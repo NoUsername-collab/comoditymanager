@@ -1,0 +1,482 @@
+/* Palete period: Victorian · Medieval · Ziar vechi (newspaper) */
+
+/* ── Shared: ferestre XP ca panouri period ── */
+html[data-admin-palette="victorian"] .admin-xp-window__titlebar,
+html[data-admin-palette="medieval"] .admin-xp-window__titlebar,
+html[data-admin-palette="newspaper"] .admin-xp-window__titlebar {
+  display: flex !important;
+}
+
+html[data-admin-palette="victorian"] .admin-shell,
+html[data-admin-palette="medieval"] .admin-shell,
+html[data-admin-palette="newspaper"] .admin-shell {
+  font-family: var(--admin-font) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-dn-liquid,
+html[data-admin-palette="medieval"] .admin-dn-liquid,
+html[data-admin-palette="newspaper"] .admin-dn-liquid {
+  opacity: 0.2 !important;
+}
+
+/* ═══════════════════════════════════════
+   VICTORIAN
+   ═══════════════════════════════════════ */
+
+html[data-admin-palette="victorian"] .admin-page-main {
+  background-color: var(--admin-page-bg);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(107, 29, 58, 0.06), transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(184, 134, 11, 0.08), transparent 40%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 12px,
+      rgba(107, 29, 58, 0.02) 12px,
+      rgba(107, 29, 58, 0.02) 13px
+    );
+}
+
+html[data-admin-palette="victorian"] .admin-hud {
+  border-bottom: 3px double #c9a86c !important;
+  box-shadow: 0 6px 24px rgba(42, 24, 16, 0.25) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-hud__eyebrow {
+  font-style: italic;
+  letter-spacing: 0.08em;
+}
+
+html[data-admin-palette="victorian"] .admin-hud__title {
+  font-family: "Playfair Display", Georgia, serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+}
+
+html[data-admin-palette="victorian"] .admin-nav-tab {
+  font-family: "Cormorant Garamond", serif !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em;
+}
+
+html[data-admin-palette="victorian"] .admin-xp-window__titlebar {
+  height: 30px;
+  padding: 0 8px 0 12px;
+  background: linear-gradient(
+    180deg,
+    #8b2948 0%,
+    #6b1d3a 45%,
+    #4a1528 100%
+  ) !important;
+  border-bottom: 2px solid #c9a86c !important;
+}
+
+html[data-admin-palette="victorian"] .admin-xp-window__titlebar-text {
+  font-family: "Playfair Display", serif !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #fff8f0 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+  letter-spacing: 0.06em;
+}
+
+html[data-admin-palette="victorian"] .admin-xp-window__ctrl--close {
+  background: linear-gradient(180deg, #a85858, #6b3030) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-xp-window__ctrl--min,
+html[data-admin-palette="victorian"] .admin-xp-window__ctrl--max {
+  background: linear-gradient(180deg, #d4b878, #9a7a40) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-xp-window {
+  border: 2px solid #c9a86c !important;
+  border-radius: 4px !important;
+  box-shadow:
+    0 0 0 1px #6b1d3a,
+    4px 6px 20px rgba(42, 24, 16, 0.35) !important;
+  background: #3d2830 !important;
+}
+
+html[data-admin-palette="victorian"] .admin-win98-body {
+  margin: 0 !important;
+  padding: 12px !important;
+  background: var(--admin-panel-bg) !important;
+  border: none !important;
+  border-top: 1px solid rgba(201, 168, 108, 0.5) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-win98-body h1,
+html[data-admin-palette="victorian"] .admin-win98-body h2,
+html[data-admin-palette="victorian"] .admin-win98-body h3 {
+  font-family: "Playfair Display", serif !important;
+  color: var(--admin-accent) !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-accent) 25%, transparent);
+  padding-bottom: 0.25rem;
+}
+
+html[data-admin-palette="victorian"] .admin-win98-body .bg-white,
+html[data-admin-palette="victorian"] .admin-win98-body .bg-gradient-to-br {
+  background: var(--admin-panel-bg) !important;
+  border: 1px solid var(--admin-panel-border) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+html[data-admin-palette="victorian"] .admin-win98-body input,
+html[data-admin-palette="victorian"] .admin-win98-body select,
+html[data-admin-palette="victorian"] .admin-win98-body textarea {
+  font-family: "Cormorant Garamond", serif !important;
+  border: 1px solid var(--admin-panel-border) !important;
+  background: #fffef9 !important;
+}
+
+html[data-admin-palette="victorian"] .admin-floating-panel {
+  border: 2px solid #c9a86c !important;
+  border-radius: 4px !important;
+  box-shadow: 4px 8px 28px rgba(42, 24, 16, 0.4) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-floating-panel__header {
+  background: linear-gradient(180deg, #8b2948, #6b1d3a) !important;
+}
+
+html[data-admin-palette="victorian"] .admin-floating-panel__title {
+  font-family: "Playfair Display", serif !important;
+  color: #fff8f0 !important;
+}
+
+html[data-admin-palette="victorian"] .admin-retro-back {
+  font-family: "Cormorant Garamond", serif !important;
+  color: var(--admin-accent) !important;
+}
+
+/* ═══════════════════════════════════════
+   MEDIEVAL
+   ═══════════════════════════════════════ */
+
+html[data-admin-palette="medieval"] .admin-page-main {
+  background-color: var(--admin-page-bg);
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    radial-gradient(ellipse at 50% 0%, rgba(122, 24, 32, 0.08), transparent 55%);
+  background-size: 16px 16px, 16px 16px, 100% 100%;
+}
+
+html[data-admin-palette="medieval"] .admin-hud {
+  border-bottom: 4px solid #4a3828 !important;
+  box-shadow: inset 0 -2px 0 #c9a227 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-hud__title {
+  font-family: "Cinzel", serif !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 1.05rem !important;
+}
+
+html[data-admin-palette="medieval"] .admin-nav-tab {
+  font-family: "Cinzel", serif !important;
+  font-size: 10px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 0 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-xp-window__titlebar {
+  height: 32px;
+  padding: 0 6px 0 10px;
+  background: linear-gradient(
+    180deg,
+    #5c4838 0%,
+    #3a2818 50%,
+    #2a2010 100%
+  ) !important;
+  border-bottom: 3px solid #c9a227 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-xp-window__titlebar-text {
+  font-family: "Cinzel", serif !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #f8f0e0 !important;
+  text-shadow: 0 1px 0 #000 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-xp-window__ctrl {
+  border-radius: 0 !important;
+  border: 2px solid #2a2010 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-xp-window__ctrl--close {
+  background: #7a1820 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-xp-window__ctrl--min,
+html[data-admin-palette="medieval"] .admin-xp-window__ctrl--max {
+  background: #6b5a48 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-xp-window {
+  border: 3px solid #4a3828 !important;
+  border-radius: 0 !important;
+  box-shadow: 6px 6px 0 rgba(20, 16, 12, 0.45) !important;
+  background: #3a2818 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-win98-body {
+  margin: 0 !important;
+  padding: 10px !important;
+  background: var(--admin-panel-bg) !important;
+  border: none !important;
+  border-top: 2px solid #8b7355 !important;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+html[data-admin-palette="medieval"] .admin-win98-body h1,
+html[data-admin-palette="medieval"] .admin-win98-body h2,
+html[data-admin-palette="medieval"] .admin-win98-body h3 {
+  font-family: "Cinzel", serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--admin-accent) !important;
+}
+
+html[data-admin-palette="medieval"] .admin-win98-body a,
+html[data-admin-palette="medieval"] .admin-win98-body button {
+  border-radius: 0 !important;
+  font-family: "Cinzel", serif !important;
+  font-size: 10px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+html[data-admin-palette="medieval"] .admin-win98-body .rounded-2xl,
+html[data-admin-palette="medieval"] .admin-win98-body .rounded-xl,
+html[data-admin-palette="medieval"] .admin-win98-body .rounded-lg {
+  border-radius: 0 !important;
+}
+
+html[data-admin-palette="medieval"] .gantt-shell {
+  border: 2px solid #4a3828 !important;
+  box-shadow: 4px 4px 0 rgba(20, 16, 12, 0.2) !important;
+}
+
+html[data-admin-palette="medieval"] .admin-floating-panel {
+  border: 3px solid #4a3828 !important;
+  border-radius: 0 !important;
+  box-shadow: 6px 6px 0 rgba(20, 16, 12, 0.35) !important;
+}
+
+html[data-admin-palette="medieval"] .admin-floating-panel__header {
+  background: linear-gradient(180deg, #5c4838, #3a2818) !important;
+  border-bottom: 2px solid #c9a227 !important;
+}
+
+html[data-admin-palette="medieval"] .admin-floating-panel__title {
+  font-family: "Cinzel", serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f8f0e0 !important;
+}
+
+/* ═══════════════════════════════════════
+   ZIAR VECHI (newspaper)
+   ═══════════════════════════════════════ */
+
+html[data-admin-palette="newspaper"] .admin-page-main {
+  background-color: var(--admin-page-bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 23px,
+      rgba(26, 26, 24, 0.04) 23px,
+      rgba(26, 26, 24, 0.04) 24px
+    );
+}
+
+html[data-admin-palette="newspaper"] .admin-hud {
+  border-bottom: 4px solid #1a1a18 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-hud__title {
+  font-family: "Newsreader", Georgia, serif !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 1rem !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-hud__eyebrow {
+  font-family: "Special Elite", monospace !important;
+  font-size: 10px !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+html[data-admin-palette="newspaper"] .admin-nav-tab {
+  font-family: "Newsreader", serif !important;
+  font-size: 11px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 0 !important;
+  border: 1px solid transparent !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-nav-tab--active {
+  border: 1px solid #1a1a18 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-xp-window__titlebar {
+  height: 28px;
+  padding: 0 8px;
+  background: #1a1a18 !important;
+  border-bottom: 3px solid #1a1a18 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-xp-window__titlebar-text {
+  font-family: "Newsreader", serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #f4f0e6 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-xp-window__ctrl {
+  border-radius: 0 !important;
+  background: #4a4844 !important;
+  border: 1px solid #f4f0e6 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-xp-window__ctrl--close {
+  background: #8b0000 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-xp-window {
+  border: 2px solid #1a1a18 !important;
+  border-radius: 0 !important;
+  box-shadow: 3px 3px 0 rgba(26, 26, 24, 0.35) !important;
+  background: #2a2a28 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body {
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  background: var(--admin-panel-bg) !important;
+  border: none !important;
+  border-top: 1px solid #1a1a18 !important;
+  column-rule-color: rgba(26, 26, 24, 0.15);
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body::before {
+  content: "";
+  display: block;
+  height: 3px;
+  margin: -4px 0 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    #1a1a18,
+    #1a1a18 2px,
+    transparent 2px,
+    transparent 6px
+  );
+  opacity: 0.35;
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body h1,
+html[data-admin-palette="newspaper"] .admin-win98-body h2,
+html[data-admin-palette="newspaper"] .admin-win98-body h3 {
+  font-family: "Newsreader", serif !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #1a1a18;
+  padding-bottom: 0.2rem;
+  color: #1a1a18 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body p,
+html[data-admin-palette="newspaper"] .admin-win98-body li {
+  font-family: "Newsreader", serif !important;
+  line-height: 1.55 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body .text-zinc-500,
+html[data-admin-palette="newspaper"] .admin-win98-body .text-zinc-600 {
+  font-family: "Special Elite", monospace !important;
+  font-size: 10px !important;
+  letter-spacing: 0.04em;
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body .bg-white,
+html[data-admin-palette="newspaper"] .admin-win98-body article {
+  background: var(--admin-panel-bg) !important;
+  border: 1px solid #1a1a18 !important;
+  box-shadow: none !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-win98-body input,
+html[data-admin-palette="newspaper"] .admin-win98-body select,
+html[data-admin-palette="newspaper"] .admin-win98-body textarea {
+  font-family: "Special Elite", monospace !important;
+  font-size: 12px !important;
+  border: 1px solid #1a1a18 !important;
+  border-radius: 0 !important;
+  background: #faf8f2 !important;
+}
+
+html[data-admin-palette="newspaper"] .avail-kpi-card__label {
+  font-family: "Special Elite", monospace !important;
+  font-size: 9px !important;
+  letter-spacing: 0.08em;
+}
+
+html[data-admin-palette="newspaper"] .gantt-shell {
+  border: 2px solid #1a1a18 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-floating-panel {
+  border: 2px solid #1a1a18 !important;
+  border-radius: 0 !important;
+  background: var(--admin-panel-bg) !important;
+  box-shadow: 4px 4px 0 rgba(26, 26, 24, 0.3) !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-floating-panel__header {
+  background: #1a1a18 !important;
+  border-bottom: 3px double #f4f0e6 !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-floating-panel__title {
+  font-family: "Newsreader", serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #f4f0e6 !important;
+  font-size: 11px !important;
+}
+
+html[data-admin-palette="newspaper"] .admin-overlay-backdrop {
+  background: rgba(26, 26, 24, 0.65) !important;
+}
+
+html[data-admin-palette="newspaper"] ::selection {
+  background: #1a1a18 !important;
+  color: #f4f0e6 !important;
+}
+
+/* Victorian & Medieval — selecție */
+html[data-admin-palette="victorian"] ::selection {
+  background: #6b1d3a !important;
+  color: #fff8f0 !important;
+}
+
+html[data-admin-palette="medieval"] ::selection {
+  background: #7a1820 !important;
+  color: #f8f0e0 !important;
+}

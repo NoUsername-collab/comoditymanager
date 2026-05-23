@@ -1,0 +1,566 @@
+/* Pagina Acasă admin — layout coerent, ușor de scanat */
+
+.admin-home {
+  --admin-home-gap: 1rem;
+  max-width: min(96rem, calc(100vw - 1.25rem));
+  margin-inline: auto;
+  padding: 0.75rem 1.25rem 2.5rem;
+}
+
+@media (min-width: 640px) {
+  .admin-home {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .admin-home {
+    padding-inline: 2rem;
+  }
+}
+
+/* —— Hero —— */
+.admin-home-hero {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem 1.45rem 1.35rem;
+  border-radius: calc(var(--admin-radius, 0.75rem) + 4px);
+  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 22%, var(--admin-panel-border));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--admin-accent-muted, #d1fae5) 45%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg, #fff) 42%,
+    color-mix(in srgb, var(--admin-page-bg, #0f172a) 4%, var(--admin-panel-bg)) 100%
+  );
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--admin-page-bg) 6%, transparent),
+    0 12px 32px color-mix(in srgb, var(--admin-accent) 8%, transparent);
+}
+
+.admin-home-hero--liquid {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+html[data-admin-retro="winxp"] .admin-home-hero__liquid,
+html[data-admin-retro="win95"] .admin-home-hero__liquid {
+  display: block !important;
+  opacity: 0.32;
+}
+
+.admin-home-hero--liquid .admin-home-hero__main,
+.admin-home-hero--liquid .admin-home-hero__actions,
+.admin-home-hero--liquid .admin-home-kpis {
+  position: relative;
+  z-index: 1;
+}
+
+.admin-home-hero__eyebrow {
+  margin: 0;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.admin-home-hero__title {
+  margin: 0.2rem 0 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--admin-text, #0f172a);
+}
+
+.admin-home-hero__meta {
+  margin: 0.45rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.admin-home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-home-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    filter 0.14s ease;
+}
+
+.admin-home-cta:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.admin-home-cta--cereri {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #ef4444 90%, white),
+    color-mix(in srgb, #dc2626 88%, #991b1b)
+  );
+  color: #fff;
+  box-shadow:
+    0 2px 10px color-mix(in srgb, #ef4444 40%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.admin-home-cta--secondary {
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--admin-page-bg) 5%, transparent);
+}
+
+.admin-home-cta--secondary:hover {
+  border-color: color-mix(in srgb, var(--admin-accent) 40%, var(--admin-panel-border));
+  background: color-mix(in srgb, var(--admin-accent-muted) 35%, var(--admin-panel-bg));
+}
+
+.admin-home-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+@media (min-width: 640px) {
+  .admin-home-kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .admin-home-hero {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+
+  .admin-home-hero__main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .admin-home-hero__actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: flex-end;
+    align-self: start;
+    padding-top: 0.35rem;
+  }
+
+  .admin-home-kpis {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+.admin-home-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-panel-border) 90%, transparent);
+  background: color-mix(in srgb, var(--admin-panel-bg) 92%, var(--admin-accent-muted));
+  padding: 0.5rem 0.6rem;
+  min-width: 0;
+}
+
+.admin-home-kpi--alert {
+  border-color: color-mix(in srgb, #f87171 55%, var(--admin-panel-border));
+  background: color-mix(in srgb, #fef2f2 70%, var(--admin-panel-bg));
+}
+
+.admin-home-kpi__value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--admin-text, #0f172a);
+}
+
+.admin-home-kpi--alert .admin-home-kpi__value {
+  color: #b91c1c;
+}
+
+.admin-home-kpi__label {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted, #71717a);
+  line-height: 1.2;
+}
+
+/* —— Secțiuni —— */
+.admin-home-section {
+  margin-top: var(--admin-home-gap);
+  animation: admin-home-float 7s ease-in-out infinite;
+}
+
+.admin-home-section:nth-child(even) {
+  animation-duration: 8.5s;
+  animation-delay: -2.5s;
+}
+
+@keyframes admin-home-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.admin-home .admin-home-window-body {
+  padding: 1.15rem 1.4rem !important;
+}
+
+html[data-admin-retro="winxp"] .admin-home .admin-home-window-body,
+html[data-admin-retro="win95"] .admin-home .admin-home-window-body {
+  padding: 10px 14px !important;
+}
+
+.admin-home .admin-today-board {
+  padding: 0.15rem 0.25rem;
+}
+
+.admin-home-section .admin-xp-window {
+  border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
+}
+
+.admin-home-split {
+  display: grid;
+  gap: var(--admin-home-gap);
+  margin-top: var(--admin-home-gap);
+}
+
+@media (min-width: 1024px) {
+  .admin-home-split {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .admin-home-split--cereri-only {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-home-panel {
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
+  background: var(--admin-panel-bg, #fff);
+  padding: 1.15rem 1.35rem;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--admin-page-bg) 5%, transparent);
+}
+
+.admin-home-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.admin-home-panel__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--admin-text, #0f172a);
+}
+
+.admin-home-panel__desc {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.admin-home-panel__link {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--admin-link, #047857);
+  text-decoration: none;
+}
+
+.admin-home-panel__link:hover {
+  text-decoration: underline;
+}
+
+.admin-home-panel--cereri {
+  border-color: color-mix(in srgb, #fbbf24 45%, var(--admin-panel-border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #fffbeb 55%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 50%
+  );
+}
+
+/* Acțiuni rapide */
+.admin-home-actions {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .admin-home-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin-home-action {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  padding: 0.7rem 0.75rem;
+  text-decoration: none;
+  transition:
+    transform 0.14s ease,
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.admin-home-action:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--admin-accent) 35%, var(--admin-panel-border));
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--admin-page-bg) 10%, transparent);
+  text-decoration: none;
+}
+
+.admin-home-action--cereri {
+  border-color: color-mix(in srgb, #f87171 50%, var(--admin-panel-border));
+  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.admin-home-action__icon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.55rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px color-mix(in srgb, #000 12%, transparent);
+}
+
+.admin-home-action__title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--admin-text, #18181b);
+}
+
+.admin-home-action__desc {
+  margin-top: 0.15rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.admin-home-action__badge {
+  display: inline-flex;
+  margin-top: 0.35rem;
+  border-radius: 9999px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  background: color-mix(in srgb, #dc2626 88%, white);
+  color: #fff;
+}
+
+/* Listă cereri */
+.admin-home-cereri-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-home-cereri-item {
+  display: block;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-panel-border) 85%, transparent);
+  background: var(--admin-panel-bg, #fff);
+  padding: 0.65rem 0.75rem;
+  text-decoration: none;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    transform 0.12s ease;
+}
+
+.admin-home-cereri-item:hover {
+  border-color: color-mix(in srgb, #f59e0b 45%, var(--admin-panel-border));
+  box-shadow: 0 4px 12px color-mix(in srgb, #f59e0b 12%, transparent);
+  transform: translateX(2px);
+  text-decoration: none;
+}
+
+.admin-home-cereri-item__guest {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--admin-text, #18181b);
+}
+
+.admin-home-cereri-item__meta {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.admin-home-cereri-item__dates {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-link, #047857);
+}
+
+/* Clădiri diseară */
+.admin-home-buildings-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-home-buildings-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .admin-home-buildings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1400px) {
+  .admin-home-buildings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin-home-empty {
+  border-radius: 0.75rem;
+  border: 2px dashed var(--admin-panel-border, #d4d4d8);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.admin-home-empty p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.admin-home-empty a {
+  display: inline-flex;
+  margin-top: 1rem;
+  border-radius: 9999px;
+  padding: 0.5rem 1.15rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  background: var(--admin-text, #18181b);
+  color: var(--admin-panel-bg, #fff);
+  text-decoration: none;
+}
+
+/* Splash lumină — tab Cereri noi */
+@keyframes admin-cereri-light-sweep {
+  0% {
+    transform: translateX(-130%) skewX(-14deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(230%) skewX(-14deg);
+    opacity: 0;
+  }
+}
+
+.admin-nav-tab--cereri-light {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.admin-nav-tab--cereri-light::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 0;
+  width: 50%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.75) 48%,
+    rgba(254, 249, 195, 0.45) 52%,
+    rgba(255, 255, 255, 0.2) 70%,
+    transparent 100%
+  );
+  animation: admin-cereri-light-sweep 2.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.admin-nav-tab--cereri-light .admin-nav-tab__icon,
+.admin-nav-tab--cereri-light .admin-nav-tab__label,
+.admin-nav-tab--cereri-light .admin-nav-tab__badge {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-nav-tab--cereri-light::before {
+    animation: none;
+    opacity: 0;
+  }
+
+  .admin-home-cta--cereri,
+  .admin-home-action--cereri {
+    animation: none;
+  }
+
+  .admin-home-section {
+    animation: none;
+  }
+}

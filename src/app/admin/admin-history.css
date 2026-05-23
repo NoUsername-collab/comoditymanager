@@ -1,0 +1,213 @@
+/* Jurnal istoric — categorii Rezervări / Admin */
+
+.activity-journal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-journal__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+@media (max-width: 520px) {
+  .activity-journal__tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+.activity-journal__tab {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
+  border: 2px solid var(--admin-panel-border, #e4e4e7);
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 92%, var(--admin-page-bg));
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.12s ease,
+    background 0.16s ease;
+}
+
+.activity-journal__tab:hover {
+  border-color: color-mix(in srgb, var(--admin-accent) 35%, var(--admin-panel-border));
+  transform: translateY(-1px);
+}
+
+.activity-journal__tab--active.activity-journal__tab--rezervari {
+  border-color: color-mix(in srgb, #0ea5e9 55%, var(--admin-panel-border));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, #e0f2fe 70%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 55%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #0ea5e9 25%, transparent),
+    0 8px 22px color-mix(in srgb, #0ea5e9 12%, transparent);
+}
+
+.activity-journal__tab--active.activity-journal__tab--admin {
+  border-color: color-mix(in srgb, #8b5cf6 50%, var(--admin-panel-border));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, #ede9fe 65%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 55%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #8b5cf6 22%, transparent),
+    0 8px 22px color-mix(in srgb, #8b5cf6 10%, transparent);
+}
+
+.activity-journal__tab-icon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.activity-journal__tab--rezervari .activity-journal__tab-icon {
+  background: color-mix(in srgb, #0ea5e9 18%, var(--admin-panel-bg));
+}
+
+.activity-journal__tab--admin .activity-journal__tab-icon {
+  background: color-mix(in srgb, #8b5cf6 16%, var(--admin-panel-bg));
+}
+
+.activity-journal__tab-body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.activity-journal__tab-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.activity-journal__tab-label {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--admin-text, #18181b);
+}
+
+.activity-journal__tab-count {
+  display: inline-flex;
+  min-width: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-journal__tab--rezervari .activity-journal__tab-count {
+  background: color-mix(in srgb, #0ea5e9 22%, var(--admin-panel-bg));
+  color: color-mix(in srgb, #0369a1 90%, var(--admin-text));
+}
+
+.activity-journal__tab--admin .activity-journal__tab-count {
+  background: color-mix(in srgb, #8b5cf6 20%, var(--admin-panel-bg));
+  color: color-mix(in srgb, #5b21b6 85%, var(--admin-text));
+}
+
+.activity-journal__tab-hint {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.activity-journal__tab-last {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--admin-text-muted, #a1a1aa);
+}
+
+.activity-journal__panel {
+  border-radius: var(--admin-radius, 0.75rem);
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  padding: 1rem 1rem 1.15rem;
+}
+
+.activity-journal__panel--rezervari {
+  border-top: 3px solid #0ea5e9;
+}
+
+.activity-journal__panel--admin {
+  border-top: 3px solid #8b5cf6;
+}
+
+.activity-journal__panel-head {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--admin-panel-border, #e4e4e7);
+}
+
+.activity-journal__panel-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--admin-text, #18181b);
+}
+
+.activity-journal__panel-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.activity-journal__empty {
+  margin-top: 0.25rem;
+}
+
+/* Rezumat — 2 categorii principale */
+.admin-history-summary {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .admin-history-summary {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.admin-history-summary__chip--rezervari {
+  border-color: color-mix(in srgb, #0ea5e9 35%, var(--admin-panel-border, #bae6fd));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, #e0f2fe 55%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 100%
+  );
+}
+
+.admin-history-summary__chip--admin {
+  border-color: color-mix(in srgb, #8b5cf6 32%, var(--admin-panel-border, #ddd6fe));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, #ede9fe 50%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 100%
+  );
+}

@@ -1,0 +1,197 @@
+/* Contrast global — Tailwind hardcodat + panouri → tokeni semantici */
+
+/* —— Neutre (zinc / gray / slate) —— */
+html[data-admin-palette] .admin-page-main [class*="text-zinc-9"],
+html[data-admin-palette] .admin-page-main [class*="text-zinc-8"],
+html[data-admin-palette] .admin-page-main [class*="text-zinc-7"],
+html[data-admin-palette] .admin-page-main [class*="text-gray-9"],
+html[data-admin-palette] .admin-page-main [class*="text-gray-8"],
+html[data-admin-palette] .admin-page-main [class*="text-gray-7"],
+html[data-admin-palette] .admin-page-main [class*="text-slate-9"],
+html[data-admin-palette] .admin-page-main [class*="text-slate-8"],
+html[data-admin-palette] .admin-page-main [class*="text-slate-7"],
+html[data-admin-palette] .admin-page-main .text-black {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .admin-page-main [class*="text-zinc-6"],
+html[data-admin-palette] .admin-page-main [class*="text-zinc-5"],
+html[data-admin-palette] .admin-page-main [class*="text-zinc-4"],
+html[data-admin-palette] .admin-page-main [class*="text-zinc-3"],
+html[data-admin-palette] .admin-page-main [class*="text-gray-6"],
+html[data-admin-palette] .admin-page-main [class*="text-gray-5"],
+html[data-admin-palette] .admin-page-main [class*="text-gray-4"],
+html[data-admin-palette] .admin-page-main [class*="text-slate-6"],
+html[data-admin-palette] .admin-page-main [class*="text-slate-5"],
+html[data-admin-palette] .admin-page-main [class*="text-slate-4"] {
+  color: var(--admin-text-muted) !important;
+}
+
+/* Fundaluri albe / zinc hardcodate */
+html[data-admin-palette] .admin-page-main .bg-white,
+html[data-admin-palette] .admin-page-main [class*="bg-white/"] {
+  background-color: var(--admin-panel-bg) !important;
+}
+
+html[data-admin-palette] .admin-page-main .border-zinc-100,
+html[data-admin-palette] .admin-page-main .border-zinc-200,
+html[data-admin-palette] .admin-page-main .border-zinc-300,
+html[data-admin-palette] .admin-page-main [class*="border-zinc"] {
+  border-color: var(--admin-panel-border) !important;
+}
+
+/* Panouri admin (admin-features.css) */
+html[data-admin-palette] .admin-panel-section,
+html[data-admin-palette] .admin-summary-chip,
+html[data-admin-palette] .admin-empty-state,
+html[data-admin-palette] .admin-metric-card,
+html[data-admin-palette] .activity-timeline__card {
+  background: var(--admin-panel-bg) !important;
+  border-color: var(--admin-panel-border) !important;
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .admin-panel-section__title,
+html[data-admin-palette] .admin-summary-chip__value,
+html[data-admin-palette] .admin-empty-state__title,
+html[data-admin-palette] .activity-timeline__card .font-medium,
+html[data-admin-palette] .activity-timeline__card .font-semibold {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .admin-panel-section__desc,
+html[data-admin-palette] .admin-summary-chip__label,
+html[data-admin-palette] .admin-summary-chip__hint,
+html[data-admin-palette] .admin-empty-state__text {
+  color: var(--admin-text-muted) !important;
+}
+
+/* —— Gantt —— (fără bare: .gantt-stay-chrome are culori proprii) */
+html[data-admin-palette] .gantt-toolbar__panel,
+html[data-admin-palette] .gantt-cereri-queue,
+html[data-admin-palette] .gantt-popover-premium__body,
+html[data-admin-palette] .admin-floating-panel--gantt .gantt-popover-premium__body {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .gantt-shell {
+  color: var(--admin-text);
+}
+
+html[data-admin-palette] .gantt-room-column-header,
+html[data-admin-palette] .gantt-room-cell,
+html[data-admin-palette] .gantt-footer-legend,
+html[data-admin-palette] .gantt-today-panel:not(.gantt-today-panel--away),
+html[data-admin-palette] .gantt-day-header-cell__label {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .gantt-day-header-cell--today .gantt-day-header-cell__label {
+  color: var(--admin-text) !important;
+  font-weight: 700;
+}
+
+html[data-admin-palette] .gantt-room-cell {
+  background-color: var(--admin-panel-bg) !important;
+}
+
+html[data-admin-palette] .gantt-footer-legend {
+  background: color-mix(
+    in srgb,
+    var(--admin-page-bg) 88%,
+    var(--admin-panel-bg)
+  ) !important;
+  border-color: var(--admin-panel-border) !important;
+}
+
+html[data-admin-palette] .gantt-building-chip {
+  background: var(--admin-panel-bg) !important;
+  border-color: var(--admin-panel-border) !important;
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .gantt-building-header__chevron {
+  background: color-mix(in srgb, var(--admin-panel-bg) 75%, var(--admin-text-muted)) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-panel-border) !important;
+}
+
+html[data-admin-palette] .gantt-today-panel--away {
+  background: color-mix(in srgb, var(--admin-page-bg) 90%, var(--admin-panel-bg)) !important;
+  border-color: var(--admin-panel-border) !important;
+  color: var(--admin-text-muted) !important;
+}
+
+html[data-admin-palette] .gantt-popover-premium__body,
+html[data-admin-palette] .admin-floating-panel--gantt .gantt-popover-premium__body {
+  background: var(--admin-panel-bg) !important;
+}
+
+html[data-admin-palette] .gantt-popover-premium__body [class*="text-zinc"] {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .gantt-popover-premium__body .text-zinc-500,
+html[data-admin-palette] .gantt-popover-premium__body .text-zinc-400 {
+  color: var(--admin-text-muted) !important;
+}
+
+html[data-admin-palette] .gantt-seg__btn--active {
+  color: var(--admin-btn-primary-text) !important;
+}
+
+html[data-admin-palette] .gantt-thead-sticky tr,
+html[data-admin-palette] .gantt-thead-sticky th {
+  background: var(--admin-panel-bg) !important;
+  color: var(--admin-text) !important;
+}
+
+/* Disponibilitate */
+html[data-admin-palette] .availability-grid-panel,
+html[data-admin-palette] .avail-kpi-card,
+html[data-admin-palette] .avail-weekends-panel,
+html[data-admin-palette] .avail-detail-panel {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .avail-kpi-card__label,
+html[data-admin-palette] .avail-kpi-card__hint,
+html[data-admin-palette] [class*="avail-"][class*="muted"] {
+  color: var(--admin-text-muted) !important;
+}
+
+/* Jurnal istoric */
+html[data-admin-palette] .activity-journal__tab-label,
+html[data-admin-palette] .activity-journal__panel-title {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .activity-journal__tab-hint,
+html[data-admin-palette] .activity-journal__tab-last,
+html[data-admin-palette] .activity-journal__panel-desc {
+  color: var(--admin-text-muted) !important;
+}
+
+html[data-admin-palette] .activity-journal__tab {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .activity-journal__panel {
+  background: var(--admin-panel-bg) !important;
+  border-color: var(--admin-panel-border) !important;
+}
+
+/* Retro + paletă: nu moșteni negru pe panouri închise */
+html[data-admin-retro][data-admin-palette] .admin-page-main {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-retro][data-admin-palette] .admin-page-main .gantt-toolbar__panel,
+html[data-admin-retro][data-admin-palette] .admin-page-main .admin-panel-section,
+html[data-admin-retro][data-admin-palette] .admin-page-main .gantt-cereri-queue {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-retro][data-admin-palette] .admin-page-main .gantt-shell {
+  color: var(--admin-text);
+}

@@ -1,0 +1,824 @@
+/* XP Luna = shell (desktop Bliss, title bar, taskbar) · Win98 = conținut ferestre */
+
+html[data-admin-retro="winxp"] {
+  --xp-bliss-top: #5a9fd4;
+  --xp-bliss-hill: #8cd65e;
+  --xp-bliss-grass: #5cb836;
+  --xp-chrome: #ece9d8;
+  --xp-border: #0054e3;
+  --xp-title-top: #0997ff;
+  --xp-title-mid: #3c92f8;
+  --xp-title-bot: #1e50b7;
+  --xp-font: Tahoma, "Segoe UI", sans-serif;
+  --w98-face: #c0c0c0;
+  --w98-light: #ffffff;
+  --w98-shadow: #808080;
+  --w98-dark: #000000;
+  --w98-client: #ffffff;
+  --w98-font: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+}
+
+/* Fără retro XP/95: ascunde chrome fereastră */
+html:not([data-admin-retro="winxp"]):not([data-admin-retro="win95"])
+  .admin-xp-window__titlebar {
+  display: none;
+}
+
+html:not([data-admin-retro="winxp"]):not([data-admin-retro="win95"])
+  .admin-xp-window {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+html:not([data-admin-retro="winxp"]):not([data-admin-retro="win95"])
+  .admin-win98-body {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+/* ── Desktop Bliss ── */
+html[data-admin-retro="winxp"] .admin-shell {
+  font-family: var(--xp-font) !important;
+  font-size: 11px !important;
+}
+
+html[data-admin-retro="winxp"] .admin-page-main {
+  background: linear-gradient(
+    180deg,
+    var(--xp-bliss-top) 0%,
+    #7eb8e8 22%,
+    #b8e6f5 38%,
+    #c8ef9a 52%,
+    var(--xp-bliss-hill) 62%,
+    var(--xp-bliss-grass) 100%
+  ) !important;
+  background-attachment: fixed !important;
+  padding: 8px 10px 16px !important;
+}
+
+html[data-admin-retro="winxp"] .admin-dn-liquid {
+  display: none !important;
+}
+
+/* ── HUD = fereastra principală XP ── */
+html[data-admin-retro="winxp"] .admin-hud {
+  background: linear-gradient(
+    180deg,
+    var(--xp-title-top) 0%,
+    #0053ee 8%,
+    #0060e6 35%,
+    var(--xp-title-mid) 100%
+  ) !important;
+  border: 1px solid var(--xp-border) !important;
+  border-radius: 8px 8px 0 0 !important;
+  box-shadow: 0 2px 8px rgba(0, 42, 128, 0.5) !important;
+  margin: 0 2px !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud::after {
+  content: "";
+  display: block !important;
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 4px;
+  height: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent) !important;
+  pointer-events: none;
+  z-index: 4;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__header {
+  padding: 5px 8px 3px !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__brand-text {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__eyebrow {
+  color: #c8e7ff !important;
+  font-size: 10px !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__title {
+  color: #fff !important;
+  font: bold 13px/1.2 var(--xp-font) !important;
+  text-shadow: 0 1px 2px rgba(0, 32, 96, 0.55) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__logo {
+  border-radius: 5px !important;
+  background: linear-gradient(135deg, #fff, #b6d6ff) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+  transform: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__logo-inner {
+  color: var(--xp-border) !important;
+}
+
+/* Taskbar XP */
+html[data-admin-retro="winxp"] .admin-hud__surface {
+  background: linear-gradient(180deg, #245edb 0%, #3c92f8 8%, #245edb 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.28) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-nav-tab {
+  font: 11px var(--xp-font) !important;
+  border-radius: 3px !important;
+  background: linear-gradient(180deg, #4a9ff5, #2566c4) !important;
+  color: #fff !important;
+  border: 1px solid #003c74 !important;
+  text-shadow: 0 1px 1px rgba(0, 32, 96, 0.45) !important;
+  transform: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-nav-tab--active {
+  background: linear-gradient(180deg, #fff7e6, #ffd970) !important;
+  color: #003399 !important;
+  border-color: #c9a000 !important;
+  text-shadow: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-nav-tab--quest {
+  background: linear-gradient(180deg, #ff8080, #dc2626) !important;
+  color: #fff !important;
+  animation: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-dn-switch {
+  background: linear-gradient(180deg, #5cb836, #3c8720) !important;
+  border: 1px solid #2d6018 !important;
+  border-radius: 4px !important;
+}
+
+html[data-admin-retro="winxp"] .admin-dn-switch__btn--active {
+  background: linear-gradient(180deg, #fff, #ece9d8) !important;
+  color: #003399 !important;
+  border: 1px solid #003c74 !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__chip--ghost,
+html[data-admin-retro="winxp"] .admin-hud__sync,
+html[data-admin-retro="winxp"] .admin-hud__badge--stable {
+  background: linear-gradient(180deg, #fff, #ece9d8 86%, #d8d4c8) !important;
+  color: #003399 !important;
+  border: 1px solid #003c74 !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud__chip--logout {
+  background: linear-gradient(180deg, #ff9a8a, #c43c2c) !important;
+  color: #fff !important;
+  border: 1px solid #8b2118 !important;
+}
+
+html[data-admin-retro="winxp"] .admin-hud-alert {
+  background: #ffffe1 !important;
+  color: #000 !important;
+  border: 1px solid #000 !important;
+  font: 11px var(--w98-font) !important;
+  animation: none !important;
+  margin: 0 10px !important;
+}
+
+/* ── Fereastră XP (cadru) ── */
+html[data-admin-retro="winxp"] .admin-xp-window {
+  margin-bottom: 10px;
+  border: 1px solid var(--xp-border);
+  border-radius: 8px 8px 6px 6px;
+  background: var(--xp-chrome);
+  box-shadow:
+    2px 2px 10px rgba(0, 42, 128, 0.35),
+    4px 4px 18px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 30px;
+  padding: 0 4px 0 8px;
+  background: linear-gradient(
+    180deg,
+    var(--xp-title-top) 0%,
+    #0060e6 45%,
+    var(--xp-title-mid) 100%
+  );
+  border-bottom: 1px solid var(--xp-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__titlebar-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: bold 11px/30px var(--xp-font);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 32, 96, 0.55);
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__controls {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__ctrl {
+  display: block;
+  width: 21px;
+  height: 21px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__ctrl--min {
+  background: linear-gradient(180deg, #3c92f8, #245edb);
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__ctrl--max {
+  background: linear-gradient(180deg, #3c92f8, #245edb);
+}
+
+html[data-admin-retro="winxp"] .admin-xp-window__ctrl--close {
+  background: linear-gradient(180deg, #ff8080, #dc2626);
+  border-color: #8b2118;
+}
+
+/* ── Client Win98 (interior) ── */
+html[data-admin-retro="winxp"] .admin-win98-body {
+  margin: 3px;
+  padding: 8px;
+  background: var(--w98-face) !important;
+  border: 2px solid !important;
+  border-color: var(--w98-shadow) var(--w98-light) var(--w98-light) var(--w98-shadow) !important;
+  font: 11px/1.35 var(--w98-font) !important;
+  color: var(--w98-dark) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body * {
+  font-family: var(--w98-font) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body h1,
+html[data-admin-retro="winxp"] .admin-win98-body h2,
+html[data-admin-retro="winxp"] .admin-win98-body h3 {
+  font: bold 11px var(--w98-font) !important;
+  color: var(--w98-dark) !important;
+  text-shadow: none !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body p,
+html[data-admin-retro="winxp"] .admin-win98-body span,
+html[data-admin-retro="winxp"] .admin-win98-body li {
+  color: var(--w98-dark) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .text-zinc-500,
+html[data-admin-retro="winxp"] .admin-win98-body .text-zinc-600,
+html[data-admin-retro="winxp"] .admin-win98-body .text-zinc-900 {
+  color: var(--w98-dark) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .rounded-2xl,
+html[data-admin-retro="winxp"] .admin-win98-body .rounded-xl,
+html[data-admin-retro="winxp"] .admin-win98-body .rounded-lg,
+html[data-admin-retro="winxp"] .admin-win98-body .rounded-full {
+  border-radius: 0 !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .bg-white,
+html[data-admin-retro="winxp"] .admin-win98-body .bg-gradient-to-br,
+html[data-admin-retro="winxp"] .admin-win98-body [class*="from-"],
+html[data-admin-retro="winxp"] .admin-win98-body [class*="to-"] {
+  background: var(--w98-client) !important;
+  background-image: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .border,
+html[data-admin-retro="winxp"] .admin-win98-body [class*="border-"] {
+  border: 2px solid !important;
+  border-color: var(--w98-shadow) var(--w98-light) var(--w98-light) var(--w98-shadow) !important;
+  box-shadow: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body a,
+html[data-admin-retro="winxp"] .admin-win98-body button,
+html[data-admin-retro="winxp"] .admin-win98-body .admin-cereri-cta {
+  background: var(--w98-face) !important;
+  color: var(--w98-dark) !important;
+  border: 2px solid !important;
+  border-color: var(--w98-light) var(--w98-dark) var(--w98-dark) var(--w98-light) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  animation: none !important;
+  font: 11px var(--w98-font) !important;
+  padding: 4px 12px !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body a:active,
+html[data-admin-retro="winxp"] .admin-win98-body button:active {
+  border-color: var(--w98-dark) var(--w98-light) var(--w98-light) var(--w98-dark) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body input,
+html[data-admin-retro="winxp"] .admin-win98-body select,
+html[data-admin-retro="winxp"] .admin-win98-body textarea {
+  background: var(--w98-client) !important;
+  border: 2px solid !important;
+  border-color: var(--w98-shadow) var(--w98-light) var(--w98-light) var(--w98-shadow) !important;
+  border-radius: 0 !important;
+  color: var(--w98-dark) !important;
+  font: 11px var(--w98-font) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .admin-today-board__badge,
+html[data-admin-retro="winxp"] .admin-win98-body .admin-summary-chip {
+  background: var(--w98-face) !important;
+  border: 2px solid !important;
+  border-color: var(--w98-light) var(--w98-dark) var(--w98-dark) var(--w98-light) !important;
+  color: var(--w98-dark) !important;
+  border-radius: 0 !important;
+  font: 11px var(--w98-font) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .font-serif {
+  font-family: var(--w98-font) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body [class*="shadow-"] {
+  box-shadow: none !important;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body [class*="hover:"]:hover {
+  transform: none !important;
+}
+
+/* Gantt / panouri legacy → XP frame + win98 inner */
+html[data-admin-retro="winxp"] .gantt-shell,
+html[data-admin-retro="winxp"] .admin-panel-section:not(.admin-xp-window) {
+  border: 2px solid !important;
+  border-color: var(--w98-light, #dfdfdf) var(--w98-shadow, #808080)
+    var(--w98-shadow, #808080) var(--w98-light, #dfdfdf) !important;
+  border-radius: 0 !important;
+  background: var(--w98-face, #c0c0c0) !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+html[data-admin-retro="winxp"] .gantt-stay:not(.gantt-stay--slant) {
+  border-radius: 0 !important;
+  font: 10px var(--w98-font) !important;
+}
+
+html[data-admin-retro="winxp"] .gantt-stay--slant {
+  font: 10px var(--w98-font) !important;
+}
+
+html[data-admin-retro="winxp"] .gantt-day-cell {
+  border: 1px solid var(--w98-shadow) !important;
+}
+
+html[data-admin-retro="winxp"] ::selection {
+  background: #000080 !important;
+  color: #fff !important;
+}
+
+/* Navigare înapoi + pagini Clădiri / Camere / Setări */
+.admin-retro-back {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #3f3f46;
+  text-decoration: none;
+}
+
+.admin-retro-back:hover {
+  color: #18181b;
+  text-decoration: underline;
+}
+
+html[data-admin-retro="winxp"] .admin-retro-back {
+  font: 11px var(--w98-font) !important;
+  color: #000080 !important;
+  text-decoration: underline !important;
+}
+
+html[data-admin-retro="winxp"] .admin-retro-page-desc {
+  color: var(--w98-dark) !important;
+}
+
+html[data-admin-retro="winxp"] .admin-retro-page-toolbar {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--w98-shadow);
+  margin-bottom: 10px !important;
+}
+
+/* Ferestre imbricate pe clădire / grup camere */
+html[data-admin-retro="winxp"] .admin-win98-body .admin-xp-window {
+  margin-top: 10px;
+}
+
+html[data-admin-retro="winxp"] .admin-win98-body .admin-xp-window:first-child {
+  margin-top: 0;
+}
+
+html[data-admin-retro="winxp"] .admin-settings-section {
+  margin-top: 10px;
+}
+
+html[data-admin-retro="winxp"] .admin-settings-section:first-of-type {
+  margin-top: 0;
+}
+
+html[data-admin-retro="winxp"] * {
+  scrollbar-width: auto;
+  scrollbar-color: var(--w98-face) var(--w98-mid, #dfdfdf);
+}
+
+html[data-admin-retro="winxp"] *::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+  background: var(--w98-face);
+}
+
+html[data-admin-retro="winxp"] *::-webkit-scrollbar-thumb {
+  background: var(--w98-face);
+  border: 2px solid;
+  border-color: var(--w98-light) var(--w98-dark) var(--w98-dark) var(--w98-light);
+}
+
+/* ── Windows 95 (desktop teal, taskbar gri) ── */
+html[data-admin-retro="win95"] {
+  --w95-face: #c0c0c0;
+  --w95-light: #ffffff;
+  --w95-shadow: #808080;
+  --w95-dark: #000000;
+  --w95-client: #ffffff;
+  --w95-title: #000080;
+  --w95-title-hi: #1084d0;
+  --w95-font: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+}
+
+html[data-admin-retro="win95"] .admin-shell {
+  font-family: var(--w95-font) !important;
+  font-size: 11px !important;
+}
+
+html[data-admin-retro="win95"] .admin-page-main {
+  background: var(--admin-page-bg) !important;
+  background-image: none !important;
+  padding: 6px 8px 12px !important;
+}
+
+html[data-admin-retro="win95"] .admin-dn-liquid {
+  display: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud {
+  background: var(--w95-face) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: inset 0 1px 0 var(--w95-light), inset 0 -1px 0 var(--w95-shadow) !important;
+  margin: 0 !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud::after {
+  display: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__header {
+  padding: 2px 4px !important;
+  background: linear-gradient(
+    90deg,
+    var(--w95-title) 0%,
+    var(--w95-title-hi) 100%
+  ) !important;
+  border-bottom: 1px solid var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__brand-text {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__eyebrow {
+  color: #fff !important;
+  font: 10px var(--w95-font) !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__title {
+  color: #fff !important;
+  font: bold 11px/1.2 var(--w95-font) !important;
+  text-shadow: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__logo {
+  border-radius: 0 !important;
+  background: var(--w95-face) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__logo-inner {
+  color: var(--w95-dark) !important;
+  font: bold 10px var(--w95-font) !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__surface {
+  background: var(--w95-face) !important;
+  border-top: 2px solid var(--w95-light) !important;
+  padding: 3px 4px 4px !important;
+  box-shadow: inset 0 1px 0 var(--w95-light) !important;
+}
+
+html[data-admin-retro="win95"] .admin-nav-tab {
+  font: 11px var(--w95-font) !important;
+  border-radius: 0 !important;
+  background: var(--w95-face) !important;
+  color: var(--w95-dark) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  padding: 3px 8px !important;
+  margin: 1px !important;
+}
+
+html[data-admin-retro="win95"] .admin-nav-tab--active {
+  border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark) !important;
+  background: #dfdfdf !important;
+  font-weight: bold !important;
+}
+
+html[data-admin-retro="win95"] .admin-nav-tab--quest {
+  background: #ffffcc !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  animation: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-dn-switch {
+  background: var(--w95-face) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  border-radius: 0 !important;
+  padding: 2px !important;
+}
+
+html[data-admin-retro="win95"] .admin-dn-switch__btn--active {
+  border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark) !important;
+  background: #dfdfdf !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__chip--ghost,
+html[data-admin-retro="win95"] .admin-hud__sync,
+html[data-admin-retro="win95"] .admin-hud__badge--stable {
+  background: var(--w95-face) !important;
+  color: var(--w95-dark) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  border-radius: 0 !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud__chip--logout {
+  background: var(--w95-face) !important;
+  color: var(--w95-dark) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+}
+
+html[data-admin-retro="win95"] .admin-hud-alert {
+  background: #ffffe1 !important;
+  color: #000 !important;
+  border: 1px solid #000 !important;
+  font: 11px var(--w95-font) !important;
+  margin: 0 6px !important;
+}
+
+html[data-admin-retro="win95"] .admin-xp-window {
+  margin-bottom: 8px;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  border-radius: 0 !important;
+  background: var(--w95-face) !important;
+  box-shadow: 1px 1px 0 var(--w95-dark) !important;
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+html[data-admin-retro="win95"] .admin-xp-window__titlebar {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  height: 18px;
+  min-height: 18px;
+  padding: 0 2px 0 3px;
+  background: linear-gradient(
+    90deg,
+    var(--w95-title) 0%,
+    var(--w95-title-hi) 100%
+  ) !important;
+  border-bottom: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-xp-window__titlebar-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: bold 11px/18px var(--w95-font) !important;
+  color: #fff !important;
+  text-shadow: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-xp-window__controls {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+html[data-admin-retro="win95"] .admin-xp-window__ctrl {
+  display: block;
+  width: 16px;
+  height: 14px;
+  border-radius: 0 !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  background: var(--w95-face) !important;
+  box-shadow: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-xp-window__ctrl--close {
+  font-size: 9px;
+  line-height: 10px;
+  text-align: center;
+  color: var(--w95-dark);
+}
+
+html[data-admin-retro="win95"] .admin-xp-window__ctrl--min,
+html[data-admin-retro="win95"] .admin-xp-window__ctrl--max {
+  background: var(--w95-face) !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body {
+  margin: 2px !important;
+  padding: 6px !important;
+  background: var(--w95-face) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow) !important;
+  font: 11px/1.35 var(--w95-font) !important;
+  color: var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body * {
+  font-family: var(--w95-font) !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body h1,
+html[data-admin-retro="win95"] .admin-win98-body h2,
+html[data-admin-retro="win95"] .admin-win98-body h3 {
+  font: bold 11px var(--w95-font) !important;
+  color: var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body .rounded-2xl,
+html[data-admin-retro="win95"] .admin-win98-body .rounded-xl,
+html[data-admin-retro="win95"] .admin-win98-body .rounded-lg,
+html[data-admin-retro="win95"] .admin-win98-body .rounded-full {
+  border-radius: 0 !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body .bg-white,
+html[data-admin-retro="win95"] .admin-win98-body .bg-gradient-to-br,
+html[data-admin-retro="win95"] .admin-win98-body [class*="from-"],
+html[data-admin-retro="win95"] .admin-win98-body [class*="to-"] {
+  background: var(--w95-client) !important;
+  background-image: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body a,
+html[data-admin-retro="win95"] .admin-win98-body button {
+  background: var(--w95-face) !important;
+  color: var(--w95-dark) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  border-radius: 0 !important;
+  font: 11px var(--w95-font) !important;
+  padding: 4px 12px !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body a:active,
+html[data-admin-retro="win95"] .admin-win98-body button:active {
+  border-color: var(--w95-dark) var(--w95-light) var(--w95-light) var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .admin-win98-body input,
+html[data-admin-retro="win95"] .admin-win98-body select,
+html[data-admin-retro="win95"] .admin-win98-body textarea {
+  background: var(--w95-client) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-shadow) var(--w95-light) var(--w95-light) var(--w95-shadow) !important;
+  border-radius: 0 !important;
+  font: 11px var(--w95-font) !important;
+}
+
+html[data-admin-retro="win95"] .gantt-shell {
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  border-radius: 0 !important;
+  background: var(--w95-face) !important;
+  box-shadow: 1px 1px 0 var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .gantt-stay:not(.gantt-stay--slant) {
+  border-radius: 0 !important;
+  font: 10px var(--w95-font) !important;
+}
+
+html[data-admin-retro="win95"] .gantt-stay--slant {
+  font: 10px var(--w95-font) !important;
+}
+
+html[data-admin-retro="win95"] .admin-floating-panel {
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  border-radius: 0 !important;
+  background: var(--w95-face) !important;
+  box-shadow: 2px 2px 0 var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .admin-floating-panel__header {
+  background: linear-gradient(
+    90deg,
+    var(--w95-title),
+    var(--w95-title-hi)
+  ) !important;
+  border-bottom: 1px solid var(--w95-dark) !important;
+  min-height: 18px;
+  padding: 0 4px !important;
+}
+
+html[data-admin-retro="win95"] .admin-floating-panel__title {
+  font: bold 11px var(--w95-font) !important;
+  color: #fff !important;
+}
+
+html[data-admin-retro="win95"] .admin-floating-panel__close {
+  width: 16px !important;
+  height: 14px !important;
+  border-radius: 0 !important;
+  background: var(--w95-face) !important;
+  border: 2px solid !important;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light) !important;
+  color: var(--w95-dark) !important;
+}
+
+html[data-admin-retro="win95"] .admin-overlay-backdrop {
+  background: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: none !important;
+}
+
+html[data-admin-retro="win95"] .admin-retro-back {
+  font: 11px var(--w95-font) !important;
+  color: #000080 !important;
+}
+
+html[data-admin-retro="win95"] ::selection {
+  background: #000080 !important;
+  color: #fff !important;
+}
+
+html[data-admin-retro="win95"] *::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+  background: var(--w95-face);
+}
+
+html[data-admin-retro="win95"] *::-webkit-scrollbar-thumb {
+  background: var(--w95-face);
+  border: 2px solid;
+  border-color: var(--w95-light) var(--w95-dark) var(--w95-dark) var(--w95-light);
+}

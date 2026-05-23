@@ -1,0 +1,101 @@
+/**
+ * Bare Gantt — fundal = culoare clădire (--gs-bg inline).
+ * Text = alb + contur negru (citește pe orice temă / orice culoare de bară).
+ */
+
+.gantt-stay-chrome {
+  isolation: isolate;
+  text-decoration: none !important;
+  background-image: none !important;
+}
+
+.gantt-shell a.gantt-stay-chrome.gantt-stay--filled,
+.gantt-shell div.gantt-stay-chrome.gantt-stay--filled,
+.gantt-shell a.gantt-cereri-card.gantt-stay-chrome,
+html[data-admin-palette] .gantt-shell a.gantt-stay-chrome.gantt-stay--filled,
+html[data-admin-palette] .gantt-shell div.gantt-stay-chrome.gantt-stay--filled,
+html[data-admin-retro] .admin-page-main .gantt-shell a.gantt-stay-chrome.gantt-stay--filled,
+html[data-admin-retro] .admin-page-main .gantt-shell div.gantt-stay-chrome.gantt-stay--filled,
+html[data-admin-retro] .admin-page-main .gantt-shell a.gantt-cereri-card.gantt-stay-chrome {
+  background-color: var(--gs-bg) !important;
+  background-image: none !important;
+  border-color: var(--gs-border) !important;
+}
+
+/* Nume + inițiale — contur: funcționează și când fundalul nu se aplică (alb/palet) */
+.gantt-stay-chrome__label,
+.gantt-stay-chrome .gantt-stay__avatar,
+.gantt-stay-chrome .gantt-stay__body > span:not(.gantt-stay__badge),
+.gantt-stay-chrome .gantt-stay__end-tab-arrow,
+.gantt-stay-chrome .gantt-cereri-card__guest,
+.gantt-stay-chrome .gantt-cereri-card__dates,
+html[data-admin-palette] .gantt-stay-chrome__label,
+html[data-admin-palette] .gantt-stay-chrome .gantt-stay__avatar,
+html[data-admin-retro] .admin-page-main .gantt-stay-chrome__label,
+html[data-admin-retro] .admin-page-main .gantt-stay-chrome .gantt-stay__avatar,
+html[data-admin-retro] .admin-page-main .gantt-stay-chrome .gantt-stay__end-tab-arrow {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow:
+    -1px -1px 0 #0f172a,
+    1px -1px 0 #0f172a,
+    -1px 1px 0 #0f172a,
+    1px 1px 0 #0f172a,
+    0 0 5px rgba(15, 23, 42, 0.95) !important;
+}
+
+.gantt-stay-chrome .gantt-stay__end-tab,
+.gantt-stay-chrome .gantt-cereri-card__tab {
+  background-color: var(--gs-tab) !important;
+  background-image: none !important;
+}
+
+.gantt-stay-chrome .gantt-stay__badge,
+.gantt-stay-chrome .gantt-cereri-card__party {
+  background-color: var(--gs-badge-bg) !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 0 2px rgba(15, 23, 42, 0.9) !important;
+}
+
+html[data-admin-palette] .gantt-shell a.gantt-stay-chrome,
+html[data-admin-palette] .gantt-shell div.gantt-stay-chrome {
+  text-decoration: none !important;
+  padding: 0 !important;
+}
+
+/* Focus clădire: nu estompa barele (doar coloana cameră) */
+.gantt-room-row--dimmed {
+  opacity: 1;
+  filter: none;
+}
+
+.gantt-room-row--dimmed .gantt-room-cell {
+  opacity: 0.42;
+  filter: grayscale(0.2);
+}
+
+.gantt-room-row--dimmed .gantt-stays-layer {
+  opacity: 1;
+  filter: none;
+}
+
+/* Etichete camere / clădiri */
+html[data-admin-palette] .gantt-building-header__title,
+html[data-admin-palette] .gantt-room-cell__name {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .gantt-room-cell__building,
+html[data-admin-palette] .gantt-building-header__count {
+  color: var(--admin-text-muted) !important;
+}
+
+html[data-admin-retro][data-admin-palette] .gantt-building-header__title,
+html[data-admin-retro][data-admin-palette] .gantt-room-cell__name {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-retro][data-admin-palette] .gantt-room-cell__building {
+  color: var(--admin-text-muted) !important;
+}

@@ -1,0 +1,43 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { AdminQuickPanel } from "@/components/calendar/AdminQuickPanel";
+import { getPensionSettings } from "@/services/pension-settings";
+import { getAdminUser } from "@/lib/auth/require-admin";
+
+export default async function ReceptiePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ confirmed?: string }>;
+}) {
+  const admin = await getAdminUser();
+  if (!admin) {
+    redirect("/admin/login?next=/receptie");
+  }
+
+  const params = await searchParams;
+  let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
+  try {
+    settings = await getPensionSettings();
+  } catch {
+    settings = null;
+  }
+
+  const checkInTime = settings?.default_check_in_time ?? "14:00";
+  const checkOutTime = settings?.default_check_out_time ?? "11:00";
+
+  return (
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10">
+      <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-800">
+        ← Site public
+      </Link>
+
+      {params.confirmed === "1" && (
+        <p className="rounded-lg bg-emerald-50 px-4 py-2 text-sm text-emerald-800">
+          Rezervare confirmată.
+        </p>
+      )}
+
+      <AdminQuickPanel checkInTime={checkInTime} checkOutTime={checkOutTime} />
+    </main>
+  );
+}

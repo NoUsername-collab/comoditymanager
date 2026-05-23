@@ -1,0 +1,414 @@
+/* —— Tema admin: paletă + zi/noapte = întreaga aplicație —— */
+
+:root {
+  --admin-page-bg: #f4f4f5;
+  --admin-panel-bg: #ffffff;
+  --admin-panel-border: #e4e4e7;
+  --admin-text: #18181b;
+  --admin-text-muted: #71717a;
+  --admin-accent: #059669;
+  --admin-accent-muted: #d1fae5;
+  --admin-hud-gradient: linear-gradient(135deg, #ecfdf5, #f0f9ff, #fafafa);
+  --admin-hud-text: #0f172a;
+  --admin-hud-eyebrow: #047857;
+  --admin-hud-overlay: transparent;
+  --admin-hud-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
+  --admin-gantt-shell-bg: linear-gradient(180deg, #fff, #fafafa);
+  --admin-font: var(--font-geist-sans), system-ui, sans-serif;
+  --admin-radius: 0.75rem;
+}
+
+html[data-admin-palette] {
+  font-family: var(--admin-font);
+}
+
+html[data-admin-palette] .admin-shell {
+  font-family: var(--admin-font);
+  color: var(--admin-text);
+}
+
+html[data-admin-palette] .admin-shell .admin-page-main,
+html[data-admin-palette] .admin-shell .flex-1 {
+  background: var(--admin-page-bg) !important;
+  color: var(--admin-text) !important;
+}
+
+/* HUD */
+html[data-admin-palette] .admin-hud {
+  background: var(--admin-hud-gradient) !important;
+  box-shadow: var(--admin-hud-shadow) !important;
+}
+
+html[data-admin-palette] .admin-hud::after {
+  background: var(--admin-hud-overlay) !important;
+}
+
+html[data-admin-palette] .admin-hud__brand-text {
+  background: var(--admin-hud-brand-bg) !important;
+  border-color: var(--admin-hud-brand-border) !important;
+  color: var(--admin-hud-text) !important;
+}
+
+html[data-admin-palette] .admin-hud__eyebrow {
+  color: var(--admin-hud-eyebrow) !important;
+}
+
+html[data-admin-palette] .admin-hud__title {
+  color: var(--admin-hud-text) !important;
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--admin-page-bg) 40%, transparent);
+}
+
+html[data-admin-palette] .admin-hud__logo {
+  background: linear-gradient(
+    135deg,
+    var(--dn-day-sun) 0%,
+    var(--dn-twilight) 48%,
+    var(--dn-night-violet) 100%
+  ) !important;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--admin-hud-text) 20%, transparent),
+    0 4px 20px color-mix(in srgb, var(--admin-accent) 45%, transparent) !important;
+}
+
+html[data-admin-palette] .admin-hud__logo-inner {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] .admin-hud__badge--stable,
+html[data-admin-palette] .admin-hud__sync {
+  background: var(--admin-chip-bg) !important;
+  color: var(--admin-chip-text) !important;
+  border: 1px solid var(--admin-chip-border) !important;
+}
+
+html[data-admin-palette] .admin-hud__chip--ghost {
+  background: var(--admin-chip-bg) !important;
+  color: var(--admin-chip-text) !important;
+  border: 1px solid var(--admin-chip-border) !important;
+}
+
+html[data-admin-palette] .admin-hud__chip--ghost:hover {
+  background: var(--admin-nav-tab-hover-bg) !important;
+  color: var(--admin-hud-text) !important;
+  border-color: color-mix(in srgb, var(--admin-accent) 35%, transparent) !important;
+}
+
+html[data-admin-palette] .admin-nav-tab {
+  color: var(--admin-nav-tab-text) !important;
+  background: var(--admin-nav-tab-bg) !important;
+  border: 1px solid var(--admin-chip-border) !important;
+  border-radius: var(--admin-radius) !important;
+}
+
+html[data-admin-palette] .admin-nav-tab:hover {
+  color: var(--admin-hud-text) !important;
+  background: var(--admin-nav-tab-hover-bg) !important;
+}
+
+html[data-admin-palette] .admin-nav-tab--active {
+  color: var(--admin-nav-active-text) !important;
+  background: var(--admin-nav-active-bg) !important;
+  box-shadow: var(--admin-nav-active-shadow) !important;
+}
+
+html[data-admin-palette] .admin-nav-tab--active .admin-nav-tab__icon {
+  color: var(--admin-accent) !important;
+}
+
+html[data-admin-palette] .admin-nav-tab--quest {
+  background: var(--admin-cereri-grad) !important;
+  color: var(--admin-btn-primary-text) !important;
+}
+
+html[data-admin-palette] .admin-dn-switch {
+  background: var(--admin-chip-bg) !important;
+  border-color: var(--admin-chip-border) !important;
+}
+
+html[data-admin-palette] .admin-dn-switch__btn {
+  color: var(--admin-nav-tab-text) !important;
+}
+
+html[data-admin-palette] .admin-dn-switch__btn--active {
+  color: var(--admin-switch-active-text) !important;
+  background: var(--admin-switch-active-bg) !important;
+}
+
+html[data-admin-palette] .admin-hud-alert {
+  background: var(--admin-alert-bg) !important;
+  color: var(--admin-alert-text) !important;
+  border-color: var(--admin-danger-border) !important;
+}
+
+html[data-admin-palette] .admin-hud-alert__link {
+  color: var(--admin-accent) !important;
+}
+
+/* Liquid blob opacities — zi vs noapte */
+html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--night-deep,
+html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--night-violet,
+html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--night-moon {
+  opacity: 0.14 !important;
+}
+
+html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--day-sun,
+html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--day-sky,
+html[data-admin-palette][data-admin-theme="day"] .admin-dn-liquid__blob--day-mist {
+  opacity: 0.92 !important;
+}
+
+html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--day-sun,
+html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--day-sky,
+html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--day-mist {
+  opacity: 0.16 !important;
+}
+
+html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night-deep,
+html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night-violet,
+html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night-moon {
+  opacity: 0.88 !important;
+}
+
+/* Retro Win98/XP — vezi admin-retro.css (shell complet) */
+html[data-admin-retro="win98"] .admin-dn-liquid,
+html[data-admin-retro="winxp"] .admin-dn-liquid {
+  display: none !important;
+}
+
+/* Panouri, formulare, linkuri */
+html[data-admin-palette] .admin-panel-section,
+html[data-admin-palette] .gantt-shell,
+html[data-admin-palette] .availability-grid-panel {
+  background: var(--admin-panel-bg) !important;
+  border-color: var(--admin-panel-border) !important;
+  color: var(--admin-text) !important;
+  border-radius: var(--admin-radius) !important;
+}
+
+html[data-admin-palette] .gantt-shell--premium,
+html[data-admin-palette] .gantt-shell {
+  background: var(--admin-gantt-shell-bg) !important;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--admin-text) 6%, transparent),
+    0 12px 40px color-mix(in srgb, var(--admin-page-bg) 20%, transparent) !important;
+}
+
+html[data-admin-palette]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell {
+  background-color: var(--gantt-zone-clean) !important;
+  background-image: linear-gradient(
+    90deg,
+    var(--gantt-zone-checkout) 0,
+    var(--gantt-zone-checkout) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) 100%
+  ) !important;
+}
+
+html[data-admin-palette] .gantt-zone-ribbon__segment--checkout {
+  background: var(--gantt-zone-checkout) !important;
+  border-right-color: var(--gantt-line-checkout) !important;
+}
+
+html[data-admin-palette] .gantt-zone-ribbon__segment--clean {
+  background: repeating-linear-gradient(
+    -48deg,
+    var(--gantt-zone-clean),
+    var(--gantt-zone-clean) 4px,
+    color-mix(in srgb, var(--gantt-zone-clean) 55%, var(--admin-text-muted, #94a3b8) 45%) 4px,
+    color-mix(in srgb, var(--gantt-zone-clean) 55%, var(--admin-text-muted, #94a3b8) 45%) 7px
+  ) !important;
+}
+
+html[data-admin-palette] .gantt-zone-ribbon__segment--checkin {
+  background: var(--gantt-zone-checkin) !important;
+  border-left-color: var(--gantt-line-checkin) !important;
+}
+
+html[data-admin-palette] .gantt-zone-ribbon__segment--checkout .gantt-zone-ribbon__label {
+  color: var(--gantt-zone-checkout-text) !important;
+}
+
+html[data-admin-palette] .gantt-zone-ribbon__segment--clean .gantt-zone-ribbon__label {
+  color: var(--gantt-zone-clean-text) !important;
+}
+
+html[data-admin-palette] .gantt-zone-ribbon__segment--checkin .gantt-zone-ribbon__label {
+  color: var(--gantt-zone-checkin-text) !important;
+}
+
+html[data-admin-palette] main h1,
+html[data-admin-palette] main h2,
+html[data-admin-palette] .admin-page-header h1 {
+  color: var(--admin-text) !important;
+}
+
+html[data-admin-palette] main p {
+  color: var(--admin-text-muted) !important;
+}
+
+html[data-admin-palette] .gantt-seg__btn--active {
+  background: var(--admin-accent) !important;
+  color: #fff !important;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--admin-accent) 45%, transparent) !important;
+}
+
+html[data-admin-palette] .gantt-seg__btn--active:hover {
+  filter: brightness(1.06);
+}
+
+html[data-admin-palette] .gantt-cereri-queue--embedded {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--admin-accent-muted) 35%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 100%
+  ) !important;
+  border-top-color: color-mix(in srgb, var(--admin-accent) 28%, var(--admin-panel-border)) !important;
+}
+
+html[data-admin-palette] .gantt-toolbar__today {
+  border-color: color-mix(in srgb, var(--admin-accent) 50%, var(--admin-panel-border)) !important;
+  color: color-mix(in srgb, var(--admin-accent) 90%, var(--admin-text)) !important;
+}
+
+html[data-admin-palette] a.text-emerald-700,
+html[data-admin-palette] .text-emerald-700 {
+  color: var(--admin-link) !important;
+}
+
+html[data-admin-palette] input,
+html[data-admin-palette] select,
+html[data-admin-palette] textarea {
+  background: var(--admin-input-bg) !important;
+  border-color: var(--admin-input-border) !important;
+  color: var(--admin-text) !important;
+  border-radius: var(--admin-radius) !important;
+}
+
+html[data-admin-palette] button.rounded-lg.bg-zinc-900,
+html[data-admin-palette] .bg-zinc-900 {
+  background: var(--admin-text) !important;
+  color: var(--admin-panel-bg) !important;
+}
+
+html[data-admin-palette] button[type="submit"].bg-zinc-900:hover {
+  background: color-mix(in srgb, var(--admin-text) 88%, var(--admin-accent)) !important;
+}
+
+html[data-admin-palette] .rounded-lg.border.border-zinc-300,
+html[data-admin-palette] .border-zinc-200 {
+  border-color: var(--admin-panel-border) !important;
+}
+
+html[data-admin-palette] .bg-white {
+  background: var(--admin-panel-bg) !important;
+}
+
+html[data-admin-palette] .bg-zinc-50,
+html[data-admin-palette] .bg-zinc-50\/80 {
+  background: color-mix(in srgb, var(--admin-page-bg) 92%, var(--admin-panel-bg)) !important;
+}
+
+/* Status ocupare / plin — ton din paletă */
+html[data-admin-palette] .status-occupied-tile,
+html[data-admin-palette] .status-occupied-swatch {
+  background: var(--admin-danger-bg) !important;
+  border-color: var(--admin-danger-border) !important;
+  color: var(--admin-danger-text) !important;
+}
+
+html[data-admin-palette] .status-day-full {
+  background: var(--admin-full-bg) !important;
+  border-color: var(--admin-danger-border) !important;
+  color: var(--admin-full-text) !important;
+}
+
+html[data-admin-palette] .admin-cereri-fill,
+html[data-admin-palette] .admin-cereri-glow {
+  background: var(--admin-cereri-grad) !important;
+  color: var(--admin-btn-primary-text) !important;
+}
+
+/* Hero Acasă */
+html[data-admin-palette] .admin-daynight-hero {
+  background: var(--admin-hero-bg) !important;
+  color: var(--admin-hud-text) !important;
+  border-color: var(--admin-panel-border) !important;
+}
+
+html[data-admin-palette] .admin-daynight-hero__content {
+  background: var(--admin-hero-content-bg) !important;
+  border-color: var(--admin-hero-border) !important;
+}
+
+html[data-admin-palette] .admin-daynight-hero__eyebrow {
+  color: var(--admin-hud-eyebrow) !important;
+}
+
+html[data-admin-palette] .admin-daynight-hero__title {
+  color: var(--admin-hud-text) !important;
+}
+
+html[data-admin-palette] .admin-daynight-hero__meta {
+  color: var(--admin-text-muted) !important;
+}
+
+/* Gantt premium */
+html[data-admin-palette] .gantt-today-line {
+  background: var(--admin-gantt-today-line, #0ea5e9) !important;
+}
+
+html[data-admin-palette] .gantt-thead-sticky tr {
+  background: var(--admin-panel-bg) !important;
+  box-shadow: var(--admin-gantt-header-shadow) !important;
+}
+
+html[data-admin-palette] .gantt-unassigned-row .gantt-unassigned-cell {
+  background: var(--admin-gantt-unassigned) !important;
+  border-color: var(--admin-gantt-cerere) !important;
+}
+
+html[data-admin-palette] .gantt-unassigned-label {
+  color: var(--admin-accent) !important;
+}
+
+html[data-admin-palette] .gantt-popover-premium__btn--primary {
+  background: var(--admin-btn-primary-bg) !important;
+  color: var(--admin-btn-primary-text) !important;
+}
+
+html[data-admin-palette] .gantt-kbd-hint {
+  color: var(--admin-text-muted) !important;
+}
+
+html[data-admin-palette] .gantt-kbd-hint kbd {
+  background: var(--admin-panel-bg) !important;
+  border-color: var(--admin-panel-border) !important;
+  color: var(--admin-text-muted) !important;
+}
+
+/* Disponibilitate heat — integrare */
+html[data-admin-palette] .avail-kpi-card {
+  border-color: var(--admin-panel-border) !important;
+  background: linear-gradient(
+    145deg,
+    var(--admin-panel-bg) 0%,
+    color-mix(in srgb, var(--admin-accent-muted) 45%, transparent) 100%
+  ) !important;
+}
+
+html[data-admin-palette] .avail-weekends-panel {
+  border-color: var(--admin-panel-border) !important;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--admin-accent-muted) 18%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 60%
+  ) !important;
+}
+
+html[data-admin-palette] .avail-weekend-card:not(.avail-weekend-card--empty) {
+  color: var(--stay-text) !important;
+}
