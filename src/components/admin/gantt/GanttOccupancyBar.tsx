@@ -31,9 +31,9 @@ export function GanttOccupancyBar({
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const className = [
-    "gantt-occ-bar pointer-events-auto absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-center overflow-hidden text-[9px] font-bold leading-none",
-    kind === "hold" && "gantt-occ-bar--hold",
-    kind === "block" && "gantt-occ-bar--block",
+    "gantt-booking-card gantt-occ-bar pointer-events-auto absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-center overflow-hidden text-[9px] font-bold leading-none",
+    kind === "hold" && "gantt-booking-card--hold gantt-occ-bar--hold",
+    kind === "block" && "gantt-booking-card--block gantt-occ-bar--block",
     continuesBefore && "gantt-occ-bar--from-prev",
     continuesAfter && "gantt-occ-bar--to-next",
   ]

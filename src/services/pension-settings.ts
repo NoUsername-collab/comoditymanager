@@ -3,6 +3,7 @@ import type {
   AdminPaletteSettings,
   AdminPaletteSource,
 } from "@/lib/admin-palettes/types";
+import { migrateLegacyPaletteKey } from "@/lib/themes";
 import type { AdminTheme } from "@/lib/admin-theme";
 
 export type PensionSettings = {
@@ -16,14 +17,7 @@ export type PensionSettings = {
   admin_day_night: AdminTheme;
 };
 
-function parsePaletteSource(raw: unknown): AdminPaletteSource {
-  if (
-    raw === "catalog" ||
-    raw === "season_auto" ||
-    raw === "season_manual"
-  ) {
-    return raw;
-  }
+function parsePaletteSource(_raw: unknown): AdminPaletteSource {
   return "catalog";
 }
 
@@ -51,11 +45,11 @@ export async function getPensionSettings(): Promise<PensionSettings | null> {
     default_check_out_time: String(data.default_check_out_time).slice(0, 5),
     total_extra_beds_max: data.total_extra_beds_max,
     admin_palette_source: parsePaletteSource(data.admin_palette_source),
-    admin_palette_key:
-      typeof data.admin_palette_key === "string" &&
-      data.admin_palette_key.length > 0
+    admin_palette_key: migrateLegacyPaletteKey(
+      typeof data.admin_palette_key === "string" && data.admin_palette_key.length > 0
         ? data.admin_palette_key
-        : "pension",
+        : "default"
+    ),
     admin_day_night: parseDayNight(data.admin_day_night),
   };
 }
@@ -64,8 +58,8 @@ export function pensionAppearanceSettings(
   s: PensionSettings
 ): AdminPaletteSettings {
   return {
-    admin_palette_source: s.admin_palette_source,
-    admin_palette_key: s.admin_palette_key,
+    admin_palette_source: "catalog",
+    admin_palette_key: migrateLegacyPaletteKey(s.admin_palette_key),
     admin_day_night: s.admin_day_night,
   };
 }

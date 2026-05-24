@@ -1,0 +1,247 @@
+/* Default (fost Alb simplu) — culori neutre, card discret */
+
+html[data-theme="default"][data-mode="day"] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-border: #e4e4e7;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
+  --color-accent: #3f3f46;
+
+  --booking-active-bg: #52525b;
+  --booking-active-border: #3f3f46;
+  --booking-active-text: #ffffff;
+
+  --booking-pending-bg: #fef3c7;
+  --booking-pending-border: #f59e0b;
+  --booking-pending-text: #78350f;
+
+  --booking-past-bg: #e4e4e7;
+  --booking-past-border: #a1a1aa;
+  --booking-past-text: #52525b;
+
+  --booking-cancelled-bg: #fafafa;
+  --booking-cancelled-border: #d4d4d8;
+  --booking-cancelled-text: #a1a1aa;
+
+  --booking-hold-bg: #fffbeb;
+  --booking-hold-border: #fbbf24;
+  --booking-hold-text: #92400e;
+
+  --booking-block-bg: #fef2f2;
+  --booking-block-border: #f87171;
+  --booking-block-text: #991b1b;
+
+  --card-radius: 6px;
+  --card-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --card-shadow: none;
+  --card-border-style: solid;
+
+  --gantt-zone-checkout: #fafafa;
+  --gantt-zone-clean: #ffffff;
+  --gantt-zone-checkin: #f4f4f5;
+  --gantt-line-checkout: #a1a1aa;
+  --gantt-line-checkin: #d4d4d8;
+
+  --admin-hud-gradient: #ffffff;
+  --admin-hud-shadow: 0 1px 0 #e4e4e7;
+  --admin-btn-primary-text: #ffffff;
+}
+
+html[data-theme="default"][data-mode="night"] {
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-border: #27272a;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-accent: #e4e4e7;
+
+  --booking-active-bg: #d4d4d8;
+  --booking-active-border: #a1a1aa;
+  --booking-active-text: #18181b;
+
+  --booking-pending-bg: #422006;
+  --booking-pending-border: #f59e0b;
+  --booking-pending-text: #fde68a;
+
+  --booking-past-bg: #3f3f46;
+  --booking-past-border: #52525b;
+  --booking-past-text: #d4d4d8;
+
+  --booking-cancelled-bg: #27272a;
+  --booking-cancelled-border: #3f3f46;
+  --booking-cancelled-text: #71717a;
+
+  --booking-hold-bg: #422006;
+  --booking-hold-border: #d97706;
+  --booking-hold-text: #fde68a;
+
+  --booking-block-bg: #450a0a;
+  --booking-block-border: #ef4444;
+  --booking-block-text: #fecaca;
+
+  --card-radius: 6px;
+  --card-shadow: none;
+
+  --gantt-zone-checkout: #1c1917;
+  --gantt-zone-clean: #18181b;
+  --gantt-zone-checkin: #27272a;
+  --gantt-line-checkout: #71717a;
+  --gantt-line-checkin: #52525b;
+
+  --admin-hud-gradient: #18181b;
+  --admin-hud-shadow: 0 1px 0 #27272a;
+  --admin-btn-primary-text: #18181b;
+}
+
+/* Default — fără Bliss, glow, gradiente decorative */
+
+html[data-theme="default"] .admin-dn-liquid {
+  display: none !important;
+}
+
+html[data-theme="default"] .admin-hud {
+  border-bottom: 1px solid var(--admin-panel-border) !important;
+}
+
+html[data-theme="default"] .admin-hud::after {
+  display: none !important;
+}
+
+html[data-theme="default"] .admin-nav-tab {
+  border-radius: var(--admin-radius) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="default"] .admin-nav-tab--active {
+  box-shadow: inset 0 -2px 0 var(--admin-accent) !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="default"] .admin-nav-tab--quest {
+  background: var(--admin-accent) !important;
+  color: var(--admin-btn-primary-text) !important;
+  animation: none !important;
+}
+
+html[data-theme="default"] .admin-dn-switch__btn--active {
+  background: var(--admin-switch-active-bg) !important;
+  color: var(--admin-btn-primary-text) !important;
+}
+
+html[data-theme="default"] .admin-xp-window {
+  border-radius: var(--admin-radius) !important;
+  border: 1px solid var(--admin-panel-border) !important;
+  box-shadow: none !important;
+  background: var(--admin-panel-bg) !important;
+}
+
+html[data-theme="default"] .admin-xp-window__titlebar {
+  background: var(--admin-accent-muted) !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--admin-panel-border) !important;
+  padding: 0.35rem 0.5rem !important;
+}
+
+html[data-theme="default"] .admin-xp-window__titlebar-text {
+  color: var(--admin-text) !important;
+  font: 600 0.8125rem var(--admin-font) !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="default"] .admin-xp-window__ctrl {
+  display: none !important;
+}
+
+html[data-theme="default"] .admin-win98-body {
+  background: var(--admin-panel-bg) !important;
+  border: none !important;
+  padding: 0.75rem !important;
+}
+
+html[data-theme="default"] .admin-page-main [class*="bg-gradient"],
+html[data-theme="default"] .admin-page-main [class*="from-"],
+html[data-theme="default"] .admin-page-main [class*="to-"] {
+  background: var(--admin-panel-bg) !important;
+  background-image: none !important;
+}
+
+html[data-theme="default"] .admin-summary-chip,
+html[data-theme="default"] .admin-metric-card,
+html[data-theme="default"] .avail-kpi-card,
+html[data-theme="default"] .admin-panel-section {
+  border-radius: var(--admin-radius) !important;
+  box-shadow: none !important;
+  background: var(--admin-panel-bg) !important;
+  background-image: none !important;
+}
+
+html[data-theme="default"] .admin-cereri-glow {
+  animation: none !important;
+  box-shadow: none !important;
+  border: 1px solid var(--admin-panel-border) !important;
+}
+
+html[data-theme="default"] .admin-daynight-hero__title {
+  font-family: var(--admin-font) !important;
+  font-weight: 600 !important;
+}
+
+html[data-theme="default"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell {
+  background-image: linear-gradient(
+    90deg,
+    var(--gantt-zone-checkout) 0,
+    var(--gantt-zone-checkout) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) 100%
+  ) !important;
+}
+
+html[data-theme="default"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell::after {
+  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, #e4e4e7) !important;
+  opacity: 0.45;
+}
+
+html[data-theme="default"] .gantt-shell,
+html[data-theme="default"] .gantt-shell--premium {
+  border-radius: var(--admin-radius) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="default"] .gantt-today-panel {
+  border-radius: var(--admin-radius) !important;
+  background: var(--admin-panel-bg) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="default"] .gantt-today-panel__pulse,
+html[data-theme="default"] .gantt-today-panel__dot {
+  animation: none !important;
+}
+
+html[data-theme="default"] .gantt-stay--today-arrival {
+  animation: none !important;
+}
+
+html[data-theme="default"] .admin-floating-panel {
+  border-radius: var(--admin-radius) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+html[data-theme="default"] .admin-floating-panel__header {
+  background: var(--admin-accent-muted) !important;
+  background-image: none !important;
+}
+
+html[data-theme="default"] .admin-floating-panel__title {
+  color: var(--admin-text) !important;
+  text-shadow: none !important;
+  font-family: var(--admin-font) !important;
+}

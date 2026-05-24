@@ -1,0 +1,106 @@
+/* Windows XP Classic — Bliss, Luna, Tahoma */
+
+html[data-theme="winxp"][data-mode="day"] {
+  --color-bg: #5a9fd4;
+  --color-surface: #ece9d8;
+  --color-border: #0054e3;
+  --color-text: #003399;
+  --color-text-muted: #3366cc;
+  --color-accent: #0054e3;
+
+  --booking-active-bg: #0054e3;
+  --booking-active-border: #003399;
+  --booking-active-text: #ffffff;
+
+  --booking-pending-bg: #fffacd;
+  --booking-pending-border: #ff8c00;
+  --booking-pending-text: #003399;
+
+  --booking-past-bg: #9eb6d8;
+  --booking-past-border: #5a7ab8;
+  --booking-past-text: #ffffff;
+
+  --booking-cancelled-bg: #ece9d8;
+  --booking-cancelled-border: #aca899;
+  --booking-cancelled-text: #666666;
+
+  --booking-hold-bg: #fffacd;
+  --booking-hold-border: #ff8c00;
+  --booking-hold-text: #003399;
+
+  --booking-block-bg: #ffc0cb;
+  --booking-block-border: #c00000;
+  --booking-block-text: #003399;
+
+  --card-radius: 6px;
+  --card-font: Tahoma, "Segoe UI", "MS Sans Serif", ui-sans-serif, sans-serif;
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  --card-border-style: solid;
+
+  --gantt-zone-checkout: #fffacd;
+  --gantt-zone-clean: #ffffff;
+  --gantt-zone-checkin: #d3e5ff;
+  --gantt-line-checkout: #ff8c00;
+  --gantt-line-checkin: #0054e3;
+
+  --admin-page-bg: #5a9fd4;
+  --admin-panel-bg: #ffffff;
+  --admin-hud-gradient: linear-gradient(
+    180deg,
+    #0997ff 0%,
+    #0053ee 8%,
+    #0060e6 40%,
+    #3c92f8 100%
+  );
+  --admin-hud-text: #ffffff;
+  --admin-hud-eyebrow: #c8e7ff;
+  --admin-hud-shadow: 0 2px 8px rgba(0, 40, 120, 0.35);
+  --admin-btn-primary-text: #ffffff;
+}
+
+html[data-theme="winxp"][data-mode="night"] {
+  --color-bg: #1a3a5c;
+  --color-surface: #f0f4fc;
+  --color-border: #0997ff;
+  --color-text: #003399;
+  --color-text-muted: #5a7ab8;
+  --color-accent: #3c92f8;
+
+  --booking-active-bg: #3c92f8;
+  --booking-active-border: #0054e3;
+  --booking-active-text: #ffffff;
+
+  --booking-pending-bg: #3d3200;
+  --booking-pending-border: #c97800;
+  --booking-pending-text: #fffacd;
+
+  --booking-past-bg: #4a6080;
+  --booking-past-border: #2a4060;
+  --booking-past-text: #e8eef8;
+
+  --booking-cancelled-bg: #e8eef8;
+  --booking-cancelled-border: #8b9cb8;
+  --booking-cancelled-text: #5a7ab8;
+
+  --booking-hold-bg: #3d3200;
+  --booking-hold-border: #c97800;
+  --booking-hold-text: #fffacd;
+
+  --booking-block-bg: #4a2020;
+  --booking-block-border: #c00000;
+  --booking-block-text: #ffc0cb;
+
+  --card-radius: 6px;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+  --gantt-zone-checkout: #3d3200;
+  --gantt-zone-clean: #e8eef8;
+  --gantt-zone-checkin: #b8d4f0;
+  --gantt-line-checkout: #c97800;
+  --gantt-line-checkin: #3c92f8;
+
+  --admin-page-bg: #1a3a5c;
+  --admin-hud-gradient: linear-gradient(180deg, #0a246a 0%, #1e59b8 50%, #3c92f8 100%);
+  --admin-hud-text: #ffffff;
+  --admin-hud-eyebrow: #93c5fd;
+}

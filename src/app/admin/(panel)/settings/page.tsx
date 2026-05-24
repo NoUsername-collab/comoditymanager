@@ -5,11 +5,7 @@ import {
 import { AdminPalettePicker } from "@/components/admin/settings/AdminPalettePicker";
 import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import {
-  resolvePaletteDefinition,
-  getSeasonLabel,
-  getCurrentSeason,
-} from "@/lib/admin-palettes";
+import { resolvePaletteDefinition } from "@/lib/admin-palettes";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
 import { updateSettingsAction } from "./actions";
 
@@ -33,12 +29,7 @@ export default async function SettingsPage({
     ? resolvePaletteDefinition(appearance)
     : null;
 
-  const sourceLabel =
-    appearance?.admin_palette_source === "catalog"
-      ? "Catalog general"
-      : appearance?.admin_palette_source === "season_auto"
-        ? `Anotimp auto (${getSeasonLabel(getCurrentSeason())})`
-        : "Anotimp manual";
+  const sourceLabel = "Temă modulară (Default · Win95 · XP)";
 
   return (
     <AdminRetroPageFrame

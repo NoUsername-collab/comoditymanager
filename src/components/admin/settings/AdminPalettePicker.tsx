@@ -1,20 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import {
-  CATALOG_PALETTES,
-  SEASON_PALETTES,
-  getCurrentSeason,
-  getSeasonLabel,
-  resolvePaletteDefinition,
-  tokensFor,
-  type AdminPaletteDefinition,
-  type AdminPaletteSettings,
-  type AdminPaletteSource,
-} from "@/lib/admin-palettes";
+import { useState } from "react";
+import { CATALOG_PALETTES, tokensFor } from "@/lib/admin-palettes";
 import { useAdminTheme } from "@/components/admin/AdminAppearanceProvider";
 import type { AdminTheme } from "@/lib/admin-theme";
+import type { ThemeId } from "@/lib/themes";
 import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
+import type { AdminPaletteDefinition } from "@/lib/admin-palettes/types";
 
 function ZoneStrip({
   palette,
@@ -54,11 +46,7 @@ function ZoneStrip({
   );
 }
 
-function ExtendedPalettePreview({
-  palette,
-}: {
-  palette: AdminPaletteDefinition;
-}) {
+function ExtendedPalettePreview({ palette }: { palette: AdminPaletteDefinition }) {
   return (
     <div className="admin-palette-extend">
       <p className="admin-palette-extend__desc">{palette.description}</p>
@@ -131,12 +119,7 @@ function PaletteThemeRow({
         aria-expanded={expanded}
         onClick={onToggleExpand}
       >
-        <span className="admin-palette-theme__name">
-          {palette.seasonEmoji && (
-            <span className="mr-1">{palette.seasonEmoji}</span>
-          )}
-          {palette.name}
-        </span>
+        <span className="admin-palette-theme__name">{palette.name}</span>
         {!expanded && (
           <span className="admin-palette-theme__strip">
             <ZoneStrip palette={palette} mode="day" compact />
@@ -178,12 +161,12 @@ function PaletteThemeRow({
 export function AdminPalettePicker({
   defaultSettings,
 }: {
-  defaultSettings: AdminPaletteSettings;
+  defaultSettings: {
+    admin_palette_key: ThemeId;
+    admin_day_night: AdminTheme;
+  };
 }) {
-  const [source, setSource] = useState<AdminPaletteSource>(
-    defaultSettings.admin_palette_source
-  );
-  const [paletteKey, setPaletteKey] = useState(
+  const [paletteKey, setPaletteKey] = useState<ThemeId>(
     defaultSettings.admin_palette_key
   );
   const [dayNight, setDayNight] = useState<AdminTheme>(
@@ -195,31 +178,19 @@ export function AdminPalettePicker({
 
   const { applySettings, settings } = useAdminTheme();
 
-  const preview = (next: Partial<AdminPaletteSettings>) => {
-    const merged: AdminPaletteSettings = {
-      admin_palette_source: next.admin_palette_source ?? source,
+  const activePalette =
+    CATALOG_PALETTES.find((p) => p.id === settings.admin_palette_key) ??
+    CATALOG_PALETTES[0]!;
+
+  const preview = (next: { admin_palette_key?: ThemeId; admin_day_night?: AdminTheme }) => {
+    applySettings({
+      admin_palette_source: "catalog",
       admin_palette_key: next.admin_palette_key ?? paletteKey,
       admin_day_night: next.admin_day_night ?? dayNight,
-    };
-    applySettings(merged);
+    });
   };
 
-  const currentSeason = useMemo(() => getCurrentSeason(), []);
-
-  const activePalette = useMemo(
-    () => resolvePaletteDefinition(settings),
-    [settings]
-  );
-
-  const visiblePalettes = useMemo(() => {
-    if (source === "catalog") return CATALOG_PALETTES;
-    if (source === "season_auto") {
-      return SEASON_PALETTES.filter((p) => p.id === currentSeason);
-    }
-    return SEASON_PALETTES;
-  }, [source, currentSeason]);
-
-  const selectPalette = (id: string) => {
+  const selectPalette = (id: ThemeId) => {
     setPaletteKey(id);
     setExpandedId(id);
     preview({ admin_palette_key: id });
@@ -227,7 +198,7 @@ export function AdminPalettePicker({
 
   return (
     <div className="admin-palette-picker">
-      <input type="hidden" name="admin_palette_source" value={source} />
+      <input type="hidden" name="admin_palette_source" value="catalog" />
       <input type="hidden" name="admin_palette_key" value={paletteKey} />
       <input type="hidden" name="admin_day_night" value={dayNight} />
 
@@ -243,8 +214,9 @@ export function AdminPalettePicker({
       >
         <div className="admin-palette-block">
           <p className="admin-palette-block__desc">
-            Fiecare temă are variantă Zi și Noapte — previzualizarea live se
-            aplică imediat în panou.
+            Fiecare temă are variantă Zi și Noapte — stilul vine din CSS modular (
+            <code className="text-xs">data-theme</code> +{" "}
+            <code className="text-xs">data-mode</code>).
           </p>
           <div className="admin-palette-daynight">
             {(["day", "night"] as const).map((m) => (
@@ -274,83 +246,18 @@ export function AdminPalettePicker({
       </SettingsSlidePanel>
 
       <SettingsSlidePanel
-        title="Sursă paletă"
-        subtitle={
-          source === "catalog"
-            ? "11 stiluri generale"
-            : source === "season_auto"
-              ? `Anotimp auto — ${getSeasonLabel(currentSeason)}`
-              : "Anotimp ales manual"
-        }
-        icon="🎨"
-      >
-        <div className="admin-palette-block">
-          <div className="admin-palette-source">
-            {(
-              [
-                ["catalog", "11 stiluri generale"],
-                ["season_auto", `Auto (${getSeasonLabel(currentSeason)})`],
-                ["season_manual", "Anotimp ales"],
-              ] as const
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => {
-                  setSource(value);
-                  let key = paletteKey;
-                  if (value === "catalog") {
-                    key = CATALOG_PALETTES.some((p) => p.id === paletteKey)
-                      ? paletteKey
-                      : "pension";
-                  } else if (value === "season_auto") {
-                    key = currentSeason;
-                  } else {
-                    key = SEASON_PALETTES.some((p) => p.id === paletteKey)
-                      ? paletteKey
-                      : currentSeason;
-                  }
-                  setPaletteKey(key);
-                  setExpandedId(key);
-                  preview({
-                    admin_palette_source: value,
-                    admin_palette_key: key,
-                  });
-                }}
-                className={[
-                  "admin-palette-source__btn",
-                  source === value && "admin-palette-source__btn--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          {source === "season_auto" && (
-            <p className="admin-palette-block__desc mt-3">
-              Acum în România: <strong>{getSeasonLabel(currentSeason)}</strong>{" "}
-              — paleta se schimbă automat la fiecare anotimp.
-            </p>
-          )}
-        </div>
-      </SettingsSlidePanel>
-
-      <SettingsSlidePanel
-        title="Tonuri & teme"
-        subtitle={`${activePalette.name} · click pe nume pentru preview`}
+        title="Temă"
+        subtitle={`${activePalette.name} · Default · Win95 · XP Classic`}
         icon="✨"
         badge={
           <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600">
-            {visiblePalettes.length}{" "}
-            {visiblePalettes.length === 1 ? "temă" : "teme"}
+            {CATALOG_PALETTES.length} teme
           </span>
         }
         defaultOpen
       >
         <div className="admin-palette-list">
-          {visiblePalettes.map((p) => (
+          {CATALOG_PALETTES.map((p) => (
             <PaletteThemeRow
               key={p.id}
               palette={p}

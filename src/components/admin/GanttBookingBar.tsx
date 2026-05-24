@@ -43,10 +43,10 @@ export function GanttBookingBar({
 
   const className = [
     ganttStayChromeClass(),
-    "gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[10px] font-semibold leading-none transition duration-200 hover:z-[2]",
+    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[10px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] h-7 w-full" : "absolute top-2 z-[1] max-w-full",
-    isCerere && "gantt-stay--cerere",
-    occupancyPhase === "past" && "gantt-stay--phase-past",
+    isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
+    occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
     occupancyPhase === "active" && "gantt-stay--phase-active",
     occupancyPhase === "future" && "gantt-stay--phase-future",
     todayHighlight === "arrival" && "gantt-stay--today-arrival",

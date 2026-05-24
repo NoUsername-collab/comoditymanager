@@ -1,0 +1,80 @@
+/**
+ * Contract variabile temă — SACRU.
+ * Valorile reale stau în [theme].css (day + night).
+ * Componentele și BookingCard.css consumă doar aceste nume.
+ */
+
+html {
+  /* UI general */
+  --color-bg: #f4f4f5;
+  --color-surface: #ffffff;
+  --color-border: #e4e4e7;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
+  --color-accent: #3f3f46;
+
+  /* Booking semantic */
+  --booking-active-bg: #059669;
+  --booking-active-border: #047857;
+  --booking-active-text: #ffffff;
+
+  --booking-pending-bg: #fbbf24;
+  --booking-pending-border: #d97706;
+  --booking-pending-text: #1c1917;
+
+  --booking-past-bg: #a1a1aa;
+  --booking-past-border: #71717a;
+  --booking-past-text: #fafafa;
+
+  --booking-cancelled-bg: #f4f4f5;
+  --booking-cancelled-border: #d4d4d8;
+  --booking-cancelled-text: #71717a;
+
+  --booking-hold-bg: #fef3c7;
+  --booking-hold-border: #f59e0b;
+  --booking-hold-text: #78350f;
+
+  --booking-block-bg: #fecaca;
+  --booking-block-border: #ef4444;
+  --booking-block-text: #7f1d1d;
+
+  /* Card shape */
+  --card-radius: 6px;
+  --card-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  --card-border-style: solid;
+
+  /* Gantt grid zones (timeline) */
+  --gantt-zone-checkout: #fafafa;
+  --gantt-zone-clean: #ffffff;
+  --gantt-zone-checkin: #f4f4f5;
+  --gantt-line-checkout: #a1a1aa;
+  --gantt-line-checkin: #d4d4d8;
+
+  /* Admin shell bridge (admin-palette.css) */
+  --admin-page-bg: var(--color-bg);
+  --admin-panel-bg: var(--color-surface);
+  --admin-panel-border: var(--color-border);
+  --admin-text: var(--color-text);
+  --admin-text-muted: var(--color-text-muted);
+  --admin-accent: var(--color-accent);
+  --admin-accent-muted: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  --admin-hud-gradient: var(--color-surface);
+  --admin-hud-text: var(--color-text);
+  --admin-hud-eyebrow: var(--color-text-muted);
+  --admin-hud-overlay: transparent;
+  --admin-hud-shadow: 0 1px 0 var(--color-border);
+  --admin-hud-brand-bg: var(--color-surface);
+  --admin-hud-brand-border: var(--color-border);
+  --admin-gantt-shell-bg: var(--color-surface);
+  --admin-font: var(--card-font);
+  --admin-radius: var(--card-radius);
+  --admin-btn-primary-bg: var(--color-accent);
+  --admin-btn-primary-text: #ffffff;
+  --admin-input-bg: var(--color-surface);
+  --admin-input-border: var(--color-border);
+}
+
+html[data-theme] {
+  font-family: var(--card-font);
+}

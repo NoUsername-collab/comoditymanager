@@ -11,10 +11,8 @@ export async function updateSettingsAction(formData: FormData) {
   const default_check_in_time = String(formData.get("default_check_in_time") ?? "14:00");
   const default_check_out_time = String(formData.get("default_check_out_time") ?? "11:00");
   const total_extra_beds_max = Number(formData.get("total_extra_beds_max") ?? 0);
-  const admin_palette_source = String(
-    formData.get("admin_palette_source") ?? "catalog"
-  ) as "catalog" | "season_auto" | "season_manual";
-  const admin_palette_key = String(formData.get("admin_palette_key") ?? "pension");
+  const admin_palette_source = "catalog" as const;
+  const admin_palette_key = String(formData.get("admin_palette_key") ?? "default");
   const admin_day_night = String(formData.get("admin_day_night") ?? "night") as
     | "day"
     | "night";

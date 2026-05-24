@@ -16,7 +16,7 @@ import {
 
 const DEFAULT_APPEARANCE: AdminPaletteSettings = {
   admin_palette_source: "catalog",
-  admin_palette_key: "pension",
+  admin_palette_key: "default",
   admin_day_night: "night",
 };
 

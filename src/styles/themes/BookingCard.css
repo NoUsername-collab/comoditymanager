@@ -1,0 +1,105 @@
+/**
+ * Carduri Gantt — consumă doar variabile din contract.
+ * Zero referințe la data-theme; componentele folosesc modificatori de stare.
+ */
+
+@keyframes gantt-booking-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+.gantt-booking-card {
+  font-family: var(--card-font);
+  border-style: var(--card-border-style);
+  box-shadow: var(--card-shadow);
+}
+
+/* Stări semantice — bară confirmată / în casă */
+.gantt-booking-card--active.gantt-stay-chrome {
+  border-radius: var(--card-radius);
+}
+
+.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
+  /* building color via --gs-* rămâne prioritar când e setat inline */
+}
+
+/* Cerere / neconfirmat */
+.gantt-booking-card--pending.gantt-stay--cerere,
+.gantt-booking-card--pending.gantt-stay-chrome.gantt-stay--cerere {
+  animation: gantt-booking-pulse 2s ease-in-out infinite;
+}
+
+.gantt-booking-card--pending.gantt-stay--cerere:not([style*="--gs-bg"]) {
+  background: var(--booking-pending-bg) !important;
+  border-color: var(--booking-pending-border) !important;
+  color: var(--booking-pending-text);
+}
+
+/* Trecut */
+.gantt-booking-card--past.gantt-stay-chrome,
+.gantt-stay--phase-past.gantt-booking-card {
+  opacity: 0.55;
+}
+
+.gantt-booking-card--past:not([style*="--gs-bg"]) {
+  background: var(--booking-past-bg) !important;
+  border-color: var(--booking-past-border) !important;
+}
+
+/* Anulat */
+.gantt-booking-card--cancelled {
+  opacity: 0.45;
+  text-decoration: line-through;
+}
+
+.gantt-booking-card--cancelled:not([style*="--gs-bg"]) {
+  background: var(--booking-cancelled-bg) !important;
+  border-color: var(--booking-cancelled-border) !important;
+  color: var(--booking-cancelled-text);
+}
+
+/* Hold / blocare */
+.gantt-booking-card--hold.gantt-occ-bar {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--booking-hold-bg),
+    var(--booking-hold-bg) 4px,
+    color-mix(in srgb, var(--booking-hold-border) 25%, transparent) 4px,
+    color-mix(in srgb, var(--booking-hold-border) 25%, transparent) 8px
+  ) !important;
+  border: 2px dashed var(--booking-hold-border) !important;
+  border-radius: var(--card-radius);
+  color: var(--booking-hold-text);
+  box-shadow: var(--card-shadow);
+}
+
+.gantt-booking-card--block.gantt-occ-bar {
+  background: var(--booking-block-bg) !important;
+  border: 2px solid var(--booking-block-border) !important;
+  border-radius: var(--card-radius);
+  color: var(--booking-block-text);
+  box-shadow: var(--card-shadow);
+}
+
+.gantt-booking-card--hold .gantt-occ-bar__label,
+.gantt-booking-card--block .gantt-occ-bar__label {
+  font-family: var(--card-font);
+}
+
+/* Zone timeline */
+html[data-theme] .gantt-day-cell--checkout {
+  background: var(--gantt-zone-checkout) !important;
+}
+
+html[data-theme] .gantt-day-cell--clean {
+  background: var(--gantt-zone-clean) !important;
+}
+
+html[data-theme] .gantt-day-cell--checkin {
+  background: var(--gantt-zone-checkin) !important;
+}

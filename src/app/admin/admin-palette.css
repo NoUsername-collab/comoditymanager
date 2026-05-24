@@ -18,10 +18,12 @@
   --admin-radius: 0.75rem;
 }
 
+html[data-theme],
 html[data-admin-palette] {
   font-family: var(--admin-font);
 }
 
+html[data-theme] .admin-shell,
 html[data-admin-palette] .admin-shell {
   font-family: var(--admin-font);
   color: var(--admin-text);
@@ -169,8 +171,8 @@ html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night
   opacity: 0.88 !important;
 }
 
-/* Retro Win98/XP — vezi admin-retro.css (shell complet) */
-html[data-admin-retro="win98"] .admin-dn-liquid,
+/* Retro Win95/XP — vezi admin-retro.css */
+html[data-admin-retro="win95"] .admin-dn-liquid,
 html[data-admin-retro="winxp"] .admin-dn-liquid {
   display: none !important;
 }
