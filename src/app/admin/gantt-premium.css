@@ -465,6 +465,33 @@
   outline-offset: 2px;
 }
 
+.gantt-toolbar__occ-btn {
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.gantt-toolbar__occ-btn--hold {
+  border-color: #ca8a04;
+  background: color-mix(in srgb, #fef9c3 88%, white);
+  color: #854d0e;
+}
+
+.gantt-toolbar__occ-btn--block {
+  border-color: #71717a;
+  background: repeating-linear-gradient(
+    135deg,
+    #e4e4e7,
+    #e4e4e7 3px,
+    #d4d4d8 3px,
+    #d4d4d8 6px
+  );
+  color: #3f3f46;
+}
+
 .gantt-toolbar__cereri-pill {
   display: inline-flex;
   align-items: center;

@@ -9,6 +9,12 @@ import {
   createRoomHoldFromGanttAction,
 } from "@/app/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import {
+  BLOCK_REASON_PRESETS,
+  resolveBlockReason,
+  type BlockReasonPresetId,
+} from "@/domain/gantt/block-reasons";
+import { showGanttCreateUndoToast } from "@/components/admin/gantt/gantt-create-undo";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
@@ -33,6 +39,9 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
   const [pending, startTransition] = useTransition();
   const [mode, setMode] = useState<Mode>("pick");
   const [reason, setReason] = useState("");
+  const [blockPreset, setBlockPreset] =
+    useState<BlockReasonPresetId>("maintenance");
+  const [blockCustom, setBlockCustom] = useState("");
   const [expiresHours, setExpiresHours] = useState("");
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -48,6 +57,8 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
   function resetForm() {
     setMode("pick");
     setReason("");
+    setBlockPreset("maintenance");
+    setBlockCustom("");
     setExpiresHours("");
     setLastName("");
     setFirstName("");
@@ -78,7 +89,11 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
         setError(res.error);
         return;
       }
-      showToast({ kind: "success", title: "Hold creat", message: period });
+      if (res.undo) {
+        showGanttCreateUndoToast(showToast, router, "Hold creat", period, res.undo);
+      } else {
+        showToast({ kind: "success", title: "Hold creat", message: period });
+      }
       handleClose();
       router.refresh();
     });
@@ -88,7 +103,8 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
     if (!draft) return;
     const d = draft;
     setError(null);
-    if (!reason.trim()) {
+    const resolvedReason = resolveBlockReason(blockPreset, blockCustom);
+    if (!resolvedReason) {
       setError("Motivul blocării este obligatoriu.");
       return;
     }
@@ -97,13 +113,23 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
         roomId: d.roomId,
         checkIn: d.checkIn,
         checkOut: d.checkOut,
-        reason,
+        reason: resolvedReason,
       });
       if (!res.ok) {
         setError(res.error);
         return;
       }
-      showToast({ kind: "success", title: "Blocare creată", message: period });
+      if (res.undo) {
+        showGanttCreateUndoToast(
+          showToast,
+          router,
+          "Blocare creată",
+          period,
+          res.undo
+        );
+      } else {
+        showToast({ kind: "success", title: "Blocare creată", message: period });
+      }
       handleClose();
       router.refresh();
     });
@@ -241,14 +267,32 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
         {mode === "block" && (
           <div className="space-y-2">
             <label className="block text-xs font-semibold text-zinc-600">
-              Motiv *
-              <input
+              Motiv
+              <select
                 className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Mentenanță, defect…"
-              />
+                value={blockPreset}
+                onChange={(e) =>
+                  setBlockPreset(e.target.value as BlockReasonPresetId)
+                }
+              >
+                {BLOCK_REASON_PRESETS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
             </label>
+            {(blockPreset === "other" || blockCustom) && (
+              <label className="block text-xs font-semibold text-zinc-600">
+                Detalii{blockPreset === "other" ? " *" : " (opțional)"}
+                <input
+                  className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
+                  value={blockCustom}
+                  onChange={(e) => setBlockCustom(e.target.value)}
+                  placeholder="Descriere scurtă"
+                />
+              </label>
+            )}
             <div className="flex gap-2 pt-1">
               <button type="button" className="admin-floating-panel__btn" onClick={() => setMode("pick")}>
                 Înapoi

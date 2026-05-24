@@ -67,3 +67,22 @@ export async function releaseRoomHold(holdId: string, releasedBy?: string | null
 
   if (error) throw new Error(error.message);
 }
+
+/** Marchează hold-urile expirate ca eliberate (lazy cleanup la citire occupancy). */
+export async function releaseExpiredRoomHolds(): Promise<number> {
+  const supabase = createAdminClient();
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("room_holds")
+    .update({
+      released_at: now,
+      released_by: "system:expired",
+    })
+    .is("released_at", null)
+    .not("expires_at", "is", null)
+    .lt("expires_at", now)
+    .select("id");
+
+  if (error) throw new Error(error.message);
+  return data?.length ?? 0;
+}

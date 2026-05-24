@@ -82,6 +82,22 @@
   color: #52525b;
 }
 
+.admin-toast__action {
+  margin-top: 0.35rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #059669;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.admin-toast__action:hover {
+  color: #047857;
+}
+
 .admin-toast__close {
   border: none;
   background: transparent;

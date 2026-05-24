@@ -36,6 +36,10 @@ import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay"
 import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
 import {
+  GanttOccupancyDetailPanel,
+  type GanttOccDetail,
+} from "@/components/admin/gantt/GanttOccupancyDetailPanel";
+import {
   GanttBuildingMarker,
   GanttRoomMarker,
 } from "@/components/admin/gantt/GanttBuildingMarker";
@@ -196,6 +200,7 @@ function RoomRow({
   compact,
   touch,
   dimmed,
+  onOccOpen,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -207,6 +212,7 @@ function RoomRow({
   compact: boolean;
   touch: boolean;
   dimmed?: boolean;
+  onOccOpen: (seg: OccupancySegment, roomName: string) => void;
 }) {
   const dayCount = viewRange.days.length;
   const roomBookings = bookings.filter(
@@ -322,6 +328,8 @@ function RoomRow({
                 title={title}
                 pos={pos}
                 kind={seg.kind as "hold" | "block"}
+                expiresAt={seg.expiresAt}
+                onOpen={() => onOccOpen(seg, room.name)}
               />
             );
           })}
@@ -452,6 +460,7 @@ export function GanttCalendar({
   }, [viewRange.periodKey, todayIndex, scrollToTodayColumn]);
 
   const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
+  const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
   const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
     () => new Set()
   );
@@ -555,6 +564,13 @@ export function GanttCalendar({
     buildingChips.length,
     groupByBuilding,
   ]);
+
+  const handleOccOpen = useCallback(
+    (seg: OccupancySegment, roomName: string) => {
+      setOccDetail({ segment: seg, roomName });
+    },
+    []
+  );
 
   const gridBodyTop = "var(--gantt-body-top, 5.75rem)";
 
@@ -726,6 +742,7 @@ export function GanttCalendar({
                           focusBuildingId != null &&
                           room.building_id !== focusBuildingId
                         }
+                        onOccOpen={handleOccOpen}
                       />
                     ))}
                   </Fragment>
@@ -743,6 +760,7 @@ export function GanttCalendar({
                     checkOutTime={checkOutTime}
                     compact={compact}
                     touch={touch}
+                    onOccOpen={handleOccOpen}
                   />
                 ))}
             {filteredRooms.length === 0 && (
@@ -818,6 +836,10 @@ export function GanttCalendar({
           </div>
         </div>
       </div>
+      <GanttOccupancyDetailPanel
+        detail={occDetail}
+        onClose={() => setOccDetail(null)}
+      />
     </div>
   );
 }

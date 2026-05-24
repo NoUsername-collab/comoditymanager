@@ -21,6 +21,8 @@ export type AdminToast = {
   kind: AdminToastKind;
   title: string;
   message?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 };
 
 type AdminFxContextValue = {
@@ -45,7 +47,8 @@ export function AdminToastProvider({ children }: { children: ReactNode }) {
     (toast: Omit<AdminToast, "id">) => {
       const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
       setToasts((prev) => [...prev.slice(-4), { ...toast, id }]);
-      window.setTimeout(() => dismissToast(id), 4200);
+      const ms = toast.actionLabel ? 10_000 : 4200;
+      window.setTimeout(() => dismissToast(id), ms);
     },
     [dismissToast]
   );
@@ -149,6 +152,18 @@ function AdminToastItem({
         <p className="admin-toast__title">{toast.title}</p>
         {toast.message ? (
           <p className="admin-toast__message">{toast.message}</p>
+        ) : null}
+        {toast.actionLabel && toast.onAction ? (
+          <button
+            type="button"
+            className="admin-toast__action"
+            onClick={() => {
+              toast.onAction?.();
+              onDismiss(toast.id);
+            }}
+          >
+            {toast.actionLabel}
+          </button>
         ) : null}
       </div>
       <button

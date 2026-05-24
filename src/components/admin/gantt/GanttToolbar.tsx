@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
@@ -11,6 +12,7 @@ import { buildCalendarQuery } from "@/lib/gantt-query";
 import { todayIso } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
 import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
+import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 
 export type GanttViewMode = "all" | "building" | "room";
 
@@ -116,6 +118,7 @@ export function GanttToolbar({
   const cereriCount = cereri.length;
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [occFormMode, setOccFormMode] = useState<"hold" | "block" | null>(null);
 
   const view = (searchParams.get("view") as GanttViewMode) || "all";
   const buildingId = searchParams.get("building") ?? "";
@@ -313,6 +316,22 @@ export function GanttToolbar({
 
           <button
             type="button"
+            className="gantt-toolbar__occ-btn gantt-toolbar__occ-btn--hold"
+            onClick={() => setOccFormMode("hold")}
+          >
+            + Hold
+          </button>
+
+          <button
+            type="button"
+            className="gantt-toolbar__occ-btn gantt-toolbar__occ-btn--block"
+            onClick={() => setOccFormMode("block")}
+          >
+            + Blocare
+          </button>
+
+          <button
+            type="button"
             className="gantt-toolbar__today"
             onClick={() =>
               window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
@@ -376,6 +395,11 @@ export function GanttToolbar({
           ) : null}
         </div>
       </div>
+      <GanttToolbarOccForm
+        mode={occFormMode}
+        rooms={rooms}
+        onClose={() => setOccFormMode(null)}
+      />
     </div>
   );
 }

@@ -74,6 +74,39 @@ export async function createRoomBlockFromGanttAction(input: {
   }
 }
 
+export async function releaseRoomHoldAction(
+  holdId: string
+): Promise<{ ok: true } | ActionErr> {
+  await requireAdmin();
+  try {
+    const user = await getAdminUser();
+    await releaseRoomHold(holdId, actorEmail(user));
+    revalidatePath("/admin/calendar");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare la eliberare hold",
+    };
+  }
+}
+
+export async function deleteRoomBlockAction(
+  blockId: string
+): Promise<{ ok: true } | ActionErr> {
+  await requireAdmin();
+  try {
+    await deleteRoomBlock(blockId);
+    revalidatePath("/admin/calendar");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare la ștergere blocare",
+    };
+  }
+}
+
 export async function undoGanttCreateAction(input: {
   kind: "hold" | "block";
   id: string;

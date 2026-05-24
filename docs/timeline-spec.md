@@ -231,7 +231,7 @@ Ordinea **obligatorie** (nu sări faze):
 | **1** | DB segments + occupancy API unificat + conflicte | ✅ cod (migrare 009) |
 | **2** | Vizual Gantt: past / active / future / hold / block | ✅ cod |
 | **3** | Drag-create + popup | ✅ cod |
-| **4** | Hold + block (toolbar + expirare) |
+| **4** | Hold + block (toolbar + expirare) | ✅ cod |
 | **5** | Split mutare cameră + preț modular |
 | **6** | Guests + pagină client + rebook |
 | **7** | Context menu + long-press mobil |

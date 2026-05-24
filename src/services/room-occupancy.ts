@@ -13,6 +13,7 @@ import {
 } from "@/lib/constants";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPensionSettings } from "@/services/pension-settings";
+import { releaseExpiredRoomHolds } from "@/services/room-holds";
 import { todayIso } from "@/lib/stay-dates";
 
 const ALL_KINDS: OccupancyKind[] = ["hold", "request", "stay", "block"];
@@ -107,6 +108,10 @@ export async function getRoomOccupancy(
   }
 
   if (kinds.includes("hold") && !options.forPublicCalendar) {
+    await releaseExpiredRoomHolds().catch(() => {
+      /* non-fatal */
+    });
+
     const { data, error } = await supabase
       .from("room_holds")
       .select(
