@@ -33,6 +33,7 @@ import {
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
+import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
 import {
   GanttBuildingMarker,
@@ -277,11 +278,15 @@ function RoomRow({
         </div>
       </td>
       <td className="relative w-full p-0 align-top">
-        <div
-          className="relative w-full overflow-hidden bg-white"
-          style={{ height: ROW_H }}
-        >
-          <div className="absolute inset-0">
+        <GanttDragCreateLayer
+          roomId={room.id}
+          roomName={room.name}
+          viewRange={viewRange}
+          occupancy={occupancy}
+          checkInTime={checkInTime}
+          checkOutTime={checkOutTime}
+          touch={touch}
+          renderGrid={
             <DayGrid
               columns={viewRange.days}
               compact={compact}
@@ -289,8 +294,8 @@ function RoomRow({
               checkInTime={checkInTime}
               checkOutTime={checkOutTime}
             />
-          </div>
-          <div className="gantt-stays-layer absolute inset-0 z-[2]">
+          }
+        >
           {overlays.map((seg) => {
             const pos = bookingBarInRange(
               seg.checkIn,
@@ -377,8 +382,7 @@ function RoomRow({
               />
             );
           })}
-          </div>
-        </div>
+        </GanttDragCreateLayer>
       </td>
     </tr>
   );
