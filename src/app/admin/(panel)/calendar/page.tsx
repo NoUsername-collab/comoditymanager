@@ -17,6 +17,8 @@ import {
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 import { buildCalendarQuery, parseGanttFilter } from "@/lib/gantt-query";
+import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
+import { getRoomOccupancy } from "@/services/room-occupancy";
 
 export default async function AdminCalendarPage({
   searchParams,
@@ -31,6 +33,7 @@ export default async function AdminCalendarPage({
     ws?: string;
     q?: string;
     filter?: string;
+    layer?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -39,6 +42,7 @@ export default async function AdminCalendarPage({
   const month = params.m !== undefined ? Number(params.m) : now.getMonth();
   const view = (params.view as GanttViewMode) || "all";
   const filter = parseGanttFilter(params.filter);
+  const layer = parseGanttLayerFilter(params.layer);
   const quarter =
     params.q !== undefined ? Number(params.q) : Math.floor(month / 3);
 
@@ -64,16 +68,18 @@ export default async function AdminCalendarPage({
       ws: nav.ws,
       q: nav.q,
       filter,
+      layer,
     });
 
   try {
-    const [allRoomsRaw, allBookings, unassignedCereri, settings, buildingsRaw] =
+    const [allRoomsRaw, allBookings, unassignedCereri, settings, buildingsRaw, occupancy] =
       await Promise.all([
         listAllRooms(),
         listBookingsForRange(viewRange.rangeStart, viewRange.rangeEnd),
         listUnassignedCereri(),
         getPensionSettings().catch(() => null),
         listBuildings(),
+        getRoomOccupancy(viewRange.rangeStart, viewRange.rangeEnd),
       ]);
     const activeBuildings = buildingsRaw.filter((b) => b.is_active);
     const allRooms = allRoomsRaw.filter((r) => r.is_active);
@@ -140,6 +146,7 @@ export default async function AdminCalendarPage({
                   : undefined
               }
               filter={filter}
+              layer={layer}
               buildings={switcherBuildings}
               rooms={ganttRoomsAll}
               periodTitle={viewRange.title}
@@ -155,10 +162,12 @@ export default async function AdminCalendarPage({
             viewRange={viewRange}
             rooms={ganttRooms}
             bookings={allBookings}
+            occupancy={occupancy}
             groupByBuilding={view === "all"}
             checkInTime={checkInTime}
             checkOutTime={checkOutTime}
             filter={filter}
+            layerFilter={layer}
           />
         </RetroXpWindow>
       </AdminRetroPageFrame>

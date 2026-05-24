@@ -15,6 +15,13 @@ import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import type { BookingRow } from "@/services/bookings";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
+import {
+  bookingMatchesLayerFilter,
+  roomOverlaySegments,
+  type GanttLayerFilter,
+} from "@/domain/gantt/occupancy-layer";
+import { occupancyPhase } from "@/domain/occupancy/phase";
+import type { OccupancySegment } from "@/domain/occupancy/types";
 import { ganttDayTimeStyle } from "@/lib/gantt-time";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import { filterGanttRooms, focusDayInRange } from "@/domain/gantt/filters";
@@ -26,6 +33,7 @@ import {
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
+import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
 import {
   GanttBuildingMarker,
   GanttRoomMarker,
@@ -180,6 +188,8 @@ function RoomRow({
   room,
   viewRange,
   bookings,
+  occupancy,
+  layerFilter,
   checkInTime,
   checkOutTime,
   compact,
@@ -189,6 +199,8 @@ function RoomRow({
   room: GanttRoom;
   viewRange: GanttViewRange;
   bookings: BookingRow[];
+  occupancy: OccupancySegment[];
+  layerFilter: GanttLayerFilter;
   checkInTime: string;
   checkOutTime: string;
   compact: boolean;
@@ -196,7 +208,12 @@ function RoomRow({
   dimmed?: boolean;
 }) {
   const dayCount = viewRange.days.length;
-  const roomBookings = bookings.filter((b) => b.room_ids.includes(room.id));
+  const roomBookings = bookings.filter(
+    (b) =>
+      b.room_ids.includes(room.id) &&
+      bookingMatchesLayerFilter(b, layerFilter)
+  );
+  const overlays = roomOverlaySegments(occupancy, room.id, layerFilter);
 
   const roomColor = resolveGanttBuildingColor(
     room.building_color,
@@ -274,6 +291,35 @@ function RoomRow({
             />
           </div>
           <div className="gantt-stays-layer absolute inset-0 z-[2]">
+          {overlays.map((seg) => {
+            const pos = bookingBarInRange(
+              seg.checkIn,
+              seg.checkOut,
+              viewRange.rangeStart,
+              viewRange.rangeEnd,
+              dayCount,
+              checkInTime,
+              checkOutTime
+            );
+            if (!pos || pos.widthPct <= 0) return null;
+            const label =
+              seg.kind === "hold"
+                ? seg.reason?.trim() || "Hold"
+                : seg.reason?.trim() || "Blocat";
+            const title =
+              seg.kind === "hold"
+                ? `Hold: ${label} · ${seg.checkIn} → ${seg.checkOut}`
+                : `Blocare: ${label} · ${seg.checkIn} → ${seg.checkOut}`;
+            return (
+              <GanttOccupancyBar
+                key={`${seg.kind}-${seg.id}`}
+                label={label}
+                title={title}
+                pos={pos}
+                kind={seg.kind as "hold" | "block"}
+              />
+            );
+          })}
           {roomBookings.map((b) => {
             const pos = bookingBarInRange(
               b.check_in,
@@ -298,6 +344,7 @@ function RoomRow({
               b.guest_first_name,
               b.guest_name
             );
+            const phase = occupancyPhase(b.check_in, b.check_out);
             return (
               <GanttDraggableStay
                 key={`${b.id}-${room.id}`}
@@ -311,6 +358,7 @@ function RoomRow({
                 buildingColor={roomColor}
                 todayHighlight={todayHl}
                 initials={initials}
+                occupancyPhase={phase}
                 popover={{
                   bookingId: b.id,
                   guestName: b.guest_name,
@@ -340,25 +388,29 @@ export function GanttCalendar({
   viewRange,
   rooms,
   bookings,
+  occupancy = [],
   groupByBuilding = false,
   checkInTime = DEFAULT_CHECK_IN_TIME,
   checkOutTime = DEFAULT_CHECK_OUT_TIME,
   filter = "all",
+  layerFilter = "all",
 }: {
   viewRange: GanttViewRange;
   rooms: GanttRoom[];
   bookings: BookingRow[];
+  occupancy?: OccupancySegment[];
   groupByBuilding?: boolean;
   checkInTime?: string;
   checkOutTime?: string;
   filter?: GanttFilter;
+  layerFilter?: GanttLayerFilter;
 }) {
   const touch = useIsTouchDevice();
   const compact = viewRange.zoom === "quarter" || touch;
   const focusIso = focusDayInRange(viewRange.days.map((d) => d.iso));
   const filteredRooms = useMemo(
-    () => filterGanttRooms(rooms, bookings, filter, focusIso),
-    [rooms, bookings, filter, focusIso]
+    () => filterGanttRooms(rooms, bookings, filter, focusIso, occupancy),
+    [rooms, bookings, filter, focusIso, occupancy]
   );
 
   const todayIndex = viewRange.days.findIndex((d) => d.isToday);
@@ -660,6 +712,8 @@ export function GanttCalendar({
                         room={room}
                         viewRange={viewRange}
                         bookings={bookings}
+                        occupancy={occupancy}
+                        layerFilter={layerFilter}
                         checkInTime={checkInTime}
                         checkOutTime={checkOutTime}
                         compact={compact}
@@ -679,6 +733,8 @@ export function GanttCalendar({
                     room={room}
                     viewRange={viewRange}
                     bookings={bookings}
+                    occupancy={occupancy}
+                    layerFilter={layerFilter}
                     checkInTime={checkInTime}
                     checkOutTime={checkOutTime}
                     compact={compact}

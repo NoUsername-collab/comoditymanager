@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { GanttFilter } from "@/domain/gantt/filters";
+import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
+import { layerFilterLabel } from "@/domain/gantt/occupancy-layer";
 import type { GanttZoom } from "@/domain/gantt/view-range";
 import { mondayOfWeekContaining } from "@/domain/gantt/view-range";
 import { buildCalendarQuery } from "@/lib/gantt-query";
@@ -89,6 +91,7 @@ export function GanttToolbar({
   ws,
   quarter,
   filter,
+  layer = "all",
   buildings,
   rooms,
   periodTitle,
@@ -102,6 +105,7 @@ export function GanttToolbar({
   ws?: string;
   quarter?: number;
   filter: GanttFilter;
+  layer?: GanttLayerFilter;
   buildings: BuildingOption[];
   rooms: RoomOption[];
   periodTitle: string;
@@ -124,6 +128,7 @@ export function GanttToolbar({
     ws?: string | null;
     q?: number;
     filter?: GanttFilter;
+    layer?: GanttLayerFilter;
     view?: GanttViewMode;
     building?: string | null;
     room?: string | null;
@@ -142,6 +147,7 @@ export function GanttToolbar({
       ws: patch.ws !== undefined ? patch.ws ?? undefined : ws,
       q: patch.q ?? quarter,
       filter: patch.filter ?? filter,
+      layer: patch.layer ?? layer,
     });
     router.push(`/admin/calendar?${q}`);
   }
@@ -153,6 +159,7 @@ export function GanttToolbar({
   const metaParts: string[] = [];
   if (filter === "free") metaParts.push("Libere la ziua focală");
   else if (filter === "occupied") metaParts.push("Ocupate în ziua focală");
+  if (layer !== "all") metaParts.push(`Strat: ${layerFilterLabel(layer)}`);
   if (view === "all") metaParts.push(`${rooms.length} camere`);
   else if (view === "building") {
     metaParts.push(
@@ -205,6 +212,22 @@ export function GanttToolbar({
               { value: "month", label: "Lună", shortLabel: "Lună" },
               { value: "week", label: "Săptămână", shortLabel: "Săpt." },
               { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
+            ]}
+          />
+
+          <SegmentGroup
+            label="Strat"
+            compact
+            value={layer}
+            onChange={(l) => push({ layer: l })}
+            options={[
+              { value: "all", label: "Tot", shortLabel: "Tot" },
+              { value: "cereri", label: "Cereri", shortLabel: "Cer." },
+              { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
+              { value: "in_house", label: "In-house", shortLabel: "In" },
+              { value: "trecute", label: "Trecute", shortLabel: "Trec." },
+              { value: "hold", label: "Hold", shortLabel: "Hold" },
+              { value: "block", label: "Blocări", shortLabel: "Bloc" },
             ]}
           />
 
@@ -318,6 +341,29 @@ export function GanttToolbar({
         {metaParts.length > 0 && (
           <p className="gantt-toolbar__meta">{metaParts.join(" · ")}</p>
         )}
+
+        <div className="gantt-toolbar__legend" aria-label="Legendă timeline">
+          <span className="gantt-toolbar__legend-item">
+            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--past" />
+            Trecut
+          </span>
+          <span className="gantt-toolbar__legend-item">
+            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--active" />
+            In-house
+          </span>
+          <span className="gantt-toolbar__legend-item">
+            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--cerere" />
+            Cerere
+          </span>
+          <span className="gantt-toolbar__legend-item">
+            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--hold" />
+            Hold
+          </span>
+          <span className="gantt-toolbar__legend-item">
+            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--block" />
+            Blocare
+          </span>
+        </div>
       </div>
     </div>
   );

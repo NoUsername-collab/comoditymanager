@@ -1,4 +1,5 @@
 import type { GanttFilter } from "@/domain/gantt/filters";
+import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { GanttZoom } from "@/domain/gantt/view-range";
 
 export function parseGanttFilter(raw: string | undefined): GanttFilter {
@@ -17,6 +18,7 @@ export function buildCalendarQuery(
     ws?: string;
     q?: number;
     filter?: GanttFilter;
+    layer?: GanttLayerFilter;
   }
 ): string {
   const p = new URLSearchParams();
@@ -31,5 +33,6 @@ export function buildCalendarQuery(
     p.set("q", String(base.q));
   }
   if (base.filter && base.filter !== "all") p.set("filter", base.filter);
+  if (base.layer && base.layer !== "all") p.set("layer", base.layer);
   return p.toString();
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { OccupancyPhase } from "@/domain/occupancy/types";
 import type { CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import { ganttStaySurface } from "@/lib/gantt-stay-surface";
@@ -20,6 +21,7 @@ type Props = {
   initials?: string;
   interactive?: boolean;
   extraClass?: string;
+  occupancyPhase?: OccupancyPhase;
 };
 
 export function GanttBookingBar({
@@ -34,6 +36,7 @@ export function GanttBookingBar({
   initials,
   interactive,
   extraClass,
+  occupancyPhase,
 }: Props) {
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
   const surface = ganttStaySurface(buildingColor, isCerere);
@@ -43,6 +46,9 @@ export function GanttBookingBar({
     "gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[10px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] h-7 w-full" : "absolute top-2 z-[1] max-w-full",
     isCerere && "gantt-stay--cerere",
+    occupancyPhase === "past" && "gantt-stay--phase-past",
+    occupancyPhase === "active" && "gantt-stay--phase-active",
+    occupancyPhase === "future" && "gantt-stay--phase-future",
     todayHighlight === "arrival" && "gantt-stay--today-arrival",
     todayHighlight === "departure" && "gantt-stay--today-departure",
     todayHighlight === "turnover" && "gantt-stay--today-turnover",
@@ -93,6 +99,11 @@ export function GanttBookingBar({
         <span className="gantt-stay-chrome__label min-w-0 flex-1 truncate">
           {label}
         </span>
+        {occupancyPhase === "active" && !isCerere && (
+          <span className="gantt-stay__phase-badge shrink-0 rounded px-1 py-0.5 text-[8px] font-extrabold uppercase tracking-wide">
+            Azi
+          </span>
+        )}
         <span
           className="gantt-stay__badge shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums leading-none"
           title={`${guestTotal} persoane`}

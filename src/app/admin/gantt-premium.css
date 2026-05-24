@@ -696,3 +696,118 @@
     scroll-behavior: auto;
   }
 }
+
+/* --- Timeline v0.2: faze + hold/block --- */
+
+.gantt-stay--phase-past {
+  opacity: 0.52;
+  filter: saturate(0.65);
+}
+
+.gantt-stay--phase-past:hover {
+  opacity: 0.72;
+  filter: saturate(0.85);
+}
+
+.gantt-stay--phase-active {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, #0ea5e9 55%, transparent),
+    0 2px 8px rgba(14, 165, 233, 0.25);
+}
+
+.gantt-stay--phase-future {
+  /* confirmate viitoare — stil implicit din culoarea clădirii */
+}
+
+.gantt-stay__phase-badge {
+  background: color-mix(in srgb, #0ea5e9 18%, white);
+  color: #0369a1;
+  border: 1px solid color-mix(in srgb, #0ea5e9 35%, transparent);
+}
+
+.gantt-occ-bar {
+  pointer-events: none;
+  border-radius: 0.35rem;
+}
+
+.gantt-occ-bar--hold {
+  border: 2px dashed #eab308;
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, #fef9c3 88%, white),
+    color-mix(in srgb, #fef9c3 88%, white) 6px,
+    color-mix(in srgb, #fde047 55%, white) 6px,
+    color-mix(in srgb, #fde047 55%, white) 12px
+  );
+  color: #854d0e;
+}
+
+.gantt-occ-bar--block {
+  border: 2px solid #71717a;
+  background: repeating-linear-gradient(
+    135deg,
+    #e4e4e7,
+    #e4e4e7 4px,
+    #d4d4d8 4px,
+    #d4d4d8 8px
+  );
+  color: #3f3f46;
+}
+
+.gantt-occ-bar__label {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.gantt-toolbar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.35rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.gantt-toolbar__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.gantt-toolbar__legend-swatch {
+  width: 0.85rem;
+  height: 0.55rem;
+  border-radius: 0.15rem;
+  flex-shrink: 0;
+}
+
+.gantt-toolbar__legend-swatch--past {
+  background: #a1a1aa;
+  opacity: 0.55;
+}
+
+.gantt-toolbar__legend-swatch--active {
+  background: #0ea5e9;
+  box-shadow: 0 0 0 1px #0369a1;
+}
+
+.gantt-toolbar__legend-swatch--cerere {
+  background: #fbbf24;
+  border: 1px dashed #d97706;
+}
+
+.gantt-toolbar__legend-swatch--hold {
+  background: #fde047;
+  border: 1px dashed #ca8a04;
+}
+
+.gantt-toolbar__legend-swatch--block {
+  background: repeating-linear-gradient(
+    135deg,
+    #e4e4e7,
+    #e4e4e7 2px,
+    #d4d4d8 2px,
+    #d4d4d8 4px
+  );
+  border: 1px solid #71717a;
+}

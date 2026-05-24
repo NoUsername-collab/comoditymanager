@@ -1,4 +1,5 @@
 import { nightOccupied, todayIso } from "@/lib/stay-dates";
+import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { BookingRow } from "@/services/bookings";
 import type { GanttRoom } from "@/domain/gantt/types";
 
@@ -14,17 +15,24 @@ export function filterGanttRooms(
   rooms: GanttRoom[],
   bookings: BookingRow[],
   filter: GanttFilter,
-  focusIso: string
+  focusIso: string,
+  occupancy: OccupancySegment[] = []
 ): GanttRoom[] {
   if (filter === "all") return rooms;
 
   return rooms.filter((room) => {
-    const occupied = bookings.some(
+    const bookingOcc = bookings.some(
       (b) =>
         b.status !== "anulata" &&
         b.room_ids.includes(room.id) &&
         nightOccupied(focusIso, b.check_in, b.check_out)
     );
+    const overlayOcc = occupancy.some(
+      (s) =>
+        s.roomId === room.id &&
+        nightOccupied(focusIso, s.checkIn, s.checkOut)
+    );
+    const occupied = bookingOcc || overlayOcc;
     return filter === "occupied" ? occupied : !occupied;
   });
 }

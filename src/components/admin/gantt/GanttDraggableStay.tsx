@@ -4,6 +4,7 @@ import { useCallback, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { shiftBookingOnGanttAction } from "@/app/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { GanttBookingBar } from "@/components/admin/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
@@ -26,6 +27,7 @@ type Props = {
   todayHighlight?: StayTodayHighlight;
   initials?: string;
   popover: GanttStayPopoverData;
+  occupancyPhase?: OccupancyPhase;
 };
 
 export function GanttDraggableStay({
@@ -40,6 +42,7 @@ export function GanttDraggableStay({
   todayHighlight,
   initials,
   popover,
+  occupancyPhase,
 }: Props) {
   const router = useRouter();
   const { notifyMoved } = useAdminFx();
@@ -179,6 +182,7 @@ export function GanttDraggableStay({
           initials={initials}
           interactive
           extraClass={snapped ? "gantt-stay-chrome--snapped" : undefined}
+          occupancyPhase={occupancyPhase}
         />
       </div>
       <GanttStayPopover

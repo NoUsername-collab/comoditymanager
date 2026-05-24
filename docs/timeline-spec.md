@@ -229,7 +229,7 @@ Ordinea **obligatorie** (nu sări faze):
 | Fază | Livrabil |
 |------|----------|
 | **1** | DB segments + occupancy API unificat + conflicte | ✅ cod (migrare 009) |
-| **2** | Vizual Gantt: past / active / future / hold / block |
+| **2** | Vizual Gantt: past / active / future / hold / block | ✅ cod |
 | **3** | Drag-create + popup |
 | **4** | Hold + block (toolbar + expirare) |
 | **5** | Split mutare cameră + preț modular |
