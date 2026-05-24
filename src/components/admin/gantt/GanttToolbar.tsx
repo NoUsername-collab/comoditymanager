@@ -363,6 +363,17 @@ export function GanttToolbar({
             <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--block" />
             Blocare
           </span>
+          <span className="gantt-toolbar__legend-item gantt-toolbar__legend-item--hint">
+            Trage pe celulă goală →
+          </span>
+          {process.env.NEXT_PUBLIC_BUILD_SHA ? (
+            <span
+              className="gantt-toolbar__legend-item gantt-toolbar__legend-item--build"
+              title="Hash build Vercel — verifică că e același cu ultimul push"
+            >
+              build {process.env.NEXT_PUBLIC_BUILD_SHA}
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

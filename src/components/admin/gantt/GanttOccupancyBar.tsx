@@ -38,6 +38,7 @@ export function GanttOccupancyBar({ label, title, pos, kind }: Props) {
       style={style}
       title={title}
       aria-label={title}
+      data-gantt-block-interaction=""
       onPointerDown={(e) => e.stopPropagation()}
     >
       <span className="gantt-occ-bar__label truncate px-1.5 py-1">{label}</span>

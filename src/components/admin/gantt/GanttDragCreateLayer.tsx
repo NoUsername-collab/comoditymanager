@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { findOccupancyConflicts } from "@/domain/occupancy/conflict";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import {
@@ -19,8 +19,7 @@ import {
   type GanttCreateDraft,
 } from "@/components/admin/gantt/GanttCreateDialog";
 
-const INTERACTIVE_SELECTOR =
-  ".gantt-draggable-stay, .gantt-occ-bar, .gantt-timeline-bar, a, button";
+const BLOCK_INTERACTION_SELECTOR = "[data-gantt-block-interaction]";
 
 type Props = {
   roomId: string;
@@ -40,8 +39,10 @@ type DragState = {
   hasConflict: boolean;
 };
 
-function isInteractiveTarget(target: EventTarget | null): boolean {
-  return target instanceof Element && !!target.closest(INTERACTIVE_SELECTOR);
+function blocksDragCreate(target: EventTarget | null): boolean {
+  return (
+    target instanceof Element && !!target.closest(BLOCK_INTERACTION_SELECTOR)
+  );
 }
 
 function nightCountFromIndices(startIdx: number, endIdx: number): number {
@@ -121,10 +122,45 @@ export function GanttDragCreateLayer({
     [dayCount, dayIsos, evalConflict]
   );
 
+  const endDrag = useCallback(() => {
+    if (!dragRef.current) return;
+    finishDrag(dragRef.current.startIdx, dragRef.current.endIdx);
+    dragRef.current = null;
+    setDrag(null);
+  }, [finishDrag]);
+
+  useEffect(() => {
+    if (!drag) return;
+
+    const scrollEl = rowRef.current?.closest(".gantt-scroll");
+    scrollEl?.classList.add("gantt-scroll--drag-lock");
+
+    const onMove = (e: PointerEvent) => {
+      if (!dragRef.current) return;
+      e.preventDefault();
+      updateDragAt(e.clientX);
+    };
+
+    const onUp = () => {
+      endDrag();
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: false });
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+
+    return () => {
+      scrollEl?.classList.remove("gantt-scroll--drag-lock");
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+  }, [drag, updateDragAt, endDrag]);
+
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (e.button !== 0) return;
-      if (isInteractiveTarget(e.target)) return;
+      if (blocksDragCreate(e.target)) return;
       const row = rowRef.current;
       if (!row || dayCount === 0) return;
 
@@ -141,29 +177,6 @@ export function GanttDragCreateLayer({
       e.preventDefault();
     },
     [dayCount]
-  );
-
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!dragRef.current) return;
-      updateDragAt(e.clientX);
-    },
-    [updateDragAt]
-  );
-
-  const onPointerUp = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!dragRef.current) return;
-      try {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      } catch {
-        /* already released */
-      }
-      finishDrag(dragRef.current.startIdx, dragRef.current.endIdx);
-      dragRef.current = null;
-      setDrag(null);
-    },
-    [finishDrag]
   );
 
   const ghost =
@@ -197,9 +210,6 @@ export function GanttDragCreateLayer({
           .join(" ")}
         style={{ height: 56 }}
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
         aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou`}
       >
         <div className="pointer-events-none absolute inset-0">{renderGrid}</div>
@@ -211,7 +221,7 @@ export function GanttDragCreateLayer({
         {ghost && drag && (
           <div
             className={[
-              "gantt-drag-preview pointer-events-none absolute top-2 z-[30] flex min-w-0 items-center overflow-hidden",
+              "gantt-drag-preview pointer-events-none absolute top-2 z-[50] flex min-w-0 items-center overflow-hidden",
               drag.hasConflict
                 ? "gantt-drag-preview--conflict"
                 : "gantt-drag-preview--free",

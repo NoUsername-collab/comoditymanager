@@ -806,6 +806,12 @@
 }
 
 /* Drag-create: preview ca bară cerere / blocare */
+.gantt-scroll--drag-lock {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: contain;
+}
+
 .gantt-drag-row {
   cursor: crosshair;
   touch-action: none;
@@ -860,6 +866,17 @@
 
 .gantt-drag-preview__label {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.gantt-toolbar__legend-item--hint {
+  color: var(--admin-text-muted, #71717a);
+  font-style: italic;
+}
+
+.gantt-toolbar__legend-item--build {
+  margin-left: auto;
+  font-family: ui-monospace, monospace;
+  opacity: 0.75;
 }
 
 .gantt-toolbar__legend-swatch--block {

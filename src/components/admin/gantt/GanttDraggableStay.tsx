@@ -140,6 +140,7 @@ export function GanttDraggableStay({
   return (
     <>
       <div
+        data-gantt-block-interaction=""
         className={[
           "gantt-draggable-stay absolute top-2 z-[1] flex min-w-0 items-stretch",
           dragging && "z-[20] cursor-grabbing",
