@@ -8,14 +8,17 @@ export type GanttContextMenuPoint = {
   clientY: number;
 };
 
-export type GanttEmptyCellTarget = GanttContextMenuPoint & {
-  kind: "empty";
-  roomId: string;
-  roomName: string;
+export type GanttCreateTarget = GanttContextMenuPoint & {
+  kind: "create";
+  roomId: string | null;
+  roomName: string | null;
   checkIn: string;
   checkOut: string;
   hasConflict: boolean;
 };
+
+/** @deprecated alias — folosește GanttCreateTarget */
+export type GanttEmptyCellTarget = GanttCreateTarget & { roomId: string; roomName: string };
 
 export type GanttStayTarget = GanttContextMenuPoint & {
   kind: "stay";
@@ -35,7 +38,7 @@ export type GanttOccTarget = GanttContextMenuPoint & {
 };
 
 export type GanttContextMenuTarget =
-  | GanttEmptyCellTarget
+  | GanttCreateTarget
   | GanttStayTarget
   | GanttOccTarget;
 

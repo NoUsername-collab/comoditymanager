@@ -68,6 +68,7 @@ export function GanttOccupancyBar({
     <div
       className={className}
       style={style}
+      data-gantt-occ=""
       title={fullTitle}
       aria-label={fullTitle}
       data-gantt-block-interaction=""

@@ -122,7 +122,7 @@ export function GanttDragCreateLayer({
       const interval = intervalFromDayIndices(dayIsos, dayIdx, dayIdx);
       if (!interval) return;
       openMenu({
-        kind: "empty",
+        kind: "create",
         clientX,
         clientY,
         roomId,
@@ -288,16 +288,6 @@ export function GanttDragCreateLayer({
     pressOriginRef.current = null;
   }, [clearLongPress]);
 
-  const onContextMenu = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (blocksDragCreate(e.target)) return;
-      e.preventDefault();
-      e.stopPropagation();
-      openEmptyMenu(e.clientX, e.clientY, dayIdxAt(e.clientX));
-    },
-    [dayIdxAt, openEmptyMenu]
-  );
-
   const ghost =
     drag && dayCount > 0
       ? ghostBarPosition(drag.startIdx, drag.endIdx, dayCount)
@@ -332,7 +322,6 @@ export function GanttDragCreateLayer({
       onPointerMove={onPointerMoveRow}
       onPointerUp={onPointerUpRow}
       onPointerCancel={onPointerUpRow}
-      onContextMenu={onContextMenu}
       aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou · click dreapta pentru meniu`}
     >
       <div className="pointer-events-none absolute inset-0">{renderGrid}</div>

@@ -27,6 +27,7 @@
 
 .gantt-shell--premium {
   background: var(--admin-gantt-shell-bg, linear-gradient(180deg, #ffffff 0%, #fafafa 100%));
+  -webkit-touch-callout: none;
 }
 
 .gantt-thead-sticky tr {

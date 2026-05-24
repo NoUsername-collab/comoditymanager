@@ -50,6 +50,7 @@ import {
 } from "@/components/admin/gantt/GanttCreateDialog";
 import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
 import { GanttContextMenuPanel } from "@/components/admin/gantt/GanttContextMenuPanel";
+import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMenuBridge";
 import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
 import {
   GanttBuildingMarker,
@@ -162,6 +163,8 @@ function DayHeader({
     <div
       className="gantt-day-header-grid grid w-full min-w-0 border-b border-zinc-300 bg-gradient-to-b from-slate-50 to-zinc-100/90"
       style={ganttDayGridStyle(columns.length)}
+      data-gantt-day-grid=""
+      data-gantt-day-count={columns.length}
     >
       {columns.map((col) => (
         <div key={col.iso} className="gantt-day-header-col flex min-w-0 flex-col">
@@ -260,6 +263,7 @@ function RoomRow({
   return (
     <tr
       data-gantt-room-row={room.id}
+      data-gantt-room-name={room.name}
       className={[
         "gantt-room-row border-t border-zinc-300",
         rowTodayClass,
@@ -634,11 +638,15 @@ export function GanttCalendar({
       onOpenMoveRoom={setMoveRoomDraft}
       onOpenOccDetail={setOccDetail}
     >
+      <GanttContextMenuBridge
+        shellRef={shellRef}
+        viewRange={viewRange}
+        occupancy={occupancy}
+      />
     <div
       key={viewRange.periodKey}
       ref={scrollRef}
       className="gantt-period-enter gantt-scroll w-full overflow-x-auto"
-      onContextMenu={(e) => e.preventDefault()}
     >
       <div
         ref={shellRef}

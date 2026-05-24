@@ -181,15 +181,24 @@ export function GanttContextMenuPanel() {
         onContextMenu={(e) => e.preventDefault()}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        {menu.kind === "empty" && (
+        {menu.kind === "create" && (
           <>
-            <MenuSection title={`${menu.roomName} · 1 noapte min.`}>
+            <MenuSection
+              title={
+                menu.roomName
+                  ? `${menu.roomName} · 1 noapte min.`
+                  : `Timeline · ${formatStayPeriod(menu.checkIn, menu.checkOut, true)}`
+              }
+            >
               <MenuItem
                 label="Creează cerere"
+                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                disabled={!menu.roomId}
                 onClick={() =>
+                  menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName,
+                    roomName: menu.roomName ?? "Cameră",
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -199,10 +208,13 @@ export function GanttContextMenuPanel() {
               />
               <MenuItem
                 label="Creează cazare directă"
+                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                disabled={!menu.roomId}
                 onClick={() =>
+                  menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName,
+                    roomName: menu.roomName ?? "Cameră",
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -212,10 +224,13 @@ export function GanttContextMenuPanel() {
               />
               <MenuItem
                 label="Hold cameră"
+                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                disabled={!menu.roomId}
                 onClick={() =>
+                  menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName,
+                    roomName: menu.roomName ?? "Cameră",
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -225,10 +240,13 @@ export function GanttContextMenuPanel() {
               />
               <MenuItem
                 label="Blocare cameră"
+                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                disabled={!menu.roomId}
                 onClick={() =>
+                  menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName,
+                    roomName: menu.roomName ?? "Cameră",
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
