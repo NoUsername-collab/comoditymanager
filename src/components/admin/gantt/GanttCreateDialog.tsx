@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   createCerereFromGanttAction,
   createDirectStayFromGanttAction,
   createRoomBlockFromGanttAction,
   createRoomHoldFromGanttAction,
+  createRoomHoldsFromGanttAction,
 } from "@/app/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
@@ -20,10 +21,12 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 
 export type GanttCreateDraft = {
   roomId: string;
+  roomIds?: string[];
   roomName: string;
   checkIn: string;
   checkOut: string;
   hasConflict: boolean;
+  initialMode?: "hold" | "block" | "cerere" | "direct";
 };
 
 type Mode = "pick" | "hold" | "block" | "cerere" | "direct";
@@ -48,6 +51,12 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!draft) return;
+    setMode(draft.initialMode ?? "pick");
+    setError(null);
+  }, [draft?.roomId, draft?.checkIn, draft?.checkOut, draft?.initialMode]);
 
   if (!draft) return null;
 
@@ -75,24 +84,37 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
   function submitHold() {
     if (!draft) return;
     const d = draft;
+    const roomIds = d.roomIds?.length ? d.roomIds : [d.roomId];
     setError(null);
     startTransition(async () => {
       const hours = expiresHours.trim() ? Number(expiresHours) : null;
-      const res = await createRoomHoldFromGanttAction({
-        roomId: d.roomId,
-        checkIn: d.checkIn,
-        checkOut: d.checkOut,
-        reason,
-        expiresHours: hours,
-      });
+      const res =
+        roomIds.length > 1
+          ? await createRoomHoldsFromGanttAction({
+              roomIds,
+              checkIn: d.checkIn,
+              checkOut: d.checkOut,
+              reason,
+              expiresHours: hours,
+            })
+          : await createRoomHoldFromGanttAction({
+              roomId: d.roomId,
+              checkIn: d.checkIn,
+              checkOut: d.checkOut,
+              reason,
+              expiresHours: hours,
+            });
       if (!res.ok) {
         setError(res.error);
         return;
       }
-      if (res.undo) {
-        showGanttCreateUndoToast(showToast, router, "Hold creat", period, res.undo);
+      const undo = res.undo;
+      const title =
+        roomIds.length > 1 ? `Hold pe ${roomIds.length} camere` : "Hold creat";
+      if (undo) {
+        showGanttCreateUndoToast(showToast, router, title, period, undo);
       } else {
-        showToast({ kind: "success", title: "Hold creat", message: period });
+        showToast({ kind: "success", title, message: period });
       }
       handleClose();
       router.refresh();
@@ -190,6 +212,12 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
           </p>
         )}
 
+        {draft.roomIds && draft.roomIds.length > 1 && (
+          <p className="rounded-md border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-900">
+            {draft.roomIds.length} camere selectate — hold multi-cameră disponibil.
+          </p>
+        )}
+
         {mode === "pick" && (
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -203,7 +231,7 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
             <button
               type="button"
               className="admin-floating-panel__btn"
-              disabled={conflict || pending}
+              disabled={conflict || pending || (draft.roomIds?.length ?? 0) > 1}
               onClick={() => setMode("block")}
             >
               Blocare
@@ -211,7 +239,7 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
             <button
               type="button"
               className="admin-floating-panel__btn"
-              disabled={conflict || pending}
+              disabled={conflict || pending || (draft.roomIds?.length ?? 0) > 1}
               onClick={() => setMode("cerere")}
             >
               Cerere
@@ -219,7 +247,7 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
             <button
               type="button"
               className="admin-floating-panel__btn"
-              disabled={conflict || pending}
+              disabled={conflict || pending || (draft.roomIds?.length ?? 0) > 1}
               onClick={() => setMode("direct")}
             >
               Cazare directă

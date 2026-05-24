@@ -116,8 +116,9 @@ pointerup
 
 ### Mobil
 
-- **Long-press ~400ms** pe celulă goală = același meniu ca click dreapta desktop.
-- Long-press + drag dreapta = același ghost bar.
+- **Long-press ~400ms** = același meniu ca **click dreapta** (celulă goală, card sejur, hold/blocare).
+- Long-press + drag dreapta pe celulă goală = același ghost bar.
+- Pe card sejur: ține apăsat deschide meniul; trage după ~10px mută date/cameră (nu deschide meniul).
 
 ---
 
@@ -234,7 +235,7 @@ Ordinea **obligatorie** (nu sări faze):
 | **4** | Hold + block (toolbar + expirare) | ✅ cod |
 | **5** | Split mutare cameră + preț modular | ✅ cod |
 | **6** | Guests + pagină client + rebook | ✅ cod |
-| **7** | Context menu + long-press mobil |
+| **7** | Context menu master controller + long-press mobil (card, gol, hold) | ✅ cod |
 
 Branch recomandat: `feature/timeline-v2`. Pilotul live (`main`) rămâne stabil.
 
@@ -251,8 +252,8 @@ Branch recomandat: `feature/timeline-v2`. Pilotul live (`main`) rămâne stabil.
 - [x] Preț: per segment / nopți
 - [x] Clienți: telefon + email, matching inteligent
 - [x] Prioritate faze: §11
-- [ ] Drag vertical mutare cameră — amânat după faza 5
-- [ ] Hold multi-cameră dintr-un singur drag — faza 2 (toolbar)
+- [x] Drag vertical mutare cameră
+- [x] Hold multi-cameră dintr-un singur drag
 
 ---
 

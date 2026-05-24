@@ -21,6 +21,29 @@ export async function createRoomHold(input: {
   expiresHours?: number | null;
   createdBy?: string | null;
 }): Promise<string> {
+  const [id] = await createRoomHolds({
+    roomIds: [input.roomId],
+    checkIn: input.checkIn,
+    checkOut: input.checkOut,
+    reason: input.reason,
+    expiresHours: input.expiresHours,
+    createdBy: input.createdBy,
+  });
+  return id;
+}
+
+export async function createRoomHolds(input: {
+  roomIds: string[];
+  checkIn: string;
+  checkOut: string;
+  reason?: string;
+  expiresHours?: number | null;
+  createdBy?: string | null;
+}): Promise<string[]> {
+  const roomIds = [...new Set(input.roomIds.filter(Boolean))];
+  if (roomIds.length === 0) {
+    throw new Error("Selectează cel puțin o cameră.");
+  }
   if (!isAtLeastOneNight(input.checkIn, input.checkOut)) {
     throw new Error("Interval invalid — minim o noapte.");
   }
@@ -28,7 +51,7 @@ export async function createRoomHold(input: {
   await assertRoomsAvailableForOccupancy(
     input.checkIn,
     input.checkOut,
-    [input.roomId]
+    roomIds
   );
 
   const expiresAt =
@@ -37,21 +60,22 @@ export async function createRoomHold(input: {
       : null;
 
   const supabase = createAdminClient();
+  const rows = roomIds.map((room_id) => ({
+    room_id,
+    check_in: input.checkIn,
+    check_out: input.checkOut,
+    reason: input.reason?.trim() || null,
+    expires_at: expiresAt,
+    created_by: input.createdBy ?? null,
+  }));
+
   const { data, error } = await supabase
     .from("room_holds")
-    .insert({
-      room_id: input.roomId,
-      check_in: input.checkIn,
-      check_out: input.checkOut,
-      reason: input.reason?.trim() || null,
-      expires_at: expiresAt,
-      created_by: input.createdBy ?? null,
-    })
-    .select("id")
-    .single();
+    .insert(rows)
+    .select("id");
 
   if (error) throw new Error(error.message);
-  return data.id as string;
+  return (data ?? []).map((r) => r.id as string);
 }
 
 export async function releaseRoomHold(holdId: string, releasedBy?: string | null): Promise<void> {

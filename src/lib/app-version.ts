@@ -1,12 +1,13 @@
 /** Versiune aplicație — aliniată cu branch / release. */
-export const STABLE_VERSION = "0.1.1";
+export const STABLE_VERSION = "0.1.2";
+export const RELEASE_STAGE = "Alpha Stage";
 export const ALPHA_VERSION = "0.1.5-alpha.0";
 
 export type ReleaseChannel = "stable" | "alpha";
 
 /**
- * stable = producție (v0.1.1): istoric, dashboard, Gantt, prețuri, etc.
- * alpha = doar facturare neoficială (v0.1.5) — setează NEXT_PUBLIC_RELEASE_CHANNEL=alpha
+ * stable = timeline v0.2 Alpha Stage (v0.1.2)
+ * alpha = doar facturare neoficială (v0.1.5) — NEXT_PUBLIC_RELEASE_CHANNEL=alpha
  */
 export const RELEASE_CHANNEL: ReleaseChannel =
   process.env.NEXT_PUBLIC_RELEASE_CHANNEL === "alpha" ? "alpha" : "stable";
@@ -15,7 +16,7 @@ export function releaseLabel(): string {
   if (RELEASE_CHANNEL === "alpha") {
     return `v${ALPHA_VERSION} · Facturare (Alpha)`;
   }
-  return `v${STABLE_VERSION} · Stable`;
+  return `v${STABLE_VERSION} · ${RELEASE_STAGE}`;
 }
 
 /** @deprecated Folosește STABLE_VERSION / ALPHA_VERSION */

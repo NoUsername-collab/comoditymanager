@@ -45,6 +45,13 @@ import {
   type MoveRoomDraft,
 } from "@/components/admin/gantt/MoveRoomDialog";
 import {
+  GanttCreateDialog,
+  type GanttCreateDraft,
+} from "@/components/admin/gantt/GanttCreateDialog";
+import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
+import { GanttContextMenuPanel } from "@/components/admin/gantt/GanttContextMenuPanel";
+import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
+import {
   GanttBuildingMarker,
   GanttRoomMarker,
 } from "@/components/admin/gantt/GanttBuildingMarker";
@@ -208,6 +215,7 @@ function RoomRow({
   onOccOpen,
   bookingById,
   onMoveRoom,
+  onCreateDraft,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -222,6 +230,7 @@ function RoomRow({
   onOccOpen: (seg: OccupancySegment, roomName: string) => void;
   bookingById: Map<string, BookingRow>;
   onMoveRoom: (draft: MoveRoomDraft) => void;
+  onCreateDraft: (draft: GanttCreateDraft) => void;
 }) {
   const dayCount = viewRange.days.length;
   const staySegments = roomStaySegments(occupancy, room.id, layerFilter);
@@ -250,6 +259,7 @@ function RoomRow({
 
   return (
     <tr
+      data-gantt-room-row={room.id}
       className={[
         "gantt-room-row border-t border-zinc-300",
         rowTodayClass,
@@ -297,6 +307,7 @@ function RoomRow({
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
           touch={touch}
+          onCreateDraft={onCreateDraft}
           renderGrid={
             <DayGrid
               columns={viewRange.days}
@@ -333,6 +344,8 @@ function RoomRow({
                 title={title}
                 pos={pos}
                 kind={seg.kind as "hold" | "block"}
+                segment={seg}
+                roomName={room.name}
                 expiresAt={seg.expiresAt}
                 onOpen={() => onOccOpen(seg, room.name)}
               />
@@ -367,6 +380,15 @@ function RoomRow({
             const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut);
             const canMoveRoom =
               b.status === "confirmata" && phase !== "past";
+            const moveDraft: MoveRoomDraft | null = canMoveRoom
+              ? {
+                  bookingId: b.id,
+                  guestName: b.guest_name,
+                  sourceRoomId: room.id,
+                  sourceRoomName: room.name,
+                  roomIds: b.room_ids,
+                }
+              : null;
             return (
               <GanttDraggableStay
                 key={`${seg.id}-${room.id}`}
@@ -381,16 +403,13 @@ function RoomRow({
                 todayHighlight={todayHl}
                 initials={initials}
                 occupancyPhase={phase}
+                guestId={b.guest_id}
+                sourceRoomId={room.id}
+                canVerticalMove={canMoveRoom}
+                moveRoomDraft={moveDraft}
                 onMoveRoom={
-                  canMoveRoom
-                    ? () =>
-                        onMoveRoom({
-                          bookingId: b.id,
-                          guestName: b.guest_name,
-                          sourceRoomId: room.id,
-                          sourceRoomName: room.name,
-                          roomIds: b.room_ids,
-                        })
+                  moveDraft
+                    ? () => onMoveRoom(moveDraft)
                     : undefined
                 }
                 popover={{
@@ -409,15 +428,8 @@ function RoomRow({
                   buildingColor: roomColor,
                   roomId: room.id,
                   canMoveRoom,
-                  onMoveRoom: canMoveRoom
-                    ? () =>
-                        onMoveRoom({
-                          bookingId: b.id,
-                          guestName: b.guest_name,
-                          sourceRoomId: room.id,
-                          sourceRoomName: room.name,
-                          roomIds: b.room_ids,
-                        })
+                  onMoveRoom: moveDraft
+                    ? () => onMoveRoom(moveDraft)
                     : undefined,
                 }}
               />
@@ -495,6 +507,9 @@ export function GanttCalendar({
   const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
   const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
   const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
+  const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
+    null
+  );
   const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
     () => new Set()
   );
@@ -614,10 +629,16 @@ export function GanttCalendar({
   const gridBodyTop = "var(--gantt-body-top, 5.75rem)";
 
   return (
+    <GanttContextMenuProvider
+      onRequestCreate={setCreateDraft}
+      onOpenMoveRoom={setMoveRoomDraft}
+      onOpenOccDetail={setOccDetail}
+    >
     <div
       key={viewRange.periodKey}
       ref={scrollRef}
       className="gantt-period-enter gantt-scroll w-full overflow-x-auto"
+      onContextMenu={(e) => e.preventDefault()}
     >
       <div
         ref={shellRef}
@@ -784,6 +805,7 @@ export function GanttCalendar({
                         onOccOpen={handleOccOpen}
                         bookingById={bookingById}
                         onMoveRoom={setMoveRoomDraft}
+                        onCreateDraft={setCreateDraft}
                       />
                     ))}
                   </Fragment>
@@ -804,6 +826,7 @@ export function GanttCalendar({
                     onOccOpen={handleOccOpen}
                     bookingById={bookingById}
                     onMoveRoom={setMoveRoomDraft}
+                    onCreateDraft={setCreateDraft}
                   />
                 ))}
             {filteredRooms.length === 0 && (
@@ -879,6 +902,12 @@ export function GanttCalendar({
           </div>
         </div>
       </div>
+    </div>
+      <GanttContextMenuPanel />
+      <GanttCreateDialog
+        draft={createDraft}
+        onClose={() => setCreateDraft(null)}
+      />
       <GanttOccupancyDetailPanel
         detail={occDetail}
         onClose={() => setOccDetail(null)}
@@ -892,6 +921,6 @@ export function GanttCalendar({
         }))}
         onClose={() => setMoveRoomDraft(null)}
       />
-    </div>
+    </GanttContextMenuProvider>
   );
 }

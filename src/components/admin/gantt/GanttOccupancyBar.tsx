@@ -1,14 +1,18 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
+import { useGanttMenuTrigger } from "@/components/admin/gantt/useGanttMenuTrigger";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
-import type { OccupancyKind } from "@/domain/occupancy/types";
+import type { OccupancyKind, OccupancySegment } from "@/domain/occupancy/types";
 
 type Props = {
   label: string;
   title: string;
   pos: GanttBarPosition;
   kind: Extract<OccupancyKind, "hold" | "block">;
+  segment: OccupancySegment;
+  roomName: string;
   expiresAt?: string | null;
   onOpen?: () => void;
 };
@@ -18,13 +22,16 @@ export function GanttOccupancyBar({
   title,
   pos,
   kind,
+  segment,
+  roomName,
   expiresAt,
   onOpen,
 }: Props) {
+  const { openMenu } = useGanttContextMenu();
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const className = [
-    "gantt-occ-bar absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-center overflow-hidden text-[9px] font-bold leading-none",
+    "gantt-occ-bar pointer-events-auto absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-center overflow-hidden text-[9px] font-bold leading-none",
     kind === "hold" && "gantt-occ-bar--hold",
     kind === "block" && "gantt-occ-bar--block",
     continuesBefore && "gantt-occ-bar--from-prev",
@@ -45,6 +52,18 @@ export function GanttOccupancyBar({
     ? `${title} · expiră ${new Date(expiresAt).toLocaleString("ro-RO")}`
     : title;
 
+  function openContextMenu(clientX: number, clientY: number) {
+    openMenu({
+      kind,
+      clientX,
+      clientY,
+      segment,
+      roomName,
+    });
+  }
+
+  const menuTrigger = useGanttMenuTrigger(openContextMenu);
+
   return (
     <div
       className={className}
@@ -54,11 +73,19 @@ export function GanttOccupancyBar({
       data-gantt-block-interaction=""
       role="button"
       tabIndex={0}
-      onPointerDown={(e) => e.stopPropagation()}
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        menuTrigger.onPointerDown(e);
+      }}
+      onPointerMove={menuTrigger.onPointerMove}
+      onPointerUp={menuTrigger.onPointerUp}
+      onPointerCancel={menuTrigger.onPointerCancel}
       onClick={(e) => {
         e.stopPropagation();
+        if (menuTrigger.consumeLongPress()) return;
         onOpen?.();
       }}
+      onContextMenu={menuTrigger.onContextMenu}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();

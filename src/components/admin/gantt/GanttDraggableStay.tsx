@@ -1,9 +1,23 @@
 "use client";
 
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { shiftBookingOnGanttAction } from "@/app/admin/(panel)/calendar/actions";
+import {
+  moveBookingRoomFromPivotAction,
+  shiftBookingOnGanttAction,
+} from "@/app/admin/(panel)/calendar/actions";
+import {
+  clearGanttRoomDropTargets,
+  findGanttRoomAtPoint,
+  setGanttRoomDropTarget,
+} from "@/domain/gantt/room-at-point";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
+import {
+  LONG_PRESS_MS,
+  LONG_PRESS_MOVE_PX,
+} from "@/domain/gantt/context-menu";
+import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { GanttBookingBar } from "@/components/admin/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
@@ -28,6 +42,10 @@ type Props = {
   initials?: string;
   popover: GanttStayPopoverData;
   occupancyPhase?: OccupancyPhase;
+  guestId?: string | null;
+  moveRoomDraft?: MoveRoomDraft | null;
+  sourceRoomId?: string;
+  canVerticalMove?: boolean;
   onMoveRoom?: () => void;
 };
 
@@ -44,28 +62,77 @@ export function GanttDraggableStay({
   initials,
   popover,
   occupancyPhase,
+  guestId,
+  moveRoomDraft,
+  sourceRoomId = "",
+  canVerticalMove = false,
   onMoveRoom,
 }: Props) {
   const router = useRouter();
+  const { openMenu } = useGanttContextMenu();
   const { notifyMoved } = useAdminFx();
   const [pending, startTransition] = useTransition();
-  const [dragging, setDragging] = useState(false);
+  const [interaction, setInteraction] = useState<"idle" | "armed" | "dragging">("idle");
   const [snapped, setSnapped] = useState(false);
   const [hover, setHover] = useState(false);
   const [popoverHover, setPopoverHover] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
   const [dragDelta, setDragDelta] = useState(0);
+  const [dragDeltaY, setDragDeltaY] = useState(0);
+  const [verticalMode, setVerticalMode] = useState(false);
   const startX = useRef(0);
+  const startY = useRef(0);
   const rowWidth = useRef(0);
+  const targetRoomRef = useRef<string | null>(null);
+  const dragDeltaRef = useRef(0);
+  const dragDeltaYRef = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressOpened = useRef(false);
+  const captureEl = useRef<HTMLDivElement | null>(null);
+  const capturePointerId = useRef<number | null>(null);
+
+  const dragging = interaction === "dragging";
 
   const title = [
     popover.guestName,
     formatStayPeriod(popover.checkIn, popover.checkOut),
-    dragging ? "Trage pentru a muta" : "Trage stânga/dreapta · click pentru detalii",
+    dragging
+      ? verticalMode
+        ? "Trage pe alt rând pentru mutare cameră"
+        : "Trage stânga/dreapta pentru date · sus/jos pentru cameră"
+      : "Trage stânga/dreapta · sus/jos mută camera · click dreapta / ține apăsat meniu",
   ].join(" · ");
+
+  const openStayMenu = useCallback(
+    (clientX: number, clientY: number) => {
+      openMenu({
+        kind: "stay",
+        clientX,
+        clientY,
+        bookingId,
+        guestId: guestId ?? null,
+        guestName: popover.guestName,
+        status: popover.status,
+        canMoveRoom: !!popover.canMoveRoom && !!moveRoomDraft,
+        moveRoomDraft: moveRoomDraft ?? null,
+        popover: {
+          ...popover,
+          onMoveRoom,
+        },
+      });
+    },
+    [openMenu, bookingId, guestId, popover, moveRoomDraft, onMoveRoom]
+  );
+
+  const clearLongPress = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  }, []);
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -75,32 +142,113 @@ export function GanttDraggableStay({
       const row = el.offsetParent as HTMLElement | null;
       rowWidth.current = row?.clientWidth ?? el.parentElement?.clientWidth ?? 1;
       startX.current = e.clientX;
-      setDragging(true);
+      startY.current = e.clientY;
+      targetRoomRef.current = null;
+      longPressOpened.current = false;
+      setVerticalMode(false);
       setDragDelta(0);
+      setDragDeltaY(0);
+      setInteraction("armed");
+      captureEl.current = el;
+      capturePointerId.current = e.pointerId;
+      clearLongPress();
+      longPressTimer.current = setTimeout(() => {
+        longPressOpened.current = true;
+        setInteraction("idle");
+        openStayMenu(e.clientX, e.clientY);
+      }, LONG_PRESS_MS);
       el.setPointerCapture(e.pointerId);
-      e.preventDefault();
     },
-    []
+    [clearLongPress, openStayMenu]
   );
 
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!dragging) return;
-      setDragDelta(e.clientX - startX.current);
-    },
-    [dragging]
-  );
+  useEffect(() => {
+    if (interaction !== "armed" && interaction !== "dragging") return;
 
-  const onPointerUp = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!dragging) return;
-      e.currentTarget.releasePointerCapture(e.pointerId);
-      setDragging(false);
+    const onMove = (e: PointerEvent) => {
+      if (interaction === "armed") {
+        const dx = e.clientX - startX.current;
+        const dy = e.clientY - startY.current;
+        if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX && !longPressOpened.current) {
+          clearLongPress();
+          setInteraction("dragging");
+        }
+        return;
+      }
+
+      const dx = e.clientX - startX.current;
+      const dy = e.clientY - startY.current;
+      setDragDelta(dx);
+      setDragDeltaY(dy);
+      dragDeltaRef.current = dx;
+      dragDeltaYRef.current = dy;
+      const isVertical =
+        canVerticalMove && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16;
+      setVerticalMode(isVertical);
+      if (isVertical) {
+        const target = findGanttRoomAtPoint(e.clientX, e.clientY);
+        targetRoomRef.current = target;
+        setGanttRoomDropTarget(
+          target && target !== sourceRoomId ? target : null
+        );
+      } else {
+        targetRoomRef.current = null;
+        setGanttRoomDropTarget(null);
+      }
+    };
+
+    const finish = () => {
+      clearLongPress();
+      const el = captureEl.current;
+      const pid = capturePointerId.current;
+      if (el && pid != null) {
+        try {
+          el.releasePointerCapture(pid);
+        } catch {
+          /* ignore */
+        }
+      }
+      captureEl.current = null;
+      capturePointerId.current = null;
+
+      if (interaction === "armed" || longPressOpened.current) {
+        setInteraction("idle");
+        return;
+      }
+
+      setInteraction("idle");
+      clearGanttRoomDropTargets();
+      const dx = dragDeltaRef.current;
+      const dy = dragDeltaYRef.current;
+      const isVertical =
+        canVerticalMove && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16;
+      const targetRoom = targetRoomRef.current;
+      setDragDelta(0);
+      setDragDeltaY(0);
+      setVerticalMode(false);
+      targetRoomRef.current = null;
+
+      if (isVertical && targetRoom && targetRoom !== sourceRoomId) {
+        startTransition(async () => {
+          const res = await moveBookingRoomFromPivotAction({
+            bookingId,
+            sourceRoomId,
+            targetRoomId: targetRoom,
+          });
+          if (!res.ok) {
+            setAlertMsg(res.error);
+            return;
+          }
+          setSnapped(true);
+          window.setTimeout(() => setSnapped(false), 360);
+          notifyMoved("Cameră mutată", popover.guestName);
+          router.refresh();
+        });
+        return;
+      }
 
       const w = rowWidth.current || 1;
-      const dayDelta = Math.round((dragDelta / w) * dayCount);
-      setDragDelta(0);
-
+      const dayDelta = Math.round((dx / w) * dayCount);
       if (dayDelta === 0) return;
 
       startTransition(async () => {
@@ -114,11 +262,31 @@ export function GanttDraggableStay({
         notifyMoved();
         router.refresh();
       });
-    },
-    [dragging, dragDelta, dayCount, bookingId, router, notifyMoved]
-  );
+    };
 
-  const showPopover = (hover || popoverHover) && !dragging && !pending;
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", finish);
+    window.addEventListener("pointercancel", finish);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", finish);
+      window.removeEventListener("pointercancel", finish);
+      clearGanttRoomDropTargets();
+    };
+  }, [
+    interaction,
+    clearLongPress,
+    canVerticalMove,
+    sourceRoomId,
+    bookingId,
+    dayCount,
+    router,
+    notifyMoved,
+    popover.guestName,
+  ]);
+
+  const showPopover =
+    (hover || popoverHover) && interaction === "idle" && !pending;
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {
@@ -144,8 +312,9 @@ export function GanttDraggableStay({
       <div
         data-gantt-block-interaction=""
         className={[
-          "gantt-draggable-stay absolute top-2 z-[1] flex min-w-0 items-stretch",
+          "gantt-draggable-stay pointer-events-auto absolute top-2 z-[1] flex min-w-0 items-stretch",
           dragging && "z-[20] cursor-grabbing",
+          verticalMode && "gantt-draggable-stay--vertical",
           pending && "opacity-60",
         ]
           .filter(Boolean)
@@ -155,14 +324,17 @@ export function GanttDraggableStay({
           openBooking();
         }}
         style={{
-          left: `calc(${pos.leftPct}% + ${dragDelta}px)`,
+          left: `calc(${pos.leftPct}% + ${verticalMode ? 0 : dragDelta}px)`,
           width: `${pos.widthPct}%`,
           maxWidth: `${100 - pos.leftPct}%`,
+          transform: verticalMode ? `translateY(${dragDeltaY}px)` : undefined,
         }}
         onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openStayMenu(e.clientX, e.clientY);
+        }}
         onMouseEnter={(e) => {
           clearLeaveTimer();
           const rect = e.currentTarget.getBoundingClientRect();

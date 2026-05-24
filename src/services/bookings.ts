@@ -545,6 +545,90 @@ export async function rescheduleBookingDates(
   });
 }
 
+/** Prelungește (+1) sau scurtează (−1) sejurul la checkout. */
+export async function adjustBookingStayNights(
+  bookingId: string,
+  nightDelta: number
+): Promise<{ check_in: string; check_out: string }> {
+  if (nightDelta === 0 || !Number.isInteger(nightDelta)) {
+    throw new Error("Ajustare invalidă.");
+  }
+
+  const booking = await getBookingById(bookingId);
+  if (!booking) throw new Error("Rezervarea nu există.");
+  if (booking.status === "anulata") {
+    throw new Error("Nu poți modifica o rezervare anulată.");
+  }
+
+  const newCheckOut = addDays(booking.check_out, nightDelta);
+  if (!isAtLeastOneNight(booking.check_in, newCheckOut)) {
+    throw new Error("Sejurul trebuie să aibă minim o noapte.");
+  }
+
+  if (booking.room_ids.length > 0) {
+    await rescheduleBookingDates(bookingId, booking.check_in, newCheckOut);
+  } else {
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("bookings")
+      .update({ check_out: newCheckOut })
+      .eq("id", bookingId);
+    if (error) throw new Error(error.message);
+  }
+
+  await logAdminActivityFromSession({
+    action: "booking.shifted",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `${nightDelta > 0 ? "Prelungit" : "Scurtat"}: ${booking.guest_name}`,
+    metadata: {
+      night_delta: nightDelta,
+      check_in: booking.check_in,
+      check_out: newCheckOut,
+    },
+  });
+
+  return { check_in: booking.check_in, check_out: newCheckOut };
+}
+
+/** Duplică sejurul ca cerere nouă (rebook similar). */
+export async function duplicateBookingAsCerere(bookingId: string): Promise<string> {
+  const b = await getBookingById(bookingId);
+  if (!b) throw new Error("Rezervarea nu există.");
+  if (b.status === "anulata") {
+    throw new Error("Nu poți duplica o rezervare anulată.");
+  }
+
+  const id = await createBookingRequest({
+    check_in: b.check_in,
+    check_out: b.check_out,
+    guest_name: b.guest_name,
+    guest_last_name: b.guest_last_name ?? b.guest_name.split(" ")[0] ?? "",
+    guest_first_name:
+      b.guest_first_name ??
+      b.guest_name.split(" ").slice(1).join(" ") ??
+      "",
+    guest_email: b.guest_email,
+    guest_phone: b.guest_phone ?? "",
+    num_adults: b.num_adults,
+    num_children: b.num_children,
+    has_minor: b.has_minor,
+    minor_age: b.minor_age ?? "",
+    notes: `[Duplicat] rebook similar · sursă ${bookingId.slice(0, 8)}`,
+    room_ids: b.room_ids.length > 0 ? b.room_ids : undefined,
+  });
+
+  await logAdminActivityFromSession({
+    action: "booking.rebooked",
+    entityType: "booking",
+    entityId: id,
+    summary: `Duplicat (rebook): ${b.guest_name}`,
+    metadata: { source_booking_id: bookingId },
+  });
+
+  return id;
+}
+
 /** Mută rezervarea cu același număr de nopți (drag pe Gantt). */
 export async function shiftBookingByDays(
   bookingId: string,

@@ -6,10 +6,12 @@ import { requireAdmin, getAdminUser } from "@/lib/auth/require-admin";
 import {
   confirmBookingWithRooms,
   createBookingRequest,
+  adjustBookingStayNights,
+  duplicateBookingAsCerere,
   shiftBookingByDays,
 } from "@/services/bookings";
 import { createRoomBlock, deleteRoomBlock } from "@/services/room-blocks";
-import { createRoomHold, releaseRoomHold } from "@/services/room-holds";
+import { createRoomHold, createRoomHolds, releaseRoomHold } from "@/services/room-holds";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   moveBookingRoomFromPivot,
@@ -22,6 +24,36 @@ type ActionErr = { ok: false; error: string };
 
 function actorEmail(user: { email?: string | null } | null): string | null {
   return user?.email ?? null;
+}
+
+export async function createRoomHoldsFromGanttAction(input: {
+  roomIds: string[];
+  checkIn: string;
+  checkOut: string;
+  reason?: string;
+  expiresHours?: number | null;
+}): Promise<
+  { ok: true; ids: string[]; undo?: { kind: "hold"; ids: string[] } } | ActionErr
+> {
+  await requireAdmin();
+  try {
+    const user = await getAdminUser();
+    const ids = await createRoomHolds({
+      roomIds: input.roomIds,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      reason: input.reason,
+      expiresHours: input.expiresHours,
+      createdBy: actorEmail(user),
+    });
+    revalidatePath("/admin/calendar");
+    return { ok: true, ids, undo: { kind: "hold", ids } };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare la hold",
+    };
+  }
 }
 
 export async function createRoomHoldFromGanttAction(input: {
@@ -113,15 +145,21 @@ export async function deleteRoomBlockAction(
 
 export async function undoGanttCreateAction(input: {
   kind: "hold" | "block";
-  id: string;
+  id?: string;
+  ids?: string[];
 }): Promise<{ ok: true } | ActionErr> {
   await requireAdmin();
   try {
     const user = await getAdminUser();
     if (input.kind === "hold") {
-      await releaseRoomHold(input.id, actorEmail(user));
+      const holdIds = input.ids ?? (input.id ? [input.id] : []);
+      for (const holdId of holdIds) {
+        await releaseRoomHold(holdId, actorEmail(user));
+      }
     } else {
-      await deleteRoomBlock(input.id);
+      const blockId = input.id;
+      if (!blockId) throw new Error("ID blocare lipsă.");
+      await deleteRoomBlock(blockId);
     }
     revalidatePath("/admin/calendar");
     return { ok: true };
@@ -328,6 +366,50 @@ export async function moveBookingRoomFromPivotAction(input: {
     return {
       ok: false,
       error: e instanceof Error ? e.message : "Eroare mutare cameră",
+    };
+  }
+}
+
+export async function adjustBookingStayNightsAction(
+  bookingId: string,
+  nightDelta: number
+): Promise<{ ok: true; check_in: string; check_out: string } | ActionErr> {
+  await requireAdmin();
+  try {
+    if (!Number.isInteger(nightDelta) || Math.abs(nightDelta) !== 1) {
+      return { ok: false, error: "Ajustare invalidă." };
+    }
+    const result = await adjustBookingStayNights(bookingId, nightDelta);
+    revalidatePath("/admin/calendar");
+    revalidatePath("/admin/bookings");
+    revalidatePath("/admin/cazari");
+    revalidatePath("/admin/istoric");
+    revalidatePath("/admin/statistics");
+    revalidatePath(`/admin/bookings/${bookingId}`);
+    return { ok: true, ...result };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare ajustare sejur",
+    };
+  }
+}
+
+export async function duplicateBookingAsCerereAction(
+  bookingId: string
+): Promise<{ ok: true; id: string } | ActionErr> {
+  await requireAdmin();
+  try {
+    const id = await duplicateBookingAsCerere(bookingId);
+    revalidatePath("/admin/calendar");
+    revalidatePath("/admin/bookings");
+    revalidatePath("/admin/cereri");
+    revalidatePath("/admin/statistics");
+    return { ok: true, id };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare duplicare",
     };
   }
 }

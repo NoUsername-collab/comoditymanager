@@ -7,7 +7,7 @@ export function showGanttCreateUndoToast(
   router: ReturnType<typeof useRouter>,
   title: string,
   message: string,
-  undo: { kind: "hold" | "block"; id: string }
+  undo: { kind: "hold" | "block"; id?: string; ids?: string[] }
 ) {
   showToast({
     kind: "success",
