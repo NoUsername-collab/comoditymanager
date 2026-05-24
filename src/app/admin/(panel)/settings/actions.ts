@@ -2,8 +2,27 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth/require-admin";
 import { updatePensionSettings } from "@/services/pension-settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { runFactoryReset } from "@/services/database-reset";
+
+export async function factoryResetAction(confirmText: string): Promise<void> {
+  await requireAdmin();
+
+  if (confirmText !== "RESET") {
+    throw new Error('Tastează exact "RESET" pentru confirmare.');
+  }
+
+  await runFactoryReset();
+
+  revalidatePath("/admin", "layout");
+  revalidatePath("/admin/settings");
+  revalidatePath("/admin/buildings");
+  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/bookings");
+  redirect("/admin/settings?reset=1");
+}
 
 export async function updateSettingsAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");

@@ -7,12 +7,14 @@ import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePan
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { resolvePaletteDefinition } from "@/lib/admin-palettes";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
+import { AdminFactoryResetPanel } from "@/components/admin/settings/AdminFactoryResetPanel";
+import { isFactoryResetEnabled } from "@/services/database-reset";
 import { updateSettingsAction } from "./actions";
 
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; reset?: string }>;
 }) {
   const params = await searchParams;
   let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
@@ -40,6 +42,12 @@ export default async function SettingsPage({
       {params.saved === "1" && (
         <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
           Salvat. Reîncarcă o pagină admin dacă nu vezi paleta imediat.
+        </p>
+      )}
+
+      {params.reset === "1" && (
+        <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          Reset complet. Poți configura din nou clădirile și camerele din admin.
         </p>
       )}
 
@@ -177,6 +185,16 @@ export default async function SettingsPage({
               </button>
             </div>
           </form>
+
+          {isFactoryResetEnabled() && (
+            <SettingsSlidePanel
+              title="Zonă periculoasă"
+              subtitle="Reset factory — doar staging / dev"
+              icon="⚠️"
+            >
+              <AdminFactoryResetPanel />
+            </SettingsSlidePanel>
+          )}
         </>
       )}
     </AdminRetroPageFrame>
