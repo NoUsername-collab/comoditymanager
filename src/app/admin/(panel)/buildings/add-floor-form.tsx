@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createFloorAction } from "./actions";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 
 export function AddFloorForm({ buildingId }: { buildingId: string }) {
   const [open, setOpen] = useState(false);
@@ -22,7 +23,7 @@ export function AddFloorForm({ buildingId }: { buildingId: string }) {
 
       {open && (
         <div className="border-t border-dashed border-zinc-200 px-4 pb-4 pt-3">
-          <form
+          <AdminPendingForm
             action={createFloorAction}
             className="flex flex-wrap items-end gap-2"
           >
@@ -60,7 +61,7 @@ export function AddFloorForm({ buildingId }: { buildingId: string }) {
             >
               + Etaj
             </button>
-          </form>
+          </AdminPendingForm>
         </div>
       )}
     </div>

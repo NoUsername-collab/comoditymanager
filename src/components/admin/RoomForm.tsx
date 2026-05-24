@@ -2,6 +2,7 @@
 
 import type { AcMode, Building, Floor } from "@/types/database";
 import { useMemo, useState } from "react";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 
 type Props = {
   buildings: Building[];
@@ -35,7 +36,7 @@ export function RoomForm({
   const defaultPrice = building?.default_price_per_night ?? 250;
 
   return (
-    <form action={createRoomAction} className="mt-8 space-y-5">
+    <AdminPendingForm action={createRoomAction} className="mt-8 space-y-5">
       <label className="block">
         <span className="text-sm font-medium">Clădire *</span>
         <select
@@ -179,6 +180,6 @@ export function RoomForm({
       >
         Salvează camera
       </button>
-    </form>
+    </AdminPendingForm>
   );
 }

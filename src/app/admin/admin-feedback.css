@@ -275,38 +275,41 @@
 .admin-pending-overlay {
   position: fixed;
   inset: 0;
-  z-index: 119500;
+  z-index: 2147483000;
   display: grid;
   place-items: center;
-  background: color-mix(in srgb, var(--admin-overlay, rgba(15, 23, 42, 0.45)) 55%, transparent);
+  background: color-mix(in srgb, var(--admin-overlay, rgba(15, 23, 42, 0.45)) 72%, transparent);
   cursor: wait;
   pointer-events: auto;
+  backdrop-filter: blur(2px);
 }
 
-.admin-pending-overlay__card {
+.admin-pending-overlay__stack {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  border-radius: 0.875rem;
-  border: 1px solid var(--admin-panel-border, #cbd5e1);
-  background: var(--admin-panel-bg, #fff);
-  padding: 0.875rem 1.125rem;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+  gap: 1rem;
+  padding: 1.5rem;
 }
 
 .admin-pending-overlay__spinner {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 9999px;
-  border: 2px solid color-mix(in srgb, var(--admin-accent, #166534) 25%, transparent);
-  border-top-color: var(--admin-accent, #166534);
-  animation: admin-pending-spin 0.75s linear infinite;
+  border: 5px solid var(--admin-loading-track, color-mix(in srgb, var(--color-accent, #166534) 14%, transparent));
+  border-top-color: var(--admin-loading-accent, var(--color-accent, #166534));
+  border-right-color: var(--admin-loading-accent-muted, var(--color-accent-muted, #dcfce7));
+  border-bottom-color: var(--admin-loading-accent-2, var(--booking-active-border, #16a34a));
+  animation: admin-pending-spin 0.8s linear infinite;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--color-accent, #166534) 22%, transparent);
 }
 
 .admin-pending-overlay__text {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--admin-text, #0f172a);
+  text-shadow: 0 1px 0 color-mix(in srgb, var(--admin-panel-bg, #fff) 80%, transparent);
 }
 
 @keyframes admin-pending-spin {

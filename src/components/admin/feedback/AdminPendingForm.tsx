@@ -17,10 +17,9 @@ export function AdminPendingForm({ action, children, className, onSubmit }: Prop
   return (
     <form
       className={className}
+      data-admin-pending="true"
       onSubmit={onSubmit}
-      action={(formData) => {
-        void runAdminAction(() => action(formData));
-      }}
+      action={(formData) => runAdminAction(() => action(formData))}
     >
       {children}
     </form>

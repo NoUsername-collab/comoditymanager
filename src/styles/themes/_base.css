@@ -146,6 +146,11 @@ html {
   --admin-hero-border: var(--color-border);
 
   --admin-overlay: rgba(15, 23, 42, 0.45);
+
+  --admin-loading-track: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  --admin-loading-accent: var(--color-accent);
+  --admin-loading-accent-muted: var(--color-accent-muted);
+  --admin-loading-accent-2: var(--booking-active-border);
 }
 
 html[data-theme] {

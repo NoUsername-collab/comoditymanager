@@ -4,11 +4,15 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
+
+const MIN_PENDING_MS = 400;
 
 type AdminPendingContextValue = {
   pending: boolean;
@@ -20,14 +24,34 @@ const AdminPendingContext = createContext<AdminPendingContextValue | null>(null)
 export function AdminPendingProvider({ children }: { children: ReactNode }) {
   const depthRef = useRef(0);
   const [pending, setPending] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!pending) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [pending]);
 
   const runAdminAction = useCallback(
     async <T,>(fn: () => Promise<T> | T): Promise<T> => {
       depthRef.current += 1;
       setPending(true);
+      const started = Date.now();
       try {
         return await fn();
       } finally {
+        const elapsed = Date.now() - started;
+        const wait = Math.max(0, MIN_PENDING_MS - elapsed);
+        if (wait > 0) {
+          await new Promise((resolve) => setTimeout(resolve, wait));
+        }
         depthRef.current = Math.max(0, depthRef.current - 1);
         if (depthRef.current === 0) {
           setPending(false);
@@ -42,23 +66,26 @@ export function AdminPendingProvider({ children }: { children: ReactNode }) {
     [pending, runAdminAction]
   );
 
+  const overlay =
+    pending && mounted ? (
+      <div
+        className="admin-pending-overlay"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        aria-label="Se procesează cererea"
+      >
+        <div className="admin-pending-overlay__stack">
+          <span className="admin-pending-overlay__spinner" aria-hidden />
+          <span className="admin-pending-overlay__text">Se procesează…</span>
+        </div>
+      </div>
+    ) : null;
+
   return (
     <AdminPendingContext.Provider value={value}>
       {children}
-      {pending ? (
-        <div
-          className="admin-pending-overlay"
-          role="status"
-          aria-live="polite"
-          aria-busy="true"
-          aria-label="Se procesează cererea"
-        >
-          <div className="admin-pending-overlay__card">
-            <span className="admin-pending-overlay__spinner" aria-hidden />
-            <span className="admin-pending-overlay__text">Se procesează…</span>
-          </div>
-        </div>
-      ) : null}
+      {overlay ? createPortal(overlay, document.body) : null}
     </AdminPendingContext.Provider>
   );
 }

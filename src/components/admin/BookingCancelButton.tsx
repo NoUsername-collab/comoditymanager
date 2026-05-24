@@ -52,12 +52,13 @@ export function BookingCancelButton({
 
   return (
     <form
-      action={(fd) => {
-        void runAdminAction(async () => {
+      data-admin-pending="true"
+      action={(fd) =>
+        runAdminAction(async () => {
           await formAction(fd);
           setOpen(false);
-        });
-      }}
+        })
+      }
       className={panelClass}
     >
       <input type="hidden" name="id" value={bookingId} />

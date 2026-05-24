@@ -2,6 +2,7 @@
 
 import type { Building, Floor } from "@/types/database";
 import { useState } from "react";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 
 type RoomData = {
   id: string;
@@ -37,7 +38,7 @@ export function RoomEditForm({
   const floors = floorsByBuilding[buildingId] ?? [];
 
   return (
-    <form action={updateRoomAction} className="mt-8 space-y-5">
+    <AdminPendingForm action={updateRoomAction} className="mt-8 space-y-5">
       <input type="hidden" name="id" value={room.id} />
 
       <label className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
@@ -167,6 +168,6 @@ export function RoomEditForm({
       >
         Salvează modificările
       </button>
-    </form>
+    </AdminPendingForm>
   );
 }

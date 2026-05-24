@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { AcMode } from "@/types/database";
 import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 
 export function BuildingForm({
   action,
@@ -12,7 +13,7 @@ export function BuildingForm({
   const [acMode, setAcMode] = useState<AcMode>("per_room");
 
   return (
-    <form action={action} className="mt-8 space-y-5">
+    <AdminPendingForm action={action} className="mt-8 space-y-5">
       <label className="block">
         <span className="text-sm font-medium">Nume clădire *</span>
         <input
@@ -72,6 +73,6 @@ export function BuildingForm({
       >
         Salvează clădirea
       </button>
-    </form>
+    </AdminPendingForm>
   );
 }

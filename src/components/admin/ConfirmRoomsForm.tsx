@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { stayNightCount } from "@/lib/stay-dates";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
@@ -105,7 +106,7 @@ export function ConfirmRoomsForm({
   }
 
   return (
-    <form action={action} className="space-y-4">
+    <AdminPendingForm action={action} className="space-y-4">
       <input type="hidden" name="id" value={bookingId} />
 
       <p className="text-xs text-zinc-500">
@@ -250,6 +251,6 @@ export function ConfirmRoomsForm({
       >
         {submitLabel}
       </button>
-    </form>
+    </AdminPendingForm>
   );
 }

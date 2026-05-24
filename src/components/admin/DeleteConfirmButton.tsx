@@ -33,12 +33,13 @@ export function DeleteConfirmButton({
 
   return (
     <form
-      action={(fd) => {
-        void runAdminAction(async () => {
+      data-admin-pending="true"
+      action={(fd) =>
+        runAdminAction(async () => {
           await formAction(fd);
           setOpen(false);
-        });
-      }}
+        })
+      }
       className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
     >
       {Object.entries(hiddenFields).map(([k, v]) => (
