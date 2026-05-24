@@ -37,7 +37,13 @@
 .gantt-booking-card--pending.gantt-stay--cerere:not([style*="--gs-bg"]) {
   background: var(--booking-pending-bg) !important;
   border-color: var(--booking-pending-border) !important;
-  color: var(--booking-pending-text);
+  color: var(--booking-pending-text) !important;
+}
+
+.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past):not([style*="--gs-bg"]) {
+  background: var(--booking-active-bg) !important;
+  border-color: var(--booking-active-border) !important;
+  color: var(--booking-active-text) !important;
 }
 
 /* Trecut */

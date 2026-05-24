@@ -1,64 +1,94 @@
 /**
  * Contract variabile temă — SACRU.
- * Valorile reale stau în [theme].css (day + night).
- * Componentele și BookingCard.css consumă doar aceste nume.
+ * Valorile reale în [theme].css (day + night).
+ * Semantică operațională: gri=dezactivat, verde=confirmat, portocaliu=cerere,
+ * galben=hold, maro=blocare problemă.
  */
 
 html {
   /* UI general */
-  --color-bg: #f4f4f5;
+  --color-bg: #f1f5f9;
   --color-surface: #ffffff;
-  --color-border: #e4e4e7;
-  --color-text: #18181b;
-  --color-text-muted: #71717a;
-  --color-accent: #3f3f46;
+  --color-border: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-accent: #166534;
+  --color-accent-muted: #dcfce7;
+  --color-focus: #15803d;
 
-  /* Booking semantic */
-  --booking-active-bg: #059669;
-  --booking-active-border: #047857;
-  --booking-active-text: #ffffff;
+  /* Confirmat (verde) */
+  --booking-active-bg: #bbf7d0;
+  --booking-active-border: #16a34a;
+  --booking-active-text: #14532d;
 
-  --booking-pending-bg: #fbbf24;
-  --booking-pending-border: #d97706;
-  --booking-pending-text: #1c1917;
+  /* Cerere neconfirmată (portocaliu) */
+  --booking-pending-bg: #ffedd5;
+  --booking-pending-border: #ea580c;
+  --booking-pending-text: #9a3412;
 
-  --booking-past-bg: #a1a1aa;
-  --booking-past-border: #71717a;
-  --booking-past-text: #fafafa;
+  /* Dezactivat / trecut / anulat (gri) */
+  --booking-past-bg: #f1f5f9;
+  --booking-past-border: #94a3b8;
+  --booking-past-text: #64748b;
 
-  --booking-cancelled-bg: #f4f4f5;
-  --booking-cancelled-border: #d4d4d8;
-  --booking-cancelled-text: #71717a;
+  --booking-cancelled-bg: #f8fafc;
+  --booking-cancelled-border: #cbd5e1;
+  --booking-cancelled-text: #94a3b8;
 
-  --booking-hold-bg: #fef3c7;
-  --booking-hold-border: #f59e0b;
-  --booking-hold-text: #78350f;
+  /* Hold (galben) */
+  --booking-hold-bg: #fef08a;
+  --booking-hold-border: #ca8a04;
+  --booking-hold-text: #713f12;
 
-  --booking-block-bg: #fecaca;
-  --booking-block-border: #ef4444;
-  --booking-block-text: #7f1d1d;
+  /* Blocare cu probleme (maro) */
+  --booking-block-bg: #e7e5e4;
+  --booking-block-border: #78716c;
+  --booking-block-text: #44403c;
+
+  /* Alias semantic (componente admin) */
+  --status-confirmed-bg: var(--booking-active-bg);
+  --status-confirmed-border: var(--booking-active-border);
+  --status-confirmed-text: var(--booking-active-text);
+  --status-pending-bg: var(--booking-pending-bg);
+  --status-pending-border: var(--booking-pending-border);
+  --status-pending-text: var(--booking-pending-text);
+  --status-disabled-bg: var(--booking-past-bg);
+  --status-disabled-border: var(--booking-past-border);
+  --status-disabled-text: var(--booking-past-text);
+  --status-hold-bg: var(--booking-hold-bg);
+  --status-hold-border: var(--booking-hold-border);
+  --status-hold-text: var(--booking-hold-text);
+  --status-block-bg: var(--booking-block-bg);
+  --status-block-border: var(--booking-block-border);
+  --status-block-text: var(--booking-block-text);
 
   /* Card shape */
   --card-radius: 6px;
   --card-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  --card-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   --card-border-style: solid;
 
-  /* Gantt grid zones (timeline) */
-  --gantt-zone-checkout: #fafafa;
+  /* Gantt grid */
+  --gantt-zone-checkout: #f8fafc;
   --gantt-zone-clean: #ffffff;
-  --gantt-zone-checkin: #f4f4f5;
-  --gantt-line-checkout: #a1a1aa;
-  --gantt-line-checkin: #d4d4d8;
+  --gantt-zone-checkin: #f1f5f9;
+  --gantt-line-checkout: #94a3b8;
+  --gantt-line-checkin: #cbd5e1;
+  --gantt-zone-checkout-text: #64748b;
+  --gantt-zone-clean-text: #475569;
+  --gantt-zone-checkin-text: #64748b;
 
-  /* Admin shell bridge (admin-palette.css) */
+  /* Admin shell */
   --admin-page-bg: var(--color-bg);
   --admin-panel-bg: var(--color-surface);
   --admin-panel-border: var(--color-border);
   --admin-text: var(--color-text);
   --admin-text-muted: var(--color-text-muted);
   --admin-accent: var(--color-accent);
-  --admin-accent-muted: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  --admin-accent-muted: var(--color-accent-muted);
+  --admin-focus-ring: var(--color-focus);
+  --admin-link: #15803d;
+
   --admin-hud-gradient: var(--color-surface);
   --admin-hud-text: var(--color-text);
   --admin-hud-eyebrow: var(--color-text-muted);
@@ -66,13 +96,56 @@ html {
   --admin-hud-shadow: 0 1px 0 var(--color-border);
   --admin-hud-brand-bg: var(--color-surface);
   --admin-hud-brand-border: var(--color-border);
+
   --admin-gantt-shell-bg: var(--color-surface);
+  --admin-gantt-today-line: #0284c7;
+  --admin-gantt-header-shadow: 0 1px 0 var(--color-border);
+  --admin-gantt-unassigned: color-mix(in srgb, var(--booking-pending-bg) 70%, var(--color-surface));
+  --admin-gantt-cerere: var(--booking-pending-border);
+
   --admin-font: var(--card-font);
   --admin-radius: var(--card-radius);
+
   --admin-btn-primary-bg: var(--color-accent);
   --admin-btn-primary-text: #ffffff;
+
   --admin-input-bg: var(--color-surface);
   --admin-input-border: var(--color-border);
+
+  --admin-chip-bg: var(--color-surface);
+  --admin-chip-text: var(--color-text-muted);
+  --admin-chip-border: var(--color-border);
+
+  --admin-nav-tab-text: var(--color-text-muted);
+  --admin-nav-tab-bg: transparent;
+  --admin-nav-tab-hover-bg: color-mix(in srgb, var(--color-bg) 65%, var(--color-surface));
+  --admin-nav-active-text: var(--color-text);
+  --admin-nav-active-bg: var(--color-surface);
+  --admin-nav-active-shadow: inset 0 -2px 0 var(--color-accent);
+
+  --admin-switch-active-bg: var(--color-accent);
+  --admin-switch-active-text: #ffffff;
+
+  --admin-cereri-grad: linear-gradient(
+    135deg,
+    var(--booking-pending-border),
+    color-mix(in srgb, var(--booking-pending-border) 75%, #c2410c)
+  );
+
+  --admin-alert-bg: color-mix(in srgb, var(--booking-pending-bg) 55%, var(--color-surface));
+  --admin-alert-text: var(--booking-pending-text);
+
+  --admin-danger-bg: #fee2e2;
+  --admin-danger-border: #f87171;
+  --admin-danger-text: #991b1b;
+  --admin-full-bg: color-mix(in srgb, var(--admin-danger-bg) 40%, var(--color-surface));
+  --admin-full-text: var(--admin-danger-text);
+
+  --admin-hero-bg: var(--color-surface);
+  --admin-hero-content-bg: var(--color-bg);
+  --admin-hero-border: var(--color-border);
+
+  --admin-overlay: rgba(15, 23, 42, 0.45);
 }
 
 html[data-theme] {

@@ -1,100 +1,111 @@
-/* Default (fost Alb simplu) — culori neutre, card discret */
+/* Default — operațional, profesional (producție) */
 
 html[data-theme="default"][data-mode="day"] {
-  --color-bg: #ffffff;
+  --color-bg: #f1f5f9;
   --color-surface: #ffffff;
-  --color-border: #e4e4e7;
-  --color-text: #18181b;
-  --color-text-muted: #71717a;
-  --color-accent: #3f3f46;
+  --color-border: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-accent: #166534;
+  --color-accent-muted: #dcfce7;
+  --color-focus: #15803d;
 
-  --booking-active-bg: #52525b;
-  --booking-active-border: #3f3f46;
-  --booking-active-text: #ffffff;
+  --booking-active-bg: #bbf7d0;
+  --booking-active-border: #16a34a;
+  --booking-active-text: #14532d;
 
-  --booking-pending-bg: #fef3c7;
-  --booking-pending-border: #f59e0b;
-  --booking-pending-text: #78350f;
+  --booking-pending-bg: #ffedd5;
+  --booking-pending-border: #ea580c;
+  --booking-pending-text: #9a3412;
 
-  --booking-past-bg: #e4e4e7;
-  --booking-past-border: #a1a1aa;
-  --booking-past-text: #52525b;
+  --booking-past-bg: #f1f5f9;
+  --booking-past-border: #94a3b8;
+  --booking-past-text: #64748b;
 
-  --booking-cancelled-bg: #fafafa;
-  --booking-cancelled-border: #d4d4d8;
-  --booking-cancelled-text: #a1a1aa;
+  --booking-cancelled-bg: #f8fafc;
+  --booking-cancelled-border: #cbd5e1;
+  --booking-cancelled-text: #94a3b8;
 
-  --booking-hold-bg: #fffbeb;
-  --booking-hold-border: #fbbf24;
-  --booking-hold-text: #92400e;
+  --booking-hold-bg: #fef08a;
+  --booking-hold-border: #ca8a04;
+  --booking-hold-text: #713f12;
 
-  --booking-block-bg: #fef2f2;
-  --booking-block-border: #f87171;
-  --booking-block-text: #991b1b;
+  --booking-block-bg: #e7e5e4;
+  --booking-block-border: #78716c;
+  --booking-block-text: #44403c;
 
   --card-radius: 6px;
-  --card-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --card-shadow: none;
-  --card-border-style: solid;
 
-  --gantt-zone-checkout: #fafafa;
+  --gantt-zone-checkout: #f8fafc;
   --gantt-zone-clean: #ffffff;
-  --gantt-zone-checkin: #f4f4f5;
-  --gantt-line-checkout: #a1a1aa;
-  --gantt-line-checkin: #d4d4d8;
+  --gantt-zone-checkin: #f1f5f9;
+  --gantt-line-checkout: #94a3b8;
+  --gantt-line-checkin: #cbd5e1;
 
   --admin-hud-gradient: #ffffff;
-  --admin-hud-shadow: 0 1px 0 #e4e4e7;
+  --admin-hud-shadow: 0 1px 0 #cbd5e1;
   --admin-btn-primary-text: #ffffff;
+  --admin-link: #15803d;
+  --admin-gantt-shell-bg: #ffffff;
 }
 
+/* Noapte — liniștitor, fără negru dur */
 html[data-theme="default"][data-mode="night"] {
-  --color-bg: #09090b;
-  --color-surface: #18181b;
-  --color-border: #27272a;
-  --color-text: #fafafa;
-  --color-text-muted: #a1a1aa;
-  --color-accent: #e4e4e7;
+  --color-bg: #252b36;
+  --color-surface: #2f3744;
+  --color-border: #3f4a5c;
+  --color-text: #e8ecf4;
+  --color-text-muted: #9aa8bc;
+  --color-accent: #4ade80;
+  --color-accent-muted: #1a3d2e;
+  --color-focus: #4ade80;
 
-  --booking-active-bg: #d4d4d8;
-  --booking-active-border: #a1a1aa;
-  --booking-active-text: #18181b;
+  --booking-active-bg: #14532d;
+  --booking-active-border: #22c55e;
+  --booking-active-text: #dcfce7;
 
-  --booking-pending-bg: #422006;
-  --booking-pending-border: #f59e0b;
-  --booking-pending-text: #fde68a;
+  --booking-pending-bg: #431407;
+  --booking-pending-border: #fb923c;
+  --booking-pending-text: #ffedd5;
 
-  --booking-past-bg: #3f3f46;
-  --booking-past-border: #52525b;
-  --booking-past-text: #d4d4d8;
+  --booking-past-bg: #343d4d;
+  --booking-past-border: #64748b;
+  --booking-past-text: #94a3b8;
 
-  --booking-cancelled-bg: #27272a;
-  --booking-cancelled-border: #3f3f46;
-  --booking-cancelled-text: #71717a;
+  --booking-cancelled-bg: #2a3140;
+  --booking-cancelled-border: #475569;
+  --booking-cancelled-text: #64748b;
 
   --booking-hold-bg: #422006;
-  --booking-hold-border: #d97706;
-  --booking-hold-text: #fde68a;
+  --booking-hold-border: #eab308;
+  --booking-hold-text: #fef9c3;
 
-  --booking-block-bg: #450a0a;
-  --booking-block-border: #ef4444;
-  --booking-block-text: #fecaca;
+  --booking-block-bg: #3d3835;
+  --booking-block-border: #a8a29e;
+  --booking-block-text: #e7e5e4;
 
-  --card-radius: 6px;
   --card-shadow: none;
 
-  --gantt-zone-checkout: #1c1917;
-  --gantt-zone-clean: #18181b;
-  --gantt-zone-checkin: #27272a;
-  --gantt-line-checkout: #71717a;
-  --gantt-line-checkin: #52525b;
+  --gantt-zone-checkout: #2a3140;
+  --gantt-zone-clean: #2f3744;
+  --gantt-zone-checkin: #343d4d;
+  --gantt-line-checkout: #64748b;
+  --gantt-line-checkin: #475569;
 
-  --admin-hud-gradient: #18181b;
-  --admin-hud-shadow: 0 1px 0 #27272a;
-  --admin-btn-primary-text: #18181b;
+  --admin-hud-gradient: #2f3744;
+  --admin-hud-shadow: 0 1px 0 #3f4a5c;
+  --admin-btn-primary-text: #0f172a;
+  --admin-link: #86efac;
+  --admin-gantt-shell-bg: #2f3744;
+  --admin-overlay: rgba(8, 12, 20, 0.62);
+
+  --admin-danger-bg: #450a0a;
+  --admin-danger-border: #f87171;
+  --admin-danger-text: #fecaca;
 }
 
-/* Default — fără Bliss, glow, gradiente decorative */
+/* Default — UI plat, fără efecte decorative */
 
 html[data-theme="default"] .admin-dn-liquid {
   display: none !important;
@@ -119,14 +130,14 @@ html[data-theme="default"] .admin-nav-tab--active {
 }
 
 html[data-theme="default"] .admin-nav-tab--quest {
-  background: var(--admin-accent) !important;
-  color: var(--admin-btn-primary-text) !important;
+  background: var(--admin-cereri-grad) !important;
+  color: #ffffff !important;
   animation: none !important;
 }
 
 html[data-theme="default"] .admin-dn-switch__btn--active {
   background: var(--admin-switch-active-bg) !important;
-  color: var(--admin-btn-primary-text) !important;
+  color: var(--admin-switch-active-text) !important;
 }
 
 html[data-theme="default"] .admin-xp-window {
@@ -179,7 +190,9 @@ html[data-theme="default"] .admin-panel-section {
 html[data-theme="default"] .admin-cereri-glow {
   animation: none !important;
   box-shadow: none !important;
-  border: 1px solid var(--admin-panel-border) !important;
+  border: 1px solid var(--booking-pending-border) !important;
+  background: var(--booking-pending-bg) !important;
+  color: var(--booking-pending-text) !important;
 }
 
 html[data-theme="default"] .admin-daynight-hero__title {
@@ -204,8 +217,8 @@ html[data-theme="default"]
 html[data-theme="default"]
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
   .gantt-day-cell::after {
-  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, #e4e4e7) !important;
-  opacity: 0.45;
+  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, var(--admin-panel-border)) !important;
+  opacity: 0.4;
 }
 
 html[data-theme="default"] .gantt-shell,
@@ -232,7 +245,7 @@ html[data-theme="default"] .gantt-stay--today-arrival {
 
 html[data-theme="default"] .admin-floating-panel {
   border-radius: var(--admin-radius) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--admin-overlay) 35%, transparent) !important;
 }
 
 html[data-theme="default"] .admin-floating-panel__header {
