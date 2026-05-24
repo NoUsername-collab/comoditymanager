@@ -112,6 +112,7 @@ html[data-theme="default"][data-mode="night"] {
 
 /* Default — UI plat, fără efecte decorative */
 
+html[data-theme="default"] .admin-liquid-shell,
 html[data-theme="default"] .admin-dn-liquid {
   display: none !important;
 }

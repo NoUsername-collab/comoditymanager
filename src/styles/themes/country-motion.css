@@ -64,23 +64,6 @@ html[data-theme="spain"] {
   --theme-motion-speed: 10s;
 }
 
-html[data-theme="romania"] .admin-hud,
-html[data-theme="italy"] .admin-hud,
-html[data-theme="france"] .admin-hud,
-html[data-theme="poland"] .admin-hud,
-html[data-theme="spain"] .admin-hud {
-  background-size: 200% 200% !important;
-  animation: theme-hud-shimmer var(--theme-motion-speed) ease-in-out infinite;
-}
-
-html[data-theme="romania"] .admin-nav-tab--active,
-html[data-theme="italy"] .admin-nav-tab--active,
-html[data-theme="france"] .admin-nav-tab--active,
-html[data-theme="poland"] .admin-nav-tab--active,
-html[data-theme="spain"] .admin-nav-tab--active {
-  animation: theme-nav-glow 4s ease-in-out infinite;
-}
-
 html[data-theme="romania"] .admin-panel-section,
 html[data-theme="italy"] .admin-panel-section,
 html[data-theme="france"] .admin-panel-section,
@@ -107,14 +90,31 @@ html[data-theme="spain"] .admin-summary-chip:hover {
   animation: theme-chip-float 2.5s ease-in-out infinite;
 }
 
+/* Teme țară — fallback liquid vizibil continuu */
+html[data-theme="romania"] .admin-dn-liquid--fallback,
+html[data-theme="italy"] .admin-dn-liquid--fallback,
+html[data-theme="france"] .admin-dn-liquid--fallback,
+html[data-theme="poland"] .admin-dn-liquid--fallback,
+html[data-theme="spain"] .admin-dn-liquid--fallback {
+  display: block !important;
+  opacity: 1 !important;
+}
+
 html[data-theme="romania"] .admin-home-hero--liquid .admin-home-hero__liquid,
 html[data-theme="italy"] .admin-home-hero--liquid .admin-home-hero__liquid,
 html[data-theme="france"] .admin-home-hero--liquid .admin-home-hero__liquid,
 html[data-theme="poland"] .admin-home-hero--liquid .admin-home-hero__liquid,
 html[data-theme="spain"] .admin-home-hero--liquid .admin-home-hero__liquid {
   display: block !important;
-  opacity: 0.28;
-  animation: theme-page-glow 8s ease-in-out infinite;
+  opacity: 1 !important;
+}
+
+html[data-theme="romania"] .admin-home-hero--liquid .admin-home-hero__liquid .admin-liquid-shader,
+html[data-theme="italy"] .admin-home-hero--liquid .admin-home-hero__liquid .admin-liquid-shader,
+html[data-theme="france"] .admin-home-hero--liquid .admin-home-hero__liquid .admin-liquid-shader,
+html[data-theme="poland"] .admin-home-hero--liquid .admin-home-hero__liquid .admin-liquid-shader,
+html[data-theme="spain"] .admin-home-hero--liquid .admin-home-hero__liquid .admin-liquid-shader {
+  opacity: 1 !important;
 }
 
 html[data-theme="romania"] .gantt-booking-card--pending.gantt-stay--cerere,

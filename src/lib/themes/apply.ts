@@ -12,4 +12,5 @@ export function applyTheme(theme: ThemeId, mode: ThemeMode): void {
   root.setAttribute("data-admin-palette-source", "catalog");
   const retro = theme === "win95" ? "win95" : theme === "winxp" ? "winxp" : "";
   root.setAttribute("data-admin-retro", retro);
+  window.dispatchEvent(new Event("admin-theme-change"));
 }

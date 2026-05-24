@@ -154,7 +154,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
   return (
     <div className="admin-home">
       <header className="admin-home-hero admin-home-hero--liquid">
-        <AdminDayNightLiquid className="admin-dn-liquid--hero admin-home-hero__liquid" />
+        <AdminDayNightLiquid hero className="admin-dn-liquid--hero admin-home-hero__liquid" />
         <div className="admin-home-hero__main">
           <p className="admin-home-hero__eyebrow">Acasă · panou recepție</p>
           <h1 className="admin-home-hero__title">{data.pensionName}</h1>
