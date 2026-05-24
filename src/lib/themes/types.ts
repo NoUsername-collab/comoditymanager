@@ -1,4 +1,12 @@
-export type ThemeId = "default" | "win95" | "winxp";
+export type ThemeId =
+  | "default"
+  | "win95"
+  | "winxp"
+  | "romania"
+  | "italy"
+  | "france"
+  | "poland"
+  | "spain";
 
 export type ThemeMode = "day" | "night";
 
@@ -19,3 +27,18 @@ export type LegacyAppearanceSettings = {
   admin_palette_key: ThemeId;
   admin_day_night: ThemeMode;
 };
+
+export const COUNTRY_THEME_IDS = [
+  "romania",
+  "italy",
+  "france",
+  "poland",
+  "spain",
+] as const satisfies readonly ThemeId[];
+
+export const ALL_THEME_IDS = [
+  "default",
+  "win95",
+  "winxp",
+  ...COUNTRY_THEME_IDS,
+] as const satisfies readonly ThemeId[];

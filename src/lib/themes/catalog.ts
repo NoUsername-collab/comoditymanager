@@ -1,4 +1,5 @@
 import type { ThemeDefinition, ThemeId } from "./types";
+import { ALL_THEME_IDS } from "./types";
 
 export const THEMES: ThemeDefinition[] = [
   {
@@ -16,13 +17,38 @@ export const THEMES: ThemeDefinition[] = [
     name: "Windows XP Classic",
     description: "Bliss, taskbar Luna, ferestre XP",
   },
+  {
+    id: "romania",
+    name: "România",
+    description: "Tricolor subtil — albastru, galben, roșu + animații line",
+  },
+  {
+    id: "italy",
+    name: "Italia",
+    description: "Verde, alb, roșu — stil mediteranean cu mișcare ușoară",
+  },
+  {
+    id: "france",
+    name: "Franța",
+    description: "Bleu-blanc-rouge elegant, gradient HUD animat",
+  },
+  {
+    id: "poland",
+    name: "Polonia",
+    description: "Alb și roșu cald, panouri line cu pulse discret",
+  },
+  {
+    id: "spain",
+    name: "Spania",
+    description: "Roșu și galben cald — flamenco subtil pe același schelet",
+  },
 ];
 
 export const DEFAULT_THEME_ID: ThemeId = "default";
 export const DEFAULT_THEME_MODE = "night" as const;
 
 export function isThemeId(value: string): value is ThemeId {
-  return value === "default" || value === "win95" || value === "winxp";
+  return (ALL_THEME_IDS as readonly string[]).includes(value);
 }
 
 export function getThemeDefinition(id: ThemeId): ThemeDefinition {

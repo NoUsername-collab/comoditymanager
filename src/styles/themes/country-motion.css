@@ -1,0 +1,146 @@
+/**
+ * Animații subtile — teme țări (România, Italia, Franța, Polonia, Spania).
+ * Default / Win95 / XP rămân neatinse.
+ */
+
+@keyframes theme-hud-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes theme-nav-glow {
+  0%,
+  100% {
+    box-shadow: inset 0 -2px 0 var(--color-accent);
+  }
+  50% {
+    box-shadow:
+      inset 0 -2px 0 var(--color-accent),
+      0 0 12px color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
+}
+
+@keyframes theme-panel-rise {
+  from {
+    opacity: 0.92;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes theme-chip-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes theme-page-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+html[data-theme="romania"],
+html[data-theme="italy"],
+html[data-theme="france"],
+html[data-theme="poland"],
+html[data-theme="spain"] {
+  --theme-motion-speed: 10s;
+}
+
+html[data-theme="romania"] .admin-hud,
+html[data-theme="italy"] .admin-hud,
+html[data-theme="france"] .admin-hud,
+html[data-theme="poland"] .admin-hud,
+html[data-theme="spain"] .admin-hud {
+  background-size: 200% 200% !important;
+  animation: theme-hud-shimmer var(--theme-motion-speed) ease-in-out infinite;
+}
+
+html[data-theme="romania"] .admin-nav-tab--active,
+html[data-theme="italy"] .admin-nav-tab--active,
+html[data-theme="france"] .admin-nav-tab--active,
+html[data-theme="poland"] .admin-nav-tab--active,
+html[data-theme="spain"] .admin-nav-tab--active {
+  animation: theme-nav-glow 4s ease-in-out infinite;
+}
+
+html[data-theme="romania"] .admin-panel-section,
+html[data-theme="italy"] .admin-panel-section,
+html[data-theme="france"] .admin-panel-section,
+html[data-theme="poland"] .admin-panel-section,
+html[data-theme="spain"] .admin-panel-section {
+  animation: theme-panel-rise 0.45s ease-out both;
+}
+
+html[data-theme="romania"] .admin-summary-chip,
+html[data-theme="italy"] .admin-summary-chip,
+html[data-theme="france"] .admin-summary-chip,
+html[data-theme="poland"] .admin-summary-chip,
+html[data-theme="spain"] .admin-summary-chip {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+html[data-theme="romania"] .admin-summary-chip:hover,
+html[data-theme="italy"] .admin-summary-chip:hover,
+html[data-theme="france"] .admin-summary-chip:hover,
+html[data-theme="poland"] .admin-summary-chip:hover,
+html[data-theme="spain"] .admin-summary-chip:hover {
+  animation: theme-chip-float 2.5s ease-in-out infinite;
+}
+
+html[data-theme="romania"] .admin-home-hero--liquid .admin-home-hero__liquid,
+html[data-theme="italy"] .admin-home-hero--liquid .admin-home-hero__liquid,
+html[data-theme="france"] .admin-home-hero--liquid .admin-home-hero__liquid,
+html[data-theme="poland"] .admin-home-hero--liquid .admin-home-hero__liquid,
+html[data-theme="spain"] .admin-home-hero--liquid .admin-home-hero__liquid {
+  display: block !important;
+  opacity: 0.28;
+  animation: theme-page-glow 8s ease-in-out infinite;
+}
+
+html[data-theme="romania"] .gantt-booking-card--pending.gantt-stay--cerere,
+html[data-theme="italy"] .gantt-booking-card--pending.gantt-stay--cerere,
+html[data-theme="france"] .gantt-booking-card--pending.gantt-stay--cerere,
+html[data-theme="poland"] .gantt-booking-card--pending.gantt-stay--cerere,
+html[data-theme="spain"] .gantt-booking-card--pending.gantt-stay--cerere {
+  animation: gantt-booking-pulse 2.2s ease-in-out infinite;
+}
+
+html[data-theme="romania"] .admin-shell {
+  --theme-motion-speed: 12s;
+}
+
+html[data-theme="italy"] .admin-shell {
+  --theme-motion-speed: 9s;
+}
+
+html[data-theme="france"] .admin-shell {
+  --theme-motion-speed: 11s;
+}
+
+html[data-theme="poland"] .admin-shell {
+  --theme-motion-speed: 13s;
+}
+
+html[data-theme="spain"] .admin-shell {
+  --theme-motion-speed: 8s;
+}

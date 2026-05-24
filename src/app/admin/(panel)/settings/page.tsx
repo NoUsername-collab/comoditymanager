@@ -33,7 +33,7 @@ export default async function SettingsPage({
     ? resolvePaletteDefinition(appearance)
     : null;
 
-  const sourceLabel = "Temă modulară (Default · Win95 · XP)";
+  const sourceLabel = "Temă modulară (Default · Retro · Țări)";
 
   return (
     <AdminRetroPageFrame

@@ -247,7 +247,7 @@ export function AdminPalettePicker({
 
       <SettingsSlidePanel
         title="Temă"
-        subtitle={`${activePalette.name} · Default · Win95 · XP Classic`}
+        subtitle={activePalette.name}
         icon="✨"
         badge={
           <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-600">
