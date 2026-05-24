@@ -1,20 +1,18 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isRoomFreeForStay } from "@/domain/availability/rooms-free";
-import {
-  isAtLeastOneNight,
-  rangesOverlap,
-} from "@/domain/booking/conflict";
+import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
-import {
-  DEFAULT_CHECK_IN_TIME,
-  DEFAULT_CHECK_OUT_TIME,
-} from "@/lib/constants";
 import { addDays } from "@/lib/stay-dates";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
 } from "@/services/activity-log";
-import { getPensionSettings } from "@/services/pension-settings";
+import { syncBookingRoomSegments } from "@/services/booking-segments";
+import {
+  assertRoomsAvailableForOccupancy,
+  listOccupiedRoomRanges,
+} from "@/services/room-occupancy";
+
+export { listOccupiedRoomRanges };
 
 export type BookingRow = {
   id: string;
@@ -85,51 +83,19 @@ export async function listBookingsForRange(
   });
 }
 
-async function pensionCheckTimes(): Promise<{
-  checkIn: string;
-  checkOut: string;
-}> {
-  const settings = await getPensionSettings().catch(() => null);
-  return {
-    checkIn: settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,
-    checkOut: settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,
-  };
-}
-
-/** Verifică că camerele sunt libere pe interval (inclusiv alte cereri cu hold). */
+/** Verifică că camerele sunt libere pe interval (bookings, holds, blocks). */
 export async function assertRoomsAvailableForStay(
   checkIn: string,
   checkOut: string,
   roomIds: string[],
   excludeBookingId?: string
 ): Promise<void> {
-  if (!isAtLeastOneNight(checkIn, checkOut)) {
-    throw new Error("Sejur invalid.");
-  }
-  const unique = [...new Set(roomIds.filter(Boolean))];
-  if (unique.length === 0) {
-    throw new Error("Selectează cel puțin o cameră.");
-  }
-
-  const times = await pensionCheckTimes();
-  const occupied = await listOccupiedRoomRanges(excludeBookingId);
-
-  for (const roomId of unique) {
-    if (
-      !isRoomFreeForStay(
-        roomId,
-        checkIn,
-        checkOut,
-        occupied,
-        times.checkIn,
-        times.checkOut
-      )
-    ) {
-      throw new Error(
-        "Una sau mai multe camere nu mai sunt disponibile. Actualizează datele și alege din nou."
-      );
-    }
-  }
+  await assertRoomsAvailableForOccupancy(
+    checkIn,
+    checkOut,
+    roomIds,
+    excludeBookingId
+  );
 }
 
 /** Alocă camere pe cerere (soft hold) — blochează calendarul până la confirmare/anulare. */
@@ -167,6 +133,7 @@ export async function assignBookingRoomHold(
     }))
   );
   if (insError) throw new Error(insError.message);
+  await syncBookingRoomSegments(bookingId);
 }
 
 async function rollbackFailedBookingRequest(bookingId: string): Promise<void> {
@@ -439,41 +406,6 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
   });
 }
 
-/** Rezervări cu camere alocate pentru verificare suprapunere */
-export async function listOccupiedRoomRanges(
-  excludeBookingId?: string
-): Promise<{ room_id: string; check_in: string; check_out: string }[]> {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("booking_rooms")
-    .select(
-      `
-      room_id,
-      bookings!inner ( id, check_in, check_out, status )
-    `
-    )
-    .neq("bookings.status", "anulata");
-
-  if (error) throw new Error(error.message);
-
-  const rows: { room_id: string; check_in: string; check_out: string }[] = [];
-  for (const line of data ?? []) {
-    const raw = line.bookings as
-      | { id: string; check_in: string; check_out: string; status: string }
-      | { id: string; check_in: string; check_out: string; status: string }[]
-      | null;
-    const b = Array.isArray(raw) ? raw[0] : raw;
-    if (!b) continue;
-    if (excludeBookingId && b.id === excludeBookingId) continue;
-    rows.push({
-      room_id: line.room_id,
-      check_in: b.check_in,
-      check_out: b.check_out,
-    });
-  }
-  return rows;
-}
-
 export async function confirmBookingWithRooms(
   bookingId: string,
   roomIds: string[],
@@ -514,6 +446,8 @@ export async function confirmBookingWithRooms(
 
   if (upError) throw new Error(upError.message);
 
+  await syncBookingRoomSegments(bookingId);
+
   await logAdminActivityFromSession({
     action: "booking.confirmed",
     entityType: "booking",
@@ -546,21 +480,12 @@ export async function rescheduleBookingDates(
     throw new Error("Alocă camere înainte de a muta pe calendar.");
   }
 
-  const occupied = await listOccupiedRoomRanges(bookingId);
-  const proposed = { checkIn: newCheckIn, checkOut: newCheckOut };
-  for (const stay of occupied) {
-    if (!booking.room_ids.includes(stay.room_id)) continue;
-    if (
-      rangesOverlap(proposed, {
-        checkIn: stay.check_in,
-        checkOut: stay.check_out,
-      })
-    ) {
-      throw new Error(
-        "Conflict: una dintre camere e deja rezervată în perioada aleasă."
-      );
-    }
-  }
+  await assertRoomsAvailableForOccupancy(
+    newCheckIn,
+    newCheckOut,
+    booking.room_ids,
+    bookingId
+  );
 
   const supabase = createAdminClient();
   const { error } = await supabase
@@ -572,6 +497,8 @@ export async function rescheduleBookingDates(
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
+
+  await syncBookingRoomSegments(bookingId);
 
   await logAdminActivityFromSession({
     action: "booking.shifted",
@@ -614,6 +541,8 @@ export async function cancelBooking(bookingId: string): Promise<void> {
     .update({ status: "anulata" })
     .eq("id", bookingId);
   if (error) throw new Error(error.message);
+
+  await syncBookingRoomSegments(bookingId);
 
   await logAdminActivityFromSession({
     action: "booking.cancelled",

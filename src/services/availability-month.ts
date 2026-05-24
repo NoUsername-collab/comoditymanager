@@ -221,7 +221,7 @@ export async function loadAvailabilityDashboard(
   const [roomsRaw, buildings, occupied, bookings] = await Promise.all([
     listAllRooms(),
     listBuildings(),
-    listOccupiedRoomRanges(),
+    listOccupiedRoomRanges(undefined, { forPublicCalendar: true }),
     listBookingsForRange(rangeStart, scanEnd),
   ]);
 
