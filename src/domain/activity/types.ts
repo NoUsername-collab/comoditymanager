@@ -5,13 +5,19 @@ export type ActivityEntityType =
   | "floor"
   | "settings"
   | "session"
-  | "pension";
+  | "pension"
+  | "guest";
 
 export type ActivityAction =
   | "booking.request_created"
   | "booking.confirmed"
   | "booking.cancelled"
   | "booking.shifted"
+  | "booking.room_moved"
+  | "booking.rebooked"
+  | "guest.created"
+  | "guest.updated"
+  | "guest.merged"
   | "building.created"
   | "building.deleted"
   | "building.price_updated"

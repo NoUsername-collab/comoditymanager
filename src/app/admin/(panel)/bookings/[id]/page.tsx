@@ -80,6 +80,16 @@ export default async function BookingDetailPage({
               {booking.guest_email}
               {booking.guest_phone ? ` · ${booking.guest_phone}` : ""}
             </dd>
+            {booking.guest_id && (
+              <dd className="mt-1">
+                <Link
+                  href={`/admin/guests/${booking.guest_id}`}
+                  className="font-semibold text-emerald-700 hover:underline"
+                >
+                  Profil client →
+                </Link>
+              </dd>
+            )}
           </div>
           {booking.notes && (
             <div>

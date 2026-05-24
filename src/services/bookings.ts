@@ -1,12 +1,17 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
-import { addDays } from "@/lib/stay-dates";
+import { addDays, parseIso } from "@/lib/stay-dates";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
 } from "@/services/activity-log";
-import { syncBookingRoomSegments } from "@/services/booking-segments";
+import {
+  bookingHasSplitSegments,
+  shiftAllSegmentsByDays,
+  syncBookingRoomSegments,
+} from "@/services/booking-segments";
+import { resolveGuestForBooking } from "@/services/guests";
 import {
   assertRoomsAvailableForOccupancy,
   listOccupiedRoomRanges,
@@ -24,6 +29,7 @@ export type BookingRow = {
   guest_first_name: string | null;
   guest_email: string;
   guest_phone: string | null;
+  guest_id: string | null;
   num_adults: number;
   num_children: number;
   room_ids: string[];
@@ -40,7 +46,7 @@ export async function listBookingsForRange(
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone,
+      guest_email, guest_phone, guest_id,
       num_adults, num_children,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -75,6 +81,7 @@ export async function listBookingsForRange(
       guest_first_name: b.guest_first_name ?? null,
       guest_email: b.guest_email,
       guest_phone: b.guest_phone,
+      guest_id: b.guest_id ?? null,
       num_adults: b.num_adults,
       num_children: b.num_children,
       room_ids,
@@ -175,6 +182,15 @@ export async function createBookingRequest(input: {
   }
 
   const supabase = createAdminClient();
+
+  const { guestId, mergeConflict } = await resolveGuestForBooking({
+    guest_name: input.guest_name,
+    guest_last_name: input.guest_last_name,
+    guest_first_name: input.guest_first_name,
+    guest_email: input.guest_email,
+    guest_phone: input.guest_phone,
+  });
+
   const { data, error } = await supabase
     .from("bookings")
     .insert({
@@ -186,6 +202,7 @@ export async function createBookingRequest(input: {
       guest_first_name: input.guest_first_name.trim(),
       guest_email: input.guest_email.trim(),
       guest_phone: input.guest_phone.trim() || null,
+      guest_id: guestId,
       num_adults: input.num_adults,
       num_children: input.num_children,
       has_minor: input.has_minor,
@@ -216,6 +233,8 @@ export async function createBookingRequest(input: {
       check_in: input.check_in,
       check_out: input.check_out,
       guest_email: input.guest_email.trim(),
+      guest_id: guestId,
+      ...(mergeConflict ? { guest_merge_conflict: true } : {}),
       ...(holdRooms.length > 0
         ? { room_ids: holdRooms, soft_hold: true }
         : {}),
@@ -240,7 +259,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone,
+      guest_email, guest_phone, guest_id,
       num_adults, num_children, has_minor, minor_age, notes, total_price,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -274,6 +293,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
     guest_first_name: data.guest_first_name ?? null,
     guest_email: data.guest_email,
     guest_phone: data.guest_phone,
+    guest_id: data.guest_id ?? null,
     num_adults: data.num_adults,
     num_children: data.num_children,
     has_minor: data.has_minor,
@@ -311,7 +331,7 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone,
+      guest_email, guest_phone, guest_id,
       num_adults, num_children,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -344,6 +364,7 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
       guest_first_name: b.guest_first_name ?? null,
       guest_email: b.guest_email,
       guest_phone: b.guest_phone,
+      guest_id: b.guest_id ?? null,
       num_adults: b.num_adults,
       num_children: b.num_children,
       room_ids,
@@ -364,7 +385,7 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, total_price,
+      guest_email, guest_phone, guest_id, total_price,
       num_adults, num_children,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -397,6 +418,7 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
       guest_first_name: b.guest_first_name ?? null,
       guest_email: b.guest_email,
       guest_phone: b.guest_phone,
+      guest_id: b.guest_id ?? null,
       num_adults: b.num_adults,
       num_children: b.num_children,
       room_ids,
@@ -498,7 +520,16 @@ export async function rescheduleBookingDates(
 
   if (error) throw new Error(error.message);
 
-  await syncBookingRoomSegments(bookingId);
+  const dayDelta = Math.round(
+    (parseIso(newCheckIn).getTime() - parseIso(booking.check_in).getTime()) /
+      86400000
+  );
+
+  if (await bookingHasSplitSegments(bookingId)) {
+    await shiftAllSegmentsByDays(bookingId, dayDelta);
+  } else {
+    await syncBookingRoomSegments(bookingId);
+  }
 
   await logAdminActivityFromSession({
     action: "booking.shifted",

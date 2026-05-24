@@ -22,6 +22,9 @@ export type GanttStayPopoverData = {
   continuesBefore: boolean;
   continuesAfter: boolean;
   buildingColor?: string | null;
+  roomId?: string;
+  canMoveRoom?: boolean;
+  onMoveRoom?: () => void;
 };
 
 export function GanttStayPopover({
@@ -108,6 +111,15 @@ export function GanttStayPopover({
           >
             Deschide detaliu
           </Link>
+          {data.canMoveRoom && data.onMoveRoom ? (
+            <button
+              type="button"
+              className="rounded-md border border-sky-200 bg-sky-50 px-2 py-1.5 text-center text-xs font-semibold text-sky-900 hover:bg-sky-100"
+              onClick={data.onMoveRoom}
+            >
+              Mută cameră (de azi)
+            </button>
+          ) : null}
           <BookingCancelButton
             label={isCerere ? "Anulează cererea" : "Anulează cazarea"}
             confirmMessage={cancelMessage}

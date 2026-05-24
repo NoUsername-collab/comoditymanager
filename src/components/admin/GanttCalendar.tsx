@@ -18,6 +18,7 @@ import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import {
   bookingMatchesLayerFilter,
   roomOverlaySegments,
+  roomStaySegments,
   type GanttLayerFilter,
 } from "@/domain/gantt/occupancy-layer";
 import { occupancyPhase } from "@/domain/occupancy/phase";
@@ -39,6 +40,10 @@ import {
   GanttOccupancyDetailPanel,
   type GanttOccDetail,
 } from "@/components/admin/gantt/GanttOccupancyDetailPanel";
+import {
+  MoveRoomDialog,
+  type MoveRoomDraft,
+} from "@/components/admin/gantt/MoveRoomDialog";
 import {
   GanttBuildingMarker,
   GanttRoomMarker,
@@ -201,6 +206,8 @@ function RoomRow({
   touch,
   dimmed,
   onOccOpen,
+  bookingById,
+  onMoveRoom,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -213,13 +220,11 @@ function RoomRow({
   touch: boolean;
   dimmed?: boolean;
   onOccOpen: (seg: OccupancySegment, roomName: string) => void;
+  bookingById: Map<string, BookingRow>;
+  onMoveRoom: (draft: MoveRoomDraft) => void;
 }) {
   const dayCount = viewRange.days.length;
-  const roomBookings = bookings.filter(
-    (b) =>
-      b.room_ids.includes(room.id) &&
-      bookingMatchesLayerFilter(b, layerFilter)
-  );
+  const staySegments = roomStaySegments(occupancy, room.id, layerFilter);
   const overlays = roomOverlaySegments(occupancy, room.id, layerFilter);
 
   const roomColor = resolveGanttBuildingColor(
@@ -333,10 +338,12 @@ function RoomRow({
               />
             );
           })}
-          {roomBookings.map((b) => {
+          {staySegments.map((seg) => {
+            const b = seg.bookingId ? bookingById.get(seg.bookingId) : undefined;
+            if (!b) return null;
             const pos = bookingBarInRange(
-              b.check_in,
-              b.check_out,
+              seg.checkIn,
+              seg.checkOut,
               viewRange.rangeStart,
               viewRange.rangeEnd,
               dayCount,
@@ -357,10 +364,12 @@ function RoomRow({
               b.guest_first_name,
               b.guest_name
             );
-            const phase = occupancyPhase(b.check_in, b.check_out);
+            const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut);
+            const canMoveRoom =
+              b.status === "confirmata" && phase !== "past";
             return (
               <GanttDraggableStay
-                key={`${b.id}-${room.id}`}
+                key={`${seg.id}-${room.id}`}
                 href={`/admin/bookings/${b.id}`}
                 label={ganttLabel}
                 pos={pos}
@@ -372,12 +381,24 @@ function RoomRow({
                 todayHighlight={todayHl}
                 initials={initials}
                 occupancyPhase={phase}
+                onMoveRoom={
+                  canMoveRoom
+                    ? () =>
+                        onMoveRoom({
+                          bookingId: b.id,
+                          guestName: b.guest_name,
+                          sourceRoomId: room.id,
+                          sourceRoomName: room.name,
+                          roomIds: b.room_ids,
+                        })
+                    : undefined
+                }
                 popover={{
                   bookingId: b.id,
                   guestName: b.guest_name,
                   label: ganttLabel,
-                  checkIn: b.check_in,
-                  checkOut: b.check_out,
+                  checkIn: seg.checkIn,
+                  checkOut: seg.checkOut,
                   status: b.status as "cerere_noua" | "confirmata",
                   numAdults: b.num_adults,
                   numChildren: b.num_children,
@@ -386,6 +407,18 @@ function RoomRow({
                   continuesBefore: pos.continuesBefore,
                   continuesAfter: pos.continuesAfter,
                   buildingColor: roomColor,
+                  roomId: room.id,
+                  canMoveRoom,
+                  onMoveRoom: canMoveRoom
+                    ? () =>
+                        onMoveRoom({
+                          bookingId: b.id,
+                          guestName: b.guest_name,
+                          sourceRoomId: room.id,
+                          sourceRoomName: room.name,
+                          roomIds: b.room_ids,
+                        })
+                    : undefined,
                 }}
               />
             );
@@ -461,6 +494,7 @@ export function GanttCalendar({
 
   const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
   const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
+  const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
   const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
     () => new Set()
   );
@@ -564,6 +598,11 @@ export function GanttCalendar({
     buildingChips.length,
     groupByBuilding,
   ]);
+
+  const bookingById = useMemo(
+    () => new Map(bookings.map((b) => [b.id, b])),
+    [bookings]
+  );
 
   const handleOccOpen = useCallback(
     (seg: OccupancySegment, roomName: string) => {
@@ -743,6 +782,8 @@ export function GanttCalendar({
                           room.building_id !== focusBuildingId
                         }
                         onOccOpen={handleOccOpen}
+                        bookingById={bookingById}
+                        onMoveRoom={setMoveRoomDraft}
                       />
                     ))}
                   </Fragment>
@@ -761,6 +802,8 @@ export function GanttCalendar({
                     compact={compact}
                     touch={touch}
                     onOccOpen={handleOccOpen}
+                    bookingById={bookingById}
+                    onMoveRoom={setMoveRoomDraft}
                   />
                 ))}
             {filteredRooms.length === 0 && (
@@ -839,6 +882,15 @@ export function GanttCalendar({
       <GanttOccupancyDetailPanel
         detail={occDetail}
         onClose={() => setOccDetail(null)}
+      />
+      <MoveRoomDialog
+        draft={moveRoomDraft}
+        rooms={rooms.map((r) => ({
+          id: r.id,
+          name: r.name,
+          building_name: r.building_name,
+        }))}
+        onClose={() => setMoveRoomDraft(null)}
       />
     </div>
   );

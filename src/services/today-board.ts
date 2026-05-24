@@ -32,6 +32,7 @@ function mapBookingRow(b: {
   guest_first_name: string | null;
   guest_email: string;
   guest_phone: string | null;
+  guest_id: string | null;
   num_adults: number;
   num_children: number;
   booking_rooms: {
@@ -57,6 +58,7 @@ function mapBookingRow(b: {
     guest_first_name: b.guest_first_name ?? null,
     guest_email: b.guest_email,
     guest_phone: b.guest_phone,
+    guest_id: b.guest_id ?? null,
     num_adults: b.num_adults,
     num_children: b.num_children,
     room_ids,
@@ -76,7 +78,7 @@ export async function loadTodayBoard(
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, num_adults, num_children,
+      guest_email, guest_phone, guest_id, num_adults, num_children,
       booking_rooms (
         room_id,
         rooms ( name, buildings ( name ) )

@@ -89,6 +89,15 @@ export function HudIconHistory({ className }: IconProps) {
   );
 }
 
+export function HudIconPerson({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <circle cx="10" cy="7" r="3" />
+      <path d="M4 17c0-3 2.5-5 6-5s6 2 6 5" />
+    </Svg>
+  );
+}
+
 export function HudIconGear({ className }: IconProps) {
   return (
     <Svg className={className}>
@@ -124,6 +133,7 @@ export type HudIconName =
   | "grid"
   | "chart"
   | "history"
+  | "person"
   | "gear";
 
 const MAP = {
@@ -135,6 +145,7 @@ const MAP = {
   grid: HudIconGrid,
   chart: HudIconChart,
   history: HudIconHistory,
+  person: HudIconPerson,
   gear: HudIconGear,
 } as const;
 

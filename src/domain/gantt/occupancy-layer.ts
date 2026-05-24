@@ -114,7 +114,7 @@ export function filterOccupancyForLayer(
   return segments.filter((s) => segmentMatchesLayerFilter(s, layer));
 }
 
-/** Doar hold + block (fără booking segments duplicate pe rând). */
+/** Hold/block overlays only — fără duplicate stay bars. */
 export function roomOverlaySegments(
   segments: OccupancySegment[],
   roomId: string,
@@ -124,5 +124,19 @@ export function roomOverlaySegments(
     (s) =>
       s.roomId === roomId &&
       (s.kind === "hold" || s.kind === "block")
+  );
+}
+
+/** Stay/request segments pentru rând cameră (split-card Phase 5). */
+export function roomStaySegments(
+  segments: OccupancySegment[],
+  roomId: string,
+  layer: GanttLayerFilter
+): OccupancySegment[] {
+  return filterOccupancyForLayer(segments, layer).filter(
+    (s) =>
+      s.roomId === roomId &&
+      (s.kind === "request" || s.kind === "stay") &&
+      s.bookingId
   );
 }

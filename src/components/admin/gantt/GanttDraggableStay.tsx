@@ -28,6 +28,7 @@ type Props = {
   initials?: string;
   popover: GanttStayPopoverData;
   occupancyPhase?: OccupancyPhase;
+  onMoveRoom?: () => void;
 };
 
 export function GanttDraggableStay({
@@ -43,6 +44,7 @@ export function GanttDraggableStay({
   initials,
   popover,
   occupancyPhase,
+  onMoveRoom,
 }: Props) {
   const router = useRouter();
   const { notifyMoved } = useAdminFx();
@@ -188,7 +190,15 @@ export function GanttDraggableStay({
         />
       </div>
       <GanttStayPopover
-        data={popover}
+        data={{
+          ...popover,
+          onMoveRoom: onMoveRoom
+            ? () => {
+                popover.onMoveRoom?.();
+                onMoveRoom();
+              }
+            : popover.onMoveRoom,
+        }}
         anchorRect={anchorRect}
         visible={showPopover}
         onMouseEnter={() => {

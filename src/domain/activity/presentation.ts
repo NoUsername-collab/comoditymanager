@@ -4,6 +4,7 @@ export type ActivityTone = "booking" | "auth" | "structure" | "settings";
 
 export function activityTone(action: ActivityAction): ActivityTone {
   if (action.startsWith("booking.")) return "booking";
+  if (action.startsWith("guest.")) return "booking";
   if (action.startsWith("auth.")) return "auth";
   if (action === "settings.updated") return "settings";
   return "structure";
@@ -15,6 +16,11 @@ export function activityIcon(action: ActivityAction): string {
     "booking.confirmed": "✓",
     "booking.cancelled": "✕",
     "booking.shifted": "↔",
+    "booking.room_moved": "⇄",
+    "booking.rebooked": "↻",
+    "guest.created": "👤",
+    "guest.updated": "👤",
+    "guest.merged": "⇶",
     "building.created": "🏠",
     "building.deleted": "🏠",
     "building.price_updated": "RON",

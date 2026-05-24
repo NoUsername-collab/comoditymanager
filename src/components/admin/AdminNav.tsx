@@ -30,6 +30,7 @@ export function AdminNav({ cereriCount }: { cereriCount: number }) {
       badge: cereriCount,
     },
     { href: "/admin/cazari", label: "Cazări", icon: "bed" },
+    { href: "/admin/guests", label: "Clienți", icon: "person" },
     { href: "/admin/calendar", label: "Calendar", icon: "calendar" },
     { href: "/admin/disponibilitate", label: "Disponibilitate", icon: "grid" },
     { href: "/admin/statistics", label: "Statistici", icon: "chart" },

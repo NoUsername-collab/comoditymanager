@@ -11,6 +11,10 @@ import {
 import { createRoomBlock, deleteRoomBlock } from "@/services/room-blocks";
 import { createRoomHold, releaseRoomHold } from "@/services/room-holds";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  moveBookingRoomFromPivot,
+  previewRoomMoveFromPivot,
+} from "@/services/booking-segments";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
 type ActionOk = { ok: true; id: string; undo?: { kind: "hold" | "block"; id: string } };
@@ -280,6 +284,50 @@ export async function shiftBookingOnGanttAction(
     return {
       ok: false,
       error: e instanceof Error ? e.message : "Eroare la mutare",
+    };
+  }
+}
+
+export async function previewRoomMoveAction(input: {
+  bookingId: string;
+  sourceRoomId: string;
+  targetRoomId: string;
+  pivotDate?: string;
+}): Promise<
+  | { ok: true; preview: Awaited<ReturnType<typeof previewRoomMoveFromPivot>> }
+  | ActionErr
+> {
+  await requireAdmin();
+  try {
+    const preview = await previewRoomMoveFromPivot(input);
+    return { ok: true, preview };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare previzualizare",
+    };
+  }
+}
+
+export async function moveBookingRoomFromPivotAction(input: {
+  bookingId: string;
+  sourceRoomId: string;
+  targetRoomId: string;
+  pivotDate?: string;
+}): Promise<{ ok: true } | ActionErr> {
+  await requireAdmin();
+  try {
+    await moveBookingRoomFromPivot(input);
+    revalidatePath("/admin/calendar");
+    revalidatePath("/admin/bookings");
+    revalidatePath(`/admin/bookings/${input.bookingId}`);
+    revalidatePath("/admin/cazari");
+    revalidatePath("/admin/statistics");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Eroare mutare cameră",
     };
   }
 }

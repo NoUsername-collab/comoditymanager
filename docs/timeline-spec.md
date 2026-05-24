@@ -232,8 +232,8 @@ Ordinea **obligatorie** (nu sări faze):
 | **2** | Vizual Gantt: past / active / future / hold / block | ✅ cod |
 | **3** | Drag-create + popup | ✅ cod |
 | **4** | Hold + block (toolbar + expirare) | ✅ cod |
-| **5** | Split mutare cameră + preț modular |
-| **6** | Guests + pagină client + rebook |
+| **5** | Split mutare cameră + preț modular | ✅ cod |
+| **6** | Guests + pagină client + rebook | ✅ cod |
 | **7** | Context menu + long-press mobil |
 
 Branch recomandat: `feature/timeline-v2`. Pilotul live (`main`) rămâne stabil.
