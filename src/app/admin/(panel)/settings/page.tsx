@@ -8,6 +8,8 @@ import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFram
 import { resolvePaletteDefinition } from "@/lib/admin-palettes";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
 import { AdminFactoryResetPanel } from "@/components/admin/settings/AdminFactoryResetPanel";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { isFactoryResetEnabled } from "@/services/database-reset";
 import { updateSettingsAction } from "./actions";
 
@@ -96,7 +98,7 @@ export default async function SettingsPage({
             </div>
           </div>
 
-          <form action={updateSettingsAction} className="admin-settings-form">
+          <AdminPendingForm action={updateSettingsAction} className="admin-settings-form">
             <input type="hidden" name="id" value={settings.id} />
 
             <SettingsSlidePanel
@@ -180,11 +182,11 @@ export default async function SettingsPage({
                 Modificările de aspect se previzualizează live; salvarea le
                 persistă pentru toți adminii.
               </p>
-              <button type="submit" className="admin-settings-submit__btn">
+              <AdminSubmitButton type="submit" className="admin-settings-submit__btn">
                 Salvează toate setările
-              </button>
+              </AdminSubmitButton>
             </div>
-          </form>
+          </AdminPendingForm>
 
           {isFactoryResetEnabled() && (
             <SettingsSlidePanel

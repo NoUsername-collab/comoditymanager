@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function BookingCancelButton({
   label,
@@ -18,11 +19,13 @@ export function BookingCancelButton({
   variant?: "default" | "compact";
 }) {
   const [open, setOpen] = useState(false);
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
 
   const triggerClass =
     variant === "compact"
-      ? "w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
-      : "text-sm text-red-600 hover:text-red-800";
+      ? "w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+      : "text-sm text-red-600 hover:text-red-800 disabled:opacity-50";
 
   const panelClass =
     variant === "compact"
@@ -36,7 +39,12 @@ export function BookingCancelButton({
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className={triggerClass}>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => setOpen(true)}
+        className={triggerClass}
+      >
         {label}
       </button>
     );
@@ -44,37 +52,47 @@ export function BookingCancelButton({
 
   return (
     <form
-      action={async (fd) => {
-        await formAction(fd);
-        setOpen(false);
+      action={(fd) => {
+        void runAdminAction(async () => {
+          await formAction(fd);
+          setOpen(false);
+        });
       }}
       className={panelClass}
     >
       <input type="hidden" name="id" value={bookingId} />
       <input type="hidden" name="return_to" value={returnTo} />
       <p className="text-red-900">{confirmMessage}</p>
-      <ConfirmButtons btnClass={btnClass} onCancel={() => setOpen(false)} />
+      <ConfirmButtons
+        btnClass={btnClass}
+        pending={pending}
+        onCancel={() => setOpen(false)}
+      />
     </form>
   );
 }
 
 function ConfirmButtons({
   btnClass,
+  pending,
   onCancel,
 }: {
   btnClass: string;
+  pending: boolean;
   onCancel: () => void;
 }) {
   return (
     <div className="mt-2 flex gap-2">
       <button
         type="submit"
-        className={`${btnClass} bg-red-600 text-white hover:bg-red-700`}
+        disabled={pending}
+        className={`${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50`}
       >
-        Da, anulează
+        {pending ? "Se anulează…" : "Da, anulează"}
       </button>
       <button
         type="button"
+        disabled={pending}
         onClick={onCancel}
         className={`${btnClass} border border-zinc-300 bg-white text-zinc-700`}
       >

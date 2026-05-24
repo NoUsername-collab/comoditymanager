@@ -14,6 +14,7 @@
 @import "./admin-feedback.css";
 @import "./admin-home.css";
 @import "./admin-gantt-stay-island.css";
+@import "../../styles/themes/gantt-cards-theme.css";
 @import "./admin-settings.css";
 
 /* Panou admin — componente noi (istoric, rezumat, goluri) */

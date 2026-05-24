@@ -4,8 +4,7 @@ import Link from "next/link";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import type { CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
-import { ganttStaySurface } from "@/lib/gantt-stay-surface";
-import { ganttStayChromeClass, ganttStayChromeStyle } from "@/lib/gantt-stay-chrome";
+import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 
@@ -31,7 +30,6 @@ export function GanttBookingBar({
   pos,
   isCerere,
   guestTotal,
-  buildingColor,
   todayHighlight,
   initials,
   interactive,
@@ -39,7 +37,6 @@ export function GanttBookingBar({
   occupancyPhase,
 }: Props) {
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
-  const surface = ganttStaySurface(buildingColor, isCerere);
 
   const className = [
     ganttStayChromeClass(),
@@ -61,11 +58,7 @@ export function GanttBookingBar({
     .join(" ");
 
   const style = {
-    ...ganttStayChromeStyle(surface),
-    backgroundColor: surface.fill,
-    border: `2px solid ${surface.border}`,
     borderRadius: ganttStaySlantRadius(continuesBefore, continuesAfter),
-    boxShadow: `0 1px 4px color-mix(in srgb, ${surface.fill} 50%, transparent)`,
     ...(interactive
       ? { left: 0, width: "100%", height: 28 }
       : {

@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import {
   createRoomBlockFromGanttAction,
   createRoomHoldFromGanttAction,
@@ -32,7 +36,8 @@ type Props = {
 export function GanttToolbarOccForm({ mode, rooms, onClose }: Props) {
   const router = useRouter();
   const { showToast } = useAdminFx();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
   const [roomId, setRoomId] = useState(rooms[0]?.id ?? "");
   const [checkIn, setCheckIn] = useState(todayIso());
   const [checkOut, setCheckOut] = useState(addDays(todayIso(), 1));
@@ -51,7 +56,7 @@ export function GanttToolbarOccForm({ mode, rooms, onClose }: Props) {
 
   function submitHold() {
     setError(null);
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const hours = expiresHours.trim() ? Number(expiresHours) : null;
       const res = await createRoomHoldFromGanttAction({
         roomId,
@@ -87,7 +92,7 @@ export function GanttToolbarOccForm({ mode, rooms, onClose }: Props) {
       setError("Motivul blocării este obligatoriu.");
       return;
     }
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = await createRoomBlockFromGanttAction({
         roomId,
         checkIn,

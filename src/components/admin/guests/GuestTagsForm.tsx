@@ -1,9 +1,9 @@
 "use client";
 
-import { useTransition } from "react";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { GUEST_TAGS, type GuestTag } from "@/domain/guest/types";
 import { updateGuestTagsAction } from "@/app/admin/(panel)/guests/actions";
+import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function GuestTagsForm({
   guestId,
@@ -12,7 +12,8 @@ export function GuestTagsForm({
   guestId: string;
   initialTags: GuestTag[];
 }) {
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
 
   function toggle(tag: GuestTag) {
     const next = initialTags.includes(tag)
@@ -21,7 +22,7 @@ export function GuestTagsForm({
     const fd = new FormData();
     fd.set("guest_id", guestId);
     for (const t of next) fd.append("tags", t);
-    startTransition(() => updateGuestTagsAction(fd));
+    void runAdminAction(() => updateGuestTagsAction(fd));
   }
 
   return (

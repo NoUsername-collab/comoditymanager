@@ -6,33 +6,38 @@ html[data-theme="default"][data-mode="day"] {
   --color-border: #cbd5e1;
   --color-text: #0f172a;
   --color-text-muted: #64748b;
-  --color-accent: #166534;
+  /* Main — verde operațional */
+  --color-accent: #16a34a;
   --color-accent-muted: #dcfce7;
   --color-focus: #15803d;
 
-  --booking-active-bg: #bbf7d0;
-  --booking-active-border: #16a34a;
-  --booking-active-text: #14532d;
+  /* Confirmat = VERDE */
+  --booking-active-bg: #22c55e;
+  --booking-active-border: #15803d;
+  --booking-active-text: #ffffff;
 
-  --booking-pending-bg: #ffedd5;
-  --booking-pending-border: #ea580c;
-  --booking-pending-text: #9a3412;
+  /* Cerere = ROȘU */
+  --booking-pending-bg: #ef4444;
+  --booking-pending-border: #b91c1c;
+  --booking-pending-text: #ffffff;
 
-  --booking-past-bg: #f1f5f9;
+  --booking-past-bg: #e2e8f0;
   --booking-past-border: #94a3b8;
-  --booking-past-text: #64748b;
+  --booking-past-text: #475569;
 
-  --booking-cancelled-bg: #f8fafc;
+  --booking-cancelled-bg: #f1f5f9;
   --booking-cancelled-border: #cbd5e1;
   --booking-cancelled-text: #94a3b8;
 
-  --booking-hold-bg: #fef08a;
+  /* Hold = GALBEN */
+  --booking-hold-bg: #fde047;
   --booking-hold-border: #ca8a04;
   --booking-hold-text: #713f12;
 
-  --booking-block-bg: #e7e5e4;
-  --booking-block-border: #78716c;
-  --booking-block-text: #44403c;
+  /* Blocare = roșu închis */
+  --booking-block-bg: #fecaca;
+  --booking-block-border: #991b1b;
+  --booking-block-text: #7f1d1d;
 
   --card-radius: 6px;
   --card-shadow: none;
@@ -58,16 +63,16 @@ html[data-theme="default"][data-mode="night"] {
   --color-text: #e8ecf4;
   --color-text-muted: #9aa8bc;
   --color-accent: #4ade80;
-  --color-accent-muted: #1a3d2e;
+  --color-accent-muted: #14532d;
   --color-focus: #4ade80;
 
-  --booking-active-bg: #14532d;
-  --booking-active-border: #22c55e;
-  --booking-active-text: #dcfce7;
+  --booking-active-bg: #22c55e;
+  --booking-active-border: #16a34a;
+  --booking-active-text: #052e16;
 
-  --booking-pending-bg: #431407;
-  --booking-pending-border: #fb923c;
-  --booking-pending-text: #ffedd5;
+  --booking-pending-bg: #dc2626;
+  --booking-pending-border: #f87171;
+  --booking-pending-text: #fef2f2;
 
   --booking-past-bg: #343d4d;
   --booking-past-border: #64748b;
@@ -77,13 +82,13 @@ html[data-theme="default"][data-mode="night"] {
   --booking-cancelled-border: #475569;
   --booking-cancelled-text: #64748b;
 
-  --booking-hold-bg: #422006;
-  --booking-hold-border: #eab308;
-  --booking-hold-text: #fef9c3;
+  --booking-hold-bg: #eab308;
+  --booking-hold-border: #fde047;
+  --booking-hold-text: #422006;
 
-  --booking-block-bg: #3d3835;
-  --booking-block-border: #a8a29e;
-  --booking-block-text: #e7e5e4;
+  --booking-block-bg: #7f1d1d;
+  --booking-block-border: #fca5a5;
+  --booking-block-text: #fef2f2;
 
   --card-shadow: none;
 

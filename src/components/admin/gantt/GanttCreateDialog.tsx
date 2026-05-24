@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "next/navigation";
 import {
   createCerereFromGanttAction,
@@ -39,7 +40,8 @@ type Props = {
 export function GanttCreateDialog({ draft, onClose }: Props) {
   const router = useRouter();
   const { showToast } = useAdminFx();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
   const [mode, setMode] = useState<Mode>("pick");
   const [reason, setReason] = useState("");
   const [blockPreset, setBlockPreset] =
@@ -86,7 +88,7 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
     const d = draft;
     const roomIds = d.roomIds?.length ? d.roomIds : [d.roomId];
     setError(null);
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const hours = expiresHours.trim() ? Number(expiresHours) : null;
       const res =
         roomIds.length > 1
@@ -130,7 +132,7 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
       setError("Motivul blocării este obligatoriu.");
       return;
     }
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = await createRoomBlockFromGanttAction({
         roomId: d.roomId,
         checkIn: d.checkIn,
@@ -161,7 +163,7 @@ export function GanttCreateDialog({ draft, onClose }: Props) {
     if (!draft) return;
     const d = draft;
     setError(null);
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const payload = {
         roomId: d.roomId,
         checkIn: d.checkIn,

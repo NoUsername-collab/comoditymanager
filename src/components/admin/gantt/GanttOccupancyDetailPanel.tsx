@@ -1,7 +1,10 @@
 "use client";
 
-import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import {
   deleteRoomBlockAction,
   releaseRoomHoldAction,
@@ -36,7 +39,8 @@ function formatExpiresAt(iso: string | null | undefined): string | null {
 export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
   const router = useRouter();
   const { showToast, notifyCancel } = useAdminFx();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
 
   if (!detail) return null;
 
@@ -46,7 +50,7 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
   const expiresLabel = isHold ? formatExpiresAt(segment.expiresAt) : null;
 
   function releaseOrDelete() {
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = isHold
         ? await releaseRoomHoldAction(segment.id)
         : await deleteRoomBlockAction(segment.id);

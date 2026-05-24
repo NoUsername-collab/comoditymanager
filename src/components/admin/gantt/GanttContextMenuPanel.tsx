@@ -1,7 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useTransition } from "react";
+import { useEffect } from "react";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import {
   adjustBookingStayNightsAction,
   deleteRoomBlockAction,
@@ -60,7 +64,8 @@ export function GanttContextMenuPanel() {
   const { menu, closeMenu, requestCreate, openMoveRoom, openOccDetail } =
     useGanttContextMenu();
   const { showToast, notifyCancel } = useAdminFx();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
 
   useEffect(() => {
     if (!menu) return;
@@ -105,7 +110,7 @@ export function GanttContextMenuPanel() {
     const fd = new FormData();
     fd.set("id", bookingId);
     fd.set("return_to", "/admin/calendar");
-    startTransition(async () => {
+    void runAdminAction(async () => {
       await cancelBookingAction(fd);
       notifyCancel(isCerere ? "Cerere anulată" : "Cazare anulată", guestName);
       closeMenu();
@@ -114,7 +119,7 @@ export function GanttContextMenuPanel() {
   }
 
   function adjustNights(bookingId: string, guestName: string, nightDelta: number) {
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = await adjustBookingStayNightsAction(bookingId, nightDelta);
       if (!res.ok) {
         showToast({ kind: "error", title: "Eroare", message: res.error });
@@ -131,7 +136,7 @@ export function GanttContextMenuPanel() {
   }
 
   function duplicateBooking(bookingId: string, guestName: string) {
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = await duplicateBookingAsCerereAction(bookingId);
       if (!res.ok) {
         showToast({ kind: "error", title: "Eroare", message: res.error });
@@ -151,7 +156,7 @@ export function GanttContextMenuPanel() {
   function releaseOcc() {
     if (menu?.kind !== "hold" && menu?.kind !== "block") return;
     const isHold = menu.kind === "hold";
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = isHold
         ? await releaseRoomHoldAction(menu.segment.id)
         : await deleteRoomBlockAction(menu.segment.id);
@@ -169,7 +174,8 @@ export function GanttContextMenuPanel() {
     <AdminPortal>
       <button
         type="button"
-        className="gantt-ctx-menu-backdrop fixed inset-0 z-[199]"
+        disabled={pending}
+        className="gantt-ctx-menu-backdrop fixed inset-0 z-[199] disabled:cursor-wait"
         aria-label="Închide meniul"
         onClick={closeMenu}
       />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useAdminPendingOptional } from "@/components/admin/feedback/AdminPendingProvider";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
 import {
@@ -71,6 +72,7 @@ export function GanttDragCreateLayer({
   onCreateDraft,
 }: Props) {
   const { openMenu } = useGanttContextMenu();
+  const pendingCtx = useAdminPendingOptional();
   const rowRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{
     startIdx: number;
@@ -245,6 +247,7 @@ export function GanttDragCreateLayer({
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      if (pendingCtx?.pending) return;
       if (e.button !== 0) return;
       if (blocksDragCreate(e.target)) return;
       const row = rowRef.current;
@@ -266,7 +269,34 @@ export function GanttDragCreateLayer({
       row.setPointerCapture(e.pointerId);
       e.preventDefault();
     },
-    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu]
+    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending, roomId]
+  );
+
+  const onPointerUpRow = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      clearLongPress();
+      pressOriginRef.current = null;
+
+      try {
+        rowRef.current?.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+
+      if (longPressOpenedRef.current) {
+        longPressOpenedRef.current = false;
+        dragRef.current = null;
+        setDrag(null);
+        clearGanttRoomDragSpan();
+        return;
+      }
+
+      if (dragRef.current) {
+        endDrag();
+        clearGanttRoomDragSpan();
+      }
+    },
+    [clearLongPress, endDrag]
   );
 
   const onPointerMoveRow = useCallback(
@@ -283,10 +313,12 @@ export function GanttDragCreateLayer({
     [clearLongPress]
   );
 
-  const onPointerUpRow = useCallback(() => {
-    clearLongPress();
-    pressOriginRef.current = null;
-  }, [clearLongPress]);
+  const onPointerCancelRow = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      onPointerUpRow(e);
+    },
+    [onPointerUpRow]
+  );
 
   const ghost =
     drag && dayCount > 0
@@ -321,7 +353,7 @@ export function GanttDragCreateLayer({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMoveRow}
       onPointerUp={onPointerUpRow}
-      onPointerCancel={onPointerUpRow}
+      onPointerCancel={onPointerCancelRow}
       aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou · click dreapta pentru meniu`}
     >
       <div className="pointer-events-none absolute inset-0">{renderGrid}</div>

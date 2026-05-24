@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
-import { ganttStaySurface } from "@/lib/gantt-stay-surface";
 import { GanttCereriCard } from "@/components/admin/gantt/GanttCereriCard";
 import { formatGuestPartyShort } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { BookingRow } from "@/services/bookings";
-
-const CERERE_ACCENT = "#d97706";
 
 export function GanttCereriQueue({
   cereri,
@@ -19,8 +16,6 @@ export function GanttCereriQueue({
   /** În interiorul panoului toolbar — fără chenar separat */
   embedded?: boolean;
 }) {
-  const surface = useMemo(() => ganttStaySurface(CERERE_ACCENT, true), []);
-
   const sorted = useMemo(
     () =>
       [...cereri].sort((a, b) =>
@@ -68,7 +63,6 @@ export function GanttCereriQueue({
             <GanttCereriCard
               key={b.id}
               href={`/admin/bookings/${b.id}`}
-              surface={surface}
               label={label}
               dates={formatStayPeriod(b.check_in, b.check_out)}
               party={formatGuestPartyShort(b.num_adults, b.num_children)}

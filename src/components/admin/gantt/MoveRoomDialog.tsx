@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  useAdminPending,
+  useRunAdminAction,
+} from "@/components/admin/feedback/AdminPendingProvider";
 import {
   moveBookingRoomFromPivotAction,
   previewRoomMoveAction,
@@ -29,7 +33,8 @@ type Props = {
 export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
   const router = useRouter();
   const { showToast, notifyMoved } = useAdminFx();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
   const [targetRoomId, setTargetRoomId] = useState("");
   const [previewText, setPreviewText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +90,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
       return;
     }
     setError(null);
-    startTransition(async () => {
+    void runAdminAction(async () => {
       const res = await moveBookingRoomFromPivotAction({
         bookingId: current.bookingId,
         sourceRoomId: current.sourceRoomId,

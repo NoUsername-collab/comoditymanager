@@ -1,0 +1,79 @@
+/**
+ * Carduri Gantt — culori DOAR din variabilele temei (--booking-*).
+ * Importat după admin-gantt-stay-island.css ca să bată --gs-bg / culoarea clădire.
+ */
+
+html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--filled:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
+  background-color: var(--booking-active-bg) !important;
+  background-image: none !important;
+  border: 2px solid var(--booking-active-border) !important;
+  box-shadow: none !important;
+  color: var(--booking-active-text) !important;
+}
+
+html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--cerere,
+html[data-theme] .gantt-shell .gantt-cereri-card.gantt-stay-chrome {
+  background-color: var(--booking-pending-bg) !important;
+  background-image: none !important;
+  border: 2px solid var(--booking-pending-border) !important;
+  box-shadow: none !important;
+  color: var(--booking-pending-text) !important;
+}
+
+html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--phase-past {
+  background-color: var(--booking-past-bg) !important;
+  border-color: var(--booking-past-border) !important;
+  color: var(--booking-past-text) !important;
+  opacity: 0.72;
+  filter: none;
+}
+
+html[data-theme] .gantt-stay-chrome__label,
+html[data-theme] .gantt-stay-chrome .gantt-stay__avatar,
+html[data-theme] .gantt-stay-chrome .gantt-stay__body > span:not(.gantt-stay__badge),
+html[data-theme] .gantt-stay-chrome .gantt-stay__end-tab-arrow,
+html[data-theme] .gantt-cereri-card__guest,
+html[data-theme] .gantt-cereri-card__dates,
+html[data-theme] .gantt-cereri-card__party {
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  text-shadow: none !important;
+}
+
+html[data-theme] .gantt-stay-chrome .gantt-stay__end-tab,
+html[data-theme] .gantt-stay-chrome .gantt-cereri-card__tab {
+  background-color: color-mix(in srgb, var(--booking-active-border) 85%, black) !important;
+  background-image: none !important;
+}
+
+html[data-theme] .gantt-stay-chrome.gantt-stay--cerere .gantt-stay__end-tab,
+html[data-theme] .gantt-cereri-card .gantt-cereri-card__tab {
+  background-color: color-mix(in srgb, var(--booking-pending-border) 85%, black) !important;
+}
+
+html[data-theme] .gantt-stay-chrome .gantt-stay__badge,
+html[data-theme] .gantt-cereri-card__party {
+  background-color: color-mix(in srgb, currentColor 18%, transparent) !important;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="default"] .gantt-stay--phase-active {
+  box-shadow: none !important;
+}
+
+html[data-theme="default"] .gantt-stay__end-tab,
+html[data-theme="default"] .gantt-stay-edge,
+html[data-theme="default"] .gantt-stay__phase-badge {
+  display: none !important;
+}
+
+html[data-theme="default"] .gantt-stay-chrome.gantt-stay--filled,
+html[data-theme="default"] .gantt-cereri-card {
+  border-radius: var(--card-radius) !important;
+}
+
+html[data-theme="default"] .gantt-booking-card--pending.gantt-stay--cerere {
+  animation: gantt-booking-pulse 2s ease-in-out infinite;
+}

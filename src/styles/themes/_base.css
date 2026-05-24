@@ -128,8 +128,8 @@ html {
 
   --admin-cereri-grad: linear-gradient(
     135deg,
-    var(--booking-pending-border),
-    color-mix(in srgb, var(--booking-pending-border) 75%, #c2410c)
+    var(--booking-pending-bg),
+    color-mix(in srgb, var(--booking-pending-border) 80%, #7f1d1d)
   );
 
   --admin-alert-bg: color-mix(in srgb, var(--booking-pending-bg) 55%, var(--color-surface));

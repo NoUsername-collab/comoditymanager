@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "next/navigation";
 import {
   moveBookingRoomFromPivotAction,
@@ -71,7 +72,8 @@ export function GanttDraggableStay({
   const router = useRouter();
   const { openMenu } = useGanttContextMenu();
   const { notifyMoved } = useAdminFx();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
   const [interaction, setInteraction] = useState<"idle" | "armed" | "dragging">("idle");
   const [snapped, setSnapped] = useState(false);
   const [hover, setHover] = useState(false);
@@ -136,6 +138,7 @@ export function GanttDraggableStay({
 
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
+      if (pending) return;
       if (e.button !== 0) return;
       e.stopPropagation();
       const el = e.currentTarget;
@@ -229,7 +232,7 @@ export function GanttDraggableStay({
       targetRoomRef.current = null;
 
       if (isVertical && targetRoom && targetRoom !== sourceRoomId) {
-        startTransition(async () => {
+        void runAdminAction(async () => {
           const res = await moveBookingRoomFromPivotAction({
             bookingId,
             sourceRoomId,
@@ -251,7 +254,7 @@ export function GanttDraggableStay({
       const dayDelta = Math.round((dx / w) * dayCount);
       if (dayDelta === 0) return;
 
-      startTransition(async () => {
+      void runAdminAction(async () => {
         const res = await shiftBookingOnGanttAction(bookingId, dayDelta);
         if (!res.ok) {
           setAlertMsg(res.error);

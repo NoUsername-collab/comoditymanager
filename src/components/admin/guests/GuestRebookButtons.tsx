@@ -1,10 +1,11 @@
 "use client";
 
-import { useTransition } from "react";
 import {
   rebookLastStayAction,
   rebookNextYearAction,
 } from "@/app/admin/(panel)/guests/actions";
+import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 
 function RebookButton({
   guestId,
@@ -17,11 +18,9 @@ function RebookButton({
   action: (formData: FormData) => Promise<void>;
   variant?: "primary" | "secondary";
 }) {
-  const [pending, startTransition] = useTransition();
-
   return (
-    <form
-      action={(fd) => startTransition(() => action(fd))}
+    <AdminPendingForm
+      action={action}
       onSubmit={(e) => {
         if (
           !confirm(
@@ -33,18 +32,18 @@ function RebookButton({
       }}
     >
       <input type="hidden" name="guest_id" value={guestId} />
-      <button
+      <AdminSubmitButton
         type="submit"
-        disabled={pending}
+        pendingLabel="…"
         className={
           variant === "primary"
             ? "admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
             : "rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium hover:bg-zinc-50 disabled:opacity-60"
         }
       >
-        {pending ? "…" : label}
-      </button>
-    </form>
+        {label}
+      </AdminSubmitButton>
+    </AdminPendingForm>
   );
 }
 

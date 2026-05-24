@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { factoryResetAction } from "@/app/admin/(panel)/settings/actions";
+import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function AdminFactoryResetPanel() {
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState("");
   const [ack, setAck] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
 
   if (!open) {
     return (
@@ -69,7 +71,7 @@ export function AdminFactoryResetPanel() {
           className="admin-factory-reset__submit"
           onClick={() => {
             setError(null);
-            startTransition(async () => {
+            void runAdminAction(async () => {
               try {
                 await factoryResetAction(confirm);
               } catch (e) {

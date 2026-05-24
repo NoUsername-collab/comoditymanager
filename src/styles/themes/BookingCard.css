@@ -24,23 +24,19 @@
   border-radius: var(--card-radius);
 }
 
-.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
-  /* building color via --gs-* rămâne prioritar când e setat inline */
-}
-
 /* Cerere / neconfirmat */
 .gantt-booking-card--pending.gantt-stay--cerere,
 .gantt-booking-card--pending.gantt-stay-chrome.gantt-stay--cerere {
   animation: gantt-booking-pulse 2s ease-in-out infinite;
 }
 
-.gantt-booking-card--pending.gantt-stay--cerere:not([style*="--gs-bg"]) {
+.gantt-booking-card--pending.gantt-stay--cerere {
   background: var(--booking-pending-bg) !important;
   border-color: var(--booking-pending-border) !important;
   color: var(--booking-pending-text) !important;
 }
 
-.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past):not([style*="--gs-bg"]) {
+.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
   background: var(--booking-active-bg) !important;
   border-color: var(--booking-active-border) !important;
   color: var(--booking-active-text) !important;
@@ -52,7 +48,7 @@
   opacity: 0.55;
 }
 
-.gantt-booking-card--past:not([style*="--gs-bg"]) {
+.gantt-booking-card--past {
   background: var(--booking-past-bg) !important;
   border-color: var(--booking-past-border) !important;
 }
@@ -63,7 +59,7 @@
   text-decoration: line-through;
 }
 
-.gantt-booking-card--cancelled:not([style*="--gs-bg"]) {
+.gantt-booking-card--cancelled {
   background: var(--booking-cancelled-bg) !important;
   border-color: var(--booking-cancelled-border) !important;
   color: var(--booking-cancelled-text);

@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function GuestSearchForm({ defaultQuery }: { defaultQuery?: string }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { pending } = useAdminPending();
+  const runAdminAction = useRunAdminAction();
 
   return (
     <form
@@ -14,7 +15,7 @@ export function GuestSearchForm({ defaultQuery }: { defaultQuery?: string }) {
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
         const q = String(fd.get("q") ?? "").trim();
-        startTransition(() => {
+        void runAdminAction(async () => {
           router.push(q ? `/admin/guests?q=${encodeURIComponent(q)}` : "/admin/guests");
         });
       }}
@@ -25,6 +26,7 @@ export function GuestSearchForm({ defaultQuery }: { defaultQuery?: string }) {
         defaultValue={defaultQuery ?? ""}
         placeholder="Caută nume, email, telefon…"
         className="min-w-[220px] flex-1 border border-zinc-300 px-3 py-2 text-sm"
+        disabled={pending}
       />
       <button
         type="submit"
