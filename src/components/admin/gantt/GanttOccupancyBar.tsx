@@ -15,7 +15,7 @@ export function GanttOccupancyBar({ label, title, pos, kind }: Props) {
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const className = [
-    "gantt-occ-bar absolute z-[0] box-border flex min-w-0 max-w-full items-center overflow-hidden text-[9px] font-bold leading-none",
+    "gantt-occ-bar pointer-events-auto absolute z-[0] box-border flex min-w-0 max-w-full items-center overflow-hidden text-[9px] font-bold leading-none",
     kind === "hold" && "gantt-occ-bar--hold",
     kind === "block" && "gantt-occ-bar--block",
     continuesBefore && "gantt-occ-bar--from-prev",

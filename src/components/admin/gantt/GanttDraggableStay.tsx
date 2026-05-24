@@ -140,7 +140,7 @@ export function GanttDraggableStay({
     <>
       <div
         className={[
-          "absolute top-2 z-[1] flex min-w-0 items-stretch",
+          "absolute top-2 z-[1] flex min-w-0 items-stretch pointer-events-auto",
           dragging && "z-[20] cursor-grabbing",
           pending && "opacity-60",
         ]

@@ -185,7 +185,7 @@ export function GanttDragCreateLayer({
           />
         )}
         <div className="gantt-stays-layer absolute inset-0 z-[2] pointer-events-none">
-          <div className="relative h-full w-full pointer-events-auto">{children}</div>
+          <div className="relative h-full w-full pointer-events-none">{children}</div>
         </div>
       </div>
       <GanttCreateDialog draft={draft} onClose={() => setDraft(null)} />
