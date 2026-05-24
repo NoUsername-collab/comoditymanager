@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { loginAction } from "@/app/admin/login/actions";
-import { ADMIN_LOGIN_USERNAME } from "@/lib/auth/constants";
+import { OPERATOR_LOGIN_USERNAME } from "@/lib/auth/constants";
 
 export function AdminLoginForm({ next }: { next: string }) {
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +29,7 @@ export function AdminLoginForm({ next }: { next: string }) {
           name="username"
           type="text"
           autoComplete="username"
-          defaultValue={ADMIN_LOGIN_USERNAME}
+          defaultValue={OPERATOR_LOGIN_USERNAME}
           className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
           required
         />
@@ -54,7 +54,7 @@ export function AdminLoginForm({ next }: { next: string }) {
         disabled={pending}
         className="w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-medium text-white disabled:opacity-60"
       >
-        {pending ? "Se conectează…" : "Intră în admin"}
+        {pending ? "Se conectează…" : "Intră în panou"}
       </button>
     </form>
   );

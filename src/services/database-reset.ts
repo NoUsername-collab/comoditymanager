@@ -1,7 +1,9 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 
+import { isFactoryResetEnabled as envFactoryResetEnabled } from "@/lib/env/server";
+
 export function isFactoryResetEnabled(): boolean {
-  return process.env.ADMIN_FACTORY_RESET_ENABLED === "true";
+  return envFactoryResetEnabled();
 }
 
 export function assertFactoryResetAllowed(): void {

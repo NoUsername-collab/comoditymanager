@@ -13,15 +13,33 @@ type Tab = {
   icon: HudIconName;
   alert?: boolean;
   badge?: number;
+  /** Ascuns pentru operator (config doar după unlock locație). */
+  locationConfig?: boolean;
 };
 
-export function AdminNav({ cereriCount }: { cereriCount: number }) {
+export function AdminNav({
+  cereriCount,
+  locationUnlocked = false,
+}: {
+  cereriCount: number;
+  locationUnlocked?: boolean;
+}) {
   const pathname = usePathname();
 
   const tabs: Tab[] = [
     { href: "/admin", label: "Acasă", icon: "home" },
-    { href: "/admin/buildings", label: "Clădiri", icon: "building" },
-    { href: "/admin/rooms", label: "Camere", icon: "bed" },
+    {
+      href: "/admin/buildings",
+      label: "Clădiri",
+      icon: "building",
+      locationConfig: true,
+    },
+    {
+      href: "/admin/rooms",
+      label: "Camere",
+      icon: "bed",
+      locationConfig: true,
+    },
     {
       href: "/admin/bookings",
       label: "Cereri noi",
@@ -38,9 +56,14 @@ export function AdminNav({ cereriCount }: { cereriCount: number }) {
     { href: "/admin/settings", label: "Setări", icon: "gear" },
   ];
 
+  const visibleTabs = tabs.filter((tab) => {
+    if (!tab.locationConfig) return true;
+    return locationUnlocked;
+  });
+
   return (
     <nav className="admin-nav admin-hud__nav" aria-label="Meniu administrare">
-      {tabs.map((tab) => {
+      {visibleTabs.map((tab) => {
         const active =
           tab.href === "/admin"
             ? pathname === "/admin"

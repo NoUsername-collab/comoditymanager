@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { createBuilding } from "@/services/buildings";
 import {
   defaultColorForAcMode,
@@ -9,8 +10,14 @@ import {
 } from "@/lib/building-color-palette";
 import type { AcMode } from "@/types/database";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { acModeToPolicyMode } from "@/lib/room-catalog-pricing";
+import {
+  listRoomOptions,
+  setBuildingOptionPolicies,
+} from "@/services/room-catalog";
 
 export async function createBuildingAction(formData: FormData) {
+  await requireLocationAdmin();
   const name = String(formData.get("name") ?? "");
   const sort_order = Number(formData.get("sort_order") ?? 0);
   const ac_mode = String(formData.get("ac_mode") ?? "per_room") as AcMode;
@@ -32,6 +39,24 @@ export async function createBuildingAction(formData: FormData) {
     ac_mode,
     default_price_per_night,
   });
+
+  try {
+    const options = await listRoomOptions(true);
+    const policies = options.map((opt) => {
+      if (opt.slug === "ac") {
+        return { option_id: opt.id, mode: acModeToPolicyMode(ac_mode) };
+      }
+      const raw = String(formData.get(`policy_${opt.id}`) ?? "per_room");
+      const mode = (["all_rooms", "none", "per_room"].includes(raw)
+        ? raw
+        : "per_room") as AcMode;
+      return { option_id: opt.id, mode };
+    });
+    await setBuildingOptionPolicies(building.id, policies);
+  } catch {
+    /* migrare 015 poate lipsi */
+  }
+
   await logAdminActivityFromSession({
     action: "building.created",
     entityType: "building",
@@ -45,6 +70,7 @@ export async function createBuildingAction(formData: FormData) {
 }
 
 export async function createFloorAction(formData: FormData) {
+  await requireLocationAdmin();
   const { createFloor } = await import("@/services/floors");
 
   const building_id = String(formData.get("building_id") ?? "");
@@ -71,6 +97,7 @@ export async function createFloorAction(formData: FormData) {
 }
 
 export async function deleteBuildingAction(formData: FormData) {
+  await requireLocationAdmin();
   const { deleteBuilding } = await import("@/services/buildings");
   const building_id = String(formData.get("building_id") ?? "");
   if (!building_id) throw new Error("ID lipsă");
@@ -94,6 +121,7 @@ export async function deleteBuildingAction(formData: FormData) {
 }
 
 export async function deleteRoomFromBuildingAction(formData: FormData) {
+  await requireLocationAdmin();
   const { deleteRoom } = await import("@/services/rooms-admin");
   const room_id = String(formData.get("room_id") ?? "");
   if (!room_id) throw new Error("ID lipsă");

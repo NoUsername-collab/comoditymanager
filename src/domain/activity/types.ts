@@ -6,7 +6,8 @@ export type ActivityEntityType =
   | "settings"
   | "session"
   | "pension"
-  | "guest";
+  | "guest"
+  | "staff";
 
 export type ActivityAction =
   | "booking.request_created"
@@ -26,6 +27,11 @@ export type ActivityAction =
   | "room.updated"
   | "room.deleted"
   | "settings.updated"
+  | "settings.appearance_updated"
+  | "settings.operational_updated"
+  | "location_admin.unlocked"
+  | "location_admin.locked"
+  | "staff.password_changed"
   | "auth.login"
   | "auth.logout";
 

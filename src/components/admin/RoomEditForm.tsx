@@ -1,28 +1,34 @@
 "use client";
 
 import type { Building, Floor } from "@/types/database";
+import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
+import type { OptionPolicyMode } from "@/types/room-catalog";
 import { useState } from "react";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
 type RoomData = {
   id: string;
   building_id: string;
   floor_id: string | null;
   name: string;
+  room_type_definition_id?: string | null;
   capacity_base: number;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
-  has_ac: boolean;
   price_per_night: number;
   is_active: boolean;
   sort_order: number;
-  building_ac_mode?: string;
+  enabled_option_ids?: string[];
 };
 
 type Props = {
   room: RoomData;
   buildings: Building[];
   floorsByBuilding: Record<string, Floor[]>;
+  types: RoomTypeDefinition[];
+  options: RoomOptionDefinition[];
+  policiesByBuilding: Record<string, { option_id: string; mode: OptionPolicyMode }[]>;
   updateRoomAction: (formData: FormData) => Promise<void>;
 };
 
@@ -30,12 +36,18 @@ export function RoomEditForm({
   room,
   buildings,
   floorsByBuilding,
+  types,
+  options,
+  policiesByBuilding,
   updateRoomAction,
 }: Props) {
   const [buildingId, setBuildingId] = useState(room.building_id);
-  const acMode = buildings.find((b) => b.id === buildingId)?.ac_mode ?? "per_room";
-  const showAc = acMode === "per_room";
+  const [typeId, setTypeId] = useState(
+    room.room_type_definition_id ?? types.find((t) => t.slug === "double")?.id ?? ""
+  );
   const floors = floorsByBuilding[buildingId] ?? [];
+  const policies = policiesByBuilding[buildingId] ?? [];
+  const selectedType = types.find((t) => t.id === typeId) ?? null;
 
   return (
     <AdminPendingForm action={updateRoomAction} className="mt-8 space-y-5">
@@ -48,7 +60,7 @@ export function RoomEditForm({
           defaultChecked={room.is_active}
           className="rounded"
         />
-        <span className="text-sm font-medium">Cameră activă (debifează = dezactivată)</span>
+        <span className="text-sm font-medium">Cameră activă</span>
       </label>
 
       <label className="block">
@@ -84,6 +96,22 @@ export function RoomEditForm({
       </label>
 
       <label className="block">
+        <span className="text-sm font-medium">Tip cameră</span>
+        <select
+          name="room_type_definition_id"
+          value={typeId}
+          onChange={(e) => setTypeId(e.target.value)}
+          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+        >
+          {types.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="block">
         <span className="text-sm font-medium">Nume</span>
         <input
           name="name"
@@ -92,6 +120,13 @@ export function RoomEditForm({
           className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
         />
       </label>
+
+      <RoomOptionFields
+        options={options}
+        policies={policies}
+        selectedType={selectedType}
+        selectedOptionIds={room.enabled_option_ids ?? []}
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <label className="block">
@@ -115,20 +150,6 @@ export function RoomEditForm({
           />
         </label>
       </div>
-
-      {showAc ? (
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            name="has_ac"
-            defaultChecked={room.has_ac}
-            className="rounded"
-          />
-          <span className="text-sm">AC</span>
-        </label>
-      ) : (
-        <input type="hidden" name="has_ac" value={room.has_ac ? "on" : ""} />
-      )}
 
       <label className="flex items-center gap-2">
         <input

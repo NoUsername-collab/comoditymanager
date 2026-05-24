@@ -13,6 +13,9 @@ import {
   getPensionSettings,
   pensionAppearanceSettings,
 } from "@/services/pension-settings";
+import { getStaffRole } from "@/lib/auth/roles";
+import { getStaffUser } from "@/lib/auth/require-staff";
+import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 
 const DEFAULT_APPEARANCE: AdminPaletteSettings = {
   admin_palette_source: "catalog",
@@ -43,6 +46,16 @@ export default async function AdminLayout({
     /* migrare 008 poate lipsi */
   }
 
+  let locationUnlocked = false;
+
+  try {
+    const user = await getStaffUser();
+    getStaffRole(user);
+    locationUnlocked = await isAdminLocationUnlocked();
+  } catch {
+    /* middleware redirecționează dacă nu e autentificat */
+  }
+
   return (
     <AdminAppearanceProvider initialSettings={appearanceSettings}>
       <AdminPaletteStyles settings={appearanceSettings} />
@@ -51,7 +64,10 @@ export default async function AdminLayout({
           <AdminDayNightLiquid />
           <div className="admin-hud__surface">
             <AdminTopBar />
-            <AdminNav cereriCount={cereriCount} />
+            <AdminNav
+              cereriCount={cereriCount}
+              locationUnlocked={locationUnlocked}
+            />
           </div>
         </div>
 

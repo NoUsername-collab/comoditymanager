@@ -18,6 +18,11 @@ const ACTION_LABELS: Record<ActivityAction, string> = {
   "room.updated": "Cameră actualizată",
   "room.deleted": "Cameră ștearsă",
   "settings.updated": "Setări pensiune",
+  "settings.appearance_updated": "Temă panou",
+  "settings.operational_updated": "Setări operaționale",
+  "location_admin.unlocked": "Administrare locație deblocată",
+  "location_admin.locked": "Administrare locație închisă",
+  "staff.password_changed": "Parolă staff schimbată",
   "auth.login": "Autentificare",
   "auth.logout": "Deconectare",
 };

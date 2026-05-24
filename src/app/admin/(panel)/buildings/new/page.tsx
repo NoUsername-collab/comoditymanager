@@ -1,8 +1,16 @@
 import { BuildingForm } from "@/components/admin/BuildingForm";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { listRoomOptions } from "@/services/room-catalog";
 import { createBuildingAction } from "../actions";
 
-export default function NewBuildingPage() {
+export default async function NewBuildingPage() {
+  let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
+  try {
+    catalogOptions = await listRoomOptions();
+  } catch {
+    catalogOptions = [];
+  }
+
   return (
     <AdminRetroPageFrame
       title="Clădire nouă — Casa Emil"
@@ -11,13 +19,12 @@ export default function NewBuildingPage() {
       className="max-w-lg"
       description={
         <>
-          Politica AC se aplică la <strong>camere noi</strong> create în această
-          clădire. Culoarea aleasă apare în calendar pentru toate camerele din
-          clădire.
+          Politicile AC și opțiunile modulare (frigider etc.) se aplică la{" "}
+          <strong>camere noi</strong>. Culoarea apare în calendar.
         </>
       }
     >
-      <BuildingForm action={createBuildingAction} />
+      <BuildingForm action={createBuildingAction} catalogOptions={catalogOptions} />
     </AdminRetroPageFrame>
   );
 }

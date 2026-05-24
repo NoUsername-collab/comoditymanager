@@ -2,7 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getAdminEmail, isAdminUsername } from "@/lib/auth/constants";
+import {
+  isKnownStaffUsername,
+  resolveStaffEmail,
+} from "@/lib/auth/constants";
+import { getStaffRole } from "@/lib/auth/roles";
 import { logAdminActivity } from "@/services/activity-log";
 
 export async function loginAction(formData: FormData) {
@@ -10,16 +14,21 @@ export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
 
-  if (!isAdminUsername(username)) {
+  if (!isKnownStaffUsername(username)) {
     return { error: "Utilizator invalid" };
   }
   if (!password) {
     return { error: "Introdu parola" };
   }
 
+  const email = resolveStaffEmail(username);
+  if (!email) {
+    return { error: "Utilizator invalid" };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
-    email: getAdminEmail(),
+    email,
     password,
   });
 
@@ -35,7 +44,7 @@ export async function loginAction(formData: FormData) {
       action: "auth.login",
       entityType: "session",
       entityId: user.id,
-      summary: "Autentificare admin",
+      summary: `Autentificare ${getStaffRole(user) ?? "staff"}`,
       actor: { id: user.id, email: user.email },
     });
   }

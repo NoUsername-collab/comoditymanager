@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   getPensionSettings,
   pensionAppearanceSettings,
@@ -7,18 +8,27 @@ import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePan
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { resolvePaletteDefinition } from "@/lib/admin-palettes";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
-import { AdminFactoryResetPanel } from "@/components/admin/settings/AdminFactoryResetPanel";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import { isFactoryResetEnabled } from "@/services/database-reset";
-import { updateSettingsAction } from "./actions";
+import { AdminLocationUnlockForm } from "@/components/admin/settings/AdminLocationUnlockForm";
+import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
+import { getStaffRole } from "@/lib/auth/roles";
+import { requireStaff } from "@/lib/auth/require-staff";
+import { updateAppearanceSettingsAction } from "./actions";
 
 export default async function SettingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; reset?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    location?: string;
+  }>;
 }) {
   const params = await searchParams;
+  const { user } = await requireStaff();
+  const role = getStaffRole(user);
+  const locationUnlocked = await isAdminLocationUnlocked();
+
   let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
   let error: string | null = null;
 
@@ -33,35 +43,43 @@ export default async function SettingsPage({
     ? resolvePaletteDefinition(appearance)
     : null;
 
-  const sourceLabel = "Temă modulară (Default · Retro · Țări)";
-
   return (
     <AdminRetroPageFrame
-      title="Setări pensiune — Casa Emil"
+      title="Setări — Casa Emil"
       className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
-      description="Ore check-in/out, paturi extra și aspect panou — totul într-un singur loc, ușor de parcurs."
+      description={
+        role === "operator"
+          ? "Sunet și temă — disponibile pentru operator. Configurarea locației necesită parola admin."
+          : "Sunet și temă pentru panou. Configurarea locației se face după re-autentificare admin."
+      }
     >
       {params.saved === "1" && (
         <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          Salvat. Reîncarcă o pagină admin dacă nu vezi paleta imediat.
+          Temă salvată.
         </p>
       )}
 
-      {params.reset === "1" && (
-        <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          Reset complet. Poți configura din nou clădirile și camerele din admin.
+      {params.location === "locked" && (
+        <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Administrarea locației este blocată. Introdu parola admin mai jos.
+        </p>
+      )}
+
+      {params.location === "forbidden" && (
+        <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          Această secțiune necesită deblocarea administrării locației.
+        </p>
+      )}
+
+      {params.location === "closed" && (
+        <p className="mb-4 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
+          Administrare locație închisă.
         </p>
       )}
 
       {error && (
         <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {error}
-          {error.includes("admin_palette") && (
-            <span className="mt-1 block">
-              Rulează migrarea{" "}
-              <code className="text-xs">008_admin_palettes.sql</code> în Supabase.
-            </span>
-          )}
         </p>
       )}
 
@@ -96,81 +114,32 @@ export default async function SettingsPage({
                 {appearance.admin_day_night === "day" ? "Zi" : "Noapte"}
               </span>
             </div>
+            <div className="admin-settings-summary__chip">
+              <span className="admin-settings-summary__label">Rol</span>
+              <span className="admin-settings-summary__value">
+                {role === "admin" ? "Admin" : "Operator"}
+              </span>
+            </div>
           </div>
 
-          <AdminPendingForm action={updateSettingsAction} className="admin-settings-form">
+          <SettingsSlidePanel
+            title="Feedback & sunet"
+            subtitle="Efecte la confirmare — local pe dispozitiv"
+            icon="🔔"
+            defaultOpen
+          >
+            <AdminFxSettings />
+          </SettingsSlidePanel>
+
+          <AdminPendingForm
+            action={updateAppearanceSettingsAction}
+            className="admin-settings-form mt-6"
+          >
             <input type="hidden" name="id" value={settings.id} />
 
             <SettingsSlidePanel
-              title="Operațional"
-              subtitle={`${settings.display_name} · ${settings.default_check_in_time} / ${settings.default_check_out_time}`}
-              icon="⚙️"
-              defaultOpen
-            >
-              <div className="admin-settings-fields">
-                <label>
-                  <span>Nume afișat</span>
-                  <input
-                    name="display_name"
-                    defaultValue={settings.display_name}
-                  />
-                  <p className="admin-settings-hint">
-                    Apare în header, facturi și comunicări cu oaspeții.
-                  </p>
-                </label>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label>
-                    <span>Check-in (ora)</span>
-                    <input
-                      name="default_check_in_time"
-                      type="time"
-                      defaultValue={settings.default_check_in_time}
-                    />
-                    <p className="admin-settings-hint">
-                      Zona albastră „noapte” în Gantt pornește de aici.
-                    </p>
-                  </label>
-                  <label>
-                    <span>Check-out (ora)</span>
-                    <input
-                      name="default_check_out_time"
-                      type="time"
-                      defaultValue={settings.default_check_out_time}
-                    />
-                    <p className="admin-settings-hint">
-                      Zona galbenă „plecare” se termină la această oră.
-                    </p>
-                  </label>
-                </div>
-
-                <label>
-                  <span>Plafon paturi suplimentare (total pensiune)</span>
-                  <input
-                    name="total_extra_beds_max"
-                    type="number"
-                    min={0}
-                    defaultValue={settings.total_extra_beds_max}
-                  />
-                  <p className="admin-settings-hint">
-                    Limită globală pentru paturi extra la rezervări — nu per
-                    cameră.
-                  </p>
-                </label>
-              </div>
-            </SettingsSlidePanel>
-
-            <SettingsSlidePanel
-              title="Feedback & sunet"
-              subtitle="Efecte la confirmare — opțional"
-              icon="🔔"
-            >
-              <AdminFxSettings />
-            </SettingsSlidePanel>
-
-            <SettingsSlidePanel
               title="Aspect panou"
-              subtitle={`${activePalette?.name ?? "Temă"} · ${sourceLabel}`}
+              subtitle={`${activePalette?.name ?? "Temă"} · modular`}
               icon="🎨"
               defaultOpen
             >
@@ -178,25 +147,39 @@ export default async function SettingsPage({
             </SettingsSlidePanel>
 
             <div className="admin-settings-submit">
-              <p className="text-xs text-zinc-500">
-                Modificările de aspect se previzualizează live; salvarea le
-                persistă pentru toți adminii.
-              </p>
               <AdminSubmitButton type="submit" className="admin-settings-submit__btn">
-                Salvează toate setările
+                Salvează tema
               </AdminSubmitButton>
             </div>
           </AdminPendingForm>
 
-          {isFactoryResetEnabled() && (
-            <SettingsSlidePanel
-              title="Zonă periculoasă"
-              subtitle="Reset factory — doar staging / dev"
-              icon="⚠️"
-            >
-              <AdminFactoryResetPanel />
-            </SettingsSlidePanel>
-          )}
+          <SettingsSlidePanel
+            title="Administrare locație"
+            subtitle={
+              locationUnlocked
+                ? "Deblocat — configurezi clădiri, camere, operațional"
+                : "Necesită parola contului Admin"
+            }
+            icon="🏨"
+            defaultOpen={params.location === "locked"}
+          >
+            {locationUnlocked ? (
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-600">
+                  Panoul de configurare este activ (2 ore). Poți modifica
+                  clădiri, tipuri cameră, opțiuni modulare și parole staff.
+                </p>
+                <Link
+                  href="/admin/settings/location"
+                  className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                >
+                  Deschide panou administrare locație
+                </Link>
+              </div>
+            ) : (
+              <AdminLocationUnlockForm />
+            )}
+          </SettingsSlidePanel>
         </>
       )}
     </AdminRetroPageFrame>

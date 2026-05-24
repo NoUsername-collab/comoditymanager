@@ -1,11 +1,33 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import {
+  ADMIN_LOCATION_UNLOCK_COOKIE,
+  isAdminLocationUnlockCookieFresh,
+} from "@/lib/auth/admin-location-unlock-cookie";
+import { pathBlockedForOperator } from "@/lib/auth/roles";
+
+import { getEdgeStaffEmails, getEdgeSupabaseConfig } from "@/lib/env/edge";
+
+function isLocationAdminPath(path: string): boolean {
+  return (
+    path === "/admin/settings/location" ||
+    path.startsWith("/admin/settings/location/")
+  );
+}
+
+function staffRoleFromEmail(email: string | undefined): "admin" | "operator" | null {
+  if (!email) return null;
+  const e = email.toLowerCase();
+  const { adminEmail, operatorEmail } = getEdgeStaffEmails();
+  if (e === adminEmail) return "admin";
+  if (e === operatorEmail) return "operator";
+  return null;
+}
 
 export async function middleware(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { configured, url, key } = getEdgeSupabaseConfig();
 
-  if (!url || !key) {
+  if (!configured || !url || !key) {
     return NextResponse.next({ request });
   }
 
@@ -42,6 +64,27 @@ export async function middleware(request: NextRequest) {
     redirectUrl.pathname = "/admin/login";
     redirectUrl.searchParams.set("next", path);
     return NextResponse.redirect(redirectUrl);
+  }
+
+  if (user && path.startsWith("/admin") && !isLoginPage) {
+    const role = staffRoleFromEmail(user.email);
+    if (!role) {
+      await supabase.auth.signOut();
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/admin/login";
+      redirectUrl.searchParams.set("error", "unauthorized");
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    if (isLocationAdminPath(path) || pathBlockedForOperator(path)) {
+      const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
+      if (!isAdminLocationUnlockCookieFresh(unlock)) {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/admin/settings";
+        redirectUrl.searchParams.set("location", "locked");
+        return NextResponse.redirect(redirectUrl);
+      }
+    }
   }
 
   if (isLoginPage && user) {
