@@ -68,6 +68,7 @@ export function GanttDraggableStay({
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (e.button !== 0) return;
+      e.stopPropagation();
       const el = e.currentTarget;
       const row = el.offsetParent as HTMLElement | null;
       rowWidth.current = row?.clientWidth ?? el.parentElement?.clientWidth ?? 1;
@@ -140,7 +141,7 @@ export function GanttDraggableStay({
     <>
       <div
         className={[
-          "absolute top-2 z-[1] flex min-w-0 items-stretch pointer-events-auto",
+          "gantt-draggable-stay absolute top-2 z-[1] flex min-w-0 items-stretch",
           dragging && "z-[20] cursor-grabbing",
           pending && "opacity-60",
         ]

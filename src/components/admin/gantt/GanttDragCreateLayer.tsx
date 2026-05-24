@@ -13,10 +13,14 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
+import { formatStayPeriod } from "@/lib/ro-calendar";
 import {
   GanttCreateDialog,
   type GanttCreateDraft,
 } from "@/components/admin/gantt/GanttCreateDialog";
+
+const INTERACTIVE_SELECTOR =
+  ".gantt-draggable-stay, .gantt-occ-bar, .gantt-timeline-bar, a, button";
 
 type Props = {
   roomId: string;
@@ -36,6 +40,14 @@ type DragState = {
   hasConflict: boolean;
 };
 
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && !!target.closest(INTERACTIVE_SELECTOR);
+}
+
+function nightCountFromIndices(startIdx: number, endIdx: number): number {
+  return Math.max(1, endIdx - startIdx + 1);
+}
+
 export function GanttDragCreateLayer({
   roomId,
   roomName,
@@ -48,7 +60,6 @@ export function GanttDragCreateLayer({
   children,
 }: Props) {
   const rowRef = useRef<HTMLDivElement>(null);
-  const dragActive = useRef(false);
   const dragRef = useRef<{ startIdx: number; endIdx: number } | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [draft, setDraft] = useState<GanttCreateDraft | null>(null);
@@ -87,35 +98,13 @@ export function GanttDragCreateLayer({
     [dayIsos, roomId, roomName, evalConflict]
   );
 
-  const onPointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.button !== 0) return;
+  const updateDragAt = useCallback(
+    (clientX: number) => {
       const row = rowRef.current;
-      if (!row || dayCount === 0) return;
-      const rect = row.getBoundingClientRect();
-      const idx = dayIndexFromPointerX(
-        e.clientX,
-        rect.left,
-        rect.width,
-        dayCount
-      );
-      dragActive.current = true;
-      dragRef.current = { startIdx: idx, endIdx: idx };
-      setDrag({ startIdx: idx, endIdx: idx, hasConflict: false });
-      e.currentTarget.setPointerCapture(e.pointerId);
-      e.preventDefault();
-    },
-    [dayCount]
-  );
-
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!dragActive.current || !dragRef.current) return;
-      const row = rowRef.current;
-      if (!row) return;
+      if (!row || !dragRef.current || dayCount === 0) return;
       const rect = row.getBoundingClientRect();
       let endIdx = dayIndexFromPointerX(
-        e.clientX,
+        clientX,
         rect.left,
         rect.width,
         dayCount
@@ -132,11 +121,44 @@ export function GanttDragCreateLayer({
     [dayCount, dayIsos, evalConflict]
   );
 
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.button !== 0) return;
+      if (isInteractiveTarget(e.target)) return;
+      const row = rowRef.current;
+      if (!row || dayCount === 0) return;
+
+      const rect = row.getBoundingClientRect();
+      const idx = dayIndexFromPointerX(
+        e.clientX,
+        rect.left,
+        rect.width,
+        dayCount
+      );
+      dragRef.current = { startIdx: idx, endIdx: idx };
+      setDrag({ startIdx: idx, endIdx: idx, hasConflict: false });
+      row.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    },
+    [dayCount]
+  );
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!dragRef.current) return;
+      updateDragAt(e.clientX);
+    },
+    [updateDragAt]
+  );
+
   const onPointerUp = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
-      if (!dragActive.current || !dragRef.current) return;
-      e.currentTarget.releasePointerCapture(e.pointerId);
-      dragActive.current = false;
+      if (!dragRef.current) return;
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {
+        /* already released */
+      }
       finishDrag(dragRef.current.startIdx, dragRef.current.endIdx);
       dragRef.current = null;
       setDrag(null);
@@ -149,44 +171,63 @@ export function GanttDragCreateLayer({
       ? ghostBarPosition(drag.startIdx, drag.endIdx, dayCount)
       : null;
 
+  const dragInterval =
+    drag && dayCount > 0
+      ? intervalFromDayIndices(dayIsos, drag.startIdx, drag.endIdx)
+      : null;
+
+  const nights =
+    drag != null ? nightCountFromIndices(drag.startIdx, drag.endIdx) : 0;
+
+  const dragPeriod =
+    dragInterval != null
+      ? formatStayPeriod(dragInterval.checkIn, dragInterval.checkOut, true)
+      : "";
+
   return (
     <>
       <div
         ref={rowRef}
-        className="relative w-full overflow-hidden bg-white"
+        className={[
+          "gantt-drag-row relative w-full overflow-hidden bg-white",
+          touch && "gantt-drag-row--touch",
+          drag && "gantt-drag-row--active",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         style={{ height: 56 }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou`}
       >
-        <div className="absolute inset-0 pointer-events-none">{renderGrid}</div>
-        <div
-          className={[
-            "gantt-drag-create-layer absolute inset-0 z-[1]",
-            touch && "gantt-drag-create-layer--touch",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou`}
-        />
+        <div className="pointer-events-none absolute inset-0">{renderGrid}</div>
+
+        <div className="pointer-events-none absolute inset-0 z-[2]">
+          <div className="relative h-full w-full">{children}</div>
+        </div>
+
         {ghost && drag && (
           <div
             className={[
-              "gantt-drag-ghost pointer-events-none absolute top-2 z-[3] h-7 rounded-md border-2",
+              "gantt-drag-preview pointer-events-none absolute top-2 z-[30] flex min-w-0 items-center overflow-hidden",
               drag.hasConflict
-                ? "gantt-drag-ghost--conflict"
-                : "gantt-drag-ghost--free",
+                ? "gantt-drag-preview--conflict"
+                : "gantt-drag-preview--free",
             ].join(" ")}
             style={{
               left: `${ghost.leftPct}%`,
               width: `${ghost.widthPct}%`,
+              minWidth: "2.75rem",
             }}
-          />
+          >
+            <span className="gantt-drag-preview__label truncate px-1.5">
+              {nights === 1 ? "1 noapte" : `${nights} nopți`}
+              {ghost.widthPct > 8 ? ` · ${dragPeriod}` : ""}
+            </span>
+          </div>
         )}
-        <div className="gantt-stays-layer absolute inset-0 z-[2] pointer-events-none">
-          <div className="relative h-full w-full pointer-events-none">{children}</div>
-        </div>
       </div>
       <GanttCreateDialog draft={draft} onClose={() => setDraft(null)} />
     </>

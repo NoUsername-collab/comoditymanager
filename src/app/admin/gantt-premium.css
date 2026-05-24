@@ -726,8 +726,12 @@
 }
 
 .gantt-occ-bar {
-  pointer-events: none;
+  pointer-events: auto;
   border-radius: 0.35rem;
+}
+
+.gantt-draggable-stay {
+  pointer-events: auto;
 }
 
 .gantt-occ-bar--hold {
@@ -801,23 +805,61 @@
   border: 1px dashed #ca8a04;
 }
 
-.gantt-drag-ghost--free {
-  border-color: #22c55e;
-  background: color-mix(in srgb, #22c55e 22%, white);
-}
-
-.gantt-drag-ghost--conflict {
-  border-color: #ef4444;
-  background: color-mix(in srgb, #ef4444 18%, white);
-}
-
-.gantt-drag-create-layer {
+/* Drag-create: preview ca bară cerere / blocare */
+.gantt-drag-row {
   cursor: crosshair;
   touch-action: none;
+  user-select: none;
 }
 
-.gantt-drag-create-layer--touch {
+.gantt-drag-row--touch {
   cursor: default;
+}
+
+.gantt-drag-row--active {
+  cursor: col-resize;
+}
+
+.gantt-drag-preview {
+  height: 1.75rem;
+  border-radius: 0.35rem;
+  border-width: 2px;
+  border-style: dashed;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gantt-drag-preview--free {
+  border-color: #d97706;
+  background: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, #fef3c7 92%, white),
+    color-mix(in srgb, #fef3c7 92%, white) 5px,
+    color-mix(in srgb, #fde68a 70%, white) 5px,
+    color-mix(in srgb, #fde68a 70%, white) 10px
+  );
+  color: #92400e;
+  animation: gantt-cereri-pulse 2.5s ease-in-out infinite;
+}
+
+.gantt-drag-preview--conflict {
+  border-color: #71717a;
+  border-style: solid;
+  background: repeating-linear-gradient(
+    135deg,
+    #e4e4e7,
+    #e4e4e7 4px,
+    #d4d4d8 4px,
+    #d4d4d8 8px
+  );
+  color: #3f3f46;
+  animation: none;
+}
+
+.gantt-drag-preview__label {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .gantt-toolbar__legend-swatch--block {

@@ -15,7 +15,7 @@ export function GanttOccupancyBar({ label, title, pos, kind }: Props) {
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const className = [
-    "gantt-occ-bar pointer-events-auto absolute z-[0] box-border flex min-w-0 max-w-full items-center overflow-hidden text-[9px] font-bold leading-none",
+    "gantt-occ-bar absolute z-[2] box-border flex min-w-0 max-w-full items-center overflow-hidden text-[9px] font-bold leading-none",
     kind === "hold" && "gantt-occ-bar--hold",
     kind === "block" && "gantt-occ-bar--block",
     continuesBefore && "gantt-occ-bar--from-prev",
@@ -38,6 +38,7 @@ export function GanttOccupancyBar({ label, title, pos, kind }: Props) {
       style={style}
       title={title}
       aria-label={title}
+      onPointerDown={(e) => e.stopPropagation()}
     >
       <span className="gantt-occ-bar__label truncate px-1.5 py-1">{label}</span>
     </div>
