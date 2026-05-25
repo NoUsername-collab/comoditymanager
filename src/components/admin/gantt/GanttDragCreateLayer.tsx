@@ -414,6 +414,7 @@ export function GanttDragCreateLayer({
               e.clientY,
               armedSelectionModeRef.current
             );
+            try { rowRef.current?.releasePointerCapture(e.pointerId); } catch {}
           }
         }
       }
