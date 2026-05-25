@@ -48,6 +48,7 @@ type DragState = {
   endIdx: number;
   hasConflict: boolean;
   roomCount: number;
+  selectionMode: "range" | "additive";
 };
 
 function blocksDragCreate(target: EventTarget | null): boolean {
@@ -74,6 +75,11 @@ function roomIdsBetween(
   return orderedRoomIds.slice(from, to + 1);
 }
 
+function appendUniqueRoomId(roomIds: string[], roomId: string | null): string[] {
+  if (!roomId) return roomIds;
+  return roomIds.includes(roomId) ? roomIds : [...roomIds, roomId];
+}
+
 export function GanttDragCreateLayer({
   roomId,
   roomName,
@@ -96,10 +102,12 @@ export function GanttDragCreateLayer({
     currentRoomId: string;
     selectedRoomIds: string[];
     orderedRoomIds: string[];
+    selectionMode: "range" | "additive";
   } | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
   const armedStartIdxRef = useRef<number | null>(null);
+  const armedSelectionModeRef = useRef<"range" | "additive">("range");
   const longPressOpenedRef = useRef(false);
   const [drag, setDrag] = useState<DragState | null>(null);
 
@@ -206,11 +214,14 @@ export function GanttDragCreateLayer({
       if (endIdx < startIdx) endIdx = startIdx;
       const hitRoom = findGanttRoomAtPoint(clientX, clientY);
       const currentRoomId = hitRoom ?? dragRef.current.currentRoomId;
-      const roomIds = roomIdsBetween(
-        dragRef.current.orderedRoomIds,
-        dragRef.current.startRoomId,
-        currentRoomId
-      );
+      const roomIds =
+        dragRef.current.selectionMode === "additive"
+          ? appendUniqueRoomId(dragRef.current.selectedRoomIds, currentRoomId)
+          : roomIdsBetween(
+              dragRef.current.orderedRoomIds,
+              dragRef.current.startRoomId,
+              currentRoomId
+            );
       const interval = intervalFromDayIndices(dayIsos, startIdx, endIdx);
       const hasConflict = interval
         ? evalConflictForRooms(interval.checkIn, interval.checkOut, roomIds)
@@ -231,13 +242,24 @@ export function GanttDragCreateLayer({
         currentRoomId,
         selectedRoomIds: roomIds,
       };
-      setDrag({ startIdx, endIdx, hasConflict, roomCount: roomIds.length });
+      setDrag({
+        startIdx,
+        endIdx,
+        hasConflict,
+        roomCount: roomIds.length,
+        selectionMode: dragRef.current.selectionMode,
+      });
     },
     [dayCount, dayIsos, evalConflictForRooms]
   );
 
   const beginDrag = useCallback(
-    (startIdx: number, clientX: number, clientY: number) => {
+    (
+      startIdx: number,
+      clientX: number,
+      clientY: number,
+      selectionMode: "range" | "additive"
+    ) => {
       const ghost = ghostBarPosition(startIdx, startIdx, dayCount);
       const orderedRoomIds = listGanttRoomIdsInDomOrder();
       dragRef.current = {
@@ -248,12 +270,14 @@ export function GanttDragCreateLayer({
         selectedRoomIds: [roomId],
         orderedRoomIds:
           orderedRoomIds.length > 0 ? orderedRoomIds : [roomId],
+        selectionMode,
       };
       setDrag({
         startIdx,
         endIdx: startIdx,
         hasConflict: false,
         roomCount: 1,
+        selectionMode,
       });
       if (ghost) {
         setGanttRoomDragSpan([roomId], {
@@ -330,9 +354,11 @@ export function GanttDragCreateLayer({
       clearLongPress();
       const idx = dayIdxAt(e.clientX);
       armedStartIdxRef.current = idx;
+      armedSelectionModeRef.current = e.ctrlKey || e.metaKey ? "additive" : "range";
       longPressTimerRef.current = setTimeout(() => {
         longPressOpenedRef.current = true;
         armedStartIdxRef.current = null;
+        armedSelectionModeRef.current = "range";
         dragRef.current = null;
         setDrag(null);
         openEmptyMenu(e.clientX, e.clientY, idx);
@@ -348,6 +374,7 @@ export function GanttDragCreateLayer({
       clearLongPress();
       pressOriginRef.current = null;
       armedStartIdxRef.current = null;
+      armedSelectionModeRef.current = "range";
 
       try {
         rowRef.current?.releasePointerCapture(e.pointerId);
@@ -381,7 +408,12 @@ export function GanttDragCreateLayer({
         if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX) {
           clearLongPress();
           if (!dragRef.current) {
-            beginDrag(armedStartIdxRef.current ?? dayIdxAt(origin.x), e.clientX, e.clientY);
+            beginDrag(
+              armedStartIdxRef.current ?? dayIdxAt(origin.x),
+              e.clientX,
+              e.clientY,
+              armedSelectionModeRef.current
+            );
           }
         }
       }
@@ -417,7 +449,7 @@ export function GanttDragCreateLayer({
   return (
     <div
       ref={rowRef}
-      data-gantt-room-row={roomId}
+      data-gantt-room-drag-layer={roomId}
       className={[
           "gantt-drag-row relative w-full overflow-visible bg-white",
         touch && "gantt-drag-row--touch",
@@ -430,7 +462,7 @@ export function GanttDragCreateLayer({
       onPointerMove={onPointerMoveRow}
       onPointerUp={onPointerUpRow}
       onPointerCancel={onPointerCancelRow}
-      aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou · click dreapta pentru meniu`}
+      aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou · ține Ctrl la start pentru selecție multi-cameră · click dreapta pentru meniu`}
     >
       <div className="pointer-events-none absolute inset-0">{renderGrid}</div>
 
@@ -453,7 +485,11 @@ export function GanttDragCreateLayer({
           }}
         >
           <span className="gantt-drag-preview__label truncate px-1.5">
-            {drag.roomCount > 1 ? `${drag.roomCount} cam · ` : ""}
+            {drag.selectionMode === "additive"
+              ? `Ctrl multi · ${drag.roomCount} cam · `
+              : drag.roomCount > 1
+                ? `${drag.roomCount} cam · `
+                : ""}
             {nights === 1 ? "1 noapte" : `${nights} nopți`}
             {ghost.widthPct > 8 ? ` · ${dragPeriod}` : ""}
           </span>

@@ -1,4 +1,5 @@
 const ROOM_ROW_SELECTOR = "[data-gantt-room-row]";
+const ROOM_DRAG_LAYER_SELECTOR = "[data-gantt-room-drag-layer]";
 let activeDropTargetId: string | null = null;
 let activeDragSpanIds = new Set<string>();
 
@@ -8,17 +9,31 @@ type GanttRoomDragPreview = {
   hasConflict: boolean;
 };
 
+function escapeSelectorValue(value: string): string {
+  return typeof CSS !== "undefined" && typeof CSS.escape === "function"
+    ? CSS.escape(value)
+    : value.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
 function roomRowSelector(roomId: string): string {
-  const escaped =
-    typeof CSS !== "undefined" && typeof CSS.escape === "function"
-      ? CSS.escape(roomId)
-      : roomId.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const escaped = escapeSelectorValue(roomId);
   return `${ROOM_ROW_SELECTOR}[data-gantt-room-row="${escaped}"]`;
+}
+
+function roomDragLayerSelector(roomId: string): string {
+  const escaped =
+    escapeSelectorValue(roomId);
+  return `${ROOM_DRAG_LAYER_SELECTOR}[data-gantt-room-drag-layer="${escaped}"]`;
 }
 
 function getRoomRow(roomId: string): HTMLElement | null {
   if (typeof document === "undefined") return null;
   return document.querySelector(roomRowSelector(roomId)) as HTMLElement | null;
+}
+
+function getRoomDragLayer(roomId: string): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  return document.querySelector(roomDragLayerSelector(roomId)) as HTMLElement | null;
 }
 
 export function findGanttRoomAtPoint(clientX: number, clientY: number): string | null {
@@ -69,20 +84,28 @@ export function setGanttRoomDragSpan(
   const touchedIds = new Set([...activeDragSpanIds, ...nextIds]);
 
   for (const roomId of touchedIds) {
-    const node = getRoomRow(roomId);
-    if (!node) continue;
     const active = nextIds.has(roomId);
-    node.classList.toggle("gantt-room-row--drag-span", active);
-    node.classList.toggle(
+    const row = getRoomRow(roomId);
+    const layer = getRoomDragLayer(roomId);
+
+    row?.classList.toggle("gantt-room-row--drag-span", active);
+    row?.classList.toggle(
       "gantt-room-row--drag-span-conflict",
       active && !!preview?.hasConflict
     );
+
+    layer?.classList.toggle("gantt-room-row--drag-span", active);
+    layer?.classList.toggle(
+      "gantt-room-row--drag-span-conflict",
+      active && !!preview?.hasConflict
+    );
+
     if (active && preview) {
-      node.style.setProperty("--gantt-drag-left", `${preview.leftPct}%`);
-      node.style.setProperty("--gantt-drag-width", `${preview.widthPct}%`);
+      layer?.style.setProperty("--gantt-drag-left", `${preview.leftPct}%`);
+      layer?.style.setProperty("--gantt-drag-width", `${preview.widthPct}%`);
     } else {
-      node.style.removeProperty("--gantt-drag-left");
-      node.style.removeProperty("--gantt-drag-width");
+      layer?.style.removeProperty("--gantt-drag-left");
+      layer?.style.removeProperty("--gantt-drag-width");
     }
   }
 

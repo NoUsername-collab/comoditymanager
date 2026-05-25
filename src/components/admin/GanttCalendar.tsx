@@ -1249,18 +1249,23 @@ export function GanttCalendar({
               />
 
               <div className="gantt-inline-controls__room-picker-shell">
-                <span className="gantt-inline-controls__picker-label">Camera</span>
+                <span className="gantt-inline-controls__picker-label">Vizualizare</span>
                 <div className="gantt-inline-controls__room-picker">
-                  {inlineViewChoice === "room" && rooms.length > 0 ? (
+                  {rooms.length > 0 ? (
                     <select
-                      value={selectedRoomId || rooms[0]?.id || ""}
-                      onChange={(e) =>
-                        pushCalendarPatch({ view: "room", room: e.target.value })
-                      }
+                      value={inlineViewChoice === "room" ? selectedRoomId || "" : ""}
+                      onChange={(e) => {
+                        const nextRoomId = e.target.value;
+                        if (!nextRoomId) {
+                          pushCalendarPatch({ view: "all", room: null });
+                          return;
+                        }
+                        pushCalendarPatch({ view: "room", room: nextRoomId });
+                      }}
                       className="gantt-toolbar__select gantt-toolbar__select--wide"
                       aria-label="Cameră"
                     >
-                      <option value="">Selectează camera…</option>
+                      <option value="">Toate camerele</option>
                       {rooms.map((room) => (
                         <option key={room.id} value={room.id}>
                           {room.name} · {room.building_name}
@@ -1303,25 +1308,6 @@ export function GanttCalendar({
                 { value: "all", label: "Toate" },
                 { value: "ac", label: "Cu AC" },
                 { value: "fridge", label: "Frigider" },
-              ]}
-            />
-
-            <SegmentGroup
-              label="Vizualizare"
-              compact
-              value={inlineViewChoice}
-              onChange={(next) =>
-                pushCalendarPatch({
-                  view: next as "all" | "room",
-                  room:
-                    next === "room"
-                      ? selectedRoomId || rooms[0]?.id || null
-                      : null,
-                })
-              }
-              options={[
-                { value: "all", label: "Toate camerele", shortLabel: "Toate" },
-                { value: "room", label: "Alege cameră", shortLabel: "Cameră" },
               ]}
             />
           </div>

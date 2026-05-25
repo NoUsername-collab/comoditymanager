@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
-import { addDays, parseIso } from "@/lib/stay-dates";
+import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
@@ -39,6 +39,60 @@ export type BookingRow = {
   total_price: number | null;
 };
 
+type BookingSelectRow = {
+  id: string;
+  check_in: string;
+  check_out: string;
+  status: string;
+  guest_name: string;
+  guest_last_name: string | null;
+  guest_first_name: string | null;
+  guest_email: string;
+  guest_phone: string | null;
+  guest_id: string | null;
+  num_adults: number;
+  num_children: number;
+  total_price: number | null;
+  booking_rooms:
+    | {
+        room_id: string;
+        rooms: { name: string } | { name: string }[] | null;
+      }[]
+    | null;
+};
+
+function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
+  return rows.map((b) => {
+    const room_ids: string[] = [];
+    const room_names: string[] = [];
+
+    for (const line of b.booking_rooms ?? []) {
+      room_ids.push(line.room_id);
+      const room = line.rooms;
+      const name = Array.isArray(room) ? room[0]?.name : room?.name;
+      if (name) room_names.push(name);
+    }
+
+    return {
+      id: b.id,
+      check_in: b.check_in,
+      check_out: b.check_out,
+      status: b.status as BookingStatus,
+      guest_name: b.guest_name,
+      guest_last_name: b.guest_last_name ?? null,
+      guest_first_name: b.guest_first_name ?? null,
+      guest_email: b.guest_email,
+      guest_phone: b.guest_phone,
+      guest_id: b.guest_id ?? null,
+      num_adults: b.num_adults,
+      num_children: b.num_children,
+      room_ids,
+      room_names,
+      total_price: b.total_price != null ? Number(b.total_price) : null,
+    };
+  });
+}
+
 export async function listBookingsForRange(
   rangeStart: string,
   rangeEnd: string
@@ -61,37 +115,7 @@ export async function listBookingsForRange(
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((b) => {
-    const br = (b.booking_rooms ?? []) as {
-      room_id: string;
-      rooms: { name: string } | { name: string }[] | null;
-    }[];
-    const room_ids: string[] = [];
-    const room_names: string[] = [];
-    for (const line of br) {
-      room_ids.push(line.room_id);
-      const r = line.rooms;
-      const name = Array.isArray(r) ? r[0]?.name : r?.name;
-      if (name) room_names.push(name);
-    }
-    return {
-      id: b.id,
-      check_in: b.check_in,
-      check_out: b.check_out,
-      status: b.status as BookingStatus,
-      guest_name: b.guest_name,
-      guest_last_name: b.guest_last_name ?? null,
-      guest_first_name: b.guest_first_name ?? null,
-      guest_email: b.guest_email,
-      guest_phone: b.guest_phone,
-      guest_id: b.guest_id ?? null,
-      num_adults: b.num_adults,
-      num_children: b.num_children,
-      room_ids,
-      room_names,
-      total_price: b.total_price != null ? Number(b.total_price) : null,
-    };
-  });
+  return mapBookingRows((data ?? []) as BookingSelectRow[]);
 }
 
 /** Verifică că camerele sunt libere pe interval (bookings, holds, blocks). */
@@ -407,37 +431,33 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((b) => {
-    const br = (b.booking_rooms ?? []) as {
-      room_id: string;
-      rooms: { name: string } | { name: string }[] | null;
-    }[];
-    const room_ids: string[] = [];
-    const room_names: string[] = [];
-    for (const line of br) {
-      room_ids.push(line.room_id);
-      const r = line.rooms;
-      const name = Array.isArray(r) ? r[0]?.name : r?.name;
-      if (name) room_names.push(name);
-    }
-    return {
-      id: b.id,
-      check_in: b.check_in,
-      check_out: b.check_out,
-      status: b.status as BookingStatus,
-      guest_name: b.guest_name,
-      guest_last_name: b.guest_last_name ?? null,
-      guest_first_name: b.guest_first_name ?? null,
-      guest_email: b.guest_email,
-      guest_phone: b.guest_phone,
-      guest_id: b.guest_id ?? null,
-      num_adults: b.num_adults,
-      num_children: b.num_children,
-      room_ids,
-      room_names,
-      total_price: b.total_price != null ? Number(b.total_price) : null,
-    };
-  });
+  return mapBookingRows((data ?? []) as BookingSelectRow[]);
+}
+
+export type CompletedStayHistoryRow = BookingRow;
+
+/** Istoric cazări deja încheiate, util pentru sidebar-uri și recap rapid. */
+export async function listCompletedStayHistory(
+  limit = 24
+): Promise<CompletedStayHistoryRow[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(
+      `
+      id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
+      guest_email, guest_phone, guest_id, total_price,
+      num_adults, num_children,
+      booking_rooms ( room_id, rooms ( name ) )
+    `
+    )
+    .eq("status", "confirmata")
+    .lt("check_out", todayIso())
+    .order("check_out", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  return mapBookingRows((data ?? []) as BookingSelectRow[]);
 }
 
 export async function confirmBookingWithRooms(
