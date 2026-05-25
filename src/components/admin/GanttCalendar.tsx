@@ -13,6 +13,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
+import {
+  computeDailyFreeCounts,
+  dailyFreeHeatLevel,
+} from "@/domain/gantt/daily-free-counts";
 import { guestInitials } from "@/domain/guest-name";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
@@ -69,6 +73,7 @@ import {
   type GanttBuildingChip,
 } from "@/components/admin/gantt/GanttBuildingChips";
 import { GanttUnassignedRow } from "@/components/admin/gantt/GanttUnassignedRow";
+import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
   roomTodayFlags,
   stayTodayHighlight,
@@ -200,6 +205,180 @@ function DayHeader({
         </div>
       ))}
     </div>
+  );
+}
+
+function SummaryGrid({
+  rooms,
+  bookings,
+  occupancy,
+  viewRange,
+  compact,
+  activeFocusIso,
+  filterActive,
+  onDayClick,
+}: {
+  rooms: GanttRoom[];
+  bookings: BookingRow[];
+  occupancy: OccupancySegment[];
+  viewRange: GanttViewRange;
+  compact: boolean;
+  activeFocusIso: string | null;
+  filterActive: boolean;
+  onDayClick: (iso: string) => void;
+}) {
+  const dayIsos = viewRange.days.map((d) => d.iso);
+  const counts = computeDailyFreeCounts(rooms, bookings, occupancy, dayIsos);
+
+  return (
+    <div
+      className="gantt-summary-row__grid grid w-full min-w-0"
+      style={ganttDayGridStyle(viewRange.days.length)}
+      role="row"
+      aria-label="Camere libere pe zi"
+    >
+      {viewRange.days.map((col, i) => {
+        const { free, total } = counts[i]!;
+        const heat = dailyFreeHeatLevel(free, total);
+        const isSelected = filterActive && activeFocusIso === col.iso;
+        const title =
+          total === 0
+            ? col.iso
+            : `${free} libere din ${total} camere · click pentru filtru`;
+
+        return (
+          <button
+            key={col.iso}
+            type="button"
+            title={title}
+            aria-pressed={isSelected}
+            aria-label={`${col.iso}: ${free} libere din ${total}`}
+            onClick={() => onDayClick(col.iso)}
+            className={[
+              "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
+              compact ? "gantt-summary-cell--compact py-1" : "py-1.5",
+              col.isWeekend && "gantt-summary-cell--weekend",
+              col.isToday && "gantt-summary-cell--today",
+              `gantt-summary-cell--${heat}`,
+              isSelected && "gantt-summary-cell--selected",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <span className="gantt-summary-cell__value tabular-nums">{free}</span>
+            {!compact && total > 0 && (
+              <span className="gantt-summary-cell__total">/{total}</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function StickyViewportHeader({
+  active,
+  left,
+  width,
+  roomColumnWidth,
+  daysContentWidth,
+  scrollLeft,
+  rooms,
+  bookings,
+  occupancy,
+  viewRange,
+  compact,
+  activeFocusIso,
+  filterActive,
+  onDayClick,
+}: {
+  active: boolean;
+  left: number;
+  width: number;
+  roomColumnWidth: number;
+  daysContentWidth: number;
+  scrollLeft: number;
+  rooms: GanttRoom[];
+  bookings: BookingRow[];
+  occupancy: OccupancySegment[];
+  viewRange: GanttViewRange;
+  compact: boolean;
+  activeFocusIso: string | null;
+  filterActive: boolean;
+  onDayClick: (iso: string) => void;
+}) {
+  if (!active || width <= 0 || daysContentWidth <= 0 || roomColumnWidth <= 0) {
+    return null;
+  }
+
+  return (
+    <AdminPortal>
+      <div
+        className="gantt-viewport-header"
+        style={{ left, width }}
+        aria-hidden={false}
+      >
+        <div className="gantt-viewport-header__row gantt-viewport-header__row--main">
+          <div
+            className="gantt-head-main-row__room gantt-room-column-header gantt-viewport-header__room"
+            style={{ width: roomColumnWidth }}
+          >
+            Cameră
+          </div>
+          <div className="gantt-viewport-header__days-viewport">
+            <div
+              className="gantt-viewport-header__days-inner"
+              style={{
+                width: daysContentWidth,
+                transform: `translateX(-${scrollLeft}px)`,
+              }}
+            >
+              <div className="gantt-head-main-row__days">
+                <DayHeader columns={viewRange.days} compact={compact} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="gantt-viewport-header__row gantt-viewport-header__row--summary">
+          <div
+            className="gantt-summary-row__label gantt-viewport-header__summary-label"
+            style={{ width: roomColumnWidth }}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+              Libere
+            </span>
+            {filterActive && activeFocusIso && (
+              <span className="mt-0.5 block text-[9px] font-medium text-emerald-700">
+                filtru activ
+              </span>
+            )}
+          </div>
+          <div className="gantt-viewport-header__days-viewport">
+            <div
+              className="gantt-viewport-header__days-inner"
+              style={{
+                width: daysContentWidth,
+                transform: `translateX(-${scrollLeft}px)`,
+              }}
+            >
+              <div className="gantt-summary-row__days">
+                <SummaryGrid
+                  rooms={rooms}
+                  bookings={bookings}
+                  occupancy={occupancy}
+                  viewRange={viewRange}
+                  compact={compact}
+                  activeFocusIso={activeFocusIso}
+                  filterActive={filterActive}
+                  onDayClick={onDayClick}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AdminPortal>
   );
 }
 
@@ -503,6 +682,14 @@ export function GanttCalendar({
   const shellRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
   const scrolledPeriodRef = useRef<string | null>(null);
+  const [stickyViewportHeader, setStickyViewportHeader] = useState({
+    active: false,
+    left: 0,
+    width: 0,
+    roomColumnWidth: 0,
+    daysContentWidth: 0,
+    scrollLeft: 0,
+  });
 
   const scrollToTodayColumn = useCallback(() => {
     const el = scrollRef.current;
@@ -633,6 +820,61 @@ export function GanttCalendar({
     groupByBuilding,
   ]);
 
+  useEffect(() => {
+    const scrollEl = scrollRef.current;
+    const shell = shellRef.current;
+    const thead = theadRef.current;
+    if (!scrollEl || !shell || !thead) return;
+
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const scrollRect = scrollEl.getBoundingClientRect();
+        const shellRect = shell.getBoundingClientRect();
+        const theadRect = thead.getBoundingClientRect();
+        const roomHeader =
+          thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
+        const roomColumnWidth = roomHeader?.getBoundingClientRect().width ?? 0;
+        const daysContentWidth = Math.max(0, scrollEl.scrollWidth - roomColumnWidth);
+        const active =
+          theadRect.top <= 0 && shellRect.bottom > Math.max(theadRect.height, 1);
+
+        setStickyViewportHeader((prev) => {
+          const next = {
+            active,
+            left: scrollRect.left,
+            width: scrollRect.width,
+            roomColumnWidth,
+            daysContentWidth,
+            scrollLeft: scrollEl.scrollLeft,
+          };
+          return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
+        });
+      });
+    };
+
+    update();
+    scrollEl.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      scrollEl.removeEventListener("scroll", update);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [
+    viewRange.periodKey,
+    compact,
+    filteredRooms.length,
+    bookings.length,
+    occupancy.length,
+    focusDay,
+    filter,
+  ]);
+
   const bookingById = useMemo(
     () => new Map(bookings.map((b) => [b.id, b])),
     [bookings]
@@ -687,6 +929,22 @@ export function GanttCalendar({
         shellRef={shellRef}
         viewRange={viewRange}
         occupancy={occupancy}
+      />
+      <StickyViewportHeader
+        active={stickyViewportHeader.active}
+        left={stickyViewportHeader.left}
+        width={stickyViewportHeader.width}
+        roomColumnWidth={stickyViewportHeader.roomColumnWidth}
+        daysContentWidth={stickyViewportHeader.daysContentWidth}
+        scrollLeft={stickyViewportHeader.scrollLeft}
+        rooms={rooms}
+        bookings={bookings}
+        occupancy={occupancy}
+        viewRange={viewRange}
+        compact={compact}
+        activeFocusIso={focusDay}
+        filterActive={filter === "free" && !!focusDay}
+        onDayClick={handleSummaryDayClick}
       />
     <div
       key={viewRange.periodKey}
