@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -81,10 +82,31 @@ export function AdminAppearanceProvider({
   children: ReactNode;
   initialSettings: AdminPaletteSettings;
 }) {
+  const cachedSnapshot = useRef<AdminPaletteSettings>(initialSettings);
+
+  const getSnapshot = useCallback(() => {
+    const next = readMergedAppearance(initialSettings);
+    const prev = cachedSnapshot.current;
+    if (
+      prev.admin_palette_source === next.admin_palette_source &&
+      prev.admin_palette_key === next.admin_palette_key &&
+      prev.admin_day_night === next.admin_day_night
+    ) {
+      return prev;
+    }
+    cachedSnapshot.current = next;
+    return next;
+  }, [initialSettings]);
+
+  const getServerSnapshot = useCallback(
+    () => initialSettings,
+    [initialSettings]
+  );
+
   const settings = useSyncExternalStore(
     subscribeToAppearance,
-    () => readMergedAppearance(initialSettings),
-    () => initialSettings
+    getSnapshot,
+    getServerSnapshot
   );
 
   const resolvedPaletteId = useMemo(
