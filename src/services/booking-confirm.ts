@@ -84,7 +84,10 @@ export async function loadBookingConfirmContext(
   const checkOutTime =
     settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
-  const occupied = await listOccupiedRoomRanges(bookingId);
+  const occupied = await listOccupiedRoomRanges(bookingId, {
+    rangeStart: booking.check_in,
+    rangeEnd: booking.check_out,
+  });
   const activeRooms = (await listAllRooms()).filter((r) => r.is_active);
   const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
     activeRooms.map((r) => r.id)

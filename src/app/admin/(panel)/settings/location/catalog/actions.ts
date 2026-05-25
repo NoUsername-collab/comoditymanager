@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   createRoomOption,
   createRoomType,
@@ -35,6 +36,7 @@ export async function createRoomTypeAction(formData: FormData) {
     summary: `Tip cameră nou: ${name}`,
   });
 
+  revalidateTag(CACHE_TAGS.roomCatalog);
   revalidatePath("/admin/settings/location");
   revalidatePath("/admin/rooms");
 }
@@ -60,6 +62,7 @@ export async function updateRoomTypeAction(formData: FormData) {
     default_option_ids,
   });
 
+  revalidateTag(CACHE_TAGS.roomCatalog);
   revalidatePath("/admin/settings/location");
   revalidatePath("/admin/rooms");
 }
@@ -80,6 +83,8 @@ export async function createRoomOptionAction(formData: FormData) {
     sort_order,
   });
 
+  revalidateTag(CACHE_TAGS.roomCatalog);
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
   revalidatePath("/admin/settings/location");
   revalidatePath("/admin/rooms");
 }
@@ -103,6 +108,8 @@ export async function updateRoomOptionAction(formData: FormData) {
     is_active,
   });
 
+  revalidateTag(CACHE_TAGS.roomCatalog);
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
   revalidatePath("/admin/settings/location");
   revalidatePath("/admin/rooms");
 }

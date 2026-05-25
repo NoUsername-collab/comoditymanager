@@ -1,7 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   cancelBooking,
@@ -10,6 +11,7 @@ import {
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 
 function revalidateBookingPaths(bookingId: string) {
+  revalidateTag(CACHE_TAGS.bookingCounts);
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/cazari");
   revalidatePath(`/admin/bookings/${bookingId}`);

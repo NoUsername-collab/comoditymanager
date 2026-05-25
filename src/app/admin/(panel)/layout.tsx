@@ -3,7 +3,6 @@ import "@/app/admin/admin-features.css";
 import { AdminShellClient } from "@/components/admin/AdminShellClient";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";
-import { AdminPaletteStyles } from "@/components/admin/AdminPaletteStyles";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
 import { cereriNoiLinkText } from "@/lib/ro-copy";
 import { countCereriNoi } from "@/services/bookings";
@@ -27,22 +26,14 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let cereriCount = 0;
+  const [cereriCount, pension] = await Promise.all([
+    countCereriNoi().catch(() => 0),
+    getPensionSettings().catch(() => null),
+  ]);
+
   let appearanceSettings: AdminPaletteSettings = DEFAULT_APPEARANCE;
-
-  try {
-    cereriCount = await countCereriNoi();
-  } catch {
-    cereriCount = 0;
-  }
-
-  try {
-    const pension = await getPensionSettings();
-    if (pension) {
-      appearanceSettings = pensionAppearanceSettings(pension);
-    }
-  } catch {
-    /* migrare 008 poate lipsi */
+  if (pension) {
+    appearanceSettings = pensionAppearanceSettings(pension);
   }
 
   let locationUnlocked = false;
@@ -57,7 +48,6 @@ export default async function AdminLayout({
 
   return (
     <AdminAppearanceProvider initialSettings={appearanceSettings}>
-      <AdminPaletteStyles settings={appearanceSettings} />
       <div className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
           <div className="admin-hud__surface">

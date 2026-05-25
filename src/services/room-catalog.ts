@@ -1,4 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   acModeToPolicyMode,
   computeRoomPrice,
@@ -42,7 +44,9 @@ function mapOption(row: Record<string, unknown>): RoomOptionDefinition {
   };
 }
 
-export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDefinition[]> {
+async function listRoomTypesUncached(
+  includeInactive = false
+): Promise<RoomTypeDefinition[]> {
   const supabase = createAdminClient();
   let q = supabase
     .from("room_type_definitions")
@@ -71,7 +75,18 @@ export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDe
   );
 }
 
-export async function listRoomOptions(includeInactive = false): Promise<RoomOptionDefinition[]> {
+const getCachedRoomTypes = unstable_cache(listRoomTypesUncached, undefined, {
+  tags: [CACHE_TAGS.roomCatalog],
+  revalidate: 300,
+});
+
+export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDefinition[]> {
+  return getCachedRoomTypes(includeInactive);
+}
+
+async function listRoomOptionsUncached(
+  includeInactive = false
+): Promise<RoomOptionDefinition[]> {
   const supabase = createAdminClient();
   let q = supabase
     .from("room_option_definitions")
@@ -82,6 +97,15 @@ export async function listRoomOptions(includeInactive = false): Promise<RoomOpti
   const { data, error } = await q;
   if (error) throw new Error(error.message);
   return (data ?? []).map((row) => mapOption(row as Record<string, unknown>));
+}
+
+const getCachedRoomOptions = unstable_cache(listRoomOptionsUncached, undefined, {
+  tags: [CACHE_TAGS.roomCatalog],
+  revalidate: 300,
+});
+
+export async function listRoomOptions(includeInactive = false): Promise<RoomOptionDefinition[]> {
+  return getCachedRoomOptions(includeInactive);
 }
 
 export async function getRoomCatalogContext(
@@ -371,7 +395,7 @@ export async function updateRoomOption(
 }
 
 /** Map room_id → slug-uri opțiuni active (AC, frigider…). */
-export async function getRoomOptionSlugsByRoomIds(
+async function getRoomOptionSlugsByRoomIdsUncached(
   roomIds: string[]
 ): Promise<Record<string, string[]>> {
   if (roomIds.length === 0) return {};
@@ -395,6 +419,21 @@ export async function getRoomOptionSlugsByRoomIds(
     out[rid].push(slug);
   }
   return out;
+}
+
+const getCachedRoomOptionSlugsByRoomIds = unstable_cache(
+  getRoomOptionSlugsByRoomIdsUncached,
+  undefined,
+  {
+    tags: [CACHE_TAGS.roomCatalog, CACHE_TAGS.roomOptionsByRoom],
+    revalidate: 300,
+  }
+);
+
+export async function getRoomOptionSlugsByRoomIds(
+  roomIds: string[]
+): Promise<Record<string, string[]>> {
+  return getCachedRoomOptionSlugsByRoomIds(roomIds);
 }
 
 export function parseSelectedOptionIds(formData: FormData): string[] {

@@ -1,13 +1,10 @@
 "use client";
 
 import {
-  computeDailyFreeCounts,
+  type DailyFreeCount,
   dailyFreeHeatLevel,
 } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import type { OccupancySegment } from "@/domain/occupancy/types";
-import type { BookingRow } from "@/services/bookings";
-import type { GanttRoom } from "@/domain/gantt/types";
 
 function ganttDayGridStyle(dayCount: number): React.CSSProperties {
   return {
@@ -16,26 +13,20 @@ function ganttDayGridStyle(dayCount: number): React.CSSProperties {
 }
 
 export function GanttDailySummaryRow({
-  rooms,
-  bookings,
-  occupancy,
+  counts,
   viewRange,
   compact,
   activeFocusIso,
   filterActive,
   onDayClick,
 }: {
-  rooms: GanttRoom[];
-  bookings: BookingRow[];
-  occupancy: OccupancySegment[];
+  counts: DailyFreeCount[];
   viewRange: GanttViewRange;
   compact: boolean;
   activeFocusIso: string | null;
   filterActive: boolean;
   onDayClick: (iso: string) => void;
 }) {
-  const dayIsos = viewRange.days.map((d) => d.iso);
-  const counts = computeDailyFreeCounts(rooms, bookings, occupancy, dayIsos);
   const dayCount = viewRange.days.length;
 
   return (

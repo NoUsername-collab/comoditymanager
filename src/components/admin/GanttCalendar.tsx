@@ -8,12 +8,14 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type RefObject,
 } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import {
+  type DailyFreeCount,
   computeDailyFreeCounts,
   dailyFreeHeatLevel,
 } from "@/domain/gantt/daily-free-counts";
@@ -24,15 +26,14 @@ import type { BookingRow } from "@/services/bookings";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import {
-  roomOverlaySegments,
-  roomStaySegments,
+  filterOccupancyForLayer,
   type GanttLayerFilter,
 } from "@/domain/gantt/occupancy-layer";
 import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import { ganttDayTimeStyle } from "@/lib/gantt-time";
 import type { GanttFilter } from "@/domain/gantt/filters";
-import { filterGanttRooms, focusDayInRange } from "@/domain/gantt/filters";
+import { focusDayInRange } from "@/domain/gantt/filters";
 import type { GanttRoom } from "@/domain/gantt/types";
 import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
@@ -70,13 +71,13 @@ import { GanttRadialController } from "@/components/admin/gantt/GanttRadialContr
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
-  roomTodayFlags,
+  type RoomTodayFlags,
   stayTodayHighlight,
   summarizeGanttToday,
 } from "@/domain/gantt/today-activity";
 import type { GanttZoom } from "@/domain/gantt/view-range";
 import { navigateRange } from "@/domain/gantt/view-range";
-import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
+import { addDays, nightOccupied, parseIso, todayIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
 
@@ -88,6 +89,15 @@ const GANTT_DAY_CELL =
   "gantt-day-cell min-w-0 bg-white shadow-[inset_0_0_0_1px_#d4d4d8]";
 
 type InlineZoomChoice = "today" | "days7" | "days15" | "days30" | "quarter";
+
+type StickyViewportState = {
+  active: boolean;
+  left: number;
+  width: number;
+  roomColumnWidth: number;
+  daysContentWidth: number;
+  scrollLeft: number;
+};
 
 function normalizeZoomChoice(zoom: GanttZoom): InlineZoomChoice {
   if (zoom === "week") return "days7";
@@ -210,27 +220,20 @@ function DayHeader({
 }
 
 function SummaryGrid({
-  rooms,
-  bookings,
-  occupancy,
+  counts,
   viewRange,
   compact,
   activeFocusIso,
   filterActive,
   onDayClick,
 }: {
-  rooms: GanttRoom[];
-  bookings: BookingRow[];
-  occupancy: OccupancySegment[];
+  counts: DailyFreeCount[];
   viewRange: GanttViewRange;
   compact: boolean;
   activeFocusIso: string | null;
   filterActive: boolean;
   onDayClick: (iso: string) => void;
 }) {
-  const dayIsos = viewRange.days.map((d) => d.iso);
-  const counts = computeDailyFreeCounts(rooms, bookings, occupancy, dayIsos);
-
   return (
     <div
       className="gantt-summary-row__grid grid w-full min-w-0"
@@ -278,37 +281,94 @@ function SummaryGrid({
 }
 
 function StickyViewportHeader({
-  active,
-  left,
-  width,
-  roomColumnWidth,
-  daysContentWidth,
-  scrollLeft,
-  rooms,
-  bookings,
-  occupancy,
+  scrollRef,
+  shellRef,
+  theadRef,
+  counts,
   viewRange,
   compact,
   activeFocusIso,
   filterActive,
   onDayClick,
 }: {
-  active: boolean;
-  left: number;
-  width: number;
-  roomColumnWidth: number;
-  daysContentWidth: number;
-  scrollLeft: number;
-  rooms: GanttRoom[];
-  bookings: BookingRow[];
-  occupancy: OccupancySegment[];
+  scrollRef: RefObject<HTMLDivElement | null>;
+  shellRef: RefObject<HTMLDivElement | null>;
+  theadRef: RefObject<HTMLTableSectionElement | null>;
+  counts: DailyFreeCount[];
   viewRange: GanttViewRange;
   compact: boolean;
   activeFocusIso: string | null;
   filterActive: boolean;
   onDayClick: (iso: string) => void;
 }) {
-  if (!active || width <= 0 || daysContentWidth <= 0 || roomColumnWidth <= 0) {
+  const [state, setState] = useState<StickyViewportState>({
+    active: false,
+    left: 0,
+    width: 0,
+    roomColumnWidth: 0,
+    daysContentWidth: 0,
+    scrollLeft: 0,
+  });
+
+  useEffect(() => {
+    const scrollEl = scrollRef.current;
+    const shell = shellRef.current;
+    const thead = theadRef.current;
+    if (!scrollEl || !shell || !thead) return;
+
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const scrollRect = scrollEl.getBoundingClientRect();
+        const shellRect = shell.getBoundingClientRect();
+        const theadRect = thead.getBoundingClientRect();
+        const roomHeader =
+          thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
+        const roomColumnWidth = roomHeader?.getBoundingClientRect().width ?? 0;
+        const daysContentWidth = Math.max(0, scrollEl.scrollWidth - roomColumnWidth);
+        const next: StickyViewportState = {
+          active:
+            theadRect.top <= 0 && shellRect.bottom > Math.max(theadRect.height, 1),
+          left: scrollRect.left,
+          width: scrollRect.width,
+          roomColumnWidth,
+          daysContentWidth,
+          scrollLeft: scrollEl.scrollLeft,
+        };
+
+        setState((prev) =>
+          prev.active === next.active &&
+          prev.left === next.left &&
+          prev.width === next.width &&
+          prev.roomColumnWidth === next.roomColumnWidth &&
+          prev.daysContentWidth === next.daysContentWidth &&
+          prev.scrollLeft === next.scrollLeft
+            ? prev
+            : next
+        );
+      });
+    };
+
+    update();
+    scrollEl.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      scrollEl.removeEventListener("scroll", update);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [scrollRef, shellRef, theadRef, viewRange.periodKey, compact, counts.length]);
+
+  if (
+    !state.active ||
+    state.width <= 0 ||
+    state.daysContentWidth <= 0 ||
+    state.roomColumnWidth <= 0
+  ) {
     return null;
   }
 
@@ -316,13 +376,13 @@ function StickyViewportHeader({
     <AdminPortal>
       <div
         className="gantt-viewport-header"
-        style={{ left, width }}
+        style={{ left: state.left, width: state.width }}
         aria-hidden={false}
       >
         <div className="gantt-viewport-header__row gantt-viewport-header__row--main">
           <div
             className="gantt-head-main-row__room gantt-room-column-header gantt-viewport-header__room"
-            style={{ width: roomColumnWidth }}
+            style={{ width: state.roomColumnWidth }}
           >
             Cameră
           </div>
@@ -330,8 +390,8 @@ function StickyViewportHeader({
             <div
               className="gantt-viewport-header__days-inner"
               style={{
-                width: daysContentWidth,
-                transform: `translateX(-${scrollLeft}px)`,
+                width: state.daysContentWidth,
+                transform: `translateX(-${state.scrollLeft}px)`,
               }}
             >
               <div className="gantt-head-main-row__days">
@@ -344,7 +404,7 @@ function StickyViewportHeader({
         <div className="gantt-viewport-header__row gantt-viewport-header__row--summary">
           <div
             className="gantt-summary-row__label gantt-viewport-header__summary-label"
-            style={{ width: roomColumnWidth }}
+            style={{ width: state.roomColumnWidth }}
           >
             <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500">
               Libere
@@ -359,15 +419,13 @@ function StickyViewportHeader({
             <div
               className="gantt-viewport-header__days-inner"
               style={{
-                width: daysContentWidth,
-                transform: `translateX(-${scrollLeft}px)`,
+                width: state.daysContentWidth,
+                transform: `translateX(-${state.scrollLeft}px)`,
               }}
             >
               <div className="gantt-summary-row__days">
                 <SummaryGrid
-                  rooms={rooms}
-                  bookings={bookings}
-                  occupancy={occupancy}
+                  counts={counts}
                   viewRange={viewRange}
                   compact={compact}
                   activeFocusIso={activeFocusIso}
@@ -386,14 +444,15 @@ function StickyViewportHeader({
 function RoomRow({
   room,
   viewRange,
-  bookings,
-  occupancy,
-  layerFilter,
+  occupancyByRoom,
+  staySegments,
+  overlays,
   checkInTime,
   checkOutTime,
   compact,
   touch,
   dimmed,
+  todayFlags,
   onOccOpen,
   bookingById,
   onMoveRoom,
@@ -401,22 +460,21 @@ function RoomRow({
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
-  bookings: BookingRow[];
-  occupancy: OccupancySegment[];
-  layerFilter: GanttLayerFilter;
+  occupancyByRoom: Map<string, OccupancySegment[]>;
+  staySegments: OccupancySegment[];
+  overlays: OccupancySegment[];
   checkInTime: string;
   checkOutTime: string;
   compact: boolean;
   touch: boolean;
   dimmed?: boolean;
+  todayFlags: RoomTodayFlags;
   onOccOpen: (seg: OccupancySegment, roomName: string) => void;
   bookingById: Map<string, BookingRow>;
   onMoveRoom: (draft: MoveRoomDraft) => void;
   onCreateDraft: (draft: GanttCreateDraft) => void;
 }) {
   const dayCount = viewRange.days.length;
-  const staySegments = roomStaySegments(occupancy, room.id, layerFilter);
-  const overlays = roomOverlaySegments(occupancy, room.id, layerFilter);
 
   const roomColor = resolveGanttBuildingColor(
     room.building_color,
@@ -425,8 +483,6 @@ function RoomRow({
   const sidebarMarkerColor = resolveGanttAcMarkerColor(room.building_ac_mode, {
     roomHasAc: room.has_ac,
   });
-
-  const todayFlags = roomTodayFlags(room.id, bookings);
 
   const rowTodayClass = [
     todayFlags.arrival && "gantt-room-row--arrival-today",
@@ -492,7 +548,7 @@ function RoomRow({
           roomId={room.id}
           roomName={room.name}
           viewRange={viewRange}
-          occupancy={occupancy}
+          occupancyByRoom={occupancyByRoom}
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
           touch={touch}
@@ -664,12 +720,71 @@ export function GanttCalendar({
   const searchParams = useSearchParams();
   const touch = useIsTouchDevice();
   const compact = viewRange.zoom === "quarter" || touch;
-  const defaultFocusIso = focusDayInRange(viewRange.days.map((d) => d.iso));
+  const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
+  const defaultFocusIso = focusDayInRange(dayIsos);
   const focusIso =
     filter !== "all" && focusDay ? focusDay : defaultFocusIso;
-  const filteredRooms = useMemo(
-    () => filterGanttRooms(rooms, bookings, filter, focusIso, occupancy),
-    [rooms, bookings, filter, focusIso, occupancy]
+  const activeBookings = useMemo(
+    () => bookings.filter((booking) => booking.status !== "anulata"),
+    [bookings]
+  );
+  const bookingsByRoom = useMemo(() => {
+    const map = new Map<string, BookingRow[]>();
+    for (const booking of activeBookings) {
+      for (const roomId of booking.room_ids) {
+        const list = map.get(roomId);
+        if (list) list.push(booking);
+        else map.set(roomId, [booking]);
+      }
+    }
+    return map;
+  }, [activeBookings]);
+  const occupancyByRoom = useMemo(() => {
+    const map = new Map<string, OccupancySegment[]>();
+    for (const segment of occupancy) {
+      const list = map.get(segment.roomId);
+      if (list) list.push(segment);
+      else map.set(segment.roomId, [segment]);
+    }
+    return map;
+  }, [occupancy]);
+  const displaySegmentsByRoom = useMemo(() => {
+    const stay = new Map<string, OccupancySegment[]>();
+    const overlay = new Map<string, OccupancySegment[]>();
+    for (const segment of filterOccupancyForLayer(occupancy, layerFilter)) {
+      const target =
+        segment.kind === "request" || segment.kind === "stay" ? stay : overlay;
+      const list = target.get(segment.roomId);
+      if (list) list.push(segment);
+      else target.set(segment.roomId, [segment]);
+    }
+    return { stay, overlay };
+  }, [occupancy, layerFilter]);
+  const occupiedRoomIdsOnFocus = useMemo(() => {
+    const occupied = new Set<string>();
+    for (const [roomId, roomBookings] of bookingsByRoom) {
+      if (roomBookings.some((booking) => nightOccupied(focusIso, booking.check_in, booking.check_out))) {
+        occupied.add(roomId);
+      }
+    }
+    for (const [roomId, segments] of occupancyByRoom) {
+      if (segments.some((segment) => nightOccupied(focusIso, segment.checkIn, segment.checkOut))) {
+        occupied.add(roomId);
+      }
+    }
+    return occupied;
+  }, [bookingsByRoom, occupancyByRoom, focusIso]);
+  const filteredRooms = useMemo(() => {
+    if (filter === "all") return rooms;
+    return rooms.filter((room) =>
+      filter === "occupied"
+        ? occupiedRoomIdsOnFocus.has(room.id)
+        : !occupiedRoomIdsOnFocus.has(room.id)
+    );
+  }, [rooms, filter, occupiedRoomIdsOnFocus]);
+  const dailyFreeCounts = useMemo(
+    () => computeDailyFreeCounts(rooms, activeBookings, occupancy, dayIsos),
+    [rooms, activeBookings, occupancy, dayIsos]
   );
 
   const todayIndex = viewRange.days.findIndex((d) => d.isToday);
@@ -678,22 +793,29 @@ export function GanttCalendar({
     todayIndex >= 0 ? ((todayIndex + 0.5) / dayCount) * 100 : null;
 
   const todaySummary = useMemo(
-    () => summarizeGanttToday(bookings, viewRange.days.map((d) => d.iso)),
-    [bookings, viewRange.days]
+    () => summarizeGanttToday(activeBookings, dayIsos),
+    [activeBookings, dayIsos]
   );
+  const todayFlagsByRoom = useMemo(() => {
+    const map = new Map<string, RoomTodayFlags>();
+    const today = todaySummary.todayIso;
+    for (const room of rooms) {
+      const roomBookings = bookingsByRoom.get(room.id) ?? [];
+      map.set(room.id, {
+        arrival: roomBookings.some((booking) => booking.check_in === today),
+        departure: roomBookings.some((booking) => booking.check_out === today),
+        occupiedTonight: roomBookings.some((booking) =>
+          nightOccupied(today, booking.check_in, booking.check_out)
+        ),
+      });
+    }
+    return map;
+  }, [rooms, bookingsByRoom, todaySummary.todayIso]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
   const scrolledPeriodRef = useRef<string | null>(null);
-  const [stickyViewportHeader, setStickyViewportHeader] = useState({
-    active: false,
-    left: 0,
-    width: 0,
-    roomColumnWidth: 0,
-    daysContentWidth: 0,
-    scrollLeft: 0,
-  });
 
   const scrollToTodayColumn = useCallback(() => {
     const el = scrollRef.current;
@@ -801,61 +923,6 @@ export function GanttCalendar({
     todaySummary.arrivals.length,
     todaySummary.departures.length,
     groupByBuilding,
-  ]);
-
-  useEffect(() => {
-    const scrollEl = scrollRef.current;
-    const shell = shellRef.current;
-    const thead = theadRef.current;
-    if (!scrollEl || !shell || !thead) return;
-
-    let frame = 0;
-    const update = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const scrollRect = scrollEl.getBoundingClientRect();
-        const shellRect = shell.getBoundingClientRect();
-        const theadRect = thead.getBoundingClientRect();
-        const roomHeader =
-          thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
-        const roomColumnWidth = roomHeader?.getBoundingClientRect().width ?? 0;
-        const daysContentWidth = Math.max(0, scrollEl.scrollWidth - roomColumnWidth);
-        const active =
-          theadRect.top <= 0 && shellRect.bottom > Math.max(theadRect.height, 1);
-
-        setStickyViewportHeader((prev) => {
-          const next = {
-            active,
-            left: scrollRect.left,
-            width: scrollRect.width,
-            roomColumnWidth,
-            daysContentWidth,
-            scrollLeft: scrollEl.scrollLeft,
-          };
-          return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
-        });
-      });
-    };
-
-    update();
-    scrollEl.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      scrollEl.removeEventListener("scroll", update);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [
-    viewRange.periodKey,
-    compact,
-    filteredRooms.length,
-    bookings.length,
-    occupancy.length,
-    focusDay,
-    filter,
   ]);
 
   const bookingById = useMemo(
@@ -1034,15 +1101,10 @@ export function GanttCalendar({
         occupancy={occupancy}
       />
       <StickyViewportHeader
-        active={stickyViewportHeader.active}
-        left={stickyViewportHeader.left}
-        width={stickyViewportHeader.width}
-        roomColumnWidth={stickyViewportHeader.roomColumnWidth}
-        daysContentWidth={stickyViewportHeader.daysContentWidth}
-        scrollLeft={stickyViewportHeader.scrollLeft}
-        rooms={rooms}
-        bookings={bookings}
-        occupancy={occupancy}
+        scrollRef={scrollRef}
+        shellRef={shellRef}
+        theadRef={theadRef}
+        counts={dailyFreeCounts}
         viewRange={viewRange}
         compact={compact}
         activeFocusIso={focusDay}
@@ -1060,36 +1122,102 @@ export function GanttCalendar({
       >
         <div className="gantt-inline-controls mx-3 mt-0">
           <div className="gantt-inline-controls__row gantt-inline-controls__row--primary">
-            <div className="gantt-inline-controls__cluster gantt-inline-controls__cluster--left">
-              <SegmentGroup
-                label="Interval"
-                compact
-                value={zoomChoice}
-                onChange={(next) => handleInlineZoomChange(next as InlineZoomChoice)}
-                options={[
-                  { value: "today", label: "Azi", shortLabel: "Azi" },
-                  { value: "days7", label: "7 zile", shortLabel: "7z" },
-                  { value: "days15", label: "15 zile", shortLabel: "15z" },
-                  { value: "days30", label: "30 zile", shortLabel: "30z" },
-                  { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
-                ]}
-              />
+            <div className="gantt-inline-controls__primary-section gantt-inline-controls__primary-section--period">
+              <div className="gantt-inline-controls__period-stack">
+                <div className="gantt-inline-controls__period-main">
+                  <SegmentGroup
+                    label="Interval"
+                    compact
+                    value={zoomChoice}
+                    onChange={(next) => handleInlineZoomChange(next as InlineZoomChoice)}
+                    options={[
+                      { value: "today", label: "Azi", shortLabel: "Azi" },
+                      { value: "days7", label: "7 zile", shortLabel: "7z" },
+                      { value: "days15", label: "15 zile", shortLabel: "15z" },
+                      { value: "days30", label: "30 zile", shortLabel: "30z" },
+                      { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
+                    ]}
+                  />
 
-              <SegmentGroup
-                label="Strat"
-                compact
-                value={layerFilter}
-                onChange={(next) => pushCalendarPatch({ layer: next as GanttLayerFilter })}
-                options={[
-                  { value: "all", label: "Tot", shortLabel: "Tot" },
-                  { value: "cereri", label: "Cereri", shortLabel: "Cer." },
-                  { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
-                  { value: "in_house", label: "In-house", shortLabel: "In" },
-                  { value: "trecute", label: "Trecute", shortLabel: "Trec." },
-                  { value: "hold", label: "Hold", shortLabel: "Hold" },
-                  { value: "block", label: "Blocări", shortLabel: "Bloc" },
-                ]}
-              />
+                  <div className="gantt-toolbar__period-shell">
+                    <div className="gantt-toolbar__period">
+                      <button
+                        type="button"
+                        className="gantt-toolbar__nav"
+                        aria-label="Perioada anterioară"
+                        onClick={() => navigatePeriod(-1)}
+                      >
+                        ←
+                      </button>
+                      <span className="gantt-toolbar__title capitalize">{viewRange.title}</span>
+                      <button
+                        type="button"
+                        className="gantt-toolbar__nav"
+                        aria-label="Perioada următoare"
+                        onClick={() => navigatePeriod(1)}
+                      >
+                        →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="gantt-inline-controls__period-nav">
+                  <GanttTodayPanel
+                    summary={todaySummary}
+                    checkInTime={checkInTime}
+                    checkOutTime={checkOutTime}
+                    onScrollToToday={scrollToTodayColumn}
+                    compact
+                  />
+
+                  <div className="gantt-toolbar__shifters" aria-label="Deplasare grid">
+                    <div className="gantt-toolbar__stepper">
+                      <span className="gantt-toolbar__stepper-label">1 zi</span>
+                      <div className="gantt-toolbar__stepper-actions">
+                        <button
+                          type="button"
+                          className="gantt-toolbar__mini-nav"
+                          aria-label="Înapoi o zi"
+                          onClick={() => shiftGrid(-1)}
+                        >
+                          ←
+                        </button>
+                        <button
+                          type="button"
+                          className="gantt-toolbar__mini-nav"
+                          aria-label="Înainte o zi"
+                          onClick={() => shiftGrid(1)}
+                        >
+                          →
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="gantt-toolbar__stepper">
+                      <span className="gantt-toolbar__stepper-label">1 săpt.</span>
+                      <div className="gantt-toolbar__stepper-actions">
+                        <button
+                          type="button"
+                          className="gantt-toolbar__mini-nav"
+                          aria-label="Înapoi o săptămână"
+                          onClick={() => shiftGrid(-7)}
+                        >
+                          ←
+                        </button>
+                        <button
+                          type="button"
+                          className="gantt-toolbar__mini-nav"
+                          aria-label="Înainte o săptămână"
+                          onClick={() => shiftGrid(7)}
+                        >
+                          →
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="gantt-inline-controls__center">
@@ -1102,7 +1230,7 @@ export function GanttCalendar({
               />
             </div>
 
-            <div className="gantt-inline-controls__cluster gantt-inline-controls__cluster--right">
+            <div className="gantt-inline-controls__primary-section gantt-inline-controls__primary-section--rooms">
               <SegmentGroup
                 label="Camere"
                 compact
@@ -1120,139 +1248,82 @@ export function GanttCalendar({
                 ]}
               />
 
-              <SegmentGroup
-                label="Opțiuni"
-                compact
-                value={selectedFeature}
-                onChange={(next) =>
-                  pushCalendarPatch({ feat: next as GanttFeatureFilter })
-                }
-                options={[
-                  { value: "all", label: "Toate" },
-                  { value: "ac", label: "Cu AC" },
-                  { value: "fridge", label: "Frigider" },
-                ]}
-              />
-
-              <SegmentGroup
-                label="Vizualizare"
-                compact
-                value={inlineViewChoice}
-                onChange={(next) =>
-                  pushCalendarPatch({
-                    view: next as "all" | "room",
-                    room:
-                      next === "room"
-                        ? selectedRoomId || rooms[0]?.id || null
-                        : null,
-                  })
-                }
-                options={[
-                  { value: "all", label: "Toate camerele", shortLabel: "Toate" },
-                  { value: "room", label: "Alege cameră", shortLabel: "Cameră" },
-                ]}
-              />
+              <div className="gantt-inline-controls__room-picker-shell">
+                <span className="gantt-inline-controls__picker-label">Camera</span>
+                <div className="gantt-inline-controls__room-picker">
+                  {inlineViewChoice === "room" && rooms.length > 0 ? (
+                    <select
+                      value={selectedRoomId || rooms[0]?.id || ""}
+                      onChange={(e) =>
+                        pushCalendarPatch({ view: "room", room: e.target.value })
+                      }
+                      className="gantt-toolbar__select gantt-toolbar__select--wide"
+                      aria-label="Cameră"
+                    >
+                      <option value="">Selectează camera…</option>
+                      {rooms.map((room) => (
+                        <option key={room.id} value={room.id}>
+                          {room.name} · {room.building_name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="gantt-inline-controls__all-rooms">Toate camerele</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="gantt-inline-controls__row gantt-inline-controls__row--nav">
-            <GanttTodayPanel
-              summary={todaySummary}
-              checkInTime={checkInTime}
-              checkOutTime={checkOutTime}
-              onScrollToToday={scrollToTodayColumn}
+          <div className="gantt-inline-controls__row gantt-inline-controls__row--secondary">
+            <SegmentGroup
+              label="Strat"
               compact
+              value={layerFilter}
+              onChange={(next) => pushCalendarPatch({ layer: next as GanttLayerFilter })}
+              options={[
+                { value: "all", label: "Tot", shortLabel: "Tot" },
+                { value: "cereri", label: "Cereri", shortLabel: "Cer." },
+                { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
+                { value: "in_house", label: "In-house", shortLabel: "In" },
+                { value: "trecute", label: "Trecute", shortLabel: "Trec." },
+                { value: "hold", label: "Hold", shortLabel: "Hold" },
+                { value: "block", label: "Blocări", shortLabel: "Bloc" },
+              ]}
             />
 
-            <div className="gantt-toolbar__shifters" aria-label="Deplasare grid">
-              <div className="gantt-toolbar__stepper">
-                <span className="gantt-toolbar__stepper-label">1 zi</span>
-                <div className="gantt-toolbar__stepper-actions">
-                  <button
-                    type="button"
-                    className="gantt-toolbar__mini-nav"
-                    aria-label="Înapoi o zi"
-                    onClick={() => shiftGrid(-1)}
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    className="gantt-toolbar__mini-nav"
-                    aria-label="Înainte o zi"
-                    onClick={() => shiftGrid(1)}
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
+            <SegmentGroup
+              label="Opțiuni"
+              compact
+              value={selectedFeature}
+              onChange={(next) =>
+                pushCalendarPatch({ feat: next as GanttFeatureFilter })
+              }
+              options={[
+                { value: "all", label: "Toate" },
+                { value: "ac", label: "Cu AC" },
+                { value: "fridge", label: "Frigider" },
+              ]}
+            />
 
-              <div className="gantt-toolbar__stepper">
-                <span className="gantt-toolbar__stepper-label">1 săpt.</span>
-                <div className="gantt-toolbar__stepper-actions">
-                  <button
-                    type="button"
-                    className="gantt-toolbar__mini-nav"
-                    aria-label="Înapoi o săptămână"
-                    onClick={() => shiftGrid(-7)}
-                  >
-                    ←
-                  </button>
-                  <button
-                    type="button"
-                    className="gantt-toolbar__mini-nav"
-                    aria-label="Înainte o săptămână"
-                    onClick={() => shiftGrid(7)}
-                  >
-                    →
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="gantt-toolbar__period-shell">
-              <div className="gantt-toolbar__period">
-                <button
-                  type="button"
-                  className="gantt-toolbar__nav"
-                  aria-label="Perioada anterioară"
-                  onClick={() => navigatePeriod(-1)}
-                >
-                  ←
-                </button>
-                <span className="gantt-toolbar__title capitalize">{viewRange.title}</span>
-                <button
-                  type="button"
-                  className="gantt-toolbar__nav"
-                  aria-label="Perioada următoare"
-                  onClick={() => navigatePeriod(1)}
-                >
-                  →
-                </button>
-              </div>
-            </div>
-
-            <div className="gantt-inline-controls__room-picker">
-              {inlineViewChoice === "room" && rooms.length > 0 ? (
-                <select
-                  value={selectedRoomId || rooms[0]?.id || ""}
-                  onChange={(e) =>
-                    pushCalendarPatch({ view: "room", room: e.target.value })
-                  }
-                  className="gantt-toolbar__select gantt-toolbar__select--wide"
-                  aria-label="Cameră"
-                >
-                  <option value="">Selectează camera…</option>
-                  {rooms.map((room) => (
-                    <option key={room.id} value={room.id}>
-                      {room.name} · {room.building_name}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <span className="gantt-inline-controls__all-rooms">Toate camerele</span>
-              )}
-            </div>
+            <SegmentGroup
+              label="Vizualizare"
+              compact
+              value={inlineViewChoice}
+              onChange={(next) =>
+                pushCalendarPatch({
+                  view: next as "all" | "room",
+                  room:
+                    next === "room"
+                      ? selectedRoomId || rooms[0]?.id || null
+                      : null,
+                })
+              }
+              options={[
+                { value: "all", label: "Toate camerele", shortLabel: "Toate" },
+                { value: "room", label: "Alege cameră", shortLabel: "Cameră" },
+              ]}
+            />
           </div>
         </div>
 
@@ -1303,9 +1374,7 @@ export function GanttCalendar({
               </th>
             </tr>
             <GanttDailySummaryRow
-              rooms={rooms}
-              bookings={bookings}
-              occupancy={occupancy}
+              counts={dailyFreeCounts}
               viewRange={viewRange}
               compact={compact}
               activeFocusIso={focusDay}
@@ -1396,9 +1465,9 @@ export function GanttCalendar({
                         key={room.id}
                         room={room}
                         viewRange={viewRange}
-                        bookings={bookings}
-                        occupancy={occupancy}
-                        layerFilter={layerFilter}
+                        occupancyByRoom={occupancyByRoom}
+                        staySegments={displaySegmentsByRoom.stay.get(room.id) ?? []}
+                        overlays={displaySegmentsByRoom.overlay.get(room.id) ?? []}
                         checkInTime={checkInTime}
                         checkOutTime={checkOutTime}
                         compact={compact}
@@ -1407,6 +1476,11 @@ export function GanttCalendar({
                           focusBuildingId != null &&
                           room.building_id !== focusBuildingId
                         }
+                        todayFlags={todayFlagsByRoom.get(room.id) ?? {
+                          arrival: false,
+                          departure: false,
+                          occupiedTonight: false,
+                        }}
                         onOccOpen={handleOccOpen}
                         bookingById={bookingById}
                         onMoveRoom={setMoveRoomDraft}
@@ -1421,13 +1495,18 @@ export function GanttCalendar({
                     key={room.id}
                     room={room}
                     viewRange={viewRange}
-                    bookings={bookings}
-                    occupancy={occupancy}
-                    layerFilter={layerFilter}
+                    occupancyByRoom={occupancyByRoom}
+                    staySegments={displaySegmentsByRoom.stay.get(room.id) ?? []}
+                    overlays={displaySegmentsByRoom.overlay.get(room.id) ?? []}
                     checkInTime={checkInTime}
                     checkOutTime={checkOutTime}
                     compact={compact}
                     touch={touch}
+                    todayFlags={todayFlagsByRoom.get(room.id) ?? {
+                      arrival: false,
+                      departure: false,
+                      occupiedTonight: false,
+                    }}
                     onOccOpen={handleOccOpen}
                     bookingById={bookingById}
                     onMoveRoom={setMoveRoomDraft}

@@ -10,7 +10,7 @@ type Props = {
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
 };
 
-/** Formular server action cu overlay global de loading. */
+/** Formular server action cu pending controlat, fără overlay global. */
 export function AdminPendingForm({ action, children, className, onSubmit }: Props) {
   const runAdminAction = useRunAdminAction();
 

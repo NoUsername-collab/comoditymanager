@@ -1,30 +1,42 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-const POLL_MS = 50_000;
+const POLL_MS = 180_000;
+const LIVE_DEBOUNCE_MS = 1_500;
+const MIN_REFRESH_GAP_MS = 15_000;
 
 export function AdminLiveRefresh() {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
-  const [mode, setMode] = useState<"live" | "poll" | "init">("init");
-  const refreshing = useRef(false);
+  const [mode, setMode] = useState<"live" | "poll">("poll");
+  const liveTimer = useRef<number | null>(null);
+  const lastRefreshAt = useRef(0);
+  const pendingRef = useRef(isPending);
+
+  useEffect(() => {
+    pendingRef.current = isPending;
+  }, [isPending]);
 
   useEffect(() => {
     function refresh(reason: "live" | "poll") {
-      if (refreshing.current) return;
-      refreshing.current = true;
-      setMode(reason);
-      router.refresh();
-      setLastRefresh(new Date());
-      window.setTimeout(() => {
-        refreshing.current = false;
-      }, 2000);
-    }
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return;
+      }
+      if (pendingRef.current) return;
+      const now = Date.now();
+      if (now - lastRefreshAt.current < MIN_REFRESH_GAP_MS) return;
 
-    refresh("poll");
+      lastRefreshAt.current = now;
+      setMode(reason);
+      setLastRefresh(new Date());
+      startTransition(() => {
+        router.refresh();
+      });
+    }
 
     const pollId = window.setInterval(() => refresh("poll"), POLL_MS);
 
@@ -40,20 +52,29 @@ export function AdminLiveRefresh() {
         .on(
           "postgres_changes",
           { event: "*", schema: "public", table: "bookings" },
-          () => refresh("live")
+          () => {
+            if (liveTimer.current) {
+              window.clearTimeout(liveTimer.current);
+            }
+            liveTimer.current = window.setTimeout(() => {
+              liveTimer.current = null;
+              refresh("live");
+            }, LIVE_DEBOUNCE_MS);
+          }
         )
         .subscribe((status) => {
           if (status === "SUBSCRIBED") setMode("live");
         });
-    } catch {
-      setMode("poll");
-    }
+    } catch {}
 
     return () => {
       window.clearInterval(pollId);
+      if (liveTimer.current) {
+        window.clearTimeout(liveTimer.current);
+      }
       if (channel && supabase) supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [router, startTransition]);
 
   const timeLabel = lastRefresh
     ? lastRefresh.toLocaleTimeString("ro-RO", {
@@ -66,7 +87,7 @@ export function AdminLiveRefresh() {
   return (
     <div
       className="admin-hud__sync"
-      title="Actualizare automată: Realtime + reîmprospătare la 50s"
+      title="Actualizare automată: realtime cu fallback rar și fără refresh-uri suprapuse"
     >
       <span
         className={[
@@ -78,7 +99,7 @@ export function AdminLiveRefresh() {
         aria-hidden
       />
       <span>
-        {mode === "live" ? "Live" : "Auto 50s"} · {timeLabel}
+        {mode === "live" ? "Live" : "Auto 3m"} · {timeLabel}
       </span>
     </div>
   );

@@ -42,6 +42,7 @@ export async function getRoomOccupancy(
 ): Promise<OccupancySegment[]> {
   const kinds = options.kinds ?? ALL_KINDS;
   const ref = options.referenceDate ?? todayIso();
+  const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
   const supabase = createAdminClient();
   const out: OccupancySegment[] = [];
 
@@ -59,6 +60,10 @@ export async function getRoomOccupancy(
       .lte("segment_start", rangeEnd)
       .gte("segment_end", rangeStart)
       .neq("bookings.status", "anulata");
+
+    if (roomIds.length > 0) {
+      q = q.in("room_id", roomIds);
+    }
 
     if (options.excludeBookingId) {
       q = q.neq("booking_id", options.excludeBookingId);
@@ -120,10 +125,15 @@ export async function getRoomOccupancy(
       .lte("check_in", rangeEnd)
       .gte("check_out", rangeStart)
       .is("released_at", null);
+    let holdRows = data ?? [];
 
     if (error) throw new Error(error.message);
 
-    for (const row of data ?? []) {
+    if (roomIds.length > 0) {
+      holdRows = holdRows.filter((row) => roomIds.includes(row.room_id as string));
+    }
+
+    for (const row of holdRows) {
       if (!isHoldActive(row)) continue;
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
@@ -147,10 +157,15 @@ export async function getRoomOccupancy(
       .select("id, room_id, check_in, check_out, reason")
       .lte("check_in", rangeEnd)
       .gte("check_out", rangeStart);
+    let blockRows = data ?? [];
 
     if (error) throw new Error(error.message);
 
-    for (const row of data ?? []) {
+    if (roomIds.length > 0) {
+      blockRows = blockRows.filter((row) => roomIds.includes(row.room_id as string));
+    }
+
+    for (const row of blockRows) {
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
       out.push({
@@ -175,12 +190,20 @@ export async function getRoomOccupancy(
 /** Interval larg pentru verificări conflict — exclude opțional un booking. */
 export async function listOccupancyForConflictCheck(
   excludeBookingId?: string,
-  options?: Pick<OccupancyQueryOptions, "forPublicCalendar">
+  options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds"> & {
+    rangeStart?: string;
+    rangeEnd?: string;
+  }
 ): Promise<OccupancySegment[]> {
-  return getRoomOccupancy("1970-01-01", "2099-12-31", {
+  return getRoomOccupancy(
+    options?.rangeStart ?? "1970-01-01",
+    options?.rangeEnd ?? "2099-12-31",
+    {
     excludeBookingId,
+    roomIds: options?.roomIds,
     forPublicCalendar: options?.forPublicCalendar,
-  });
+    }
+  );
 }
 
 export async function assertRoomsAvailableForOccupancy(
@@ -203,7 +226,11 @@ export async function assertRoomsAvailableForOccupancy(
     checkOut: settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,
   };
 
-  const segments = await listOccupancyForConflictCheck(excludeBookingId);
+  const segments = await listOccupancyForConflictCheck(excludeBookingId, {
+    rangeStart: checkIn,
+    rangeEnd: checkOut,
+    roomIds: unique,
+  });
   if (
     hasOccupancyConflict(unique, checkIn, checkOut, segments, {
       bookingId: excludeBookingId,
@@ -218,7 +245,10 @@ export async function assertRoomsAvailableForOccupancy(
 /** Compat: format vechi pentru isRoomFreeForStay / countFreeRooms */
 export async function listOccupiedRoomRanges(
   excludeBookingId?: string,
-  options?: Pick<OccupancyQueryOptions, "forPublicCalendar">
+  options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds"> & {
+    rangeStart?: string;
+    rangeEnd?: string;
+  }
 ): Promise<{ room_id: string; check_in: string; check_out: string }[]> {
   const segments = await listOccupancyForConflictCheck(
     excludeBookingId,

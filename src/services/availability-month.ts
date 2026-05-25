@@ -1,5 +1,5 @@
 import { nightOccupied } from "@/lib/stay-dates";
-import { dayInitialFromIso, daysInMonth, monthYearLabelRo } from "@/lib/ro-calendar";
+import { daysInMonth, monthYearLabelRo } from "@/lib/ro-calendar";
 import { listOccupiedRoomRanges, listBookingsForRange } from "@/services/bookings";
 import { listAllRooms } from "@/services/rooms-admin";
 import { listBuildings } from "@/services/buildings";
@@ -215,7 +215,7 @@ export async function loadAvailabilityDashboard(
   buildingId: string | null = null,
   featureFilter: GanttFeatureFilter = "all"
 ): Promise<AvailabilityDashboard> {
-  const { start, end, dim } = monthRange(year, month);
+  const { start, end } = monthRange(year, month);
 
   const prevMonth = month === 0 ? 11 : month - 1;
   const prevYear = month === 0 ? year - 1 : year;
@@ -227,7 +227,11 @@ export async function loadAvailabilityDashboard(
   const [roomsRaw, buildings, occupied, bookings] = await Promise.all([
     listAllRooms(),
     listBuildings(),
-    listOccupiedRoomRanges(undefined, { forPublicCalendar: true }),
+    listOccupiedRoomRanges(undefined, {
+      forPublicCalendar: true,
+      rangeStart,
+      rangeEnd: scanEnd,
+    }),
     listBookingsForRange(rangeStart, scanEnd),
   ]);
 

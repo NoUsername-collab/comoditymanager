@@ -1,11 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createBookingRequest } from "@/services/bookings";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 
 function mustAcceptLegal(formData: FormData) {
   if (formData.get("accept_terms") !== "on") {
@@ -124,6 +125,7 @@ export async function submitGuestRequestAction(formData: FormData) {
     room_ids: selected.rooms.map((r) => r.id),
   });
 
+  revalidateTag(CACHE_TAGS.bookingCounts);
   revalidatePath("/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/calendar");
@@ -169,6 +171,7 @@ export async function submitPhoneBookingAction(formData: FormData) {
     notes,
   });
 
+  revalidateTag(CACHE_TAGS.bookingCounts);
   revalidatePath("/receptie");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/calendar");

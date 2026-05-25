@@ -21,22 +21,35 @@ export function computeDailyFreeCounts(
     return dayIsos.map((iso) => ({ iso, free: 0, total: 0, occupied: 0 }));
   }
 
-  return dayIsos.map((iso) => {
-    let occupied = 0;
-    for (const room of rooms) {
-      const bookingOcc = bookings.some(
-        (b) =>
-          b.status !== "anulata" &&
-          b.room_ids.includes(room.id) &&
-          nightOccupied(iso, b.check_in, b.check_out)
-      );
-      const overlayOcc = occupancy.some(
-        (s) =>
-          s.roomId === room.id &&
-          nightOccupied(iso, s.checkIn, s.checkOut)
-      );
-      if (bookingOcc || overlayOcc) occupied += 1;
+  const roomSet = new Set(rooms.map((room) => room.id));
+  const occupiedByDay = new Map<string, Set<string>>();
+  for (const iso of dayIsos) {
+    occupiedByDay.set(iso, new Set());
+  }
+
+  for (const booking of bookings) {
+    if (booking.status === "anulata") continue;
+    for (const roomId of booking.room_ids) {
+      if (!roomSet.has(roomId)) continue;
+      for (const iso of dayIsos) {
+        if (nightOccupied(iso, booking.check_in, booking.check_out)) {
+          occupiedByDay.get(iso)?.add(roomId);
+        }
+      }
     }
+  }
+
+  for (const segment of occupancy) {
+    if (!roomSet.has(segment.roomId)) continue;
+    for (const iso of dayIsos) {
+      if (nightOccupied(iso, segment.checkIn, segment.checkOut)) {
+        occupiedByDay.get(iso)?.add(segment.roomId);
+      }
+    }
+  }
+
+  return dayIsos.map((iso) => {
+    const occupied = occupiedByDay.get(iso)?.size ?? 0;
     return { iso, free: total - occupied, total, occupied };
   });
 }

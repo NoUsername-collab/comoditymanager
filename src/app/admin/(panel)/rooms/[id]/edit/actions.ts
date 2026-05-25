@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { listBuildings } from "@/services/buildings";
 import { parseSelectedOptionIds } from "@/services/room-catalog";
 import { updateRoom } from "@/services/rooms-admin";
@@ -58,6 +59,8 @@ export async function updateRoomAction(formData: FormData) {
     metadata: { is_active, room_type_definition_id },
   });
 
+  revalidateTag(CACHE_TAGS.rooms);
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
   revalidatePath("/admin/rooms");
   revalidatePath("/");
   revalidatePath("/admin/calendar");

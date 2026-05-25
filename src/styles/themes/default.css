@@ -118,6 +118,38 @@ html[data-theme="default"][data-mode="night"] {
   --admin-danger-text: #fecaca;
 }
 
+html[data-theme="default"][data-mode="day"] .gantt-radial {
+  --gantt-home-ring-outer: var(--color-accent);
+  --gantt-home-ring-mid: var(--booking-pending-bg);
+  --gantt-home-ring-inner: var(--color-accent);
+  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg, #fff) 94%, white);
+  --gantt-home-surface-bottom: color-mix(
+    in srgb,
+    var(--admin-panel-bg, #fff) 84%,
+    var(--booking-pending-bg) 16%
+  );
+  --gantt-home-door-top: color-mix(in srgb, var(--booking-pending-bg) 72%, white);
+  --gantt-home-door-bottom: color-mix(in srgb, var(--color-accent) 82%, black);
+}
+
+html[data-theme="default"][data-mode="night"] .gantt-radial {
+  --gantt-home-ring-outer: var(--booking-active-border);
+  --gantt-home-ring-mid: var(--booking-pending-border);
+  --gantt-home-ring-inner: var(--booking-active-border);
+  --gantt-home-surface-top: color-mix(
+    in srgb,
+    var(--admin-panel-bg, #2f3744) 90%,
+    white 10%
+  );
+  --gantt-home-surface-bottom: color-mix(
+    in srgb,
+    var(--admin-panel-bg, #2f3744) 80%,
+    var(--booking-pending-border) 20%
+  );
+  --gantt-home-door-top: color-mix(in srgb, var(--booking-pending-border) 68%, white);
+  --gantt-home-door-bottom: color-mix(in srgb, var(--booking-active-border) 82%, black);
+}
+
 /* Default — UI plat, fără efecte decorative */
 
 html[data-theme="default"] .admin-liquid-shell,

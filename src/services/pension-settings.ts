@@ -1,4 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import type {
   AdminPaletteSettings,
   AdminPaletteSource,
@@ -17,7 +19,7 @@ export type PensionSettings = {
   admin_day_night: AdminTheme;
 };
 
-function parsePaletteSource(_raw: unknown): AdminPaletteSource {
+function parsePaletteSource(): AdminPaletteSource {
   return "catalog";
 }
 
@@ -25,7 +27,7 @@ function parseDayNight(raw: unknown): AdminTheme {
   return raw === "day" || raw === "night" ? raw : "night";
 }
 
-export async function getPensionSettings(): Promise<PensionSettings | null> {
+async function getPensionSettingsUncached(): Promise<PensionSettings | null> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("pension_settings")
@@ -52,6 +54,15 @@ export async function getPensionSettings(): Promise<PensionSettings | null> {
     ),
     admin_day_night: parseDayNight(data.admin_day_night),
   };
+}
+
+const getCachedPensionSettings = unstable_cache(getPensionSettingsUncached, undefined, {
+  tags: [CACHE_TAGS.pensionSettings],
+  revalidate: 300,
+});
+
+export async function getPensionSettings(): Promise<PensionSettings | null> {
+  return getCachedPensionSettings();
 }
 
 export function pensionAppearanceSettings(

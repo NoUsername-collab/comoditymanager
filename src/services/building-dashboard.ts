@@ -4,15 +4,10 @@ import {
   addDays,
   firstDayOfMonth,
   lastDayOfMonth,
-  nightOccupied,
   nightsBetween,
-  todayIso,
+  stayNightDates,
 } from "@/lib/stay-dates";
-import {
-  roomNightStatus,
-  type NightStay,
-  type RoomNightStatus,
-} from "@/domain/availability/room-night-status";
+import { type NightStay, type RoomNightStatus } from "@/domain/availability/room-night-status";
 import type { Building } from "@/types/database";
 import { listBuildings } from "@/services/buildings";
 import { listFloorsByBuilding } from "@/services/floors";
@@ -55,7 +50,10 @@ export type BuildingDashboard = {
   rooms: BuildingRoomRow[];
 };
 
-async function loadStaysForAvailability(): Promise<NightStay[]> {
+async function loadStaysForAvailability(
+  rangeStart: string,
+  rangeEnd: string
+): Promise<NightStay[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("booking_rooms")
@@ -65,7 +63,9 @@ async function loadStaysForAvailability(): Promise<NightStay[]> {
       bookings!inner ( check_in, check_out, status, guest_name )
     `
     )
-    .neq("bookings.status", "anulata");
+    .neq("bookings.status", "anulata")
+    .lte("bookings.check_in", rangeEnd)
+    .gt("bookings.check_out", rangeStart);
 
   if (error) throw new Error(error.message);
 
@@ -102,24 +102,65 @@ async function loadStaysForAvailability(): Promise<NightStay[]> {
   return stays;
 }
 
+type AvailabilityIndexes = {
+  confirmedRoomIdsByNight: Map<string, Set<string>>;
+  statusByRoomOnViewDate: Map<string, { status: RoomNightStatus; guest: string | null }>;
+};
+
+function buildAvailabilityIndexes(
+  stays: NightStay[],
+  rangeStart: string,
+  rangeEnd: string,
+  viewDate: string
+): AvailabilityIndexes {
+  const confirmedRoomIdsByNight = new Map<string, Set<string>>();
+  const statusByRoomOnViewDate = new Map<
+    string,
+    { status: RoomNightStatus; guest: string | null }
+  >();
+  const rangeEndExclusive = addDays(rangeEnd, 1);
+
+  for (const stay of stays) {
+    const start = stay.check_in > rangeStart ? stay.check_in : rangeStart;
+    const endExclusive = stay.check_out < rangeEndExclusive ? stay.check_out : rangeEndExclusive;
+
+    if (start >= endExclusive) continue;
+
+    if (viewDate >= stay.check_in && viewDate < stay.check_out) {
+      const existing = statusByRoomOnViewDate.get(stay.room_id);
+      if (!existing || existing.status !== "occupied") {
+        statusByRoomOnViewDate.set(stay.room_id, {
+          status: stay.status === "confirmata" ? "occupied" : "pending",
+          guest: stay.guest_name,
+        });
+      }
+    }
+
+    if (stay.status !== "confirmata") continue;
+    for (const night of stayNightDates(start, endExclusive)) {
+      const roomIds = confirmedRoomIdsByNight.get(night) ?? new Set<string>();
+      roomIds.add(stay.room_id);
+      confirmedRoomIdsByNight.set(night, roomIds);
+    }
+  }
+
+  return { confirmedRoomIdsByNight, statusByRoomOnViewDate };
+}
+
 function countOccupiedRoomNights(
   roomIds: string[],
   nights: string[],
-  stays: NightStay[],
-  onlyConfirmed = true
+  confirmedRoomIdsByNight: Map<string, Set<string>>
 ): number {
   if (roomIds.length === 0 || nights.length === 0) return 0;
+
+  const roomIdSet = new Set(roomIds);
   let total = 0;
   for (const night of nights) {
-    for (const roomId of roomIds) {
-      if (
-        stays.some(
-          (s) =>
-            s.room_id === roomId &&
-            (!onlyConfirmed || s.status === "confirmata") &&
-            nightOccupied(night, s.check_in, s.check_out)
-        )
-      ) {
+    const occupiedRoomIds = confirmedRoomIdsByNight.get(night);
+    if (!occupiedRoomIds) continue;
+    for (const roomId of occupiedRoomIds) {
+      if (roomIdSet.has(roomId)) {
         total += 1;
       }
     }
@@ -131,11 +172,15 @@ function buildWindow(
   label: string,
   nights: string[],
   activeRoomIds: string[],
-  stays: NightStay[],
+  confirmedRoomIdsByNight: Map<string, Set<string>>,
   freeTonight?: number
 ): OccupancyWindow {
   const total = activeRoomIds.length * nights.length;
-  const occupied = countOccupiedRoomNights(activeRoomIds, nights, stays);
+  const occupied = countOccupiedRoomNights(
+    activeRoomIds,
+    nights,
+    confirmedRoomIdsByNight
+  );
   const pct = total > 0 ? Math.round((occupied / total) * 100) : 0;
   return {
     label,
@@ -163,8 +208,14 @@ export async function listBuildingDashboards(
   const [buildings, allRooms, stays] = await Promise.all([
     listBuildings(),
     listAllRooms(),
-    loadStaysForAvailability(),
+    loadStaysForAvailability(monthStart, monthEnd),
   ]);
+  const { confirmedRoomIdsByNight, statusByRoomOnViewDate } = buildAvailabilityIndexes(
+    stays,
+    monthStart,
+    monthEnd,
+    viewDate
+  );
 
   return Promise.all(
     buildings.map(async (building) => {
@@ -178,12 +229,10 @@ export async function listBuildingDashboards(
       let pendingOnDate = 0;
 
       const roomRows: BuildingRoomRow[] = rooms.map((r) => {
-        const { status, guest } = roomNightStatus(
-          r.is_active,
-          r.id,
-          viewDate,
-          stays
-        );
+        const roomStatus = r.is_active
+          ? (statusByRoomOnViewDate.get(r.id) ?? { status: "free", guest: null })
+          : { status: "inactive" as const, guest: null };
+        const { status, guest } = roomStatus;
         if (r.is_active) {
           if (status === "free") freeOnDate += 1;
           if (status === "occupied") occupiedOnDate += 1;
@@ -205,20 +254,20 @@ export async function listBuildingDashboards(
         dateLabel,
         nightsOnDate,
         activeRoomIds,
-        stays,
+        confirmedRoomIdsByNight,
         freeOnDate
       );
       const week = buildWindow(
         "7 zile",
         nightsWeek,
         activeRoomIds,
-        stays
+        confirmedRoomIdsByNight
       );
       const month = buildWindow(
         "Luna curentă",
         nightsMonth,
         activeRoomIds,
-        stays
+        confirmedRoomIdsByNight
       );
 
       return {

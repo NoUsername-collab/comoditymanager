@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { confirmBookingWithRooms } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 import { requireAdmin } from "@/lib/auth/require-admin";
@@ -15,6 +16,7 @@ export async function quickConfirmAction(formData: FormData) {
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
+  revalidateTag(CACHE_TAGS.bookingCounts);
   revalidatePath("/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/calendar");

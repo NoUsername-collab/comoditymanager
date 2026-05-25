@@ -28,6 +28,8 @@ export type OccupancySegment = {
 export type OccupancyQueryOptions = {
   /** Filtru kind; default toate */
   kinds?: OccupancyKind[];
+  /** Limitează interogarea la camerele relevante */
+  roomIds?: string[];
   /** Exclude segmentele unui booking (la realloc) */
   excludeBookingId?: string;
   /** Pentru calendar public: fără hold/request nealocate */

@@ -33,7 +33,7 @@ type Props = {
   roomId: string;
   roomName: string;
   viewRange: GanttViewRange;
-  occupancy: OccupancySegment[];
+  occupancyByRoom: Map<string, OccupancySegment[]>;
   checkInTime?: string;
   checkOutTime?: string;
   touch: boolean;
@@ -63,7 +63,7 @@ export function GanttDragCreateLayer({
   roomId,
   roomName,
   viewRange,
-  occupancy,
+  occupancyByRoom,
   checkInTime = DEFAULT_CHECK_IN_TIME,
   checkOutTime = DEFAULT_CHECK_OUT_TIME,
   touch,
@@ -91,7 +91,7 @@ export function GanttDragCreateLayer({
   const evalConflictForRooms = useCallback(
     (checkIn: string, checkOut: string, roomIds: string[]) => {
       for (const rid of roomIds) {
-        const occ = occupancy.filter((s) => s.roomId === rid);
+        const occ = occupancyByRoom.get(rid) ?? [];
         const conflicts = findOccupancyConflicts(
           [rid],
           checkIn,
@@ -104,7 +104,7 @@ export function GanttDragCreateLayer({
       }
       return false;
     },
-    [occupancy, checkInTime, checkOutTime]
+    [occupancyByRoom, checkInTime, checkOutTime]
   );
 
   const evalConflict = useCallback(

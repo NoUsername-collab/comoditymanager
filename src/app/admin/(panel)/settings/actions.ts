@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import {
   clearAdminLocationUnlock,
@@ -11,6 +11,7 @@ import {
   requireLocationAdmin,
   requireStaff,
 } from "@/lib/auth/require-staff";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { updatePensionSettings } from "@/services/pension-settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
@@ -79,6 +80,7 @@ export async function updateAppearanceSettingsAction(formData: FormData) {
     metadata: { admin_palette_key, admin_day_night, role: settings.role },
   });
 
+  revalidateTag(CACHE_TAGS.pensionSettings);
   revalidatePath("/admin/settings");
   revalidatePath("/");
   redirect("/admin/settings?saved=1");
@@ -126,6 +128,7 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     },
   });
 
+  revalidateTag(CACHE_TAGS.pensionSettings);
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");
   revalidatePath("/");
@@ -170,6 +173,12 @@ export async function factoryResetAction(confirmText: string): Promise<void> {
 
   await runFactoryReset();
 
+  revalidateTag(CACHE_TAGS.pensionSettings);
+  revalidateTag(CACHE_TAGS.buildings);
+  revalidateTag(CACHE_TAGS.rooms);
+  revalidateTag(CACHE_TAGS.roomCatalog);
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
+  revalidateTag(CACHE_TAGS.bookingCounts);
   revalidatePath("/admin", "layout");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");

@@ -1,7 +1,9 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { AcMode, Building } from "@/types/database";
 
-export async function listBuildings(): Promise<Building[]> {
+async function listBuildingsUncached(): Promise<Building[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("buildings")
@@ -15,6 +17,15 @@ export async function listBuildings(): Promise<Building[]> {
       (row as { default_price_per_night?: number }).default_price_per_night ?? 0
     ),
   }));
+}
+
+const getCachedBuildings = unstable_cache(listBuildingsUncached, undefined, {
+  tags: [CACHE_TAGS.buildings],
+  revalidate: 300,
+});
+
+export async function listBuildings(): Promise<Building[]> {
+  return getCachedBuildings();
 }
 
 export async function updateBuildingDefaultPrice(

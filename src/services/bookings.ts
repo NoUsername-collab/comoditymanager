@@ -1,4 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
@@ -307,7 +309,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
   };
 }
 
-export async function countCereriNoi(): Promise<number> {
+async function countCereriNoiUncached(): Promise<number> {
   const supabase = createAdminClient();
   const { count, error } = await supabase
     .from("bookings")
@@ -316,6 +318,15 @@ export async function countCereriNoi(): Promise<number> {
 
   if (error) throw new Error(error.message);
   return count ?? 0;
+}
+
+const getCachedCereriCount = unstable_cache(countCereriNoiUncached, undefined, {
+  tags: [CACHE_TAGS.bookingCounts],
+  revalidate: 30,
+});
+
+export async function countCereriNoi(): Promise<number> {
+  return getCachedCereriCount();
 }
 
 /** Cereri noi fără camere alocate — vizibile indiferent de perioada Gantt */

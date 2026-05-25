@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { createBuilding } from "@/services/buildings";
 import {
   defaultColorForAcMode,
@@ -65,6 +66,7 @@ export async function createBuildingAction(formData: FormData) {
     summary: `Clădire nouă: ${name}`,
     metadata: { ac_mode, default_price_per_night },
   });
+  revalidateTag(CACHE_TAGS.buildings);
   revalidatePath("/admin/buildings");
   revalidatePath("/");
   redirect("/admin/buildings");
@@ -99,6 +101,7 @@ export async function updateBuildingPoliciesAction(formData: FormData) {
     metadata: { ac_mode },
   });
 
+  revalidateTag(CACHE_TAGS.buildings);
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/calendar");
   revalidatePath("/admin/rooms");
@@ -150,6 +153,7 @@ export async function deleteBuildingAction(formData: FormData) {
     throw e instanceof Error ? e : new Error("Eroare la ștergere");
   }
 
+  revalidateTag(CACHE_TAGS.buildings);
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/rooms");
   revalidatePath("/");
@@ -174,6 +178,8 @@ export async function deleteRoomFromBuildingAction(formData: FormData) {
     throw e instanceof Error ? e : new Error("Eroare la ștergere");
   }
 
+  revalidateTag(CACHE_TAGS.rooms);
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/rooms");
   revalidatePath("/");

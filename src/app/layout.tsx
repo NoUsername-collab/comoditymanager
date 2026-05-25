@@ -31,8 +31,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const themeScript = `(function(){try{var t=localStorage.getItem("casaemil-theme");if(t==="onyx"||t==="garden"||t==="sand")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`;
-
   return (
     <html
       lang="ro"
@@ -43,7 +41,6 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: DEVICE_BOOT_SCRIPT }} />
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <script dangerouslySetInnerHTML={{ __html: ADMIN_THEME_BOOT_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900">

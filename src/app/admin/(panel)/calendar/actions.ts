@@ -1,8 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { requireAdmin, getAdminUser } from "@/lib/auth/require-admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   confirmBookingWithRooms,
   createBookingRequest,
@@ -209,6 +210,7 @@ export async function createCerereFromGanttAction(input: {
       notes: "Creat din Gantt",
       room_ids: [input.roomId],
     });
+    revalidateTag(CACHE_TAGS.bookingCounts);
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/bookings");
     return { ok: true, id };
@@ -271,6 +273,7 @@ export async function createDirectStayFromGanttAction(input: {
 
     await confirmBookingWithRooms(bookingId, [input.roomId], total);
 
+    revalidateTag(CACHE_TAGS.bookingCounts);
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/bookings");
     revalidatePath("/admin/cazari");
@@ -401,6 +404,7 @@ export async function duplicateBookingAsCerereAction(
   await requireAdmin();
   try {
     const id = await duplicateBookingAsCerere(bookingId);
+    revalidateTag(CACHE_TAGS.bookingCounts);
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/bookings");
     revalidatePath("/admin/cereri");

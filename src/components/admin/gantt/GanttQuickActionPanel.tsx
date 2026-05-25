@@ -441,9 +441,12 @@ export function GanttQuickActionPanel({
       setMovePreviewState({
         key: `${selectedBooking.id}:${moveSourceRoomId}:${moveTargetRoomId}`,
         text:
-          `${sourceRoomName}: ${formatStayPeriod(res.preview.sourceSegment.start, res.preview.sourceSegment.end, true)} · ` +
-          `→ ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, true)} · ` +
-          `Total: ${res.preview.oldTotal} → ${res.preview.newTotal} RON`,
+          res.preview.mode === "full"
+            ? `${sourceRoomName} → ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, true)} · ` +
+              `Total: ${res.preview.oldTotal} → ${res.preview.newTotal} RON`
+            : `${sourceRoomName}: ${formatStayPeriod(res.preview.sourceSegment?.start ?? "", res.preview.sourceSegment?.end ?? "", true)} · ` +
+              `→ ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, true)} · ` +
+              `Total: ${res.preview.oldTotal} → ${res.preview.newTotal} RON`,
       });
     });
 

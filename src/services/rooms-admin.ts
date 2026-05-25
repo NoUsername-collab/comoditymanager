@@ -1,4 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   calculatePriceFromCatalog,
   getRoomEnabledOptionIds,
@@ -23,7 +25,7 @@ export type CreateRoomInput = {
   building_default_price?: number;
 };
 
-export async function listAllRooms(): Promise<
+async function listAllRoomsUncached(): Promise<
   (Room & {
     building_name: string;
     floor_name: string | null;
@@ -73,6 +75,21 @@ export async function listAllRooms(): Promise<
       room_type_name: typeName ?? null,
     };
   });
+}
+
+const getCachedRooms = unstable_cache(listAllRoomsUncached, undefined, {
+  tags: [CACHE_TAGS.rooms],
+  revalidate: 300,
+});
+
+export async function listAllRooms(): Promise<
+  (Room & {
+    building_name: string;
+    floor_name: string | null;
+    room_type_name: string | null;
+  })[]
+> {
+  return getCachedRooms();
 }
 
 async function resolveRoomInsertFields(input: CreateRoomInput) {

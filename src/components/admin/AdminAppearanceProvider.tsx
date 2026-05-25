@@ -17,7 +17,6 @@ import {
 } from "@/lib/admin-palettes";
 import {
   readAppearanceFromStorage,
-  writeAdminTheme,
   writeAppearanceToStorage,
   type AdminTheme,
 } from "@/lib/admin-theme";
@@ -32,6 +31,20 @@ type AppearanceContextValue = {
 };
 
 const AppearanceContext = createContext<AppearanceContextValue | null>(null);
+
+function mergeAppearanceSettings(
+  initialSettings: AdminPaletteSettings,
+  stored: AdminPaletteSettings
+): AdminPaletteSettings {
+  return {
+    admin_palette_source:
+      stored.admin_palette_source ?? initialSettings.admin_palette_source,
+    admin_palette_key:
+      stored.admin_palette_key || initialSettings.admin_palette_key,
+    admin_day_night:
+      stored.admin_day_night ?? initialSettings.admin_day_night,
+  };
+}
 
 export function useAdminTheme(): AppearanceContextValue {
   const ctx = useContext(AppearanceContext);
@@ -48,7 +61,12 @@ export function AdminAppearanceProvider({
   children: ReactNode;
   initialSettings: AdminPaletteSettings;
 }) {
-  const [settings, setSettings] = useState<AdminPaletteSettings>(initialSettings);
+  const [settings, setSettings] = useState<AdminPaletteSettings>(() => {
+    if (typeof window === "undefined") {
+      return initialSettings;
+    }
+    return mergeAppearanceSettings(initialSettings, readAppearanceFromStorage());
+  });
 
   const resolvedPaletteId = useMemo(
     () => resolvePaletteId(settings),
@@ -63,17 +81,9 @@ export function AdminAppearanceProvider({
   }, []);
 
   useEffect(() => {
-    const stored = readAppearanceFromStorage();
-    const merged: AdminPaletteSettings = {
-      admin_palette_source:
-        stored.admin_palette_source ?? initialSettings.admin_palette_source,
-      admin_palette_key:
-        stored.admin_palette_key || initialSettings.admin_palette_key,
-      admin_day_night:
-        stored.admin_day_night ?? initialSettings.admin_day_night,
-    };
-    applyFull(merged);
-  }, [initialSettings, applyFull]);
+    const def = resolvePaletteDefinition(settings);
+    applyPaletteTokens(def, settings.admin_day_night);
+  }, [settings]);
 
   const setTheme = useCallback(
     (theme: AdminTheme) => {

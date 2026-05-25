@@ -18,7 +18,11 @@ export async function loadGuestStayPreview(
 
   const [roomsRaw, occupied, settings] = await Promise.all([
     listAllRooms(),
-    listOccupiedRoomRanges(undefined, { forPublicCalendar: true }),
+    listOccupiedRoomRanges(undefined, {
+      forPublicCalendar: true,
+      rangeStart: checkIn,
+      rangeEnd: checkOut,
+    }),
     getPensionSettings().catch(() => null),
   ]);
 

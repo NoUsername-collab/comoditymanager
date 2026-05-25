@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { updateBuildingDefaultPrice } from "@/services/buildings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 
@@ -16,6 +17,7 @@ export async function updateBuildingDefaultPriceAction(formData: FormData) {
     summary: `Preț implicit clădire: ${price} RON/noapte`,
     metadata: { default_price_per_night: price },
   });
+  revalidateTag(CACHE_TAGS.buildings);
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/rooms");
 }
