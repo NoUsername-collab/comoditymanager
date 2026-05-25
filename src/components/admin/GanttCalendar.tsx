@@ -44,6 +44,13 @@ import {
 } from "@/lib/constants";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
 import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
+import { GanttPinnedSelectionChip } from "@/components/admin/gantt/GanttPinnedSelectionChip";
+import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
+import {
+  setGanttRoomPinnedSpan,
+  clearGanttRoomPinnedSpan,
+} from "@/domain/gantt/room-at-point";
+import { ghostBarPosition } from "@/domain/gantt/drag-create";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
 import {
   GanttOccupancyDetailPanel,
@@ -457,6 +464,8 @@ function RoomRow({
   bookingById,
   onMoveRoom,
   onCreateDraft,
+  pinnedSelection,
+  onCtrlDragEnd,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -473,6 +482,8 @@ function RoomRow({
   bookingById: Map<string, BookingRow>;
   onMoveRoom: (draft: MoveRoomDraft) => void;
   onCreateDraft: (draft: GanttCreateDraft) => void;
+  pinnedSelection?: PinnedSelection | null;
+  onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
 }) {
   const dayCount = viewRange.days.length;
 
@@ -553,6 +564,8 @@ function RoomRow({
           checkOutTime={checkOutTime}
           touch={touch}
           onCreateDraft={onCreateDraft}
+          pinnedSelection={pinnedSelection}
+          onCtrlDragEnd={onCtrlDragEnd}
           renderGrid={
             <DayGrid
               columns={viewRange.days}
@@ -845,6 +858,7 @@ export function GanttCalendar({
   const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
     null
   );
+  const [pinnedSelection, setPinnedSelection] = useState<PinnedSelection | null>(null);
   const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
     () => new Set()
   );
@@ -888,6 +902,10 @@ export function GanttCalendar({
       }
       if (e.key === "Escape") {
         setFocusBuildingId(null);
+        setPinnedSelection((prev) => {
+          if (prev) clearGanttRoomPinnedSpan();
+          return null;
+        });
       }
     };
     window.addEventListener("keydown", onKey);
@@ -936,6 +954,76 @@ export function GanttCalendar({
     },
     []
   );
+
+  const handleCtrlDragEnd = useCallback(
+    (roomIds: string[], checkIn: string, checkOut: string) => {
+      setPinnedSelection((prev) => {
+        const dates = prev ?? { checkIn, checkOut };
+        const existingSet = new Set(prev?.roomIds ?? []);
+        for (const id of roomIds) {
+          if (existingSet.has(id)) existingSet.delete(id);
+          else existingSet.add(id);
+        }
+        const nextRoomIds = [...existingSet];
+        if (nextRoomIds.length === 0) return null;
+        return { roomIds: nextRoomIds, checkIn: dates.checkIn, checkOut: dates.checkOut };
+      });
+    },
+    []
+  );
+
+  const commitPinnedSelection = useCallback(() => {
+    if (!pinnedSelection) return;
+    const firstRoomId = pinnedSelection.roomIds[0] ?? "";
+    setCreateDraft({
+      roomId: firstRoomId,
+      roomIds: pinnedSelection.roomIds,
+      roomName: `${pinnedSelection.roomIds.length} camere`,
+      checkIn: pinnedSelection.checkIn,
+      checkOut: pinnedSelection.checkOut,
+      hasConflict: false,
+    });
+    setPinnedSelection(null);
+    clearGanttRoomPinnedSpan();
+  }, [pinnedSelection]);
+
+  const cancelPinnedSelection = useCallback(() => {
+    setPinnedSelection(null);
+    clearGanttRoomPinnedSpan();
+  }, []);
+
+  const handleCreateDraftWithPinnedClear = useCallback(
+    (draft: GanttCreateDraftRequest) => {
+      if (pinnedSelection) {
+        setPinnedSelection(null);
+        clearGanttRoomPinnedSpan();
+      }
+      setCreateDraft(draft);
+    },
+    [pinnedSelection]
+  );
+
+  useEffect(() => {
+    if (!pinnedSelection) {
+      clearGanttRoomPinnedSpan();
+      return;
+    }
+    const startIdx = dayIsos.indexOf(pinnedSelection.checkIn);
+    const lastNight = addDays(pinnedSelection.checkOut, -1);
+    const endIdx = dayIsos.indexOf(lastNight);
+    if (startIdx < 0 && endIdx < 0) {
+      clearGanttRoomPinnedSpan();
+      return;
+    }
+    const safeStart = Math.max(0, startIdx);
+    const safeEnd = endIdx < 0 ? dayIsos.length - 1 : endIdx;
+    const ghost = ghostBarPosition(safeStart, safeEnd, dayIsos.length);
+    setGanttRoomPinnedSpan(pinnedSelection.roomIds, {
+      leftPct: ghost.leftPct,
+      widthPct: ghost.widthPct,
+      hasConflict: false,
+    });
+  }, [pinnedSelection, dayIsos]);
 
   const handleSummaryDayClick = useCallback(
     (iso: string) => {
@@ -1470,7 +1558,9 @@ export function GanttCalendar({
                         onOccOpen={handleOccOpen}
                         bookingById={bookingById}
                         onMoveRoom={setMoveRoomDraft}
-                        onCreateDraft={setCreateDraft}
+                        onCreateDraft={handleCreateDraftWithPinnedClear}
+                        pinnedSelection={pinnedSelection}
+                        onCtrlDragEnd={handleCtrlDragEnd}
                       />
                     ))}
                   </Fragment>
@@ -1496,7 +1586,9 @@ export function GanttCalendar({
                     onOccOpen={handleOccOpen}
                     bookingById={bookingById}
                     onMoveRoom={setMoveRoomDraft}
-                    onCreateDraft={setCreateDraft}
+                    onCreateDraft={handleCreateDraftWithPinnedClear}
+                    pinnedSelection={pinnedSelection}
+                    onCtrlDragEnd={handleCtrlDragEnd}
                   />
                 ))}
             {filteredRooms.length === 0 && (
@@ -1513,6 +1605,14 @@ export function GanttCalendar({
             )}
           </tbody>
         </table>
+
+        {pinnedSelection && (
+          <GanttPinnedSelectionChip
+            selection={pinnedSelection}
+            onCommit={commitPinnedSelection}
+            onCancel={cancelPinnedSelection}
+          />
+        )}
 
         <div className="gantt-footer-legend border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 text-[11px] text-zinc-600">
           <p className="gantt-stay-hint mb-2 text-xs">

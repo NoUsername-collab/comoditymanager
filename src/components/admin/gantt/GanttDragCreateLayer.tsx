@@ -14,6 +14,7 @@ import {
   listGanttRoomIdsInDomOrder,
   setGanttRoomDragSpan,
 } from "@/domain/gantt/room-at-point";
+import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
   dayIndexFromPointerX,
   ghostBarPosition,
@@ -41,6 +42,8 @@ type Props = {
   renderGrid: ReactNode;
   children: ReactNode;
   onCreateDraft: (draft: GanttCreateDraft) => void;
+  pinnedSelection?: PinnedSelection | null;
+  onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
 };
 
 type DragState = {
@@ -48,7 +51,7 @@ type DragState = {
   endIdx: number;
   hasConflict: boolean;
   roomCount: number;
-  selectionMode: "range" | "additive";
+  selectionMode: "range" | "ctrl";
 };
 
 function blocksDragCreate(target: EventTarget | null): boolean {
@@ -91,6 +94,8 @@ export function GanttDragCreateLayer({
   renderGrid,
   children,
   onCreateDraft,
+  pinnedSelection,
+  onCtrlDragEnd,
 }: Props) {
   const { openMenu } = useGanttContextMenu();
   const pendingCtx = useAdminPendingOptional();
@@ -102,12 +107,12 @@ export function GanttDragCreateLayer({
     currentRoomId: string;
     selectedRoomIds: string[];
     orderedRoomIds: string[];
-    selectionMode: "range" | "additive";
+    selectionMode: "range" | "ctrl";
   } | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
   const armedStartIdxRef = useRef<number | null>(null);
-  const armedSelectionModeRef = useRef<"range" | "additive">("range");
+  const armedSelectionModeRef = useRef<"range" | "ctrl">("range");
   const longPressOpenedRef = useRef(false);
   const [drag, setDrag] = useState<DragState | null>(null);
 
@@ -215,7 +220,7 @@ export function GanttDragCreateLayer({
       const hitRoom = findGanttRoomAtPoint(clientX, clientY);
       const currentRoomId = hitRoom ?? dragRef.current.currentRoomId;
       const roomIds =
-        dragRef.current.selectionMode === "additive"
+        dragRef.current.selectionMode === "ctrl"
           ? appendUniqueRoomId(dragRef.current.selectedRoomIds, currentRoomId)
           : roomIdsBetween(
               dragRef.current.orderedRoomIds,
@@ -258,7 +263,7 @@ export function GanttDragCreateLayer({
       startIdx: number,
       clientX: number,
       clientY: number,
-      selectionMode: "range" | "additive"
+      selectionMode: "range" | "ctrl"
     ) => {
       const ghost = ghostBarPosition(startIdx, startIdx, dayCount);
       const orderedRoomIds = listGanttRoomIdsInDomOrder();
@@ -302,15 +307,23 @@ export function GanttDragCreateLayer({
       return;
     }
     if (!dragRef.current) return;
-    finishDrag(
-      dragRef.current.startIdx,
-      dragRef.current.endIdx,
-      dragRef.current.selectedRoomIds
-    );
+    const { startIdx, endIdx, selectedRoomIds, selectionMode } = dragRef.current;
     dragRef.current = null;
     setDrag(null);
     armedStartIdxRef.current = null;
-  }, [finishDrag]);
+
+    if (selectionMode === "ctrl" && onCtrlDragEnd) {
+      const interval = pinnedSelection
+        ? { checkIn: pinnedSelection.checkIn, checkOut: pinnedSelection.checkOut }
+        : intervalFromDayIndices(dayIsos, startIdx, endIdx);
+      if (interval) {
+        onCtrlDragEnd(selectedRoomIds, interval.checkIn, interval.checkOut);
+      }
+      clearGanttRoomDragSpan();
+      return;
+    }
+    finishDrag(startIdx, endIdx, selectedRoomIds);
+  }, [finishDrag, onCtrlDragEnd, pinnedSelection, dayIsos]);
 
   useEffect(() => {
     if (!drag) return;
@@ -354,7 +367,7 @@ export function GanttDragCreateLayer({
       clearLongPress();
       const idx = dayIdxAt(e.clientX);
       armedStartIdxRef.current = idx;
-      armedSelectionModeRef.current = e.ctrlKey || e.metaKey ? "additive" : "range";
+      armedSelectionModeRef.current = e.ctrlKey || e.metaKey ? "ctrl" : "range";
       longPressTimerRef.current = setTimeout(() => {
         longPressOpenedRef.current = true;
         armedStartIdxRef.current = null;
@@ -414,7 +427,6 @@ export function GanttDragCreateLayer({
               e.clientY,
               armedSelectionModeRef.current
             );
-            try { rowRef.current?.releasePointerCapture(e.pointerId); } catch {}
           }
         }
       }
@@ -486,8 +498,8 @@ export function GanttDragCreateLayer({
           }}
         >
           <span className="gantt-drag-preview__label truncate px-1.5">
-            {drag.selectionMode === "additive"
-              ? `Ctrl multi · ${drag.roomCount} cam · `
+            {drag.selectionMode === "ctrl"
+              ? `Ctrl · ${drag.roomCount} cam · `
               : drag.roomCount > 1
                 ? `${drag.roomCount} cam · `
                 : ""}

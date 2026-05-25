@@ -2,6 +2,7 @@ const ROOM_ROW_SELECTOR = "[data-gantt-room-row]";
 const ROOM_DRAG_LAYER_SELECTOR = "[data-gantt-room-drag-layer]";
 let activeDropTargetId: string | null = null;
 let activeDragSpanIds = new Set<string>();
+let activePinnedIds = new Set<string>();
 
 type GanttRoomDragPreview = {
   leftPct: number;
@@ -114,4 +115,36 @@ export function setGanttRoomDragSpan(
 
 export function clearGanttRoomDragSpan(): void {
   setGanttRoomDragSpan([]);
+}
+
+export function setGanttRoomPinnedSpan(
+  roomIds: string[],
+  preview?: GanttRoomDragPreview
+): void {
+  if (typeof document === "undefined") return;
+  const nextIds = new Set(roomIds);
+  const touchedIds = new Set([...activePinnedIds, ...nextIds]);
+
+  for (const roomId of touchedIds) {
+    const active = nextIds.has(roomId);
+    const row = getRoomRow(roomId);
+    const layer = getRoomDragLayer(roomId);
+
+    row?.classList.toggle("gantt-room-row--pinned", active);
+    layer?.classList.toggle("gantt-room-row--pinned", active);
+
+    if (active && preview) {
+      layer?.style.setProperty("--gantt-pinned-left", `${preview.leftPct}%`);
+      layer?.style.setProperty("--gantt-pinned-width", `${preview.widthPct}%`);
+    } else {
+      layer?.style.removeProperty("--gantt-pinned-left");
+      layer?.style.removeProperty("--gantt-pinned-width");
+    }
+  }
+
+  activePinnedIds = nextIds;
+}
+
+export function clearGanttRoomPinnedSpan(): void {
+  setGanttRoomPinnedSpan([]);
 }
