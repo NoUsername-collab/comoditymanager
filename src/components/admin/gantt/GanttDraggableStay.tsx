@@ -26,7 +26,6 @@ import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
-import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
   GanttStayPopover,
   type GanttStayPopoverData,
@@ -118,7 +117,6 @@ export function GanttDraggableStay({
   const longPressOpened = useRef(false);
   const captureEl = useRef<HTMLDivElement | null>(null);
   const capturePointerId = useRef<number | null>(null);
-  const dragOriginRect = useRef<DOMRect | null>(null);
 
   const dragging = interaction === "dragging";
 
@@ -182,7 +180,6 @@ export function GanttDraggableStay({
       setInteraction("armed");
       captureEl.current = el;
       capturePointerId.current = e.pointerId;
-      dragOriginRect.current = el.getBoundingClientRect();
       clearLongPress();
       longPressTimer.current = setTimeout(() => {
         longPressOpened.current = true;
@@ -244,7 +241,6 @@ export function GanttDraggableStay({
       capturePointerId.current = null;
 
       if (interaction === "armed" || longPressOpened.current) {
-        dragOriginRect.current = null;
         setInteraction("idle");
         return;
       }
@@ -260,7 +256,6 @@ export function GanttDraggableStay({
       setDragDeltaY(0);
       setVerticalMode(false);
       targetRoomRef.current = null;
-      dragOriginRect.current = null;
 
       if (isVertical && targetRoom && targetRoom !== sourceRoomId) {
         void runAdminAction(async () => {
@@ -321,8 +316,6 @@ export function GanttDraggableStay({
 
   const showPopover =
     !touch && (hover || popoverHover) && interaction === "idle" && !pending;
-  const showLiftedGhost =
-    dragging && verticalMode && dragOriginRect.current != null;
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {
@@ -350,9 +343,9 @@ export function GanttDraggableStay({
         data-gantt-stay=""
         className={[
           "gantt-draggable-stay pointer-events-auto absolute top-2 z-[1] flex min-w-0 items-stretch",
-          dragging && "z-[20] cursor-grabbing",
+          dragging && "cursor-grabbing",
+          dragging && !verticalMode && "z-[20]",
           verticalMode && "gantt-draggable-stay--vertical",
-          showLiftedGhost && "gantt-draggable-stay--ghost-source",
           pending && "opacity-60",
         ]
           .filter(Boolean)
@@ -365,6 +358,7 @@ export function GanttDraggableStay({
           left: `calc(${pos.leftPct}% + ${verticalMode ? 0 : dragDelta}px)`,
           width: `${pos.widthPct}%`,
           maxWidth: `${100 - pos.leftPct}%`,
+          transform: verticalMode ? `translateY(${dragDeltaY}px)` : undefined,
         }}
         onPointerDown={onPointerDown}
         onContextMenu={(e) => {
@@ -398,34 +392,6 @@ export function GanttDraggableStay({
           occupancyPhase={occupancyPhase}
         />
       </div>
-      {showLiftedGhost && dragOriginRect.current ? (
-        <AdminPortal>
-          <div
-            className="gantt-drag-lifted-ghost"
-            style={{
-              left: dragOriginRect.current.left + dragDelta,
-              top: dragOriginRect.current.top + dragDeltaY,
-              width: dragOriginRect.current.width,
-            }}
-            aria-hidden
-          >
-            <GanttBookingBar
-              href={href}
-              label={label}
-              title={title}
-              pos={pos}
-              isCerere={isCerere}
-              guestTotal={guestTotal}
-              buildingColor={buildingColor}
-              todayHighlight={todayHighlight}
-              initials={initials}
-              interactive
-              extraClass={snapped ? "gantt-stay-chrome--snapped" : undefined}
-              occupancyPhase={occupancyPhase}
-            />
-          </div>
-        </AdminPortal>
-      ) : null}
       <GanttStayPopover
         data={{
           ...popover,

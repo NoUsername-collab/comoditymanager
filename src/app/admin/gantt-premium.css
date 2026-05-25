@@ -1048,31 +1048,6 @@
   pointer-events: auto;
 }
 
-.gantt-draggable-stay--ghost-source {
-  opacity: 0.18;
-  filter: saturate(0.82);
-}
-
-.gantt-drag-lifted-ghost {
-  position: fixed;
-  z-index: 100120;
-  pointer-events: none;
-  transform: translate3d(0, 0, 0) rotate(-1deg) scale(1.02);
-  transform-origin: center center;
-  filter: drop-shadow(0 18px 30px rgba(15, 23, 42, 0.28));
-}
-
-.gantt-drag-lifted-ghost .gantt-booking-card {
-  height: 28px !important;
-  box-shadow:
-    0 18px 32px rgba(15, 23, 42, 0.26),
-    0 4px 12px rgba(5, 150, 105, 0.18);
-}
-
-.gantt-drag-lifted-ghost .gantt-stay__body {
-  backdrop-filter: saturate(1.08);
-}
-
 .gantt-occ-bar--hold {
   border: 2px dashed #eab308;
   background: repeating-linear-gradient(
@@ -1295,7 +1270,15 @@
 }
 
 .gantt-draggable-stay--vertical {
-  z-index: 48;
+  z-index: 22;
+  will-change: transform;
+  filter: drop-shadow(0 16px 26px rgba(15, 23, 42, 0.22));
+}
+
+.gantt-draggable-stay--vertical .gantt-booking-card {
+  box-shadow:
+    0 16px 28px rgba(15, 23, 42, 0.2),
+    0 4px 12px rgba(5, 150, 105, 0.16);
 }
 
 /* Rând sumar — camere libere / zi */

@@ -307,7 +307,7 @@ function RoomRow({
           </div>
         </div>
       </td>
-      <td className="relative w-full p-0 align-top">
+      <td className="relative w-full overflow-visible p-0 align-top">
         <GanttDragCreateLayer
           roomId={room.id}
           roomName={room.name}
