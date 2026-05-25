@@ -49,13 +49,14 @@ function buildDayColumns(isoDates: string[]): GanttDayColumn[] {
   });
 }
 
-function isRollingZoom(zoom: GanttZoom): zoom is GanttRollingZoom {
-  return (
-    zoom === "today" ||
-    zoom === "days7" ||
-    zoom === "days15" ||
-    zoom === "days30"
-  );
+function isRollingZoom(
+  zoom: GanttZoom
+): zoom is Exclude<GanttRollingZoom, "days30"> {
+  return zoom === "today" || zoom === "days7" || zoom === "days15";
+}
+
+function isMonthLikeZoom(zoom: GanttZoom): zoom is "days30" | "month" {
+  return zoom === "days30" || zoom === "month";
 }
 
 function rollingZoomLength(zoom: GanttRollingZoom): number {
@@ -198,6 +199,14 @@ export function resolveGanttRange(params: {
     return buildRollingRange(ws, zoom);
   }
 
+  if (isMonthLikeZoom(zoom)) {
+    return {
+      ...buildMonthRange(year, month),
+      zoom,
+      periodKey: `${zoom}-${year}-${month}`,
+    };
+  }
+
   if (zoom === "week") {
     const ws =
       params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws)
@@ -249,5 +258,9 @@ export function navigateRange(
     nm = 0;
     ny += 1;
   }
-  return { y: ny, m: nm, zoom: "month" };
+  return {
+    y: ny,
+    m: nm,
+    zoom: isMonthLikeZoom(range.zoom) ? range.zoom : "month",
+  };
 }

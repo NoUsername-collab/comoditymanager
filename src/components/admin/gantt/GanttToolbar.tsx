@@ -255,7 +255,7 @@ export function GanttToolbar({
               onChange={(z) =>
                 push({
                   zoom: z,
-                  ws: z === "quarter" ? null : todayIso(),
+                  ws: z === "quarter" || z === "days30" ? null : todayIso(),
                   q:
                     z === "quarter"
                       ? quarter ?? Math.floor(month / 3)

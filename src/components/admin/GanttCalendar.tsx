@@ -764,7 +764,7 @@ export function GanttCalendar({
               <th className="gantt-room-column-header sticky left-0 z-30 border-r border-zinc-200 px-3 py-3 text-left text-xs font-semibold tracking-wide text-zinc-700">
                 Cameră
               </th>
-              <th className="sticky top-0 z-20 bg-gradient-to-b from-slate-50 to-zinc-100/90 p-0">
+              <th className="bg-gradient-to-b from-slate-50 to-zinc-100/90 p-0">
                 <DayHeader columns={viewRange.days} compact={compact} />
               </th>
             </tr>

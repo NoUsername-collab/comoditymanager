@@ -111,8 +111,13 @@ export function GanttRadialController({
         aria-label={open ? "Închide controllerul rapid" : "Deschide controllerul rapid"}
         onClick={() => setOpen((value) => !value)}
       >
-        <span className="gantt-radial__roof" aria-hidden />
-        <span className="gantt-radial__house">Casa</span>
+        <span className="gantt-radial__icon" aria-hidden>
+          <span className="gantt-radial__roof" />
+          <span className="gantt-radial__body">
+            <span className="gantt-radial__door" />
+          </span>
+        </span>
+        <span className="sr-only">Casa</span>
       </button>
     </div>
   );
