@@ -497,3 +497,38 @@ html[data-theme="spain"][data-mode="night"] {
   --admin-hud-text: #f5e8ea;
   --admin-hud-eyebrow: #ffc400;
 }
+
+html[data-theme="romania"] {
+  --admin-loading-track: rgba(252, 209, 22, 0.18);
+  --admin-loading-accent: #002b7f;
+  --admin-loading-accent-muted: #fcd116;
+  --admin-loading-accent-2: #ce1126;
+}
+
+html[data-theme="italy"] {
+  --admin-loading-track: rgba(0, 146, 70, 0.16);
+  --admin-loading-accent: #009246;
+  --admin-loading-accent-muted: #f8fafc;
+  --admin-loading-accent-2: #ce2b37;
+}
+
+html[data-theme="france"] {
+  --admin-loading-track: rgba(0, 85, 164, 0.16);
+  --admin-loading-accent: #0055a4;
+  --admin-loading-accent-muted: #f8fafc;
+  --admin-loading-accent-2: #ef4135;
+}
+
+html[data-theme="poland"] {
+  --admin-loading-track: rgba(220, 20, 60, 0.16);
+  --admin-loading-accent: #ffffff;
+  --admin-loading-accent-muted: #dc143c;
+  --admin-loading-accent-2: #991b1b;
+}
+
+html[data-theme="spain"] {
+  --admin-loading-track: rgba(198, 11, 30, 0.18);
+  --admin-loading-accent: #c60b1e;
+  --admin-loading-accent-muted: #ffc400;
+  --admin-loading-accent-2: #7a1f1a;
+}

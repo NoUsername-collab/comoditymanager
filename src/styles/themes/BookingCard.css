@@ -45,7 +45,7 @@
 /* Trecut */
 .gantt-booking-card--past.gantt-stay-chrome,
 .gantt-stay--phase-past.gantt-booking-card {
-  opacity: 0.55;
+  opacity: 1;
 }
 
 .gantt-booking-card--past {

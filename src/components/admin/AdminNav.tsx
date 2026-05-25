@@ -29,18 +29,6 @@ export function AdminNav({
   const tabs: Tab[] = [
     { href: "/admin", label: "Acasă", icon: "home" },
     {
-      href: "/admin/buildings",
-      label: "Clădiri",
-      icon: "building",
-      locationConfig: true,
-    },
-    {
-      href: "/admin/rooms",
-      label: "Camere",
-      icon: "bed",
-      locationConfig: true,
-    },
-    {
       href: "/admin/bookings",
       label: "Cereri noi",
       icon: "inbox",

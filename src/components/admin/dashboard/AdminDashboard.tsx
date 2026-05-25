@@ -3,13 +3,8 @@ import type { AdminDashboardData } from "@/services/admin-dashboard";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { cereriNoiPulsText } from "@/lib/ro-copy";
-import { getBuildingTheme } from "@/lib/building-theme";
-import { occupancyCaptionFromWindow } from "@/lib/admin-ui";
-import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
-import { OccupancyRow } from "@/components/admin/ui/OccupancyRow";
-import { AdminDayNightLiquid } from "@/components/admin/AdminDayNightLiquid";
 import { TodayBoardSection } from "@/components/admin/dashboard/TodayBoardSection";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { MonthCompareCards } from "@/components/admin/dashboard/MonthCompareCards";
@@ -45,116 +40,33 @@ const QUICK_ACTIONS = [
     accent: "linear-gradient(135deg, #34d399, #059669)",
   },
   {
-    href: "/admin/buildings",
-    title: "Clădiri",
-    desc: "Structură & etaje",
-    icon: "🏠",
-    accent: "linear-gradient(135deg, #60a5fa, #2563eb)",
-  },
-  {
-    href: "/admin/rooms",
-    title: "Camere",
-    desc: "Capacitate & preț",
-    icon: "🛏",
-    accent: "linear-gradient(135deg, #2dd4bf, #0d9488)",
-  },
-  {
     href: "/admin/settings",
     title: "Setări",
-    desc: "Ore & paturi extra",
+    desc: "Admin only · configurare",
     icon: "⚙️",
     accent: "linear-gradient(135deg, #71717a, #27272a)",
   },
 ] as const;
-
-function BuildingTonightCard({
-  data,
-}: {
-  data: AdminDashboardData["buildings"][0];
-}) {
-  const theme = getBuildingTheme(data.building.ac_mode, data.building.name);
-  const activeRooms = data.rooms.filter((r) => r.is_active);
-
-  return (
-    <article
-      className={[
-        "flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition hover:shadow-lg",
-        theme.border,
-      ].join(" ")}
-    >
-      <div
-        className={["px-4 py-3", theme.headerBg].join(" ")}
-        style={{ borderBottom: `3px solid ${theme.accent}` }}
-      >
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span
-              className="h-2.5 w-2.5 rounded-full shadow-sm"
-              style={{ backgroundColor: theme.accent }}
-            />
-            <h3 className="font-semibold text-zinc-900">{data.building.name}</h3>
-          </div>
-          <Link
-            href={`/admin/rooms/new?building=${data.building.id}`}
-            className="text-[10px] font-medium text-zinc-500 hover:text-zinc-800"
-          >
-            + cameră
-          </Link>
-        </div>
-        <p className="mt-1 text-xs text-zinc-500">{theme.label}</p>
-      </div>
-
-      <div className="space-y-3 px-4 py-3">
-        <OccupancyRow
-          label={data.on_date.label}
-          pct={data.on_date.occupancy_pct}
-          accent={theme.accent}
-          barTrack={theme.barBg}
-          caption={occupancyCaptionFromWindow(data.on_date, true)}
-        />
-
-        {activeRooms.length > 0 ? (
-          <RoomAvailabilityGrid>
-            {activeRooms.map((room) => (
-              <RoomGridTile
-                key={room.id}
-                id={room.id}
-                name={room.name}
-                floorName={room.floor_name}
-                isActive={room.is_active}
-                statusOnDate={room.status_on_date}
-                guestOnDate={room.guest_on_date}
-                dateLabel={data.view_date_label}
-              />
-            ))}
-          </RoomAvailabilityGrid>
-        ) : (
-          <p className="text-xs text-zinc-400">Nicio cameră activă.</p>
-        )}
-      </div>
-
-      <div className="mt-auto border-t border-zinc-100 px-4 py-2">
-        <Link
-          href="/admin/buildings"
-          className="text-xs font-medium text-zinc-500 hover:text-zinc-800"
-        >
-          Detalii clădire →
-        </Link>
-      </div>
-    </article>
-  );
-}
 
 export function AdminDashboard({ data }: { data: AdminDashboardData }) {
   const { stats, cereriCount, cereriPreview } = data;
   const now = new Date();
   const calHref = `/admin/calendar?y=${now.getFullYear()}&m=${now.getMonth()}`;
   const hasCereri = cereriCount > 0;
+  const liveRooms = data.buildings
+    .flatMap((section) =>
+      section.rooms
+        .filter((room) => room.is_active)
+        .map((room) => ({
+          ...room,
+          viewDateLabel: section.view_date_label,
+        }))
+    )
+    .sort((a, b) => a.name.localeCompare(b.name, "ro-RO"));
 
   return (
     <div className="admin-home">
       <header className="admin-home-hero admin-home-hero--liquid">
-        <AdminDayNightLiquid hero className="admin-dn-liquid--hero admin-home-hero__liquid" />
         <div className="admin-home-hero__main">
           <p className="admin-home-hero__eyebrow">Acasă · panou recepție</p>
           <h1 className="admin-home-hero__title">{data.pensionName}</h1>
@@ -213,7 +125,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           <div className="admin-home-kpi" role="listitem">
             <span className="admin-home-kpi__value">{stats.weekOccupancyPct}%</span>
             <span className="admin-home-kpi__label">
-              Săptămâna · {stats.buildingsCount} clădiri
+              Săptămâna · {stats.activeRooms} camere active
             </span>
           </div>
         </div>
@@ -338,15 +250,15 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
       <section
         className="admin-home-panel admin-home-section"
-        aria-labelledby="admin-home-buildings-title"
+        aria-labelledby="admin-home-rooms-title"
       >
         <div className="admin-home-buildings-head">
           <div>
-            <h2 id="admin-home-buildings-title" className="admin-home-panel__title">
-              Diseară — pe clădiri
+            <h2 id="admin-home-rooms-title" className="admin-home-panel__title">
+              Camere live
             </h2>
             <p className="admin-home-panel__desc">
-              Grid live: alb liber · roșu ocupat
+              Status operațional read-only. Editările și creările se fac doar din Setări admin.
             </p>
           </div>
           <Link href={calHref} className="admin-home-panel__link">
@@ -354,21 +266,35 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           </Link>
         </div>
 
-        <ClimateLegend />
-
-        {data.buildings.length > 0 ? (
-          <div className="admin-home-buildings-grid mt-4">
-            {data.buildings.map((b) => (
-              <BuildingTonightCard key={b.building.id} data={b} />
-            ))}
+        {liveRooms.length > 0 ? (
+          <div className="mt-4 space-y-3">
+            <RoomAvailabilityGrid>
+              {liveRooms.map((room) => (
+                <RoomGridTile
+                  key={room.id}
+                  id={room.id}
+                  name={room.name}
+                  floorName={room.floor_name}
+                  isActive={room.is_active}
+                  statusOnDate={room.status_on_date}
+                  guestOnDate={room.guest_on_date}
+                  dateLabel={room.viewDateLabel}
+                  href={null}
+                />
+              ))}
+            </RoomAvailabilityGrid>
+            <p className="text-xs text-zinc-500">
+              Verde = liberă, roșu = ocupată, galben = cerere. Pentru editări sau
+              creare structură intri din `Setări`.
+            </p>
           </div>
         ) : (
           <AdminEmptyState
-            emoji="🏠"
-            title="Încă nu ai clădiri configurate"
-            description="Adaugă prima clădire și camerele — apoi Acasă devine panoul tău de recepție live."
-            actionHref="/admin/buildings/new"
-            actionLabel="+ Prima clădire"
+            emoji="🛏"
+            title="Încă nu ai camere configurate"
+            description="Configurarea structurii și a camerelor se face din Setări, în centrul de administrare."
+            actionHref="/admin/settings/location"
+            actionLabel="Deschide configurarea"
           />
         )}
       </section>

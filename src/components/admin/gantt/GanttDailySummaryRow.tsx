@@ -64,7 +64,7 @@ export function GanttDailySummaryRow({
             const title =
               total === 0
                 ? col.iso
-                : `${free} libere din ${total} camere · click pentru filtru`;
+                : `${free} camere libere · click pentru filtru`;
 
             return (
               <button
@@ -72,7 +72,7 @@ export function GanttDailySummaryRow({
                 type="button"
                 title={title}
                 aria-pressed={isSelected}
-                aria-label={`${col.iso}: ${free} libere din ${total}`}
+                aria-label={`${col.iso}: ${free} camere libere`}
                 onClick={() => onDayClick(col.iso)}
                 className={[
                   "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
@@ -89,7 +89,7 @@ export function GanttDailySummaryRow({
                   {free}
                 </span>
                 {!compact && total > 0 && (
-                  <span className="gantt-summary-cell__total">/{total}</span>
+                  <span className="gantt-summary-cell__total">camere</span>
                 )}
               </button>
             );

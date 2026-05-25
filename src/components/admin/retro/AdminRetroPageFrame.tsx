@@ -23,6 +23,9 @@ export function AdminRetroPageFrame({
   className?: string;
   bodyClassName?: string;
 }) {
+  const plainDescription =
+    typeof description === "string" || typeof description === "number";
+
   return (
     <main className={["p-8", className].filter(Boolean).join(" ")}>
       {backHref && (
@@ -34,9 +37,15 @@ export function AdminRetroPageFrame({
         {(description || action) && (
           <div className="admin-retro-page-toolbar mb-4 flex flex-wrap items-start justify-between gap-3">
             {description ? (
-              <p className="admin-retro-page-desc max-w-2xl text-sm leading-relaxed">
-                {description}
-              </p>
+              plainDescription ? (
+                <p className="admin-retro-page-desc max-w-2xl text-sm leading-relaxed">
+                  {description}
+                </p>
+              ) : (
+                <div className="admin-retro-page-desc min-w-0 flex-1">
+                  {description}
+                </div>
+              )
             ) : (
               <span />
             )}

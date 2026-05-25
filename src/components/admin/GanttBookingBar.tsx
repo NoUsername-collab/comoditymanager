@@ -23,6 +23,63 @@ type Props = {
   occupancyPhase?: OccupancyPhase;
 };
 
+function semanticStayVars(
+  isCerere: boolean,
+  occupancyPhase?: OccupancyPhase
+): CSSProperties & Record<string, string> {
+  const tone =
+    occupancyPhase === "past"
+      ? {
+          fill: "var(--booking-past-bg)",
+          border: "var(--booking-past-border)",
+          text: "var(--booking-past-text)",
+          tab: "color-mix(in srgb, var(--booking-past-border) 82%, black)",
+          badge: "color-mix(in srgb, var(--booking-past-text) 14%, transparent)",
+          glow: "color-mix(in srgb, var(--booking-past-border) 35%, transparent)",
+        }
+      : isCerere
+        ? {
+            fill: "var(--booking-pending-bg)",
+            border: "var(--booking-pending-border)",
+            text: "var(--booking-pending-text)",
+            tab: "color-mix(in srgb, var(--booking-pending-border) 85%, black)",
+            badge:
+              "color-mix(in srgb, var(--booking-pending-text) 18%, transparent)",
+            glow:
+              "color-mix(in srgb, var(--booking-pending-border) 35%, transparent)",
+          }
+        : {
+            fill: "var(--booking-active-bg)",
+            border: "var(--booking-active-border)",
+            text: "var(--booking-active-text)",
+            tab: "color-mix(in srgb, var(--booking-active-border) 85%, black)",
+            badge:
+              "color-mix(in srgb, var(--booking-active-text) 18%, transparent)",
+            glow:
+              "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
+          };
+
+  return {
+    background: tone.fill,
+    backgroundColor: tone.fill,
+    borderColor: tone.border,
+    color: tone.text,
+    "--stay-fill": tone.fill,
+    "--stay-border": tone.border,
+    "--stay-text": tone.text,
+    "--stay-tab-end": tone.tab,
+    "--stay-badge-bg": tone.badge,
+    "--stay-badge-text": tone.text,
+    "--stay-glow": tone.glow,
+    "--gs-bg": tone.fill,
+    "--gs-border": tone.border,
+    "--gs-fg": tone.text,
+    "--gs-tab": tone.tab,
+    "--gs-badge-bg": tone.badge,
+    "--gs-glow": tone.glow,
+  };
+}
+
 export function GanttBookingBar({
   href,
   label,
@@ -40,8 +97,8 @@ export function GanttBookingBar({
 
   const className = [
     ganttStayChromeClass(),
-    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[10px] font-semibold leading-none transition duration-200 hover:z-[2]",
-    interactive ? "z-[1] h-7 w-full" : "absolute top-2 z-[1] max-w-full",
+    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
+    interactive ? "z-[1] h-[30px] w-full" : "absolute top-2 z-[1] max-w-full",
     isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
     occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
     occupancyPhase === "active" && "gantt-stay--phase-active",
@@ -58,14 +115,15 @@ export function GanttBookingBar({
     .join(" ");
 
   const style = {
+    ...semanticStayVars(isCerere, occupancyPhase),
     borderRadius: ganttStaySlantRadius(continuesBefore, continuesAfter),
     ...(interactive
-      ? { left: 0, width: "100%", height: 28 }
+      ? { left: 0, width: "100%", height: 30 }
       : {
           left: `${leftPct}%`,
           width: `${widthPct}%`,
           maxWidth: `${100 - leftPct}%`,
-          height: 28,
+          height: 30,
         }),
   } as CSSProperties;
 
@@ -93,12 +151,12 @@ export function GanttBookingBar({
           {label}
         </span>
         {occupancyPhase === "active" && !isCerere && (
-          <span className="gantt-stay__phase-badge shrink-0 rounded px-1 py-0.5 text-[8px] font-extrabold uppercase tracking-wide">
+          <span className="gantt-stay__phase-badge shrink-0 rounded px-1 py-0.5 text-[10px] font-extrabold uppercase tracking-wide">
             Azi
           </span>
         )}
         <span
-          className="gantt-stay__badge shrink-0 rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums leading-none"
+          className="gantt-stay__badge shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-bold tabular-nums leading-none"
           title={`${guestTotal} persoane`}
         >
           {guestTotal}

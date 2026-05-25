@@ -194,6 +194,14 @@ export function GanttDragCreateLayer({
       const hasConflict = interval
         ? evalConflictForRooms(interval.checkIn, interval.checkOut, roomIds)
         : false;
+      const ghost = ghostBarPosition(startIdx, endIdx, dayCount);
+      if (ghost) {
+        setGanttRoomDragSpan(roomIds, {
+          leftPct: ghost.leftPct,
+          widthPct: ghost.widthPct,
+          hasConflict,
+        });
+      }
       dragRef.current = { startIdx, endIdx, roomIds: dragRef.current.roomIds };
       setDrag({ startIdx, endIdx, hasConflict, roomCount: roomIds.length });
     },
@@ -202,6 +210,7 @@ export function GanttDragCreateLayer({
 
   const beginDrag = useCallback(
     (startIdx: number, clientX: number, clientY: number) => {
+      const ghost = ghostBarPosition(startIdx, startIdx, dayCount);
       dragRef.current = {
         startIdx,
         endIdx: startIdx,
@@ -213,10 +222,18 @@ export function GanttDragCreateLayer({
         hasConflict: false,
         roomCount: 1,
       });
-      setGanttRoomDragSpan([roomId]);
+      if (ghost) {
+        setGanttRoomDragSpan([roomId], {
+          leftPct: ghost.leftPct,
+          widthPct: ghost.widthPct,
+          hasConflict: false,
+        });
+      } else {
+        setGanttRoomDragSpan([roomId]);
+      }
       updateDragAt(clientX, clientY);
     },
-    [roomId, updateDragAt]
+    [dayCount, roomId, updateDragAt]
   );
 
   const endDrag = useCallback(() => {
@@ -290,7 +307,7 @@ export function GanttDragCreateLayer({
       row.setPointerCapture(e.pointerId);
       e.preventDefault();
     },
-    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending, roomId]
+    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending]
   );
 
   const onPointerUpRow = useCallback(

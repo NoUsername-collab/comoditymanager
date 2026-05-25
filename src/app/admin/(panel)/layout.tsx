@@ -1,7 +1,6 @@
 import Link from "next/link";
 import "@/app/admin/admin-features.css";
 import { AdminShellClient } from "@/components/admin/AdminShellClient";
-import { AdminDayNightLiquid } from "@/components/admin/AdminDayNightLiquid";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";
 import { AdminPaletteStyles } from "@/components/admin/AdminPaletteStyles";
@@ -61,7 +60,6 @@ export default async function AdminLayout({
       <AdminPaletteStyles settings={appearanceSettings} />
       <div className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
-          <AdminDayNightLiquid />
           <div className="admin-hud__surface">
             <AdminTopBar />
             <AdminNav

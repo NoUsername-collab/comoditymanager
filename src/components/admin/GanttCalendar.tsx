@@ -24,7 +24,6 @@ import type { BookingRow } from "@/services/bookings";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import {
-  bookingMatchesLayerFilter,
   roomOverlaySegments,
   roomStaySegments,
   type GanttLayerFilter,
@@ -67,35 +66,37 @@ import {
 } from "@/components/admin/gantt/GanttBuildingMarker";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 import { GanttTodayPanel } from "@/components/admin/gantt/GanttTodayPanel";
-import { GanttZoneRibbon } from "@/components/admin/gantt/GanttZoneRibbon";
-import {
-  GanttBuildingChips,
-  type GanttBuildingChip,
-} from "@/components/admin/gantt/GanttBuildingChips";
-import { GanttUnassignedRow } from "@/components/admin/gantt/GanttUnassignedRow";
+import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
+import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
   roomTodayFlags,
   stayTodayHighlight,
   summarizeGanttToday,
 } from "@/domain/gantt/today-activity";
+import type { GanttZoom } from "@/domain/gantt/view-range";
+import { navigateRange } from "@/domain/gantt/view-range";
+import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
+import type { GanttFeatureFilter } from "@/domain/gantt/filters";
+import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
 
 export type { GanttRoom };
 
 const ROOM_COL_W = "11rem";
-const ROW_H = 56;
-
-function bookingInViewRange(
-  b: BookingRow,
-  rangeStart: string,
-  rangeEnd: string
-): boolean {
-  if (b.status === "anulata") return false;
-  return b.check_in <= rangeEnd && b.check_out >= rangeStart;
-}
 
 const GANTT_DAY_CELL =
   "gantt-day-cell min-w-0 bg-white shadow-[inset_0_0_0_1px_#d4d4d8]";
+
+type InlineZoomChoice = "today" | "days7" | "days15" | "days30" | "quarter";
+
+function normalizeZoomChoice(zoom: GanttZoom): InlineZoomChoice {
+  if (zoom === "week") return "days7";
+  if (zoom === "month") return "days30";
+  if (zoom === "today" || zoom === "days7" || zoom === "days15" || zoom === "days30") {
+    return zoom;
+  }
+  return "quarter";
+}
 
 function ganttDayGridStyle(dayCount: number): CSSProperties {
   return {
@@ -244,7 +245,7 @@ function SummaryGrid({
         const title =
           total === 0
             ? col.iso
-            : `${free} libere din ${total} camere · click pentru filtru`;
+            : `${free} camere libere · click pentru filtru`;
 
         return (
           <button
@@ -252,7 +253,7 @@ function SummaryGrid({
             type="button"
             title={title}
             aria-pressed={isSelected}
-            aria-label={`${col.iso}: ${free} libere din ${total}`}
+            aria-label={`${col.iso}: ${free} camere libere`}
             onClick={() => onDayClick(col.iso)}
             className={[
               "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
@@ -267,7 +268,7 @@ function SummaryGrid({
           >
             <span className="gantt-summary-cell__value tabular-nums">{free}</span>
             {!compact && total > 0 && (
-              <span className="gantt-summary-cell__total">/{total}</span>
+              <span className="gantt-summary-cell__total">camere</span>
             )}
           </button>
         );
@@ -586,7 +587,8 @@ function RoomRow({
                 isCerere={isCerere}
                 guestTotal={guests}
                 bookingId={b.id}
-                dayCount={dayCount}
+                dayIsos={viewRange.days.map((day) => day.iso)}
+                bookingCheckIn={b.check_in}
                 buildingColor={roomColor}
                 todayHighlight={todayHl}
                 initials={initials}
@@ -642,6 +644,7 @@ export function GanttCalendar({
   checkInTime = DEFAULT_CHECK_IN_TIME,
   checkOutTime = DEFAULT_CHECK_OUT_TIME,
   filter = "all",
+  featureFilter = "all",
   layerFilter = "all",
   focusDay = null,
 }: {
@@ -653,6 +656,7 @@ export function GanttCalendar({
   checkInTime?: string;
   checkOutTime?: string;
   filter?: GanttFilter;
+  featureFilter?: GanttFeatureFilter;
   layerFilter?: GanttLayerFilter;
   focusDay?: string | null;
 }) {
@@ -712,6 +716,9 @@ export function GanttCalendar({
 
   const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
   const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
+  const [occFormMode, setOccFormMode] = useState<
+    "hold" | "block" | "cerere" | "direct" | "move" | null
+  >(null);
   const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
   const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
     null
@@ -737,29 +744,6 @@ export function GanttCalendar({
         rooms: buildingRooms,
       }))
     : [];
-
-  const buildingChips: GanttBuildingChip[] = useMemo(
-    () =>
-      buildingGroups.map((g) => ({
-        id: g.buildingId,
-        name: g.buildingName,
-        color_hex: g.buildingColor,
-        ac_mode: g.buildingAcMode,
-        roomCount: g.rooms.length,
-        hasAnyRoomAc: g.hasAnyRoomAc,
-      })),
-    [buildingGroups]
-  );
-
-  const unassignedInRange = useMemo(
-    () =>
-      bookings.filter(
-        (b) =>
-          b.room_ids.length === 0 &&
-          bookingInViewRange(b, viewRange.rangeStart, viewRange.rangeEnd)
-      ),
-    [bookings, viewRange.rangeStart, viewRange.rangeEnd]
-  );
 
   useEffect(() => {
     const onScrollToday = () => scrollToTodayColumn();
@@ -816,7 +800,6 @@ export function GanttCalendar({
     compact,
     todaySummary.arrivals.length,
     todaySummary.departures.length,
-    buildingChips.length,
     groupByBuilding,
   ]);
 
@@ -917,6 +900,126 @@ export function GanttCalendar({
     [filter, focusDay, router, searchParams, viewRange]
   );
 
+  const zoomChoice = useMemo(
+    () => normalizeZoomChoice(viewRange.zoom),
+    [viewRange.zoom]
+  );
+  const firstIso = viewRange.days[0]?.iso ?? todayIso();
+  const firstDate = parseIso(firstIso);
+  const currentYear =
+    searchParams.get("y") !== null
+      ? Number(searchParams.get("y"))
+      : firstDate.getFullYear();
+  const currentMonth =
+    searchParams.get("m") !== null
+      ? Number(searchParams.get("m"))
+      : firstDate.getMonth();
+  const currentWs = searchParams.get("ws") ?? undefined;
+  const inlineViewChoice = searchParams.get("view") === "room" ? "room" : "all";
+  const selectedRoomId = searchParams.get("room") ?? "";
+  const selectedFeature = featureFilter;
+
+  const pushCalendarPatch = useCallback(
+    (patch: {
+      y?: number;
+      m?: number;
+      zoom?: GanttZoom;
+      ws?: string | null;
+      q?: number;
+      filter?: GanttFilter;
+      layer?: GanttLayerFilter;
+      feat?: GanttFeatureFilter;
+      fd?: string | null;
+      view?: "all" | "room";
+      room?: string | null;
+    }) => {
+      const q = buildCalendarQuery({
+        y: patch.y ?? (Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear()),
+        m: patch.m ?? (Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth()),
+        view: patch.view ?? inlineViewChoice,
+        room:
+          patch.room !== undefined
+            ? patch.room ?? undefined
+            : selectedRoomId || undefined,
+        zoom: patch.zoom ?? viewRange.zoom,
+        ws: patch.ws !== undefined ? patch.ws ?? undefined : currentWs,
+        q:
+          patch.q ??
+          (viewRange.zoom === "quarter"
+            ? Number(viewRange.periodKey.split("-")[2])
+            : undefined),
+        filter: patch.filter ?? filter,
+        layer: patch.layer ?? layerFilter,
+        feat: patch.feat ?? selectedFeature,
+        fd: patch.fd !== undefined ? patch.fd ?? undefined : focusDay || undefined,
+      });
+      router.push(`/admin/calendar?${q}`);
+    },
+    [
+      currentMonth,
+      currentYear,
+      currentWs,
+      filter,
+      firstDate,
+      focusDay,
+      inlineViewChoice,
+      layerFilter,
+      router,
+      selectedFeature,
+      selectedRoomId,
+      viewRange.periodKey,
+      viewRange.zoom,
+    ]
+  );
+
+  const handleInlineZoomChange = useCallback(
+    (nextZoom: InlineZoomChoice) => {
+      const currentQuarter =
+        viewRange.zoom === "quarter"
+          ? Number(viewRange.periodKey.split("-")[2])
+          : Math.floor(currentMonth / 3);
+      pushCalendarPatch({
+        zoom: nextZoom,
+        ws: nextZoom === "quarter" || nextZoom === "days30" ? null : todayIso(),
+        q: nextZoom === "quarter" ? currentQuarter : undefined,
+      });
+    },
+    [currentMonth, pushCalendarPatch, viewRange.periodKey, viewRange.zoom]
+  );
+
+  const shiftGrid = useCallback(
+    (days: number) => {
+      const nextStart = addDays(firstIso, days);
+      const nextDate = parseIso(nextStart);
+      pushCalendarPatch({
+        y: nextDate.getFullYear(),
+        m: nextDate.getMonth(),
+        ws: nextStart,
+        q: viewRange.zoom === "quarter" ? Math.floor(nextDate.getMonth() / 3) : undefined,
+      });
+    },
+    [firstIso, pushCalendarPatch, viewRange.zoom]
+  );
+
+  const navigatePeriod = useCallback(
+    (direction: -1 | 1) => {
+      const next = navigateRange(
+        viewRange,
+        direction,
+        Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear(),
+        Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth()
+      );
+      pushCalendarPatch({
+        y: next.y,
+        m: next.m,
+        zoom: next.zoom,
+        ws: next.ws ?? null,
+        q: next.q,
+      });
+    },
+    [currentMonth, currentYear, firstDate, pushCalendarPatch, viewRange]
+  );
+
   const gridBodyTop = "var(--gantt-body-top, 5.75rem)";
 
   return (
@@ -955,12 +1058,203 @@ export function GanttCalendar({
         ref={shellRef}
         className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
       >
-        <GanttTodayPanel
-          summary={todaySummary}
-          checkInTime={checkInTime}
-          checkOutTime={checkOutTime}
-          onScrollToToday={scrollToTodayColumn}
-        />
+        <div className="gantt-inline-controls mx-3 mt-0">
+          <div className="gantt-inline-controls__row gantt-inline-controls__row--primary">
+            <div className="gantt-inline-controls__cluster gantt-inline-controls__cluster--left">
+              <SegmentGroup
+                label="Interval"
+                compact
+                value={zoomChoice}
+                onChange={(next) => handleInlineZoomChange(next as InlineZoomChoice)}
+                options={[
+                  { value: "today", label: "Azi", shortLabel: "Azi" },
+                  { value: "days7", label: "7 zile", shortLabel: "7z" },
+                  { value: "days15", label: "15 zile", shortLabel: "15z" },
+                  { value: "days30", label: "30 zile", shortLabel: "30z" },
+                  { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
+                ]}
+              />
+
+              <SegmentGroup
+                label="Strat"
+                compact
+                value={layerFilter}
+                onChange={(next) => pushCalendarPatch({ layer: next as GanttLayerFilter })}
+                options={[
+                  { value: "all", label: "Tot", shortLabel: "Tot" },
+                  { value: "cereri", label: "Cereri", shortLabel: "Cer." },
+                  { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
+                  { value: "in_house", label: "In-house", shortLabel: "In" },
+                  { value: "trecute", label: "Trecute", shortLabel: "Trec." },
+                  { value: "hold", label: "Hold", shortLabel: "Hold" },
+                  { value: "block", label: "Blocări", shortLabel: "Bloc" },
+                ]}
+              />
+            </div>
+
+            <div className="gantt-inline-controls__center">
+              <GanttRadialController
+                onOpenRequest={() => setOccFormMode("cerere")}
+                onOpenHold={() => setOccFormMode("hold")}
+                onOpenMove={() => setOccFormMode("move")}
+                onOpenBlock={() => setOccFormMode("block")}
+                onOpenReception={() => setOccFormMode("direct")}
+              />
+            </div>
+
+            <div className="gantt-inline-controls__cluster gantt-inline-controls__cluster--right">
+              <SegmentGroup
+                label="Camere"
+                compact
+                value={filter}
+                onChange={(next) =>
+                  pushCalendarPatch({
+                    filter: next as GanttFilter,
+                    fd: next === "free" ? focusDay || null : null,
+                  })
+                }
+                options={[
+                  { value: "all", label: "Toate" },
+                  { value: "occupied", label: "Ocupate" },
+                  { value: "free", label: "Libere" },
+                ]}
+              />
+
+              <SegmentGroup
+                label="Opțiuni"
+                compact
+                value={selectedFeature}
+                onChange={(next) =>
+                  pushCalendarPatch({ feat: next as GanttFeatureFilter })
+                }
+                options={[
+                  { value: "all", label: "Toate" },
+                  { value: "ac", label: "Cu AC" },
+                  { value: "fridge", label: "Frigider" },
+                ]}
+              />
+
+              <SegmentGroup
+                label="Vizualizare"
+                compact
+                value={inlineViewChoice}
+                onChange={(next) =>
+                  pushCalendarPatch({
+                    view: next as "all" | "room",
+                    room:
+                      next === "room"
+                        ? selectedRoomId || rooms[0]?.id || null
+                        : null,
+                  })
+                }
+                options={[
+                  { value: "all", label: "Toate camerele", shortLabel: "Toate" },
+                  { value: "room", label: "Alege cameră", shortLabel: "Cameră" },
+                ]}
+              />
+            </div>
+          </div>
+
+          <div className="gantt-inline-controls__row gantt-inline-controls__row--nav">
+            <GanttTodayPanel
+              summary={todaySummary}
+              checkInTime={checkInTime}
+              checkOutTime={checkOutTime}
+              onScrollToToday={scrollToTodayColumn}
+              compact
+            />
+
+            <div className="gantt-toolbar__shifters" aria-label="Deplasare grid">
+              <div className="gantt-toolbar__stepper">
+                <span className="gantt-toolbar__stepper-label">1 zi</span>
+                <div className="gantt-toolbar__stepper-actions">
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înapoi o zi"
+                    onClick={() => shiftGrid(-1)}
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înainte o zi"
+                    onClick={() => shiftGrid(1)}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+
+              <div className="gantt-toolbar__stepper">
+                <span className="gantt-toolbar__stepper-label">1 săpt.</span>
+                <div className="gantt-toolbar__stepper-actions">
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înapoi o săptămână"
+                    onClick={() => shiftGrid(-7)}
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înainte o săptămână"
+                    onClick={() => shiftGrid(7)}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="gantt-toolbar__period-shell">
+              <div className="gantt-toolbar__period">
+                <button
+                  type="button"
+                  className="gantt-toolbar__nav"
+                  aria-label="Perioada anterioară"
+                  onClick={() => navigatePeriod(-1)}
+                >
+                  ←
+                </button>
+                <span className="gantt-toolbar__title capitalize">{viewRange.title}</span>
+                <button
+                  type="button"
+                  className="gantt-toolbar__nav"
+                  aria-label="Perioada următoare"
+                  onClick={() => navigatePeriod(1)}
+                >
+                  →
+                </button>
+              </div>
+            </div>
+
+            <div className="gantt-inline-controls__room-picker">
+              {inlineViewChoice === "room" && rooms.length > 0 ? (
+                <select
+                  value={selectedRoomId || rooms[0]?.id || ""}
+                  onChange={(e) =>
+                    pushCalendarPatch({ view: "room", room: e.target.value })
+                  }
+                  className="gantt-toolbar__select gantt-toolbar__select--wide"
+                  aria-label="Cameră"
+                >
+                  <option value="">Selectează camera…</option>
+                  {rooms.map((room) => (
+                    <option key={room.id} value={room.id}>
+                      {room.name} · {room.building_name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span className="gantt-inline-controls__all-rooms">Toate camerele</span>
+              )}
+            </div>
+          </div>
+        </div>
 
         {filter === "free" && focusDay && (
           <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
@@ -975,24 +1269,6 @@ export function GanttCalendar({
             >
               Resetează filtru
             </button>
-          </div>
-        )}
-
-        <GanttZoneRibbon
-          checkInTime={checkInTime}
-          checkOutTime={checkOutTime}
-        />
-
-        {groupByBuilding && buildingChips.length > 0 && (
-          <div className="mx-3 mb-2 flex flex-wrap items-center justify-between gap-2">
-            <GanttBuildingChips
-              buildings={buildingChips}
-              focusBuildingId={focusBuildingId}
-              onFocusBuilding={setFocusBuildingId}
-            />
-            <p className="gantt-kbd-hint hidden sm:block">
-              <kbd>T</kbd> centrare azi · <kbd>Esc</kbd> reset focus
-            </p>
           </div>
         )}
 
@@ -1038,14 +1314,6 @@ export function GanttCalendar({
             />
           </thead>
           <tbody>
-            <GanttUnassignedRow
-              bookings={unassignedInRange}
-              viewRange={viewRange}
-              checkInTime={checkInTime}
-              checkOutTime={checkOutTime}
-              compact={compact}
-              touch={touch}
-            />
             {groupByBuilding
               ? buildingGroups.map((group) => {
                   const collapsed = collapsedBuildings.has(group.buildingId);
@@ -1236,6 +1504,18 @@ export function GanttCalendar({
               <span className="inline-block h-3 w-7 rounded-full bg-gradient-to-r from-amber-300 to-amber-400" />
               Cerere
             </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block h-3 w-7 rounded-full bg-slate-300" />
+              Trecut
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block h-3 w-7 rounded-full bg-yellow-300" />
+              Hold
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block h-3 w-7 rounded-full bg-yellow-400" />
+              Blocare
+            </span>
           </div>
         </div>
       </div>
@@ -1243,6 +1523,12 @@ export function GanttCalendar({
       <GanttContextMenuPanel />
       <GanttCreateDialog
         draft={createDraft}
+        rooms={rooms.map((r) => ({
+          id: r.id,
+          name: r.name,
+          building_name: r.building_name,
+        }))}
+        bookings={bookings}
         onClose={() => setCreateDraft(null)}
       />
       <GanttOccupancyDetailPanel
@@ -1250,6 +1536,11 @@ export function GanttCalendar({
         onClose={() => setOccDetail(null)}
       />
       <MoveRoomDialog
+        key={
+          moveRoomDraft
+            ? `${moveRoomDraft.bookingId}:${moveRoomDraft.sourceRoomId}`
+            : "move-room-closed"
+        }
         draft={moveRoomDraft}
         rooms={rooms.map((r) => ({
           id: r.id,
@@ -1257,6 +1548,17 @@ export function GanttCalendar({
           building_name: r.building_name,
         }))}
         onClose={() => setMoveRoomDraft(null)}
+      />
+      <GanttToolbarOccForm
+        key={occFormMode ?? "closed"}
+        mode={occFormMode}
+        rooms={rooms.map((r) => ({
+          id: r.id,
+          name: r.name,
+          building_name: r.building_name,
+        }))}
+        bookings={bookings}
+        onClose={() => setOccFormMode(null)}
       />
     </GanttContextMenuProvider>
   );

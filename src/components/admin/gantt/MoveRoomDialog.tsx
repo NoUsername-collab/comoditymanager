@@ -32,23 +32,23 @@ type Props = {
 
 export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
   const router = useRouter();
-  const { showToast, notifyMoved } = useAdminFx();
+  const { notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const [targetRoomId, setTargetRoomId] = useState("");
-  const [previewText, setPreviewText] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!draft) return;
-    setTargetRoomId("");
-    setPreviewText(null);
-    setError(null);
-  }, [draft]);
+  const [previewState, setPreviewState] = useState<{
+    roomId: string;
+    text: string | null;
+    error: string | null;
+  }>({
+    roomId: "",
+    text: null,
+    error: null,
+  });
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!draft || !targetRoomId || targetRoomId === draft.sourceRoomId) {
-      setPreviewText(null);
       return;
     }
     let cancelled = false;
@@ -59,17 +59,26 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
     }).then((res) => {
       if (cancelled) return;
       if (!res.ok) {
-        setPreviewText(null);
-        setError(res.error);
+        setPreviewState({
+          roomId: targetRoomId,
+          text: null,
+          error: res.error,
+        });
         return;
       }
-      setError(null);
       const p = res.preview;
-      setPreviewText(
-        `${draft.sourceRoomName}: ${formatStayPeriod(p.sourceSegment.start, p.sourceSegment.end, true)} · ` +
-          `→ ${rooms.find((r) => r.id === targetRoomId)?.name ?? "cameră"}: ${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, true)} · ` +
-          `Total: ${p.oldTotal} → ${p.newTotal} RON`
-      );
+      setPreviewState({
+        roomId: targetRoomId,
+        error: null,
+        text:
+          p.mode === "full"
+            ? `${draft.sourceRoomName} → ${rooms.find((r) => r.id === targetRoomId)?.name ?? "cameră"} · ` +
+              `${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, true)} · ` +
+              `Total: ${p.oldTotal} → ${p.newTotal} RON`
+            : `${draft.sourceRoomName}: ${formatStayPeriod(p.sourceSegment?.start ?? "", p.sourceSegment?.end ?? "", true)} · ` +
+              `→ ${rooms.find((r) => r.id === targetRoomId)?.name ?? "cameră"}: ${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, true)} · ` +
+              `Total: ${p.oldTotal} → ${p.newTotal} RON`,
+      });
     });
     return () => {
       cancelled = true;
@@ -81,15 +90,19 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
   const targets = rooms.filter(
     (r) => r.id !== draft.sourceRoomId && !draft.roomIds.includes(r.id)
   );
+  const previewText =
+    previewState.roomId === targetRoomId ? previewState.text : null;
+  const error =
+    submitError ?? (previewState.roomId === targetRoomId ? previewState.error : null);
 
   function submit() {
     if (!draft) return;
     const current = draft;
     if (!targetRoomId) {
-      setError("Alege camera țintă.");
+      setSubmitError("Alege camera țintă.");
       return;
     }
-    setError(null);
+    setSubmitError(null);
     void runAdminAction(async () => {
       const res = await moveBookingRoomFromPivotAction({
         bookingId: current.bookingId,
@@ -97,10 +110,10 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
         targetRoomId,
       });
       if (!res.ok) {
-        setError(res.error);
+        setSubmitError(res.error);
         return;
       }
-      notifyMoved("Cameră mutată", `${current.guestName} — split de azi`);
+      notifyMoved("Cameră mutată", `${current.guestName} — camera a fost actualizată`);
       onClose();
       router.refresh();
     });
@@ -110,7 +123,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
     <AdminFloatingPanel
       open
       onClose={onClose}
-      title="Mută cameră (de azi)"
+      title="Mută cameră"
       variant="modal"
       width={440}
     >
@@ -118,7 +131,8 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
         <p className="text-sm text-zinc-600">
           <strong>{draft.guestName}</strong>
           <br />
-          Din <strong>{draft.sourceRoomName}</strong> — segmentul viitor merge în camera aleasă.
+          Din <strong>{draft.sourceRoomName}</strong> — dacă sejurul nu a început, mutăm tot
+          intervalul; dacă a început deja, segmentăm doar din ziua mutării.
         </p>
 
         <label className="block text-xs font-semibold text-zinc-600">
@@ -126,7 +140,10 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
           <select
             className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
             value={targetRoomId}
-            onChange={(e) => setTargetRoomId(e.target.value)}
+            onChange={(e) => {
+              setTargetRoomId(e.target.value);
+              setSubmitError(null);
+            }}
           >
             <option value="">Selectează…</option>
             {targets.map((r) => (

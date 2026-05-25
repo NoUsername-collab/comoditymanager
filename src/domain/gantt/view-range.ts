@@ -85,6 +85,30 @@ function rollingZoomLabel(zoom: GanttRollingZoom): string {
   }
 }
 
+function buildFixedLengthRange(
+  startIso: string,
+  length: number,
+  zoom: GanttZoom,
+  periodKey: string,
+  title: string
+): GanttViewRange {
+  const days: string[] = [];
+  let cur = startIso;
+  for (let i = 0; i < length; i += 1) {
+    days.push(cur);
+    cur = addDays(cur, 1);
+  }
+
+  return {
+    zoom,
+    periodKey,
+    title,
+    days: buildDayColumns(days),
+    rangeStart: days[0],
+    rangeEnd: addDays(days[days.length - 1], 1),
+  };
+}
+
 export function buildRollingRange(
   startIso: string,
   zoom: GanttRollingZoom
@@ -138,6 +162,34 @@ export function buildMonthRange(year: number, month: number): GanttViewRange {
   };
 }
 
+export function buildAnchoredMonthRange(
+  startIso: string,
+  zoom: "days30" | "month"
+): GanttViewRange {
+  const anchor = parseIso(startIso);
+  const canonicalStart = `${anchor.getFullYear()}-${String(anchor.getMonth() + 1).padStart(2, "0")}-01`;
+  const length = daysInMonth(anchor.getFullYear(), anchor.getMonth());
+  const endIso = addDays(startIso, length - 1);
+  const title =
+    startIso === canonicalStart
+      ? new Date(anchor.getFullYear(), anchor.getMonth(), 1).toLocaleDateString(
+          "ro-RO",
+          {
+            month: "long",
+            year: "numeric",
+          }
+        )
+      : `${formatDateWithDay(startIso, true)} – ${formatDateWithDay(endIso, true)}`;
+
+  return buildFixedLengthRange(
+    startIso,
+    length,
+    zoom,
+    `${zoom}-${startIso}`,
+    title
+  );
+}
+
 export function buildWeekRange(weekStartIso: string): GanttViewRange {
   const days: string[] = [];
   let cur = weekStartIso;
@@ -179,6 +231,31 @@ export function buildQuarterRange(year: number, quarter: number): GanttViewRange
   };
 }
 
+export function buildAnchoredQuarterRange(startIso: string): GanttViewRange {
+  const anchor = parseIso(startIso);
+  const quarter = Math.floor(anchor.getMonth() / 3);
+  const quarterStartMonth = quarter * 3;
+  const canonicalStart = `${anchor.getFullYear()}-${String(quarterStartMonth + 1).padStart(2, "0")}-01`;
+  let length = 0;
+  for (let month = quarterStartMonth; month < quarterStartMonth + 3; month += 1) {
+    length += daysInMonth(anchor.getFullYear(), month);
+  }
+  const endIso = addDays(startIso, length - 1);
+  const labels = ["Ian–Mar", "Apr–Iun", "Iul–Sep", "Oct–Dec"];
+  const title =
+    startIso === canonicalStart
+      ? `${labels[quarter]} ${anchor.getFullYear()}`
+      : `${formatDateWithDay(startIso, true)} – ${formatDateWithDay(endIso, true)}`;
+
+  return buildFixedLengthRange(
+    startIso,
+    length,
+    "quarter",
+    `quarter-${startIso}`,
+    title
+  );
+}
+
 export function resolveGanttRange(params: {
   y?: number;
   m?: number;
@@ -190,16 +267,16 @@ export function resolveGanttRange(params: {
   const year = params.y ?? now.getFullYear();
   const month = params.m ?? now.getMonth();
   const zoom = (params.zoom as GanttZoom) || "days30";
+  const validWs =
+    params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws) ? params.ws : undefined;
 
   if (isRollingZoom(zoom)) {
-    const ws =
-      params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws)
-        ? params.ws
-        : todayIso();
+    const ws = validWs ?? todayIso();
     return buildRollingRange(ws, zoom);
   }
 
   if (isMonthLikeZoom(zoom)) {
+    if (validWs) return buildAnchoredMonthRange(validWs, zoom);
     return {
       ...buildMonthRange(year, month),
       zoom,
@@ -208,14 +285,12 @@ export function resolveGanttRange(params: {
   }
 
   if (zoom === "week") {
-    const ws =
-      params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws)
-        ? params.ws
-        : mondayOfWeekContaining(todayIso());
+    const ws = validWs ?? mondayOfWeekContaining(todayIso());
     return buildRollingRange(ws, "days7");
   }
 
   if (zoom === "quarter") {
+    if (validWs) return buildAnchoredQuarterRange(validWs);
     const q =
       params.q !== undefined && params.q >= 0 && params.q <= 3
         ? params.q

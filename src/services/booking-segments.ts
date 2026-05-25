@@ -1,10 +1,9 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import {
-  resolveMovePivot,
   type BookingRoomSegmentRow,
 } from "@/domain/booking/segment-types";
 import { computeBookingTotalFromSegments } from "@/domain/pricing/segment-total";
-import { addDays, stayNightCount } from "@/lib/stay-dates";
+import { addDays, stayNightCount, todayIso } from "@/lib/stay-dates";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
@@ -19,6 +18,51 @@ async function roomNightlyRate(roomId: string): Promise<number> {
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Camera nu există.");
   return Number(data.price_per_night);
+}
+
+type RoomMovePlan =
+  | {
+      mode: "full";
+      effectiveStart: string;
+    }
+  | {
+      mode: "split";
+      effectiveStart: string;
+      pivot: string;
+    };
+
+function resolveRoomMovePlan(
+  segmentStart: string,
+  segmentEnd: string,
+  requestedPivot?: string
+): RoomMovePlan {
+  const today = todayIso();
+  const pivot = requestedPivot && requestedPivot > today ? requestedPivot : today;
+
+  // If the stay has not started yet, moving rooms should reassign the whole segment,
+  // not create an artificial split after the first night.
+  if (pivot <= segmentStart) {
+    return {
+      mode: "full",
+      effectiveStart: segmentStart,
+    };
+  }
+
+  if (pivot >= segmentEnd) {
+    throw new Error("Nu mai rămân nopți viitoare de mutat pe acest segment.");
+  }
+  if (!isAtLeastOneNight(segmentStart, pivot)) {
+    throw new Error("Segmentul trecut trebuie să păstreze minim o noapte.");
+  }
+  if (!isAtLeastOneNight(pivot, segmentEnd)) {
+    throw new Error("Segmentul nou trebuie să aibă minim o noapte.");
+  }
+
+  return {
+    mode: "split",
+    effectiveStart: pivot,
+    pivot,
+  };
 }
 
 export async function listSegmentsForBooking(
@@ -180,10 +224,11 @@ export async function shiftAllSegmentsByDays(
 }
 
 export type RoomMovePreview = {
-  pivot: string;
+  mode: "full" | "split";
+  pivot: string | null;
   sourceRoomId: string;
   targetRoomId: string;
-  sourceSegment: { start: string; end: string; nights: number; total: number };
+  sourceSegment: { start: string; end: string; nights: number; total: number } | null;
   targetSegment: { start: string; end: string; nights: number; total: number };
   newTotal: number;
   oldTotal: number;
@@ -199,7 +244,7 @@ export async function previewRoomMoveFromPivot(input: {
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
   if (!source) throw new Error("Segment sursă negăsit.");
 
-  const pivot = resolveMovePivot(
+  const plan = resolveRoomMovePlan(
     source.segment_start,
     source.segment_end,
     input.pivotDate
@@ -209,13 +254,22 @@ export async function previewRoomMoveFromPivot(input: {
   const oldTotal = computeBookingTotalFromSegments(segments);
   const nextSegments = segments.flatMap((s) => {
     if (s.id !== source.id) return [s];
+    if (plan.mode === "full") {
+      return [
+        {
+          ...s,
+          room_id: input.targetRoomId,
+          nightly_rate: targetRate,
+        },
+      ];
+    }
     return [
-      { ...s, segment_end: pivot },
+      { ...s, segment_end: plan.pivot },
       {
         ...s,
         id: "new",
         room_id: input.targetRoomId,
-        segment_start: pivot,
+        segment_start: plan.pivot,
         segment_end: source.segment_end,
         nightly_rate: targetRate,
       },
@@ -224,24 +278,28 @@ export async function previewRoomMoveFromPivot(input: {
   const newTotal = computeBookingTotalFromSegments(nextSegments);
 
   return {
-    pivot,
+    mode: plan.mode,
+    pivot: plan.mode === "split" ? plan.pivot : null,
     sourceRoomId: input.sourceRoomId,
     targetRoomId: input.targetRoomId,
-    sourceSegment: {
-      start: source.segment_start,
-      end: pivot,
-      nights: stayNightCount(source.segment_start, pivot),
-      total: computeBookingTotalFromSegments([
-        { ...source, segment_end: pivot },
-      ]),
-    },
+    sourceSegment:
+      plan.mode === "split"
+        ? {
+            start: source.segment_start,
+            end: plan.pivot,
+            nights: stayNightCount(source.segment_start, plan.pivot),
+            total: computeBookingTotalFromSegments([
+              { ...source, segment_end: plan.pivot },
+            ]),
+          }
+        : null,
     targetSegment: {
-      start: pivot,
+      start: plan.effectiveStart,
       end: source.segment_end,
-      nights: stayNightCount(pivot, source.segment_end),
+      nights: stayNightCount(plan.effectiveStart, source.segment_end),
       total: computeBookingTotalFromSegments([
         {
-          segment_start: pivot,
+          segment_start: plan.effectiveStart,
           segment_end: source.segment_end,
           nightly_rate: targetRate,
         },
@@ -252,7 +310,7 @@ export async function previewRoomMoveFromPivot(input: {
   };
 }
 
-/** Mută camera de la pivot înainte — split card pe timeline. */
+/** Mută camera integral dacă sejurul nu a început; altfel face split de la pivot. */
 export async function moveBookingRoomFromPivot(input: {
   bookingId: string;
   sourceRoomId: string;
@@ -282,14 +340,14 @@ export async function moveBookingRoomFromPivot(input: {
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
   if (!source) throw new Error("Segment sursă negăsit.");
 
-  const pivot = resolveMovePivot(
+  const plan = resolveRoomMovePlan(
     source.segment_start,
     source.segment_end,
     input.pivotDate
   );
 
   await assertRoomsAvailableForOccupancy(
-    pivot,
+    plan.effectiveStart,
     source.segment_end,
     [input.targetRoomId],
     input.bookingId
@@ -297,20 +355,31 @@ export async function moveBookingRoomFromPivot(input: {
 
   const targetRate = await roomNightlyRate(input.targetRoomId);
 
-  const { error: truncErr } = await supabase
-    .from("booking_room_segments")
-    .update({ segment_end: pivot })
-    .eq("id", source.id);
-  if (truncErr) throw new Error(truncErr.message);
+  if (plan.mode === "full") {
+    const { error: updateErr } = await supabase
+      .from("booking_room_segments")
+      .update({
+        room_id: input.targetRoomId,
+        nightly_rate: targetRate,
+      })
+      .eq("id", source.id);
+    if (updateErr) throw new Error(updateErr.message);
+  } else {
+    const { error: truncErr } = await supabase
+      .from("booking_room_segments")
+      .update({ segment_end: plan.pivot })
+      .eq("id", source.id);
+    if (truncErr) throw new Error(truncErr.message);
 
-  const { error: insErr } = await supabase.from("booking_room_segments").insert({
-    booking_id: input.bookingId,
-    room_id: input.targetRoomId,
-    segment_start: pivot,
-    segment_end: source.segment_end,
-    nightly_rate: targetRate,
-  });
-  if (insErr) throw new Error(insErr.message);
+    const { error: insErr } = await supabase.from("booking_room_segments").insert({
+      booking_id: input.bookingId,
+      room_id: input.targetRoomId,
+      segment_start: plan.pivot,
+      segment_end: source.segment_end,
+      nightly_rate: targetRate,
+    });
+    if (insErr) throw new Error(insErr.message);
+  }
 
   const { error: brErr } = await supabase
     .from("booking_rooms")
@@ -325,11 +394,15 @@ export async function moveBookingRoomFromPivot(input: {
     action: "booking.room_moved",
     entityType: "booking",
     entityId: input.bookingId,
-    summary: `Mutare cameră: ${booking.guest_name} · pivot ${pivot}`,
+    summary:
+      plan.mode === "full"
+        ? `Mutare cameră: ${booking.guest_name} · tot sejurul`
+        : `Mutare cameră: ${booking.guest_name} · pivot ${plan.pivot}`,
     metadata: {
       source_room_id: input.sourceRoomId,
       target_room_id: input.targetRoomId,
-      pivot,
+      move_mode: plan.mode,
+      pivot: plan.mode === "split" ? plan.pivot : null,
     },
   });
 }

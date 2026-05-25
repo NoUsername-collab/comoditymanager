@@ -10,6 +10,7 @@ export function RoomGridTile({
   statusOnDate,
   guestOnDate,
   dateLabel,
+  href,
 }: {
   id: string;
   name: string;
@@ -18,6 +19,7 @@ export function RoomGridTile({
   statusOnDate: RoomNightStatus;
   guestOnDate?: string | null;
   dateLabel?: string;
+  href?: string | null;
 }) {
   const label = roomShortLabel(name);
   const title = [
@@ -35,23 +37,32 @@ export function RoomGridTile({
     .filter(Boolean)
     .join(" · ");
 
+  const className = [
+    "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-[11px] font-bold leading-none shadow-sm transition",
+    href && "hover:scale-105 hover:shadow",
+    statusOnDate === "inactive" &&
+      "border-zinc-200 bg-zinc-100 text-zinc-400 line-through",
+    statusOnDate === "free" &&
+      "border-emerald-200/80 bg-white text-emerald-900",
+    statusOnDate === "occupied" && "status-occupied-tile",
+    statusOnDate === "pending" &&
+      "border-amber-400/70 bg-amber-300 text-amber-950",
+    href && statusOnDate === "free" && "hover:border-emerald-300",
+    href && statusOnDate === "pending" && "hover:bg-amber-400",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  if (!href) {
+    return (
+      <span title={title} className={className}>
+        {label}
+      </span>
+    );
+  }
+
   return (
-    <Link
-      href={`/admin/rooms/${id}/edit`}
-      title={title}
-      className={[
-        "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-[11px] font-bold leading-none shadow-sm transition hover:scale-105 hover:shadow",
-        statusOnDate === "inactive" &&
-          "border-zinc-200 bg-zinc-100 text-zinc-400 line-through",
-        statusOnDate === "free" &&
-          "border-emerald-200/80 bg-white text-emerald-900 hover:border-emerald-300",
-        statusOnDate === "occupied" && "status-occupied-tile",
-        statusOnDate === "pending" &&
-          "border-amber-400/70 bg-amber-300 text-amber-950 hover:bg-amber-400",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
+    <Link href={href} title={title} className={className}>
       {label}
     </Link>
   );

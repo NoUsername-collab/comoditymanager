@@ -3,26 +3,28 @@
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
+  onOpenRequest: () => void;
   onOpenHold: () => void;
+  onOpenMove: () => void;
   onOpenBlock: () => void;
   onOpenReception: () => void;
-  onScrollToToday: () => void;
 };
 
 type RadialAction = {
-  id: "today" | "hold" | "block" | "booking";
+  id: "request" | "booking" | "hold" | "move" | "block";
   label: string;
   hint: string;
-  position: "top" | "left" | "right" | "bottom";
-  tone: "emerald" | "amber" | "slate" | "sky";
+  position: "top-left" | "top-right" | "left" | "right" | "bottom";
+  tone: "emerald" | "amber" | "slate" | "sky" | "violet";
   onClick: () => void;
 };
 
 export function GanttRadialController({
+  onOpenRequest,
   onOpenHold,
+  onOpenMove,
   onOpenBlock,
   onOpenReception,
-  onScrollToToday,
 }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -47,12 +49,20 @@ export function GanttRadialController({
 
   const actions: RadialAction[] = [
     {
-      id: "today",
-      label: "Azi",
-      hint: "centrare",
-      position: "top",
-      tone: "emerald",
-      onClick: onScrollToToday,
+      id: "request",
+      label: "Cerere",
+      hint: "noua",
+      position: "top-left",
+      tone: "violet",
+      onClick: onOpenRequest,
+    },
+    {
+      id: "booking",
+      label: "Rezervare",
+      hint: "directa",
+      position: "top-right",
+      tone: "sky",
+      onClick: onOpenReception,
     },
     {
       id: "hold",
@@ -63,20 +73,20 @@ export function GanttRadialController({
       onClick: onOpenHold,
     },
     {
+      id: "move",
+      label: "Muta",
+      hint: "camera",
+      position: "bottom",
+      tone: "emerald",
+      onClick: onOpenMove,
+    },
+    {
       id: "block",
       label: "Blocare",
       hint: "indisp.",
       position: "right",
       tone: "slate",
       onClick: onOpenBlock,
-    },
-    {
-      id: "booking",
-      label: "Rezervare",
-      hint: "noua",
-      position: "bottom",
-      tone: "sky",
-      onClick: onOpenReception,
     },
   ];
 
@@ -124,7 +134,6 @@ export function GanttRadialController({
             <span className="gantt-radial__door" />
           </span>
         </span>
-        <span className="gantt-radial__core-text">{open ? "Inchide" : "Actiuni"}</span>
         <span className="sr-only">Casa</span>
       </button>
     </div>

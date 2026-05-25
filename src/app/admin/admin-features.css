@@ -1,12 +1,12 @@
 @import "../../styles/themes/_base.css";
 @import "../../styles/themes/default.css";
+@import "../../styles/themes/color-themes.css";
 @import "../../styles/themes/admin-default-bridge.css";
 @import "../../styles/themes/win95.css";
 @import "../../styles/themes/winxp.css";
 @import "../../styles/themes/country-themes.css";
 @import "../../styles/themes/country-hud-neon.css";
 @import "../../styles/themes/country-motion.css";
-@import "./admin-liquid-shader.css";
 @import "../../styles/themes/BookingCard.css";
 @import "./gantt-premium.css";
 @import "./admin-palette.css";

@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { AdminThemeLoading } from "@/components/admin/loading/AdminThemeLoading";
 
 const MIN_PENDING_MS = 400;
 
@@ -24,11 +25,7 @@ const AdminPendingContext = createContext<AdminPendingContextValue | null>(null)
 export function AdminPendingProvider({ children }: { children: ReactNode }) {
   const depthRef = useRef(0);
   const [pending, setPending] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = typeof document !== "undefined";
 
   useEffect(() => {
     if (!pending) return;
@@ -68,18 +65,7 @@ export function AdminPendingProvider({ children }: { children: ReactNode }) {
 
   const overlay =
     pending && mounted ? (
-      <div
-        className="admin-pending-overlay"
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
-        aria-label="Se procesează cererea"
-      >
-        <div className="admin-pending-overlay__stack">
-          <span className="admin-pending-overlay__spinner" aria-hidden />
-          <span className="admin-pending-overlay__text">Se procesează…</span>
-        </div>
-      </div>
+      <AdminThemeLoading fullScreen label="Se procesează…" />
     ) : null;
 
   return (

@@ -30,6 +30,7 @@ import {
   GanttStayPopover,
   type GanttStayPopoverData,
 } from "./GanttStayPopover";
+import { addDays, parseIso } from "@/lib/stay-dates";
 
 const DRAG_BLOCK_SELECTOR = [
   "a",
@@ -58,7 +59,8 @@ type Props = {
   isCerere: boolean;
   guestTotal: number;
   bookingId: string;
-  dayCount: number;
+  dayIsos: string[];
+  bookingCheckIn: string;
   buildingColor?: string | null;
   todayHighlight?: StayTodayHighlight;
   initials?: string;
@@ -78,7 +80,8 @@ export function GanttDraggableStay({
   isCerere,
   guestTotal,
   bookingId,
-  dayCount,
+  dayIsos,
+  bookingCheckIn,
   buildingColor,
   todayHighlight,
   initials,
@@ -107,10 +110,11 @@ export function GanttDraggableStay({
   const [verticalMode, setVerticalMode] = useState(false);
   const startX = useRef(0);
   const startY = useRef(0);
-  const rowWidth = useRef(0);
   const targetRoomRef = useRef<string | null>(null);
   const dragDeltaRef = useRef(0);
   const dragDeltaYRef = useRef(0);
+  const lastPointerX = useRef(0);
+  const lastPointerY = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -119,6 +123,7 @@ export function GanttDraggableStay({
   const capturePointerId = useRef<number | null>(null);
 
   const dragging = interaction === "dragging";
+  const visibleDayCount = dayIsos.length;
 
   const title = [
     popover.guestName,
@@ -168,10 +173,10 @@ export function GanttDraggableStay({
       }
       e.stopPropagation();
       const el = e.currentTarget;
-      const row = el.offsetParent as HTMLElement | null;
-      rowWidth.current = row?.clientWidth ?? el.parentElement?.clientWidth ?? 1;
       startX.current = e.clientX;
       startY.current = e.clientY;
+      lastPointerX.current = e.clientX;
+      lastPointerY.current = e.clientY;
       targetRoomRef.current = null;
       longPressOpened.current = false;
       setVerticalMode(false);
@@ -188,7 +193,7 @@ export function GanttDraggableStay({
       }, LONG_PRESS_MS);
       el.setPointerCapture(e.pointerId);
     },
-    [clearLongPress, openStayMenu]
+    [clearLongPress, openStayMenu, pending]
   );
 
   useEffect(() => {
@@ -207,6 +212,8 @@ export function GanttDraggableStay({
 
       const dx = e.clientX - startX.current;
       const dy = e.clientY - startY.current;
+      lastPointerX.current = e.clientX;
+      lastPointerY.current = e.clientY;
       setDragDelta(dx);
       setDragDeltaY(dy);
       dragDeltaRef.current = dx;
@@ -226,7 +233,7 @@ export function GanttDraggableStay({
       }
     };
 
-    const finish = () => {
+    const finish = (e?: PointerEvent) => {
       clearLongPress();
       const el = captureEl.current;
       const pid = capturePointerId.current;
@@ -249,9 +256,12 @@ export function GanttDraggableStay({
       clearGanttRoomDropTargets();
       const dx = dragDeltaRef.current;
       const dy = dragDeltaYRef.current;
+      const clientX = e?.clientX ?? lastPointerX.current;
+      const clientY = e?.clientY ?? lastPointerY.current;
       const isVertical =
         canVerticalMove && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16;
-      const targetRoom = targetRoomRef.current;
+      const targetRoom =
+        targetRoomRef.current ?? findGanttRoomAtPoint(clientX, clientY);
       setDragDelta(0);
       setDragDeltaY(0);
       setVerticalMode(false);
@@ -276,8 +286,26 @@ export function GanttDraggableStay({
         return;
       }
 
-      const w = rowWidth.current || 1;
-      const dayDelta = Math.round((dx / w) * dayCount);
+      if (targetRoom !== sourceRoomId || !el || visibleDayCount === 0) return;
+
+      const grid = document.querySelector(
+        "[data-gantt-day-grid]"
+      ) as HTMLElement | null;
+      if (!grid) return;
+
+      const gridRect = grid.getBoundingClientRect();
+      const cardRect = el.getBoundingClientRect();
+      if (gridRect.width <= 0) return;
+
+      const dayWidth = gridRect.width / visibleDayCount;
+      if (dayWidth <= 0) return;
+
+      const rawStartIndex = Math.floor((cardRect.left - gridRect.left) / dayWidth);
+      const targetCheckIn = addDays(dayIsos[0] ?? bookingCheckIn, rawStartIndex);
+      const dayDelta = Math.round(
+        (parseIso(targetCheckIn).getTime() - parseIso(bookingCheckIn).getTime()) /
+          86400000
+      );
       if (dayDelta === 0) return;
 
       void runAdminAction(async () => {
@@ -308,10 +336,13 @@ export function GanttDraggableStay({
     canVerticalMove,
     sourceRoomId,
     bookingId,
-    dayCount,
+    bookingCheckIn,
+    dayIsos,
     router,
     notifyMoved,
     popover.guestName,
+    runAdminAction,
+    visibleDayCount,
   ]);
 
   const showPopover =

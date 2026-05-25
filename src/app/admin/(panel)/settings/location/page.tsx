@@ -47,7 +47,7 @@ export default async function LocationAdminPage({
     <AdminRetroPageFrame
       title="Administrare locație — Casa Emil"
       className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
-      description="Configurare pensiune, structură clădiri/camere, catalog modular și conturi staff."
+      description="Hub admin pentru toată configurarea: structură locație, camere, catalog modular și conturi staff."
     >
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <Link
@@ -85,6 +85,42 @@ export default async function LocationAdminPage({
 
       {settings && (
         <>
+          <div className="mb-6 grid gap-3 md:grid-cols-3">
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+                1. Structură
+              </p>
+              <p className="mt-2 text-sm font-semibold text-zinc-900">
+                Configurezi spațiile și camerele.
+              </p>
+              <p className="mt-1 text-sm text-zinc-600">
+                Acesta este singurul loc din care pornește configurarea.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+                2. Catalog
+              </p>
+              <p className="mt-2 text-sm font-semibold text-zinc-900">
+                Tipuri de cameră și opțiuni.
+              </p>
+              <p className="mt-1 text-sm text-zinc-600">
+                AC, frigider și politicile lor rămân centralizate aici.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
+                3. Staff
+              </p>
+              <p className="mt-2 text-sm font-semibold text-zinc-900">
+                Parole și acces operațional.
+              </p>
+              <p className="mt-1 text-sm text-zinc-600">
+                Operatorul folosește aplicația, adminul configurează din acest hub.
+              </p>
+            </div>
+          </div>
+
           <SettingsSlidePanel
             title="Operațional"
             subtitle={`${settings.display_name} · ore și paturi extra`}
@@ -141,24 +177,40 @@ export default async function LocationAdminPage({
           </SettingsSlidePanel>
 
           <SettingsSlidePanel
-            title="Structură"
-            subtitle="Clădiri, camere, etaje"
+            title="Structură locație"
+            subtitle="Organizare camere și spații, dintr-un singur loc"
             icon="🏢"
             defaultOpen
           >
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/admin/buildings"
-                className="rounded-lg border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-50"
-              >
-                Clădiri
-              </Link>
-              <Link
-                href="/admin/rooms"
-                className="rounded-lg border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-50"
-              >
-                Camere
-              </Link>
+            <div className="space-y-4">
+              <p className="text-sm text-zinc-600">
+                Pentru a rămâne simplu pentru operator și clar pentru admin, orice
+                creare sau editare pornește din acest hub.
+              </p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Link
+                  href="/admin/buildings"
+                  className="rounded-xl border border-zinc-300 bg-white px-4 py-4 hover:bg-zinc-50"
+                >
+                  <span className="block text-sm font-semibold text-zinc-900">
+                    Structură locație
+                  </span>
+                  <span className="mt-1 block text-sm text-zinc-600">
+                    Zone, etaje și ordonarea structurii fizice.
+                  </span>
+                </Link>
+                <Link
+                  href="/admin/rooms"
+                  className="rounded-xl border border-zinc-300 bg-white px-4 py-4 hover:bg-zinc-50"
+                >
+                  <span className="block text-sm font-semibold text-zinc-900">
+                    Camere
+                  </span>
+                  <span className="mt-1 block text-sm text-zinc-600">
+                    Nume, capacitate, preț și stare activă.
+                  </span>
+                </Link>
+              </div>
             </div>
           </SettingsSlidePanel>
 

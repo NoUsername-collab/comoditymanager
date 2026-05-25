@@ -6,11 +6,11 @@ import {
 import { AdminPalettePicker } from "@/components/admin/settings/AdminPalettePicker";
 import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { resolvePaletteDefinition } from "@/lib/admin-palettes";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminLocationUnlockForm } from "@/components/admin/settings/AdminLocationUnlockForm";
+import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 import { getStaffRole } from "@/lib/auth/roles";
 import { requireStaff } from "@/lib/auth/require-staff";
@@ -39,9 +39,6 @@ export default async function SettingsPage({
   }
 
   const appearance = settings ? pensionAppearanceSettings(settings) : null;
-  const activePalette = appearance
-    ? resolvePaletteDefinition(appearance)
-    : null;
 
   return (
     <AdminRetroPageFrame
@@ -110,8 +107,7 @@ export default async function SettingsPage({
             <div className="admin-settings-summary__chip">
               <span className="admin-settings-summary__label">Temă activă</span>
               <span className="admin-settings-summary__value">
-                {activePalette?.name ?? "—"} ·{" "}
-                {appearance.admin_day_night === "day" ? "Zi" : "Noapte"}
+                <AdminCurrentThemeSummary />
               </span>
             </div>
             <div className="admin-settings-summary__chip">
@@ -139,7 +135,7 @@ export default async function SettingsPage({
 
             <SettingsSlidePanel
               title="Aspect panou"
-              subtitle={`${activePalette?.name ?? "Temă"} · modular`}
+              subtitle="Temă modulară activă"
               icon="🎨"
               defaultOpen
             >
@@ -157,7 +153,7 @@ export default async function SettingsPage({
             title="Administrare locație"
             subtitle={
               locationUnlocked
-                ? "Deblocat — configurezi clădiri, camere, operațional"
+                ? "Deblocat — singurul loc pentru creare/editare structură și camere"
                 : "Necesită parola contului Admin"
             }
             icon="🏨"
@@ -166,14 +162,14 @@ export default async function SettingsPage({
             {locationUnlocked ? (
               <div className="space-y-3">
                 <p className="text-sm text-zinc-600">
-                  Panoul de configurare este activ (2 ore). Poți modifica
-                  clădiri, tipuri cameră, opțiuni modulare și parole staff.
+                  Panoul de configurare este activ (2 ore). Orice creare sau
+                  editare de structură, camere, catalog și staff pornește de aici.
                 </p>
                 <Link
                   href="/admin/settings/location"
                   className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
                 >
-                  Deschide panou administrare locație
+                  Deschide centrul de configurare
                 </Link>
               </div>
             ) : (

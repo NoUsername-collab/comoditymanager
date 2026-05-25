@@ -5,7 +5,27 @@ export const THEMES: ThemeDefinition[] = [
   {
     id: "default",
     name: "Default",
-    description: "Alb simplu — curat, fără efecte, pentru lucru zilnic",
+    description: "Neutral operațional — fără referințe de țară, focus pe lizibilitate",
+  },
+  {
+    id: "green",
+    name: "Verde",
+    description: "Paletă generică verde — calmă, clară, fără identitate de țară",
+  },
+  {
+    id: "blue",
+    name: "Albastru",
+    description: "Paletă generică albastră — rece, tehnică, foarte clară",
+  },
+  {
+    id: "orange",
+    name: "Portocaliu",
+    description: "Paletă generică portocalie — caldă, energică, foarte vizibilă",
+  },
+  {
+    id: "red",
+    name: "Roșu",
+    description: "Paletă generică roșie — intensă, fermă, pentru contrast puternic",
   },
   {
     id: "win95",

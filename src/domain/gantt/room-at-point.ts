@@ -1,5 +1,11 @@
 const ROOM_ROW_SELECTOR = "[data-gantt-room-row]";
 
+type GanttRoomDragPreview = {
+  leftPct: number;
+  widthPct: number;
+  hasConflict: boolean;
+};
+
 export function findGanttRoomAtPoint(clientX: number, clientY: number): string | null {
   if (typeof document === "undefined") return null;
   const els = document.elementsFromPoint(clientX, clientY);
@@ -28,12 +34,28 @@ export function clearGanttRoomDropTargets(): void {
   setGanttRoomDropTarget(null);
 }
 
-export function setGanttRoomDragSpan(roomIds: string[]): void {
+export function setGanttRoomDragSpan(
+  roomIds: string[],
+  preview?: GanttRoomDragPreview
+): void {
   if (typeof document === "undefined") return;
   const set = new Set(roomIds);
   document.querySelectorAll(ROOM_ROW_SELECTOR).forEach((el) => {
     const id = (el as HTMLElement).dataset.ganttRoomRow;
-    el.classList.toggle("gantt-room-row--drag-span", id != null && set.has(id));
+    const active = id != null && set.has(id);
+    el.classList.toggle("gantt-room-row--drag-span", active);
+    el.classList.toggle(
+      "gantt-room-row--drag-span-conflict",
+      active && !!preview?.hasConflict
+    );
+    const node = el as HTMLElement;
+    if (active && preview) {
+      node.style.setProperty("--gantt-drag-left", `${preview.leftPct}%`);
+      node.style.setProperty("--gantt-drag-width", `${preview.widthPct}%`);
+    } else {
+      node.style.removeProperty("--gantt-drag-left");
+      node.style.removeProperty("--gantt-drag-width");
+    }
   });
 }
 

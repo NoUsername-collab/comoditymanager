@@ -166,32 +166,28 @@ export function AdminPalettePicker({
     admin_day_night: AdminTheme;
   };
 }) {
-  const [paletteKey, setPaletteKey] = useState<ThemeId>(
-    defaultSettings.admin_palette_key
-  );
-  const [dayNight, setDayNight] = useState<AdminTheme>(
-    defaultSettings.admin_day_night
-  );
   const [expandedId, setExpandedId] = useState<string | null>(
     defaultSettings.admin_palette_key
   );
 
   const { applySettings, settings } = useAdminTheme();
 
+  const paletteValue = settings.admin_palette_key;
+  const dayNightValue = settings.admin_day_night;
+
   const activePalette =
-    CATALOG_PALETTES.find((p) => p.id === settings.admin_palette_key) ??
+    CATALOG_PALETTES.find((p) => p.id === paletteValue) ??
     CATALOG_PALETTES[0]!;
 
   const preview = (next: { admin_palette_key?: ThemeId; admin_day_night?: AdminTheme }) => {
     applySettings({
       admin_palette_source: "catalog",
-      admin_palette_key: next.admin_palette_key ?? paletteKey,
-      admin_day_night: next.admin_day_night ?? dayNight,
+      admin_palette_key: next.admin_palette_key ?? paletteValue,
+      admin_day_night: next.admin_day_night ?? dayNightValue,
     });
   };
 
   const selectPalette = (id: ThemeId) => {
-    setPaletteKey(id);
     setExpandedId(id);
     preview({ admin_palette_key: id });
   };
@@ -199,17 +195,17 @@ export function AdminPalettePicker({
   return (
     <div className="admin-palette-picker">
       <input type="hidden" name="admin_palette_source" value="catalog" />
-      <input type="hidden" name="admin_palette_key" value={paletteKey} />
-      <input type="hidden" name="admin_day_night" value={dayNight} />
+      <input type="hidden" name="admin_palette_key" value={paletteValue} />
+      <input type="hidden" name="admin_day_night" value={dayNightValue} />
 
       <SettingsSlidePanel
         title="Mod zi / noapte"
         subtitle={
-          dayNight === "day"
+          dayNightValue === "day"
             ? "Aspect luminos activ"
             : "Aspect întunecat activ"
         }
-        icon={dayNight === "day" ? "☀️" : "🌙"}
+        icon={dayNightValue === "day" ? "☀️" : "🌙"}
         defaultOpen
       >
         <div className="admin-palette-block">
@@ -224,12 +220,11 @@ export function AdminPalettePicker({
                 key={m}
                 type="button"
                 onClick={() => {
-                  setDayNight(m);
                   preview({ admin_day_night: m });
                 }}
                 className={[
                   "admin-palette-daynight__btn",
-                  dayNight === m && "admin-palette-daynight__btn--active",
+                  dayNightValue === m && "admin-palette-daynight__btn--active",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -240,7 +235,7 @@ export function AdminPalettePicker({
           </div>
           <div className="mt-3">
             <p className="admin-palette-extend__mode-label">Tema activă</p>
-            <ZoneStrip palette={activePalette} mode={dayNight} />
+            <ZoneStrip palette={activePalette} mode={dayNightValue} />
           </div>
         </div>
       </SettingsSlidePanel>
@@ -261,7 +256,7 @@ export function AdminPalettePicker({
             <PaletteThemeRow
               key={p.id}
               palette={p}
-              selected={paletteKey === p.id}
+              selected={paletteValue === p.id}
               expanded={expandedId === p.id}
               onToggleExpand={() =>
                 setExpandedId((prev) => (prev === p.id ? null : p.id))

@@ -43,10 +43,65 @@
   isolation: isolate;
 }
 
+.admin-home-hero--liquid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at 22% 24%,
+      color-mix(in srgb, var(--admin-accent-muted, #d1fae5) 78%, transparent) 0%,
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 74% 30%,
+      color-mix(in srgb, var(--admin-accent, #059669) 18%, transparent) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 56% 62%,
+      color-mix(in srgb, var(--color-focus, #2563eb) 14%, transparent) 0%,
+      transparent 42%
+    );
+  opacity: 0.95;
+  filter: blur(8px) saturate(1.06);
+}
+
 html[data-admin-retro="winxp"] .admin-home-hero__liquid,
 html[data-admin-retro="win95"] .admin-home-hero__liquid {
   display: block !important;
   opacity: 0.32;
+}
+
+html[data-theme="romania"] .admin-home-hero--liquid::before,
+html[data-theme="italy"] .admin-home-hero--liquid::before,
+html[data-theme="france"] .admin-home-hero--liquid::before,
+html[data-theme="poland"] .admin-home-hero--liquid::before,
+html[data-theme="spain"] .admin-home-hero--liquid::before {
+  background:
+    linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--admin-accent) 11%, transparent) 0%,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 24% 24%,
+      color-mix(in srgb, var(--admin-accent-muted) 82%, transparent) 0%,
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 72% 28%,
+      color-mix(in srgb, var(--admin-accent) 24%, transparent) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 56% 60%,
+      color-mix(in srgb, var(--color-focus) 20%, transparent) 0%,
+      transparent 40%
+    );
+  filter: blur(10px) saturate(1.08);
 }
 
 .admin-home-hero--liquid .admin-home-hero__main,

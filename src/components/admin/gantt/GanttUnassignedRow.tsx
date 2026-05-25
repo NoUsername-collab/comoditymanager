@@ -15,15 +15,11 @@ export function GanttUnassignedRow({
   viewRange,
   checkInTime,
   checkOutTime,
-  compact,
-  touch,
 }: {
   bookings: BookingRow[];
   viewRange: GanttViewRange;
   checkInTime: string;
   checkOutTime: string;
-  compact: boolean;
-  touch: boolean;
 }) {
   const dayCount = viewRange.days.length;
   if (bookings.length === 0) return null;
@@ -33,7 +29,7 @@ export function GanttUnassignedRow({
       <td className="gantt-unassigned-cell sticky left-0 z-10 border-r border-amber-200/80 px-3 py-2 align-top">
         <span className="gantt-unassigned-label">Cereri fără cameră</span>
         <span className="mt-0.5 block text-[10px] font-medium text-amber-800/80">
-          {bookings.length} în luna afișată · lista completă deasupra
+          {bookings.length} în perioada afișată · în timeline principal
         </span>
       </td>
       <td className="relative p-0 align-top">
@@ -86,7 +82,8 @@ export function GanttUnassignedRow({
                   isCerere
                   guestTotal={guestPartyTotal(b.num_adults, b.num_children)}
                   bookingId={b.id}
-                  dayCount={dayCount}
+                dayIsos={viewRange.days.map((day) => day.iso)}
+                bookingCheckIn={b.check_in}
                   buildingColor="#d97706"
                   todayHighlight={stayTodayHighlight(b)}
                   popover={{

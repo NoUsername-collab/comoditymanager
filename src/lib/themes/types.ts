@@ -1,5 +1,9 @@
 export type ThemeId =
   | "default"
+  | "green"
+  | "blue"
+  | "orange"
+  | "red"
   | "win95"
   | "winxp"
   | "romania"
@@ -38,6 +42,10 @@ export const COUNTRY_THEME_IDS = [
 
 export const ALL_THEME_IDS = [
   "default",
+  "green",
+  "blue",
+  "orange",
+  "red",
   "win95",
   "winxp",
   ...COUNTRY_THEME_IDS,

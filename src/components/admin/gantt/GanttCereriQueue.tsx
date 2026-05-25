@@ -11,10 +11,22 @@ import type { BookingRow } from "@/services/bookings";
 export function GanttCereriQueue({
   cereri,
   embedded = false,
+  inline = false,
+  top = false,
+  title,
+  subtitle,
+  ariaLabel,
 }: {
   cereri: BookingRow[];
   /** În interiorul panoului toolbar — fără chenar separat */
   embedded?: boolean;
+  /** În banda compactă de control, cu header scurt */
+  inline?: boolean;
+  /** În toolbar-ul mare al paginii, deasupra Gantt-ului */
+  top?: boolean;
+  title?: string;
+  subtitle?: string | null;
+  ariaLabel?: string;
 }) {
   const sorted = useMemo(
     () =>
@@ -26,29 +38,42 @@ export function GanttCereriQueue({
 
   if (sorted.length === 0) return null;
 
+  const resolvedTitle = title ?? (inline || top ? "Fără cameră" : "Cereri fără cameră");
+  const resolvedSubtitle =
+    subtitle === undefined
+      ? inline || top
+        ? null
+        : "Vizibile indiferent de luna din calendar — procesează și alocă camere"
+      : subtitle;
+  const resolvedAriaLabel = ariaLabel ?? resolvedTitle;
+
   return (
     <section
       id="gantt-cereri-queue"
       className={[
         "gantt-cereri-queue",
         embedded && "gantt-cereri-queue--embedded",
+        inline && "gantt-cereri-queue--inline",
+        top && "gantt-cereri-queue--top",
       ]
         .filter(Boolean)
         .join(" ")}
-      aria-label="Cereri fără cameră"
+      aria-label={resolvedAriaLabel}
     >
       <header className="gantt-cereri-queue__head">
         <div>
           <h2 className="gantt-cereri-queue__title">
-            Cereri fără cameră
+            {resolvedTitle}
             <span className="gantt-cereri-queue__count">{sorted.length}</span>
           </h2>
-          <p className="gantt-cereri-queue__sub">
-            Vizibile indiferent de luna din calendar — procesează și alocă camere
-          </p>
+          {resolvedSubtitle && (
+            <p className="gantt-cereri-queue__sub">
+              {resolvedSubtitle}
+            </p>
+          )}
         </div>
         <Link href="/admin/bookings" className="gantt-cereri-queue__all-link">
-          Toate cererile →
+          {inline ? "Toate →" : "Toate cererile →"}
         </Link>
       </header>
 

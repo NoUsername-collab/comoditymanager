@@ -24,7 +24,7 @@ html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--phase-past {
   background-color: var(--booking-past-bg) !important;
   border-color: var(--booking-past-border) !important;
   color: var(--booking-past-text) !important;
-  opacity: 0.72;
+  opacity: 1;
   filter: none;
 }
 
@@ -59,8 +59,115 @@ html[data-theme] .gantt-cereri-card__party {
   text-shadow: none !important;
 }
 
+html[data-theme] .gantt-shell .gantt-booking-card .gantt-stay__body,
+html[data-theme] .gantt-shell .gantt-booking-card .gantt-stay-chrome__label,
+html[data-theme]
+  .gantt-shell
+  .gantt-booking-card
+  .gantt-stay__body
+  > :not(.gantt-stay__badge):not(.gantt-stay__avatar):not(.gantt-stay__phase-badge) {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
 html[data-theme="default"] .gantt-stay--phase-active {
   box-shadow: none !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past),
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--cerere,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--past,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-cereri-card.gantt-stay-chrome {
+  background-image: none !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
+  background: var(--booking-active-bg) !important;
+  background-color: var(--booking-active-bg) !important;
+  border-color: var(--booking-active-border) !important;
+  color: var(--booking-active-text) !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--cerere,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-cereri-card.gantt-stay-chrome {
+  background: var(--booking-pending-bg) !important;
+  background-color: var(--booking-pending-bg) !important;
+  border-color: var(--booking-pending-border) !important;
+  color: var(--booking-pending-text) !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--past,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-stay--phase-past {
+  background: var(--booking-past-bg) !important;
+  background-color: var(--booking-past-bg) !important;
+  border-color: var(--booking-past-border) !important;
+  color: var(--booking-past-text) !important;
+}
+
+html[data-theme="default"] .gantt-shell .gantt-booking-card .gantt-stay__body,
+html[data-theme="default"] .gantt-shell .gantt-cereri-card .gantt-cereri-card__main {
+  background: transparent !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past)
+  .gantt-stay__avatar,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past)
+  .gantt-stay__badge,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past)
+  .gantt-stay__phase-badge {
+  background: color-mix(in srgb, var(--booking-active-text) 18%, transparent) !important;
+  color: var(--booking-active-text) !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--cerere
+  .gantt-stay__avatar,
+html[data-theme="default"] .gantt-shell .gantt-cereri-card .gantt-cereri-card__party {
+  background: color-mix(in srgb, var(--booking-pending-text) 18%, transparent) !important;
+  color: var(--booking-pending-text) !important;
+}
+
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--past
+  .gantt-stay__avatar,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--past
+  .gantt-stay__badge,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--past
+  .gantt-stay__phase-badge {
+  background: color-mix(in srgb, var(--booking-past-text) 14%, transparent) !important;
+  color: var(--booking-past-text) !important;
 }
 
 html[data-theme="default"] .gantt-stay__end-tab,

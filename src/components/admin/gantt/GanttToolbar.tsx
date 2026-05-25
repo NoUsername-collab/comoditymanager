@@ -1,21 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { GanttFilter, GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { layerFilterLabel } from "@/domain/gantt/occupancy-layer";
 import type { GanttZoom } from "@/domain/gantt/view-range";
 import { buildCalendarQuery } from "@/lib/gantt-query";
-import { todayIso } from "@/lib/stay-dates";
+import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
 import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
 
 export type GanttViewMode = "all" | "building" | "room";
-type ZoomChoice = "today" | "days7" | "days15" | "days30" | "quarter";
 
 type BuildingOption = { id: string; name: string; color_hex: string | null };
 type RoomOption = {
@@ -32,16 +31,7 @@ type SegOption<T extends string> = {
   shortLabel?: string;
 };
 
-function normalizeZoomChoice(zoom: GanttZoom): ZoomChoice {
-  if (zoom === "week") return "days7";
-  if (zoom === "month") return "days30";
-  if (zoom === "today" || zoom === "days7" || zoom === "days15" || zoom === "days30") {
-    return zoom;
-  }
-  return "quarter";
-}
-
-function SegmentGroup<T extends string>({
+export function SegmentGroup<T extends string>({
   label,
   options,
   value,
@@ -108,8 +98,10 @@ export function GanttToolbar({
   buildings,
   rooms,
   periodTitle,
+  rangeStart,
   prevHref,
   nextHref,
+  bookings = [],
   cereri = [],
 }: {
   year: number;
@@ -123,20 +115,24 @@ export function GanttToolbar({
   buildings: BuildingOption[];
   rooms: RoomOption[];
   periodTitle: string;
+  rangeStart: string;
   prevHref: string;
   nextHref: string;
+  bookings?: BookingRow[];
   cereri?: BookingRow[];
 }) {
   const cereriCount = cereri.length;
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [occFormMode, setOccFormMode] = useState<"hold" | "block" | null>(null);
+  const [occFormMode, setOccFormMode] = useState<
+    "hold" | "block" | "cerere" | "direct" | "move" | null
+  >(null);
 
   const view = (searchParams.get("view") as GanttViewMode) || "all";
   const buildingId = searchParams.get("building") ?? "";
   const roomId = searchParams.get("room") ?? "";
   const focusDay = searchParams.get("fd") ?? "";
-  const zoomChoice = useMemo(() => normalizeZoomChoice(zoom), [zoom]);
+  const anchorStart = ws ?? rangeStart ?? todayIso();
 
   function push(patch: {
     y?: number;
@@ -176,6 +172,17 @@ export function GanttToolbar({
     router.push(`/admin/calendar?${q}`);
   }
 
+  function shiftGrid(days: number) {
+    const nextStart = addDays(anchorStart, days);
+    const nextDate = parseIso(nextStart);
+    push({
+      y: nextDate.getFullYear(),
+      m: nextDate.getMonth(),
+      ws: nextStart,
+      q: zoom === "quarter" ? Math.floor(nextDate.getMonth() / 3) : undefined,
+    });
+  }
+
   const roomsForBuilding = buildingId
     ? rooms.filter((r) => r.building_id === buildingId)
     : rooms;
@@ -206,126 +213,20 @@ export function GanttToolbar({
   return (
     <div className="gantt-chrome">
       <div className="gantt-toolbar__panel">
-        <div className="gantt-toolbar__row gantt-toolbar__row--hero">
-          <div className="gantt-toolbar__period">
-            <Link
-              href={prevHref}
-              className="gantt-toolbar__nav"
-              aria-label="Perioada anterioară"
-            >
-              ←
-            </Link>
-            <span className="gantt-toolbar__title capitalize">{periodTitle}</span>
-            <Link
-              href={nextHref}
-              className="gantt-toolbar__nav"
-              aria-label="Perioada următoare"
-            >
-              →
-            </Link>
-          </div>
-
-          <div className="gantt-toolbar__center">
-            <span className="gantt-toolbar__center-kicker">Comenzi rapide</span>
+        <div className="gantt-toolbar__row gantt-toolbar__row--radial">
+          <div className="gantt-toolbar__center gantt-toolbar__center--compact">
             <GanttRadialController
+              onOpenRequest={() => setOccFormMode("cerere")}
               onOpenHold={() => setOccFormMode("hold")}
+              onOpenMove={() => setOccFormMode("move")}
               onOpenBlock={() => setOccFormMode("block")}
-              onOpenReception={() => router.push("/receptie#receptie")}
-              onScrollToToday={() =>
-                window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
-              }
+              onOpenReception={() => setOccFormMode("direct")}
             />
-          </div>
-
-          <div className="gantt-toolbar__actions">
-            {view === "building" && buildings.length > 0 && (
-              <select
-                value={buildingId || buildings[0]?.id || ""}
-                onChange={(e) =>
-                  push({ view: "building", building: e.target.value })
-                }
-                className="gantt-toolbar__select"
-                aria-label="Clădire"
-              >
-                {buildings.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {view === "room" && rooms.length > 0 && (
-              <select
-                value={roomId || rooms[0]?.id || ""}
-                onChange={(e) => push({ view: "room", room: e.target.value })}
-                className="gantt-toolbar__select gantt-toolbar__select--wide"
-                aria-label="Cameră"
-              >
-                {buildings.map((b) => {
-                  const group = rooms.filter((r) => r.building_id === b.id);
-                  if (group.length === 0) return null;
-                  return (
-                    <optgroup key={b.id} label={b.name}>
-                      {group.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  );
-                })}
-              </select>
-            )}
-
-            <button
-              type="button"
-              className="gantt-toolbar__today"
-              onClick={() =>
-                window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
-              }
-            >
-              Azi in grid
-            </button>
-
-            {cereriCount > 0 ? (
-              <a
-                href="#gantt-cereri-queue"
-                className="gantt-toolbar__cereri-pill gantt-toolbar__cereri-pill--jump"
-                title="Sari la lista cererilor"
-              >
-                <span className="gantt-toolbar__cereri-dot" aria-hidden />
-                {cereriCount} cerer{cereriCount === 1 ? "a" : "i"}
-              </a>
-            ) : null}
           </div>
         </div>
 
         <div className="gantt-toolbar__row gantt-toolbar__row--controls">
           <div className="gantt-toolbar__segments">
-            <SegmentGroup
-              label="Interval"
-              compact
-              value={zoomChoice}
-              onChange={(z) =>
-                push({
-                  zoom: z,
-                  ws: z === "quarter" || z === "days30" ? null : todayIso(),
-                  q:
-                    z === "quarter"
-                      ? quarter ?? Math.floor(month / 3)
-                      : undefined,
-                })
-              }
-              options={[
-                { value: "today", label: "Azi", shortLabel: "Azi" },
-                { value: "days7", label: "7 zile", shortLabel: "7z" },
-                { value: "days15", label: "15 zile", shortLabel: "15z" },
-                { value: "days30", label: "30 zile", shortLabel: "30z" },
-                { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
-              ]}
-            />
-
             <SegmentGroup
               label="Strat"
               compact
@@ -403,6 +304,142 @@ export function GanttToolbar({
           <GanttCereriQueue cereri={cereri} embedded />
         ) : null}
 
+        <div className="gantt-toolbar__row gantt-toolbar__row--nav">
+          <div className="gantt-toolbar__nav-strip">
+            <div className="gantt-toolbar__shifters" aria-label="Deplasare grid">
+              <div className="gantt-toolbar__stepper">
+                <span className="gantt-toolbar__stepper-label">1 zi</span>
+                <div className="gantt-toolbar__stepper-actions">
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înapoi o zi"
+                    onClick={() => shiftGrid(-1)}
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înainte o zi"
+                    onClick={() => shiftGrid(1)}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+
+              <div className="gantt-toolbar__stepper">
+                <span className="gantt-toolbar__stepper-label">1 săpt.</span>
+                <div className="gantt-toolbar__stepper-actions">
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înapoi o săptămână"
+                    onClick={() => shiftGrid(-7)}
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    className="gantt-toolbar__mini-nav"
+                    aria-label="Înainte o săptămână"
+                    onClick={() => shiftGrid(7)}
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="gantt-toolbar__period-shell">
+              <div className="gantt-toolbar__period">
+                <Link
+                  href={prevHref}
+                  className="gantt-toolbar__nav"
+                  aria-label="Perioada anterioară"
+                >
+                  ←
+                </Link>
+                <span className="gantt-toolbar__title capitalize">{periodTitle}</span>
+                <Link
+                  href={nextHref}
+                  className="gantt-toolbar__nav"
+                  aria-label="Perioada următoare"
+                >
+                  →
+                </Link>
+              </div>
+              <p className="gantt-toolbar__period-hint">
+                Selector perioadă fixat chiar înainte de grid, cu salt fin pe zi sau săptămână.
+              </p>
+            </div>
+
+            <div className="gantt-toolbar__actions gantt-toolbar__actions--nav">
+              <button
+                type="button"
+                className="gantt-toolbar__today"
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
+                }
+              >
+                Azi în grid
+              </button>
+
+              {cereriCount > 0 ? (
+                <a
+                  href="#gantt-cereri-queue"
+                  className="gantt-toolbar__cereri-pill gantt-toolbar__cereri-pill--jump"
+                  title="Sari la lista cererilor fără cameră"
+                >
+                  <span className="gantt-toolbar__cereri-dot" aria-hidden />
+                  {cereriCount} cerer{cereriCount === 1 ? "e" : "i"} fără cameră
+                </a>
+              ) : null}
+
+              {view === "building" && buildings.length > 0 && (
+                <select
+                  value={buildingId || buildings[0]?.id || ""}
+                  onChange={(e) =>
+                    push({ view: "building", building: e.target.value })
+                  }
+                  className="gantt-toolbar__select"
+                  aria-label="Clădire"
+                >
+                  {buildings.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {view === "room" && rooms.length > 0 && (
+                <select
+                  value={roomId || rooms[0]?.id || ""}
+                  onChange={(e) => push({ view: "room", room: e.target.value })}
+                  className="gantt-toolbar__select gantt-toolbar__select--wide"
+                  aria-label="Cameră"
+                >
+                  {buildings.map((b) => {
+                    const group = rooms.filter((r) => r.building_id === b.id);
+                    if (group.length === 0) return null;
+                    return (
+                      <optgroup key={b.id} label={b.name}>
+                        {group.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+                </select>
+              )}
+            </div>
+          </div>
+        </div>
+
         {metaParts.length > 0 && (
           <p className="gantt-toolbar__meta">{metaParts.join(" · ")}</p>
         )}
@@ -442,8 +479,10 @@ export function GanttToolbar({
         </div>
       </div>
       <GanttToolbarOccForm
+        key={occFormMode ?? "closed"}
         mode={occFormMode}
         rooms={rooms}
+        bookings={bookings}
         onClose={() => setOccFormMode(null)}
       />
     </div>
