@@ -28,6 +28,7 @@ export function buildCalendarQuery(
     filter?: GanttFilter;
     layer?: GanttLayerFilter;
     feat?: GanttFeatureFilter;
+    fd?: string;
   }
 ): string {
   const p = new URLSearchParams();
@@ -44,5 +45,6 @@ export function buildCalendarQuery(
   if (base.filter && base.filter !== "all") p.set("filter", base.filter);
   if (base.layer && base.layer !== "all") p.set("layer", base.layer);
   if (base.feat && base.feat !== "all") p.set("feat", base.feat);
+  if (base.fd) p.set("fd", base.fd);
   return p.toString();
 }

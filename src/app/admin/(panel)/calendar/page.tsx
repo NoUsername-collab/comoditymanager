@@ -37,6 +37,7 @@ export default async function AdminCalendarPage({
     filter?: string;
     layer?: string;
     feat?: string;
+    fd?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -47,6 +48,8 @@ export default async function AdminCalendarPage({
   const filter = parseGanttFilter(params.filter);
   const feat = parseGanttFeatureFilter(params.feat);
   const layer = parseGanttLayerFilter(params.layer);
+  const focusDay =
+    params.fd && /^\d{4}-\d{2}-\d{2}$/.test(params.fd) ? params.fd : null;
   const quarter =
     params.q !== undefined ? Number(params.q) : Math.floor(month / 3);
 
@@ -74,6 +77,7 @@ export default async function AdminCalendarPage({
       filter,
       layer,
       feat,
+      fd: focusDay ?? undefined,
     });
 
   try {
@@ -181,6 +185,7 @@ export default async function AdminCalendarPage({
             checkOutTime={checkOutTime}
             filter={filter}
             layerFilter={layer}
+            focusDay={focusDay}
           />
         </RetroXpWindow>
       </AdminRetroPageFrame>

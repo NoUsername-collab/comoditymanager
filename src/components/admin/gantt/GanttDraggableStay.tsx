@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "next/navigation";
 import {
@@ -70,6 +71,7 @@ export function GanttDraggableStay({
   onMoveRoom,
 }: Props) {
   const router = useRouter();
+  const touch = useIsTouchDevice();
   const { openMenu } = useGanttContextMenu();
   const { notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
@@ -289,7 +291,7 @@ export function GanttDraggableStay({
   ]);
 
   const showPopover =
-    (hover || popoverHover) && interaction === "idle" && !pending;
+    !touch && (hover || popoverHover) && interaction === "idle" && !pending;
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {

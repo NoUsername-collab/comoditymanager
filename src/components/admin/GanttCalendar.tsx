@@ -9,6 +9,10 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { buildCalendarQuery } from "@/lib/gantt-query";
+import { formatDateWithDay } from "@/lib/ro-calendar";
+import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import { guestInitials } from "@/domain/guest-name";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
@@ -438,6 +442,10 @@ function RoomRow({
                   continuesAfter: pos.continuesAfter,
                   buildingColor: roomColor,
                   roomId: room.id,
+                  roomName: room.name,
+                  roomNames: b.room_names,
+                  guestPhone: b.guest_phone,
+                  totalPrice: b.total_price,
                   canMoveRoom,
                   onMoveRoom: moveDraft
                     ? () => onMoveRoom(moveDraft)
@@ -462,6 +470,7 @@ export function GanttCalendar({
   checkOutTime = DEFAULT_CHECK_OUT_TIME,
   filter = "all",
   layerFilter = "all",
+  focusDay = null,
 }: {
   viewRange: GanttViewRange;
   rooms: GanttRoom[];
@@ -472,10 +481,15 @@ export function GanttCalendar({
   checkOutTime?: string;
   filter?: GanttFilter;
   layerFilter?: GanttLayerFilter;
+  focusDay?: string | null;
 }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const touch = useIsTouchDevice();
   const compact = viewRange.zoom === "quarter" || touch;
-  const focusIso = focusDayInRange(viewRange.days.map((d) => d.iso));
+  const defaultFocusIso = focusDayInRange(viewRange.days.map((d) => d.iso));
+  const focusIso =
+    filter !== "all" && focusDay ? focusDay : defaultFocusIso;
   const filteredRooms = useMemo(
     () => filterGanttRooms(rooms, bookings, filter, focusIso, occupancy),
     [rooms, bookings, filter, focusIso, occupancy]
@@ -637,6 +651,36 @@ export function GanttCalendar({
     []
   );
 
+  const handleSummaryDayClick = useCallback(
+    (iso: string) => {
+      const isActive = filter === "free" && focusDay === iso;
+      const y = Number(searchParams.get("y")) || viewRange.days[0]?.iso.slice(0, 4);
+      const m =
+        searchParams.get("m") !== null
+          ? Number(searchParams.get("m"))
+          : Number(viewRange.days[0]?.iso.slice(5, 7)) - 1;
+      const q = buildCalendarQuery({
+        y: Number(y) || new Date().getFullYear(),
+        m: Number.isFinite(m) ? m : new Date().getMonth(),
+        view: searchParams.get("view") ?? undefined,
+        building: searchParams.get("building") ?? undefined,
+        room: searchParams.get("room") ?? undefined,
+        zoom: viewRange.zoom,
+        ws: viewRange.zoom === "week" ? viewRange.days[0]?.iso : undefined,
+        q:
+          viewRange.zoom === "quarter"
+            ? Number(viewRange.periodKey.split("-")[2])
+            : undefined,
+        filter: isActive ? "all" : "free",
+        layer: (searchParams.get("layer") as GanttLayerFilter) ?? undefined,
+        feat: (searchParams.get("feat") as "ac" | "fridge") ?? undefined,
+        fd: isActive ? undefined : iso,
+      });
+      router.push(`/admin/calendar?${q}`);
+    },
+    [filter, focusDay, router, searchParams, viewRange]
+  );
+
   const gridBodyTop = "var(--gantt-body-top, 5.75rem)";
 
   return (
@@ -665,6 +709,22 @@ export function GanttCalendar({
           checkOutTime={checkOutTime}
           onScrollToToday={scrollToTodayColumn}
         />
+
+        {filter === "free" && focusDay && (
+          <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
+            <span>
+              Afișezi camere <strong>libere</strong> pe{" "}
+              <strong>{formatDateWithDay(focusDay, true)}</strong>
+            </span>
+            <button
+              type="button"
+              className="rounded-md border border-emerald-300 bg-white px-2.5 py-1 font-semibold hover:bg-emerald-100"
+              onClick={() => handleSummaryDayClick(focusDay)}
+            >
+              Resetează filtru
+            </button>
+          </div>
+        )}
 
         <GanttZoneRibbon
           checkInTime={checkInTime}
@@ -714,6 +774,16 @@ export function GanttCalendar({
                 <DayHeader columns={viewRange.days} compact={compact} />
               </th>
             </tr>
+            <GanttDailySummaryRow
+              rooms={rooms}
+              bookings={bookings}
+              occupancy={occupancy}
+              viewRange={viewRange}
+              compact={compact}
+              activeFocusIso={focusDay}
+              filterActive={filter === "free" && !!focusDay}
+              onDayClick={handleSummaryDayClick}
+            />
           </thead>
           <tbody>
             <GanttUnassignedRow

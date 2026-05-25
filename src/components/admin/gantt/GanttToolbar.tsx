@@ -125,6 +125,7 @@ export function GanttToolbar({
   const view = (searchParams.get("view") as GanttViewMode) || "all";
   const buildingId = searchParams.get("building") ?? "";
   const roomId = searchParams.get("room") ?? "";
+  const focusDay = searchParams.get("fd") ?? "";
 
   function push(patch: {
     y?: number;
@@ -135,6 +136,7 @@ export function GanttToolbar({
     filter?: GanttFilter;
     feat?: GanttFeatureFilter;
     layer?: GanttLayerFilter;
+    fd?: string | null;
     view?: GanttViewMode;
     building?: string | null;
     room?: string | null;
@@ -155,6 +157,10 @@ export function GanttToolbar({
       filter: patch.filter ?? filter,
       feat: patch.feat ?? feat,
       layer: patch.layer ?? layer,
+      fd:
+        patch.fd !== undefined
+          ? patch.fd ?? undefined
+          : focusDay || undefined,
     });
     router.push(`/admin/calendar?${q}`);
   }
@@ -164,8 +170,15 @@ export function GanttToolbar({
     : rooms;
 
   const metaParts: string[] = [];
-  if (filter === "free") metaParts.push("Libere la ziua focală");
-  else if (filter === "occupied") metaParts.push("Ocupate în ziua focală");
+  if (filter === "free") {
+    metaParts.push(
+      focusDay ? `Libere pe ${focusDay}` : "Libere la ziua focală"
+    );
+  } else if (filter === "occupied") {
+    metaParts.push(
+      focusDay ? `Ocupate pe ${focusDay}` : "Ocupate în ziua focală"
+    );
+  }
   if (feat === "ac") metaParts.push("Cu AC");
   else if (feat === "fridge") metaParts.push("Cu frigider");
   if (layer !== "all") metaParts.push(`Strat: ${layerFilterLabel(layer)}`);
@@ -244,7 +257,12 @@ export function GanttToolbar({
             label="Camere"
             compact
             value={filter}
-            onChange={(f) => push({ filter: f })}
+            onChange={(f) =>
+              push({
+                filter: f,
+                fd: f === "free" ? focusDay || null : null,
+              })
+            }
             options={[
               { value: "all", label: "Toate" },
               { value: "occupied", label: "Ocupate" },

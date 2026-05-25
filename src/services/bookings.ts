@@ -34,6 +34,7 @@ export type BookingRow = {
   num_children: number;
   room_ids: string[];
   room_names: string[];
+  total_price: number | null;
 };
 
 export async function listBookingsForRange(
@@ -47,7 +48,7 @@ export async function listBookingsForRange(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
       guest_email, guest_phone, guest_id,
-      num_adults, num_children,
+      num_adults, num_children, total_price,
       booking_rooms ( room_id, rooms ( name ) )
     `
     )
@@ -86,6 +87,7 @@ export async function listBookingsForRange(
       num_children: b.num_children,
       room_ids,
       room_names,
+      total_price: b.total_price != null ? Number(b.total_price) : null,
     };
   });
 }
@@ -332,7 +334,7 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
       guest_email, guest_phone, guest_id,
-      num_adults, num_children,
+      num_adults, num_children, total_price,
       booking_rooms ( room_id, rooms ( name ) )
     `
     )
@@ -369,13 +371,12 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
       num_children: b.num_children,
       room_ids,
       room_names,
+      total_price: b.total_price != null ? Number(b.total_price) : null,
     };
   });
 }
 
-export type OperationalStayRow = BookingRow & {
-  total_price: number | null;
-};
+export type OperationalStayRow = BookingRow;
 
 /** Cazări active: cereri noi + confirmate (fără anulate). */
 export async function listOperationalStays(): Promise<OperationalStayRow[]> {
