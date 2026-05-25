@@ -3,7 +3,7 @@
 import { useAdminTheme } from "@/components/admin/AdminAppearanceProvider";
 
 export function AdminDayNightSwitch() {
-  const { theme, setTheme } = useAdminTheme();
+  const { mode, setMode } = useAdminTheme();
 
   return (
     <div
@@ -15,12 +15,12 @@ export function AdminDayNightSwitch() {
         type="button"
         className={[
           "admin-dn-switch__btn",
-          theme === "day" && "admin-dn-switch__btn--active",
+          mode === "day" && "admin-dn-switch__btn--active",
         ]
           .filter(Boolean)
           .join(" ")}
-        aria-pressed={theme === "day"}
-        onClick={() => setTheme("day")}
+        aria-pressed={mode === "day"}
+        onClick={() => setMode("day")}
       >
         <span className="admin-dn-switch__icon" aria-hidden>
           ☀
@@ -31,12 +31,12 @@ export function AdminDayNightSwitch() {
         type="button"
         className={[
           "admin-dn-switch__btn",
-          theme === "night" && "admin-dn-switch__btn--active",
+          mode === "night" && "admin-dn-switch__btn--active",
         ]
           .filter(Boolean)
           .join(" ")}
-        aria-pressed={theme === "night"}
-        onClick={() => setTheme("night")}
+        aria-pressed={mode === "night"}
+        onClick={() => setMode("night")}
       >
         <span className="admin-dn-switch__icon" aria-hidden>
           ☽

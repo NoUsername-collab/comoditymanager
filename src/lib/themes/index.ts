@@ -12,11 +12,6 @@ export { THEME_BOOT_SCRIPT } from "./boot";
 export {
   readThemeSettings,
   writeThemeSettings,
-  toLegacyAppearance,
-  fromLegacyAppearance,
   THEME_STORAGE_KEY,
   THEME_MODE_STORAGE_KEY,
-  ADMIN_THEME_STORAGE_KEY,
-  ADMIN_PALETTE_SOURCE_KEY,
-  ADMIN_PALETTE_KEY_KEY,
 } from "./storage";

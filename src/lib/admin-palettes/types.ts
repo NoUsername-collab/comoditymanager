@@ -1,13 +1,5 @@
-import type { AdminTheme } from "@/lib/admin-theme";
-import type { ThemeId } from "@/lib/themes";
+import type { ThemeId, ThemeMode } from "@/lib/themes";
 
-export type AdminPaletteSource = "catalog";
-
-export type CatalogPaletteId = ThemeId;
-
-export type ResolvedPaletteId = ThemeId;
-
-/** Tokeni pentru previzualizare în setări (valorile live sunt în CSS) */
 export type AdminPaletteTokens = {
   pageBg: string;
   panelBg: string;
@@ -33,10 +25,4 @@ export type AdminPaletteDefinition = {
   group: "catalog";
   day: AdminPaletteTokens;
   night: AdminPaletteTokens;
-};
-
-export type AdminPaletteSettings = {
-  admin_palette_source: AdminPaletteSource;
-  admin_palette_key: ThemeId;
-  admin_day_night: AdminTheme;
 };

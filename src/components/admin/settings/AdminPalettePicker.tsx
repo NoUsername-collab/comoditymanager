@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { CATALOG_PALETTES, tokensFor } from "@/lib/admin-palettes";
 import { useAdminTheme } from "@/components/admin/AdminAppearanceProvider";
-import type { AdminTheme } from "@/lib/admin-theme";
-import type { ThemeId } from "@/lib/themes";
+import type { ThemeId, ThemeMode } from "@/lib/themes";
 import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
 import type { AdminPaletteDefinition } from "@/lib/admin-palettes/types";
 
@@ -14,7 +13,7 @@ function ZoneStrip({
   compact,
 }: {
   palette: AdminPaletteDefinition;
-  mode: AdminTheme;
+  mode: ThemeMode;
   compact?: boolean;
 }) {
   const t = tokensFor(palette, mode);
@@ -161,51 +160,37 @@ function PaletteThemeRow({
 export function AdminPalettePicker({
   defaultSettings,
 }: {
-  defaultSettings: {
-    admin_palette_key: ThemeId;
-    admin_day_night: AdminTheme;
-  };
+  defaultSettings: { theme: ThemeId; mode: ThemeMode };
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(
-    defaultSettings.admin_palette_key
+    defaultSettings.theme
   );
 
-  const { applySettings, settings } = useAdminTheme();
-
-  const paletteValue = settings.admin_palette_key;
-  const dayNightValue = settings.admin_day_night;
+  const { apply, themeId, mode } = useAdminTheme();
 
   const activePalette =
-    CATALOG_PALETTES.find((p) => p.id === paletteValue) ??
+    CATALOG_PALETTES.find((p) => p.id === themeId) ??
     CATALOG_PALETTES[0]!;
-
-  const preview = (next: { admin_palette_key?: ThemeId; admin_day_night?: AdminTheme }) => {
-    applySettings({
-      admin_palette_source: "catalog",
-      admin_palette_key: next.admin_palette_key ?? paletteValue,
-      admin_day_night: next.admin_day_night ?? dayNightValue,
-    });
-  };
 
   const selectPalette = (id: ThemeId) => {
     setExpandedId(id);
-    preview({ admin_palette_key: id });
+    apply(id, mode);
   };
 
   return (
     <div className="admin-palette-picker">
       <input type="hidden" name="admin_palette_source" value="catalog" />
-      <input type="hidden" name="admin_palette_key" value={paletteValue} />
-      <input type="hidden" name="admin_day_night" value={dayNightValue} />
+      <input type="hidden" name="admin_palette_key" value={themeId} />
+      <input type="hidden" name="admin_day_night" value={mode} />
 
       <SettingsSlidePanel
         title="Mod zi / noapte"
         subtitle={
-          dayNightValue === "day"
+          mode === "day"
             ? "Aspect luminos activ"
             : "Aspect întunecat activ"
         }
-        icon={dayNightValue === "day" ? "☀️" : "🌙"}
+        icon={mode === "day" ? "☀️" : "🌙"}
         defaultOpen
       >
         <div className="admin-palette-block">
@@ -219,12 +204,10 @@ export function AdminPalettePicker({
               <button
                 key={m}
                 type="button"
-                onClick={() => {
-                  preview({ admin_day_night: m });
-                }}
+                onClick={() => apply(themeId, m)}
                 className={[
                   "admin-palette-daynight__btn",
-                  dayNightValue === m && "admin-palette-daynight__btn--active",
+                  mode === m && "admin-palette-daynight__btn--active",
                 ]
                   .filter(Boolean)
                   .join(" ")}
@@ -235,7 +218,7 @@ export function AdminPalettePicker({
           </div>
           <div className="mt-3">
             <p className="admin-palette-extend__mode-label">Tema activă</p>
-            <ZoneStrip palette={activePalette} mode={dayNightValue} />
+            <ZoneStrip palette={activePalette} mode={mode} />
           </div>
         </div>
       </SettingsSlidePanel>
@@ -256,7 +239,7 @@ export function AdminPalettePicker({
             <PaletteThemeRow
               key={p.id}
               palette={p}
-              selected={paletteValue === p.id}
+              selected={themeId === p.id}
               expanded={expandedId === p.id}
               onToggleExpand={() =>
                 setExpandedId((prev) => (prev === p.id ? null : p.id))

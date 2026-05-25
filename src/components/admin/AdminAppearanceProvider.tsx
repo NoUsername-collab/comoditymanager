@@ -10,61 +10,29 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import {
-  applyPaletteTokens,
-  resolvePaletteDefinition,
-  resolvePaletteId,
-  type AdminPaletteSettings,
-} from "@/lib/admin-palettes";
-import {
-  readAppearanceFromStorage,
-  writeAppearanceToStorage,
-  type AdminTheme,
-} from "@/lib/admin-theme";
+import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
+import { readThemeSettings, writeThemeSettings } from "@/lib/themes";
+import { applyTheme } from "@/lib/themes";
 
 type AppearanceContextValue = {
-  theme: AdminTheme;
-  settings: AdminPaletteSettings;
-  resolvedPaletteId: string;
-  setTheme: (theme: AdminTheme) => void;
-  toggleTheme: () => void;
-  applySettings: (next: AdminPaletteSettings) => void;
+  themeId: ThemeId;
+  mode: ThemeMode;
+  setMode: (mode: ThemeMode) => void;
+  toggleMode: () => void;
+  apply: (themeId: ThemeId, mode: ThemeMode) => void;
 };
 
 const AppearanceContext = createContext<AppearanceContextValue | null>(null);
-const APPEARANCE_CHANGE_EVENT = "casaemil:admin-appearance-change";
+const APPEARANCE_EVENT = "casaemil:appearance-change";
 
-function mergeAppearanceSettings(
-  initialSettings: AdminPaletteSettings,
-  stored: AdminPaletteSettings
-): AdminPaletteSettings {
-  return {
-    admin_palette_source:
-      stored.admin_palette_source ?? initialSettings.admin_palette_source,
-    admin_palette_key:
-      stored.admin_palette_key || initialSettings.admin_palette_key,
-    admin_day_night:
-      stored.admin_day_night ?? initialSettings.admin_day_night,
-  };
-}
-
-function subscribeToAppearance(onStoreChange: () => void): () => void {
+function subscribe(onStoreChange: () => void): () => void {
   if (typeof window === "undefined") return () => {};
-
-  const handleChange = () => onStoreChange();
-  window.addEventListener("storage", handleChange);
-  window.addEventListener(APPEARANCE_CHANGE_EVENT, handleChange);
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(APPEARANCE_EVENT, onStoreChange);
   return () => {
-    window.removeEventListener("storage", handleChange);
-    window.removeEventListener(APPEARANCE_CHANGE_EVENT, handleChange);
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(APPEARANCE_EVENT, onStoreChange);
   };
-}
-
-function readMergedAppearance(
-  initialSettings: AdminPaletteSettings
-): AdminPaletteSettings {
-  if (typeof window === "undefined") return initialSettings;
-  return mergeAppearanceSettings(initialSettings, readAppearanceFromStorage());
 }
 
 export function useAdminTheme(): AppearanceContextValue {
@@ -80,23 +48,17 @@ export function AdminAppearanceProvider({
   initialSettings,
 }: {
   children: ReactNode;
-  initialSettings: AdminPaletteSettings;
+  initialSettings: ThemeSettings;
 }) {
-  const cachedSnapshot = useRef<AdminPaletteSettings>(initialSettings);
+  const cachedSnapshot = useRef(initialSettings);
 
   const getSnapshot = useCallback(() => {
-    const next = readMergedAppearance(initialSettings);
+    const next = readThemeSettings();
     const prev = cachedSnapshot.current;
-    if (
-      prev.admin_palette_source === next.admin_palette_source &&
-      prev.admin_palette_key === next.admin_palette_key &&
-      prev.admin_day_night === next.admin_day_night
-    ) {
-      return prev;
-    }
+    if (prev.theme === next.theme && prev.mode === next.mode) return prev;
     cachedSnapshot.current = next;
     return next;
-  }, [initialSettings]);
+  }, []);
 
   const getServerSnapshot = useCallback(
     () => initialSettings,
@@ -104,52 +66,46 @@ export function AdminAppearanceProvider({
   );
 
   const settings = useSyncExternalStore(
-    subscribeToAppearance,
+    subscribe,
     getSnapshot,
     getServerSnapshot
   );
 
-  const resolvedPaletteId = useMemo(
-    () => resolvePaletteId(settings),
-    [settings]
-  );
+  useEffect(() => {
+    applyTheme(settings.theme, settings.mode);
+  }, [settings.theme, settings.mode]);
 
-  const applyFull = useCallback((next: AdminPaletteSettings) => {
-    writeAppearanceToStorage(next);
-    const def = resolvePaletteDefinition(next);
-    applyPaletteTokens(def, next.admin_day_night);
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event(APPEARANCE_CHANGE_EVENT));
-    }
+  const apply = useCallback((themeId: ThemeId, mode: ThemeMode) => {
+    writeThemeSettings({ theme: themeId, mode });
+    applyTheme(themeId, mode);
+    window.dispatchEvent(new Event(APPEARANCE_EVENT));
   }, []);
 
-  useEffect(() => {
-    const def = resolvePaletteDefinition(settings);
-    applyPaletteTokens(def, settings.admin_day_night);
-  }, [settings]);
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
 
-  const setTheme = useCallback(
-    (theme: AdminTheme) => {
-      const next = { ...settings, admin_day_night: theme };
-      applyFull(next);
-    },
-    [settings, applyFull]
+  const setMode = useCallback(
+    (mode: ThemeMode) => apply(settingsRef.current.theme, mode),
+    [apply]
   );
 
-  const toggleTheme = useCallback(() => {
-    setTheme(settings.admin_day_night === "day" ? "night" : "day");
-  }, [settings.admin_day_night, setTheme]);
+  const toggleMode = useCallback(
+    () => {
+      const s = settingsRef.current;
+      apply(s.theme, s.mode === "day" ? "night" : "day");
+    },
+    [apply]
+  );
 
   const value = useMemo(
     () => ({
-      theme: settings.admin_day_night,
-      settings,
-      resolvedPaletteId,
-      setTheme,
-      toggleTheme,
-      applySettings: applyFull,
+      themeId: settings.theme,
+      mode: settings.mode,
+      setMode,
+      toggleMode,
+      apply,
     }),
-    [settings, resolvedPaletteId, setTheme, toggleTheme, applyFull]
+    [settings.theme, settings.mode, setMode, toggleMode, apply]
   );
 
   return (
@@ -159,5 +115,4 @@ export function AdminAppearanceProvider({
   );
 }
 
-/** Compat: toggle doar zi/noapte în HUD */
 export { AdminAppearanceProvider as AdminThemeProvider };

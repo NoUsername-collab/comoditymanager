@@ -1,12 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import type {
-  AdminPaletteSettings,
-  AdminPaletteSource,
-} from "@/lib/admin-palettes/types";
+import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
-import type { AdminTheme } from "@/lib/admin-theme";
 
 export type PensionSettings = {
   id: string;
@@ -14,17 +10,12 @@ export type PensionSettings = {
   default_check_in_time: string;
   default_check_out_time: string;
   total_extra_beds_max: number;
-  admin_palette_source: AdminPaletteSource;
-  admin_palette_key: string;
-  admin_day_night: AdminTheme;
+  admin_palette_source: "catalog";
+  admin_palette_key: ThemeId;
+  admin_day_night: ThemeMode;
 };
 
-function parsePaletteSource(raw?: unknown): AdminPaletteSource {
-  void raw;
-  return "catalog";
-}
-
-function parseDayNight(raw: unknown): AdminTheme {
+function parseDayNight(raw: unknown): ThemeMode {
   return raw === "day" || raw === "night" ? raw : "night";
 }
 
@@ -47,7 +38,7 @@ async function getPensionSettingsUncached(): Promise<PensionSettings | null> {
     default_check_in_time: String(data.default_check_in_time).slice(0, 5),
     default_check_out_time: String(data.default_check_out_time).slice(0, 5),
     total_extra_beds_max: data.total_extra_beds_max,
-    admin_palette_source: parsePaletteSource(data.admin_palette_source),
+    admin_palette_source: "catalog",
     admin_palette_key: migrateLegacyPaletteKey(
       typeof data.admin_palette_key === "string" && data.admin_palette_key.length > 0
         ? data.admin_palette_key
@@ -68,11 +59,10 @@ export async function getPensionSettings(): Promise<PensionSettings | null> {
 
 export function pensionAppearanceSettings(
   s: PensionSettings
-): AdminPaletteSettings {
+): ThemeSettings {
   return {
-    admin_palette_source: "catalog",
-    admin_palette_key: migrateLegacyPaletteKey(s.admin_palette_key),
-    admin_day_night: s.admin_day_night,
+    theme: migrateLegacyPaletteKey(s.admin_palette_key),
+    mode: s.admin_day_night,
   };
 }
 
@@ -83,9 +73,9 @@ export async function updatePensionSettings(
     default_check_in_time: string;
     default_check_out_time: string;
     total_extra_beds_max: number;
-    admin_palette_source: AdminPaletteSource;
+    admin_palette_source: "catalog";
     admin_palette_key: string;
-    admin_day_night: AdminTheme;
+    admin_day_night: ThemeMode;
   }
 ): Promise<void> {
   const supabase = createAdminClient();

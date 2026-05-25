@@ -25,13 +25,6 @@ export type ThemeSettings = {
   mode: ThemeMode;
 };
 
-/** Compat DB / form fields */
-export type LegacyAppearanceSettings = {
-  admin_palette_source: "catalog";
-  admin_palette_key: ThemeId;
-  admin_day_night: ThemeMode;
-};
-
 export const COUNTRY_THEME_IDS = [
   "romania",
   "italy",

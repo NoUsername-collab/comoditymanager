@@ -6,7 +6,7 @@ import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvi
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
 import { cereriNoiLinkText } from "@/lib/ro-copy";
 import { countCereriNoi } from "@/services/bookings";
-import type { AdminPaletteSettings } from "@/lib/admin-palettes/types";
+import type { ThemeSettings } from "@/lib/themes";
 import {
   getPensionSettings,
   pensionAppearanceSettings,
@@ -15,10 +15,9 @@ import { getStaffRole } from "@/lib/auth/roles";
 import { getStaffUser } from "@/lib/auth/require-staff";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 
-const DEFAULT_APPEARANCE: AdminPaletteSettings = {
-  admin_palette_source: "catalog",
-  admin_palette_key: "default",
-  admin_day_night: "night",
+const DEFAULT_APPEARANCE: ThemeSettings = {
+  theme: "default",
+  mode: "night",
 };
 
 export default async function AdminLayout({
@@ -31,7 +30,7 @@ export default async function AdminLayout({
     getPensionSettings().catch(() => null),
   ]);
 
-  let appearanceSettings: AdminPaletteSettings = DEFAULT_APPEARANCE;
+  let appearanceSettings: ThemeSettings = DEFAULT_APPEARANCE;
   if (pension) {
     appearanceSettings = pensionAppearanceSettings(pension);
   }
