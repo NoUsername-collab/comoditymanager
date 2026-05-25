@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { GanttFilter, GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
@@ -130,7 +130,6 @@ export function GanttToolbar({
   const cereriCount = cereri.length;
   const router = useRouter();
   const searchParams = useSearchParams();
-  const panelRef = useRef<HTMLDivElement>(null);
   const [occFormMode, setOccFormMode] = useState<"hold" | "block" | null>(null);
 
   const view = (searchParams.get("view") as GanttViewMode) || "all";
@@ -138,27 +137,6 @@ export function GanttToolbar({
   const roomId = searchParams.get("room") ?? "";
   const focusDay = searchParams.get("fd") ?? "";
   const zoomChoice = useMemo(() => normalizeZoomChoice(zoom), [zoom]);
-
-  useEffect(() => {
-    const panel = panelRef.current;
-    if (!panel) return;
-    const root = document.documentElement;
-    const sync = () => {
-      root.style.setProperty(
-        "--gantt-toolbar-height",
-        `${Math.ceil(panel.getBoundingClientRect().height)}px`
-      );
-    };
-    sync();
-    const ro = new ResizeObserver(sync);
-    ro.observe(panel);
-    window.addEventListener("resize", sync);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", sync);
-      root.style.removeProperty("--gantt-toolbar-height");
-    };
-  }, []);
 
   function push(patch: {
     y?: number;
@@ -227,7 +205,7 @@ export function GanttToolbar({
 
   return (
     <div className="gantt-chrome">
-      <div ref={panelRef} className="gantt-toolbar__panel">
+      <div className="gantt-toolbar__panel">
         <div className="gantt-toolbar__row gantt-toolbar__row--hero">
           <div className="gantt-toolbar__period">
             <Link

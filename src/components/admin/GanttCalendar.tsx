@@ -751,7 +751,7 @@ export function GanttCalendar({
 
         <table
           className={[
-            "w-full table-fixed border-collapse text-xs",
+            "w-full table-fixed border-separate border-spacing-0 text-xs",
             compact ? "min-w-[2400px]" : "min-w-full",
           ].join(" ")}
         >
@@ -761,10 +761,10 @@ export function GanttCalendar({
           </colgroup>
           <thead ref={theadRef} className="gantt-thead-sticky">
             <tr className="gantt-head-main-row bg-gradient-to-r from-slate-50 to-zinc-50">
-              <th className="gantt-room-column-header sticky left-0 z-30 border-r border-zinc-200 px-3 py-3 text-left text-xs font-semibold tracking-wide text-zinc-700">
+              <th className="gantt-head-main-row__room gantt-room-column-header sticky left-0 z-30 border-r border-zinc-200 px-3 py-3 text-left text-xs font-semibold tracking-wide text-zinc-700">
                 Cameră
               </th>
-              <th className="bg-gradient-to-b from-slate-50 to-zinc-100/90 p-0">
+              <th className="gantt-head-main-row__days p-0">
                 <DayHeader columns={viewRange.days} compact={compact} />
               </th>
             </tr>

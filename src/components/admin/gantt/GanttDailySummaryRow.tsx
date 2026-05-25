@@ -50,7 +50,7 @@ export function GanttDailySummaryRow({
           </span>
         )}
       </td>
-      <td className="p-0 align-middle">
+      <td className="gantt-summary-row__days p-0 align-middle">
         <div
           className="gantt-summary-row__grid grid w-full min-w-0"
           style={ganttDayGridStyle(dayCount)}
