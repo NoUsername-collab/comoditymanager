@@ -6,7 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import {
@@ -31,6 +31,7 @@ type AppearanceContextValue = {
 };
 
 const AppearanceContext = createContext<AppearanceContextValue | null>(null);
+const APPEARANCE_CHANGE_EVENT = "casaemil:admin-appearance-change";
 
 function mergeAppearanceSettings(
   initialSettings: AdminPaletteSettings,
@@ -44,6 +45,25 @@ function mergeAppearanceSettings(
     admin_day_night:
       stored.admin_day_night ?? initialSettings.admin_day_night,
   };
+}
+
+function subscribeToAppearance(onStoreChange: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+
+  const handleChange = () => onStoreChange();
+  window.addEventListener("storage", handleChange);
+  window.addEventListener(APPEARANCE_CHANGE_EVENT, handleChange);
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener(APPEARANCE_CHANGE_EVENT, handleChange);
+  };
+}
+
+function readMergedAppearance(
+  initialSettings: AdminPaletteSettings
+): AdminPaletteSettings {
+  if (typeof window === "undefined") return initialSettings;
+  return mergeAppearanceSettings(initialSettings, readAppearanceFromStorage());
 }
 
 export function useAdminTheme(): AppearanceContextValue {
@@ -61,12 +81,11 @@ export function AdminAppearanceProvider({
   children: ReactNode;
   initialSettings: AdminPaletteSettings;
 }) {
-  const [settings, setSettings] = useState<AdminPaletteSettings>(() => {
-    if (typeof window === "undefined") {
-      return initialSettings;
-    }
-    return mergeAppearanceSettings(initialSettings, readAppearanceFromStorage());
-  });
+  const settings = useSyncExternalStore(
+    subscribeToAppearance,
+    () => readMergedAppearance(initialSettings),
+    () => initialSettings
+  );
 
   const resolvedPaletteId = useMemo(
     () => resolvePaletteId(settings),
@@ -74,10 +93,12 @@ export function AdminAppearanceProvider({
   );
 
   const applyFull = useCallback((next: AdminPaletteSettings) => {
-    setSettings(next);
     writeAppearanceToStorage(next);
     const def = resolvePaletteDefinition(next);
     applyPaletteTokens(def, next.admin_day_night);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event(APPEARANCE_CHANGE_EVENT));
+    }
   }, []);
 
   useEffect(() => {
