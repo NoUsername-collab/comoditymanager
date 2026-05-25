@@ -37,7 +37,7 @@ export function buildCalendarQuery(
   if (base.view) p.set("view", base.view);
   if (base.building) p.set("building", base.building);
   if (base.room) p.set("room", base.room);
-  if (base.zoom && base.zoom !== "month") p.set("zoom", base.zoom);
+  if (base.zoom) p.set("zoom", base.zoom);
   if (base.ws) p.set("ws", base.ws);
   if (base.q !== undefined && base.zoom === "quarter") {
     p.set("q", String(base.q));

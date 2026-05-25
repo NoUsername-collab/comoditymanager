@@ -185,23 +185,17 @@ function DayHeader({
           <div
             className={[
               dayHeaderCellClass(col, compact),
-              "flex flex-1 flex-col items-center justify-center py-1.5 text-center leading-tight",
+              "gantt-day-header-cell__body flex flex-1 flex-col items-center justify-center text-center leading-tight",
             ]
               .filter(Boolean)
               .join(" ")}
           >
-            {compact ? (
-              <span className="gantt-day-header-cell__label text-[8px] font-semibold">
-                {col.weekday.slice(0, 2)} {col.dayNum}
-              </span>
-            ) : (
-              <span className="gantt-day-header-cell__label whitespace-nowrap leading-none">
-                <span className="text-[10px] font-semibold">{col.weekday}</span>{" "}
-                <span className="text-[12px] font-bold tabular-nums">
-                  {col.dayNum}
-                </span>
-              </span>
-            )}
+            <span className="gantt-day-header-cell__date tabular-nums">
+              {col.dayNum}
+            </span>
+            <span className="gantt-day-header-cell__weekday">
+              {compact ? col.weekday.slice(0, 2) : col.weekday}
+            </span>
           </div>
         </div>
       ))}
@@ -766,7 +760,7 @@ export function GanttCalendar({
             <col />
           </colgroup>
           <thead ref={theadRef} className="gantt-thead-sticky">
-            <tr className="bg-gradient-to-r from-slate-50 to-zinc-50">
+            <tr className="gantt-head-main-row bg-gradient-to-r from-slate-50 to-zinc-50">
               <th className="gantt-room-column-header sticky left-0 z-30 border-r border-zinc-200 px-3 py-3 text-left text-xs font-semibold tracking-wide text-zinc-700">
                 Cameră
               </th>

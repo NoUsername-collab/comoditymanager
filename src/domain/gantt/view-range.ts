@@ -2,7 +2,12 @@ import { daysInMonth } from "@/lib/ro-calendar";
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 import { dayInitialFromIso, formatDateWithDay } from "@/lib/ro-calendar";
 
-export type GanttZoom = "month" | "week" | "quarter";
+export type GanttRollingZoom = "today" | "days7" | "days15" | "days30";
+export type GanttZoom =
+  | GanttRollingZoom
+  | "quarter"
+  | "month"
+  | "week";
 
 export type GanttDayColumn = {
   iso: string;
@@ -42,6 +47,72 @@ function buildDayColumns(isoDates: string[]): GanttDayColumn[] {
       isToday: iso === today,
     };
   });
+}
+
+function isRollingZoom(zoom: GanttZoom): zoom is GanttRollingZoom {
+  return (
+    zoom === "today" ||
+    zoom === "days7" ||
+    zoom === "days15" ||
+    zoom === "days30"
+  );
+}
+
+function rollingZoomLength(zoom: GanttRollingZoom): number {
+  switch (zoom) {
+    case "today":
+      return 1;
+    case "days7":
+      return 7;
+    case "days15":
+      return 15;
+    case "days30":
+      return 30;
+  }
+}
+
+function rollingZoomLabel(zoom: GanttRollingZoom): string {
+  switch (zoom) {
+    case "today":
+      return "Azi";
+    case "days7":
+      return "7 zile";
+    case "days15":
+      return "15 zile";
+    case "days30":
+      return "30 zile";
+  }
+}
+
+export function buildRollingRange(
+  startIso: string,
+  zoom: GanttRollingZoom
+): GanttViewRange {
+  const len = rollingZoomLength(zoom);
+  const days: string[] = [];
+  let cur = startIso;
+  for (let i = 0; i < len; i += 1) {
+    days.push(cur);
+    cur = addDays(cur, 1);
+  }
+
+  const cols = buildDayColumns(days);
+  const title =
+    len === 1
+      ? `${rollingZoomLabel(zoom)} · ${formatDateWithDay(days[0], true)}`
+      : `${formatDateWithDay(days[0], true)} – ${formatDateWithDay(
+          days[days.length - 1],
+          true
+        )}`;
+
+  return {
+    zoom,
+    periodKey: `${zoom}-${startIso}`,
+    title,
+    days: cols,
+    rangeStart: days[0],
+    rangeEnd: addDays(days[days.length - 1], 1),
+  };
 }
 
 export function buildMonthRange(year: number, month: number): GanttViewRange {
@@ -117,14 +188,22 @@ export function resolveGanttRange(params: {
   const now = new Date();
   const year = params.y ?? now.getFullYear();
   const month = params.m ?? now.getMonth();
-  const zoom = (params.zoom as GanttZoom) || "month";
+  const zoom = (params.zoom as GanttZoom) || "days30";
+
+  if (isRollingZoom(zoom)) {
+    const ws =
+      params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws)
+        ? params.ws
+        : todayIso();
+    return buildRollingRange(ws, zoom);
+  }
 
   if (zoom === "week") {
     const ws =
       params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws)
         ? params.ws
         : mondayOfWeekContaining(todayIso());
-    return buildWeekRange(ws);
+    return buildRollingRange(ws, "days7");
   }
 
   if (zoom === "quarter") {
@@ -144,9 +223,15 @@ export function navigateRange(
   year: number,
   month: number
 ): { y: number; m: number; zoom: GanttZoom; ws?: string; q?: number } {
-  if (range.zoom === "week") {
-    const ws = addDays(range.days[0].iso, direction * 7);
-    return { y: parseIso(ws).getFullYear(), m: parseIso(ws).getMonth(), zoom: "week", ws };
+  if (isRollingZoom(range.zoom)) {
+    const ws = addDays(range.days[0].iso, direction * rollingZoomLength(range.zoom));
+    const d = parseIso(ws);
+    return {
+      y: d.getFullYear(),
+      m: d.getMonth(),
+      zoom: range.zoom,
+      ws,
+    };
   }
   if (range.zoom === "quarter") {
     const q = Number(range.periodKey.split("-")[2]) + direction;

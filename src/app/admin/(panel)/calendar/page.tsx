@@ -142,7 +142,7 @@ export default async function AdminCalendarPage({
     return (
       <AdminRetroPageFrame
         title="Calendar Gantt — Casa Emil"
-        description="Vedere lună, săptămână, trimestru — filtre clădire și cameră."
+        description="Vedere Azi, 7, 15, 30 zile și trimestru — filtre clădire și cameră."
         className="w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
       >
         <div className="mb-4">
@@ -155,7 +155,7 @@ export default async function AdminCalendarPage({
               year={year}
               month={month}
               zoom={viewRange.zoom}
-              ws={viewRange.zoom === "week" ? viewRange.days[0].iso : undefined}
+              ws={viewRange.zoom !== "quarter" ? viewRange.days[0].iso : undefined}
               quarter={
                 viewRange.zoom === "quarter"
                   ? Number(viewRange.periodKey.split("-")[2])
