@@ -81,6 +81,7 @@ export function GanttDragCreateLayer({
   } | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
+  const armedStartIdxRef = useRef<number | null>(null);
   const longPressOpenedRef = useRef(false);
   const [drag, setDrag] = useState<DragState | null>(null);
 
@@ -199,11 +200,31 @@ export function GanttDragCreateLayer({
     [dayCount, dayIsos, evalConflictForRooms]
   );
 
+  const beginDrag = useCallback(
+    (startIdx: number, clientX: number, clientY: number) => {
+      dragRef.current = {
+        startIdx,
+        endIdx: startIdx,
+        roomIds: new Set([roomId]),
+      };
+      setDrag({
+        startIdx,
+        endIdx: startIdx,
+        hasConflict: false,
+        roomCount: 1,
+      });
+      setGanttRoomDragSpan([roomId]);
+      updateDragAt(clientX, clientY);
+    },
+    [roomId, updateDragAt]
+  );
+
   const endDrag = useCallback(() => {
     if (longPressOpenedRef.current) {
       longPressOpenedRef.current = false;
       dragRef.current = null;
       setDrag(null);
+      armedStartIdxRef.current = null;
       return;
     }
     if (!dragRef.current) return;
@@ -214,6 +235,7 @@ export function GanttDragCreateLayer({
     );
     dragRef.current = null;
     setDrag(null);
+    armedStartIdxRef.current = null;
   }, [finishDrag]);
 
   useEffect(() => {
@@ -257,15 +279,14 @@ export function GanttDragCreateLayer({
       pressOriginRef.current = { x: e.clientX, y: e.clientY };
       clearLongPress();
       const idx = dayIdxAt(e.clientX);
+      armedStartIdxRef.current = idx;
       longPressTimerRef.current = setTimeout(() => {
         longPressOpenedRef.current = true;
+        armedStartIdxRef.current = null;
         dragRef.current = null;
         setDrag(null);
         openEmptyMenu(e.clientX, e.clientY, idx);
       }, LONG_PRESS_MS);
-
-      dragRef.current = { startIdx: idx, endIdx: idx, roomIds: new Set([roomId]) };
-      setDrag({ startIdx: idx, endIdx: idx, hasConflict: false, roomCount: 1 });
       row.setPointerCapture(e.pointerId);
       e.preventDefault();
     },
@@ -276,6 +297,7 @@ export function GanttDragCreateLayer({
     (e: React.PointerEvent<HTMLDivElement>) => {
       clearLongPress();
       pressOriginRef.current = null;
+      armedStartIdxRef.current = null;
 
       try {
         rowRef.current?.releasePointerCapture(e.pointerId);
@@ -294,6 +316,7 @@ export function GanttDragCreateLayer({
       if (dragRef.current) {
         endDrag();
         clearGanttRoomDragSpan();
+        return;
       }
     },
     [clearLongPress, endDrag]
@@ -307,10 +330,13 @@ export function GanttDragCreateLayer({
         const dy = e.clientY - origin.y;
         if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX) {
           clearLongPress();
+          if (!dragRef.current) {
+            beginDrag(armedStartIdxRef.current ?? dayIdxAt(origin.x), e.clientX, e.clientY);
+          }
         }
       }
     },
-    [clearLongPress]
+    [beginDrag, clearLongPress, dayIdxAt]
   );
 
   const onPointerCancelRow = useCallback(
@@ -343,7 +369,7 @@ export function GanttDragCreateLayer({
       ref={rowRef}
       data-gantt-room-row={roomId}
       className={[
-        "gantt-drag-row relative w-full overflow-hidden bg-white",
+          "gantt-drag-row relative w-full overflow-visible bg-white",
         touch && "gantt-drag-row--touch",
         drag && "gantt-drag-row--active",
       ]

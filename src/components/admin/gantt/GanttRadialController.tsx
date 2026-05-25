@@ -12,6 +12,7 @@ type Props = {
 type RadialAction = {
   id: "today" | "hold" | "block" | "booking";
   label: string;
+  hint: string;
   position: "top" | "left" | "right" | "bottom";
   tone: "emerald" | "amber" | "slate" | "sky";
   onClick: () => void;
@@ -48,6 +49,7 @@ export function GanttRadialController({
     {
       id: "today",
       label: "Azi",
+      hint: "centrare",
       position: "top",
       tone: "emerald",
       onClick: onScrollToToday,
@@ -55,6 +57,7 @@ export function GanttRadialController({
     {
       id: "hold",
       label: "Hold",
+      hint: "temporar",
       position: "left",
       tone: "amber",
       onClick: onOpenHold,
@@ -62,6 +65,7 @@ export function GanttRadialController({
     {
       id: "block",
       label: "Blocare",
+      hint: "indisp.",
       position: "right",
       tone: "slate",
       onClick: onOpenBlock,
@@ -69,6 +73,7 @@ export function GanttRadialController({
     {
       id: "booking",
       label: "Rezervare",
+      hint: "noua",
       position: "bottom",
       tone: "sky",
       onClick: onOpenReception,
@@ -100,7 +105,8 @@ export function GanttRadialController({
             setOpen(false);
           }}
         >
-          {action.label}
+          <span className="gantt-radial__action-label">{action.label}</span>
+          <span className="gantt-radial__action-hint">{action.hint}</span>
         </button>
       ))}
 
@@ -109,6 +115,7 @@ export function GanttRadialController({
         className="gantt-radial__core"
         aria-expanded={open}
         aria-label={open ? "Închide controllerul rapid" : "Deschide controllerul rapid"}
+        aria-pressed={open}
         onClick={() => setOpen((value) => !value)}
       >
         <span className="gantt-radial__icon" aria-hidden>
@@ -117,6 +124,7 @@ export function GanttRadialController({
             <span className="gantt-radial__door" />
           </span>
         </span>
+        <span className="gantt-radial__core-text">{open ? "Inchide" : "Actiuni"}</span>
         <span className="sr-only">Casa</span>
       </button>
     </div>

@@ -93,6 +93,7 @@ export function AdminFloatingPanel({
               ? { width: Math.min(width, window.innerWidth - 32) }
               : { ...panelStyle, width }
           }
+          onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
           onMouseEnter={onPanelMouseEnter}
           onMouseLeave={onPanelMouseLeave}

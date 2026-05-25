@@ -84,7 +84,11 @@ export function GanttStayPopover({
         className="gantt-popover-premium__stripe"
         style={{ background: stripe }}
       />
-      <div className="gantt-popover-premium__body">
+      <div
+        className="gantt-popover-premium__body"
+        data-gantt-no-drag=""
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <div className="flex gap-3">
           <div
             className="gantt-popover-premium__avatar shrink-0"

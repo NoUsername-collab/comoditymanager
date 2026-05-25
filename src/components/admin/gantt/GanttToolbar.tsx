@@ -228,7 +228,7 @@ export function GanttToolbar({
   return (
     <div className="gantt-chrome">
       <div ref={panelRef} className="gantt-toolbar__panel">
-        <div className="gantt-toolbar__row gantt-toolbar__row--controls">
+        <div className="gantt-toolbar__row gantt-toolbar__row--hero">
           <div className="gantt-toolbar__period">
             <Link
               href={prevHref}
@@ -247,103 +247,8 @@ export function GanttToolbar({
             </Link>
           </div>
 
-          <div className="gantt-toolbar__segments">
-            <SegmentGroup
-              label="Interval"
-              compact
-              value={zoomChoice}
-              onChange={(z) =>
-                push({
-                  zoom: z,
-                  ws: z === "quarter" || z === "days30" ? null : todayIso(),
-                  q:
-                    z === "quarter"
-                      ? quarter ?? Math.floor(month / 3)
-                      : undefined,
-                })
-              }
-              options={[
-                { value: "today", label: "Azi", shortLabel: "Azi" },
-                { value: "days7", label: "7 zile", shortLabel: "7z" },
-                { value: "days15", label: "15 zile", shortLabel: "15z" },
-                { value: "days30", label: "30 zile", shortLabel: "30z" },
-                { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
-              ]}
-            />
-
-          <SegmentGroup
-            label="Strat"
-            compact
-            value={layer}
-            onChange={(l) => push({ layer: l })}
-            options={[
-              { value: "all", label: "Tot", shortLabel: "Tot" },
-              { value: "cereri", label: "Cereri", shortLabel: "Cer." },
-              { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
-              { value: "in_house", label: "In-house", shortLabel: "In" },
-              { value: "trecute", label: "Trecute", shortLabel: "Trec." },
-              { value: "hold", label: "Hold", shortLabel: "Hold" },
-              { value: "block", label: "Blocări", shortLabel: "Bloc" },
-            ]}
-          />
-
-          <SegmentGroup
-            label="Camere"
-            compact
-            value={filter}
-            onChange={(f) =>
-              push({
-                filter: f,
-                fd: f === "free" ? focusDay || null : null,
-              })
-            }
-            options={[
-              { value: "all", label: "Toate" },
-              { value: "occupied", label: "Ocupate" },
-              { value: "free", label: "Libere" },
-            ]}
-          />
-
-          <SegmentGroup
-            label="Opțiuni"
-            compact
-            value={feat}
-            onChange={(f) => push({ feat: f })}
-            options={[
-              { value: "all", label: "Toate" },
-              { value: "ac", label: "Cu AC" },
-              { value: "fridge", label: "Frigider" },
-            ]}
-          />
-
-            <SegmentGroup
-              label="Vizualizare"
-              compact
-              value={view}
-              onChange={(v) => {
-                if (v === "all") push({ view: "all", building: null, room: null });
-                else if (v === "building")
-                  push({
-                    view: "building",
-                    building: buildingId || buildings[0]?.id || null,
-                    room: null,
-                  });
-                else
-                  push({
-                    view: "room",
-                    room: roomId || rooms[0]?.id || null,
-                    building: null,
-                  });
-              }}
-              options={[
-                { value: "all", label: "Toate" },
-                { value: "building", label: "Per clădire" },
-                { value: "room", label: "Per cameră" },
-              ]}
-            />
-          </div>
-
           <div className="gantt-toolbar__center">
+            <span className="gantt-toolbar__center-kicker">Comenzi rapide</span>
             <GanttRadialController
               onOpenHold={() => setOccFormMode("hold")}
               onOpenBlock={() => setOccFormMode("block")}
@@ -402,7 +307,7 @@ export function GanttToolbar({
                 window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
               }
             >
-              Azi în grid
+              Azi in grid
             </button>
 
             {cereriCount > 0 ? (
@@ -412,9 +317,107 @@ export function GanttToolbar({
                 title="Sari la lista cererilor"
               >
                 <span className="gantt-toolbar__cereri-dot" aria-hidden />
-                {cereriCount} cerer{cereriCount === 1 ? "ă" : "i"}
+                {cereriCount} cerer{cereriCount === 1 ? "a" : "i"}
               </a>
             ) : null}
+          </div>
+        </div>
+
+        <div className="gantt-toolbar__row gantt-toolbar__row--controls">
+          <div className="gantt-toolbar__segments">
+            <SegmentGroup
+              label="Interval"
+              compact
+              value={zoomChoice}
+              onChange={(z) =>
+                push({
+                  zoom: z,
+                  ws: z === "quarter" || z === "days30" ? null : todayIso(),
+                  q:
+                    z === "quarter"
+                      ? quarter ?? Math.floor(month / 3)
+                      : undefined,
+                })
+              }
+              options={[
+                { value: "today", label: "Azi", shortLabel: "Azi" },
+                { value: "days7", label: "7 zile", shortLabel: "7z" },
+                { value: "days15", label: "15 zile", shortLabel: "15z" },
+                { value: "days30", label: "30 zile", shortLabel: "30z" },
+                { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
+              ]}
+            />
+
+            <SegmentGroup
+              label="Strat"
+              compact
+              value={layer}
+              onChange={(l) => push({ layer: l })}
+              options={[
+                { value: "all", label: "Tot", shortLabel: "Tot" },
+                { value: "cereri", label: "Cereri", shortLabel: "Cer." },
+                { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
+                { value: "in_house", label: "In-house", shortLabel: "In" },
+                { value: "trecute", label: "Trecute", shortLabel: "Trec." },
+                { value: "hold", label: "Hold", shortLabel: "Hold" },
+                { value: "block", label: "Blocări", shortLabel: "Bloc" },
+              ]}
+            />
+
+            <SegmentGroup
+              label="Camere"
+              compact
+              value={filter}
+              onChange={(f) =>
+                push({
+                  filter: f,
+                  fd: f === "free" ? focusDay || null : null,
+                })
+              }
+              options={[
+                { value: "all", label: "Toate" },
+                { value: "occupied", label: "Ocupate" },
+                { value: "free", label: "Libere" },
+              ]}
+            />
+
+            <SegmentGroup
+              label="Opțiuni"
+              compact
+              value={feat}
+              onChange={(f) => push({ feat: f })}
+              options={[
+                { value: "all", label: "Toate" },
+                { value: "ac", label: "Cu AC" },
+                { value: "fridge", label: "Frigider" },
+              ]}
+            />
+
+            <SegmentGroup
+              label="Vizualizare"
+              compact
+              value={view}
+              onChange={(v) => {
+                if (v === "all") push({ view: "all", building: null, room: null });
+                else if (v === "building")
+                  push({
+                    view: "building",
+                    building: buildingId || buildings[0]?.id || null,
+                    room: null,
+                  });
+                else
+                  push({
+                    view: "room",
+                    room: roomId || rooms[0]?.id || null,
+                    building: null,
+                  });
+              }}
+              options={[
+                { value: "all", label: "Toate" },
+                { value: "building", label: "Per clădire" },
+                { value: "room", label: "Per cameră" },
+              ]}
+            />
           </div>
         </div>
 

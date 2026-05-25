@@ -691,11 +691,11 @@ export function GanttCalendar({
     <div
       key={viewRange.periodKey}
       ref={scrollRef}
-      className="gantt-period-enter gantt-scroll w-full overflow-x-auto"
+      className="gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible"
     >
       <div
         ref={shellRef}
-        className="gantt-shell gantt-shell--premium relative min-w-full overflow-hidden"
+        className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
       >
         <GanttTodayPanel
           summary={todaySummary}
