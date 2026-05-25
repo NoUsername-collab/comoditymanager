@@ -8,4 +8,6 @@ export type GanttRoom = {
   building_color: string | null;
   building_ac_mode: AcMode;
   has_ac: boolean;
+  room_type_name?: string | null;
+  option_slugs?: string[];
 };

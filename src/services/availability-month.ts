@@ -19,6 +19,9 @@ import {
 import { addDays, todayIso } from "@/lib/stay-dates";
 import type { AcMode } from "@/types/database";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
+import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
+import { roomMatchesFeatureFilter } from "@/components/admin/catalog/RoomFeatureBadges";
+import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 
 export type DayAvailabilityStatus = "available" | "full";
 
@@ -77,6 +80,8 @@ export type DayRoomRow = {
   building_name: string;
   building_color: string;
   has_ac: boolean;
+  room_type_name: string | null;
+  option_slugs: string[];
   status: "free" | "occupied" | "cerere";
   guest_name: string | null;
   booking_id: string | null;
@@ -207,7 +212,8 @@ export async function loadMonthAvailabilityGrid(
 export async function loadAvailabilityDashboard(
   year: number,
   month: number,
-  buildingId: string | null = null
+  buildingId: string | null = null,
+  featureFilter: GanttFeatureFilter = "all"
 ): Promise<AvailabilityDashboard> {
   const { start, end, dim } = monthRange(year, month);
 
@@ -225,11 +231,24 @@ export async function loadAvailabilityDashboard(
     listBookingsForRange(rangeStart, scanEnd),
   ]);
 
-  const rooms = roomsRaw.map((r) => ({
-    id: r.id,
-    building_id: r.building_id,
-    is_active: r.is_active,
-  }));
+  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
+    roomsRaw.map((r) => r.id)
+  ).catch(() => ({} as Record<string, string[]>));
+
+  const rooms = roomsRaw
+    .filter(
+      (r) =>
+        r.is_active &&
+        roomMatchesFeatureFilter(
+          { has_ac: r.has_ac, option_slugs: optionSlugsByRoom[r.id] ?? [] },
+          featureFilter
+        )
+    )
+    .map((r) => ({
+      id: r.id,
+      building_id: r.building_id,
+      is_active: r.is_active,
+    }));
 
   const countMaps = buildDayCountsMaps(bookings);
 
@@ -310,22 +329,30 @@ export async function loadAvailabilityDashboard(
 
 export async function loadDayAvailabilityDetail(
   iso: string,
-  buildingId: string | null = null
+  buildingId: string | null = null,
+  featureFilter: GanttFeatureFilter = "all"
 ): Promise<DayAvailabilityDetail | null> {
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || m < 1 || m > 12 || !d) return null;
 
-  const grid = await loadAvailabilityDashboard(y, m - 1, buildingId);
+  const grid = await loadAvailabilityDashboard(y, m - 1, buildingId, featureFilter);
   const day = grid.days.find((x) => x.iso === iso);
   if (!day) return null;
 
   const roomsRaw = await listAllRooms();
+  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
+    roomsRaw.map((r) => r.id)
+  ).catch(() => ({} as Record<string, string[]>));
   const buildings = await listBuildings();
   const buildingMap = new Map(buildings.map((b) => [b.id, b]));
   const activeRooms = roomsRaw.filter(
     (r) =>
       r.is_active &&
-      (!buildingId || r.building_id === buildingId)
+      (!buildingId || r.building_id === buildingId) &&
+      roomMatchesFeatureFilter(
+        { has_ac: r.has_ac, option_slugs: optionSlugsByRoom[r.id] ?? [] },
+        featureFilter
+      )
   );
 
   const supabase = createAdminClient();
@@ -387,6 +414,8 @@ export async function loadDayAvailabilityDetail(
       building_name: r.building_name,
       building_color: color,
       has_ac: r.has_ac,
+      room_type_name: r.room_type_name,
+      option_slugs: optionSlugsByRoom[r.id] ?? [],
       status: st?.status ?? "free",
       guest_name: st?.guest_name ?? null,
       booking_id: st?.booking_id ?? null,

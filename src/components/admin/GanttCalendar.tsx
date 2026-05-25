@@ -27,6 +27,7 @@ import { ganttDayTimeStyle } from "@/lib/gantt-time";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import { filterGanttRooms, focusDayInRange } from "@/domain/gantt/filters";
 import type { GanttRoom } from "@/domain/gantt/types";
+import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { guestPartyTotal } from "@/lib/guest-party";
 import {
@@ -285,6 +286,12 @@ function RoomRow({
           <div className="gantt-room-cell__text min-w-0">
             <span className="gantt-room-cell__name">{room.name}</span>
             <span className="gantt-room-cell__building">{room.building_name}</span>
+            <RoomFeatureBadges
+              roomTypeName={room.room_type_name}
+              optionSlugs={room.option_slugs}
+              hasAc={room.has_ac}
+              compact
+            />
             {(todayFlags.arrival || todayFlags.departure) && (
               <span className="gantt-room-today-badges mt-1 flex flex-wrap gap-1">
                 {todayFlags.arrival && (

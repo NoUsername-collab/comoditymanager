@@ -13,11 +13,15 @@ import { getBookingById, listOccupiedRoomRanges } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { listAllRooms } from "@/services/rooms-admin";
 
+import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
+
 export type ConfirmRoomOption = {
   id: string;
   name: string;
   building_name: string;
   has_ac: boolean;
+  room_type_name: string | null;
+  option_slugs: string[];
   capacity_base: number;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
@@ -82,6 +86,9 @@ export async function loadBookingConfirmContext(
 
   const occupied = await listOccupiedRoomRanges(bookingId);
   const activeRooms = (await listAllRooms()).filter((r) => r.is_active);
+  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
+    activeRooms.map((r) => r.id)
+  ).catch(() => ({} as Record<string, string[]>));
 
   const availableRooms: ConfirmRoomOption[] = activeRooms
     .filter((r) =>
@@ -99,6 +106,8 @@ export async function loadBookingConfirmContext(
       name: r.name,
       building_name: r.building_name,
       has_ac: r.has_ac,
+      room_type_name: r.room_type_name,
+      option_slugs: optionSlugsByRoom[r.id] ?? [],
       capacity_base: r.capacity_base,
       allows_extra_beds: r.allows_extra_beds,
       max_extra_beds_per_room: r.max_extra_beds_per_room,

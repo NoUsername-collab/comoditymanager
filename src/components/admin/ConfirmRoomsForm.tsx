@@ -5,6 +5,7 @@ import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { stayNightCount } from "@/lib/stay-dates";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
+import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import {
   canRoomsHostGuests,
   totalCapacityOfRooms,
@@ -157,9 +158,15 @@ export function ConfirmRoomsForm({
                 checked={selected.has(r.id)}
                 onChange={() => toggle(r.id)}
               />
-              <span>
-                {r.name} — {r.building_name} · {r.has_ac ? "AC" : "fără AC"} ·{" "}
-                {r.max_capacity} pers. · {formatRon(r.price_per_night)} RON/noapte
+              <span className="min-w-0 flex-1">
+                {r.name} — {r.building_name} · {r.max_capacity} pers. ·{" "}
+                {formatRon(r.price_per_night)} RON/noapte
+                <RoomFeatureBadges
+                  roomTypeName={r.room_type_name}
+                  optionSlugs={r.option_slugs}
+                  hasAc={r.has_ac}
+                  compact
+                />
               </span>
             </label>
           ))}

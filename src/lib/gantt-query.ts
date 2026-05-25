@@ -1,6 +1,14 @@
 import type { GanttFilter } from "@/domain/gantt/filters";
+import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { GanttZoom } from "@/domain/gantt/view-range";
+
+export function parseGanttFeatureFilter(
+  raw: string | undefined
+): GanttFeatureFilter {
+  if (raw === "ac" || raw === "fridge") return raw;
+  return "all";
+}
 
 export function parseGanttFilter(raw: string | undefined): GanttFilter {
   if (raw === "occupied" || raw === "free") return raw;
@@ -19,6 +27,7 @@ export function buildCalendarQuery(
     q?: number;
     filter?: GanttFilter;
     layer?: GanttLayerFilter;
+    feat?: GanttFeatureFilter;
   }
 ): string {
   const p = new URLSearchParams();
@@ -34,5 +43,6 @@ export function buildCalendarQuery(
   }
   if (base.filter && base.filter !== "all") p.set("filter", base.filter);
   if (base.layer && base.layer !== "all") p.set("layer", base.layer);
+  if (base.feat && base.feat !== "all") p.set("feat", base.feat);
   return p.toString();
 }

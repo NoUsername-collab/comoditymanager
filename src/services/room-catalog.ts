@@ -370,6 +370,33 @@ export async function updateRoomOption(
   if (error) throw new Error(error.message);
 }
 
+/** Map room_id → slug-uri opțiuni active (AC, frigider…). */
+export async function getRoomOptionSlugsByRoomIds(
+  roomIds: string[]
+): Promise<Record<string, string[]>> {
+  if (roomIds.length === 0) return {};
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("room_enabled_options")
+    .select("room_id, room_option_definitions ( slug )")
+    .in("room_id", roomIds);
+  if (error) throw new Error(error.message);
+
+  const out: Record<string, string[]> = {};
+  for (const row of data ?? []) {
+    const rid = String(row.room_id);
+    const def = row.room_option_definitions as
+      | { slug: string }
+      | { slug: string }[]
+      | null;
+    const slug = Array.isArray(def) ? def[0]?.slug : def?.slug;
+    if (!slug) continue;
+    if (!out[rid]) out[rid] = [];
+    out[rid].push(slug);
+  }
+  return out;
+}
+
 export function parseSelectedOptionIds(formData: FormData): string[] {
   return formData.getAll("option_ids").map(String).filter((id) => id.length > 0);
 }

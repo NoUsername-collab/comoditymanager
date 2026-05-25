@@ -11,13 +11,20 @@ import { BuildingRoomsCollapsible } from "./BuildingRoomsCollapsible";
 import { DeleteConfirmButton } from "./DeleteConfirmButton";
 import { deleteBuildingAction } from "@/app/admin/(panel)/buildings/actions";
 import { BuildingDefaultPriceForm } from "./BuildingDefaultPriceForm";
+import { BuildingPoliciesForm } from "./BuildingPoliciesForm";
+import type { RoomOptionDefinition } from "@/types/room-catalog";
+import type { OptionPolicyMode } from "@/types/room-catalog";
 
 export function BuildingDashboardCardInteractive({
   data,
   theme,
+  catalogOptions = [],
+  catalogPolicies = [],
 }: {
   data: BuildingDashboard;
   theme: BuildingTheme;
+  catalogOptions?: RoomOptionDefinition[];
+  catalogPolicies?: { option_id: string; mode: OptionPolicyMode }[];
 }) {
   const { building } = data;
   const [bodyOpen, setBodyOpen] = useState(true);
@@ -176,6 +183,16 @@ export function BuildingDashboardCardInteractive({
             />
 
             <AddFloorForm buildingId={building.id} />
+
+            {catalogOptions.length > 0 && (
+              <BuildingPoliciesForm
+                buildingId={building.id}
+                buildingName={building.name}
+                acMode={building.ac_mode}
+                options={catalogOptions}
+                policies={catalogPolicies}
+              />
+            )}
 
             <div className="mt-4 border-t border-zinc-200/80 pt-3">
               <DeleteConfirmButton

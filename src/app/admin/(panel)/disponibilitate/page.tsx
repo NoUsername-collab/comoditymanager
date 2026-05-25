@@ -4,6 +4,7 @@ import { AvailabilityDashboard } from "@/components/admin/availability/Availabil
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { loadAvailabilityDashboard } from "@/services/availability-month";
+import { parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { todayIso } from "@/lib/stay-dates";
 
@@ -23,6 +24,7 @@ export default async function AdminDisponibilitatePage({
     building?: string;
     view?: string;
     ws?: string;
+    feat?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -30,6 +32,7 @@ export default async function AdminDisponibilitatePage({
   const year = Number(params.y) || now.getFullYear();
   const month = params.m !== undefined ? Number(params.m) : now.getMonth();
   const buildingId = params.building?.length ? params.building : null;
+  const feat = parseGanttFeatureFilter(params.feat);
   const view = params.view === "week" ? "week" : "month";
   const weekStart =
     params.ws ?? (view === "week" ? mondayOfWeekIso(params.day ?? todayIso()) : null);
@@ -43,7 +46,7 @@ export default async function AdminDisponibilitatePage({
   let error: string | null = null;
 
   try {
-    dashboard = await loadAvailabilityDashboard(year, month, buildingId);
+    dashboard = await loadAvailabilityDashboard(year, month, buildingId, feat);
   } catch (e) {
     error = e instanceof Error ? e.message : "Eroare";
   }
@@ -98,6 +101,7 @@ export default async function AdminDisponibilitatePage({
                 dashboard={dashboard}
                 initialDay={params.day}
                 buildingId={buildingId}
+                featureFilter={feat}
                 view={view}
                 weekStart={weekStart}
               />

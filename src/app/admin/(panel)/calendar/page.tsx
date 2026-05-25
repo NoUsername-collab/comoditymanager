@@ -16,7 +16,9 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
-import { buildCalendarQuery, parseGanttFilter } from "@/lib/gantt-query";
+import { buildCalendarQuery, parseGanttFilter, parseGanttFeatureFilter } from "@/lib/gantt-query";
+import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
+import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getRoomOccupancy } from "@/services/room-occupancy";
 
@@ -34,6 +36,7 @@ export default async function AdminCalendarPage({
     q?: string;
     filter?: string;
     layer?: string;
+    feat?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -42,6 +45,7 @@ export default async function AdminCalendarPage({
   const month = params.m !== undefined ? Number(params.m) : now.getMonth();
   const view = (params.view as GanttViewMode) || "all";
   const filter = parseGanttFilter(params.filter);
+  const feat = parseGanttFeatureFilter(params.feat);
   const layer = parseGanttLayerFilter(params.layer);
   const quarter =
     params.q !== undefined ? Number(params.q) : Math.floor(month / 3);
@@ -69,6 +73,7 @@ export default async function AdminCalendarPage({
       q: nav.q,
       filter,
       layer,
+      feat,
     });
 
   try {
@@ -90,6 +95,11 @@ export default async function AdminCalendarPage({
 
     const buildingById = new Map(activeBuildings.map((b) => [b.id, b]));
 
+    const roomIds = allRooms.map((r) => r.id);
+    const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(roomIds).catch(
+      () => ({} as Record<string, string[]>)
+    );
+
     const ganttRoomsAll = allRooms.map((r) => {
       const building = buildingById.get(r.building_id);
       return {
@@ -100,10 +110,12 @@ export default async function AdminCalendarPage({
         building_color: building?.color_hex ?? null,
         building_ac_mode: building?.ac_mode ?? "per_room",
         has_ac: r.has_ac,
+        room_type_name: r.room_type_name,
+        option_slugs: optionSlugsByRoom[r.id] ?? [],
       };
     });
 
-    let ganttRooms = ganttRoomsAll;
+    let ganttRooms = filterGanttRoomsByFeature(ganttRoomsAll, feat);
 
     if (view === "building") {
       const bid = params.building || activeBuildings[0]?.id;
@@ -146,6 +158,7 @@ export default async function AdminCalendarPage({
                   : undefined
               }
               filter={filter}
+              feat={feat}
               layer={layer}
               buildings={switcherBuildings}
               rooms={ganttRoomsAll}

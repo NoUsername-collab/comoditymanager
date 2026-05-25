@@ -15,6 +15,8 @@ import type {
   DayAvailability,
   DayAvailabilityDetail,
 } from "@/services/availability-month";
+import type { GanttFeatureFilter } from "@/domain/gantt/filters";
+import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { AvailabilityLiveSync } from "./AvailabilityLiveSync";
@@ -239,6 +241,20 @@ function DayDetailPanel({
   const occupied = rooms.filter((r) => r.status === "occupied");
   const cereri = rooms.filter((r) => r.status === "cerere");
 
+  function roomSubtitle(r: (typeof rooms)[number]) {
+    return (
+      <>
+        {r.building_name}
+        <RoomFeatureBadges
+          roomTypeName={r.room_type_name}
+          optionSlugs={r.option_slugs}
+          hasAc={r.has_ac}
+          compact
+        />
+      </>
+    );
+  }
+
   return (
     <div className="availability-detail-panel--overlay avail-detail flex flex-col">
       <div className="border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
@@ -289,8 +305,7 @@ function DayDetailPanel({
                     <span className="min-w-0 flex-1 text-left text-sm font-medium">
                       {r.name}
                       <span className="block text-[10px] text-zinc-500">
-                        {r.building_name}
-                        {r.has_ac ? " · AC" : ""}
+                        {roomSubtitle(r)}
                       </span>
                     </span>
                     <span className="text-[10px] font-bold text-emerald-700">
@@ -377,12 +392,14 @@ export function AvailabilityDashboard({
   dashboard: initial,
   initialDay,
   buildingId: initialBuildingId,
+  featureFilter: initialFeatureFilter = "all",
   view: initialView,
   weekStart: initialWeekStart,
 }: {
   dashboard: AvailabilityDashboard;
   initialDay?: string;
   buildingId: string | null;
+  featureFilter?: GanttFeatureFilter;
   view: "month" | "week";
   weekStart: string | null;
 }) {
@@ -398,6 +415,7 @@ export function AvailabilityDashboard({
   const [kpiHelp, setKpiHelp] = useState<string | null>(null);
 
   const buildingId = initialBuildingId;
+  const featureFilter = initialFeatureFilter;
   const view = initialView;
 
   const weekendAccentColor = useMemo(() => {
@@ -420,12 +438,13 @@ export function AvailabilityDashboard({
       const q = buildQuery(dashboard.year, dashboard.month, {
         day: patch.day ?? searchParams.get("day") ?? undefined,
         building: patch.building ?? buildingId ?? undefined,
+        feat: patch.feat ?? (featureFilter !== "all" ? featureFilter : undefined),
         view: patch.view ?? view,
         ws: patch.ws ?? (view === "week" ? weekMonday : undefined),
       });
       router.push(`/admin/disponibilitate?${q}`);
     },
-    [router, dashboard.year, dashboard.month, searchParams, buildingId, view, weekMonday]
+    [router, dashboard.year, dashboard.month, searchParams, buildingId, featureFilter, view, weekMonday]
   );
 
   const selectDay = useCallback(
@@ -433,14 +452,18 @@ export function AvailabilityDashboard({
       setSelectedIso(iso);
       setLoading(true);
       try {
-        const d = await fetchDayAvailabilityDetailAction(iso, buildingId);
+        const d = await fetchDayAvailabilityDetailAction(
+          iso,
+          buildingId,
+          featureFilter
+        );
         setDetail(d);
         pushParams({ day: iso });
       } finally {
         setLoading(false);
       }
     },
-    [buildingId, pushParams]
+    [buildingId, featureFilter, pushParams]
   );
 
   const handleDayClick = (iso: string, shift: boolean) => {
@@ -678,6 +701,35 @@ export function AvailabilityDashboard({
               style={{ background: b.display_color }}
             />
             {b.name} ({b.room_count})
+          </button>
+        ))}
+      </div>
+
+      <div className="avail-building-chips mt-2">
+        {(
+          [
+            { value: "all" as const, label: "Toate opțiunile" },
+            { value: "ac" as const, label: "Cu AC" },
+            { value: "fridge" as const, label: "Cu frigider" },
+          ] as const
+        ).map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            className={[
+              "avail-building-chip",
+              featureFilter === opt.value && "avail-building-chip--active",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            style={{ "--chip-color": "#94a3b8" } as React.CSSProperties}
+            onClick={() =>
+              pushParams({
+                feat: opt.value === "all" ? undefined : opt.value,
+              })
+            }
+          >
+            {opt.label}
           </button>
         ))}
       </div>

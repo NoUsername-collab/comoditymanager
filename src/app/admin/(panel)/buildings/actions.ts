@@ -9,6 +9,7 @@ import {
   normalizeBuildingColor,
 } from "@/lib/building-color-palette";
 import type { AcMode } from "@/types/database";
+import type { OptionPolicyMode } from "@/types/room-catalog";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { acModeToPolicyMode } from "@/lib/room-catalog-pricing";
 import {
@@ -67,6 +68,40 @@ export async function createBuildingAction(formData: FormData) {
   revalidatePath("/admin/buildings");
   revalidatePath("/");
   redirect("/admin/buildings");
+}
+
+export async function updateBuildingPoliciesAction(formData: FormData) {
+  await requireLocationAdmin();
+  const building_id = String(formData.get("building_id") ?? "");
+  const ac_mode = String(formData.get("ac_mode") ?? "per_room") as AcMode;
+
+  if (!building_id) throw new Error("ID clădire lipsă");
+
+  const options = await listRoomOptions(true);
+  const policies = options.map((opt) => {
+    if (opt.slug === "ac") {
+      return { option_id: opt.id, mode: acModeToPolicyMode(ac_mode) };
+    }
+    const raw = String(formData.get(`policy_${opt.id}`) ?? "per_room");
+    const mode = (["all_rooms", "none", "per_room"].includes(raw)
+      ? raw
+      : "per_room") as OptionPolicyMode;
+    return { option_id: opt.id, mode };
+  });
+
+  await setBuildingOptionPolicies(building_id, policies);
+
+  await logAdminActivityFromSession({
+    action: "building.price_updated",
+    entityType: "building",
+    entityId: building_id,
+    summary: "Politici opțiuni clădire actualizate",
+    metadata: { ac_mode },
+  });
+
+  revalidatePath("/admin/buildings");
+  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/rooms");
 }
 
 export async function createFloorAction(formData: FormData) {

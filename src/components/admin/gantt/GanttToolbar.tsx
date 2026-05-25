@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { GanttFilter } from "@/domain/gantt/filters";
+import type { GanttFilter, GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { layerFilterLabel } from "@/domain/gantt/occupancy-layer";
 import type { GanttZoom } from "@/domain/gantt/view-range";
@@ -93,6 +93,7 @@ export function GanttToolbar({
   ws,
   quarter,
   filter,
+  feat = "all",
   layer = "all",
   buildings,
   rooms,
@@ -107,6 +108,7 @@ export function GanttToolbar({
   ws?: string;
   quarter?: number;
   filter: GanttFilter;
+  feat?: GanttFeatureFilter;
   layer?: GanttLayerFilter;
   buildings: BuildingOption[];
   rooms: RoomOption[];
@@ -131,6 +133,7 @@ export function GanttToolbar({
     ws?: string | null;
     q?: number;
     filter?: GanttFilter;
+    feat?: GanttFeatureFilter;
     layer?: GanttLayerFilter;
     view?: GanttViewMode;
     building?: string | null;
@@ -150,6 +153,7 @@ export function GanttToolbar({
       ws: patch.ws !== undefined ? patch.ws ?? undefined : ws,
       q: patch.q ?? quarter,
       filter: patch.filter ?? filter,
+      feat: patch.feat ?? feat,
       layer: patch.layer ?? layer,
     });
     router.push(`/admin/calendar?${q}`);
@@ -162,6 +166,8 @@ export function GanttToolbar({
   const metaParts: string[] = [];
   if (filter === "free") metaParts.push("Libere la ziua focală");
   else if (filter === "occupied") metaParts.push("Ocupate în ziua focală");
+  if (feat === "ac") metaParts.push("Cu AC");
+  else if (feat === "fridge") metaParts.push("Cu frigider");
   if (layer !== "all") metaParts.push(`Strat: ${layerFilterLabel(layer)}`);
   if (view === "all") metaParts.push(`${rooms.length} camere`);
   else if (view === "building") {
@@ -243,6 +249,18 @@ export function GanttToolbar({
               { value: "all", label: "Toate" },
               { value: "occupied", label: "Ocupate" },
               { value: "free", label: "Libere" },
+            ]}
+          />
+
+          <SegmentGroup
+            label="Opțiuni"
+            compact
+            value={feat}
+            onChange={(f) => push({ feat: f })}
+            options={[
+              { value: "all", label: "Toate" },
+              { value: "ac", label: "Cu AC" },
+              { value: "fridge", label: "Frigider" },
             ]}
           />
 
