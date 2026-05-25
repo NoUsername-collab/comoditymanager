@@ -35,6 +35,13 @@ export function findGanttRoomAtPoint(clientX: number, clientY: number): string |
   return null;
 }
 
+export function listGanttRoomIdsInDomOrder(): string[] {
+  if (typeof document === "undefined") return [];
+  return Array.from(document.querySelectorAll<HTMLElement>(ROOM_ROW_SELECTOR))
+    .map((node) => node.dataset.ganttRoomRow ?? "")
+    .filter(Boolean);
+}
+
 export function setGanttRoomDropTarget(roomId: string | null): void {
   if (typeof document === "undefined") return;
   if (activeDropTargetId === roomId) return;

@@ -210,7 +210,7 @@ export async function createCerereFromGanttAction(input: {
       notes: "Creat din Gantt",
       room_ids: [input.roomId],
     });
-    revalidateTag(CACHE_TAGS.bookingCounts);
+    revalidateTag(CACHE_TAGS.bookingCounts, "max");
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/bookings");
     return { ok: true, id };
@@ -273,7 +273,7 @@ export async function createDirectStayFromGanttAction(input: {
 
     await confirmBookingWithRooms(bookingId, [input.roomId], total);
 
-    revalidateTag(CACHE_TAGS.bookingCounts);
+    revalidateTag(CACHE_TAGS.bookingCounts, "max");
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/bookings");
     revalidatePath("/admin/cazari");
@@ -404,7 +404,7 @@ export async function duplicateBookingAsCerereAction(
   await requireAdmin();
   try {
     const id = await duplicateBookingAsCerere(bookingId);
-    revalidateTag(CACHE_TAGS.bookingCounts);
+    revalidateTag(CACHE_TAGS.bookingCounts, "max");
     revalidatePath("/admin/calendar");
     revalidatePath("/admin/bookings");
     revalidatePath("/admin/cereri");

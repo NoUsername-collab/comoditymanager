@@ -16,7 +16,7 @@ export async function quickConfirmAction(formData: FormData) {
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
-  revalidateTag(CACHE_TAGS.bookingCounts);
+  revalidateTag(CACHE_TAGS.bookingCounts, "max");
   revalidatePath("/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/calendar");

@@ -80,7 +80,7 @@ export async function updateAppearanceSettingsAction(formData: FormData) {
     metadata: { admin_palette_key, admin_day_night, role: settings.role },
   });
 
-  revalidateTag(CACHE_TAGS.pensionSettings);
+  revalidateTag(CACHE_TAGS.pensionSettings, "max");
   revalidatePath("/admin/settings");
   revalidatePath("/");
   redirect("/admin/settings?saved=1");
@@ -128,7 +128,7 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     },
   });
 
-  revalidateTag(CACHE_TAGS.pensionSettings);
+  revalidateTag(CACHE_TAGS.pensionSettings, "max");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");
   revalidatePath("/");
@@ -173,12 +173,12 @@ export async function factoryResetAction(confirmText: string): Promise<void> {
 
   await runFactoryReset();
 
-  revalidateTag(CACHE_TAGS.pensionSettings);
-  revalidateTag(CACHE_TAGS.buildings);
-  revalidateTag(CACHE_TAGS.rooms);
-  revalidateTag(CACHE_TAGS.roomCatalog);
-  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
-  revalidateTag(CACHE_TAGS.bookingCounts);
+  revalidateTag(CACHE_TAGS.pensionSettings, "max");
+  revalidateTag(CACHE_TAGS.buildings, "max");
+  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateTag(CACHE_TAGS.roomCatalog, "max");
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+  revalidateTag(CACHE_TAGS.bookingCounts, "max");
   revalidatePath("/admin", "layout");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");

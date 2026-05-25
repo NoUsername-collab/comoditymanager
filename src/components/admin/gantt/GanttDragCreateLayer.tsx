@@ -11,6 +11,7 @@ import {
 import {
   clearGanttRoomDragSpan,
   findGanttRoomAtPoint,
+  listGanttRoomIdsInDomOrder,
   setGanttRoomDragSpan,
 } from "@/domain/gantt/room-at-point";
 import {
@@ -59,6 +60,20 @@ function nightCountFromIndices(startIdx: number, endIdx: number): number {
   return Math.max(1, endIdx - startIdx + 1);
 }
 
+function roomIdsBetween(
+  orderedRoomIds: string[],
+  startRoomId: string,
+  endRoomId: string
+): string[] {
+  const startIndex = orderedRoomIds.indexOf(startRoomId);
+  const endIndex = orderedRoomIds.indexOf(endRoomId);
+  if (startIndex === -1 || endIndex === -1) return [startRoomId];
+
+  const from = Math.min(startIndex, endIndex);
+  const to = Math.max(startIndex, endIndex);
+  return orderedRoomIds.slice(from, to + 1);
+}
+
 export function GanttDragCreateLayer({
   roomId,
   roomName,
@@ -77,7 +92,10 @@ export function GanttDragCreateLayer({
   const dragRef = useRef<{
     startIdx: number;
     endIdx: number;
-    roomIds: Set<string>;
+    startRoomId: string;
+    currentRoomId: string;
+    selectedRoomIds: string[];
+    orderedRoomIds: string[];
   } | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pressOriginRef = useRef<{ x: number; y: number } | null>(null);
@@ -187,9 +205,12 @@ export function GanttDragCreateLayer({
       const startIdx = dragRef.current.startIdx;
       if (endIdx < startIdx) endIdx = startIdx;
       const hitRoom = findGanttRoomAtPoint(clientX, clientY);
-      if (hitRoom) dragRef.current.roomIds.add(hitRoom);
-      const roomIds = [...dragRef.current.roomIds];
-      setGanttRoomDragSpan(roomIds);
+      const currentRoomId = hitRoom ?? dragRef.current.currentRoomId;
+      const roomIds = roomIdsBetween(
+        dragRef.current.orderedRoomIds,
+        dragRef.current.startRoomId,
+        currentRoomId
+      );
       const interval = intervalFromDayIndices(dayIsos, startIdx, endIdx);
       const hasConflict = interval
         ? evalConflictForRooms(interval.checkIn, interval.checkOut, roomIds)
@@ -201,8 +222,15 @@ export function GanttDragCreateLayer({
           widthPct: ghost.widthPct,
           hasConflict,
         });
+      } else {
+        setGanttRoomDragSpan(roomIds);
       }
-      dragRef.current = { startIdx, endIdx, roomIds: dragRef.current.roomIds };
+      dragRef.current = {
+        ...dragRef.current,
+        endIdx,
+        currentRoomId,
+        selectedRoomIds: roomIds,
+      };
       setDrag({ startIdx, endIdx, hasConflict, roomCount: roomIds.length });
     },
     [dayCount, dayIsos, evalConflictForRooms]
@@ -211,10 +239,15 @@ export function GanttDragCreateLayer({
   const beginDrag = useCallback(
     (startIdx: number, clientX: number, clientY: number) => {
       const ghost = ghostBarPosition(startIdx, startIdx, dayCount);
+      const orderedRoomIds = listGanttRoomIdsInDomOrder();
       dragRef.current = {
         startIdx,
         endIdx: startIdx,
-        roomIds: new Set([roomId]),
+        startRoomId: roomId,
+        currentRoomId: roomId,
+        selectedRoomIds: [roomId],
+        orderedRoomIds:
+          orderedRoomIds.length > 0 ? orderedRoomIds : [roomId],
       };
       setDrag({
         startIdx,
@@ -248,7 +281,7 @@ export function GanttDragCreateLayer({
     finishDrag(
       dragRef.current.startIdx,
       dragRef.current.endIdx,
-      [...dragRef.current.roomIds]
+      dragRef.current.selectedRoomIds
     );
     dragRef.current = null;
     setDrag(null);

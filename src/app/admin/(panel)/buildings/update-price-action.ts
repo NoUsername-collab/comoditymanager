@@ -17,7 +17,7 @@ export async function updateBuildingDefaultPriceAction(formData: FormData) {
     summary: `Preț implicit clădire: ${price} RON/noapte`,
     metadata: { default_price_per_night: price },
   });
-  revalidateTag(CACHE_TAGS.buildings);
+  revalidateTag(CACHE_TAGS.buildings, "max");
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/rooms");
 }

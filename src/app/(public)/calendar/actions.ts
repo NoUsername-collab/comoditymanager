@@ -125,7 +125,7 @@ export async function submitGuestRequestAction(formData: FormData) {
     room_ids: selected.rooms.map((r) => r.id),
   });
 
-  revalidateTag(CACHE_TAGS.bookingCounts);
+  revalidateTag(CACHE_TAGS.bookingCounts, "max");
   revalidatePath("/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/calendar");
@@ -171,7 +171,7 @@ export async function submitPhoneBookingAction(formData: FormData) {
     notes,
   });
 
-  revalidateTag(CACHE_TAGS.bookingCounts);
+  revalidateTag(CACHE_TAGS.bookingCounts, "max");
   revalidatePath("/receptie");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/calendar");

@@ -66,7 +66,7 @@ export async function createBuildingAction(formData: FormData) {
     summary: `Clădire nouă: ${name}`,
     metadata: { ac_mode, default_price_per_night },
   });
-  revalidateTag(CACHE_TAGS.buildings);
+  revalidateTag(CACHE_TAGS.buildings, "max");
   revalidatePath("/admin/buildings");
   revalidatePath("/");
   redirect("/admin/buildings");
@@ -101,7 +101,7 @@ export async function updateBuildingPoliciesAction(formData: FormData) {
     metadata: { ac_mode },
   });
 
-  revalidateTag(CACHE_TAGS.buildings);
+  revalidateTag(CACHE_TAGS.buildings, "max");
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/calendar");
   revalidatePath("/admin/rooms");
@@ -153,7 +153,7 @@ export async function deleteBuildingAction(formData: FormData) {
     throw e instanceof Error ? e : new Error("Eroare la ștergere");
   }
 
-  revalidateTag(CACHE_TAGS.buildings);
+  revalidateTag(CACHE_TAGS.buildings, "max");
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/rooms");
   revalidatePath("/");
@@ -178,8 +178,8 @@ export async function deleteRoomFromBuildingAction(formData: FormData) {
     throw e instanceof Error ? e : new Error("Eroare la ștergere");
   }
 
-  revalidateTag(CACHE_TAGS.rooms);
-  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
+  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
   revalidatePath("/admin/buildings");
   revalidatePath("/admin/rooms");
   revalidatePath("/");

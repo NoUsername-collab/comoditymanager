@@ -19,7 +19,8 @@ export type PensionSettings = {
   admin_day_night: AdminTheme;
 };
 
-function parsePaletteSource(): AdminPaletteSource {
+function parsePaletteSource(raw?: unknown): AdminPaletteSource {
+  void raw;
   return "catalog";
 }
 

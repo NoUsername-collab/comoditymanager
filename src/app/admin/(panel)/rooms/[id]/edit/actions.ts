@@ -59,8 +59,8 @@ export async function updateRoomAction(formData: FormData) {
     metadata: { is_active, room_type_definition_id },
   });
 
-  revalidateTag(CACHE_TAGS.rooms);
-  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
+  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
   revalidatePath("/admin/rooms");
   revalidatePath("/");
   revalidatePath("/admin/calendar");

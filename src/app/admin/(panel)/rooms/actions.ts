@@ -61,8 +61,8 @@ export async function createRoomAction(formData: FormData) {
       metadata: { building_id, bulk_count, room_type_definition_id },
     });
 
-    revalidateTag(CACHE_TAGS.rooms);
-    revalidateTag(CACHE_TAGS.roomOptionsByRoom);
+    revalidateTag(CACHE_TAGS.rooms, "max");
+    revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
     revalidatePath("/admin/rooms");
     revalidatePath("/");
     redirect(`/admin/rooms?bulk=${ids.length}`);
@@ -93,8 +93,8 @@ export async function createRoomAction(formData: FormData) {
     metadata: { building_id, room_type_definition_id },
   });
 
-  revalidateTag(CACHE_TAGS.rooms);
-  revalidateTag(CACHE_TAGS.roomOptionsByRoom);
+  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
   revalidatePath("/admin/rooms");
   revalidatePath("/");
   redirect("/admin/rooms");

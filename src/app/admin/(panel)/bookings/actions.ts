@@ -11,7 +11,7 @@ import {
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 
 function revalidateBookingPaths(bookingId: string) {
-  revalidateTag(CACHE_TAGS.bookingCounts);
+  revalidateTag(CACHE_TAGS.bookingCounts, "max");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/cazari");
   revalidatePath(`/admin/bookings/${bookingId}`);
