@@ -8,6 +8,7 @@ import {
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { BookingActivitySection } from "@/components/admin/activity/BookingActivitySection";
 import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
+import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
@@ -57,6 +58,26 @@ export default async function BookingDetailPage({
         <p className="mt-2 text-sm">
           Status: <strong>{booking.status}</strong>
         </p>
+
+        {(booking.guest_alert_level !== "normal" || booking.guest_profile) && (
+          <div
+            className={[
+              "mt-4 rounded border px-3 py-3 text-sm",
+              booking.guest_alert_level === "blacklist"
+                ? "border-red-300 bg-red-50 text-red-950"
+                : booking.guest_alert_level === "watchlist"
+                  ? "border-amber-300 bg-amber-50 text-amber-950"
+                  : "border-zinc-200 bg-zinc-50 text-zinc-900",
+            ].join(" ")}
+          >
+            <p className="font-bold">Profil client</p>
+            <GuestProfileBadges
+              profile={booking.guest_profile}
+              alertLevel={booking.guest_alert_level}
+              alertNote={booking.guest_alert_note}
+            />
+          </div>
+        )}
 
         <dl className="mt-4 grid gap-2 text-sm">
           <div>

@@ -2,6 +2,81 @@ export type GuestTag = "vip" | "recurrent";
 
 export const GUEST_TAGS: readonly GuestTag[] = ["vip", "recurrent"] as const;
 
+export type GuestPositiveTrait =
+  | "respectuos"
+  | "linistit"
+  | "ingrijit"
+  | "plateste_la_timp"
+  | "recomandat";
+
+export type GuestNegativeTrait =
+  | "zgomotos"
+  | "mizerie"
+  | "conflictual"
+  | "neplata"
+  | "pagube"
+  | "incalca_reguli";
+
+export type GuestFlagLevel = "normal" | "watchlist" | "blacklist";
+
+export type GuestProfileRow = {
+  guest_id: string;
+  trust_score: number;
+  loyalty_score: number;
+  stars_avg: number;
+  positive_traits: GuestPositiveTrait[];
+  negative_traits: GuestNegativeTrait[];
+  flag_level: GuestFlagLevel;
+  blacklist_reason: string | null;
+  blacklisted_at: string | null;
+  blacklisted_by: string | null;
+  blacklisted_by_email: string | null;
+  unblacklisted_at: string | null;
+  unblacklisted_by: string | null;
+  unblacklisted_by_email: string | null;
+  manual_trust_adjustment: number;
+  manual_loyalty_adjustment: number;
+  manual_note: string | null;
+  completed_stays: number;
+  total_nights: number;
+  last_stay_check_out: string | null;
+  review_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GuestBookingFlagSummary = Pick<
+  GuestProfileRow,
+  | "guest_id"
+  | "trust_score"
+  | "loyalty_score"
+  | "stars_avg"
+  | "positive_traits"
+  | "negative_traits"
+  | "flag_level"
+  | "blacklist_reason"
+  | "review_count"
+  | "completed_stays"
+  | "total_nights"
+  | "last_stay_check_out"
+  | "manual_note"
+>;
+
+export type GuestStayReviewRow = {
+  booking_id: string;
+  guest_id: string;
+  stars: number;
+  positive_traits: GuestPositiveTrait[];
+  negative_traits: GuestNegativeTrait[];
+  problem_details: string | null;
+  trust_delta: number;
+  loyalty_delta: number;
+  reviewed_at: string;
+  reviewed_by: string | null;
+  reviewed_by_email: string | null;
+  updated_at: string;
+};
+
 export type GuestRow = {
   id: string;
   last_name: string;
@@ -13,6 +88,7 @@ export type GuestRow = {
   email_normalized: string | null;
   notes: string | null;
   tags: GuestTag[];
+  profile: GuestProfileRow | null;
   created_at: string;
   updated_at: string;
 };
@@ -27,8 +103,36 @@ export type GuestListItem = Pick<
   | "created_at"
   | "updated_at"
 > & {
+  profile: GuestBookingFlagSummary | null;
   booking_count: number;
   last_stay_check_out: string | null;
+};
+
+export type GuestSearchFilter =
+  | "all"
+  | "recent"
+  | "flagged"
+  | "blacklist"
+  | "watchlist"
+  | "rated"
+  | "unreviewed"
+  | "loyal";
+
+export type GuestSearchResult = {
+  items: GuestListItem[];
+  query: string;
+  filter: GuestSearchFilter;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
+  hasPrevious: boolean;
+  mode: "highlights" | "results";
+};
+
+export type GuestHighlights = {
+  flagged: GuestListItem[];
+  recent: GuestListItem[];
+  rated: GuestListItem[];
 };
 
 export type GuestBookingInput = {

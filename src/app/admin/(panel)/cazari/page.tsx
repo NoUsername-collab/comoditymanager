@@ -4,6 +4,7 @@ import { formatBookingRef } from "@/lib/booking-admin-links";
 import { formatRoDate } from "@/lib/stay-dates";
 import { AdminStaySearchForm } from "@/components/admin/AdminStaySearchForm";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
+import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
@@ -171,6 +172,11 @@ function StayInfo({
           <p className="truncate text-xs text-zinc-600">
             {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") || "Fără contact"}
           </p>
+          <GuestProfileBadges
+            profile={stay.guest_profile}
+            alertLevel={stay.guest_alert_level}
+            alertNote={stay.guest_alert_note}
+          />
         </div>
         <span
           className={[

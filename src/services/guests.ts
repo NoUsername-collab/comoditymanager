@@ -8,9 +8,13 @@ import {
 } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
+  GuestHighlights,
   GuestBookingInput,
   GuestListItem,
   GuestRow,
+  GuestSearchFilter,
+  GuestSearchResult,
+  GuestStayReviewRow,
   GuestTag,
 } from "@/domain/guest/types";
 import type { BookingStatus } from "@/domain/booking/types";
@@ -21,12 +25,18 @@ import {
   logAdminActivity,
   logAdminActivityFromSession,
 } from "@/services/activity-log";
-import { listSegmentsForBooking } from "@/services/booking-segments";
 import {
   assertRoomsAvailableForStay,
   createBookingRequest,
   getBookingById,
 } from "@/services/bookings";
+import {
+  ensureGuestProfiles,
+  getGuestProfile,
+  listGuestProfileSummaries,
+  listGuestStayReviewsByBookingIds,
+  mergeGuestProfiles,
+} from "@/services/guest-profiles";
 
 function mapGuestRow(row: Record<string, unknown>): GuestRow {
   return {
@@ -42,9 +52,21 @@ function mapGuestRow(row: Record<string, unknown>): GuestRow {
       row.email_normalized != null ? String(row.email_normalized) : null,
     notes: row.notes != null ? String(row.notes) : null,
     tags: parseGuestTags(row.tags),
+    profile: null,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
   };
+}
+
+export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("guests")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? mapGuestRow(data) : null;
 }
 
 async function findGuestByPhone(
@@ -97,6 +119,7 @@ async function createGuestRecord(input: GuestBookingInput): Promise<string> {
     .single();
 
   if (error) throw new Error(error.message);
+  await ensureGuestProfiles([data.id]);
   return data.id;
 }
 
@@ -179,76 +202,442 @@ export async function resolveGuestForBooking(
   return { guestId, mergeConflict: false };
 }
 
-export async function getGuestById(id: string): Promise<GuestRow | null> {
+export async function getGuestById(
+  id: string,
+  options?: { recomputeProfile?: boolean }
+): Promise<GuestRow | null> {
+  const guest = await getGuestBaseById(id);
+  if (!guest) return null;
+  const profile = await getGuestProfile(id, {
+    recompute: options?.recomputeProfile === true,
+  });
+  return { ...guest, profile };
+}
+
+type GuestListSelectRow = {
+  id: string;
+  display_name: string;
+  phone: string | null;
+  email: string | null;
+  tags: unknown;
+  created_at: string;
+  updated_at: string;
+};
+
+function sanitizeGuestSearchTerm(term: string): string {
+  return term.trim().replace(/[%_]/g, "");
+}
+
+function normalizeGuestFilter(filter?: string): GuestSearchFilter {
+  switch (filter) {
+    case "recent":
+    case "flagged":
+    case "blacklist":
+    case "watchlist":
+    case "rated":
+    case "unreviewed":
+    case "loyal":
+      return filter;
+    default:
+      return "all";
+  }
+}
+
+function normalizeGuestPage(page?: number): number {
+  return Number.isFinite(page) && page && page > 0 ? Math.floor(page) : 1;
+}
+
+function isoDaysAgo(days: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
+function matchesGuestFilter(
+  guest: GuestListItem,
+  filter: GuestSearchFilter
+): boolean {
+  const profile = guest.profile;
+  if (filter === "all") return true;
+  if (filter === "flagged") return profile?.flag_level !== "normal";
+  if (filter === "blacklist") return profile?.flag_level === "blacklist";
+  if (filter === "watchlist") return profile?.flag_level === "watchlist";
+  if (filter === "rated") return (profile?.review_count ?? 0) > 0;
+  if (filter === "unreviewed") return (profile?.review_count ?? 0) === 0;
+  if (filter === "loyal") {
+    return (profile?.loyalty_score ?? 0) >= 65 || (profile?.completed_stays ?? 0) >= 3;
+  }
+  if (filter === "recent") {
+    return (
+      (profile?.last_stay_check_out != null &&
+        profile.last_stay_check_out >= isoDaysAgo(365)) ||
+      guest.updated_at >= new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
+    );
+  }
+  return true;
+}
+
+async function fetchGuestListItemsByIds(
+  guestIds: string[]
+): Promise<GuestListItem[]> {
+  const ids = [...new Set(guestIds.filter(Boolean))];
+  if (ids.length === 0) return [];
+
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("guests")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+    .select("id, display_name, phone, email, tags, created_at, updated_at")
+    .in("id", ids);
+
   if (error) throw new Error(error.message);
-  return data ? mapGuestRow(data) : null;
+
+  const rows = new Map(
+    ((data ?? []) as GuestListSelectRow[]).map((row) => [row.id, row])
+  );
+  const profiles = await listGuestProfileSummaries(ids);
+
+  return ids
+    .map((id) => {
+      const row = rows.get(id);
+      if (!row) return null;
+      const profile = profiles.get(id) ?? null;
+      return {
+        id: row.id,
+        display_name: row.display_name,
+        phone: row.phone,
+        email: row.email,
+        tags: parseGuestTags(row.tags),
+        profile,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        booking_count: profile?.completed_stays ?? 0,
+        last_stay_check_out: profile?.last_stay_check_out ?? null,
+      };
+    })
+    .filter((guest): guest is GuestListItem => guest != null);
+}
+
+async function listGuestIdsForHighlights(limit = 8): Promise<{
+  flagged: string[];
+  recent: string[];
+  rated: string[];
+}> {
+  const supabase = createAdminClient();
+
+  const [flaggedRes, recentRes, ratedRes] = await Promise.all([
+    supabase
+      .from("guest_profiles")
+      .select("guest_id, flag_level, updated_at")
+      .in("flag_level", ["watchlist", "blacklist"])
+      .order("updated_at", { ascending: false })
+      .limit(limit * 2),
+    supabase
+      .from("guests")
+      .select("id")
+      .order("updated_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("guest_profiles")
+      .select("guest_id")
+      .gt("review_count", 0)
+      .order("stars_avg", { ascending: false })
+      .order("review_count", { ascending: false })
+      .limit(limit),
+  ]);
+
+  if (flaggedRes.error) throw new Error(flaggedRes.error.message);
+  if (recentRes.error) throw new Error(recentRes.error.message);
+  if (ratedRes.error) throw new Error(ratedRes.error.message);
+
+  const flagged = ((flaggedRes.data ?? []) as {
+    guest_id: string;
+    flag_level: "watchlist" | "blacklist";
+    updated_at: string;
+  }[])
+    .sort((left, right) => {
+      if (left.flag_level !== right.flag_level) {
+        return left.flag_level === "blacklist" ? -1 : 1;
+      }
+      return left.updated_at < right.updated_at ? 1 : -1;
+    })
+    .slice(0, limit)
+    .map((row) => row.guest_id);
+
+  return {
+    flagged,
+    recent: ((recentRes.data ?? []) as { id: string }[]).map((row) => row.id),
+    rated: ((ratedRes.data ?? []) as { guest_id: string }[]).map(
+      (row) => row.guest_id
+    ),
+  };
+}
+
+async function searchGuestIdsByQueryWindow(input: {
+  query: string;
+  offset: number;
+  limit: number;
+}): Promise<{ ids: string[]; exhausted: boolean }> {
+  const supabase = createAdminClient();
+  const term = sanitizeGuestSearchTerm(input.query);
+  if (!term) return { ids: [], exhausted: true };
+  const windowEnd = input.offset + input.limit;
+
+  const normalizedPhone = normalizePhone(term);
+  const normalizedEmail = normalizeEmail(term);
+  const exactIds = new Set<string>();
+
+  if (normalizedPhone) {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .eq("phone_normalized", normalizedPhone)
+      .limit(Math.max(windowEnd, 1));
+    if (error) throw new Error(error.message);
+    for (const row of data ?? []) exactIds.add(String(row.id));
+  }
+
+  if (normalizedEmail && !isPlaceholderEmail(normalizedEmail)) {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .eq("email_normalized", normalizedEmail)
+      .limit(Math.max(windowEnd, 1));
+    if (error) throw new Error(error.message);
+    for (const row of data ?? []) exactIds.add(String(row.id));
+  }
+
+  if (exactIds.size > 0) {
+    const ids = [...exactIds];
+    return {
+      ids: ids.slice(input.offset, windowEnd),
+      exhausted: ids.length <= windowEnd,
+    };
+  }
+
+  const buildIdList = (rows: { id: string }[] | null | undefined) =>
+    [...new Set((rows ?? []).map((row) => String(row.id)))];
+
+  if (!normalizedPhone && !normalizedEmail && term.length < 2) {
+    return { ids: [], exhausted: true };
+  }
+
+  if (term.includes("@")) {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .ilike("email", `${term}%`)
+      .order("display_name", { ascending: true })
+      .range(input.offset, windowEnd);
+    if (error) throw new Error(error.message);
+    const ids = buildIdList(data as { id: string }[] | null);
+    return { ids: ids.slice(0, input.limit), exhausted: ids.length <= input.limit };
+  }
+
+  if (normalizedPhone || /\d{4,}/.test(term)) {
+    const phoneQuery = normalizedPhone ?? term.replace(/\D/g, "");
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .ilike("phone", `%${phoneQuery}%`)
+      .order("display_name", { ascending: true })
+      .range(input.offset, windowEnd);
+    if (error) throw new Error(error.message);
+    const ids = buildIdList(data as { id: string }[] | null);
+    return { ids: ids.slice(0, input.limit), exhausted: ids.length <= input.limit };
+  }
+
+  const namePattern = term.length < 3 ? `${term}%` : `%${term}%`;
+  const { data, error } = await supabase
+    .from("guests")
+    .select("id")
+    .ilike("display_name", namePattern)
+    .order("display_name", { ascending: true })
+    .range(input.offset, windowEnd);
+  if (error) throw new Error(error.message);
+
+  const ids = buildIdList(data as { id: string }[] | null);
+  return { ids: ids.slice(0, input.limit), exhausted: ids.length <= input.limit };
+}
+
+async function listGuestIdsByFilter(
+  filter: GuestSearchFilter,
+  page: number,
+  pageSize: number
+): Promise<{ ids: string[]; hasMore: boolean }> {
+  const supabase = createAdminClient();
+  const offset = (page - 1) * pageSize;
+  const to = offset + pageSize;
+
+  if (filter === "recent" || filter === "all") {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .order("updated_at", { ascending: false })
+      .range(offset, to);
+    if (error) throw new Error(error.message);
+    const ids = ((data ?? []) as { id: string }[]).map((row) => row.id);
+    return { ids: ids.slice(0, pageSize), hasMore: ids.length > pageSize };
+  }
+
+  let query = supabase.from("guest_profiles").select("guest_id");
+  if (filter === "flagged") {
+    query = query.in("flag_level", ["watchlist", "blacklist"]).order("updated_at", {
+      ascending: false,
+    });
+  } else if (filter === "blacklist") {
+    query = query.eq("flag_level", "blacklist").order("updated_at", {
+      ascending: false,
+    });
+  } else if (filter === "watchlist") {
+    query = query.eq("flag_level", "watchlist").order("updated_at", {
+      ascending: false,
+    });
+  } else if (filter === "rated") {
+    query = query
+      .gt("review_count", 0)
+      .order("stars_avg", { ascending: false })
+      .order("review_count", { ascending: false });
+  } else if (filter === "unreviewed") {
+    query = query.eq("review_count", 0).order("updated_at", { ascending: false });
+  } else if (filter === "loyal") {
+    query = query
+      .or("loyalty_score.gte.65,completed_stays.gte.3")
+      .order("loyalty_score", { ascending: false })
+      .order("completed_stays", { ascending: false });
+  }
+
+  const { data, error } = await query.range(offset, to);
+  if (error) throw new Error(error.message);
+
+  const ids = ((data ?? []) as { guest_id: string }[]).map((row) => row.guest_id);
+  return { ids: ids.slice(0, pageSize), hasMore: ids.length > pageSize };
+}
+
+export async function listGuestHighlights(): Promise<GuestHighlights> {
+  const { flagged, recent, rated } = await listGuestIdsForHighlights();
+  const [flaggedGuests, recentGuests, ratedGuests] = await Promise.all([
+    fetchGuestListItemsByIds(flagged),
+    fetchGuestListItemsByIds(recent),
+    fetchGuestListItemsByIds(rated),
+  ]);
+
+  return {
+    flagged: flaggedGuests,
+    recent: recentGuests,
+    rated: ratedGuests,
+  };
+}
+
+export async function searchGuests(input: {
+  query?: string;
+  filter?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<GuestSearchResult> {
+  const query = input.query?.trim() ?? "";
+  const filter = normalizeGuestFilter(input.filter);
+  const page = normalizeGuestPage(input.page);
+  const pageSize = Math.min(Math.max(input.pageSize ?? 20, 1), 50);
+  const hasSearchCriteria = query.length > 0 || filter !== "all";
+
+  if (!hasSearchCriteria) {
+    return {
+      items: [],
+      query,
+      filter,
+      page,
+      pageSize,
+      hasMore: false,
+      hasPrevious: false,
+      mode: "highlights",
+    };
+  }
+
+  if (!query) {
+    const { ids, hasMore } = await listGuestIdsByFilter(filter, page, pageSize);
+    const items = await fetchGuestListItemsByIds(ids);
+    return {
+      items,
+      query,
+      filter,
+      page,
+      pageSize,
+      hasMore,
+      hasPrevious: page > 1,
+      mode: "results",
+    };
+  }
+
+  const offset = (page - 1) * pageSize;
+  const targetCount = offset + pageSize + 1;
+  const batchSize = Math.min(100, Math.max(30, pageSize * 3));
+  const filteredItems: GuestListItem[] = [];
+  const seenIds = new Set<string>();
+  let queryOffset = 0;
+  let exhausted = false;
+
+  while (!exhausted && filteredItems.length < targetCount) {
+    const { ids, exhausted: batchExhausted } = await searchGuestIdsByQueryWindow({
+      query,
+      offset: queryOffset,
+      limit: batchSize,
+    });
+    exhausted = batchExhausted;
+    if (ids.length === 0) break;
+    queryOffset += ids.length;
+
+    const candidateItems = await fetchGuestListItemsByIds(ids);
+    for (const guest of candidateItems) {
+      if (seenIds.has(guest.id)) continue;
+      seenIds.add(guest.id);
+      if (matchesGuestFilter(guest, filter)) {
+        filteredItems.push(guest);
+        if (filteredItems.length >= targetCount) break;
+      }
+    }
+  }
+
+  const pagedItems = filteredItems.slice(offset, offset + pageSize);
+
+  return {
+    items: pagedItems,
+    query,
+    filter,
+    page,
+    pageSize,
+    hasMore: filteredItems.length > offset + pageSize,
+    hasPrevious: page > 1,
+    mode: "results",
+  };
 }
 
 export async function listGuests(query?: string): Promise<GuestListItem[]> {
+  const result = await searchGuests({ query, page: 1, pageSize: 50 });
+  return result.items;
+}
+
+async function listSegmentsForBookings(
+  bookingIds: string[]
+): Promise<Map<string, BookingRoomSegmentRow[]>> {
+  const ids = [...new Set(bookingIds.filter(Boolean))];
+  if (ids.length === 0) return new Map();
+
   const supabase = createAdminClient();
-  let q = supabase
-    .from("guests")
-    .select("id, display_name, phone, email, tags, created_at, updated_at")
-    .order("display_name", { ascending: true })
-    .limit(200);
+  const { data, error } = await supabase
+    .from("booking_room_segments")
+    .select("id, booking_id, room_id, segment_start, segment_end, nightly_rate")
+    .in("booking_id", ids)
+    .order("segment_start", { ascending: true });
 
-  const term = query?.trim();
-  if (term) {
-    const like = `%${term.replace(/[%_]/g, "")}%`;
-    q = q.or(
-      `display_name.ilike.${like},email.ilike.${like},phone.ilike.${like}`
-    );
-  }
-
-  const { data, error } = await q;
   if (error) throw new Error(error.message);
 
-  const guests = data ?? [];
-  if (guests.length === 0) return [];
-
-  const ids = guests.map((g) => g.id as string);
-  const { data: bookings, error: bErr } = await supabase
-    .from("bookings")
-    .select("guest_id, check_out, status")
-    .in("guest_id", ids)
-    .neq("status", "anulata");
-  if (bErr) throw new Error(bErr.message);
-
-  const stats = new Map<
-    string,
-    { count: number; lastCheckOut: string | null }
-  >();
-  for (const b of bookings ?? []) {
-    const gid = b.guest_id as string;
-    const cur = stats.get(gid) ?? { count: 0, lastCheckOut: null };
-    cur.count += 1;
-    const co = b.check_out as string;
-    if (!cur.lastCheckOut || co > cur.lastCheckOut) {
-      cur.lastCheckOut = co;
-    }
-    stats.set(gid, cur);
+  const grouped = new Map<string, BookingRoomSegmentRow[]>();
+  for (const row of (data ?? []) as BookingRoomSegmentRow[]) {
+    const current = grouped.get(row.booking_id) ?? [];
+    current.push(row);
+    grouped.set(row.booking_id, current);
   }
-
-  return guests.map((g) => {
-    const s = stats.get(g.id as string);
-    return {
-      id: g.id as string,
-      display_name: g.display_name as string,
-      phone: g.phone as string | null,
-      email: g.email as string | null,
-      tags: parseGuestTags(g.tags),
-      created_at: g.created_at as string,
-      updated_at: g.updated_at as string,
-      booking_count: s?.count ?? 0,
-      last_stay_check_out: s?.lastCheckOut ?? null,
-    };
-  });
+  return grouped;
 }
 
 export type GuestBookingHistoryItem = {
@@ -261,6 +650,7 @@ export type GuestBookingHistoryItem = {
   num_adults: number;
   num_children: number;
   segments: BookingRoomSegmentRow[];
+  review: GuestStayReviewRow | null;
 };
 
 export async function getGuestBookingHistory(
@@ -280,6 +670,12 @@ export async function getGuestBookingHistory(
 
   if (error) throw new Error(error.message);
 
+  const segmentsByBooking = await listSegmentsForBookings(
+    (data ?? []).map((booking) => String(booking.id))
+  );
+  const reviews = await listGuestStayReviewsByBookingIds(
+    (data ?? []).map((booking) => String(booking.id))
+  );
   const items: GuestBookingHistoryItem[] = [];
   for (const b of data ?? []) {
     const br = (b.booking_rooms ?? []) as {
@@ -292,7 +688,6 @@ export async function getGuestBookingHistory(
       const name = Array.isArray(r) ? r[0]?.name : r?.name;
       if (name) room_names.push(name);
     }
-    const segments = await listSegmentsForBooking(b.id as string);
     items.push({
       id: b.id as string,
       check_in: b.check_in as string,
@@ -302,7 +697,8 @@ export async function getGuestBookingHistory(
       total_price: b.total_price != null ? Number(b.total_price) : null,
       num_adults: b.num_adults as number,
       num_children: b.num_children as number,
-      segments,
+      segments: segmentsByBooking.get(String(b.id)) ?? [],
+      review: reviews.get(String(b.id)) ?? null,
     });
   }
   return items;
@@ -356,8 +752,8 @@ export async function mergeGuests(
 
   const supabase = createAdminClient();
   const [source, target] = await Promise.all([
-    getGuestById(sourceId),
-    getGuestById(targetId),
+    getGuestBaseById(sourceId),
+    getGuestBaseById(targetId),
   ]);
   if (!source || !target) throw new Error("Clientul nu există.");
 
@@ -390,6 +786,8 @@ export async function mergeGuests(
     .update(patch)
     .eq("id", targetId);
   if (updErr) throw new Error(updErr.message);
+
+  await mergeGuestProfiles(sourceId, targetId);
 
   const { error: delErr } = await supabase
     .from("guests")
@@ -442,7 +840,7 @@ async function getLastGuestBooking(guestId: string) {
 }
 
 export async function rebookGuestLastStay(guestId: string): Promise<string> {
-  const guest = await getGuestById(guestId);
+  const guest = await getGuestBaseById(guestId);
   if (!guest) throw new Error("Clientul nu există.");
 
   const last = await getLastGuestBooking(guestId);
@@ -492,7 +890,7 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
 export async function rebookGuestSamePeriodNextYear(
   guestId: string
 ): Promise<string> {
-  const guest = await getGuestById(guestId);
+  const guest = await getGuestBaseById(guestId);
   if (!guest) throw new Error("Clientul nu există.");
 
   const last = await getLastGuestBooking(guestId);
@@ -553,7 +951,7 @@ export async function rebookGuestSamePeriodNextYear(
 export async function findDuplicateGuestsForGuest(
   guestId: string
 ): Promise<GuestListItem[]> {
-  const guest = await getGuestById(guestId);
+  const guest = await getGuestBaseById(guestId);
   if (!guest) return [];
 
   const supabase = createAdminClient();
@@ -579,6 +977,7 @@ export async function findDuplicateGuestsForGuest(
     phone: g.phone as string | null,
     email: g.email as string | null,
     tags: parseGuestTags(g.tags),
+    profile: null,
     created_at: g.created_at as string,
     updated_at: g.updated_at as string,
     booking_count: 0,

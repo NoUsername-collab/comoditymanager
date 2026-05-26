@@ -1,4 +1,8 @@
 import { unstable_cache } from "next/cache";
+import type {
+  GuestBookingFlagSummary,
+  GuestFlagLevel,
+} from "@/domain/guest/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
@@ -14,6 +18,10 @@ import {
   syncBookingRoomSegments,
 } from "@/services/booking-segments";
 import { resolveGuestForBooking } from "@/services/guests";
+import {
+  listGuestProfileSummaries,
+  resolveGuestAlertSnapshot,
+} from "@/services/guest-profiles";
 import {
   assertRoomsAvailableForOccupancy,
   listOccupiedRoomRanges,
@@ -32,6 +40,9 @@ export type BookingRow = {
   guest_email: string;
   guest_phone: string | null;
   guest_id: string | null;
+  guest_alert_level: GuestFlagLevel;
+  guest_alert_note: string | null;
+  guest_profile: GuestBookingFlagSummary | null;
   num_adults: number;
   num_children: number;
   room_ids: string[];
@@ -50,6 +61,8 @@ type BookingSelectRow = {
   guest_email: string;
   guest_phone: string | null;
   guest_id: string | null;
+  guest_alert_level: GuestFlagLevel;
+  guest_alert_note: string | null;
   num_adults: number;
   num_children: number;
   total_price: number | null;
@@ -84,6 +97,12 @@ function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
       guest_email: b.guest_email,
       guest_phone: b.guest_phone,
       guest_id: b.guest_id ?? null,
+      guest_alert_level:
+        b.guest_alert_level === "watchlist" || b.guest_alert_level === "blacklist"
+          ? b.guest_alert_level
+          : "normal",
+      guest_alert_note: b.guest_alert_note ?? null,
+      guest_profile: null,
       num_adults: b.num_adults,
       num_children: b.num_children,
       room_ids,
@@ -91,6 +110,17 @@ function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
       total_price: b.total_price != null ? Number(b.total_price) : null,
     };
   });
+}
+
+async function attachGuestProfiles(rows: BookingRow[]): Promise<BookingRow[]> {
+  const guestIds = rows.map((row) => row.guest_id).filter(Boolean) as string[];
+  if (guestIds.length === 0) return rows;
+
+  const profiles = await listGuestProfileSummaries(guestIds);
+  return rows.map((row) => ({
+    ...row,
+    guest_profile: row.guest_id ? profiles.get(row.guest_id) ?? null : null,
+  }));
 }
 
 export async function listBookingsForRange(
@@ -103,7 +133,7 @@ export async function listBookingsForRange(
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id,
+      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
       num_adults, num_children, total_price,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -115,7 +145,7 @@ export async function listBookingsForRange(
 
   if (error) throw new Error(error.message);
 
-  return mapBookingRows((data ?? []) as BookingSelectRow[]);
+  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
 }
 
 /** Verifică că camerele sunt libere pe interval (bookings, holds, blocks). */
@@ -218,6 +248,11 @@ export async function createBookingRequest(input: {
     guest_email: input.guest_email,
     guest_phone: input.guest_phone,
   });
+  const guestAlert = await resolveGuestAlertSnapshot({
+    guestId,
+    guestLastName: input.guest_last_name,
+    guestFirstName: input.guest_first_name,
+  });
 
   const { data, error } = await supabase
     .from("bookings")
@@ -231,6 +266,8 @@ export async function createBookingRequest(input: {
       guest_email: input.guest_email.trim(),
       guest_phone: input.guest_phone.trim() || null,
       guest_id: guestId,
+      guest_alert_level: guestAlert.level,
+      guest_alert_note: guestAlert.note,
       num_adults: input.num_adults,
       num_children: input.num_children,
       has_minor: input.has_minor,
@@ -262,6 +299,8 @@ export async function createBookingRequest(input: {
       check_out: input.check_out,
       guest_email: input.guest_email.trim(),
       guest_id: guestId,
+      guest_alert_level: guestAlert.level,
+      guest_alert_note: guestAlert.note,
       ...(mergeConflict ? { guest_merge_conflict: true } : {}),
       ...(holdRooms.length > 0
         ? { room_ids: holdRooms, soft_hold: true }
@@ -269,6 +308,20 @@ export async function createBookingRequest(input: {
     },
     actor: null,
   });
+
+  if (guestAlert.level !== "normal") {
+    await logAdminActivity({
+      action: "booking.flagged",
+      entityType: "booking",
+      entityId: data.id,
+      summary: `Cerere cu alertă client: ${input.guest_name.trim()}`,
+      metadata: {
+        guest_alert_level: guestAlert.level,
+        guest_alert_note: guestAlert.note,
+      },
+      actor: null,
+    });
+  }
 
   return data.id;
 }
@@ -287,7 +340,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id,
+      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
       num_adults, num_children, has_minor, minor_age, notes, total_price,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -310,6 +363,9 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
     const name = Array.isArray(r) ? r[0]?.name : r?.name;
     if (name) room_names.push(name);
   }
+  const profiles = await listGuestProfileSummaries(
+    data.guest_id ? [String(data.guest_id)] : []
+  );
 
   return {
     id: data.id,
@@ -322,6 +378,12 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
     guest_email: data.guest_email,
     guest_phone: data.guest_phone,
     guest_id: data.guest_id ?? null,
+    guest_alert_level:
+      data.guest_alert_level === "watchlist" || data.guest_alert_level === "blacklist"
+        ? data.guest_alert_level
+        : "normal",
+    guest_alert_note: data.guest_alert_note ?? null,
+    guest_profile: data.guest_id ? profiles.get(String(data.guest_id)) ?? null : null,
     num_adults: data.num_adults,
     num_children: data.num_children,
     has_minor: data.has_minor,
@@ -368,7 +430,7 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id,
+      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
       num_adults, num_children, total_price,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -378,7 +440,7 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((b) => {
+  return attachGuestProfiles((data ?? []).map((b) => {
     const br = (b.booking_rooms ?? []) as {
       room_id: string;
       rooms: { name: string } | { name: string }[] | null;
@@ -402,13 +464,19 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
       guest_email: b.guest_email,
       guest_phone: b.guest_phone,
       guest_id: b.guest_id ?? null,
+      guest_alert_level:
+        b.guest_alert_level === "watchlist" || b.guest_alert_level === "blacklist"
+          ? b.guest_alert_level
+          : "normal",
+      guest_alert_note: b.guest_alert_note ?? null,
+      guest_profile: null,
       num_adults: b.num_adults,
       num_children: b.num_children,
       room_ids,
       room_names,
       total_price: b.total_price != null ? Number(b.total_price) : null,
     };
-  });
+  }));
 }
 
 export type OperationalStayRow = BookingRow;
@@ -421,7 +489,7 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, total_price,
+      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note, total_price,
       num_adults, num_children,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -431,7 +499,7 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
 
   if (error) throw new Error(error.message);
 
-  return mapBookingRows((data ?? []) as BookingSelectRow[]);
+  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
 }
 
 export type CompletedStayHistoryRow = BookingRow;
@@ -446,7 +514,7 @@ export async function listCompletedStayHistory(
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, total_price,
+      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note, total_price,
       num_adults, num_children,
       booking_rooms ( room_id, rooms ( name ) )
     `
@@ -457,7 +525,7 @@ export async function listCompletedStayHistory(
     .limit(limit);
 
   if (error) throw new Error(error.message);
-  return mapBookingRows((data ?? []) as BookingSelectRow[]);
+  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
 }
 
 export async function confirmBookingWithRooms(

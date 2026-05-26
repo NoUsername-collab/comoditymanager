@@ -27,6 +27,18 @@ function AdminFlashFromUrlInner() {
       notifyCancel();
     } else if (toast === "moved") {
       notifyMoved();
+    } else if (toast === "merged") {
+      showToast({
+        kind: "success",
+        title: "Profil combinat",
+        message: "Profilurile clientului au fost unite cu succes.",
+      });
+    } else if (toast === "rebooked") {
+      showToast({
+        kind: "success",
+        title: "Rebook creat",
+        message: "Cererea nouă a fost creată pe baza sejurului anterior.",
+      });
     } else if (saved === "1" && pathname.startsWith("/admin/settings")) {
       showToast({
         kind: "success",

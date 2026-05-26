@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
+import type { GuestFlagLevel } from "@/domain/guest/types";
 import type { BookingRow } from "@/services/bookings";
 import { todayIso } from "@/lib/stay-dates";
 
@@ -33,6 +34,8 @@ function mapBookingRow(b: {
   guest_email: string;
   guest_phone: string | null;
   guest_id: string | null;
+  guest_alert_level?: GuestFlagLevel;
+  guest_alert_note?: string | null;
   num_adults: number;
   num_children: number;
   total_price: number | null;
@@ -60,6 +63,12 @@ function mapBookingRow(b: {
     guest_email: b.guest_email,
     guest_phone: b.guest_phone,
     guest_id: b.guest_id ?? null,
+    guest_alert_level:
+      b.guest_alert_level === "watchlist" || b.guest_alert_level === "blacklist"
+        ? b.guest_alert_level
+        : "normal",
+    guest_alert_note: b.guest_alert_note ?? null,
+    guest_profile: null,
     num_adults: b.num_adults,
     num_children: b.num_children,
     room_ids,
@@ -80,7 +89,8 @@ export async function loadTodayBoard(
     .select(
       `
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, num_adults, num_children, total_price,
+      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
+      num_adults, num_children, total_price,
       booking_rooms (
         room_id,
         rooms ( name, buildings ( name ) )

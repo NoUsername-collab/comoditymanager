@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { listCereriNoi } from "@/services/bookings";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
@@ -36,6 +37,11 @@ export default async function AdminBookingsPage() {
                   {c.num_children} cop.
                 </p>
                 <p className="text-xs">{c.guest_email}</p>
+                <GuestProfileBadges
+                  profile={c.guest_profile}
+                  alertLevel={c.guest_alert_level}
+                  alertNote={c.guest_alert_note}
+                />
               </div>
               <Link
                 href={`/admin/bookings/${c.id}`}

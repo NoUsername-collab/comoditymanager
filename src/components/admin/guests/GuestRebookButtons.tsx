@@ -12,11 +12,13 @@ function RebookButton({
   label,
   action,
   variant = "primary",
+  disabled = false,
 }: {
   guestId: string;
   label: string;
   action: (formData: FormData) => Promise<void>;
   variant?: "primary" | "secondary";
+  disabled?: boolean;
 }) {
   return (
     <AdminPendingForm
@@ -35,6 +37,7 @@ function RebookButton({
       <AdminSubmitButton
         type="submit"
         pendingLabel="…"
+        disabled={disabled}
         className={
           variant === "primary"
             ? "admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
@@ -47,19 +50,27 @@ function RebookButton({
   );
 }
 
-export function GuestRebookButtons({ guestId }: { guestId: string }) {
+export function GuestRebookButtons({
+  guestId,
+  disabled = false,
+}: {
+  guestId: string;
+  disabled?: boolean;
+}) {
   return (
     <div className="flex flex-wrap gap-2">
       <RebookButton
         guestId={guestId}
         label="Rebook ultimul sejur"
         action={rebookLastStayAction}
+        disabled={disabled}
       />
       <RebookButton
         guestId={guestId}
         label="Aceeași perioadă an viitor"
         action={rebookNextYearAction}
         variant="secondary"
+        disabled={disabled}
       />
     </div>
   );

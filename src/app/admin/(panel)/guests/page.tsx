@@ -1,26 +1,182 @@
 import Link from "next/link";
-import { formatStayPeriod } from "@/lib/ro-calendar";
-import { formatRoDate } from "@/lib/stay-dates";
+import type {
+  GuestListItem,
+  GuestSearchFilter,
+  GuestSearchResult,
+} from "@/domain/guest/types";
+import { GuestListCard } from "@/components/admin/guests/GuestListCard";
+import { GuestPreviewPanel } from "@/components/admin/guests/GuestPreviewPanel";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { GuestSearchForm } from "@/components/admin/guests/GuestSearchForm";
-import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
-import { listGuests } from "@/services/guests";
+import { getGuestById, listGuestHighlights, searchGuests } from "@/services/guests";
+
+const FILTER_LINKS: { id: GuestSearchFilter; label: string }[] = [
+  { id: "flagged", label: "Flag-uiți" },
+  { id: "blacklist", label: "Blacklist" },
+  { id: "watchlist", label: "Watchlist" },
+  { id: "recent", label: "Recenți" },
+  { id: "rated", label: "Cu review" },
+  { id: "loyal", label: "Fideli" },
+];
+
+function firstValue(value: string | string[] | undefined): string {
+  if (Array.isArray(value)) return value[0] ?? "";
+  return value ?? "";
+}
+
+function normalizePage(value: string): number {
+  const page = Number(value);
+  return Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+}
+
+function buildGuestListHref(input: {
+  q?: string;
+  filter?: string;
+  page?: number;
+  selected?: string | null;
+}): string {
+  const params = new URLSearchParams();
+  const q = input.q?.trim();
+  const filter = input.filter?.trim();
+
+  if (q) params.set("q", q);
+  if (filter && filter !== "all") params.set("filter", filter);
+  if (input.page && input.page > 1) params.set("page", String(input.page));
+  if (input.selected) params.set("selected", input.selected);
+
+  const query = params.toString();
+  return query ? `/admin/guests?${query}` : "/admin/guests";
+}
+
+function GuestListSection({
+  title,
+  guests,
+  currentHref,
+}: {
+  title: string;
+  guests: GuestListItem[];
+  currentHref: string;
+}) {
+  return (
+    <RetroXpWindow title={`${title} (${guests.length})`} className="mb-6">
+      {guests.length === 0 ? (
+        <p className="text-sm text-zinc-500">Niciun client în această secțiune încă.</p>
+      ) : (
+        <ul className="space-y-2">
+          {guests.map((guest) => (
+            <GuestListCard
+              key={guest.id}
+              guest={guest}
+              previewHref={buildGuestListHref({ ...parseHref(currentHref), selected: guest.id })}
+              profileHref={`/admin/guests/${guest.id}?from=${encodeURIComponent(currentHref)}`}
+            />
+          ))}
+        </ul>
+      )}
+    </RetroXpWindow>
+  );
+}
+
+function parseHref(href: string): { q?: string; filter?: string; page?: number } {
+  const url = new URL(href, "https://cursor.local");
+  return {
+    q: url.searchParams.get("q") ?? undefined,
+    filter: url.searchParams.get("filter") ?? undefined,
+    page: normalizePage(url.searchParams.get("page") ?? ""),
+  };
+}
+
+function PaginationBar({
+  result,
+  currentHref,
+}: {
+  result: GuestSearchResult;
+  currentHref: string;
+}) {
+  const current = parseHref(currentHref);
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-200 pt-4 text-sm">
+      <p className="text-zinc-500">
+        Pagina {result.page}
+        {result.query ? ` · căutare „${result.query}”` : ""}
+      </p>
+      <div className="flex gap-2">
+        {result.hasPrevious ? (
+          <Link
+            href={buildGuestListHref({
+              q: current.q,
+              filter: current.filter,
+              page: result.page - 1,
+            })}
+            className="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+          >
+            Pagina anterioară
+          </Link>
+        ) : null}
+        {result.hasMore ? (
+          <Link
+            href={buildGuestListHref({
+              q: current.q,
+              filter: current.filter,
+              page: result.page + 1,
+            })}
+            className="admin-cereri-fill px-4 py-2 text-sm font-medium"
+          >
+            Pagina următoare
+          </Link>
+        ) : null}
+      </div>
+    </div>
+  );
+}
 
 export default async function AdminGuestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; filter?: string; page?: string; selected?: string }>;
 }) {
-  const { q } = await searchParams;
-  let guests: Awaited<ReturnType<typeof listGuests>> = [];
+  const raw = await searchParams;
+  const q = firstValue(raw.q);
+  const filter = firstValue(raw.filter);
+  const page = normalizePage(firstValue(raw.page));
+  const selected = firstValue(raw.selected);
+  const currentHref = buildGuestListHref({
+    q,
+    filter,
+    page,
+  });
+
+  let result: GuestSearchResult = {
+    items: [],
+    query: q,
+    filter: (filter as GuestSearchFilter) || "all",
+    page,
+    pageSize: 20,
+    hasMore: false,
+    hasPrevious: false,
+    mode: "highlights",
+  };
+  let highlights: Awaited<ReturnType<typeof listGuestHighlights>> | null = null;
+  let selectedGuest: Awaited<ReturnType<typeof getGuestById>> = null;
   let error: string | null = null;
 
   try {
-    guests = await listGuests(q);
+    result = await searchGuests({ query: q, filter, page, pageSize: 20 });
+    if (result.mode === "highlights") {
+      highlights = await listGuestHighlights();
+    }
   } catch (e) {
     error = e instanceof Error ? e.message : "Eroare";
+  }
+
+  if (selected) {
+    try {
+      selectedGuest = await getGuestById(selected);
+    } catch {
+      selectedGuest = null;
+    }
   }
 
   return (
@@ -31,55 +187,87 @@ export default async function AdminGuestsPage({
       {error && <p className="mb-4 text-sm text-red-800">{error}</p>}
 
       <RetroXpWindow title="Caută client" className="mb-6">
-        <GuestSearchForm defaultQuery={q} />
+        <div className="space-y-3">
+          <GuestSearchForm
+            defaultQuery={q}
+            defaultFilter={(result.filter as GuestSearchFilter) || "all"}
+          />
+          <div className="flex flex-wrap gap-2">
+            {FILTER_LINKS.map((item) => (
+              <Link
+                key={item.id}
+                href={buildGuestListHref({ filter: item.id })}
+                className="rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <p className="text-xs text-zinc-500">
+            Lista este optimizată pentru căutare și triere rapidă. Fără query, afișăm doar
+            secțiuni scurte, nu mii de rânduri.
+          </p>
+        </div>
       </RetroXpWindow>
 
-      <RetroXpWindow title={`Clienți (${guests.length})`}>
-        {guests.length === 0 ? (
-          <AdminEmptyState
-            emoji="👤"
-            title={q ? "Niciun client găsit" : "Niciun client încă"}
-            description={
-              q
-                ? "Încearcă alt termen de căutare."
-                : "Clienții apar automat când se trimit cereri sau se creează cazări."
-            }
+      {result.mode === "highlights" && highlights ? (
+        <>
+          <GuestListSection
+            title="Flag-uiți"
+            guests={highlights.flagged}
+            currentHref={currentHref}
           />
-        ) : (
-          <ul className="space-y-2">
-            {guests.map((g) => (
-              <li
-                key={g.id}
-                className="flex flex-wrap items-center justify-between gap-3 border border-zinc-200 bg-white px-4 py-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{g.display_name}</p>
-                  <p className="text-sm text-zinc-600">
-                    {[g.email, g.phone].filter(Boolean).join(" · ") || "—"}
-                  </p>
-                  <p className="text-xs text-zinc-500">
-                    {g.booking_count} sejur{g.booking_count === 1 ? "" : "uri"}
-                    {g.last_stay_check_out
-                      ? ` · ultimul checkout ${formatRoDate(g.last_stay_check_out)}`
-                      : ""}
-                  </p>
-                  {g.tags.length > 0 && (
-                    <p className="mt-1 text-xs text-amber-800">
-                      {g.tags.map((t) => GUEST_TAG_LABELS[t]).join(" · ")}
-                    </p>
-                  )}
-                </div>
-                <Link
-                  href={`/admin/guests/${g.id}`}
-                  className="admin-cereri-fill shrink-0 px-4 py-2 text-sm font-medium"
-                >
-                  Profil
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </RetroXpWindow>
+          <GuestListSection
+            title="Recenți"
+            guests={highlights.recent}
+            currentHref={currentHref}
+          />
+          <GuestListSection
+            title="Cu stele bune"
+            guests={highlights.rated}
+            currentHref={currentHref}
+          />
+        </>
+      ) : (
+        <RetroXpWindow title={`Rezultate (${result.items.length})`}>
+          {result.items.length === 0 ? (
+            <AdminEmptyState
+              emoji="🔎"
+              title="Niciun client găsit"
+              description="Schimbă termenul sau filtrul. Pentru volume mari, rezultatele apar doar prin căutare și filtre."
+            />
+          ) : (
+            <>
+              <ul className="space-y-2">
+                {result.items.map((guest) => (
+                  <GuestListCard
+                    key={guest.id}
+                    guest={guest}
+                    previewHref={buildGuestListHref({
+                      q,
+                      filter,
+                      page,
+                      selected: guest.id,
+                    })}
+                    profileHref={`/admin/guests/${guest.id}?from=${encodeURIComponent(currentHref)}`}
+                  />
+                ))}
+              </ul>
+              <PaginationBar result={result} currentHref={currentHref} />
+            </>
+          )}
+        </RetroXpWindow>
+      )}
+
+      <GuestPreviewPanel
+        guest={selectedGuest}
+        closeHref={currentHref}
+        profileHref={
+          selectedGuest
+            ? `/admin/guests/${selectedGuest.id}?from=${encodeURIComponent(currentHref)}`
+            : "/admin/guests"
+        }
+      />
     </AdminRetroPageFrame>
   );
 }
