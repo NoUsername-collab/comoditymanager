@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { GuestMergeForm } from "@/components/admin/guests/GuestMergeForm";
+import { GuestBlacklistPanel } from "@/components/admin/guests/GuestBlacklistPanel";
 import { GuestNotesForm } from "@/components/admin/guests/GuestNotesForm";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { GuestProfileCards } from "@/components/admin/guests/GuestProfileCards";
@@ -109,7 +110,12 @@ export default async function GuestDetailPage({
         </div>
 
         <div className="mt-6 space-y-2">
-          <h2 className="font-bold">Blacklist / ajustări scor</h2>
+          <h2 className="font-bold">Blacklist</h2>
+          <GuestBlacklistPanel guestId={guest.id} profile={guest.profile} />
+        </div>
+
+        <div className="mt-6 space-y-2">
+          <h2 className="font-bold">Ajustări scor / watchlist</h2>
           <GuestProfileControlsForm guestId={guest.id} profile={guest.profile} />
         </div>
 

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { updateGuestProfileControlsAction } from "@/app/admin/(panel)/guests/actions";
-import type { GuestFlagLevel, GuestProfileRow } from "@/domain/guest/types";
+import type { GuestProfileRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 
@@ -13,50 +12,29 @@ export function GuestProfileControlsForm({
   guestId: string;
   profile: GuestProfileRow | null;
 }) {
-  const [flagLevel, setFlagLevel] = useState<GuestFlagLevel>(
-    profile?.flag_level ?? "normal"
-  );
-  const requiresReason = flagLevel === "blacklist";
-
   return (
     <AdminPendingForm action={updateGuestProfileControlsAction} className="space-y-4">
       <input type="hidden" name="guest_id" value={guestId} />
+      <input
+        type="hidden"
+        name="blacklist_reason"
+        value={profile?.blacklist_reason ?? ""}
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1 text-sm">
-          <span className="font-bold">Status profil</span>
+          <span className="font-bold">Status operațional</span>
           <select
             name="flag_level"
-            defaultValue={profile?.flag_level ?? "normal"}
-            onChange={(e) =>
-              setFlagLevel(
-                e.target.value === "blacklist" || e.target.value === "watchlist"
-                  ? e.target.value
-                  : "normal"
-              )
-            }
+            defaultValue={profile?.flag_level === "watchlist" ? "watchlist" : "normal"}
             className="w-full border border-zinc-300 bg-white px-3 py-2"
           >
             <option value="normal">Normal</option>
             <option value="watchlist">Watchlist</option>
-            <option value="blacklist">Blacklist</option>
           </select>
-        </label>
-
-        <label className="space-y-1 text-sm">
-          <span className="font-bold">Motiv blacklist</span>
-          <input
-            name="blacklist_reason"
-            defaultValue={profile?.blacklist_reason ?? ""}
-            placeholder="Ex: neplată, pagube, conflict repetat"
-            required={requiresReason}
-            className="w-full border border-zinc-300 px-3 py-2"
-          />
-          {requiresReason && (
-            <span className="block text-xs text-amber-800">
-              Când pui un client în blacklist, motivul devine obligatoriu.
-            </span>
-          )}
+          <span className="block text-xs text-zinc-500">
+            Blacklist-ul se gestionează separat din panoul dedicat.
+          </span>
         </label>
 
         <label className="space-y-1 text-sm">

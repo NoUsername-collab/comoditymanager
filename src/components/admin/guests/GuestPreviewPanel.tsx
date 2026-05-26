@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { GuestRow } from "@/domain/guest/types";
+import { GuestBlacklistPanel } from "@/components/admin/guests/GuestBlacklistPanel";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestRebookButtons } from "@/components/admin/guests/GuestRebookButtons";
@@ -79,6 +80,8 @@ export function GuestPreviewPanel({
             <p className="mt-1 whitespace-pre-wrap">{guest.notes}</p>
           </section>
         )}
+
+        <GuestBlacklistPanel guestId={guest.id} profile={guest.profile} compact />
 
         <section className="rounded-xl border border-zinc-200 bg-white px-4 py-4">
           <p className="text-sm font-bold text-zinc-900">Acțiuni rapide</p>
