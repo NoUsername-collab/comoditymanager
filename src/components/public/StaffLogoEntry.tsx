@@ -1,33 +1,82 @@
 "use client";
 
-import { cloneElement, isValidElement } from "react";
+import { useRef, type MouseEvent, type ReactNode } from "react";
 import { useRouter } from "@/i18n/navigation";
 
+/** Window to detect double-click before single-click navigation runs. */
+const DOUBLE_CLICK_MS = 350;
+
 /**
- * Acces staff invizibil: triple-click pe logo/titlu → login.
- * Nu apare niciun link „Admin” pe site pentru oaspeți.
+ * Hidden staff entry: double-click logo/title → admin login.
+ * Single click goes home (delayed slightly so double-click is reliable).
  */
 export function StaffLogoEntry({
   children,
+  className = "",
 }: {
-  children: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
+  children: ReactNode;
+  className?: string;
 }) {
   const router = useRouter();
+  const pendingHomeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastClickRef = useRef(0);
 
-  if (!isValidElement(children)) {
-    return children;
+  function clearPendingHome() {
+    if (pendingHomeRef.current) {
+      clearTimeout(pendingHomeRef.current);
+      pendingHomeRef.current = null;
+    }
   }
 
-  const prevOnClick = children.props.onClick;
+  function goLogin(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    clearPendingHome();
+    lastClickRef.current = 0;
+    router.push("/admin/login?next=/receptie");
+  }
 
-  return cloneElement(children, {
-    onClick: (e: React.MouseEvent) => {
-      if (e.detail === 3) {
-        e.preventDefault();
-        router.push("/admin/login?next=/receptie");
-        return;
-      }
-      prevOnClick?.(e);
-    },
-  });
+  function scheduleHome() {
+    clearPendingHome();
+    pendingHomeRef.current = setTimeout(() => {
+      pendingHomeRef.current = null;
+      lastClickRef.current = 0;
+      router.push("/");
+    }, DOUBLE_CLICK_MS);
+  }
+
+  function handleClick(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const now = Date.now();
+    const withinDouble =
+      lastClickRef.current > 0 && now - lastClickRef.current < DOUBLE_CLICK_MS;
+
+    if (withinDouble || e.detail >= 2) {
+      goLogin(e);
+      return;
+    }
+
+    lastClickRef.current = now;
+    scheduleHome();
+  }
+
+  return (
+    <div
+      role="link"
+      tabIndex={0}
+      className={className}
+      onClick={handleClick}
+      onDoubleClick={goLogin}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push("/");
+        }
+      }}
+    >
+      {children}
+    </div>
+  );
 }

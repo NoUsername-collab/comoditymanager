@@ -1,4 +1,3 @@
-import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./BrandLogo";
 import { PublicNav } from "./PublicNav";
 import { StaffLogoEntry } from "./StaffLogoEntry";
@@ -21,14 +20,12 @@ export async function PublicHeader() {
   return (
     <header className="public-header">
       <div className="public-header__inner">
-        <StaffLogoEntry>
-          <Link href="/" className="public-header__brand group">
-            <BrandLogo animated />
-            <div className="min-w-0 leading-tight">
-              <span className="public-header__name">{title}</span>
-              <span className="public-header__tag">{t("subtitle")}</span>
-            </div>
-          </Link>
+        <StaffLogoEntry className="public-header__brand group cursor-pointer">
+          <BrandLogo animated />
+          <div className="min-w-0 leading-tight">
+            <span className="public-header__name">{title}</span>
+            <span className="public-header__tag">{t("subtitle")}</span>
+          </div>
         </StaffLogoEntry>
         <div className="flex items-center gap-3">
           <PublicNav />
