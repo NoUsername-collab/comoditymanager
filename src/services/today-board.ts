@@ -74,6 +74,10 @@ function mapBookingRow(b: {
     room_ids,
     room_names,
     total_price: b.total_price != null ? Number(b.total_price) : null,
+    actual_check_in_at: null,
+    actual_check_out_at: null,
+    actual_check_in_by: null,
+    actual_check_out_by: null,
   };
 }
 

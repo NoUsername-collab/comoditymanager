@@ -74,6 +74,8 @@ type Props = {
   todayHighlight?: StayTodayHighlight;
   initials?: string;
   popover: GanttStayPopoverData;
+  actualCheckInAt?: string | null;
+  actualCheckOutAt?: string | null;
   occupancyPhase?: OccupancyPhase;
   guestId?: string | null;
   moveRoomDraft?: MoveRoomDraft | null;
@@ -95,6 +97,8 @@ export function GanttDraggableStay({
   todayHighlight,
   initials,
   popover,
+  actualCheckInAt = null,
+  actualCheckOutAt = null,
   occupancyPhase,
   guestId,
   moveRoomDraft,
@@ -154,6 +158,10 @@ export function GanttDraggableStay({
         guestId: guestId ?? null,
         guestName: popover.guestName,
         status: popover.status,
+        actualCheckInAt,
+        actualCheckOutAt,
+        plannedCheckIn: popover.checkIn,
+        plannedCheckOut: popover.checkOut,
         canMoveRoom: !!popover.canMoveRoom && !!moveRoomDraft,
         moveRoomDraft: moveRoomDraft ?? null,
         popover: {
@@ -162,7 +170,16 @@ export function GanttDraggableStay({
         },
       });
     },
-    [openMenu, bookingId, guestId, popover, moveRoomDraft, onMoveRoom]
+    [
+      openMenu,
+      bookingId,
+      guestId,
+      popover,
+      actualCheckInAt,
+      actualCheckOutAt,
+      moveRoomDraft,
+      onMoveRoom,
+    ]
   );
 
   const clearLongPress = useCallback(() => {

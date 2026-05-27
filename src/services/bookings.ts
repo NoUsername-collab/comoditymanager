@@ -26,8 +26,18 @@ import {
   assertRoomsAvailableForOccupancy,
   listOccupiedRoomRanges,
 } from "@/services/room-occupancy";
+import { getAdminUser } from "@/lib/auth/require-admin";
+import { parseOperationalTimestamp } from "@/lib/operational-check";
 
 export { listOccupiedRoomRanges };
+
+const BOOKING_ROW_SELECT = `
+  id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
+  guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
+  num_adults, num_children, total_price,
+  actual_check_in_at, actual_check_out_at, actual_check_in_by, actual_check_out_by,
+  booking_rooms ( room_id, rooms ( name ) )
+`;
 
 export type BookingRow = {
   id: string;
@@ -48,6 +58,10 @@ export type BookingRow = {
   room_ids: string[];
   room_names: string[];
   total_price: number | null;
+  actual_check_in_at: string | null;
+  actual_check_out_at: string | null;
+  actual_check_in_by: string | null;
+  actual_check_out_by: string | null;
 };
 
 type BookingSelectRow = {
@@ -66,6 +80,10 @@ type BookingSelectRow = {
   num_adults: number;
   num_children: number;
   total_price: number | null;
+  actual_check_in_at: string | null;
+  actual_check_out_at: string | null;
+  actual_check_in_by: string | null;
+  actual_check_out_by: string | null;
   booking_rooms:
     | {
         room_id: string;
@@ -108,6 +126,10 @@ function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
       room_ids,
       room_names,
       total_price: b.total_price != null ? Number(b.total_price) : null,
+      actual_check_in_at: b.actual_check_in_at ?? null,
+      actual_check_out_at: b.actual_check_out_at ?? null,
+      actual_check_in_by: b.actual_check_in_by ?? null,
+      actual_check_out_by: b.actual_check_out_by ?? null,
     };
   });
 }
@@ -130,14 +152,7 @@ export async function listBookingsForRange(
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
-    .select(
-      `
-      id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
-      num_adults, num_children, total_price,
-      booking_rooms ( room_id, rooms ( name ) )
-    `
-    )
+    .select(BOOKING_ROW_SELECT)
     .neq("status", "anulata")
     .lte("check_in", rangeEnd)
     .gte("check_out", rangeStart)
@@ -342,6 +357,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
       guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
       num_adults, num_children, has_minor, minor_age, notes, total_price,
+      actual_check_in_at, actual_check_out_at, actual_check_in_by, actual_check_out_by,
       booking_rooms ( room_id, rooms ( name ) )
     `
     )
@@ -390,6 +406,10 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
     minor_age: data.minor_age,
     notes: data.notes,
     total_price: data.total_price != null ? Number(data.total_price) : null,
+    actual_check_in_at: data.actual_check_in_at ?? null,
+    actual_check_out_at: data.actual_check_out_at ?? null,
+    actual_check_in_by: data.actual_check_in_by ?? null,
+    actual_check_out_by: data.actual_check_out_by ?? null,
     room_ids,
     room_names,
   };
@@ -427,56 +447,13 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
-    .select(
-      `
-      id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
-      num_adults, num_children, total_price,
-      booking_rooms ( room_id, rooms ( name ) )
-    `
-    )
+    .select(BOOKING_ROW_SELECT)
     .eq("status", "cerere_noua")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
 
-  return attachGuestProfiles((data ?? []).map((b) => {
-    const br = (b.booking_rooms ?? []) as {
-      room_id: string;
-      rooms: { name: string } | { name: string }[] | null;
-    }[];
-    const room_ids: string[] = [];
-    const room_names: string[] = [];
-    for (const line of br) {
-      room_ids.push(line.room_id);
-      const r = line.rooms;
-      const name = Array.isArray(r) ? r[0]?.name : r?.name;
-      if (name) room_names.push(name);
-    }
-    return {
-      id: b.id,
-      check_in: b.check_in,
-      check_out: b.check_out,
-      status: b.status as BookingStatus,
-      guest_name: b.guest_name,
-      guest_last_name: b.guest_last_name ?? null,
-      guest_first_name: b.guest_first_name ?? null,
-      guest_email: b.guest_email,
-      guest_phone: b.guest_phone,
-      guest_id: b.guest_id ?? null,
-      guest_alert_level:
-        b.guest_alert_level === "watchlist" || b.guest_alert_level === "blacklist"
-          ? b.guest_alert_level
-          : "normal",
-      guest_alert_note: b.guest_alert_note ?? null,
-      guest_profile: null,
-      num_adults: b.num_adults,
-      num_children: b.num_children,
-      room_ids,
-      room_names,
-      total_price: b.total_price != null ? Number(b.total_price) : null,
-    };
-  }));
+  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
 }
 
 export type OperationalStayRow = BookingRow;
@@ -486,14 +463,7 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
-    .select(
-      `
-      id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note, total_price,
-      num_adults, num_children,
-      booking_rooms ( room_id, rooms ( name ) )
-    `
-    )
+    .select(BOOKING_ROW_SELECT)
     .in("status", ["cerere_noua", "confirmata"])
     .order("check_in", { ascending: true });
 
@@ -511,14 +481,7 @@ export async function listCompletedStayHistory(
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
-    .select(
-      `
-      id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
-      guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note, total_price,
-      num_adults, num_children,
-      booking_rooms ( room_id, rooms ( name ) )
-    `
-    )
+    .select(BOOKING_ROW_SELECT)
     .eq("status", "confirmata")
     .lt("check_out", todayIso())
     .order("check_out", { ascending: false })
@@ -771,5 +734,151 @@ export async function cancelBooking(bookingId: string): Promise<void> {
       room_ids: booking.room_ids,
       total_price: booking.total_price,
     },
+  });
+}
+
+async function requireConfirmedBooking(bookingId: string) {
+  const booking = await getBookingById(bookingId);
+  if (!booking) throw new Error("Rezervarea nu există.");
+  if (booking.status !== "confirmata") {
+    throw new Error("Check-in/out operațional doar pentru cazări confirmate.");
+  }
+  return booking;
+}
+
+export async function setBookingCheckIn(
+  bookingId: string,
+  at?: string | null
+): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+  if (booking.actual_check_in_at) {
+    throw new Error("Check-in deja înregistrat.");
+  }
+  if (booking.actual_check_out_at) {
+    throw new Error("Nu poți înregistra check-in după check-out.");
+  }
+
+  const ts = parseOperationalTimestamp(at);
+  const user = await getAdminUser();
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      actual_check_in_at: ts,
+      actual_check_in_by: user?.id ?? null,
+    })
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "booking.checkin.set",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Check-in: ${booking.guest_name}`,
+    metadata: {
+      at: ts,
+      planned_check_in: booking.check_in,
+      planned_check_out: booking.check_out,
+    },
+  });
+}
+
+export async function setBookingCheckOut(
+  bookingId: string,
+  at?: string | null
+): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+  if (!booking.actual_check_in_at) {
+    throw new Error("Înregistrează check-in înainte de check-out.");
+  }
+  if (booking.actual_check_out_at) {
+    throw new Error("Check-out deja înregistrat.");
+  }
+
+  const ts = parseOperationalTimestamp(at);
+  const checkInAt = new Date(booking.actual_check_in_at);
+  const checkOutAt = new Date(ts);
+  if (checkOutAt < checkInAt) {
+    throw new Error("Check-out nu poate fi înainte de check-in.");
+  }
+
+  const user = await getAdminUser();
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      actual_check_out_at: ts,
+      actual_check_out_by: user?.id ?? null,
+    })
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "booking.checkout.set",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Check-out: ${booking.guest_name}`,
+    metadata: {
+      at: ts,
+      actual_check_in_at: booking.actual_check_in_at,
+      planned_check_out: booking.check_out,
+    },
+  });
+}
+
+export async function undoBookingCheckIn(bookingId: string): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+  if (!booking.actual_check_in_at) {
+    throw new Error("Check-in nu este înregistrat.");
+  }
+  if (booking.actual_check_out_at) {
+    throw new Error("Anulează check-out înainte de a anula check-in.");
+  }
+
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      actual_check_in_at: null,
+      actual_check_in_by: null,
+    })
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "booking.checkin.undo",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Check-in anulat: ${booking.guest_name}`,
+    metadata: { previous_at: booking.actual_check_in_at },
+  });
+}
+
+export async function undoBookingCheckOut(bookingId: string): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+  if (!booking.actual_check_out_at) {
+    throw new Error("Check-out nu este înregistrat.");
+  }
+
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      actual_check_out_at: null,
+      actual_check_out_by: null,
+    })
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "booking.checkout.undo",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Check-out anulat: ${booking.guest_name}`,
+    metadata: { previous_at: booking.actual_check_out_at },
   });
 }

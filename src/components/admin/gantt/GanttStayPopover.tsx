@@ -17,6 +17,8 @@ export type GanttStayPopoverData = {
   checkIn: string;
   checkOut: string;
   status: "cerere_noua" | "confirmata";
+  actualCheckInAt?: string | null;
+  actualCheckOutAt?: string | null;
   numAdults: number;
   numChildren: number;
   checkInTime: string;

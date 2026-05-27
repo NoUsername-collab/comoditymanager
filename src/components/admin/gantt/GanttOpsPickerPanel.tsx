@@ -1,0 +1,112 @@
+"use client";
+
+import { useMemo } from "react";
+import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
+import { formatStayPeriod } from "@/lib/ro-calendar";
+import { todayIso } from "@/lib/stay-dates";
+import type { BookingRow } from "@/services/bookings";
+
+export type GanttOpsPickerMode = "checkin" | "checkout";
+
+type Props = {
+  open: boolean;
+  mode: GanttOpsPickerMode;
+  bookings: BookingRow[];
+  onClose: () => void;
+  onSelect: (booking: BookingRow) => void;
+};
+
+function filterForMode(bookings: BookingRow[], mode: GanttOpsPickerMode): BookingRow[] {
+  const today = todayIso();
+  return bookings
+    .filter((b) => b.status === "confirmata")
+    .filter((b) => {
+      if (mode === "checkin") {
+        return (
+          !b.actual_check_in_at &&
+          b.check_in <= today &&
+          b.check_out > today
+        );
+      }
+      return Boolean(b.actual_check_in_at) && !b.actual_check_out_at;
+    })
+    .sort((a, b) => a.guest_name.localeCompare(b.guest_name, "ro"));
+}
+
+export function GanttOpsPickerPanel({
+  open,
+  mode,
+  bookings,
+  onClose,
+  onSelect,
+}: Props) {
+  const rows = useMemo(() => filterForMode(bookings, mode), [bookings, mode]);
+
+  if (!open) return null;
+
+  const title = mode === "checkin" ? "Check-in azi" : "Check-out";
+
+  return (
+    <AdminPortal>
+      <button
+        type="button"
+        className="fixed inset-0 z-[210] bg-black/30"
+        aria-label="Închide"
+        onClick={onClose}
+      />
+      <div
+        className="admin-floating-panel fixed left-1/2 top-[18%] z-[211] max-h-[min(70vh,28rem)] w-[min(24rem,92vw)] -translate-x-1/2 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl"
+        role="dialog"
+        aria-label={title}
+      >
+        <div className="border-b border-zinc-100 px-4 py-3">
+          <h2 className="text-sm font-bold text-zinc-900">{title}</h2>
+          <p className="mt-0.5 text-[11px] text-zinc-500">
+            Alege cazarea, apoi confirmă ora.
+          </p>
+        </div>
+        <ul className="max-h-[min(52vh,22rem)] overflow-y-auto p-2">
+          {rows.length === 0 ? (
+            <li className="px-3 py-6 text-center text-xs text-zinc-500">
+              {mode === "checkin"
+                ? "Nicio cazare de check-in acum."
+                : "Nicio cazare de check-out în așteptare."}
+            </li>
+          ) : (
+            rows.map((b) => (
+              <li key={b.id}>
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-3 py-2.5 text-left hover:bg-zinc-50"
+                  onClick={() => {
+                    onSelect(b);
+                    onClose();
+                  }}
+                >
+                  <span className="block text-sm font-semibold text-zinc-900">
+                    {b.guest_name}
+                  </span>
+                  <span className="block text-[11px] text-zinc-500">
+                    {formatStayPeriod(b.check_in, b.check_out, true)}
+                    {b.room_names.length > 0
+                      ? ` · ${b.room_names.join(", ")}`
+                      : ""}
+                  </span>
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+        <div className="border-t border-zinc-100 px-4 py-2">
+          <button
+            type="button"
+            className="text-xs font-medium text-zinc-500 hover:text-zinc-800"
+            onClick={onClose}
+          >
+            Închide
+          </button>
+        </div>
+      </div>
+    </AdminPortal>
+  );
+}

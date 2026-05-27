@@ -76,6 +76,11 @@ import {
 } from "@/components/admin/gantt/GanttBuildingMarker";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
+import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import {
+  GanttOpsPickerPanel,
+  type GanttOpsPickerMode,
+} from "@/components/admin/gantt/GanttOpsPickerPanel";
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -753,6 +758,8 @@ function RoomRow({
                     ? () => onMoveRoom(moveDraft)
                     : undefined
                 }
+                actualCheckInAt={b.actual_check_in_at}
+                actualCheckOutAt={b.actual_check_out_at}
                 popover={{
                   bookingId: b.id,
                   guestName: b.guest_name,
@@ -760,6 +767,8 @@ function RoomRow({
                   checkIn: seg.checkIn,
                   checkOut: seg.checkOut,
                   status: b.status as "cerere_noua" | "confirmata",
+                  actualCheckInAt: b.actual_check_in_at,
+                  actualCheckOutAt: b.actual_check_out_at,
                   numAdults: b.num_adults,
                   numChildren: b.num_children,
                   checkInTime,
@@ -1005,6 +1014,16 @@ export function GanttCalendar({
   const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
     () => new Set()
   );
+  const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
+    null
+  );
+  const [opsCheckDialog, setOpsCheckDialog] = useState<{
+    mode: GanttOpsPickerMode;
+    bookingId: string;
+    guestName: string;
+    plannedCheckIn: string;
+    plannedCheckOut: string;
+  } | null>(null);
 
   const buildingGroups = groupByBuilding
     ? Array.from(
@@ -1440,6 +1459,8 @@ export function GanttCalendar({
                 onOpenMove={() => setOccFormMode("move")}
                 onOpenBlock={() => setOccFormMode("block")}
                 onOpenReception={() => setOccFormMode("direct")}
+                onOpenCheckIn={() => setOpsPickerMode("checkin")}
+                onOpenCheckOut={() => setOpsPickerMode("checkout")}
               />
             </div>
 
@@ -1947,6 +1968,34 @@ export function GanttCalendar({
       </div>
     </div>
       <GanttContextMenuPanel />
+      <GanttOpsPickerPanel
+        open={opsPickerMode !== null}
+        mode={opsPickerMode ?? "checkin"}
+        bookings={activeBookings}
+        onClose={() => setOpsPickerMode(null)}
+        onSelect={(b) => {
+          if (!opsPickerMode) return;
+          setOpsCheckDialog({
+            mode: opsPickerMode,
+            bookingId: b.id,
+            guestName: b.guest_name,
+            plannedCheckIn: b.check_in,
+            plannedCheckOut: b.check_out,
+          });
+        }}
+      />
+      {opsCheckDialog && (
+        <GanttCheckTimeDialog
+          open
+          mode={opsCheckDialog.mode}
+          bookingId={opsCheckDialog.bookingId}
+          guestName={opsCheckDialog.guestName}
+          plannedCheckIn={opsCheckDialog.plannedCheckIn}
+          plannedCheckOut={opsCheckDialog.plannedCheckOut}
+          onClose={() => setOpsCheckDialog(null)}
+          onSuccess={() => router.refresh()}
+        />
+      )}
       <GanttCreateDialog
         draft={createDraft}
         rooms={rooms.map((r) => ({

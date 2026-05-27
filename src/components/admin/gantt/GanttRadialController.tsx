@@ -8,10 +8,12 @@ type Props = {
   onOpenMove: () => void;
   onOpenBlock: () => void;
   onOpenReception: () => void;
+  onOpenCheckIn?: () => void;
+  onOpenCheckOut?: () => void;
 };
 
 type RadialAction = {
-  id: "request" | "booking" | "hold" | "move" | "block";
+  id: "request" | "booking" | "hold" | "move" | "block" | "checkin" | "checkout";
   label: string;
   title: string;
   side: "left" | "right";
@@ -25,6 +27,8 @@ export function GanttRadialController({
   onOpenMove,
   onOpenBlock,
   onOpenReception,
+  onOpenCheckIn,
+  onOpenCheckOut,
 }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -56,6 +60,30 @@ export function GanttRadialController({
       kind: "manage",
       onClick: onOpenMove,
     },
+    ...(onOpenCheckIn
+      ? [
+          {
+            id: "checkin" as const,
+            label: "In",
+            title: "Check-in operativ",
+            side: "left" as const,
+            kind: "manage" as const,
+            onClick: onOpenCheckIn,
+          },
+        ]
+      : []),
+    ...(onOpenCheckOut
+      ? [
+          {
+            id: "checkout" as const,
+            label: "Out",
+            title: "Check-out operativ",
+            side: "left" as const,
+            kind: "manage" as const,
+            onClick: onOpenCheckOut,
+          },
+        ]
+      : []),
     {
       id: "hold",
       label: "Hold",

@@ -26,6 +26,10 @@ export type GanttStayTarget = GanttContextMenuPoint & {
   guestId: string | null;
   guestName: string;
   status: "cerere_noua" | "confirmata";
+  actualCheckInAt: string | null;
+  actualCheckOutAt: string | null;
+  plannedCheckIn: string;
+  plannedCheckOut: string;
   canMoveRoom: boolean;
   moveRoomDraft: MoveRoomDraft | null;
   popover: GanttStayPopoverData;

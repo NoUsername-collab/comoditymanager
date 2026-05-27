@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -12,9 +12,14 @@ import {
   duplicateBookingAsCerereAction,
   releaseRoomHoldAction,
 } from "@/app/admin/(panel)/calendar/actions";
-import { cancelBookingAction } from "@/app/admin/(panel)/bookings/actions";
+import {
+  cancelBookingAction,
+  undoBookingCheckInAction,
+  undoBookingCheckOutAction,
+} from "@/app/admin/(panel)/bookings/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
+import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
@@ -68,6 +73,13 @@ export function GanttContextMenuPanel() {
   const { showToast, notifyCancel } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
+  const [checkDialog, setCheckDialog] = useState<{
+    mode: "checkin" | "checkout";
+    bookingId: string;
+    guestName: string;
+    plannedCheckIn: string;
+    plannedCheckOut: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!menu) return;
@@ -190,6 +202,7 @@ export function GanttContextMenuPanel() {
   }
 
   return (
+    <>
     <AdminPortal>
       <button
         type="button"
@@ -309,6 +322,110 @@ export function GanttContextMenuPanel() {
                   onClick={() => {
                     closeMenu();
                     router.push(`/admin/bookings/${menu.bookingId}`);
+                  }}
+                />
+              )}
+              {menu.status === "confirmata" && !menu.actualCheckInAt && (
+                <MenuItem
+                  label="Check-in…"
+                  hint="Sosire efectivă la pensiune"
+                  disabled={pending}
+                  onClick={() => {
+                    setCheckDialog({
+                      mode: "checkin",
+                      bookingId: menu.bookingId,
+                      guestName: menu.guestName,
+                      plannedCheckIn: menu.plannedCheckIn,
+                      plannedCheckOut: menu.plannedCheckOut,
+                    });
+                    closeMenu();
+                  }}
+                />
+              )}
+              {menu.status === "confirmata" &&
+                menu.actualCheckInAt &&
+                !menu.actualCheckOutAt && (
+                  <>
+                    <MenuItem
+                      label="Check-out…"
+                      hint="Plecare efectivă"
+                      disabled={pending}
+                      onClick={() => {
+                        setCheckDialog({
+                          mode: "checkout",
+                          bookingId: menu.bookingId,
+                          guestName: menu.guestName,
+                          plannedCheckIn: menu.plannedCheckIn,
+                          plannedCheckOut: menu.plannedCheckOut,
+                        });
+                        closeMenu();
+                      }}
+                    />
+                    <MenuItem
+                      label="Anulează check-in"
+                      disabled={pending}
+                      onClick={() => {
+                        if (
+                          !confirm(
+                            `Anulezi check-in pentru ${menu.guestName}?`
+                          )
+                        ) {
+                          return;
+                        }
+                        void runAdminAction(async () => {
+                          const fd = new FormData();
+                          fd.set("id", menu.bookingId);
+                          const res = await undoBookingCheckInAction(fd);
+                          if (!res.ok) {
+                            showToast({
+                              kind: "error",
+                              title: "Eroare",
+                              message: res.error,
+                            });
+                            return;
+                          }
+                          showToast({
+                            kind: "success",
+                            title: "Check-in anulat",
+                            message: menu.guestName,
+                          });
+                          closeMenu();
+                          router.refresh();
+                        });
+                      }}
+                    />
+                  </>
+                )}
+              {menu.status === "confirmata" && menu.actualCheckOutAt && (
+                <MenuItem
+                  label="Anulează check-out"
+                  disabled={pending}
+                  onClick={() => {
+                    if (
+                      !confirm(`Anulezi check-out pentru ${menu.guestName}?`)
+                    ) {
+                      return;
+                    }
+                    void runAdminAction(async () => {
+                      const fd = new FormData();
+                      fd.set("id", menu.bookingId);
+                      const res = await undoBookingCheckOutAction(fd);
+                      if (!res.ok) {
+                        showToast({
+                          kind: "error",
+                          title: "Eroare",
+                          message: res.error,
+                        });
+                        return;
+                      }
+                      showToast({
+                        kind: "success",
+                        title: "Check-out anulat",
+                        message: menu.guestName,
+                      });
+                      closeMenu();
+                      router.refresh();
+                    });
                   }}
                 />
               )}
@@ -435,5 +552,18 @@ export function GanttContextMenuPanel() {
         )}
       </div>
     </AdminPortal>
+    {checkDialog && (
+      <GanttCheckTimeDialog
+        open
+        mode={checkDialog.mode}
+        bookingId={checkDialog.bookingId}
+        guestName={checkDialog.guestName}
+        plannedCheckIn={checkDialog.plannedCheckIn}
+        plannedCheckOut={checkDialog.plannedCheckOut}
+        onClose={() => setCheckDialog(null)}
+        onSuccess={() => router.refresh()}
+      />
+    )}
+    </>
   );
 }

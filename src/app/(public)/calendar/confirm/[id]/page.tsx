@@ -41,7 +41,13 @@ export default async function QuickConfirmPage({
         {booking.guest_name} · {formatStayPeriod(booking.check_in, booking.check_out)}
       </p>
 
-      <div className="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+      <div
+        className="mt-6 rounded-xl border bg-[var(--site-card)] p-5 shadow-sm"
+        style={{
+          borderColor: "var(--site-border)",
+          color: "var(--site-fg)",
+        }}
+      >
         <ConfirmRoomsForm
           bookingId={booking.id}
           checkIn={booking.check_in}
