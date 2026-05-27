@@ -6,7 +6,7 @@ export function createClient() {
 
   if (!url || !key) {
     throw new Error(
-      "Lipsește NEXT_PUBLIC_SUPABASE_URL sau ANON_KEY — copiază .env.example în .env.local"
+      "Missing NEXT_PUBLIC_SUPABASE_URL or ANON_KEY. Copy .env.example to .env.local"
     );
   }
 

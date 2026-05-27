@@ -5,7 +5,7 @@ export const THEMES: ThemeDefinition[] = [
   {
     id: "default",
     name: "Default",
-    description: "Temă implicită Casa Emil, singura activă momentan",
+    description: "Casa Emil default theme, currently the only active option",
   },
 ];
 
@@ -20,7 +20,7 @@ export function getThemeDefinition(id: ThemeId): ThemeDefinition {
   return THEMES.find((t) => t.id === id) ?? THEMES[0]!;
 }
 
-/** Migrare chei vechi din localStorage / DB */
+/** Migrate legacy keys from localStorage / DB. */
 export function migrateLegacyPaletteKey(key: string): ThemeId {
   void key;
   return DEFAULT_THEME_ID;

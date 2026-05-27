@@ -16,7 +16,7 @@ async function roomNightlyRate(roomId: string): Promise<number> {
     .eq("id", roomId)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Camera nu există.");
+  if (!data) throw new Error("room.not_found");
   return Number(data.price_per_night);
 }
 
@@ -49,13 +49,13 @@ function resolveRoomMovePlan(
   }
 
   if (pivot >= segmentEnd) {
-    throw new Error("Nu mai rămân nopți viitoare de mutat pe acest segment.");
+    throw new Error("segments.no_future_nights_to_move");
   }
   if (!isAtLeastOneNight(segmentStart, pivot)) {
-    throw new Error("Segmentul trecut trebuie să păstreze minim o noapte.");
+    throw new Error("segments.past_segment_must_keep_min_one_night");
   }
   if (!isAtLeastOneNight(pivot, segmentEnd)) {
-    throw new Error("Segmentul nou trebuie să aibă minim o noapte.");
+    throw new Error("segments.new_segment_must_have_min_one_night");
   }
 
   return {
@@ -242,7 +242,7 @@ export async function previewRoomMoveFromPivot(input: {
 }): Promise<RoomMovePreview> {
   const segments = await listSegmentsForBooking(input.bookingId);
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
-  if (!source) throw new Error("Segment sursă negăsit.");
+  if (!source) throw new Error("segments.source_not_found");
 
   const plan = resolveRoomMovePlan(
     source.segment_start,
@@ -318,7 +318,7 @@ export async function moveBookingRoomFromPivot(input: {
   pivotDate?: string;
 }): Promise<void> {
   if (input.sourceRoomId === input.targetRoomId) {
-    throw new Error("Alege o cameră diferită.");
+    throw new Error("segments.choose_different_room");
   }
 
   const supabase = createAdminClient();
@@ -328,17 +328,17 @@ export async function moveBookingRoomFromPivot(input: {
     .eq("id", input.bookingId)
     .maybeSingle();
   if (bErr) throw new Error(bErr.message);
-  if (!booking) throw new Error("Rezervarea nu există.");
+  if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
-    throw new Error("Rezervarea este anulată.");
+    throw new Error("booking.cancelled");
   }
   if (booking.status !== "confirmata") {
-    throw new Error("Mutarea camerei e disponibilă doar pentru cazări confirmate.");
+    throw new Error("segments.room_move_only_for_confirmed_stays");
   }
 
   const segments = await listSegmentsForBooking(input.bookingId);
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
-  if (!source) throw new Error("Segment sursă negăsit.");
+  if (!source) throw new Error("segments.source_not_found");
 
   const plan = resolveRoomMovePlan(
     source.segment_start,

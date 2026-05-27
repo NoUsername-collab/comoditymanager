@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { GuestRow } from "@/domain/guest/types";
 import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { GuestBlacklistPanel } from "@/components/admin/guests/GuestBlacklistPanel";
@@ -20,6 +21,8 @@ export function GuestPreviewPanel({
   closeHref: string;
   profileHref: string;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
   const router = useRouter();
   if (!guest) return null;
   const canRebook = (guest.profile?.completed_stays ?? 0) > 0;
@@ -47,7 +50,7 @@ export function GuestPreviewPanel({
     <AdminFloatingPanel
       open
       onClose={() => router.replace(closeHref)}
-      title={`Preview client — ${guest.display_name}`}
+      title={tGuests("previewTitle", { name: guest.display_name })}
       variant="modal"
       width={720}
     >
@@ -60,7 +63,7 @@ export function GuestPreviewPanel({
             <GuestFlagPill flagLevel={guest.profile?.flag_level} />
           </div>
           <p className="mt-1 text-sm" style={mutedStyle}>
-            {[guest.email, guest.phone].filter(Boolean).join(" · ") || "Fără contact"}
+            {[guest.email, guest.phone].filter(Boolean).join(" · ") || tCommon("noContact")}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
             <GuestStarsCompact
@@ -71,12 +74,11 @@ export function GuestPreviewPanel({
               showValue={false}
             />
             <span className="text-sm" style={mutedStyle}>
-              {guest.profile?.completed_stays ?? 0} sejur
-              {(guest.profile?.completed_stays ?? 0) === 1 ? "" : "uri"} încheiate
+              {tGuests("completedStaysCount", { count: guest.profile?.completed_stays ?? 0 })}
             </span>
             {guest.profile?.last_stay_check_out && (
               <span className="text-sm" style={mutedStyle}>
-                Ultimul checkout {formatRoDate(guest.profile.last_stay_check_out)}
+                {tGuests("lastCheckout")} {formatRoDate(guest.profile.last_stay_check_out)}
               </span>
             )}
           </div>
@@ -86,13 +88,13 @@ export function GuestPreviewPanel({
           <section className="rounded-xl border px-4 py-4 text-sm" style={softPanelStyle}>
             {guest.profile?.blacklist_reason && guest.profile.flag_level === "blacklist" ? (
               <p>
-                <span className="font-bold">Motiv blacklist:</span>{" "}
+                <span className="font-bold">{tGuests("blacklistReason")}:</span>{" "}
                 {guest.profile.blacklist_reason}
               </p>
             ) : null}
             {guest.profile?.manual_note ? (
               <p className={guest.profile?.blacklist_reason ? "mt-2" : ""}>
-                <span className="font-bold">Notă internă:</span> {guest.profile.manual_note}
+                <span className="font-bold">{tGuests("internalNote")}:</span> {guest.profile.manual_note}
               </p>
             ) : null}
           </section>
@@ -101,7 +103,7 @@ export function GuestPreviewPanel({
         {guest.notes && (
           <section className="rounded-xl border px-4 py-4 text-sm" style={panelStyle}>
             <p className="font-bold" style={titleStyle}>
-              Note generale
+              {tGuests("generalNotes")}
             </p>
             <p className="mt-1 whitespace-pre-wrap">{guest.notes}</p>
           </section>
@@ -116,7 +118,7 @@ export function GuestPreviewPanel({
 
         <section className="rounded-xl border px-4 py-4" style={panelStyle}>
           <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={subtleTextStyle}>
-            Acțiuni rapide
+            {tCommon("quickActions")}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
@@ -124,14 +126,14 @@ export function GuestPreviewPanel({
               className="rounded px-4 py-2 text-sm font-medium transition"
               style={primaryButtonStyle}
             >
-              Deschide profil complet
+              {tGuests("openFullProfile")}
             </Link>
           </div>
           <div className="mt-4">
             <GuestRebookButtons guestId={guest.id} disabled={!canRebook} />
             {!canRebook && (
               <p className="mt-2 text-xs" style={subtleTextStyle}>
-                Rebook devine disponibil după primul sejur încheiat.
+                {tGuests("rebookAfterFirstStay")}
               </p>
             )}
           </div>

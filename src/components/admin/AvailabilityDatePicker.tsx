@@ -1,6 +1,8 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { viewDateLabel } from "@/lib/availability-date";
 import { todayIso } from "@/lib/stay-dates";
 
@@ -9,6 +11,8 @@ export function AvailabilityDatePicker({
 }: {
   selectedDate: string;
 }) {
+  const tPicker = useTranslations("admin.availabilityDatePicker");
+  const tCommon = useTranslations("admin.common");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -28,14 +32,14 @@ export function AvailabilityDatePicker({
     <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-zinc-200/90 bg-gradient-to-r from-white to-zinc-50/80 px-4 py-3 shadow-sm ring-1 ring-zinc-900/5">
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
-          Disponibilitate la data
+          {tPicker("availabilityOnDate")}
         </p>
         <p className="text-sm font-semibold text-zinc-800">
           {viewDateLabel(selectedDate)}
         </p>
       </div>
       <label className="flex items-center gap-2 text-sm text-zinc-600">
-        <span className="sr-only">Alege data</span>
+        <span className="sr-only">{tPicker("chooseDate")}</span>
         <input
           type="date"
           value={selectedDate}
@@ -49,7 +53,7 @@ export function AvailabilityDatePicker({
           onClick={() => setDate(todayIso())}
           className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 shadow-sm hover:bg-zinc-50"
         >
-          Azi
+          {tCommon("todayShort")}
         </button>
       )}
     </div>

@@ -1,12 +1,11 @@
+"use client";
+
 import type {
   GuestBookingFlagSummary,
   GuestFlagLevel,
   GuestProfileRow,
 } from "@/domain/guest/types";
-import {
-  guestLoyaltyLabel,
-  guestTrustLabel,
-} from "@/domain/guest/reputation";
+import { useTranslations } from "next-intl";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 
 function QuickProfileCard({
@@ -68,6 +67,21 @@ export function GuestProfileBadges({
   alertLevel?: GuestFlagLevel;
   alertNote?: string | null;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const trustLabel = (score: number): string => {
+    if (score >= 85) return tGuests("profileBadges.trustExcellent");
+    if (score >= 70) return tGuests("profileBadges.trustVeryGood");
+    if (score >= 55) return tGuests("profileBadges.trustOk");
+    if (score >= 35) return tGuests("profileBadges.trustNeedsAttention");
+    return tGuests("profileBadges.trustHighRisk");
+  };
+  const loyaltyLabel = (score: number): string => {
+    if (score >= 85) return tGuests("profileBadges.loyaltyVeryLoyal");
+    if (score >= 65) return tGuests("profileBadges.loyaltyLoyal");
+    if (score >= 35) return tGuests("profileBadges.loyaltyReturnsOccasionally");
+    if (score >= 15) return tGuests("profileBadges.loyaltyDeveloping");
+    return tGuests("profileBadges.loyaltyNewOrRare");
+  };
   if (!profile && (!alertLevel || alertLevel === "normal")) return null;
 
   const effectiveLevel =
@@ -75,34 +89,34 @@ export function GuestProfileBadges({
 
   const riskTone =
     effectiveLevel === "blacklist"
-      ? "Blacklist"
+      ? tGuests("profileBadges.blacklist")
       : effectiveLevel === "watchlist"
-        ? "Watchlist"
-        : "Normal";
+        ? tGuests("profileBadges.watchlist")
+        : tGuests("profileBadges.normal");
 
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {profile && (
         <>
           <QuickProfileCard
-            title="Comportament"
+            title={tGuests("profileBadges.behavior")}
             value={String(profile.trust_score)}
-            subtitle={guestTrustLabel(profile.trust_score)}
+            subtitle={trustLabel(profile.trust_score)}
             tone="sky"
           />
           <QuickProfileCard
-            title="Fidelitate"
+            title={tGuests("profileBadges.loyalty")}
             value={String(profile.loyalty_score)}
-            subtitle={guestLoyaltyLabel(profile.loyalty_score)}
+            subtitle={loyaltyLabel(profile.loyalty_score)}
             tone="emerald"
           />
           <QuickProfileCard
-            title="Rating"
+            title={tGuests("profileBadges.rating")}
             value={`${profile.stars_avg.toFixed(1)} / 5`}
             subtitle={
               profile.review_count > 0
-                ? `${profile.review_count} review${profile.review_count === 1 ? "" : "-uri"}`
-                : "Fără review încă"
+                ? tGuests("profileBadges.reviewsCount", { count: profile.review_count })
+                : tGuests("profileBadges.noReviewYet")
             }
             tone="neutral"
           >
@@ -117,14 +131,14 @@ export function GuestProfileBadges({
             </div>
           </QuickProfileCard>
           <QuickProfileCard
-            title="Stare"
+            title={tGuests("profileBadges.state")}
             value={riskTone}
             subtitle={
               effectiveLevel === "blacklist"
-                ? profile.blacklist_reason || "Alertă critică pentru rezervări noi"
+                ? profile.blacklist_reason || tGuests("profileBadges.criticalAlert")
                 : effectiveLevel === "watchlist"
-                  ? "Client de urmărit cu atenție"
-                  : "Fără alertă activă"
+                  ? tGuests("profileBadges.watchCarefully")
+                  : tGuests("profileBadges.noActiveAlert")
             }
             tone={effectiveLevel === "normal" ? "neutral" : "amber"}
           />

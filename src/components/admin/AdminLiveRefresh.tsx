@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 const POLL_MS = 180_000;
@@ -9,6 +10,7 @@ const LIVE_DEBOUNCE_MS = 1_500;
 const MIN_REFRESH_GAP_MS = 15_000;
 
 export function AdminLiveRefresh() {
+  const tCommon = useTranslations("admin.common");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
@@ -87,7 +89,7 @@ export function AdminLiveRefresh() {
   return (
     <div
       className="admin-hud__sync"
-      title="Actualizare automată: realtime cu fallback rar și fără refresh-uri suprapuse"
+      title={tCommon("autoRefreshTitle")}
     >
       <span
         className={[
@@ -99,7 +101,7 @@ export function AdminLiveRefresh() {
         aria-hidden
       />
       <span>
-        {mode === "live" ? "Live" : "Auto 3m"} · {timeLabel}
+        {mode === "live" ? tCommon("live") : tCommon("auto3m")} · {timeLabel}
       </span>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId } from "react";
+import { useTranslations } from "next-intl";
 import { AdminPortal } from "./AdminPortal";
 import { useFloatingPosition } from "./useFloatingPosition";
 
@@ -37,6 +38,7 @@ export function AdminFloatingPanel({
   onPanelMouseEnter,
   onPanelMouseLeave,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
   const titleId = useId();
   const panelStyle = useFloatingPosition(open, anchorRect ?? null, width, variant);
 
@@ -73,7 +75,7 @@ export function AdminFloatingPanel({
           <button
             type="button"
             className="admin-overlay-backdrop"
-            aria-label="Închide"
+            aria-label={tCommon("close")}
             onClick={onClose}
           />
         )}
@@ -107,7 +109,7 @@ export function AdminFloatingPanel({
                 type="button"
                 className="admin-floating-panel__close"
                 onClick={onClose}
-                aria-label="Închide"
+                aria-label={tCommon("close")}
               >
                 ✕
               </button>

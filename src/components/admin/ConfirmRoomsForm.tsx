@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { stayNightCount } from "@/lib/stay-dates";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
@@ -26,8 +27,8 @@ type Props = {
   action: (formData: FormData) => Promise<void>;
 };
 
-function formatRon(value: number): string {
-  return value.toLocaleString("ro-RO", {
+function formatCurrency(value: number, locale: string): string {
+  return value.toLocaleString(locale, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   });
@@ -44,10 +45,13 @@ export function ConfirmRoomsForm({
   checkInTime,
   checkOutTime,
   defaultSelectedIds = [],
-  submitLabel = "Confirmă rezervarea",
+  submitLabel,
   action,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tConfirm = useTranslations("admin.confirmRooms");
   const validDefaults = defaultSelectedIds.filter((id) =>
+  const resolvedSubmitLabel = submitLabel ?? tConfirm("confirmBooking");
     availableRooms.some((r) => r.id === id)
   );
 
@@ -111,16 +115,18 @@ export function ConfirmRoomsForm({
       <input type="hidden" name="id" value={bookingId} />
 
       <p className="text-xs text-zinc-500">
-        Check-in {checkInTime} · Check-out {checkOutTime}
+        {tConfirm("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
       </p>
 
       <p className="text-sm text-zinc-700">
-        <strong>{guestCount}</strong> persoane
+        <strong>{guestCount}</strong> {tCommon("persons")}
         {canFulfill && minRoomsNeeded > 0 && (
           <span className="text-zinc-500">
             {" "}
-            · minim <strong>{minRoomsNeeded}</strong>{" "}
-            {minRoomsNeeded === 1 ? "cameră" : "camere"} în perioada aleasă
+            · {tConfirm("minimumRoomsInPeriod", {
+              count: minRoomsNeeded,
+              rooms: minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
+            })}
           </span>
         )}
       </p>
@@ -130,13 +136,15 @@ export function ConfirmRoomsForm({
           role="alert"
           className="rounded-lg border-2 border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-900"
         >
-          Nu există disponibilitate
+          {tConfirm("noAvailability")}
           <p className="mt-1 font-normal text-red-800">
             {noRoomsAvailable
-              ? "Nicio cameră liberă în intervalul cererii."
-              : `Capacitatea camerelor libere (${availableRooms.length} ${
-                  availableRooms.length === 1 ? "cameră" : "camere"
-                }) nu acoperă ${guestCount} persoane.`}
+              ? tConfirm("noRoomInRequestedRange")
+              : tConfirm("capacityDoesNotCoverGuests", {
+                  count: availableRooms.length,
+                  rooms: availableRooms.length === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
+                  guests: guestCount,
+                })}
           </p>
         </div>
       )}
@@ -144,7 +152,7 @@ export function ConfirmRoomsForm({
       {canFulfill && availableRooms.length > 0 && (
         <div className="max-h-64 space-y-2 overflow-y-auto">
           <p className="text-xs font-medium text-zinc-600">
-            Camere disponibile ({availableRooms.length})
+            {tConfirm("availableRooms", { count: availableRooms.length })}
           </p>
           {availableRooms.map((r) => (
             <label
@@ -159,8 +167,8 @@ export function ConfirmRoomsForm({
                 onChange={() => toggle(r.id)}
               />
               <span className="min-w-0 flex-1">
-                {r.name} — {r.building_name} · {r.max_capacity} pers. ·{" "}
-                {formatRon(r.price_per_night)} RON/noapte
+                {r.name} — {r.building_name} · {r.max_capacity} {tCommon("personsShort")} ·{" "}
+                {formatCurrency(r.price_per_night, "ro-RO")} {tCommon("ronPerNight")}
                 <RoomFeatureBadges
                   roomTypeName={r.room_type_name}
                   optionSlugs={r.option_slugs}
@@ -178,34 +186,36 @@ export function ConfirmRoomsForm({
           role="alert"
           className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900"
         >
-          Camerele selectate au capacitate {selectedCapacity} pers. — insuficient
-          pentru {guestCount} persoane.
+          {tConfirm("selectedCapacityInsufficient", {
+            capacity: selectedCapacity,
+            guests: guestCount,
+            personsShort: tCommon("personsShort"),
+          })}
         </div>
       )}
 
       {canFulfill && selected.size === 0 && (
-        <p className="text-sm text-amber-800">Selectează cel puțin o cameră.</p>
+        <p className="text-sm text-amber-800">{tConfirm("selectAtLeastOneRoom")}</p>
       )}
 
       {canFulfill && selected.size > 0 && nights > 0 && (
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm">
-          <p className="font-medium text-zinc-800">Preț standard (camere)</p>
+          <p className="font-medium text-zinc-800">{tConfirm("standardPriceRooms")}</p>
           <ul className="mt-2 space-y-1 text-zinc-600">
             {selectedRooms.map((r) => (
               <li key={r.id}>
-                {r.name}: {formatRon(r.price_per_night)} RON × {nights}{" "}
-                {nights === 1 ? "noapte" : "nopți"} ={" "}
-                {formatRon(r.price_per_night * nights)} RON
+                {r.name}: {formatCurrency(r.price_per_night, "ro-RO")} RON × {nights}{" "}
+                {nights === 1 ? tConfirm("night") : tConfirm("nights")} ={" "}
+                {formatCurrency(r.price_per_night * nights, "ro-RO")} RON
               </li>
             ))}
           </ul>
           <p className="mt-2 border-t border-zinc-200 pt-2 font-medium text-zinc-800">
-            Subtotal: {formatRon(standardTotal)} RON
+            {tConfirm("subtotal")}: {formatCurrency(standardTotal, "ro-RO")} RON
           </p>
           {!modifyPrice && (
             <p className="mt-1 text-xs text-zinc-500">
-              La confirmare se înregistrează totalul standard ({formatRon(standardTotal)}{" "}
-              RON) în statistici.
+              {tConfirm("standardTotalRecorded", { total: formatCurrency(standardTotal, "ro-RO") })}
             </p>
           )}
         </div>
@@ -220,30 +230,30 @@ export function ConfirmRoomsForm({
               checked={modifyPrice}
               onChange={(e) => setModifyPrice(e.target.checked)}
             />
-            Modifică prețul de bază
+            {tConfirm("modifyBasePrice")}
           </label>
 
           {modifyPrice && (
             <div className="space-y-2 rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-3">
               <label className="block text-sm">
-                Supliment (+ RON, pe lângă prețul standard)
+                {tConfirm("supplementLabel")}
                 <input
                   name="price_adjustment"
                   type="number"
                   step="0.01"
-                  placeholder="0"
+                  placeholder={tConfirm("zero")}
                   value={adjustment}
                   onChange={(e) => setAdjustment(e.target.value)}
                   className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2"
                 />
               </label>
               {!adjustmentValid && (
-                <p className="text-xs text-red-700">Introdu o sumă validă.</p>
+                <p className="text-xs text-red-700">{tConfirm("enterValidAmount")}</p>
               )}
               <p className="text-sm font-medium text-zinc-800">
-                Total înregistrat: {formatRon(finalTotal)} RON
+                {tConfirm("recordedTotal")}: {formatCurrency(finalTotal, "ro-RO")} RON
                 <span className="ml-1 font-normal text-zinc-600">
-                  ({formatRon(standardTotal)} + {formatRon(adjustmentNum)})
+                  ({formatCurrency(standardTotal, "ro-RO")} + {formatCurrency(adjustmentNum, "ro-RO")})
                 </span>
               </p>
             </div>
@@ -256,7 +266,7 @@ export function ConfirmRoomsForm({
         disabled={!canSubmit}
         className="w-full rounded-lg bg-emerald-700 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500"
       >
-        {submitLabel}
+        {resolvedSubmitLabel}
       </button>
     </AdminPendingForm>
   );

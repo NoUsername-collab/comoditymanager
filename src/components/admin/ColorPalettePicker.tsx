@@ -5,6 +5,7 @@ import {
   BUILDING_COLOR_PALETTE,
   defaultColorForAcMode,
 } from "@/lib/building-color-palette";
+import { useTranslations } from "next-intl";
 
 type Props = {
   name?: string;
@@ -18,6 +19,8 @@ export function ColorPalettePicker({
   defaultValue,
   acMode,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tBuildings = useTranslations("admin.buildings");
   const [value, setValue] = useState(
     () =>
       defaultValue ??
@@ -37,11 +40,11 @@ export function ColorPalettePicker({
   return (
     <fieldset className="space-y-3">
       <legend className="text-sm font-medium text-zinc-800">
-        Culoare în calendar
+        {tBuildings("calendarColor")}
       </legend>
       <input type="hidden" name={name} value={value} />
 
-      <div className="flex flex-wrap gap-2.5" role="listbox" aria-label="Paletă culori">
+      <div className="flex flex-wrap gap-2.5" role="listbox" aria-label={tBuildings("colorPalette")}>
         {BUILDING_COLOR_PALETTE.map((c) => {
           const active = c.hex.toLowerCase() === value.toLowerCase();
           return (
@@ -76,7 +79,7 @@ export function ColorPalettePicker({
           style={{ backgroundColor: value }}
         />
         <span>
-          {selected?.label ?? "Culoare"} — <code className="text-xs">{value}</code>
+          {selected?.label ?? tCommon("color")} — <code className="text-xs">{value}</code>
         </span>
       </div>
     </fieldset>

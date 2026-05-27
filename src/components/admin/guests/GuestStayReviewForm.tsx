@@ -1,9 +1,8 @@
-import { saveGuestStayReviewAction } from "@/app/admin/(panel)/guests/actions";
+import { saveGuestStayReviewAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { useTranslations } from "next-intl";
 import {
   GUEST_NEGATIVE_TRAITS,
-  GUEST_NEGATIVE_TRAIT_LABELS,
   GUEST_POSITIVE_TRAITS,
-  GUEST_POSITIVE_TRAIT_LABELS,
 } from "@/domain/guest/reputation";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
@@ -61,10 +60,24 @@ export function GuestStayReviewForm({
   bookingId: string;
   review: GuestStayReviewRow | null;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const positiveLabels: Record<string, string> = Object.fromEntries(
+    GUEST_POSITIVE_TRAITS.map((trait) => [
+      trait,
+      tGuests(`traits.positive.${trait}` as never),
+    ])
+  );
+  const negativeLabels: Record<string, string> = Object.fromEntries(
+    GUEST_NEGATIVE_TRAITS.map((trait) => [
+      trait,
+      tGuests(`traits.negative.${trait}` as never),
+    ])
+  );
+
   return (
     <details className="mt-3 rounded border border-zinc-200 bg-zinc-50 p-3">
       <summary className="cursor-pointer text-sm font-semibold text-zinc-800">
-        {review ? "Editează review-ul sejurului" : "Evaluează acest sejur"}
+        {review ? tGuests("review.editStayReview") : tGuests("review.rateStay")}
       </summary>
 
       <AdminPendingForm
@@ -76,22 +89,22 @@ export function GuestStayReviewForm({
 
         <div className="grid gap-4 md:grid-cols-3">
           <label className="space-y-1 text-sm">
-            <span className="font-bold">Stele</span>
+            <span className="font-bold">{tGuests("review.stars")}</span>
             <select
               name="stars"
               defaultValue={String(review?.stars ?? 5)}
               className="w-full border border-zinc-300 bg-white px-3 py-2"
             >
-              <option value="5">5 stele</option>
-              <option value="4">4 stele</option>
-              <option value="3">3 stele</option>
-              <option value="2">2 stele</option>
-              <option value="1">1 stea</option>
+              <option value="5">{tGuests("review.starsOption", { count: 5 })}</option>
+              <option value="4">{tGuests("review.starsOption", { count: 4 })}</option>
+              <option value="3">{tGuests("review.starsOption", { count: 3 })}</option>
+              <option value="2">{tGuests("review.starsOption", { count: 2 })}</option>
+              <option value="1">{tGuests("review.starOption", { count: 1 })}</option>
             </select>
           </label>
 
           <label className="space-y-1 text-sm">
-            <span className="font-bold">Ajustare trust</span>
+            <span className="font-bold">{tGuests("review.trustAdjustment")}</span>
             <input
               name="trust_delta"
               type="number"
@@ -103,7 +116,7 @@ export function GuestStayReviewForm({
           </label>
 
           <label className="space-y-1 text-sm">
-            <span className="font-bold">Ajustare fidelitate</span>
+            <span className="font-bold">{tGuests("review.loyaltyAdjustment")}</span>
             <input
               name="loyalty_delta"
               type="number"
@@ -116,40 +129,40 @@ export function GuestStayReviewForm({
         </div>
 
         <TraitChecklist
-          title="Trăsături bune"
+          title={tGuests("review.goodTraits")}
           name="positive_traits"
           options={GUEST_POSITIVE_TRAITS}
-          labels={GUEST_POSITIVE_TRAIT_LABELS}
+          labels={positiveLabels}
           selected={review?.positive_traits ?? []}
           tone="good"
         />
 
         <TraitChecklist
-          title="Trăsături problematice"
+          title={tGuests("review.problemTraits")}
           name="negative_traits"
           options={GUEST_NEGATIVE_TRAITS}
-          labels={GUEST_NEGATIVE_TRAIT_LABELS}
+          labels={negativeLabels}
           selected={review?.negative_traits ?? []}
           tone="bad"
         />
 
         <label className="block space-y-1 text-sm">
-          <span className="font-bold">Detalii problemă / context</span>
+          <span className="font-bold">{tGuests("review.problemDetails")}</span>
           <textarea
             name="problem_details"
             rows={3}
             defaultValue={review?.problem_details ?? ""}
-            placeholder="Ce s-a întâmplat, cum s-a rezolvat, ce trebuie știe staff-ul data viitoare."
+            placeholder={tGuests("review.problemPlaceholder")}
             className="w-full border border-zinc-300 px-3 py-2"
           />
         </label>
 
         <AdminSubmitButton
           type="submit"
-          pendingLabel="Salvez review-ul…"
+          pendingLabel={tGuests("review.saving")}
           className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
-          Salvează review sejur
+          {tGuests("review.saveStayReview")}
         </AdminSubmitButton>
       </AdminPendingForm>
     </details>

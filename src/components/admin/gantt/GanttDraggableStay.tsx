@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import {
   moveBookingRoomFromPivotAction,
   shiftBookingOnGanttAction,
-} from "@/app/admin/(panel)/calendar/actions";
+} from "@/app/[locale]/admin/(panel)/calendar/actions";
 import {
   clearGanttRoomDropTargets,
   findGanttRoomAtPoint,
@@ -106,6 +107,8 @@ export function GanttDraggableStay({
   canVerticalMove = false,
   onMoveRoom,
 }: Props) {
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const router = useRouter();
   const touch = useIsTouchDevice();
   const { openMenu } = useGanttContextMenu();
@@ -140,12 +143,12 @@ export function GanttDraggableStay({
 
   const title = [
     popover.guestName,
-    formatStayPeriod(popover.checkIn, popover.checkOut),
+    formatStayPeriod(popover.checkIn, popover.checkOut, locale),
     dragging
       ? verticalMode
-        ? "Trage pe alt rând pentru mutare cameră"
-        : "Trage stânga/dreapta pentru date · sus/jos pentru cameră"
-      : "Trage stânga/dreapta · sus/jos mută camera · click dreapta / ține apăsat meniu",
+        ? tGantt("drag.dragOtherRow")
+        : tGantt("drag.leftRightDatesUpDownRoom")
+      : tGantt("drag.defaultHint"),
   ].join(" · ");
 
   const openStayMenu = useCallback(
@@ -322,7 +325,7 @@ export function GanttDraggableStay({
           }
           setSnapped(true);
           window.setTimeout(() => setSnapped(false), 360);
-          notifyMoved("Cameră mutată", popover.guestName);
+          notifyMoved(tGantt("moveRoom.moved"), popover.guestName);
           router.refresh();
         });
         return;

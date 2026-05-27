@@ -1347,28 +1347,37 @@ html[data-theme="default"][data-mode="night"] {
 .admin-hud__header {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(18rem, 23rem) minmax(0, 1fr) minmax(18rem, 23rem);
+  display: flex;
   align-items: center;
-  gap: 0.66rem 0.9rem;
-  padding: 0.64rem 1.15rem 0.42rem;
+  gap: 0.6rem;
+  padding: 0.4rem 0.8rem;
 }
 
 .admin-hud__brand {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  width: 100%;
-  min-width: 0;
-  justify-self: start;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .admin-hud__center {
   display: flex;
+  flex: 1;
   min-width: 0;
-  width: min(100%, 44rem);
   justify-content: center;
-  justify-self: center;
+}
+
+.admin-hud__right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.admin-hud__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 /* Panou solid — text lizibil pe orice fundal liquid */
@@ -1384,8 +1393,8 @@ html[data-theme="default"][data-mode="night"] {
 .admin-hud__logo {
   display: grid;
   place-items: center;
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 1.75rem;
+  height: 1.75rem;
   border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%;
   background: linear-gradient(
     135deg,
@@ -1458,134 +1467,52 @@ html[data-theme="default"][data-mode="night"] {
   box-shadow: none;
 }
 
-.admin-hud-today {
-  display: grid;
-  width: min(100%, 34.8rem);
-  grid-template-columns: minmax(12rem, 0.95fr) minmax(18rem, 1.25fr);
-  align-items: center;
-  gap: 0.3rem 0.46rem;
-  padding: 0.3rem 0.46rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 88%, transparent);
-  border-radius: 0.76rem;
-  background: color-mix(in srgb, var(--surface) 96%, transparent);
-  box-shadow:
-    0 8px 18px color-mix(in srgb, var(--text) 5%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--surface) 88%, transparent);
-}
-
-.admin-hud-today--empty {
+.admin-hud-today-inline {
   display: flex;
-  width: min(100%, 28rem);
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-}
-
-.admin-hud-today__block {
-  min-width: 0;
-  height: 100%;
-  padding: 0.2rem 0.3rem;
-  border-radius: 0.54rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 84%, transparent);
-  background: color-mix(in srgb, var(--surface) 94%, var(--surface-2));
-}
-
-.admin-hud-today__main {
-  min-width: 0;
-}
-
-.admin-hud-today__label {
-  margin: 0;
-  font-size: 0.44rem;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.admin-hud-today__section-title {
-  margin: 0;
-  font-size: 0.42rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.admin-hud-today__date {
-  margin: 0.06rem 0 0;
-  font-size: 0.72rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-  color: var(--admin-text, #18181b);
-}
-
-.admin-hud-today__meta,
-.admin-hud-today__fallback {
-  margin: 0.1rem 0 0;
-  font-size: 0.52rem;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.admin-hud-today__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.55rem;
-}
-
-.admin-hud-today__stats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.2rem;
-  margin-top: 0.2rem;
-}
-
-.admin-hud-today__chip {
-  display: grid;
-  grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 0.18rem 0.3rem;
-  min-height: 1.24rem;
-  padding: 0.16rem 0.3rem;
-  border-radius: 0.56rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 82%, transparent);
-  background: color-mix(in srgb, var(--surface-2) 90%, transparent);
-  font-size: 0.5rem;
-  font-weight: 700;
-  color: var(--admin-text, #18181b);
+  gap: 0.3rem;
 }
 
-.admin-hud-today__chip-value {
+.admin-hud-today-inline__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.18rem 0.42rem;
+  border-radius: 9999px;
   font-size: 0.58rem;
-  line-height: 1;
+  font-weight: 600;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
 }
 
-.admin-hud-today__chip-label {
-  line-height: 1.05;
+.admin-hud-today-inline__stat strong {
+  font-weight: 800;
+  font-size: 0.64rem;
 }
 
-.admin-hud-today__chip--arrival {
-  border-color: rgba(52, 211, 153, 0.45);
-  background: rgba(236, 253, 245, 0.92);
-  color: #065f46;
+.admin-hud-today-inline__stat--arrival {
+  background: rgba(52, 211, 153, 0.2);
+  color: #a7f3d0;
+  border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
-.admin-hud-today__chip--departure {
-  border-color: rgba(251, 191, 36, 0.5);
-  background: rgba(255, 251, 235, 0.92);
-  color: #92400e;
+.admin-hud-today-inline__stat--departure {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
-.admin-hud-today__chip--clean {
-  border-color: rgba(167, 139, 250, 0.45);
-  background: rgba(245, 243, 255, 0.95);
-  color: #5b21b6;
+.admin-hud-today-inline__stat--clean {
+  background: rgba(167, 139, 250, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.3);
 }
 
-.admin-hud-today__chip--alert {
-  border-color: rgba(248, 113, 113, 0.5);
-  background: rgba(254, 242, 242, 0.95);
-  color: #991b1b;
+.admin-hud-today-inline__stat--alert {
+  background: rgba(248, 113, 113, 0.25);
+  color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
 }
 
 .admin-hud__badge {
@@ -1695,21 +1622,18 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 .admin-hud__nav {
-  position: relative;
-  z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.32rem;
-  padding: 0.44rem 1.15rem 0.78rem;
+  gap: 0.22rem;
 }
 
 .admin-nav-tab {
   display: inline-flex;
   align-items: center;
-  gap: 0.36rem;
-  border-radius: 0.7rem;
-  padding: 0.44rem 0.78rem;
-  font-size: 0.79rem;
+  gap: 0.25rem;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: var(--dn-text-muted);
   background: var(--dn-glass);

@@ -167,7 +167,7 @@ export async function createRoomsBulk(input: {
   building_default_price?: number;
 }): Promise<{ ids: string[] }> {
   if (input.count < 1 || input.count > 50) {
-    throw new Error("Număr camere: între 1 și 50");
+    throw new Error("rooms.bulk_count_must_be_between_1_and_50");
   }
 
   const ids: string[] = [];
@@ -291,7 +291,7 @@ export async function deleteRoom(id: string): Promise<void> {
   if (brErr) throw new Error(brErr.message);
   if ((count ?? 0) > 0) {
     throw new Error(
-      "Camera apare în rezervări. Dezactiveaz-o din Edit în loc să o ștergi."
+      "rooms.cannot_delete_room_with_bookings_disable_instead"
     );
   }
 

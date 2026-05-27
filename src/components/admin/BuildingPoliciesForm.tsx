@@ -4,14 +4,9 @@ import type { AcMode } from "@/types/database";
 import type { RoomOptionDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
-import { updateBuildingPoliciesAction } from "@/app/admin/(panel)/buildings/actions";
-
-const POLICY_OPTIONS: { value: OptionPolicyMode; label: string }[] = [
-  { value: "all_rooms", label: "Toate camerele" },
-  { value: "none", label: "Niciuna" },
-  { value: "per_room", label: "Per cameră" },
-];
+import { updateBuildingPoliciesAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 
 export function BuildingPoliciesForm({
   buildingId,
@@ -26,6 +21,13 @@ export function BuildingPoliciesForm({
   options: RoomOptionDefinition[];
   policies: { option_id: string; mode: OptionPolicyMode }[];
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tPolicies = useTranslations("admin.buildingPoliciesForm");
+  const policyOptions: { value: OptionPolicyMode; label: string }[] = [
+    { value: "all_rooms", label: tPolicies("policyAllRooms") },
+    { value: "none", label: tPolicies("policyNone") },
+    { value: "per_room", label: tPolicies("policyPerRoom") },
+  ];
   const [open, setOpen] = useState(false);
   const [acMode, setAcMode] = useState(initialAcMode);
   const acOption = options.find((o) => o.slug === "ac");
@@ -44,7 +46,7 @@ export function BuildingPoliciesForm({
         onClick={() => setOpen((v) => !v)}
         className="text-xs font-medium text-zinc-700 underline hover:text-zinc-900"
       >
-        {open ? "Ascunde politici opțiuni" : "Editează politici AC / frigider…"}
+        {open ? tPolicies("hideOptionPolicies") : tPolicies("editPoliciesAcFridge")}
       </button>
 
       {open && (
@@ -56,16 +58,16 @@ export function BuildingPoliciesForm({
           <p className="text-xs text-zinc-500">{buildingName}</p>
 
           <label className="block text-sm">
-            <span className="font-medium">Politică AC</span>
+            <span className="font-medium">{tPolicies("acPolicy")}</span>
             <select
               name="ac_mode"
               value={acMode}
               onChange={(e) => setAcMode(e.target.value as AcMode)}
               className="mt-1 w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
             >
-              <option value="all_rooms">Toate camerele</option>
-              <option value="none">Fără AC</option>
-              <option value="per_room">Per cameră</option>
+              <option value="all_rooms">{tPolicies("policyAllRooms")}</option>
+              <option value="none">{tCommon("withoutAc")}</option>
+              <option value="per_room">{tPolicies("policyPerRoom")}</option>
             </select>
           </label>
 
@@ -77,7 +79,7 @@ export function BuildingPoliciesForm({
                 defaultValue={policyFor(opt.id)}
                 className="mt-1 w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
               >
-                {POLICY_OPTIONS.map((p) => (
+                {policyOptions.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}
                   </option>
@@ -94,7 +96,7 @@ export function BuildingPoliciesForm({
             type="submit"
             className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white"
           >
-            Salvează politici
+            {tPolicies("savePolicies")}
           </button>
         </AdminPendingForm>
       )}

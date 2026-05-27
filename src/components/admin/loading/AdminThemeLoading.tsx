@@ -1,12 +1,19 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 type Props = {
   label?: string;
   fullScreen?: boolean;
 };
 
 export function AdminThemeLoading({
-  label = "Se încarcă…",
+  label,
   fullScreen = false,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const resolvedLabel = label ?? tCommon("loading");
+
   return (
     <div
       className={[
@@ -18,11 +25,11 @@ export function AdminThemeLoading({
       role="status"
       aria-live="polite"
       aria-busy="true"
-      aria-label={label}
+      aria-label={resolvedLabel}
     >
       <div className="admin-theme-loading__card">
         <span className="admin-theme-loading__spinner" aria-hidden />
-        <span className="admin-theme-loading__text">{label}</span>
+        <span className="admin-theme-loading__text">{resolvedLabel}</span>
         <span className="admin-theme-loading__track" aria-hidden>
           <span className="admin-theme-loading__track-bar" />
         </span>

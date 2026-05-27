@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   lockLocationAdminAction,
   unlockLocationAdminAction,
-} from "@/app/admin/(panel)/settings/actions";
+} from "@/app/[locale]/admin/(panel)/settings/actions";
 
 export function AdminLocationUnlockForm() {
+  const tPage = useTranslations("admin.pages.settingsLocation.unlock");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -25,11 +27,10 @@ export function AdminLocationUnlockForm() {
       }}
     >
       <p className="text-sm text-zinc-600">
-        Introdu parola contului <strong>Admin</strong> pentru a configura
-        clădiri, camere, ore check-in și conturi staff. Sesiunea durează 2 ore.
+        {tPage.rich("hintHtml", { strong: (chunks) => <strong>{chunks}</strong> })}
       </p>
       <label className="block text-sm">
-        Parolă admin
+        {tPage("adminPassword")}
         <input
           name="admin_password"
           type="password"
@@ -48,13 +49,14 @@ export function AdminLocationUnlockForm() {
         disabled={pending}
         className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
       >
-        {pending ? "Se verifică…" : "Deschide administrare locație"}
+        {pending ? tPage("checking") : tPage("openLocationAdmin")}
       </button>
     </form>
   );
 }
 
 export function AdminLocationLockButton() {
+  const tPage = useTranslations("admin.pages.settingsLocation.unlock");
   const [pending, setPending] = useState(false);
 
   return (
@@ -73,7 +75,7 @@ export function AdminLocationLockButton() {
         disabled={pending}
         className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-60"
       >
-        {pending ? "Se închide…" : "Închide administrare locație"}
+        {pending ? tPage("closing") : tPage("closeLocationAdmin")}
       </button>
     </form>
   );

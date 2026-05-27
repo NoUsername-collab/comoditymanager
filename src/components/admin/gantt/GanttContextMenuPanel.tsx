@@ -1,7 +1,9 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/navigation";
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -11,12 +13,12 @@ import {
   deleteRoomBlockAction,
   duplicateBookingAsCerereAction,
   releaseRoomHoldAction,
-} from "@/app/admin/(panel)/calendar/actions";
+} from "@/app/[locale]/admin/(panel)/calendar/actions";
 import {
   cancelBookingAction,
   undoBookingCheckInAction,
   undoBookingCheckOutAction,
-} from "@/app/admin/(panel)/bookings/actions";
+} from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
@@ -66,6 +68,8 @@ function MenuSection({ title, children }: { title?: string; children: React.Reac
 }
 
 export function GanttContextMenuPanel() {
+  const t = useTranslations("admin.common");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { menu, closeMenu, requestCreate, openMoveRoom, openOccDetail } =
@@ -100,7 +104,7 @@ export function GanttContextMenuPanel() {
   function copyAdminLink(path: string) {
     const url = `${window.location.origin}${path}`;
     void navigator.clipboard.writeText(url).then(() => {
-      showToast({ kind: "success", title: "Link copiat", message: url });
+      showToast({ kind: "success", title: t("linkCopied"), message: url });
       closeMenu();
     });
   }
@@ -129,13 +133,8 @@ export function GanttContextMenuPanel() {
     checkOut: string,
     isCerere: boolean
   ) {
-    if (
-      !confirm(
-        isCerere
-          ? `Anulezi cererea ${guestName} · ${formatStayPeriod(checkIn, checkOut, true)}?`
-          : `Anulezi cazarea ${guestName} · ${formatStayPeriod(checkIn, checkOut, true)}?`
-      )
-    ) {
+    const period = formatStayPeriod(checkIn, checkOut, locale, true);
+    if (!confirm(isCerere ? t("cancelRequestConfirm", { name: guestName, period }) : t("cancelStayConfirm", { name: guestName, period }))) {
       return;
     }
     const fd = new FormData();
@@ -143,7 +142,7 @@ export function GanttContextMenuPanel() {
     fd.set("return_to", "/admin/calendar");
     void runAdminAction(async () => {
       await cancelBookingAction(fd);
-      notifyCancel(isCerere ? "Cerere anulată" : "Cazare anulată", guestName);
+      notifyCancel(isCerere ? t("requestCancelled") : t("stayCancelled"), guestName);
       closeMenu();
       router.refresh();
     });
@@ -153,13 +152,13 @@ export function GanttContextMenuPanel() {
     void runAdminAction(async () => {
       const res = await adjustBookingStayNightsAction(bookingId, nightDelta);
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: t("error"), message: res.error });
         return;
       }
       showToast({
         kind: "success",
-        title: nightDelta > 0 ? "Sejur prelungit" : "Sejur scurtat",
-        message: `${guestName} · ${formatStayPeriod(res.check_in, res.check_out, true)}`,
+        title: nightDelta > 0 ? t("stayExtended") : t("stayShortened"),
+        message: `${guestName} · ${formatStayPeriod(res.check_in, res.check_out, locale, true)}`,
       });
       closeMenu();
       router.refresh();
@@ -170,13 +169,13 @@ export function GanttContextMenuPanel() {
     void runAdminAction(async () => {
       const res = await duplicateBookingAsCerereAction(bookingId);
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: t("error"), message: res.error });
         return;
       }
       showToast({
         kind: "success",
-        title: "Duplicat ca cerere",
-        message: `${guestName} · deschide cererea nouă`,
+        title: t("duplicateAsRequest"),
+        message: `${guestName} · ${t("openNewRequest")}`,
       });
       closeMenu();
       router.push(`/admin/bookings/${res.id}`);
@@ -192,10 +191,10 @@ export function GanttContextMenuPanel() {
         ? await releaseRoomHoldAction(menu.segment.id)
         : await deleteRoomBlockAction(menu.segment.id);
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: t("error"), message: res.error });
         return;
       }
-      notifyCancel(isHold ? "Hold eliberat" : "Blocare ștearsă", menu.roomName);
+      notifyCancel(isHold ? t("holdReleased") : t("blockRemoved"), menu.roomName);
       closeMenu();
       router.refresh();
     });
@@ -208,14 +207,14 @@ export function GanttContextMenuPanel() {
         type="button"
         disabled={pending}
         className="gantt-ctx-menu-backdrop fixed inset-0 z-[199] disabled:cursor-wait"
-        aria-label="Închide meniul"
+        aria-label={t("closeMenu")}
         onClick={closeMenu}
       />
       <div
         className="gantt-ctx-menu fixed z-[200]"
         style={style}
         role="menu"
-        aria-label="Master controller Gantt"
+        aria-label={t("masterController")}
         onContextMenu={(e) => e.preventDefault()}
         onPointerDown={(e) => e.stopPropagation()}
       >
@@ -224,19 +223,19 @@ export function GanttContextMenuPanel() {
             <MenuSection
               title={
                 menu.roomName
-                  ? `${menu.roomName} · 1 noapte min.`
-                  : `Timeline · ${formatStayPeriod(menu.checkIn, menu.checkOut, true)}`
+                  ? `${menu.roomName} ${t("oneNightMin")}`
+                  : `${t("timeline")} · ${formatStayPeriod(menu.checkIn, menu.checkOut, locale, true)}`
               }
             >
               <MenuItem
-                label="Creează cerere"
-                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                label={t("createRequest")}
+                hint={!menu.roomId ? t("clickRoomRow") : undefined}
                 disabled={!menu.roomId}
                 onClick={() =>
                   menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName ?? "Cameră",
+                    roomName: menu.roomName ?? t("room"),
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -245,14 +244,14 @@ export function GanttContextMenuPanel() {
                 }
               />
               <MenuItem
-                label="Creează cazare directă"
-                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                label={t("createDirectStay")}
+                hint={!menu.roomId ? t("clickRoomRow") : undefined}
                 disabled={!menu.roomId}
                 onClick={() =>
                   menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName ?? "Cameră",
+                    roomName: menu.roomName ?? t("room"),
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -261,14 +260,14 @@ export function GanttContextMenuPanel() {
                 }
               />
               <MenuItem
-                label="Hold cameră"
-                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                label={t("holdRoom")}
+                hint={!menu.roomId ? t("clickRoomRow") : undefined}
                 disabled={!menu.roomId}
                 onClick={() =>
                   menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName ?? "Cameră",
+                    roomName: menu.roomName ?? t("room"),
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -277,14 +276,14 @@ export function GanttContextMenuPanel() {
                 }
               />
               <MenuItem
-                label="Blocare cameră"
-                hint={!menu.roomId ? "Click pe rând cameră" : undefined}
+                label={t("blockRoom")}
+                hint={!menu.roomId ? t("clickRoomRow") : undefined}
                 disabled={!menu.roomId}
                 onClick={() =>
                   menu.roomId &&
                   requestCreate({
                     roomId: menu.roomId,
-                    roomName: menu.roomName ?? "Cameră",
+                    roomName: menu.roomName ?? t("room"),
                     checkIn: menu.checkIn,
                     checkOut: menu.checkOut,
                     hasConflict: menu.hasConflict,
@@ -293,14 +292,14 @@ export function GanttContextMenuPanel() {
                 }
               />
               <MenuItem
-                label="Deschide heat map disponibilitate"
+                label={t("openHeatmap")}
                 onClick={() => {
                   openAvailability(menu.checkIn);
                 }}
               />
             </MenuSection>
             <p className="gantt-ctx-menu__hint px-3 py-2 text-[10px] text-zinc-500">
-              Trage pentru interval · click dreapta / ține apăsat ~400ms
+              {t("dragHint")}
             </p>
           </>
         )}
@@ -309,7 +308,7 @@ export function GanttContextMenuPanel() {
           <>
             <MenuSection title={menu.guestName}>
               <MenuItem
-                label="Deschide detalii"
+                label={t("openDetails")}
                 onClick={() => {
                   closeMenu();
                   router.push(`/admin/bookings/${menu.bookingId}`);
@@ -317,8 +316,8 @@ export function GanttContextMenuPanel() {
               />
               {menu.status === "cerere_noua" && (
                 <MenuItem
-                  label="Confirmă"
-                  hint="Deschide pagina cererii pentru confirmare"
+                  label={t("confirmRequest")}
+                  hint={t("confirmRequestHint")}
                   onClick={() => {
                     closeMenu();
                     router.push(`/admin/bookings/${menu.bookingId}`);
@@ -327,8 +326,8 @@ export function GanttContextMenuPanel() {
               )}
               {menu.status === "confirmata" && !menu.actualCheckInAt && (
                 <MenuItem
-                  label="Check-in…"
-                  hint="Sosire efectivă la pensiune"
+                  label={t("checkInEllipsis")}
+                  hint={t("checkInHint")}
                   disabled={pending}
                   onClick={() => {
                     setCheckDialog({
@@ -347,8 +346,8 @@ export function GanttContextMenuPanel() {
                 !menu.actualCheckOutAt && (
                   <>
                     <MenuItem
-                      label="Check-out…"
-                      hint="Plecare efectivă"
+                      label={t("checkOutEllipsis")}
+                      hint={t("checkOutHint")}
                       disabled={pending}
                       onClick={() => {
                         setCheckDialog({
@@ -362,12 +361,12 @@ export function GanttContextMenuPanel() {
                       }}
                     />
                     <MenuItem
-                      label="Anulează check-in"
+                      label={t("undoCheckIn")}
                       disabled={pending}
                       onClick={() => {
                         if (
                           !confirm(
-                            `Anulezi check-in pentru ${menu.guestName}?`
+                            t("undoCheckInConfirm", { name: menu.guestName })
                           )
                         ) {
                           return;
@@ -379,14 +378,14 @@ export function GanttContextMenuPanel() {
                           if (!res.ok) {
                             showToast({
                               kind: "error",
-                              title: "Eroare",
+                              title: t("error"),
                               message: res.error,
                             });
                             return;
                           }
                           showToast({
                             kind: "success",
-                            title: "Check-in anulat",
+                            title: t("checkInUndone"),
                             message: menu.guestName,
                           });
                           closeMenu();
@@ -398,11 +397,11 @@ export function GanttContextMenuPanel() {
                 )}
               {menu.status === "confirmata" && menu.actualCheckOutAt && (
                 <MenuItem
-                  label="Anulează check-out"
+                  label={t("undoCheckOut")}
                   disabled={pending}
                   onClick={() => {
                     if (
-                      !confirm(`Anulezi check-out pentru ${menu.guestName}?`)
+                      !confirm(t("undoCheckOutConfirm", { name: menu.guestName }))
                     ) {
                       return;
                     }
@@ -413,14 +412,14 @@ export function GanttContextMenuPanel() {
                       if (!res.ok) {
                         showToast({
                           kind: "error",
-                          title: "Eroare",
+                          title: t("error"),
                           message: res.error,
                         });
                         return;
                       }
                       showToast({
                         kind: "success",
-                        title: "Check-out anulat",
+                        title: t("checkOutUndone"),
                         message: menu.guestName,
                       });
                       closeMenu();
@@ -430,7 +429,7 @@ export function GanttContextMenuPanel() {
                 />
               )}
               <MenuItem
-                label="Anulează"
+                label={t("cancel")}
                 destructive
                 disabled={pending}
                 onClick={() =>
@@ -444,20 +443,20 @@ export function GanttContextMenuPanel() {
                 }
               />
               <MenuItem
-                label="Mută date…"
-                hint="Alternativ: trage bara stânga/dreapta"
+                label={t("moveDates")}
+                hint={t("moveDatesHint")}
                 onClick={() => {
                   showToast({
                     kind: "info",
-                    title: "Mută date",
-                    message: "Trage bara sejurului stânga/dreapta pe timeline.",
+                    title: t("moveDates"),
+                    message: t("moveDatesToast"),
                   });
                   closeMenu();
                 }}
               />
               {menu.canMoveRoom && menu.moveRoomDraft && (
                 <MenuItem
-                  label="Mută cameră…"
+                  label={t("moveRoom")}
                   onClick={() => {
                     openMoveRoom(menu.moveRoomDraft!);
                     menu.popover.onMoveRoom?.();
@@ -465,34 +464,34 @@ export function GanttContextMenuPanel() {
                 />
               )}
               <MenuItem
-                label="Prelungește (+1 noapte)"
+                label={t("extendNight")}
                 disabled={pending}
                 onClick={() => adjustNights(menu.bookingId, menu.guestName, 1)}
               />
               <MenuItem
-                label="Scurtează (−1 noapte)"
+                label={t("shortenNight")}
                 disabled={pending}
                 onClick={() => adjustNights(menu.bookingId, menu.guestName, -1)}
               />
               <MenuItem
-                label="Duplică (rebook similar)"
+                label={t("duplicateRebook")}
                 disabled={pending}
                 onClick={() => duplicateBooking(menu.bookingId, menu.guestName)}
               />
               <MenuItem
-                label="Istoric acțiuni"
+                label={t("actionHistory")}
             onClick={() => {
                   closeMenu();
                   router.push(`/admin/bookings/${menu.bookingId}#activitate`);
                 }}
               />
               <MenuItem
-                label="Copiază link admin"
+                label={t("copyAdminLink")}
                 onClick={() => copyAdminLink(`/admin/bookings/${menu.bookingId}`)}
               />
             </MenuSection>
             <p className="gantt-ctx-menu__hint px-3 py-2 text-[10px] text-zinc-500">
-              Click dreapta / ține apăsat ~400ms pe mobil
+              {t("mobileHint")}
             </p>
           </>
         )}
@@ -500,10 +499,10 @@ export function GanttContextMenuPanel() {
         {(menu.kind === "hold" || menu.kind === "block") && (
           <>
             <MenuSection
-              title={menu.kind === "hold" ? "Hold operator" : "Blocare cameră"}
+              title={menu.kind === "hold" ? t("holdOperator") : t("roomBlock")}
             >
               <MenuItem
-                label="Deschide detalii"
+                label={t("openDetails")}
                 onClick={() =>
                   openOccDetail({ segment: menu.segment, roomName: menu.roomName })
                 }
@@ -511,7 +510,7 @@ export function GanttContextMenuPanel() {
               {menu.kind === "hold" && (
                 <>
                   <MenuItem
-                    label="Convertește hold → cerere"
+                    label={t("convertHoldRequest")}
                     onClick={() =>
                       requestCreate({
                         roomId: menu.segment.roomId,
@@ -524,7 +523,7 @@ export function GanttContextMenuPanel() {
                     }
                   />
                   <MenuItem
-                    label="Convertește hold → cazare directă"
+                    label={t("convertHoldDirect")}
                     onClick={() =>
                       requestCreate({
                         roomId: menu.segment.roomId,
@@ -539,14 +538,14 @@ export function GanttContextMenuPanel() {
                 </>
               )}
               <MenuItem
-                label={menu.kind === "hold" ? "Anulează hold" : "Anulează blocare"}
+                label={menu.kind === "hold" ? t("cancelHold") : t("cancelBlock")}
                 destructive
                 disabled={pending}
                 onClick={releaseOcc}
               />
             </MenuSection>
             <p className="gantt-ctx-menu__hint px-3 py-2 text-[10px] text-zinc-500">
-              Click dreapta / ține apăsat ~400ms pe mobil
+              {t("mobileHint")}
             </p>
           </>
         )}

@@ -1,9 +1,14 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 type Props = {
   /** Formular recepție (inputuri mai mici) */
   compact?: boolean;
 };
 
 export function GuestNameFields({ compact }: Props) {
+  const t = useTranslations("public.form");
   const inputClass = compact
     ? "mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
     : "mt-1 w-full";
@@ -14,22 +19,22 @@ export function GuestNameFields({ compact }: Props) {
   return (
     <div className={compact ? "grid grid-cols-2 gap-2" : "grid grid-cols-2 gap-3"}>
       <label className={labelClass}>
-        Nume (familie) *
+        {t("lastName")}
         <input
           name="guest_last_name"
           required
           autoComplete="family-name"
-          placeholder="ex. Popescu"
+          placeholder={t("lastNamePlaceholder")}
           className={inputClass}
         />
       </label>
       <label className={labelClass}>
-        Prenume *
+        {t("firstName")}
         <input
           name="guest_first_name"
           required
           autoComplete="given-name"
-          placeholder="ex. Maria"
+          placeholder={t("firstNamePlaceholder")}
           className={inputClass}
         />
       </label>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { updateGuestProfileControlsAction } from "@/app/admin/(panel)/guests/actions";
+import { useTranslations } from "next-intl";
+import { updateGuestProfileControlsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import type { GuestProfileRow } from "@/domain/guest/types";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -16,6 +17,8 @@ export function GuestBlacklistPanel({
   profile: GuestProfileRow | null;
   compact?: boolean;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
   const initiallyBlacklisted = profile?.flag_level === "blacklist";
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState(profile?.blacklist_reason ?? "");
@@ -59,7 +62,7 @@ export function GuestBlacklistPanel({
       await runAdminAction(() => updateGuestProfileControlsAction(formData));
       setOpen(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Nu am putut actualiza blacklist-ul.");
+      setError(e instanceof Error ? e.message : tGuests("blacklist.couldNotUpdate"));
     }
   }
 
@@ -77,13 +80,13 @@ export function GuestBlacklistPanel({
           .join(" ")}
         style={dangerButtonStyle}
       >
-        {isBlacklisted ? "Gestionează blacklist" : "Adaugă în blacklist"}
+        {isBlacklisted ? tGuests("blacklist.manage") : tGuests("blacklist.add")}
       </button>
 
       <AdminFloatingPanel
         open={open}
         onClose={() => setOpen(false)}
-        title={isBlacklisted ? "Blacklist activ" : "Confirmare blacklist"}
+        title={isBlacklisted ? tGuests("blacklist.activeTitle") : tGuests("blacklist.confirmTitle")}
         variant="modal"
         width={560}
         className="guest-blacklist-modal"
@@ -91,19 +94,19 @@ export function GuestBlacklistPanel({
         <div className="space-y-4 p-4">
           <p className="text-sm text-zinc-300">
             {isBlacklisted
-              ? "Actualizezi sau scoți clientul din blacklist. Motivul rămâne vizibil pentru staff."
-              : "Confirmi introducerea clientului în blacklist. După salvare va ridica alertă puternică la rezervări noi."}
+              ? tGuests("blacklist.updateOrRemoveHint")
+              : tGuests("blacklist.confirmAddHint")}
           </p>
 
           <label className="block space-y-1 text-sm">
             <span className="font-semibold" style={{ color: "var(--admin-danger-text)" }}>
-              Motiv
+              {tGuests("blacklist.reason")}
             </span>
             <textarea
               rows={compact ? 3 : 4}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Ex: neplată, pagube, conflict repetat, încălcarea regulilor"
+              placeholder={tGuests("blacklist.placeholder")}
               className="w-full rounded px-3 py-2 text-sm"
               style={{
                 border: "1px solid #7f1d1d",
@@ -123,7 +126,7 @@ export function GuestBlacklistPanel({
                 className="rounded px-4 py-2 text-sm font-medium transition disabled:opacity-60"
                 style={neutralButtonStyle}
               >
-                {pending ? "Procesez…" : "Scoate din blacklist"}
+                {pending ? tGuests("blacklist.processing") : tGuests("blacklist.remove")}
               </button>
             )}
             <button
@@ -132,7 +135,7 @@ export function GuestBlacklistPanel({
               className="rounded px-4 py-2 text-sm font-medium transition"
               style={neutralButtonStyle}
             >
-              Anulează
+              {tCommon("cancel")}
             </button>
             <button
               type="button"
@@ -143,11 +146,11 @@ export function GuestBlacklistPanel({
             >
               {pending
                 ? isBlacklisted
-                  ? "Actualizez…"
-                  : "Pun în blacklist…"
+                  ? tGuests("blacklist.updating")
+                  : tGuests("blacklist.putting")
                 : isBlacklisted
-                  ? "Confirmă blacklist"
-                  : "Confirmă și adaugă"}
+                  ? tGuests("blacklist.confirm")
+                  : tGuests("blacklist.confirmAndAdd")}
             </button>
           </div>
         </div>
@@ -155,7 +158,7 @@ export function GuestBlacklistPanel({
 
       <AdminAlertDialog
         open={error != null}
-        title="Blacklist"
+        title={tGuests("blacklist.title")}
         message={error ?? ""}
         onClose={() => setError(null)}
       />

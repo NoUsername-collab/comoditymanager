@@ -5,6 +5,7 @@ import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-cata
 import type { OptionPolicyMode } from "@/types/room-catalog";
 import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
@@ -50,6 +51,8 @@ export function RoomForm({
   createRoomAction,
   defaultBuildingId,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tRooms = useTranslations("admin.roomForm");
   const [mode, setMode] = useState<"single" | "bulk">("single");
   const initial =
     defaultBuildingId && buildings.some((b) => b.id === defaultBuildingId)
@@ -77,14 +80,14 @@ export function RoomForm({
           onClick={() => setMode("single")}
           className={`rounded-lg px-3 py-1.5 text-sm ${mode === "single" ? "bg-zinc-900 text-white" : "border border-zinc-300"}`}
         >
-          O cameră
+          {tRooms("singleRoom")}
         </button>
         <button
           type="button"
           onClick={() => setMode("bulk")}
           className={`rounded-lg px-3 py-1.5 text-sm ${mode === "bulk" ? "bg-zinc-900 text-white" : "border border-zinc-300"}`}
         >
-          Bulk (mai multe)
+          {tRooms("bulkMany")}
         </button>
       </div>
 
@@ -92,7 +95,7 @@ export function RoomForm({
         <input type="hidden" name="create_mode" value={mode} />
 
         <label className="block">
-          <span className="text-sm font-medium">Clădire *</span>
+          <span className="text-sm font-medium">{tCommon("building")} *</span>
           <select
             name="building_id"
             required
@@ -109,13 +112,13 @@ export function RoomForm({
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium">Etaj (opțional)</span>
+          <span className="text-sm font-medium">{tRooms("floorOptional")}</span>
           <select
             name="floor_id"
             className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
             defaultValue=""
           >
-            <option value="">— fără etaj —</option>
+            <option value="">{tRooms("withoutFloor")}</option>
             {floors.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.name}
@@ -125,7 +128,7 @@ export function RoomForm({
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium">Tip cameră *</span>
+          <span className="text-sm font-medium">{tRooms("roomTypeRequired")}</span>
           <select
             name="room_type_definition_id"
             required
@@ -135,7 +138,7 @@ export function RoomForm({
           >
             {types.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name} · {t.capacity_base} pers.
+                {t.name} · {t.capacity_base} {tCommon("personsShort")}
                 {t.base_price_per_night > 0 ? ` · ${t.base_price_per_night} RON` : ""}
               </option>
             ))}
@@ -144,27 +147,27 @@ export function RoomForm({
 
         {mode === "single" ? (
           <label className="block">
-            <span className="text-sm font-medium">Nume cameră *</span>
+            <span className="text-sm font-medium">{tRooms("roomNameRequired")}</span>
             <input
               name="name"
               required
-              placeholder="Camera 1"
+              placeholder={tRooms("roomNamePlaceholder")}
               className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
             />
           </label>
         ) : (
           <div className="grid gap-4 sm:grid-cols-3">
             <label className="block">
-              <span className="text-sm font-medium">Prefix nume *</span>
+              <span className="text-sm font-medium">{tRooms("namePrefixRequired")}</span>
               <input
                 name="name_prefix"
                 required
-                defaultValue="Camera "
+                defaultValue={tRooms("roomPrefixDefault")}
                 className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
               />
             </label>
             <label className="block">
-              <span className="text-sm font-medium">De la nr.</span>
+              <span className="text-sm font-medium">{tRooms("startNumber")}</span>
               <input
                 name="start_number"
                 type="number"
@@ -174,7 +177,7 @@ export function RoomForm({
               />
             </label>
             <label className="block">
-              <span className="text-sm font-medium">Câte camere</span>
+              <span className="text-sm font-medium">{tRooms("howManyRooms")}</span>
               <input
                 name="bulk_count"
                 type="number"
@@ -196,9 +199,9 @@ export function RoomForm({
 
         <div className="grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="text-sm font-medium">Preț / noapte (RON)</span>
+            <span className="text-sm font-medium">{tRooms("pricePerNightRon")}</span>
             <span className="block text-xs text-zinc-500">
-              0 = calculează automat ({suggestedPrice} RON sugerat)
+              {tRooms("autoPriceHint", { suggestedPrice })}
             </span>
             <input
               name="price_per_night"
@@ -211,7 +214,7 @@ export function RoomForm({
             />
           </label>
           <label className="block">
-            <span className="text-sm font-medium">Ordine afișare</span>
+            <span className="text-sm font-medium">{tCommon("displayOrder")}</span>
             <input
               name="sort_order"
               type="number"
@@ -223,11 +226,11 @@ export function RoomForm({
 
         <label className="flex items-center gap-2">
           <input type="checkbox" name="allows_extra_beds" className="rounded" />
-          <span className="text-sm">Permite pat(uri) suplimentare</span>
+          <span className="text-sm">{tRooms("allowExtraBeds")}</span>
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium">Max paturi extra</span>
+          <span className="text-sm font-medium">{tRooms("maxExtraBeds")}</span>
           <input
             name="max_extra_beds_per_room"
             type="number"
@@ -242,7 +245,7 @@ export function RoomForm({
           type="submit"
           className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
         >
-          {mode === "bulk" ? "Creează camerele" : "Salvează camera"}
+          {mode === "bulk" ? tRooms("createRooms") : tRooms("saveRoom")}
         </button>
       </AdminPendingForm>
     </div>

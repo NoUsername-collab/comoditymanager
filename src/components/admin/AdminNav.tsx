@@ -1,19 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import {
   AdminHudIcon,
   type HudIconName,
 } from "@/components/admin/AdminHudIcons";
+import { useTranslations } from "next-intl";
 
 type Tab = {
   href: string;
-  label: string;
+  labelKey:
+    | "home"
+    | "newRequests"
+    | "stays"
+    | "clients"
+    | "calendar"
+    | "statistics"
+    | "settings";
   icon: HudIconName;
   alert?: boolean;
   badge?: number;
-  /** Ascuns pentru operator (config doar după unlock locație). */
   locationConfig?: boolean;
 };
 
@@ -25,21 +31,22 @@ export function AdminNav({
   locationUnlocked?: boolean;
 }) {
   const pathname = usePathname();
+  const t = useTranslations("admin.nav");
 
   const tabs: Tab[] = [
-    { href: "/admin", label: "Acasă", icon: "home" },
+    { href: "/admin", labelKey: "home", icon: "home" },
     {
       href: "/admin/bookings",
-      label: "Cereri noi",
+      labelKey: "newRequests",
       icon: "inbox",
       alert: cereriCount > 0,
       badge: cereriCount,
     },
-    { href: "/admin/cazari", label: "Cazări", icon: "bed" },
-    { href: "/admin/guests", label: "Clienți", icon: "person" },
-    { href: "/admin/calendar", label: "Calendar", icon: "calendar" },
-    { href: "/admin/statistics", label: "Statistici", icon: "chart" },
-    { href: "/admin/settings", label: "Setări", icon: "gear" },
+    { href: "/admin/cazari", labelKey: "stays", icon: "bed" },
+    { href: "/admin/guests", labelKey: "clients", icon: "person" },
+    { href: "/admin/calendar", labelKey: "calendar", icon: "calendar" },
+    { href: "/admin/statistics", labelKey: "statistics", icon: "chart" },
+    { href: "/admin/settings", labelKey: "settings", icon: "gear" },
   ];
 
   const visibleTabs = tabs.filter((tab) => {
@@ -48,7 +55,7 @@ export function AdminNav({
   });
 
   return (
-    <nav className="admin-nav admin-hud__nav" aria-label="Meniu administrare">
+    <nav className="admin-nav admin-hud__nav" aria-label={t("menuAria")}>
       {visibleTabs.map((tab) => {
         const active =
           tab.href === "/admin"
@@ -71,9 +78,9 @@ export function AdminNav({
           >
             <AdminHudIcon
               name={tab.icon}
-              className="admin-nav-tab__icon h-[18px] w-[18px] shrink-0"
+              className="admin-nav-tab__icon h-[15px] w-[15px] shrink-0"
             />
-            <span className="admin-nav-tab__label">{tab.label}</span>
+            <span className="admin-nav-tab__label">{t(tab.labelKey)}</span>
             {tab.badge != null && tab.badge > 0 && (
               <span
                 className={[
@@ -82,8 +89,9 @@ export function AdminNav({
                 ]
                   .filter(Boolean)
                   .join(" ")}
+                aria-hidden
               >
-                {tab.badge}
+                {tab.badge > 99 ? "99+" : tab.badge}
               </span>
             )}
           </Link>

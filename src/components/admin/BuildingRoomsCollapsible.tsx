@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { BuildingRoomRow } from "@/services/building-dashboard";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
 import { DeleteConfirmButton } from "./DeleteConfirmButton";
-import { deleteRoomFromBuildingAction } from "@/app/admin/(panel)/buildings/actions";
+import { deleteRoomFromBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 
 export function BuildingRoomsCollapsible({
   rooms,
@@ -26,6 +27,8 @@ export function BuildingRoomsCollapsible({
   /** Sumarul e deja în header-ul clădirii */
   hideSummary?: boolean;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tBuildings = useTranslations("admin.buildings");
   const [open, setOpen] = useState(true);
   const active = rooms.filter((r) => r.is_active);
 
@@ -38,10 +41,10 @@ export function BuildingRoomsCollapsible({
       >
         <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span>
-            Camere · {active.length} active
+            {tCommon("rooms")} · {active.length} {tCommon("active")}
             {rooms.length !== active.length && (
               <span className="ml-1 font-normal text-zinc-400">
-                ({rooms.length} total)
+                ({rooms.length} {tCommon("total")})
               </span>
             )}
           </span>
@@ -59,21 +62,21 @@ export function BuildingRoomsCollapsible({
           {!hideSummary && (
             <p className="flex flex-wrap gap-2 text-xs font-medium">
               <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-800">
-                {freeOnDate} libere
+                {freeOnDate} {tCommon("free")}
               </span>
               <span className="status-occupied-pill rounded-full px-2 py-0.5 text-[11px] font-bold">
-                {occupiedOnDate} ocupate
+                {occupiedOnDate} {tCommon("occupied")}
               </span>
               {pendingOnDate > 0 && (
                 <span className="admin-cereri-glow rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-800">
-                  {pendingOnDate} cereri
+                  {pendingOnDate} {tCommon("requests")}
                 </span>
               )}
             </p>
           )}
 
           {rooms.length === 0 ? (
-            <p className="text-sm text-zinc-400">Nicio cameră — adaugă prima.</p>
+            <p className="text-sm text-zinc-400">{tCommon("noRoomsAddFirst")}</p>
           ) : (
             <RoomAvailabilityGrid>
               {rooms.map((room) => (
@@ -93,7 +96,7 @@ export function BuildingRoomsCollapsible({
 
           <details className="text-xs text-zinc-500">
             <summary className="cursor-pointer font-medium text-zinc-600 hover:text-zinc-900">
-              Listă detalii & ștergere
+              {tBuildings("detailsAndDeleteList")}
             </summary>
             <ul className="mt-2 space-y-1.5">
               {rooms.map((room) => (
@@ -110,11 +113,11 @@ export function BuildingRoomsCollapsible({
                       href={`/admin/rooms/${room.id}/edit`}
                       className="underline"
                     >
-                      Edit
+                      {tCommon("edit")}
                     </Link>
                     <DeleteConfirmButton
-                      label="Șterge"
-                      confirmMessage={`Ștergi „${room.name}”?`}
+                      label={tCommon("delete")}
+                      confirmMessage={tBuildings("deleteRoomConfirm", { room: room.name })}
                       formAction={deleteRoomFromBuildingAction}
                       hiddenFields={{
                         room_id: room.id,

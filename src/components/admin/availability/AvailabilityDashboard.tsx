@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { fetchDayAvailabilityDetailAction } from "@/app/admin/(panel)/disponibilitate/actions";
+import { Link } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { fetchDayAvailabilityDetailAction } from "@/app/[locale]/admin/(panel)/disponibilitate/actions";
 import { heatLevelClass, pressureLabel } from "@/domain/availability/heat";
 import { minFreeAcrossDays } from "@/domain/availability/compute";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
@@ -22,49 +24,35 @@ import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { AvailabilityLiveSync } from "./AvailabilityLiveSync";
 import { AvailabilityWeekendsPanel } from "./AvailabilityWeekendsPanel";
 
-const WEEK_HEADERS = ["Lun", "Mar", "Mie", "Joi", "Vin", "Sam", "Dum"];
-
-const KPI_HELP: Record<string, { title: string; body: string }> = {
-  relaxed: {
-    title: "Zile relaxate",
-    body: "Număr de zile în lună cu cel puțin 3 camere libere simultan — presiune redusă, ușor de vândut last-minute.",
-  },
-  full: {
-    title: "Zile pline",
-    body: "Zile în care toate camerele active sunt ocupate sau blocate — nu mai ai capacitate disponibilă.",
-  },
-  min: {
-    title: "Minim libere",
-    body: "Cea mai strânsă zi din lună: minimul de camere libere într-o singură noapte. Data apare sub etichetă.",
-  },
-  cereri: {
-    title: "Cereri nealocate",
-    body: "Total nopți din lună cu cereri fără cameră alocată — necesită procesare în lista de rezervări.",
-  },
-};
-
 type DisplayMode = "heat" | "free" | "binary";
 
-const HEAT_LEGEND: { key: string; className: string; label: string }[] = [
-  { key: "relaxed", className: "avail-heat-cell--relaxed", label: "Relaxat" },
-  { key: "moderate", className: "avail-heat-cell--moderate", label: "Moderat" },
-  { key: "tight", className: "avail-heat-cell--tight", label: "Strâns" },
-  { key: "full", className: "avail-heat-cell--full", label: "Plin" },
-];
-
-function AvailabilityHeatLegend({ displayMode }: { displayMode: DisplayMode }) {
+function AvailabilityHeatLegend({
+  displayMode,
+  labels,
+}: {
+  displayMode: DisplayMode;
+  labels: {
+    modeHeat: string;
+    modeFree: string;
+    modeBinary: string;
+    ariaLabel: string;
+    departures: string;
+    arrivals: string;
+    legendItems: { key: string; className: string; label: string }[];
+  };
+}) {
   const modeHint =
     displayMode === "heat"
-      ? "Cifră = % ocupare"
+      ? labels.modeHeat
       : displayMode === "free"
-        ? "Cifră = camere libere"
-        : "Plin / liber";
+        ? labels.modeFree
+        : labels.modeBinary;
 
   return (
-    <div className="avail-heat-legend" aria-label="Legendă culori disponibilitate">
+    <div className="avail-heat-legend" aria-label={labels.ariaLabel}>
       <span className="avail-heat-legend__mode">{modeHint}</span>
       <div className="avail-heat-legend__items">
-        {HEAT_LEGEND.map((item) => (
+        {labels.legendItems.map((item) => (
           <span key={item.key} className="avail-heat-legend__item">
             <span
               className={`avail-heat-legend__swatch ${item.className}`}
@@ -76,9 +64,9 @@ function AvailabilityHeatLegend({ displayMode }: { displayMode: DisplayMode }) {
       </div>
       <span className="avail-heat-legend__zones">
         <span className="avail-heat-legend__zone avail-heat-legend__zone--out" />
-        plecări
+        {labels.departures}
         <span className="avail-heat-legend__zone avail-heat-legend__zone--in" />
-        sosiri
+        {labels.arrivals}
       </span>
     </div>
   );
@@ -90,12 +78,23 @@ function HeatDayCell({
   inRange,
   displayMode,
   onSelect,
+  labels,
+  locale,
 }: {
   day: DayAvailability;
   selected: boolean;
   inRange: boolean;
   displayMode: DisplayMode;
   onSelect: (iso: string, shift: boolean) => void;
+  locale: string;
+  labels: {
+    full: string;
+    freeRooms: string;
+    departures: string;
+    arrivals: string;
+    occupancy: string;
+    dayCardHint: string;
+  };
 }) {
   const btnRef = useRef<HTMLButtonElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -118,7 +117,7 @@ function HeatDayCell({
       : displayMode === "heat"
         ? `${day.occupancy_pct}%`
         : day.status === "full"
-          ? "Plin"
+          ? labels.full
           : `${day.free_rooms}`;
 
   const clearHoverTimer = () => {
@@ -155,7 +154,7 @@ function HeatDayCell({
       ]
         .filter(Boolean)
         .join(" ")}
-      title={`${formatDateWithDay(day.iso)} · ${day.free_rooms}/${day.total_rooms} libere · ${pressureLabel(day.pressure)}`}
+      title={`${formatDateWithDay(day.iso, locale)} · ${day.free_rooms}/${day.total_rooms} ${labels.freeRooms.toLowerCase()} · ${pressureLabel(day.pressure)}`}
     >
       <span className="avail-heat-cell__core">
         <span className="avail-heat-cell__dow">{day.weekday}</span>
@@ -173,9 +172,9 @@ function HeatDayCell({
           }
           aria-hidden
         >
-          <span title="Plecări" />
+          <span title={labels.departures} />
           <span />
-          <span title="Sosiri" />
+          <span title={labels.arrivals} />
         </div>
       )}
       {day.unassigned_cereri > 0 && (
@@ -194,20 +193,20 @@ function HeatDayCell({
       width={240}
     >
       <div className="admin-day-preview">
-        <strong>{formatDateWithDay(day.iso)}</strong>
+        <strong>{formatDateWithDay(day.iso, locale)}</strong>
         <span>
-          {day.free_rooms}/{day.total_rooms} libere · {day.occupancy_pct}% ocupare
+          {day.free_rooms}/{day.total_rooms} {labels.freeRooms.toLowerCase()} · {day.occupancy_pct}% {labels.occupancy.toLowerCase()}
         </span>
         <span className="mt-1 block text-zinc-600">{pressureLabel(day.pressure)}</span>
         {(day.checkins > 0 || day.checkouts > 0) && (
           <span className="mt-1 block text-zinc-500">
-            {day.checkins > 0 && `${day.checkins} sosiri`}
+            {day.checkins > 0 && `${day.checkins} ${labels.arrivals.toLowerCase()}`}
             {day.checkins > 0 && day.checkouts > 0 && " · "}
-            {day.checkouts > 0 && `${day.checkouts} plecări`}
+            {day.checkouts > 0 && `${day.checkouts} ${labels.departures.toLowerCase()}`}
           </span>
         )}
         <span className="mt-1.5 block text-[10px] font-semibold text-emerald-700">
-          Click = carte de zi completă
+          {labels.dayCardHint}
         </span>
       </div>
     </AdminFloatingPanel>
@@ -219,10 +218,27 @@ function DayDetailPanel({
   detail,
   year,
   month,
+  labels,
 }: {
   detail: DayAvailabilityDetail;
   year: number;
   month: number;
+  labels: {
+    free: string;
+    occupied: string;
+    rooms: string;
+    arrivals: string;
+    departures: string;
+    unassignedRequest: string;
+    unassignedRequestSuffix: string;
+    processArrow: string;
+    pendingRequestWithRooms: string;
+    freeTitle: string;
+    addBooking: string;
+    requestsPerRoom: string;
+    occupiedTitle: string;
+    focusGanttWeek: string;
+  };
 }) {
   const { day, rooms } = detail;
   const free = rooms.filter((r) => r.status === "free");
@@ -250,10 +266,10 @@ function DayDetailPanel({
           {pressureLabel(day.pressure)}
         </p>
         <p className="mt-0.5 text-sm text-zinc-600">
-          {day.free_rooms} libere · {day.occupied_rooms} ocupate · {day.total_rooms}{" "}
-          camere
-          {day.checkins > 0 && ` · ${day.checkins} sosiri`}
-          {day.checkouts > 0 && ` · ${day.checkouts} plecări`}
+          {day.free_rooms} {labels.free.toLowerCase()} · {day.occupied_rooms} {labels.occupied.toLowerCase()} · {day.total_rooms}{" "}
+          {labels.rooms.toLowerCase()}
+          {day.checkins > 0 && ` · ${day.checkins} ${labels.arrivals.toLowerCase()}`}
+          {day.checkouts > 0 && ` · ${day.checkouts} ${labels.departures.toLowerCase()}`}
         </p>
       </div>
 
@@ -263,21 +279,20 @@ function DayDetailPanel({
             href="/admin/bookings"
             className="admin-cereri-glow block rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-900 hover:bg-red-100"
           >
-            {detail.unassigned_cereri} cerere
-            {detail.unassigned_cereri !== 1 ? "i" : ""} nealocată
-            {detail.unassigned_cereri !== 1 ? "" : "ă"} — procesează →
+            {detail.unassigned_cereri} {labels.unassignedRequest}
+            {detail.unassigned_cereri !== 1 ? labels.unassignedRequestSuffix : ""} — {labels.processArrow}
           </Link>
         )}
         {detail.pending_cereri > 0 && (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
-            {detail.pending_cereri} cerere cu camere în așteptare
+            {detail.pending_cereri} {labels.pendingRequestWithRooms}
           </p>
         )}
 
         {free.length > 0 && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-              Libere ({free.length})
+              {labels.freeTitle} ({free.length})
             </h3>
             <ul className="mt-2 space-y-1.5">
               {free.map((r) => (
@@ -297,7 +312,7 @@ function DayDetailPanel({
                       </span>
                     </span>
                     <span className="text-[10px] font-bold text-emerald-700">
-                      + Rezervare
+                      + {labels.addBooking}
                     </span>
                   </Link>
                 </li>
@@ -309,7 +324,7 @@ function DayDetailPanel({
         {cereri.length > 0 && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wide text-amber-700">
-              Cereri pe cameră ({cereri.length})
+              {labels.requestsPerRoom} ({cereri.length})
             </h3>
             <ul className="mt-2 space-y-1.5">
               {cereri.map((r) => (
@@ -337,7 +352,7 @@ function DayDetailPanel({
         {occupied.length > 0 && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wide text-rose-700">
-              Ocupate ({occupied.length})
+              {labels.occupiedTitle} ({occupied.length})
             </h3>
             <ul className="mt-2 space-y-1.5">
               {occupied.map((r) => (
@@ -369,7 +384,7 @@ function DayDetailPanel({
           href={`/admin/calendar?y=${day.iso.slice(0, 4)}&m=${Number(day.iso.slice(5, 7)) - 1}&ws=${mondayOfWeekIso(day.iso)}`}
           className="text-sm font-semibold text-emerald-700 hover:underline"
         >
-          Focus Gantt (săptămâna) →
+          {labels.focusGanttWeek} →
         </Link>
       </div>
     </div>
@@ -399,6 +414,9 @@ export function AvailabilityDashboard({
   queryPrefix?: string;
   extraQueryParams?: Record<string, string | undefined>;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tAvail = useTranslations("admin.availabilityDashboard");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [dashboard] = useState(initial);
@@ -409,6 +427,43 @@ export function AvailabilityDashboard({
   const [rangeStart, setRangeStart] = useState<string | null>(null);
   const [rangeEnd, setRangeEnd] = useState<string | null>(null);
   const [kpiHelp, setKpiHelp] = useState<string | null>(null);
+  const weekHeaders = [
+    tAvail("weekdayMon"),
+    tAvail("weekdayTue"),
+    tAvail("weekdayWed"),
+    tAvail("weekdayThu"),
+    tAvail("weekdayFri"),
+    tAvail("weekdaySat"),
+    tAvail("weekdaySun"),
+  ];
+  const kpiHelpMap: Record<string, { title: string; body: string }> = {
+    relaxed: { title: tAvail("kpiRelaxedTitle"), body: tAvail("kpiRelaxedBody") },
+    full: { title: tAvail("kpiFullTitle"), body: tAvail("kpiFullBody") },
+    min: { title: tAvail("kpiMinTitle"), body: tAvail("kpiMinBody") },
+    cereri: { title: tAvail("kpiRequestsTitle"), body: tAvail("kpiRequestsBody") },
+  };
+  const heatLegendLabels = {
+    modeHeat: tAvail("metricOccupancyPct"),
+    modeFree: tAvail("metricFreeRooms"),
+    modeBinary: tAvail("metricBinary"),
+    ariaLabel: tAvail("availabilityColorLegend"),
+    departures: tCommon("departuresLabel"),
+    arrivals: tCommon("arrivals"),
+    legendItems: [
+      { key: "relaxed", className: "avail-heat-cell--relaxed", label: tAvail("relaxed") },
+      { key: "moderate", className: "avail-heat-cell--moderate", label: tAvail("moderate") },
+      { key: "tight", className: "avail-heat-cell--tight", label: tAvail("tight") },
+      { key: "full", className: "avail-heat-cell--full", label: tCommon("full") },
+    ],
+  };
+  const heatCellLabels = {
+    full: tCommon("full"),
+    freeRooms: tAvail("freeRooms"),
+    departures: tCommon("departuresLabel"),
+    arrivals: tCommon("arrivals"),
+    occupancy: tCommon("occupancy"),
+    dayCardHint: tAvail("clickForDayCard"),
+  };
 
   const buildingId = initialBuildingId;
   const featureFilter = initialFeatureFilter;
@@ -581,7 +636,7 @@ export function AvailabilityDashboard({
         ? [rangeStart, rangeEnd]
         : [rangeEnd, rangeStart]
       : [rangeStart!, rangeStart!];
-    const text = `Casa Emil: ${formatDateWithDay(a!)} – ${formatDateWithDay(b!)} · min ${rangeStats.min} camere libere / noapte`;
+    const text = `${tAvail("clipboardPrefix")}: ${formatDateWithDay(a!, locale)} – ${formatDateWithDay(b!, locale)} · ${tCommon("min")} ${rangeStats.min} ${tAvail("freeRooms").toLowerCase()} / ${tCommon("night")}`;
     void navigator.clipboard.writeText(text);
   };
 
@@ -594,9 +649,9 @@ export function AvailabilityDashboard({
         <div className="avail-display-mode">
           {(
             [
-              ["heat", "% ocupare"],
-              ["free", "Camere libere"],
-              ["binary", "Plin / liber"],
+              ["heat", tAvail("metricOccupancyPct")],
+              ["free", tAvail("freeRooms")],
+              ["binary", tAvail("metricBinary")],
             ] as const
           ).map(([mode, label]) => (
             <button
@@ -620,7 +675,7 @@ export function AvailabilityDashboard({
               .join(" ")}
             onClick={() => pushParams({ view: "month", ws: undefined })}
           >
-            Lună
+            {tCommon("month")}
           </button>
           <button
             type="button"
@@ -637,7 +692,7 @@ export function AvailabilityDashboard({
               })
             }
           >
-            7 zile
+            {tCommon("sevenDays")}
           </button>
         </div>
       </div>
@@ -645,21 +700,21 @@ export function AvailabilityDashboard({
       <div className="avail-kpi-strip">
         {(
           [
-            ["relaxed", kpis.days_relaxed, "Zile cu ≥3 camere libere", "avail-kpi-card--good"],
-            ["full", kpis.days_full, "Zile pline", ""],
+            ["relaxed", kpis.days_relaxed, tAvail("kpiRelaxedLabel"), "avail-kpi-card--good"],
+            ["full", kpis.days_full, tAvail("kpiFullLabel"), ""],
             [
               "min",
               kpis.min_free_rooms,
-              "Minim libere",
+              tAvail("kpiMinLabel"),
               "",
               kpis.min_free_day_iso
-                ? `pe ${kpis.min_free_day_iso.slice(8, 10)}.${kpis.min_free_day_iso.slice(5, 7)}`
+                ? tAvail("onDate", { date: new Date(kpis.min_free_day_iso).toLocaleDateString(locale) })
                 : undefined,
             ],
             [
               "cereri",
               kpis.unassigned_nights,
-              "Nopți cu cereri nealocate",
+              tAvail("kpiUnassignedNightsLabel"),
               kpis.unassigned_nights > 0 ? "avail-kpi-card--alert" : "",
             ],
           ] as const
@@ -669,7 +724,7 @@ export function AvailabilityDashboard({
             type="button"
             className={["avail-kpi-card text-left", extra].filter(Boolean).join(" ")}
             onClick={() => setKpiHelp(key)}
-            title="Click pentru explicație"
+            title={tAvail("clickForExplanation")}
           >
             <p className="avail-kpi-card__value">{value}</p>
             <p className="avail-kpi-card__label">
@@ -686,14 +741,14 @@ export function AvailabilityDashboard({
 
       {kpis.vs_prev_full_delta !== 0 && (
         <p className="text-xs text-zinc-600">
-          vs luna trecută:{" "}
+          {tAvail("vsLastMonth")}:{" "}
           <strong
             className={
               kpis.vs_prev_full_delta > 0 ? "text-rose-700" : "text-emerald-700"
             }
           >
             {kpis.vs_prev_full_delta > 0 ? "+" : ""}
-            {kpis.vs_prev_full_delta} zile pline
+            {kpis.vs_prev_full_delta} {tAvail("fullDays")}
           </strong>
         </p>
       )}
@@ -726,7 +781,7 @@ export function AvailabilityDashboard({
             )
           }
         >
-          Toate · {dashboard.total_rooms}
+          {tCommon("all")} · {dashboard.total_rooms}
         </button>
         {dashboard.buildings.map((b) => (
           <button
@@ -764,9 +819,9 @@ export function AvailabilityDashboard({
       <div className="avail-building-chips mt-2">
         {(
           [
-            { value: "all" as const, label: "Toate opțiunile" },
-            { value: "ac" as const, label: "Cu AC" },
-            { value: "fridge" as const, label: "Cu frigider" },
+            { value: "all" as const, label: tAvail("allOptions") },
+            { value: "ac" as const, label: tAvail("withAc") },
+            { value: "fridge" as const, label: tCommon("withFridge") },
           ] as const
         ).map((opt) => (
           <button
@@ -793,9 +848,9 @@ export function AvailabilityDashboard({
       {rangeDays.length > 0 && (
         <div className="avail-interval-bar flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-medium text-zinc-800">
-            Interval {formatDateWithDay(rangeDays[0]!.iso)} →{" "}
-            {formatDateWithDay(rangeDays[rangeDays.length - 1]!.iso)} · minim{" "}
-            <strong>{rangeStats.min}</strong> camere libere / noapte
+            {tCommon("interval")} {formatDateWithDay(rangeDays[0]!.iso, locale)} →{" "}
+            {formatDateWithDay(rangeDays[rangeDays.length - 1]!.iso, locale)} · minim{" "}
+            <strong>{rangeStats.min}</strong> {tAvail("freeRooms").toLowerCase()} / {tCommon("night")}
           </p>
           <div className="flex gap-2">
             <button
@@ -803,7 +858,7 @@ export function AvailabilityDashboard({
               className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
               onClick={copyIntervalText}
             >
-              Copiază pentru client
+              {tAvail("copyForClient")}
             </button>
             <button
               type="button"
@@ -813,24 +868,24 @@ export function AvailabilityDashboard({
                 setRangeEnd(null);
               }}
             >
-              Șterge interval
+              {tAvail("clearInterval")}
             </button>
           </div>
         </div>
       )}
 
       <p className="text-[11px] text-zinc-500">
-        Shift+click pe zile pentru interval · Click normal = detalii
+        {tAvail("shiftClickHint")}
       </p>
 
-      <RetroXpWindow title={`Disponibilitate — ${dashboard.title}`}>
+      <RetroXpWindow title={`${tCommon("availability")} — ${dashboard.title}`}>
       <div className="availability-layout">
         <div className="availability-grid-panel min-w-0">
           {view === "month" ? (
             <>
               <div className="availability-month-matrix">
                 <div className="availability-month-grid availability-month-grid--calendar">
-                  {WEEK_HEADERS.map((h) => (
+                  {weekHeaders.map((h) => (
                     <div key={h} className="availability-month-header">
                       {h}
                     </div>
@@ -850,27 +905,28 @@ export function AvailabilityDashboard({
                           inRange={inRange(cell.day.iso)}
                           displayMode={displayMode}
                           onSelect={handleDayClick}
+                          labels={heatCellLabels}
+                          locale={locale}
                         />
                       </div>
                     )
                   )}
                 </div>
 
-                <AvailabilityHeatLegend displayMode={displayMode} />
+                <AvailabilityHeatLegend displayMode={displayMode} labels={heatLegendLabels} />
               </div>
             </>
           ) : (
             <div className="availability-week-matrix">
               <div className="availability-month-grid availability-month-grid--calendar">
-                {WEEK_HEADERS.map((h) => (
+                {weekHeaders.map((h) => (
                   <div key={`w-${h}`} className="availability-month-header">
                     {h}
                   </div>
                 ))}
               {weekSlots.every((d) => d === null) ? (
                 <p className="availability-week-empty">
-                  Navighează la luna care conține această săptămână sau alege o zi din
-                  lună.
+                  {tAvail("navigateToWeekMonth")}
                 </p>
               ) : (
                 weekSlots.map((d, i) => {
@@ -895,13 +951,15 @@ export function AvailabilityDashboard({
                         inRange={inRange(d.iso)}
                         displayMode={displayMode}
                         onSelect={handleDayClick}
+                        labels={heatCellLabels}
+                        locale={locale}
                       />
                     </div>
                   );
                 })
               )}
               </div>
-              <AvailabilityHeatLegend displayMode={displayMode} />
+              <AvailabilityHeatLegend displayMode={displayMode} labels={heatLegendLabels} />
               <div className="availability-week-nav">
                 <button
                   type="button"
@@ -913,7 +971,7 @@ export function AvailabilityDashboard({
                     })
                   }
                 >
-                  ← Săpt. anterioară
+                  ← {tAvail("previousWeek")}
                 </button>
                 <button
                   type="button"
@@ -925,7 +983,7 @@ export function AvailabilityDashboard({
                     })
                   }
                 >
-                  Săpt. următoare →
+                  {tAvail("nextWeek")} →
                 </button>
               </div>
             </div>
@@ -933,7 +991,7 @@ export function AvailabilityDashboard({
         </div>
 
         {loading && selectedIso && (
-          <p className="mt-3 text-center text-sm text-zinc-500">Se încarcă cartea de zi…</p>
+          <p className="mt-3 text-center text-sm text-zinc-500">{tAvail("loadingDayCard")}</p>
         )}
       </div>
       </RetroXpWindow>
@@ -952,7 +1010,7 @@ export function AvailabilityDashboard({
         }}
         title={
           detail
-            ? `Carte de zi — ${formatDateWithDay(detail.day.iso, true)}`
+            ? `${tAvail("dayCard")} — ${formatDateWithDay(detail.day.iso, locale, true)}`
             : undefined
         }
         variant="modal"
@@ -963,19 +1021,35 @@ export function AvailabilityDashboard({
             detail={detail}
             year={dashboard.year}
             month={dashboard.month}
+            labels={{
+              free: tCommon("free"),
+              occupied: tCommon("occupied"),
+              rooms: tCommon("rooms"),
+              arrivals: tCommon("arrivals"),
+              departures: tCommon("departuresLabel"),
+              unassignedRequest: tAvail("unassignedRequest"),
+              unassignedRequestSuffix: tAvail("unassignedRequestSuffix"),
+              processArrow: tAvail("processArrow"),
+              pendingRequestWithRooms: tAvail("pendingRequestWithRooms"),
+              freeTitle: tAvail("freeTitle"),
+              addBooking: tAvail("addBooking"),
+              requestsPerRoom: tAvail("requestsPerRoom"),
+              occupiedTitle: tAvail("occupiedTitle"),
+              focusGanttWeek: tAvail("focusGanttWeek"),
+            }}
           />
         )}
       </AdminFloatingPanel>
 
       <AdminFloatingPanel
-        open={!!kpiHelp && !!KPI_HELP[kpiHelp]}
+        open={!!kpiHelp && !!kpiHelpMap[kpiHelp]}
         onClose={() => setKpiHelp(null)}
-        title={kpiHelp ? KPI_HELP[kpiHelp].title : undefined}
+        title={kpiHelp ? kpiHelpMap[kpiHelp].title : undefined}
         variant="modal"
         width={400}
       >
         {kpiHelp && (
-          <p className="admin-alert-dialog__message">{KPI_HELP[kpiHelp].body}</p>
+          <p className="admin-alert-dialog__message">{kpiHelpMap[kpiHelp].body}</p>
         )}
       </AdminFloatingPanel>
     </div>

@@ -2,12 +2,13 @@
 
 import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { useTranslations } from "next-intl";
 import {
   createRoomOptionAction,
   createRoomTypeAction,
   updateRoomOptionAction,
   updateRoomTypeAction,
-} from "@/app/admin/(panel)/settings/location/catalog/actions";
+} from "@/app/[locale]/admin/(panel)/settings/location/catalog/actions";
 
 export function AdminRoomCatalogPanel({
   types,
@@ -18,14 +19,16 @@ export function AdminRoomCatalogPanel({
   options: RoomOptionDefinition[];
   catalogError: string | null;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tCatalog = useTranslations("admin.roomCatalogPanel");
   if (catalogError) {
     return (
       <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
         {catalogError}
         <span className="mt-1 block">
-          Rulează migrarea{" "}
+          {tCatalog("runMigration")}{" "}
           <code className="text-xs">015_room_catalog.sql</code> în Supabase SQL
-          Editor.
+          {tCatalog("inSqlEditor")}
         </span>
       </p>
     );
@@ -34,10 +37,9 @@ export function AdminRoomCatalogPanel({
   return (
     <div className="space-y-8">
       <section>
-        <h3 className="text-sm font-semibold text-zinc-900">Tipuri cameră</h3>
+        <h3 className="text-sm font-semibold text-zinc-900">{tCatalog("roomTypesTitle")}</h3>
         <p className="mt-1 text-xs text-zinc-500">
-          Preț bază + capacitate. Opțiunile bifate se aplică implicit la camere
-          noi.
+          {tCatalog("roomTypesSubtitle")}
         </p>
         <ul className="mt-4 space-y-3">
           {types.map((t) => (
@@ -49,25 +51,25 @@ export function AdminRoomCatalogPanel({
                 <input type="hidden" name="id" value={t.id} />
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="text-sm">
-                    Nume
+                    {tCommon("name")}
                     <input name="name" defaultValue={t.name} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                   <label className="text-sm">
-                    Capacitate
+                    {tCatalog("capacity")}
                     <input name="capacity_base" type="number" min={1} defaultValue={t.capacity_base} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                   <label className="text-sm">
-                    Preț bază / noapte
+                    {tCatalog("basePricePerNight")}
                     <input name="base_price_per_night" type="number" min={0} defaultValue={t.base_price_per_night} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                   <label className="text-sm">
-                    Ordine
+                    {tCommon("displayOrder")}
                     <input name="sort_order" type="number" defaultValue={t.sort_order} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                 </div>
                 {options.length > 0 && (
                   <fieldset className="text-sm">
-                    <legend className="mb-1 font-medium">Opțiuni implicite</legend>
+                    <legend className="mb-1 font-medium">{tCatalog("defaultOptions")}</legend>
                     <div className="flex flex-wrap gap-3">
                       {options.map((o) => (
                         <label key={o.id} className="flex items-center gap-1.5">
@@ -85,10 +87,10 @@ export function AdminRoomCatalogPanel({
                 )}
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" name="is_active" defaultChecked={t.is_active} />
-                  Activ {t.is_system && <span className="text-zinc-400">(sistem)</span>}
+                  {tCommon("active")} {t.is_system && <span className="text-zinc-400">({tCatalog("system")})</span>}
                 </label>
                 <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
-                  Salvează tip
+                  {tCatalog("saveType")}
                 </button>
               </AdminPendingForm>
             </li>
@@ -96,36 +98,35 @@ export function AdminRoomCatalogPanel({
         </ul>
 
         <AdminPendingForm action={createRoomTypeAction} className="mt-4 space-y-3 rounded-xl border border-dashed border-zinc-300 p-4">
-          <p className="text-sm font-medium">Tip custom nou</p>
+          <p className="text-sm font-medium">{tCatalog("newCustomType")}</p>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-sm">
-              Nume
-              <input name="name" placeholder="Family Suite" required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              {tCommon("name")}
+              <input name="name" placeholder={tCatalog("familySuite")} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
             <label className="text-sm">
-              Capacitate
+              {tCatalog("capacity")}
               <input name="capacity_base" type="number" min={1} defaultValue={2} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
             <label className="text-sm">
-              Preț bază
+              {tCatalog("basePrice")}
               <input name="base_price_per_night" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
             <label className="text-sm">
-              Ordine
+              {tCommon("displayOrder")}
               <input name="sort_order" type="number" defaultValue={types.length + 1} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
           </div>
           <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
-            Adaugă tip
+            {tCatalog("addType")}
           </button>
         </AdminPendingForm>
       </section>
 
       <section>
-        <h3 className="text-sm font-semibold text-zinc-900">Opțiuni modulare</h3>
+        <h3 className="text-sm font-semibold text-zinc-900">{tCatalog("modularOptionsTitle")}</h3>
         <p className="mt-1 text-xs text-zinc-500">
-          AC, frigider, etc. Supliment la preț. Politica per clădire se setează la
-          crearea clădirii.
+          {tCatalog("modularOptionsSubtitle")}
         </p>
         <ul className="mt-4 space-y-3">
           {options.map((o) => (
@@ -134,28 +135,28 @@ export function AdminRoomCatalogPanel({
                 <input type="hidden" name="id" value={o.id} />
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="text-sm">
-                    Nume
+                    {tCommon("name")}
                     <input name="name" defaultValue={o.name} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                   <label className="text-sm">
-                    Supliment / noapte
+                    {tCatalog("addonPerNight")}
                     <input name="price_per_night_addon" type="number" min={0} defaultValue={o.price_per_night_addon} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                   <label className="text-sm">
-                    Ordine
+                    {tCommon("displayOrder")}
                     <input name="sort_order" type="number" defaultValue={o.sort_order} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                   <label className="text-sm sm:col-span-2 lg:col-span-1">
-                    Descriere
+                    {tCommon("description")}
                     <input name="description" defaultValue={o.description ?? ""} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
                   </label>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" name="is_active" defaultChecked={o.is_active} />
-                  Activ {o.is_system && <span className="text-zinc-400">(sistem · {o.slug})</span>}
+                  {tCommon("active")} {o.is_system && <span className="text-zinc-400">({tCatalog("system")} · {o.slug})</span>}
                 </label>
                 <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
-                  Salvează opțiune
+                  {tCatalog("saveOption")}
                 </button>
               </AdminPendingForm>
             </li>
@@ -163,23 +164,23 @@ export function AdminRoomCatalogPanel({
         </ul>
 
         <AdminPendingForm action={createRoomOptionAction} className="mt-4 space-y-3 rounded-xl border border-dashed border-zinc-300 p-4">
-          <p className="text-sm font-medium">Opțiune custom nouă</p>
+          <p className="text-sm font-medium">{tCatalog("newCustomOption")}</p>
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="text-sm">
-              Nume
-              <input name="name" placeholder="Balcon" required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              {tCommon("name")}
+              <input name="name" placeholder={tCatalog("balcony")} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
             <label className="text-sm">
-              Supliment / noapte
+              {tCatalog("addonPerNight")}
               <input name="price_per_night_addon" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
             <label className="text-sm">
-              Descriere
+              {tCommon("description")}
               <input name="description" className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
           </div>
           <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
-            Adaugă opțiune
+            {tCatalog("addOption")}
           </button>
         </AdminPendingForm>
       </section>

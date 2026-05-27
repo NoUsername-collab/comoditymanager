@@ -280,7 +280,7 @@ export async function createRoomType(input: {
 }): Promise<{ id: string }> {
   const supabase = createAdminClient();
   const slug = slugifyCatalogName(input.name);
-  if (!slug) throw new Error("Nume tip invalid");
+  if (!slug) throw new Error("room_type.invalid_name");
 
   const { data, error } = await supabase
     .from("room_type_definitions")
@@ -350,7 +350,7 @@ export async function createRoomOption(input: {
 }): Promise<{ id: string }> {
   const supabase = createAdminClient();
   const slug = slugifyCatalogName(input.name);
-  if (!slug) throw new Error("Nume opțiune invalid");
+  if (!slug) throw new Error("room_option.invalid_name");
 
   const { data, error } = await supabase
     .from("room_option_definitions")

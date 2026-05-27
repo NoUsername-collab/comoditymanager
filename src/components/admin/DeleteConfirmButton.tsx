@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function DeleteConfirmButton({
@@ -14,6 +15,7 @@ export function DeleteConfirmButton({
   formAction: (formData: FormData) => Promise<void>;
   hiddenFields: Record<string, string>;
 }) {
+  const tCommon = useTranslations("admin.common");
   const [open, setOpen] = useState(false);
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -52,7 +54,7 @@ export function DeleteConfirmButton({
           disabled={pending}
           className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
         >
-          {pending ? "Se șterge…" : "Da, șterge"}
+          {pending ? tCommon("deleting") : tCommon("confirmDelete")}
         </button>
         <button
           type="button"
@@ -60,7 +62,7 @@ export function DeleteConfirmButton({
           onClick={() => setOpen(false)}
           className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-xs text-zinc-700"
         >
-          Anulează
+          {tCommon("cancel")}
         </button>
       </div>
     </form>

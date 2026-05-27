@@ -33,12 +33,12 @@ export async function updateStaffPasswordByEmail(
   newPassword: string
 ): Promise<void> {
   if (!newPassword || newPassword.length < 8) {
-    throw new Error("Parola trebuie să aibă cel puțin 8 caractere");
+    throw new Error("staff.password_min_8_chars");
   }
 
   const allowed = listStaffAccounts().map((a) => a.email.toLowerCase());
   if (!allowed.includes(email.toLowerCase())) {
-    throw new Error("Cont staff necunoscut");
+    throw new Error("staff.unknown_account");
   }
 
   const supabase = createAdminClient();
@@ -52,7 +52,7 @@ export async function updateStaffPasswordByEmail(
   );
   if (!user) {
     throw new Error(
-      "Contul nu există în Supabase. Rulează npm run setup-staff."
+      "staff.account_missing_in_supabase_run_setup_staff"
     );
   }
 

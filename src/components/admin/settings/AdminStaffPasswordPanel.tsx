@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { changeStaffPasswordAction } from "@/app/admin/(panel)/settings/actions";
+import { useTranslations } from "next-intl";
+import { changeStaffPasswordAction } from "@/app/[locale]/admin/(panel)/settings/actions";
 import type { StaffAccount } from "@/services/staff-accounts";
 
 export function AdminStaffPasswordPanel({
@@ -9,6 +10,8 @@ export function AdminStaffPasswordPanel({
 }: {
   accounts: StaffAccount[];
 }) {
+  const tPage = useTranslations("admin.pages.settingsLocation.staffPanel");
+  const tCommon = useTranslations("admin.common");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -23,14 +26,14 @@ export function AdminStaffPasswordPanel({
         try {
           const result = await changeStaffPasswordAction(formData);
           if (result?.error) setError(result.error);
-          if (result?.ok) setSuccess("Parola a fost actualizată.");
+          if (result?.ok) setSuccess(tPage("passwordUpdated"));
         } finally {
           setPending(false);
         }
       }}
     >
       <label>
-        <span>Cont staff</span>
+        <span>{tPage("staffAccount")}</span>
         <select name="staff_email" required defaultValue={accounts[0]?.email}>
           {accounts.map((a) => (
             <option key={a.email} value={a.email}>
@@ -40,7 +43,7 @@ export function AdminStaffPasswordPanel({
         </select>
       </label>
       <label>
-        <span>Parolă nouă</span>
+        <span>{tPage("newPassword")}</span>
         <input
           name="new_password"
           type="password"
@@ -48,10 +51,10 @@ export function AdminStaffPasswordPanel({
           minLength={8}
           required
         />
-        <p className="admin-settings-hint">Minim 8 caractere.</p>
+        <p className="admin-settings-hint">{tPage("minLength")}</p>
       </label>
       <label>
-        <span>Confirmă parola</span>
+        <span>{tPage("confirmPassword")}</span>
         <input
           name="confirm_password"
           type="password"
@@ -75,7 +78,7 @@ export function AdminStaffPasswordPanel({
         disabled={pending}
         className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
       >
-        {pending ? "Se salvează…" : "Schimbă parola"}
+        {pending ? tCommon("saving") : tPage("changePassword")}
       </button>
     </form>
   );

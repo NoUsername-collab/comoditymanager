@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -9,7 +10,7 @@ import {
 import {
   moveBookingRoomFromPivotAction,
   previewRoomMoveAction,
-} from "@/app/admin/(panel)/calendar/actions";
+} from "@/app/[locale]/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
@@ -31,6 +32,8 @@ type Props = {
 };
 
 export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
   const router = useRouter();
   const { notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
@@ -72,12 +75,12 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
         error: null,
         text:
           p.mode === "full"
-            ? `${draft.sourceRoomName} → ${rooms.find((r) => r.id === targetRoomId)?.name ?? "cameră"} · ` +
-              `${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, true)} · ` +
-              `Total: ${p.oldTotal} → ${p.newTotal} RON`
-            : `${draft.sourceRoomName}: ${formatStayPeriod(p.sourceSegment?.start ?? "", p.sourceSegment?.end ?? "", true)} · ` +
-              `→ ${rooms.find((r) => r.id === targetRoomId)?.name ?? "cameră"}: ${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, true)} · ` +
-              `Total: ${p.oldTotal} → ${p.newTotal} RON`,
+            ? `${draft.sourceRoomName} → ${rooms.find((r) => r.id === targetRoomId)?.name ?? tCommon("room")} · ` +
+              `${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, locale, true)} · ` +
+              `${tCommon("total")}: ${p.oldTotal} → ${p.newTotal} RON`
+            : `${draft.sourceRoomName}: ${formatStayPeriod(p.sourceSegment?.start ?? "", p.sourceSegment?.end ?? "", locale, true)} · ` +
+              `→ ${rooms.find((r) => r.id === targetRoomId)?.name ?? tCommon("room")}: ${formatStayPeriod(p.targetSegment.start, p.targetSegment.end, locale, true)} · ` +
+              `${tCommon("total")}: ${p.oldTotal} → ${p.newTotal} RON`,
       });
     });
     return () => {
@@ -99,7 +102,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
     if (!draft) return;
     const current = draft;
     if (!targetRoomId) {
-      setSubmitError("Alege camera țintă.");
+      setSubmitError(tGantt("moveRoom.chooseTarget"));
       return;
     }
     setSubmitError(null);
@@ -113,7 +116,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
         setSubmitError(res.error);
         return;
       }
-      notifyMoved("Cameră mutată", `${current.guestName} — camera a fost actualizată`);
+      notifyMoved(tGantt("moveRoom.moved"), tGantt("moveRoom.updated", { guestName: current.guestName }));
       onClose();
       router.refresh();
     });
@@ -123,7 +126,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
     <AdminFloatingPanel
       open
       onClose={onClose}
-      title="Mută cameră"
+      title={tGantt("moveRoom.title")}
       variant="modal"
       width={440}
     >
@@ -131,12 +134,11 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
         <p className="text-sm text-zinc-600">
           <strong>{draft.guestName}</strong>
           <br />
-          Din <strong>{draft.sourceRoomName}</strong> — dacă sejurul nu a început, mutăm tot
-          intervalul; dacă a început deja, segmentăm doar din ziua mutării.
+          {tGantt.rich("moveRoom.introHtml", { room: () => <strong>{draft.sourceRoomName}</strong> })}
         </p>
 
         <label className="block text-xs font-semibold text-zinc-600">
-          Camera țintă
+          {tGantt("moveRoom.targetRoom")}
           <select
             className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
             value={targetRoomId}
@@ -145,7 +147,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
               setSubmitError(null);
             }}
           >
-            <option value="">Selectează…</option>
+            <option value="">{tCommon("selectPlaceholder")}</option>
             {targets.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name} · {r.building_name}
@@ -172,10 +174,10 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
           disabled={pending || !targetRoomId}
           onClick={submit}
         >
-          Confirmă mutarea
+          {tGantt("moveRoom.confirm")}
         </button>
         <button type="button" className="admin-floating-panel__btn w-full" onClick={onClose}>
-          Anulează
+          {tCommon("cancel")}
         </button>
       </div>
     </AdminFloatingPanel>

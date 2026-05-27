@@ -1,15 +1,17 @@
 "use client";
 
 import { useAdminTheme } from "@/components/admin/AdminAppearanceProvider";
+import { useTranslations } from "next-intl";
 
 export function AdminDayNightSwitch() {
+  const tCommon = useTranslations("admin.common");
   const { mode, setMode } = useAdminTheme();
 
   return (
     <div
       className="admin-dn-switch"
       role="group"
-      aria-label="Temă panou administrare"
+      aria-label={tCommon("adminTheme")}
     >
       <button
         type="button"
@@ -25,7 +27,7 @@ export function AdminDayNightSwitch() {
         <span className="admin-dn-switch__icon" aria-hidden>
           ☀
         </span>
-        Zi
+        {tCommon("day")}
       </button>
       <button
         type="button"
@@ -41,7 +43,7 @@ export function AdminDayNightSwitch() {
         <span className="admin-dn-switch__icon" aria-hidden>
           ☽
         </span>
-        Noapte
+        {tCommon("night")}
       </button>
     </div>
   );

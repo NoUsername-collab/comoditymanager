@@ -4,6 +4,7 @@ import type { Building, Floor } from "@/types/database";
 import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
@@ -41,6 +42,8 @@ export function RoomEditForm({
   policiesByBuilding,
   updateRoomAction,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tEdit = useTranslations("admin.roomEditForm");
   const [buildingId, setBuildingId] = useState(room.building_id);
   const [typeId, setTypeId] = useState(
     room.room_type_definition_id ?? types.find((t) => t.slug === "double")?.id ?? ""
@@ -60,11 +63,11 @@ export function RoomEditForm({
           defaultChecked={room.is_active}
           className="rounded"
         />
-        <span className="text-sm font-medium">Cameră activă</span>
+        <span className="text-sm font-medium">{tEdit("roomActive")}</span>
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium">Clădire</span>
+        <span className="text-sm font-medium">{tCommon("building")}</span>
         <select
           name="building_id"
           value={buildingId}
@@ -80,13 +83,13 @@ export function RoomEditForm({
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium">Etaj</span>
+        <span className="text-sm font-medium">{tEdit("floor")}</span>
         <select
           name="floor_id"
           defaultValue={room.floor_id ?? ""}
           className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
         >
-          <option value="">— fără —</option>
+          <option value="">{tEdit("withoutFloor")}</option>
           {floors.map((f) => (
             <option key={f.id} value={f.id}>
               {f.name}
@@ -96,7 +99,7 @@ export function RoomEditForm({
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium">Tip cameră</span>
+        <span className="text-sm font-medium">{tEdit("roomType")}</span>
         <select
           name="room_type_definition_id"
           value={typeId}
@@ -112,7 +115,7 @@ export function RoomEditForm({
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium">Nume</span>
+        <span className="text-sm font-medium">{tCommon("name")}</span>
         <input
           name="name"
           defaultValue={room.name}
@@ -130,7 +133,7 @@ export function RoomEditForm({
 
       <div className="grid grid-cols-2 gap-4">
         <label className="block">
-          <span className="text-sm font-medium">Capacitate</span>
+          <span className="text-sm font-medium">{tEdit("capacity")}</span>
           <input
             name="capacity_base"
             type="number"
@@ -140,7 +143,7 @@ export function RoomEditForm({
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium">Preț/noapte</span>
+          <span className="text-sm font-medium">{tEdit("pricePerNight")}</span>
           <input
             name="price_per_night"
             type="number"
@@ -158,11 +161,11 @@ export function RoomEditForm({
           defaultChecked={room.allows_extra_beds}
           className="rounded"
         />
-        <span className="text-sm">Paturi suplimentare</span>
+        <span className="text-sm">{tEdit("extraBeds")}</span>
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium">Max paturi extra</span>
+        <span className="text-sm font-medium">{tEdit("maxExtraBeds")}</span>
         <input
           name="max_extra_beds_per_room"
           type="number"
@@ -174,7 +177,7 @@ export function RoomEditForm({
       </label>
 
       <label className="block">
-        <span className="text-sm font-medium">Ordine</span>
+        <span className="text-sm font-medium">{tCommon("displayOrder")}</span>
         <input
           name="sort_order"
           type="number"
@@ -187,7 +190,7 @@ export function RoomEditForm({
         type="submit"
         className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
       >
-        Salvează modificările
+        {tEdit("saveChanges")}
       </button>
     </AdminPendingForm>
   );

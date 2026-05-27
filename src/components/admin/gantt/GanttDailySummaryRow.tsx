@@ -5,6 +5,7 @@ import {
   dailyFreeHeatLevel,
 } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
+import { useTranslations } from "next-intl";
 
 function ganttDayGridStyle(dayCount: number): React.CSSProperties {
   return {
@@ -31,17 +32,18 @@ export function GanttDailySummaryRow({
   onPanPointerDown?: React.PointerEventHandler<HTMLDivElement>;
   panActive?: boolean;
 }) {
+  const tCommon = useTranslations("admin.common");
   const dayCount = viewRange.days.length;
 
   return (
     <tr className="gantt-summary-row border-b border-zinc-200">
       <td className="gantt-summary-row__label sticky left-0 z-30 border-r border-zinc-200 px-3 py-1.5 align-middle">
         <span className="gantt-summary-row__label-title">
-          Libere
+          {tCommon("free")}
         </span>
         {filterActive && activeFocusIso && (
           <span className="gantt-summary-row__label-state">
-            filtru activ
+            {tCommon("activeFilter")}
           </span>
         )}
       </td>
@@ -56,9 +58,9 @@ export function GanttDailySummaryRow({
             .join(" ")}
           style={ganttDayGridStyle(dayCount)}
           role="row"
-          aria-label="Camere libere pe zi"
+          aria-label={tCommon("freeRoomsByDay")}
           onPointerDown={onPanPointerDown}
-          title="Trage stânga-dreapta pentru scroll rapid"
+          title={tCommon("scrollDrag")}
         >
           {viewRange.days.map((col, i) => {
             const { free, total } = counts[i]!;
@@ -67,7 +69,7 @@ export function GanttDailySummaryRow({
             const title =
               total === 0
                 ? col.iso
-                : `${free} camere libere · click pentru filtru`;
+                : tCommon("freeRoomsFilterTitle", { count: free });
 
             return (
               <button
@@ -75,7 +77,7 @@ export function GanttDailySummaryRow({
                 type="button"
                 title={title}
                 aria-pressed={isSelected}
-                aria-label={`${col.iso}: ${free} camere libere`}
+                aria-label={tCommon("freeRoomsForDate", { iso: col.iso, count: free })}
                 onClick={() => onDayClick(col.iso)}
                 className={[
                   "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",

@@ -1,4 +1,7 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { formatRoDate } from "@/lib/stay-dates";
 
 export type StayInfo = {
@@ -23,6 +26,8 @@ export function StayBlock({
   empty: string;
   muted?: boolean;
 }) {
+  const tGuests = useTranslations("admin.guests");
+
   return (
     <div
       className={[
@@ -42,7 +47,10 @@ export function StayBlock({
             {formatRoDate(stay.check_in)} → {formatRoDate(stay.check_out)}
           </p>
           <p className="mt-1 text-xs text-zinc-500">
-            {stay.num_adults} ad. + {stay.num_children} cop.
+            {tGuests("stayBlock.guestsSummary", {
+              adults: stay.num_adults,
+              children: stay.num_children,
+            })}
           </p>
           <span
             className={[
@@ -52,13 +60,15 @@ export function StayBlock({
                 : "bg-amber-100 text-amber-900",
             ].join(" ")}
           >
-            {stay.status === "confirmata" ? "Confirmată" : "Cerere nouă"}
+            {stay.status === "confirmata"
+              ? tGuests("stayBlock.confirmed")
+              : tGuests("stayBlock.newRequest")}
           </span>
           <Link
             href={`/admin/bookings/${stay.booking_id}`}
             className="mt-2 block text-xs font-medium text-zinc-600 underline hover:text-zinc-900"
           >
-            Vezi rezervarea →
+            {tGuests("stayBlock.viewBooking")} →
           </Link>
         </div>
       )}

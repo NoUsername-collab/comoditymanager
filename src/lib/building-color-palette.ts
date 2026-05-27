@@ -1,15 +1,15 @@
-/** Paletă fixă pentru culoarea clădirii în Gantt / legendă */
+/** Fixed palette for building color in Gantt / legend. */
 export const BUILDING_COLOR_PALETTE = [
-  { hex: "#2563eb", label: "Albastru (AC rece)" },
-  { hex: "#0891b2", label: "Turcoaz" },
+  { hex: "#2563eb", label: "Blue (cool AC)" },
+  { hex: "#0891b2", label: "Turquoise" },
   { hex: "#4f46e5", label: "Indigo" },
   { hex: "#7c3aed", label: "Violet" },
-  { hex: "#059669", label: "Verde" },
-  { hex: "#ca8a04", label: "Auriu" },
-  { hex: "#ea580c", label: "Portocaliu (cald)" },
-  { hex: "#dc2626", label: "Roșu" },
-  { hex: "#db2777", label: "Roz" },
-  { hex: "#64748b", label: "Gri ardezie" },
+  { hex: "#059669", label: "Green" },
+  { hex: "#ca8a04", label: "Gold" },
+  { hex: "#ea580c", label: "Orange (warm)" },
+  { hex: "#dc2626", label: "Red" },
+  { hex: "#db2777", label: "Pink" },
+  { hex: "#64748b", label: "Slate gray" },
 ] as const;
 
 const ALLOWED = new Set(
@@ -36,7 +36,7 @@ export function isAllowedBuildingColor(hex: string): boolean {
   return ALLOWED.has(hex.trim().toLowerCase());
 }
 
-/** Culoare afișată în Gantt / disponibilitate — paletă sau implicit pe AC. */
+/** Display color in Gantt / availability from palette or AC fallback. */
 export function resolveGanttBuildingColor(
   colorHex: string | null | undefined,
   acMode: "all_rooms" | "none" | "per_room"

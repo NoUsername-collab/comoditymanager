@@ -1,61 +1,24 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import type { AdminDashboardData } from "@/services/admin-dashboard";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { cereriNoiPulsText } from "@/lib/ro-copy";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
 import { TodayBoardSection } from "@/components/admin/dashboard/TodayBoardSection";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { MonthCompareCards } from "@/components/admin/dashboard/MonthCompareCards";
 
-const QUICK_ACTIONS = [
-  {
-    href: "/admin/bookings",
-    title: "Cereri noi",
-    desc: "Confirmă și alocă camere",
-    icon: "📬",
-    accent: "linear-gradient(135deg, #f87171, #dc2626)",
-    cereri: true,
-  },
-  {
-    href: "/receptie",
-    title: "Recepție rapidă",
-    desc: "Telefon & check-in",
-    icon: "☎️",
-    accent: "linear-gradient(135deg, #fbbf24, #ea580c)",
-  },
-  {
-    href: "/admin/calendar",
-    title: "Calendar",
-    desc: "Vedere lună / camere",
-    icon: "📅",
-    accent: "linear-gradient(135deg, #a78bfa, #7c3aed)",
-  },
-  {
-    href: "/admin#disponibilitate",
-    title: "Disponibilitate live",
-    desc: "Panou complet aici, în Acasă",
-    icon: "▦",
-    accent: "linear-gradient(135deg, #34d399, #059669)",
-  },
-  {
-    href: "/admin/settings",
-    title: "Setări",
-    desc: "Admin only · configurare",
-    icon: "⚙️",
-    accent: "linear-gradient(135deg, #71717a, #27272a)",
-  },
-] as const;
-
-export function AdminDashboard({
+export async function AdminDashboard({
   data,
   availabilityPanel,
 }: {
   data: AdminDashboardData;
   availabilityPanel?: ReactNode;
 }) {
+  const tDashboard = await getTranslations("admin.dashboard");
+  const tCommon = await getTranslations("admin.common");
   const { stats, cereriCount, cereriPreview } = data;
   const now = new Date();
   const calHref = `/admin/calendar?y=${now.getFullYear()}&m=${now.getMonth()}`;
@@ -71,23 +34,61 @@ export function AdminDashboard({
     )
     .sort((a, b) => a.name.localeCompare(b.name, "ro-RO"));
 
+  const quickActions = [
+    {
+      href: "/admin/bookings",
+      title: tDashboard("quickCereri"),
+      desc: tDashboard("quickCereriDesc"),
+      icon: "📬",
+      accent: "linear-gradient(135deg, #f87171, #dc2626)",
+    },
+    {
+      href: "/receptie",
+      title: tDashboard("quickReceptie"),
+      desc: tDashboard("quickReceptieDesc"),
+      icon: "☎️",
+      accent: "linear-gradient(135deg, #fbbf24, #ea580c)",
+    },
+    {
+      href: "/admin/calendar",
+      title: tDashboard("quickCalendar"),
+      desc: tDashboard("quickCalendarDesc"),
+      icon: "📅",
+      accent: "linear-gradient(135deg, #a78bfa, #7c3aed)",
+    },
+    {
+      href: "/admin#disponibilitate",
+      title: tDashboard("quickAvail"),
+      desc: tDashboard("quickAvailDesc"),
+      icon: "▦",
+      accent: "linear-gradient(135deg, #34d399, #059669)",
+    },
+    {
+      href: "/admin/settings",
+      title: tDashboard("quickSettings"),
+      desc: tDashboard("quickSettingsDesc"),
+      icon: "⚙️",
+      accent: "linear-gradient(135deg, #71717a, #27272a)",
+    },
+  ] as const;
+
   return (
     <div className="admin-home">
       <header className="admin-home-hero admin-home-hero--liquid">
         <div className="admin-home-hero__main">
-          <p className="admin-home-hero__eyebrow">Acasă · panou recepție</p>
+          <p className="admin-home-hero__eyebrow">{tCommon("homeEyebrow")}</p>
           <h1 className="admin-home-hero__title">{data.pensionName}</h1>
           <p className="admin-home-hero__meta">
             <span className="capitalize">{data.todayLabel}</span>
             {" · "}
-            Check-in {data.checkInTime} · Check-out {data.checkOutTime}
+            {tCommon("checkIn")} {data.checkInTime} · {tCommon("checkout")} {data.checkOutTime}
           </p>
           <p className="admin-home-mood">{data.moodLine}</p>
           {data.briefingLine && (
             <p className="admin-home-briefing">{data.briefingLine}</p>
           )}
           {data.milestones.length > 0 && (
-            <div className="admin-home-milestones" aria-label="Realizări">
+            <div className="admin-home-milestones" aria-label={tCommon("achievements")}>
               {data.milestones.map((m) => (
                 <span key={m.id} className="admin-home-milestone">
                   <span aria-hidden>{m.emoji}</span> {m.label}
@@ -101,38 +102,38 @@ export function AdminDashboard({
           {hasCereri ? (
             <Link href="/admin/bookings" className="admin-home-cta admin-home-cta--cereri">
               <span aria-hidden>📬</span>
-              {cereriNoiPulsText(cereriCount)}
+              {tDashboard("pendingPuls", { count: cereriCount })}
             </Link>
           ) : null}
           <Link href={calHref} className="admin-home-cta admin-home-cta--secondary">
-            Calendar luna curentă →
+            {tCommon("currentMonthCalendar")}
           </Link>
         </div>
 
-        <div className="admin-home-kpis" role="list" aria-label="Indicatori rapizi">
+        <div className="admin-home-kpis" role="list" aria-label={tCommon("quickKpis")}>
           <div
             className={["admin-home-kpi", hasCereri && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
             role="listitem"
           >
             <span className="admin-home-kpi__value">{cereriCount}</span>
-            <span className="admin-home-kpi__label">Cereri noi</span>
+            <span className="admin-home-kpi__label">{tCommon("newRequestsLabel")}</span>
           </div>
           <div className="admin-home-kpi" role="listitem">
             <span className="admin-home-kpi__value">{stats.freeTonight}</span>
             <span className="admin-home-kpi__label">
-              Libere diseară / {stats.activeRooms}
+              {tCommon("freeTonight")} / {stats.activeRooms}
             </span>
           </div>
           <div className="admin-home-kpi" role="listitem">
             <span className="admin-home-kpi__value">{stats.occupiedTonight}</span>
             <span className="admin-home-kpi__label">
-              Ocupate · {stats.occupancyTonightPct}%
+              {tCommon("occupiedTonight")} · {stats.occupancyTonightPct}%
             </span>
           </div>
           <div className="admin-home-kpi" role="listitem">
             <span className="admin-home-kpi__value">{stats.weekOccupancyPct}%</span>
             <span className="admin-home-kpi__label">
-              Săptămâna · {stats.activeRooms} camere active
+              {tCommon("weekOccupancy")} · {tCommon("activeRoomsCount", { count: stats.activeRooms })}
             </span>
           </div>
         </div>
@@ -165,14 +166,14 @@ export function AdminDashboard({
           <div className="admin-home-panel__head">
             <div>
               <h2 id="admin-home-availability-title" className="admin-home-panel__title">
-                Disponibilitate live
+                {tDashboard("quickAvail")}
               </h2>
               <p className="admin-home-panel__desc">
-                Panoul complet de disponibilitate este acum integrat direct în Acasă.
+                {tDashboard("quickAvailDesc")}
               </p>
             </div>
             <Link href={calHref} className="admin-home-panel__link">
-              Calendar →
+              {tDashboard("quickCalendar")} →
             </Link>
           </div>
           <div className="mt-4">{availabilityPanel}</div>
@@ -191,15 +192,15 @@ export function AdminDashboard({
           <div className="admin-home-panel__head">
             <div>
               <h2 id="admin-home-actions-title" className="admin-home-panel__title">
-                Acțiuni rapide
+                {tCommon("quickActions")}
               </h2>
               <p className="admin-home-panel__desc">
-                Destinații frecvente — un click
+                {tCommon("seeAll")}
               </p>
             </div>
           </div>
           <div className="admin-home-actions">
-            {QUICK_ACTIONS.map((a) => {
+            {quickActions.map((a) => {
               const isCereri = a.href === "/admin/bookings";
               const showBadge = isCereri && hasCereri;
 
@@ -242,14 +243,14 @@ export function AdminDashboard({
             <div className="admin-home-panel__head">
               <div>
                 <h2 id="admin-home-cereri-title" className="admin-home-panel__title">
-                  Cereri în așteptare
+                  {tCommon("cereriQueue")}
                 </h2>
                 <p className="admin-home-panel__desc">
-                  Procesează rapid — confirmă și alocă camere
+                  {tDashboard("quickCereriDesc")}
                 </p>
               </div>
               <Link href="/admin/bookings" className="admin-home-panel__link">
-                Toate →
+                {tCommon("seeAll")} →
               </Link>
             </div>
             <ul className="admin-home-cereri-list">
@@ -285,14 +286,14 @@ export function AdminDashboard({
         <div className="admin-home-buildings-head">
           <div>
             <h2 id="admin-home-rooms-title" className="admin-home-panel__title">
-              Camere live
+              {tCommon("roomGrid")}
             </h2>
             <p className="admin-home-panel__desc">
-              Status operațional read-only. Editările și creările se fac doar din Setări admin.
+              Status operațional read-only.
             </p>
           </div>
           <Link href={calHref} className="admin-home-panel__link">
-            Calendar →
+            {tDashboard("quickCalendar")} →
           </Link>
         </div>
 
@@ -314,17 +315,16 @@ export function AdminDashboard({
               ))}
             </RoomAvailabilityGrid>
             <p className="text-xs text-zinc-500">
-              Verde = liberă, roșu = ocupată, galben = cerere. Pentru editări sau
-              creare structură intri din `Setări`.
+              Verde = liberă, roșu = ocupată, galben = cerere.
             </p>
           </div>
         ) : (
           <AdminEmptyState
             emoji="🛏"
-            title="Încă nu ai camere configurate"
-            description="Configurarea structurii și a camerelor se face din Setări, în centrul de administrare."
+            title={tCommon("noRoomsConfigured")}
+            description={tDashboard("configureRoomsFromSettings")}
             actionHref="/admin/settings/location"
-            actionLabel="Deschide configurarea"
+            actionLabel={tDashboard("openConfiguration")}
           />
         )}
       </section>

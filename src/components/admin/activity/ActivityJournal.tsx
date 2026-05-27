@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { ActivityTimeline } from "@/components/admin/activity/ActivityTimeline";
 import {
   splitActivityByCategory,
@@ -8,7 +9,7 @@ import {
 } from "@/domain/activity/categories";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 
-const TABS: {
+type TabMeta = {
   id: ActivityJournalCategory;
   label: string;
   short: string;
@@ -16,32 +17,11 @@ const TABS: {
   hint: string;
   emptyTitle: string;
   emptyText: string;
-}[] = [
-  {
-    id: "rezervari",
-    label: "Rezervări",
-    short: "Rezervări",
-    icon: "✉",
-    hint: "Cereri, confirmări, mutări, anulări",
-    emptyTitle: "Nicio acțiune la rezervări",
-    emptyText:
-      "Când vine o cerere de pe site sau modifici o rezervare în admin, evenimentele apar aici.",
-  },
-  {
-    id: "admin",
-    label: "Admin",
-    short: "Admin",
-    icon: "⚙",
-    hint: "Login, setări, clădiri și camere",
-    emptyTitle: "Nicio acțiune admin",
-    emptyText:
-      "Autentificări, setări pensiune și modificări la clădiri/camere sunt listate aici.",
-  },
-];
+};
 
-function formatLast(iso: string | undefined): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleString("ro-RO", {
+function formatLast(iso: string | undefined, locale: string, emDash: string): string {
+  if (!iso) return emDash;
+  return new Date(iso).toLocaleString(locale, {
     day: "numeric",
     month: "short",
     hour: "2-digit",
@@ -50,6 +30,9 @@ function formatLast(iso: string | undefined): string {
 }
 
 export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
+  const locale = useLocale();
+  const tActivity = useTranslations("admin.activity");
+  const tCommon = useTranslations("admin.common");
   const { rezervari, admin } = useMemo(
     () => splitActivityByCategory(entries),
     [entries]
@@ -66,8 +49,28 @@ export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
     counts.rezervari >= counts.admin ? "rezervari" : "admin";
 
   const [active, setActive] = useState<ActivityJournalCategory>(defaultTab);
+  const tabs: TabMeta[] = [
+    {
+      id: "rezervari",
+      label: tActivity("bookings"),
+      short: tActivity("bookings"),
+      icon: "✉",
+      hint: tActivity("bookingsHint"),
+      emptyTitle: tActivity("bookingsEmptyTitle"),
+      emptyText: tActivity("bookingsEmptyText"),
+    },
+    {
+      id: "admin",
+      label: tActivity("admin"),
+      short: tActivity("admin"),
+      icon: "⚙",
+      hint: tActivity("adminHint"),
+      emptyTitle: tActivity("adminEmptyTitle"),
+      emptyText: tActivity("adminEmptyText"),
+    },
+  ];
 
-  const activeMeta = TABS.find((t) => t.id === active)!;
+  const activeMeta = tabs.find((t) => t.id === active)!;
   const activeEntries = lists[active];
 
   return (
@@ -75,9 +78,9 @@ export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
       <div
         className="activity-journal__tabs"
         role="tablist"
-        aria-label="Categorii jurnal"
+        aria-label={tActivity("journalCategories")}
       >
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive = active === tab.id;
           return (
             <button
@@ -108,7 +111,7 @@ export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
                 </span>
                 <span className="activity-journal__tab-hint">{tab.hint}</span>
                 <span className="activity-journal__tab-last">
-                  Ultimul: {formatLast(lastAt[tab.id])}
+                  {tActivity("last")}: {formatLast(lastAt[tab.id], locale, tCommon("emDash"))}
                 </span>
               </span>
             </button>

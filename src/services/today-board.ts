@@ -159,7 +159,7 @@ export async function loadTodayBoard(
           : bld?.name ?? "";
         roomsToClean.push({
           room_id: line.room_id,
-          room_name: room?.name ?? "Cameră",
+          room_name: room?.name ?? "Room",
           building_name,
           guest_name: guestLabel,
           booking_id: raw.id,
@@ -173,7 +173,7 @@ export async function loadTodayBoard(
     todayIso: today,
     checkInTime,
     checkOutTime,
-    cleaningWindowLabel: `Curățenie după check-out ${checkOutTime} până la check-in ${checkInTime}`,
+    cleaningWindowLabel: `Cleaning after check-out ${checkOutTime} until check-in ${checkInTime}`,
     arrivals,
     departures,
     roomsToClean,

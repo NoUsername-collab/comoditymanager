@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useTranslations } from "next-intl";
 import {
   burstConfetti,
   playCancelSound,
@@ -37,6 +38,7 @@ type AdminFxContextValue = {
 const AdminFxContext = createContext<AdminFxContextValue | null>(null);
 
 export function AdminToastProvider({ children }: { children: ReactNode }) {
+  const tCommon = useTranslations("admin.common");
   const [toasts, setToasts] = useState<AdminToast[]>([]);
 
   const dismissToast = useCallback((id: string) => {
@@ -55,36 +57,36 @@ export function AdminToastProvider({ children }: { children: ReactNode }) {
 
   const celebrateConfirm = useCallback(
     (
-      title = "Rezervare confirmată!",
-      message = "Camerele sunt alocate și calendarul e actualizat."
+      title = tCommon("bookingConfirmedTitle"),
+      message = tCommon("bookingConfirmedMessage")
     ) => {
       showToast({ kind: "success", title, message });
       burstConfetti();
       playConfirmSound();
     },
-    [showToast]
+    [showToast, tCommon]
   );
 
   const notifyCancel = useCallback(
     (
-      title = "Rezervare anulată",
-      message = "Status actualizat — camerele sunt din nou libere."
+      title = tCommon("bookingCancelledTitle"),
+      message = tCommon("bookingCancelledMessage")
     ) => {
       showToast({ kind: "info", title, message });
       playCancelSound();
     },
-    [showToast]
+    [showToast, tCommon]
   );
 
   const notifyMoved = useCallback(
     (
-      title = "Rezervare mutată",
-      message = "Perioada a fost actualizată pe calendar."
+      title = tCommon("bookingMovedTitle"),
+      message = tCommon("bookingMovedMessage")
     ) => {
       showToast({ kind: "success", title, message });
       playConfirmSound();
     },
-    [showToast]
+    [showToast, tCommon]
   );
 
   const value = useMemo(
@@ -140,6 +142,7 @@ function AdminToastItem({
   toast: AdminToast;
   onDismiss: (id: string) => void;
 }) {
+  const tCommon = useTranslations("admin.common");
   const icon =
     toast.kind === "success" ? "✓" : toast.kind === "error" ? "!" : "i";
 
@@ -169,7 +172,7 @@ function AdminToastItem({
       <button
         type="button"
         className="admin-toast__close"
-        aria-label="Închide"
+        aria-label={tCommon("close")}
         onClick={() => onDismiss(toast.id)}
       >
         ×

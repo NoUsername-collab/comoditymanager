@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import type { CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
@@ -93,6 +94,7 @@ export function GanttBookingBar({
   extraClass,
   occupancyPhase,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const className = [
@@ -137,7 +139,7 @@ export function GanttBookingBar({
         {continuesBefore && (
           <span
             className="shrink-0 opacity-80"
-            aria-label="Continuă din luna anterioară"
+            aria-label={tCommon("continuesFromPreviousMonth")}
           >
             ‹
           </span>
@@ -152,7 +154,7 @@ export function GanttBookingBar({
         </span>
         {occupancyPhase === "active" && !isCerere && (
           <span className="gantt-stay__phase-badge shrink-0 rounded px-1 py-0.5 text-[10px] font-extrabold uppercase tracking-wide">
-            Azi
+            {tCommon("todayPanel")}
           </span>
         )}
         <span

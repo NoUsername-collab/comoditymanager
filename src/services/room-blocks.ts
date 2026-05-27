@@ -10,9 +10,9 @@ export async function createRoomBlock(input: {
   createdBy?: string | null;
 }): Promise<string> {
   const reason = input.reason.trim();
-  if (!reason) throw new Error("Motivul blocării este obligatoriu.");
+  if (!reason) throw new Error("room_blocks.reason_required");
   if (!isAtLeastOneNight(input.checkIn, input.checkOut)) {
-    throw new Error("Interval invalid — minim o noapte.");
+    throw new Error("room_blocks.invalid_interval_min_one_night");
   }
 
   await assertRoomsAvailableForOccupancy(

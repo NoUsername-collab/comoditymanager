@@ -213,11 +213,11 @@ export async function assertRoomsAvailableForOccupancy(
   excludeBookingId?: string
 ): Promise<void> {
   if (!isAtLeastOneNight(checkIn, checkOut)) {
-    throw new Error("Sejur invalid.");
+    throw new Error("occupancy.invalid_stay");
   }
   const unique = [...new Set(roomIds.filter(Boolean))];
   if (unique.length === 0) {
-    throw new Error("Selectează cel puțin o cameră.");
+    throw new Error("occupancy.select_at_least_one_room");
   }
 
   const settings = await getPensionSettings().catch(() => null);
@@ -236,9 +236,7 @@ export async function assertRoomsAvailableForOccupancy(
       bookingId: excludeBookingId,
     }, times)
   ) {
-    throw new Error(
-      "Una sau mai multe camere nu mai sunt disponibile. Actualizează datele și alege din nou."
-    );
+    throw new Error("occupancy.one_or_more_rooms_unavailable_refresh_and_retry");
   }
 }
 

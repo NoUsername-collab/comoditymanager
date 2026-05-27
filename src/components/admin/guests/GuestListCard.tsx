@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { GuestListItem } from "@/domain/guest/types";
 import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { formatRoDate } from "@/lib/stay-dates";
@@ -14,6 +15,8 @@ export function GuestListCard({
   previewHref: string;
   profileHref: string;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
   return (
     <li
       className="relative h-full w-full max-w-[240px] overflow-hidden rounded-[9px] border px-2.5 py-2.5"
@@ -32,10 +35,10 @@ export function GuestListCard({
           {guest.display_name}
         </p>
         <p className="mt-0.5 truncate text-[10px] leading-tight" style={{ color: "var(--text-muted)" }}>
-          {guest.email || "Fără email"}
+          {guest.email || tGuests("noEmail")}
         </p>
         <p className="truncate text-[10px] leading-tight" style={{ color: "var(--text-faint)" }}>
-          {guest.phone || "Fără telefon"}
+          {guest.phone || tGuests("noPhone")}
         </p>
       </div>
 
@@ -55,7 +58,7 @@ export function GuestListCard({
               color: "var(--accent)",
             }}
           >
-            Trust {guest.profile?.trust_score ?? 0}
+            {tGuests("trust")} {guest.profile?.trust_score ?? 0}
           </span>
           <span
             className="rounded-full border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.08em]"
@@ -65,20 +68,19 @@ export function GuestListCard({
               color: "var(--accent)",
             }}
           >
-            Fid. {guest.profile?.loyalty_score ?? 0}
+            {tGuests("loyalShort")} {guest.profile?.loyalty_score ?? 0}
           </span>
         </div>
 
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           {guest.last_stay_check_out && (
             <span className="text-[9px]" style={{ color: "var(--text-faint)" }}>
-              Ultimul {formatRoDate(guest.last_stay_check_out)}
+              {tGuests("last")} {formatRoDate(guest.last_stay_check_out)}
             </span>
           )}
           {(guest.profile?.completed_stays ?? guest.booking_count) > 0 && (
             <span className="text-[9px]" style={{ color: "var(--text-faint)" }}>
-              {guest.profile?.completed_stays ?? guest.booking_count} sejur
-              {(guest.profile?.completed_stays ?? guest.booking_count) === 1 ? "" : "uri"}
+              {tGuests("staysCount", { count: guest.profile?.completed_stays ?? guest.booking_count })}
             </span>
           )}
         </div>
@@ -86,8 +88,8 @@ export function GuestListCard({
         <div className="grid grid-cols-[40px_1fr] gap-1.5">
           <Link
             href={previewHref}
-            aria-label={`Preview ${guest.display_name}`}
-            title="Preview"
+            aria-label={tGuests("previewAria", { name: guest.display_name })}
+            title={tCommon("preview")}
             className="rounded px-0 py-1 text-center text-[10px] font-semibold transition"
             style={{
               border: "1px solid var(--border)",
@@ -106,7 +108,7 @@ export function GuestListCard({
               color: "var(--surface)",
             }}
           >
-            Profil
+            {tCommon("profile")}
           </Link>
         </div>
       </div>

@@ -1,28 +1,28 @@
 import type { OccupancyWindow } from "@/services/building-dashboard";
 
 export const AC_LABELS: Record<string, string> = {
-  all_rooms: "AC în toată clădirea",
-  none: "Fără AC",
-  per_room: "AC opțional per cameră",
+  all_rooms: "AC across entire building",
+  none: "No AC",
+  per_room: "Optional AC per room",
 };
 
 export type RoomTonightStatus = "free" | "occupied" | "pending" | "inactive";
 
 export const ROOM_STATUS = {
   free: {
-    label: "Liberă diseară",
+    label: "Free tonight",
     pill: "bg-white text-emerald-800 ring-1 ring-emerald-200",
   },
   occupied: {
-    label: "Ocupată diseară",
+    label: "Occupied tonight",
     pill: "status-occupied-pill ring-0",
   },
   pending: {
-    label: "Cerere alocată",
+    label: "Assigned request",
     pill: "bg-amber-100 text-amber-900 ring-1 ring-amber-200",
   },
   inactive: {
-    label: "Inactivă",
+    label: "Inactive",
     pill: "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200",
   },
 } as const satisfies Record<
@@ -35,13 +35,13 @@ export function occupancyCaption(
   opts?: { freeTonight?: number; tonight?: boolean }
 ): string {
   if (opts?.tonight && opts.freeTonight != null) {
-    if (pct === 0) return `${opts.freeTonight} libere`;
-    if (opts.freeTonight === 0) return "Complet ocupat";
-    return `${opts.freeTonight} libere · ${pct}% ocupat`;
+    if (pct === 0) return `${opts.freeTonight} free`;
+    if (opts.freeTonight === 0) return "Fully occupied";
+    return `${opts.freeTonight} free · ${pct}% occupied`;
   }
-  if (pct === 0) return "Disponibil";
-  if (pct >= 85) return "Aproape plin";
-  return `${pct}% rezervat`;
+  if (pct === 0) return "Available";
+  if (pct >= 85) return "Almost full";
+  return `${pct}% reserved`;
 }
 
 export function occupancyCaptionFromWindow(

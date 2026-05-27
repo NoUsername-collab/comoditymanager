@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Casa Emil — Pensiune Tasnad",
-  description: "Cerere de cazare și rezervări — Casa Emil, Tasnad",
+  title: "Casa Emil",
+  description: "Stay requests and reservations",
 };
 
 export const viewport: Viewport = {
@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="ro"
+      lang="en"
       data-theme={DEFAULT_THEME_ID}
       data-mode={DEFAULT_THEME_MODE}
       data-device="desktop"

@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -12,9 +13,9 @@ type Props = {
   children: ReactNode;
 };
 
-export function PublicPageShell({
+export async function PublicPageShell({
   backHref = "/",
-  backLabel = "Acasă",
+  backLabel,
   eyebrow,
   title,
   lead,
@@ -22,6 +23,9 @@ export function PublicPageShell({
   narrow,
   children,
 }: Props) {
+  const tCommon = await getTranslations("common");
+  const resolvedBackLabel = backLabel ?? tCommon("back");
+
   return (
     <main className="public-page">
       <div
@@ -35,7 +39,7 @@ export function PublicPageShell({
       >
         {backHref && (
           <Link href={backHref} className="public-back-link">
-            ← {backLabel}
+            ← {resolvedBackLabel}
           </Link>
         )}
         <header className="public-page__head">

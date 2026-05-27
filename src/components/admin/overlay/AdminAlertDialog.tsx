@@ -1,11 +1,12 @@
 "use client";
 
 import { AdminFloatingPanel } from "./AdminFloatingPanel";
+import { useTranslations } from "next-intl";
 
 export function AdminAlertDialog({
   open,
   message,
-  title = "Atenție",
+  title,
   onClose,
 }: {
   open: boolean;
@@ -13,11 +14,12 @@ export function AdminAlertDialog({
   title?: string;
   onClose: () => void;
 }) {
+  const tCommon = useTranslations("admin.common");
   return (
     <AdminFloatingPanel
       open={open}
       onClose={onClose}
-      title={title}
+      title={title ?? tCommon("attention")}
       variant="modal"
       width={380}
     >
@@ -28,7 +30,7 @@ export function AdminAlertDialog({
           className="admin-floating-panel__btn admin-floating-panel__btn--primary"
           onClick={onClose}
         >
-          OK
+          {tCommon("ok")}
         </button>
       </div>
     </AdminFloatingPanel>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
   useAdminPending,
@@ -10,7 +11,7 @@ import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
   setBookingCheckInAction,
   setBookingCheckOutAction,
-} from "@/app/admin/(panel)/bookings/actions";
+} from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { datetimeLocalNow } from "@/lib/operational-check";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
@@ -35,6 +36,8 @@ export function GanttCheckTimeDialog({
   onClose,
   onSuccess,
 }: GanttCheckTimeDialogProps) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
@@ -55,9 +58,8 @@ export function GanttCheckTimeDialog({
 
   if (!open) return null;
 
-  const title = mode === "checkin" ? "Confirmă check-in" : "Confirmă check-out";
-  const cta =
-    mode === "checkin" ? "Confirmă check-in" : "Confirmă check-out";
+  const title = mode === "checkin" ? tGantt("checkTime.confirmCheckIn") : tGantt("checkTime.confirmCheckOut");
+  const cta = mode === "checkin" ? tGantt("checkTime.confirmCheckIn") : tGantt("checkTime.confirmCheckOut");
 
   function submit(at?: string) {
     void runAdminAction(async () => {
@@ -71,13 +73,13 @@ export function GanttCheckTimeDialog({
           : await setBookingCheckOutAction(fd);
 
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: tCommon("error"), message: res.error });
         return;
       }
 
       showToast({
         kind: "success",
-        title: mode === "checkin" ? "Check-in înregistrat" : "Check-out înregistrat",
+        title: mode === "checkin" ? tGantt("checkTime.checkInRecorded") : tGantt("checkTime.checkOutRecorded"),
         message: guestName,
       });
       onClose();
@@ -90,7 +92,7 @@ export function GanttCheckTimeDialog({
       <button
         type="button"
         className="fixed inset-0 z-[220] bg-black/40"
-        aria-label="Închide"
+        aria-label={tCommon("close")}
         onClick={onClose}
       />
       <div
@@ -103,11 +105,11 @@ export function GanttCheckTimeDialog({
         </h2>
         <p className="mt-1 text-xs text-zinc-600">{guestName}</p>
         <p className="mt-0.5 text-[11px] text-zinc-500">
-          Planificat: {formatStayPeriod(plannedCheckIn, plannedCheckOut, true)}
+          {tGantt("checkTime.planned")}: {formatStayPeriod(plannedCheckIn, plannedCheckOut, locale, true)}
         </p>
 
         <label className="mt-4 block text-xs font-semibold text-zinc-800">
-          Data și ora
+          {tGantt("checkTime.dateTime")}
           <input
             type="datetime-local"
             value={atLocal}
@@ -124,7 +126,7 @@ export function GanttCheckTimeDialog({
             disabled={pending}
             onClick={() => submit(atLocal)}
           >
-            {pending ? "Se salvează…" : cta}
+            {pending ? tCommon("saving") : cta}
           </button>
           <button
             type="button"
@@ -132,7 +134,7 @@ export function GanttCheckTimeDialog({
             disabled={pending}
             onClick={() => submit()}
           >
-            Acum
+            {tCommon("now")}
           </button>
           <button
             type="button"
@@ -140,7 +142,7 @@ export function GanttCheckTimeDialog({
             disabled={pending}
             onClick={onClose}
           >
-            Anulează
+            {tCommon("cancel")}
           </button>
         </div>
       </div>

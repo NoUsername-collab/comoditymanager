@@ -1,6 +1,6 @@
 "use client";
 
-import { updateBuildingDefaultPriceAction } from "@/app/admin/(panel)/buildings/update-price-action";
+import { updateBuildingDefaultPriceAction } from "@/app/[locale]/admin/(panel)/buildings/update-price-action";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 

@@ -3,7 +3,8 @@
 import {
   rebookLastStayAction,
   rebookNextYearAction,
-} from "@/app/admin/(panel)/guests/actions";
+} from "@/app/[locale]/admin/(panel)/guests/actions";
+import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 
@@ -20,13 +21,14 @@ function RebookButton({
   variant?: "primary" | "secondary";
   disabled?: boolean;
 }) {
+  const tGuests = useTranslations("admin.guests");
   return (
     <AdminPendingForm
       action={action}
       onSubmit={(e) => {
         if (
           !confirm(
-            `${label}? Se creează o cerere nouă cu aceleași camere (dacă sunt libere).`
+            tGuests("rebook.confirm", { label })
           )
         ) {
           e.preventDefault();
@@ -57,17 +59,18 @@ export function GuestRebookButtons({
   guestId: string;
   disabled?: boolean;
 }) {
+  const tGuests = useTranslations("admin.guests");
   return (
     <div className="flex flex-wrap gap-2">
       <RebookButton
         guestId={guestId}
-        label="Rebook ultimul sejur"
+        label={tGuests("rebook.lastStay")}
         action={rebookLastStayAction}
         disabled={disabled}
       />
       <RebookButton
         guestId={guestId}
-        label="Aceeași perioadă an viitor"
+        label={tGuests("rebook.samePeriodNextYear")}
         action={rebookNextYearAction}
         variant="secondary"
         disabled={disabled}

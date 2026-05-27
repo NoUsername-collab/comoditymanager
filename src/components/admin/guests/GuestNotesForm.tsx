@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { updateGuestNotesAction } from "@/app/admin/(panel)/guests/actions";
+import { useTranslations } from "next-intl";
+import { updateGuestNotesAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
@@ -13,6 +14,8 @@ export function GuestNotesForm({
   guestId: string;
   initialNotes: string;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
   const runAdminAction = useRunAdminAction();
   const { pending } = useAdminPending();
   const [open, setOpen] = useState(false);
@@ -27,7 +30,7 @@ export function GuestNotesForm({
       await runAdminAction(() => updateGuestNotesAction(formData));
       setOpen(false);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Nu am putut salva notele.");
+      setError(e instanceof Error ? e.message : tGuests("notes.couldNotSave"));
     }
   }
 
@@ -40,17 +43,17 @@ export function GuestNotesForm({
           disabled={pending}
           className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
-          {initialNotes.trim() ? "Editează notele generale" : "Adaugă note generale"}
+          {initialNotes.trim() ? tGuests("notes.editGeneralNotes") : tGuests("notes.addGeneralNotes")}
         </button>
         <span className="text-xs text-zinc-500">
-          {initialNotes.trim() ? "Există note salvate pentru client." : "Nu există note generale încă."}
+          {initialNotes.trim() ? tGuests("notes.savedForGuest") : tGuests("notes.noneYet")}
         </span>
       </div>
 
       <AdminFloatingPanel
         open={open}
         onClose={() => setOpen(false)}
-        title="Note interne generale"
+        title={tGuests("notes.internalGeneralNotes")}
         variant="modal"
         width={640}
       >
@@ -59,7 +62,7 @@ export function GuestNotesForm({
             rows={8}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Note interne despre client…"
+            placeholder={tGuests("notes.placeholder")}
             className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
           />
           <div className="flex flex-wrap justify-end gap-2">
@@ -68,7 +71,7 @@ export function GuestNotesForm({
               onClick={() => setOpen(false)}
               className="rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700"
             >
-              Închide
+              {tCommon("close")}
             </button>
             <button
               type="button"
@@ -76,7 +79,7 @@ export function GuestNotesForm({
               disabled={pending}
               className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
             >
-              {pending ? "Salvez…" : "Salvează note"}
+              {pending ? tCommon("saving") : tGuests("notes.saveNotes")}
             </button>
           </div>
         </div>
@@ -84,7 +87,7 @@ export function GuestNotesForm({
 
       <AdminAlertDialog
         open={error != null}
-        title="Note interne"
+        title={tGuests("notes.internalNotesTitle")}
         message={error ?? ""}
         onClose={() => setError(null)}
       />

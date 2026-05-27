@@ -264,7 +264,7 @@ export async function listBuildingDashboards(
         confirmedRoomIdsByNight
       );
       const month = buildWindow(
-        "Luna curentă",
+        "current_month",
         nightsMonth,
         activeRoomIds,
         confirmedRoomIdsByNight

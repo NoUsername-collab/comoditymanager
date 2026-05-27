@@ -1,12 +1,15 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "./BrandLogo";
 import { PublicNav } from "./PublicNav";
 import { StaffLogoEntry } from "./StaffLogoEntry";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getTranslations } from "next-intl/server";
 
 export async function PublicHeader() {
-  let title = "Casa Emil";
-  const subtitle = "Pensiune · Tasnad";
+  const t = await getTranslations("public.header");
+  const tShell = await getTranslations("public.shell");
+  let title = tShell("brandFallback");
 
   try {
     const s = await getPensionSettings();
@@ -23,11 +26,14 @@ export async function PublicHeader() {
             <BrandLogo animated />
             <div className="min-w-0 leading-tight">
               <span className="public-header__name">{title}</span>
-              <span className="public-header__tag">{subtitle}</span>
+              <span className="public-header__tag">{t("subtitle")}</span>
             </div>
           </Link>
         </StaffLogoEntry>
-        <PublicNav />
+        <div className="flex items-center gap-3">
+          <PublicNav />
+          <LanguageSwitcher />
+        </div>
       </div>
     </header>
   );

@@ -1,8 +1,11 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getTranslations } from "next-intl/server";
 
 export async function PublicFooter() {
-  let title = "Casa Emil";
+  const t = await getTranslations("public.footer");
+  const tShell = await getTranslations("public.shell");
+  let title = tShell("brandFallback");
   try {
     const s = await getPensionSettings();
     if (s?.display_name) title = s.display_name;
@@ -16,31 +19,28 @@ export async function PublicFooter() {
         <div className="public-footer__grid">
           <div>
             <p className="public-footer__brand-name">{title}</p>
-            <p className="public-footer__brand-desc">
-              Cazare liniștită în Tasnad. Cerere online — confirmare personală
-              de la pensiune, fără plată pe site.
-            </p>
+            <p className="public-footer__brand-desc">{t("tagline")}</p>
           </div>
 
           <div>
-            <p className="public-footer__label">Linkuri</p>
+            <p className="public-footer__label">{t("links")}</p>
             <nav className="public-footer__links">
-              <Link href="/calendar">Cerere cazare</Link>
-              <Link href="/termeni">Termeni și condiții</Link>
-              <Link href="/confidentialitate">Confidențialitate (GDPR)</Link>
+              <Link href="/calendar">{t("bookingRequest")}</Link>
+              <Link href="/termeni">{t("terms")}</Link>
+              <Link href="/confidentialitate">{t("privacy")}</Link>
             </nav>
           </div>
 
           <div>
-            <p className="public-footer__label">Contact</p>
+            <p className="public-footer__label">{t("contact")}</p>
             <p className="public-footer__contact">
-              <a href="mailto:contact@casaemil.ro">contact@casaemil.ro</a>
+              <a href={`mailto:${t("contactEmail")}`}>{t("contactEmail")}</a>
             </p>
           </div>
         </div>
 
         <p className="public-footer__bottom">
-          © {new Date().getFullYear()} {title} · Tasnad, România
+          {t("copyright", { year: new Date().getFullYear(), name: title })}
         </p>
       </div>
     </footer>

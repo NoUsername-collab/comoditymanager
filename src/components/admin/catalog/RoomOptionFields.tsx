@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
 import { policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
@@ -23,6 +24,8 @@ export function RoomOptionFields({
   onToggle,
   optionIds,
 }: Props) {
+  const tRoomForm = useTranslations("admin.roomForm");
+  const tOptions = useTranslations("admin.roomOptionFields");
   const resolved = useMemo(() => {
     return options.map((option) => {
       const mode = policyModeForOption(policies, option.id);
@@ -37,14 +40,14 @@ export function RoomOptionFields({
   if (options.length === 0) {
     return (
       <p className="text-sm text-zinc-500">
-        Nici o opțiune în catalog — adaugă din Administrare locație.
+        {tOptions("noOptionsInCatalog")}
       </p>
     );
   }
 
   return (
     <fieldset className="space-y-2 rounded-lg border border-zinc-200 p-3">
-      <legend className="px-1 text-sm font-medium">Opțiuni cameră</legend>
+      <legend className="px-1 text-sm font-medium">{tRoomForm("roomOptions")}</legend>
       {resolved.map(({ option, mode, enabled, editable, source }) => (
         <label
           key={option.id}
@@ -76,12 +79,12 @@ export function RoomOptionFields({
           </span>
           <span className="text-xs text-zinc-400">
             {mode === "all_rooms"
-              ? "· toate camerele clădirii"
+              ? tOptions("allRoomsInBuilding")
               : mode === "none"
-                ? "· indisponibil în clădire"
+                ? tOptions("unavailableInBuilding")
                 : source === "type_default"
-                  ? "· implicit din tip"
-                  : "· per cameră"}
+                  ? tOptions("defaultFromType")
+                  : tOptions("perRoom")}
           </span>
         </label>
       ))}

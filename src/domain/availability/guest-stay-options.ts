@@ -104,7 +104,7 @@ export function computeGuestStayOptions(
       free_room_count: 0,
       can_host: false,
       options: [],
-      message: "Alege date valide și cel puțin un oaspete.",
+      message: "Choose valid dates and at least one guest.",
     };
   }
 
@@ -131,7 +131,7 @@ export function computeGuestStayOptions(
       free_room_count: 0,
       can_host: false,
       options: [],
-      message: "Nu avem camere libere în perioada aleasă. Încearcă alte date.",
+      message: "No free rooms for selected period. Try different dates.",
     };
   }
 
@@ -144,7 +144,7 @@ export function computeGuestStayOptions(
       free_room_count: freeRooms.length,
       can_host: false,
       options: [],
-      message: `Capacitate insuficientă pentru ${guestCount} persoane în perioada aleasă.`,
+      message: `Insufficient capacity for ${guestCount} guests in selected period.`,
     };
   }
 
@@ -165,7 +165,7 @@ export function computeGuestStayOptions(
         nights,
         "single",
         `${r.name}`,
-        `${r.building_name ?? "Pensiune"} · până la ${r.capacity_max} pers. · ${r.has_ac ? "AC" : "Fără AC"}`
+        `${r.building_name ?? "Guesthouse"} · up to ${r.capacity_max} guests · ${r.has_ac ? "AC" : "No AC"}`
       )
     );
   }
@@ -182,7 +182,7 @@ export function computeGuestStayOptions(
           nights,
           "combo",
           `${comboBest.length} camere`,
-          `${names} · minim ${minRooms} camere pentru grupul vostru`
+          `${names} · at least ${minRooms} rooms for your group`
         )
       );
     }
@@ -199,8 +199,8 @@ export function computeGuestStayOptions(
           comboCheap,
           nights,
           "combo",
-          comboCheap.length === 1 ? comboCheap[0].name : `${comboCheap.length} camere (economic)`,
-          `${names} · variantă la preț mai mic`
+          comboCheap.length === 1 ? comboCheap[0].name : `${comboCheap.length} rooms (economy)`,
+          `${names} · lower price option`
         )
       );
     }
@@ -214,8 +214,8 @@ export function computeGuestStayOptions(
         comboBest,
         nights,
         comboBest.length > 1 ? "combo" : "single",
-        comboBest.length > 1 ? `${comboBest.length} camere` : comboBest[0].name,
-        "Variantă disponibilă pentru perioada aleasă"
+        comboBest.length > 1 ? `${comboBest.length} rooms` : comboBest[0].name,
+        "Available option for selected period"
       )
     );
   }
@@ -230,7 +230,7 @@ export function computeGuestStayOptions(
     options: options.slice(0, 5),
     message:
       options.length === 0
-        ? "Nu am putut genera o variantă. Contactați pensiunea."
+        ? "Could not generate an option. Contact the guesthouse."
         : undefined,
   };
 }

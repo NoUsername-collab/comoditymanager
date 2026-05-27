@@ -21,13 +21,13 @@ export function resolveMovePivot(
     pivot = addDays(segmentStart, 1);
   }
   if (pivot >= segmentEnd) {
-    throw new Error("Nu mai rămân nopți viitoare de mutat pe acest segment.");
+    throw new Error("segments.no_future_nights_to_move");
   }
   if (!isAtLeastOneNight(segmentStart, pivot)) {
-    throw new Error("Segmentul trecut trebuie să păstreze minim o noapte.");
+    throw new Error("segments.past_segment_must_keep_min_one_night");
   }
   if (!isAtLeastOneNight(pivot, segmentEnd)) {
-    throw new Error("Segmentul nou trebuie să aibă minim o noapte.");
+    throw new Error("segments.new_segment_must_have_min_one_night");
   }
   return pivot;
 }

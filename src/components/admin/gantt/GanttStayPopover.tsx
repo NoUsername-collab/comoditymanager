@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { guestInitials } from "@/domain/guest-name";
 import { formatGuestPartyDetail } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { todayIso } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
-import { cancelBookingAction } from "@/app/admin/(panel)/bookings/actions";
+import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 
 export type GanttStayPopoverData = {
   bookingId: string;
@@ -55,6 +56,9 @@ export function GanttStayPopover({
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tFlow = useTranslations("booking.flowStatus");
+  const locale = useLocale();
   const router = useRouter();
   const isCerere = data.status === "cerere_noua";
   const stripe = data.buildingColor ?? (isCerere ? "#d97706" : "#059669");
@@ -66,8 +70,14 @@ export function GanttStayPopover({
       ? data.roomNames.join(", ")
       : data.roomName ?? "—";
   const cancelMessage = isCerere
-    ? `Anulezi cererea ${data.guestName} · ${formatStayPeriod(data.checkIn, data.checkOut, true)}?`
-    : `Anulezi cazarea confirmată ${data.guestName} · ${formatStayPeriod(data.checkIn, data.checkOut, true)}? Camerele devin libere.`;
+    ? tCommon("cancelRequestConfirm", {
+        name: data.guestName,
+        period: formatStayPeriod(data.checkIn, data.checkOut, locale, true),
+      })
+    : tCommon("cancelStayConfirm", {
+        name: data.guestName,
+        period: formatStayPeriod(data.checkIn, data.checkOut, locale, true),
+      });
 
   return (
     <AdminFloatingPanel
@@ -111,33 +121,33 @@ export function GanttStayPopover({
                   : "bg-emerald-100 text-emerald-800",
               ].join(" ")}
             >
-              {isCerere ? "Cerere nouă" : "Confirmată"}
+              {isCerere ? tFlow("cerere_noua") : tFlow("confirmata")}
             </span>
           </div>
         </div>
 
         <dl className="mt-3 space-y-1.5 text-sm">
           <div className="flex justify-between gap-3">
-            <dt className="text-zinc-500">Perioadă</dt>
+            <dt className="text-zinc-500">{tCommon("period")}</dt>
             <dd className="text-right font-medium text-zinc-800">
-              {formatStayPeriod(data.checkIn, data.checkOut, true)}
+              {formatStayPeriod(data.checkIn, data.checkOut, locale, true)}
             </dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-zinc-500">Persoane</dt>
+            <dt className="text-zinc-500">{tCommon("persons")}</dt>
             <dd className="font-medium text-zinc-800">
               {formatGuestPartyDetail(data.numAdults, data.numChildren)}
             </dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-zinc-500">Cameră</dt>
+            <dt className="text-zinc-500">{tCommon("room")}</dt>
             <dd className="max-w-[58%] truncate text-right font-medium text-zinc-800">
               {roomsLabel}
             </dd>
           </div>
           {data.guestPhone ? (
             <div className="flex justify-between gap-3">
-              <dt className="text-zinc-500">Telefon</dt>
+              <dt className="text-zinc-500">{tCommon("phone")}</dt>
               <dd>
                 <a
                   href={`tel:${data.guestPhone.replace(/\s/g, "")}`}
@@ -150,7 +160,7 @@ export function GanttStayPopover({
           ) : null}
           {data.totalPrice != null && data.totalPrice > 0 ? (
             <div className="flex justify-between gap-3 border-t border-zinc-100 pt-1.5">
-              <dt className="font-medium text-zinc-600">Preț total</dt>
+              <dt className="font-medium text-zinc-600">{tCommon("totalPrice")}</dt>
               <dd className="text-base font-bold tabular-nums text-zinc-900">
                 {formatRon(data.totalPrice)} RON
               </dd>
@@ -159,12 +169,12 @@ export function GanttStayPopover({
         </dl>
 
         <p className="mt-2 text-[11px] text-zinc-500">
-          Sosire {data.checkInTime} · plecare {data.checkOutTime}
+          {tCommon("arrival")} {data.checkInTime} · {tCommon("departure")} {data.checkOutTime}
         </p>
         {(data.continuesBefore || data.continuesAfter) && (
           <p className="mt-1 text-xs text-amber-700">
-            {data.continuesBefore && "← continuă din perioada anterioară "}
-            {data.continuesAfter && "→ continuă în perioada următoare"}
+            {data.continuesBefore && tCommon("continuesFromPrevious")}
+            {data.continuesAfter && tCommon("continuesToNext")}
           </p>
         )}
 
@@ -174,7 +184,7 @@ export function GanttStayPopover({
             className="col-span-2 rounded-lg bg-zinc-900 px-3 py-2 text-center text-xs font-semibold text-white hover:bg-zinc-800"
             onClick={() => router.push(`/admin/bookings/${data.bookingId}`)}
           >
-            Deschide
+            {tCommon("openDetails")}
           </button>
           {data.canMoveRoom && data.onMoveRoom ? (
             <button
@@ -182,7 +192,7 @@ export function GanttStayPopover({
               className="rounded-lg border border-sky-200 bg-sky-50 px-2 py-2 text-center text-xs font-semibold text-sky-900 hover:bg-sky-100"
               onClick={data.onMoveRoom}
             >
-              Mută cameră
+              {tCommon("moveRoom")}
             </button>
           ) : null}
           {isCheckInToday ? (
@@ -195,18 +205,18 @@ export function GanttStayPopover({
                 .filter(Boolean)
                 .join(" ")}
             >
-              Check-in azi
+              {tCommon("checkInToday")}
             </Link>
           ) : null}
         </div>
 
         <details className="mt-2 text-xs">
           <summary className="cursor-pointer text-zinc-400 hover:text-zinc-600">
-            Mai multe acțiuni
+            {tCommon("quickActions")}
           </summary>
           <div className="mt-2">
             <BookingCancelButton
-              label={isCerere ? "Anulează cererea" : "Anulează cazarea"}
+              label={isCerere ? tCommon("cancelRequest") : tCommon("cancelStay")}
               confirmMessage={cancelMessage}
               formAction={cancelBookingAction}
               bookingId={data.bookingId}
@@ -217,7 +227,7 @@ export function GanttStayPopover({
         </details>
 
         <p className="mt-2 text-[10px] text-zinc-400">
-          Trage bara · dublu-click deschide · click dreapta meniu
+          {tCommon("dragBarHint")}
         </p>
       </div>
     </AdminFloatingPanel>

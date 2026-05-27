@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { loginAction } from "@/app/admin/login/actions";
+import { useTranslations } from "next-intl";
+import { loginAction } from "@/app/[locale]/admin/login/actions";
 import { OPERATOR_LOGIN_USERNAME } from "@/lib/auth/constants";
 
 export function AdminLoginForm({ next }: { next: string }) {
+  const t = useTranslations("admin.login");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -24,7 +26,7 @@ export function AdminLoginForm({ next }: { next: string }) {
     >
       <input type="hidden" name="next" value={next} />
       <label className="block text-sm">
-        Utilizator
+        {t("username")}
         <input
           name="username"
           type="text"
@@ -35,7 +37,7 @@ export function AdminLoginForm({ next }: { next: string }) {
         />
       </label>
       <label className="block text-sm">
-        Parolă
+        {t("password")}
         <input
           name="password"
           type="password"
@@ -54,7 +56,7 @@ export function AdminLoginForm({ next }: { next: string }) {
         disabled={pending}
         className="w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-medium text-white disabled:opacity-60"
       >
-        {pending ? "Se conectează…" : "Intră în panou"}
+        {pending ? t("submitting") : t("submit")}
       </button>
     </form>
   );

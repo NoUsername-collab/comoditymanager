@@ -1,8 +1,8 @@
 export const BLOCK_REASON_PRESETS = [
-  { id: "maintenance", label: "Mentenanță" },
-  { id: "defect", label: "Defect / reparații" },
-  { id: "personal", label: "Uz personal" },
-  { id: "other", label: "Altul…" },
+  { id: "maintenance", label: "Maintenance" },
+  { id: "defect", label: "Defect / repairs" },
+  { id: "personal", label: "Personal use" },
+  { id: "other", label: "Other..." },
 ] as const;
 
 export type BlockReasonPresetId = (typeof BLOCK_REASON_PRESETS)[number]["id"];

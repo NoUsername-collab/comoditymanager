@@ -1,6 +1,10 @@
-import { daysInMonth } from "@/lib/ro-calendar";
+import {
+  dayInitialFromIso,
+  daysInMonth,
+  formatDateWithDay,
+  monthYearLabel,
+} from "@/lib/ro-calendar";
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
-import { dayInitialFromIso, formatDateWithDay } from "@/lib/ro-calendar";
 
 export type GanttRollingZoom = "today" | "days7" | "days15" | "days30";
 export type GanttZoom =
@@ -26,6 +30,22 @@ export type GanttViewRange = {
   rangeEnd: string;
 };
 
+export type GanttRangeLabels = {
+  today: string;
+  days7: string;
+  days15: string;
+  days30: string;
+  quarters: [string, string, string, string];
+};
+
+const DEFAULT_LABELS: GanttRangeLabels = {
+  today: "Today",
+  days7: "7 days",
+  days15: "15 days",
+  days30: "30 days",
+  quarters: ["Jan–Mar", "Apr–Jun", "Jul–Sep", "Oct–Dec"],
+};
+
 export function mondayOfWeekContaining(iso: string): string {
   const d = parseIso(iso);
   const day = d.getDay();
@@ -34,14 +54,14 @@ export function mondayOfWeekContaining(iso: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function buildDayColumns(isoDates: string[]): GanttDayColumn[] {
+function buildDayColumns(isoDates: string[], locale: string): GanttDayColumn[] {
   const today = todayIso();
   return isoDates.map((iso) => {
     const d = parseIso(iso);
     const dow = d.getDay();
     return {
       iso,
-      weekday: dayInitialFromIso(iso),
+      weekday: dayInitialFromIso(iso, locale),
       dayNum: d.getDate(),
       isWeekend: dow === 0 || dow === 6,
       isToday: iso === today,
@@ -72,16 +92,16 @@ function rollingZoomLength(zoom: GanttRollingZoom): number {
   }
 }
 
-function rollingZoomLabel(zoom: GanttRollingZoom): string {
+function rollingZoomLabel(zoom: GanttRollingZoom, labels: GanttRangeLabels): string {
   switch (zoom) {
     case "today":
-      return "Azi";
+      return labels.today;
     case "days7":
-      return "7 zile";
+      return labels.days7;
     case "days15":
-      return "15 zile";
+      return labels.days15;
     case "days30":
-      return "30 zile";
+      return labels.days30;
   }
 }
 
@@ -90,7 +110,8 @@ function buildFixedLengthRange(
   length: number,
   zoom: GanttZoom,
   periodKey: string,
-  title: string
+  title: string,
+  locale: string
 ): GanttViewRange {
   const days: string[] = [];
   let cur = startIso;
@@ -103,7 +124,7 @@ function buildFixedLengthRange(
     zoom,
     periodKey,
     title,
-    days: buildDayColumns(days),
+    days: buildDayColumns(days, locale),
     rangeStart: days[0],
     rangeEnd: addDays(days[days.length - 1], 1),
   };
@@ -111,7 +132,9 @@ function buildFixedLengthRange(
 
 export function buildRollingRange(
   startIso: string,
-  zoom: GanttRollingZoom
+  zoom: GanttRollingZoom,
+  locale: string,
+  labels: GanttRangeLabels = DEFAULT_LABELS
 ): GanttViewRange {
   const len = rollingZoomLength(zoom);
   const days: string[] = [];
@@ -121,12 +144,13 @@ export function buildRollingRange(
     cur = addDays(cur, 1);
   }
 
-  const cols = buildDayColumns(days);
+  const cols = buildDayColumns(days, locale);
   const title =
     len === 1
-      ? `${rollingZoomLabel(zoom)} · ${formatDateWithDay(days[0], true)}`
-      : `${formatDateWithDay(days[0], true)} – ${formatDateWithDay(
+      ? `${rollingZoomLabel(zoom, labels)} · ${formatDateWithDay(days[0], locale, true)}`
+      : `${formatDateWithDay(days[0], locale, true)} – ${formatDateWithDay(
           days[days.length - 1],
+          locale,
           true
         )}`;
 
@@ -140,7 +164,11 @@ export function buildRollingRange(
   };
 }
 
-export function buildMonthRange(year: number, month: number): GanttViewRange {
+export function buildMonthRange(
+  year: number,
+  month: number,
+  locale: string
+): GanttViewRange {
   const dim = daysInMonth(year, month);
   const days: string[] = [];
   for (let d = 1; d <= dim; d++) {
@@ -148,14 +176,11 @@ export function buildMonthRange(year: number, month: number): GanttViewRange {
       `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`
     );
   }
-  const cols = buildDayColumns(days);
+  const cols = buildDayColumns(days, locale);
   return {
     zoom: "month",
     periodKey: `m-${year}-${month}`,
-    title: new Date(year, month, 1).toLocaleDateString("ro-RO", {
-      month: "long",
-      year: "numeric",
-    }),
+    title: monthYearLabel(year, month, locale),
     days: cols,
     rangeStart: days[0],
     rangeEnd: addDays(days[days.length - 1], 1),
@@ -164,7 +189,8 @@ export function buildMonthRange(year: number, month: number): GanttViewRange {
 
 export function buildAnchoredMonthRange(
   startIso: string,
-  zoom: "days30" | "month"
+  zoom: "days30" | "month",
+  locale: string
 ): GanttViewRange {
   const anchor = parseIso(startIso);
   const canonicalStart = `${anchor.getFullYear()}-${String(anchor.getMonth() + 1).padStart(2, "0")}-01`;
@@ -172,43 +198,43 @@ export function buildAnchoredMonthRange(
   const endIso = addDays(startIso, length - 1);
   const title =
     startIso === canonicalStart
-      ? new Date(anchor.getFullYear(), anchor.getMonth(), 1).toLocaleDateString(
-          "ro-RO",
-          {
-            month: "long",
-            year: "numeric",
-          }
-        )
-      : `${formatDateWithDay(startIso, true)} – ${formatDateWithDay(endIso, true)}`;
+      ? monthYearLabel(anchor.getFullYear(), anchor.getMonth(), locale)
+      : `${formatDateWithDay(startIso, locale, true)} – ${formatDateWithDay(endIso, locale, true)}`;
 
   return buildFixedLengthRange(
     startIso,
     length,
     zoom,
     `${zoom}-${startIso}`,
-    title
+    title,
+    locale
   );
 }
 
-export function buildWeekRange(weekStartIso: string): GanttViewRange {
+export function buildWeekRange(weekStartIso: string, locale: string): GanttViewRange {
   const days: string[] = [];
   let cur = weekStartIso;
   for (let i = 0; i < 7; i++) {
     days.push(cur);
     cur = addDays(cur, 1);
   }
-  const cols = buildDayColumns(days);
+  const cols = buildDayColumns(days, locale);
   return {
     zoom: "week",
     periodKey: `w-${weekStartIso}`,
-    title: `${formatDateWithDay(days[0])} – ${formatDateWithDay(days[6])}`,
+    title: `${formatDateWithDay(days[0], locale)} – ${formatDateWithDay(days[6], locale)}`,
     days: cols,
     rangeStart: days[0],
     rangeEnd: addDays(days[6], 1),
   };
 }
 
-export function buildQuarterRange(year: number, quarter: number): GanttViewRange {
+export function buildQuarterRange(
+  year: number,
+  quarter: number,
+  locale: string,
+  labels: GanttRangeLabels = DEFAULT_LABELS
+): GanttViewRange {
   const startMonth = quarter * 3;
   const days: string[] = [];
   for (let m = startMonth; m < startMonth + 3; m++) {
@@ -219,19 +245,22 @@ export function buildQuarterRange(year: number, quarter: number): GanttViewRange
       );
     }
   }
-  const cols = buildDayColumns(days);
-  const labels = ["Ian–Mar", "Apr–Iun", "Iul–Sep", "Oct–Dec"];
+  const cols = buildDayColumns(days, locale);
   return {
     zoom: "quarter",
     periodKey: `q-${year}-${quarter}`,
-    title: `${labels[quarter]} ${year}`,
+    title: `${labels.quarters[quarter]} ${year}`,
     days: cols,
     rangeStart: days[0],
     rangeEnd: addDays(days[days.length - 1], 1),
   };
 }
 
-export function buildAnchoredQuarterRange(startIso: string): GanttViewRange {
+export function buildAnchoredQuarterRange(
+  startIso: string,
+  locale: string,
+  labels: GanttRangeLabels = DEFAULT_LABELS
+): GanttViewRange {
   const anchor = parseIso(startIso);
   const quarter = Math.floor(anchor.getMonth() / 3);
   const quarterStartMonth = quarter * 3;
@@ -241,18 +270,18 @@ export function buildAnchoredQuarterRange(startIso: string): GanttViewRange {
     length += daysInMonth(anchor.getFullYear(), month);
   }
   const endIso = addDays(startIso, length - 1);
-  const labels = ["Ian–Mar", "Apr–Iun", "Iul–Sep", "Oct–Dec"];
   const title =
     startIso === canonicalStart
-      ? `${labels[quarter]} ${anchor.getFullYear()}`
-      : `${formatDateWithDay(startIso, true)} – ${formatDateWithDay(endIso, true)}`;
+      ? `${labels.quarters[quarter]} ${anchor.getFullYear()}`
+      : `${formatDateWithDay(startIso, locale, true)} – ${formatDateWithDay(endIso, locale, true)}`;
 
   return buildFixedLengthRange(
     startIso,
     length,
     "quarter",
     `quarter-${startIso}`,
-    title
+    title,
+    locale
   );
 }
 
@@ -262,7 +291,11 @@ export function resolveGanttRange(params: {
   zoom?: string;
   ws?: string;
   q?: number;
+  locale?: string;
+  labels?: GanttRangeLabels;
 }): GanttViewRange {
+  const locale = params.locale ?? "ro";
+  const labels = params.labels ?? DEFAULT_LABELS;
   const now = new Date();
   const year = params.y ?? now.getFullYear();
   const month = params.m ?? now.getMonth();
@@ -272,13 +305,13 @@ export function resolveGanttRange(params: {
 
   if (isRollingZoom(zoom)) {
     const ws = validWs ?? todayIso();
-    return buildRollingRange(ws, zoom);
+    return buildRollingRange(ws, zoom, locale, labels);
   }
 
   if (isMonthLikeZoom(zoom)) {
-    if (validWs) return buildAnchoredMonthRange(validWs, zoom);
+    if (validWs) return buildAnchoredMonthRange(validWs, zoom, locale);
     return {
-      ...buildMonthRange(year, month),
+      ...buildMonthRange(year, month, locale),
       zoom,
       periodKey: `${zoom}-${year}-${month}`,
     };
@@ -286,19 +319,19 @@ export function resolveGanttRange(params: {
 
   if (zoom === "week") {
     const ws = validWs ?? mondayOfWeekContaining(todayIso());
-    return buildRollingRange(ws, "days7");
+    return buildRollingRange(ws, "days7", locale, labels);
   }
 
   if (zoom === "quarter") {
-    if (validWs) return buildAnchoredQuarterRange(validWs);
+    if (validWs) return buildAnchoredQuarterRange(validWs, locale, labels);
     const q =
       params.q !== undefined && params.q >= 0 && params.q <= 3
         ? params.q
         : Math.floor(month / 3);
-    return buildQuarterRange(year, q);
+    return buildQuarterRange(year, q, locale, labels);
   }
 
-  return buildMonthRange(year, month);
+  return buildMonthRange(year, month, locale);
 }
 
 export function navigateRange(

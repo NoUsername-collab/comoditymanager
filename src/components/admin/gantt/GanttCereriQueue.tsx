@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useMemo } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { GanttCereriCard } from "@/components/admin/gantt/GanttCereriCard";
 import { formatGuestPartyShort } from "@/lib/guest-party";
@@ -28,6 +29,9 @@ export function GanttCereriQueue({
   subtitle?: string | null;
   ariaLabel?: string;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const sorted = useMemo(
     () =>
       [...cereri].sort((a, b) =>
@@ -38,12 +42,12 @@ export function GanttCereriQueue({
 
   if (sorted.length === 0) return null;
 
-  const resolvedTitle = title ?? (inline || top ? "Fără cameră" : "Cereri fără cameră");
+  const resolvedTitle = title ?? (inline || top ? tCommon("noRoom") : tGantt("queue.requestsNoRoom"));
   const resolvedSubtitle =
     subtitle === undefined
       ? inline || top
         ? null
-        : "Vizibile indiferent de luna din calendar — procesează și alocă camere"
+        : tGantt("queue.visibleHint")
       : subtitle;
   const resolvedAriaLabel = ariaLabel ?? resolvedTitle;
 
@@ -73,7 +77,7 @@ export function GanttCereriQueue({
           )}
         </div>
         <Link href="/admin/bookings" className="gantt-cereri-queue__all-link">
-          {inline ? "Toate →" : "Toate cererile →"}
+          {inline ? tGantt("queue.allArrow") : tGantt("queue.allRequestsArrow")}
         </Link>
       </header>
 
@@ -89,7 +93,7 @@ export function GanttCereriQueue({
               key={b.id}
               href={`/admin/bookings/${b.id}`}
               label={label}
-              dates={formatStayPeriod(b.check_in, b.check_out)}
+              dates={formatStayPeriod(b.check_in, b.check_out, locale)}
               party={formatGuestPartyShort(b.num_adults, b.num_children)}
             />
           );

@@ -1,0 +1,143 @@
+{
+  "admin": {
+    "common": {
+      "error": "Грешка",
+      "select": "Изберете…",
+      "room": "Стая",
+      "roomFallback": "стая",
+      "sourceRoom": "изходна стая",
+      "targetRoom": "целева стая",
+      "genericError": "Грешка",
+      "linkCopied": "Линкът е копиран",
+      "closeMenu": "Затвори менюто",
+      "close": "Затвори",
+      "delete": "Изтрий",
+      "cancel": "Отмени",
+      "confirm": "Потвърди",
+      "save": "Запази",
+      "loading": "Зареждане…",
+      "noEmail": "Без имейл",
+      "noPhone": "Без телефон",
+      "internalNote": "Вътрешна бележка:",
+      "period": "Период",
+      "building": "Сграда",
+      "nights": "Нощувки",
+      "totalPrice": "Обща цена",
+      "scrollDrag": "Плъзнете наляво-надясно за бърз скрол",
+      "autoRefreshTitle": "Авто обновяване: realtime с рядък fallback",
+      "searchStay": "Търсене по име, телефон, имейл, стая или код…",
+      "searchGuest": "Търсене име, имейл, телефон…",
+      "oneNightMin": "· мин. 1 нощ",
+      "timeline": "Времева линия",
+      "clickRoomRow": "Кликнете върху ред за стая",
+      "masterController": "Gantt контролер",
+      "openHeatmap": "Отвори heat map наличност",
+      "dragHint": "Плъзнете за интервал · десен бутон / задръж ~400ms",
+      "mobileHint": "Десен бутон / задръж ~400ms на мобилен",
+      "createRequest": "Създай заявка",
+      "createDirectStay": "Създай директен престой",
+      "holdRoom": "Hold стая",
+      "blockRoom": "Блокиране стая",
+      "extendNight": "Удължи (+1 нощ)",
+      "shortenNight": "Съкрати (−1 нощ)",
+      "duplicateRebook": "Дублирай (подобен rebook)",
+      "actionHistory": "История действия",
+      "copyAdminLink": "Копирай admin линк",
+      "cancelStay": "Отмени престоя",
+      "cancelRequest": "Отмени заявката",
+      "welcomeHome": "Добре дошли в Casa Emil!",
+      "loadDataError": "Данните не могат да се заредят",
+      "homeEyebrow": "Начало · панел рецепция",
+      "currentMonthCalendar": "Календар текущ месец →",
+      "newRequestsLabel": "Нови заявки",
+      "achievements": "Постижения",
+      "noRoomsConfigured": "Все още няма конфигурирани стаи"
+    },
+    "dashboard": {
+      "quickCereri": "Нови заявки",
+      "quickCereriDesc": "Потвърди и разпредели стаи",
+      "quickReceptie": "Бърза рецепция",
+      "quickReceptieDesc": "Телефон и check-in",
+      "quickCalendar": "Календар",
+      "quickCalendarDesc": "Изглед месец / стаи",
+      "quickAvail": "Наличност на живо",
+      "quickAvailDesc": "Пълен панел тук на Начало",
+      "quickSettings": "Настройки",
+      "quickSettingsDesc": "Само Admin · конфигурация",
+      "pendingPuls": "{count, plural, one {# заявка за обработка} other {# заявки за обработка}}",
+      "moodOneRequest": "Имате една заявка за обработка — гостът чака отговор.",
+      "moodManyRequests": "Имате {count} чакащи заявки — рецепцията е заета.",
+      "moodBusyArrivals": "Натоварен ден: {count} потвърдени пристигания днес.",
+      "moodSomeArrivals": "Днес имате {count} пристигания.",
+      "moodFullWeek": "Пълна седмица — стаите се движат добре!",
+      "moodQuietEvening": "Тиха вечер — всички стаи са свободни.",
+      "moodAllFree": "Няма заети стаи тази вечер.",
+      "moodDefault": "Всичко изглежда добре на рецепцията!",
+      "briefingEmpty": "Брифинг днес: няма check-in/out, няма чакащи заявки.",
+      "briefingPrefix": "Брифинг днес:",
+      "milestoneFirst": "Първо потвърждение",
+      "milestoneTen": "10 потвърдени престоя",
+      "milestoneFifty": "50 потвърдени престоя",
+      "milestoneHundred": "100 потвърдени престоя",
+      "milestoneMonthHalf": "{pct}% заетост този месец",
+      "milestoneWeekFull": "Седмица на капацитет",
+      "milestoneInboxZero": "Inbox zero — без заявки"
+    },
+    "gantt": {
+      "layers": {
+        "all": "Всички",
+        "cereri": "Заявки",
+        "confirmate": "Потвърдени",
+        "in_house": "In-house",
+        "trecute": "Минали",
+        "hold": "Hold",
+        "block": "Блокировки"
+      }
+    },
+    "activity": {
+      "booking.request_created": "Нова заявка (сайт)",
+      "booking.confirmed": "Резервация потвърдена",
+      "booking.cancelled": "Резервация отменена",
+      "auth.login": "Вход",
+      "auth.logout": "Изход",
+      "actorPublicSite": "Публичен сайт",
+      "actorSystem": "Система",
+      "emptyTitle": "Все още няма събития",
+      "emptyText": "След потвърждения, премествания или промени в админ, действията се появяват автоматично.",
+      "viewBooking": "Виж резервация",
+      "viewCalendar": "Виж в календара"
+    },
+    "pages": {
+      "calendar": {
+        "title": "Календар — Casa Emil",
+        "ganttTitle": "Gantt календар — Casa Emil",
+        "windowGantt": "Gantt",
+        "unassignedTitle": "Непотвърдени заявки",
+        "unassignedSubtitle": "Без стая в показания период",
+        "unassignedAria": "Непотвърдени заявки без стая",
+        "genericError": "Грешка",
+        "loadError": "Календарът не може да се зареди.",
+        "heatmapError": "Грешка при зареждане на heatmap."
+      },
+      "cazari": {
+        "title": "Престои — Casa Emil",
+        "confirmedTitle": "Потвърдени престои ({count})",
+        "noRoomBadge": "Без стая"
+      },
+      "statistics": {
+        "title": "Статистика — Casa Emil"
+      },
+      "location": {
+        "title": "Администрация локация — Casa Emil"
+      }
+    }
+  },
+  "booking": {
+    "flowStatus": {
+      "cerere_noua": "Нова заявка",
+      "confirmata": "Потвърдена",
+      "anulata": "Отменена",
+      "refuzata": "Отказана"
+    }
+  }
+}

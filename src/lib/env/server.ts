@@ -21,7 +21,7 @@ const serverEnvSchema = z
     (data) =>
       data.ADMIN_EMAIL.toLowerCase() !== data.OPERATOR_EMAIL.toLowerCase(),
     {
-      message: "ADMIN_EMAIL și OPERATOR_EMAIL trebuie să fie diferite",
+      message: "ADMIN_EMAIL and OPERATOR_EMAIL must be different",
       path: ["OPERATOR_EMAIL"],
     }
   );
@@ -46,7 +46,7 @@ export function getServerEnv(): ServerEnv {
       (i) => `${i.path.join(".")}: ${i.message}`
     );
     throw new Error(
-      `Configurare env invalidă:\n${lines.join("\n")}\nRulează: npm run env:check`
+      `Invalid env configuration:\n${lines.join("\n")}\nRun: npm run env:check`
     );
   }
 
@@ -55,7 +55,7 @@ export function getServerEnv(): ServerEnv {
     parsed.data.ADMIN_FACTORY_RESET_ENABLED === "true"
   ) {
     throw new Error(
-      "ADMIN_FACTORY_RESET_ENABLED=true este interzis pe producție"
+      "ADMIN_FACTORY_RESET_ENABLED=true is not allowed in production"
     );
   }
 
@@ -97,7 +97,7 @@ export function isFactoryResetEnabled(): boolean {
   return getServerEnv().ADMIN_FACTORY_RESET_ENABLED === "true";
 }
 
-/** Validează env la pornirea serverului Node (instrumentation). */
+/** Validates env at Node server boot (instrumentation). */
 export function assertServerEnvAtBoot(): void {
   getServerEnv();
 }

@@ -2,7 +2,7 @@
 
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { GUEST_TAGS, type GuestTag } from "@/domain/guest/types";
-import { updateGuestTagsAction } from "@/app/admin/(panel)/guests/actions";
+import { updateGuestTagsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function GuestTagsForm({

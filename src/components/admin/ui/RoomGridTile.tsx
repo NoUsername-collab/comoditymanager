@@ -1,4 +1,7 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { roomShortLabel } from "@/lib/building-theme";
 import type { RoomNightStatus } from "@/domain/availability/room-night-status";
 
@@ -21,18 +24,19 @@ export function RoomGridTile({
   dateLabel?: string;
   href?: string | null;
 }) {
+  const tCommon = useTranslations("admin.common");
   const label = roomShortLabel(name);
   const title = [
     name,
     floorName,
-    dateLabel && `Data: ${dateLabel}`,
+    dateLabel && tCommon("dateLabel", { date: dateLabel }),
     statusOnDate === "occupied"
-      ? `Ocupată — ${guestOnDate ?? "oaspete"}`
+      ? tCommon("occupiedGuestLabel", { guest: guestOnDate ?? tCommon("guestFallback") })
       : statusOnDate === "pending"
-        ? `Cerere — ${guestOnDate ?? "oaspete"}`
+        ? tCommon("pendingGuestLabel", { guest: guestOnDate ?? tCommon("guestFallback") })
         : statusOnDate === "free"
-          ? "Liberă"
-          : "Inactivă",
+          ? tCommon("freeFemale")
+          : tCommon("inactiveFemale"),
   ]
     .filter(Boolean)
     .join(" · ");

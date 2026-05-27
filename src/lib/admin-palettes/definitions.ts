@@ -4,12 +4,12 @@ function t(partial: AdminPaletteTokens): AdminPaletteTokens {
   return partial;
 }
 
-/** Singura temă activă acum: default. Teme noi vor urma același pattern day/night. */
+/** Only active theme for now: default. New themes follow same day/night pattern. */
 export const CATALOG_PALETTES: AdminPaletteDefinition[] = [
   {
     id: "default",
     name: "Default",
-    description: "Tema implicită Casa Emil, pe schelet unic day/night.",
+    description: "Casa Emil default theme on a unified day/night structure.",
     group: "catalog",
     day: t({
       pageBg: "#eef0f8",

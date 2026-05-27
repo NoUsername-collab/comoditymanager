@@ -1,7 +1,7 @@
 "use client";
 
 import { cloneElement, isValidElement } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 /**
  * Acces staff invizibil: triple-click pe logo/titlu → login.

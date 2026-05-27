@@ -25,8 +25,8 @@ export type InformalInvoice = {
 };
 
 const DISCLAIMER =
-  "Document informativ — nu reprezintă factură fiscală, bon fiscal sau document contabil. " +
-  "Valorile sunt orientative, bazate pe prețurile setate în sistem.";
+  "Informational document only. Not a fiscal invoice, receipt, or accounting document. " +
+  "Values are estimates based on prices configured in the system.";
 
 export function buildInformalInvoice(input: {
   booking_id: string;

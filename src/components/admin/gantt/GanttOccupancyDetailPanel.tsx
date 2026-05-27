@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -8,7 +9,7 @@ import {
 import {
   deleteRoomBlockAction,
   releaseRoomHoldAction,
-} from "@/app/admin/(panel)/calendar/actions";
+} from "@/app/[locale]/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -37,6 +38,9 @@ function formatExpiresAt(iso: string | null | undefined): string | null {
 }
 
 export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const router = useRouter();
   const { showToast, notifyCancel } = useAdminFx();
   const { pending } = useAdminPending();
@@ -45,7 +49,7 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
   if (!detail) return null;
 
   const { segment, roomName } = detail;
-  const period = formatStayPeriod(segment.checkIn, segment.checkOut, true);
+  const period = formatStayPeriod(segment.checkIn, segment.checkOut, locale, true);
   const isHold = segment.kind === "hold";
   const expiresLabel = isHold ? formatExpiresAt(segment.expiresAt) : null;
 
@@ -55,11 +59,11 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
         ? await releaseRoomHoldAction(segment.id)
         : await deleteRoomBlockAction(segment.id);
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: tCommon("error"), message: res.error });
         return;
       }
       notifyCancel(
-        isHold ? "Hold eliberat" : "Blocare ștearsă",
+        isHold ? tGantt("occupancy.holdReleased") : tGantt("occupancy.blockDeleted"),
         `${roomName} · ${period}`
       );
       onClose();
@@ -71,7 +75,7 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
     <AdminFloatingPanel
       open
       onClose={onClose}
-      title={isHold ? "Hold cameră" : "Blocare cameră"}
+      title={isHold ? tGantt("occupancy.holdRoom") : tGantt("occupancy.blockRoom")}
       variant="modal"
       width={400}
     >
@@ -90,10 +94,10 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
 
         {expiresLabel ? (
           <p className="text-sm text-amber-800">
-            Expiră: <strong>{expiresLabel}</strong>
+            {tGantt("occupancy.expires")}: <strong>{expiresLabel}</strong>
           </p>
         ) : isHold ? (
-          <p className="text-sm text-zinc-500">Fără expirare automată — eliberare manuală.</p>
+          <p className="text-sm text-zinc-500">{tGantt("occupancy.noAutoExpire")}</p>
         ) : null}
 
         <button
@@ -102,11 +106,11 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
           disabled={pending}
           onClick={releaseOrDelete}
         >
-          {isHold ? "Eliberează hold" : "Șterge blocarea"}
+          {isHold ? tGantt("occupancy.releaseHold") : tGantt("occupancy.deleteBlock")}
         </button>
 
         <button type="button" className="admin-floating-panel__btn w-full" onClick={onClose}>
-          Închide
+          {tCommon("close")}
         </button>
       </div>
     </AdminFloatingPanel>

@@ -1,19 +1,26 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AdminTodayNotifications } from "@/components/admin/AdminTodayNotifications";
 import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminLiveRefresh } from "@/components/admin/AdminLiveRefresh";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { HudIconGlobe } from "@/components/admin/AdminHudIcons";
-import { LogoutButton } from "@/app/admin/(panel)/logout-button";
+import { LogoutButton } from "@/app/[locale]/admin/(panel)/logout-button";
+import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
+import { AdminNav } from "@/components/admin/AdminNav";
 import type { TodayBoard } from "@/services/today-board";
+import { getTranslations } from "next-intl/server";
 
-export function AdminTopBar({
+export async function AdminTopBar({
   board,
   cereriCount,
+  locationUnlocked = false,
 }: {
   board: TodayBoard | null;
   cereriCount: number;
+  locationUnlocked?: boolean;
 }) {
+  const t = await getTranslations("admin.shell");
+
   return (
     <header className="admin-hud__header">
       <div className="admin-hud__brand">
@@ -21,26 +28,25 @@ export function AdminTopBar({
           <span className="admin-hud__logo-inner">HO</span>
         </div>
         <div className="admin-hud__brand-text">
-          <p className="admin-hud__eyebrow">Hospira · Control</p>
-          <h1 className="admin-hud__title">Panou administrare</h1>
+          <p className="admin-hud__eyebrow">{t("eyebrow")}</p>
+          <h1 className="admin-hud__title">{t("title")}</h1>
         </div>
       </div>
 
       <div className="admin-hud__center">
-        <AdminTodayNotifications board={board} cereriCount={cereriCount} />
+        <AdminNav cereriCount={cereriCount} locationUnlocked={locationUnlocked} />
       </div>
 
-      <div className="admin-hud__actions">
-        <div className="admin-hud__action-cluster admin-hud__action-cluster--status">
+      <div className="admin-hud__right">
+        <AdminTodayNotifications board={board} cereriCount={cereriCount} />
+        <div className="admin-hud__tools">
           <AdminDayNightSwitch />
-          <AdminVersionBadge />
           <AdminLiveRefresh />
-        </div>
-
-        <div className="admin-hud__action-cluster admin-hud__action-cluster--links">
+          <AdminVersionBadge />
+          <LanguageSwitcher />
           <Link href="/calendar" className="admin-hud__chip admin-hud__chip--ghost">
-            <HudIconGlobe className="h-4 w-4 shrink-0 opacity-90" />
-            Site public
+            <HudIconGlobe className="h-3.5 w-3.5 shrink-0 opacity-90" />
+            <span className="admin-hud__chip-label-text">{t("publicSite")}</span>
           </Link>
           <LogoutButton />
         </div>

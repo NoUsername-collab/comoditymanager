@@ -1,9 +1,12 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import {
   activityCalendarHref,
   formatBookingRef,
 } from "@/lib/booking-admin-links";
-import { activityActionLabel } from "@/domain/activity/labels";
+import { activityMessageKey } from "@/lib/i18n-activity";
 import {
   activityIcon,
   activityTone,
@@ -11,19 +14,14 @@ import {
 } from "@/domain/activity/presentation";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 
-function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString("ro-RO", {
+function formatWhen(iso: string, locale: string): string {
+  const tag = locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB";
+  return new Date(iso).toLocaleString(tag, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function actorLabel(entry: ActivityLogEntry): string {
-  if (entry.actor_email) return entry.actor_email;
-  if (entry.action === "booking.request_created") return "Site public";
-  return "Sistem";
 }
 
 export function ActivityTimeline({
@@ -36,17 +34,23 @@ export function ActivityTimeline({
   /** Pentru evenimente fără date în metadata (ex. login vechi) */
   bookingCheckIn?: string | null;
 }) {
+  const locale = useLocale();
+  const t = useTranslations("admin.activity");
+
+  function actorLabel(entry: ActivityLogEntry): string {
+    if (entry.actor_email) return entry.actor_email;
+    if (entry.action === "booking.request_created") return t("actorPublicSite");
+    return t("actorSystem");
+  }
+
   if (entries.length === 0) {
     return (
       <div className="admin-empty-state">
         <span className="admin-empty-state__icon" aria-hidden>
           📋
         </span>
-        <p className="admin-empty-state__title">Niciun eveniment încă</p>
-        <p className="admin-empty-state__text">
-          După confirmări, mutări sau modificări în admin, acțiunile apar aici
-          automat.
-        </p>
+        <p className="admin-empty-state__title">{t("emptyTitle")}</p>
+        <p className="admin-empty-state__text">{t("emptyText")}</p>
       </div>
     );
   }
@@ -106,13 +110,13 @@ export function ActivityTimeline({
                     styles.badge,
                   ].join(" ")}
                 >
-                  {activityActionLabel(entry.action)}
+                  {t(activityMessageKey(entry.action))}
                 </span>
                 <time
                   className="ml-auto text-[11px] tabular-nums text-zinc-500"
                   dateTime={entry.created_at}
                 >
-                  {formatWhen(entry.created_at)}
+                  {formatWhen(entry.created_at, locale)}
                 </time>
               </div>
               <p className="mt-2 text-sm font-semibold leading-snug text-zinc-900">
@@ -132,7 +136,7 @@ export function ActivityTimeline({
                       href={`/admin/bookings/${entry.entity_id}`}
                       className="font-semibold text-sky-700 hover:text-sky-900 hover:underline"
                     >
-                      Vezi rezervarea →
+                      {t("viewBooking")} →
                     </Link>
                     {calendarHref && (
                       <>
@@ -141,7 +145,7 @@ export function ActivityTimeline({
                           href={calendarHref}
                           className="font-semibold text-emerald-700 hover:text-emerald-900 hover:underline"
                         >
-                          Vezi în calendar →
+                          {t("viewCalendar")} →
                         </Link>
                       </>
                     )}

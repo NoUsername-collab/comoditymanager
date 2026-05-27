@@ -1,40 +1,20 @@
 /**
- * Calendar Gregorian (Date local) — an bisect, luni cu 28–31 zile.
- * ISO YYYY-MM-DD întotdeauna parsat local, fără shift UTC.
+ * Gregorian calendar helpers (local Date parsing).
+ * ISO YYYY-MM-DD is always parsed in local time, without UTC shift.
  */
 
-/** Duminică=0 … Sâmbătă=6 — 3 litere, prima majusculă */
-const WEEKDAY_SHORT = [
-  "Dum",
-  "Lun",
-  "Mar",
-  "Mie",
-  "Joi",
-  "Vin",
-  "Sam",
-] as const;
-
-const MONTH_SHORT = [
-  "ian",
-  "feb",
-  "mar",
-  "apr",
-  "mai",
-  "iun",
-  "iul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
-] as const;
+export function toIntlLocale(locale: string): string {
+  if (locale === "ro") return "ro-RO";
+  if (locale === "bg") return "bg-BG";
+  return "en-GB";
+}
 
 export function parseDateIsoLocal(iso: string): Date {
   const [y, m, d] = iso.split("-").map(Number);
   return new Date(y, m - 1, d, 12, 0, 0, 0);
 }
 
-/** Zile în lună (0-indexed month), inclusiv februarie în an bisect */
+/** Days in month (0-indexed month), including leap February */
 export function daysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }
@@ -43,57 +23,113 @@ export function isLeapYear(year: number): boolean {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
 }
 
-export function dayInitialFromDate(date: Date): string {
-  return WEEKDAY_SHORT[date.getDay()];
+export function formatWeekdayShort(iso: string, locale: string): string {
+  const d = parseDateIsoLocal(iso);
+  const formatted = new Intl.DateTimeFormat(toIntlLocale(locale), {
+    weekday: "short",
+  }).format(d);
+  return formatted.replace(/\.$/u, "");
 }
 
-export function dayInitialFromIso(iso: string): string {
-  return dayInitialFromDate(parseDateIsoLocal(iso));
+export function formatWeekdayNarrow(iso: string, locale: string): string {
+  const d = parseDateIsoLocal(iso);
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    weekday: "narrow",
+  }).format(d);
+}
+
+/** @deprecated Use formatWeekdayShort(iso, locale) */
+export function dayInitialFromDate(date: Date, locale = "ro"): string {
+  const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  return formatWeekdayShort(iso, locale);
+}
+
+export function dayInitialFromIso(iso: string, locale = "ro"): string {
+  return formatWeekdayShort(iso, locale);
 }
 
 export function dayInitialInMonth(
   year: number,
   month: number,
-  day: number
+  day: number,
+  locale = "ro"
 ): string {
-  return dayInitialFromDate(new Date(year, month, day));
+  const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return formatWeekdayShort(iso, locale);
 }
 
-/** Header Gantt: „Lun 4” */
 export function formatGanttDayLabel(
   year: number,
   month: number,
-  day: number
+  day: number,
+  locale = "ro"
 ): { weekday: string; day: number } {
+  const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   return {
-    weekday: dayInitialInMonth(year, month, day),
+    weekday: formatWeekdayShort(iso, locale),
     day,
   };
 }
 
-/** ex. „22 mai · Joi” */
-export function formatDateWithDay(iso: string, showYear = false): string {
-  const d = parseDateIsoLocal(iso);
-  const initial = dayInitialFromDate(d);
-  const month = MONTH_SHORT[d.getMonth()];
-  const base = showYear
-    ? `${d.getDate()} ${month} ${d.getFullYear()}`
-    : `${d.getDate()} ${month}`;
-  return `${base} · ${initial}`;
+function resolveLocaleAndShowYear(
+  localeOrShowYear?: string | boolean,
+  showYearArg?: boolean
+): { locale: string; showYear: boolean } {
+  if (typeof localeOrShowYear === "string") {
+    return { locale: localeOrShowYear, showYear: showYearArg ?? false };
+  }
+  if (typeof localeOrShowYear === "boolean") {
+    return { locale: "ro", showYear: localeOrShowYear };
+  }
+  return { locale: "ro", showYear: showYearArg ?? false };
 }
 
-/** ex. „22 mai · Joi → 3 iun · Vin” */
+/** e.g. "22 May · Thu" (locale-dependent) */
+export function formatDateWithDay(
+  iso: string,
+  localeOrShowYear?: string | boolean,
+  showYearArg?: boolean
+): string {
+  const { locale, showYear } = resolveLocaleAndShowYear(
+    localeOrShowYear,
+    showYearArg
+  );
+  const d = parseDateIsoLocal(iso);
+  const loc = toIntlLocale(locale);
+  const datePart = new Intl.DateTimeFormat(loc, {
+    day: "numeric",
+    month: "short",
+    ...(showYear ? { year: "numeric" } : {}),
+  }).format(d);
+  const weekday = formatWeekdayShort(iso, locale);
+  return `${datePart} · ${weekday}`;
+}
+
 export function formatStayPeriod(
   checkIn: string,
   checkOut: string,
-  showYear = false
+  localeOrShowYear?: string | boolean,
+  showYearArg?: boolean
 ): string {
-  return `${formatDateWithDay(checkIn, showYear)} → ${formatDateWithDay(checkOut, showYear)}`;
+  const { locale, showYear } = resolveLocaleAndShowYear(
+    localeOrShowYear,
+    showYearArg
+  );
+  return `${formatDateWithDay(checkIn, locale, showYear)} → ${formatDateWithDay(checkOut, locale, showYear)}`;
 }
 
-export function monthYearLabelRo(year: number, month: number): string {
-  return new Date(year, month, 1).toLocaleDateString("ro-RO", {
+export function monthYearLabel(
+  year: number,
+  month: number,
+  locale: string
+): string {
+  return new Date(year, month, 1).toLocaleDateString(toIntlLocale(locale), {
     month: "long",
     year: "numeric",
   });
+}
+
+/** @deprecated Use monthYearLabel(year, month, locale) */
+export function monthYearLabelRo(year: number, month: number): string {
+  return monthYearLabel(year, month, "ro");
 }

@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
 const LIVE_DEBOUNCE_MS = 1_500;
 const MIN_REFRESH_GAP_MS = 15_000;
 
 export function AvailabilityLiveSync() {
+  const tCommon = useTranslations("admin.common");
+  const tPage = useTranslations("admin.availability");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [live, setLive] = useState(false);
@@ -72,7 +75,7 @@ export function AvailabilityLiveSync() {
   }, [router, startTransition]);
 
   return (
-    <span className="avail-live-pill" title="Actualizare la confirmări / cereri noi">
+    <span className="avail-live-pill" title={tPage("liveSyncTitle")}>
       <span
         className={[
           "avail-live-pill__dot",
@@ -82,7 +85,7 @@ export function AvailabilityLiveSync() {
           .join(" ")}
         aria-hidden
       />
-      {live ? "Live disponibilitate" : "Sincronizare…"}
+      {live ? tPage("liveAvailability") : tCommon("syncing")}
     </span>
   );
 }

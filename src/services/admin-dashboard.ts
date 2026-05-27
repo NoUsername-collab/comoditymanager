@@ -22,6 +22,7 @@ import {
   type HomeMilestone,
 } from "@/lib/admin-home-copy";
 import type { MonthComparison } from "@/domain/statistics/month-compare";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export type AdminDashboardStats = {
   buildingsCount: number;
@@ -49,8 +50,9 @@ export type AdminDashboardData = {
   error: string | null;
 };
 
-function todayLabelRo(): string {
-  return new Date().toLocaleDateString("ro-RO", {
+function todayLabelForLocale(locale: string): string {
+  const tag = locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB";
+  return new Date().toLocaleDateString(tag, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -59,9 +61,13 @@ function todayLabelRo(): string {
 }
 
 export async function loadAdminDashboard(): Promise<AdminDashboardData> {
+  const locale = await getLocale();
+  const tDash = await getTranslations("admin.dashboard");
+  const tCommon = await getTranslations("admin.common");
+
   const fallback: AdminDashboardData = {
     pensionName: "Casa Emil",
-    todayLabel: todayLabelRo(),
+    todayLabel: todayLabelForLocale(locale),
     checkInTime: DEFAULT_CHECK_IN_TIME,
     checkOutTime: DEFAULT_CHECK_OUT_TIME,
     cereriCount: 0,
@@ -77,7 +83,7 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
     buildings: [],
     todayBoard: null,
     monthCompare: null,
-    moodLine: "Bun venit la Casa Emil!",
+    moodLine: tCommon("welcomeHome"),
     briefingLine: null,
     milestones: [],
     error: null,
@@ -133,7 +139,7 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
 
     return {
       pensionName: settings?.display_name ?? "Casa Emil",
-      todayLabel: todayLabelRo(),
+      todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,
       cereriCount,
@@ -142,9 +148,9 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
       buildings,
       todayBoard,
       monthCompare,
-      moodLine: buildHomeMoodLine({ stats, cereriCount, todayBoard }),
-      briefingLine: buildHomeBriefing({ todayBoard, cereriCount }),
-      milestones: buildHomeMilestones({
+      moodLine: buildHomeMoodLine(tDash, { stats, cereriCount, todayBoard }),
+      briefingLine: buildHomeBriefing(tDash, { todayBoard, cereriCount }),
+      milestones: buildHomeMilestones(tDash, {
         totalConfirmed,
         stats,
         monthCompare,
@@ -155,7 +161,7 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   } catch (e) {
     return {
       ...fallback,
-      error: e instanceof Error ? e.message : "Nu s-au putut încărca datele",
+      error: e instanceof Error ? e.message : tCommon("loadDataError"),
     };
   }
 }

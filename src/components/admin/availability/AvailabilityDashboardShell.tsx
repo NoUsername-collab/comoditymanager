@@ -1,10 +1,11 @@
 import { Suspense } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { AvailabilityDashboard } from "@/components/admin/availability/AvailabilityDashboard";
 import { loadAvailabilityDashboard } from "@/services/availability-month";
 import { parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { todayIso } from "@/lib/stay-dates";
+import { getTranslations } from "next-intl/server";
 
 export type AvailabilityShellSearchParams = {
   y?: string;
@@ -43,6 +44,8 @@ export async function AvailabilityDashboardShell({
   anchorHash?: string;
   className?: string;
 }) {
+  const tCommon = await getTranslations("admin.common");
+  const tPage = await getTranslations("admin.availability");
   const now = new Date();
   const year = Number(searchParams.y) || now.getFullYear();
   const month = searchParams.m !== undefined ? Number(searchParams.m) : now.getMonth();
@@ -63,7 +66,7 @@ export async function AvailabilityDashboardShell({
   try {
     dashboard = await loadAvailabilityDashboard(year, month, buildingId, featureFilter);
   } catch (e) {
-    error = e instanceof Error ? e.message : "Eroare";
+    error = e instanceof Error ? e.message : tCommon("error");
   }
 
   if (error) {
@@ -110,15 +113,15 @@ export async function AvailabilityDashboardShell({
           </Link>
         </div>
         <p className="text-sm">
-          <strong>{dashboard.total_rooms}</strong> camere
-          {buildingId && " (filtru clădire)"}
+          <strong>{dashboard.total_rooms}</strong> {tCommon("rooms")}
+          {buildingId && ` (${tPage("buildingFilterActive")})`}
         </p>
       </div>
 
       <Suspense
         fallback={
           <div className="border border-dashed border-zinc-200 p-12 text-center text-sm text-zinc-500">
-            Se încarcă panoul…
+            {tPage("loadingPanel")}
           </div>
         }
       >

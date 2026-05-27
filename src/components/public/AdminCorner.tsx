@@ -1,6 +1,6 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { logoutAction } from "@/app/admin/login/actions";
+import { logoutAction } from "@/app/[locale]/admin/login/actions";
 
 /** Doar când ești logat — oaspeții nu văd niciun link Admin. */
 export async function AdminCorner() {

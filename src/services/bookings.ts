@@ -184,10 +184,10 @@ export async function assignBookingRoomHold(
   roomIds: string[]
 ): Promise<void> {
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Cererea nu există");
-  if (booking.status === "anulata") throw new Error("Cererea e anulată");
+  if (!booking) throw new Error("booking.request_not_found");
+  if (booking.status === "anulata") throw new Error("booking.request_cancelled");
   if (booking.status === "confirmata") {
-    throw new Error("Rezervarea e deja confirmată.");
+    throw new Error("booking.already_confirmed");
   }
 
   const unique = [...new Set(roomIds.filter(Boolean))];
@@ -497,7 +497,7 @@ export async function confirmBookingWithRooms(
   totalPrice: number
 ): Promise<void> {
   if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
-    throw new Error("Prețul total trebuie completat la confirmare");
+    throw new Error("booking.total_price_required_on_confirm");
   }
   const { assertRoomsAssignableForBooking } = await import(
     "@/services/booking-confirm"
@@ -506,8 +506,8 @@ export async function confirmBookingWithRooms(
 
   const supabase = createAdminClient();
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Cererea nu există");
-  if (booking.status === "anulata") throw new Error("Cererea e anulată");
+  if (!booking) throw new Error("booking.request_not_found");
+  if (booking.status === "anulata") throw new Error("booking.request_cancelled");
 
   await supabase.from("booking_rooms").delete().eq("booking_id", bookingId);
 
@@ -553,16 +553,16 @@ export async function rescheduleBookingDates(
   newCheckOut: string
 ): Promise<void> {
   if (!isAtLeastOneNight(newCheckIn, newCheckOut)) {
-    throw new Error("Sejurul trebuie să aibă minim o noapte.");
+    throw new Error("booking.minimum_one_night_required");
   }
 
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Rezervarea nu există.");
+  if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
-    throw new Error("Nu poți muta o rezervare anulată.");
+    throw new Error("booking.cannot_shift_cancelled");
   }
   if (booking.room_ids.length === 0) {
-    throw new Error("Alocă camere înainte de a muta pe calendar.");
+    throw new Error("booking.assign_rooms_before_shift");
   }
 
   await assertRoomsAvailableForOccupancy(
@@ -614,18 +614,18 @@ export async function adjustBookingStayNights(
   nightDelta: number
 ): Promise<{ check_in: string; check_out: string }> {
   if (nightDelta === 0 || !Number.isInteger(nightDelta)) {
-    throw new Error("Ajustare invalidă.");
+    throw new Error("booking.invalid_adjustment");
   }
 
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Rezervarea nu există.");
+  if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
-    throw new Error("Nu poți modifica o rezervare anulată.");
+    throw new Error("booking.cannot_update_cancelled");
   }
 
   const newCheckOut = addDays(booking.check_out, nightDelta);
   if (!isAtLeastOneNight(booking.check_in, newCheckOut)) {
-    throw new Error("Sejurul trebuie să aibă minim o noapte.");
+    throw new Error("booking.minimum_one_night_required");
   }
 
   if (booking.room_ids.length > 0) {
@@ -657,9 +657,9 @@ export async function adjustBookingStayNights(
 /** Duplică sejurul ca cerere nouă (rebook similar). */
 export async function duplicateBookingAsCerere(bookingId: string): Promise<string> {
   const b = await getBookingById(bookingId);
-  if (!b) throw new Error("Rezervarea nu există.");
+  if (!b) throw new Error("booking.not_found");
   if (b.status === "anulata") {
-    throw new Error("Nu poți duplica o rezervare anulată.");
+    throw new Error("booking.cannot_duplicate_cancelled");
   }
 
   const id = await createBookingRequest({
@@ -698,7 +698,7 @@ export async function shiftBookingByDays(
   dayDelta: number
 ): Promise<{ check_in: string; check_out: string }> {
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Rezervarea nu există.");
+  if (!booking) throw new Error("booking.not_found");
 
   const newCheckIn = addDays(booking.check_in, dayDelta);
   const newCheckOut = addDays(booking.check_out, dayDelta);
@@ -708,9 +708,9 @@ export async function shiftBookingByDays(
 
 export async function cancelBooking(bookingId: string): Promise<void> {
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Rezervarea nu există");
+  if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
-    throw new Error("Rezervarea este deja anulată");
+    throw new Error("booking.already_cancelled");
   }
 
   const supabase = createAdminClient();
@@ -739,9 +739,9 @@ export async function cancelBooking(bookingId: string): Promise<void> {
 
 async function requireConfirmedBooking(bookingId: string) {
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("Rezervarea nu există.");
+  if (!booking) throw new Error("booking.not_found");
   if (booking.status !== "confirmata") {
-    throw new Error("Check-in/out operațional doar pentru cazări confirmate.");
+    throw new Error("booking.ops_only_for_confirmed");
   }
   return booking;
 }
@@ -752,10 +752,10 @@ export async function setBookingCheckIn(
 ): Promise<void> {
   const booking = await requireConfirmedBooking(bookingId);
   if (booking.actual_check_in_at) {
-    throw new Error("Check-in deja înregistrat.");
+    throw new Error("booking.checkin_already_recorded");
   }
   if (booking.actual_check_out_at) {
-    throw new Error("Nu poți înregistra check-in după check-out.");
+    throw new Error("booking.checkin_after_checkout_not_allowed");
   }
 
   const ts = parseOperationalTimestamp(at);
@@ -790,17 +790,17 @@ export async function setBookingCheckOut(
 ): Promise<void> {
   const booking = await requireConfirmedBooking(bookingId);
   if (!booking.actual_check_in_at) {
-    throw new Error("Înregistrează check-in înainte de check-out.");
+    throw new Error("booking.checkin_required_before_checkout");
   }
   if (booking.actual_check_out_at) {
-    throw new Error("Check-out deja înregistrat.");
+    throw new Error("booking.checkout_already_recorded");
   }
 
   const ts = parseOperationalTimestamp(at);
   const checkInAt = new Date(booking.actual_check_in_at);
   const checkOutAt = new Date(ts);
   if (checkOutAt < checkInAt) {
-    throw new Error("Check-out nu poate fi înainte de check-in.");
+    throw new Error("booking.checkout_before_checkin_not_allowed");
   }
 
   const user = await getAdminUser();
@@ -831,10 +831,10 @@ export async function setBookingCheckOut(
 export async function undoBookingCheckIn(bookingId: string): Promise<void> {
   const booking = await requireConfirmedBooking(bookingId);
   if (!booking.actual_check_in_at) {
-    throw new Error("Check-in nu este înregistrat.");
+    throw new Error("booking.checkin_not_recorded");
   }
   if (booking.actual_check_out_at) {
-    throw new Error("Anulează check-out înainte de a anula check-in.");
+    throw new Error("booking.undo_checkout_first");
   }
 
   const supabase = createAdminClient();
@@ -860,7 +860,7 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
 export async function undoBookingCheckOut(bookingId: string): Promise<void> {
   const booking = await requireConfirmedBooking(bookingId);
   if (!booking.actual_check_out_at) {
-    throw new Error("Check-out nu este înregistrat.");
+    throw new Error("booking.checkout_not_recorded");
   }
 
   const supabase = createAdminClient();

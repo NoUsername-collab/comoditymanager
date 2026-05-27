@@ -11,10 +11,15 @@ import {
   type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/navigation";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
-import { formatDateWithDay } from "@/lib/ro-calendar";
+import {
+  formatDateWithDay,
+  formatWeekdayNarrow,
+  formatWeekdayShort,
+} from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import {
   type DailyFreeCount,
@@ -95,6 +100,7 @@ import { addDays, nightOccupied, parseIso, todayIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
 import { HudIconCalendar, HudIconGrid } from "@/components/admin/AdminHudIcons";
+import { useLocale, useTranslations } from "next-intl";
 
 export type { GanttRoom };
 
@@ -106,12 +112,7 @@ const GANTT_DAY_CELL =
 
 type InlineZoomChoice = "today" | "days7" | "days15" | "days30" | "quarter";
 
-const QUICK_SHIFT_STEPS = [
-  { days: 1, shortLabel: "1z", label: "1 zi" },
-  { days: 7, shortLabel: "1s", label: "1 săptămână" },
-  { days: 15, shortLabel: "15z", label: "15 zile" },
-  { days: 30, shortLabel: "30z", label: "30 zile" },
-] as const;
+const QUICK_SHIFT_STEPS = [{ days: 1 }, { days: 7 }, { days: 15 }, { days: 30 }] as const;
 
 function ToolbarFilterIcon({ className }: { className?: string }) {
   return (
@@ -153,19 +154,32 @@ function normalizeZoomChoice(zoom: GanttZoom): InlineZoomChoice {
   return "quarter";
 }
 
-function periodStepMeta(zoom: InlineZoomChoice): { label: string; aria: string } {
+function periodStepMeta(
+  zoom: InlineZoomChoice,
+  tCommon: (key: string) => string
+): { label: string; aria: string } {
   switch (zoom) {
     case "today":
-      return { label: "Pas 1 zi", aria: "o zi" };
+      return { label: tCommon("stepOneDay"), aria: tCommon("oneDayAria") };
     case "days7":
-      return { label: "Pas 1 săptămână", aria: "o săptămână" };
+      return { label: tCommon("stepOneWeek"), aria: tCommon("oneWeekAria") };
     case "days15":
-      return { label: "Pas 15 zile", aria: "15 zile" };
+      return { label: tCommon("stepFifteenDays"), aria: tCommon("fifteenDaysAria") };
     case "days30":
-      return { label: "Pas 1 lună", aria: "o lună" };
+      return { label: tCommon("stepOneMonth"), aria: tCommon("oneMonthAria") };
     case "quarter":
-      return { label: "Pas 1 trimestru", aria: "un trimestru" };
+      return { label: tCommon("stepOneQuarter"), aria: tCommon("oneQuarterAria") };
   }
+}
+
+function quickShiftMeta(
+  days: number,
+  tCommon: (key: string) => string
+): { label: string; shortLabel: string } {
+  if (days === 1) return { label: tCommon("oneDayAria"), shortLabel: "1d" };
+  if (days === 7) return { label: tCommon("oneWeekAria"), shortLabel: "1w" };
+  if (days === 15) return { label: tCommon("fifteenDaysAria"), shortLabel: "15d" };
+  return { label: tCommon("oneMonthAria"), shortLabel: "30d" };
 }
 
 function ganttDayGridStyle(dayCount: number): CSSProperties {
@@ -238,11 +252,17 @@ function DayHeader({
   compact,
   onPanPointerDown,
   panActive = false,
+  scrollTitle,
+  todayLabel,
+  locale,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
   onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
   panActive?: boolean;
+  scrollTitle: string;
+  todayLabel: string;
+  locale: string;
 }) {
   return (
     <div
@@ -257,7 +277,7 @@ function DayHeader({
       data-gantt-day-grid=""
       data-gantt-day-count={columns.length}
       onPointerDown={onPanPointerDown}
-      title="Trage stânga-dreapta pentru scroll rapid"
+      title={scrollTitle}
     >
       {columns.map((col) => (
         <div key={col.iso} className="gantt-day-header-col flex min-w-0 flex-col">
@@ -268,7 +288,7 @@ function DayHeader({
             ].join(" ")}
             aria-hidden={!col.isToday}
           >
-            Azi
+            {todayLabel}
           </span>
           <div
             className={[
@@ -282,7 +302,9 @@ function DayHeader({
               {col.dayNum}
             </span>
             <span className="gantt-day-header-cell__weekday">
-              {compact ? col.weekday.slice(0, 2) : col.weekday}
+              {compact
+                ? formatWeekdayNarrow(col.iso, locale)
+                : formatWeekdayShort(col.iso, locale)}
             </span>
           </div>
         </div>
@@ -300,6 +322,10 @@ function SummaryGrid({
   onDayClick,
   onPanPointerDown,
   panActive = false,
+  ariaLabel,
+  scrollTitle,
+  dayTitle,
+  dayAriaLabel,
 }: {
   counts: DailyFreeCount[];
   viewRange: GanttViewRange;
@@ -309,6 +335,10 @@ function SummaryGrid({
   onDayClick: (iso: string) => void;
   onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
   panActive?: boolean;
+  ariaLabel: string;
+  scrollTitle: string;
+  dayTitle: (iso: string, free: number, total: number) => string;
+  dayAriaLabel: (iso: string, free: number) => string;
 }) {
   return (
     <div
@@ -321,18 +351,15 @@ function SummaryGrid({
         .join(" ")}
       style={ganttDayGridStyle(viewRange.days.length)}
       role="row"
-      aria-label="Camere libere pe zi"
+      aria-label={ariaLabel}
       onPointerDown={onPanPointerDown}
-      title="Trage stânga-dreapta pentru scroll rapid"
+      title={scrollTitle}
     >
       {viewRange.days.map((col, i) => {
         const { free, total } = counts[i]!;
         const heat = dailyFreeHeatLevel(free, total);
         const isSelected = filterActive && activeFocusIso === col.iso;
-        const title =
-          total === 0
-            ? col.iso
-            : `${free} camere libere · click pentru filtru`;
+        const title = dayTitle(col.iso, free, total);
 
         return (
           <button
@@ -340,7 +367,7 @@ function SummaryGrid({
             type="button"
             title={title}
             aria-pressed={isSelected}
-            aria-label={`${col.iso}: ${free} camere libere`}
+            aria-label={dayAriaLabel(col.iso, free)}
             onClick={() => onDayClick(col.iso)}
             className={[
               "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
@@ -386,6 +413,8 @@ function StickyViewportHeader({
   onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
   panActive?: boolean;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const locale = useLocale();
   const [state, setState] = useState<StickyViewportState>({
     active: false,
     left: 0,
@@ -469,7 +498,7 @@ function StickyViewportHeader({
             className="gantt-head-main-row__room gantt-room-column-header gantt-viewport-header__room px-3 py-[0.72rem]"
             style={{ width: state.roomColumnWidth }}
           >
-            Cameră
+            {tCommon("room")}
           </div>
           <div className="gantt-viewport-header__days-viewport">
             <div
@@ -485,6 +514,9 @@ function StickyViewportHeader({
                   compact={compact}
                   onPanPointerDown={onPanPointerDown}
                   panActive={panActive}
+                  scrollTitle={tCommon("scrollDrag")}
+                  todayLabel={tCommon("todayPanel")}
+                  locale={locale}
                 />
               </div>
             </div>
@@ -497,11 +529,11 @@ function StickyViewportHeader({
             style={{ width: state.roomColumnWidth }}
           >
             <span className="gantt-summary-row__label-title">
-              Libere
+              {tCommon("free")}
             </span>
             {filterActive && activeFocusIso && (
               <span className="gantt-summary-row__label-state">
-                filtru activ
+                {tCommon("activeFilter")}
               </span>
             )}
           </div>
@@ -523,6 +555,14 @@ function StickyViewportHeader({
                   onDayClick={onDayClick}
                   onPanPointerDown={onPanPointerDown}
                   panActive={panActive}
+                  ariaLabel={tCommon("freeRoomsByDay")}
+                  scrollTitle={tCommon("scrollDrag")}
+                  dayTitle={(iso, free, total) =>
+                    total === 0 ? iso : tCommon("freeRoomsFilterTitle", { count: free })
+                  }
+                  dayAriaLabel={(iso, free) =>
+                    tCommon("freeRoomsForDate", { iso, count: free })
+                  }
                 />
               </div>
             </div>
@@ -570,6 +610,8 @@ function RoomRow({
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tLayers = useTranslations("admin.gantt.layers");
   const dayCount = viewRange.days.length;
 
   const roomColor = resolveGanttBuildingColor(
@@ -676,12 +718,20 @@ function RoomRow({
             if (!pos || pos.widthPct <= 0) return null;
             const label =
               seg.kind === "hold"
-                ? seg.reason?.trim() || "Hold"
-                : seg.reason?.trim() || "Blocat";
+                ? seg.reason?.trim() || tLayers("hold")
+                : seg.reason?.trim() || tCommon("blocked");
             const title =
               seg.kind === "hold"
-                ? `Hold: ${label} · ${seg.checkIn} → ${seg.checkOut}`
-                : `Blocare: ${label} · ${seg.checkIn} → ${seg.checkOut}`;
+                ? tCommon("holdTitleRange", {
+                    label,
+                    checkIn: seg.checkIn,
+                    checkOut: seg.checkOut,
+                  })
+                : tCommon("blockTitleRange", {
+                    label,
+                    checkIn: seg.checkIn,
+                    checkOut: seg.checkOut,
+                  });
             return (
               <GanttOccupancyBar
                 key={`${seg.kind}-${seg.id}`}
@@ -820,6 +870,10 @@ export function GanttCalendar({
   layerFilter?: GanttLayerFilter;
   focusDay?: string | null;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tLayers = useTranslations("admin.gantt.layers");
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const touch = useIsTouchDevice();
@@ -1035,7 +1089,7 @@ export function GanttCalendar({
         }, new Map<string, GanttRoom[]>())
       ).map(([buildingId, buildingRooms]) => ({
         buildingId,
-        buildingName: buildingRooms[0]?.building_name ?? "Clădire",
+        buildingName: buildingRooms[0]?.building_name ?? tCommon("building"),
         buildingColor: buildingRooms[0]?.building_color ?? null,
         buildingAcMode: buildingRooms[0]?.building_ac_mode ?? "per_room",
         hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
@@ -1415,7 +1469,7 @@ export function GanttCalendar({
     selectedFeature,
   ]);
 
-  const activePeriodStep = periodStepMeta(zoomChoice);
+  const activePeriodStep = periodStepMeta(zoomChoice, tCommon);
 
   return (
     <GanttContextMenuProvider
@@ -1479,8 +1533,8 @@ export function GanttCalendar({
                   setFiltersAnchorRect(event.currentTarget.getBoundingClientRect());
                   setIsFiltersOpen((prev) => !prev);
                 }}
-                aria-label="Filtre"
-                title="Camere și opțiuni"
+                aria-label={tCommon("filters")}
+                title={tCommon("roomsAndOptions")}
               >
                 <ToolbarFilterIcon className="gantt-toolbar__filters-icon" />
               </button>
@@ -1491,18 +1545,18 @@ export function GanttCalendar({
             <div className="gantt-inline-controls__navigator-band">
               <div className="gantt-inline-controls__side-dock gantt-inline-controls__side-dock--left">
                 <SegmentGroup
-                  label="Interval"
+                  label={tCommon("interval")}
                   compact
                   inline
                   forceShortLabels
                   value={zoomChoice}
                   onChange={(next) => handleInlineZoomChange(next as InlineZoomChoice)}
                   options={[
-                    { value: "today", label: "Azi", shortLabel: "Azi" },
-                    { value: "days7", label: "7 zile", shortLabel: "7z" },
-                    { value: "days15", label: "15 zile", shortLabel: "15z" },
-                    { value: "days30", label: "30 zile", shortLabel: "30z" },
-                    { value: "quarter", label: "Trimestru", shortLabel: "Trim." },
+                    { value: "today", label: tCommon("todayPanel"), shortLabel: tCommon("todayShort") },
+                    { value: "days7", label: tCommon("sevenDays"), shortLabel: tCommon("sevenDaysShort") },
+                    { value: "days15", label: tCommon("fifteenDays"), shortLabel: tCommon("fifteenDaysShort") },
+                    { value: "days30", label: tCommon("thirtyDays"), shortLabel: tCommon("thirtyDaysShort") },
+                    { value: "quarter", label: tCommon("quarter"), shortLabel: tCommon("quarterShort") },
                   ]}
                 />
                 <button
@@ -1516,8 +1570,8 @@ export function GanttCalendar({
                     .filter(Boolean)
                     .join(" ")}
                   onClick={toggleTodayStartMode}
-                  aria-label="Azi la start"
-                  title="Comută intervalul astfel încât azi să fie la începutul ferestrei"
+                  aria-label={tCommon("todayAtStart")}
+                  title={tCommon("alignToday")}
                 >
                   <HudIconCalendar className="gantt-toolbar__gap-icon" />
                 </button>
@@ -1528,30 +1582,32 @@ export function GanttCalendar({
                 <div className="gantt-toolbar__period gantt-toolbar__period--hero">
                   <div
                     className="gantt-toolbar__quick-jumps gantt-toolbar__quick-jumps--back"
-                    aria-label="Salt rapid înapoi"
+                    aria-label={tCommon("quickJumpBack")}
                   >
-                    {QUICK_SHIFT_STEPS.map((step) => (
+                    {QUICK_SHIFT_STEPS.map((step) => {
+                      const meta = quickShiftMeta(step.days, tCommon);
+                      return (
                       <button
                         key={`back-${step.days}`}
                         type="button"
                         className="gantt-toolbar__jump-btn"
-                        aria-label={`Înapoi ${step.label}`}
-                        title={`Înapoi ${step.label}`}
+                        aria-label={tCommon("goBackBy", { period: meta.label })}
+                        title={tCommon("goBackBy", { period: meta.label })}
                         onClick={() => shiftGrid(-step.days)}
                       >
                         <span className="gantt-toolbar__jump-arrow" aria-hidden>
                           ←
                         </span>
-                        <span className="gantt-toolbar__jump-label">{step.shortLabel}</span>
+                        <span className="gantt-toolbar__jump-label">{meta.shortLabel}</span>
                       </button>
-                    ))}
+                    )})}
                   </div>
 
                   <button
                     type="button"
                     className="gantt-toolbar__nav"
-                    aria-label={`Înapoi ${activePeriodStep.aria}`}
-                    title={`Înapoi ${activePeriodStep.label.toLowerCase()}`}
+                    aria-label={tCommon("goBackBy", { period: activePeriodStep.aria })}
+                    title={tCommon("goBackBy", { period: activePeriodStep.label.toLowerCase() })}
                     onClick={() => navigatePeriod(-1)}
                   >
                     ←
@@ -1565,8 +1621,8 @@ export function GanttCalendar({
                   <button
                     type="button"
                     className="gantt-toolbar__nav"
-                    aria-label={`Înainte ${activePeriodStep.aria}`}
-                    title={`Înainte ${activePeriodStep.label.toLowerCase()}`}
+                    aria-label={tCommon("goForwardBy", { period: activePeriodStep.aria })}
+                    title={tCommon("goForwardBy", { period: activePeriodStep.label.toLowerCase() })}
                     onClick={() => navigatePeriod(1)}
                   >
                     →
@@ -1574,23 +1630,25 @@ export function GanttCalendar({
 
                   <div
                     className="gantt-toolbar__quick-jumps gantt-toolbar__quick-jumps--forward"
-                    aria-label="Salt rapid înainte"
+                    aria-label={tCommon("quickJumpForward")}
                   >
-                    {QUICK_SHIFT_STEPS.map((step) => (
+                    {QUICK_SHIFT_STEPS.map((step) => {
+                      const meta = quickShiftMeta(step.days, tCommon);
+                      return (
                       <button
                         key={`forward-${step.days}`}
                         type="button"
                         className="gantt-toolbar__jump-btn"
-                        aria-label={`Înainte ${step.label}`}
-                        title={`Înainte ${step.label}`}
+                        aria-label={tCommon("goForwardBy", { period: meta.label })}
+                        title={tCommon("goForwardBy", { period: meta.label })}
                         onClick={() => shiftGrid(step.days)}
                       >
-                        <span className="gantt-toolbar__jump-label">{step.shortLabel}</span>
+                        <span className="gantt-toolbar__jump-label">{meta.shortLabel}</span>
                         <span className="gantt-toolbar__jump-arrow" aria-hidden>
                           →
                         </span>
                       </button>
-                    ))}
+                    )})}
                   </div>
                 </div>
               </div>
@@ -1608,26 +1666,26 @@ export function GanttCalendar({
                     .filter(Boolean)
                     .join(" ")}
                   onClick={toggleAvailabilityPanel}
-                  aria-label="Heat map"
-                  title="Deschide heat map-ul de disponibilitate ca panel flotant"
+                  aria-label={tCommon("heatmap")}
+                  title={tCommon("openHeatmapFloating")}
                 >
                   <HudIconGrid className="gantt-toolbar__gap-icon" />
                 </button>
                 <SegmentGroup
-                  label="Afiseaza"
+                  label={tCommon("display")}
                   compact
                   inline
                   forceShortLabels
                   value={layerFilter}
                   onChange={(next) => pushCalendarPatch({ layer: next as GanttLayerFilter })}
                   options={[
-                    { value: "all", label: "Tot", shortLabel: "Tot" },
-                    { value: "cereri", label: "Cereri", shortLabel: "Cer." },
-                    { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
-                    { value: "in_house", label: "In-house", shortLabel: "In" },
-                    { value: "trecute", label: "Trecute", shortLabel: "Trec." },
-                    { value: "hold", label: "Hold", shortLabel: "Hold" },
-                    { value: "block", label: "Blocări", shortLabel: "Bloc" },
+                    { value: "all", label: tLayers("all"), shortLabel: tLayers("all") },
+                    { value: "cereri", label: tLayers("cereri"), shortLabel: tCommon("requestsShort") },
+                    { value: "confirmate", label: tLayers("confirmate"), shortLabel: tCommon("confirmedShort") },
+                    { value: "in_house", label: tLayers("in_house"), shortLabel: tCommon("inShort") },
+                    { value: "trecute", label: tLayers("trecute"), shortLabel: tCommon("pastShort") },
+                    { value: "hold", label: tLayers("hold"), shortLabel: tLayers("hold") },
+                    { value: "block", label: tLayers("block"), shortLabel: tCommon("blocksShort") },
                   ]}
                 />
               </div>
@@ -1641,14 +1699,14 @@ export function GanttCalendar({
             setIsFiltersOpen(false);
             setFiltersAnchorRect(null);
           }}
-          title="Filtre"
+          title={tCommon("filters")}
           anchorRect={filtersAnchorRect}
           width={360}
           className="gantt-filters-panel"
         >
           <div className="space-y-4 p-1">
             <SegmentGroup
-              label="Camere"
+              label={tCommon("roomsLabel")}
               compact
               value={filter}
               onChange={(next) => {
@@ -1660,14 +1718,14 @@ export function GanttCalendar({
                 });
               }}
               options={[
-                { value: "all", label: "Toate" },
-                { value: "occupied", label: "Ocupate" },
-                { value: "free", label: "Libere" },
+                { value: "all", label: tCommon("all") },
+                { value: "occupied", label: tCommon("occupied") },
+                { value: "free", label: tCommon("free") },
               ]}
             />
 
             <SegmentGroup
-              label="Opțiuni"
+              label={tCommon("filters")}
               compact
               value={selectedFeature}
               onChange={(next) => {
@@ -1676,9 +1734,9 @@ export function GanttCalendar({
                 pushCalendarPatch({ feat: next as GanttFeatureFilter });
               }}
               options={[
-                { value: "all", label: "Toate" },
-                { value: "ac", label: "Cu AC" },
-                { value: "fridge", label: "Frigider" },
+                { value: "all", label: tCommon("all") },
+                { value: "ac", label: tCommon("withAc") },
+                { value: "fridge", label: tCommon("fridge") },
               ]}
             />
           </div>
@@ -1687,15 +1745,15 @@ export function GanttCalendar({
         {filter === "free" && focusDay && (
           <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
             <span>
-              Afișezi camere <strong>libere</strong> pe{" "}
-              <strong>{formatDateWithDay(focusDay, true)}</strong>
+              {tCommon("showingRooms")} <strong>{tCommon("free").toLowerCase()}</strong> {tCommon("onDay")}{" "}
+              <strong>{formatDateWithDay(focusDay, locale, true)}</strong>
             </span>
             <button
               type="button"
               className="rounded-md border border-emerald-300 bg-white px-2.5 py-1 font-semibold hover:bg-emerald-100"
               onClick={() => handleSummaryDayClick(focusDay)}
             >
-              Resetează filtru
+              {tCommon("resetFilter")}
             </button>
           </div>
         )}
@@ -1716,7 +1774,7 @@ export function GanttCalendar({
           <thead ref={theadRef} className="gantt-thead-sticky">
             <tr className="gantt-head-main-row">
               <th className="gantt-head-main-row__room gantt-room-column-header sticky left-0 z-30 px-3 py-[0.72rem] text-left text-xs font-semibold tracking-wide">
-                Cameră
+                {tCommon("room")}
               </th>
               <th className="gantt-head-main-row__days p-0">
                 <DayHeader
@@ -1724,6 +1782,9 @@ export function GanttCalendar({
                   compact={compact}
                   onPanPointerDown={handleHeaderPanPointerDown}
                   panActive={isHeaderPanActive}
+                  scrollTitle={tCommon("scrollDrag")}
+                  todayLabel={tCommon("todayPanel")}
+                  locale={locale}
                 />
               </th>
             </tr>
@@ -1809,7 +1870,7 @@ export function GanttCalendar({
                             </span>
                             <span className="gantt-building-header__count">
                               {group.rooms.length}{" "}
-                              {group.rooms.length === 1 ? "cameră" : "camere"}
+                              {group.rooms.length === 1 ? tCommon("room") : tCommon("rooms")}
                             </span>
                           </div>
                         </div>
@@ -1880,8 +1941,8 @@ export function GanttCalendar({
                   className="px-4 py-12 text-center text-sm text-zinc-500"
                 >
                   {filter !== "all"
-                    ? "Nicio cameră pentru filtrul ales — încearcă „Toate”."
-                    : "Nicio cameră pentru filtrul ales."}
+                    ? tCommon("noRoomForFilterTryAll")
+                    : tCommon("noRoomForFilter")}
                 </td>
               </tr>
             )}
@@ -1898,70 +1959,69 @@ export function GanttCalendar({
 
         <div className="gantt-footer-legend border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 text-[11px] text-zinc-600">
           <p className="gantt-stay-hint mb-2 text-xs">
-            Trage ±1 zi · click/dublu-click pe bară ·
-            focus clădire din chips · <kbd className="rounded border px-1">T</kbd>{" "}
-            azi
+            {tGantt("footer.dragHint")} · {tGantt("footer.buildingFocusHint")} ·{" "}
+            <kbd className="rounded border px-1">T</kbd> {tCommon("todayShort").toLowerCase()}
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
             <span className="inline-flex items-center gap-1.5">
               <span className="gantt-legend-swatch gantt-legend-swatch--checkout" />
-              Zi — plecare (până {checkOutTime})
+              {tGantt("footer.dayDepartureUntil", { time: checkOutTime })}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="gantt-legend-swatch gantt-legend-swatch--clean" />
-              Curățenie
+              {tGantt("footer.cleaning")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="gantt-legend-swatch gantt-legend-swatch--checkin" />
-              Noapte — sosire (de la {checkInTime})
+              {tGantt("footer.nightArrivalFrom", { time: checkInTime })}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="gantt-legend-swatch gantt-legend-swatch--weekend" />
-              Weekend
+              {tGantt("footer.weekend")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="gantt-legend-today-line" aria-hidden />
-              Azi
+              {tCommon("todayShort")}
             </span>
             <span className="inline-flex items-center gap-1">
               <span className="gantt-room-today-badge gantt-room-today-badge--in">
-                Sosire
+                {tCommon("arrival")}
               </span>
               <span className="gantt-room-today-badge gantt-room-today-badge--out">
-                Plecare
+                {tCommon("departure")}
               </span>
             </span>
             <span className="inline-flex items-center gap-1.5">
               <GanttBuildingMarker acMode="all_rooms" size="sm" />
-              Clădire cu AC
+              {tGantt("markers.buildingWithAc")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <GanttBuildingMarker acMode="none" size="sm" />
-              Clădire fără AC
+              {tGantt("markers.buildingWithoutAc")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <GanttRoomMarker acMode="all_rooms" size="sm" />
-              Cameră
+              {tCommon("room")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="mr-0.5 inline-block h-3 w-7 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-[inset_2px_0_0_#059669]" />
-              Confirmată
+              {tLayers("confirmate")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="inline-block h-3 w-7 rounded-full bg-gradient-to-r from-amber-300 to-amber-400" />
-              Cerere
+              {tCommon("request")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="inline-block h-3 w-7 rounded-full bg-slate-300" />
-              Trecut
+              {tLayers("trecute")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="inline-block h-3 w-7 rounded-full bg-yellow-300" />
-              Hold
+              {tLayers("hold")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="inline-block h-3 w-7 rounded-full bg-yellow-400" />
-              Blocare
+              {tLayers("block")}
             </span>
           </div>
         </div>

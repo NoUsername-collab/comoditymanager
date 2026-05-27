@@ -23,38 +23,6 @@ export const GUEST_NEGATIVE_TRAITS: readonly GuestNegativeTrait[] = [
   "nesimtit",
 ] as const;
 
-export const GUEST_POSITIVE_TRAIT_LABELS: Record<GuestPositiveTrait, string> = {
-  voios: "Voios",
-  glumet: "Glumeț",
-  respectuos: "Respectuos",
-  linistit: "Liniștit",
-  miezul_serii: "Miezul serii",
-  ingrijit: "Îngrijit",
-  plateste_la_timp: "Plătește la timp",
-  recomandat: "Recomandat",
-};
-
-export const GUEST_NEGATIVE_TRAIT_LABELS: Record<GuestNegativeTrait, string> = {
-  betiv: "Bețiv",
-  galagios: "Gălăgios",
-  recalcitrant: "Recalcitrant",
-  scandalagiu: "Scandalagiu",
-  cleptoman: "Cleptoman",
-  nesimtit: "Nesimțit",
-  zgomotos: "Zgomotos",
-  mizerie: "Lasă mizerie",
-  conflictual: "Conflictual",
-  neplata: "Neplată",
-  pagube: "Produce pagube",
-  incalca_reguli: "Încalcă reguli",
-};
-
-export const GUEST_FLAG_LABELS: Record<GuestFlagLevel, string> = {
-  normal: "Normal",
-  watchlist: "Watchlist",
-  blacklist: "Blacklist",
-};
-
 const STAR_TRUST_WEIGHTS: Record<number, number> = {
   1: -28,
   2: -14,
@@ -151,22 +119,6 @@ export function maxGuestFlagLevel(
   right: GuestFlagLevel
 ): GuestFlagLevel {
   return flagSeverity(left) >= flagSeverity(right) ? left : right;
-}
-
-export function guestTrustLabel(score: number): string {
-  if (score >= 85) return "Excelent";
-  if (score >= 70) return "Foarte ok";
-  if (score >= 55) return "OK";
-  if (score >= 35) return "Cu atenție";
-  return "Risc mare";
-}
-
-export function guestLoyaltyLabel(score: number): string {
-  if (score >= 85) return "Foarte fidel";
-  if (score >= 65) return "Fidel";
-  if (score >= 35) return "Revine ocazional";
-  if (score >= 15) return "În formare";
-  return "Nou / rar";
 }
 
 export function deriveLoyaltyBaseScore(

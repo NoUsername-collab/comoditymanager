@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { BuildingDashboard } from "@/services/building-dashboard";
 import type { BuildingTheme } from "@/lib/building-theme";
 import { AC_LABELS, occupancyCaptionFromWindow } from "@/lib/admin-ui";
 import { OccupancyRow } from "@/components/admin/ui/OccupancyRow";
-import { AddFloorForm } from "@/app/admin/(panel)/buildings/add-floor-form";
+import { AddFloorForm } from "@/app/[locale]/admin/(panel)/buildings/add-floor-form";
 import { BuildingRoomsCollapsible } from "./BuildingRoomsCollapsible";
 import { DeleteConfirmButton } from "./DeleteConfirmButton";
-import { deleteBuildingAction } from "@/app/admin/(panel)/buildings/actions";
+import { deleteBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 import { BuildingDefaultPriceForm } from "./BuildingDefaultPriceForm";
 import { BuildingPoliciesForm } from "./BuildingPoliciesForm";
 import type { RoomOptionDefinition } from "@/types/room-catalog";
@@ -26,6 +27,8 @@ export function BuildingDashboardCardInteractive({
   catalogOptions?: RoomOptionDefinition[];
   catalogPolicies?: { option_id: string; mode: OptionPolicyMode }[];
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tBuildings = useTranslations("admin.buildings");
   const { building } = data;
   const [bodyOpen, setBodyOpen] = useState(true);
 
@@ -68,14 +71,14 @@ export function BuildingDashboardCardInteractive({
             href={`/admin/rooms/new?building=${building.id}`}
             className="shrink-0 rounded-lg border border-white/90 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 shadow-sm transition hover:bg-white hover:shadow"
           >
-            + Cameră
+            + {tCommon("room")}
           </Link>
         </header>
 
         <div className="mt-4 flex flex-wrap items-end gap-4 sm:gap-6">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              Etaje
+              {tBuildings("floors")}
             </p>
             <p className="text-xl font-bold tabular-nums text-zinc-900">
               {data.floor_count}
@@ -83,25 +86,25 @@ export function BuildingDashboardCardInteractive({
           </div>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              Camere
+              {tCommon("rooms")}
             </p>
             <p className="text-xl font-bold tabular-nums text-zinc-900">
               {data.active_room_count}
               <span className="ml-1 text-xs font-medium text-zinc-500">
-                active
+                {tCommon("active")}
               </span>
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5 pb-0.5">
             <span className="rounded-full border border-emerald-200/80 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-800">
-              {data.free_on_date} libere
+              {data.free_on_date} {tCommon("free")}
             </span>
             <span className="status-occupied-pill rounded-full px-2.5 py-1 text-[11px] font-bold">
-              {data.occupied_on_date} ocupate
+              {data.occupied_on_date} {tCommon("occupied")}
             </span>
             {data.pending_on_date > 0 && (
               <span className="admin-cereri-glow rounded-full border border-red-300/80 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800">
-                {data.pending_on_date} cereri
+                {data.pending_on_date} {tCommon("requests")}
               </span>
             )}
             <span className="rounded-full border border-zinc-200/80 bg-white/70 px-2.5 py-1 text-[11px] font-medium text-zinc-600">
@@ -117,7 +120,7 @@ export function BuildingDashboardCardInteractive({
           aria-expanded={bodyOpen}
         >
           <span>
-            {bodyOpen ? "Ascunde" : "Arată"} ocupare, camere & administrare
+            {bodyOpen ? tCommon("hide") : tCommon("show")} {tBuildings("occupancyRoomsAdmin")}
           </span>
           <span
             className={[
@@ -196,8 +199,8 @@ export function BuildingDashboardCardInteractive({
 
             <div className="mt-4 border-t border-zinc-200/80 pt-3">
               <DeleteConfirmButton
-                label="Șterge clădirea"
-                confirmMessage={`Ștergi „${building.name}”? Trebuie să nu mai aibă camere.`}
+                label={tCommon("deleteBuilding")}
+                confirmMessage={tBuildings("deleteBuildingConfirm", { name: building.name })}
                 formAction={deleteBuildingAction}
                 hiddenFields={{ building_id: building.id }}
               />

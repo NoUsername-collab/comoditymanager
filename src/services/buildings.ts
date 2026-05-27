@@ -75,7 +75,7 @@ export async function deleteBuilding(id: string): Promise<void> {
   if (roomErr) throw new Error(roomErr.message);
   if ((roomCount ?? 0) > 0) {
     throw new Error(
-      "Șterge mai întâi toate camerele din clădire (sau dezactivează-le)."
+      "buildings.delete_all_rooms_or_disable_them_first"
     );
   }
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import type { BookingRow } from "@/services/bookings";
 import {
   useAdminPending,
@@ -15,7 +16,7 @@ import {
   createRoomHoldsFromGanttAction,
   moveBookingRoomFromPivotAction,
   previewRoomMoveAction,
-} from "@/app/admin/(panel)/calendar/actions";
+} from "@/app/[locale]/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
   BLOCK_REASON_PRESETS,
@@ -116,6 +117,8 @@ function IntervalPlanner({
   onToday,
   invalidInterval,
   hasConflict,
+  invalidMessage,
+  nightLabel,
 }: {
   title: string;
   subtitle: ReactNode;
@@ -128,13 +131,15 @@ function IntervalPlanner({
   onToday: () => void;
   invalidInterval: boolean;
   hasConflict: boolean;
+  invalidMessage: string;
+  nightLabel: (count: number) => string;
 }) {
   const nights =
     checkIn && checkOut && !invalidInterval ? nightsBetween(checkIn, checkOut) : 0;
   const period =
     checkIn && checkOut && !invalidInterval
-      ? formatStayPeriod(checkIn, checkOut, true)
-      : "Alege un check-out după check-in.";
+      ? formatStayPeriod(checkIn, checkOut, locale, true)
+      : invalidMessage;
 
   return (
     <section className="rounded-[1.65rem] border border-zinc-200 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,244,245,0.96))] p-4 shadow-[0_18px_42px_-28px_rgba(15,23,42,0.45)]">
@@ -218,7 +223,7 @@ function IntervalPlanner({
             className={softButtonClass}
             onClick={() => onSetDuration(value)}
           >
-            {value} {value === 1 ? "noapte" : "nopți"}
+            {nightLabel(value)}
           </button>
         ))}
       </div>
@@ -229,6 +234,7 @@ function IntervalPlanner({
 function ActionRadial({
   disabled,
   onSelect,
+  tGantt,
 }: {
   disabled: {
     hold: boolean;
@@ -237,12 +243,13 @@ function ActionRadial({
     direct: boolean;
   };
   onSelect: (mode: "hold" | "block" | "cerere" | "direct") => void;
+  tGantt: (key: string) => string;
 }) {
   const actions = [
     {
       id: "cerere",
-      label: "Cerere nouă",
-      hint: "neconfirmată",
+      label: tGantt("quick.radial.request"),
+      hint: tGantt("quick.radial.unconfirmed"),
       offsetX: -126,
       offsetY: -82,
       tone:
@@ -250,24 +257,24 @@ function ActionRadial({
     },
     {
       id: "direct",
-      label: "Cazare directă",
-      hint: "confirmată",
+      label: tGantt("quick.radial.direct"),
+      hint: tGantt("quick.radial.confirmed"),
       offsetX: 126,
       offsetY: -82,
       tone: "border-sky-300 bg-sky-50 text-sky-700 shadow-sky-100/80",
     },
     {
       id: "hold",
-      label: "Hold",
-      hint: "temporar",
+      label: tGantt("quick.radial.hold"),
+      hint: tGantt("quick.radial.temporary"),
       offsetX: -126,
       offsetY: 82,
       tone: "border-amber-300 bg-amber-50 text-amber-700 shadow-amber-100/80",
     },
     {
       id: "block",
-      label: "Blocare",
-      hint: "indisp.",
+      label: tGantt("quick.radial.block"),
+      hint: tGantt("quick.radial.unavailable"),
       offsetX: 126,
       offsetY: 82,
       tone: "border-zinc-300 bg-zinc-50 text-zinc-700 shadow-zinc-100/80",
@@ -283,7 +290,7 @@ function ActionRadial({
           <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
             Release
           </div>
-          <div className="mt-1 text-base font-extrabold text-zinc-800">Alege</div>
+          <div className="mt-1 text-base font-extrabold text-zinc-800">{tGantt("quick.radial.choose")}</div>
         </div>
       </div>
 
@@ -329,6 +336,9 @@ export function GanttQuickActionPanel({
   onClose,
   onModeChange,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const router = useRouter();
   const { showToast, notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
@@ -379,7 +389,7 @@ export function GanttQuickActionPanel({
       : null);
   const period =
     activeCheckIn && activeCheckOut && activeCheckIn < activeCheckOut
-      ? formatStayPeriod(activeCheckIn, activeCheckOut, true)
+      ? formatStayPeriod(activeCheckIn, activeCheckOut, locale, true)
       : "";
   const multiRoomCount = draft?.roomIds?.length ?? 0;
   const hasMultiRoomDraft = multiRoomCount > 1;
@@ -435,17 +445,17 @@ export function GanttQuickActionPanel({
       }
       setError(null);
       const sourceRoomName =
-        rooms.find((room) => room.id === moveSourceRoomId)?.name ?? "camera sursă";
+        rooms.find((room) => room.id === moveSourceRoomId)?.name ?? tGantt("quick.sourceRoom");
       const targetRoomName =
-        rooms.find((room) => room.id === moveTargetRoomId)?.name ?? "camera țintă";
+        rooms.find((room) => room.id === moveTargetRoomId)?.name ?? tGantt("quick.targetRoom");
       setMovePreviewState({
         key: `${selectedBooking.id}:${moveSourceRoomId}:${moveTargetRoomId}`,
         text:
           res.preview.mode === "full"
-            ? `${sourceRoomName} → ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, true)} · ` +
+            ? `${sourceRoomName} → ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, locale, true)} · ` +
               `Total: ${res.preview.oldTotal} → ${res.preview.newTotal} RON`
-            : `${sourceRoomName}: ${formatStayPeriod(res.preview.sourceSegment?.start ?? "", res.preview.sourceSegment?.end ?? "", true)} · ` +
-              `→ ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, true)} · ` +
+            : `${sourceRoomName}: ${formatStayPeriod(res.preview.sourceSegment?.start ?? "", res.preview.sourceSegment?.end ?? "", locale, true)} · ` +
+              `→ ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, locale, true)} · ` +
               `Total: ${res.preview.oldTotal} → ${res.preview.newTotal} RON`,
       });
     });
@@ -499,7 +509,7 @@ export function GanttQuickActionPanel({
 
   function ensureCreatableInterval() {
     if (intervalInvalid) {
-      setError("Check-out trebuie să fie după check-in.");
+      setError(tGantt("quick.errors.checkoutAfterCheckin"));
       return false;
     }
     return true;
@@ -507,7 +517,7 @@ export function GanttQuickActionPanel({
 
   function submitHold() {
     if (!activeRoomId) {
-      setError("Alege camera.");
+      setError(tGantt("quick.errors.chooseRoom"));
       return;
     }
     if (!ensureCreatableInterval()) return;
@@ -541,13 +551,18 @@ export function GanttQuickActionPanel({
           showToast,
           router,
           draft?.roomIds && draft.roomIds.length > 1
-            ? `Hold pe ${draft.roomIds.length} camere`
-            : "Hold creat",
+            ? tGantt("quick.holdCreatedMany", { count: draft.roomIds.length })
+            : tGantt("quick.holdCreated"),
           period,
-          res.undo
+          res.undo,
+          {
+            actionLabel: tGantt("quick.undoAction"),
+            undoneTitle: tGantt("quick.undoneTitle"),
+            undoneMessage: tGantt("quick.undoneMessage"),
+          }
         );
       } else {
-        showToast({ kind: "success", title: "Hold creat", message: period });
+        showToast({ kind: "success", title: tGantt("quick.holdCreated"), message: period });
       }
       onClose();
       router.refresh();
@@ -556,13 +571,13 @@ export function GanttQuickActionPanel({
 
   function submitBlock() {
     if (!activeRoomId) {
-      setError("Alege camera.");
+      setError(tGantt("quick.errors.chooseRoom"));
       return;
     }
     if (!ensureCreatableInterval()) return;
     const resolvedReason = resolveBlockReason(blockPreset, blockCustom);
     if (!resolvedReason) {
-      setError("Motivul blocării este obligatoriu.");
+      setError(tGantt("quick.errors.blockReasonRequired"));
       return;
     }
     setError(null);
@@ -581,12 +596,17 @@ export function GanttQuickActionPanel({
         showGanttCreateUndoToast(
           showToast,
           router,
-          "Blocare creată",
+          tGantt("quick.blockCreated"),
           period,
-          res.undo
+          res.undo,
+          {
+            actionLabel: tGantt("quick.undoAction"),
+            undoneTitle: tGantt("quick.undoneTitle"),
+            undoneMessage: tGantt("quick.undoneMessage"),
+          }
         );
       } else {
-        showToast({ kind: "success", title: "Blocare creată", message: period });
+        showToast({ kind: "success", title: tGantt("quick.blockCreated"), message: period });
       }
       onClose();
       router.refresh();
@@ -595,7 +615,7 @@ export function GanttQuickActionPanel({
 
   function submitGuestCreate(kind: "cerere" | "direct") {
     if (!activeRoomId) {
-      setError("Alege camera.");
+      setError(tGantt("quick.errors.chooseRoom"));
       return;
     }
     if (!ensureCreatableInterval()) return;
@@ -620,11 +640,11 @@ export function GanttQuickActionPanel({
       }
       showToast({
         kind: "success",
-        title: kind === "cerere" ? "Cerere creată" : "Cazare directă creată",
+        title: kind === "cerere" ? tGantt("quick.requestCreated") : tGantt("quick.directCreated"),
         message:
           kind === "cerere"
-            ? "Cererea apare imediat în Gantt și în listă."
-            : "Rezervarea apare imediat în Gantt.",
+            ? tGantt("quick.requestAppears")
+            : tGantt("quick.bookingAppears"),
       });
       onClose();
       router.refresh();
@@ -633,7 +653,7 @@ export function GanttQuickActionPanel({
 
   function submitMove() {
     if (!selectedBooking || !moveSourceRoomId || !moveTargetRoomId) {
-      setError("Alege rezervarea și camera țintă.");
+      setError(tGantt("quick.errors.chooseBookingAndTarget"));
       return;
     }
     setError(null);
@@ -647,25 +667,25 @@ export function GanttQuickActionPanel({
         setError(res.error);
         return;
       }
-      notifyMoved("Cameră mutată", selectedBooking.guest_name);
+      notifyMoved(tGantt("moveRoom.moved"), selectedBooking.guest_name);
       onClose();
       router.refresh();
     });
   }
 
   const titleMap: Record<GanttQuickPanelMode, string> = {
-    pick: "Alege acțiunea",
-    hold: "Hold rapid",
-    block: "Blocare rapidă",
-    cerere: "Cerere nouă",
-    direct: "Cazare directă",
-    move: "Mută cameră",
+    pick: tGantt("quick.title.pick"),
+    hold: tGantt("quick.title.hold"),
+    block: tGantt("quick.title.block"),
+    cerere: tGantt("quick.title.request"),
+    direct: tGantt("quick.title.direct"),
+    move: tGantt("quick.title.move"),
   };
   const intervalTitle = draft
     ? hasMultiRoomDraft
-      ? "Selecție multi-cameră"
-      : "Interval selectat"
-    : "Interval rezervare";
+      ? tGantt("quick.multiRoomSelection")
+      : tGantt("quick.selectedInterval")
+    : tGantt("quick.bookingInterval");
   const intervalSubtitle = draft ? (
     <>
       <strong className="font-semibold text-zinc-900">
@@ -679,9 +699,7 @@ export function GanttQuickActionPanel({
     </>
   ) : (
     <>
-      <strong className="font-semibold text-zinc-900">
-        {activeRoom?.name ?? "Alege camera"}
-      </strong>
+        <strong className="font-semibold text-zinc-900">{activeRoom?.name ?? tGantt("quick.chooseRoom")}</strong>
       {activeRoom?.building_name ? (
         <span className="text-zinc-500"> · {activeRoom.building_name}</span>
       ) : null}
@@ -731,21 +749,23 @@ export function GanttQuickActionPanel({
               onToday={moveIntervalToToday}
               invalidInterval={intervalInvalid}
               hasConflict={hasConflict}
+              invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
+              nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
             />
 
             {hasConflict ? (
               <SummaryCard
-                title="Conflict"
+                title={tGantt("quick.conflict")}
                 tone="warn"
-                body="Intervalul se suprapune peste o ocupare existentă. Mută perioada direct din panoul de sus."
+                body={tGantt("quick.conflictBody")}
               />
             ) : null}
 
             {hasMultiRoomDraft ? (
               <SummaryCard
-                title="Notă"
+                title={tGantt("quick.note")}
                 tone="info"
-                body="Pe selecția multi-cameră putem crea doar hold rapid din acest panel."
+                body={tGantt("quick.multiRoomOnlyHold")}
               />
             ) : null}
           </>
@@ -760,6 +780,7 @@ export function GanttQuickActionPanel({
               direct: hasConflict || hasMultiRoomDraft || intervalInvalid,
             }}
             onSelect={(nextMode) => onModeChange?.(nextMode)}
+            tGantt={tGantt}
           />
         ) : null}
 
@@ -772,7 +793,7 @@ export function GanttQuickActionPanel({
                   className={inputClass}
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Ex. se așteaptă confirmarea"
+                  placeholder={tGantt("quick.holdReasonPlaceholder")}
                 />
               </label>
               <label className={labelClass}>
@@ -783,7 +804,7 @@ export function GanttQuickActionPanel({
                   className={inputClass}
                   value={expiresHours}
                   onChange={(e) => setExpiresHours(e.target.value)}
-                  placeholder="ore, opțional"
+                  placeholder={tGantt("quick.hoursOptionalPlaceholder")}
                 />
               </label>
             </div>
@@ -834,7 +855,7 @@ export function GanttQuickActionPanel({
                   className={inputClass}
                   value={blockCustom}
                   onChange={(e) => setBlockCustom(e.target.value)}
-                  placeholder="Descriere scurtă"
+                  placeholder={tGantt("quick.shortDescription")}
                 />
               </label>
             ) : null}
@@ -925,7 +946,7 @@ export function GanttQuickActionPanel({
                 }
                 onClick={() => submitGuestCreate(mode)}
               >
-                {mode === "cerere" ? "Creează cererea" : "Confirmă cazarea"}
+                {mode === "cerere" ? tGantt("quick.createRequest") : tGantt("quick.confirmStay")}
               </button>
             </div>
           </>
@@ -949,7 +970,7 @@ export function GanttQuickActionPanel({
                   setMoveTargetRoomId("");
                 }}
               >
-                <option value="">Selectează…</option>
+                <option value="">{tCommon("selectPlaceholder")}</option>
                 {confirmedBookings.map((booking) => (
                   <option key={booking.id} value={booking.id}>
                     {booking.guest_name} · {booking.room_names.join(", ")}
@@ -960,15 +981,15 @@ export function GanttQuickActionPanel({
 
             {confirmedBookings.length === 0 ? (
               <SummaryCard
-                title="Mutare indisponibilă"
-                body="Nu există încă rezervări confirmate cu camere alocate pentru mutare."
+                title={tGantt("quick.moveUnavailable")}
+                body={tGantt("quick.moveUnavailableBody")}
               />
             ) : null}
 
             {selectedBooking ? (
               <>
                 <SummaryCard
-                  title="Rezervare selectată"
+                  title={tGantt("quick.selectedBooking")}
                   body={
                     <>
                       <strong className="font-semibold text-zinc-900">
@@ -1012,7 +1033,7 @@ export function GanttQuickActionPanel({
                         setMoveTargetRoomId(e.target.value);
                       }}
                     >
-                      <option value="">Selectează…</option>
+                      <option value="">{tCommon("selectPlaceholder")}</option>
                       {moveTargetOptions.map((option) => (
                         <option key={option.id} value={option.id}>
                           {option.name} · {option.building_name}

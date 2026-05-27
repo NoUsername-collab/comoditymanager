@@ -11,7 +11,7 @@ import { listAllRooms } from "@/services/rooms-admin";
 import { listBuildings } from "@/services/buildings";
 
 const STATS_NOTE =
-  "Ocuparea folosește camerele active de azi ca referință pentru tot istoricul. Rezervările rămân în baza de date — rapoartele se extind automat pe măsură ce acumulați ani de operare.";
+  "Occupancy uses today's active rooms as reference for the full history. Bookings stay in the database and reports expand automatically as operational history grows.";
 
 export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
   const supabase = createAdminClient();

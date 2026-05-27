@@ -1,16 +1,16 @@
-/** Convertește input form (datetime-local sau ISO) în timestamptz ISO. */
+/** Converts datetime-local/ISO input to ISO timestamp. */
 export function parseOperationalTimestamp(input?: string | null): string {
   const raw = input?.trim();
   if (!raw) return new Date().toISOString();
 
   const parsed = new Date(raw);
   if (Number.isNaN(parsed.getTime())) {
-    throw new Error("Dată sau oră invalidă.");
+    throw new Error("operational.invalid_date_or_time");
   }
   return parsed.toISOString();
 }
 
-/** Valoare inițială pentru <input type="datetime-local" /> (ora locală). */
+/** Initial value for <input type="datetime-local" /> in local time. */
 export function datetimeLocalNow(): string {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function BookingCancelButton({
@@ -18,6 +19,7 @@ export function BookingCancelButton({
   returnTo?: string;
   variant?: "default" | "compact";
 }) {
+  const tCommon = useTranslations("admin.common");
   const [open, setOpen] = useState(false);
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -68,6 +70,11 @@ export function BookingCancelButton({
         btnClass={btnClass}
         pending={pending}
         onCancel={() => setOpen(false)}
+        labels={{
+          cancelling: tCommon("cancelling"),
+          confirmCancel: tCommon("confirmCancel"),
+          dismiss: tCommon("dismiss"),
+        }}
       />
     </form>
   );
@@ -77,10 +84,12 @@ function ConfirmButtons({
   btnClass,
   pending,
   onCancel,
+  labels,
 }: {
   btnClass: string;
   pending: boolean;
   onCancel: () => void;
+  labels: { cancelling: string; confirmCancel: string; dismiss: string };
 }) {
   return (
     <div className="mt-2 flex gap-2">
@@ -89,7 +98,7 @@ function ConfirmButtons({
         disabled={pending}
         className={`${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50`}
       >
-        {pending ? "Se anulează…" : "Da, anulează"}
+        {pending ? labels.cancelling : labels.confirmCancel}
       </button>
       <button
         type="button"
@@ -97,7 +106,7 @@ function ConfirmButtons({
         onClick={onCancel}
         className={`${btnClass} border border-zinc-300 bg-white text-zinc-700`}
       >
-        Renunță
+        {labels.dismiss}
       </button>
     </div>
   );

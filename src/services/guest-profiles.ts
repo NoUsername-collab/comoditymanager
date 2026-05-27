@@ -8,7 +8,6 @@ import type {
 } from "@/domain/guest/types";
 import {
   createDefaultGuestProfile,
-  GUEST_FLAG_LABELS,
   isGuestFlagged,
   mapGuestProfileRow,
   mapGuestStayReviewRow,
@@ -240,12 +239,12 @@ export async function saveGuestStayReview(input: {
   loyaltyDelta: number;
 }): Promise<void> {
   const booking = await getBookingReviewCheck(input.bookingId);
-  if (!booking) throw new Error("Sejurul nu există.");
+  if (!booking) throw new Error("guest.stay_not_found");
   if (booking.guest_id !== input.guestId) {
-    throw new Error("Review-ul nu aparține acestui client.");
+    throw new Error("guest.review_not_belong_to_guest");
   }
   if (booking.status !== "confirmata" || booking.check_out >= todayIso()) {
-    throw new Error("Poți evalua doar sejururi confirmate deja încheiate.");
+    throw new Error("guest.only_past_confirmed_stays_can_be_reviewed");
   }
 
   const actor = await getAdminUser();
@@ -302,7 +301,7 @@ export async function updateGuestProfileControls(input: {
   const nextReason = input.blacklistReason.trim() || null;
 
   if (input.flagLevel === "blacklist" && !nextReason && !current.blacklist_reason) {
-    throw new Error("Explică de ce clientul intră în blacklist.");
+    throw new Error("guest.blacklist_reason_required");
   }
 
   const patch: Record<string, unknown> = {
@@ -357,7 +356,7 @@ export async function updateGuestProfileControls(input: {
       action,
       entityType: "guest",
       entityId: input.guestId,
-      summary: `Profil setat pe ${GUEST_FLAG_LABELS[input.flagLevel]}`,
+      summary: `Flag level updated: ${input.flagLevel}`,
       metadata: {
         previous_flag_level: current.flag_level,
         next_flag_level: input.flagLevel,
@@ -369,7 +368,7 @@ export async function updateGuestProfileControls(input: {
       action: "guest.adjusted",
       entityType: "guest",
       entityId: input.guestId,
-      summary: "Scoruri client ajustate manual",
+      summary: "Guest profile manually adjusted",
       metadata: {
         manual_trust_adjustment: input.manualTrustAdjustment,
         manual_loyalty_adjustment: input.manualLoyaltyAdjustment,
@@ -397,7 +396,7 @@ export async function resolveGuestAlertSnapshot(input: {
         note:
           profile.flag_level === "blacklist"
             ? `Client marcat în blacklist${profile.blacklist_reason ? `: ${profile.blacklist_reason}` : ""}`
-            : "Client marcat în watchlist",
+            : "Guest marked as watchlist",
       };
     }
   }

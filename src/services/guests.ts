@@ -749,7 +749,7 @@ export async function mergeGuests(
   targetId: string
 ): Promise<void> {
   if (sourceId === targetId) {
-    throw new Error("Alege un client diferit pentru combinare.");
+    throw new Error("guest.select_different_guest_for_merge");
   }
 
   const supabase = createAdminClient();
@@ -757,7 +757,7 @@ export async function mergeGuests(
     getGuestBaseById(sourceId),
     getGuestBaseById(targetId),
   ]);
-  if (!source || !target) throw new Error("Clientul nu există.");
+  if (!source || !target) throw new Error("guest.not_found");
 
   const { error: moveErr } = await supabase
     .from("bookings")
@@ -843,11 +843,11 @@ async function getLastGuestBooking(guestId: string) {
 
 export async function rebookGuestLastStay(guestId: string): Promise<string> {
   const guest = await getGuestBaseById(guestId);
-  if (!guest) throw new Error("Clientul nu există.");
+  if (!guest) throw new Error("guest.not_found");
 
   const last = await getLastGuestBooking(guestId);
   if (!last) {
-    throw new Error("Nu există un sejur anterior pentru rebook.");
+    throw new Error("guest.no_previous_stay_for_rebook");
   }
 
   const roomIds = last.room_ids;
@@ -893,11 +893,11 @@ export async function rebookGuestSamePeriodNextYear(
   guestId: string
 ): Promise<string> {
   const guest = await getGuestBaseById(guestId);
-  if (!guest) throw new Error("Clientul nu există.");
+  if (!guest) throw new Error("guest.not_found");
 
   const last = await getLastGuestBooking(guestId);
   if (!last) {
-    throw new Error("Nu există un sejur anterior pentru rebook.");
+    throw new Error("guest.no_previous_stay_for_rebook");
   }
 
   const shifted = shiftStayDatesByYears(last.check_in, last.check_out, 1);

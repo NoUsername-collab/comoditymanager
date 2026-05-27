@@ -1,6 +1,7 @@
 "use client";
 
 import type { BookingRow } from "@/services/bookings";
+import { useTranslations } from "next-intl";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import { guestPartyTotal } from "@/lib/guest-party";
@@ -21,15 +22,16 @@ export function GanttUnassignedRow({
   checkInTime: string;
   checkOutTime: string;
 }) {
+  const tGantt = useTranslations("admin.gantt");
   const dayCount = viewRange.days.length;
   if (bookings.length === 0) return null;
 
   return (
     <tr className="gantt-unassigned-row border-t border-amber-200">
       <td className="gantt-unassigned-cell sticky left-0 z-10 border-r border-amber-200/80 px-3 py-2 align-top">
-        <span className="gantt-unassigned-label">Cereri fără cameră</span>
+        <span className="gantt-unassigned-label">{tGantt("queue.requestsNoRoom")}</span>
         <span className="mt-0.5 block text-[10px] font-medium text-amber-800/80">
-          {bookings.length} în perioada afișată · în timeline principal
+          {tGantt("unassigned.countInTimeline", { count: bookings.length })}
         </span>
       </td>
       <td className="relative p-0 align-top">

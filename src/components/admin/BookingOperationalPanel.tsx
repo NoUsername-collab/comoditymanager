@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import {
   useAdminPending,
@@ -11,8 +11,9 @@ import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDia
 import {
   undoBookingCheckInAction,
   undoBookingCheckOutAction,
-} from "@/app/admin/(panel)/bookings/actions";
+} from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
+import { useTranslations } from "next-intl";
 
 type Props = {
   bookingId: string;
@@ -32,6 +33,8 @@ export function BookingOperationalPanel({
   actualCheckOutAt,
 }: Props) {
   const router = useRouter();
+  const t = useTranslations("admin.operational");
+  const tCommon = useTranslations("common");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
@@ -40,53 +43,53 @@ export function BookingOperationalPanel({
   );
 
   function undoCheckIn() {
-    if (!confirm("Anulezi check-in-ul înregistrat?")) return;
+    if (!confirm(t("confirmUndoCheckIn"))) return;
     void runAdminAction(async () => {
       const fd = new FormData();
       fd.set("id", bookingId);
       const res = await undoBookingCheckInAction(fd);
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: tCommon("error"), message: res.error });
         return;
       }
-      showToast({ kind: "success", title: "Check-in anulat", message: guestName });
+      showToast({ kind: "success", title: t("undoCheckInSuccess"), message: guestName });
       router.refresh();
     });
   }
 
   function undoCheckOut() {
-    if (!confirm("Anulezi check-out-ul înregistrat?")) return;
+    if (!confirm(t("confirmUndoCheckOut"))) return;
     void runAdminAction(async () => {
       const fd = new FormData();
       fd.set("id", bookingId);
       const res = await undoBookingCheckOutAction(fd);
       if (!res.ok) {
-        showToast({ kind: "error", title: "Eroare", message: res.error });
+        showToast({ kind: "error", title: tCommon("error"), message: res.error });
         return;
       }
-      showToast({ kind: "success", title: "Check-out anulat", message: guestName });
+      showToast({ kind: "success", title: t("undoCheckOutSuccess"), message: guestName });
       router.refresh();
     });
   }
 
   return (
     <div className="mt-6 space-y-3 border border-emerald-200 bg-emerald-50/60 p-4">
-      <h2 className="font-bold text-emerald-950">Sosire / plecare (recepție)</h2>
+      <h2 className="font-bold text-emerald-950">{t("title")}</h2>
       <dl className="grid gap-2 text-sm">
         <div>
-          <dt className="font-semibold text-emerald-900">Check-in operațional</dt>
+          <dt className="font-semibold text-emerald-900">{t("checkInLabel")}</dt>
           <dd>
             {actualCheckInAt
               ? formatOperationalTimestamp(actualCheckInAt)
-              : "Neînregistrat"}
+              : t("notRecorded")}
           </dd>
         </div>
         <div>
-          <dt className="font-semibold text-emerald-900">Check-out operațional</dt>
+          <dt className="font-semibold text-emerald-900">{t("checkOutLabel")}</dt>
           <dd>
             {actualCheckOutAt
               ? formatOperationalTimestamp(actualCheckOutAt)
-              : "Neînregistrat"}
+              : t("notRecorded")}
           </dd>
         </div>
       </dl>
@@ -99,7 +102,7 @@ export function BookingOperationalPanel({
             disabled={pending}
             onClick={() => setDialogMode("checkin")}
           >
-            Check-in…
+            {t("checkInAction")}
           </button>
         )}
         {actualCheckInAt && !actualCheckOutAt && (
@@ -110,7 +113,7 @@ export function BookingOperationalPanel({
               disabled={pending}
               onClick={() => setDialogMode("checkout")}
             >
-              Check-out…
+              {t("checkOutAction")}
             </button>
             <button
               type="button"
@@ -118,7 +121,7 @@ export function BookingOperationalPanel({
               disabled={pending}
               onClick={undoCheckIn}
             >
-              Anulează check-in
+              {t("undoCheckIn")}
             </button>
           </>
         )}
@@ -129,7 +132,7 @@ export function BookingOperationalPanel({
             disabled={pending}
             onClick={undoCheckOut}
           >
-            Anulează check-out
+            {t("undoCheckOut")}
           </button>
         )}
       </div>

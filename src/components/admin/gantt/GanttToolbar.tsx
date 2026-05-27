@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation"
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { GanttFilter, GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { layerFilterLabel } from "@/domain/gantt/occupancy-layer";
@@ -139,6 +141,8 @@ export function GanttToolbar({
   bookings?: BookingRow[];
   cereri?: BookingRow[];
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tLayers = useTranslations("admin.gantt.layers");
   const cereriCount = cereri.length;
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -208,24 +212,32 @@ export function GanttToolbar({
   const metaParts: string[] = [];
   if (filter === "free") {
     metaParts.push(
-      focusDay ? `Libere pe ${focusDay}` : "Libere la ziua focală"
+      focusDay ? tCommon("freeOnDay", { day: focusDay }) : tCommon("freeOnFocusedDay")
     );
   } else if (filter === "occupied") {
     metaParts.push(
-      focusDay ? `Ocupate pe ${focusDay}` : "Ocupate în ziua focală"
+      focusDay
+        ? tCommon("occupiedOnDay", { day: focusDay })
+        : tCommon("occupiedOnFocusedDay")
     );
   }
-  if (feat === "ac") metaParts.push("Cu AC");
-  else if (feat === "fridge") metaParts.push("Cu frigider");
-  if (layer !== "all") metaParts.push(`Afiseaza: ${layerFilterLabel(layer)}`);
+  if (feat === "ac") metaParts.push(tCommon("withAc"));
+  else if (feat === "fridge") metaParts.push(tCommon("withFridge"));
+  if (layer !== "all") {
+    metaParts.push(
+      tCommon("displayLayer", {
+        layer: layerFilterLabel(layer, (key) => tLayers(key)),
+      })
+    );
+  }
   if (view === "all") metaParts.push(`${rooms.length} camere`);
   else if (view === "building") {
     metaParts.push(
-      `${roomsForBuilding.length} cam · ${buildings.find((b) => b.id === buildingId)?.name ?? ""}`
+      `${roomsForBuilding.length} ${tCommon("roomsShort")} · ${buildings.find((b) => b.id === buildingId)?.name ?? ""}`
     );
   } else {
     const r = rooms.find((x) => x.id === roomId);
-    metaParts.push(r ? `${r.name} · ${r.building_name}` : "1 cameră");
+    metaParts.push(r ? `${r.name} · ${r.building_name}` : `1 ${tCommon("room")}`);
   }
 
   return (
@@ -246,23 +258,23 @@ export function GanttToolbar({
         <div className="gantt-toolbar__row gantt-toolbar__row--controls">
           <div className="gantt-toolbar__segments">
             <SegmentGroup
-              label="Afiseaza"
+              label={tCommon("displayLayer", { layer: "" }).replace(/:\s*$/, "")}
               compact
               value={layer}
               onChange={(l) => push({ layer: l })}
               options={[
-                { value: "all", label: "Tot", shortLabel: "Tot" },
-                { value: "cereri", label: "Cereri", shortLabel: "Cer." },
-                { value: "confirmate", label: "Confirmate", shortLabel: "Conf." },
-                { value: "in_house", label: "In-house", shortLabel: "In" },
-                { value: "trecute", label: "Trecute", shortLabel: "Trec." },
-                { value: "hold", label: "Hold", shortLabel: "Hold" },
-                { value: "block", label: "Blocări", shortLabel: "Bloc" },
+                { value: "all", label: tLayers("all"), shortLabel: tLayers("all") },
+                { value: "cereri", label: tLayers("cereri"), shortLabel: tCommon("requestsShort") },
+                { value: "confirmate", label: tLayers("confirmate"), shortLabel: tCommon("confirmedShort") },
+                { value: "in_house", label: tLayers("in_house"), shortLabel: tCommon("inShort") },
+                { value: "trecute", label: tLayers("trecute"), shortLabel: tCommon("pastShort") },
+                { value: "hold", label: tLayers("hold"), shortLabel: tLayers("hold") },
+                { value: "block", label: tLayers("block"), shortLabel: tCommon("blocksShort") },
               ]}
             />
 
             <SegmentGroup
-              label="Camere"
+              label={tCommon("roomsLabel")}
               compact
               value={filter}
               onChange={(f) =>
@@ -272,26 +284,26 @@ export function GanttToolbar({
                 })
               }
               options={[
-                { value: "all", label: "Toate" },
-                { value: "occupied", label: "Ocupate" },
-                { value: "free", label: "Libere" },
+                { value: "all", label: tCommon("all") },
+                { value: "occupied", label: tCommon("occupied") },
+                { value: "free", label: tCommon("free") },
               ]}
             />
 
             <SegmentGroup
-              label="Opțiuni"
+              label={tCommon("options")}
               compact
               value={feat}
               onChange={(f) => push({ feat: f })}
               options={[
-                { value: "all", label: "Toate" },
-                { value: "ac", label: "Cu AC" },
-                { value: "fridge", label: "Frigider" },
+                { value: "all", label: tCommon("all") },
+                { value: "ac", label: tCommon("withAc") },
+                { value: "fridge", label: tCommon("fridge") },
               ]}
             />
 
             <SegmentGroup
-              label="Vizualizare"
+              label={tCommon("view")}
               compact
               value={view}
               onChange={(v) => {
@@ -310,9 +322,9 @@ export function GanttToolbar({
                   });
               }}
               options={[
-                { value: "all", label: "Toate" },
-                { value: "building", label: "Per clădire" },
-                { value: "room", label: "Per cameră" },
+                { value: "all", label: tCommon("all") },
+                { value: "building", label: tCommon("byBuilding") },
+                { value: "room", label: tCommon("byRoom") },
               ]}
             />
           </div>
@@ -324,14 +336,14 @@ export function GanttToolbar({
 
         <div className="gantt-toolbar__row gantt-toolbar__row--nav">
           <div className="gantt-toolbar__nav-strip">
-            <div className="gantt-toolbar__shifters" aria-label="Deplasare grid">
+            <div className="gantt-toolbar__shifters" aria-label={tCommon("timeline")}>
               <div className="gantt-toolbar__stepper">
-                <span className="gantt-toolbar__stepper-label">1 zi</span>
+                <span className="gantt-toolbar__stepper-label">{tCommon("oneDay")}</span>
                 <div className="gantt-toolbar__stepper-actions">
                   <button
                     type="button"
                     className="gantt-toolbar__mini-nav"
-                    aria-label="Înapoi o zi"
+                    aria-label={tCommon("backOneDay")}
                     onClick={() => shiftGrid(-1)}
                   >
                     ←
@@ -339,7 +351,7 @@ export function GanttToolbar({
                   <button
                     type="button"
                     className="gantt-toolbar__mini-nav"
-                    aria-label="Înainte o zi"
+                    aria-label={tCommon("forwardOneDay")}
                     onClick={() => shiftGrid(1)}
                   >
                     →
@@ -348,12 +360,12 @@ export function GanttToolbar({
               </div>
 
               <div className="gantt-toolbar__stepper">
-                <span className="gantt-toolbar__stepper-label">1 săpt.</span>
+                <span className="gantt-toolbar__stepper-label">{tCommon("oneWeek")}</span>
                 <div className="gantt-toolbar__stepper-actions">
                   <button
                     type="button"
                     className="gantt-toolbar__mini-nav"
-                    aria-label="Înapoi o săptămână"
+                    aria-label={tCommon("backOneWeek")}
                     onClick={() => shiftGrid(-7)}
                   >
                     ←
@@ -361,7 +373,7 @@ export function GanttToolbar({
                   <button
                     type="button"
                     className="gantt-toolbar__mini-nav"
-                    aria-label="Înainte o săptămână"
+                    aria-label={tCommon("forwardOneWeek")}
                     onClick={() => shiftGrid(7)}
                   >
                     →
@@ -375,7 +387,7 @@ export function GanttToolbar({
                 <Link
                   href={prevHref}
                   className="gantt-toolbar__nav"
-                  aria-label="Perioada anterioară"
+                  aria-label={tCommon("previousPeriod")}
                 >
                   ←
                 </Link>
@@ -383,13 +395,13 @@ export function GanttToolbar({
                 <Link
                   href={nextHref}
                   className="gantt-toolbar__nav"
-                  aria-label="Perioada următoare"
+                  aria-label={tCommon("nextPeriod")}
                 >
                   →
                 </Link>
               </div>
               <p className="gantt-toolbar__period-hint">
-                Selector perioadă fixat chiar înainte de grid, cu salt fin pe zi sau săptămână.
+                {tCommon("periodSelectorHint")}
               </p>
             </div>
 
@@ -401,17 +413,17 @@ export function GanttToolbar({
                   window.dispatchEvent(new CustomEvent("gantt:scroll-today"))
                 }
               >
-                Azi în grid
+                {tCommon("todayPanel")}
               </button>
 
               {cereriCount > 0 ? (
                 <a
                   href="#gantt-cereri-queue"
                   className="gantt-toolbar__cereri-pill gantt-toolbar__cereri-pill--jump"
-                  title="Sari la lista cererilor fără cameră"
+                  title={tCommon("jumpUnassigned")}
                 >
                   <span className="gantt-toolbar__cereri-dot" aria-hidden />
-                  {cereriCount} cerer{cereriCount === 1 ? "e" : "i"} fără cameră
+                  {tCommon("requestsNoRoomCount", { count: cereriCount })}
                 </a>
               ) : null}
 
@@ -422,7 +434,7 @@ export function GanttToolbar({
                     push({ view: "building", building: e.target.value })
                   }
                   className="gantt-toolbar__select"
-                  aria-label="Clădire"
+                  aria-label={tCommon("buildingLabel")}
                 >
                   {buildings.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -437,7 +449,7 @@ export function GanttToolbar({
                   value={roomId || rooms[0]?.id || ""}
                   onChange={(e) => push({ view: "room", room: e.target.value })}
                   className="gantt-toolbar__select gantt-toolbar__select--wide"
-                  aria-label="Cameră"
+                  aria-label={tCommon("roomLabel")}
                 >
                   {buildings.map((b) => {
                     const group = rooms.filter((r) => r.building_id === b.id);
@@ -462,34 +474,34 @@ export function GanttToolbar({
           <p className="gantt-toolbar__meta">{metaParts.join(" · ")}</p>
         )}
 
-        <div className="gantt-toolbar__legend" aria-label="Legendă timeline">
+        <div className="gantt-toolbar__legend" aria-label={tCommon("legend")}>
           <span className="gantt-toolbar__legend-item">
             <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--past" />
-            Trecut
+            {tCommon("past")}
           </span>
           <span className="gantt-toolbar__legend-item">
             <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--active" />
-            In-house
+            {tCommon("inHouse")}
           </span>
           <span className="gantt-toolbar__legend-item">
             <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--cerere" />
-            Cerere
+            {tCommon("requests").slice(0, -1)}
           </span>
           <span className="gantt-toolbar__legend-item">
             <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--hold" />
-            Hold
+            {tCommon("holds").slice(0, -1)}
           </span>
           <span className="gantt-toolbar__legend-item">
             <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--block" />
-            Blocare
+            {tCommon("blocks").slice(0, -1)}
           </span>
           <span className="gantt-toolbar__legend-item gantt-toolbar__legend-item--hint">
-            Trage pe celulă goală →
+            {tCommon("dragEmptyCell")}
           </span>
           {process.env.NEXT_PUBLIC_BUILD_SHA ? (
             <span
               className="gantt-toolbar__legend-item gantt-toolbar__legend-item--build"
-              title="Hash build Vercel — verifică că e același cu ultimul push"
+            title={tCommon("vercelHashTitle")}
             >
               build {process.env.NEXT_PUBLIC_BUILD_SHA}
             </span>

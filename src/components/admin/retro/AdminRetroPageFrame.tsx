@@ -1,14 +1,14 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import { btnPrimary } from "@/lib/admin-ui";
 import { RetroXpWindow } from "./RetroXpWindow";
 
-/** Pagină admin cu cadru XP + interior Win98 — pentru nostalgici */
+/** Admin page with XP frame and Win98-style interior. */
 export function AdminRetroPageFrame({
   title,
   description,
   backHref,
-  backLabel = "Înapoi",
+  backLabel,
   action,
   children,
   className = "",
@@ -30,7 +30,7 @@ export function AdminRetroPageFrame({
     <main className={["p-8", className].filter(Boolean).join(" ")}>
       {backHref && (
         <Link href={backHref} className="admin-retro-back mb-3 inline-block">
-          ← {backLabel}
+          ← {backLabel ?? ""}
         </Link>
       )}
       <RetroXpWindow title={title} bodyClassName={bodyClassName}>

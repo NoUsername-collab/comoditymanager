@@ -1,10 +1,14 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation"
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useAdminFx } from "./AdminToastProvider";
 
 function AdminFlashFromUrlInner() {
+  const tGuests = useTranslations("admin.guests");
+  const tSettings = useTranslations("admin.pages.settings");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -30,20 +34,20 @@ function AdminFlashFromUrlInner() {
     } else if (toast === "merged") {
       showToast({
         kind: "success",
-        title: "Profil combinat",
-        message: "Profilurile clientului au fost unite cu succes.",
+        title: tGuests("mergedProfileTitle"),
+        message: tGuests("mergedProfileMessage"),
       });
     } else if (toast === "rebooked") {
       showToast({
         kind: "success",
-        title: "Rebook creat",
-        message: "Cererea nouă a fost creată pe baza sejurului anterior.",
+        title: tGuests("rebookCreatedTitle"),
+        message: tGuests("rebookCreatedMessage"),
       });
     } else if (saved === "1" && pathname.startsWith("/admin/settings")) {
       showToast({
         kind: "success",
-        title: "Setări salvate",
-        message: "Modificările sunt active pentru panoul admin.",
+        title: tSettings("saved"),
+        message: tSettings("descriptionAdmin"),
       });
     }
 
@@ -61,6 +65,8 @@ function AdminFlashFromUrlInner() {
     notifyCancel,
     notifyMoved,
     showToast,
+    tGuests,
+    tSettings,
   ]);
 
   return null;

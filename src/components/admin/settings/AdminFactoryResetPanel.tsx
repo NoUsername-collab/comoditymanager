@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { factoryResetAction } from "@/app/admin/(panel)/settings/actions";
+import { useTranslations } from "next-intl";
+import { factoryResetAction } from "@/app/[locale]/admin/(panel)/settings/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function AdminFactoryResetPanel() {
+  const tPage = useTranslations("admin.pages.settingsLocation.factoryReset");
+  const tCommon = useTranslations("admin.common");
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState("");
   const [ack, setAck] = useState(false);
@@ -16,15 +19,14 @@ export function AdminFactoryResetPanel() {
     return (
       <div className="admin-factory-reset">
         <p className="admin-factory-reset__warn">
-          Șterge <strong>permanent</strong> clădiri, camere, rezervări, clienți,
-          hold-uri, blocări și istoricul activității. Conturile de login admin rămân.
+          {tPage.rich("warningHtml", { strong: (chunks) => <strong>{chunks}</strong> })}
         </p>
         <button
           type="button"
           className="admin-factory-reset__trigger"
           onClick={() => setOpen(true)}
         >
-          Reset complet date pensiune…
+          {tPage("trigger")}
         </button>
       </div>
     );
@@ -32,12 +34,12 @@ export function AdminFactoryResetPanel() {
 
   return (
     <div className="admin-factory-reset admin-factory-reset--open">
-      <p className="admin-factory-reset__title">Confirmare reset factory</p>
+      <p className="admin-factory-reset__title">{tPage("confirmTitle")}</p>
       <ul className="admin-factory-reset__list">
-        <li>Se șterg toate clădirile și camerele</li>
-        <li>Se șterg toate rezervările și clienții</li>
-        <li>Se șterg hold-urile, blocările și jurnalul activității</li>
-        <li>Setările pensiunii revin la valorile implicite</li>
+        <li>{tPage("bullet1")}</li>
+        <li>{tPage("bullet2")}</li>
+        <li>{tPage("bullet3")}</li>
+        <li>{tPage("bullet4")}</li>
       </ul>
 
       <label className="admin-factory-reset__ack">
@@ -46,11 +48,11 @@ export function AdminFactoryResetPanel() {
           checked={ack}
           onChange={(e) => setAck(e.target.checked)}
         />
-        <span>Înțeleg că acțiunea este ireversibilă</span>
+        <span>{tPage("ack")}</span>
       </label>
 
       <label className="admin-factory-reset__confirm-label">
-        <span>Tastează RESET pentru confirmare</span>
+        <span>{tPage("typeReset")}</span>
         <input
           type="text"
           value={confirm}
@@ -75,12 +77,12 @@ export function AdminFactoryResetPanel() {
               try {
                 await factoryResetAction(confirm);
               } catch (e) {
-                setError(e instanceof Error ? e.message : "Eroare la reset");
+                setError(e instanceof Error ? e.message : tPage("resetError"));
               }
             });
           }}
         >
-          {pending ? "Se șterge…" : "Da, reset complet"}
+          {pending ? tPage("deleting") : tPage("confirmButton")}
         </button>
         <button
           type="button"
@@ -93,7 +95,7 @@ export function AdminFactoryResetPanel() {
             setError(null);
           }}
         >
-          Anulează
+          {tCommon("cancel")}
         </button>
       </div>
     </div>

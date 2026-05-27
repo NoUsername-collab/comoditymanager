@@ -67,7 +67,7 @@ export function guestNamesFromForm(formData: FormData): {
   const guest_first_name = String(formData.get("guest_first_name") ?? "").trim();
 
   if (!guest_last_name || !guest_first_name) {
-    throw new Error("Completează numele de familie și prenumele");
+    throw new Error("guest.last_and_first_name_required");
   }
 
   return {

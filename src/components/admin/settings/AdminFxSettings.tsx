@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   readAdminFxPrefs,
   writeAdminFxPrefs,
@@ -9,6 +10,7 @@ import { playConfirmSound } from "@/components/admin/feedback/admin-fx-effects";
 
 export function AdminFxSettings() {
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const t = useTranslations("admin.settings.fx");
 
   useEffect(() => {
     setSoundEnabled(readAdminFxPrefs().soundEnabled);
@@ -28,10 +30,9 @@ export function AdminFxSettings() {
           }}
         />
         <span>
-          <strong>Sunet la confirmare</strong>
+          <strong>{t("confirmSoundTitle")}</strong>
           <span className="admin-fx-settings__hint">
-            Stil scurt „system ding” — dezactivat implicit. Poți testa bifând
-            caseta.
+            {t("confirmSoundHint")}
           </span>
         </span>
       </label>

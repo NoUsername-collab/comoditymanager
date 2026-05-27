@@ -9,7 +9,7 @@ export function isFactoryResetEnabled(): boolean {
 export function assertFactoryResetAllowed(): void {
   if (!isFactoryResetEnabled()) {
     throw new Error(
-      "Reset factory dezactivat. Setează ADMIN_FACTORY_RESET_ENABLED=true în env (recomandat doar staging/dev)."
+      "factory_reset.disabled_set_admin_factory_reset_enabled_true"
     );
   }
 }
@@ -27,7 +27,7 @@ export async function runFactoryReset(): Promise<void> {
       error.message.includes("does not exist")
     ) {
       throw new Error(
-        "Funcția admin_factory_reset lipsește. Rulează migrarea 013_factory_reset.sql în Supabase."
+        "factory_reset.rpc_admin_factory_reset_missing_run_migration_013"
       );
     }
     throw new Error(error.message);

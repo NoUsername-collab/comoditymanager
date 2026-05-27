@@ -1,11 +1,12 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import {
   previewGuestStayAction,
   submitGuestRequestAction,
-} from "@/app/(public)/calendar/actions";
+} from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
 import { GuestStayOptionsPicker } from "@/components/calendar/GuestStayOptionsPicker";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
@@ -23,6 +24,10 @@ type Props = {
 type Step = "dates" | "preview" | "contact";
 
 export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
+  const t = useTranslations("public.form");
+  const tErrors = useTranslations("errors");
+  const tCommon = useTranslations("common");
+
   const [step, setStep] = useState<Step>("dates");
   const [hasMinor, setHasMinor] = useState(false);
   const [checkIn, setCheckIn] = useState("");
@@ -58,7 +63,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
     setPreview(null);
     setSelected(null);
     if (!checkIn || !checkOut) {
-      setPreviewError("Alege check-in și check-out.");
+      setPreviewError(tErrors("pickDates"));
       return;
     }
     startPreviewTransition(async () => {
@@ -86,24 +91,45 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
         await submitGuestRequestAction(formData);
         return { ok: true };
       } catch (e) {
-        return { error: e instanceof Error ? e.message : "Eroare" };
+        return {
+          error: e instanceof Error ? e.message : tCommon("error"),
+        };
       }
     },
     null
   );
 
+  const linkTags = {
+    link: (chunks: React.ReactNode) => (
+      <Link href="/termeni" target="_blank" className="font-medium underline">
+        {chunks}
+      </Link>
+    ),
+  };
+
+  const gdprLinkTags = {
+    link: (chunks: React.ReactNode) => (
+      <Link
+        href="/confidentialitate"
+        target="_blank"
+        className="font-medium underline"
+      >
+        {chunks}
+      </Link>
+    ),
+  };
+
   if (state?.ok) {
     return (
       <div className="public-notice public-notice--success p-6 text-center">
-        <p className="text-lg font-semibold">Cererea a fost trimisă.</p>
-        <p className="mt-2 text-sm opacity-90">
-          Camerele din varianta aleasă sunt reținute provizoriu. Pensiunea vă
-          contactează pentru confirmare — prețul final poate fi ajustat; nu e
-          plată online.
-        </p>
+        <p className="text-lg font-semibold">{t("successTitle")}</p>
+        <p className="mt-2 text-sm opacity-90">{t("successBody")}</p>
         {selected && (
           <p className="mt-3 text-xs opacity-80">
-            Varianta aleasă: <strong>{selected.title}</strong>
+            {t.rich("successVariant", {
+              title: selected.title,
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </p>
         )}
       </div>
@@ -116,25 +142,25 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const canSubmitContact =
     acceptTerms && acceptGdpr && selected && step === "contact";
 
+  const steps: { key: Step; label: string }[] = [
+    { key: "dates", label: t("stepDates") },
+    { key: "preview", label: t("stepPreview") },
+    { key: "contact", label: t("stepContact") },
+  ];
+
   return (
     <div className="guest-booking-form site-card space-y-5 p-6 shadow-sm">
       <div>
         <h2 className="text-lg font-semibold text-[var(--site-fg)]">
-          Cerere de cazare
+          {t("title")}
         </h2>
         <p className="mt-1 text-sm text-[var(--site-muted)]">
-          Check-in {checkInTime} · Check-out {checkOutTime}
+          {t("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
         </p>
       </div>
 
       <ol className="public-step-track">
-        {(
-          [
-            ["dates", "1. Perioadă"],
-            ["preview", "2. Variante"],
-            ["contact", "3. Trimite"],
-          ] as const
-        ).map(([key, label], i) => (
+        {steps.map(({ key, label }, i) => (
           <li
             key={key}
             className={[
@@ -154,7 +180,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
         <div className="space-y-4">
           <div className="guest-form-grid-2 grid grid-cols-2 gap-3">
             <label className="site-field">
-              Check-in *
+              {t("checkIn")}
               <input
                 type="date"
                 required
@@ -166,7 +192,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               <DateWeekdayHint iso={checkIn} />
             </label>
             <label className="site-field">
-              Check-out *
+              {t("checkOut")}
               <input
                 type="date"
                 required
@@ -186,7 +212,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
 
           <div className="guest-form-grid-2 grid grid-cols-2 gap-3">
             <label className="site-field">
-              Adulți *
+              {t("adults")}
               <input
                 type="number"
                 min={1}
@@ -201,7 +227,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               />
             </label>
             <label className="site-field">
-              Copii
+              {t("children")}
               <input
                 type="number"
                 min={0}
@@ -226,7 +252,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             disabled={previewPending || !checkIn || !checkOut}
             className="site-cta w-full justify-center py-2.5 disabled:opacity-50"
           >
-            {previewPending ? "Se calculează…" : "Vezi variante și preț estimat"}
+            {previewPending ? t("previewLoading") : t("previewButton")}
           </button>
         </div>
       )}
@@ -245,7 +271,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               onClick={() => setStep("dates")}
               className="site-btn-secondary"
             >
-              ← Schimbă datele
+              {t("changeDates")}
             </button>
             <button
               type="button"
@@ -253,7 +279,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               onClick={() => setStep("contact")}
               className="site-cta flex-1 justify-center py-2.5 disabled:opacity-50"
             >
-              Sunt de acord — continuă
+              {t("continue")}
             </button>
           </div>
         </div>
@@ -272,18 +298,20 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
           />
 
           <div className="public-summary-box">
-            <p className="public-summary-box__title">Rezumat ales</p>
+            <p className="public-summary-box__title">{t("summaryTitle")}</p>
             <p className="public-summary-box__meta">{selected.title}</p>
             <p className="public-summary-box__meta">
-              Estimare {selected.total_estimate_ron} RON · {selected.nights}{" "}
-              nopți
+              {t("estimate", {
+                total: selected.total_estimate_ron,
+                nights: selected.nights,
+              })}
             </p>
             <button
               type="button"
               className="mt-2 text-xs font-semibold text-[var(--site-accent)] underline"
               onClick={() => setStep("preview")}
             >
-              Schimbă varianta
+              {t("changeVariant")}
             </button>
           </div>
 
@@ -295,15 +323,15 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               onChange={(e) => setHasMinor(e.target.checked)}
               className="rounded"
             />
-            Am minor însoțitor
+            {t("hasMinor")}
           </label>
 
           {hasMinor && (
             <label className="site-field">
-              Vârsta minor
+              {t("minorAge")}
               <input
                 name="minor_age"
-                placeholder="ex. 5 ani"
+                placeholder={t("minorAgePlaceholder")}
                 className="mt-1 w-full"
               />
             </label>
@@ -311,7 +339,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
 
           <GuestNameFields />
           <label className="site-field">
-            Email *
+            {tCommon("email")} *
             <input
               name="guest_email"
               type="email"
@@ -320,7 +348,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             />
           </label>
           <label className="site-field">
-            Telefon
+            {tCommon("phone")}
             <input
               name="guest_phone"
               type="tel"
@@ -328,7 +356,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             />
           </label>
           <label className="site-field">
-            Mesaj (opțional)
+            {t("messageOptional")}
             <textarea
               name="notes"
               rows={2}
@@ -346,13 +374,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
                 className="mt-0.5 rounded"
                 required
               />
-              <span>
-                Accept{" "}
-                <Link href="/termeni" target="_blank" className="font-medium underline">
-                  termenii și condițiile
-                </Link>{" "}
-                *
-              </span>
+              <span>{t.rich("acceptTerms", linkTags)}</span>
             </label>
             <label className="flex items-start gap-2">
               <input
@@ -363,17 +385,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
                 className="mt-0.5 rounded"
                 required
               />
-              <span>
-                Am citit{" "}
-                <Link
-                  href="/confidentialitate"
-                  target="_blank"
-                  className="font-medium underline"
-                >
-                  politica de confidențialitate (GDPR)
-                </Link>{" "}
-                *
-              </span>
+              <span>{t.rich("acceptGdpr", gdprLinkTags)}</span>
             </label>
           </div>
 
@@ -385,14 +397,14 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               onClick={() => setStep("preview")}
               className="site-btn-secondary"
             >
-              ← Înapoi
+              {t("back")}
             </button>
             <button
               type="submit"
               disabled={pending || !canSubmitContact}
               className="site-cta flex-1 justify-center py-2.5 disabled:opacity-50"
             >
-              {pending ? "Se trimite…" : "Trimite cererea"}
+              {pending ? t("submitting") : t("submit")}
             </button>
           </div>
         </form>

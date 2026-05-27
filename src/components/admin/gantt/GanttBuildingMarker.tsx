@@ -1,4 +1,7 @@
+"use client";
+
 import type { CSSProperties } from "react";
+import { useTranslations } from "next-intl";
 import type { AcMode } from "@/types/database";
 import {
   GANTT_AC_MARKER_BLUE,
@@ -64,6 +67,7 @@ function GanttAcMarker({
   buildingHasAnyRoomAc,
   title,
 }: MarkerBase & { variant: "building" | "room" }) {
+  const tGantt = useTranslations("admin.gantt");
   const color = resolveGanttAcMarkerColor(acMode, {
     roomHasAc,
     buildingHasAnyRoomAc,
@@ -79,12 +83,12 @@ function GanttAcMarker({
     variant === "building"
       ? hasAc
         ? partial
-          ? "Clădire — AC pe unele camere"
-          : "Clădire cu AC"
-        : "Clădire fără AC"
+          ? tGantt("markers.buildingSomeAc")
+          : tGantt("markers.buildingWithAc")
+        : tGantt("markers.buildingWithoutAc")
       : hasAc
-        ? "Cameră cu AC"
-        : "Cameră fără AC";
+        ? tGantt("markers.roomWithAc")
+        : tGantt("markers.roomWithoutAc");
 
   return (
     <span

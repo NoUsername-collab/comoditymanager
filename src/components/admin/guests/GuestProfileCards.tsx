@@ -1,8 +1,10 @@
+"use client";
+
 import type { GuestProfileRow } from "@/domain/guest/types";
+import { useTranslations } from "next-intl";
 import {
-  GUEST_FLAG_LABELS,
-  GUEST_NEGATIVE_TRAIT_LABELS,
-  GUEST_POSITIVE_TRAIT_LABELS,
+  GUEST_NEGATIVE_TRAITS,
+  GUEST_POSITIVE_TRAITS,
 } from "@/domain/guest/reputation";
 
 function TraitLine({
@@ -14,6 +16,7 @@ function TraitLine({
   values: string[];
   tone: "good" | "bad";
 }) {
+  const tGuests = useTranslations("admin.guests");
   const style =
     tone === "good"
       ? { color: "var(--status-confirmed-text)" }
@@ -35,7 +38,20 @@ function TraitLine({
 }
 
 export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null }) {
+  const tGuests = useTranslations("admin.guests");
   if (!profile) return null;
+  const positiveLabels: Record<string, string> = Object.fromEntries(
+    GUEST_POSITIVE_TRAITS.map((trait) => [
+      trait,
+      tGuests(`traits.positive.${trait}` as never),
+    ])
+  );
+  const negativeLabels: Record<string, string> = Object.fromEntries(
+    GUEST_NEGATIVE_TRAITS.map((trait) => [
+      trait,
+      tGuests(`traits.negative.${trait}` as never),
+    ])
+  );
 
   return (
     <div className="space-y-4">
@@ -50,20 +66,20 @@ export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null
       >
         <div className="space-y-3">
           <TraitLine
-            title="Trăsături bune active"
-            values={profile.positive_traits.map((trait) => GUEST_POSITIVE_TRAIT_LABELS[trait])}
+            title={tGuests("profileCards.activeGoodTraits")}
+            values={profile.positive_traits.map((trait) => positiveLabels[trait])}
             tone="good"
           />
           <TraitLine
-            title="Trăsături de atenție"
-            values={profile.negative_traits.map((trait) => GUEST_NEGATIVE_TRAIT_LABELS[trait])}
+            title={tGuests("profileCards.attentionTraits")}
+            values={profile.negative_traits.map((trait) => negativeLabels[trait])}
             tone="bad"
           />
         </div>
 
         <div className="space-y-2 text-sm">
           <p>
-            <span className="font-bold">Stare curentă:</span>{" "}
+            <span className="font-bold">{tGuests("profileCards.currentState")}:</span>{" "}
             <span
               style={
                 profile.flag_level === "blacklist"
@@ -73,17 +89,21 @@ export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null
                     : { color: "var(--admin-text)" }
               }
             >
-              {GUEST_FLAG_LABELS[profile.flag_level]}
+              {profile.flag_level === "blacklist"
+                ? tGuests("profileBadges.blacklist")
+                : profile.flag_level === "watchlist"
+                  ? tGuests("profileBadges.watchlist")
+                  : tGuests("profileBadges.normal")}
             </span>
           </p>
           <p>
-            <span className="font-bold">Sejururi încheiate:</span> {profile.completed_stays}
+            <span className="font-bold">{tGuests("profileCards.completedStays")}:</span> {profile.completed_stays}
           </p>
           <p>
-            <span className="font-bold">Nopți totale:</span> {profile.total_nights}
+            <span className="font-bold">{tGuests("profileCards.totalNights")}:</span> {profile.total_nights}
           </p>
           <p>
-            <span className="font-bold">Ultimul checkout:</span>{" "}
+            <span className="font-bold">{tGuests("profileCards.lastCheckout")}:</span>{" "}
             {profile.last_stay_check_out ?? "—"}
           </p>
           {profile.manual_note && (
@@ -95,7 +115,7 @@ export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null
                 color: "var(--admin-text)",
               }}
             >
-              <span className="font-bold">Notă operator:</span> {profile.manual_note}
+              <span className="font-bold">{tGuests("profileCards.operatorNote")}:</span> {profile.manual_note}
             </p>
           )}
           {profile.blacklist_reason && profile.flag_level === "blacklist" && (
@@ -107,7 +127,7 @@ export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null
                 color: "var(--admin-danger-text)",
               }}
             >
-              <span className="font-bold">Motiv blacklist:</span> {profile.blacklist_reason}
+              <span className="font-bold">{tGuests("blacklistReason")}:</span> {profile.blacklist_reason}
             </p>
           )}
         </div>

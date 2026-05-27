@@ -1,5 +1,6 @@
 import { nightOccupied } from "@/lib/stay-dates";
-import { daysInMonth, monthYearLabelRo } from "@/lib/ro-calendar";
+import { daysInMonth, monthYearLabel } from "@/lib/ro-calendar";
+import { getLocale } from "next-intl/server";
 import { listOccupiedRoomRanges, listBookingsForRange } from "@/services/bookings";
 import { listAllRooms } from "@/services/rooms-admin";
 import { listBuildings } from "@/services/buildings";
@@ -144,7 +145,8 @@ function buildDaysForMonth(
   rooms: { id: string; building_id: string; is_active: boolean }[],
   occupied: OccupiedRange[],
   countMaps: ReturnType<typeof buildDayCountsMaps>,
-  buildingId: string | null
+  buildingId: string | null,
+  locale: string
 ): DayAvailability[] {
   const { dim } = monthRange(year, month);
   const filtered = filterRoomsByBuilding(rooms, buildingId);
@@ -153,12 +155,19 @@ function buildDaysForMonth(
   for (let d = 1; d <= dim; d++) {
     const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     days.push(
-      computeDayAvailability(iso, d, filtered, occupied, {
-        checkins: countMaps.checkins.get(iso) ?? 0,
-        checkouts: countMaps.checkouts.get(iso) ?? 0,
-        unassigned_cereri: countMaps.unassigned.get(iso) ?? 0,
-        pending_cereri: countMaps.pending.get(iso) ?? 0,
-      })
+      computeDayAvailability(
+        iso,
+        d,
+        filtered,
+        occupied,
+        {
+          checkins: countMaps.checkins.get(iso) ?? 0,
+          checkouts: countMaps.checkouts.get(iso) ?? 0,
+          unassigned_cereri: countMaps.unassigned.get(iso) ?? 0,
+          pending_cereri: countMaps.pending.get(iso) ?? 0,
+        },
+        locale
+      )
     );
   }
   return days;
@@ -215,6 +224,7 @@ export async function loadAvailabilityDashboard(
   buildingId: string | null = null,
   featureFilter: GanttFeatureFilter = "all"
 ): Promise<AvailabilityDashboard> {
+  const locale = await getLocale();
   const { start, end } = monthRange(year, month);
 
   const prevMonth = month === 0 ? 11 : month - 1;
@@ -256,14 +266,23 @@ export async function loadAvailabilityDashboard(
 
   const countMaps = buildDayCountsMaps(bookings);
 
-  const days = buildDaysForMonth(year, month, rooms, occupied, countMaps, buildingId);
+  const days = buildDaysForMonth(
+    year,
+    month,
+    rooms,
+    occupied,
+    countMaps,
+    buildingId,
+    locale
+  );
   const prevDays = buildDaysForMonth(
     prevYear,
     prevMonth,
     rooms,
     occupied,
     countMaps,
-    buildingId
+    buildingId,
+    locale
   );
   const prevFull = prevDays.filter((d) => d.status === "full").length;
 
@@ -276,7 +295,15 @@ export async function loadAvailabilityDashboard(
       mm -= 12;
       yy += 1;
     }
-    const built = buildDaysForMonth(yy, mm, rooms, occupied, countMaps, buildingId);
+    const built = buildDaysForMonth(
+      yy,
+      mm,
+      rooms,
+      occupied,
+      countMaps,
+      buildingId,
+      locale
+    );
     for (const d of built) {
       if (d.iso >= scanStart && d.iso <= scanEnd && !seenScan.has(d.iso)) {
         seenScan.add(d.iso);
@@ -317,7 +344,7 @@ export async function loadAvailabilityDashboard(
   return {
     year,
     month,
-    title: monthYearLabelRo(year, month),
+    title: monthYearLabel(year, month, locale),
     total_rooms: activeTotal,
     week_starts_monday: true,
     leading_blanks: mondayFirstOffset(year, month),

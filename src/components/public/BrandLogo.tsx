@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import path from "path";
+import { getTranslations } from "next-intl/server";
 import { BrandMarkSvg } from "./BrandMarkSvg";
 
 type Props = {
@@ -54,10 +55,12 @@ function LogoImages({
   onyxSrc,
   lightBgSrc,
   px,
+  alt,
 }: {
   onyxSrc: string;
   lightBgSrc: string | null;
   px: number;
+  alt: string;
 }) {
   const imgClass = "brand-logo-img h-full w-full object-contain";
 
@@ -66,7 +69,7 @@ function LogoImages({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={onyxSrc}
-        alt="Casa Emil"
+        alt={alt}
         width={px}
         height={px}
         className={`brand-logo-img--onyx-bg absolute inset-0 ${imgClass}`}
@@ -94,6 +97,7 @@ export async function BrandLogo({
   className = "",
   animated = true,
 }: Props) {
+  const tShell = await getTranslations("public.shell");
   const onyxSrc = await loadLogo(LOGO_ONYX_PATHS);
   const lightBgSrc = await loadLogo(LOGO_LIGHT_BG_PATHS);
   const { className: boxClass, style: boxStyle } = shellBox(className, size);
@@ -101,7 +105,12 @@ export async function BrandLogo({
 
   if (onyxSrc) {
     const imgs = (
-      <LogoImages onyxSrc={onyxSrc} lightBgSrc={lightBgSrc} px={px} />
+      <LogoImages
+        onyxSrc={onyxSrc}
+        lightBgSrc={lightBgSrc}
+        px={px}
+        alt={tShell("brandFallback")}
+      />
     );
 
     if (!animated) {

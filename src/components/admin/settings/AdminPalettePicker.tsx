@@ -1,29 +1,32 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CATALOG_PALETTES, tokensFor } from "@/lib/admin-palettes";
 import { useAdminTheme } from "@/components/admin/AdminAppearanceProvider";
 
 function ZoneStrip() {
   const palette = CATALOG_PALETTES[0]!;
   const { mode } = useAdminTheme();
-  const t = tokensFor(palette, mode);
+  const tPalette = useTranslations("admin.settings.palette");
+  const tokens = tokensFor(palette, mode);
 
   return (
-    <div className="admin-palette-zones" title={mode === "day" ? "Zi" : "Noapte"}>
-      <span className="admin-palette-zones__checkout h-full" style={{ background: t.ganttZoneCheckout }} />
+    <div className="admin-palette-zones" title={mode === "day" ? tPalette("day") : tPalette("night")}>
+      <span className="admin-palette-zones__checkout h-full" style={{ background: tokens.ganttZoneCheckout }} />
       <span
         className="admin-palette-zones__clean h-full"
         style={{
-          background: `repeating-linear-gradient(-45deg, ${t.ganttZoneClean}, ${t.ganttZoneClean} 4px, rgba(0,0,0,0.07) 4px, rgba(0,0,0,0.07) 6px)`,
+          background: `repeating-linear-gradient(-45deg, ${tokens.ganttZoneClean}, ${tokens.ganttZoneClean} 4px, rgba(0,0,0,0.07) 4px, rgba(0,0,0,0.07) 6px)`,
         }}
       />
-      <span className="admin-palette-zones__checkin h-full" style={{ background: t.ganttZoneCheckin }} />
+      <span className="admin-palette-zones__checkin h-full" style={{ background: tokens.ganttZoneCheckin }} />
     </div>
   );
 }
 
 export function AdminPalettePicker() {
   const { apply, mode } = useAdminTheme();
+  const t = useTranslations("admin.settings.palette");
 
   return (
     <div className="admin-palette-picker">
@@ -33,9 +36,8 @@ export function AdminPalettePicker() {
 
       <div className="admin-palette-block">
         <p className="admin-palette-block__desc">
-          Toate temele alternative au fost scoase. Rămâne activ doar scheletul{" "}
-          <code className="text-xs">default</code>, cu variante Zi și Noapte pe același
-          pattern pentru extensiile viitoare.
+          {t("descriptionPrefix")} <code className="text-xs">default</code>,{" "}
+          {t("descriptionSuffix")}
         </p>
 
         <div className="admin-palette-daynight">
@@ -51,13 +53,13 @@ export function AdminPalettePicker() {
                 .filter(Boolean)
                 .join(" ")}
             >
-              {nextMode === "day" ? "Zi" : "Noapte"}
+              {nextMode === "day" ? t("day") : t("night")}
             </button>
           ))}
         </div>
 
         <div className="mt-3 space-y-2">
-          <p className="admin-palette-extend__mode-label">Preview default</p>
+          <p className="admin-palette-extend__mode-label">{t("previewDefault")}</p>
           <ZoneStrip />
         </div>
       </div>

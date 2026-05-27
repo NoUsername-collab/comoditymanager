@@ -1,12 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import {
   useAdminPending,
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string }) {
+  const t = useTranslations("admin.common");
   const router = useRouter();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -27,7 +29,7 @@ export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string })
         name="q"
         type="search"
         defaultValue={defaultQuery ?? ""}
-        placeholder="Caută după nume, telefon, email, cameră sau cod..."
+        placeholder={t("searchStay")}
         className="min-w-[260px] flex-1 border border-zinc-300 px-3 py-2 text-sm"
         disabled={pending}
       />
@@ -36,7 +38,7 @@ export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string })
         disabled={pending}
         className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
       >
-        {pending ? "…" : "Caută"}
+        {pending ? "…" : t("searchGuest")}
       </button>
       {defaultQuery?.trim() ? (
         <button
@@ -49,7 +51,7 @@ export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string })
             });
           }}
         >
-          Resetează
+          {t("cancel")}
         </button>
       ) : null}
     </form>

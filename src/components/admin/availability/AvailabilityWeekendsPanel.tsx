@@ -2,39 +2,26 @@
 
 import type { CSSProperties } from "react";
 import { useMemo } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import type { WeekendPick } from "@/domain/availability/weekend-finder";
 import { ganttStaySurface } from "@/lib/gantt-stay-surface";
 import { ganttStaySlantRadiusClosed } from "@/lib/gantt-stay-shape";
 import { parseIso } from "@/lib/stay-dates";
 
-const RO_MONTHS_SHORT = [
-  "Ian",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mai",
-  "Iun",
-  "Iul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Noi",
-  "Dec",
-] as const;
-
-function weekendRangeTitle(w: WeekendPick): string {
+function weekendRangeTitle(w: WeekendPick, locale: string): string {
+  const format = new Intl.DateTimeFormat(locale, { month: "short" });
   const sat = parseIso(w.saturday_iso);
   const sun = parseIso(w.sunday_iso);
   const sameMonth = sat.getMonth() === sun.getMonth();
   if (sameMonth) {
-    return `${sat.getDate()}–${sun.getDate()} ${RO_MONTHS_SHORT[sat.getMonth()]}`;
+    return `${sat.getDate()}–${sun.getDate()} ${format.format(sat)}`;
   }
-  return `${sat.getDate()} ${RO_MONTHS_SHORT[sat.getMonth()]} – ${sun.getDate()} ${RO_MONTHS_SHORT[sun.getMonth()]}`;
+  return `${sat.getDate()} ${format.format(sat)} – ${sun.getDate()} ${format.format(sun)}`;
 }
 
-function weekendSubtitle(w: WeekendPick): string {
-  if (w.label.includes("/")) return w.label.split(" ").slice(1).join(" ") || "Sam / Dum";
-  return "Sam · Dum";
+function weekendSubtitle(w: WeekendPick, fallback: string): string {
+  if (w.label.includes("/")) return w.label.split(" ").slice(1).join(" ") || fallback;
+  return fallback;
 }
 
 type Props = {
@@ -50,6 +37,9 @@ export function AvailabilityWeekendsPanel({
   accentColor,
   onSelect,
 }: Props) {
+  const locale = useLocale();
+  const tPage = useTranslations("admin.availability");
+  const tCommon = useTranslations("admin.common");
   const surface = ganttStaySurface(accentColor, false);
 
   const slots = useMemo(() => {
@@ -66,13 +56,13 @@ export function AvailabilityWeekendsPanel({
     <section
       className="avail-weekends-panel"
       style={panelStyle}
-      aria-label="Weekenduri libere"
+      aria-label={tPage("freeWeekends")}
     >
       <header className="avail-weekends-panel__head">
         <div className="avail-weekends-panel__titles">
-          <h3 className="avail-weekends-panel__title">Weekenduri libere</h3>
+          <h3 className="avail-weekends-panel__title">{tPage("freeWeekends")}</h3>
           <p className="avail-weekends-panel__sub">
-            Următoarele 4 weekenduri cu ≥2 camere libere (sâmbătă + duminică)
+            {tPage("freeWeekendsSubtitle")}
           </p>
         </div>
         <span
@@ -127,20 +117,20 @@ export function AvailabilityWeekendsPanel({
                 .join(" ")}
               style={cardStyle}
               onClick={() => onSelect(w.saturday_iso)}
-              title={`${weekendRangeTitle(w)} · ${w.min_free_rooms} camere libere`}
+              title={`${weekendRangeTitle(w, locale)} · ${w.min_free_rooms} ${tPage("freeRooms")}`}
             >
               <span className="avail-weekend-card__main">
                 {isNext && (
-                  <span className="avail-weekend-card__flag">Următor</span>
+                  <span className="avail-weekend-card__flag">{tCommon("next")}</span>
                 )}
                 <span className="avail-weekend-card__range">
-                  {weekendRangeTitle(w)}
+                  {weekendRangeTitle(w, locale)}
                 </span>
-                <span className="avail-weekend-card__dow">{weekendSubtitle(w)}</span>
+                <span className="avail-weekend-card__dow">{weekendSubtitle(w, tPage("satSun"))}</span>
               </span>
               <span className="avail-weekend-card__count" aria-hidden>
                 {w.min_free_rooms}
-                <span className="avail-weekend-card__count-unit">cam</span>
+                <span className="avail-weekend-card__count-unit">{tCommon("roomsShort")}</span>
               </span>
               <span className="gantt-stay__end-tab avail-weekend-card__tab" aria-hidden>
                 <span className="gantt-stay__end-tab-arrow">›</span>

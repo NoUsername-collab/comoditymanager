@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { RoomDashboard } from "@/services/room-dashboard";
 import { getBuildingTheme } from "@/lib/building-theme";
 import { AC_LABELS } from "@/lib/admin-ui";
@@ -22,6 +23,7 @@ export function RoomsBuildingSection({
   rooms: RoomDashboard[];
   viewDateLabel: string;
 }) {
+  const tCommon = useTranslations("admin.common");
   const [open, setOpen] = useState(true);
   const theme = getBuildingTheme(acMode, buildingName);
   const active = rooms.filter((r) => r.is_active);
@@ -47,14 +49,14 @@ export function RoomsBuildingSection({
             <h2 className="text-lg font-semibold text-zinc-900">{buildingName}</h2>
           </div>
           <p className="mt-1 text-sm text-zinc-600">
-            {AC_LABELS[acMode]} · {active.length} camere active
+            {AC_LABELS[acMode]} · {active.length} {tCommon("activeRooms")}
           </p>
         </div>
         <Link
           href={`/admin/rooms/new?building=${buildingId}`}
           className="rounded-lg border border-white/80 bg-white px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-zinc-50"
         >
-          + Cameră
+          + {tCommon("room")}
         </Link>
       </div>
 
@@ -64,7 +66,7 @@ export function RoomsBuildingSection({
           onClick={() => setOpen((v) => !v)}
           className="flex w-full items-center justify-between text-sm font-medium text-zinc-700"
         >
-          <span>Grid camere</span>
+          <span>{tCommon("roomGridTitle")}</span>
           <span className="text-zinc-400">{open ? "▾" : "▸"}</span>
         </button>
 

@@ -72,7 +72,8 @@ export function computeDayAvailability(
   dayNum: number,
   rooms: AvailRoomInput[],
   occupied: OccupiedRange[],
-  counts: DayCounts
+  counts: DayCounts,
+  locale = "ro"
 ): ComputedDay {
   const active = rooms.filter((r) => r.is_active);
   const total = active.length;
@@ -87,7 +88,7 @@ export function computeDayAvailability(
   return {
     iso,
     day: dayNum,
-    weekday: dayInitialFromIso(iso),
+    weekday: dayInitialFromIso(iso, locale),
     free_rooms: free,
     total_rooms: total,
     occupied_rooms: occupiedCount,

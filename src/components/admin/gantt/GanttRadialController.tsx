@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Props = {
   onOpenRequest: () => void;
@@ -30,6 +31,7 @@ export function GanttRadialController({
   onOpenCheckIn,
   onOpenCheckOut,
 }: Props) {
+  const tGantt = useTranslations("admin.gantt");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -54,8 +56,8 @@ export function GanttRadialController({
   const actions: RadialAction[] = [
     {
       id: "move",
-      label: "Muta",
-      title: "Muta camera",
+      label: tGantt("radial.move"),
+      title: tGantt("radial.moveTitle"),
       side: "left",
       kind: "manage",
       onClick: onOpenMove,
@@ -65,7 +67,7 @@ export function GanttRadialController({
           {
             id: "checkin" as const,
             label: "In",
-            title: "Check-in operativ",
+            title: tGantt("radial.checkInTitle"),
             side: "left" as const,
             kind: "manage" as const,
             onClick: onOpenCheckIn,
@@ -77,7 +79,7 @@ export function GanttRadialController({
           {
             id: "checkout" as const,
             label: "Out",
-            title: "Check-out operativ",
+            title: tGantt("radial.checkOutTitle"),
             side: "left" as const,
             kind: "manage" as const,
             onClick: onOpenCheckOut,
@@ -86,32 +88,32 @@ export function GanttRadialController({
       : []),
     {
       id: "hold",
-      label: "Hold",
-      title: "Adauga hold",
+      label: tGantt("radial.hold"),
+      title: tGantt("radial.holdTitle"),
       side: "left",
       kind: "create",
       onClick: onOpenHold,
     },
     {
       id: "request",
-      label: "Cerere",
-      title: "Cerere noua",
+      label: tGantt("radial.request"),
+      title: tGantt("radial.requestTitle"),
       side: "right",
       kind: "create",
       onClick: onOpenRequest,
     },
     {
       id: "booking",
-      label: "Cazare",
-      title: "Cazare directa",
+      label: tGantt("radial.booking"),
+      title: tGantt("radial.bookingTitle"),
       side: "right",
       kind: "create",
       onClick: onOpenReception,
     },
     {
       id: "block",
-      label: "Blocare",
-      title: "Blocare",
+      label: tGantt("radial.block"),
+      title: tGantt("radial.blockTitle"),
       side: "right",
       kind: "create",
       onClick: onOpenBlock,
@@ -157,7 +159,7 @@ export function GanttRadialController({
         type="button"
         className="gantt-radial__core"
         aria-expanded={open}
-        aria-label={open ? "Închide controllerul rapid" : "Deschide controllerul rapid"}
+        aria-label={open ? tGantt("radial.closeController") : tGantt("radial.openController")}
         aria-pressed={open}
         onClick={() => setOpen((value) => !value)}
       >
@@ -167,7 +169,7 @@ export function GanttRadialController({
             <span className="gantt-radial__door" />
           </span>
         </span>
-        <span className="sr-only">Casa</span>
+        <span className="sr-only">{tGantt("radial.home")}</span>
       </button>
 
       <div className="gantt-radial__rail gantt-radial__rail--right">

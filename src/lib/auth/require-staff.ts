@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import {
   getStaffRole,
@@ -14,12 +14,12 @@ export async function requireStaff() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("Trebuie să fii autentificat");
+    throw new Error("auth.login_required");
   }
 
   const role = getStaffRole(user);
   if (!role) {
-    throw new Error("Cont neautorizat");
+    throw new Error("auth.unauthorized_account");
   }
 
   return { user, role, supabase };
@@ -28,7 +28,7 @@ export async function requireStaff() {
 export async function requireStaffRole(allowed: StaffRole[]) {
   const ctx = await requireStaff();
   if (!allowed.includes(ctx.role)) {
-    throw new Error("Acces interzis pentru acest rol");
+    throw new Error("auth.role_forbidden");
   }
   return ctx;
 }
@@ -62,7 +62,7 @@ export async function requireLocationAdmin() {
   const ctx = await requireStaff();
   const unlocked = await isAdminLocationUnlocked();
   if (!unlocked) {
-    redirect("/admin/settings?location=locked");
+    await redirect("/admin/settings?location=locked");
   }
   return ctx;
 }
@@ -72,6 +72,6 @@ export async function guardOperatorRoute(pathname: string) {
   if (!user) return;
   const role = getStaffRole(user);
   if (role === "operator" && pathBlockedForOperator(pathname)) {
-    redirect("/admin/settings?location=forbidden");
+    await redirect("/admin/settings?location=forbidden");
   }
 }

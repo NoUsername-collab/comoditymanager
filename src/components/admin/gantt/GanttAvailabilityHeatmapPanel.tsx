@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 
 export function GanttAvailabilityHeatmapPanel({
@@ -20,13 +21,14 @@ export function GanttAvailabilityHeatmapPanel({
   roomCountLabel: string;
   children: React.ReactNode;
 }) {
+  const tCommon = useTranslations("admin.common");
   const router = useRouter();
 
   return (
     <AdminFloatingPanel
       open={open}
       onClose={() => router.push(closeHref)}
-      title="Heat map disponibilitate"
+      title={tCommon("availabilityHeatmap")}
       variant="modal"
       width={1280}
       showBackdrop={false}
@@ -43,6 +45,7 @@ export function GanttAvailabilityHeatmapPanel({
               type="button"
               className="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium"
               onClick={() => router.push(prevHref)}
+              aria-label={tCommon("previous")}
             >
               ←
             </button>
@@ -50,6 +53,7 @@ export function GanttAvailabilityHeatmapPanel({
               type="button"
               className="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium"
               onClick={() => router.push(nextHref)}
+              aria-label={tCommon("next")}
             >
               →
             </button>

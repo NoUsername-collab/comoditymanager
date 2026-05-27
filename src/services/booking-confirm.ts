@@ -36,7 +36,7 @@ export async function resolveTotalPriceForConfirm(
   formData: FormData
 ): Promise<number> {
   const ctx = await loadBookingConfirmContext(bookingId);
-  if (!ctx) throw new Error("Cererea nu există");
+  if (!ctx) throw new Error("booking.request_not_found");
 
   const idSet = new Set(roomIds);
   const selected = ctx.availableRooms.filter((r) => idSet.has(r.id));
@@ -47,7 +47,7 @@ export async function resolveTotalPriceForConfirm(
   );
 
   if (!Number.isFinite(standard) || standard <= 0) {
-    throw new Error("Prețul calculat este invalid — verifică prețurile camerelor");
+    throw new Error("booking.calculated_price_invalid_check_room_prices");
   }
 
   if (formData.get("modify_price") !== "on") {
@@ -56,7 +56,7 @@ export async function resolveTotalPriceForConfirm(
 
   const adjustment = Number(formData.get("price_adjustment") ?? 0);
   if (!Number.isFinite(adjustment)) {
-    throw new Error("Introdu un supliment valid (RON)");
+    throw new Error("booking.enter_valid_adjustment_ron");
   }
 
   return Math.round((standard + adjustment) * 100) / 100;
@@ -141,24 +141,20 @@ export async function assertRoomsAssignableForBooking(
   roomIds: string[]
 ): Promise<void> {
   const ctx = await loadBookingConfirmContext(bookingId);
-  if (!ctx) throw new Error("Cererea nu există");
+  if (!ctx) throw new Error("booking.request_not_found");
 
   if (roomIds.length === 0) {
-    throw new Error("Selectează cel puțin o cameră");
+    throw new Error("booking.select_at_least_one_room");
   }
 
   const idSet = new Set(roomIds);
   const selected = ctx.availableRooms.filter((r) => idSet.has(r.id));
 
   if (selected.length !== roomIds.length) {
-    throw new Error(
-      "Una sau mai multe camere nu mai sunt disponibile — reîncarcă pagina"
-    );
+    throw new Error("booking.one_or_more_rooms_unavailable_reload");
   }
 
   if (!canRoomsHostGuests(ctx.guestCount, selected)) {
-    throw new Error(
-      "Camerele selectate nu pot găzdui toți oaspeții pentru această perioadă"
-    );
+    throw new Error("booking.selected_rooms_cannot_host_all_guests");
   }
 }

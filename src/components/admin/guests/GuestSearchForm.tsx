@@ -1,19 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { GuestSearchFilter } from "@/domain/guest/types";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
-
-const FILTER_OPTIONS: { value: GuestSearchFilter; label: string }[] = [
-  { value: "all", label: "Toți" },
-  { value: "flagged", label: "Flag-uiți" },
-  { value: "blacklist", label: "Blacklist" },
-  { value: "watchlist", label: "Watchlist" },
-  { value: "recent", label: "Recenți" },
-  { value: "rated", label: "Cu review" },
-  { value: "unreviewed", label: "Fără review" },
-  { value: "loyal", label: "Fideli" },
-];
 
 export function GuestSearchForm({
   defaultQuery,
@@ -22,9 +12,21 @@ export function GuestSearchForm({
   defaultQuery?: string;
   defaultFilter?: GuestSearchFilter;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
   const router = useRouter();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
+  const filterOptions: { value: GuestSearchFilter; label: string }[] = [
+    { value: "all", label: tGuests("filters.all") },
+    { value: "flagged", label: tGuests("filters.flagged") },
+    { value: "blacklist", label: tGuests("filters.blacklist") },
+    { value: "watchlist", label: tGuests("filters.watchlist") },
+    { value: "recent", label: tGuests("filters.recent") },
+    { value: "rated", label: tGuests("filters.rated") },
+    { value: "unreviewed", label: tGuests("filters.unreviewed") },
+    { value: "loyal", label: tGuests("filters.loyal") },
+  ];
 
   return (
     <form
@@ -46,7 +48,7 @@ export function GuestSearchForm({
         name="q"
         type="search"
         defaultValue={defaultQuery ?? ""}
-        placeholder="Caută nume, email, telefon…"
+        placeholder={tGuests("searchPlaceholder")}
         className="min-w-[220px] flex-1 border border-zinc-300 px-3 py-2 text-sm"
         disabled={pending}
       />
@@ -56,7 +58,7 @@ export function GuestSearchForm({
         className="border border-zinc-300 bg-white px-3 py-2 text-sm"
         disabled={pending}
       >
-        {FILTER_OPTIONS.map((option) => (
+        {filterOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
@@ -67,7 +69,7 @@ export function GuestSearchForm({
         disabled={pending}
         className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
       >
-        {pending ? "…" : "Caută"}
+        {pending ? "…" : tCommon("search")}
       </button>
       {(defaultQuery || defaultFilter !== "all") && (
         <button
@@ -80,7 +82,7 @@ export function GuestSearchForm({
           }}
           className="rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-60"
         >
-          Resetează
+          {tCommon("reset")}
         </button>
       )}
     </form>

@@ -2,76 +2,80 @@ import type { AdminDashboardStats } from "@/services/admin-dashboard";
 import type { TodayBoard } from "@/services/today-board";
 import type { MonthComparison } from "@/domain/statistics/month-compare";
 
-export function buildHomeMoodLine(input: {
-  stats: AdminDashboardStats;
-  cereriCount: number;
-  todayBoard: TodayBoard | null;
-}): string {
+type T = (key: string, values?: Record<string, string | number | Date>) => string;
+
+export function buildHomeMoodLine(
+  t: T,
+  input: {
+    stats: AdminDashboardStats;
+    cereriCount: number;
+    todayBoard: TodayBoard | null;
+  }
+): string {
   const { stats, cereriCount, todayBoard } = input;
 
   if (cereriCount > 0) {
     return cereriCount === 1
-      ? "Ai o cerere de procesat — oaspetele așteaptă răspunsul tău."
-      : `Ai ${cereriCount} cereri în așteptare — recepția are de lucru.`;
+      ? t("moodOneRequest")
+      : t("moodManyRequests", { count: cereriCount });
   }
 
   const arrivals = todayBoard?.arrivals.length ?? 0;
   if (arrivals >= 3) {
-    return `Zi aglomerată: ${arrivals} sosiri confirmate azi. Mult succes la check-in!`;
+    return t("moodBusyArrivals", { count: arrivals });
   }
   if (arrivals > 0) {
-    return `Azi ai ${arrivals} sosir${arrivals === 1 ? "e" : "i"} — zi de primire oaspeți.`;
+    return t("moodSomeArrivals", { count: arrivals });
   }
 
   if (stats.weekOccupancyPct >= 75) {
-    return "Săptămână plină — camerele se mișcă bine. Continuă tot așa!";
+    return t("moodFullWeek");
   }
 
   if (stats.occupancyTonightPct === 0 && stats.activeRooms > 0) {
-    return "Seară liniștită — toate camerele sunt libere diseară. Poți respira.";
+    return t("moodQuietEvening");
   }
 
   if (stats.freeTonight === stats.activeRooms && stats.activeRooms > 0) {
-    return "Nicio cameră ocupată diseară — perfect pentru pregătiri sau odihnă.";
+    return t("moodAllFree");
   }
 
-  return "Totul arată bine la recepție. O zi bună la Casa Emil!";
+  return t("moodDefault");
 }
 
-export function buildHomeBriefing(input: {
-  todayBoard: TodayBoard | null;
-  cereriCount: number;
-}): string | null {
+export function buildHomeBriefing(
+  t: T,
+  input: {
+    todayBoard: TodayBoard | null;
+    cereriCount: number;
+  }
+): string | null {
   const { todayBoard, cereriCount } = input;
   if (!todayBoard) return null;
 
   const parts: string[] = [];
   if (todayBoard.arrivals.length > 0) {
     parts.push(
-      `${todayBoard.arrivals.length} sosir${todayBoard.arrivals.length === 1 ? "e" : "i"}`
+      t("briefingArrivals", { count: todayBoard.arrivals.length })
     );
   }
   if (todayBoard.departures.length > 0) {
     parts.push(
-      `${todayBoard.departures.length} plecar${todayBoard.departures.length === 1 ? "e" : "i"}`
+      t("briefingDepartures", { count: todayBoard.departures.length })
     );
   }
   if (todayBoard.roomsToClean.length > 0) {
-    parts.push(
-      `${todayBoard.roomsToClean.length} de curățat`
-    );
+    parts.push(t("briefingClean", { count: todayBoard.roomsToClean.length }));
   }
   if (cereriCount > 0) {
-    parts.push(
-      `${cereriCount} cerer${cereriCount === 1 ? "ă" : "i"} nou${cereriCount === 1 ? "ă" : "i"}`
-    );
+    parts.push(t("briefingRequests", { count: cereriCount }));
   }
 
   if (parts.length === 0) {
-    return "Briefing azi: niciun check-in/out programat, nicio cerere în așteptare.";
+    return t("briefingEmpty");
   }
 
-  return `Briefing azi: ${parts.join(" · ")}.`;
+  return `${t("briefingPrefix")} ${parts.join(" · ")}.`;
 }
 
 export type HomeMilestone = {
@@ -80,43 +84,48 @@ export type HomeMilestone = {
   label: string;
 };
 
-export function buildHomeMilestones(input: {
-  totalConfirmed: number;
-  stats: AdminDashboardStats;
-  monthCompare: MonthComparison | null;
-  cereriCount: number;
-}): HomeMilestone[] {
+export function buildHomeMilestones(
+  t: T,
+  input: {
+    totalConfirmed: number;
+    stats: AdminDashboardStats;
+    monthCompare: MonthComparison | null;
+    cereriCount: number;
+  }
+): HomeMilestone[] {
   const out: HomeMilestone[] = [];
   const { totalConfirmed, stats, monthCompare, cereriCount } = input;
 
   if (totalConfirmed >= 1) {
-    out.push({ id: "first", emoji: "🎉", label: "Prima confirmare" });
+    out.push({ id: "first", emoji: "🎉", label: t("milestoneFirst") });
   }
   if (totalConfirmed >= 10) {
-    out.push({ id: "ten", emoji: "🏅", label: "10 sejururi confirmate" });
+    out.push({ id: "ten", emoji: "🏅", label: t("milestoneTen") });
   }
   if (totalConfirmed >= 50) {
-    out.push({ id: "fifty", emoji: "⭐", label: "50 sejururi confirmate" });
+    out.push({ id: "fifty", emoji: "⭐", label: t("milestoneFifty") });
   }
   if (totalConfirmed >= 100) {
-    out.push({ id: "hundred", emoji: "💫", label: "100 sejururi confirmate" });
+    out.push({ id: "hundred", emoji: "💫", label: t("milestoneHundred") });
   }
   if (monthCompare && monthCompare.current.occupancyPct >= 50) {
     out.push({
       id: "month-half",
       emoji: "📈",
-      label: `${monthCompare.current.occupancyPct}% ocupare luna asta`,
+      label: t("milestoneMonthHalf", {
+        pct: monthCompare.current.occupancyPct,
+      }),
     });
   }
   if (stats.weekOccupancyPct >= 80) {
     out.push({
       id: "week-full",
       emoji: "🔥",
-      label: "Săptămână la capacitate",
+      label: t("milestoneWeekFull"),
     });
   }
   if (cereriCount === 0 && totalConfirmed > 0) {
-    out.push({ id: "inbox-zero", emoji: "✨", label: "Inbox zero — fără cereri" });
+    out.push({ id: "inbox-zero", emoji: "✨", label: t("milestoneInboxZero") });
   }
 
   return out.slice(-5);

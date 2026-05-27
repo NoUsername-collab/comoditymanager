@@ -1,13 +1,16 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { RoomDashboard } from "@/services/room-dashboard";
 import { getBuildingTheme } from "@/lib/building-theme";
 import { AC_LABELS, ROOM_STATUS, occupancyCaption } from "@/lib/admin-ui";
 import { OccupancyRow } from "@/components/admin/ui/OccupancyRow";
 import { StayBlock } from "@/components/admin/ui/StayBlock";
 import { DeleteConfirmButton } from "./DeleteConfirmButton";
-import { deleteRoomFromBuildingAction } from "@/app/admin/(panel)/buildings/actions";
+import { deleteRoomFromBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 
 export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
+  const tCommon = useTranslations("admin.common");
+  const tRooms = useTranslations("admin.rooms");
   const theme = getBuildingTheme(room.building_ac_mode, room.building_name);
   const st = ROOM_STATUS[room.status_on_date];
 
@@ -56,18 +59,18 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
             href={`/admin/rooms/${room.id}/edit`}
             className="rounded-lg border border-white/80 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50"
           >
-            Editează
+            {tCommon("edit")}
           </Link>
         </header>
 
         <div className="mt-3 flex flex-wrap gap-4 text-sm">
           <span>
-            <strong className="text-zinc-800">{room.capacity_base}</strong> pers.
+            <strong className="text-zinc-800">{room.capacity_base}</strong> {tCommon("personsShort")}
           </span>
-          <span>{room.has_ac ? "AC" : "Fără AC"}</span>
-          <span>{room.price_per_night} RON/noapte</span>
+          <span>{room.has_ac ? tCommon("ac") : tCommon("withoutAc")}</span>
+          <span>{room.price_per_night} {tCommon("ronPerNight")}</span>
           {room.allows_extra_beds && (
-            <span className="text-zinc-500">Pat extra</span>
+            <span className="text-zinc-500">{tRooms("extraBed")}</span>
           )}
         </div>
       </div>
@@ -80,23 +83,23 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
           barTrack={theme.barBg}
           caption={
             room.status_on_date === "occupied"
-              ? room.guest_on_date ?? room.current_stay?.guest_name ?? "Ocupată"
+              ? room.guest_on_date ?? room.current_stay?.guest_name ?? tCommon("occupied")
               : room.status_on_date === "pending"
-                ? room.guest_on_date ?? "Cerere"
+                ? room.guest_on_date ?? tCommon("request")
                 : room.status_on_date === "inactive"
-                  ? "Inactivă"
-                  : "Liberă"
+                  ? tCommon("inactive")
+                  : tCommon("free")
           }
         />
         <OccupancyRow
-          label="7 zile"
+          label={tCommon("sevenDays")}
           pct={room.week_occupancy_pct}
           accent={theme.accent}
           barTrack={theme.barBg}
           caption={occupancyCaption(room.week_occupancy_pct)}
         />
         <OccupancyRow
-          label="Luna curentă"
+          label={tCommon("currentMonth")}
           pct={room.month_occupancy_pct}
           accent={theme.accent}
           barTrack={theme.barBg}
@@ -108,19 +111,19 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
         <StayBlock
           title={room.view_date_label}
           stay={room.current_stay}
-          empty={`Liberă — niciun oaspete pe ${room.view_date_label.toLowerCase()}.`}
+          empty={tRooms("freeNoGuestOnDate", { date: room.view_date_label.toLowerCase() })}
         />
         <StayBlock
-          title="Următorul sejur"
+          title={tRooms("nextStay")}
           stay={room.next_stay}
-          empty="Nicio rezervare următoare."
+          empty={tRooms("noNextBooking")}
           muted
         />
 
         <div className="border-t border-zinc-100 pt-3">
           <DeleteConfirmButton
-            label="Șterge camera"
-            confirmMessage={`Ștergi „${room.name}”?`}
+            label={tCommon("deleteRoom")}
+            confirmMessage={tRooms("deleteRoomConfirm", { room: room.name })}
             formAction={deleteRoomFromBuildingAction}
             hiddenFields={{ room_id: room.id, building_id: room.building_id }}
           />

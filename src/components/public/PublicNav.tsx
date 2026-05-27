@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -10,9 +10,10 @@ function isActive(pathname: string, href: string): boolean {
 
 export function PublicNav() {
   const pathname = usePathname();
+  const t = useTranslations("public.nav");
 
   return (
-    <nav className="public-header__nav" aria-label="Navigare principală">
+    <nav className="public-header__nav" aria-label={t("mainAria")}>
       <Link
         href="/"
         className={[
@@ -22,7 +23,7 @@ export function PublicNav() {
           .filter(Boolean)
           .join(" ")}
       >
-        Acasă
+        {t("home")}
       </Link>
       <Link
         href="/confidentialitate"
@@ -34,10 +35,10 @@ export function PublicNav() {
           .filter(Boolean)
           .join(" ")}
       >
-        GDPR
+        {t("gdpr")}
       </Link>
       <Link href="/calendar" className="public-header__link public-header__cta site-cta">
-        Rezervare
+        {t("book")}
       </Link>
     </nav>
   );

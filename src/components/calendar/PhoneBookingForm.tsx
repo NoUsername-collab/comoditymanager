@@ -1,8 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useActionState, useState } from "react";
-import { submitPhoneBookingAction } from "@/app/(public)/calendar/actions";
+import { useTranslations } from "next-intl";
+import { submitPhoneBookingAction } from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { addDays, todayIso } from "@/lib/stay-dates";
@@ -15,6 +16,9 @@ export function PhoneBookingForm({
   checkOutTime: string;
 }) {
   const router = useRouter();
+  const t = useTranslations("public.phoneForm");
+  const tForm = useTranslations("public.form");
+  const tCommon = useTranslations("common");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const today = todayIso();
@@ -43,7 +47,9 @@ export function PhoneBookingForm({
         }
         return { ok: true, saved: true };
       } catch (e) {
-        return { error: e instanceof Error ? e.message : "Eroare" };
+        return {
+          error: e instanceof Error ? e.message : tCommon("error"),
+        };
       }
     },
     null
@@ -52,7 +58,7 @@ export function PhoneBookingForm({
   if (state?.ok && state.saved) {
     return (
       <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-        Cerere salvată. Poți aloca camere mai jos sau din listă.
+        {t("savedDetail")}
       </p>
     );
   }
@@ -60,11 +66,11 @@ export function PhoneBookingForm({
   return (
     <form action={formAction} className="space-y-3 text-sm">
       <p className="text-xs text-zinc-500">
-        Recepție · {checkInTime} / {checkOutTime}
+        {t("receptionHours", { checkIn: checkInTime, checkOut: checkOutTime })}
       </p>
       <div className="grid grid-cols-2 gap-2">
         <label>
-          Check-in
+          {tForm("checkIn").replace(" *", "")}
           <input
             name="check_in"
             type="date"
@@ -77,7 +83,7 @@ export function PhoneBookingForm({
           <DateWeekdayHint iso={checkIn} />
         </label>
         <label>
-          Check-out
+          {tForm("checkOut").replace(" *", "")}
           <input
             name="check_out"
             type="date"
@@ -94,31 +100,31 @@ export function PhoneBookingForm({
       <GuestNameFields compact />
       <div className="grid grid-cols-2 gap-2">
         <label>
-          Telefon
+          {tCommon("phone")}
           <input name="guest_phone" type="tel" className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
         </label>
         <label>
-          Email (opț.)
+          {t("emailOptional")}
           <input name="guest_email" type="email" className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
         </label>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <label>
-          Adulți
+          {tForm("adults").replace(" *", "")}
           <input name="num_adults" type="number" min={1} defaultValue={2} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
         </label>
         <label>
-          Copii
+          {tForm("children")}
           <input name="num_children" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
         </label>
       </div>
       <label className="block">
-        Notițe
-        <input name="notes" placeholder="ex. sunat la 10:30" className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
+        {t("notesLabel")}
+        <input name="notes" placeholder={t("notesPlaceholder")} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
       </label>
       <label className="flex items-center gap-2 text-xs">
         <input type="checkbox" name="confirm_now" className="rounded" />
-        Merg direct la alocare camere
+        {t("confirmAllocate")}
       </label>
       {state?.error && <p className="text-red-600">{state.error}</p>}
       <button
@@ -126,7 +132,7 @@ export function PhoneBookingForm({
         disabled={pending}
         className="rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium text-white disabled:opacity-50"
       >
-        {pending ? "Salvez…" : "Înregistrează cererea"}
+        {pending ? t("saving") : t("submit")}
       </button>
     </form>
   );

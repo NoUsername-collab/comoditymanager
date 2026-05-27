@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { useAdminPendingOptional } from "@/components/admin/feedback/AdminPendingProvider";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
@@ -97,6 +98,9 @@ export function GanttDragCreateLayer({
   pinnedSelection,
   onCtrlDragEnd,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const { openMenu } = useGanttContextMenu();
   const pendingCtx = useAdminPendingOptional();
   const rowRef = useRef<HTMLDivElement>(null);
@@ -189,7 +193,7 @@ export function GanttDragCreateLayer({
         roomIds: uniqueRooms,
         roomName:
           uniqueRooms.length > 1
-            ? `${uniqueRooms.length} camere`
+            ? `${uniqueRooms.length} ${tCommon("rooms")}`
             : roomName,
         checkIn: interval.checkIn,
         checkOut: interval.checkOut,
@@ -456,7 +460,7 @@ export function GanttDragCreateLayer({
 
   const dragPeriod =
     dragInterval != null
-      ? formatStayPeriod(dragInterval.checkIn, dragInterval.checkOut, true)
+      ? formatStayPeriod(dragInterval.checkIn, dragInterval.checkOut, locale, true)
       : "";
 
   return (
@@ -475,7 +479,7 @@ export function GanttDragCreateLayer({
       onPointerMove={onPointerMoveRow}
       onPointerUp={onPointerUpRow}
       onPointerCancel={onPointerCancelRow}
-      aria-label={`Trage spre dreapta pe ${roomName} pentru interval nou · ține Ctrl la start pentru selecție multi-cameră · click dreapta pentru meniu`}
+      aria-label={tGantt("dragCreate.aria", { roomName })}
     >
       <div className="pointer-events-none absolute inset-0">{renderGrid}</div>
 
@@ -499,11 +503,11 @@ export function GanttDragCreateLayer({
         >
           <span className="gantt-drag-preview__label truncate px-1.5">
             {drag.selectionMode === "ctrl"
-              ? `Ctrl · ${drag.roomCount} cam · `
+              ? tGantt("dragCreate.ctrlRooms", { count: drag.roomCount })
               : drag.roomCount > 1
-                ? `${drag.roomCount} cam · `
+                ? tGantt("dragCreate.rooms", { count: drag.roomCount })
                 : ""}
-            {nights === 1 ? "1 noapte" : `${nights} nopți`}
+            {tGantt("quick.nightsLabel", { count: nights })}
             {ghost.widthPct > 8 ? ` · ${dragPeriod}` : ""}
           </span>
         </div>

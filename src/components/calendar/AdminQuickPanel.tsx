@@ -1,9 +1,10 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { redirect } from "next/navigation";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { listCereriNoi } from "@/services/bookings";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { PhoneBookingForm } from "./PhoneBookingForm";
+import { getTranslations } from "next-intl/server";
 
 export async function AdminQuickPanel({
   checkInTime,
@@ -12,9 +13,10 @@ export async function AdminQuickPanel({
   checkInTime: string;
   checkOutTime: string;
 }) {
+  const t = await getTranslations("public.staffPanel");
   const admin = await getAdminUser();
   if (!admin) {
-    redirect("/admin/login?next=/receptie");
+    await redirect("/admin/login?next=/receptie");
   }
 
   let cereri: Awaited<ReturnType<typeof listCereriNoi>> = [];
@@ -31,22 +33,22 @@ export async function AdminQuickPanel({
     >
       <div className="border-b border-zinc-700/80 px-4 py-3">
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-          Staff
+          {t("badge")}
         </p>
-        <h2 className="text-sm font-semibold">Recepție rapidă</h2>
+        <h2 className="text-sm font-semibold">{t("title")}</h2>
       </div>
 
       <div className="grid gap-4 p-4 lg:grid-cols-2">
         <div className="rounded-lg bg-zinc-800/50 p-4">
           <p className="mb-3 text-xs font-medium text-zinc-300">
-            Rezervare telefon / walk-in
+            {t("phoneTitle")}
           </p>
           <PhoneBookingForm checkInTime={checkInTime} checkOutTime={checkOutTime} />
         </div>
 
         <div className="rounded-lg bg-zinc-800/50 p-4">
           <p className="mb-3 flex items-center justify-between text-xs font-medium text-zinc-300">
-            <span>De confirmat</span>
+            <span>{t("pendingTitle")}</span>
             {cereri.length > 0 && (
               <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
                 {cereri.length}
@@ -54,7 +56,7 @@ export async function AdminQuickPanel({
             )}
           </p>
           {cereri.length === 0 ? (
-            <p className="text-xs text-zinc-500">Nicio cerere nouă.</p>
+            <p className="text-xs text-zinc-500">{t("noRequests")}</p>
           ) : (
             <ul className="max-h-48 space-y-2 overflow-y-auto">
               {cereri.map((c) => (
@@ -72,7 +74,7 @@ export async function AdminQuickPanel({
                     href={`/calendar/confirm/${c.id}`}
                     className="shrink-0 rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-500"
                   >
-                    Confirmă
+                    {t("confirm")}
                   </Link>
                 </li>
               ))}
@@ -82,7 +84,7 @@ export async function AdminQuickPanel({
             href="/admin/calendar"
             className="mt-3 inline-block text-[11px] text-zinc-400 underline hover:text-zinc-200"
           >
-            Calendar complet →
+            {t("fullCalendar")}
           </Link>
         </div>
       </div>

@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { updateGuestProfileControlsAction } from "@/app/admin/(panel)/guests/actions";
+import { useTranslations } from "next-intl";
+import { updateGuestProfileControlsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import type { GuestProfileRow } from "@/domain/guest/types";
 import {
   GUEST_NEGATIVE_TRAITS,
-  GUEST_NEGATIVE_TRAIT_LABELS,
   GUEST_POSITIVE_TRAITS,
-  GUEST_POSITIVE_TRAIT_LABELS,
 } from "@/domain/guest/reputation";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -63,6 +62,20 @@ export function GuestProfileControlsForm({
   guestId: string;
   profile: GuestProfileRow | null;
 }) {
+  const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
+  const positiveLabels: Record<string, string> = Object.fromEntries(
+    GUEST_POSITIVE_TRAITS.map((trait) => [
+      trait,
+      tGuests(`traits.positive.${trait}` as never),
+    ])
+  );
+  const negativeLabels: Record<string, string> = Object.fromEntries(
+    GUEST_NEGATIVE_TRAITS.map((trait) => [
+      trait,
+      tGuests(`traits.negative.${trait}` as never),
+    ])
+  );
   const [noteOpen, setNoteOpen] = useState(false);
   const [manualNote, setManualNote] = useState(profile?.manual_note ?? "");
 
@@ -77,22 +90,22 @@ export function GuestProfileControlsForm({
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="space-y-1 text-sm">
-          <span className="font-bold">Stare profil</span>
+          <span className="font-bold">{tGuests("profileControls.profileState")}</span>
           <select
             name="flag_level"
             defaultValue={profile?.flag_level === "watchlist" ? "watchlist" : "normal"}
             className="w-full border border-zinc-300 bg-white px-3 py-2"
           >
-            <option value="normal">Normal</option>
-            <option value="watchlist">Watchlist</option>
+            <option value="normal">{tGuests("profileControls.normal")}</option>
+            <option value="watchlist">{tGuests("profileControls.watchlist")}</option>
           </select>
           <span className="block text-xs text-zinc-500">
-            Blacklist-ul se gestionează separat din panoul dedicat.
+            {tGuests("profileControls.blacklistManagedSeparately")}
           </span>
         </label>
 
         <label className="space-y-1 text-sm">
-          <span className="font-bold">Ajustare trust</span>
+          <span className="font-bold">{tGuests("review.trustAdjustment")}</span>
           <input
             name="manual_trust_adjustment"
             type="number"
@@ -104,7 +117,7 @@ export function GuestProfileControlsForm({
         </label>
 
         <label className="space-y-1 text-sm">
-          <span className="font-bold">Ajustare fidelitate</span>
+          <span className="font-bold">{tGuests("review.loyaltyAdjustment")}</span>
           <input
             name="manual_loyalty_adjustment"
             type="number"
@@ -118,26 +131,26 @@ export function GuestProfileControlsForm({
 
       <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
         <div>
-          <p className="text-sm font-bold">Trăsături manuale</p>
+          <p className="text-sm font-bold">{tGuests("profileControls.manualTraits")}</p>
           <p className="text-xs text-zinc-500">
-            Poți selecta mai multe. Se combină cu trăsăturile venite din review-urile recente.
+            {tGuests("profileControls.manualTraitsHint")}
           </p>
         </div>
 
         <TraitChecklist
-          title="Trăsături bune"
+          title={tGuests("review.goodTraits")}
           name="manual_positive_traits"
           options={GUEST_POSITIVE_TRAITS}
-          labels={GUEST_POSITIVE_TRAIT_LABELS}
+          labels={positiveLabels}
           selected={profile?.manual_positive_traits ?? []}
           tone="good"
         />
 
         <TraitChecklist
-          title="Trăsături de atenție"
+          title={tGuests("profileControls.attentionTraits")}
           name="manual_negative_traits"
           options={GUEST_NEGATIVE_TRAITS}
-          labels={GUEST_NEGATIVE_TRAIT_LABELS}
+          labels={negativeLabels}
           selected={profile?.manual_negative_traits ?? []}
           tone="bad"
         />
@@ -146,35 +159,37 @@ export function GuestProfileControlsForm({
       <input type="hidden" name="manual_note" value={manualNote} readOnly />
 
       <div className="space-y-2 text-sm">
-        <p className="font-bold">Notă internă despre profil</p>
+        <p className="font-bold">{tGuests("profileControls.internalProfileNote")}</p>
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={() => setNoteOpen(true)}
             className="admin-cereri-fill px-4 py-2 text-sm font-medium"
           >
-            {manualNote.trim() ? "Editează nota profilului" : "Adaugă notă de profil"}
+            {manualNote.trim()
+              ? tGuests("profileControls.editProfileNote")
+              : tGuests("profileControls.addProfileNote")}
           </button>
           <span className="text-xs text-zinc-500">
             {manualNote.trim()
-              ? "Există o notă de profil pregătită. Se salvează cu profilul."
-              : "Fără notă de profil momentan."}
+              ? tGuests("profileControls.noteReady")
+              : tGuests("profileControls.noProfileNoteYet")}
           </span>
         </div>
       </div>
 
       <AdminSubmitButton
         type="submit"
-        pendingLabel="Salvez…"
+        pendingLabel={tCommon("saving")}
         className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
       >
-        Salvează profilul clientului
+        {tGuests("profileControls.saveGuestProfile")}
       </AdminSubmitButton>
 
       <AdminFloatingPanel
         open={noteOpen}
         onClose={() => setNoteOpen(false)}
-        title="Notă internă despre profil"
+        title={tGuests("profileControls.internalProfileNote")}
         variant="modal"
         width={620}
       >
@@ -183,7 +198,7 @@ export function GuestProfileControlsForm({
             rows={7}
             value={manualNote}
             onChange={(e) => setManualNote(e.target.value)}
-            placeholder="Observații generale, context pentru staff, motiv de watchlist etc."
+            placeholder={tGuests("profileControls.notePlaceholder")}
             className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
           />
           <div className="flex flex-wrap justify-end gap-2">
@@ -192,14 +207,14 @@ export function GuestProfileControlsForm({
               onClick={() => setNoteOpen(false)}
               className="rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700"
             >
-              Închide
+              {tCommon("close")}
             </button>
             <button
               type="button"
               onClick={() => setNoteOpen(false)}
               className="admin-cereri-fill px-4 py-2 text-sm font-medium"
             >
-              Aplică în formular
+              {tGuests("profileControls.applyInForm")}
             </button>
           </div>
         </div>

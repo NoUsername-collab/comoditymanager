@@ -42,10 +42,10 @@ export async function createRoomHolds(input: {
 }): Promise<string[]> {
   const roomIds = [...new Set(input.roomIds.filter(Boolean))];
   if (roomIds.length === 0) {
-    throw new Error("Selectează cel puțin o cameră.");
+    throw new Error("room_holds.select_at_least_one_room");
   }
   if (!isAtLeastOneNight(input.checkIn, input.checkOut)) {
-    throw new Error("Interval invalid — minim o noapte.");
+    throw new Error("room_holds.invalid_interval_min_one_night");
   }
 
   await assertRoomsAvailableForOccupancy(

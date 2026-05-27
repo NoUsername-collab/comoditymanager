@@ -29,24 +29,30 @@ export function parseGanttLayerFilter(raw: string | undefined): GanttLayerFilter
   return "all";
 }
 
-export function layerFilterLabel(layer: GanttLayerFilter): string {
+type LayerFilterTranslator = (key: GanttLayerFilter) => string;
+
+export function layerFilterLabel(
+  layer: GanttLayerFilter,
+  t?: LayerFilterTranslator
+): string {
+  if (t) return t(layer);
   switch (layer) {
     case "all":
-      return "Tot";
+      return "All";
     case "cereri":
-      return "Cereri";
+      return "Requests";
     case "confirmate":
-      return "Confirmate";
+      return "Confirmed";
     case "in_house":
       return "In-house";
     case "trecute":
-      return "Trecute";
+      return "Past";
     case "hold":
       return "Hold";
     case "block":
-      return "Blocări";
+      return "Blocks";
     default:
-      return "Tot";
+      return "All";
   }
 }
 

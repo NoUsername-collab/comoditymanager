@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import type { AvailabilityDashboard as AvailabilityDashboardData } from "@/services/availability-month";
 
 function buildHomeAvailabilityHref(input: {
@@ -31,6 +32,8 @@ export function AvailabilityLightSummary({
   featureFilter: "all" | "ac" | "fridge";
   weekStart: string | null;
 }) {
+  const tSummary = useTranslations("admin.availabilityLightSummary");
+  const tCommon = useTranslations("admin.common");
   const nextWeekend = dashboard.weekend_picks[0] ?? dashboard.next_weekend;
   const homeHref = buildHomeAvailabilityHref({
     year: dashboard.year,
@@ -44,29 +47,32 @@ export function AvailabilityLightSummary({
   const cards = [
     {
       label: "Minim liber",
+      label: tSummary("minFree"),
       value: `${dashboard.kpis.min_free_rooms}`,
       sub: dashboard.kpis.min_free_day_iso
-        ? `pe ${dashboard.kpis.min_free_day_iso}`
-        : "în luna afișată",
+        ? tSummary("onDate", { date: dashboard.kpis.min_free_day_iso })
+        : tSummary("inShownMonth"),
     },
     {
-      label: "Zile pline",
+      label: tSummary("fullDays"),
       value: `${dashboard.kpis.days_full}`,
       sub: dashboard.kpis.vs_prev_full_delta === 0
-        ? "fără schimbare vs luna trecută"
-        : `${dashboard.kpis.vs_prev_full_delta > 0 ? "+" : ""}${dashboard.kpis.vs_prev_full_delta} vs luna trecută`,
+        ? tSummary("noChangeVsLastMonth")
+        : tSummary("deltaVsLastMonth", {
+            delta: `${dashboard.kpis.vs_prev_full_delta > 0 ? "+" : ""}${dashboard.kpis.vs_prev_full_delta}`,
+          }),
     },
     {
-      label: "Cereri nealocate",
+      label: tSummary("unassignedRequests"),
       value: `${dashboard.kpis.unassigned_nights}`,
-      sub: "nopți care cer atenție",
+      sub: tSummary("nightsNeedAttention"),
     },
     {
-      label: "Weekend bun",
-      value: nextWeekend ? nextWeekend.label : "—",
+      label: tSummary("goodWeekend"),
+      value: nextWeekend ? nextWeekend.label : tCommon("emDash"),
       sub: nextWeekend
-        ? `${nextWeekend.min_free_rooms} camere libere minim`
-        : "nu există încă în scan",
+        ? tSummary("minimumFreeRooms", { count: nextWeekend.min_free_rooms })
+        : tSummary("noneInScanYet"),
     },
   ] as const;
 
@@ -75,20 +81,20 @@ export function AvailabilityLightSummary({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-500">
-            Disponibilitate rapidă
+            {tSummary("quickAvailability")}
           </p>
           <h2 className="mt-1 text-lg font-black text-zinc-900">
-            Rezumat {dashboard.title}
+            {tSummary("summaryWithTitle", { title: dashboard.title })}
           </h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Snapshot scurt pentru Gantt. Panoul complet este acum integrat în Acasă.
+            {tSummary("snapshotHint")}
           </p>
         </div>
         <Link
           href={homeHref}
           className="rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-white"
         >
-          Deschide panoul complet →
+          {tSummary("openFullPanel")} →
         </Link>
       </div>
 

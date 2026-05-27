@@ -1,12 +1,15 @@
 "use client";
 
 import type { InvoiceContext } from "@/services/invoice";
+import { useLocale, useTranslations } from "next-intl";
 import { formatRon } from "@/domain/invoice/informal-invoice";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
 export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
+  const tInvoice = useTranslations("admin.informalInvoice");
+  const locale = useLocale();
   const { invoice, pensionName, pensionAddress } = ctx;
-  const issued = new Date().toLocaleDateString("ro-RO", {
+  const issued = new Date().toLocaleDateString(locale, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -24,27 +27,27 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
           onClick={printPage}
           className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
         >
-          Printează / PDF
+          {tInvoice("printPdf")}
         </button>
       </div>
 
       <article className="informal-invoice-sheet overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-lg ring-1 ring-zinc-900/5 print:rounded-none print:border-0 print:shadow-none">
         <header className="border-b border-zinc-100 bg-gradient-to-r from-zinc-900 to-zinc-800 px-8 py-8 text-white print:bg-zinc-900">
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-amber-200/90">
-            Document informativ
+            {tInvoice("documentInformative")}
           </p>
           <h1 className="mt-2 font-serif text-3xl font-semibold">{pensionName}</h1>
           {pensionAddress && (
             <p className="mt-2 text-sm text-zinc-300">{pensionAddress}</p>
           )}
-          <p className="mt-4 text-sm text-zinc-400">Emis: {issued}</p>
+          <p className="mt-4 text-sm text-zinc-400">{tInvoice("issued")}: {issued}</p>
         </header>
 
         <div className="px-8 py-6">
           <div className="grid gap-6 sm:grid-cols-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Client
+                {tInvoice("client")}
               </p>
               <p className="mt-1 text-lg font-semibold text-zinc-900">
                 {invoice.guest_name}
@@ -56,13 +59,13 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
             </div>
             <div className="text-left sm:text-right">
               <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Sejur
+                {tInvoice("stay")}
               </p>
               <p className="mt-1 font-medium text-zinc-900">
                 {formatStayPeriod(invoice.check_in, invoice.check_out, true)}
               </p>
               <p className="text-sm text-zinc-600">
-                {invoice.nights} {invoice.nights === 1 ? "noapte" : "nopți"}
+                {invoice.nights} {invoice.nights === 1 ? tInvoice("night") : tInvoice("nights")}
               </p>
             </div>
           </div>
@@ -71,10 +74,10 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
             <table className="mt-8 w-full text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500">
-                  <th className="pb-2 pr-4">Cameră</th>
-                  <th className="pb-2 pr-4 text-right">RON/noapte</th>
-                  <th className="pb-2 pr-4 text-right">Nopți</th>
-                  <th className="pb-2 text-right">Total</th>
+                  <th className="pb-2 pr-4">{tInvoice("room")}</th>
+                  <th className="pb-2 pr-4 text-right">{tInvoice("ronPerNight")}</th>
+                  <th className="pb-2 pr-4 text-right">{tInvoice("nightsHeader")}</th>
+                  <th className="pb-2 text-right">{tInvoice("total")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -103,18 +106,18 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
             </table>
           ) : (
             <p className="mt-8 rounded-lg border border-dashed border-zinc-200 px-4 py-6 text-center text-sm text-zinc-500">
-              Alocă camere rezervării pentru a calcula liniile de preț.
+              {tInvoice("allocateRoomsToCalculate")}
             </p>
           )}
 
           <div className="mt-8 flex flex-col items-end gap-1 border-t border-zinc-200 pt-6">
             {invoice.uses_recorded_total && invoice.total_price !== invoice.subtotal && (
               <p className="text-sm text-zinc-500">
-                Estimare camere: {formatRon(invoice.subtotal)}
+                {tInvoice("roomsEstimate")}: {formatRon(invoice.subtotal)}
               </p>
             )}
             <p className="text-2xl font-bold tabular-nums text-zinc-900">
-              Total:{" "}
+              {tInvoice("total")}:{" "}
               {invoice.total_price != null
                 ? formatRon(invoice.total_price)
                 : formatRon(invoice.subtotal)}

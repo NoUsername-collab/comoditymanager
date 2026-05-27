@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { mergeGuestsAction } from "@/app/admin/(panel)/guests/actions";
+import { useTranslations } from "next-intl";
+import { mergeGuestsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -20,6 +21,7 @@ export function GuestMergeForm({
 }) {
   const [selected, setSelected] = useState("");
   const { pending } = useAdminPending();
+  const t = useTranslations("admin.guests.mergeForm");
 
   if (duplicates.length === 0) return null;
 
@@ -30,7 +32,7 @@ export function GuestMergeForm({
     >
       <input type="hidden" name="target_id" value={guestId} />
       <p className="text-sm font-semibold text-amber-950">
-        Posibile duplicate — combină manual
+        {t("title")}
       </p>
       <select
         name="source_id"
@@ -40,7 +42,7 @@ export function GuestMergeForm({
         required
         disabled={pending}
       >
-        <option value="">Alege profilul de combinat…</option>
+        <option value="">{t("selectPlaceholder")}</option>
         {duplicates.map((d) => (
           <option key={d.id} value={d.id}>
             {d.display_name}
@@ -52,10 +54,10 @@ export function GuestMergeForm({
       <AdminSubmitButton
         type="submit"
         disabled={!selected}
-        pendingLabel="Combin…"
+        pendingLabel={t("pending")}
         className="rounded border border-amber-400 bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-950 disabled:opacity-60"
       >
-        Combină profilul selectat aici
+        {t("submit")}
       </AdminSubmitButton>
     </AdminPendingForm>
   );

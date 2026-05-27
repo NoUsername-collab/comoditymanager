@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import type { GanttTodaySummary } from "@/domain/gantt/today-activity";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 
@@ -17,6 +18,9 @@ export function GanttTodayPanel({
   onScrollToToday: () => void;
   compact?: boolean;
 }) {
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   if (!summary.inView) {
     return (
       <div
@@ -27,8 +31,7 @@ export function GanttTodayPanel({
           .filter(Boolean)
           .join(" ")}
       >
-        Ziua de azi nu e în această perioadă — folosește săgețile sau zoom „Lună”
-        curentă.
+        {tGantt("today.outOfRange")}
       </div>
     );
   }
@@ -47,10 +50,10 @@ export function GanttTodayPanel({
       <div className="flex flex-wrap items-center gap-2">
         <span className="gantt-today-panel__pulse inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
           <span className="gantt-today-panel__dot" aria-hidden />
-          Azi
+          {tCommon("todayPanel")}
         </span>
         <span className="text-xs font-medium text-zinc-700">
-          {formatDateWithDay(todayIso, true)}
+          {formatDateWithDay(todayIso, locale, true)}
         </span>
         <span
           className={[
@@ -60,19 +63,18 @@ export function GanttTodayPanel({
             .filter(Boolean)
             .join(" ")}
         >
-          Check-in {checkInTime} · Check-out {checkOutTime}
+          {tCommon("checkIn")} {checkInTime} · {tCommon("checkOut")} {checkOutTime}
         </span>
 
         <div className="flex flex-wrap items-center gap-1.5 sm:ml-1">
           <span className="gantt-today-chip gantt-today-chip--arrival">
-            {arrivals.length}{" "}
-            {arrivals.length === 1 ? "sosire" : "sosiri"}
+            {tGantt("today.arrivalsCount", { count: arrivals.length })}
           </span>
           <span className="gantt-today-chip gantt-today-chip--departure">
-            {departures.length} plecări
+            {tGantt("today.departuresCount", { count: departures.length })}
           </span>
           <span className="gantt-today-chip gantt-today-chip--night">
-            {stayingTonight} diseară
+            {tGantt("today.stayingTonightCount", { count: stayingTonight })}
           </span>
         </div>
 
@@ -87,7 +89,7 @@ export function GanttTodayPanel({
               .filter(Boolean)
               .join(" ")}
           >
-            {compact ? "Centrare" : "Centrare azi"}
+            {compact ? tGantt("today.center") : tGantt("today.centerToday")}
           </button>
           <Link
             href="/receptie"
@@ -98,7 +100,7 @@ export function GanttTodayPanel({
               .filter(Boolean)
               .join(" ")}
           >
-            {compact ? "Recepție" : "Recepție →"}
+            {compact ? tGantt("today.reception") : tGantt("today.receptionArrow")}
           </Link>
         </div>
       </div>

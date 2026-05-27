@@ -17,10 +17,10 @@ export function availabilityPressure(
 
 export function pressureLabel(pressure: AvailabilityPressure): string {
   const map: Record<AvailabilityPressure, string> = {
-    relaxed: "Disponibilitate bună",
-    moderate: "Presiune moderată",
-    tight: "Aproape plin",
-    full: "Complet ocupat",
+    relaxed: "Good availability",
+    moderate: "Moderate pressure",
+    tight: "Almost full",
+    full: "Fully occupied",
   };
   return map[pressure];
 }
