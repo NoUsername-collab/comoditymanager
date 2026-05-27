@@ -1,9 +1,12 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { submitPhoneBookingAction } from "@/app/[locale]/(public)/calendar/actions";
+import {
+  submitPhoneBookingAction,
+  suggestExistingGuestAction,
+} from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { addDays, todayIso } from "@/lib/stay-dates";
@@ -21,6 +24,12 @@ export function PhoneBookingForm({
   const tCommon = useTranslations("common");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
+  const [guestLastName, setGuestLastName] = useState("");
+  const [guestFirstName, setGuestFirstName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [identityHint, setIdentityHint] = useState<string | null>(null);
+  const [identityPending, startIdentityTransition] = useTransition();
   const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
@@ -32,6 +41,34 @@ export function PhoneBookingForm({
     }
     const earliestOut = addDays(value, 1);
     if (!checkOut || checkOut <= value) setCheckOut(earliestOut);
+  }
+
+  function maybeAutofillGuest() {
+    const hasIdentity =
+      guestEmail.trim().length > 0 ||
+      guestPhone.trim().length > 0 ||
+      (guestLastName.trim().length > 1 && guestFirstName.trim().length > 1);
+    if (!hasIdentity) return;
+    startIdentityTransition(async () => {
+      const res = await suggestExistingGuestAction({
+        guest_last_name: guestLastName,
+        guest_first_name: guestFirstName,
+        guest_email: guestEmail,
+        guest_phone: guestPhone,
+      });
+      if (!res.ok || !res.match) return;
+      setGuestLastName(res.match.lastName);
+      setGuestFirstName(res.match.firstName);
+      setGuestEmail(res.match.email ?? guestEmail);
+      setGuestPhone(res.match.phone ?? guestPhone);
+      if (res.match.flagLevel === "blacklist") {
+        setIdentityHint(tForm("existingGuestBlacklist", { name: res.match.displayName }));
+      } else if (res.match.flagLevel === "watchlist") {
+        setIdentityHint(tForm("existingGuestWatchlist", { name: res.match.displayName }));
+      } else {
+        setIdentityHint(tForm("existingGuestFound", { name: res.match.displayName }));
+      }
+    });
   }
 
   const [state, formAction, pending] = useActionState(
@@ -97,17 +134,43 @@ export function PhoneBookingForm({
           <DateWeekdayHint iso={checkOut} />
         </label>
       </div>
-      <GuestNameFields compact />
+      <GuestNameFields
+        compact
+        lastName={guestLastName}
+        firstName={guestFirstName}
+        onLastNameChange={setGuestLastName}
+        onFirstNameChange={setGuestFirstName}
+        onIdentityBlur={maybeAutofillGuest}
+      />
       <div className="grid grid-cols-2 gap-2">
         <label>
           {tCommon("phone")}
-          <input name="guest_phone" type="tel" className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
+          <input
+            name="guest_phone"
+            type="tel"
+            value={guestPhone}
+            onChange={(e) => setGuestPhone(e.target.value)}
+            onBlur={maybeAutofillGuest}
+            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
+          />
         </label>
         <label>
           {t("emailOptional")}
-          <input name="guest_email" type="email" className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
+          <input
+            name="guest_email"
+            type="email"
+            value={guestEmail}
+            onChange={(e) => setGuestEmail(e.target.value)}
+            onBlur={maybeAutofillGuest}
+            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
+          />
         </label>
       </div>
+      {(identityPending || identityHint) && (
+        <p className="text-xs text-zinc-500">
+          {identityPending ? tForm("checkingExistingGuest") : identityHint}
+        </p>
+      )}
       <div className="grid grid-cols-2 gap-2">
         <label>
           {tForm("adults").replace(" *", "")}

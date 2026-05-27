@@ -137,7 +137,11 @@
       "perNight": "{price}/night",
       "selectOption": "Select",
       "totalEstimateLabel": "estimated total",
-      "selectedMark": "âœ“ Selected option"
+      "selectedMark": "âœ“ Selected option",
+      "checkingExistingGuest": "Проверявам съществуващ клиент…",
+      "existingGuestFound": "Открит е съществуващ клиент: {name}. Данните са попълнени автоматично.",
+      "existingGuestWatchlist": "Внимание: съществуващ клиент в watchlist: {name}. Данните са попълнени.",
+      "existingGuestBlacklist": "Внимание: съществуващ клиент в blacklist: {name}. Данните са попълнени."
     },
     "phoneForm": {
       "hint": "Walk-in or phone booking entered at reception.",

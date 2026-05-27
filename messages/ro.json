@@ -137,7 +137,11 @@
       "perNight": "{price}/noapte",
       "selectOption": "Alege",
       "totalEstimateLabel": "total estimat",
-      "selectedMark": "✓ Varianta aleasă"
+      "selectedMark": "✓ Varianta aleasă",
+      "checkingExistingGuest": "Verific client existent…",
+      "existingGuestFound": "Client existent detectat: {name}. Am completat automat datele.",
+      "existingGuestWatchlist": "Atenție: client existent în watchlist: {name}. Datele au fost completate.",
+      "existingGuestBlacklist": "Atenție: client existent în blacklist: {name}. Datele au fost completate."
     },
     "phoneForm": {
       "hint": "Rezervare introdusă la recepție (telefon sau walk-in).",
@@ -646,6 +650,8 @@
       "cancel": "Anulează",
       "confirm": "Confirmă",
       "save": "Salvează",
+      "saving": "Salvez…",
+      "clients": "Clienți",
       "loading": "Se încarcă…",
       "noEmail": "Fără email",
       "noPhone": "Fără telefon",

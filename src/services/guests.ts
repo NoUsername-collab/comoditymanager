@@ -155,6 +155,16 @@ export type ResolveGuestResult = {
   mergeConflict: boolean;
 };
 
+export type GuestAutofillMatch = {
+  guestId: string;
+  lastName: string;
+  firstName: string;
+  email: string | null;
+  phone: string | null;
+  displayName: string;
+  flagLevel: "normal" | "watchlist" | "blacklist" | null;
+};
+
 /** Matching: telefon → email → guest nou. Conflict = telefon ≠ email match. */
 export async function resolveGuestForBooking(
   input: GuestBookingInput
@@ -200,6 +210,101 @@ export async function resolveGuestForBooking(
   });
 
   return { guestId, mergeConflict: false };
+}
+
+async function findGuestByIdsOrdered(ids: string[]): Promise<GuestRow | null> {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (unique.length === 0) return null;
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("guests")
+    .select("*")
+    .in("id", unique)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ? mapGuestRow(data) : null;
+}
+
+export async function findGuestAutofillMatch(input: {
+  guest_last_name?: string;
+  guest_first_name?: string;
+  guest_email?: string;
+  guest_phone?: string;
+}): Promise<GuestAutofillMatch | null> {
+  const emailNorm = normalizeEmail(input.guest_email ?? "");
+  const phoneNorm = normalizePhone(input.guest_phone ?? "");
+  const last = String(input.guest_last_name ?? "").trim();
+  const first = String(input.guest_first_name ?? "").trim();
+  const supabase = createAdminClient();
+  let candidate: GuestRow | null = null;
+
+  if (phoneNorm && emailNorm && !isPlaceholderEmail(emailNorm)) {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .eq("phone_normalized", phoneNorm)
+      .eq("email_normalized", emailNorm)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (data?.id) {
+      candidate = await getGuestBaseById(String(data.id));
+    }
+  }
+
+  if (!candidate && phoneNorm) {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .eq("phone_normalized", phoneNorm)
+      .order("updated_at", { ascending: false })
+      .limit(2);
+    if (error) throw new Error(error.message);
+    candidate = await findGuestByIdsOrdered(
+      ((data ?? []) as { id: string }[]).map((row) => row.id)
+    );
+  }
+
+  if (!candidate && emailNorm && !isPlaceholderEmail(emailNorm)) {
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .eq("email_normalized", emailNorm)
+      .order("updated_at", { ascending: false })
+      .limit(2);
+    if (error) throw new Error(error.message);
+    candidate = await findGuestByIdsOrdered(
+      ((data ?? []) as { id: string }[]).map((row) => row.id)
+    );
+  }
+
+  if (!candidate && last && first) {
+    const full = formatGuestFullName(last, first);
+    const { data, error } = await supabase
+      .from("guests")
+      .select("id")
+      .ilike("display_name", full)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (data?.id) candidate = await getGuestBaseById(String(data.id));
+  }
+
+  if (!candidate) return null;
+  const profile = await getGuestProfile(candidate.id);
+  return {
+    guestId: candidate.id,
+    lastName: candidate.last_name,
+    firstName: candidate.first_name,
+    email: candidate.email,
+    phone: candidate.phone,
+    displayName: candidate.display_name,
+    flagLevel: profile?.flag_level ?? null,
+  };
 }
 
 export async function getGuestById(
@@ -275,6 +380,12 @@ function matchesGuestFilter(
     );
   }
   return true;
+}
+
+function guestFlagRank(level: string | null | undefined): number {
+  if (level === "blacklist") return 2;
+  if (level === "watchlist") return 1;
+  return 0;
 }
 
 async function fetchGuestListItemsByIds(
@@ -450,7 +561,13 @@ async function searchGuestIdsByQueryWindow(input: {
   const { data, error } = await supabase
     .from("guests")
     .select("id")
-    .ilike("display_name", namePattern)
+    .or(
+      [
+        `display_name.ilike.${namePattern}`,
+        `email.ilike.${namePattern}`,
+        `phone.ilike.${namePattern}`,
+      ].join(",")
+    )
     .order("display_name", { ascending: true })
     .range(input.offset, windowEnd);
   if (error) throw new Error(error.message);
@@ -589,6 +706,14 @@ export async function searchGuests(input: {
     queryOffset += ids.length;
 
     const candidateItems = await fetchGuestListItemsByIds(ids);
+    // When multiple similar profiles exist, keep riskier profiles first
+    // so blacklist/watchlist guests are not hidden behind duplicates.
+    candidateItems.sort((a, b) => {
+      const byFlag =
+        guestFlagRank(b.profile?.flag_level) - guestFlagRank(a.profile?.flag_level);
+      if (byFlag !== 0) return byFlag;
+      return b.updated_at.localeCompare(a.updated_at);
+    });
     for (const guest of candidateItems) {
       if (seenIds.has(guest.id)) continue;
       seenIds.add(guest.id);

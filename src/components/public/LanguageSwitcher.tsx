@@ -76,7 +76,7 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <details ref={detailsRef} className="relative">
+    <details ref={detailsRef} className="relative z-[130001]">
       <summary
         aria-label={tCommon("language")}
         className="list-none cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-2 py-1 text-base leading-none flex items-center"
@@ -84,7 +84,7 @@ export function LanguageSwitcher() {
         <Flag code={locale} />
       </summary>
 
-      <div className="absolute right-0 z-50 mt-2 min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-header-bg)] p-1 shadow-lg">
+      <div className="absolute right-0 z-[130002] mt-2 min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-header-bg)] p-1 shadow-lg">
         {routing.locales.map((l) => (
           <button
             key={l}

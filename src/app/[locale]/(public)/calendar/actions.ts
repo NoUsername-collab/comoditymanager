@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createBookingRequest } from "@/services/bookings";
+import { findGuestAutofillMatch } from "@/services/guests";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
@@ -186,4 +187,22 @@ export async function submitPhoneBookingAction(formData: FormData) {
     return { ok: true as const, bookingId: id, redirectConfirm: true };
   }
   return { ok: true as const, bookingId: id };
+}
+
+export async function suggestExistingGuestAction(input: {
+  guest_last_name?: string;
+  guest_first_name?: string;
+  guest_email?: string;
+  guest_phone?: string;
+}) {
+  const t = await getTranslations("errors");
+  try {
+    const match = await findGuestAutofillMatch(input);
+    return { ok: true as const, match };
+  } catch (e) {
+    return {
+      ok: false as const,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
 }

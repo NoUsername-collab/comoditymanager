@@ -59,7 +59,7 @@ export function GanttOpsPickerPanel({
         onClick={onClose}
       />
       <div
-        className="admin-floating-panel fixed left-1/2 top-[18%] z-[211] max-h-[min(70vh,28rem)] w-[min(24rem,92vw)] -translate-x-1/2 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl"
+        className="fixed left-1/2 top-[18%] z-[211] max-h-[min(70vh,28rem)] w-[min(24rem,92vw)] -translate-x-1/2 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl"
         role="dialog"
         aria-label={title}
       >

@@ -97,7 +97,7 @@ export function GanttCheckTimeDialog({
         onClick={onClose}
       />
       <div
-        className="admin-floating-panel fixed left-1/2 top-1/2 z-[221] w-[min(22rem,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200 bg-white p-4 shadow-xl"
+        className="fixed left-1/2 top-1/2 z-[221] w-[min(22rem,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200 bg-white p-4 shadow-xl"
         role="dialog"
         aria-labelledby="gantt-check-time-title"
       >

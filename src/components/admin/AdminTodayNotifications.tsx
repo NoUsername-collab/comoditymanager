@@ -13,6 +13,16 @@ export async function AdminTodayNotifications({
 
   return (
     <div className="admin-hud-today-inline" aria-label={t("notificationsToday")}>
+      <span
+        className={[
+          "admin-hud-today-inline__stat admin-hud-today-inline__stat--alert",
+          cereriCount <= 0 && "admin-hud-today-inline__stat--idle",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
+        <strong>{cereriCount}</strong> {t("newShort")}
+      </span>
       <span className="admin-hud-today-inline__stat admin-hud-today-inline__stat--arrival">
         <strong>{board.arrivals.length}</strong> {t("arrivalsShort")}
       </span>
@@ -22,11 +32,6 @@ export async function AdminTodayNotifications({
       <span className="admin-hud-today-inline__stat admin-hud-today-inline__stat--clean">
         <strong>{board.roomsToClean.length}</strong> {t("toCleanShort")}
       </span>
-      {cereriCount > 0 && (
-        <span className="admin-hud-today-inline__stat admin-hud-today-inline__stat--alert">
-          <strong>{cereriCount}</strong> {t("newShort")}
-        </span>
-      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   previewGuestStayAction,
+  suggestExistingGuestAction,
   submitGuestRequestAction,
 } from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
@@ -40,6 +41,12 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [previewPending, startPreviewTransition] = useTransition();
+  const [identityPending, startIdentityTransition] = useTransition();
+  const [guestLastName, setGuestLastName] = useState("");
+  const [guestFirstName, setGuestFirstName] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [identityHint, setIdentityHint] = useState<string | null>(null);
 
   const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
@@ -81,6 +88,37 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       setStep("preview");
       if (res.preview.options.length === 1) {
         setSelected(res.preview.options[0]);
+      }
+    });
+  }
+
+  function maybeAutofillGuest() {
+    const hasIdentity =
+      guestEmail.trim().length > 0 ||
+      guestPhone.trim().length > 0 ||
+      (guestLastName.trim().length > 1 && guestFirstName.trim().length > 1);
+    if (!hasIdentity) return;
+
+    startIdentityTransition(async () => {
+      const res = await suggestExistingGuestAction({
+        guest_last_name: guestLastName,
+        guest_first_name: guestFirstName,
+        guest_email: guestEmail,
+        guest_phone: guestPhone,
+      });
+      if (!res.ok || !res.match) return;
+
+      setGuestLastName(res.match.lastName);
+      setGuestFirstName(res.match.firstName);
+      setGuestEmail(res.match.email ?? guestEmail);
+      setGuestPhone(res.match.phone ?? guestPhone);
+
+      if (res.match.flagLevel === "blacklist") {
+        setIdentityHint(t("existingGuestBlacklist", { name: res.match.displayName }));
+      } else if (res.match.flagLevel === "watchlist") {
+        setIdentityHint(t("existingGuestWatchlist", { name: res.match.displayName }));
+      } else {
+        setIdentityHint(t("existingGuestFound", { name: res.match.displayName }));
       }
     });
   }
@@ -337,7 +375,13 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             </label>
           )}
 
-          <GuestNameFields />
+          <GuestNameFields
+            lastName={guestLastName}
+            firstName={guestFirstName}
+            onLastNameChange={setGuestLastName}
+            onFirstNameChange={setGuestFirstName}
+            onIdentityBlur={maybeAutofillGuest}
+          />
           <label className="site-field">
             {tCommon("email")} *
             <input
@@ -345,6 +389,9 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               type="email"
               required
               className="mt-1 w-full"
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
+              onBlur={maybeAutofillGuest}
             />
           </label>
           <label className="site-field">
@@ -353,8 +400,16 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               name="guest_phone"
               type="tel"
               className="mt-1 w-full"
+              value={guestPhone}
+              onChange={(e) => setGuestPhone(e.target.value)}
+              onBlur={maybeAutofillGuest}
             />
           </label>
+          {(identityPending || identityHint) && (
+            <p className="text-xs text-[var(--site-muted)]">
+              {identityPending ? t("checkingExistingGuest") : identityHint}
+            </p>
+          )}
           <label className="site-field">
             {t("messageOptional")}
             <textarea

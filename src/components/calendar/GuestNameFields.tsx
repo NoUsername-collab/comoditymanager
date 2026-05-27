@@ -5,9 +5,21 @@ import { useTranslations } from "next-intl";
 type Props = {
   /** Formular recepție (inputuri mai mici) */
   compact?: boolean;
+  lastName?: string;
+  firstName?: string;
+  onLastNameChange?: (value: string) => void;
+  onFirstNameChange?: (value: string) => void;
+  onIdentityBlur?: () => void;
 };
 
-export function GuestNameFields({ compact }: Props) {
+export function GuestNameFields({
+  compact,
+  lastName,
+  firstName,
+  onLastNameChange,
+  onFirstNameChange,
+  onIdentityBlur,
+}: Props) {
   const t = useTranslations("public.form");
   const inputClass = compact
     ? "mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
@@ -26,6 +38,9 @@ export function GuestNameFields({ compact }: Props) {
           autoComplete="family-name"
           placeholder={t("lastNamePlaceholder")}
           className={inputClass}
+          value={lastName}
+          onChange={(e) => onLastNameChange?.(e.target.value)}
+          onBlur={onIdentityBlur}
         />
       </label>
       <label className={labelClass}>
@@ -36,6 +51,9 @@ export function GuestNameFields({ compact }: Props) {
           autoComplete="given-name"
           placeholder={t("firstNamePlaceholder")}
           className={inputClass}
+          value={firstName}
+          onChange={(e) => onFirstNameChange?.(e.target.value)}
+          onBlur={onIdentityBlur}
         />
       </label>
     </div>

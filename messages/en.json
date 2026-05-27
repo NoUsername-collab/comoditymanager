@@ -137,7 +137,11 @@
       "perNight": "{price}/night",
       "selectOption": "Select",
       "totalEstimateLabel": "estimated total",
-      "selectedMark": "âœ“ Selected option"
+      "selectedMark": "âœ“ Selected option",
+      "checkingExistingGuest": "Checking existing guest…",
+      "existingGuestFound": "Existing guest found: {name}. Details were auto-filled.",
+      "existingGuestWatchlist": "Attention: existing watchlist guest: {name}. Details were auto-filled.",
+      "existingGuestBlacklist": "Attention: existing blacklist guest: {name}. Details were auto-filled."
     },
     "phoneForm": {
       "hint": "Walk-in or phone booking entered at reception.",
