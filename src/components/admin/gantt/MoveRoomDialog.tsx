@@ -34,6 +34,7 @@ type Props = {
 export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const router = useRouter();
   const { notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();

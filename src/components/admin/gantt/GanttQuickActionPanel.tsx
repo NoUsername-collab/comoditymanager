@@ -119,6 +119,7 @@ function IntervalPlanner({
   hasConflict,
   invalidMessage,
   nightLabel,
+  locale,
 }: {
   title: string;
   subtitle: ReactNode;
@@ -133,6 +134,7 @@ function IntervalPlanner({
   hasConflict: boolean;
   invalidMessage: string;
   nightLabel: (count: number) => string;
+  locale: string;
 }) {
   const nights =
     checkIn && checkOut && !invalidInterval ? nightsBetween(checkIn, checkOut) : 0;
@@ -751,6 +753,7 @@ export function GanttQuickActionPanel({
               hasConflict={hasConflict}
               invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
               nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
+              locale={locale}
             />
 
             {hasConflict ? (

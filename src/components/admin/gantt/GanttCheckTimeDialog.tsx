@@ -38,6 +38,7 @@ export function GanttCheckTimeDialog({
 }: GanttCheckTimeDialogProps) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
