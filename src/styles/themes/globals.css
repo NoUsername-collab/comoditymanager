@@ -1,0 +1,82 @@
+/*
+  globals.css — stiluri semantice bazate pe tema activă
+
+  REGULA: zero culori hardcodate în componentele noi.
+  Totul vine din variabilele definite în _base.css + [theme]-day/night.css.
+*/
+
+@import "./default-night.css";
+@import "./default-day.css";
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.25s ease, color 0.25s ease;
+  min-height: 100vh;
+}
+
+.text-primary { color: var(--text); }
+.text-muted { color: var(--text-muted); }
+.text-faint { color: var(--text-faint); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+
+.surface { background: var(--surface); }
+.surface-2 { background: var(--surface-2); }
+.surface-3 { background: var(--surface-3); }
+
+.border-theme { border: 1px solid var(--border); }
+.border-theme-strong { border: 1px solid var(--border-strong); }
+.border-accent { border: 1px solid var(--accent); }
+
+.card-theme {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.booking-card--active {
+  background: var(--active-bg);
+  border-color: var(--active-border);
+  color: var(--active-text);
+  box-shadow: var(--active-glow);
+}
+
+.booking-card--pending {
+  background: var(--pending-bg);
+  border-color: var(--pending-border);
+  color: var(--pending-text);
+}
+
+.booking-card--past {
+  background: var(--past-bg);
+  border-color: var(--past-border);
+  color: var(--past-text);
+}
+
+.booking-card--blocked {
+  background: var(--blocked-bg);
+  border-color: var(--blocked-border);
+  color: var(--blocked-text);
+}
+
+.booking-card--hold {
+  background: var(--hold-bg);
+  border-color: var(--hold-border);
+  color: var(--hold-text);
+}
+
+.booking-card--cancelled {
+  background: var(--cancelled-bg);
+  border-color: var(--cancelled-border);
+  color: var(--cancelled-text);
+}

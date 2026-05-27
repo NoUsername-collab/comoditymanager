@@ -4,6 +4,7 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { GuestMergeForm } from "@/components/admin/guests/GuestMergeForm";
 import { GuestBlacklistPanel } from "@/components/admin/guests/GuestBlacklistPanel";
+import { GuestIdentityCard } from "@/components/admin/guests/GuestIdentityCard";
 import { GuestNotesForm } from "@/components/admin/guests/GuestNotesForm";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { GuestProfileCards } from "@/components/admin/guests/GuestProfileCards";
@@ -65,161 +66,234 @@ export default async function GuestDetailPage({
   }
   const today = todayIso();
   const backHref = from?.startsWith("/admin/guests") ? from : "/admin/guests";
+  const reviewedHistoryCount = history.filter((stay) => stay.review != null).length;
+  const latestStay = history[0] ?? null;
 
   return (
     <AdminRetroPageFrame
       title={`Client — ${guest.display_name}`}
       backHref={backHref}
       backLabel="Clienți"
-      className="max-w-3xl"
+      className="max-w-none pl-3 pr-4 xl:pr-5"
     >
-      <RetroXpWindow title={guest.display_name}>
-        <dl className="grid gap-2 text-sm">
-          <div>
-            <dt className="font-bold">Contact</dt>
-            <dd>
-              {guest.email ?? "—"}
-              {guest.phone ? ` · ${guest.phone}` : ""}
-            </dd>
-          </div>
+      <div className="grid gap-6 xl:grid-cols-[510px_minmax(0,1fr)] 2xl:grid-cols-[540px_minmax(0,1.2fr)]">
+        <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
+          <GuestIdentityCard guest={guest} />
+
           {guest.profile && (
-            <div>
-              <dt className="font-bold">Snapshot profil</dt>
-              <dd>
-                <GuestProfileBadges profile={guest.profile} />
-              </dd>
-            </div>
+            <RetroXpWindow title="Rezumat client">
+              <GuestProfileBadges profile={guest.profile} />
+            </RetroXpWindow>
           )}
-          {guest.tags.length > 0 && (
-            <div>
-              <dt className="font-bold">Legacy tags</dt>
-              <dd>{guest.tags.map((t) => GUEST_TAG_LABELS[t]).join(", ")}</dd>
-            </div>
-          )}
-        </dl>
 
-        <GuestMergeForm guestId={guest.id} duplicates={duplicates} />
-        {duplicatesError && (
-          <p className="mt-3 text-xs text-amber-800">{duplicatesError}</p>
-        )}
+          <RetroXpWindow title="Acțiuni rapide">
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <GuestBlacklistPanel
+                  key={`blacklist-${guest.id}-${guest.profile?.updated_at ?? "none"}-${guest.profile?.flag_level ?? "normal"}`}
+                  guestId={guest.id}
+                  profile={guest.profile}
+                />
+              </div>
 
-        <div className="mt-6 space-y-2">
-          <h2 className="font-bold">Profil Client v2</h2>
-          {profileError && <p className="text-xs text-amber-800">{profileError}</p>}
-          <GuestProfileCards profile={guest.profile} />
-        </div>
+              <div className="space-y-2">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">
+                  Rebook rapid
+                </p>
+                <GuestRebookButtons guestId={guest.id} disabled={history.length === 0} />
+                {history.length === 0 && !historyError && (
+                  <p className="text-xs text-zinc-500">
+                    Devine disponibil după primul sejur legat profilului.
+                  </p>
+                )}
+              </div>
 
-        <div className="mt-6 space-y-2">
-          <h2 className="font-bold">Blacklist</h2>
-          <GuestBlacklistPanel guestId={guest.id} profile={guest.profile} />
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <h2 className="font-bold">Ajustări scor / watchlist</h2>
-          <GuestProfileControlsForm guestId={guest.id} profile={guest.profile} />
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <h2 className="font-bold">Note interne generale</h2>
-          <GuestNotesForm guestId={guest.id} initialNotes={guest.notes ?? ""} />
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <h2 className="font-bold">Rebook</h2>
-          <p className="text-xs text-zinc-500">
-            Creează cerere nouă pe baza ultimului sejur (camere + persoane).
-          </p>
-          <GuestRebookButtons guestId={guest.id} disabled={history.length === 0} />
-          {history.length === 0 && !historyError && (
-            <p className="text-xs text-zinc-500">
-              Rebook devine disponibil după primul sejur legat profilului.
-            </p>
-          )}
-        </div>
-      </RetroXpWindow>
-
-      <RetroXpWindow title={`Istoric sejururi (${history.length})`} className="mt-6">
-        {historyError ? (
-          <p className="text-sm text-amber-800">{historyError}</p>
-        ) : history.length === 0 ? (
-          <p className="text-sm text-zinc-500">Niciun sejur legat încă.</p>
-        ) : (
-          <ul className="space-y-3">
-            {history.map((stay) => (
-              <li
-                key={stay.id}
-                className="border border-zinc-200 bg-white px-4 py-3 text-sm"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="font-semibold">
-                      {formatStayPeriod(stay.check_in, stay.check_out, true)}
-                    </p>
-                    <p className="text-zinc-600">
-                      {statusLabel(stay.status)}
-                      {stay.room_names.length > 0
-                        ? ` · ${stay.room_names.join(", ")}`
-                        : ""}
-                      {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
-                    </p>
-                    <p className="text-xs text-zinc-400 font-mono">
-                      {formatBookingRef(stay.id)}
-                    </p>
-                    {stay.review && (
-                      <div className="mt-2 space-y-1 text-xs">
-                        <p className="font-semibold text-violet-800">
-                          Review: {stay.review.stars} stele
-                          {stay.review.problem_details ? " · are detalii" : ""}
-                        </p>
-                        {(stay.review.positive_traits.length > 0 ||
-                          stay.review.negative_traits.length > 0) && (
-                          <p className="text-zinc-600">
-                            {stay.review.positive_traits.map(
-                              (trait) => GUEST_POSITIVE_TRAIT_LABELS[trait]
-                            ).join(" · ")}
-                            {stay.review.positive_traits.length > 0 &&
-                            stay.review.negative_traits.length > 0
-                              ? " | "
-                              : ""}
-                            {stay.review.negative_traits.map(
-                              (trait) => GUEST_NEGATIVE_TRAIT_LABELS[trait]
-                            ).join(" · ")}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <Link
-                    href={`/admin/bookings/${stay.id}`}
-                    className="text-sm font-semibold text-emerald-700 hover:underline"
-                  >
-                    Detalii →
-                  </Link>
+              {guest.tags.length > 0 && (
+                <div className="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+                    Etichete vechi
+                  </p>
+                  <p className="mt-1 text-xs text-zinc-700">
+                    {guest.tags.map((t) => GUEST_TAG_LABELS[t]).join(", ")}
+                  </p>
                 </div>
-                {stay.segments.length > 1 && (
-                  <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 text-xs text-zinc-600">
-                    {stay.segments.map((seg) => (
-                      <li key={seg.id}>
-                        Segment {formatStayPeriod(seg.segment_start, seg.segment_end, true)}
-                        {seg.nightly_rate != null
-                          ? ` · ${seg.nightly_rate} RON/noapte`
-                          : ""}
+              )}
+            </div>
+          </RetroXpWindow>
+        </aside>
+
+        <div className="space-y-4">
+          <RetroXpWindow title="Evaluare client">
+            <div className="space-y-3">
+              {profileError && <p className="text-xs text-amber-800">{profileError}</p>}
+              <GuestProfileCards profile={guest.profile} />
+            </div>
+          </RetroXpWindow>
+
+          <RetroXpWindow title="Ajustări operator și Trăsături">
+            <GuestProfileControlsForm
+              key={`profile-controls-${guest.id}-${guest.profile?.updated_at ?? "none"}`}
+              guestId={guest.id}
+              profile={guest.profile}
+            />
+          </RetroXpWindow>
+
+          <RetroXpWindow title="Note și context">
+            <div className="space-y-4">
+              <div className="grid gap-3 lg:grid-cols-2">
+                <div className="rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+                    Notă profil
+                  </p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-700">
+                    {guest.profile?.manual_note?.trim() || "Fără notă de profil."}
+                  </p>
+                </div>
+                <div className="rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500">
+                    Note generale
+                  </p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-700">
+                    {guest.notes?.trim() || "Fără note generale."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <GuestNotesForm
+                  key={`guest-notes-${guest.id}-${guest.updated_at}-${guest.notes ?? ""}`}
+                  guestId={guest.id}
+                  initialNotes={guest.notes ?? ""}
+                />
+              </div>
+            </div>
+          </RetroXpWindow>
+
+          {(duplicates.length > 0 || duplicatesError) && (
+            <RetroXpWindow title="Atenție: profiluri similare">
+              {duplicatesError ? (
+                <p className="text-sm text-amber-800">{duplicatesError}</p>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-zinc-600">
+                    Dacă vezi același client în mai multe profiluri, combină-l aici ca să
+                    păstrezi istoricul și scorurile într-un singur loc.
+                  </p>
+                  <GuestMergeForm guestId={guest.id} duplicates={duplicates} />
+                </div>
+              )}
+            </RetroXpWindow>
+          )}
+
+          <RetroXpWindow title={`Istoric sejururi (${history.length})`}>
+            {historyError ? (
+              <p className="text-sm text-amber-800">{historyError}</p>
+            ) : history.length === 0 ? (
+              <p className="text-sm text-zinc-500">Niciun sejur legat încă.</p>
+            ) : (
+              <details>
+                <summary className="cursor-pointer list-none rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold text-zinc-900">Deschide istoricul complet</p>
+                      <p className="mt-1 text-xs text-zinc-500">
+                        {latestStay
+                          ? `Ultimul sejur: ${formatStayPeriod(latestStay.check_in, latestStay.check_out, true)}`
+                          : "Fără sejururi"}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <span className="rounded-full border border-zinc-200 bg-white px-2 py-1 font-semibold text-zinc-700">
+                        {history.length} sejur{history.length === 1 ? "" : "uri"}
+                      </span>
+                      <span className="rounded-full border border-zinc-200 bg-white px-2 py-1 font-semibold text-zinc-700">
+                        {reviewedHistoryCount} review{reviewedHistoryCount === 1 ? "" : "-uri"}
+                      </span>
+                    </div>
+                  </div>
+                </summary>
+
+                <div className="mt-4">
+                  <ul className="space-y-3">
+                    {history.map((stay) => (
+                      <li
+                        key={stay.id}
+                        className="border border-zinc-200 bg-white px-4 py-3 text-sm"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <div>
+                            <p className="font-semibold">
+                              {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                            </p>
+                            <p className="text-zinc-600">
+                              {statusLabel(stay.status)}
+                              {stay.room_names.length > 0
+                                ? ` · ${stay.room_names.join(", ")}`
+                                : ""}
+                              {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
+                            </p>
+                            <p className="text-xs font-mono text-zinc-400">
+                              {formatBookingRef(stay.id)}
+                            </p>
+                            {stay.review && (
+                              <div className="mt-2 space-y-1 text-xs">
+                                <p className="font-semibold text-violet-800">
+                                  Review: {stay.review.stars} stele
+                                  {stay.review.problem_details ? " · are detalii" : ""}
+                                </p>
+                                {(stay.review.positive_traits.length > 0 ||
+                                  stay.review.negative_traits.length > 0) && (
+                                  <p className="text-zinc-600">
+                                    {stay.review.positive_traits.map(
+                                      (trait) => GUEST_POSITIVE_TRAIT_LABELS[trait]
+                                    ).join(" · ")}
+                                    {stay.review.positive_traits.length > 0 &&
+                                    stay.review.negative_traits.length > 0
+                                      ? " | "
+                                      : ""}
+                                    {stay.review.negative_traits.map(
+                                      (trait) => GUEST_NEGATIVE_TRAIT_LABELS[trait]
+                                    ).join(" · ")}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <Link
+                            href={`/admin/bookings/${stay.id}`}
+                            className="text-sm font-semibold text-emerald-700 hover:underline"
+                          >
+                            Detalii →
+                          </Link>
+                        </div>
+                        {stay.segments.length > 1 && (
+                          <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 text-xs text-zinc-600">
+                            {stay.segments.map((seg) => (
+                              <li key={seg.id}>
+                                Segment {formatStayPeriod(seg.segment_start, seg.segment_end, true)}
+                                {seg.nightly_rate != null
+                                  ? ` · ${seg.nightly_rate} RON/noapte`
+                                  : ""}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {stay.status === "confirmata" && stay.check_out < today && (
+                          <GuestStayReviewForm
+                            guestId={guest.id}
+                            bookingId={stay.id}
+                            review={stay.review}
+                          />
+                        )}
                       </li>
                     ))}
                   </ul>
-                )}
-                {stay.status === "confirmata" && stay.check_out < today && (
-                  <GuestStayReviewForm
-                    guestId={guest.id}
-                    bookingId={stay.id}
-                    review={stay.review}
-                  />
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </RetroXpWindow>
+                </div>
+              </details>
+            )}
+          </RetroXpWindow>
+        </div>
+      </div>
     </AdminRetroPageFrame>
   );
 }

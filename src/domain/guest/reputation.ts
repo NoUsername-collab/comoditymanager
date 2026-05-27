@@ -8,31 +8,39 @@ import type {
 } from "./types";
 
 export const GUEST_POSITIVE_TRAITS: readonly GuestPositiveTrait[] = [
-  "respectuos",
+  "voios",
+  "glumet",
   "linistit",
-  "ingrijit",
-  "plateste_la_timp",
-  "recomandat",
+  "miezul_serii",
 ] as const;
 
 export const GUEST_NEGATIVE_TRAITS: readonly GuestNegativeTrait[] = [
-  "zgomotos",
-  "mizerie",
-  "conflictual",
-  "neplata",
-  "pagube",
-  "incalca_reguli",
+  "betiv",
+  "galagios",
+  "recalcitrant",
+  "scandalagiu",
+  "cleptoman",
+  "nesimtit",
 ] as const;
 
 export const GUEST_POSITIVE_TRAIT_LABELS: Record<GuestPositiveTrait, string> = {
+  voios: "Voios",
+  glumet: "Glumeț",
   respectuos: "Respectuos",
   linistit: "Liniștit",
+  miezul_serii: "Miezul serii",
   ingrijit: "Îngrijit",
   plateste_la_timp: "Plătește la timp",
   recomandat: "Recomandat",
 };
 
 export const GUEST_NEGATIVE_TRAIT_LABELS: Record<GuestNegativeTrait, string> = {
+  betiv: "Bețiv",
+  galagios: "Gălăgios",
+  recalcitrant: "Recalcitrant",
+  scandalagiu: "Scandalagiu",
+  cleptoman: "Cleptoman",
+  nesimtit: "Nesimțit",
   zgomotos: "Zgomotos",
   mizerie: "Lasă mizerie",
   conflictual: "Conflictual",
@@ -56,14 +64,23 @@ const STAR_TRUST_WEIGHTS: Record<number, number> = {
 };
 
 const POSITIVE_TRAIT_TRUST_WEIGHTS: Record<GuestPositiveTrait, number> = {
+  voios: 2,
+  glumet: 2,
   respectuos: 5,
   linistit: 4,
+  miezul_serii: 1,
   ingrijit: 5,
   plateste_la_timp: 8,
   recomandat: 4,
 };
 
 const NEGATIVE_TRAIT_TRUST_WEIGHTS: Record<GuestNegativeTrait, number> = {
+  betiv: -8,
+  galagios: -10,
+  recalcitrant: -16,
+  scandalagiu: -20,
+  cleptoman: -30,
+  nesimtit: -14,
   zgomotos: -8,
   mizerie: -10,
   conflictual: -14,
@@ -74,6 +91,7 @@ const NEGATIVE_TRAIT_TRUST_WEIGHTS: Record<GuestNegativeTrait, number> = {
 
 export const DEFAULT_TRUST_SCORE = 60;
 export const DEFAULT_LOYALTY_SCORE = 0;
+export const DEFAULT_STARS_AVG = 1;
 
 export function parseGuestPositiveTraits(raw: unknown): GuestPositiveTrait[] {
   if (!Array.isArray(raw)) return [];
@@ -107,6 +125,17 @@ export function clampGuestScore(value: number): number {
 
 export function roundGuestStars(value: number): number {
   return Math.round(value * 10) / 10;
+}
+
+export function resolveGuestStarsAverage(
+  starsAvg: number | null | undefined,
+  reviewCount: number | null | undefined
+): number {
+  if ((reviewCount ?? 0) <= 0) return DEFAULT_STARS_AVG;
+
+  const numericValue = Number(starsAvg);
+  if (!Number.isFinite(numericValue)) return DEFAULT_STARS_AVG;
+  return roundGuestStars(Math.max(1, Math.min(5, numericValue)));
 }
 
 export function isGuestFlagged(level: GuestFlagLevel): boolean {
@@ -210,7 +239,9 @@ export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
     guest_id: guestId,
     trust_score: DEFAULT_TRUST_SCORE,
     loyalty_score: DEFAULT_LOYALTY_SCORE,
-    stars_avg: 0,
+    stars_avg: DEFAULT_STARS_AVG,
+    manual_positive_traits: [],
+    manual_negative_traits: [],
     positive_traits: [],
     negative_traits: [],
     flag_level: "normal",
@@ -236,12 +267,15 @@ export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
 export function mapGuestProfileRow(row: Record<string, unknown>): GuestProfileRow {
   const guestId = String(row.guest_id ?? "");
   const fallback = createDefaultGuestProfile(guestId);
+  const reviewCount = Number(row.review_count ?? fallback.review_count);
 
   return {
     guest_id: guestId,
     trust_score: Number(row.trust_score ?? fallback.trust_score),
     loyalty_score: Number(row.loyalty_score ?? fallback.loyalty_score),
-    stars_avg: Number(row.stars_avg ?? fallback.stars_avg),
+    stars_avg: resolveGuestStarsAverage(row.stars_avg as number | undefined, reviewCount),
+    manual_positive_traits: parseGuestPositiveTraits(row.manual_positive_traits),
+    manual_negative_traits: parseGuestNegativeTraits(row.manual_negative_traits),
     positive_traits: parseGuestPositiveTraits(row.positive_traits),
     negative_traits: parseGuestNegativeTraits(row.negative_traits),
     flag_level:
@@ -271,7 +305,7 @@ export function mapGuestProfileRow(row: Record<string, unknown>): GuestProfileRo
     total_nights: Number(row.total_nights ?? fallback.total_nights),
     last_stay_check_out:
       row.last_stay_check_out != null ? String(row.last_stay_check_out) : null,
-    review_count: Number(row.review_count ?? fallback.review_count),
+    review_count: reviewCount,
     created_at: row.created_at != null ? String(row.created_at) : fallback.created_at,
     updated_at: row.updated_at != null ? String(row.updated_at) : fallback.updated_at,
   };
@@ -306,6 +340,8 @@ export function toGuestBookingFlagSummary(
     trust_score: profile.trust_score,
     loyalty_score: profile.loyalty_score,
     stars_avg: profile.stars_avg,
+    manual_positive_traits: profile.manual_positive_traits,
+    manual_negative_traits: profile.manual_negative_traits,
     positive_traits: profile.positive_traits,
     negative_traits: profile.negative_traits,
     flag_level: profile.flag_level,
@@ -327,6 +363,14 @@ export function computeGuestProfileSnapshot(args: {
 }): GuestProfileRow {
   const { current, completedStays, totalNights, lastStayCheckOut, reviews } = args;
   const activeTraits = aggregateActiveTraits(reviews);
+  const mergedPositiveTraits = uniquePositiveTraits([
+    ...activeTraits.positive_traits,
+    ...current.manual_positive_traits,
+  ]);
+  const mergedNegativeTraits = uniqueNegativeTraits([
+    ...activeTraits.negative_traits,
+    ...current.manual_negative_traits,
+  ]);
   const trustBase =
     DEFAULT_TRUST_SCORE +
     reviews.reduce((sum, review) => sum + calculateReviewTrustImpact(review), 0);
@@ -335,18 +379,18 @@ export function computeGuestProfileSnapshot(args: {
     reviews.reduce((sum, review) => sum + review.loyalty_delta, 0);
   const starsAvg =
     reviews.length > 0
-      ? roundGuestStars(
+      ? resolveGuestStarsAverage(
           reviews.reduce((sum, review) => sum + review.stars, 0) / reviews.length
-        )
-      : 0;
+        , reviews.length)
+      : DEFAULT_STARS_AVG;
 
   return {
     ...current,
     trust_score: clampGuestScore(trustBase + current.manual_trust_adjustment),
     loyalty_score: clampGuestScore(loyaltyBase + current.manual_loyalty_adjustment),
     stars_avg: starsAvg,
-    positive_traits: activeTraits.positive_traits,
-    negative_traits: activeTraits.negative_traits,
+    positive_traits: mergedPositiveTraits,
+    negative_traits: mergedNegativeTraits,
     completed_stays: completedStays,
     total_nights: totalNights,
     last_stay_check_out: lastStayCheckOut,

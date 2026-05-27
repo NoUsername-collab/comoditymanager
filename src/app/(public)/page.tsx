@@ -1,10 +1,14 @@
 import Link from "next/link";
+import { PublicStaffPreview } from "@/components/public/PublicStaffPreview";
+import { getAdminUser } from "@/lib/auth/require-admin";
+import { loadAdminDashboard } from "@/services/admin-dashboard";
 import { getPensionSettings } from "@/services/pension-settings";
 
 export default async function HomePage() {
   let title = "Casa Emil";
   let checkIn = "14:00";
   let checkOut = "11:00";
+  let staffPreview: Awaited<ReturnType<typeof loadAdminDashboard>> | null = null;
 
   try {
     const s = await getPensionSettings();
@@ -15,6 +19,15 @@ export default async function HomePage() {
     }
   } catch {
     /* dev fără DB */
+  }
+
+  try {
+    const staffUser = await getAdminUser();
+    if (staffUser) {
+      staffPreview = await loadAdminDashboard();
+    }
+  } catch {
+    staffPreview = null;
   }
 
   return (
@@ -44,6 +57,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {staffPreview && <PublicStaffPreview data={staffPreview} />}
 
       <section className="public-section">
         <h2 className="public-section__title">De ce e simplu</h2>

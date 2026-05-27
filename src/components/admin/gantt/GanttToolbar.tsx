@@ -37,16 +37,20 @@ export function SegmentGroup<T extends string>({
   value,
   onChange,
   compact,
+  inline = false,
+  forceShortLabels = false,
 }: {
   label: string;
   options: SegOption<T>[];
   value: T;
   onChange: (v: T) => void;
   compact?: boolean;
+  inline?: boolean;
+  forceShortLabels?: boolean;
 }) {
   return (
     <div
-      className={["gantt-seg", compact && "gantt-seg--compact"]
+      className={["gantt-seg", compact && "gantt-seg--compact", inline && "gantt-seg--inline"]
         .filter(Boolean)
         .join(" ")}
       role="group"
@@ -69,10 +73,24 @@ export function SegmentGroup<T extends string>({
           >
             {opt.shortLabel ? (
               <>
-                <span className="gantt-seg__btn-text gantt-seg__btn-text--short">
+                <span
+                  className={[
+                    "gantt-seg__btn-text gantt-seg__btn-text--short",
+                    forceShortLabels && "gantt-seg__btn-text--force",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
                   {opt.shortLabel}
                 </span>
-                <span className="gantt-seg__btn-text gantt-seg__btn-text--long">
+                <span
+                  className={[
+                    "gantt-seg__btn-text gantt-seg__btn-text--long",
+                    forceShortLabels && "gantt-seg__btn-text--force-hidden",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
                   {opt.label}
                 </span>
               </>
@@ -199,7 +217,7 @@ export function GanttToolbar({
   }
   if (feat === "ac") metaParts.push("Cu AC");
   else if (feat === "fridge") metaParts.push("Cu frigider");
-  if (layer !== "all") metaParts.push(`Strat: ${layerFilterLabel(layer)}`);
+  if (layer !== "all") metaParts.push(`Afiseaza: ${layerFilterLabel(layer)}`);
   if (view === "all") metaParts.push(`${rooms.length} camere`);
   else if (view === "building") {
     metaParts.push(
@@ -228,7 +246,7 @@ export function GanttToolbar({
         <div className="gantt-toolbar__row gantt-toolbar__row--controls">
           <div className="gantt-toolbar__segments">
             <SegmentGroup
-              label="Strat"
+              label="Afiseaza"
               compact
               value={layer}
               onChange={(l) => push({ layer: l })}

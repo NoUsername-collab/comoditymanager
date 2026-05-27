@@ -1,0 +1,58 @@
+/*
+  default-day.css — Tema Default, Day Mode
+  Aplicat când: <html data-theme="default" data-mode="day">
+*/
+
+html[data-theme="default"][data-mode="day"] {
+  --bg: #eef0f8;
+  --surface: #ffffff;
+  --surface-2: #f4f6ff;
+  --surface-3: #e8ecfa;
+  --border: #dde2f0;
+  --border-strong: #c8d0e8;
+
+  --text: #1a1d2e;
+  --text-muted: #5a6080;
+  --text-faint: #adb3cc;
+
+  --accent: #4f7ef8;
+  --accent-hover: #3a6ae0;
+  --accent-muted: #e4eaff;
+
+  --active-bg: #f0fdf4;
+  --active-border: #22c55e;
+  --active-text: #166534;
+  --active-glow: 0 0 0 1px #22c55e30;
+
+  --pending-bg: #fffbeb;
+  --pending-border: #f59e0b;
+  --pending-text: #92400e;
+
+  --past-bg: #f4f6ff;
+  --past-border: #dde2f0;
+  --past-text: #adb3cc;
+
+  --blocked-bg: #faf5ff;
+  --blocked-border: #7c3aed;
+  --blocked-text: #4c1d95;
+
+  --hold-bg: #f0f9ff;
+  --hold-border: #38bdf8;
+  --hold-text: #075985;
+
+  --cancelled-bg: #fef2f2;
+  --cancelled-border: #ef4444;
+  --cancelled-text: #991b1b;
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #4f7ef8;
+
+  --weekend-bg: rgba(79, 126, 248, 0.06);
+  --today-bg: rgba(79, 126, 248, 0.07);
+  --today-line: #4f7ef8;
+
+  --shadow: 0 2px 12px rgba(79, 126, 248, 0.08);
+  --shadow-lg: 0 8px 32px rgba(79, 126, 248, 0.14);
+}

@@ -69,17 +69,7 @@
   filter: blur(8px) saturate(1.06);
 }
 
-html[data-admin-retro="winxp"] .admin-home-hero__liquid,
-html[data-admin-retro="win95"] .admin-home-hero__liquid {
-  display: block !important;
-  opacity: 0.32;
-}
-
-html[data-theme="romania"] .admin-home-hero--liquid::before,
-html[data-theme="italy"] .admin-home-hero--liquid::before,
-html[data-theme="france"] .admin-home-hero--liquid::before,
-html[data-theme="poland"] .admin-home-hero--liquid::before,
-html[data-theme="spain"] .admin-home-hero--liquid::before {
+.admin-home-hero--liquid::before {
   background:
     linear-gradient(
       120deg,
@@ -285,11 +275,6 @@ html[data-theme="spain"] .admin-home-hero--liquid::before {
 
 .admin-home .admin-home-window-body {
   padding: 1.15rem 1.4rem !important;
-}
-
-html[data-admin-retro="winxp"] .admin-home .admin-home-window-body,
-html[data-admin-retro="win95"] .admin-home .admin-home-window-body {
-  padding: 10px 14px !important;
 }
 
 .admin-home .admin-today-board {

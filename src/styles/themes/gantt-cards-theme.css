@@ -4,28 +4,45 @@
  */
 
 html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--filled:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
-  background-color: var(--booking-active-bg) !important;
-  background-image: none !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--booking-active-bg) 94%, white) 0%,
+    color-mix(in srgb, var(--booking-active-bg) 84%, var(--booking-active-border)) 100%
+  ) !important;
   border: 2px solid var(--booking-active-border) !important;
-  box-shadow: none !important;
+  box-shadow:
+    0 2px 10px color-mix(in srgb, var(--booking-active-border) 20%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 45%, transparent) !important;
   color: var(--booking-active-text) !important;
 }
 
 html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--cerere,
 html[data-theme] .gantt-shell .gantt-cereri-card.gantt-stay-chrome {
-  background-color: var(--booking-pending-bg) !important;
-  background-image: none !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--booking-pending-bg) 96%, white) 0%,
+    color-mix(in srgb, var(--booking-pending-bg) 86%, var(--booking-pending-border)) 100%
+  ) !important;
   border: 2px solid var(--booking-pending-border) !important;
-  box-shadow: none !important;
+  box-shadow:
+    0 2px 10px color-mix(in srgb, var(--booking-pending-border) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 42%, transparent) !important;
   color: var(--booking-pending-text) !important;
 }
 
 html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--phase-past {
-  background-color: var(--booking-past-bg) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--booking-past-bg) 96%, white) 0%,
+    color-mix(in srgb, var(--booking-past-bg) 90%, var(--booking-past-border)) 100%
+  ) !important;
   border-color: var(--booking-past-border) !important;
   color: var(--booking-past-text) !important;
   opacity: 1;
   filter: none;
+  box-shadow:
+    0 1px 6px color-mix(in srgb, var(--booking-past-border) 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 30%, transparent) !important;
 }
 
 html[data-theme] .gantt-stay-chrome__label,
@@ -94,8 +111,11 @@ html[data-theme="default"]
 html[data-theme="default"]
   .gantt-shell
   .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
-  background: var(--booking-active-bg) !important;
-  background-color: var(--booking-active-bg) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--booking-active-bg) 94%, white) 0%,
+    color-mix(in srgb, var(--booking-active-bg) 84%, var(--booking-active-border)) 100%
+  ) !important;
   border-color: var(--booking-active-border) !important;
   color: var(--booking-active-text) !important;
 }
@@ -106,8 +126,11 @@ html[data-theme="default"]
 html[data-theme="default"]
   .gantt-shell
   .gantt-cereri-card.gantt-stay-chrome {
-  background: var(--booking-pending-bg) !important;
-  background-color: var(--booking-pending-bg) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--booking-pending-bg) 96%, white) 0%,
+    color-mix(in srgb, var(--booking-pending-bg) 86%, var(--booking-pending-border)) 100%
+  ) !important;
   border-color: var(--booking-pending-border) !important;
   color: var(--booking-pending-text) !important;
 }
@@ -118,8 +141,11 @@ html[data-theme="default"]
 html[data-theme="default"]
   .gantt-shell
   .gantt-booking-card.gantt-stay--phase-past {
-  background: var(--booking-past-bg) !important;
-  background-color: var(--booking-past-bg) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--booking-past-bg) 96%, white) 0%,
+    color-mix(in srgb, var(--booking-past-bg) 90%, var(--booking-past-border)) 100%
+  ) !important;
   border-color: var(--booking-past-border) !important;
   color: var(--booking-past-text) !important;
 }

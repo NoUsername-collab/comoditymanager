@@ -13,9 +13,9 @@ type Props = {
 type RadialAction = {
   id: "request" | "booking" | "hold" | "move" | "block";
   label: string;
-  hint: string;
-  position: "top-left" | "top-right" | "left" | "right" | "bottom";
-  tone: "emerald" | "amber" | "slate" | "sky" | "violet";
+  title: string;
+  side: "left" | "right";
+  kind: "create" | "manage";
   onClick: () => void;
 };
 
@@ -49,46 +49,49 @@ export function GanttRadialController({
 
   const actions: RadialAction[] = [
     {
-      id: "request",
-      label: "Cerere",
-      hint: "noua",
-      position: "top-left",
-      tone: "violet",
-      onClick: onOpenRequest,
-    },
-    {
-      id: "booking",
-      label: "Rezervare",
-      hint: "directa",
-      position: "top-right",
-      tone: "sky",
-      onClick: onOpenReception,
+      id: "move",
+      label: "Muta",
+      title: "Muta camera",
+      side: "left",
+      kind: "manage",
+      onClick: onOpenMove,
     },
     {
       id: "hold",
       label: "Hold",
-      hint: "temporar",
-      position: "left",
-      tone: "amber",
+      title: "Adauga hold",
+      side: "left",
+      kind: "create",
       onClick: onOpenHold,
     },
     {
-      id: "move",
-      label: "Muta",
-      hint: "camera",
-      position: "bottom",
-      tone: "emerald",
-      onClick: onOpenMove,
+      id: "request",
+      label: "Cerere",
+      title: "Cerere noua",
+      side: "right",
+      kind: "create",
+      onClick: onOpenRequest,
+    },
+    {
+      id: "booking",
+      label: "Cazare",
+      title: "Cazare directa",
+      side: "right",
+      kind: "create",
+      onClick: onOpenReception,
     },
     {
       id: "block",
       label: "Blocare",
-      hint: "indisp.",
-      position: "right",
-      tone: "slate",
+      title: "Blocare",
+      side: "right",
+      kind: "create",
       onClick: onOpenBlock,
     },
   ];
+
+  const leftActions = actions.filter((action) => action.side === "left");
+  const rightActions = actions.filter((action) => action.side === "right");
 
   return (
     <div
@@ -97,28 +100,30 @@ export function GanttRadialController({
         .filter(Boolean)
         .join(" ")}
     >
-      {actions.map((action) => (
-        <button
-          key={action.id}
-          type="button"
-          className={[
-            "gantt-radial__action",
-            `gantt-radial__action--${action.position}`,
-            `gantt-radial__action--${action.tone}`,
-            open && "gantt-radial__action--visible",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          tabIndex={open ? 0 : -1}
-          onClick={() => {
-            action.onClick();
-            setOpen(false);
-          }}
-        >
-          <span className="gantt-radial__action-label">{action.label}</span>
-          <span className="gantt-radial__action-hint">{action.hint}</span>
-        </button>
-      ))}
+      <div className="gantt-radial__rail gantt-radial__rail--left">
+        {leftActions.map((action) => (
+          <button
+            key={action.id}
+            type="button"
+            className={[
+              "gantt-radial__action",
+              `gantt-radial__action--${action.kind}`,
+              open && "gantt-radial__action--visible",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            tabIndex={open ? 0 : -1}
+            aria-label={action.title}
+            title={action.title}
+            onClick={() => {
+              action.onClick();
+              setOpen(false);
+            }}
+          >
+            <span className="gantt-radial__action-label">{action.label}</span>
+          </button>
+        ))}
+      </div>
 
       <button
         type="button"
@@ -136,6 +141,31 @@ export function GanttRadialController({
         </span>
         <span className="sr-only">Casa</span>
       </button>
+
+      <div className="gantt-radial__rail gantt-radial__rail--right">
+        {rightActions.map((action) => (
+          <button
+            key={action.id}
+            type="button"
+            className={[
+              "gantt-radial__action",
+              `gantt-radial__action--${action.kind}`,
+              open && "gantt-radial__action--visible",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            tabIndex={open ? 0 : -1}
+            aria-label={action.title}
+            title={action.title}
+            onClick={() => {
+              action.onClick();
+              setOpen(false);
+            }}
+          >
+            <span className="gantt-radial__action-label">{action.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

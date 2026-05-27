@@ -14,6 +14,7 @@ import {
 import { getStaffRole } from "@/lib/auth/roles";
 import { getStaffUser } from "@/lib/auth/require-staff";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
+import { loadTodayBoard } from "@/services/today-board";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
   theme: "default",
@@ -29,6 +30,10 @@ export default async function AdminLayout({
     countCereriNoi().catch(() => 0),
     getPensionSettings().catch(() => null),
   ]);
+
+  const checkInTime = pension?.default_check_in_time ?? "14:00";
+  const checkOutTime = pension?.default_check_out_time ?? "11:00";
+  const todayBoard = await loadTodayBoard(checkInTime, checkOutTime).catch(() => null);
 
   let appearanceSettings: ThemeSettings = DEFAULT_APPEARANCE;
   if (pension) {
@@ -50,7 +55,7 @@ export default async function AdminLayout({
       <div className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
           <div className="admin-hud__surface">
-            <AdminTopBar />
+            <AdminTopBar board={todayBoard} cereriCount={cereriCount} />
             <AdminNav
               cereriCount={cereriCount}
               locationUnlocked={locationUnlocked}

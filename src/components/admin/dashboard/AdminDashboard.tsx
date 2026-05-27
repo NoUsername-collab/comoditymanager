@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import type { AdminDashboardData } from "@/services/admin-dashboard";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
@@ -33,9 +34,9 @@ const QUICK_ACTIONS = [
     accent: "linear-gradient(135deg, #a78bfa, #7c3aed)",
   },
   {
-    href: "/admin/disponibilitate",
-    title: "Disponibilitate",
-    desc: "Heat map & weekenduri",
+    href: "/admin#disponibilitate",
+    title: "Disponibilitate live",
+    desc: "Panou complet aici, în Acasă",
     icon: "▦",
     accent: "linear-gradient(135deg, #34d399, #059669)",
   },
@@ -48,7 +49,13 @@ const QUICK_ACTIONS = [
   },
 ] as const;
 
-export function AdminDashboard({ data }: { data: AdminDashboardData }) {
+export function AdminDashboard({
+  data,
+  availabilityPanel,
+}: {
+  data: AdminDashboardData;
+  availabilityPanel?: ReactNode;
+}) {
   const { stats, cereriCount, cereriPreview } = data;
   const now = new Date();
   const calHref = `/admin/calendar?y=${now.getFullYear()}&m=${now.getMonth()}`;
@@ -147,6 +154,29 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
         <div className="admin-home-section">
           <MonthCompareCards compare={data.monthCompare} />
         </div>
+      )}
+
+      {availabilityPanel && (
+        <section
+          id="disponibilitate"
+          className="admin-home-panel admin-home-section"
+          aria-labelledby="admin-home-availability-title"
+        >
+          <div className="admin-home-panel__head">
+            <div>
+              <h2 id="admin-home-availability-title" className="admin-home-panel__title">
+                Disponibilitate live
+              </h2>
+              <p className="admin-home-panel__desc">
+                Panoul complet de disponibilitate este acum integrat direct în Acasă.
+              </p>
+            </div>
+            <Link href={calHref} className="admin-home-panel__link">
+              Calendar →
+            </Link>
+          </div>
+          <div className="mt-4">{availabilityPanel}</div>
+        </section>
       )}
 
       <div

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import {
   useAdminPending,
@@ -17,6 +17,7 @@ import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 
 function MenuItem({
   label,
@@ -61,6 +62,7 @@ function MenuSection({ title, children }: { title?: string; children: React.Reac
 
 export function GanttContextMenuPanel() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { menu, closeMenu, requestCreate, openMoveRoom, openOccDetail } =
     useGanttContextMenu();
   const { showToast, notifyCancel } = useAdminFx();
@@ -89,6 +91,23 @@ export function GanttContextMenuPanel() {
       showToast({ kind: "success", title: "Link copiat", message: url });
       closeMenu();
     });
+  }
+
+  function openAvailability(dayIso?: string) {
+    const rawFeat = searchParams.get("feat");
+    const featureFilter = rawFeat === "ac" || rawFeat === "fridge" ? rawFeat : "all";
+    const next = mergeAvailabilityPanelSearch(new URLSearchParams(searchParams.toString()), {
+      open: true,
+      year: dayIso ? Number(dayIso.slice(0, 4)) : undefined,
+      month: dayIso ? Number(dayIso.slice(5, 7)) - 1 : undefined,
+      day: dayIso ?? null,
+      buildingId: searchParams.get("building"),
+      view: "month",
+      weekStart: null,
+      featureFilter,
+    });
+    closeMenu();
+    router.push(`/admin/calendar?${next.toString()}`);
   }
 
   function cancelBooking(
@@ -261,10 +280,9 @@ export function GanttContextMenuPanel() {
                 }
               />
               <MenuItem
-                label="Vezi disponibilitate săptămână"
+                label="Deschide heat map disponibilitate"
                 onClick={() => {
-                  closeMenu();
-                  router.push("/admin/disponibilitate");
+                  openAvailability(menu.checkIn);
                 }}
               />
             </MenuSection>

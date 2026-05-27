@@ -117,6 +117,12 @@ export async function updateGuestProfileControlsAction(formData: FormData) {
       -40,
       40
     ),
+    manualPositiveTraits: parseGuestPositiveTraits(
+      formData.getAll("manual_positive_traits").map(String) as GuestPositiveTrait[]
+    ),
+    manualNegativeTraits: parseGuestNegativeTraits(
+      formData.getAll("manual_negative_traits").map(String) as GuestNegativeTrait[]
+    ),
     manualNote: String(formData.get("manual_note") ?? ""),
   });
 

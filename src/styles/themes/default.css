@@ -1,156 +1,18 @@
-/* Default — operațional, profesional (producție) */
+/* Default — shared selectors only. Variabilele sunt în default-day.css / default-night.css */
 
-html[data-theme="default"][data-mode="day"] {
-  --color-bg: #f1f5f9;
-  --color-surface: #ffffff;
-  --color-border: #cbd5e1;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  /* Main — verde operațional */
-  --color-accent: #16a34a;
-  --color-accent-muted: #dcfce7;
-  --color-focus: #15803d;
-
-  /* Confirmat = VERDE */
-  --booking-active-bg: #22c55e;
-  --booking-active-border: #15803d;
-  --booking-active-text: #ffffff;
-
-  /* Cerere = PORTOCALIU */
-  --booking-pending-bg: #fb923c;
-  --booking-pending-border: #ea580c;
-  --booking-pending-text: #ffffff;
-
-  --booking-past-bg: #cbd5e1;
-  --booking-past-border: #64748b;
-  --booking-past-text: #334155;
-
-  --booking-cancelled-bg: #f1f5f9;
-  --booking-cancelled-border: #cbd5e1;
-  --booking-cancelled-text: #94a3b8;
-
-  /* Hold = GALBEN */
-  --booking-hold-bg: #fde047;
-  --booking-hold-border: #ca8a04;
-  --booking-hold-text: #713f12;
-
-  /* Blocare = GALBEN intens */
-  --booking-block-bg: #facc15;
-  --booking-block-border: #ca8a04;
-  --booking-block-text: #713f12;
-
-  --card-radius: 6px;
-  --card-shadow: none;
-
-  --gantt-zone-checkout: #f8fafc;
-  --gantt-zone-clean: #ffffff;
-  --gantt-zone-checkin: #f1f5f9;
-  --gantt-line-checkout: #94a3b8;
-  --gantt-line-checkin: #cbd5e1;
-
-  --admin-hud-gradient: #ffffff;
-  --admin-hud-shadow: 0 1px 0 #cbd5e1;
-  --admin-btn-primary-text: #ffffff;
-  --admin-link: #15803d;
-  --admin-gantt-shell-bg: #ffffff;
-  --admin-loading-track: rgba(37, 99, 235, 0.16);
-  --admin-loading-accent: #15803d;
-  --admin-loading-accent-muted: #fb923c;
-  --admin-loading-accent-2: #2563eb;
-}
-
-/* Noapte — liniștitor, fără negru dur */
-html[data-theme="default"][data-mode="night"] {
-  --color-bg: #252b36;
-  --color-surface: #2f3744;
-  --color-border: #3f4a5c;
-  --color-text: #e8ecf4;
-  --color-text-muted: #9aa8bc;
-  --color-accent: #4ade80;
-  --color-accent-muted: #14532d;
-  --color-focus: #4ade80;
-
-  --booking-active-bg: #22c55e;
-  --booking-active-border: #16a34a;
-  --booking-active-text: #052e16;
-
-  --booking-pending-bg: #ea580c;
-  --booking-pending-border: #fdba74;
-  --booking-pending-text: #fff7ed;
-
-  --booking-past-bg: #3f4a5c;
-  --booking-past-border: #94a3b8;
-  --booking-past-text: #e2e8f0;
-
-  --booking-cancelled-bg: #2a3140;
-  --booking-cancelled-border: #475569;
-  --booking-cancelled-text: #64748b;
-
-  --booking-hold-bg: #eab308;
-  --booking-hold-border: #fde047;
-  --booking-hold-text: #422006;
-
-  --booking-block-bg: #ca8a04;
-  --booking-block-border: #fde047;
-  --booking-block-text: #fffbeb;
-
-  --card-shadow: none;
-
-  --gantt-zone-checkout: #2a3140;
-  --gantt-zone-clean: #2f3744;
-  --gantt-zone-checkin: #343d4d;
-  --gantt-line-checkout: #64748b;
-  --gantt-line-checkin: #475569;
-
-  --admin-hud-gradient: #2f3744;
-  --admin-hud-shadow: 0 1px 0 #3f4a5c;
-  --admin-btn-primary-text: #0f172a;
-  --admin-link: #86efac;
-  --admin-gantt-shell-bg: #2f3744;
-  --admin-overlay: rgba(8, 12, 20, 0.62);
-  --admin-loading-track: rgba(96, 165, 250, 0.2);
-  --admin-loading-accent: #4ade80;
-  --admin-loading-accent-muted: #fb923c;
-  --admin-loading-accent-2: #60a5fa;
-
-  --admin-danger-bg: #450a0a;
-  --admin-danger-border: #f87171;
-  --admin-danger-text: #fecaca;
-}
-
-html[data-theme="default"][data-mode="day"] .gantt-radial {
-  --gantt-home-ring-outer: var(--color-accent);
-  --gantt-home-ring-mid: var(--booking-pending-bg);
-  --gantt-home-ring-inner: var(--color-accent);
-  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg, #fff) 94%, white);
+html[data-theme="default"] .gantt-radial {
+  --gantt-home-ring-outer: var(--admin-accent);
+  --gantt-home-ring-mid: var(--pending-border);
+  --gantt-home-ring-inner: var(--admin-accent);
+  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, white);
   --gantt-home-surface-bottom: color-mix(
     in srgb,
-    var(--admin-panel-bg, #fff) 84%,
-    var(--booking-pending-bg) 16%
+    var(--admin-panel-bg) 84%,
+    var(--pending-border) 16%
   );
-  --gantt-home-door-top: color-mix(in srgb, var(--booking-pending-bg) 72%, white);
-  --gantt-home-door-bottom: color-mix(in srgb, var(--color-accent) 82%, black);
+  --gantt-home-door-top: color-mix(in srgb, var(--pending-border) 72%, white);
+  --gantt-home-door-bottom: color-mix(in srgb, var(--admin-accent) 82%, black);
 }
-
-html[data-theme="default"][data-mode="night"] .gantt-radial {
-  --gantt-home-ring-outer: var(--booking-active-border);
-  --gantt-home-ring-mid: var(--booking-pending-border);
-  --gantt-home-ring-inner: var(--booking-active-border);
-  --gantt-home-surface-top: color-mix(
-    in srgb,
-    var(--admin-panel-bg, #2f3744) 90%,
-    white 10%
-  );
-  --gantt-home-surface-bottom: color-mix(
-    in srgb,
-    var(--admin-panel-bg, #2f3744) 80%,
-    var(--booking-pending-border) 20%
-  );
-  --gantt-home-door-top: color-mix(in srgb, var(--booking-pending-border) 68%, white);
-  --gantt-home-door-bottom: color-mix(in srgb, var(--booking-active-border) 82%, black);
-}
-
-/* Default — UI plat, fără efecte decorative */
 
 html[data-theme="default"] .admin-liquid-shell,
 html[data-theme="default"] .admin-dn-liquid {
@@ -236,9 +98,9 @@ html[data-theme="default"] .admin-panel-section {
 html[data-theme="default"] .admin-cereri-glow {
   animation: none !important;
   box-shadow: none !important;
-  border: 1px solid var(--booking-pending-border) !important;
-  background: var(--booking-pending-bg) !important;
-  color: var(--booking-pending-text) !important;
+  border: 1px solid var(--pending-border) !important;
+  background: var(--pending-bg) !important;
+  color: var(--pending-text) !important;
 }
 
 html[data-theme="default"] .admin-daynight-hero__title {
@@ -263,7 +125,8 @@ html[data-theme="default"]
 html[data-theme="default"]
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
   .gantt-day-cell::after {
-  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, var(--admin-panel-border)) !important;
+  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, var(--admin-panel-border))
+    !important;
   opacity: 0.4;
 }
 
@@ -291,7 +154,8 @@ html[data-theme="default"] .gantt-stay--today-arrival {
 
 html[data-theme="default"] .admin-floating-panel {
   border-radius: var(--admin-radius) !important;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--admin-overlay) 35%, transparent) !important;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--admin-overlay) 35%, transparent)
+    !important;
 }
 
 html[data-theme="default"] .admin-floating-panel__header {

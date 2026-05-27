@@ -4,15 +4,57 @@ import type {
   GuestProfileRow,
 } from "@/domain/guest/types";
 import {
-  GUEST_FLAG_LABELS,
   guestLoyaltyLabel,
   guestTrustLabel,
 } from "@/domain/guest/reputation";
+import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 
-function flagTone(level: GuestFlagLevel): string {
-  if (level === "blacklist") return "border-red-300 bg-red-50 text-red-900";
-  if (level === "watchlist") return "border-amber-300 bg-amber-50 text-amber-950";
-  return "border-zinc-200 bg-zinc-50 text-zinc-700";
+function QuickProfileCard({
+  title,
+  value,
+  subtitle,
+  children,
+  tone,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  children?: React.ReactNode;
+  tone: "sky" | "emerald" | "amber" | "neutral";
+}) {
+  const toneStyle =
+    tone === "sky"
+      ? {
+          borderColor: "#bfdbfe",
+          background: "#eff6ff",
+          color: "#1d4ed8",
+        }
+      : tone === "emerald"
+        ? {
+            borderColor: "#a7f3d0",
+            background: "#ecfdf5",
+            color: "#047857",
+          }
+        : tone === "amber"
+          ? {
+              borderColor: "#fcd34d",
+              background: "#fffbeb",
+              color: "#b45309",
+            }
+          : {
+              borderColor: "var(--border)",
+              background: "var(--surface-2)",
+              color: "var(--text)",
+            };
+
+  return (
+    <div className="rounded-lg border px-3 py-3" style={toneStyle}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-70">{title}</p>
+      <p className="mt-1 text-lg font-black leading-tight">{value}</p>
+      <p className="mt-1 text-xs font-medium opacity-80">{subtitle}</p>
+      {children ? <div className="mt-2">{children}</div> : null}
+    </div>
+  );
 }
 
 type ProfileLike = GuestBookingFlagSummary | GuestProfileRow | null;
@@ -31,33 +73,65 @@ export function GuestProfileBadges({
   const effectiveLevel =
     alertLevel && alertLevel !== "normal" ? alertLevel : profile?.flag_level ?? "normal";
 
+  const riskTone =
+    effectiveLevel === "blacklist"
+      ? "Blacklist"
+      : effectiveLevel === "watchlist"
+        ? "Watchlist"
+        : "Normal";
+
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold">
-      {(effectiveLevel === "watchlist" || effectiveLevel === "blacklist") && (
-        <span
-          className={[
-            "rounded-full border px-2 py-0.5 uppercase tracking-wide",
-            flagTone(effectiveLevel),
-          ].join(" ")}
-        >
-          {GUEST_FLAG_LABELS[effectiveLevel]}
-        </span>
-      )}
+    <div className="grid gap-3 sm:grid-cols-2">
       {profile && (
         <>
-          <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-sky-900">
-            Trust {profile.trust_score} · {guestTrustLabel(profile.trust_score)}
-          </span>
-          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-900">
-            Fidelitate {profile.loyalty_score} · {guestLoyaltyLabel(profile.loyalty_score)}
-          </span>
-          <span className="rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-violet-900">
-            Stele {profile.stars_avg.toFixed(1)}
-          </span>
+          <QuickProfileCard
+            title="Comportament"
+            value={String(profile.trust_score)}
+            subtitle={guestTrustLabel(profile.trust_score)}
+            tone="sky"
+          />
+          <QuickProfileCard
+            title="Fidelitate"
+            value={String(profile.loyalty_score)}
+            subtitle={guestLoyaltyLabel(profile.loyalty_score)}
+            tone="emerald"
+          />
+          <QuickProfileCard
+            title="Rating"
+            value={`${profile.stars_avg.toFixed(1)} / 5`}
+            subtitle={
+              profile.review_count > 0
+                ? `${profile.review_count} review${profile.review_count === 1 ? "" : "-uri"}`
+                : "Fără review încă"
+            }
+            tone="neutral"
+          >
+            <div className="flex items-center">
+              <GuestStarsCompact
+                value={profile.stars_avg}
+                count={profile.review_count}
+                size="md"
+                showCount={false}
+                showValue={false}
+              />
+            </div>
+          </QuickProfileCard>
+          <QuickProfileCard
+            title="Stare"
+            value={riskTone}
+            subtitle={
+              effectiveLevel === "blacklist"
+                ? profile.blacklist_reason || "Alertă critică pentru rezervări noi"
+                : effectiveLevel === "watchlist"
+                  ? "Client de urmărit cu atenție"
+                  : "Fără alertă activă"
+            }
+            tone={effectiveLevel === "normal" ? "neutral" : "amber"}
+          />
         </>
       )}
       {alertNote && (
-        <span className="basis-full text-[11px] font-medium text-amber-900">{alertNote}</span>
+        <span className="sm:col-span-2 text-[11px] font-medium text-amber-900">{alertNote}</span>
       )}
     </div>
   );

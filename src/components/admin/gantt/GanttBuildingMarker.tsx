@@ -13,28 +13,37 @@ function HouseIcon({ className }: { className?: string }) {
     <svg
       viewBox="0 0 24 24"
       className={className}
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden
     >
-      <path d="M12 3.2 4 9.5v11.3h5.5v-6.8h4.9v6.8H20V9.5L12 3.2zm0 1.8 6.2 4.8V19h-2.7v-6.3H8.5V19H5.8v-9.2L12 5z" />
+      <path d="M3.5 10.5 12 4l8.5 6.5" />
+      <path d="M6.5 9.5V20h11V9.5" />
+      <path d="M10 20v-5.5h4V20" />
     </svg>
   );
 }
 
-function DoorIcon({ className }: { className?: string }) {
+function BedIcon({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
       className={className}
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden
     >
-      <path
-        d="M6.75 4h10.5A1.75 1.75 0 0 1 19 5.75v12.5A1.75 1.75 0 0 1 17.25 20H6.75A1.75 1.75 0 0 1 5 18.25V5.75A1.75 1.75 0 0 1 6.75 4Z"
-        opacity="0.32"
-      />
-      <path d="M8.25 5.75h7.5v12.5h-7.5V5.75Z" />
-      <circle cx="14.35" cy="12" r="1.15" />
+      <path d="M3.5 12.5h17" />
+      <path d="M5.5 12.5V8.5h5.5a2 2 0 0 1 2 2v2" />
+      <path d="M13 12.5V10h3.5a2 2 0 0 1 2 2.5" />
+      <path d="M5 12.5V20" />
+      <path d="M19 12.5V20" />
     </svg>
   );
 }
@@ -93,14 +102,12 @@ function GanttAcMarker({
       title={title ?? defaultTitle}
       aria-hidden={!title}
     >
-      <span className="gantt-ac-marker__halo" />
       <span className="gantt-ac-marker__ring" />
-      {isHero && <span className="gantt-ac-marker__shine" />}
       <span className="gantt-ac-marker__glyph">
         {variant === "building" ? (
           <HouseIcon className="gantt-ac-marker__svg" />
         ) : (
-          <DoorIcon className="gantt-ac-marker__svg" />
+          <BedIcon className="gantt-ac-marker__svg" />
         )}
       </span>
     </span>

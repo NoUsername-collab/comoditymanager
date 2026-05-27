@@ -22,19 +22,10 @@ export async function AdminCorner() {
   return (
     <div className="fixed right-4 top-3 z-50 flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-1 py-1 text-[11px] shadow-md backdrop-blur-sm">
       <Link
-        href="/receptie"
+        href="/admin"
         className="rounded-full px-2.5 py-1 font-medium text-[var(--site-fg)] hover:opacity-80"
       >
-        Recepție rapidă
-      </Link>
-      <span className="text-[var(--site-muted)]" aria-hidden>
-        |
-      </span>
-      <Link
-        href="/admin"
-        className="rounded-full px-2.5 py-1 font-medium text-[var(--site-muted)] hover:text-[var(--site-fg)]"
-      >
-        Administrare
+        Panou operator
       </Link>
       <form action={logoutAction} className="ml-0.5">
         <button

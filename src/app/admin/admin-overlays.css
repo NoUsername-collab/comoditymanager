@@ -140,6 +140,35 @@
   font-size: 0.8125rem;
 }
 
+.guest-blacklist-modal {
+  border: 1px solid #7f1d1d;
+  background: #050505;
+  color: #fca5a5;
+  box-shadow:
+    0 0 0 1px rgba(127, 29, 29, 0.45),
+    0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+.guest-blacklist-modal .admin-floating-panel__header {
+  border-bottom-color: #7f1d1d;
+  background: #0f0f10;
+}
+
+.guest-blacklist-modal .admin-floating-panel__title {
+  color: #fca5a5;
+}
+
+.guest-blacklist-modal .admin-floating-panel__close {
+  border-color: #7f1d1d;
+  background: #111113;
+  color: #fca5a5;
+}
+
+.guest-blacklist-modal .admin-floating-panel__close:hover {
+  background: #18181b;
+  color: #fecaca;
+}
+
 .availability-detail-panel--overlay {
   border: none;
   border-radius: 0;

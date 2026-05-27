@@ -116,7 +116,7 @@ export function GuestStayReviewForm({
         </div>
 
         <TraitChecklist
-          title="Traits bune"
+          title="Trăsături bune"
           name="positive_traits"
           options={GUEST_POSITIVE_TRAITS}
           labels={GUEST_POSITIVE_TRAIT_LABELS}
@@ -125,7 +125,7 @@ export function GuestStayReviewForm({
         />
 
         <TraitChecklist
-          title="Traits problematice"
+          title="Trăsături problematice"
           name="negative_traits"
           options={GUEST_NEGATIVE_TRAITS}
           labels={GUEST_NEGATIVE_TRAIT_LABELS}

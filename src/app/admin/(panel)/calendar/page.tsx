@@ -1,13 +1,17 @@
+import { AvailabilityDashboard } from "@/components/admin/availability/AvailabilityDashboard";
 import { GanttCalendar } from "@/components/admin/GanttCalendar";
+import { GanttAvailabilityHeatmapPanel } from "@/components/admin/gantt/GanttAvailabilityHeatmapPanel";
 import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import type { GanttViewMode } from "@/components/admin/gantt/GanttToolbar";
+import { readAvailabilityPanelState, mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { resolveGanttRange } from "@/domain/gantt/view-range";
 import { listBuildings } from "@/services/buildings";
 import { listAllRooms } from "@/services/rooms-admin";
 import { listBookingsForRange } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
+import { loadAvailabilityDashboard } from "@/services/availability-month";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
@@ -17,6 +21,19 @@ import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getRoomOccupancy } from "@/services/room-occupancy";
+
+function toUrlSearchParams(params: Record<string, string | undefined>) {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined) search.set(key, value);
+  }
+  return search;
+}
+
+function hrefForQuery(query: URLSearchParams) {
+  const qs = query.toString();
+  return qs ? `/admin/calendar?${qs}` : "/admin/calendar";
+}
 
 export default async function AdminCalendarPage({
   searchParams,
@@ -34,6 +51,14 @@ export default async function AdminCalendarPage({
     layer?: string;
     feat?: string;
     fd?: string;
+    avail?: string;
+    avail_y?: string;
+    avail_m?: string;
+    avail_day?: string;
+    avail_building?: string;
+    avail_view?: string;
+    avail_ws?: string;
+    avail_feat?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -56,16 +81,20 @@ export default async function AdminCalendarPage({
     ws: params.ws,
     q: quarter,
   });
+  const availabilityState = readAvailabilityPanelState(
+    (key) => params[key as keyof typeof params],
+    { year, month, featureFilter: feat }
+  );
 
-  let data: Awaited<
-    ReturnType<typeof Promise.all<[
-      ReturnType<typeof listAllRooms>,
-      ReturnType<typeof listBookingsForRange>,
-      ReturnType<typeof getPensionSettings>,
-      ReturnType<typeof listBuildings>,
-      ReturnType<typeof getRoomOccupancy>
-    ]>>
-  >;
+  let data:
+    | [
+        Awaited<ReturnType<typeof listAllRooms>>,
+        Awaited<ReturnType<typeof listBookingsForRange>>,
+        Awaited<ReturnType<typeof getPensionSettings>>,
+        Awaited<ReturnType<typeof listBuildings>>,
+        Awaited<ReturnType<typeof getRoomOccupancy>>,
+      ]
+    | undefined;
 
   try {
     data = await Promise.all([
@@ -88,7 +117,31 @@ export default async function AdminCalendarPage({
     );
   }
 
-  const [allRoomsRaw, allBookings, settings, buildingsRaw, occupancy] = data;
+  if (!data) return null;
+
+  const [
+    allRoomsRaw,
+    allBookings,
+    settings,
+    buildingsRaw,
+    occupancy,
+  ] = data;
+  let availabilityDashboard = null;
+  let availabilityError: string | null = null;
+
+  if (availabilityState.open) {
+    try {
+      availabilityDashboard = await loadAvailabilityDashboard(
+        availabilityState.year,
+        availabilityState.month,
+        availabilityState.buildingId,
+        availabilityState.featureFilter
+      );
+    } catch (e) {
+      availabilityError = e instanceof Error ? e.message : "Eroare la încărcarea heatmap-ului.";
+    }
+  }
+
   const activeBuildings = buildingsRaw.filter((b) => b.is_active);
   const allRooms = allRoomsRaw.filter((r) => r.is_active);
   const checkInTime =
@@ -135,6 +188,40 @@ export default async function AdminCalendarPage({
   const unassignedCereri = allBookings.filter(
     (booking) => booking.status === "cerere_noua" && booking.room_ids.length === 0
   );
+  const baseCalendarSearch = toUrlSearchParams(params);
+  const prevMonth = availabilityState.month === 0 ? 11 : availabilityState.month - 1;
+  const prevYear =
+    availabilityState.month === 0 ? availabilityState.year - 1 : availabilityState.year;
+  const nextMonth = availabilityState.month === 11 ? 0 : availabilityState.month + 1;
+  const nextYear =
+    availabilityState.month === 11 ? availabilityState.year + 1 : availabilityState.year;
+  const closeAvailabilityHref = hrefForQuery(
+    mergeAvailabilityPanelSearch(baseCalendarSearch, { open: false })
+  );
+  const prevAvailabilityHref = hrefForQuery(
+    mergeAvailabilityPanelSearch(baseCalendarSearch, {
+      open: true,
+      year: prevYear,
+      month: prevMonth,
+      buildingId: availabilityState.buildingId,
+      view: availabilityState.view,
+      weekStart: availabilityState.view === "week" ? availabilityState.weekStart : null,
+      featureFilter: availabilityState.featureFilter,
+      day: null,
+    })
+  );
+  const nextAvailabilityHref = hrefForQuery(
+    mergeAvailabilityPanelSearch(baseCalendarSearch, {
+      open: true,
+      year: nextYear,
+      month: nextMonth,
+      buildingId: availabilityState.buildingId,
+      view: availabilityState.view,
+      weekStart: availabilityState.view === "week" ? availabilityState.weekStart : null,
+      featureFilter: availabilityState.featureFilter,
+      day: null,
+    })
+  );
 
   return (
     <AdminRetroPageFrame
@@ -169,6 +256,36 @@ export default async function AdminCalendarPage({
           focusDay={focusDay}
         />
       </RetroXpWindow>
+      <GanttAvailabilityHeatmapPanel
+        open={availabilityState.open}
+        closeHref={closeAvailabilityHref}
+        title={availabilityDashboard?.title ?? "Disponibilitate"}
+        prevHref={prevAvailabilityHref}
+        nextHref={nextAvailabilityHref}
+        roomCountLabel={
+          availabilityDashboard
+            ? `${availabilityDashboard.total_rooms} camere${availabilityState.buildingId ? " · filtru clădire" : ""}`
+            : "Panou heatmap disponibilitate"
+        }
+      >
+        {availabilityError ? (
+          <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {availabilityError}
+          </p>
+        ) : availabilityDashboard ? (
+          <AvailabilityDashboard
+            dashboard={availabilityDashboard}
+            initialDay={availabilityState.day ?? undefined}
+            buildingId={availabilityState.buildingId}
+            featureFilter={availabilityState.featureFilter}
+            view={availabilityState.view}
+            weekStart={availabilityState.weekStart}
+            basePath="/admin/calendar"
+            queryPrefix="avail_"
+            extraQueryParams={{ avail: "1" }}
+          />
+        ) : null}
+      </GanttAvailabilityHeatmapPanel>
     </AdminRetroPageFrame>
   );
 }

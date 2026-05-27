@@ -65,13 +65,39 @@ html.touch-device .guest-booking-form .step-pills li {
 
 /* —— Admin shell —— */
 html.touch-device .admin-hud__header {
-  flex-wrap: wrap;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
-  padding: 0.75rem 1rem 0.5rem;
+  padding: 0.68rem 0.95rem 0.46rem;
+}
+
+html.touch-device .admin-hud__brand,
+html.touch-device .admin-hud__actions,
+html.touch-device .admin-hud__center {
+  justify-self: stretch;
+}
+
+html.touch-device .admin-hud__actions,
+html.touch-device .admin-hud__action-cluster {
+  justify-content: flex-start;
 }
 
 html.touch-device .admin-hud__title {
   font-size: 1.05rem;
+}
+
+html.touch-device .admin-hud__center {
+  order: 3;
+  min-width: 100%;
+}
+
+html.touch-device .admin-hud-today {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html.touch-device .admin-hud-today__stats,
+html.touch-device .admin-hud-today__actions {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 html.touch-device .admin-nav {
@@ -90,8 +116,8 @@ html.touch-device .admin-nav a {
   flex-shrink: 0;
   scroll-snap-align: start;
   min-height: 2.75rem;
-  padding: 0.625rem 0.875rem;
-  font-size: 0.8125rem;
+  padding: 0.58rem 0.82rem;
+  font-size: 0.79rem;
 }
 
 html.touch-device .admin-shell .flex-1 > main {

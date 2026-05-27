@@ -1,16 +1,4 @@
-export type ThemeId =
-  | "default"
-  | "green"
-  | "blue"
-  | "orange"
-  | "red"
-  | "win95"
-  | "winxp"
-  | "romania"
-  | "italy"
-  | "france"
-  | "poland"
-  | "spain";
+export type ThemeId = "default";
 
 export type ThemeMode = "day" | "night";
 
@@ -25,21 +13,8 @@ export type ThemeSettings = {
   mode: ThemeMode;
 };
 
-export const COUNTRY_THEME_IDS = [
-  "romania",
-  "italy",
-  "france",
-  "poland",
-  "spain",
-] as const satisfies readonly ThemeId[];
+export const COUNTRY_THEME_IDS = [] as const satisfies readonly ThemeId[];
 
 export const ALL_THEME_IDS = [
   "default",
-  "green",
-  "blue",
-  "orange",
-  "red",
-  "win95",
-  "winxp",
-  ...COUNTRY_THEME_IDS,
 ] as const satisfies readonly ThemeId[];

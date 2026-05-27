@@ -3,13 +3,22 @@ export type GuestTag = "vip" | "recurrent";
 export const GUEST_TAGS: readonly GuestTag[] = ["vip", "recurrent"] as const;
 
 export type GuestPositiveTrait =
-  | "respectuos"
+  | "voios"
+  | "glumet"
   | "linistit"
+  | "miezul_serii"
+  | "respectuos"
   | "ingrijit"
   | "plateste_la_timp"
   | "recomandat";
 
 export type GuestNegativeTrait =
+  | "betiv"
+  | "galagios"
+  | "recalcitrant"
+  | "scandalagiu"
+  | "cleptoman"
+  | "nesimtit"
   | "zgomotos"
   | "mizerie"
   | "conflictual"
@@ -24,6 +33,8 @@ export type GuestProfileRow = {
   trust_score: number;
   loyalty_score: number;
   stars_avg: number;
+  manual_positive_traits: GuestPositiveTrait[];
+  manual_negative_traits: GuestNegativeTrait[];
   positive_traits: GuestPositiveTrait[];
   negative_traits: GuestNegativeTrait[];
   flag_level: GuestFlagLevel;
@@ -51,6 +62,8 @@ export type GuestBookingFlagSummary = Pick<
   | "trust_score"
   | "loyalty_score"
   | "stars_avg"
+  | "manual_positive_traits"
+  | "manual_negative_traits"
   | "positive_traits"
   | "negative_traits"
   | "flag_level"
@@ -130,9 +143,10 @@ export type GuestSearchResult = {
 };
 
 export type GuestHighlights = {
-  flagged: GuestListItem[];
-  recent: GuestListItem[];
+  blacklist: GuestListItem[];
+  loyal: GuestListItem[];
   rated: GuestListItem[];
+  recent: GuestListItem[];
 };
 
 export type GuestBookingInput = {

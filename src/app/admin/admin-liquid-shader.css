@@ -35,12 +35,8 @@
   visibility: hidden;
 }
 
-/* Fallback CSS — mișcare continuă tip lichid (temă țară, fără WebGL) */
-html[data-theme="romania"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-html[data-theme="italy"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-html[data-theme="france"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-html[data-theme="poland"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
+/* Fallback CSS — schelet unic default */
+html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
   animation-duration: 9s, 12s !important;
   animation-timing-function: ease-in-out !important;
   animation-iteration-count: infinite !important;
@@ -48,11 +44,7 @@ html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
   opacity: 0.75 !important;
 }
 
-html[data-theme="romania"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun,
-html[data-theme="italy"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun,
-html[data-theme="france"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun,
-html[data-theme="poland"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun,
-html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun {
+html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sun {
   background: radial-gradient(
     circle at 35% 35%,
     var(--color-accent) 0%,
@@ -62,11 +54,7 @@ html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-
   animation: admin-liquid-drift-a 11s ease-in-out infinite, admin-liquid-morph 7s ease-in-out infinite !important;
 }
 
-html[data-theme="romania"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky,
-html[data-theme="italy"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky,
-html[data-theme="france"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky,
-html[data-theme="poland"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky,
-html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky {
+html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-sky {
   background: radial-gradient(
     ellipse at 50% 40%,
     var(--color-accent-muted) 0%,
@@ -76,11 +64,7 @@ html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--day-
   animation: admin-liquid-drift-b 13s ease-in-out infinite reverse, admin-liquid-morph 9s ease-in-out infinite reverse !important;
 }
 
-html[data-theme="romania"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep,
-html[data-theme="italy"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep,
-html[data-theme="france"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep,
-html[data-theme="poland"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep,
-html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep {
+html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--night-deep {
   background: radial-gradient(
     ellipse at 60% 55%,
     var(--color-focus) 0%,
@@ -142,9 +126,7 @@ html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob--nigh
   }
 }
 
-html[data-theme="default"] .admin-liquid-shell,
-html[data-admin-retro="win95"] .admin-liquid-shell,
-html[data-admin-retro="winxp"] .admin-liquid-shell {
+html[data-theme="default"] .admin-liquid-shell {
   display: none !important;
 }
 
@@ -153,11 +135,7 @@ html[data-admin-retro="winxp"] .admin-liquid-shell {
     display: none !important;
   }
 
-  html[data-theme="romania"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-  html[data-theme="italy"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-  html[data-theme="france"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-  html[data-theme="poland"] .admin-dn-liquid--fallback .admin-dn-liquid__blob,
-  html[data-theme="spain"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
+  html[data-theme="default"] .admin-dn-liquid--fallback .admin-dn-liquid__blob {
     animation: none !important;
   }
 }

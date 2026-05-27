@@ -290,6 +290,8 @@ export async function updateGuestProfileControls(input: {
   blacklistReason: string;
   manualTrustAdjustment: number;
   manualLoyaltyAdjustment: number;
+  manualPositiveTraits: GuestPositiveTrait[];
+  manualNegativeTraits: GuestNegativeTrait[];
   manualNote: string;
 }): Promise<void> {
   await ensureGuestProfiles([input.guestId]);
@@ -309,6 +311,8 @@ export async function updateGuestProfileControls(input: {
       input.flagLevel === "blacklist" ? nextReason ?? current.blacklist_reason : null,
     manual_trust_adjustment: input.manualTrustAdjustment,
     manual_loyalty_adjustment: input.manualLoyaltyAdjustment,
+    manual_positive_traits: input.manualPositiveTraits,
+    manual_negative_traits: input.manualNegativeTraits,
     manual_note: input.manualNote.trim() || null,
   };
 
@@ -338,6 +342,8 @@ export async function updateGuestProfileControls(input: {
   const adjustmentChanged =
     current.manual_trust_adjustment !== input.manualTrustAdjustment ||
     current.manual_loyalty_adjustment !== input.manualLoyaltyAdjustment ||
+    current.manual_positive_traits.join("|") !== input.manualPositiveTraits.join("|") ||
+    current.manual_negative_traits.join("|") !== input.manualNegativeTraits.join("|") ||
     (current.manual_note ?? "") !== (input.manualNote.trim() || "");
 
   if (flagChanged) {
@@ -367,6 +373,8 @@ export async function updateGuestProfileControls(input: {
       metadata: {
         manual_trust_adjustment: input.manualTrustAdjustment,
         manual_loyalty_adjustment: input.manualLoyaltyAdjustment,
+        manual_positive_traits: input.manualPositiveTraits,
+        manual_negative_traits: input.manualNegativeTraits,
         manual_note: input.manualNote.trim() || null,
       },
     });
@@ -491,6 +499,18 @@ export async function mergeGuestProfiles(
       target.manual_trust_adjustment + source.manual_trust_adjustment,
     manual_loyalty_adjustment:
       target.manual_loyalty_adjustment + source.manual_loyalty_adjustment,
+    manual_positive_traits: [
+      ...new Set([
+        ...target.manual_positive_traits,
+        ...source.manual_positive_traits,
+      ]),
+    ],
+    manual_negative_traits: [
+      ...new Set([
+        ...target.manual_negative_traits,
+        ...source.manual_negative_traits,
+      ]),
+    ],
     manual_note: [target.manual_note, source.manual_note]
       .filter(Boolean)
       .join("\n---\n") || null,

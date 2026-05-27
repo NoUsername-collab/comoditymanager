@@ -11,6 +11,7 @@ import {
 import {
   clearGanttRoomDropTargets,
   findGanttRoomAtPoint,
+  getGanttRoomDragLayer,
   setGanttRoomDropTarget,
 } from "@/domain/gantt/room-at-point";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
@@ -31,6 +32,7 @@ import {
   type GanttStayPopoverData,
 } from "./GanttStayPopover";
 import { addDays } from "@/lib/stay-dates";
+import { dayIndexFromPointerX } from "@/domain/gantt/drag-create";
 
 const DRAG_BLOCK_SELECTOR = [
   "a",
@@ -50,6 +52,13 @@ const DRAG_BLOCK_SELECTOR = [
 
 function blocksStayDragStart(target: EventTarget | null): boolean {
   return target instanceof Element && !!target.closest(DRAG_BLOCK_SELECTOR);
+}
+
+function shouldUseVerticalDrag(canVerticalMove: boolean, dx: number, dy: number): boolean {
+  if (!canVerticalMove) return false;
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+  return absY >= 24 && absY > absX * 1.35;
 }
 
 type Props = {
@@ -211,8 +220,7 @@ export function GanttDraggableStay({
           setDragDeltaY(dy);
           dragDeltaRef.current = dx;
           dragDeltaYRef.current = dy;
-          const isVertical =
-            canVerticalMove && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16;
+          const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
           setVerticalMode(isVertical);
           if (isVertical) {
             const target = findGanttRoomAtPoint(e.clientX, e.clientY);
@@ -237,8 +245,7 @@ export function GanttDraggableStay({
       setDragDeltaY(dy);
       dragDeltaRef.current = dx;
       dragDeltaYRef.current = dy;
-      const isVertical =
-        canVerticalMove && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16;
+      const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
       setVerticalMode(isVertical);
       if (isVertical) {
         const target = findGanttRoomAtPoint(e.clientX, e.clientY);
@@ -277,8 +284,7 @@ export function GanttDraggableStay({
       const dy = dragDeltaYRef.current;
       const clientX = e?.clientX ?? lastPointerX.current;
       const clientY = e?.clientY ?? lastPointerY.current;
-      const isVertical =
-        canVerticalMove && Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16;
+      const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
       const targetRoom =
         targetRoomRef.current ?? findGanttRoomAtPoint(clientX, clientY);
       setDragDelta(0);
@@ -307,18 +313,28 @@ export function GanttDraggableStay({
 
       if (visibleDayCount === 0) return;
 
-      const grid = document.querySelector(
-        "[data-gantt-day-grid]"
-      ) as HTMLElement | null;
-      if (!grid) return;
+      const targetLayer =
+        getGanttRoomDragLayer(targetRoom ?? sourceRoomId) ??
+        getGanttRoomDragLayer(sourceRoomId);
+      if (!targetLayer) return;
 
-      const gridRect = grid.getBoundingClientRect();
+      const gridRect = targetLayer.getBoundingClientRect();
       if (gridRect.width <= 0) return;
 
       const dayWidth = gridRect.width / visibleDayCount;
       if (dayWidth <= 0) return;
 
-      const dayDelta = Math.round(dx / dayWidth);
+      const pointerDayIndex = dayIndexFromPointerX(
+        clientX,
+        gridRect.left,
+        gridRect.width,
+        visibleDayCount
+      );
+      const visualStartIndex = Math.max(
+        0,
+        Math.min(visibleDayCount - 1, Math.floor((pos.leftPct / 100) * visibleDayCount))
+      );
+      const dayDelta = pointerDayIndex - visualStartIndex;
       const targetCheckIn = addDays(bookingCheckIn, dayDelta);
       if (targetCheckIn === bookingCheckIn) return;
 
@@ -355,6 +371,7 @@ export function GanttDraggableStay({
     router,
     notifyMoved,
     popover.guestName,
+    pos.leftPct,
     runAdminAction,
     visibleDayCount,
   ]);

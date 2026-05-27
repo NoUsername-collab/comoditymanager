@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ThemeSwitcher } from "./ThemeSwitcher";
 import { getPensionSettings } from "@/services/pension-settings";
 
 export async function PublicFooter() {
@@ -33,13 +32,10 @@ export async function PublicFooter() {
           </div>
 
           <div>
-            <p className="public-footer__label">Contact & aspect</p>
+            <p className="public-footer__label">Contact</p>
             <p className="public-footer__contact">
               <a href="mailto:contact@casaemil.ro">contact@casaemil.ro</a>
             </p>
-            <div className="public-footer__themes">
-              <ThemeSwitcher />
-            </div>
           </div>
         </div>
 

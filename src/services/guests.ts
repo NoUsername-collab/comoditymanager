@@ -318,19 +318,27 @@ async function fetchGuestListItemsByIds(
 }
 
 async function listGuestIdsForHighlights(limit = 8): Promise<{
-  flagged: string[];
+  blacklist: string[];
+  loyal: string[];
   recent: string[];
   rated: string[];
 }> {
   const supabase = createAdminClient();
 
-  const [flaggedRes, recentRes, ratedRes] = await Promise.all([
+  const [blacklistRes, loyalRes, recentRes, ratedRes] = await Promise.all([
     supabase
       .from("guest_profiles")
-      .select("guest_id, flag_level, updated_at")
-      .in("flag_level", ["watchlist", "blacklist"])
+      .select("guest_id")
+      .eq("flag_level", "blacklist")
       .order("updated_at", { ascending: false })
-      .limit(limit * 2),
+      .limit(limit),
+    supabase
+      .from("guest_profiles")
+      .select("guest_id")
+      .or("loyalty_score.gte.65,completed_stays.gte.3")
+      .order("loyalty_score", { ascending: false })
+      .order("completed_stays", { ascending: false })
+      .limit(limit),
     supabase
       .from("guests")
       .select("id")
@@ -345,26 +353,18 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
       .limit(limit),
   ]);
 
-  if (flaggedRes.error) throw new Error(flaggedRes.error.message);
+  if (blacklistRes.error) throw new Error(blacklistRes.error.message);
+  if (loyalRes.error) throw new Error(loyalRes.error.message);
   if (recentRes.error) throw new Error(recentRes.error.message);
   if (ratedRes.error) throw new Error(ratedRes.error.message);
 
-  const flagged = ((flaggedRes.data ?? []) as {
-    guest_id: string;
-    flag_level: "watchlist" | "blacklist";
-    updated_at: string;
-  }[])
-    .sort((left, right) => {
-      if (left.flag_level !== right.flag_level) {
-        return left.flag_level === "blacklist" ? -1 : 1;
-      }
-      return left.updated_at < right.updated_at ? 1 : -1;
-    })
-    .slice(0, limit)
-    .map((row) => row.guest_id);
-
   return {
-    flagged,
+    blacklist: ((blacklistRes.data ?? []) as { guest_id: string }[]).map(
+      (row) => row.guest_id
+    ),
+    loyal: ((loyalRes.data ?? []) as { guest_id: string }[]).map(
+      (row) => row.guest_id
+    ),
     recent: ((recentRes.data ?? []) as { id: string }[]).map((row) => row.id),
     rated: ((ratedRes.data ?? []) as { guest_id: string }[]).map(
       (row) => row.guest_id
@@ -514,17 +514,19 @@ async function listGuestIdsByFilter(
 }
 
 export async function listGuestHighlights(): Promise<GuestHighlights> {
-  const { flagged, recent, rated } = await listGuestIdsForHighlights();
-  const [flaggedGuests, recentGuests, ratedGuests] = await Promise.all([
-    fetchGuestListItemsByIds(flagged),
+  const { blacklist, loyal, recent, rated } = await listGuestIdsForHighlights(10);
+  const [blacklistGuests, loyalGuests, recentGuests, ratedGuests] = await Promise.all([
+    fetchGuestListItemsByIds(blacklist),
+    fetchGuestListItemsByIds(loyal),
     fetchGuestListItemsByIds(recent),
     fetchGuestListItemsByIds(rated),
   ]);
 
   return {
-    flagged: flaggedGuests,
-    recent: recentGuests,
+    blacklist: blacklistGuests,
+    loyal: loyalGuests,
     rated: ratedGuests,
+    recent: recentGuests,
   };
 }
 

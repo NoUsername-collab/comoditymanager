@@ -307,6 +307,12 @@ export function navigateRange(
   year: number,
   month: number
 ): { y: number; m: number; zoom: GanttZoom; ws?: string; q?: number } {
+  const isAnchoredFixedRange =
+    (range.zoom === "quarter" && range.periodKey.startsWith("quarter-")) ||
+    ((range.zoom === "days30" || range.zoom === "month") &&
+      range.periodKey.startsWith(`${range.zoom}-`) &&
+      range.periodKey.split("-").length >= 4);
+
   if (isRollingZoom(range.zoom)) {
     const ws = addDays(range.days[0].iso, direction * rollingZoomLength(range.zoom));
     const d = parseIso(ws);
@@ -318,10 +324,31 @@ export function navigateRange(
     };
   }
   if (range.zoom === "quarter") {
+    if (isAnchoredFixedRange) {
+      const ws = addDays(range.days[0].iso, direction * range.days.length);
+      const d = parseIso(ws);
+      return {
+        y: d.getFullYear(),
+        m: d.getMonth(),
+        zoom: "quarter",
+        ws,
+        q: Math.floor(d.getMonth() / 3),
+      };
+    }
     const q = Number(range.periodKey.split("-")[2]) + direction;
     if (q < 0) return { y: year - 1, m: 9, zoom: "quarter", q: 3 };
     if (q > 3) return { y: year + 1, m: 0, zoom: "quarter", q: 0 };
     return { y: year, m: q * 3, zoom: "quarter", q };
+  }
+  if (isMonthLikeZoom(range.zoom) && isAnchoredFixedRange) {
+    const ws = addDays(range.days[0].iso, direction * range.days.length);
+    const d = parseIso(ws);
+    return {
+      y: d.getFullYear(),
+      m: d.getMonth(),
+      zoom: range.zoom,
+      ws,
+    };
   }
   let nm = month + direction;
   let ny = year;

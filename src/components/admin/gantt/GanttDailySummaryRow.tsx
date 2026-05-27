@@ -19,6 +19,8 @@ export function GanttDailySummaryRow({
   activeFocusIso,
   filterActive,
   onDayClick,
+  onPanPointerDown,
+  panActive = false,
 }: {
   counts: DailyFreeCount[];
   viewRange: GanttViewRange;
@@ -26,27 +28,37 @@ export function GanttDailySummaryRow({
   activeFocusIso: string | null;
   filterActive: boolean;
   onDayClick: (iso: string) => void;
+  onPanPointerDown?: React.PointerEventHandler<HTMLDivElement>;
+  panActive?: boolean;
 }) {
   const dayCount = viewRange.days.length;
 
   return (
     <tr className="gantt-summary-row border-b border-zinc-200">
-      <td className="gantt-summary-row__label sticky left-0 z-30 border-r border-zinc-200 bg-zinc-50/95 px-3 py-1.5 align-middle">
-        <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+      <td className="gantt-summary-row__label sticky left-0 z-30 border-r border-zinc-200 px-3 py-1.5 align-middle">
+        <span className="gantt-summary-row__label-title">
           Libere
         </span>
         {filterActive && activeFocusIso && (
-          <span className="mt-0.5 block text-[9px] font-medium text-emerald-700">
+          <span className="gantt-summary-row__label-state">
             filtru activ
           </span>
         )}
       </td>
       <td className="gantt-summary-row__days p-0 align-middle">
         <div
-          className="gantt-summary-row__grid grid w-full min-w-0"
+          className={[
+            "gantt-summary-row__grid grid w-full min-w-0",
+            "gantt-summary-row__grid--pan",
+            panActive && "gantt-summary-row__grid--panning",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           style={ganttDayGridStyle(dayCount)}
           role="row"
           aria-label="Camere libere pe zi"
+          onPointerDown={onPanPointerDown}
+          title="Trage stânga-dreapta pentru scroll rapid"
         >
           {viewRange.days.map((col, i) => {
             const { free, total } = counts[i]!;
@@ -67,7 +79,7 @@ export function GanttDailySummaryRow({
                 onClick={() => onDayClick(col.iso)}
                 className={[
                   "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
-                  compact ? "gantt-summary-cell--compact py-1" : "py-1.5",
+                  compact ? "gantt-summary-cell--compact py-[0.25rem]" : "py-[0.36rem]",
                   col.isWeekend && "gantt-summary-cell--weekend",
                   col.isToday && "gantt-summary-cell--today",
                   `gantt-summary-cell--${heat}`,
@@ -79,9 +91,6 @@ export function GanttDailySummaryRow({
                 <span className="gantt-summary-cell__value tabular-nums">
                   {free}
                 </span>
-                {!compact && total > 0 && (
-                  <span className="gantt-summary-cell__total">camere</span>
-                )}
               </button>
             );
           })}

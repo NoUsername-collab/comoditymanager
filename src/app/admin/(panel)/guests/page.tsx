@@ -52,19 +52,56 @@ function buildGuestListHref(input: {
 
 function GuestListSection({
   title,
+  description,
   guests,
   currentHref,
 }: {
   title: string;
+  description: string;
   guests: GuestListItem[];
   currentHref: string;
 }) {
   return (
     <RetroXpWindow title={`${title} (${guests.length})`} className="mb-6">
+      <div
+        className="mb-3 rounded-md border px-3 py-2"
+        style={{
+          borderColor: "var(--border)",
+          background: "var(--surface-2)",
+        }}
+      >
+        <p
+          className="text-[10px] font-bold uppercase tracking-[0.18em]"
+          style={{ color: "var(--text-faint)" }}
+        >
+          Secțiune clienți
+        </p>
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-base font-black" style={{ color: "var(--text)" }}>
+            {title}
+          </h2>
+          <span
+            className="rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em]"
+            style={{
+              borderColor: "var(--accent)",
+              background: "var(--accent-muted)",
+              color: "var(--accent)",
+            }}
+          >
+            {guests.length} clienți
+          </span>
+        </div>
+        <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
+          {description}
+        </p>
+      </div>
+
       {guests.length === 0 ? (
-        <p className="text-sm text-zinc-500">Niciun client în această secțiune încă.</p>
+        <p className="text-sm text-zinc-500">
+          Niciun client în această secțiune încă.
+        </p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="grid justify-start gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,240px))]">
           {guests.map((guest) => (
             <GuestListCard
               key={guest.id}
@@ -213,18 +250,27 @@ export default async function AdminGuestsPage({
       {result.mode === "highlights" && highlights ? (
         <>
           <GuestListSection
-            title="Flag-uiți"
-            guests={highlights.flagged}
+            title="Primii 10 în blacklist"
+            description="Clienți marcați manual ca blacklist. Cer atenție maximă la orice rezervare nouă."
+            guests={highlights.blacklist}
+            currentHref={currentHref}
+          />
+          <GuestListSection
+            title="Top 10 fidelitate"
+            description="Clienții care revin cel mai des și au scorul de fidelitate cel mai bun."
+            guests={highlights.loyal}
+            currentHref={currentHref}
+          />
+          <GuestListSection
+            title="Top 10 stele"
+            description="Clienți cu cele mai bune evaluări reale din review-urile de sejur."
+            guests={highlights.rated}
             currentHref={currentHref}
           />
           <GuestListSection
             title="Recenți"
+            description="Ultimii clienți actualizați sau apăruți în lucru, pentru triere rapidă."
             guests={highlights.recent}
-            currentHref={currentHref}
-          />
-          <GuestListSection
-            title="Cu stele bune"
-            guests={highlights.rated}
             currentHref={currentHref}
           />
         </>
@@ -238,7 +284,7 @@ export default async function AdminGuestsPage({
             />
           ) : (
             <>
-              <ul className="space-y-2">
+              <ul className="grid justify-start gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,240px))]">
                 {result.items.map((guest) => (
                   <GuestListCard
                     key={guest.id}

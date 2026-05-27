@@ -37,6 +37,10 @@ function getRoomDragLayer(roomId: string): HTMLElement | null {
   return document.querySelector(roomDragLayerSelector(roomId)) as HTMLElement | null;
 }
 
+export function getGanttRoomDragLayer(roomId: string): HTMLElement | null {
+  return getRoomDragLayer(roomId);
+}
+
 export function findGanttRoomAtPoint(clientX: number, clientY: number): string | null {
   if (typeof document === "undefined") return null;
   const els = document.elementsFromPoint(clientX, clientY);

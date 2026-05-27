@@ -84,18 +84,6 @@ function AvailabilityHeatLegend({ displayMode }: { displayMode: DisplayMode }) {
   );
 }
 
-function buildQuery(
-  year: number,
-  month: number,
-  extra: Record<string, string | undefined>
-) {
-  const p = new URLSearchParams({ y: String(year), m: String(month) });
-  for (const [k, v] of Object.entries(extra)) {
-    if (v) p.set(k, v);
-  }
-  return p.toString();
-}
-
 function HeatDayCell({
   day,
   selected,
@@ -395,6 +383,10 @@ export function AvailabilityDashboard({
   featureFilter: initialFeatureFilter = "all",
   view: initialView,
   weekStart: initialWeekStart,
+  basePath = "/admin/disponibilitate",
+  anchorHash = "",
+  queryPrefix = "",
+  extraQueryParams = {},
 }: {
   dashboard: AvailabilityDashboard;
   initialDay?: string;
@@ -402,6 +394,10 @@ export function AvailabilityDashboard({
   featureFilter?: GanttFeatureFilter;
   view: "month" | "week";
   weekStart: string | null;
+  basePath?: string;
+  anchorHash?: string;
+  queryPrefix?: string;
+  extraQueryParams?: Record<string, string | undefined>;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -433,18 +429,68 @@ export function AvailabilityDashboard({
   const weekMonday =
     initialWeekStart ?? mondayOfWeekIso(selectedIso ?? todayIso());
 
+  const prefixedKey = useCallback(
+    (key: string) => (queryPrefix ? `${queryPrefix}${key}` : key),
+    [queryPrefix]
+  );
+
+  const buildQuery = useCallback(
+    (year: number, month: number, extra: Record<string, string | undefined>) => {
+      const p = new URLSearchParams(searchParams.toString());
+      const nextValues: Record<string, string | undefined> = {
+        [prefixedKey("y")]: String(year),
+        [prefixedKey("m")]: String(month),
+        [prefixedKey("day")]: extra.day,
+        [prefixedKey("building")]: extra.building,
+        [prefixedKey("feat")]: extra.feat,
+        [prefixedKey("view")]: extra.view,
+        [prefixedKey("ws")]: extra.ws,
+      };
+
+      for (const [key, value] of Object.entries(nextValues)) {
+        if (value) p.set(key, value);
+        else p.delete(key);
+      }
+
+      for (const [key, value] of Object.entries(extraQueryParams)) {
+        if (value) p.set(key, value);
+        else p.delete(key);
+      }
+
+      return p.toString();
+    },
+    [searchParams, prefixedKey, extraQueryParams]
+  );
+
+  const buildTargetHref = useCallback(
+    (query: string) => `${basePath}?${query}${anchorHash}`,
+    [anchorHash, basePath]
+  );
+
   const pushParams = useCallback(
     (patch: Record<string, string | undefined>) => {
       const q = buildQuery(dashboard.year, dashboard.month, {
-        day: patch.day ?? searchParams.get("day") ?? undefined,
+        day: patch.day ?? searchParams.get(prefixedKey("day")) ?? undefined,
         building: patch.building ?? buildingId ?? undefined,
         feat: patch.feat ?? (featureFilter !== "all" ? featureFilter : undefined),
         view: patch.view ?? view,
         ws: patch.ws ?? (view === "week" ? weekMonday : undefined),
       });
-      router.push(`/admin/disponibilitate?${q}`);
+      router.push(buildTargetHref(q));
     },
-    [router, dashboard.year, dashboard.month, searchParams, buildingId, featureFilter, view, weekMonday]
+    [
+      router,
+      dashboard.year,
+      dashboard.month,
+      searchParams,
+      buildingId,
+      featureFilter,
+      view,
+      weekMonday,
+      prefixedKey,
+      buildQuery,
+      buildTargetHref,
+    ]
   );
 
   const selectDay = useCallback(
@@ -480,9 +526,12 @@ export function AvailabilityDashboard({
   };
 
   useEffect(() => {
-    if (initialDay) selectDay(initialDay);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!initialDay) return;
+    const frame = window.requestAnimationFrame(() => {
+      void selectDay(initialDay);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [initialDay, selectDay]);
 
   const rangeDays = useMemo(() => {
     if (!rangeStart) return [];
@@ -668,7 +717,12 @@ export function AvailabilityDashboard({
           style={{ "--chip-color": "#64748b" } as React.CSSProperties}
           onClick={() =>
             router.push(
-              `/admin/disponibilitate?${buildQuery(dashboard.year, dashboard.month, { view, day: selectedIso ?? undefined })}`
+                buildTargetHref(
+                  buildQuery(dashboard.year, dashboard.month, {
+                    view,
+                    day: selectedIso ?? undefined,
+                  })
+                )
             )
           }
         >
@@ -687,12 +741,14 @@ export function AvailabilityDashboard({
             style={{ "--chip-color": b.display_color } as React.CSSProperties}
             onClick={() =>
               router.push(
-                `/admin/disponibilitate?${buildQuery(dashboard.year, dashboard.month, {
-                  building: b.id,
-                  view,
-                  day: selectedIso ?? undefined,
-                  ws: view === "week" ? weekMonday : undefined,
-                })}`
+                buildTargetHref(
+                  buildQuery(dashboard.year, dashboard.month, {
+                    building: b.id,
+                    view,
+                    day: selectedIso ?? undefined,
+                    ws: view === "week" ? weekMonday : undefined,
+                  })
+                )
               )
             }
           >
@@ -892,7 +948,7 @@ export function AvailabilityDashboard({
             view,
             ws: view === "week" ? weekMonday : undefined,
           });
-          router.push(`/admin/disponibilitate?${q}`);
+          router.push(buildTargetHref(q));
         }}
         title={
           detail

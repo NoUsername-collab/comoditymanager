@@ -10,6 +10,7 @@ import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminLocationUnlockForm } from "@/components/admin/settings/AdminLocationUnlockForm";
+import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 import { getStaffRole } from "@/lib/auth/roles";
@@ -22,6 +23,7 @@ export default async function SettingsPage({
   searchParams: Promise<{
     saved?: string;
     location?: string;
+    section?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -127,6 +129,15 @@ export default async function SettingsPage({
             <AdminFxSettings />
           </SettingsSlidePanel>
 
+          <SettingsSlidePanel
+            title="Istoric acțiuni"
+            subtitle="Rezervări + admin, exact jurnalul vechi mutat aici"
+            icon="🕘"
+            defaultOpen={params.section === "history"}
+          >
+            <AdminActivityHistoryPanel />
+          </SettingsSlidePanel>
+
           <AdminPendingForm
             action={updateAppearanceSettingsAction}
             className="admin-settings-form mt-6"
@@ -139,7 +150,7 @@ export default async function SettingsPage({
               icon="🎨"
               defaultOpen
             >
-              <AdminPalettePicker defaultSettings={appearance} />
+              <AdminPalettePicker />
             </SettingsSlidePanel>
 
             <div className="admin-settings-submit">

@@ -38,9 +38,7 @@ export function AdminNav({
     { href: "/admin/cazari", label: "Cazări", icon: "bed" },
     { href: "/admin/guests", label: "Clienți", icon: "person" },
     { href: "/admin/calendar", label: "Calendar", icon: "calendar" },
-    { href: "/admin/disponibilitate", label: "Disponibilitate", icon: "grid" },
     { href: "/admin/statistics", label: "Statistici", icon: "chart" },
-    { href: "/admin/istoric", label: "Istoric", icon: "history" },
     { href: "/admin/settings", label: "Setări", icon: "gear" },
   ];
 
