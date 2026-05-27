@@ -46,7 +46,6 @@ export function AvailabilityLightSummary({
 
   const cards = [
     {
-      label: "Minim liber",
       label: tSummary("minFree"),
       value: `${dashboard.kpis.min_free_rooms}`,
       sub: dashboard.kpis.min_free_day_iso
