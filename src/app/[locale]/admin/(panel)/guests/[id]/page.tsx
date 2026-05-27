@@ -11,8 +11,6 @@ import { GuestProfileCards } from "@/components/admin/guests/GuestProfileCards";
 import { GuestProfileControlsForm } from "@/components/admin/guests/GuestProfileControlsForm";
 import { GuestRebookButtons } from "@/components/admin/guests/GuestRebookButtons";
 import { GuestStayReviewForm } from "@/components/admin/guests/GuestStayReviewForm";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { todayIso } from "@/lib/stay-dates";
 import {
@@ -68,246 +66,207 @@ export default async function GuestDetailPage({
   } catch (e) {
     duplicatesError = e instanceof Error ? e.message : tPage("duplicatesLoadError");
   }
+
   const today = todayIso();
   const backHref = from?.startsWith("/admin/guests") ? from : "/admin/guests";
   const reviewedHistoryCount = history.filter((stay) => stay.review != null).length;
   const latestStay = history[0] ?? null;
 
   return (
-    <AdminRetroPageFrame
-      title={`${tCommon("clients")} — ${guest.display_name}`}
-      backHref={backHref}
-      backLabel={tCommon("clients")}
-      className="max-w-none pl-3 pr-4 xl:pr-5"
-    >
-      <div className="grid gap-6 xl:grid-cols-[510px_minmax(0,1fr)] 2xl:grid-cols-[540px_minmax(0,1.2fr)]">
-        <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
-          <GuestIdentityCard guest={guest} />
+    <main className="guest-profile-page">
+      <Link href={backHref} className="guest-profile-page__back">
+        ← {tCommon("clients")}
+      </Link>
 
-          {guest.profile && (
-            <RetroXpWindow title={tPage("summary")}>
-              <GuestProfileBadges profile={guest.profile} />
-            </RetroXpWindow>
-          )}
+      <GuestIdentityCard guest={guest} />
 
-          <RetroXpWindow title={tPage("quickActions")}>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <GuestBlacklistPanel
-                  key={`blacklist-${guest.id}-${guest.profile?.updated_at ?? "none"}-${guest.profile?.flag_level ?? "normal"}`}
-                  guestId={guest.id}
-                  profile={guest.profile}
-                />
-              </div>
+      {profileError && <p className="guest-profile-page__warn">{profileError}</p>}
 
-              <div className="space-y-2">
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-zinc-500">
-                  {tPage("quickRebook")}
-                </p>
-                <GuestRebookButtons guestId={guest.id} disabled={history.length === 0} />
-                {history.length === 0 && !historyError && (
-                  <p className="text-xs text-zinc-500">
-                    {tPage("quickRebookHint")}
-                  </p>
-                )}
-              </div>
+      {guest.profile && (
+        <div className="guest-profile-page__badges">
+          <GuestProfileBadges profile={guest.profile} />
+        </div>
+      )}
 
-              {guest.tags.length > 0 && (
-                <div className="rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-                    {tPage("legacyTags")}
-                  </p>
-                  <p className="mt-1 text-xs text-zinc-700">
-                    {guest.tags.map((t) => GUEST_TAG_LABELS[t]).join(", ")}
-                  </p>
-                </div>
-              )}
-            </div>
-          </RetroXpWindow>
-        </aside>
+      <div className="guest-profile-page__grid">
+        <div className="guest-profile-page__main">
+          <section className="guest-panel">
+            <h3 className="guest-panel__title">{tPage("guestReview")}</h3>
+            <GuestProfileCards profile={guest.profile} />
+          </section>
 
-        <div className="space-y-4">
-          <RetroXpWindow title={tPage("guestReview")}>
-            <div className="space-y-3">
-              {profileError && <p className="text-xs text-amber-800">{profileError}</p>}
-              <GuestProfileCards profile={guest.profile} />
-            </div>
-          </RetroXpWindow>
-
-          <RetroXpWindow title={tPage("operatorTraits")}>
+          <section className="guest-panel">
+            <h3 className="guest-panel__title">{tPage("operatorTraits")}</h3>
             <GuestProfileControlsForm
               key={`profile-controls-${guest.id}-${guest.profile?.updated_at ?? "none"}`}
               guestId={guest.id}
               profile={guest.profile}
             />
-          </RetroXpWindow>
+          </section>
 
-          <RetroXpWindow title={tPage("notesContext")}>
-            <div className="space-y-4">
-              <div className="grid gap-3 lg:grid-cols-2">
-                <div className="rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-                    {tPage("profileNote")}
-                  </p>
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-700">
-                    {guest.profile?.manual_note?.trim() || tPage("noProfileNote")}
-                  </p>
-                </div>
-                <div className="rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-500">
-                    {tPage("generalNotes")}
-                  </p>
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-700">
-                    {guest.notes?.trim() || tPage("noGeneralNotes")}
-                  </p>
-                </div>
+          <section className="guest-panel">
+            <h3 className="guest-panel__title">{tPage("notesContext")}</h3>
+            <div className="guest-notes-grid">
+              <div className="guest-note-box">
+                <p className="guest-note-box__label">{tPage("profileNote")}</p>
+                <p className="guest-note-box__text">
+                  {guest.profile?.manual_note?.trim() || tPage("noProfileNote")}
+                </p>
               </div>
-
-              <div className="flex flex-wrap gap-2">
-                <GuestNotesForm
-                  key={`guest-notes-${guest.id}-${guest.updated_at}-${guest.notes ?? ""}`}
-                  guestId={guest.id}
-                  initialNotes={guest.notes ?? ""}
-                />
+              <div className="guest-note-box">
+                <p className="guest-note-box__label">{tPage("generalNotes")}</p>
+                <p className="guest-note-box__text">
+                  {guest.notes?.trim() || tPage("noGeneralNotes")}
+                </p>
               </div>
             </div>
-          </RetroXpWindow>
+            <div className="mt-3">
+              <GuestNotesForm
+                key={`guest-notes-${guest.id}-${guest.updated_at}-${guest.notes ?? ""}`}
+                guestId={guest.id}
+                initialNotes={guest.notes ?? ""}
+              />
+            </div>
+          </section>
+        </div>
+
+        <div className="guest-profile-page__sidebar">
+          <section className="guest-panel">
+            <h3 className="guest-panel__title">{tPage("quickActions")}</h3>
+            <div className="space-y-3">
+              <GuestBlacklistPanel
+                key={`blacklist-${guest.id}-${guest.profile?.updated_at ?? "none"}-${guest.profile?.flag_level ?? "normal"}`}
+                guestId={guest.id}
+                profile={guest.profile}
+              />
+              <div>
+                <p className="guest-panel__subtitle">{tPage("quickRebook")}</p>
+                <GuestRebookButtons guestId={guest.id} disabled={history.length === 0} />
+                {history.length === 0 && !historyError && (
+                  <p className="guest-panel__hint">{tPage("quickRebookHint")}</p>
+                )}
+              </div>
+              {guest.tags.length > 0 && (
+                <div className="guest-legacy-tags">
+                  <p className="guest-legacy-tags__label">{tPage("legacyTags")}</p>
+                  <p className="guest-legacy-tags__text">
+                    {guest.tags.map((t) => GUEST_TAG_LABELS[t]).join(", ")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
 
           {(duplicates.length > 0 || duplicatesError) && (
-            <RetroXpWindow title={tPage("similarProfiles")}>
+            <section className="guest-panel">
+              <h3 className="guest-panel__title">{tPage("similarProfiles")}</h3>
               {duplicatesError ? (
-                <p className="text-sm text-amber-800">{duplicatesError}</p>
+                <p className="guest-panel__warn">{duplicatesError}</p>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-sm text-zinc-600">
-                    {tPage("similarProfilesHelp")}
-                  </p>
+                  <p className="guest-panel__hint">{tPage("similarProfilesHelp")}</p>
                   <GuestMergeForm guestId={guest.id} duplicates={duplicates} />
                 </div>
               )}
-            </RetroXpWindow>
+            </section>
           )}
 
-          <RetroXpWindow title={tPage("historyTitle", { count: history.length })}>
+          <section className="guest-panel">
+            <h3 className="guest-panel__title">
+              {tPage("historyTitle", { count: history.length })}
+            </h3>
             {historyError ? (
-              <p className="text-sm text-amber-800">{historyError}</p>
+              <p className="guest-panel__warn">{historyError}</p>
             ) : history.length === 0 ? (
-              <p className="text-sm text-zinc-500">{tPage("noLinkedStays")}</p>
+              <p className="guest-panel__hint">{tPage("noLinkedStays")}</p>
             ) : (
-              <details>
-                <summary className="cursor-pointer list-none rounded-md border border-zinc-200 bg-zinc-50 px-4 py-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-bold text-zinc-900">{tPage("openFullHistory")}</p>
-                      <p className="mt-1 text-xs text-zinc-500">
-                        {latestStay
-                          ? tPage("latestStay", {
-                              period: formatStayPeriod(
-                                latestStay.check_in,
-                                latestStay.check_out,
-                                true
-                              ),
-                            })
-                          : tPage("noStays")}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="rounded-full border border-zinc-200 bg-white px-2 py-1 font-semibold text-zinc-700">
-                        {tPage("staysCount", { count: history.length })}
-                      </span>
-                      <span className="rounded-full border border-zinc-200 bg-white px-2 py-1 font-semibold text-zinc-700">
-                        {tPage("reviewsCount", { count: reviewedHistoryCount })}
-                      </span>
-                    </div>
-                  </div>
-                </summary>
-
-                <div className="mt-4">
-                  <ul className="space-y-3">
-                    {history.map((stay) => (
-                      <li
-                        key={stay.id}
-                        className="border border-zinc-200 bg-white px-4 py-3 text-sm"
-                      >
-                        <div className="flex flex-wrap items-start justify-between gap-2">
-                          <div>
-                            <p className="font-semibold">
-                              {formatStayPeriod(stay.check_in, stay.check_out, true)}
-                            </p>
-                            <p className="text-zinc-600">
-                              {statusLabel(stay.status, tFlow)}
-                              {stay.room_names.length > 0
-                                ? ` · ${stay.room_names.join(", ")}`
-                                : ""}
-                              {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
-                            </p>
-                            <p className="text-xs font-mono text-zinc-400">
-                              {formatBookingRef(stay.id)}
-                            </p>
-                            {stay.review && (
-                              <div className="mt-2 space-y-1 text-xs">
-                                <p className="font-semibold text-violet-800">
-                                  {tPage("reviewSummary", {
-                                    stars: stay.review.stars,
-                                  })}
-                                  {stay.review.problem_details
-                                    ? ` · ${tPage("reviewHasDetails")}`
-                                    : ""}
-                                </p>
-                                {(stay.review.positive_traits.length > 0 ||
-                                  stay.review.negative_traits.length > 0) && (
-                                  <p className="text-zinc-600">
-                                    {stay.review.positive_traits.map(
-                                      (trait) => tGuests(`traits.positive.${trait}` as never)
-                                    ).join(" · ")}
-                                    {stay.review.positive_traits.length > 0 &&
-                                    stay.review.negative_traits.length > 0
-                                      ? " | "
-                                      : ""}
-                                    {stay.review.negative_traits.map(
-                                      (trait) => tGuests(`traits.negative.${trait}` as never)
-                                    ).join(" · ")}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <Link
-                            href={`/admin/bookings/${stay.id}`}
-                            className="text-sm font-semibold text-emerald-700 hover:underline"
-                          >
-                            {tCommon("details")} →
-                          </Link>
-                        </div>
-                        {stay.segments.length > 1 && (
-                          <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 text-xs text-zinc-600">
-                            {stay.segments.map((seg) => (
-                              <li key={seg.id}>
-                                {tPage("segmentLabel")}{" "}
-                                {formatStayPeriod(seg.segment_start, seg.segment_end, true)}
-                                {seg.nightly_rate != null
-                                  ? ` · ${seg.nightly_rate} ${tPage("ronPerNight")}`
-                                  : ""}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                        {stay.status === "confirmata" && stay.check_out < today && (
-                          <GuestStayReviewForm
-                            guestId={guest.id}
-                            bookingId={stay.id}
-                            review={stay.review}
-                          />
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+              <div className="guest-history">
+                <div className="guest-history__summary">
+                  <span className="guest-history__pill">
+                    {tPage("staysCount", { count: history.length })}
+                  </span>
+                  <span className="guest-history__pill">
+                    {tPage("reviewsCount", { count: reviewedHistoryCount })}
+                  </span>
+                  {latestStay && (
+                    <span className="guest-history__latest">
+                      {tPage("latestStay", {
+                        period: formatStayPeriod(latestStay.check_in, latestStay.check_out, true),
+                      })}
+                    </span>
+                  )}
                 </div>
-              </details>
+                <ul className="guest-history__list">
+                  {history.map((stay) => (
+                    <li key={stay.id} className="guest-history__item">
+                      <div className="guest-history__item-top">
+                        <div>
+                          <p className="guest-history__period">
+                            {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                          </p>
+                          <p className="guest-history__meta">
+                            {statusLabel(stay.status, tFlow)}
+                            {stay.room_names.length > 0 ? ` · ${stay.room_names.join(", ")}` : ""}
+                            {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
+                          </p>
+                          <p className="guest-history__ref">{formatBookingRef(stay.id)}</p>
+                          {stay.review && (
+                            <div className="guest-history__review">
+                              <p className="guest-history__review-stars">
+                                {tPage("reviewSummary", { stars: stay.review.stars })}
+                                {stay.review.problem_details ? ` · ${tPage("reviewHasDetails")}` : ""}
+                              </p>
+                              {(stay.review.positive_traits.length > 0 ||
+                                stay.review.negative_traits.length > 0) && (
+                                <p className="guest-history__review-traits">
+                                  {stay.review.positive_traits
+                                    .map((trait) => tGuests(`traits.positive.${trait}` as never))
+                                    .join(" · ")}
+                                  {stay.review.positive_traits.length > 0 &&
+                                  stay.review.negative_traits.length > 0
+                                    ? " | "
+                                    : ""}
+                                  {stay.review.negative_traits
+                                    .map((trait) => tGuests(`traits.negative.${trait}` as never))
+                                    .join(" · ")}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <Link
+                          href={`/admin/bookings/${stay.id}`}
+                          className="guest-history__detail-link"
+                        >
+                          {tCommon("details")} →
+                        </Link>
+                      </div>
+                      {stay.segments.length > 1 && (
+                        <ul className="guest-history__segments">
+                          {stay.segments.map((seg) => (
+                            <li key={seg.id}>
+                              {tPage("segmentLabel")}{" "}
+                              {formatStayPeriod(seg.segment_start, seg.segment_end, true)}
+                              {seg.nightly_rate != null ? ` · ${seg.nightly_rate} ${tPage("ronPerNight")}` : ""}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      {stay.status === "confirmata" && stay.check_out < today && (
+                        <GuestStayReviewForm
+                          guestId={guest.id}
+                          bookingId={stay.id}
+                          review={stay.review}
+                        />
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          </RetroXpWindow>
+          </section>
         </div>
       </div>
-    </AdminRetroPageFrame>
+    </main>
   );
 }

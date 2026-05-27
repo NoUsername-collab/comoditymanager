@@ -30,7 +30,7 @@ export function GuestSearchForm({
 
   return (
     <form
-      className="flex flex-wrap gap-2"
+      className="guest-search"
       onSubmit={(e) => {
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
@@ -44,33 +44,38 @@ export function GuestSearchForm({
         });
       }}
     >
-      <input
-        name="q"
-        type="search"
-        defaultValue={defaultQuery ?? ""}
-        placeholder={tGuests("searchPlaceholder")}
-        className="min-w-[220px] flex-1 border border-zinc-300 px-3 py-2 text-sm"
-        disabled={pending}
-      />
-      <select
-        name="filter"
-        defaultValue={defaultFilter}
-        className="border border-zinc-300 bg-white px-3 py-2 text-sm"
-        disabled={pending}
-      >
-        {filterOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <button
-        type="submit"
-        disabled={pending}
-        className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
-      >
-        {pending ? "…" : tCommon("search")}
-      </button>
+      <div className="guest-search__bar">
+        <svg className="guest-search__icon" viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+          <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+        </svg>
+        <input
+          name="q"
+          type="search"
+          defaultValue={defaultQuery ?? ""}
+          placeholder={tGuests("searchPlaceholder")}
+          className="guest-search__input"
+          disabled={pending}
+        />
+        <select
+          name="filter"
+          defaultValue={defaultFilter}
+          className="guest-search__filter"
+          disabled={pending}
+        >
+          {filterOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <button
+          type="submit"
+          disabled={pending}
+          className="guest-search__submit"
+        >
+          {pending ? "…" : tCommon("search")}
+        </button>
+      </div>
       {(defaultQuery || defaultFilter !== "all") && (
         <button
           type="button"
@@ -80,7 +85,7 @@ export function GuestSearchForm({
               router.push("/admin/guests");
             });
           }}
-          className="rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-60"
+          className="guest-search__reset"
         >
           {tCommon("reset")}
         </button>

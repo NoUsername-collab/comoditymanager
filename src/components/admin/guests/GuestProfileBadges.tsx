@@ -8,54 +8,6 @@ import type {
 import { useTranslations } from "next-intl";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 
-function QuickProfileCard({
-  title,
-  value,
-  subtitle,
-  children,
-  tone,
-}: {
-  title: string;
-  value: string;
-  subtitle: string;
-  children?: React.ReactNode;
-  tone: "sky" | "emerald" | "amber" | "neutral";
-}) {
-  const toneStyle =
-    tone === "sky"
-      ? {
-          borderColor: "#bfdbfe",
-          background: "#eff6ff",
-          color: "#1d4ed8",
-        }
-      : tone === "emerald"
-        ? {
-            borderColor: "#a7f3d0",
-            background: "#ecfdf5",
-            color: "#047857",
-          }
-        : tone === "amber"
-          ? {
-              borderColor: "#fcd34d",
-              background: "#fffbeb",
-              color: "#b45309",
-            }
-          : {
-              borderColor: "var(--border)",
-              background: "var(--surface-2)",
-              color: "var(--text)",
-            };
-
-  return (
-    <div className="rounded-lg border px-3 py-3" style={toneStyle}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.16em] opacity-70">{title}</p>
-      <p className="mt-1 text-lg font-black leading-tight">{value}</p>
-      <p className="mt-1 text-xs font-medium opacity-80">{subtitle}</p>
-      {children ? <div className="mt-2">{children}</div> : null}
-    </div>
-  );
-}
-
 type ProfileLike = GuestBookingFlagSummary | GuestProfileRow | null;
 
 export function GuestProfileBadges({
@@ -68,6 +20,7 @@ export function GuestProfileBadges({
   alertNote?: string | null;
 }) {
   const tGuests = useTranslations("admin.guests");
+
   const trustLabel = (score: number): string => {
     if (score >= 85) return tGuests("profileBadges.trustExcellent");
     if (score >= 70) return tGuests("profileBadges.trustVeryGood");
@@ -75,6 +28,7 @@ export function GuestProfileBadges({
     if (score >= 35) return tGuests("profileBadges.trustNeedsAttention");
     return tGuests("profileBadges.trustHighRisk");
   };
+
   const loyaltyLabel = (score: number): string => {
     if (score >= 85) return tGuests("profileBadges.loyaltyVeryLoyal");
     if (score >= 65) return tGuests("profileBadges.loyaltyLoyal");
@@ -82,6 +36,7 @@ export function GuestProfileBadges({
     if (score >= 15) return tGuests("profileBadges.loyaltyDeveloping");
     return tGuests("profileBadges.loyaltyNewOrRare");
   };
+
   if (!profile && (!alertLevel || alertLevel === "normal")) return null;
 
   const effectiveLevel =
@@ -95,32 +50,22 @@ export function GuestProfileBadges({
         : tGuests("profileBadges.normal");
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="guest-badges">
       {profile && (
         <>
-          <QuickProfileCard
-            title={tGuests("profileBadges.behavior")}
-            value={String(profile.trust_score)}
-            subtitle={trustLabel(profile.trust_score)}
-            tone="sky"
-          />
-          <QuickProfileCard
-            title={tGuests("profileBadges.loyalty")}
-            value={String(profile.loyalty_score)}
-            subtitle={loyaltyLabel(profile.loyalty_score)}
-            tone="emerald"
-          />
-          <QuickProfileCard
-            title={tGuests("profileBadges.rating")}
-            value={`${profile.stars_avg.toFixed(1)} / 5`}
-            subtitle={
-              profile.review_count > 0
-                ? tGuests("profileBadges.reviewsCount", { count: profile.review_count })
-                : tGuests("profileBadges.noReviewYet")
-            }
-            tone="neutral"
-          >
-            <div className="flex items-center">
+          <div className="guest-badge guest-badge--sky">
+            <span className="guest-badge__label">{tGuests("profileBadges.behavior")}</span>
+            <span className="guest-badge__value">{profile.trust_score}</span>
+            <span className="guest-badge__sub">{trustLabel(profile.trust_score)}</span>
+          </div>
+          <div className="guest-badge guest-badge--emerald">
+            <span className="guest-badge__label">{tGuests("profileBadges.loyalty")}</span>
+            <span className="guest-badge__value">{profile.loyalty_score}</span>
+            <span className="guest-badge__sub">{loyaltyLabel(profile.loyalty_score)}</span>
+          </div>
+          <div className="guest-badge guest-badge--neutral">
+            <span className="guest-badge__label">{tGuests("profileBadges.rating")}</span>
+            <span className="guest-badge__value">
               <GuestStarsCompact
                 value={profile.stars_avg}
                 count={profile.review_count}
@@ -128,24 +73,28 @@ export function GuestProfileBadges({
                 showCount={false}
                 showValue={false}
               />
-            </div>
-          </QuickProfileCard>
-          <QuickProfileCard
-            title={tGuests("profileBadges.state")}
-            value={riskTone}
-            subtitle={
-              effectiveLevel === "blacklist"
+            </span>
+            <span className="guest-badge__sub">
+              {profile.review_count > 0
+                ? tGuests("profileBadges.reviewsCount", { count: profile.review_count })
+                : tGuests("profileBadges.noReviewYet")}
+            </span>
+          </div>
+          <div className={`guest-badge ${effectiveLevel === "normal" ? "guest-badge--neutral" : "guest-badge--amber"}`}>
+            <span className="guest-badge__label">{tGuests("profileBadges.state")}</span>
+            <span className="guest-badge__value">{riskTone}</span>
+            <span className="guest-badge__sub">
+              {effectiveLevel === "blacklist"
                 ? profile.blacklist_reason || tGuests("profileBadges.criticalAlert")
                 : effectiveLevel === "watchlist"
                   ? tGuests("profileBadges.watchCarefully")
-                  : tGuests("profileBadges.noActiveAlert")
-            }
-            tone={effectiveLevel === "normal" ? "neutral" : "amber"}
-          />
+                  : tGuests("profileBadges.noActiveAlert")}
+            </span>
+          </div>
         </>
       )}
       {alertNote && (
-        <span className="sm:col-span-2 text-[11px] font-medium text-amber-900">{alertNote}</span>
+        <span className="guest-badges__alert">{alertNote}</span>
       )}
     </div>
   );

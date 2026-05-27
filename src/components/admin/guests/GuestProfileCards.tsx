@@ -7,39 +7,10 @@ import {
   GUEST_POSITIVE_TRAITS,
 } from "@/domain/guest/reputation";
 
-function TraitLine({
-  title,
-  values,
-  tone,
-}: {
-  title: string;
-  values: string[];
-  tone: "good" | "bad";
-}) {
-  const tGuests = useTranslations("admin.guests");
-  const style =
-    tone === "good"
-      ? { color: "var(--status-confirmed-text)" }
-      : { color: "var(--admin-danger-text)" };
-
-  return (
-    <div>
-      <p
-        className="text-xs font-bold uppercase tracking-wide"
-        style={{ color: "var(--admin-text-muted)" }}
-      >
-        {title}
-      </p>
-      <p className="mt-1 text-sm font-medium" style={style}>
-        {values.length > 0 ? values.join(" · ") : "—"}
-      </p>
-    </div>
-  );
-}
-
 export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null }) {
   const tGuests = useTranslations("admin.guests");
   if (!profile) return null;
+
   const positiveLabels: Record<string, string> = Object.fromEntries(
     GUEST_POSITIVE_TRAITS.map((trait) => [
       trait,
@@ -54,84 +25,75 @@ export function GuestProfileCards({ profile }: { profile: GuestProfileRow | null
   );
 
   return (
-    <div className="space-y-4">
-      <div
-        className="grid gap-3 rounded-md border p-4 md:grid-cols-2"
-        style={{
-          borderColor: "var(--admin-panel-border)",
-          background: "var(--admin-panel-bg)",
-          color: "var(--admin-text)",
-          boxShadow: "var(--card-shadow)",
-        }}
-      >
-        <div className="space-y-3">
-          <TraitLine
-            title={tGuests("profileCards.activeGoodTraits")}
-            values={profile.positive_traits.map((trait) => positiveLabels[trait])}
-            tone="good"
-          />
-          <TraitLine
-            title={tGuests("profileCards.attentionTraits")}
-            values={profile.negative_traits.map((trait) => negativeLabels[trait])}
-            tone="bad"
-          />
-        </div>
-
-        <div className="space-y-2 text-sm">
-          <p>
-            <span className="font-bold">{tGuests("profileCards.currentState")}:</span>{" "}
-            <span
-              style={
-                profile.flag_level === "blacklist"
-                  ? { color: "var(--admin-danger-text)" }
-                  : profile.flag_level === "watchlist"
-                    ? { color: "var(--status-pending-text)" }
-                    : { color: "var(--admin-text)" }
-              }
-            >
-              {profile.flag_level === "blacklist"
-                ? tGuests("profileBadges.blacklist")
-                : profile.flag_level === "watchlist"
-                  ? tGuests("profileBadges.watchlist")
-                  : tGuests("profileBadges.normal")}
-            </span>
-          </p>
-          <p>
-            <span className="font-bold">{tGuests("profileCards.completedStays")}:</span> {profile.completed_stays}
-          </p>
-          <p>
-            <span className="font-bold">{tGuests("profileCards.totalNights")}:</span> {profile.total_nights}
-          </p>
-          <p>
-            <span className="font-bold">{tGuests("profileCards.lastCheckout")}:</span>{" "}
-            {profile.last_stay_check_out ?? "—"}
-          </p>
-          {profile.manual_note && (
-            <p
-              className="rounded border px-3 py-2 text-xs"
-              style={{
-                borderColor: "var(--color-border)",
-                background: "var(--color-bg)",
-                color: "var(--admin-text)",
-              }}
-            >
-              <span className="font-bold">{tGuests("profileCards.operatorNote")}:</span> {profile.manual_note}
-            </p>
-          )}
-          {profile.blacklist_reason && profile.flag_level === "blacklist" && (
-            <p
-              className="rounded border px-3 py-2 text-xs"
-              style={{
-                borderColor: "var(--admin-danger-border)",
-                background: "var(--admin-danger-bg)",
-                color: "var(--admin-danger-text)",
-              }}
-            >
-              <span className="font-bold">{tGuests("blacklistReason")}:</span> {profile.blacklist_reason}
-            </p>
-          )}
+    <div className="guest-traits">
+      <div className="guest-traits__section">
+        <p className="guest-traits__title">{tGuests("profileCards.activeGoodTraits")}</p>
+        <div className="guest-traits__tags">
+          {profile.positive_traits.length > 0
+            ? profile.positive_traits.map((trait) => (
+                <span key={trait} className="guest-traits__tag guest-traits__tag--good">
+                  {positiveLabels[trait]}
+                </span>
+              ))
+            : <span className="guest-traits__empty">—</span>}
         </div>
       </div>
+
+      <div className="guest-traits__section">
+        <p className="guest-traits__title">{tGuests("profileCards.attentionTraits")}</p>
+        <div className="guest-traits__tags">
+          {profile.negative_traits.length > 0
+            ? profile.negative_traits.map((trait) => (
+                <span key={trait} className="guest-traits__tag guest-traits__tag--bad">
+                  {negativeLabels[trait]}
+                </span>
+              ))
+            : <span className="guest-traits__empty">—</span>}
+        </div>
+      </div>
+
+      <div className="guest-traits__details">
+        <div className="guest-traits__detail">
+          <span className="guest-traits__detail-label">{tGuests("profileCards.currentState")}</span>
+          <span
+            className={
+              profile.flag_level === "blacklist"
+                ? "guest-traits__detail-value--danger"
+                : profile.flag_level === "watchlist"
+                  ? "guest-traits__detail-value--warn"
+                  : "guest-traits__detail-value"
+            }
+          >
+            {profile.flag_level === "blacklist"
+              ? tGuests("profileBadges.blacklist")
+              : profile.flag_level === "watchlist"
+                ? tGuests("profileBadges.watchlist")
+                : tGuests("profileBadges.normal")}
+          </span>
+        </div>
+        <div className="guest-traits__detail">
+          <span className="guest-traits__detail-label">{tGuests("profileCards.totalNights")}</span>
+          <span className="guest-traits__detail-value">{profile.total_nights}</span>
+        </div>
+        <div className="guest-traits__detail">
+          <span className="guest-traits__detail-label">{tGuests("profileCards.lastCheckout")}</span>
+          <span className="guest-traits__detail-value">{profile.last_stay_check_out ?? "—"}</span>
+        </div>
+      </div>
+
+      {profile.manual_note && (
+        <div className="guest-traits__note">
+          <span className="guest-traits__note-label">{tGuests("profileCards.operatorNote")}</span>
+          <p>{profile.manual_note}</p>
+        </div>
+      )}
+
+      {profile.blacklist_reason && profile.flag_level === "blacklist" && (
+        <div className="guest-traits__note guest-traits__note--danger">
+          <span className="guest-traits__note-label">{tGuests("blacklistReason")}</span>
+          <p>{profile.blacklist_reason}</p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-﻿import { Link } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import type {
   GuestListItem,
@@ -8,8 +8,6 @@ import type {
 import { GuestListCard } from "@/components/admin/guests/GuestListCard";
 import { GuestPreviewPanel } from "@/components/admin/guests/GuestPreviewPanel";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { GuestSearchForm } from "@/components/admin/guests/GuestSearchForm";
 import { getGuestById, listGuestHighlights, searchGuests } from "@/services/guests";
 
@@ -51,62 +49,34 @@ function parseHref(href: string): { q?: string; filter?: string; page?: number }
   };
 }
 
-function GuestListSection({
-  sectionLabel,
-  guestsLabel,
-  emptyLabel,
+function GuestSection({
   title,
   description,
   guests,
   currentHref,
+  guestsLabel,
+  emptyLabel,
 }: {
-  sectionLabel: string;
-  guestsLabel: (count: number) => string;
-  emptyLabel: string;
   title: string;
   description: string;
   guests: GuestListItem[];
   currentHref: string;
+  guestsLabel: (count: number) => string;
+  emptyLabel: string;
 }) {
   return (
-    <RetroXpWindow title={`${title} (${guests.length})`} className="mb-6">
-      <div
-        className="mb-3 rounded-md border px-3 py-2"
-        style={{
-          borderColor: "var(--border)",
-          background: "var(--surface-2)",
-        }}
-      >
-        <p
-          className="text-[10px] font-bold uppercase tracking-[0.18em]"
-          style={{ color: "var(--text-faint)" }}
-        >
-          {sectionLabel}
-        </p>
-        <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-base font-black" style={{ color: "var(--text)" }}>
-            {title}
-          </h2>
-          <span
-            className="rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em]"
-            style={{
-              borderColor: "var(--accent)",
-              background: "var(--accent-muted)",
-              color: "var(--accent)",
-            }}
-          >
-            {guestsLabel(guests.length)}
-          </span>
+    <section className="guest-section">
+      <div className="guest-section__header">
+        <div>
+          <h2 className="guest-section__title">{title}</h2>
+          <p className="guest-section__desc">{description}</p>
         </div>
-        <p className="mt-1 text-xs" style={{ color: "var(--text-muted)" }}>
-          {description}
-        </p>
+        <span className="guest-section__count">{guestsLabel(guests.length)}</span>
       </div>
-
       {guests.length === 0 ? (
-        <p className="text-sm text-zinc-500">{emptyLabel}</p>
+        <p className="guest-section__empty">{emptyLabel}</p>
       ) : (
-        <ul className="grid justify-start gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,240px))]">
+        <ul className="guest-grid">
           {guests.map((guest) => (
             <GuestListCard
               key={guest.id}
@@ -117,7 +87,7 @@ function GuestListSection({
           ))}
         </ul>
       )}
-    </RetroXpWindow>
+    </section>
   );
 }
 
@@ -138,12 +108,12 @@ function PaginationBar({
 }) {
   const current = parseHref(currentHref);
   return (
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-200 pt-4 text-sm">
-      <p className="text-zinc-500">
+    <div className="guest-pagination">
+      <p className="guest-pagination__info">
         {pageLabel(result.page)}
         {result.query ? ` · ${searchLabel(result.query)}` : ""}
       </p>
-      <div className="flex gap-2">
+      <div className="guest-pagination__buttons">
         {result.hasPrevious ? (
           <Link
             href={buildGuestListHref({
@@ -151,7 +121,7 @@ function PaginationBar({
               filter: current.filter,
               page: result.page - 1,
             })}
-            className="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
+            className="guest-pagination__btn"
           >
             {previousLabel}
           </Link>
@@ -163,7 +133,7 @@ function PaginationBar({
               filter: current.filter,
               page: result.page + 1,
             })}
-            className="admin-cereri-fill px-4 py-2 text-sm font-medium"
+            className="guest-pagination__btn guest-pagination__btn--next"
           >
             {nextLabel}
           </Link>
@@ -227,71 +197,71 @@ export default async function AdminGuestsPage({
   }
 
   return (
-    <AdminRetroPageFrame title={t("title")} description={t("description")}>
-      {error && <p className="mb-4 text-sm text-red-800">{error}</p>}
+    <main className="guest-page">
+      <header className="guest-page__header">
+        <h1 className="guest-page__title">{t("title")}</h1>
+        <p className="guest-page__desc">{t("description")}</p>
+      </header>
 
-      <RetroXpWindow title={t("searchTitle")} className="mb-6">
-        <div className="space-y-3">
-          <GuestSearchForm
-            defaultQuery={q}
-            defaultFilter={(result.filter as GuestSearchFilter) || "all"}
-          />
-          <div className="flex flex-wrap gap-2">
-            {FILTER_LINKS.map((item) => (
-              <Link
-                key={item.id}
-                href={buildGuestListHref({ filter: item.id })}
-                className="rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-          <p className="text-xs text-zinc-500">{t("searchHint")}</p>
+      {error && <p className="guest-page__error">{error}</p>}
+
+      <div className="guest-page__search-area">
+        <GuestSearchForm
+          defaultQuery={q}
+          defaultFilter={(result.filter as GuestSearchFilter) || "all"}
+        />
+        <div className="guest-filter-pills">
+          {FILTER_LINKS.map((item) => (
+            <Link
+              key={item.id}
+              href={buildGuestListHref({ filter: item.id })}
+              className="guest-filter-pill"
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
-      </RetroXpWindow>
+        <p className="guest-page__hint">{t("searchHint")}</p>
+      </div>
 
       {result.mode === "highlights" && highlights ? (
-        <>
-          <GuestListSection
-            sectionLabel={t("sectionLabel")}
-            guestsLabel={(count) => t("guestsCount", { count })}
-            emptyLabel={t("sectionEmpty")}
+        <div className="guest-highlights">
+          <GuestSection
             title={t("blacklistTitle")}
             description={t("blacklistDescription")}
             guests={highlights.blacklist}
             currentHref={currentHref}
-          />
-          <GuestListSection
-            sectionLabel={t("sectionLabel")}
             guestsLabel={(count) => t("guestsCount", { count })}
             emptyLabel={t("sectionEmpty")}
+          />
+          <GuestSection
             title={t("loyalTitle")}
             description={t("loyalDescription")}
             guests={highlights.loyal}
             currentHref={currentHref}
-          />
-          <GuestListSection
-            sectionLabel={t("sectionLabel")}
             guestsLabel={(count) => t("guestsCount", { count })}
             emptyLabel={t("sectionEmpty")}
+          />
+          <GuestSection
             title={t("ratedTitle")}
             description={t("ratedDescription")}
             guests={highlights.rated}
             currentHref={currentHref}
-          />
-          <GuestListSection
-            sectionLabel={t("sectionLabel")}
             guestsLabel={(count) => t("guestsCount", { count })}
             emptyLabel={t("sectionEmpty")}
+          />
+          <GuestSection
             title={t("recentTitle")}
             description={t("recentDescription")}
             guests={highlights.recent}
             currentHref={currentHref}
+            guestsLabel={(count) => t("guestsCount", { count })}
+            emptyLabel={t("sectionEmpty")}
           />
-        </>
+        </div>
       ) : (
-        <RetroXpWindow title={t("resultsTitle", { count: result.items.length })}>
+        <section className="guest-results">
+          <h2 className="guest-results__title">{t("resultsTitle", { count: result.items.length })}</h2>
           {result.items.length === 0 ? (
             <AdminEmptyState
               emoji="??"
@@ -300,7 +270,7 @@ export default async function AdminGuestsPage({
             />
           ) : (
             <>
-              <ul className="grid justify-start gap-3 [grid-template-columns:repeat(auto-fit,minmax(220px,240px))]">
+              <ul className="guest-grid">
                 {result.items.map((guest) => (
                   <GuestListCard
                     key={guest.id}
@@ -320,7 +290,7 @@ export default async function AdminGuestsPage({
               />
             </>
           )}
-        </RetroXpWindow>
+        </section>
       )}
 
       <GuestPreviewPanel
@@ -332,7 +302,6 @@ export default async function AdminGuestsPage({
             : "/admin/guests"
         }
       />
-    </AdminRetroPageFrame>
+    </main>
   );
 }
-

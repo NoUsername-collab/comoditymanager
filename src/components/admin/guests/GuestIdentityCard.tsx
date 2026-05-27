@@ -1,43 +1,10 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import type { GuestRow } from "@/domain/guest/types";
+import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
+import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 import { formatRoDate } from "@/lib/stay-dates";
-
-function IdentityField({
-  label,
-  value,
-  mono = false,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
-  return (
-    <div
-      className="flex h-full min-h-[84px] flex-col justify-between rounded-md border px-3 py-2"
-      style={{ borderColor: "var(--border)" }}
-    >
-      <p
-        className="text-[10px] font-bold uppercase tracking-[0.16em]"
-        style={{ color: "var(--text-muted)" }}
-      >
-        {label}
-      </p>
-      <p
-        className={[
-          "mt-1 text-sm font-semibold",
-          mono && "break-all font-mono text-[12px]",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        style={{ color: "var(--text)" }}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
 
 export function GuestIdentityCard({
   guest,
@@ -48,55 +15,57 @@ export function GuestIdentityCard({
 }) {
   const tGuests = useTranslations("admin.guests");
   const tCommon = useTranslations("admin.common");
+
+  const trust = guest.profile?.trust_score ?? 0;
+  const loyalty = guest.profile?.loyalty_score ?? 0;
+  const stars = guest.profile?.stars_avg ?? DEFAULT_STARS_AVG;
+  const reviewCount = guest.profile?.review_count ?? 0;
+  const stays = guest.profile?.completed_stays ?? 0;
+
   return (
-    <section
-      className="rounded-xl border px-4 py-4"
-      style={{
-        borderColor: "var(--admin-panel-border)",
-        background: "var(--admin-panel-bg)",
-        color: "var(--admin-text)",
-        boxShadow: "var(--card-shadow)",
-      }}
-    >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p
-            className="text-[11px] font-bold uppercase tracking-[0.18em]"
-            style={{ color: "var(--text-muted)" }}
-          >
-            {tGuests("identityTitle")}
+    <section className="guest-hero">
+      <div className="guest-hero__top">
+        <div className="guest-hero__avatar">
+          {(guest.display_name?.[0] ?? "?").toUpperCase()}
+        </div>
+        <div className="guest-hero__info">
+          <div className="guest-hero__name-row">
+            <h2 className="guest-hero__name">{guest.display_name}</h2>
+            <GuestFlagPill flagLevel={guest.profile?.flag_level} />
+          </div>
+          <p className="guest-hero__contact">
+            {[guest.email, guest.phone].filter(Boolean).join(" · ") || tGuests("noEmail")}
           </p>
-          <h2 className="mt-1 truncate text-2xl font-black" style={{ color: "var(--text)" }}>
-            {guest.display_name}
-          </h2>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <GuestFlagPill flagLevel={guest.profile?.flag_level} />
-          <span
-            className="rounded-full border px-2.5 py-1 text-[11px] font-semibold"
-            style={{
-              borderColor: "var(--border)",
-              background: "var(--surface-2)",
-              color: "var(--text-muted)",
-            }}
-          >
+          <p className="guest-hero__since">
             {tGuests("clientSince")} {formatRoDate(guest.created_at.slice(0, 10))}
-          </span>
+            {" · ID: "}
+            <span className="font-mono text-[10px] opacity-60">{guest.id.slice(0, 8)}</span>
+          </p>
         </div>
       </div>
 
-      <div className="mt-4 grid items-stretch gap-3 md:grid-cols-2">
-        <IdentityField label={tCommon("email")} value={guest.email ?? tGuests("noEmail")} />
-        <IdentityField label={tCommon("phone")} value={guest.phone ?? tGuests("noPhone")} />
-        <IdentityField label={tGuests("clientId")} value={guest.id} mono />
-        <IdentityField
-          label={tGuests("lastUpdate")}
-          value={formatRoDate(guest.updated_at.slice(0, 10))}
-        />
+      <div className="guest-hero__stats">
+        <div className="guest-hero__stat guest-hero__stat--trust">
+          <span className="guest-hero__stat-value">{trust}</span>
+          <span className="guest-hero__stat-label">{tGuests("trust")}</span>
+        </div>
+        <div className="guest-hero__stat guest-hero__stat--loyalty">
+          <span className="guest-hero__stat-value">{loyalty}</span>
+          <span className="guest-hero__stat-label">{tGuests("loyalShort")}</span>
+        </div>
+        <div className="guest-hero__stat guest-hero__stat--stars">
+          <span className="guest-hero__stat-value">
+            <GuestStarsCompact value={stars} count={reviewCount} showCount={false} showValue={false} />
+          </span>
+          <span className="guest-hero__stat-label">{stars.toFixed(1)}/5</span>
+        </div>
+        <div className="guest-hero__stat">
+          <span className="guest-hero__stat-value">{stays}</span>
+          <span className="guest-hero__stat-label">{tGuests("profileCards.completedStays")}</span>
+        </div>
       </div>
 
-      {footer ? <div className="mt-4 flex flex-wrap gap-2">{footer}</div> : null}
+      {footer ? <div className="guest-hero__footer">{footer}</div> : null}
     </section>
   );
 }
