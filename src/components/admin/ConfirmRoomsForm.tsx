@@ -51,9 +51,9 @@ export function ConfirmRoomsForm({
   const tCommon = useTranslations("admin.common");
   const tConfirm = useTranslations("admin.confirmRooms");
   const validDefaults = defaultSelectedIds.filter((id) =>
-  const resolvedSubmitLabel = submitLabel ?? tConfirm("confirmBooking");
     availableRooms.some((r) => r.id === id)
   );
+  const resolvedSubmitLabel = submitLabel ?? tConfirm("confirmBooking");
 
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(validDefaults)
