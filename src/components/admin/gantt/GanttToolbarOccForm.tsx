@@ -12,6 +12,7 @@ type Props = {
   rooms: GanttQuickRoomOption[];
   bookings: BookingRow[];
   onClose: () => void;
+  today?: string;
 };
 
 export function GanttToolbarOccForm({
@@ -19,6 +20,7 @@ export function GanttToolbarOccForm({
   rooms,
   bookings,
   onClose,
+  today,
 }: Props) {
   return (
     <GanttQuickActionPanel
@@ -26,6 +28,7 @@ export function GanttToolbarOccForm({
       rooms={rooms}
       bookings={bookings}
       onClose={onClose}
+      today={today}
     />
   );
 }

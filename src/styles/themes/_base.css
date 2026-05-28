@@ -169,11 +169,17 @@ html {
   --admin-switch-active-bg: var(--accent);
   --admin-switch-active-text: #ffffff;
 
+  /* Gradient doar pentru tab „cereri” — tonuri suficient de închise pentru text alb */
   --admin-cereri-grad: linear-gradient(
-    135deg,
-    var(--pending-bg),
-    color-mix(in srgb, var(--pending-border) 80%, #7f1d1d)
+    180deg,
+    color-mix(in srgb, var(--accent) 92%, black 8%),
+    color-mix(in srgb, var(--accent) 72%, black 28%)
   );
+
+  --admin-cereri-fill-bg: var(--admin-btn-primary-bg);
+  --admin-cereri-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 86%, black);
+  --admin-cereri-fill-text: var(--admin-btn-primary-text);
+  --admin-cereri-fill-border: color-mix(in srgb, var(--admin-btn-primary-bg) 68%, black);
 
   --admin-alert-bg: color-mix(in srgb, var(--pending-bg) 55%, var(--surface));
   --admin-alert-text: var(--pending-text);

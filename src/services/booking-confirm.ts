@@ -72,21 +72,31 @@ export type BookingConfirmContext = {
   canFulfill: boolean;
 };
 
-export async function loadBookingConfirmContext(
-  bookingId: string
-): Promise<BookingConfirmContext | null> {
-  const booking = await getBookingById(bookingId);
-  if (!booking) return null;
+export type StayRoomsAvailability = {
+  checkInTime: string;
+  checkOutTime: string;
+  guestCount: number;
+  availableRooms: ConfirmRoomOption[];
+  minRoomsNeeded: number;
+  canFulfill: boolean;
+};
 
+/** Camere libere pentru un interval (fără rezervare existentă). */
+export async function loadAvailableRoomsForStay(input: {
+  checkIn: string;
+  checkOut: string;
+  guestCount: number;
+  excludeBookingId?: string;
+}): Promise<StayRoomsAvailability> {
   const settings = await getPensionSettings().catch(() => null);
   const checkInTime =
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
   const checkOutTime =
     settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
-  const occupied = await listOccupiedRoomRanges(bookingId, {
-    rangeStart: booking.check_in,
-    rangeEnd: booking.check_out,
+  const occupied = await listOccupiedRoomRanges(input.excludeBookingId, {
+    rangeStart: input.checkIn,
+    rangeEnd: input.checkOut,
   });
   const activeRooms = (await listAllRooms()).filter((r) => r.is_active);
   const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
@@ -97,8 +107,8 @@ export async function loadBookingConfirmContext(
     .filter((r) =>
       isRoomFreeForStay(
         r.id,
-        booking.check_in,
-        booking.check_out,
+        input.checkIn,
+        input.checkOut,
         occupied,
         checkInTime,
         checkOutTime
@@ -118,20 +128,43 @@ export async function loadBookingConfirmContext(
       price_per_night: r.price_per_night,
     }));
 
-  const guestCount = booking.num_adults + booking.num_children;
   const { possible, minRooms } = minRoomsToHostGuests(
-    guestCount,
+    input.guestCount,
     availableRooms
   );
 
   return {
-    booking,
     checkInTime,
     checkOutTime,
-    guestCount,
+    guestCount: input.guestCount,
     availableRooms,
     minRoomsNeeded: minRooms,
     canFulfill: possible,
+  };
+}
+
+export async function loadBookingConfirmContext(
+  bookingId: string
+): Promise<BookingConfirmContext | null> {
+  const booking = await getBookingById(bookingId);
+  if (!booking) return null;
+
+  const guestCount = booking.num_adults + booking.num_children;
+  const rooms = await loadAvailableRoomsForStay({
+    checkIn: booking.check_in,
+    checkOut: booking.check_out,
+    guestCount,
+    excludeBookingId: bookingId,
+  });
+
+  return {
+    booking,
+    checkInTime: rooms.checkInTime,
+    checkOutTime: rooms.checkOutTime,
+    guestCount,
+    availableRooms: rooms.availableRooms,
+    minRoomsNeeded: rooms.minRoomsNeeded,
+    canFulfill: rooms.canFulfill,
   };
 }
 

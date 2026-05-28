@@ -1,6 +1,7 @@
 import { formatGuestFullName } from "@/domain/guest-name";
 import { shiftStayDatesByYears } from "@/domain/guest/rebook-dates";
 import {
+  assertValidGuestPhone,
   hasGuestIdentity,
   isPlaceholderEmail,
   normalizeEmail,
@@ -123,6 +124,8 @@ async function findGuestByEmail(
 }
 
 async function createGuestRecord(input: GuestBookingInput): Promise<string> {
+  assertValidGuestPhone(input.guest_phone);
+
   const emailNorm = normalizeEmail(input.guest_email);
   const phoneNorm = normalizePhone(input.guest_phone);
   const email =

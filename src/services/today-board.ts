@@ -3,6 +3,7 @@ import { formatGuestGanttLabel } from "@/domain/guest-name";
 import type { GuestFlagLevel } from "@/domain/guest/types";
 import type { BookingRow } from "@/services/bookings";
 import { todayIso } from "@/lib/stay-dates";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 export type RoomToClean = {
   room_id: string;
@@ -85,7 +86,7 @@ export async function loadTodayBoard(
   checkInTime: string,
   checkOutTime: string
 ): Promise<TodayBoard> {
-  const today = todayIso();
+  const today = await getEffectiveToday();
   const supabase = createAdminClient();
 
   const { data, error } = await supabase

@@ -195,6 +195,67 @@ begin
 end;
 $$;
 
+-- ─── Advance simulation by N days (process time-dependent events) ────────────
+
+create or replace function public.sim_advance(
+  p_new_today date
+)
+returns jsonb
+language plpgsql
+security definer
+as $$
+declare
+  v_checked_in  int := 0;
+  v_checked_out int := 0;
+  v_holds_expired int := 0;
+begin
+  -- Safety: only if simulation is active
+  if not exists (
+    select 1 from information_schema.tables
+    where table_schema = 'public' and table_name = '_sim_backup_guests'
+  ) then
+    raise exception 'Simulation is not active. Start a simulation first.';
+  end if;
+
+  -- 1) Auto check-in: confirmed bookings whose check_in ≤ new_today
+  --    that have not been checked in yet
+  update public.bookings
+  set
+    actual_check_in_at = (check_in || 'T14:00:00')::timestamptz::text,
+    actual_check_in_by = 'sim'
+  where status = 'confirmata'
+    and check_in <= p_new_today::text
+    and actual_check_in_at is null;
+  get diagnostics v_checked_in = row_count;
+
+  -- 2) Auto check-out: confirmed bookings whose check_out ≤ new_today
+  --    that have been checked in but not checked out yet
+  update public.bookings
+  set
+    actual_check_out_at = (check_out || 'T11:00:00')::timestamptz::text,
+    actual_check_out_by = 'sim'
+  where status = 'confirmata'
+    and check_out <= p_new_today::text
+    and actual_check_in_at is not null
+    and actual_check_out_at is null;
+  get diagnostics v_checked_out = row_count;
+
+  -- 3) Release expired holds
+  update public.room_holds
+  set released_at = now()::text
+  where released_at is null
+    and expires_at is not null
+    and expires_at::timestamptz < (p_new_today::text || 'T00:00:00')::timestamptz;
+  get diagnostics v_holds_expired = row_count;
+
+  return jsonb_build_object(
+    'checked_in', v_checked_in,
+    'checked_out', v_checked_out,
+    'holds_expired', v_holds_expired
+  );
+end;
+$$;
+
 comment on function public.sim_start is
   'Starts simulation mode: creates backup copies of all tables. The app operates on real tables during simulation.';
 
@@ -206,3 +267,6 @@ comment on function public.sim_is_active is
 
 comment on function public.sim_force_cleanup is
   'Emergency: drops all backup tables without restoring. Use only if sim_stop fails.';
+
+comment on function public.sim_advance is
+  'Advances simulation: auto check-in/check-out bookings and expire holds up to the given date.';

@@ -64,7 +64,15 @@ export default async function AdminLayout({
       <div className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
           <div className="admin-hud__surface">
-            <AdminTopBar board={todayBoard} cereriCount={cereriCount} locationUnlocked={locationUnlocked} isAdmin={isAdmin} simActive={simStatus.active} />
+            <AdminTopBar
+              board={todayBoard}
+              cereriCount={cereriCount}
+              locationUnlocked={locationUnlocked}
+              isAdmin={isAdmin}
+              simActive={simStatus.active}
+              simDate={simStatus.active ? simStatus.currentDate : null}
+              simDays={simStatus.active ? simStatus.daysAdvanced : 0}
+            />
           </div>
         </div>
 

@@ -6,9 +6,17 @@ import type {
   GuestSearchResult,
 } from "@/domain/guest/types";
 import { GuestListCard } from "@/components/admin/guests/GuestListCard";
+import { GuestCollapsibleSection } from "@/components/admin/guests/GuestCollapsibleSection";
+import { GuestRecentHeroSection } from "@/components/admin/guests/GuestRecentHeroSection";
 import { GuestPreviewPanel } from "@/components/admin/guests/GuestPreviewPanel";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { GuestSearchForm } from "@/components/admin/guests/GuestSearchForm";
+import {
+  buildGuestListHref,
+  guestListPreviewHref,
+  guestProfileHref,
+  parseGuestListHref,
+} from "@/lib/guest-list-links";
 import { getGuestById, listGuestHighlights, searchGuests } from "@/services/guests";
 
 function firstValue(value: string | string[] | undefined): string {
@@ -19,78 +27,6 @@ function firstValue(value: string | string[] | undefined): string {
 function normalizePage(value: string): number {
   const page = Number(value);
   return Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
-}
-
-function buildGuestListHref(input: {
-  q?: string;
-  filter?: string;
-  page?: number;
-  selected?: string | null;
-}): string {
-  const params = new URLSearchParams();
-  const q = input.q?.trim();
-  const filter = input.filter?.trim();
-
-  if (q) params.set("q", q);
-  if (filter && filter !== "all") params.set("filter", filter);
-  if (input.page && input.page > 1) params.set("page", String(input.page));
-  if (input.selected) params.set("selected", input.selected);
-
-  const query = params.toString();
-  return query ? `/admin/guests?${query}` : "/admin/guests";
-}
-
-function parseHref(href: string): { q?: string; filter?: string; page?: number } {
-  const url = new URL(href, "https://cursor.local");
-  return {
-    q: url.searchParams.get("q") ?? undefined,
-    filter: url.searchParams.get("filter") ?? undefined,
-    page: normalizePage(url.searchParams.get("page") ?? ""),
-  };
-}
-
-function GuestSection({
-  title,
-  description,
-  guests,
-  currentHref,
-  guestsLabel,
-  emptyLabel,
-}: {
-  title: string;
-  description: string;
-  guests: GuestListItem[];
-  currentHref: string;
-  guestsLabel: (count: number) => string;
-  emptyLabel: string;
-}) {
-  return (
-    <section className="guest-section guest-surface">
-      <div className="guest-section__header">
-        <div>
-          <h2 className="guest-section__title">{title}</h2>
-          <p className="guest-section__desc">{description}</p>
-        </div>
-        <span className="guest-section__count" aria-live="polite">
-          {guestsLabel(guests.length)}
-        </span>
-      </div>
-      {guests.length === 0 ? (
-        <p className="guest-section__empty">{emptyLabel}</p>
-      ) : (
-        <ul className="guest-grid">
-          {guests.map((guest) => (
-            <GuestListCard
-              key={guest.id}
-              guest={guest}
-              previewHref={buildGuestListHref({ ...parseHref(currentHref), selected: guest.id })}
-              profileHref={`/admin/guests/${guest.id}?from=${encodeURIComponent(currentHref)}`}
-            />
-          ))}
-        </ul>
-      )}
-    </section>
-  );
 }
 
 function PaginationBar({
@@ -108,7 +44,7 @@ function PaginationBar({
   result: GuestSearchResult;
   currentHref: string;
 }) {
-  const current = parseHref(currentHref);
+  const current = parseGuestListHref(currentHref);
   return (
     <div className="guest-pagination">
       <p className="guest-pagination__info">
@@ -233,38 +169,38 @@ export default async function AdminGuestsPage({
 
       {result.mode === "highlights" && highlights ? (
         <div className="guest-highlights">
-          <GuestSection
-            title={t("blacklistTitle")}
-            description={t("blacklistDescription")}
-            guests={highlights.blacklist}
-            currentHref={currentHref}
-            guestsLabel={(count) => t("guestsCount", { count })}
-            emptyLabel={t("sectionEmpty")}
-          />
-          <GuestSection
-            title={t("loyalTitle")}
-            description={t("loyalDescription")}
-            guests={highlights.loyal}
-            currentHref={currentHref}
-            guestsLabel={(count) => t("guestsCount", { count })}
-            emptyLabel={t("sectionEmpty")}
-          />
-          <GuestSection
-            title={t("ratedTitle")}
-            description={t("ratedDescription")}
-            guests={highlights.rated}
-            currentHref={currentHref}
-            guestsLabel={(count) => t("guestsCount", { count })}
-            emptyLabel={t("sectionEmpty")}
-          />
-          <GuestSection
+          <GuestRecentHeroSection
+            eyebrow={t("filterRecent")}
             title={t("recentTitle")}
             description={t("recentDescription")}
             guests={highlights.recent}
             currentHref={currentHref}
-            guestsLabel={(count) => t("guestsCount", { count })}
+            guestsCountLabel={t("guestsCount", { count: highlights.recent.length })}
             emptyLabel={t("sectionEmpty")}
           />
+          <div className="guest-highlights__secondary">
+            <GuestCollapsibleSection
+              title={t("blacklistTitle")}
+              description={t("blacklistDescription")}
+              guests={highlights.blacklist}
+              currentHref={currentHref}
+              emptyLabel={t("sectionEmpty")}
+            />
+            <GuestCollapsibleSection
+              title={t("loyalTitle")}
+              description={t("loyalDescription")}
+              guests={highlights.loyal}
+              currentHref={currentHref}
+              emptyLabel={t("sectionEmpty")}
+            />
+            <GuestCollapsibleSection
+              title={t("ratedTitle")}
+              description={t("ratedDescription")}
+              guests={highlights.rated}
+              currentHref={currentHref}
+              emptyLabel={t("sectionEmpty")}
+            />
+          </div>
         </div>
       ) : (
         <section className="guest-results guest-surface">
@@ -282,8 +218,8 @@ export default async function AdminGuestsPage({
                   <GuestListCard
                     key={guest.id}
                     guest={guest}
-                    previewHref={buildGuestListHref({ q, filter, page, selected: guest.id })}
-                    profileHref={`/admin/guests/${guest.id}?from=${encodeURIComponent(currentHref)}`}
+                    previewHref={guestListPreviewHref(currentHref, guest.id)}
+                    profileHref={guestProfileHref(currentHref, guest.id)}
                   />
                 ))}
               </ul>

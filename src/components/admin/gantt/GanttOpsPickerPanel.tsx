@@ -15,10 +15,10 @@ type Props = {
   bookings: BookingRow[];
   onClose: () => void;
   onSelect: (booking: BookingRow) => void;
+  today?: string;
 };
 
-function filterForMode(bookings: BookingRow[], mode: GanttOpsPickerMode): BookingRow[] {
-  const today = todayIso();
+function filterForMode(bookings: BookingRow[], mode: GanttOpsPickerMode, today: string = todayIso()): BookingRow[] {
   return bookings
     .filter((b) => b.status === "confirmata")
     .filter((b) => {
@@ -40,11 +40,12 @@ export function GanttOpsPickerPanel({
   bookings,
   onClose,
   onSelect,
+  today: todayProp,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
-  const rows = useMemo(() => filterForMode(bookings, mode), [bookings, mode]);
+  const rows = useMemo(() => filterForMode(bookings, mode, todayProp), [bookings, mode, todayProp]);
 
   if (!open) return null;
 

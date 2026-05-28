@@ -12,6 +12,30 @@ export function isPlaceholderEmail(email: string | null | undefined): boolean {
 }
 
 /** Normalizează telefon românesc spre E.164 (+40…). */
+const PHONE_PLACEHOLDER_VALUES = new Set([
+  "",
+  "—",
+  "-",
+  "–",
+  "n/a",
+  "na",
+  "null",
+  ".",
+]);
+
+/** Telefon valid (normalizabil), fără placeholder-e admin. */
+export function isValidGuestPhone(raw: string | null | undefined): boolean {
+  const trimmed = (raw ?? "").trim();
+  if (PHONE_PLACEHOLDER_VALUES.has(trimmed.toLowerCase())) return false;
+  return normalizePhone(trimmed) !== null;
+}
+
+export function assertValidGuestPhone(raw: string | null | undefined): void {
+  if (!isValidGuestPhone(raw)) {
+    throw new Error("guest.phone_required");
+  }
+}
+
 export function normalizePhone(raw: string | null | undefined): string | null {
   const s = (raw ?? "").trim();
   if (!s) return null;

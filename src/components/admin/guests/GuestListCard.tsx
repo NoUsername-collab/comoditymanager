@@ -5,6 +5,7 @@ import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { formatRoDate } from "@/lib/stay-dates";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
+import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 
 export function GuestListCard({
@@ -38,7 +39,7 @@ export function GuestListCard({
           </div>
           <div className="guest-card__badges">
             <GuestFlagPill flagLevel={guest.profile?.flag_level} variant="edge" />
-            <GuestIdentityStatusPill status={guest.identity_status} />
+            <GuestIdentityStatusPill status={guest.identity_status} compact />
           </div>
         </div>
 
@@ -49,11 +50,13 @@ export function GuestListCard({
             showCount={false}
             showValue={false}
           />
-          <span className="guest-card__pill">
+          <span className="guest-card__pill guest-card__pill--hint">
             {tGuests("trust")} {guest.profile?.trust_score ?? 0}
+            <GuestScoreHint kind="trust" />
           </span>
-          <span className="guest-card__pill">
+          <span className="guest-card__pill guest-card__pill--hint">
             {tGuests("loyalShort")} {guest.profile?.loyalty_score ?? 0}
+            <GuestScoreHint kind="loyalty" />
           </span>
         </div>
 

@@ -1738,14 +1738,26 @@ html[data-theme="default"][data-mode="night"] {
   animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
 }
 
-/* Fundal roșu cereri — ~15% mai blând (glow-ul rămâne neschimbat) */
+/* Butoane acțiune admin — fundal solid, contrast ridicat (fără gradient deschis) */
 .admin-cereri-fill {
-  background-color: color-mix(in srgb, #dc2626 85%, white) !important;
-  color: #ffffff;
+  background: var(--admin-cereri-fill-bg, var(--admin-btn-primary-bg, #059669)) !important;
+  color: var(--admin-cereri-fill-text, var(--admin-btn-primary-text, #ffffff)) !important;
+  border: 1px solid var(--admin-cereri-fill-border, color-mix(in srgb, #059669 68%, black)) !important;
+  font-weight: 600;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-cereri-fill-bg, #059669) 28%, transparent);
 }
 
-.admin-cereri-fill:hover {
-  background-color: color-mix(in srgb, #ef4444 85%, white) !important;
+.admin-cereri-fill:hover:not(:disabled) {
+  background: var(
+    --admin-cereri-fill-bg-hover,
+    color-mix(in srgb, var(--admin-btn-primary-bg, #059669) 86%, black)
+  ) !important;
+  border-color: color-mix(in srgb, var(--admin-cereri-fill-bg, #059669) 52%, black) !important;
+}
+
+.admin-cereri-fill:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .admin-nav-tab--quest {

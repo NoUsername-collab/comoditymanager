@@ -17,12 +17,16 @@ export async function AdminTopBar({
   locationUnlocked = false,
   isAdmin = false,
   simActive = false,
+  simDate,
+  simDays,
 }: {
   board: TodayBoard | null;
   cereriCount: number;
   locationUnlocked?: boolean;
   isAdmin?: boolean;
   simActive?: boolean;
+  simDate?: string | null;
+  simDays?: number;
 }) {
   const t = await getTranslations("admin.shell");
 
@@ -49,7 +53,7 @@ export async function AdminTopBar({
           <AdminLiveRefresh />
           <AdminVersionBadge />
           <LanguageSwitcher />
-          {isAdmin && <SimTriggerChip simActive={simActive} />}
+          {isAdmin && <SimTriggerChip simActive={simActive} simDate={simDate} simDays={simDays} />}
           <Link href="/calendar" className="admin-hud__chip admin-hud__chip--ghost">
             <HudIconGlobe className="h-3.5 w-3.5 shrink-0 opacity-90" />
             <span className="admin-hud__chip-label-text">{t("publicSite")}</span>

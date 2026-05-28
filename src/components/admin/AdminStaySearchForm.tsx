@@ -7,7 +7,25 @@ import {
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
 
-export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string }) {
+function buildCazariHref(
+  q: string,
+  preserve?: { tab?: string; h?: string }
+): string {
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (preserve?.tab && preserve.tab !== "ops") params.set("tab", preserve.tab);
+  if (preserve?.h && preserve.h !== "30d") params.set("h", preserve.h);
+  const qs = params.toString();
+  return qs ? `/admin/cazari?${qs}` : "/admin/cazari";
+}
+
+export function AdminStaySearchForm({
+  defaultQuery,
+  preserveParams,
+}: {
+  defaultQuery?: string;
+  preserveParams?: { tab?: string; h?: string };
+}) {
   const t = useTranslations("admin.common");
   const router = useRouter();
   const { pending } = useAdminPending();
@@ -21,7 +39,7 @@ export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string })
         const fd = new FormData(e.currentTarget);
         const q = String(fd.get("q") ?? "").trim();
         void runAdminAction(async () => {
-          router.push(q ? `/admin/cazari?q=${encodeURIComponent(q)}` : "/admin/cazari");
+          router.push(buildCazariHref(q, preserveParams));
         });
       }}
     >
@@ -47,7 +65,7 @@ export function AdminStaySearchForm({ defaultQuery }: { defaultQuery?: string })
           className="border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-60"
           onClick={() => {
             void runAdminAction(async () => {
-              router.push("/admin/cazari");
+              router.push(buildCazariHref("", preserveParams));
             });
           }}
         >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { GuestRow, GuestNationalIdType } from "@/domain/guest/types";
 import {
@@ -8,9 +8,11 @@ import {
   cleanNationalId,
   NATIONAL_ID_LENGTH,
   NATIONAL_ID_COUNTRY,
+  NATIONAL_ID_TYPES,
 } from "@/domain/guest/national-id";
 import type { NationalIdType } from "@/domain/guest/national-id";
 import { updateGuestIdentityAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { isValidGuestPhone } from "@/domain/guest/normalize";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -51,9 +53,82 @@ function inferNationalIdType(country: string, nationality: string): NationalIdTy
   return COUNTRY_TO_ID_TYPE[country] ?? COUNTRY_TO_ID_TYPE[nationality] ?? "cnp";
 }
 
+function NationalIdTypePicker({
+  value,
+  onChange,
+  disabled,
+  labelForType,
+}: {
+  value: NationalIdType;
+  onChange: (type: NationalIdType) => void;
+  disabled?: boolean;
+  labelForType: (type: NationalIdType) => string;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: MouseEvent) {
+      if (!rootRef.current?.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    return () => document.removeEventListener("mousedown", onPointerDown);
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="guest-id-type-picker">
+      <button
+        type="button"
+        className="guest-id-type-picker__trigger guest-identity-form__select"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label={labelForType(value)}
+        title={labelForType(value)}
+        disabled={disabled}
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span className="guest-id-type-picker__code">{NATIONAL_ID_COUNTRY[value]}</span>
+        <span className="guest-id-type-picker__chevron" aria-hidden>
+          ▾
+        </span>
+      </button>
+      {open && (
+        <ul className="guest-id-type-picker__menu" role="listbox" aria-label={labelForType(value)}>
+          {NATIONAL_ID_TYPES.map((type) => (
+            <li key={type} role="none">
+              <button
+                type="button"
+                role="option"
+                aria-selected={value === type}
+                className={[
+                  "guest-id-type-picker__option",
+                  value === type && "guest-id-type-picker__option--active",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => {
+                  onChange(type);
+                  setOpen(false);
+                }}
+              >
+                {labelForType(type)}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const t = useTranslations("admin.guests.identity");
   const tCommon = useTranslations("admin.common");
+  const tRoot = useTranslations("common");
+  const tErrors = useTranslations("errors");
   const runAdminAction = useRunAdminAction();
   const { pending } = useAdminPending();
 
@@ -78,6 +153,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const [county, setCounty] = useState(guest.county ?? "");
   const [country, setCountry] = useState(guest.country ?? "România");
   const [sex, setSex] = useState<"M" | "F" | "">(guest.sex ?? "");
+  const [phone, setPhone] = useState(guest.phone ?? "");
 
   const [idError, setIdError] = useState<string | null>(null);
   const [idAutoFilled, setIdAutoFilled] = useState(false);
@@ -134,6 +210,11 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
     setError(null);
     setSuccess(false);
 
+    if (!isValidGuestPhone(phone)) {
+      setError(tErrors("phoneRequired"));
+      return;
+    }
+
     // Validate national ID if provided
     if (nationalId.trim()) {
       const cleaned = cleanNationalId(nationalId);
@@ -146,6 +227,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 
     const formData = new FormData();
     formData.set("guest_id", guest.id);
+    formData.set("phone", phone.trim());
     formData.set("doc_type", docType);
     formData.set("doc_series", docSeries);
     formData.set("doc_number", docNumber);
@@ -268,20 +350,29 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
         <div className="guest-identity-form__section">
           <h4 className="guest-identity-form__section-title">{t("personalSection")}</h4>
 
+          <div className="guest-identity-form__row">
+            <label className="guest-identity-form__field">
+              <span className="guest-identity-form__label">{tRoot("phone")} *</span>
+              <input
+                type="tel"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="07xx xxx xxx"
+                className="guest-identity-form__input"
+              />
+            </label>
+          </div>
+
           <div className="guest-identity-form__row guest-identity-form__row--multi">
             <label className="guest-identity-form__field guest-identity-form__field--small">
               <span className="guest-identity-form__label">{t("nationalIdType")}</span>
-              <select
+              <NationalIdTypePicker
                 value={nationalIdType}
-                onChange={(e) => handleNationalIdTypeChange(e.target.value as NationalIdType)}
-                className="guest-identity-form__select"
-              >
-                <option value="cnp">{t("nationalIdTypes.cnp")}</option>
-                <option value="idnp">{t("nationalIdTypes.idnp")}</option>
-                <option value="egn">{t("nationalIdTypes.egn")}</option>
-                <option value="amka">{t("nationalIdTypes.amka")}</option>
-                <option value="szemelyi_szam">{t("nationalIdTypes.szemelyi_szam")}</option>
-              </select>
+                onChange={handleNationalIdTypeChange}
+                disabled={pending}
+                labelForType={(type) => t(`nationalIdTypes.${type}`)}
+              />
             </label>
             <label className="guest-identity-form__field">
               <span className="guest-identity-form__label">
@@ -454,12 +545,15 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 function IdentityStatusPill({
   status,
   t,
+  compact = false,
 }: {
   status: string;
   t: (key: string) => string;
+  compact?: boolean;
 }) {
   const cls = [
     "guest-identity-status",
+    compact && "guest-identity-status--compact",
     status === "complete" && "guest-identity-status--complete",
     status === "partial" && "guest-identity-status--partial",
     status === "draft" && "guest-identity-status--draft",
@@ -479,7 +573,13 @@ function IdentityStatusPill({
 }
 
 /** Exported for reuse in cards / badges */
-export function GuestIdentityStatusPill({ status }: { status: string }) {
+export function GuestIdentityStatusPill({
+  status,
+  compact = false,
+}: {
+  status: string;
+  compact?: boolean;
+}) {
   const t = useTranslations("admin.guests.identity");
-  return <IdentityStatusPill status={status} t={t} />;
+  return <IdentityStatusPill status={status} t={t} compact={compact} />;
 }

@@ -80,6 +80,7 @@ function HeatDayCell({
   onSelect,
   labels,
   locale,
+  today,
 }: {
   day: DayAvailability;
   selected: boolean;
@@ -95,13 +96,14 @@ function HeatDayCell({
     occupancy: string;
     dayCardHint: string;
   };
+  today?: string;
 }) {
   const btnRef = useRef<HTMLButtonElement>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [hoverPreview, setHoverPreview] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
 
-  const isToday = day.iso === todayIso();
+  const isToday = day.iso === (today ?? todayIso());
   const isWeekend = (() => {
     const d = parseIso(day.iso);
     const dow = d.getDay();
@@ -402,6 +404,7 @@ export function AvailabilityDashboard({
   anchorHash = "",
   queryPrefix = "",
   extraQueryParams = {},
+  today: todayProp,
 }: {
   dashboard: AvailabilityDashboard;
   initialDay?: string;
@@ -413,7 +416,9 @@ export function AvailabilityDashboard({
   anchorHash?: string;
   queryPrefix?: string;
   extraQueryParams?: Record<string, string | undefined>;
+  today?: string;
 }) {
+  const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
   const tAvail = useTranslations("admin.availabilityDashboard");
   const locale = useLocale();
@@ -482,7 +487,7 @@ export function AvailabilityDashboard({
     return dashboard.next_weekend ? [dashboard.next_weekend] : [];
   }, [dashboard.weekend_picks, dashboard.next_weekend]);
   const weekMonday =
-    initialWeekStart ?? mondayOfWeekIso(selectedIso ?? todayIso());
+    initialWeekStart ?? mondayOfWeekIso(selectedIso ?? effectiveToday);
 
   const prefixedKey = useCallback(
     (key: string) => (queryPrefix ? `${queryPrefix}${key}` : key),
@@ -907,6 +912,7 @@ export function AvailabilityDashboard({
                           onSelect={handleDayClick}
                           labels={heatCellLabels}
                           locale={locale}
+                          today={effectiveToday}
                         />
                       </div>
                     )

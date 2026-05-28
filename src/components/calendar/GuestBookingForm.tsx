@@ -408,10 +408,11 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             />
           </label>
           <label className="site-field">
-            {tCommon("phone")}
+            {tCommon("phone")} *
             <input
               name="guest_phone"
               type="tel"
+              required
               className="mt-1 w-full"
               value={guestPhone}
               onChange={(e) => {

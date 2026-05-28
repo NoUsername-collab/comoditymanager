@@ -49,22 +49,25 @@ export function GanttStayPopover({
   visible,
   onMouseEnter,
   onMouseLeave,
+  today: todayProp,
 }: {
   data: GanttStayPopoverData;
   anchorRect: DOMRect | null;
   visible: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  today?: string;
 }) {
   const tCommon = useTranslations("admin.common");
   const tFlow = useTranslations("booking.flowStatus");
   const locale = useLocale();
   const router = useRouter();
+  const effectiveToday = todayProp ?? todayIso();
   const isCerere = data.status === "cerere_noua";
   const stripe = data.buildingColor ?? (isCerere ? "#d97706" : "#059669");
   const initials = guestInitials(null, null, data.guestName);
   const isCheckInToday =
-    !isCerere && data.checkIn === todayIso();
+    !isCerere && data.checkIn === effectiveToday;
   const roomsLabel =
     data.roomNames && data.roomNames.length > 0
       ? data.roomNames.join(", ")

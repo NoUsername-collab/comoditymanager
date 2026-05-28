@@ -19,8 +19,7 @@ export function filterGanttRoomsByFeature(
   });
 }
 
-export function focusDayInRange(dayIsos: string[]): string {
-  const today = todayIso();
+export function focusDayInRange(dayIsos: string[], today: string = todayIso()): string {
   if (dayIsos.includes(today)) return today;
   return dayIsos[Math.floor(dayIsos.length / 2)] ?? today;
 }

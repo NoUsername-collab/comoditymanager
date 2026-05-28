@@ -8,6 +8,7 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
@@ -17,6 +18,11 @@ import {
   shiftAllSegmentsByDays,
   syncBookingRoomSegments,
 } from "@/services/booking-segments";
+import {
+  assertValidGuestPhone,
+  isValidGuestPhone,
+  normalizePhone,
+} from "@/domain/guest/normalize";
 import { resolveGuestForBooking } from "@/services/guests";
 import {
   listGuestProfileSummaries,
@@ -37,6 +43,11 @@ const BOOKING_ROW_SELECT = `
   num_adults, num_children, total_price,
   actual_check_in_at, actual_check_out_at, actual_check_in_by, actual_check_out_by,
   booking_rooms ( room_id, rooms ( name ) )
+`;
+
+const BOOKING_ROW_WITH_UPDATED_SELECT = `
+  ${BOOKING_ROW_SELECT.trim()},
+  updated_at
 `;
 
 export type BookingRow = {
@@ -242,6 +253,8 @@ export async function createBookingRequest(input: {
   /** Soft hold: camere blocate provizoriu (status rămâne cerere_noua). */
   room_ids?: string[];
 }): Promise<string> {
+  assertValidGuestPhone(input.guest_phone);
+
   const holdRooms = input.room_ids?.length
     ? [...new Set(input.room_ids.filter(Boolean))]
     : [];
@@ -279,7 +292,7 @@ export async function createBookingRequest(input: {
       guest_last_name: input.guest_last_name.trim(),
       guest_first_name: input.guest_first_name.trim(),
       guest_email: input.guest_email.trim(),
-      guest_phone: input.guest_phone.trim() || null,
+      guest_phone: input.guest_phone.trim(),
       guest_id: guestId,
       guest_alert_level: guestAlert.level,
       guest_alert_note: guestAlert.note,
@@ -483,12 +496,37 @@ export async function listCompletedStayHistory(
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
     .eq("status", "confirmata")
-    .lt("check_out", todayIso())
+    .lt("check_out", await getEffectiveToday())
     .order("check_out", { ascending: false })
     .limit(limit);
 
   if (error) throw new Error(error.message);
   return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+}
+
+export type CancelledStayHistoryRow = BookingRow & { updated_at: string };
+
+/** Cereri/cazări anulate recent — pentru recontact când se eliberează loc. */
+export async function listCancelledStayHistory(
+  limit = 24
+): Promise<CancelledStayHistoryRow[]> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(BOOKING_ROW_WITH_UPDATED_SELECT)
+    .eq("status", "anulata")
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+
+  type RowWithUpdated = BookingSelectRow & { updated_at: string };
+  const raw = (data ?? []) as unknown as RowWithUpdated[];
+  const mapped = await attachGuestProfiles(mapBookingRows(raw));
+  return mapped.map((row, index) => ({
+    ...row,
+    updated_at: raw[index]?.updated_at ?? new Date().toISOString(),
+  }));
 }
 
 export async function confirmBookingWithRooms(
@@ -746,10 +784,80 @@ async function requireConfirmedBooking(bookingId: string) {
   return booking;
 }
 
+/** Check-in necesită telefon pe rezervare sau pe profilul client legat. */
+async function ensureBookingPhoneForCheckIn(bookingId: string): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+
+  if (isValidGuestPhone(booking.guest_phone)) return;
+
+  if (booking.guest_id) {
+    const supabase = createAdminClient();
+    const { data: guest, error } = await supabase
+      .from("guests")
+      .select("phone, phone_normalized")
+      .eq("id", booking.guest_id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+
+    if (guest && isValidGuestPhone(guest.phone)) {
+      const phone = String(guest.phone).trim();
+      const { error: upError } = await supabase
+        .from("bookings")
+        .update({
+          guest_phone: phone,
+        })
+        .eq("id", bookingId);
+      if (upError) throw new Error(upError.message);
+      return;
+    }
+  }
+
+  throw new Error("booking.phone_required_for_checkin");
+}
+
+export async function updateBookingGuestPhone(
+  bookingId: string,
+  rawPhone: string
+): Promise<void> {
+  assertValidGuestPhone(rawPhone);
+  const booking = await getBookingById(bookingId);
+  if (!booking) throw new Error("booking.not_found");
+
+  const phone = rawPhone.trim();
+  const phoneNorm = normalizePhone(phone);
+  const supabase = createAdminClient();
+
+  const { error: bookingError } = await supabase
+    .from("bookings")
+    .update({ guest_phone: phone })
+    .eq("id", bookingId);
+  if (bookingError) throw new Error(bookingError.message);
+
+  if (booking.guest_id && phoneNorm) {
+    const { error: guestError } = await supabase
+      .from("guests")
+      .update({
+        phone,
+        phone_normalized: phoneNorm,
+      })
+      .eq("id", booking.guest_id);
+    if (guestError) throw new Error(guestError.message);
+  }
+
+  await logAdminActivityFromSession({
+    action: "guest.updated",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Telefon actualizat: ${booking.guest_name}`,
+    metadata: { guest_id: booking.guest_id },
+  });
+}
+
 export async function setBookingCheckIn(
   bookingId: string,
   at?: string | null
 ): Promise<void> {
+  await ensureBookingPhoneForCheckIn(bookingId);
   const booking = await requireConfirmedBooking(bookingId);
   if (booking.actual_check_in_at) {
     throw new Error("booking.checkin_already_recorded");
@@ -824,6 +932,93 @@ export async function setBookingCheckOut(
       at: ts,
       actual_check_in_at: booking.actual_check_in_at,
       planned_check_out: booking.check_out,
+    },
+  });
+}
+
+export async function editBookingCheckIn(
+  bookingId: string,
+  at?: string | null
+): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+  if (!booking.actual_check_in_at) {
+    throw new Error("booking.checkin_not_recorded");
+  }
+
+  const ts = parseOperationalTimestamp(at);
+  if (booking.actual_check_out_at) {
+    const checkOutAt = new Date(booking.actual_check_out_at);
+    const editedCheckInAt = new Date(ts);
+    if (editedCheckInAt > checkOutAt) {
+      throw new Error("booking.checkout_before_checkin_not_allowed");
+    }
+  }
+
+  const user = await getAdminUser();
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      actual_check_in_at: ts,
+      actual_check_in_by: user?.id ?? null,
+    })
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "booking.checkin.set",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Check-in editat: ${booking.guest_name}`,
+    metadata: {
+      previous_at: booking.actual_check_in_at,
+      new_at: ts,
+      actual_check_out_at: booking.actual_check_out_at,
+    },
+  });
+}
+
+export async function editBookingCheckOut(
+  bookingId: string,
+  at?: string | null
+): Promise<void> {
+  const booking = await requireConfirmedBooking(bookingId);
+  if (!booking.actual_check_in_at) {
+    throw new Error("booking.checkin_required_before_checkout");
+  }
+  if (!booking.actual_check_out_at) {
+    throw new Error("booking.checkout_not_recorded");
+  }
+
+  const ts = parseOperationalTimestamp(at);
+  const checkInAt = new Date(booking.actual_check_in_at);
+  const editedCheckOutAt = new Date(ts);
+  if (editedCheckOutAt < checkInAt) {
+    throw new Error("booking.checkout_before_checkin_not_allowed");
+  }
+
+  const user = await getAdminUser();
+  const supabase = createAdminClient();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      actual_check_out_at: ts,
+      actual_check_out_by: user?.id ?? null,
+    })
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "booking.checkout.set",
+    entityType: "booking",
+    entityId: bookingId,
+    summary: `Check-out editat: ${booking.guest_name}`,
+    metadata: {
+      previous_at: booking.actual_check_out_at,
+      new_at: ts,
+      actual_check_in_at: booking.actual_check_in_at,
     },
   });
 }

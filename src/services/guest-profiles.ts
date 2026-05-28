@@ -16,6 +16,7 @@ import {
   computeGuestProfileSnapshot,
 } from "@/domain/guest/reputation";
 import { stayNightCount, todayIso } from "@/lib/stay-dates";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
@@ -158,7 +159,7 @@ async function listCompletedStayStats(guestId: string): Promise<{
     .select("check_in, check_out")
     .eq("guest_id", guestId)
     .eq("status", "confirmata")
-    .lt("check_out", todayIso())
+    .lt("check_out", await getEffectiveToday())
     .order("check_out", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -243,7 +244,7 @@ export async function saveGuestStayReview(input: {
   if (booking.guest_id !== input.guestId) {
     throw new Error("guest.review_not_belong_to_guest");
   }
-  if (booking.status !== "confirmata" || booking.check_out >= todayIso()) {
+  if (booking.status !== "confirmata" || booking.check_out >= await getEffectiveToday()) {
     throw new Error("guest.only_past_confirmed_stays_can_be_reviewed");
   }
 

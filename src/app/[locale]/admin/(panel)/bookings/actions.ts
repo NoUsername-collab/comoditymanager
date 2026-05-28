@@ -7,10 +7,13 @@ import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   cancelBooking,
   confirmBookingWithRooms,
+  editBookingCheckIn,
+  editBookingCheckOut,
   setBookingCheckIn,
   setBookingCheckOut,
   undoBookingCheckIn,
   undoBookingCheckOut,
+  updateBookingGuestPhone,
 } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 import { getTranslations } from "next-intl/server";
@@ -66,6 +69,41 @@ function readAt(formData: FormData): string | undefined {
   return at || undefined;
 }
 
+function mapBookingOpsError(
+  e: unknown,
+  t: Awaited<ReturnType<typeof getTranslations<"admin.serverActions">>>
+): string {
+  if (e instanceof Error) {
+    if (e.message === "booking.phone_required_for_checkin") {
+      return t("phoneRequiredCheckIn");
+    }
+    if (e.message === "guest.phone_required") {
+      return t("phoneRequired");
+    }
+  }
+  return e instanceof Error ? e.message : t("checkInError");
+}
+
+export async function updateBookingGuestPhoneAction(
+  formData: FormData
+): Promise<OpsActionResult> {
+  const t = await getTranslations("admin.serverActions");
+  await requireAdmin();
+  const id = readBookingId(formData);
+  const phone = String(formData.get("guest_phone") ?? "").trim();
+  if (!id) return { ok: false, error: t("bookingIdMissing") };
+  try {
+    await updateBookingGuestPhone(id, phone);
+    revalidateBookingPaths(id);
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: mapBookingOpsError(e, t),
+    };
+  }
+}
+
 export async function setBookingCheckInAction(
   formData: FormData
 ): Promise<OpsActionResult> {
@@ -80,7 +118,7 @@ export async function setBookingCheckInAction(
   } catch (e) {
     return {
       ok: false,
-      error: e instanceof Error ? e.message : t("checkInError"),
+      error: mapBookingOpsError(e, t),
     };
   }
 }
@@ -144,6 +182,44 @@ export async function undoBookingCheckOutAction(
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("undoCheckOutError"),
+    };
+  }
+}
+
+export async function editBookingCheckInAction(
+  formData: FormData
+): Promise<OpsActionResult> {
+  const t = await getTranslations("admin.serverActions");
+  await requireAdmin();
+  const id = readBookingId(formData);
+  if (!id) return { ok: false, error: t("bookingIdMissing") };
+  try {
+    await editBookingCheckIn(id, readAt(formData));
+    revalidateBookingPaths(id);
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("checkInError"),
+    };
+  }
+}
+
+export async function editBookingCheckOutAction(
+  formData: FormData
+): Promise<OpsActionResult> {
+  const t = await getTranslations("admin.serverActions");
+  await requireAdmin();
+  const id = readBookingId(formData);
+  if (!id) return { ok: false, error: t("bookingIdMissing") };
+  try {
+    await editBookingCheckOut(id, readAt(formData));
+    revalidateBookingPaths(id);
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("checkOutError"),
     };
   }
 }

@@ -13,9 +13,9 @@ export type BookingRoomSegmentRow = {
 export function resolveMovePivot(
   segmentStart: string,
   segmentEnd: string,
-  requestedPivot?: string
+  requestedPivot?: string,
+  today: string = todayIso()
 ): string {
-  const today = todayIso();
   let pivot = requestedPivot && requestedPivot > today ? requestedPivot : today;
   if (pivot <= segmentStart) {
     pivot = addDays(segmentStart, 1);

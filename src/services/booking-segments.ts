@@ -7,6 +7,7 @@ import { addDays, stayNightCount, todayIso } from "@/lib/stay-dates";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 async function roomNightlyRate(roomId: string): Promise<number> {
   const supabase = createAdminClient();
@@ -34,9 +35,9 @@ type RoomMovePlan =
 function resolveRoomMovePlan(
   segmentStart: string,
   segmentEnd: string,
-  requestedPivot?: string
+  requestedPivot?: string,
+  today: string = todayIso()
 ): RoomMovePlan {
-  const today = todayIso();
   const pivot = requestedPivot && requestedPivot > today ? requestedPivot : today;
 
   // If the stay has not started yet, moving rooms should reassign the whole segment,
@@ -244,10 +245,12 @@ export async function previewRoomMoveFromPivot(input: {
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
   if (!source) throw new Error("segments.source_not_found");
 
+  const effectiveToday = await getEffectiveToday();
   const plan = resolveRoomMovePlan(
     source.segment_start,
     source.segment_end,
-    input.pivotDate
+    input.pivotDate,
+    effectiveToday
   );
   const targetRate = await roomNightlyRate(input.targetRoomId);
 
@@ -340,10 +343,12 @@ export async function moveBookingRoomFromPivot(input: {
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
   if (!source) throw new Error("segments.source_not_found");
 
+  const effectiveToday2 = await getEffectiveToday();
   const plan = resolveRoomMovePlan(
     source.segment_start,
     source.segment_end,
-    input.pivotDate
+    input.pivotDate,
+    effectiveToday2
   );
 
   await assertRoomsAvailableForOccupancy(

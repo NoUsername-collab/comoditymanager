@@ -154,10 +154,11 @@ export function PhoneBookingForm({
       />
       <div className="grid grid-cols-2 gap-2">
         <label>
-          {tCommon("phone")}
+          {tCommon("phone")} *
           <input
             name="guest_phone"
             type="tel"
+            required
             value={guestPhone}
             onChange={(e) => {
               setGuestPhone(e.target.value);

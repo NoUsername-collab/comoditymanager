@@ -13,11 +13,13 @@ import {
   undoBookingCheckOutAction,
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
+import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { useTranslations } from "next-intl";
 
 type Props = {
   bookingId: string;
   guestName: string;
+  guestPhone?: string | null;
   plannedCheckIn: string;
   plannedCheckOut: string;
   actualCheckInAt: string | null;
@@ -27,6 +29,7 @@ type Props = {
 export function BookingOperationalPanel({
   bookingId,
   guestName,
+  guestPhone,
   plannedCheckIn,
   plannedCheckOut,
   actualCheckInAt,
@@ -41,6 +44,8 @@ export function BookingOperationalPanel({
   const [dialogMode, setDialogMode] = useState<"checkin" | "checkout" | null>(
     null
   );
+  const hasPhone = isValidGuestPhone(guestPhone);
+  const checkInBlockedTitle = !hasPhone ? t("phoneRequiredForCheckIn") : "";
 
   function undoCheckIn() {
     if (!confirm(t("confirmUndoCheckIn"))) return;
@@ -99,7 +104,8 @@ export function BookingOperationalPanel({
           <button
             type="button"
             className="rounded-md bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-            disabled={pending}
+            disabled={pending || !hasPhone}
+            title={checkInBlockedTitle}
             onClick={() => setDialogMode("checkin")}
           >
             {t("checkInAction")}

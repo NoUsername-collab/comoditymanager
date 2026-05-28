@@ -59,6 +59,7 @@ type Props = {
   draft?: GanttQuickCreateDraft | null;
   onClose: () => void;
   onModeChange?: (mode: GanttQuickPanelMode) => void;
+  today?: string;
 };
 
 const labelClass =
@@ -337,6 +338,7 @@ export function GanttQuickActionPanel({
   draft = null,
   onClose,
   onModeChange,
+  today: todayProp,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
@@ -345,6 +347,7 @@ export function GanttQuickActionPanel({
   const { showToast, notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
+  const effectiveToday = todayProp ?? todayIso();
 
   const confirmedBookings = useMemo(
     () =>
@@ -357,9 +360,9 @@ export function GanttQuickActionPanel({
   const defaultRoomId = rooms[0]?.id ?? "";
   const defaultBooking = confirmedBookings[0] ?? null;
   const [roomId, setRoomId] = useState(draft?.roomId ?? defaultRoomId);
-  const [checkIn, setCheckIn] = useState(draft?.checkIn ?? todayIso());
+  const [checkIn, setCheckIn] = useState(draft?.checkIn ?? effectiveToday);
   const [checkOut, setCheckOut] = useState(
-    draft?.checkOut ?? addDays(draft?.checkIn ?? todayIso(), 1)
+    draft?.checkOut ?? addDays(draft?.checkIn ?? effectiveToday, 1)
   );
   const [reason, setReason] = useState("");
   const [expiresHours, setExpiresHours] = useState("");
@@ -495,7 +498,7 @@ export function GanttQuickActionPanel({
 
   function setIntervalDuration(nights: number) {
     setError(null);
-    setCheckOut(addDays(activeCheckIn || todayIso(), nights));
+    setCheckOut(addDays(activeCheckIn || effectiveToday, nights));
   }
 
   function moveIntervalToToday() {
@@ -503,10 +506,9 @@ export function GanttQuickActionPanel({
       activeCheckIn && activeCheckOut && activeCheckIn < activeCheckOut
         ? nightsBetween(activeCheckIn, activeCheckOut)
         : 1;
-    const today = todayIso();
     setError(null);
-    setCheckIn(today);
-    setCheckOut(addDays(today, Math.max(1, duration)));
+    setCheckIn(effectiveToday);
+    setCheckOut(addDays(effectiveToday, Math.max(1, duration)));
   }
 
   function ensureCreatableInterval() {
@@ -621,6 +623,10 @@ export function GanttQuickActionPanel({
       return;
     }
     if (!ensureCreatableInterval()) return;
+    if (!guestPhone.trim()) {
+      setError(tGantt("quick.errors.phoneRequired"));
+      return;
+    }
     setError(null);
     void runAdminAction(async () => {
       const payload = {
@@ -920,9 +926,11 @@ export function GanttQuickActionPanel({
               />
             </label>
             <label className={labelClass}>
-              Telefon (opțional)
+              Telefon *
               <input
                 className={inputClass}
+                type="tel"
+                required
                 value={guestPhone}
                 onChange={(e) => setGuestPhone(e.target.value)}
               />

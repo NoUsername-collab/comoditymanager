@@ -123,6 +123,7 @@ export function GanttToolbar({
   nextHref,
   bookings = [],
   cereri = [],
+  today,
 }: {
   year: number;
   month: number;
@@ -140,6 +141,7 @@ export function GanttToolbar({
   nextHref: string;
   bookings?: BookingRow[];
   cereri?: BookingRow[];
+  today?: string;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
@@ -154,7 +156,8 @@ export function GanttToolbar({
   const buildingId = searchParams.get("building") ?? "";
   const roomId = searchParams.get("room") ?? "";
   const focusDay = searchParams.get("fd") ?? "";
-  const anchorStart = ws ?? rangeStart ?? todayIso();
+  const effectiveToday = today ?? todayIso();
+  const anchorStart = ws ?? rangeStart ?? effectiveToday;
 
   function push(patch: {
     y?: number;

@@ -114,10 +114,11 @@ export function bookingMatchesLayerFilter(
 
 export function filterOccupancyForLayer(
   segments: OccupancySegment[],
-  layer: GanttLayerFilter
+  layer: GanttLayerFilter,
+  ref?: string
 ): OccupancySegment[] {
   if (layer === "all") return segments;
-  return segments.filter((s) => segmentMatchesLayerFilter(s, layer));
+  return segments.filter((s) => segmentMatchesLayerFilter(s, layer, ref));
 }
 
 /** Hold/block overlays only — fără duplicate stay bars. */

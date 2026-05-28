@@ -6,6 +6,7 @@ import type {
   GuestProfileRow,
 } from "@/domain/guest/types";
 import { useTranslations } from "next-intl";
+import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 
 type ProfileLike = GuestBookingFlagSummary | GuestProfileRow | null;
@@ -54,17 +55,26 @@ export function GuestProfileBadges({
       {profile && (
         <>
           <div className="guest-badge guest-badge--sky">
-            <span className="guest-badge__label">{tGuests("profileBadges.behavior")}</span>
+            <span className="guest-badge__label guest-badge__label-row">
+              {tGuests("profileBadges.behavior")}
+              <GuestScoreHint kind="trust" />
+            </span>
             <span className="guest-badge__value">{profile.trust_score}</span>
             <span className="guest-badge__sub">{trustLabel(profile.trust_score)}</span>
           </div>
           <div className="guest-badge guest-badge--emerald">
-            <span className="guest-badge__label">{tGuests("profileBadges.loyalty")}</span>
+            <span className="guest-badge__label guest-badge__label-row">
+              {tGuests("profileBadges.loyalty")}
+              <GuestScoreHint kind="loyalty" />
+            </span>
             <span className="guest-badge__value">{profile.loyalty_score}</span>
             <span className="guest-badge__sub">{loyaltyLabel(profile.loyalty_score)}</span>
           </div>
           <div className="guest-badge guest-badge--neutral">
-            <span className="guest-badge__label">{tGuests("profileBadges.rating")}</span>
+            <span className="guest-badge__label guest-badge__label-row">
+              {tGuests("profileBadges.rating")}
+              <GuestScoreHint kind="stars" />
+            </span>
             <span className="guest-badge__value">
               <GuestStarsCompact
                 value={profile.stars_avg}

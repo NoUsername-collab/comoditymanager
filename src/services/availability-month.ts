@@ -18,6 +18,7 @@ import {
   type WeekendPick,
 } from "@/domain/availability/weekend-finder";
 import { addDays, todayIso } from "@/lib/stay-dates";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import type { AcMode } from "@/types/database";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
@@ -231,7 +232,7 @@ export async function loadAvailabilityDashboard(
   const prevYear = month === 0 ? year - 1 : year;
 
   const scanEnd = addDays(end, 75);
-  const scanStart = todayIso();
+  const scanStart = await getEffectiveToday();
   const rangeStart = scanStart < start ? scanStart : start;
 
   const [roomsRaw, buildings, occupied, bookings] = await Promise.all([
@@ -332,7 +333,8 @@ export async function loadAvailabilityDashboard(
 
   const kpis = computeKpis(days, prevFull);
   const weekend_picks = scanWeekendsInDays(mergedScan, 2).slice(0, 4);
-  const next_weekend = findNextWeekendWithRooms(mergedScan, todayIso(), 2);
+  const effectiveToday = await getEffectiveToday();
+  const next_weekend = findNextWeekendWithRooms(mergedScan, effectiveToday, 2);
 
   const cereri_band: CereriBandDay[] = days.map((d) => ({
     iso: d.iso,

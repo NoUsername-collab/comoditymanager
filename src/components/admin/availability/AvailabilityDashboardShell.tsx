@@ -6,6 +6,7 @@ import { parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { todayIso } from "@/lib/stay-dates";
 import { getTranslations } from "next-intl/server";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 export type AvailabilityShellSearchParams = {
   y?: string;
@@ -46,14 +47,15 @@ export async function AvailabilityDashboardShell({
 }) {
   const tCommon = await getTranslations("admin.common");
   const tPage = await getTranslations("admin.availability");
-  const now = new Date();
-  const year = Number(searchParams.y) || now.getFullYear();
-  const month = searchParams.m !== undefined ? Number(searchParams.m) : now.getMonth();
+  const effectiveToday = await getEffectiveToday();
+  const refDate = new Date(effectiveToday + "T00:00:00");
+  const year = Number(searchParams.y) || refDate.getFullYear();
+  const month = searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
   const buildingId = searchParams.building?.length ? searchParams.building : null;
   const featureFilter = parseGanttFeatureFilter(searchParams.feat);
   const view = searchParams.view === "week" ? "week" : "month";
   const weekStart =
-    searchParams.ws ?? (view === "week" ? mondayOfWeekIso(searchParams.day ?? todayIso()) : null);
+    searchParams.ws ?? (view === "week" ? mondayOfWeekIso(searchParams.day ?? effectiveToday) : null);
 
   const prevM = month === 0 ? 11 : month - 1;
   const prevY = month === 0 ? year - 1 : year;
@@ -134,6 +136,7 @@ export async function AvailabilityDashboardShell({
           weekStart={weekStart}
           basePath={basePath}
           anchorHash={anchorHash}
+          today={effectiveToday}
         />
       </Suspense>
     </div>

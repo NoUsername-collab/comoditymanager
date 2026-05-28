@@ -18,6 +18,7 @@ import {
   moveBookingRoomFromPivot,
   previewRoomMoveFromPivot,
 } from "@/services/booking-segments";
+import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getTranslations } from "next-intl/server";
 
@@ -201,8 +202,13 @@ export async function createCerereFromGanttAction(input: {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
     const email = input.guestEmail.trim();
-    if (!last || !first || !email) {
-      return { ok: false, error: t("nameAndEmailRequired") };
+    if (!last || !first || !email || !input.guestPhone?.trim()) {
+      return { ok: false, error: t("nameEmailPhoneRequired") };
+    }
+    try {
+      assertValidGuestPhone(input.guestPhone);
+    } catch {
+      return { ok: false, error: t("invalidPhone") };
     }
 
     const id = await createBookingRequest({
@@ -212,7 +218,7 @@ export async function createCerereFromGanttAction(input: {
       guest_last_name: last,
       guest_first_name: first,
       guest_email: email,
-      guest_phone: input.guestPhone?.trim() || "—",
+      guest_phone: input.guestPhone.trim(),
       num_adults: 1,
       num_children: 0,
       has_minor: false,
@@ -247,8 +253,13 @@ export async function createDirectStayFromGanttAction(input: {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
     const email = input.guestEmail.trim();
-    if (!last || !first || !email) {
-      return { ok: false, error: t("nameAndEmailRequired") };
+    if (!last || !first || !email || !input.guestPhone?.trim()) {
+      return { ok: false, error: t("nameEmailPhoneRequired") };
+    }
+    try {
+      assertValidGuestPhone(input.guestPhone);
+    } catch {
+      return { ok: false, error: t("invalidPhone") };
     }
 
     const bookingId = await createBookingRequest({
@@ -258,7 +269,7 @@ export async function createDirectStayFromGanttAction(input: {
       guest_last_name: last,
       guest_first_name: first,
       guest_email: email,
-      guest_phone: input.guestPhone?.trim() || "—",
+      guest_phone: input.guestPhone.trim(),
       num_adults: 1,
       num_children: 0,
       has_minor: false,

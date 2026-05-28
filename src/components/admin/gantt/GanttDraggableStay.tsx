@@ -83,6 +83,7 @@ type Props = {
   sourceRoomId?: string;
   canVerticalMove?: boolean;
   onMoveRoom?: () => void;
+  today?: string;
 };
 
 export function GanttDraggableStay({
@@ -106,6 +107,7 @@ export function GanttDraggableStay({
   sourceRoomId = "",
   canVerticalMove = false,
   onMoveRoom,
+  today,
 }: Props) {
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
@@ -494,6 +496,7 @@ export function GanttDraggableStay({
           setPopoverHover(true);
         }}
         onMouseLeave={scheduleHidePopover}
+        today={today}
       />
       <AdminAlertDialog
         open={!!alertMsg}

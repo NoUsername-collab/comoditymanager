@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createBookingRequest } from "@/services/bookings";
 import { findGuestAutofillMatch } from "@/services/guests";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
+import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { requireAdmin } from "@/lib/auth/require-admin";
@@ -81,8 +82,13 @@ export async function submitGuestRequestAction(formData: FormData) {
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const option_id = String(formData.get("selected_option_id") ?? "");
 
-  if (!check_in || !check_out || !guest_email) {
+  if (!check_in || !check_out || !guest_email || !guest_phone.trim()) {
     throw new Error(t("fillRequired"));
+  }
+  try {
+    assertValidGuestPhone(guest_phone);
+  } catch {
+    throw new Error(t("invalidPhone"));
   }
   if (!isAtLeastOneNight(check_in, check_out)) {
     throw new Error(t("minOneNight"));
@@ -154,11 +160,16 @@ export async function submitPhoneBookingAction(formData: FormData) {
   const notesRaw = String(formData.get("notes") ?? "").trim();
   const confirm_now = formData.get("confirm_now") === "on";
 
-  if (!check_in || !check_out) {
+  if (!check_in || !check_out || !guest_phone.trim()) {
     throw new Error(t("fillRequired"));
   }
   if (!isAtLeastOneNight(check_in, check_out)) {
     throw new Error(t("minOneNight"));
+  }
+  try {
+    assertValidGuestPhone(guest_phone);
+  } catch {
+    throw new Error(t("invalidPhone"));
   }
 
   const notes = notesRaw

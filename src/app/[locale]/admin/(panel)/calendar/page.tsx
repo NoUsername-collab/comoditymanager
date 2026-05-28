@@ -22,6 +22,8 @@ import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getRoomOccupancy } from "@/services/room-occupancy";
 import { getLocale, getTranslations } from "next-intl/server";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { parseIso } from "@/lib/stay-dates";
 
 function toUrlSearchParams(params: Record<string, string | undefined>) {
   const search = new URLSearchParams();
@@ -67,9 +69,10 @@ export default async function AdminCalendarPage({
   const tGanttRange = await getTranslations("admin.gantt.range");
   const locale = await getLocale();
   const params = await searchParams;
-  const now = new Date();
-  const year = Number(params.y) || now.getFullYear();
-  const month = params.m !== undefined ? Number(params.m) : now.getMonth();
+  const effectiveToday = await getEffectiveToday();
+  const refDate = parseIso(effectiveToday);
+  const year = Number(params.y) || refDate.getFullYear();
+  const month = params.m !== undefined ? Number(params.m) : refDate.getMonth();
   const view = (params.view as GanttViewMode) || "all";
   const filter = parseGanttFilter(params.filter);
   const feat = parseGanttFeatureFilter(params.feat);
@@ -86,6 +89,7 @@ export default async function AdminCalendarPage({
     ws: params.ws,
     q: quarter,
     locale,
+    today: effectiveToday,
     labels: {
       today: tCommon("todayShort"),
       days7: tCommon("sevenDays"),
@@ -271,6 +275,7 @@ export default async function AdminCalendarPage({
           featureFilter={feat}
           layerFilter={layer}
           focusDay={focusDay}
+          today={effectiveToday}
         />
       </RetroXpWindow>
       <GanttAvailabilityHeatmapPanel
@@ -303,6 +308,7 @@ export default async function AdminCalendarPage({
             basePath="/admin/calendar"
             queryPrefix="avail_"
             extraQueryParams={{ avail: "1" }}
+            today={effectiveToday}
           />
         ) : null}
       </GanttAvailabilityHeatmapPanel>

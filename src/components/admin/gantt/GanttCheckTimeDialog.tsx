@@ -9,6 +9,8 @@ import {
 } from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
+  editBookingCheckInAction,
+  editBookingCheckOutAction,
   setBookingCheckInAction,
   setBookingCheckOutAction,
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
@@ -18,6 +20,7 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 export type GanttCheckTimeDialogProps = {
   open: boolean;
   mode: "checkin" | "checkout";
+  intent?: "set" | "edit";
   bookingId: string;
   guestName: string;
   plannedCheckIn: string;
@@ -29,6 +32,7 @@ export type GanttCheckTimeDialogProps = {
 export function GanttCheckTimeDialog({
   open,
   mode,
+  intent = "set",
   bookingId,
   guestName,
   plannedCheckIn,
@@ -70,8 +74,12 @@ export function GanttCheckTimeDialog({
 
       const res =
         mode === "checkin"
-          ? await setBookingCheckInAction(fd)
-          : await setBookingCheckOutAction(fd);
+          ? intent === "edit"
+            ? await editBookingCheckInAction(fd)
+            : await setBookingCheckInAction(fd)
+          : intent === "edit"
+            ? await editBookingCheckOutAction(fd)
+            : await setBookingCheckOutAction(fd);
 
       if (!res.ok) {
         showToast({ kind: "error", title: tCommon("error"), message: res.error });

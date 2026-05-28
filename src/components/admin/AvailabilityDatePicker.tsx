@@ -8,18 +8,21 @@ import { todayIso } from "@/lib/stay-dates";
 
 export function AvailabilityDatePicker({
   selectedDate,
+  today: todayProp,
 }: {
   selectedDate: string;
+  today?: string;
 }) {
   const tPicker = useTranslations("admin.availabilityDatePicker");
   const tCommon = useTranslations("admin.common");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const effectiveToday = todayProp ?? todayIso();
 
   function setDate(iso: string) {
     const next = new URLSearchParams(searchParams.toString());
-    if (iso === todayIso()) {
+    if (iso === effectiveToday) {
       next.delete("date");
     } else {
       next.set("date", iso);
@@ -47,10 +50,10 @@ export function AvailabilityDatePicker({
           className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-800 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
         />
       </label>
-      {selectedDate !== todayIso() && (
+      {selectedDate !== effectiveToday && (
         <button
           type="button"
-          onClick={() => setDate(todayIso())}
+          onClick={() => setDate(effectiveToday)}
           className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 shadow-sm hover:bg-zinc-50"
         >
           {tCommon("todayShort")}

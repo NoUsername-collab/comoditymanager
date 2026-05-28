@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { todayIso } from "@/lib/stay-dates";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
   buildYearStatistics,
   discoverYears,
@@ -100,7 +101,7 @@ export async function loadStatisticsReport(): Promise<StatisticsReport> {
   ]);
 
   const snapshot = activeRoomSnapshot(rooms, buildings);
-  const currentYear = Number(todayIso().slice(0, 4));
+  const currentYear = Number((await getEffectiveToday()).slice(0, 4));
   const yearsWithData = discoverYears(bookings, currentYear);
   const firstYear = yearsWithData[0] ?? currentYear;
   const lastYear = yearsWithData[yearsWithData.length - 1] ?? currentYear;

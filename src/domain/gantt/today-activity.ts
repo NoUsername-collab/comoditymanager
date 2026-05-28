@@ -19,9 +19,9 @@ export type StayTodayHighlight = "arrival" | "departure" | "turnover" | null;
 
 export function summarizeGanttToday(
   bookings: BookingRow[],
-  dayIsos: string[]
+  dayIsos: string[],
+  today: string = todayIso()
 ): GanttTodaySummary {
-  const today = todayIso();
   const active = bookings.filter((b) => b.status !== "anulata");
 
   return {

@@ -6,6 +6,7 @@ import {
   formatBookingRef,
 } from "@/lib/booking-admin-links";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
+import { BookingGuestPhoneForm } from "@/components/admin/BookingGuestPhoneForm";
 import { BookingOperationalPanel } from "@/components/admin/BookingOperationalPanel";
 import { BookingActivitySection } from "@/components/admin/activity/BookingActivitySection";
 import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
@@ -194,14 +195,21 @@ export default async function BookingDetailPage({
         )}
 
         {booking.status === "confirmata" && (
-          <BookingOperationalPanel
-            bookingId={booking.id}
-            guestName={booking.guest_name}
-            plannedCheckIn={booking.check_in}
-            plannedCheckOut={booking.check_out}
-            actualCheckInAt={booking.actual_check_in_at}
-            actualCheckOutAt={booking.actual_check_out_at}
-          />
+          <>
+            <BookingGuestPhoneForm
+              bookingId={booking.id}
+              defaultPhone={booking.guest_phone}
+            />
+            <BookingOperationalPanel
+              bookingId={booking.id}
+              guestName={booking.guest_name}
+              guestPhone={booking.guest_phone}
+              plannedCheckIn={booking.check_in}
+              plannedCheckOut={booking.check_out}
+              actualCheckInAt={booking.actual_check_in_at}
+              actualCheckOutAt={booking.actual_check_out_at}
+            />
+          </>
         )}
 
         {booking.status === "confirmata" && booking.room_names.length > 0 && (

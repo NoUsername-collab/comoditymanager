@@ -591,6 +591,7 @@ function RoomRow({
   onCreateDraft,
   pinnedSelection,
   onCtrlDragEnd,
+  today,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -609,6 +610,7 @@ function RoomRow({
   onCreateDraft: (draft: GanttCreateDraft) => void;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
+  today: string;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
@@ -766,13 +768,13 @@ function RoomRow({
               b.guest_name
             );
             const guests = guestPartyTotal(b.num_adults, b.num_children);
-            const todayHl = stayTodayHighlight(b);
+            const todayHl = stayTodayHighlight(b, today);
             const initials = guestInitials(
               b.guest_last_name,
               b.guest_first_name,
               b.guest_name
             );
-            const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut);
+            const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut, today);
             const canMoveRoom =
               b.status === "confirmata" && phase !== "past";
             const moveDraft: MoveRoomDraft | null = canMoveRoom
@@ -810,6 +812,7 @@ function RoomRow({
                 }
                 actualCheckInAt={b.actual_check_in_at}
                 actualCheckOutAt={b.actual_check_out_at}
+                today={today}
                 popover={{
                   bookingId: b.id,
                   guestName: b.guest_name,
@@ -857,6 +860,7 @@ export function GanttCalendar({
   featureFilter = "all",
   layerFilter = "all",
   focusDay = null,
+  today: todayProp,
 }: {
   viewRange: GanttViewRange;
   rooms: GanttRoom[];
@@ -869,7 +873,10 @@ export function GanttCalendar({
   featureFilter?: GanttFeatureFilter;
   layerFilter?: GanttLayerFilter;
   focusDay?: string | null;
+  /** Effective "today" — sim date when simulation is active */
+  today?: string;
 }) {
+  const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
   const tGantt = useTranslations("admin.gantt");
@@ -879,7 +886,7 @@ export function GanttCalendar({
   const touch = useIsTouchDevice();
   const compact = viewRange.zoom === "quarter" || touch;
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
-  const defaultFocusIso = focusDayInRange(dayIsos);
+  const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
   const focusIso =
     filter !== "all" && focusDay ? focusDay : defaultFocusIso;
   const activeBookings = useMemo(
@@ -909,7 +916,7 @@ export function GanttCalendar({
   const displaySegmentsByRoom = useMemo(() => {
     const stay = new Map<string, OccupancySegment[]>();
     const overlay = new Map<string, OccupancySegment[]>();
-    for (const segment of filterOccupancyForLayer(occupancy, layerFilter)) {
+    for (const segment of filterOccupancyForLayer(occupancy, layerFilter, effectiveToday)) {
       const target =
         segment.kind === "request" || segment.kind === "stay" ? stay : overlay;
       const list = target.get(segment.roomId);
@@ -949,8 +956,8 @@ export function GanttCalendar({
   const dayCount = viewRange.days.length;
 
   const todaySummary = useMemo(
-    () => summarizeGanttToday(activeBookings, dayIsos),
-    [activeBookings, dayIsos]
+    () => summarizeGanttToday(activeBookings, dayIsos, effectiveToday),
+    [activeBookings, dayIsos, effectiveToday]
   );
   const todayFlagsByRoom = useMemo(() => {
     const map = new Map<string, RoomTodayFlags>();
@@ -1279,10 +1286,10 @@ export function GanttCalendar({
     [viewRange.zoom]
   );
   const todayStartAnchor = useMemo(
-    () => (zoomChoice === "today" ? todayIso() : addDays(todayIso(), -1)),
-    [zoomChoice]
+    () => (zoomChoice === "today" ? effectiveToday : addDays(effectiveToday, -1)),
+    [zoomChoice, effectiveToday]
   );
-  const firstIso = viewRange.days[0]?.iso ?? todayIso();
+  const firstIso = viewRange.days[0]?.iso ?? effectiveToday;
   const firstDate = parseIso(firstIso);
   const currentYear =
     searchParams.get("y") !== null
@@ -1354,7 +1361,7 @@ export function GanttCalendar({
           ? Number(viewRange.periodKey.split("-")[2])
           : Math.floor(currentMonth / 3);
       const nextTodayStartAnchor =
-        nextZoom === "today" ? todayIso() : addDays(todayIso(), -1);
+        nextZoom === "today" ? effectiveToday : addDays(effectiveToday, -1);
       pushCalendarPatch({
         zoom: nextZoom,
         ws:
@@ -1364,23 +1371,23 @@ export function GanttCalendar({
               : null
             : isTodayStartMode
               ? nextTodayStartAnchor
-              : todayIso(),
+              : effectiveToday,
         q: nextZoom === "quarter" ? currentQuarter : undefined,
       });
     },
-    [currentMonth, isTodayStartMode, pushCalendarPatch, viewRange.periodKey, viewRange.zoom]
+    [currentMonth, effectiveToday, isTodayStartMode, pushCalendarPatch, viewRange.periodKey, viewRange.zoom]
   );
 
   const toggleTodayStartMode = useCallback(() => {
     if (isTodayStartMode) {
-      const todayDate = parseIso(todayIso());
+      const todayDate = parseIso(effectiveToday);
       pushCalendarPatch({
         y: todayDate.getFullYear(),
         m: todayDate.getMonth(),
         ws:
           viewRange.zoom === "quarter" || viewRange.zoom === "days30"
             ? null
-            : todayIso(),
+            : effectiveToday,
         q: viewRange.zoom === "quarter" ? Math.floor(todayDate.getMonth() / 3) : undefined,
       });
       return;
@@ -1904,6 +1911,7 @@ export function GanttCalendar({
                         onCreateDraft={handleCreateDraftWithPinnedClear}
                         pinnedSelection={pinnedSelection}
                         onCtrlDragEnd={handleCtrlDragEnd}
+                        today={effectiveToday}
                       />
                     ))}
                   </Fragment>
@@ -1932,6 +1940,7 @@ export function GanttCalendar({
                     onCreateDraft={handleCreateDraftWithPinnedClear}
                     pinnedSelection={pinnedSelection}
                     onCtrlDragEnd={handleCtrlDragEnd}
+                    today={effectiveToday}
                   />
                 ))}
             {filteredRooms.length === 0 && (
@@ -2033,6 +2042,7 @@ export function GanttCalendar({
         mode={opsPickerMode ?? "checkin"}
         bookings={activeBookings}
         onClose={() => setOpsPickerMode(null)}
+        today={effectiveToday}
         onSelect={(b) => {
           if (!opsPickerMode) return;
           setOpsCheckDialog({
@@ -2094,6 +2104,7 @@ export function GanttCalendar({
         }))}
         bookings={bookings}
         onClose={() => setOccFormMode(null)}
+        today={effectiveToday}
       />
     </GanttContextMenuProvider>
   );
