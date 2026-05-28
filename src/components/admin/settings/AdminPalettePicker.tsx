@@ -7,7 +7,7 @@ import { useAdminTheme } from "@/components/admin/AdminAppearanceProvider";
 function ZoneStrip() {
   const palette = CATALOG_PALETTES[0]!;
   const { mode } = useAdminTheme();
-  const tPalette = useTranslations("admin.settings.palette");
+  const tPalette = useTranslations("admin.common.palette");
   const tokens = tokensFor(palette, mode);
 
   return (
@@ -26,7 +26,7 @@ function ZoneStrip() {
 
 export function AdminPalettePicker() {
   const { apply, mode } = useAdminTheme();
-  const t = useTranslations("admin.settings.palette");
+  const t = useTranslations("admin.common.palette");
 
   return (
     <div className="admin-palette-picker">

@@ -54,8 +54,8 @@ export function mondayOfWeekContaining(iso: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function buildDayColumns(isoDates: string[], locale: string): GanttDayColumn[] {
-  const today = todayIso();
+function buildDayColumns(isoDates: string[], locale: string, today?: string): GanttDayColumn[] {
+  const ref = today ?? todayIso();
   return isoDates.map((iso) => {
     const d = parseIso(iso);
     const dow = d.getDay();
@@ -64,7 +64,7 @@ function buildDayColumns(isoDates: string[], locale: string): GanttDayColumn[] {
       weekday: dayInitialFromIso(iso, locale),
       dayNum: d.getDate(),
       isWeekend: dow === 0 || dow === 6,
-      isToday: iso === today,
+      isToday: iso === ref,
     };
   });
 }
@@ -111,7 +111,8 @@ function buildFixedLengthRange(
   zoom: GanttZoom,
   periodKey: string,
   title: string,
-  locale: string
+  locale: string,
+  today?: string
 ): GanttViewRange {
   const days: string[] = [];
   let cur = startIso;
@@ -124,7 +125,7 @@ function buildFixedLengthRange(
     zoom,
     periodKey,
     title,
-    days: buildDayColumns(days, locale),
+    days: buildDayColumns(days, locale, today),
     rangeStart: days[0],
     rangeEnd: addDays(days[days.length - 1], 1),
   };
@@ -134,7 +135,8 @@ export function buildRollingRange(
   startIso: string,
   zoom: GanttRollingZoom,
   locale: string,
-  labels: GanttRangeLabels = DEFAULT_LABELS
+  labels: GanttRangeLabels = DEFAULT_LABELS,
+  today?: string
 ): GanttViewRange {
   const len = rollingZoomLength(zoom);
   const days: string[] = [];
@@ -144,7 +146,7 @@ export function buildRollingRange(
     cur = addDays(cur, 1);
   }
 
-  const cols = buildDayColumns(days, locale);
+  const cols = buildDayColumns(days, locale, today);
   const title =
     len === 1
       ? `${rollingZoomLabel(zoom, labels)} · ${formatDateWithDay(days[0], locale, true)}`
@@ -167,7 +169,8 @@ export function buildRollingRange(
 export function buildMonthRange(
   year: number,
   month: number,
-  locale: string
+  locale: string,
+  today?: string
 ): GanttViewRange {
   const dim = daysInMonth(year, month);
   const days: string[] = [];

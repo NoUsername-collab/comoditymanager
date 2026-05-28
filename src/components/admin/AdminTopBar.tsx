@@ -7,6 +7,7 @@ import { HudIconGlobe } from "@/components/admin/AdminHudIcons";
 import { LogoutButton } from "@/app/[locale]/admin/(panel)/logout-button";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { SimTriggerChip } from "@/components/admin/SimTriggerChip";
 import type { TodayBoard } from "@/services/today-board";
 import { getTranslations } from "next-intl/server";
 
@@ -14,10 +15,14 @@ export async function AdminTopBar({
   board,
   cereriCount,
   locationUnlocked = false,
+  isAdmin = false,
+  simActive = false,
 }: {
   board: TodayBoard | null;
   cereriCount: number;
   locationUnlocked?: boolean;
+  isAdmin?: boolean;
+  simActive?: boolean;
 }) {
   const t = await getTranslations("admin.shell");
 
@@ -44,6 +49,7 @@ export async function AdminTopBar({
           <AdminLiveRefresh />
           <AdminVersionBadge />
           <LanguageSwitcher />
+          {isAdmin && <SimTriggerChip simActive={simActive} />}
           <Link href="/calendar" className="admin-hud__chip admin-hud__chip--ghost">
             <HudIconGlobe className="h-3.5 w-3.5 shrink-0 opacity-90" />
             <span className="admin-hud__chip-label-text">{t("publicSite")}</span>

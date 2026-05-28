@@ -1,0 +1,237 @@
+/* ─── Dev Log Page ─── */
+
+.devlog-page {
+  padding: 1.5rem 2rem;
+  max-width: 1200px;
+}
+
+.devlog-page__header {
+  margin-bottom: 1.25rem;
+}
+
+.devlog-page__title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-family: var(--font-geist-mono, monospace);
+}
+
+.devlog-page__desc {
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.devlog-page__error {
+  margin-bottom: 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fca5a5;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.8rem;
+}
+
+/* ─── Filters ─── */
+
+.devlog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.devlog-filters__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.devlog-filters__label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+  margin-right: 0.25rem;
+}
+
+.devlog-filters__pill {
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.15s;
+}
+
+.devlog-filters__pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.devlog-filters__pill--active {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--surface);
+}
+
+/* ─── Log List ─── */
+
+.devlog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.devlog-empty {
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-faint);
+}
+
+.devlog-entry {
+  border-radius: 0.4rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.devlog-entry[open] {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+
+.devlog-entry__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.78rem;
+}
+
+.devlog-entry__summary::-webkit-details-marker {
+  display: none;
+}
+
+.devlog-entry__level {
+  flex-shrink: 0;
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-family: var(--font-geist-mono, monospace);
+}
+
+.devlog-entry__source {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-family: var(--font-geist-mono, monospace);
+}
+
+.devlog-entry__message {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.devlog-entry__time {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  font-family: var(--font-geist-mono, monospace);
+}
+
+.devlog-entry__duration {
+  flex-shrink: 0;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-family: var(--font-geist-mono, monospace);
+}
+
+.devlog-entry__details {
+  padding: 0.75rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.devlog-entry__details p {
+  margin: 0.2rem 0;
+}
+
+.devlog-entry__details strong {
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.devlog-entry__stack,
+.devlog-entry__context {
+  margin-top: 0.5rem;
+  padding: 0.6rem;
+  border-radius: 0.35rem;
+  background: #0f0f10;
+  color: #e5e7eb;
+  font-size: 0.7rem;
+  font-family: var(--font-geist-mono, monospace);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ─── Pagination ─── */
+
+.devlog-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.devlog-pagination__btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 0.15s;
+}
+
+.devlog-pagination__btn:hover {
+  background: var(--surface-2);
+}
+
+.devlog-pagination__info {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}

@@ -5,6 +5,7 @@ import { AdminShellClient } from "@/components/admin/AdminShellClient";
 
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { SimOverlay } from "@/components/admin/SimOverlay";
 import { countCereriNoi } from "@/services/bookings";
 import type { ThemeSettings } from "@/lib/themes";
 import {
@@ -14,6 +15,8 @@ import {
 import { getStaffRole } from "@/lib/auth/roles";
 import { getStaffUser } from "@/lib/auth/require-staff";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
+import { getSimStatus } from "@/domain/simulation/sim-cookie";
+import { todayReal } from "@/domain/simulation/sim-clock";
 import { loadTodayBoard } from "@/services/today-board";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
@@ -27,6 +30,9 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("admin.layout");
+  // Simulation state
+  const simStatus = await getSimStatus();
+
   const [cereriCount, pension] = await Promise.all([
     countCereriNoi().catch(() => 0),
     getPensionSettings().catch(() => null),
@@ -42,10 +48,12 @@ export default async function AdminLayout({
   }
 
   let locationUnlocked = false;
+  let isAdmin = false;
 
   try {
     const user = await getStaffUser();
-    getStaffRole(user);
+    const role = getStaffRole(user);
+    isAdmin = role === "admin";
     locationUnlocked = await isAdminLocationUnlocked();
   } catch {
     /* proxy redirects if unauthenticated */
@@ -56,7 +64,7 @@ export default async function AdminLayout({
       <div className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
           <div className="admin-hud__surface">
-            <AdminTopBar board={todayBoard} cereriCount={cereriCount} locationUnlocked={locationUnlocked} />
+            <AdminTopBar board={todayBoard} cereriCount={cereriCount} locationUnlocked={locationUnlocked} isAdmin={isAdmin} simActive={simStatus.active} />
           </div>
         </div>
 
@@ -72,6 +80,13 @@ export default async function AdminLayout({
         <AdminShellClient>
           <div className="admin-page-main flex-1">{children}</div>
         </AdminShellClient>
+
+        <SimOverlay
+          active={simStatus.active}
+          currentDate={simStatus.active ? simStatus.currentDate : null}
+          daysAdvanced={simStatus.active ? simStatus.daysAdvanced : 0}
+          realDate={todayReal()}
+        />
       </div>
     </AdminAppearanceProvider>
   );

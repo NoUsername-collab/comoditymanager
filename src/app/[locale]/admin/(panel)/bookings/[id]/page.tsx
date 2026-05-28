@@ -9,11 +9,13 @@ import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { BookingOperationalPanel } from "@/components/admin/BookingOperationalPanel";
 import { BookingActivitySection } from "@/components/admin/activity/BookingActivitySection";
 import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
+import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
+import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
 import { cancelBookingAction, confirmBookingAction } from "../actions";
 import { getTranslations } from "next-intl/server";
 
@@ -31,6 +33,17 @@ export default async function BookingDetailPage({
 
   const { booking, checkInTime, checkOutTime, guestCount, availableRooms, minRoomsNeeded, canFulfill } =
     ctx;
+
+  // Dedup check — find potential duplicate guests for this booking
+  const dedupCandidates = await findDedupCandidates(
+    dedupInputFromBooking({
+      guestLastName: booking.guest_last_name ?? "",
+      guestFirstName: booking.guest_first_name ?? "",
+      guestEmail: booking.guest_email,
+      guestPhone: booking.guest_phone ?? "",
+      excludeGuestId: booking.guest_id ?? undefined,
+    })
+  ).catch(() => []);
 
   const canConfirm = booking.status === "cerere_noua";
   const canCancel = booking.status !== "anulata";
@@ -135,6 +148,15 @@ export default async function BookingDetailPage({
             </div>
           )}
         </dl>
+
+        {dedupCandidates.length > 0 && (
+          <div className="mt-4">
+            <GuestDedupWarning
+              candidates={dedupCandidates}
+              currentGuestId={booking.guest_id}
+            />
+          </div>
+        )}
 
         {canConfirm && (
           <div className="mt-6 space-y-4 border border-zinc-200 bg-white p-4">

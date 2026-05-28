@@ -1,0 +1,207 @@
+/* ─── Simulation Trigger Chip (in top bar) ─── */
+
+.admin-hud__chip--sim {
+  cursor: pointer;
+  border: 1px dashed rgba(168, 85, 247, 0.5);
+  color: #c4b5fd;
+  background: rgba(88, 28, 135, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.15);
+  font-size: 0.64rem;
+  letter-spacing: 0.02em;
+}
+
+.admin-hud__chip--sim:hover:not(:disabled) {
+  border-color: #a855f7;
+  color: #ede9fe;
+  background: rgba(126, 34, 206, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 85, 247, 0.4),
+    0 4px 16px rgba(168, 85, 247, 0.2);
+  transform: translateY(-1px);
+}
+
+.admin-hud__chip--sim:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.admin-hud__chip-sim-icon {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+/* ─── Simulation Overlay Bar (active state) ─── */
+
+.sim-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.sim-overlay__bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+  border-top: 2px solid #f87171;
+  box-shadow: 0 -4px 20px rgba(239, 68, 68, 0.25);
+  pointer-events: auto;
+}
+
+.sim-overlay__indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.sim-overlay__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: sim-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes sim-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.6); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 4px rgba(248, 113, 113, 0); }
+}
+
+.sim-overlay__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #f87171;
+}
+
+.sim-overlay__date {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.sim-overlay__date-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #a5b4fc;
+}
+
+.sim-overlay__date-value {
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-family: var(--font-geist-mono, monospace);
+  color: #e0e7ff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sim-overlay__days {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #818cf8;
+}
+
+.sim-overlay__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+.sim-overlay__btn {
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sim-overlay__btn:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.sim-overlay__btn--advance {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0e7ff;
+}
+
+.sim-overlay__btn--advance:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.sim-overlay__btn--stop {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.sim-overlay__btn--stop:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fef2f2;
+}
+
+.sim-overlay__confirm-stop {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.sim-overlay__confirm-text {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #fca5a5;
+}
+
+.sim-overlay__btn--stop-yes {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.sim-overlay__btn--stop-yes:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.sim-overlay__btn--stop-no {
+  background: transparent;
+  color: #a5b4fc;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.sim-overlay__btn--stop-no:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sim-overlay__loading {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  animation: sim-fade 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes sim-fade {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.sim-overlay__error {
+  padding: 0.35rem 1.25rem;
+  background: #7f1d1d;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fecaca;
+  pointer-events: auto;
+}

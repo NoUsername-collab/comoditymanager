@@ -10,7 +10,7 @@ import { playConfirmSound } from "@/components/admin/feedback/admin-fx-effects";
 
 export function AdminFxSettings() {
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const t = useTranslations("admin.settings.fx");
+  const t = useTranslations("admin.common.fx");
 
   useEffect(() => {
     setSoundEnabled(readAdminFxPrefs().soundEnabled);

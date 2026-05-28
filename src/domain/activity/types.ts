@@ -23,6 +23,7 @@ export type ActivityAction =
   | "booking.checkout.undo"
   | "guest.created"
   | "guest.updated"
+  | "guest.identity_updated"
   | "guest.merged"
   | "guest.reviewed"
   | "guest.flagged"

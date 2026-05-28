@@ -4,6 +4,7 @@ import type { GuestListItem } from "@/domain/guest/types";
 import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { formatRoDate } from "@/lib/stay-dates";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
+import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 
 export function GuestListCard({
@@ -35,7 +36,10 @@ export function GuestListCard({
               </p>
             </div>
           </div>
-          <GuestFlagPill flagLevel={guest.profile?.flag_level} variant="edge" />
+          <div className="guest-card__badges">
+            <GuestFlagPill flagLevel={guest.profile?.flag_level} variant="edge" />
+            <GuestIdentityStatusPill status={guest.identity_status} />
+          </div>
         </div>
 
         <div className="guest-card__stats">
