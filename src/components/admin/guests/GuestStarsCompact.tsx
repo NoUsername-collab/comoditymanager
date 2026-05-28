@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 function starTone(value: number): string {
   if (value <= 1.5) return "#dc2626";
   if (value <= 2.5) return "#ea580c";
@@ -19,6 +21,7 @@ export function GuestStarsCompact({
   showCount?: boolean;
   showValue?: boolean;
 }) {
+  const tGuests = useTranslations("admin.guests");
   const safeValue = Number.isFinite(value) ? Math.max(0, Math.min(5, value)) : 0;
   const rounded = Math.max(0, Math.min(5, Math.round(safeValue)));
   const iconSize = size === "md" ? 18 : 12;
@@ -37,8 +40,11 @@ export function GuestStarsCompact({
       style={{ color: tone }}
       title={
         hasReviews
-          ? `${safeValue.toFixed(1)} din 5${reviewCount ? ` · ${reviewCount} review-uri` : ""}`
-          : `${safeValue.toFixed(1)} standard initial · fara evaluari inca`
+          ? tGuests("stars.tooltipWithReviews", {
+              value: safeValue.toFixed(1),
+              count: reviewCount,
+            })
+          : tGuests("stars.tooltipNoReviews", { value: safeValue.toFixed(1) })
       }
     >
       <span className="inline-flex items-center gap-0.5">
@@ -65,7 +71,7 @@ export function GuestStarsCompact({
       </span>
       {showValue && (
         <span style={{ color: "var(--text-muted)" }}>
-          {hasReviews ? safeValue.toFixed(1) : "standard"}
+          {hasReviews ? safeValue.toFixed(1) : tGuests("stars.initialStandard")}
           {showCount && reviewCount ? ` (${reviewCount})` : ""}
         </span>
       )}

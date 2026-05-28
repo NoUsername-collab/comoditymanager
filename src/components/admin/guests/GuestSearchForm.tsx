@@ -73,7 +73,7 @@ export function GuestSearchForm({
           disabled={pending}
           className="guest-search__submit"
         >
-          {pending ? "…" : tCommon("search")}
+          {pending ? tCommon("checking") : tCommon("search")}
         </button>
       </div>
       {(defaultQuery || defaultFilter !== "all") && (

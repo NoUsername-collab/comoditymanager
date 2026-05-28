@@ -2,15 +2,18 @@
 
 import { Link } from "@/i18n/navigation";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
+import type { GuestFlagLevel } from "@/domain/guest/types";
+import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 
 type Props = {
   href: string;
   label: string;
   dates: string;
   party: string;
+  alertLevel?: GuestFlagLevel | null;
 };
 
-export function GanttCereriCard({ href, label, dates, party }: Props) {
+export function GanttCereriCard({ href, label, dates, party, alertLevel }: Props) {
   return (
     <Link
       href={href}
@@ -22,6 +25,9 @@ export function GanttCereriCard({ href, label, dates, party }: Props) {
       <span className="gantt-cereri-card__main">
         <span className="gantt-stay-chrome__label gantt-cereri-card__guest">{label}</span>
         <span className="gantt-cereri-card__dates">{dates}</span>
+      </span>
+      <span className="gantt-cereri-card__risk">
+        <GuestFlagPill flagLevel={alertLevel} />
       </span>
       <span className="gantt-cereri-card__party">{party}</span>
       <span className="gantt-stay__end-tab gantt-cereri-card__tab" aria-hidden>

@@ -1,4 +1,7 @@
+"use client";
+
 import type { GuestFlagLevel } from "@/domain/guest/types";
+import { useTranslations } from "next-intl";
 
 export function GuestFlagPill({
   flagLevel,
@@ -7,6 +10,7 @@ export function GuestFlagPill({
   flagLevel: GuestFlagLevel | null | undefined;
   variant?: "default" | "edge";
 }) {
+  const tGuests = useTranslations("admin.guests");
   if (!flagLevel || flagLevel === "normal") return null;
 
   const style =
@@ -43,7 +47,7 @@ export function GuestFlagPill({
       ].join(" ")}
       style={style}
     >
-      {flagLevel}
+      {tGuests(`profileBadges.${flagLevel}` as never)}
     </span>
   );
 }

@@ -8,15 +8,20 @@ import {
 } from "@/domain/guest/normalize";
 import { parseGuestTags } from "@/domain/guest/tags";
 import type {
+  GuestDocType,
   GuestHighlights,
   GuestBookingInput,
+  GuestIdentityStatus,
   GuestListItem,
+  GuestNationalIdType,
   GuestRow,
   GuestSearchFilter,
   GuestSearchResult,
+  GuestSex,
   GuestStayReviewRow,
   GuestTag,
 } from "@/domain/guest/types";
+import { GUEST_MATCH_PRIORITY } from "@/domain/guest/matching-contract";
 import type { BookingStatus } from "@/domain/booking/types";
 import type { BookingRoomSegmentRow } from "@/domain/booking/segment-types";
 import { stayNightCount } from "@/lib/stay-dates";
@@ -38,23 +43,45 @@ import {
   mergeGuestProfiles,
 } from "@/services/guest-profiles";
 
+function optStr(v: unknown): string | null {
+  return v != null && v !== "" ? String(v) : null;
+}
+
 function mapGuestRow(row: Record<string, unknown>): GuestRow {
   return {
     id: String(row.id),
     last_name: String(row.last_name ?? ""),
     first_name: String(row.first_name ?? ""),
     display_name: String(row.display_name ?? ""),
-    phone: row.phone != null ? String(row.phone) : null,
-    phone_normalized:
-      row.phone_normalized != null ? String(row.phone_normalized) : null,
-    email: row.email != null ? String(row.email) : null,
-    email_normalized:
-      row.email_normalized != null ? String(row.email_normalized) : null,
-    notes: row.notes != null ? String(row.notes) : null,
+    phone: optStr(row.phone),
+    phone_normalized: optStr(row.phone_normalized),
+    email: optStr(row.email),
+    email_normalized: optStr(row.email_normalized),
+    notes: optStr(row.notes),
     tags: parseGuestTags(row.tags),
     profile: null,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
+
+    // Identity fields
+    identity_status: (row.identity_status as GuestRow["identity_status"]) ?? "draft",
+    doc_type: optStr(row.doc_type) as GuestRow["doc_type"],
+    doc_series: optStr(row.doc_series),
+    doc_number: optStr(row.doc_number),
+    doc_issued_by: optStr(row.doc_issued_by),
+    doc_issue_date: optStr(row.doc_issue_date),
+    doc_expiry_date: optStr(row.doc_expiry_date),
+    national_id_type: optStr(row.national_id_type) as GuestRow["national_id_type"],
+    national_id: optStr(row.national_id),
+    cnp: optStr(row.cnp),
+    birth_date: optStr(row.birth_date),
+    birth_place: optStr(row.birth_place),
+    nationality: optStr(row.nationality),
+    address: optStr(row.address),
+    city: optStr(row.city),
+    county: optStr(row.county),
+    country: optStr(row.country),
+    sex: optStr(row.sex) as GuestRow["sex"],
   };
 }
 
@@ -165,7 +192,7 @@ export type GuestAutofillMatch = {
   flagLevel: "normal" | "watchlist" | "blacklist" | null;
 };
 
-/** Matching: telefon → email → guest nou. Conflict = telefon ≠ email match. */
+/** Matching priority from domain contract. */
 export async function resolveGuestForBooking(
   input: GuestBookingInput
 ): Promise<ResolveGuestResult> {
@@ -240,7 +267,12 @@ export async function findGuestAutofillMatch(input: {
   const supabase = createAdminClient();
   let candidate: GuestRow | null = null;
 
-  if (phoneNorm && emailNorm && !isPlaceholderEmail(emailNorm)) {
+  if (
+    GUEST_MATCH_PRIORITY.includes("phone_email") &&
+    phoneNorm &&
+    emailNorm &&
+    !isPlaceholderEmail(emailNorm)
+  ) {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
@@ -255,7 +287,7 @@ export async function findGuestAutofillMatch(input: {
     }
   }
 
-  if (!candidate && phoneNorm) {
+  if (!candidate && GUEST_MATCH_PRIORITY.includes("phone") && phoneNorm) {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
@@ -268,7 +300,12 @@ export async function findGuestAutofillMatch(input: {
     );
   }
 
-  if (!candidate && emailNorm && !isPlaceholderEmail(emailNorm)) {
+  if (
+    !candidate &&
+    GUEST_MATCH_PRIORITY.includes("email") &&
+    emailNorm &&
+    !isPlaceholderEmail(emailNorm)
+  ) {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
@@ -281,7 +318,7 @@ export async function findGuestAutofillMatch(input: {
     );
   }
 
-  if (!candidate && last && first) {
+  if (!candidate && GUEST_MATCH_PRIORITY.includes("name") && last && first) {
     const full = formatGuestFullName(last, first);
     const { data, error } = await supabase
       .from("guests")
@@ -325,6 +362,7 @@ type GuestListSelectRow = {
   phone: string | null;
   email: string | null;
   tags: unknown;
+  identity_status: string;
   created_at: string;
   updated_at: string;
 };
@@ -397,7 +435,7 @@ async function fetchGuestListItemsByIds(
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("guests")
-    .select("id, display_name, phone, email, tags, created_at, updated_at")
+    .select("id, display_name, phone, email, tags, identity_status, created_at, updated_at")
     .in("id", ids);
 
   if (error) throw new Error(error.message);
@@ -418,6 +456,7 @@ async function fetchGuestListItemsByIds(
         phone: row.phone,
         email: row.email,
         tags: parseGuestTags(row.tags),
+        identity_status: (row.identity_status as GuestListItem["identity_status"]) ?? "draft",
         profile,
         created_at: row.created_at,
         updated_at: row.updated_at,
@@ -831,6 +870,134 @@ export async function getGuestBookingHistory(
   return items;
 }
 
+export type GuestIdentityInput = {
+  doc_type: GuestDocType | null;
+  doc_series: string | null;
+  doc_number: string | null;
+  doc_issued_by: string | null;
+  doc_issue_date: string | null;
+  doc_expiry_date: string | null;
+  national_id_type: GuestNationalIdType | null;
+  national_id: string | null;
+  /** @deprecated kept for backward compat — synced from national_id when type=cnp */
+  cnp: string | null;
+  birth_date: string | null;
+  birth_place: string | null;
+  nationality: string | null;
+  address: string | null;
+  city: string | null;
+  county: string | null;
+  country: string | null;
+  sex: GuestSex | null;
+};
+
+function computeIdentityStatus(input: GuestIdentityInput): GuestIdentityStatus {
+  const hasDoc = input.doc_type != null && input.doc_number != null;
+  const hasNationalId = input.national_id != null && input.national_id.length > 0;
+  const hasCnp = input.cnp != null && input.cnp.length > 0;
+  const hasBirthDate = input.birth_date != null;
+  const hasNationality = input.nationality != null;
+  const hasAddress = input.address != null;
+  const hasSex = input.sex != null;
+
+  const coreFields = [hasDoc, hasNationalId || hasCnp || hasBirthDate, hasNationality, hasSex];
+  const filledCore = coreFields.filter(Boolean).length;
+
+  if (filledCore === coreFields.length && hasAddress) return "complete";
+  if (filledCore >= 1) return "partial";
+  return "draft";
+}
+
+export async function updateGuestIdentity(
+  guestId: string,
+  input: GuestIdentityInput
+): Promise<{ identityStatus: GuestIdentityStatus }> {
+  const supabase = createAdminClient();
+  const identityStatus = computeIdentityStatus(input);
+
+  // Sync cnp field from national_id when type is cnp (backward compat)
+  const cnpValue = input.national_id_type === "cnp"
+    ? (input.national_id?.trim() || null)
+    : (input.cnp?.trim() || null);
+
+  const patch: Record<string, unknown> = {
+    identity_status: identityStatus,
+    doc_type: input.doc_type,
+    doc_series: input.doc_series?.trim() || null,
+    doc_number: input.doc_number?.trim() || null,
+    doc_issued_by: input.doc_issued_by?.trim() || null,
+    doc_issue_date: input.doc_issue_date || null,
+    doc_expiry_date: input.doc_expiry_date || null,
+    national_id_type: input.national_id_type,
+    national_id: input.national_id?.trim() || null,
+    cnp: cnpValue,
+    birth_date: input.birth_date || null,
+    birth_place: input.birth_place?.trim() || null,
+    nationality: input.nationality?.trim() || null,
+    address: input.address?.trim() || null,
+    city: input.city?.trim() || null,
+    county: input.county?.trim() || null,
+    country: input.country?.trim() || null,
+    sex: input.sex,
+  };
+
+  const { error } = await supabase
+    .from("guests")
+    .update(patch)
+    .eq("id", guestId);
+
+  if (error) throw new Error(error.message);
+
+  await logAdminActivityFromSession({
+    action: "guest.identity_updated",
+    entityType: "guest",
+    entityId: guestId,
+    summary: `Date identitate actualizate → ${identityStatus}`,
+    metadata: { identityStatus, docType: input.doc_type },
+  });
+
+  return { identityStatus };
+}
+
+/**
+ * Find a guest by national ID (CNP, EGN, IDNP, AMKA, Személyi szám).
+ * Searches both `national_id` and legacy `cnp` fields.
+ */
+export async function findGuestByNationalId(
+  nationalId: string,
+  excludeGuestId?: string
+): Promise<GuestRow | null> {
+  const cleaned = nationalId.replace(/[\s\-]/g, "");
+  if (!cleaned) return null;
+
+  const supabase = createAdminClient();
+
+  // Search in both national_id and legacy cnp column
+  let query = supabase
+    .from("guests")
+    .select("*")
+    .or(`national_id.eq.${cleaned},cnp.eq.${cleaned}`)
+    .limit(1)
+    .maybeSingle();
+
+  if (excludeGuestId) {
+    query = supabase
+      .from("guests")
+      .select("*")
+      .or(`national_id.eq.${cleaned},cnp.eq.${cleaned}`)
+      .neq("id", excludeGuestId)
+      .limit(1)
+      .maybeSingle();
+  }
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return data ? mapGuestRow(data) : null;
+}
+
+/** @deprecated Use findGuestByNationalId */
+export const findGuestByCnp = findGuestByNationalId;
+
 export async function updateGuestNotes(
   guestId: string,
   notes: string
@@ -1093,7 +1260,7 @@ export async function findDuplicateGuestsForGuest(
 
   const { data, error } = await supabase
     .from("guests")
-    .select("id, display_name, phone, email, tags, created_at, updated_at")
+    .select("id, display_name, phone, email, tags, identity_status, created_at, updated_at")
     .or(orParts.join(","))
     .neq("id", guestId);
   if (error) throw new Error(error.message);
@@ -1104,6 +1271,7 @@ export async function findDuplicateGuestsForGuest(
     phone: g.phone as string | null,
     email: g.email as string | null,
     tags: parseGuestTags(g.tags),
+    identity_status: (g.identity_status as GuestListItem["identity_status"]) ?? "draft",
     profile: null,
     created_at: g.created_at as string,
     updated_at: g.updated_at as string,

@@ -4,12 +4,15 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { GuestMergeForm } from "@/components/admin/guests/GuestMergeForm";
 import { GuestBlacklistPanel } from "@/components/admin/guests/GuestBlacklistPanel";
+import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestIdentityCard } from "@/components/admin/guests/GuestIdentityCard";
+import { GuestIdentityForm } from "@/components/admin/guests/GuestIdentityForm";
 import { GuestNotesForm } from "@/components/admin/guests/GuestNotesForm";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { GuestProfileCards } from "@/components/admin/guests/GuestProfileCards";
 import { GuestProfileControlsForm } from "@/components/admin/guests/GuestProfileControlsForm";
 import { GuestRebookButtons } from "@/components/admin/guests/GuestRebookButtons";
+import { GuestProfileSection } from "@/components/admin/guests/GuestProfileSection";
 import { GuestStayReviewForm } from "@/components/admin/guests/GuestStayReviewForm";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { todayIso } from "@/lib/stay-dates";
@@ -19,6 +22,7 @@ import {
   getGuestBookingHistory,
   getGuestById,
 } from "@/services/guests";
+import { dedupInputFromGuest, findDedupCandidates } from "@/services/guest-dedup";
 import { getTranslations } from "next-intl/server";
 
 function statusLabel(status: string, tFlow: (key: string) => string): string {
@@ -67,6 +71,11 @@ export default async function GuestDetailPage({
     duplicatesError = e instanceof Error ? e.message : tPage("duplicatesLoadError");
   }
 
+  // Smart dedup scoring — multi-layer matching
+  const dedupCandidates = await findDedupCandidates(
+    dedupInputFromGuest(guest)
+  ).catch(() => []);
+
   const today = todayIso();
   const backHref = from?.startsWith("/admin/guests") ? from : "/admin/guests";
   const reviewedHistoryCount = history.filter((stay) => stay.review != null).length;
@@ -88,24 +97,37 @@ export default async function GuestDetailPage({
         </div>
       )}
 
+      {dedupCandidates.length > 0 && (
+        <div className="mb-4">
+          <GuestDedupWarning
+            candidates={dedupCandidates}
+            currentGuestId={guest.id}
+          />
+        </div>
+      )}
+
       <div className="guest-profile-page__grid">
         <div className="guest-profile-page__main">
-          <section className="guest-panel">
-            <h3 className="guest-panel__title">{tPage("guestReview")}</h3>
-            <GuestProfileCards profile={guest.profile} />
-          </section>
+          <GuestProfileSection title={tPage("identityData")}>
+            <GuestIdentityForm
+              key={`identity-${guest.id}-${guest.updated_at}`}
+              guest={guest}
+            />
+          </GuestProfileSection>
 
-          <section className="guest-panel">
-            <h3 className="guest-panel__title">{tPage("operatorTraits")}</h3>
+          <GuestProfileSection title={tPage("guestReview")}>
+            <GuestProfileCards profile={guest.profile} />
+          </GuestProfileSection>
+
+          <GuestProfileSection title={tPage("operatorTraits")}>
             <GuestProfileControlsForm
               key={`profile-controls-${guest.id}-${guest.profile?.updated_at ?? "none"}`}
               guestId={guest.id}
               profile={guest.profile}
             />
-          </section>
+          </GuestProfileSection>
 
-          <section className="guest-panel">
-            <h3 className="guest-panel__title">{tPage("notesContext")}</h3>
+          <GuestProfileSection title={tPage("notesContext")}>
             <div className="guest-notes-grid">
               <div className="guest-note-box">
                 <p className="guest-note-box__label">{tPage("profileNote")}</p>
@@ -127,12 +149,11 @@ export default async function GuestDetailPage({
                 initialNotes={guest.notes ?? ""}
               />
             </div>
-          </section>
+          </GuestProfileSection>
         </div>
 
         <div className="guest-profile-page__sidebar">
-          <section className="guest-panel">
-            <h3 className="guest-panel__title">{tPage("quickActions")}</h3>
+          <GuestProfileSection title={tPage("quickActions")} aside>
             <div className="space-y-3">
               <GuestBlacklistPanel
                 key={`blacklist-${guest.id}-${guest.profile?.updated_at ?? "none"}-${guest.profile?.flag_level ?? "normal"}`}
@@ -155,11 +176,10 @@ export default async function GuestDetailPage({
                 </div>
               )}
             </div>
-          </section>
+          </GuestProfileSection>
 
           {(duplicates.length > 0 || duplicatesError) && (
-            <section className="guest-panel">
-              <h3 className="guest-panel__title">{tPage("similarProfiles")}</h3>
+            <GuestProfileSection title={tPage("similarProfiles")} aside>
               {duplicatesError ? (
                 <p className="guest-panel__warn">{duplicatesError}</p>
               ) : (
@@ -168,13 +188,13 @@ export default async function GuestDetailPage({
                   <GuestMergeForm guestId={guest.id} duplicates={duplicates} />
                 </div>
               )}
-            </section>
+            </GuestProfileSection>
           )}
 
-          <section className="guest-panel">
-            <h3 className="guest-panel__title">
-              {tPage("historyTitle", { count: history.length })}
-            </h3>
+          <GuestProfileSection
+            title={tPage("historyTitle", { count: history.length })}
+            aside
+          >
             {historyError ? (
               <p className="guest-panel__warn">{historyError}</p>
             ) : history.length === 0 ? (
@@ -264,7 +284,7 @@ export default async function GuestDetailPage({
                 </ul>
               </div>
             )}
-          </section>
+          </GuestProfileSection>
         </div>
       </div>
     </main>

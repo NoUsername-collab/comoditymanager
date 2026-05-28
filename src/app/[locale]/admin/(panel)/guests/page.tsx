@@ -65,13 +65,15 @@ function GuestSection({
   emptyLabel: string;
 }) {
   return (
-    <section className="guest-section">
+    <section className="guest-section guest-surface">
       <div className="guest-section__header">
         <div>
           <h2 className="guest-section__title">{title}</h2>
           <p className="guest-section__desc">{description}</p>
         </div>
-        <span className="guest-section__count">{guestsLabel(guests.length)}</span>
+        <span className="guest-section__count" aria-live="polite">
+          {guestsLabel(guests.length)}
+        </span>
       </div>
       {guests.length === 0 ? (
         <p className="guest-section__empty">{emptyLabel}</p>
@@ -198,14 +200,14 @@ export default async function AdminGuestsPage({
 
   return (
     <main className="guest-page">
-      <header className="guest-page__header">
+      <header className="guest-page__header guest-surface">
         <h1 className="guest-page__title">{t("title")}</h1>
         <p className="guest-page__desc">{t("description")}</p>
       </header>
 
       {error && <p className="guest-page__error">{error}</p>}
 
-      <div className="guest-page__search-area">
+      <div className="guest-page__search-area guest-surface">
         <GuestSearchForm
           defaultQuery={q}
           defaultFilter={(result.filter as GuestSearchFilter) || "all"}
@@ -215,7 +217,12 @@ export default async function AdminGuestsPage({
             <Link
               key={item.id}
               href={buildGuestListHref({ filter: item.id })}
-              className="guest-filter-pill"
+              className={[
+                "guest-filter-pill",
+                result.filter === item.id && "guest-filter-pill--active",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
               {item.label}
             </Link>
@@ -260,11 +267,11 @@ export default async function AdminGuestsPage({
           />
         </div>
       ) : (
-        <section className="guest-results">
+        <section className="guest-results guest-surface">
           <h2 className="guest-results__title">{t("resultsTitle", { count: result.items.length })}</h2>
           {result.items.length === 0 ? (
             <AdminEmptyState
-              emoji="??"
+              emoji="🔎"
               title={t("emptyTitle")}
               description={t("emptyDescription")}
             />

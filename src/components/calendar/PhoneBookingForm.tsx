@@ -29,6 +29,7 @@ export function PhoneBookingForm({
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [identityHint, setIdentityHint] = useState<string | null>(null);
+  const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">("neutral");
   const [identityPending, startIdentityTransition] = useTransition();
   const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
@@ -62,10 +63,13 @@ export function PhoneBookingForm({
       setGuestEmail(res.match.email ?? guestEmail);
       setGuestPhone(res.match.phone ?? guestPhone);
       if (res.match.flagLevel === "blacklist") {
+        setIdentityHintTone("warn");
         setIdentityHint(tForm("existingGuestBlacklist", { name: res.match.displayName }));
       } else if (res.match.flagLevel === "watchlist") {
+        setIdentityHintTone("warn");
         setIdentityHint(tForm("existingGuestWatchlist", { name: res.match.displayName }));
       } else {
+        setIdentityHintTone("neutral");
         setIdentityHint(tForm("existingGuestFound", { name: res.match.displayName }));
       }
     });
@@ -138,8 +142,14 @@ export function PhoneBookingForm({
         compact
         lastName={guestLastName}
         firstName={guestFirstName}
-        onLastNameChange={setGuestLastName}
-        onFirstNameChange={setGuestFirstName}
+        onLastNameChange={(value) => {
+          setGuestLastName(value);
+          if (identityHint) setIdentityHint(null);
+        }}
+        onFirstNameChange={(value) => {
+          setGuestFirstName(value);
+          if (identityHint) setIdentityHint(null);
+        }}
         onIdentityBlur={maybeAutofillGuest}
       />
       <div className="grid grid-cols-2 gap-2">
@@ -149,7 +159,10 @@ export function PhoneBookingForm({
             name="guest_phone"
             type="tel"
             value={guestPhone}
-            onChange={(e) => setGuestPhone(e.target.value)}
+            onChange={(e) => {
+              setGuestPhone(e.target.value);
+              if (identityHint) setIdentityHint(null);
+            }}
             onBlur={maybeAutofillGuest}
             className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
           />
@@ -160,14 +173,20 @@ export function PhoneBookingForm({
             name="guest_email"
             type="email"
             value={guestEmail}
-            onChange={(e) => setGuestEmail(e.target.value)}
+            onChange={(e) => {
+              setGuestEmail(e.target.value);
+              if (identityHint) setIdentityHint(null);
+            }}
             onBlur={maybeAutofillGuest}
             className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
           />
         </label>
       </div>
       {(identityPending || identityHint) && (
-        <p className="text-xs text-zinc-500">
+        <p
+          className={identityHintTone === "warn" ? "text-xs text-amber-700" : "text-xs text-zinc-500"}
+          aria-live="polite"
+        >
           {identityPending ? tForm("checkingExistingGuest") : identityHint}
         </p>
       )}

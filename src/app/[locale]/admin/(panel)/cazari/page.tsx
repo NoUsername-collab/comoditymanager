@@ -41,6 +41,7 @@ type CazariLabels = {
   historyEmpty: string;
   checkout: string;
   openBooking: string;
+  openClientProfile: string;
 };
 
 function firstQueryValue(value: string | string[] | undefined): string {
@@ -187,6 +188,16 @@ function StayInfo({
             alertLevel={stay.guest_alert_level}
             alertNote={stay.guest_alert_note}
           />
+                  {stay.guest_id && (
+                    <p className="mt-1">
+                      <Link
+                        href={`/admin/guests/${stay.guest_id}`}
+                        className="text-[11px] font-bold text-emerald-700 underline underline-offset-2 hover:text-emerald-800"
+                      >
+                        {labels.openClientProfile}
+                      </Link>
+                    </p>
+                  )}
         </div>
         <span
           className={[
@@ -396,6 +407,7 @@ export default async function AdminCazariPage({
     historyEmpty: tPages("historyEmpty"),
     checkout: tCommon("checkout"),
     openBooking: tCommon("openBooking"),
+    openClientProfile: tPages("openClientProfile"),
   };
 
   let stays: OperationalStay[] = [];

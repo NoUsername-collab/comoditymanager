@@ -1818,6 +1818,16 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   color: inherit;
 }
 
+.gantt-cereri-card__risk {
+  display: flex;
+  align-items: center;
+  padding-right: 0.15rem;
+}
+
+.gantt-cereri-card__risk .inline-flex {
+  border-radius: 999px;
+}
+
 .gantt-cereri-card__tab {
   min-width: 0.65rem;
 }

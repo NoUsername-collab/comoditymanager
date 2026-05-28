@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import type { GuestRow } from "@/domain/guest/types";
 import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
+import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
 import { formatRoDate } from "@/lib/stay-dates";
 
@@ -32,13 +33,15 @@ export function GuestIdentityCard({
           <div className="guest-hero__name-row">
             <h2 className="guest-hero__name">{guest.display_name}</h2>
             <GuestFlagPill flagLevel={guest.profile?.flag_level} />
+            <GuestIdentityStatusPill status={guest.identity_status} />
           </div>
           <p className="guest-hero__contact">
             {[guest.email, guest.phone].filter(Boolean).join(" · ") || tGuests("noEmail")}
           </p>
           <p className="guest-hero__since">
             {tGuests("clientSince")} {formatRoDate(guest.created_at.slice(0, 10))}
-            {" · ID: "}
+            {" · "}
+            {tGuests("clientIdShort")}{" "}
             <span className="font-mono text-[10px] opacity-60">{guest.id.slice(0, 8)}</span>
           </p>
         </div>
@@ -57,7 +60,9 @@ export function GuestIdentityCard({
           <span className="guest-hero__stat-value">
             <GuestStarsCompact value={stars} count={reviewCount} showCount={false} showValue={false} />
           </span>
-          <span className="guest-hero__stat-label">{stars.toFixed(1)}/5</span>
+          <span className="guest-hero__stat-label">
+            {tGuests("stars.outOfFive", { value: stars.toFixed(1) })}
+          </span>
         </div>
         <div className="guest-hero__stat">
           <span className="guest-hero__stat-value">{stays}</span>

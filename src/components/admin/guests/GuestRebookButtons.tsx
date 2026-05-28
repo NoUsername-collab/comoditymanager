@@ -22,6 +22,7 @@ function RebookButton({
   disabled?: boolean;
 }) {
   const tGuests = useTranslations("admin.guests");
+  const tCommon = useTranslations("admin.common");
   return (
     <AdminPendingForm
       action={action}
@@ -38,7 +39,7 @@ function RebookButton({
       <input type="hidden" name="guest_id" value={guestId} />
       <AdminSubmitButton
         type="submit"
-        pendingLabel="…"
+        pendingLabel={tCommon("checking")}
         disabled={disabled}
         className={
           variant === "primary"

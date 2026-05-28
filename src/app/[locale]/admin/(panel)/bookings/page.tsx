@@ -36,6 +36,13 @@ export default async function AdminBookingsPage() {
                   {c.num_children} {t("childrenShort")}
                 </p>
                 <p className="text-xs">{c.guest_email}</p>
+                {c.guest_id && (
+                  <p className="mt-1 text-xs">
+                    <Link href={`/admin/guests/${c.guest_id}`} className="font-semibold text-emerald-700 hover:underline">
+                      {t("openClientProfile")} →
+                    </Link>
+                  </p>
+                )}
                 <GuestProfileBadges
                   profile={c.guest_profile}
                   alertLevel={c.guest_alert_level}

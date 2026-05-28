@@ -95,6 +95,7 @@ export function GanttCereriQueue({
               label={label}
               dates={formatStayPeriod(b.check_in, b.check_out, locale)}
               party={formatGuestPartyShort(b.num_adults, b.num_children)}
+              alertLevel={b.guest_alert_level}
             />
           );
         })}

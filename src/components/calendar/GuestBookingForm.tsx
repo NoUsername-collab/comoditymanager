@@ -47,6 +47,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [identityHint, setIdentityHint] = useState<string | null>(null);
+  const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">("neutral");
 
   const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
@@ -114,10 +115,13 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       setGuestPhone(res.match.phone ?? guestPhone);
 
       if (res.match.flagLevel === "blacklist") {
+        setIdentityHintTone("warn");
         setIdentityHint(t("existingGuestBlacklist", { name: res.match.displayName }));
       } else if (res.match.flagLevel === "watchlist") {
+        setIdentityHintTone("warn");
         setIdentityHint(t("existingGuestWatchlist", { name: res.match.displayName }));
       } else {
+        setIdentityHintTone("neutral");
         setIdentityHint(t("existingGuestFound", { name: res.match.displayName }));
       }
     });
@@ -378,8 +382,14 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
           <GuestNameFields
             lastName={guestLastName}
             firstName={guestFirstName}
-            onLastNameChange={setGuestLastName}
-            onFirstNameChange={setGuestFirstName}
+            onLastNameChange={(value) => {
+              setGuestLastName(value);
+              if (identityHint) setIdentityHint(null);
+            }}
+            onFirstNameChange={(value) => {
+              setGuestFirstName(value);
+              if (identityHint) setIdentityHint(null);
+            }}
             onIdentityBlur={maybeAutofillGuest}
           />
           <label className="site-field">
@@ -390,7 +400,10 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               required
               className="mt-1 w-full"
               value={guestEmail}
-              onChange={(e) => setGuestEmail(e.target.value)}
+              onChange={(e) => {
+                setGuestEmail(e.target.value);
+                if (identityHint) setIdentityHint(null);
+              }}
               onBlur={maybeAutofillGuest}
             />
           </label>
@@ -401,12 +414,23 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               type="tel"
               className="mt-1 w-full"
               value={guestPhone}
-              onChange={(e) => setGuestPhone(e.target.value)}
+              onChange={(e) => {
+                setGuestPhone(e.target.value);
+                if (identityHint) setIdentityHint(null);
+              }}
               onBlur={maybeAutofillGuest}
             />
           </label>
           {(identityPending || identityHint) && (
-            <p className="text-xs text-[var(--site-muted)]">
+            <p
+              className={[
+                "text-xs",
+                identityHintTone === "warn"
+                  ? "text-amber-700"
+                  : "text-[var(--site-muted)]",
+              ].join(" ")}
+              aria-live="polite"
+            >
               {identityPending ? t("checkingExistingGuest") : identityHint}
             </p>
           )}
