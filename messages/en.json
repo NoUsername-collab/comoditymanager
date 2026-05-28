@@ -1306,7 +1306,8 @@
       "yes": "Yes",
       "no": "No",
       "processing": "Processing...",
-      "realDateLabel": "Real: {date}"
+      "realDateLabel": "Real: {date}",
+      "noDbBackupWarning": "No DB backup — changes persist on real data when you stop"
     },
     "confirmRooms": {
       "confirmBooking": "Confirm booking",

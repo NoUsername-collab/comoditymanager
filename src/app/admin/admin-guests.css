@@ -1205,6 +1205,108 @@
   color: #92400e;
 }
 
+.guest-badges--compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.guest-badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.guest-badge-chip strong {
+  font-weight: 800;
+  color: var(--text);
+}
+
+.guest-badge-chip--sky {
+  border-color: #bfdbfe;
+  background: color-mix(in srgb, #3b82f6 8%, var(--surface));
+}
+
+.guest-badge-chip--emerald {
+  border-color: #a7f3d0;
+  background: color-mix(in srgb, #10b981 8%, var(--surface));
+}
+
+.guest-badge-chip--amber {
+  border-color: #fcd34d;
+  background: color-mix(in srgb, #f59e0b 10%, var(--surface));
+}
+
+.guest-badge-chip--alert {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+/* ─── Cereri noi (listă compactă) ─── */
+
+.cerere-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cerere-item {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  padding: 0.55rem 0.65rem;
+}
+
+.cerere-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cerere-item__name {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.cerere-item__action {
+  flex-shrink: 0;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.72rem !important;
+}
+
+.cerere-item__meta {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.cerere-item__email {
+  color: var(--text-faint);
+}
+
+.cerere-item__profile-link {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.cerere-item__profile-link:hover {
+  text-decoration: underline;
+}
+
 /* ─── Guest Traits ─── */
 
 .guest-traits {

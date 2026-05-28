@@ -93,18 +93,23 @@ export async function releaseRoomHold(holdId: string, releasedBy?: string | null
 }
 
 /** Marchează hold-urile expirate ca eliberate (lazy cleanup la citire occupancy). */
-export async function releaseExpiredRoomHolds(): Promise<number> {
+export async function releaseExpiredRoomHolds(asOfIso?: string): Promise<number> {
   const supabase = createAdminClient();
-  const now = new Date().toISOString();
+  const cutoff = asOfIso
+    ? new Date(`${asOfIso}T00:00:00.000`).toISOString()
+    : new Date().toISOString();
+  const releasedAt = asOfIso
+    ? new Date(`${asOfIso}T12:00:00.000`).toISOString()
+    : new Date().toISOString();
   const { data, error } = await supabase
     .from("room_holds")
     .update({
-      released_at: now,
+      released_at: releasedAt,
       released_by: "system:expired",
     })
     .is("released_at", null)
     .not("expires_at", "is", null)
-    .lt("expires_at", now)
+    .lt("expires_at", cutoff)
     .select("id");
 
   if (error) throw new Error(error.message);

@@ -1305,7 +1305,8 @@
       "yes": "Da",
       "no": "Nu",
       "processing": "Se procesează...",
-      "realDateLabel": "Real: {date}"
+      "realDateLabel": "Real: {date}",
+      "noDbBackupWarning": "Fără backup DB — modificările rămân pe date reale la Stop"
     },
     "confirmRooms": {
       "confirmBooking": "Confirmă rezervarea",

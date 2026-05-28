@@ -124,7 +124,9 @@ export default async function AdminCalendarPage({
       listBookingsForRange(viewRange.rangeStart, viewRange.rangeEnd),
       getPensionSettings().catch(() => null),
       listBuildings(),
-      getRoomOccupancy(viewRange.rangeStart, viewRange.rangeEnd),
+      getRoomOccupancy(viewRange.rangeStart, viewRange.rangeEnd, {
+        referenceDate: effectiveToday,
+      }),
     ]);
   } catch (e) {
     const msg = e instanceof Error ? e.message : t("genericError");

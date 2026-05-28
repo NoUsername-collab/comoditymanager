@@ -1268,7 +1268,8 @@
       "yes": "Да",
       "no": "Не",
       "processing": "Обработка...",
-      "realDateLabel": "Реална: {date}"
+      "realDateLabel": "Реална: {date}",
+      "noDbBackupWarning": "Без DB резервно копие — промените остават върху реалните данни при Спри"
     },
     "confirmRooms": {
       "confirmBooking": "Потвърди резервацията",

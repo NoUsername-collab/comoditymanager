@@ -7,6 +7,8 @@ type SimOverlayProps = {
   currentDate: string | null;
   daysAdvanced: number;
   realDate: string;
+  /** False when cookie sim is on but 023_simulation.sql backup was not created. */
+  dbBackupActive?: boolean;
 };
 
 /**
@@ -19,6 +21,7 @@ export function SimOverlay({
   currentDate,
   daysAdvanced,
   realDate,
+  dbBackupActive = true,
 }: SimOverlayProps) {
   const t = useTranslations("admin.simulation");
 
@@ -32,6 +35,12 @@ export function SimOverlay({
         {daysAdvanced > 0 && ` (+${daysAdvanced}d)`}
         {" · "}
         {t("realDateLabel", { date: realDate })}
+        {!dbBackupActive && (
+          <>
+            {" · "}
+            <strong>{t("noDbBackupWarning")}</strong>
+          </>
+        )}
       </span>
     </div>
   );

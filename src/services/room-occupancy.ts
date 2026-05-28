@@ -13,8 +13,8 @@ import {
 } from "@/lib/constants";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { releaseExpiredRoomHolds } from "@/services/room-holds";
-import { todayIso } from "@/lib/stay-dates";
 
 const ALL_KINDS: OccupancyKind[] = ["hold", "request", "stay", "block"];
 
@@ -22,13 +22,17 @@ function bookingStatusToKind(status: BookingStatus): OccupancyKind {
   return status === "confirmata" ? "stay" : "request";
 }
 
-function isHoldActive(row: {
-  released_at: string | null;
-  expires_at: string | null;
-}): boolean {
+function isHoldActive(
+  row: {
+    released_at: string | null;
+    expires_at: string | null;
+  },
+  asOfIso: string
+): boolean {
   if (row.released_at) return false;
   if (!row.expires_at) return true;
-  return new Date(row.expires_at).getTime() > Date.now();
+  const asOfMs = new Date(`${asOfIso}T23:59:59.999`).getTime();
+  return new Date(row.expires_at).getTime() > asOfMs;
 }
 
 /**
@@ -41,7 +45,7 @@ export async function getRoomOccupancy(
   options: OccupancyQueryOptions = {}
 ): Promise<OccupancySegment[]> {
   const kinds = options.kinds ?? ALL_KINDS;
-  const ref = options.referenceDate ?? todayIso();
+  const ref = options.referenceDate ?? (await getEffectiveToday());
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
   const supabase = createAdminClient();
   const out: OccupancySegment[] = [];
@@ -113,7 +117,7 @@ export async function getRoomOccupancy(
   }
 
   if (kinds.includes("hold") && !options.forPublicCalendar) {
-    await releaseExpiredRoomHolds().catch(() => {
+    await releaseExpiredRoomHolds(ref).catch(() => {
       /* non-fatal */
     });
 
@@ -134,7 +138,7 @@ export async function getRoomOccupancy(
     }
 
     for (const row of holdRows) {
-      if (!isHoldActive(row)) continue;
+      if (!isHoldActive(row, ref)) continue;
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
       out.push({

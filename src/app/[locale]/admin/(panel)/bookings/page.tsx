@@ -23,38 +23,46 @@ export default async function AdminBookingsPage() {
       <RetroXpWindow title={t("windowTitle", { count: cereri.length })}>
         {error && <p className="text-sm text-red-800">{error}</p>}
 
-        <ul className="space-y-2">
+        <ul className="cerere-list">
           {cereri.map((c) => (
-            <li
-              key={c.id}
-              className="flex flex-wrap items-center justify-between gap-3 border border-zinc-200 bg-white px-4 py-3"
-            >
-              <div>
-                <p className="font-semibold">{c.guest_name}</p>
-                <p className="text-sm">
-                  {formatStayPeriod(c.check_in, c.check_out)} · {c.num_adults} {t("adultsShort")} + {" "}
-                  {c.num_children} {t("childrenShort")}
-                </p>
-                <p className="text-xs">{c.guest_email}</p>
-                {c.guest_id && (
-                  <p className="mt-1 text-xs">
-                    <Link href={`/admin/guests/${c.guest_id}`} className="font-semibold text-emerald-700 hover:underline">
+            <li key={c.id} className="cerere-item">
+              <div className="cerere-item__head">
+                <p className="cerere-item__name">{c.guest_name}</p>
+                <Link
+                  href={`/admin/bookings/${c.id}`}
+                  className="cerere-item__action admin-cereri-fill"
+                >
+                  {t("process")}
+                </Link>
+              </div>
+              <p className="cerere-item__meta">
+                {formatStayPeriod(c.check_in, c.check_out)} · {c.num_adults}{" "}
+                {t("adultsShort")} + {c.num_children} {t("childrenShort")}
+                {c.guest_email ? (
+                  <>
+                    {" "}
+                    · <span className="cerere-item__email">{c.guest_email}</span>
+                  </>
+                ) : null}
+                {c.guest_id ? (
+                  <>
+                    {" "}
+                    ·{" "}
+                    <Link
+                      href={`/admin/guests/${c.guest_id}`}
+                      className="cerere-item__profile-link"
+                    >
                       {t("openClientProfile")} →
                     </Link>
-                  </p>
-                )}
-                <GuestProfileBadges
-                  profile={c.guest_profile}
-                  alertLevel={c.guest_alert_level}
-                  alertNote={c.guest_alert_note}
-                />
-              </div>
-              <Link
-                href={`/admin/bookings/${c.id}`}
-                className="admin-cereri-fill px-4 py-2 text-sm font-medium"
-              >
-                {t("process")}
-              </Link>
+                  </>
+                ) : null}
+              </p>
+              <GuestProfileBadges
+                variant="compact"
+                profile={c.guest_profile}
+                alertLevel={c.guest_alert_level}
+                alertNote={c.guest_alert_note}
+              />
             </li>
           ))}
         </ul>

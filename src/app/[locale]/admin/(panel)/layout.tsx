@@ -17,6 +17,7 @@ import { getStaffUser } from "@/lib/auth/require-staff";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
+import { isSimBackupPresent } from "@/services/simulation";
 import { loadTodayBoard } from "@/services/today-board";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
@@ -32,6 +33,8 @@ export default async function AdminLayout({
   const t = await getTranslations("admin.layout");
   // Simulation state
   const simStatus = await getSimStatus();
+  const simDbBackup =
+    simStatus.active ? await isSimBackupPresent().catch(() => false) : true;
 
   const [cereriCount, pension] = await Promise.all([
     countCereriNoi().catch(() => 0),
@@ -94,6 +97,7 @@ export default async function AdminLayout({
           currentDate={simStatus.active ? simStatus.currentDate : null}
           daysAdvanced={simStatus.active ? simStatus.daysAdvanced : 0}
           realDate={todayReal()}
+          dbBackupActive={simDbBackup}
         />
       </div>
     </AdminAppearanceProvider>

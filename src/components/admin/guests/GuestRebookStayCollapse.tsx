@@ -21,6 +21,8 @@ type Props = {
   bookingId: string;
   compact?: boolean;
   initialPayload?: GuestRebookPanelPayload | null;
+  /** Simulated or real today (YYYY-MM-DD) for date inputs. */
+  today?: string;
 };
 
 export function GuestRebookStayCollapse({
@@ -28,6 +30,7 @@ export function GuestRebookStayCollapse({
   bookingId,
   compact = false,
   initialPayload = null,
+  today,
 }: Props) {
   const tPage = useTranslations("admin.pages.guestDetail");
   const tRebook = useTranslations("admin.pages.guestRebook");
@@ -104,6 +107,7 @@ export function GuestRebookStayCollapse({
           <GuestRebookStayForm
             embedded
             compact={compact}
+            today={today}
             draft={payload.draft}
             initialRooms={payload.initialRooms}
             initialCanFulfill={payload.initialCanFulfill}

@@ -15,10 +15,12 @@ export function GuestProfileBadges({
   profile,
   alertLevel,
   alertNote,
+  variant = "default",
 }: {
   profile: ProfileLike;
   alertLevel?: GuestFlagLevel;
   alertNote?: string | null;
+  variant?: "default" | "compact";
 }) {
   const tGuests = useTranslations("admin.guests");
 
@@ -49,6 +51,47 @@ export function GuestProfileBadges({
       : effectiveLevel === "watchlist"
         ? tGuests("profileBadges.watchlist")
         : tGuests("profileBadges.normal");
+
+  if (variant === "compact" && profile) {
+    return (
+      <div className="guest-badges guest-badges--compact">
+        <span className="guest-badge-chip guest-badge-chip--sky">
+          {tGuests("profileBadges.behavior")}{" "}
+          <strong>{profile.trust_score}</strong>
+          <GuestScoreHint kind="trust" />
+        </span>
+        <span className="guest-badge-chip guest-badge-chip--emerald">
+          {tGuests("profileBadges.loyalty")}{" "}
+          <strong>{profile.loyalty_score}</strong>
+          <GuestScoreHint kind="loyalty" />
+        </span>
+        <span className="guest-badge-chip guest-badge-chip--neutral">
+          {tGuests("profileBadges.rating")}{" "}
+          <GuestStarsCompact
+            value={profile.stars_avg}
+            count={profile.review_count}
+            size="sm"
+            showCount={false}
+            showValue
+          />
+          <GuestScoreHint kind="stars" />
+        </span>
+        <span
+          className={[
+            "guest-badge-chip",
+            effectiveLevel === "normal"
+              ? "guest-badge-chip--neutral"
+              : "guest-badge-chip--amber",
+          ].join(" ")}
+        >
+          {riskTone}
+        </span>
+        {alertNote ? (
+          <span className="guest-badge-chip guest-badge-chip--alert">{alertNote}</span>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="guest-badges">

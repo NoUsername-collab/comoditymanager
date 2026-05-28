@@ -22,7 +22,6 @@ import {
 import { GuestProfileSection } from "@/components/admin/guests/GuestProfileSection";
 import { GuestStayReviewForm } from "@/components/admin/guests/GuestStayReviewForm";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
-import { todayIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
   findDuplicateGuestsForGuest,
@@ -193,6 +192,7 @@ export default async function GuestDetailPage({
                   bookingId={latestStay.id}
                   compact
                   initialPayload={latestRebookPayload}
+                  today={today}
                 />
                 <Link
                   href={buildGuestDetailHref({ id: guest.id, from: backHref, tab: "history" })}
@@ -372,6 +372,7 @@ export default async function GuestDetailPage({
                         <GuestRebookStayCollapse
                           guestId={guest.id}
                           bookingId={stay.id}
+                          today={today}
                         />
                         {stay.segments.length > 1 && (
                           <ul className="guest-history__segments">
