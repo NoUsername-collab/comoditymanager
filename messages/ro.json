@@ -352,7 +352,11 @@
         "locationSubtitleLocked": "Requires Admin password",
         "locationPanelInfo": "Panel is active for 2 hours.",
         "openConfigCenter": "Open configuration center",
-        "genericError": "Error"
+        "genericError": "Error",
+        "staffTitle": "Echipa",
+        "staffSubtitle": "Gestioneaza membrii echipei",
+        "staffPanelInfo": "Invita operatori si admini, schimba roluri, dezactiveaza conturi.",
+        "openStaffManagement": "Gestioneaza echipa"
       },
       "guests": {
         "title": "Clienți — Casa Emil",
@@ -714,6 +718,35 @@
           "deleting": "Se șterge…",
           "confirmButton": "Da, reset complet"
         }
+      },
+      "staffManagement": {
+        "title": "Echipa",
+        "backToSettings": "Setari",
+        "description": "Gestioneaza membrii echipei tale. Invita noi operatori sau admini.",
+        "currentStaffTitle": "Membrii echipei",
+        "currentStaffSubtitle": "{count} membri activi",
+        "inviteTitle": "Invita membru nou",
+        "inviteSubtitle": "Adauga un operator sau admin",
+        "rolesExplainTitle": "Despre roluri",
+        "rolesExplainSubtitle": "Ce poate face fiecare rol",
+        "roleOwnerTitle": "Proprietar",
+        "roleOwnerDesc": "Acces complet. Gestioneaza facturarea, setarile pensiunii, si echipa. Un singur proprietar per pensiune.",
+        "roleAdminTitle": "Admin",
+        "roleAdminDesc": "Gestioneaza rezervarile, calendarul, confirmarile. Primeste notificari email. Nu poate schimba facturarea.",
+        "roleOperatorTitle": "Operator (Receptioner)",
+        "roleOperatorDesc": "Check-in, check-out, vizualizare calendar. Nu poate confirma sau anula rezervari. Ideal pentru staff de receptie.",
+        "noMembers": "Niciun membru in echipa.",
+        "pendingInvite": "Invitatie in asteptare",
+        "changeRole": "Schimba rol",
+        "deactivate": "Dezactiveaza",
+        "emailLabel": "Email",
+        "emailPlaceholder": "operator@exemplu.ro",
+        "roleLabel": "Rol",
+        "roleOperator": "Operator (Receptioner)",
+        "roleAdmin": "Admin",
+        "roleHint": "Operatorul poate face check-in/out. Adminul gestioneaza rezervarile.",
+        "inviteButton": "Invita",
+        "inviteSuccess": "Invitatie trimisa cu succes!"
       }
     },
     "common": {
@@ -1029,7 +1062,6 @@
       "retroMaximize": "Maximizează",
       "retroClose": "Închide fereastra",
       "persons": "Persoane",
-      "phone": "Telefon",
       "details": "Detalii",
       "dateLabel": "Data: {date}",
       "occupiedGuestLabel": "Ocupată — {guest}",
@@ -1172,7 +1204,7 @@
       "profile": "Profil",
       "adminTheme": "Temă panou administrare",
       "day": "Zi",
-      "night": "Noapte",
+      "night": "noapte",
       "explanation": "Explicație",
       "minimize": "Minimizează",
       "maximize": "Maximizează",
@@ -1188,7 +1220,6 @@
       "show": "Arată",
       "hide": "Ascunde",
       "request": "Cerere",
-      "requests": "Cereri",
       "inactive": "Inactivă",
       "quickJumpBack": "Salt rapid înapoi",
       "quickJumpForward": "Salt rapid înainte",
@@ -1202,7 +1233,6 @@
       "edit": "Editează",
       "month": "Lună",
       "min": "minim",
-      "night": "noapte",
       "availability": "Disponibilitate",
       "full": "Plin",
       "displayOrder": "Ordine afișare",
@@ -1299,6 +1329,10 @@
       "nextDay": "Avansează o zi",
       "nextWeek": "Avansează o săptămână",
       "nextMonth": "Avansează o lună",
+      "nextCheckIn": "Salt la următorul check-in",
+      "nextCheckOut": "Salt la următorul check-out",
+      "noUpcomingCheckIn": "Niciun check-in viitor",
+      "noUpcomingCheckOut": "Niciun check-out viitor",
       "dayShort": "zi",
       "stopSim": "Oprește",
       "confirmStop": "Ești sigur?",
@@ -1482,28 +1516,37 @@
       "adminLogout": "Deconectare admin",
       "invalidGuest": "Client invalid",
       "selectProfileToMerge": "Selectează profilul de combinat",
-      "invalidReview": "Review invalid"
-      ,"bookingIdMissing":"ID rezervare lipsă."
-      ,"checkInError":"Eroare check-in."
-      ,"checkOutError":"Eroare check-out."
-      ,"undoCheckInError":"Eroare anulare check-in."
-      ,"undoCheckOutError":"Eroare anulare check-out."
-      ,"undoCheckoutFirst":"Anulează check-out înainte de a anula check-in."
-      ,"checkInNotRecorded":"Check-in nu este înregistrat."
-      ,"adminPasswordIncorrect":"Parolă admin incorectă"
-      ,"locationAdminUnlocked":"Administrare locație deblocată"
-      ,"locationAdminLocked":"Administrare locație închisă"
-      ,"settingsNotConfigured":"Setările pensiunii nu sunt configurate"
-      ,"settingsMissing":"Setări lipsă"
-      ,"passwordsDoNotMatch":"Parolele nu coincid"
-      ,"changePasswordError":"Eroare la schimbarea parolei"
-      ,"typeResetExactly":"Tastează exact \"RESET\" pentru confirmare."
-      ,"roomTypeNameRequired":"Numele tipului e obligatoriu"
-      ,"newRoomTypeSummary":"Tip cameră nou: {name}"
-      ,"roomOptionNameRequired":"Numele opțiunii e obligatoriu"
-      ,"buildingDefaultPriceSummary":"Preț implicit clădire: {price} RON/noapte"
-      ,"roomUpdateIncomplete":"Date incomplete"
-      ,"roomUpdatedSummary":"Cameră actualizată: {name}"
+      "invalidReview": "Review invalid",
+      "bookingIdMissing": "ID rezervare lipsă.",
+      "checkInError": "Eroare check-in.",
+      "checkOutError": "Eroare check-out.",
+      "undoCheckInError": "Eroare anulare check-in.",
+      "undoCheckOutError": "Eroare anulare check-out.",
+      "undoCheckoutFirst": "Anulează check-out înainte de a anula check-in.",
+      "checkInNotRecorded": "Check-in nu este înregistrat.",
+      "adminPasswordIncorrect": "Parolă admin incorectă",
+      "locationAdminUnlocked": "Administrare locație deblocată",
+      "locationAdminLocked": "Administrare locație închisă",
+      "settingsNotConfigured": "Setările pensiunii nu sunt configurate",
+      "settingsMissing": "Setări lipsă",
+      "passwordsDoNotMatch": "Parolele nu coincid",
+      "changePasswordError": "Eroare la schimbarea parolei",
+      "typeResetExactly": "Tastează exact \"RESET\" pentru confirmare.",
+      "roomTypeNameRequired": "Numele tipului e obligatoriu",
+      "newRoomTypeSummary": "Tip cameră nou: {name}",
+      "roomOptionNameRequired": "Numele opțiunii e obligatoriu",
+      "buildingDefaultPriceSummary": "Preț implicit clădire: {price} RON/noapte",
+      "roomUpdateIncomplete": "Date incomplete",
+      "roomUpdatedSummary": "Cameră actualizată: {name}",
+      "emailRequired": "Emailul este obligatoriu.",
+      "invalidEmail": "Format email invalid.",
+      "invalidRole": "Rol invalid.",
+      "memberAlreadyExists": "Acest membru exista deja in echipa.",
+      "alreadyHasOwner": "Exista deja un proprietar.",
+      "memberIdRequired": "ID membru lipsa.",
+      "cannotDemoteLastOwner": "Nu poti schimba rolul ultimului proprietar.",
+      "cannotDeactivateOwner": "Nu poti dezactiva proprietarul.",
+      "genericError": "A aparut o eroare. Incearca din nou."
     },
     "availabilityLightSummary": {
       "minFree": "Minim liber",

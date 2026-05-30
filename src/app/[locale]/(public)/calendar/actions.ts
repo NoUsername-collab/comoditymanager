@@ -10,6 +10,21 @@ import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import {
+  checkRateLimit,
+  getClientIp,
+  RATE_LIMIT_BOOKING_SUBMIT,
+  RATE_LIMIT_BOOKING_PREVIEW,
+} from "@/lib/rate-limit";
+
+async function assertRateLimit(preset: { limit: number; windowMs: number }, action: string) {
+  const ip = await getClientIp();
+  const result = checkRateLimit(`${action}:${ip}`, preset.limit, preset.windowMs);
+  if (!result.allowed) {
+    const seconds = Math.ceil(result.retryAfterMs / 1000);
+    throw new Error(`rate_limit.too_many_requests:${seconds}`);
+  }
+}
 
 async function mustAcceptLegal(formData: FormData) {
   const t = await getTranslations("errors");
@@ -29,6 +44,7 @@ export async function previewGuestStayAction(input: {
 }) {
   const t = await getTranslations("errors");
   try {
+    await assertRateLimit(RATE_LIMIT_BOOKING_PREVIEW, "preview");
     const preview = await loadGuestStayPreview(
       input.check_in,
       input.check_out,
@@ -68,6 +84,7 @@ async function assertSelectedOptionStillValid(
 export async function submitGuestRequestAction(formData: FormData) {
   const t = await getTranslations("errors");
   const tServer = await getTranslations("public.serverActions");
+  await assertRateLimit(RATE_LIMIT_BOOKING_SUBMIT, "submit");
   await mustAcceptLegal(formData);
 
   const check_in = String(formData.get("check_in") ?? "");
@@ -121,7 +138,7 @@ export async function submitGuestRequestAction(formData: FormData) {
     ? `${notesRaw}\n\n${variantBlock}`
     : variantBlock;
 
-  await createBookingRequest({
+  const bookingId = await createBookingRequest({
     check_in,
     check_out,
     ...guest,
@@ -135,6 +152,38 @@ export async function submitGuestRequestAction(formData: FormData) {
     total_price: selected.total_estimate_ron,
     room_ids: selected.rooms.map((r) => r.id),
   });
+
+  // Notify pension owner(s) — reads email from DB, not env var
+  // Non-blocking — never delays user response
+  (async () => {
+    try {
+      const { getTenantNotificationEmails, getTenantDisplayName } = await import("@/services/tenants");
+      const [emails, pensionName] = await Promise.all([
+        getTenantNotificationEmails(),
+        getTenantDisplayName(),
+      ]);
+      if (emails.length === 0) return;
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rezova.ro";
+      const { notifyOwnerNewRequest } = await import("@/lib/email/notify");
+      // Send to ALL tenant owners/admins
+      for (const ownerEmail of emails) {
+        notifyOwnerNewRequest({
+          ownerEmail,
+          pensionName,
+          guestName: `${guest.guest_last_name ?? ""} ${guest.guest_first_name ?? ""}`.trim() || guest.guest_name,
+          guestEmail: guest_email,
+          guestPhone: guest_phone || null,
+          checkIn: check_in,
+          checkOut: check_out,
+          adults: num_adults,
+          children: num_children,
+          rooms: selected.rooms.map((r) => r.name),
+          bookingId: bookingId ?? "unknown",
+          baseUrl,
+        }).catch(() => {});
+      }
+    } catch { /* email/import failure — non-fatal */ }
+  })();
 
   revalidateTag(CACHE_TAGS.bookingCounts, "max");
   revalidatePath("/calendar");
@@ -206,6 +255,7 @@ export async function suggestExistingGuestAction(input: {
   guest_email?: string;
   guest_phone?: string;
 }) {
+  await requireAdmin();
   const t = await getTranslations("errors");
   try {
     const match = await findGuestAutofillMatch(input);

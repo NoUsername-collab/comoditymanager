@@ -43,6 +43,10 @@ export type ActivityAction =
   | "location_admin.unlocked"
   | "location_admin.locked"
   | "staff.password_changed"
+  | "staff.invited"
+  | "staff.role_changed"
+  | "staff.deactivated"
+  | "staff.reactivated"
   | "auth.login"
   | "auth.logout";
 

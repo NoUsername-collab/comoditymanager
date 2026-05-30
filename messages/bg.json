@@ -352,7 +352,11 @@
         "locationSubtitleLocked": "Requires Admin password",
         "locationPanelInfo": "Panel is active for 2 hours.",
         "openConfigCenter": "Open configuration center",
-        "genericError": "Error"
+        "genericError": "Error",
+        "staffTitle": "Ekip",
+        "staffSubtitle": "Upravlyavajte chlenove na ekipa",
+        "staffPanelInfo": "Pokanete operatori i admini, promenete roli, deaktivirajte akaunti.",
+        "openStaffManagement": "Upravlyavaj ekipa"
       },
       "guests": {
         "title": "Клиенти — Casa Emil",
@@ -689,6 +693,35 @@
       "invoice": {
         "description": "Презентация за клиента — не замества фискална фактура.",
         "backToBooking": "Назад към резервацията"
+      },
+      "staffManagement": {
+        "title": "Ekip",
+        "backToSettings": "Nastrojki",
+        "description": "Upravlyavajte chlenove na ekipa. Pokanete novi operatori ili admini.",
+        "currentStaffTitle": "Chlenove na ekipa",
+        "currentStaffSubtitle": "{count} aktivni chlenove",
+        "inviteTitle": "Pokanete nov chlen",
+        "inviteSubtitle": "Dobavete operator ili admin",
+        "rolesExplainTitle": "Za rolite",
+        "rolesExplainSubtitle": "Kakvo mozhe vsyaka rolya",
+        "roleOwnerTitle": "Sobstvenik",
+        "roleOwnerDesc": "Pylen dostyp. Upravlyava fakturiraneto, nastrojkite i ekipa. Edin sobstvenik na pension.",
+        "roleAdminTitle": "Admin",
+        "roleAdminDesc": "Upravlyava rezervaciite, kalendara, potvyrzhdeniata. Poluchava email uvedomleniya.",
+        "roleOperatorTitle": "Operator (Recepcionist)",
+        "roleOperatorDesc": "Check-in, check-out, pregled na kalendar. Ne mozhe da potvyrzhdava ili otmenyava rezervacii.",
+        "noMembers": "Nyama chlenove na ekipa.",
+        "pendingInvite": "Chakashtata pokana",
+        "changeRole": "Promeni rolya",
+        "deactivate": "Deaktiviraj",
+        "emailLabel": "Email",
+        "emailPlaceholder": "operator@primer.bg",
+        "roleLabel": "Rolya",
+        "roleOperator": "Operator (Recepcionist)",
+        "roleAdmin": "Admin",
+        "roleHint": "Operatoryt mozhe da pravi check-in/out. Adminyt upravlyava rezervaciite.",
+        "inviteButton": "Pokani",
+        "inviteSuccess": "Pokanata e izpratena uspeshno!"
       }
     },
     "common": {
@@ -789,7 +822,7 @@
       "dayBook": "Day book",
       "inHouse": "In-house",
       "past": "Past",
-      "requests": "Requests",
+      "requests": "Заявки",
       "confirmed": "Confirmed",
       "holds": "Holds",
       "blocks": "Blocks",
@@ -1004,7 +1037,6 @@
       "retroMaximize": "Maximize",
       "retroClose": "Close window",
       "persons": "Гости",
-      "phone": "Телефон",
       "details": "Детайли",
       "dateLabel": "Дата: {date}",
       "occupiedGuestLabel": "Заета — {guest}",
@@ -1135,7 +1167,7 @@
       "profile": "Профил",
       "adminTheme": "Тема на админ панела",
       "day": "Ден",
-      "night": "Нощ",
+      "night": "нощ",
       "explanation": "Обяснение",
       "minimize": "Минимизирай",
       "maximize": "Максимизирай",
@@ -1151,7 +1183,6 @@
       "show": "Покажи",
       "hide": "Скрий",
       "request": "Заявка",
-      "requests": "Заявки",
       "inactive": "Неактивна",
       "quickJumpBack": "Бърз скок назад",
       "quickJumpForward": "Бърз скок напред",
@@ -1165,7 +1196,6 @@
       "edit": "Редактирай",
       "month": "Месец",
       "min": "мин",
-      "night": "нощ",
       "availability": "Наличност",
       "full": "Пълен",
       "displayOrder": "Ред на показване",
@@ -1262,6 +1292,10 @@
       "nextDay": "Напред един ден",
       "nextWeek": "Напред една седмица",
       "nextMonth": "Напред един месец",
+      "nextCheckIn": "Скок до следващото настаняване",
+      "nextCheckOut": "Скок до следващото напускане",
+      "noUpcomingCheckIn": "Няма предстоящо настаняване",
+      "noUpcomingCheckOut": "Няма предстоящо напускане",
       "dayShort": "д",
       "stopSim": "Спри",
       "confirmStop": "Сигурни ли сте?",
@@ -1445,28 +1479,37 @@
       "adminLogout": "Admin изход",
       "invalidGuest": "Невалиден клиент",
       "selectProfileToMerge": "Избери профил за обединяване",
-      "invalidReview": "Невалиден review"
-      ,"bookingIdMissing":"Липсва ID на резервация."
-      ,"checkInError":"Грешка при check-in."
-      ,"checkOutError":"Грешка при check-out."
-      ,"undoCheckInError":"Грешка при отмяна на check-in."
-      ,"undoCheckOutError":"Грешка при отмяна на check-out."
-      ,"undoCheckoutFirst":"Отмени check-out преди да отмениш check-in."
-      ,"checkInNotRecorded":"Check-in не е регистриран."
-      ,"adminPasswordIncorrect":"Невалидна admin парола"
-      ,"locationAdminUnlocked":"Администрирането на локацията е отключено"
-      ,"locationAdminLocked":"Администрирането на локацията е заключено"
-      ,"settingsNotConfigured":"Настройките на обекта не са конфигурирани"
-      ,"settingsMissing":"Липсват настройки"
-      ,"passwordsDoNotMatch":"Паролите не съвпадат"
-      ,"changePasswordError":"Грешка при смяна на паролата"
-      ,"typeResetExactly":"Въведи точно \"RESET\" за потвърждение."
-      ,"roomTypeNameRequired":"Името на типа стая е задължително"
-      ,"newRoomTypeSummary":"Нов тип стая: {name}"
-      ,"roomOptionNameRequired":"Името на опцията е задължително"
-      ,"buildingDefaultPriceSummary":"Цена по подразбиране за сграда: {price} RON/нощ"
-      ,"roomUpdateIncomplete":"Непълни данни"
-      ,"roomUpdatedSummary":"Стаята е обновена: {name}"
+      "invalidReview": "Невалиден review",
+      "bookingIdMissing": "Липсва ID на резервация.",
+      "checkInError": "Грешка при check-in.",
+      "checkOutError": "Грешка при check-out.",
+      "undoCheckInError": "Грешка при отмяна на check-in.",
+      "undoCheckOutError": "Грешка при отмяна на check-out.",
+      "undoCheckoutFirst": "Отмени check-out преди да отмениш check-in.",
+      "checkInNotRecorded": "Check-in не е регистриран.",
+      "adminPasswordIncorrect": "Невалидна admin парола",
+      "locationAdminUnlocked": "Администрирането на локацията е отключено",
+      "locationAdminLocked": "Администрирането на локацията е заключено",
+      "settingsNotConfigured": "Настройките на обекта не са конфигурирани",
+      "settingsMissing": "Липсват настройки",
+      "passwordsDoNotMatch": "Паролите не съвпадат",
+      "changePasswordError": "Грешка при смяна на паролата",
+      "typeResetExactly": "Въведи точно \"RESET\" за потвърждение.",
+      "roomTypeNameRequired": "Името на типа стая е задължително",
+      "newRoomTypeSummary": "Нов тип стая: {name}",
+      "roomOptionNameRequired": "Името на опцията е задължително",
+      "buildingDefaultPriceSummary": "Цена по подразбиране за сграда: {price} RON/нощ",
+      "roomUpdateIncomplete": "Непълни данни",
+      "roomUpdatedSummary": "Стаята е обновена: {name}",
+      "emailRequired": "Email e zadylzhitelen.",
+      "invalidEmail": "Nevalizhen email format.",
+      "invalidRole": "Nevalidna rolya.",
+      "memberAlreadyExists": "Tozi chlen veche syshtestvuva v ekipa.",
+      "alreadyHasOwner": "Veche ima sobstvenik.",
+      "memberIdRequired": "ID na chlen lipstva.",
+      "cannotDemoteLastOwner": "Ne mozhete da promenite poslednata rolya na sobstvenika.",
+      "cannotDeactivateOwner": "Ne mozhete da deaktivirate sobstvenika.",
+      "genericError": "Vyznkna greshka. Opitatye otnovo."
     },
     "availabilityLightSummary": {
       "minFree": "Минимум свободни",

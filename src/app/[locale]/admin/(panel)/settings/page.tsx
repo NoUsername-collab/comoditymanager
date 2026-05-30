@@ -130,6 +130,24 @@ export default async function SettingsPage({
             </div>
           </AdminPendingForm>
 
+          {role === "admin" && (
+            <SettingsSlidePanel
+              title={t("staffTitle")}
+              subtitle={t("staffSubtitle")}
+              icon="*"
+            >
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-600">{t("staffPanelInfo")}</p>
+                <Link
+                  href="/admin/settings/staff"
+                  className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                >
+                  {t("openStaffManagement")}
+                </Link>
+              </div>
+            </SettingsSlidePanel>
+          )}
+
           <SettingsSlidePanel
             title={t("locationTitle")}
             subtitle={locationUnlocked ? t("locationSubtitleUnlocked") : t("locationSubtitleLocked")}

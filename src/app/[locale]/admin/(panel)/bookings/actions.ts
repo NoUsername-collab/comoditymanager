@@ -39,6 +39,27 @@ export async function confirmBookingAction(formData: FormData) {
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
+  // Notify guest (non-blocking) — pension name from DB
+  (async () => {
+    try {
+      const { getTenantDisplayName } = await import("@/services/tenants");
+      const pensionName = await getTenantDisplayName();
+      const { getBookingById } = await import("@/services/bookings");
+      const booking = await getBookingById(id);
+      if (!booking || !booking.guest_email) return;
+      const { notifyGuestConfirmed } = await import("@/lib/email/notify");
+      await notifyGuestConfirmed({
+        guestEmail: booking.guest_email,
+        pensionName,
+        guestName: booking.guest_name,
+        checkIn: booking.check_in,
+        checkOut: booking.check_out,
+        rooms: booking.room_names,
+        totalPrice: total_price,
+      });
+    } catch { /* email failure must never crash */ }
+  })();
+
   revalidateBookingPaths(id);
   await redirect("/admin/calendar?confirmed=1");
 }
@@ -52,7 +73,31 @@ export async function cancelBookingAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const returnTo = String(formData.get("return_to") ?? "/admin/bookings");
+
+  // Capture booking data BEFORE cancellation for email notification
+  const { getBookingById } = await import("@/services/bookings");
+  const bookingBefore = await getBookingById(id).catch(() => null);
+
   await cancelBooking(id);
+
+  // Notify guest (non-blocking) — pension name from DB
+  if (bookingBefore?.guest_email) {
+    (async () => {
+      try {
+        const { getTenantDisplayName } = await import("@/services/tenants");
+        const pensionName = await getTenantDisplayName();
+        const { notifyGuestCancelled } = await import("@/lib/email/notify");
+        await notifyGuestCancelled({
+          guestEmail: bookingBefore.guest_email,
+          pensionName,
+          guestName: bookingBefore.guest_name,
+          checkIn: bookingBefore.check_in,
+          checkOut: bookingBefore.check_out,
+        });
+      } catch { /* email failure must never crash */ }
+    })();
+  }
+
   revalidateBookingPaths(id);
   const base = returnTo.startsWith("/admin") ? returnTo : "/admin/bookings";
   await redirect(appendQueryParam(base, "toast", "cancelled"));

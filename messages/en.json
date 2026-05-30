@@ -352,7 +352,11 @@
         "locationSubtitleLocked": "Requires Admin password",
         "locationPanelInfo": "Panel is active for 2 hours.",
         "openConfigCenter": "Open configuration center",
-        "genericError": "Error"
+        "genericError": "Error",
+        "staffTitle": "Team",
+        "staffSubtitle": "Manage team members",
+        "staffPanelInfo": "Invite operators and admins, change roles, deactivate accounts.",
+        "openStaffManagement": "Manage team"
       },
       "guests": {
         "title": "Guests — Casa Emil",
@@ -714,6 +718,35 @@
           "deleting": "Deleting…",
           "confirmButton": "Yes, full reset"
         }
+      },
+      "staffManagement": {
+        "title": "Team",
+        "backToSettings": "Settings",
+        "description": "Manage your team members. Invite new operators or admins.",
+        "currentStaffTitle": "Team members",
+        "currentStaffSubtitle": "{count} active members",
+        "inviteTitle": "Invite new member",
+        "inviteSubtitle": "Add an operator or admin",
+        "rolesExplainTitle": "About roles",
+        "rolesExplainSubtitle": "What each role can do",
+        "roleOwnerTitle": "Owner",
+        "roleOwnerDesc": "Full access. Manages billing, pension settings, and team. One owner per pension.",
+        "roleAdminTitle": "Admin",
+        "roleAdminDesc": "Manages bookings, calendar, confirmations. Receives email notifications. Cannot change billing.",
+        "roleOperatorTitle": "Operator (Receptionist)",
+        "roleOperatorDesc": "Check-in, check-out, view calendar. Cannot confirm or cancel bookings. Ideal for front desk staff.",
+        "noMembers": "No team members.",
+        "pendingInvite": "Pending invite",
+        "changeRole": "Change role",
+        "deactivate": "Deactivate",
+        "emailLabel": "Email",
+        "emailPlaceholder": "operator@example.com",
+        "roleLabel": "Role",
+        "roleOperator": "Operator (Receptionist)",
+        "roleAdmin": "Admin",
+        "roleHint": "Operator can do check-in/out. Admin manages bookings.",
+        "inviteButton": "Invite",
+        "inviteSuccess": "Invitation sent successfully!"
       }
     },
     "common": {
@@ -1029,7 +1062,6 @@
       "retroMaximize": "Maximize",
       "retroClose": "Close window",
       "persons": "Guests",
-      "phone": "Phone",
       "details": "Details",
       "dateLabel": "Date: {date}",
       "occupiedGuestLabel": "Occupied — {guest}",
@@ -1173,7 +1205,7 @@
       "profile": "Profile",
       "adminTheme": "Admin panel theme",
       "day": "Day",
-      "night": "Night",
+      "night": "night",
       "explanation": "Explanation",
       "minimize": "Minimize",
       "maximize": "Maximize",
@@ -1189,7 +1221,6 @@
       "show": "Show",
       "hide": "Hide",
       "request": "Request",
-      "requests": "Requests",
       "inactive": "Inactive",
       "quickJumpBack": "Quick jump backward",
       "quickJumpForward": "Quick jump forward",
@@ -1203,7 +1234,6 @@
       "edit": "Edit",
       "month": "Month",
       "min": "min",
-      "night": "night",
       "availability": "Availability",
       "full": "Full",
       "displayOrder": "Display order",
@@ -1300,6 +1330,10 @@
       "nextDay": "Advance one day",
       "nextWeek": "Advance one week",
       "nextMonth": "Advance one month",
+      "nextCheckIn": "Jump to next check-in",
+      "nextCheckOut": "Jump to next check-out",
+      "noUpcomingCheckIn": "No upcoming check-in",
+      "noUpcomingCheckOut": "No upcoming check-out",
       "dayShort": "d",
       "stopSim": "Stop",
       "confirmStop": "Are you sure?",
@@ -1483,28 +1517,37 @@
       "adminLogout": "Admin logout",
       "invalidGuest": "Invalid guest",
       "selectProfileToMerge": "Select profile to merge",
-      "invalidReview": "Invalid review"
-      ,"bookingIdMissing":"Booking ID missing."
-      ,"checkInError":"Check-in error."
-      ,"checkOutError":"Check-out error."
-      ,"undoCheckInError":"Undo check-in error."
-      ,"undoCheckOutError":"Undo check-out error."
-      ,"undoCheckoutFirst":"Undo check-out before undoing check-in."
-      ,"checkInNotRecorded":"Check-in is not recorded."
-      ,"adminPasswordIncorrect":"Incorrect admin password"
-      ,"locationAdminUnlocked":"Location admin unlocked"
-      ,"locationAdminLocked":"Location admin locked"
-      ,"settingsNotConfigured":"Property settings are not configured"
-      ,"settingsMissing":"Settings missing"
-      ,"passwordsDoNotMatch":"Passwords do not match"
-      ,"changePasswordError":"Password change error"
-      ,"typeResetExactly":"Type exactly \"RESET\" to confirm."
-      ,"roomTypeNameRequired":"Room type name is required"
-      ,"newRoomTypeSummary":"New room type: {name}"
-      ,"roomOptionNameRequired":"Room option name is required"
-      ,"buildingDefaultPriceSummary":"Default building price: {price} RON/night"
-      ,"roomUpdateIncomplete":"Incomplete data"
-      ,"roomUpdatedSummary":"Room updated: {name}"
+      "invalidReview": "Invalid review",
+      "bookingIdMissing": "Booking ID missing.",
+      "checkInError": "Check-in error.",
+      "checkOutError": "Check-out error.",
+      "undoCheckInError": "Undo check-in error.",
+      "undoCheckOutError": "Undo check-out error.",
+      "undoCheckoutFirst": "Undo check-out before undoing check-in.",
+      "checkInNotRecorded": "Check-in is not recorded.",
+      "adminPasswordIncorrect": "Incorrect admin password",
+      "locationAdminUnlocked": "Location admin unlocked",
+      "locationAdminLocked": "Location admin locked",
+      "settingsNotConfigured": "Property settings are not configured",
+      "settingsMissing": "Settings missing",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "changePasswordError": "Password change error",
+      "typeResetExactly": "Type exactly \"RESET\" to confirm.",
+      "roomTypeNameRequired": "Room type name is required",
+      "newRoomTypeSummary": "New room type: {name}",
+      "roomOptionNameRequired": "Room option name is required",
+      "buildingDefaultPriceSummary": "Default building price: {price} RON/night",
+      "roomUpdateIncomplete": "Incomplete data",
+      "roomUpdatedSummary": "Room updated: {name}",
+      "emailRequired": "Email is required.",
+      "invalidEmail": "Invalid email format.",
+      "invalidRole": "Invalid role.",
+      "memberAlreadyExists": "This member already exists in the team.",
+      "alreadyHasOwner": "An owner already exists.",
+      "memberIdRequired": "Member ID missing.",
+      "cannotDemoteLastOwner": "Cannot change the last owner role.",
+      "cannotDeactivateOwner": "Cannot deactivate the owner.",
+      "genericError": "An error occurred. Please try again."
     },
     "availabilityLightSummary": {
       "minFree": "Minimum free",
