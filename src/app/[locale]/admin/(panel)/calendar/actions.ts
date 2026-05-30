@@ -13,7 +13,7 @@ import {
 } from "@/services/bookings";
 import { createRoomBlock, deleteRoomBlock } from "@/services/room-blocks";
 import { createRoomHold, createRoomHolds, releaseRoomHold } from "@/services/room-holds";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getRoomById } from "@/services/rooms-admin";
 import {
   moveBookingRoomFromPivot,
   previewRoomMoveFromPivot,
@@ -278,14 +278,7 @@ export async function createDirectStayFromGanttAction(input: {
       room_ids: [input.roomId],
     });
 
-    const supabase = await createAdminClient();
-    const { data: room, error: roomErr } = await supabase
-      .from("rooms")
-      .select("price_per_night")
-      .eq("id", input.roomId)
-      .maybeSingle();
-    if (roomErr) throw new Error(roomErr.message);
-    if (!room) throw new Error(t("roomNotFound"));
+    const room = await getRoomById(input.roomId);
 
     const total = computeStandardStayTotal(
       [{ price_per_night: Number(room.price_per_night) }],

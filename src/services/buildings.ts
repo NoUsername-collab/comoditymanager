@@ -1,13 +1,15 @@
 import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import type { AcMode, Building } from "@/types/database";
 
-async function listBuildingsUncached(): Promise<Building[]> {
+async function listBuildingsUncached(tenantId: string): Promise<Building[]> {
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("buildings")
     .select("id, name, sort_order, color_hex, ac_mode, is_active, default_price_per_night")
+    .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -19,23 +21,30 @@ async function listBuildingsUncached(): Promise<Building[]> {
   }));
 }
 
-const getCachedBuildings = unstable_cache(listBuildingsUncached, undefined, {
-  tags: [CACHE_TAGS.buildings],
-  revalidate: 300,
-});
+const getCachedBuildings = (tenantId: string) =>
+  unstable_cache(
+    () => listBuildingsUncached(tenantId),
+    ["buildings", tenantId],
+    {
+      tags: [CACHE_TAGS.buildings, `tenant-${tenantId}-buildings`],
+      revalidate: 300,
+    }
+  );
 
 export async function listBuildings(): Promise<Building[]> {
-  return getCachedBuildings();
+  const { tenantId } = await getTenantScope();
+  return getCachedBuildings(tenantId)();
 }
 
 export async function updateBuildingDefaultPrice(
   buildingId: string,
   default_price_per_night: number
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("buildings")
     .update({ default_price_per_night: Math.max(0, default_price_per_night) })
+    .eq("tenant_id", tenantId)
     .eq("id", buildingId);
   if (error) throw new Error(error.message);
 }
@@ -47,17 +56,19 @@ export async function createBuilding(input: {
   ac_mode: AcMode;
   default_price_per_night?: number;
 }): Promise<{ id: string }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("buildings")
-    .insert({
+    .insert(
+      withTenantId(tenantId, {
       name: input.name.trim(),
       sort_order: input.sort_order,
       color_hex: input.color_hex || null,
       ac_mode: input.ac_mode,
       default_price_per_night: input.default_price_per_night ?? 0,
       is_active: true,
-    })
+      })
+    )
     .select("id")
     .single();
   if (error) throw new Error(error.message);
@@ -65,11 +76,12 @@ export async function createBuilding(input: {
 }
 
 export async function deleteBuilding(id: string): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { count: roomCount, error: roomErr } = await supabase
     .from("rooms")
     .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
     .eq("building_id", id);
 
   if (roomErr) throw new Error(roomErr.message);
@@ -79,7 +91,11 @@ export async function deleteBuilding(id: string): Promise<void> {
     );
   }
 
-  const { error } = await supabase.from("buildings").delete().eq("id", id);
+  const { error } = await supabase
+    .from("buildings")
+    .delete()
+    .eq("tenant_id", tenantId)
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 

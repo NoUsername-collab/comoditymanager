@@ -11,7 +11,7 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { releaseExpiredRoomHolds } from "@/services/room-holds";
@@ -47,7 +47,7 @@ export async function getRoomOccupancy(
   const kinds = options.kinds ?? ALL_KINDS;
   const ref = options.referenceDate ?? (await getEffectiveToday());
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const out: OccupancySegment[] = [];
 
   if (kinds.includes("request") || kinds.includes("stay")) {
@@ -61,6 +61,7 @@ export async function getRoomOccupancy(
         )
       `
       )
+      .eq("tenant_id", tenantId)
       .lte("segment_start", rangeEnd)
       .gte("segment_end", rangeStart)
       .neq("bookings.status", "anulata");
@@ -121,23 +122,24 @@ export async function getRoomOccupancy(
       /* non-fatal */
     });
 
-    const { data, error } = await supabase
+    let holdQ = supabase
       .from("room_holds")
       .select(
         "id, room_id, check_in, check_out, reason, expires_at, released_at"
       )
+      .eq("tenant_id", tenantId)
       .lte("check_in", rangeEnd)
       .gte("check_out", rangeStart)
       .is("released_at", null);
-    let holdRows = data ?? [];
-
-    if (error) throw new Error(error.message);
 
     if (roomIds.length > 0) {
-      holdRows = holdRows.filter((row) => roomIds.includes(row.room_id as string));
+      holdQ = holdQ.in("room_id", roomIds);
     }
 
-    for (const row of holdRows) {
+    const { data, error } = await holdQ;
+    if (error) throw new Error(error.message);
+
+    for (const row of data ?? []) {
       if (!isHoldActive(row, ref)) continue;
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
@@ -156,20 +158,21 @@ export async function getRoomOccupancy(
   }
 
   if (kinds.includes("block")) {
-    const { data, error } = await supabase
+    let blockQ = supabase
       .from("room_blocks")
       .select("id, room_id, check_in, check_out, reason")
+      .eq("tenant_id", tenantId)
       .lte("check_in", rangeEnd)
       .gte("check_out", rangeStart);
-    let blockRows = data ?? [];
-
-    if (error) throw new Error(error.message);
 
     if (roomIds.length > 0) {
-      blockRows = blockRows.filter((row) => roomIds.includes(row.room_id as string));
+      blockQ = blockQ.in("room_id", roomIds);
     }
 
-    for (const row of blockRows) {
+    const { data, error } = await blockQ;
+    if (error) throw new Error(error.message);
+
+    for (const row of data ?? []) {
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
       out.push({
@@ -273,7 +276,7 @@ export async function checkRoomIntervalFree(
   if (!isAtLeastOneNight(checkIn, checkOut)) {
     return { free: false, conflicts: [] };
   }
-  const segments = await getRoomOccupancy(checkIn, checkOut);
+  const segments = await getRoomOccupancy(checkIn, checkOut, { roomIds: [roomId] });
   const settings = await getPensionSettings().catch(() => null);
   const times = {
     checkIn: settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,

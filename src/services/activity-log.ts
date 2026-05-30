@@ -4,7 +4,7 @@ import type {
   ActivityLogEntry,
 } from "@/domain/activity/types";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
 type LogInput = {
   action: ActivityAction;
@@ -42,16 +42,18 @@ function mapRow(row: {
 /** Înregistrează o acțiune; nu aruncă — jurnalul nu trebuie să blocheze fluxul principal. */
 export async function logAdminActivity(input: LogInput): Promise<void> {
   try {
-    const supabase = await createAdminClient();
-    const { error } = await supabase.from("admin_activity_log").insert({
-      actor_id: input.actor?.id ?? null,
-      actor_email: input.actor?.email ?? null,
-      action: input.action,
-      entity_type: input.entityType,
-      entity_id: input.entityId ?? null,
-      summary: input.summary.slice(0, 500),
-      metadata: input.metadata ?? {},
-    });
+    const { tenantId, supabase } = await getTenantScope();
+    const { error } = await supabase.from("admin_activity_log").insert(
+      withTenantId(tenantId, {
+        actor_id: input.actor?.id ?? null,
+        actor_email: input.actor?.email ?? null,
+        action: input.action,
+        entity_type: input.entityType,
+        entity_id: input.entityId ?? null,
+        summary: input.summary.slice(0, 500),
+        metadata: input.metadata ?? {},
+      })
+    );
     if (error) console.error("[activity-log]", error.message);
   } catch (e) {
     console.error("[activity-log]", e);
@@ -71,12 +73,13 @@ export async function logAdminActivityFromSession(
 export async function listRecentActivity(
   limit = 100
 ): Promise<ActivityLogEntry[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
     .select(
       "id, created_at, actor_id, actor_email, action, entity_type, entity_id, summary, metadata"
     )
+    .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -88,12 +91,13 @@ export async function listBookingActivity(
   bookingId: string,
   limit = 40
 ): Promise<ActivityLogEntry[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
     .select(
       "id, created_at, actor_id, actor_email, action, entity_type, entity_id, summary, metadata"
     )
+    .eq("tenant_id", tenantId)
     .eq("entity_type", "booking")
     .eq("entity_id", bookingId)
     .order("created_at", { ascending: false })

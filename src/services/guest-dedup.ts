@@ -14,7 +14,7 @@ import {
   type DedupGuestRow,
   type DedupInput,
 } from "@/domain/guest/dedup-score";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope } from "@/lib/tenant/scope";
 
 // ─── DB columns for candidate rows ──────────────────────────────────────────
 
@@ -36,7 +36,7 @@ async function searchCandidateRows(
   input: DedupInput,
   limit = 20
 ): Promise<DedupGuestRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const orParts: string[] = [];
 
   // National ID match (highest priority)
@@ -66,6 +66,7 @@ async function searchCandidateRows(
   let query = supabase
     .from("guests")
     .select(DEDUP_SELECT)
+    .eq("tenant_id", tenantId)
     .or(orParts.join(","))
     .limit(limit);
 
@@ -90,10 +91,11 @@ async function searchByNameBirthDate(
 ): Promise<DedupGuestRow[]> {
   if (!input.lastName || !input.birthDate) return [];
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   let query = supabase
     .from("guests")
     .select(DEDUP_SELECT)
+    .eq("tenant_id", tenantId)
     .ilike("last_name", input.lastName.trim())
     .eq("birth_date", input.birthDate)
     .limit(limit);

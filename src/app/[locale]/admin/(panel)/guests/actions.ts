@@ -22,9 +22,8 @@ import {
   parseGuestPositiveTraits,
 } from "@/domain/guest/reputation";
 import { parseGuestTags } from "@/domain/guest/tags";
-import { assertValidGuestPhone, normalizePhone } from "@/domain/guest/normalize";
+import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { createAdminClient } from "@/lib/supabase/admin";
 import {
   findGuestByNationalId,
   mergeGuests,
@@ -32,6 +31,7 @@ import {
   rebookGuestSamePeriodNextYear,
   updateGuestIdentity,
   updateGuestNotes,
+  updateGuestPhone,
   updateGuestTags,
 } from "@/services/guests";
 import type { GuestIdentityInput } from "@/services/guests";
@@ -174,16 +174,7 @@ export async function updateGuestIdentityAction(formData: FormData) {
 
   const phoneRaw = String(formData.get("phone") ?? "").trim();
   assertValidGuestPhone(phoneRaw);
-  const phoneNorm = normalizePhone(phoneRaw);
-  const supabase = await createAdminClient();
-  const { error: phoneError } = await supabase
-    .from("guests")
-    .update({
-      phone: phoneRaw,
-      phone_normalized: phoneNorm,
-    })
-    .eq("id", guestId);
-  if (phoneError) throw new Error(phoneError.message);
+  await updateGuestPhone(guestId, phoneRaw);
 
   const rawDocType = parseOptionalStr(formData, "doc_type");
   const docType = rawDocType && VALID_DOC_TYPES.has(rawDocType)

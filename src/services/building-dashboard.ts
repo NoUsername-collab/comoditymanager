@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
 import {
   addDays,
@@ -54,7 +54,7 @@ async function loadStaysForAvailability(
   rangeStart: string,
   rangeEnd: string
 ): Promise<NightStay[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("booking_rooms")
     .select(
@@ -63,6 +63,7 @@ async function loadStaysForAvailability(
       bookings!inner ( check_in, check_out, status, guest_name )
     `
     )
+    .eq("tenant_id", tenantId)
     .neq("bookings.status", "anulata")
     .lte("bookings.check_in", rangeEnd)
     .gt("bookings.check_out", rangeStart);

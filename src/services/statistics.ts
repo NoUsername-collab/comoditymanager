@@ -1,5 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
-import { todayIso } from "@/lib/stay-dates";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
   buildYearStatistics,
@@ -15,7 +14,7 @@ const STATS_NOTE =
   "Occupancy uses today's active rooms as reference for the full history. Bookings stay in the database and reports expand automatically as operational history grows.";
 
 export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -26,6 +25,7 @@ export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
       booking_rooms ( room_id, rooms ( name, price_per_night, building_id, buildings ( name ) ) )
     `
     )
+    .eq("tenant_id", tenantId)
     .order("check_in", { ascending: true });
 
   if (error) throw new Error(error.message);

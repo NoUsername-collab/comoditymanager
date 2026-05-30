@@ -70,6 +70,40 @@ export async function getTenantById(
   }
 }
 
+/** Lookup by URL slug (casa-emil.hospira.ro → casa-emil). */
+export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
+  try {
+    const supabase = createPublicAdminClient();
+    const { data, error } = await supabase
+      .from("tenants")
+      .select("*")
+      .eq("slug", slug)
+      .in("status", ["active", "trial"])
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data as TenantRow;
+  } catch {
+    return null;
+  }
+}
+
+/** Lookup by custom domain (rezervari.pensiunea.ro). */
+export async function getTenantByDomain(domain: string): Promise<TenantRow | null> {
+  try {
+    const supabase = createPublicAdminClient();
+    const { data, error } = await supabase.rpc("resolve_tenant_by_domain", {
+      p_domain: domain,
+    });
+
+    if (error || !data?.length) return null;
+    const row = data[0] as { tenant_id: string };
+    return getTenantById(row.tenant_id);
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Get the owner's notification email for a tenant.
  * Falls back to ADMIN_EMAIL env var, then to null.

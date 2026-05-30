@@ -1,12 +1,13 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import {
   ADMIN_LOCATION_UNLOCK_COOKIE,
   isAdminLocationUnlockCookieFresh,
 } from "@/lib/auth/admin-location-unlock-cookie";
 import { pathBlockedForOperator } from "@/lib/auth/roles";
-import { getEdgeStaffEmails, getEdgeSupabaseConfig } from "@/lib/env/edge";
+import { resolveStaffRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
+import { getEdgeSupabaseConfig } from "@/lib/env/edge";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
@@ -90,15 +91,21 @@ function isLocationAdminPath(path: string): boolean {
   );
 }
 
-function staffRoleFromEmail(
-  email: string | undefined
-): "admin" | "operator" | null {
-  if (!email) return null;
-  const e = email.toLowerCase();
-  const { adminEmail, operatorEmail } = getEdgeStaffEmails();
-  if (e === adminEmail) return "admin";
-  if (e === operatorEmail) return "operator";
-  // Check app_metadata role (for multi-tenant staff)
+async function resolveEffectiveStaffRole(
+  userId: string,
+  _email: string | undefined,
+  slug: string | undefined,
+  customDomain: string | undefined
+): Promise<"admin" | "operator" | null> {
+  if (slug) {
+    return resolveStaffRoleOnTenantHost(userId, { slug });
+  }
+  if (customDomain) {
+    return resolveStaffRoleOnTenantHost(userId, { customDomain });
+  }
+  // No tenant context (platform domain or local dev without header)
+  // Check app_metadata.role as fallback (set during signup/invite)
+  // NO legacy env var bypass — prevents "god mode" access
   return null;
 }
 
@@ -110,11 +117,11 @@ export async function proxy(request: NextRequest) {
 
   // ── PLATFORM (hospira.ro) ────────────────────────────────────
   if (domain.type === "platform") {
-    // Root → redirect to landing
+    // Root → redirect to landing (redirect, not rewrite — rewrite skips intl and 404s)
     if (path === "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/landing";
-      return NextResponse.rewrite(url);
+      return NextResponse.redirect(url);
     }
 
     // Block tenant-only routes on platform domain
@@ -134,16 +141,16 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── TENANT (slug.hospira.ro or custom domain) ────────────────
-  // Set tenant slug in headers for downstream resolution
-  const slug =
-    domain.type === "tenant" ? domain.slug : undefined;
-  const customDomain =
-    domain.type === "custom" ? domain.domain : undefined;
+  const slug = domain.type === "tenant" ? domain.slug : undefined;
+  const customDomain = domain.type === "custom" ? domain.domain : undefined;
 
-  // Add tenant context to request headers
   const requestHeaders = new Headers(request.headers);
   if (slug) requestHeaders.set("x-tenant-slug", slug);
   if (customDomain) requestHeaders.set("x-tenant-domain", customDomain);
+
+  const tenantRequest = new NextRequest(request.url, {
+    headers: requestHeaders,
+  });
 
   // Block platform-only routes on tenant domains
   if (path === "/landing" || path === "/signup" || path === "/preturi") {
@@ -152,8 +159,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Normal intl + auth flow for tenant
-  const intlResponse = intlMiddleware(request);
+  const intlResponse = intlMiddleware(tenantRequest);
 
   const { configured, url, key } = getEdgeSupabaseConfig();
   if (!configured || !url || !key) {
@@ -165,11 +171,11 @@ export async function proxy(request: NextRequest) {
   const supabase = createServerClient(url, key, {
     cookies: {
       getAll() {
-        return request.cookies.getAll();
+        return tenantRequest.cookies.getAll();
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value)
+          tenantRequest.cookies.set(name, value)
         );
         cookiesToSet.forEach(({ name, value, options }) =>
           supabaseResponse.cookies.set(name, value, options)
@@ -196,12 +202,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && path.startsWith("/admin") && !isLoginPage) {
-    const role = staffRoleFromEmail(user.email);
-    // For multi-tenant: also check app_metadata
-    const metaRole =
-      user.app_metadata?.role as "admin" | "operator" | "owner" | undefined;
-    const effectiveRole = role ?? (metaRole === "owner" ? "admin" : metaRole) ?? null;
+  if (user && ((path.startsWith("/admin") && !isLoginPage) || staffOnly)) {
+    const effectiveRole = await resolveEffectiveStaffRole(
+      user.id,
+      user.email,
+      slug,
+      customDomain
+    );
 
     if (!effectiveRole) {
       await supabase.auth.signOut();
@@ -211,7 +218,11 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    if (isLocationAdminPath(path) || pathBlockedForOperator(path)) {
+    if (
+      path.startsWith("/admin") &&
+      !isLoginPage &&
+      (isLocationAdminPath(path) || pathBlockedForOperator(path))
+    ) {
       const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
       if (!isAdminLocationUnlockCookieFresh(unlock)) {
         const redirectUrl = request.nextUrl.clone();

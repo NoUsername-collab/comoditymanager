@@ -4,7 +4,7 @@ import { getLocale } from "next-intl/server";
 import { listOccupiedRoomRanges, listBookingsForRange } from "@/services/bookings";
 import { listAllRooms } from "@/services/rooms-admin";
 import { listBuildings } from "@/services/buildings";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope } from "@/lib/tenant/scope";
 import {
   computeDayAvailability,
   filterRoomsByBuilding,
@@ -388,13 +388,14 @@ export async function loadDayAvailabilityDetail(
       )
   );
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data } = await supabase
     .from("booking_rooms")
     .select(
       `room_id, booking_id,
       bookings!inner ( id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name )`
     )
+    .eq("tenant_id", tenantId)
     .neq("bookings.status", "anulata");
 
   const roomState = new Map<
@@ -464,6 +465,7 @@ export async function loadDayAvailabilityDetail(
   const { data: cereri } = await supabase
     .from("bookings")
     .select("id, check_in, check_out, booking_rooms ( room_id )")
+    .eq("tenant_id", tenantId)
     .eq("status", "cerere_noua")
     .lte("check_in", iso)
     .gt("check_out", iso);

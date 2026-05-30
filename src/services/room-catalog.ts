@@ -1,6 +1,12 @@
 import { unstable_cache } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import {
+  getTenantScope,
+  tenantCacheKey,
+  tenantCacheTag,
+  withTenantId,
+} from "@/lib/tenant/scope";
 import {
   acModeToPolicyMode,
   computeRoomPrice,
@@ -44,27 +50,77 @@ function mapOption(row: Record<string, unknown>): RoomOptionDefinition {
   };
 }
 
+async function requireBuildingInTenant(
+  supabase: SupabaseClient,
+  tenantId: string,
+  buildingId: string
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("buildings")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("id", buildingId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("buildings.not_found");
+}
+
+async function requireRoomInTenant(
+  supabase: SupabaseClient,
+  tenantId: string,
+  roomId: string
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("rooms")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("id", roomId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("rooms.not_found");
+}
+
+async function requireRoomTypeInTenant(
+  supabase: SupabaseClient,
+  tenantId: string,
+  typeId: string
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("room_type_definitions")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("id", typeId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("room_type.not_found");
+}
+
 async function listRoomTypesUncached(
+  tenantId: string,
   includeInactive = false
 ): Promise<RoomTypeDefinition[]> {
-  const supabase = await createAdminClient();
+  const { supabase } = await getTenantScope();
   let q = supabase
     .from("room_type_definitions")
     .select("*")
+    .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
   if (!includeInactive) q = q.eq("is_active", true);
 
   const { data, error } = await q;
   if (error) throw new Error(error.message);
 
+  const typeIds = (data ?? []).map((row) => String(row.id));
   const { data: defaults, error: dErr } = await supabase
     .from("room_type_default_options")
-    .select("room_type_id, option_id");
+    .select("room_type_id, option_id")
+    .in("room_type_id", typeIds.length > 0 ? typeIds : ["00000000-0000-0000-0000-000000000000"]);
   if (dErr) throw new Error(dErr.message);
 
   const byType = new Map<string, string[]>();
   for (const row of defaults ?? []) {
     const tid = String(row.room_type_id);
+    if (!typeIds.includes(tid)) continue;
     const list = byType.get(tid) ?? [];
     list.push(String(row.option_id));
     byType.set(tid, list);
@@ -75,22 +131,30 @@ async function listRoomTypesUncached(
   );
 }
 
-const getCachedRoomTypes = unstable_cache(listRoomTypesUncached, undefined, {
-  tags: [CACHE_TAGS.roomCatalog],
-  revalidate: 300,
-});
+const getCachedRoomTypes = (tenantId: string, includeInactive: boolean) =>
+  unstable_cache(
+    () => listRoomTypesUncached(tenantId, includeInactive),
+    tenantCacheKey(tenantId, CACHE_TAGS.roomCatalog, "types", String(includeInactive)),
+    {
+      tags: [CACHE_TAGS.roomCatalog, tenantCacheTag(tenantId, "room-catalog")],
+      revalidate: 300,
+    }
+  );
 
 export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDefinition[]> {
-  return getCachedRoomTypes(includeInactive);
+  const { tenantId } = await getTenantScope();
+  return getCachedRoomTypes(tenantId, includeInactive)();
 }
 
 async function listRoomOptionsUncached(
+  tenantId: string,
   includeInactive = false
 ): Promise<RoomOptionDefinition[]> {
-  const supabase = await createAdminClient();
+  const { supabase } = await getTenantScope();
   let q = supabase
     .from("room_option_definitions")
     .select("*")
+    .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
   if (!includeInactive) q = q.eq("is_active", true);
 
@@ -99,13 +163,19 @@ async function listRoomOptionsUncached(
   return (data ?? []).map((row) => mapOption(row as Record<string, unknown>));
 }
 
-const getCachedRoomOptions = unstable_cache(listRoomOptionsUncached, undefined, {
-  tags: [CACHE_TAGS.roomCatalog],
-  revalidate: 300,
-});
+const getCachedRoomOptions = (tenantId: string, includeInactive: boolean) =>
+  unstable_cache(
+    () => listRoomOptionsUncached(tenantId, includeInactive),
+    tenantCacheKey(tenantId, CACHE_TAGS.roomCatalog, "options", String(includeInactive)),
+    {
+      tags: [CACHE_TAGS.roomCatalog, tenantCacheTag(tenantId, "room-catalog")],
+      revalidate: 300,
+    }
+  );
 
 export async function listRoomOptions(includeInactive = false): Promise<RoomOptionDefinition[]> {
-  return getCachedRoomOptions(includeInactive);
+  const { tenantId } = await getTenantScope();
+  return getCachedRoomOptions(tenantId, includeInactive)();
 }
 
 export async function getRoomCatalogContext(
@@ -124,7 +194,9 @@ export async function getRoomCatalogContext(
 export async function getBuildingOptionPolicies(
   buildingId: string
 ): Promise<BuildingOptionPolicy[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
+  await requireBuildingInTenant(supabase, tenantId, buildingId);
+
   const { data, error } = await supabase
     .from("building_option_policies")
     .select("building_id, option_id, mode")
@@ -172,7 +244,8 @@ export async function setBuildingOptionPolicies(
   buildingId: string,
   policies: { option_id: string; mode: OptionPolicyMode }[]
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
+  await requireBuildingInTenant(supabase, tenantId, buildingId);
 
   const { error: delErr } = await supabase
     .from("building_option_policies")
@@ -196,13 +269,19 @@ export async function setBuildingOptionPolicies(
   if (acOpt) {
     const mode = policies.find((p) => p.option_id === acOpt.id)?.mode;
     if (mode) {
-      await supabase.from("buildings").update({ ac_mode: mode }).eq("id", buildingId);
+      await supabase
+        .from("buildings")
+        .update({ ac_mode: mode })
+        .eq("tenant_id", tenantId)
+        .eq("id", buildingId);
     }
   }
 }
 
 export async function getRoomEnabledOptionIds(roomId: string): Promise<string[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
+  await requireRoomInTenant(supabase, tenantId, roomId);
+
   const { data, error } = await supabase
     .from("room_enabled_options")
     .select("option_id")
@@ -215,7 +294,9 @@ export async function setRoomEnabledOptions(
   roomId: string,
   optionIds: string[]
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
+  await requireRoomInTenant(supabase, tenantId, roomId);
+
   const { error: delErr } = await supabase
     .from("room_enabled_options")
     .delete()
@@ -278,21 +359,23 @@ export async function createRoomType(input: {
   sort_order?: number;
   default_option_ids?: string[];
 }): Promise<{ id: string }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const slug = slugifyCatalogName(input.name);
   if (!slug) throw new Error("room_type.invalid_name");
 
   const { data, error } = await supabase
     .from("room_type_definitions")
-    .insert({
-      slug,
-      name: input.name.trim(),
-      capacity_base: input.capacity_base,
-      base_price_per_night: input.base_price_per_night,
-      sort_order: input.sort_order ?? 0,
-      is_system: false,
-      is_active: true,
-    })
+    .insert(
+      withTenantId(tenantId, {
+        slug,
+        name: input.name.trim(),
+        capacity_base: input.capacity_base,
+        base_price_per_night: input.base_price_per_night,
+        sort_order: input.sort_order ?? 0,
+        is_system: false,
+        is_active: true,
+      })
+    )
     .select("id")
     .single();
   if (error) throw new Error(error.message);
@@ -319,7 +402,9 @@ export async function updateRoomType(
     default_option_ids: string[];
   }
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
+  await requireRoomTypeInTenant(supabase, tenantId, id);
+
   const { error } = await supabase
     .from("room_type_definitions")
     .update({
@@ -330,6 +415,7 @@ export async function updateRoomType(
       is_active: input.is_active,
       updated_at: new Date().toISOString(),
     })
+    .eq("tenant_id", tenantId)
     .eq("id", id);
   if (error) throw new Error(error.message);
 
@@ -348,21 +434,23 @@ export async function createRoomOption(input: {
   price_per_night_addon: number;
   sort_order?: number;
 }): Promise<{ id: string }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const slug = slugifyCatalogName(input.name);
   if (!slug) throw new Error("room_option.invalid_name");
 
   const { data, error } = await supabase
     .from("room_option_definitions")
-    .insert({
-      slug,
-      name: input.name.trim(),
-      description: input.description?.trim() || null,
-      price_per_night_addon: input.price_per_night_addon,
-      sort_order: input.sort_order ?? 0,
-      is_system: false,
-      is_active: true,
-    })
+    .insert(
+      withTenantId(tenantId, {
+        slug,
+        name: input.name.trim(),
+        description: input.description?.trim() || null,
+        price_per_night_addon: input.price_per_night_addon,
+        sort_order: input.sort_order ?? 0,
+        is_system: false,
+        is_active: true,
+      })
+    )
     .select("id")
     .single();
   if (error) throw new Error(error.message);
@@ -379,7 +467,7 @@ export async function updateRoomOption(
     is_active: boolean;
   }
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("room_option_definitions")
     .update({
@@ -390,20 +478,33 @@ export async function updateRoomOption(
       is_active: input.is_active,
       updated_at: new Date().toISOString(),
     })
+    .eq("tenant_id", tenantId)
     .eq("id", id);
   if (error) throw new Error(error.message);
 }
 
 /** Map room_id → slug-uri opțiuni active (AC, frigider…). */
 async function getRoomOptionSlugsByRoomIdsUncached(
+  tenantId: string,
   roomIds: string[]
 ): Promise<Record<string, string[]>> {
   if (roomIds.length === 0) return {};
-  const supabase = await createAdminClient();
+  const { supabase } = await getTenantScope();
+
+  const { data: scopedRooms, error: roomErr } = await supabase
+    .from("rooms")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .in("id", roomIds);
+  if (roomErr) throw new Error(roomErr.message);
+
+  const scopedIds = (scopedRooms ?? []).map((r) => String(r.id));
+  if (scopedIds.length === 0) return {};
+
   const { data, error } = await supabase
     .from("room_enabled_options")
     .select("room_id, room_option_definitions ( slug )")
-    .in("room_id", roomIds);
+    .in("room_id", scopedIds);
   if (error) throw new Error(error.message);
 
   const out: Record<string, string[]> = {};
@@ -421,19 +522,21 @@ async function getRoomOptionSlugsByRoomIdsUncached(
   return out;
 }
 
-const getCachedRoomOptionSlugsByRoomIds = unstable_cache(
-  getRoomOptionSlugsByRoomIdsUncached,
-  undefined,
-  {
-    tags: [CACHE_TAGS.roomCatalog, CACHE_TAGS.roomOptionsByRoom],
-    revalidate: 300,
-  }
-);
+const getCachedRoomOptionSlugsByRoomIds = (tenantId: string, roomIds: string[]) =>
+  unstable_cache(
+    () => getRoomOptionSlugsByRoomIdsUncached(tenantId, roomIds),
+    tenantCacheKey(tenantId, CACHE_TAGS.roomOptionsByRoom, ...roomIds.sort()),
+    {
+      tags: [CACHE_TAGS.roomCatalog, CACHE_TAGS.roomOptionsByRoom, tenantCacheTag(tenantId, "room-options-by-room")],
+      revalidate: 300,
+    }
+  );
 
 export async function getRoomOptionSlugsByRoomIds(
   roomIds: string[]
 ): Promise<Record<string, string[]>> {
-  return getCachedRoomOptionSlugsByRoomIds(roomIds);
+  const { tenantId } = await getTenantScope();
+  return getCachedRoomOptionSlugsByRoomIds(tenantId, roomIds)();
 }
 
 export function parseSelectedOptionIds(formData: FormData): string[] {

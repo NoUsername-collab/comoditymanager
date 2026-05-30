@@ -1,6 +1,11 @@
 import { unstable_cache } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import {
+  getTenantScope,
+  tenantCacheKey,
+  tenantCacheTag,
+  withTenantId,
+} from "@/lib/tenant/scope";
 import {
   calculatePriceFromCatalog,
   getRoomEnabledOptionIds,
@@ -25,14 +30,27 @@ export type CreateRoomInput = {
   building_default_price?: number;
 };
 
-async function listAllRoomsUncached(): Promise<
+async function requireBuildingInTenant(buildingId: string) {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("buildings")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("id", buildingId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("buildings.not_found");
+  return { tenantId, supabase };
+}
+
+async function listAllRoomsUncached(tenantId: string): Promise<
   (Room & {
     building_name: string;
     floor_name: string | null;
     room_type_name: string | null;
   })[]
 > {
-  const supabase = await createAdminClient();
+  const { supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("rooms")
     .select(
@@ -45,6 +63,7 @@ async function listAllRoomsUncached(): Promise<
       room_type_definitions ( name )
     `
     )
+    .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -77,10 +96,15 @@ async function listAllRoomsUncached(): Promise<
   });
 }
 
-const getCachedRooms = unstable_cache(listAllRoomsUncached, undefined, {
-  tags: [CACHE_TAGS.rooms],
-  revalidate: 300,
-});
+const getCachedRooms = (tenantId: string) =>
+  unstable_cache(
+    () => listAllRoomsUncached(tenantId),
+    tenantCacheKey(tenantId, CACHE_TAGS.rooms),
+    {
+      tags: [CACHE_TAGS.rooms, tenantCacheTag(tenantId, "rooms")],
+      revalidate: 300,
+    }
+  );
 
 export async function listAllRooms(): Promise<
   (Room & {
@@ -89,7 +113,8 @@ export async function listAllRooms(): Promise<
     room_type_name: string | null;
   })[]
 > {
-  return getCachedRooms();
+  const { tenantId } = await getTenantScope();
+  return getCachedRooms(tenantId)();
 }
 
 async function resolveRoomInsertFields(input: CreateRoomInput) {
@@ -125,25 +150,27 @@ export async function createRoom(input: CreateRoomInput): Promise<{ id: string }
   const { type, price, capacity, room_type, has_ac } =
     await resolveRoomInsertFields(input);
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await requireBuildingInTenant(input.building_id);
   const { data, error } = await supabase
     .from("rooms")
-    .insert({
-      building_id: input.building_id,
-      floor_id: input.floor_id || null,
-      name: input.name.trim(),
-      room_type,
-      room_type_definition_id: type?.id ?? null,
-      capacity_base: capacity,
-      allows_extra_beds: input.allows_extra_beds,
-      max_extra_beds_per_room: input.allows_extra_beds
-        ? input.max_extra_beds_per_room
-        : 0,
-      has_ac,
-      price_per_night: price,
-      sort_order: input.sort_order,
-      is_active: true,
-    })
+    .insert(
+      withTenantId(tenantId, {
+        building_id: input.building_id,
+        floor_id: input.floor_id || null,
+        name: input.name.trim(),
+        room_type,
+        room_type_definition_id: type?.id ?? null,
+        capacity_base: capacity,
+        allows_extra_beds: input.allows_extra_beds,
+        max_extra_beds_per_room: input.allows_extra_beds
+          ? input.max_extra_beds_per_room
+          : 0,
+        has_ac,
+        price_per_night: price,
+        sort_order: input.sort_order,
+        is_active: true,
+      })
+    )
     .select("id")
     .single();
   if (error) throw new Error(error.message);
@@ -193,12 +220,13 @@ export async function createRoomsBulk(input: {
 }
 
 export async function getRoomById(id: string) {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("rooms")
     .select(
       "id, building_id, floor_id, name, room_type, room_type_definition_id, capacity_base, allows_extra_beds, max_extra_beds_per_room, has_ac, price_per_night, is_active, sort_order, buildings ( ac_mode )"
     )
+    .eq("tenant_id", tenantId)
     .eq("id", id)
     .single();
 
@@ -255,7 +283,7 @@ export async function updateRoom(
   const capacity = type?.capacity_base ?? input.capacity_base;
   const room_type = type?.slug ?? "double";
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("rooms")
     .update({
@@ -274,6 +302,7 @@ export async function updateRoom(
       sort_order: input.sort_order,
       is_active: input.is_active,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", id);
 
   if (error) throw new Error(error.message);
@@ -281,11 +310,12 @@ export async function updateRoom(
 }
 
 export async function deleteRoom(id: string): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { count, error: brErr } = await supabase
     .from("booking_rooms")
     .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
     .eq("room_id", id);
 
   if (brErr) throw new Error(brErr.message);
@@ -295,7 +325,11 @@ export async function deleteRoom(id: string): Promise<void> {
     );
   }
 
-  await supabase.from("room_enabled_options").delete().eq("room_id", id);
-  const { error } = await supabase.from("rooms").delete().eq("id", id);
+  await setRoomEnabledOptions(id, []);
+  const { error } = await supabase
+    .from("rooms")
+    .delete()
+    .eq("tenant_id", tenantId)
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }

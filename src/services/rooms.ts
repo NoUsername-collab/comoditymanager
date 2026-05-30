@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { getTenantScope } from "@/lib/tenant/scope";
 
 /** Rând din tabela `rooms` + nume clădire (join simplu) */
 export type RoomRow = {
@@ -14,14 +14,13 @@ export type RoomRow = {
 };
 
 /**
- * Citește camerele active din Supabase.
- * `services/` = „telefonul” către baza de date (nu reguli business).
+ * Citește camerele active pentru tenant-ul curent (subdomeniu).
  */
 export async function listActiveRooms(): Promise<{
   rooms: RoomRow[];
   error: string | null;
 }> {
-  const supabase = await createClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { data, error } = await supabase
     .from("rooms")
@@ -38,6 +37,7 @@ export async function listActiveRooms(): Promise<{
       buildings ( name )
     `
     )
+    .eq("tenant_id", tenantId)
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
 

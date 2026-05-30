@@ -1,10 +1,10 @@
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import {
-  getStaffRole,
   pathBlockedForOperator,
   type StaffRole,
 } from "@/lib/auth/roles";
+import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 
 export async function requireStaff() {
@@ -17,9 +17,9 @@ export async function requireStaff() {
     throw new Error("auth.login_required");
   }
 
-  const role = getStaffRole(user);
+  const role = await resolveStaffRole(user);
   if (!role) {
-    throw new Error("auth.unauthorized_account");
+    throw new Error("auth.tenant_member_required");
   }
 
   return { user, role, supabase };
@@ -45,7 +45,9 @@ export async function getStaffUser() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user || !getStaffRole(user)) return null;
+    if (!user) return null;
+    const role = await resolveStaffRole(user);
+    if (!role) return null;
     return user;
   } catch {
     return null;
@@ -70,7 +72,7 @@ export async function requireLocationAdmin() {
 export async function guardOperatorRoute(pathname: string) {
   const user = await getStaffUser();
   if (!user) return;
-  const role = getStaffRole(user);
+  const role = await resolveStaffRole(user);
   if (role === "operator" && pathBlockedForOperator(pathname)) {
     await redirect("/admin/settings?location=forbidden");
   }

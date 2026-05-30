@@ -3,11 +3,16 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { loginAction } from "@/app/[locale]/admin/login/actions";
-import { OPERATOR_LOGIN_USERNAME } from "@/lib/auth/constants";
 
-export function AdminLoginForm({ next }: { next: string }) {
+export function AdminLoginForm({
+  next,
+  initialError = null,
+}: {
+  next: string;
+  initialError?: string | null;
+}) {
   const t = useTranslations("admin.login");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
   const [pending, setPending] = useState(false);
 
   return (
@@ -31,7 +36,7 @@ export function AdminLoginForm({ next }: { next: string }) {
           name="username"
           type="text"
           autoComplete="username"
-          defaultValue={OPERATOR_LOGIN_USERNAME}
+          placeholder={t("usernameOrEmailPlaceholder")}
           className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
           required
         />

@@ -7,11 +7,11 @@ export type StaffLoginUsername =
   | typeof ADMIN_LOGIN_USERNAME;
 
 export function getAdminEmail(): string {
-  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@casaemil.ro";
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@hospira.ro";
 }
 
 export function getOperatorEmail(): string {
-  return process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@casaemil.ro";
+  return process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@hospira.ro";
 }
 
 export function normalizeLoginUsername(input: string): string {
@@ -31,6 +31,21 @@ export function resolveStaffEmail(username: string): string | null {
   if (u === OPERATOR_LOGIN_USERNAME.toLowerCase()) return getOperatorEmail();
   if (u === ADMIN_LOGIN_USERNAME.toLowerCase()) return getAdminEmail();
   return null;
+}
+
+/** Username (Admin/Operator) or full email for tenant staff login. */
+export function resolveLoginIdentifier(input: string): string | null {
+  const trimmed = normalizeLoginUsername(input);
+  if (trimmed.includes("@")) return trimmed.toLowerCase();
+  return resolveStaffEmail(trimmed);
+}
+
+export function isValidLoginIdentifier(input: string): boolean {
+  const trimmed = normalizeLoginUsername(input);
+  if (trimmed.includes("@")) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+  }
+  return isKnownStaffUsername(trimmed);
 }
 
 /** @deprecated folosește resolveStaffEmail */

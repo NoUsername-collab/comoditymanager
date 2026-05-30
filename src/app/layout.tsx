@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Casa Emil",
-  description: "Stay requests and reservations",
+  title: "Hospira",
+  description: "Software modern pentru pensiuni si hoteluri mici",
 };
 
 export const viewport: Viewport = {

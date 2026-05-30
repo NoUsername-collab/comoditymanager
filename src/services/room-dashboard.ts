@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
 import {
   roomNightStatus,
@@ -54,7 +54,7 @@ export type RoomDashboard = {
 type StayRow = RoomStayInfo & { room_id: string };
 
 async function loadStaysForRooms(): Promise<StayRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("booking_rooms")
     .select(
@@ -66,6 +66,7 @@ async function loadStaysForRooms(): Promise<StayRow[]> {
       )
     `
     )
+    .eq("tenant_id", tenantId)
     .neq("bookings.status", "anulata");
 
   if (error) throw new Error(error.message);

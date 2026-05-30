@@ -39,7 +39,7 @@
     "shell": {
       "backHome": "Home",
       "legalEyebrow": "Legal",
-      "brandFallback": "Casa Emil"
+      "brandFallback": "Hospira"
     },
     "header": {
       "subtitle": "Guesthouse · Tasnad"
@@ -57,7 +57,7 @@
       "terms": "Terms and conditions",
       "privacy": "Privacy (GDPR)",
       "contact": "Contact",
-      "contactEmail": "contact@casaemil.ro",
+      "contactEmail": "contact@hospira.ro",
       "copyright": "© {year} {name} · Tasnad, Romania"
     },
     "home": {
@@ -228,7 +228,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Casa Emil · Tasnad — <email>contact@casaemil.ro</email>"
+      "s4Body": "Hospira · Tasnad — <email>contact@hospira.ro</email>"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -245,7 +245,7 @@
       "retentionTitle": "Retention",
       "retentionBody": "We keep data as long as needed to manage the booking and meet legal obligations (accounting, tax).",
       "rightsTitle": "Your rights",
-      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@casaemil.ro</email>."
+      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@hospira.ro</email>."
     },
     "staffPanel": {
       "badge": "Staff",
@@ -274,11 +274,13 @@
       "publicSite": "Public site"
     },
     "login": {
-      "eyebrow": "Casa Emil",
+      "eyebrow": "Hospira",
       "title": "Admin",
       "lead": "Staff access only.",
       "backToSite": "← Back to site",
-      "username": "Username",
+      "username": "Username or email",
+      "usernameOrEmailPlaceholder": "Admin, Operator, or staff email",
+      "notMemberOfPension": "This account does not have access to this property. Use the correct subdomain or contact the owner.",
       "password": "Password",
       "submitting": "Signing in…",
       "submit": "Enter dashboard"
@@ -305,7 +307,7 @@
     },
     "pages": {
       "bookings": {
-        "title": "New requests — Casa Emil",
+        "title": "New requests — Hospira",
         "description": "Confirm availability and assign rooms.",
         "windowTitle": "New requests ({count})",
         "genericError": "Error",
@@ -318,7 +320,7 @@
         "emptyAction": "Open public calendar"
       },
       "rooms": {
-        "title": "Rooms — Casa Emil",
+        "title": "Rooms — Hospira",
         "description": "Compact day grid for room status.",
         "addRoom": "+ Add room",
         "inactiveRooms": "Inactive rooms",
@@ -326,7 +328,7 @@
         "genericError": "Error"
       },
       "settings": {
-        "title": "Settings — Casa Emil",
+        "title": "Settings — Hospira",
         "descriptionOperator": "Sound and theme for operators.",
         "descriptionAdmin": "Sound and theme for dashboard.",
         "saved": "Theme saved.",
@@ -359,7 +361,7 @@
         "openStaffManagement": "Manage team"
       },
       "guests": {
-        "title": "Guests — Casa Emil",
+        "title": "Guests — Hospira",
         "description": "Guest profiles and stay history.",
         "searchTitle": "Find guest",
         "searchHint": "List is optimized for quick search.",
@@ -393,8 +395,8 @@
       },
       "calendar": {
         "genericError": "Error",
-        "title": "Calendar — Casa Emil",
-        "ganttTitle": "Gantt calendar — Casa Emil",
+        "title": "Calendar — Hospira",
+        "ganttTitle": "Gantt calendar — Hospira",
         "windowGantt": "Gantt",
         "unassignedTitle": "Unconfirmed requests",
         "unassignedSubtitle": "No room in displayed period",
@@ -405,7 +407,7 @@
         "buildingFilterSuffix": " · building filter"
       },
       "cazari": {
-        "title": "Stays — Casa Emil",
+        "title": "Stays — Hospira",
         "searchFilter": "Search and filter",
         "results": "Results",
         "operational": "Operational",
@@ -478,7 +480,7 @@
         "historyCompletedSection": "Completed stays"
       },
       "statistics": {
-        "title": "Statistics — Casa Emil",
+        "title": "Statistics — Hospira",
         "monthCompare": "Month comparison",
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
@@ -505,7 +507,7 @@
         "noBookingsYet": "No bookings yet — statistics appear after the first request."
       },
       "location": {
-        "title": "Location administration — Casa Emil",
+        "title": "Location administration — Hospira",
         "operational": "Operational",
         "operationalSubtitle": "{name} · hours and extra beds",
         "displayName": "Display name",
@@ -588,7 +590,7 @@
       "bookingDetail": {
         "period": "Period",
         "confirmAllocate": "Confirm and assign rooms",
-        "title": "Booking — Casa Emil",
+        "title": "Booking — Hospira",
         "guestProfile": "Guest profile",
         "persons": "Guests",
         "contact": "Contact",
@@ -608,7 +610,7 @@
         "phoneRequiredSave": "Save phone"
       },
       "roomsNew": {
-        "title": "New room — Casa Emil",
+        "title": "New room — Hospira",
         "migrationHint": "for types and",
         "catalogHint": "Run <code>015_room_catalog.sql</code> in Supabase SQL Editor for types and"
       },
@@ -616,9 +618,9 @@
         "loadError": "Could not load dashboard data"
       },
       "buildings": {
-        "newTitle": "New building — Casa Emil",
+        "newTitle": "New building — Hospira",
         "newHint": "You can add <strong>new rooms</strong> after creation. Color appears on the calendar.",
-        "listTitle": "Buildings — Casa Emil",
+        "listTitle": "Buildings — Hospira",
         "listDescription": "Pick a date — see free / occupied rooms per building and in the grid.",
         "addBuilding": "+ Add building",
         "unknownError": "Unknown error",
@@ -626,7 +628,7 @@
         "noBuildings": "No buildings yet — add the first one with the button above."
       },
       "disponibilitate": {
-        "title": "Availability — Casa Emil",
+        "title": "Availability — Hospira",
         "description": "Heat map, KPIs, free weekends, building filter, Shift+click range, live updates."
       },
       "invoice": {
@@ -647,7 +649,7 @@
         "descriptionSuffix": "Color appears in calendar."
       },
       "settingsLocation": {
-        "title": "Location administration — Casa Emil",
+        "title": "Location administration — Hospira",
         "description": "Admin hub for full setup: location structure, rooms, modular catalog and staff accounts.",
         "backToSettings": "← Back to settings",
         "unlockedForTwoHours": "Location administration unlocked for 2 hours.",
@@ -969,7 +971,7 @@
       "reputationExcellent": "Excellent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklisted",
-      "welcomeHome": "Welcome to Casa Emil!",
+      "welcomeHome": "Welcome to Hospira!",
       "loadDataError": "Could not load data",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -1033,7 +1035,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Casa Emil",
+      "locationAdminTitle": "Location administration — Hospira",
       "noRoomsConfigured": "No rooms configured yet",
       "achievements": "Achievements",
       "homeEyebrow": "Home · reception panel",
@@ -1092,9 +1094,9 @@
       "addFloor": "Add floor",
       "floorPlaceholder": "Ground floor / Floor 1",
       "newBuildingHint": "New rooms can be added after creation. Color appears on the calendar.",
-      "buildingsTitle": "Buildings — Casa Emil",
-      "availabilityTitle": "Availability — Casa Emil",
-      "newRoomTitle": "New room — Casa Emil",
+      "buildingsTitle": "Buildings — Hospira",
+      "availabilityTitle": "Availability — Hospira",
+      "newRoomTitle": "New room — Hospira",
       "catalogSqlHint": "for types and options in Supabase SQL Editor",
       "checkInHour": "Check-in (time)",
       "checkOutHour": "Check-out (time)",
@@ -1292,7 +1294,7 @@
       "tight": "Tight",
       "freeRooms": "Free rooms",
       "clickForDayCard": "Click = full day card",
-      "clipboardPrefix": "Casa Emil",
+      "clipboardPrefix": "Hospira",
       "kpiRelaxedLabel": "Days with >=3 free rooms",
       "kpiFullLabel": "Full days",
       "kpiMinLabel": "Minimum free",
@@ -1513,6 +1515,7 @@
       "invalidUser": "Invalid user",
       "enterPassword": "Enter password",
       "invalidUserOrPassword": "Invalid user or password",
+      "notMemberOfPension": "This account does not have access to this property.",
       "loginSummary": "Login {role}",
       "adminLogout": "Admin logout",
       "invalidGuest": "Invalid guest",
@@ -1585,7 +1588,7 @@
       "moodFullWeek": "Full week — rooms are moving well. Keep it up!",
       "moodQuietEvening": "Quiet evening — all rooms are free tonight. Take a breath.",
       "moodAllFree": "No rooms occupied tonight — perfect for prep or rest.",
-      "moodDefault": "Everything looks good at reception. Have a great day at Casa Emil!",
+      "moodDefault": "Everything looks good at reception. Have a great day at Hospira!",
       "briefingArrivals": "{count, plural, one {# arrival} other {# arrivals}}",
       "briefingDepartures": "{count, plural, one {# departure} other {# departures}}",
       "briefingClean": "{count} to clean",
@@ -2310,67 +2313,67 @@
   },
   "landing": {
     "heroBadge": "Software for guesthouses",
-    "heroTitle": "Manage your guesthouse simply and modern",
-    "heroSubtitle": "Visual calendar, online bookings, automatic notifications. Everything you need to never lose a booking.",
+    "heroTitle": "Manage your pension from your phone",
+    "heroSubtitle": "Calendar, online bookings, check-in/out and notifications. Everything you need, in one place. No commissions, no complications.",
     "heroCta": "Try for free",
     "heroCtaSecondary": "See pricing",
     "heroNote": "No credit card required. 3 rooms free, forever.",
-    "problemTitle": "Life without and with Hospira",
+    "problemTitle": "Sound familiar?",
     "withoutHospira": "Without Hospira",
-    "problem1": "Bookings in a notebook or Excel",
+    "problem1": "Bookings on paper or Excel",
     "problem2": "Double bookings and confusion",
     "problem3": "Guests call to ask about availability",
-    "problem4": "Losing money on 15-18% Booking.com commissions",
+    "problem4": "15-18% commission to Booking.com on every reservation",
     "withHospira": "With Hospira",
-    "solution1": "Visual calendar with all bookings",
-    "solution2": "Impossible to double-book",
+    "solution1": "Digital calendar with all reservations",
+    "solution2": "Impossible to double-book (database-level protection)",
     "solution3": "Guests book directly on your website",
     "solution4": "Direct bookings = 0% commission",
     "featuresTitle": "Everything you need",
-    "featuresLead": "Every feature designed for small and medium guesthouses.",
+    "featuresLead": "Built specifically for small guesthouses in Romania, Moldova and Bulgaria.",
     "feature1Icon": "1",
     "feature1Title": "Visual calendar",
-    "feature1Desc": "See all rooms and bookings in one place. Drag & drop for quick changes.",
+    "feature1Desc": "See all rooms and bookings on one page. Intuitive Gantt chart, drag & drop.",
     "feature2Icon": "2",
     "feature2Title": "Online bookings",
-    "feature2Desc": "Your own booking page with reservation form. Guests book directly, no commission.",
+    "feature2Desc": "Guests book directly on your site. You get instant email notification.",
     "feature3Icon": "3",
-    "feature3Title": "Email notifications",
-    "feature3Desc": "Get instant email when a new booking arrives. Guest receives automatic confirmation.",
+    "feature3Title": "Check-in / Check-out",
+    "feature3Desc": "Record arrivals and departures with one click. Complete guest history.",
     "feature4Icon": "4",
-    "feature4Title": "Check-in / Check-out",
-    "feature4Desc": "Complete tracking of guest arrivals and departures. History per guest.",
+    "feature4Title": "Your team",
+    "feature4Desc": "Add receptionist, admin, operator. Each sees only what they need.",
     "feature5Icon": "5",
-    "feature5Title": "Your team",
-    "feature5Desc": "Invite receptionist, admin, operator. Each sees only what they are allowed.",
+    "feature5Title": "Email notifications",
+    "feature5Desc": "Get email when a new booking arrives. Guest gets automatic confirmation.",
     "feature6Icon": "6",
-    "feature6Title": "Zero double bookings",
-    "feature6Desc": "Database-level protection. Physically impossible to confirm two bookings on the same room.",
+    "feature6Title": "Your presentation page",
+    "feature6Desc": "Each pension gets its own site with availability and booking form.",
     "howTitle": "How it works",
-    "step1Title": "Create a free account",
-    "step1Desc": "30 seconds. Guesthouse name, email, password. Done.",
+    "step1Title": "Create account",
+    "step1Desc": "Pension name, email, password. 30 seconds, no credit card.",
     "step2Title": "Add your rooms",
-    "step2Desc": "Configure buildings, floors and rooms. Simple, visual.",
+    "step2Desc": "Configure buildings, floors and rooms. Get a presentation site automatically.",
     "step3Title": "Receive bookings",
-    "step3Desc": "Guests book on your page. You confirm with one click.",
-    "pricingTitle": "Simple pricing, no surprises",
-    "pricingLead": "Start free. Pay only when you grow.",
+    "step3Desc": "Guests book online, you confirm from calendar. Simple.",
+    "pricingTitle": "Simple pricing",
+    "pricingLead": "No contracts, no surprises. Pay monthly, cancel anytime.",
     "planStarterName": "Starter",
-    "planForever": "Free forever",
-    "planTrial": "14 days free trial",
-    "planStarter1": "3 rooms",
+    "planForever": "Free, forever",
+    "planTrial": "14 days free, then pay",
+    "planStarter1": "3 rooms included",
     "planStarter2": "Visual calendar",
     "planStarter3": "Online bookings",
-    "planStarter4": "Email notifications",
+    "planStarter4": "Presentation page",
     "planStarterCta": "Start free",
     "planStandardName": "Standard",
-    "planStandard1": "10 rooms",
+    "planStandard1": "Up to 10 rooms",
     "planStandard2": "Everything in Starter",
-    "planStandard3": "Team (2 members)",
-    "planStandard4": "Basic statistics",
+    "planStandard3": "Email notifications",
+    "planStandard4": "Team (2 members)",
     "planStandardCta": "Try 14 days",
-    "planRecommended": "Recommended",
     "planProName": "Pro",
+    "planRecommended": "Recommended",
     "planPro1": "Unlimited rooms",
     "planPro2": "Everything in Standard",
     "planPro3": "Unlimited team",
@@ -2378,8 +2381,8 @@
     "planPro5": "No Hospira branding",
     "planProCta": "Try 14 days",
     "month": "month",
-    "finalCtaTitle": "Done with notebooks and Excel",
-    "finalCtaText": "Start in 30 seconds. No credit card required.",
+    "finalCtaTitle": "Ready to start?",
+    "finalCtaText": "Create account in 30 seconds. No credit card, no obligations.",
     "finalCtaButton": "Create free account"
   }
 }

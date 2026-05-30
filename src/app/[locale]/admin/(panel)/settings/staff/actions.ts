@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireStaffRole } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
-import { getDefaultTenant } from "@/services/tenants";
+import { getTenantScope } from "@/lib/tenant/scope";
 import {
   inviteTenantMember,
   updateTenantMemberRole,
@@ -21,9 +21,8 @@ type ActionResult =
 /** Only owner and admin can manage staff */
 async function requireStaffManager() {
   const ctx = await requireStaffRole(["admin"]);
-  const tenant = await getDefaultTenant();
-  if (!tenant) throw new Error("tenant.not_found");
-  return { ...ctx, tenant };
+  const { tenantId } = await getTenantScope();
+  return { ...ctx, tenant: { id: tenantId } };
 }
 
 // ─── List staff ────────────────────────────────────────────────────

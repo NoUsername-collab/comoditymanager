@@ -1,4 +1,5 @@
 import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
 
@@ -36,19 +37,21 @@ type LogInput = {
  */
 export async function writeDevLog(input: LogInput): Promise<void> {
   try {
-    const supabase = createPublicAdminClient();
-    await supabase.from("dev_logs").insert({
-      level: input.level ?? "error",
-      source: input.source ?? "server",
-      message: input.message.slice(0, 2000),
-      stack: input.stack?.slice(0, 4000) ?? null,
-      context: input.context ?? {},
-      request_path: input.requestPath ?? null,
-      request_method: input.requestMethod ?? null,
-      user_id: input.userId ?? null,
-      user_email: input.userEmail ?? null,
-      duration_ms: input.durationMs ?? null,
-    });
+    const { tenantId, supabase } = await getTenantScope();
+    await supabase.from("dev_logs").insert(
+      withTenantId(tenantId, {
+        level: input.level ?? "error",
+        source: input.source ?? "server",
+        message: input.message.slice(0, 2000),
+        stack: input.stack?.slice(0, 4000) ?? null,
+        context: input.context ?? {},
+        request_path: input.requestPath ?? null,
+        request_method: input.requestMethod ?? null,
+        user_id: input.userId ?? null,
+        user_email: input.userEmail ?? null,
+        duration_ms: input.durationMs ?? null,
+      })
+    );
   } catch {
     // Silenced — logging must never crash the app
   }
@@ -100,13 +103,14 @@ export async function listDevLogs(options?: {
   limit?: number;
   offset?: number;
 }): Promise<{ logs: DevLogEntry[]; total: number }> {
-  const supabase = createPublicAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const limit = options?.limit ?? 50;
   const offset = options?.offset ?? 0;
 
   let query = supabase
     .from("dev_logs")
     .select("*", { count: "exact" })
+    .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
@@ -130,13 +134,14 @@ export async function listDevLogs(options?: {
  * Șterge loguri mai vechi de N zile.
  */
 export async function purgeOldDevLogs(daysOld = 30): Promise<number> {
-  const supabase = createPublicAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - daysOld);
 
   const { count, error } = await supabase
     .from("dev_logs")
     .delete({ count: "exact" })
+    .eq("tenant_id", tenantId)
     .lt("created_at", cutoff.toISOString());
 
   if (error) throw new Error(error.message);

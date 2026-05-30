@@ -18,7 +18,7 @@ import {
 import { stayNightCount, todayIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 
 type BookingReviewCheckRow = {
@@ -37,10 +37,11 @@ export type GuestAlertSnapshot = {
 async function fetchGuestProfileRow(
   guestId: string
 ): Promise<GuestProfileRow | null> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
     .select("*")
+    .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .maybeSingle();
 
@@ -52,10 +53,13 @@ export async function ensureGuestProfiles(guestIds: string[]): Promise<void> {
   const uniqueIds = [...new Set(guestIds.filter(Boolean))];
   if (uniqueIds.length === 0) return;
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guest_profiles")
-    .upsert(uniqueIds.map((guest_id) => ({ guest_id })), { onConflict: "guest_id" });
+    .upsert(
+      uniqueIds.map((guest_id) => withTenantId(tenantId, { guest_id })),
+      { onConflict: "guest_id" }
+    );
 
   if (error) throw new Error(error.message);
 }
@@ -81,10 +85,11 @@ export async function listGuestProfileSummaries(
   if (uniqueIds.length === 0) return new Map();
   await ensureGuestProfiles(uniqueIds);
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
     .select("*")
+    .eq("tenant_id", tenantId)
     .in("guest_id", uniqueIds);
 
   if (error) throw new Error(error.message);
@@ -113,10 +118,11 @@ export async function listGuestStayReviewsByBookingIds(
   const uniqueIds = [...new Set(bookingIds.filter(Boolean))];
   if (uniqueIds.length === 0) return new Map();
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_stay_reviews")
     .select("*")
+    .eq("tenant_id", tenantId)
     .in("booking_id", uniqueIds);
 
   if (error) throw new Error(error.message);
@@ -134,10 +140,11 @@ export async function listGuestStayReviewsForGuest(
 ): Promise<GuestStayReviewRow[]> {
   if (!guestId) return [];
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_stay_reviews")
     .select("*")
+    .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .order("reviewed_at", { ascending: false });
 
@@ -153,10 +160,11 @@ async function listCompletedStayStats(guestId: string): Promise<{
   totalNights: number;
   lastStayCheckOut: string | null;
 }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select("check_in, check_out")
+    .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .eq("status", "confirmata")
     .lt("check_out", await getEffectiveToday())
@@ -193,7 +201,7 @@ export async function recomputeGuestProfile(
     reviews,
   });
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
     .update({
@@ -207,6 +215,7 @@ export async function recomputeGuestProfile(
       last_stay_check_out: snapshot.last_stay_check_out,
       review_count: snapshot.review_count,
     })
+    .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .select("*")
     .single();
@@ -218,10 +227,11 @@ export async function recomputeGuestProfile(
 async function getBookingReviewCheck(
   bookingId: string
 ): Promise<BookingReviewCheckRow | null> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select("id, guest_id, guest_name, status, check_out")
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId)
     .maybeSingle();
 
@@ -249,21 +259,23 @@ export async function saveGuestStayReview(input: {
   }
 
   const actor = await getAdminUser();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const now = new Date().toISOString();
-  const { error } = await supabase.from("guest_stay_reviews").upsert({
-    booking_id: input.bookingId,
-    guest_id: input.guestId,
-    stars: input.stars,
-    positive_traits: input.positiveTraits,
-    negative_traits: input.negativeTraits,
-    problem_details: input.problemDetails.trim() || null,
-    trust_delta: input.trustDelta,
-    loyalty_delta: input.loyaltyDelta,
-    reviewed_at: now,
-    reviewed_by: actor?.id ?? null,
-    reviewed_by_email: actor?.email ?? null,
-  });
+  const { error } = await supabase.from("guest_stay_reviews").upsert(
+    withTenantId(tenantId, {
+      booking_id: input.bookingId,
+      guest_id: input.guestId,
+      stars: input.stars,
+      positive_traits: input.positiveTraits,
+      negative_traits: input.negativeTraits,
+      problem_details: input.problemDetails.trim() || null,
+      trust_delta: input.trustDelta,
+      loyalty_delta: input.loyaltyDelta,
+      reviewed_at: now,
+      reviewed_by: actor?.id ?? null,
+      reviewed_by_email: actor?.email ?? null,
+    })
+  );
 
   if (error) throw new Error(error.message);
 
@@ -328,10 +340,11 @@ export async function updateGuestProfileControls(input: {
     patch.unblacklisted_by_email = actor?.email ?? null;
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guest_profiles")
     .update(patch)
+    .eq("tenant_id", tenantId)
     .eq("guest_id", input.guestId);
 
   if (error) throw new Error(error.message);
@@ -406,10 +419,11 @@ export async function resolveGuestAlertSnapshot(input: {
     return { level: "normal", note: null };
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("id, display_name")
+    .eq("tenant_id", tenantId)
     .ilike("last_name", lastName)
     .ilike("first_name", firstName)
     .limit(10);
@@ -474,53 +488,57 @@ export async function mergeGuestProfiles(
         : source
       : null;
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error: reviewsError } = await supabase
     .from("guest_stay_reviews")
     .update({ guest_id: targetId })
+    .eq("tenant_id", tenantId)
     .eq("guest_id", sourceId);
 
   if (reviewsError) throw new Error(reviewsError.message);
 
-  const { error: upsertError } = await supabase.from("guest_profiles").upsert({
-    guest_id: targetId,
-    flag_level: mergedFlag,
-    blacklist_reason: preservedBlacklist?.blacklist_reason ?? null,
-    blacklisted_at: preservedBlacklist?.blacklisted_at ?? null,
-    blacklisted_by: preservedBlacklist?.blacklisted_by ?? null,
-    blacklisted_by_email: preservedBlacklist?.blacklisted_by_email ?? null,
-    unblacklisted_at:
-      target.unblacklisted_at ?? source.unblacklisted_at ?? null,
-    unblacklisted_by:
-      target.unblacklisted_by ?? source.unblacklisted_by ?? null,
-    unblacklisted_by_email:
-      target.unblacklisted_by_email ?? source.unblacklisted_by_email ?? null,
-    manual_trust_adjustment:
-      target.manual_trust_adjustment + source.manual_trust_adjustment,
-    manual_loyalty_adjustment:
-      target.manual_loyalty_adjustment + source.manual_loyalty_adjustment,
-    manual_positive_traits: [
-      ...new Set([
-        ...target.manual_positive_traits,
-        ...source.manual_positive_traits,
-      ]),
-    ],
-    manual_negative_traits: [
-      ...new Set([
-        ...target.manual_negative_traits,
-        ...source.manual_negative_traits,
-      ]),
-    ],
-    manual_note: [target.manual_note, source.manual_note]
-      .filter(Boolean)
-      .join("\n---\n") || null,
-  });
+  const { error: upsertError } = await supabase.from("guest_profiles").upsert(
+    withTenantId(tenantId, {
+      guest_id: targetId,
+      flag_level: mergedFlag,
+      blacklist_reason: preservedBlacklist?.blacklist_reason ?? null,
+      blacklisted_at: preservedBlacklist?.blacklisted_at ?? null,
+      blacklisted_by: preservedBlacklist?.blacklisted_by ?? null,
+      blacklisted_by_email: preservedBlacklist?.blacklisted_by_email ?? null,
+      unblacklisted_at:
+        target.unblacklisted_at ?? source.unblacklisted_at ?? null,
+      unblacklisted_by:
+        target.unblacklisted_by ?? source.unblacklisted_by ?? null,
+      unblacklisted_by_email:
+        target.unblacklisted_by_email ?? source.unblacklisted_by_email ?? null,
+      manual_trust_adjustment:
+        target.manual_trust_adjustment + source.manual_trust_adjustment,
+      manual_loyalty_adjustment:
+        target.manual_loyalty_adjustment + source.manual_loyalty_adjustment,
+      manual_positive_traits: [
+        ...new Set([
+          ...target.manual_positive_traits,
+          ...source.manual_positive_traits,
+        ]),
+      ],
+      manual_negative_traits: [
+        ...new Set([
+          ...target.manual_negative_traits,
+          ...source.manual_negative_traits,
+        ]),
+      ],
+      manual_note: [target.manual_note, source.manual_note]
+        .filter(Boolean)
+        .join("\n---\n") || null,
+    })
+  );
 
   if (upsertError) throw new Error(upsertError.message);
 
   const { error: deleteError } = await supabase
     .from("guest_profiles")
     .delete()
+    .eq("tenant_id", tenantId)
     .eq("guest_id", sourceId);
 
   if (deleteError) throw new Error(deleteError.message);

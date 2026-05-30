@@ -34,6 +34,7 @@ import {
   listOccupiedRoomRanges,
 } from "@/services/room-occupancy";
 import { getAdminUser } from "@/lib/auth/require-admin";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 
 export { listOccupiedRoomRanges };
@@ -161,10 +162,11 @@ export async function listBookingsForRange(
   rangeStart: string,
   rangeEnd: string
 ): Promise<BookingRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
+    .eq("tenant_id", tenantId)
     .neq("status", "anulata")
     .lte("check_in", rangeEnd)
     .gte("check_out", rangeStart)
@@ -210,30 +212,38 @@ export async function assignBookingRoomHold(
     bookingId
   );
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error: delError } = await supabase
     .from("booking_rooms")
     .delete()
+    .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId);
   if (delError) throw new Error(delError.message);
 
   const { error: insError } = await supabase.from("booking_rooms").insert(
-    unique.map((room_id) => ({
-      booking_id: bookingId,
-      room_id,
-      extra_beds: 0,
-    }))
+    unique.map((room_id) =>
+      withTenantId(tenantId, {
+        booking_id: bookingId,
+        room_id,
+        extra_beds: 0,
+      })
+    )
   );
   if (insError) throw new Error(insError.message);
   await syncBookingRoomSegments(bookingId);
 }
 
 async function rollbackFailedBookingRequest(bookingId: string): Promise<void> {
-  const supabase = await createAdminClient();
-  await supabase.from("booking_rooms").delete().eq("booking_id", bookingId);
+  const { tenantId, supabase } = await getTenantScope();
+  await supabase
+    .from("booking_rooms")
+    .delete()
+    .eq("tenant_id", tenantId)
+    .eq("booking_id", bookingId);
   await supabase
     .from("bookings")
     .update({ status: "anulata" })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 }
 
@@ -268,7 +278,7 @@ export async function createBookingRequest(input: {
     );
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { guestId, mergeConflict } = await resolveGuestForBooking({
     guest_name: input.guest_name,
@@ -285,25 +295,27 @@ export async function createBookingRequest(input: {
 
   const { data, error } = await supabase
     .from("bookings")
-    .insert({
-      check_in: input.check_in,
-      check_out: input.check_out,
-      status: "cerere_noua",
-      guest_name: input.guest_name.trim(),
-      guest_last_name: input.guest_last_name.trim(),
-      guest_first_name: input.guest_first_name.trim(),
-      guest_email: input.guest_email.trim(),
-      guest_phone: input.guest_phone.trim(),
-      guest_id: guestId,
-      guest_alert_level: guestAlert.level,
-      guest_alert_note: guestAlert.note,
-      num_adults: input.num_adults,
-      num_children: input.num_children,
-      has_minor: input.has_minor,
-      minor_age: input.has_minor ? input.minor_age.trim() : null,
-      notes: input.notes.trim() || null,
-      total_price: input.total_price ?? null,
-    })
+    .insert(
+      withTenantId(tenantId, {
+        check_in: input.check_in,
+        check_out: input.check_out,
+        status: "cerere_noua",
+        guest_name: input.guest_name.trim(),
+        guest_last_name: input.guest_last_name.trim(),
+        guest_first_name: input.guest_first_name.trim(),
+        guest_email: input.guest_email.trim(),
+        guest_phone: input.guest_phone.trim(),
+        guest_id: guestId,
+        guest_alert_level: guestAlert.level,
+        guest_alert_note: guestAlert.note,
+        num_adults: input.num_adults,
+        num_children: input.num_children,
+        has_minor: input.has_minor,
+        minor_age: input.has_minor ? input.minor_age.trim() : null,
+        notes: input.notes.trim() || null,
+        total_price: input.total_price ?? null,
+      })
+    )
     .select("id")
     .single();
 
@@ -363,7 +375,7 @@ export type BookingDetail = BookingRow & {
 };
 
 export async function getBookingById(id: string): Promise<BookingDetail | null> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -375,6 +387,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
       booking_rooms ( room_id, rooms ( name ) )
     `
     )
+    .eq("tenant_id", tenantId)
     .eq("id", id)
     .maybeSingle();
 
@@ -429,24 +442,31 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
   };
 }
 
-async function countCereriNoiUncached(): Promise<number> {
+async function countCereriNoiUncached(tenantId: string): Promise<number> {
   const supabase = await createAdminClient();
   const { count, error } = await supabase
     .from("bookings")
     .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
     .eq("status", "cerere_noua");
 
   if (error) throw new Error(error.message);
   return count ?? 0;
 }
 
-const getCachedCereriCount = unstable_cache(countCereriNoiUncached, undefined, {
-  tags: [CACHE_TAGS.bookingCounts],
-  revalidate: 30,
-});
+const getCachedCereriCount = (tenantId: string) =>
+  unstable_cache(
+    () => countCereriNoiUncached(tenantId),
+    ["cereri-count", tenantId],
+    {
+      tags: [CACHE_TAGS.bookingCounts, `tenant-${tenantId}-cereri`],
+      revalidate: 30,
+    }
+  );
 
 export async function countCereriNoi(): Promise<number> {
-  return getCachedCereriCount();
+  const { tenantId } = await getTenantScope();
+  return getCachedCereriCount(tenantId)();
 }
 
 /** Cereri noi fără camere alocate — vizibile indiferent de perioada Gantt */
@@ -458,10 +478,11 @@ export async function listUnassignedCereri(): Promise<BookingRow[]> {
 }
 
 export async function listCereriNoi(): Promise<BookingRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
+    .eq("tenant_id", tenantId)
     .eq("status", "cerere_noua")
     .order("created_at", { ascending: false });
 
@@ -474,10 +495,11 @@ export type OperationalStayRow = BookingRow;
 
 /** Cazări active: cereri noi + confirmate (fără anulate). */
 export async function listOperationalStays(): Promise<OperationalStayRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
+    .eq("tenant_id", tenantId)
     .in("status", ["cerere_noua", "confirmata"])
     .order("check_in", { ascending: true });
 
@@ -492,10 +514,11 @@ export type CompletedStayHistoryRow = BookingRow;
 export async function listCompletedStayHistory(
   limit = 24
 ): Promise<CompletedStayHistoryRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
+    .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
     .lt("check_out", await getEffectiveToday())
     .order("check_out", { ascending: false })
@@ -511,10 +534,11 @@ export type CancelledStayHistoryRow = BookingRow & { updated_at: string };
 export async function listCancelledStayHistory(
   limit = 24
 ): Promise<CancelledStayHistoryRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_WITH_UPDATED_SELECT)
+    .eq("tenant_id", tenantId)
     .eq("status", "anulata")
     .order("updated_at", { ascending: false })
     .limit(limit);
@@ -553,16 +577,22 @@ export async function confirmBookingWithRooms(
   if (simActive) {
     // Simulation mode: use individual operations on sim_sandbox schema.
     // Atomicity is not critical for throwaway simulation data.
-    const supabase = await createAdminClient();
+    const { tenantId, supabase } = await getTenantScope();
 
-    await supabase.from("booking_rooms").delete().eq("booking_id", bookingId);
+    await supabase
+      .from("booking_rooms")
+      .delete()
+      .eq("tenant_id", tenantId)
+      .eq("booking_id", bookingId);
 
     const { error: brError } = await supabase.from("booking_rooms").insert(
-      roomIds.map((room_id) => ({
-        booking_id: bookingId,
-        room_id,
-        extra_beds: 0,
-      }))
+      roomIds.map((room_id) =>
+        withTenantId(tenantId, {
+          booking_id: bookingId,
+          room_id,
+          extra_beds: 0,
+        })
+      )
     );
     if (brError) throw new Error(brError.message);
 
@@ -573,6 +603,7 @@ export async function confirmBookingWithRooms(
         total_price: totalPrice,
         confirmed_at: new Date().toISOString(),
       })
+      .eq("tenant_id", tenantId)
       .eq("id", bookingId);
 
     if (upError) throw new Error(upError.message);
@@ -633,13 +664,14 @@ export async function rescheduleBookingDates(
     bookingId
   );
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       check_in: newCheckIn,
       check_out: newCheckOut,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
@@ -692,10 +724,11 @@ export async function adjustBookingStayNights(
   if (booking.room_ids.length > 0) {
     await rescheduleBookingDates(bookingId, booking.check_in, newCheckOut);
   } else {
-    const supabase = await createAdminClient();
+    const { tenantId, supabase } = await getTenantScope();
     const { error } = await supabase
       .from("bookings")
       .update({ check_out: newCheckOut })
+      .eq("tenant_id", tenantId)
       .eq("id", bookingId);
     if (error) throw new Error(error.message);
   }
@@ -774,10 +807,11 @@ export async function cancelBooking(bookingId: string): Promise<void> {
     throw new Error("booking.already_cancelled");
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({ status: "anulata" })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
   if (error) throw new Error(error.message);
 
@@ -814,10 +848,11 @@ async function ensureBookingPhoneForCheckIn(bookingId: string): Promise<void> {
   if (isValidGuestPhone(booking.guest_phone)) return;
 
   if (booking.guest_id) {
-    const supabase = await createAdminClient();
+    const { tenantId, supabase } = await getTenantScope();
     const { data: guest, error } = await supabase
       .from("guests")
       .select("phone, phone_normalized")
+      .eq("tenant_id", tenantId)
       .eq("id", booking.guest_id)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -829,6 +864,7 @@ async function ensureBookingPhoneForCheckIn(bookingId: string): Promise<void> {
         .update({
           guest_phone: phone,
         })
+        .eq("tenant_id", tenantId)
         .eq("id", bookingId);
       if (upError) throw new Error(upError.message);
       return;
@@ -848,11 +884,12 @@ export async function updateBookingGuestPhone(
 
   const phone = rawPhone.trim();
   const phoneNorm = normalizePhone(phone);
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { error: bookingError } = await supabase
     .from("bookings")
     .update({ guest_phone: phone })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
   if (bookingError) throw new Error(bookingError.message);
 
@@ -863,6 +900,7 @@ export async function updateBookingGuestPhone(
         phone,
         phone_normalized: phoneNorm,
       })
+      .eq("tenant_id", tenantId)
       .eq("id", booking.guest_id);
     if (guestError) throw new Error(guestError.message);
   }
@@ -891,13 +929,14 @@ export async function setBookingCheckIn(
 
   const ts = parseOperationalTimestamp(at);
   const user = await getAdminUser();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       actual_check_in_at: ts,
       actual_check_in_by: user?.id ?? null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
@@ -935,13 +974,14 @@ export async function setBookingCheckOut(
   }
 
   const user = await getAdminUser();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       actual_check_out_at: ts,
       actual_check_out_by: user?.id ?? null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
@@ -978,13 +1018,14 @@ export async function editBookingCheckIn(
   }
 
   const user = await getAdminUser();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       actual_check_in_at: ts,
       actual_check_in_by: user?.id ?? null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
@@ -1022,13 +1063,14 @@ export async function editBookingCheckOut(
   }
 
   const user = await getAdminUser();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       actual_check_out_at: ts,
       actual_check_out_by: user?.id ?? null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
@@ -1055,13 +1097,14 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
     throw new Error("booking.undo_checkout_first");
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       actual_check_in_at: null,
       actual_check_in_by: null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);
@@ -1081,13 +1124,14 @@ export async function undoBookingCheckOut(bookingId: string): Promise<void> {
     throw new Error("booking.checkout_not_recorded");
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
       actual_check_out_at: null,
       actual_check_out_by: null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
 
   if (error) throw new Error(error.message);

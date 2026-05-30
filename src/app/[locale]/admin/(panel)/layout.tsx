@@ -12,7 +12,7 @@ import {
   getPensionSettings,
   pensionAppearanceSettings,
 } from "@/services/pension-settings";
-import { getStaffRole } from "@/lib/auth/roles";
+import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { getStaffUser } from "@/lib/auth/require-staff";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
@@ -55,7 +55,7 @@ export default async function AdminLayout({
 
   try {
     const user = await getStaffUser();
-    const role = getStaffRole(user);
+    const role = user ? await resolveStaffRole(user) : null;
     isAdmin = role === "admin";
     locationUnlocked = await isAdminLocationUnlocked();
   } catch {

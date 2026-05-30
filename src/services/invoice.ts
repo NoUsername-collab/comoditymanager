@@ -1,5 +1,4 @@
 import { buildInformalInvoice, type InformalInvoice } from "@/domain/invoice/informal-invoice";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { getBookingById } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { listAllRooms } from "@/services/rooms-admin";

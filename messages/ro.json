@@ -39,7 +39,7 @@
     "shell": {
       "backHome": "Acasă",
       "legalEyebrow": "Legal",
-      "brandFallback": "Casa Emil"
+      "brandFallback": "Hospira"
     },
     "header": {
       "subtitle": "Pensiune · Tasnad"
@@ -57,7 +57,7 @@
       "terms": "Termeni și condiții",
       "privacy": "Confidențialitate (GDPR)",
       "contact": "Contact",
-      "contactEmail": "contact@casaemil.ro",
+      "contactEmail": "contact@hospira.ro",
       "copyright": "© {year} {name} · Tasnad, România"
     },
     "home": {
@@ -210,7 +210,7 @@
       "selectedVariantNote": "Camerele sunt reținute provizoriu până la confirmarea pensiunii. Prețul final poate fi ajustat.",
       "phoneNoteWithDetails": "[Telefon] {notes}",
       "phoneNoteDefault": "[Telefon] Rezervare recepție",
-      "receptionFallbackEmail": "receptie@casaemil.local"
+      "receptionFallbackEmail": "receptie@hospira.local"
     },
     "confirm": {
       "backReceptie": "Recepție rapidă",
@@ -228,7 +228,7 @@
       "s3Title": "3. Anulare",
       "s3Body": "Condițiile de anulare sau modificare a sejurului sunt comunicate de pensiune odată cu confirmarea rezervării.",
       "s4Title": "4. Contact",
-      "s4Body": "Casa Emil · Tasnad — <email>contact@casaemil.ro</email>"
+      "s4Body": "Hospira · Tasnad — <email>contact@hospira.ro</email>"
     },
     "privacy": {
       "title": "Politica de confidențialitate",
@@ -245,7 +245,7 @@
       "retentionTitle": "Durata păstrării",
       "retentionBody": "Păstrăm datele pe durata necesară pentru gestionarea rezervării și îndeplinirea obligațiilor legale (contabilitate, fiscalitate).",
       "rightsTitle": "Drepturile tale",
-      "rightsBody": "Aveți dreptul de acces, rectificare, ștergere, restricționare, opoziție și portabilitate. Pentru exercitarea drepturilor, scrieți la <email>contact@casaemil.ro</email>."
+      "rightsBody": "Aveți dreptul de acces, rectificare, ștergere, restricționare, opoziție și portabilitate. Pentru exercitarea drepturilor, scrieți la <email>contact@hospira.ro</email>."
     },
     "staffPanel": {
       "badge": "Staff",
@@ -274,11 +274,13 @@
       "publicSite": "Site public"
     },
     "login": {
-      "eyebrow": "Casa Emil",
+      "eyebrow": "Hospira",
       "title": "Admin",
       "lead": "Acces doar pentru administrator.",
       "backToSite": "← Înapoi la site",
-      "username": "Utilizator",
+      "username": "Utilizator sau email",
+      "usernameOrEmailPlaceholder": "Admin, Operator sau email staff",
+      "notMemberOfPension": "Contul nu are acces la această pensiune. Folosește subdomeniul corect sau contactează owner-ul.",
       "password": "Parolă",
       "submitting": "Se conectează…",
       "submit": "Intră în panou"
@@ -305,7 +307,7 @@
     },
     "pages": {
       "bookings": {
-        "title": "New requests — Casa Emil",
+        "title": "New requests — Hospira",
         "description": "Confirm availability and assign rooms.",
         "windowTitle": "New requests ({count})",
         "genericError": "Error",
@@ -318,7 +320,7 @@
         "emptyAction": "Open public calendar"
       },
       "rooms": {
-        "title": "Rooms — Casa Emil",
+        "title": "Rooms — Hospira",
         "description": "Compact day grid for room status.",
         "addRoom": "+ Add room",
         "inactiveRooms": "Inactive rooms",
@@ -326,7 +328,7 @@
         "genericError": "Error"
       },
       "settings": {
-        "title": "Settings — Casa Emil",
+        "title": "Settings — Hospira",
         "descriptionOperator": "Sound and theme for operators.",
         "descriptionAdmin": "Sound and theme for dashboard.",
         "saved": "Theme saved.",
@@ -359,7 +361,7 @@
         "openStaffManagement": "Gestioneaza echipa"
       },
       "guests": {
-        "title": "Clienți — Casa Emil",
+        "title": "Clienți — Hospira",
         "description": "Profiluri clienți, deduplicare și istoric sejururi.",
         "searchTitle": "Caută client",
         "searchHint": "Căutarea prioritizează profilele cu risc și cele actualizate recent.",
@@ -393,8 +395,8 @@
       },
       "calendar": {
         "genericError": "Eroare",
-        "title": "Calendar — Casa Emil",
-        "ganttTitle": "Calendar Gantt — Casa Emil",
+        "title": "Calendar — Hospira",
+        "ganttTitle": "Calendar Gantt — Hospira",
         "windowGantt": "Gantt",
         "unassignedTitle": "Cereri neconfirmate",
         "unassignedSubtitle": "Fără cameră în perioada afișată",
@@ -405,7 +407,7 @@
         "buildingFilterSuffix": " · filtru clădire"
       },
       "cazari": {
-        "title": "Cazări — Casa Emil",
+        "title": "Cazări — Hospira",
         "searchFilter": "Caută și filtrează",
         "results": "Rezultate",
         "operational": "Operațional",
@@ -478,7 +480,7 @@
         "historyCompletedSection": "Cazări încheiate"
       },
       "statistics": {
-        "title": "Statistici — Casa Emil",
+        "title": "Statistici — Hospira",
         "monthCompare": "Comparativ lună",
         "continuous": "Înregistrare continuă",
         "guestNights": "Nopți oaspeți",
@@ -505,7 +507,7 @@
         "noBookingsYet": "Nu există încă rezervări — statisticile apar după prima cerere."
       },
       "location": {
-        "title": "Administrare locație — Casa Emil",
+        "title": "Administrare locație — Hospira",
         "operational": "Operațional",
         "operationalSubtitle": "{name} · ore și paturi extra",
         "displayName": "Nume afișat",
@@ -588,7 +590,7 @@
       "bookingDetail": {
         "period": "Perioadă",
         "confirmAllocate": "Confirmă și alocă camere",
-        "title": "Rezervare — Casa Emil",
+        "title": "Rezervare — Hospira",
         "guestProfile": "Profil client",
         "persons": "Persoane",
         "contact": "Contact",
@@ -608,7 +610,7 @@
         "phoneRequiredSave": "Salvează telefonul"
       },
       "roomsNew": {
-        "title": "Cameră nouă — Casa Emil",
+        "title": "Cameră nouă — Hospira",
         "migrationHint": "pentru tipuri și",
         "catalogHint": "Rulează <code>015_room_catalog.sql</code> în Supabase SQL Editor pentru tipuri și"
       },
@@ -616,9 +618,9 @@
         "loadError": "Nu s-au putut încărca datele"
       },
       "buildings": {
-        "newTitle": "Clădire nouă — Casa Emil",
+        "newTitle": "Clădire nouă — Hospira",
         "newHint": "Poți adăuga <strong>camere noi</strong> după creare. Culoarea apare în calendar.",
-        "listTitle": "Clădiri — Casa Emil",
+        "listTitle": "Clădiri — Hospira",
         "listDescription": "Alege o dată — vezi camere libere / ocupate pe clădire și în grid.",
         "addBuilding": "+ Adaugă clădire",
         "unknownError": "Eroare necunoscută",
@@ -626,7 +628,7 @@
         "noBuildings": "Nicio clădire — adaugă prima din butonul de sus."
       },
       "disponibilitate": {
-        "title": "Disponibilitate — Casa Emil",
+        "title": "Disponibilitate — Hospira",
         "description": "Heat map, KPI, weekend-uri libere, filtru clădire, interval Shift+click, live."
       },
       "invoice": {
@@ -647,7 +649,7 @@
         "descriptionSuffix": "Culoarea apare în calendar."
       },
       "settingsLocation": {
-        "title": "Administrare locație — Casa Emil",
+        "title": "Administrare locație — Hospira",
         "description": "Hub admin pentru toată configurarea: structură locație, camere, catalog modular și conturi staff.",
         "backToSettings": "← Înapoi la setări",
         "unlockedForTwoHours": "Administrare locație deblocată pentru 2 ore.",
@@ -969,7 +971,7 @@
       "reputationExcellent": "Excelent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklist",
-      "welcomeHome": "Bun venit la Casa Emil!",
+      "welcomeHome": "Bun venit la Hospira!",
       "loadDataError": "Nu s-au putut încărca datele",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -1033,7 +1035,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Casa Emil",
+      "locationAdminTitle": "Location administration — Hospira",
       "noRoomsConfigured": "Încă nu ai camere configurate",
       "achievements": "Realizări",
       "homeEyebrow": "Acasă · panou recepție",
@@ -1092,9 +1094,9 @@
       "addFloor": "Adaugă etaj",
       "floorPlaceholder": "Parter / Etaj 1",
       "newBuildingHint": "După creare poți adăuga camere noi. Culoarea apare în calendar.",
-      "buildingsTitle": "Clădiri — Casa Emil",
-      "availabilityTitle": "Disponibilitate — Casa Emil",
-      "newRoomTitle": "Cameră nouă — Casa Emil",
+      "buildingsTitle": "Clădiri — Hospira",
+      "availabilityTitle": "Disponibilitate — Hospira",
+      "newRoomTitle": "Cameră nouă — Hospira",
       "catalogSqlHint": "pentru tipuri și opțiuni în Supabase SQL Editor",
       "checkInHour": "Check-in (ora)",
       "checkOutHour": "Check-out (ora)",
@@ -1291,7 +1293,7 @@
       "tight": "Strâns",
       "freeRooms": "Camere libere",
       "clickForDayCard": "Click = carte de zi completă",
-      "clipboardPrefix": "Casa Emil",
+      "clipboardPrefix": "Hospira",
       "kpiRelaxedLabel": "Zile cu ≥3 camere libere",
       "kpiFullLabel": "Zile pline",
       "kpiMinLabel": "Minim libere",
@@ -1512,6 +1514,7 @@
       "invalidUser": "Utilizator invalid",
       "enterPassword": "Introdu parola",
       "invalidUserOrPassword": "Utilizator sau parolă greșită",
+      "notMemberOfPension": "Contul nu are acces la această pensiune.",
       "loginSummary": "Autentificare {role}",
       "adminLogout": "Deconectare admin",
       "invalidGuest": "Client invalid",
@@ -1584,7 +1587,7 @@
       "moodFullWeek": "Săptămână plină — camerele se mișcă bine. Continuă tot așa!",
       "moodQuietEvening": "Seară liniștită — toate camerele sunt libere diseară. Poți respira.",
       "moodAllFree": "Nicio cameră ocupată diseară — perfect pentru pregătiri sau odihnă.",
-      "moodDefault": "Totul arată bine la recepție. O zi bună la Casa Emil!",
+      "moodDefault": "Totul arată bine la recepție. O zi bună la Hospira!",
       "briefingArrivals": "{count, plural, one {# sosire} few {# sosiri} other {# sosiri}}",
       "briefingDepartures": "{count, plural, one {# plecare} few {# plecări} other {# plecări}}",
       "briefingClean": "{count} de curățat",
@@ -2309,76 +2312,76 @@
   },
   "landing": {
     "heroBadge": "Software pentru pensiuni",
-    "heroTitle": "Gestioneaza-ti pensiunea simplu si modern",
-    "heroSubtitle": "Calendar vizual, rezervari online, notificari automate. Tot ce ai nevoie ca sa nu mai pierzi rezervari.",
+    "heroTitle": "Gestioneaza-ti pensiunea din telefon",
+    "heroSubtitle": "Calendar, rezervari online, check-in/out si notificari. Tot ce ai nevoie, intr-un singur loc. Fara comisioane, fara complicatii.",
     "heroCta": "Incearca gratuit",
     "heroCtaSecondary": "Vezi preturile",
     "heroNote": "Fara card de credit. 3 camere gratuit, permanent.",
-    "problemTitle": "Cum e viata fara si cu Hospira",
+    "problemTitle": "Suna cunoscut?",
     "withoutHospira": "Fara Hospira",
-    "problem1": "Rezervari in caiet sau Excel",
-    "problem2": "Dubla rezervare si confuzie",
-    "problem3": "Oaspetii te suna sa intrebe de disponibilitate",
-    "problem4": "Pierzi bani cu comisionul de 15-18% la Booking",
+    "problem1": "Rezervari pe caiet sau in Excel",
+    "problem2": "Dubla rezervare si confuzii",
+    "problem3": "Oaspetii suna sa intrebe disponibilitatea",
+    "problem4": "15-18% comision la Booking.com pe fiecare rezervare",
     "withHospira": "Cu Hospira",
-    "solution1": "Calendar vizual cu toate rezervarile",
-    "solution2": "Imposibil sa faci dubla rezervare",
+    "solution1": "Calendar digital cu toate rezervarile",
+    "solution2": "Imposibil de rezervat dublu (protectie la nivel de baza de date)",
     "solution3": "Oaspetii rezerva singuri pe site-ul tau",
-    "solution4": "Rezervari directe = 0% comision",
+    "solution4": "Rezervarile directe = 0% comision",
     "featuresTitle": "Tot ce ai nevoie",
-    "featuresLead": "Fiecare functionalitate gandita pentru pensiuni mici si medii.",
+    "featuresLead": "Construit special pentru pensiuni mici din Romania, Moldova si Bulgaria.",
     "feature1Icon": "1",
     "feature1Title": "Calendar vizual",
-    "feature1Desc": "Vezi toate camerele si rezervarile intr-un singur loc. Drag & drop pentru mutari rapide.",
+    "feature1Desc": "Vezi toate camerele si rezervarile pe o singura pagina. Gantt chart intuitiv, drag & drop.",
     "feature2Icon": "2",
     "feature2Title": "Rezervari online",
-    "feature2Desc": "Pagina ta de prezentare cu formular de rezervare. Oaspetii rezerva direct, fara comision.",
+    "feature2Desc": "Oaspetii tai rezerva direct pe site-ul tau. Primesti notificare instant pe email.",
     "feature3Icon": "3",
-    "feature3Title": "Notificari email",
-    "feature3Desc": "Primesti email instant cand vine o rezervare noua. Oaspetele primeste confirmare automata.",
+    "feature3Title": "Check-in / Check-out",
+    "feature3Desc": "Inregistreaza sosirile si plecarile cu un click. Istoric complet per oaspete.",
     "feature4Icon": "4",
-    "feature4Title": "Check-in / Check-out",
-    "feature4Desc": "Tracking complet al sosirii si plecarii oaspetilor. Istoric per oaspete.",
+    "feature4Title": "Echipa ta",
+    "feature4Desc": "Adauga receptioner, admin, operator. Fiecare vede doar ce trebuie.",
     "feature5Icon": "5",
-    "feature5Title": "Echipa ta",
-    "feature5Desc": "Invita receptioner, admin, operator. Fiecare vede doar ce-i permis.",
+    "feature5Title": "Notificari email",
+    "feature5Desc": "Primesti email cand vine o rezervare noua. Oaspetele primeste confirmare automata.",
     "feature6Icon": "6",
-    "feature6Title": "Zero dubla rezervare",
-    "feature6Desc": "Protectie la nivel de baza de date. Fizic imposibil sa confirmi doua rezervari pe aceeasi camera.",
+    "feature6Title": "Pagina ta de prezentare",
+    "feature6Desc": "Fiecare pensiune primeste site propriu cu disponibilitate si formular de rezervare.",
     "howTitle": "Cum functioneaza",
-    "step1Title": "Creezi cont gratuit",
-    "step1Desc": "30 secunde. Numele pensiunii, email, parola. Gata.",
-    "step2Title": "Adaugi camerele",
-    "step2Desc": "Configurezi cladirile, etajele si camerele tale. Simplu, vizual.",
+    "step1Title": "Creeaza cont",
+    "step1Desc": "Numele pensiunii, email, parola. 30 secunde, fara card de credit.",
+    "step2Title": "Adauga camerele",
+    "step2Desc": "Configurezi cladirile, etajele si camerele. Primesti site de prezentare automat.",
     "step3Title": "Primesti rezervari",
-    "step3Desc": "Oaspetii rezerva pe pagina ta. Tu confirmi dintr-un click.",
-    "pricingTitle": "Preturi simple, fara surprize",
-    "pricingLead": "Incepe gratuit. Platesti doar cand cresti.",
+    "step3Desc": "Oaspetii rezerva online, tu confirmi din calendar. Simplu.",
+    "pricingTitle": "Preturi simple",
+    "pricingLead": "Fara contracte, fara surprize. Platesti lunar, anulezi oricand.",
     "planStarterName": "Starter",
-    "planForever": "Gratuit permanent",
-    "planTrial": "14 zile gratuit",
-    "planStarter1": "3 camere",
+    "planForever": "Gratuit, permanent",
+    "planTrial": "14 zile gratuit, apoi platesti",
+    "planStarter1": "3 camere incluse",
     "planStarter2": "Calendar vizual",
     "planStarter3": "Rezervari online",
-    "planStarter4": "Notificari email",
+    "planStarter4": "Pagina de prezentare",
     "planStarterCta": "Incepe gratuit",
     "planStandardName": "Standard",
-    "planStandard1": "10 camere",
-    "planStandard2": "Tot ce e in Starter",
-    "planStandard3": "Echipa (2 membri)",
-    "planStandard4": "Statistici de baza",
+    "planStandard1": "Pana la 10 camere",
+    "planStandard2": "Tot ce include Starter",
+    "planStandard3": "Notificari email",
+    "planStandard4": "Echipa (2 membri)",
     "planStandardCta": "Incearca 14 zile",
-    "planRecommended": "Recomandat",
     "planProName": "Pro",
+    "planRecommended": "Recomandat",
     "planPro1": "Camere nelimitate",
-    "planPro2": "Tot ce e in Standard",
+    "planPro2": "Tot ce include Standard",
     "planPro3": "Echipa nelimitata",
-    "planPro4": "Domeniu propriu",
+    "planPro4": "Domeniu custom",
     "planPro5": "Fara branding Hospira",
     "planProCta": "Incearca 14 zile",
     "month": "luna",
-    "finalCtaTitle": "Gata cu caietul si Excel-ul",
-    "finalCtaText": "Incepe in 30 de secunde. Fara card de credit.",
-    "finalCtaButton": "Creaza cont gratuit"
+    "finalCtaTitle": "Gata de start?",
+    "finalCtaText": "Creeaza cont in 30 de secunde. Fara card de credit, fara obligatii.",
+    "finalCtaButton": "Creeaza cont gratuit"
   }
 }

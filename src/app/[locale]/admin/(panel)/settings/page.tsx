@@ -14,7 +14,6 @@ import { AdminLocationUnlockForm } from "@/components/admin/settings/AdminLocati
 import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
-import { getStaffRole } from "@/lib/auth/roles";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { updateAppearanceSettingsAction } from "./actions";
 
@@ -29,8 +28,7 @@ export default async function SettingsPage({
 }) {
   const t = await getTranslations("admin.pages.settings");
   const params = await searchParams;
-  const { user } = await requireStaff();
-  const role = getStaffRole(user);
+  const { user, role } = await requireStaff();
   const locationUnlocked = await isAdminLocationUnlocked();
 
   let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;

@@ -4,16 +4,17 @@ import {
 } from "@/domain/booking/segment-types";
 import { computeBookingTotalFromSegments } from "@/domain/pricing/segment-total";
 import { addDays, stayNightCount, todayIso } from "@/lib/stay-dates";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 async function roomNightlyRate(roomId: string): Promise<number> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("rooms")
     .select("price_per_night")
+    .eq("tenant_id", tenantId)
     .eq("id", roomId)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -69,10 +70,11 @@ function resolveRoomMovePlan(
 export async function listSegmentsForBooking(
   bookingId: string
 ): Promise<BookingRoomSegmentRow[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("booking_room_segments")
     .select("id, booking_id, room_id, segment_start, segment_end, nightly_rate")
+    .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId)
     .order("segment_start");
 
@@ -84,10 +86,11 @@ export async function bookingHasSplitSegments(bookingId: string): Promise<boolea
   const segments = await listSegmentsForBooking(bookingId);
   if (segments.length <= 1) return false;
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data: booking, error: bErr } = await supabase
     .from("bookings")
     .select("check_in, check_out")
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId)
     .maybeSingle();
   if (bErr) throw new Error(bErr.message);
@@ -96,6 +99,7 @@ export async function bookingHasSplitSegments(bookingId: string): Promise<boolea
   const { count, error } = await supabase
     .from("booking_rooms")
     .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId);
   if (error) throw new Error(error.message);
 
@@ -111,7 +115,7 @@ export async function bookingHasSplitSegments(bookingId: string): Promise<boolea
 }
 
 async function recalcBookingEnvelopeAndTotal(bookingId: string): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const segments = await listSegmentsForBooking(bookingId);
   if (segments.length === 0) return;
 
@@ -128,17 +132,19 @@ async function recalcBookingEnvelopeAndTotal(bookingId: string): Promise<void> {
   const { error } = await supabase
     .from("bookings")
     .update({ check_in: checkIn, check_out: checkOut, total_price: total })
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId);
   if (error) throw new Error(error.message);
 }
 
 /** Rescrie segmentele din booking_rooms — doar dacă nu există split-uri. */
 export async function syncBookingRoomSegments(bookingId: string): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { data: booking, error: bErr } = await supabase
     .from("bookings")
     .select("id, check_in, check_out, status")
+    .eq("tenant_id", tenantId)
     .eq("id", bookingId)
     .maybeSingle();
 
@@ -147,6 +153,7 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
     await supabase
       .from("booking_room_segments")
       .delete()
+      .eq("tenant_id", tenantId)
       .eq("booking_id", bookingId);
     return;
   }
@@ -156,6 +163,7 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
   const { data: rooms, error: rErr } = await supabase
     .from("booking_rooms")
     .select("room_id")
+    .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId);
 
   if (rErr) throw new Error(rErr.message);
@@ -163,6 +171,7 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
   const { error: delErr } = await supabase
     .from("booking_room_segments")
     .delete()
+    .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId);
   if (delErr) throw new Error(delErr.message);
 
@@ -172,13 +181,15 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
   const inserts = [];
   for (const room_id of roomIds) {
     const rate = await roomNightlyRate(room_id);
-    inserts.push({
-      booking_id: bookingId,
-      room_id,
-      segment_start: booking.check_in,
-      segment_end: booking.check_out,
-      nightly_rate: rate,
-    });
+    inserts.push(
+      withTenantId(tenantId, {
+        booking_id: bookingId,
+        room_id,
+        segment_start: booking.check_in,
+        segment_end: booking.check_out,
+        nightly_rate: rate,
+      })
+    );
   }
 
   const { error: insErr } = await supabase
@@ -188,10 +199,11 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
 }
 
 export async function resyncAllBookingSegments(): Promise<number> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select("id")
+    .eq("tenant_id", tenantId)
     .neq("status", "anulata");
 
   if (error) throw new Error(error.message);
@@ -209,7 +221,7 @@ export async function shiftAllSegmentsByDays(
   const segments = await listSegmentsForBooking(bookingId);
   if (segments.length === 0) return;
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   for (const seg of segments) {
     const { error } = await supabase
       .from("booking_room_segments")
@@ -217,6 +229,7 @@ export async function shiftAllSegmentsByDays(
         segment_start: addDays(seg.segment_start, dayDelta),
         segment_end: addDays(seg.segment_end, dayDelta),
       })
+      .eq("tenant_id", tenantId)
       .eq("id", seg.id);
     if (error) throw new Error(error.message);
   }
@@ -324,10 +337,11 @@ export async function moveBookingRoomFromPivot(input: {
     throw new Error("segments.choose_different_room");
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data: booking, error: bErr } = await supabase
     .from("bookings")
     .select("id, status, guest_name")
+    .eq("tenant_id", tenantId)
     .eq("id", input.bookingId)
     .maybeSingle();
   if (bErr) throw new Error(bErr.message);
@@ -367,22 +381,26 @@ export async function moveBookingRoomFromPivot(input: {
         room_id: input.targetRoomId,
         nightly_rate: targetRate,
       })
+      .eq("tenant_id", tenantId)
       .eq("id", source.id);
     if (updateErr) throw new Error(updateErr.message);
   } else {
     const { error: truncErr } = await supabase
       .from("booking_room_segments")
       .update({ segment_end: plan.pivot })
+      .eq("tenant_id", tenantId)
       .eq("id", source.id);
     if (truncErr) throw new Error(truncErr.message);
 
-    const { error: insErr } = await supabase.from("booking_room_segments").insert({
-      booking_id: input.bookingId,
-      room_id: input.targetRoomId,
-      segment_start: plan.pivot,
-      segment_end: source.segment_end,
-      nightly_rate: targetRate,
-    });
+    const { error: insErr } = await supabase.from("booking_room_segments").insert(
+      withTenantId(tenantId, {
+        booking_id: input.bookingId,
+        room_id: input.targetRoomId,
+        segment_start: plan.pivot,
+        segment_end: source.segment_end,
+        nightly_rate: targetRate,
+      })
+    );
     if (insErr) throw new Error(insErr.message);
   }
 
@@ -390,15 +408,18 @@ export async function moveBookingRoomFromPivot(input: {
     const { error: brErr } = await supabase
       .from("booking_rooms")
       .update({ room_id: input.targetRoomId })
+      .eq("tenant_id", tenantId)
       .eq("booking_id", input.bookingId)
       .eq("room_id", input.sourceRoomId);
     if (brErr) throw new Error(brErr.message);
   } else {
-    const { error: brErr } = await supabase.from("booking_rooms").insert({
-      booking_id: input.bookingId,
-      room_id: input.targetRoomId,
-      extra_beds: 0,
-    });
+    const { error: brErr } = await supabase.from("booking_rooms").insert(
+      withTenantId(tenantId, {
+        booking_id: input.bookingId,
+        room_id: input.targetRoomId,
+        extra_beds: 0,
+      })
+    );
     if (brErr) throw new Error(brErr.message);
   }
 

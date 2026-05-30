@@ -39,7 +39,7 @@
     "shell": {
       "backHome": "Начало",
       "legalEyebrow": "Правни",
-      "brandFallback": "Casa Emil"
+      "brandFallback": "Hospira"
     },
     "header": {
       "subtitle": "Къща за гости · Таснад"
@@ -57,7 +57,7 @@
       "terms": "Общи условия",
       "privacy": "Поверителност (GDPR)",
       "contact": "Контакт",
-      "contactEmail": "contact@casaemil.ro",
+      "contactEmail": "contact@hospira.ro",
       "copyright": "© {year} {name} · Таснад, Румъния"
     },
     "home": {
@@ -228,7 +228,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Casa Emil · Tasnad — <email>contact@casaemil.ro</email>"
+      "s4Body": "Hospira · Tasnad — <email>contact@hospira.ro</email>"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -245,7 +245,7 @@
       "retentionTitle": "Retention",
       "retentionBody": "We keep data as long as needed to manage the booking and meet legal obligations (accounting, tax).",
       "rightsTitle": "Your rights",
-      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@casaemil.ro</email>."
+      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@hospira.ro</email>."
     },
     "staffPanel": {
       "badge": "Екип",
@@ -274,7 +274,7 @@
       "publicSite": "Публичен сайт"
     },
     "login": {
-      "eyebrow": "Casa Emil",
+      "eyebrow": "Hospira",
       "title": "Админ",
       "lead": "Само за персонал.",
       "backToSite": "← Обратно към сайта",
@@ -305,7 +305,7 @@
     },
     "pages": {
       "bookings": {
-        "title": "New requests — Casa Emil",
+        "title": "New requests — Hospira",
         "description": "Confirm availability and assign rooms.",
         "windowTitle": "New requests ({count})",
         "genericError": "Error",
@@ -318,7 +318,7 @@
         "emptyAction": "Open public calendar"
       },
       "rooms": {
-        "title": "Rooms — Casa Emil",
+        "title": "Rooms — Hospira",
         "description": "Compact day grid for room status.",
         "addRoom": "+ Add room",
         "inactiveRooms": "Inactive rooms",
@@ -326,7 +326,7 @@
         "genericError": "Error"
       },
       "settings": {
-        "title": "Settings — Casa Emil",
+        "title": "Settings — Hospira",
         "descriptionOperator": "Sound and theme for operators.",
         "descriptionAdmin": "Sound and theme for dashboard.",
         "saved": "Theme saved.",
@@ -359,7 +359,7 @@
         "openStaffManagement": "Upravlyavaj ekipa"
       },
       "guests": {
-        "title": "Клиенти — Casa Emil",
+        "title": "Клиенти — Hospira",
         "description": "Профили на клиенти, дедупликация и история на престоите.",
         "searchTitle": "Търси клиент",
         "searchHint": "Търсенето приоритизира рискови профили и последно обновени записи.",
@@ -393,8 +393,8 @@
       },
       "calendar": {
         "genericError": "Грешка",
-        "title": "Календар — Casa Emil",
-        "ganttTitle": "Gantt календар — Casa Emil",
+        "title": "Календар — Hospira",
+        "ganttTitle": "Gantt календар — Hospira",
         "windowGantt": "Gantt",
         "unassignedTitle": "Непотвърдени заявки",
         "unassignedSubtitle": "Без стая в показания период",
@@ -405,7 +405,7 @@
         "buildingFilterSuffix": " · филтър сграда"
       },
       "cazari": {
-        "title": "Престои — Casa Emil",
+        "title": "Престои — Hospira",
         "searchFilter": "Търси и филтрирай",
         "results": "Резултати",
         "operational": "Оперативни",
@@ -478,7 +478,7 @@
         "historyCompletedSection": "Приключени престои"
       },
       "statistics": {
-        "title": "Статистика — Casa Emil",
+        "title": "Статистика — Hospira",
         "monthCompare": "Month comparison",
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
@@ -500,7 +500,7 @@
         "noBookingsYet": "Все още няма резервации — статистиката се появява след първата заявка."
       },
       "location": {
-        "title": "Администрация локация — Casa Emil",
+        "title": "Администрация локация — Hospira",
         "operational": "Operational",
         "operationalSubtitle": "{name} · hours and extra beds",
         "displayName": "Display name",
@@ -580,7 +580,7 @@
         "guestProfile": "Профил на гост",
         "persons": "Гости",
         "contact": "Контакт",
-        "title": "Резервация — Casa Emil",
+        "title": "Резервация — Hospira",
         "bookingReference": "Референция:",
         "viewInCalendar": "Виж в календара",
         "status": "Статус:",
@@ -597,7 +597,7 @@
         "phoneRequiredSave": "Запази телефон"
       },
       "roomsNew": {
-        "title": "New room — Casa Emil",
+        "title": "New room — Hospira",
         "migrationHint": "for types and",
         "catalogRunMigration": "Стартирай миграцията",
         "addBuildingFirst": "Първо добави"
@@ -618,7 +618,7 @@
         "descriptionSuffix": "Цветът се вижда в календара."
       },
       "settingsLocation": {
-        "title": "Администрация на локацията — Casa Emil",
+        "title": "Администрация на локацията — Hospira",
         "description": "Админ хъб за цялата конфигурация: структура, стаи, модулен каталог и staff акаунти.",
         "backToSettings": "← Назад към настройки",
         "unlockedForTwoHours": "Администрацията на локацията е отключена за 2 часа.",
@@ -944,7 +944,7 @@
       "reputationExcellent": "Excellent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklisted",
-      "welcomeHome": "Добре дошли в Casa Emil!",
+      "welcomeHome": "Добре дошли в Hospira!",
       "loadDataError": "Данните не могат да се заредят",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -1008,7 +1008,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Casa Emil",
+      "locationAdminTitle": "Location administration — Hospira",
       "noRoomsConfigured": "Все още няма конфигурирани стаи",
       "achievements": "Постижения",
       "homeEyebrow": "Начало · панел рецепция",
@@ -1064,9 +1064,9 @@
       "informalDocument": "Информативен документ",
       "addFloor": "Добави етаж",
       "floorPlaceholder": "Партер / Етаж 1",
-      "buildingsTitle": "Сгради — Casa Emil",
-      "availabilityTitle": "Наличност — Casa Emil",
-      "newRoomTitle": "Нова стая — Casa Emil",
+      "buildingsTitle": "Сгради — Hospira",
+      "availabilityTitle": "Наличност — Hospira",
+      "newRoomTitle": "Нова стая — Hospira",
       "seeAllRequests": "Виж всички",
       "roomGridTitle": "Мрежа стаи",
       "todayTitle": "Днес — {dayLabel}",
@@ -1254,7 +1254,7 @@
       "tight": "Натоварено",
       "freeRooms": "Свободни стаи",
       "clickForDayCard": "Клик = пълна дневна карта",
-      "clipboardPrefix": "Casa Emil",
+      "clipboardPrefix": "Hospira",
       "kpiRelaxedLabel": "Дни с ≥3 свободни стаи",
       "kpiFullLabel": "Пълни дни",
       "kpiMinLabel": "Минимум свободни",
@@ -2256,76 +2256,76 @@
   },
   "landing": {
     "heroBadge": "Softuer za pansioni",
-    "heroTitle": "Upravlyavaj pansiona si prosto i moderno",
-    "heroSubtitle": "Vizualen kalendar, onlajn rezervacii, avtomatichni uvedomleniya. Vsichko koeto ti tryabva.",
-    "heroCta": "Probvaj bezplatno",
-    "heroCtaSecondary": "Vizh cenite",
-    "heroNote": "Bez kreditna karta. 3 stai bezplatno, zavinargi.",
-    "problemTitle": "Zhivot bez i s Hospira",
+    "heroTitle": "Upravlyavajte pansiona si ot telefona",
+    "heroSubtitle": "Kalendar, onlajn rezervacii, check-in/out i uvedomleniya. Vsichko koeto vi tryabva, na edno myasto.",
+    "heroCta": "Probajtye bezplatno",
+    "heroCtaSecondary": "Vizhte cenite",
+    "heroNote": "Bez kreditna karta. 3 stai bezplatno, zavinagi.",
+    "problemTitle": "Zvuchi poznato?",
     "withoutHospira": "Bez Hospira",
-    "problem1": "Rezervacii v tetradka ili Excel",
+    "problem1": "Rezervacii na hartiya ili Excel",
     "problem2": "Dvojni rezervacii i obyrkvane",
-    "problem3": "Gostite se obazhdaat da pitaat za nalichnost",
-    "problem4": "Gubiash pari s 15-18% komisionna ot Booking",
+    "problem3": "Gostite se obazhdhat za nalichnost",
+    "problem4": "15-18% komisiona kym Booking.com",
     "withHospira": "S Hospira",
-    "solution1": "Vizualen kalendar s vsichki rezervacii",
-    "solution2": "Nevyzmozhno da napravish dvojna rezervaciya",
-    "solution3": "Gostite rezerviraat direktno na tvoq sajt",
-    "solution4": "Direktni rezervacii = 0% komisionna",
-    "featuresTitle": "Vsichko koeto ti tryabva",
-    "featuresLead": "Vsyaka funkciya e proektiranа za malki i sredni pansioni.",
+    "solution1": "Digitalen kalendar sys vsichki rezervacii",
+    "solution2": "Nevyzmozhno e da se rezervira dvoyno",
+    "solution3": "Gostite rezervirat direktno na vashiya sajt",
+    "solution4": "Direktni rezervacii = 0% komisiona",
+    "featuresTitle": "Vsichko koeto vi tryabva",
+    "featuresLead": "Syzdadeno specialno za malki pansioni v Rymaniya, Moldova i Bylgariya.",
     "feature1Icon": "1",
     "feature1Title": "Vizualen kalendar",
-    "feature1Desc": "Vizh vsichki stai i rezervacii na edno myasto.",
+    "feature1Desc": "Vizhte vsichki stai i rezervacii na edna stranica.",
     "feature2Icon": "2",
     "feature2Title": "Onlajn rezervacii",
-    "feature2Desc": "Tvoqta stranica s formular za rezervaciya. Gostite rezerviraat direktno.",
+    "feature2Desc": "Gostite rezervirat direktno na vashiya sajt.",
     "feature3Icon": "3",
-    "feature3Title": "Email uvedomleniya",
-    "feature3Desc": "Poluchavash email kogato pristigne nova rezervaciya.",
+    "feature3Title": "Check-in / Check-out",
+    "feature3Desc": "Registrirajte pristiganiya i zaminavaniya s edin klik.",
     "feature4Icon": "4",
-    "feature4Title": "Check-in / Check-out",
-    "feature4Desc": "Pylno prosledyavane na pristigane i zaminanvane.",
+    "feature4Title": "Vashiyat ekip",
+    "feature4Desc": "Dobavete recepcionist, admin, operator.",
     "feature5Icon": "5",
-    "feature5Title": "Tvoqt ekip",
-    "feature5Desc": "Pokani recepcionist, admin, operator.",
+    "feature5Title": "Email uvedomleniya",
+    "feature5Desc": "Poluchavate email kogato ima nova rezervaciya.",
     "feature6Icon": "6",
-    "feature6Title": "Nula dvojni rezervacii",
-    "feature6Desc": "Zashtita na nivo baza danni. Fizicheski nevyzmozhno.",
+    "feature6Title": "Vashata stranica",
+    "feature6Desc": "Vseki pansion poluchava svoj sajt s nalichnost i forma za rezervaciya.",
     "howTitle": "Kak raboti",
-    "step1Title": "Syzdaj bezplaten akount",
-    "step1Desc": "30 sekundi. Ime na pansiona, email, parola. Gotovo.",
-    "step2Title": "Dobavi staite si",
-    "step2Desc": "Konfiguriraj sgradi, etazhi i stai. Prosto.",
-    "step3Title": "Poluchavaj rezervacii",
-    "step3Desc": "Gostite rezerviraat na tvoqta stranica. Ti potvyrzhavash s edin klik.",
-    "pricingTitle": "Prosti ceni, bez izenadi",
-    "pricingLead": "Zapochni bezplatno. Plashtash samo kogato rastnesh.",
+    "step1Title": "Syzdajte akaunt",
+    "step1Desc": "Ime na pansiona, email, parola. 30 sekundi.",
+    "step2Title": "Dobavete staite",
+    "step2Desc": "Konfigurirajte sgradi, etazhi i stai.",
+    "step3Title": "Poluchavajte rezervacii",
+    "step3Desc": "Gostite rezervirat onlajn, vie potvyrzhdavate ot kalendara.",
+    "pricingTitle": "Prosti ceni",
+    "pricingLead": "Bez dogovori, bez iznenaadi. Plashtate mesechno.",
     "planStarterName": "Starter",
-    "planForever": "Bezplatno zavinagi",
+    "planForever": "Bezplatno, zavinagi",
     "planTrial": "14 dni bezplatno",
-    "planStarter1": "3 stai",
+    "planStarter1": "3 stai vklyucheni",
     "planStarter2": "Vizualen kalendar",
     "planStarter3": "Onlajn rezervacii",
-    "planStarter4": "Email uvedomleniya",
-    "planStarterCta": "Zapochni bezplatno",
+    "planStarter4": "Stranica za prezentaciya",
+    "planStarterCta": "Zapochnete bezplatno",
     "planStandardName": "Standard",
-    "planStandard1": "10 stai",
+    "planStandard1": "Do 10 stai",
     "planStandard2": "Vsichko ot Starter",
-    "planStandard3": "Ekip (2 chlena)",
-    "planStandard4": "Bazova statistika",
-    "planStandardCta": "Probvaj 14 dni",
-    "planRecommended": "Preporychano",
+    "planStandard3": "Email uvedomleniya",
+    "planStandard4": "Ekip (2 chlena)",
+    "planStandardCta": "Probajtye 14 dni",
     "planProName": "Pro",
+    "planRecommended": "Preporychano",
     "planPro1": "Neogranicheni stai",
     "planPro2": "Vsichko ot Standard",
     "planPro3": "Neogranichen ekip",
     "planPro4": "Sobstven domejn",
     "planPro5": "Bez branding Hospira",
-    "planProCta": "Probvaj 14 dni",
+    "planProCta": "Probajtye 14 dni",
     "month": "mesec",
-    "finalCtaTitle": "Gotovo s tetradkite i Excel",
-    "finalCtaText": "Zapochni za 30 sekundi. Bez kreditna karta.",
-    "finalCtaButton": "Syzdaj bezplaten akount"
+    "finalCtaTitle": "Gotovi li ste?",
+    "finalCtaText": "Syzdajte akaunt za 30 sekundi. Bez kreditna karta.",
+    "finalCtaButton": "Syzdajte bezplaten akaunt"
   }
 }

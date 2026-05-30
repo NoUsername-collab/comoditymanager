@@ -20,6 +20,7 @@ import {
   advanceSimState,
 } from "@/domain/simulation/sim-cookie";
 import type { SimState, SimStatus } from "@/domain/simulation/sim-types";
+import { getActiveTenantIdForData } from "@/lib/tenant/active";
 
 export type SimAdvanceResult = {
   checked_in: number;
@@ -137,10 +138,12 @@ export async function advanceSimulationToDate(
 export async function findNextCheckIn(
   afterDate: string
 ): Promise<string | null> {
+  const tenantId = await getActiveTenantIdForData();
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select("check_in")
+    .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
     .gt("check_in", afterDate)
     .is("actual_check_in_at", null)
@@ -159,10 +162,12 @@ export async function findNextCheckIn(
 export async function findNextCheckOut(
   afterDate: string
 ): Promise<string | null> {
+  const tenantId = await getActiveTenantIdForData();
   const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select("check_out")
+    .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
     .gt("check_out", afterDate)
     .not("actual_check_in_at", "is", null)

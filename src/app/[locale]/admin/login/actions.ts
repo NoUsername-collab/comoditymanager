@@ -3,11 +3,12 @@
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import {
-  isKnownStaffUsername,
-  resolveStaffEmail,
+  isValidLoginIdentifier,
+  resolveLoginIdentifier,
 } from "@/lib/auth/constants";
-import { getStaffRole } from "@/lib/auth/roles";
+import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { logAdminActivity } from "@/services/activity-log";
+import { resolveRequestTenant } from "@/lib/tenant/active";
 import { getTranslations } from "next-intl/server";
 
 export async function loginAction(formData: FormData) {
@@ -16,14 +17,14 @@ export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const next = String(formData.get("next") ?? "/admin");
 
-  if (!isKnownStaffUsername(username)) {
+  if (!isValidLoginIdentifier(username)) {
     return { error: t("invalidUser") };
   }
   if (!password) {
     return { error: t("enterPassword") };
   }
 
-  const email = resolveStaffEmail(username);
+  const email = resolveLoginIdentifier(username);
   if (!email) {
     return { error: t("invalidUser") };
   }
@@ -41,12 +42,26 @@ export async function loginAction(formData: FormData) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
   if (user) {
+    const tenant = await resolveRequestTenant();
+    const role = await resolveStaffRole(user);
+
+    if (tenant && !role) {
+      await supabase.auth.signOut();
+      return { error: t("notMemberOfPension") };
+    }
+
+    if (!tenant && !role) {
+      await supabase.auth.signOut();
+      return { error: t("invalidUserOrPassword") };
+    }
+
     await logAdminActivity({
       action: "auth.login",
       entityType: "session",
       entityId: user.id,
-      summary: t("loginSummary", { role: getStaffRole(user) ?? "staff" }),
+      summary: t("loginSummary", { role: role ?? "staff" }),
       actor: { id: user.id, email: user.email },
     });
   }

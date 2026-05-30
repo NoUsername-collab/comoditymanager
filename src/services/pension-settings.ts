@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { getTenantScope } from "@/lib/tenant/scope";
 import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
 
@@ -19,7 +20,7 @@ function parseDayNight(raw: unknown): ThemeMode {
   return raw === "day" || raw === "night" ? raw : "night";
 }
 
-async function getPensionSettingsUncached(): Promise<PensionSettings | null> {
+async function getPensionSettingsUncached(tenantId: string): Promise<PensionSettings | null> {
   // Always read from public — pension settings are global, not sim-scoped
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -27,7 +28,7 @@ async function getPensionSettingsUncached(): Promise<PensionSettings | null> {
     .select(
       "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night"
     )
-    .limit(1)
+    .eq("tenant_id", tenantId)
     .maybeSingle();
 
   if (error) throw new Error(error.message);
@@ -49,13 +50,19 @@ async function getPensionSettingsUncached(): Promise<PensionSettings | null> {
   };
 }
 
-const getCachedPensionSettings = unstable_cache(getPensionSettingsUncached, undefined, {
-  tags: [CACHE_TAGS.pensionSettings],
-  revalidate: 300,
-});
+const getCachedPensionSettings = (tenantId: string) =>
+  unstable_cache(
+    () => getPensionSettingsUncached(tenantId),
+    ["pension-settings", tenantId],
+    {
+      tags: [CACHE_TAGS.pensionSettings, `tenant-${tenantId}-settings`],
+      revalidate: 300,
+    }
+  );
 
 export async function getPensionSettings(): Promise<PensionSettings | null> {
-  return getCachedPensionSettings();
+  const { tenantId } = await getTenantScope();
+  return getCachedPensionSettings(tenantId)();
 }
 
 export function pensionAppearanceSettings(
@@ -79,7 +86,7 @@ export async function updatePensionSettings(
     admin_day_night: ThemeMode;
   }
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("pension_settings")
     .update({
@@ -91,6 +98,7 @@ export async function updatePensionSettings(
       admin_palette_key: input.admin_palette_key,
       admin_day_night: input.admin_day_night,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", id);
 
   if (error) throw new Error(error.message);

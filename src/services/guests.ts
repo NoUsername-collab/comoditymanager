@@ -29,7 +29,7 @@ import { GUEST_MATCH_PRIORITY } from "@/domain/guest/matching-contract";
 import type { BookingStatus } from "@/domain/booking/types";
 import type { BookingRoomSegmentRow } from "@/domain/booking/segment-types";
 import { stayNightCount } from "@/lib/stay-dates";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
@@ -90,10 +90,11 @@ function mapGuestRow(row: Record<string, unknown>): GuestRow {
 }
 
 export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
+    .eq("tenant_id", tenantId)
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -103,10 +104,11 @@ export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
 async function findGuestByPhone(
   phoneNormalized: string
 ): Promise<GuestRow | null> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
+    .eq("tenant_id", tenantId)
     .eq("phone_normalized", phoneNormalized)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -116,10 +118,11 @@ async function findGuestByPhone(
 async function findGuestByEmail(
   emailNormalized: string
 ): Promise<GuestRow | null> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
+    .eq("tenant_id", tenantId)
     .eq("email_normalized", emailNormalized)
     .maybeSingle();
   if (error) throw new Error(error.message);
@@ -135,19 +138,21 @@ async function createGuestRecord(input: GuestBookingInput): Promise<string> {
     emailNorm && !isPlaceholderEmail(emailNorm) ? input.guest_email.trim() : null;
   const phone = phoneNorm ? input.guest_phone.trim() : null;
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
-    .insert({
-      last_name: input.guest_last_name.trim(),
-      first_name: input.guest_first_name.trim(),
-      display_name: input.guest_name.trim(),
-      email,
-      email_normalized:
-        emailNorm && !isPlaceholderEmail(emailNorm) ? emailNorm : null,
-      phone,
-      phone_normalized: phoneNorm,
-    })
+    .insert(
+      withTenantId(tenantId, {
+        last_name: input.guest_last_name.trim(),
+        first_name: input.guest_first_name.trim(),
+        display_name: input.guest_name.trim(),
+        email,
+        email_normalized:
+          emailNorm && !isPlaceholderEmail(emailNorm) ? emailNorm : null,
+        phone,
+        phone_normalized: phoneNorm,
+      })
+    )
     .select("id")
     .single();
 
@@ -162,7 +167,7 @@ async function touchGuestFromBooking(
 ): Promise<void> {
   const emailNorm = normalizeEmail(input.guest_email);
   const phoneNorm = normalizePhone(input.guest_phone);
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const patch: Record<string, unknown> = {
     last_name: input.guest_last_name.trim(),
@@ -179,7 +184,11 @@ async function touchGuestFromBooking(
     patch.email_normalized = emailNorm;
   }
 
-  const { error } = await supabase.from("guests").update(patch).eq("id", guestId);
+  const { error } = await supabase
+    .from("guests")
+    .update(patch)
+    .eq("tenant_id", tenantId)
+    .eq("id", guestId);
   if (error) throw new Error(error.message);
 }
 
@@ -248,10 +257,11 @@ export async function resolveGuestForBooking(
 async function findGuestByIdsOrdered(ids: string[]): Promise<GuestRow | null> {
   const unique = [...new Set(ids.filter(Boolean))];
   if (unique.length === 0) return null;
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
+    .eq("tenant_id", tenantId)
     .in("id", unique)
     .order("updated_at", { ascending: false })
     .limit(1)
@@ -270,7 +280,7 @@ export async function findGuestAutofillMatch(input: {
   const phoneNorm = normalizePhone(input.guest_phone ?? "");
   const last = String(input.guest_last_name ?? "").trim();
   const first = String(input.guest_first_name ?? "").trim();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   let candidate: GuestRow | null = null;
 
   if (
@@ -282,6 +292,7 @@ export async function findGuestAutofillMatch(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .eq("phone_normalized", phoneNorm)
       .eq("email_normalized", emailNorm)
       .order("updated_at", { ascending: false })
@@ -297,6 +308,7 @@ export async function findGuestAutofillMatch(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .eq("phone_normalized", phoneNorm)
       .order("updated_at", { ascending: false })
       .limit(2);
@@ -315,6 +327,7 @@ export async function findGuestAutofillMatch(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .eq("email_normalized", emailNorm)
       .order("updated_at", { ascending: false })
       .limit(2);
@@ -329,6 +342,7 @@ export async function findGuestAutofillMatch(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .ilike("display_name", full)
       .order("updated_at", { ascending: false })
       .limit(1)
@@ -438,10 +452,11 @@ async function fetchGuestListItemsByIds(
   const ids = [...new Set(guestIds.filter(Boolean))];
   if (ids.length === 0) return [];
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("id, display_name, phone, email, tags, identity_status, created_at, updated_at")
+    .eq("tenant_id", tenantId)
     .in("id", ids);
 
   if (error) throw new Error(error.message);
@@ -479,18 +494,20 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
   recent: string[];
   rated: string[];
 }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const [blacklistRes, loyalRes, recentRes, ratedRes] = await Promise.all([
     supabase
       .from("guest_profiles")
       .select("guest_id")
+      .eq("tenant_id", tenantId)
       .eq("flag_level", "blacklist")
       .order("updated_at", { ascending: false })
       .limit(limit),
     supabase
       .from("guest_profiles")
       .select("guest_id")
+      .eq("tenant_id", tenantId)
       .or("loyalty_score.gte.65,completed_stays.gte.3")
       .order("loyalty_score", { ascending: false })
       .order("completed_stays", { ascending: false })
@@ -498,11 +515,13 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
     supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .order("updated_at", { ascending: false })
       .limit(limit),
     supabase
       .from("guest_profiles")
       .select("guest_id")
+      .eq("tenant_id", tenantId)
       .gt("review_count", 0)
       .order("stars_avg", { ascending: false })
       .order("review_count", { ascending: false })
@@ -533,7 +552,7 @@ async function searchGuestIdsByQueryWindow(input: {
   offset: number;
   limit: number;
 }): Promise<{ ids: string[]; exhausted: boolean }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const term = sanitizeGuestSearchTerm(input.query);
   if (!term) return { ids: [], exhausted: true };
   const windowEnd = input.offset + input.limit;
@@ -546,6 +565,7 @@ async function searchGuestIdsByQueryWindow(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .eq("phone_normalized", normalizedPhone)
       .limit(Math.max(windowEnd, 1));
     if (error) throw new Error(error.message);
@@ -556,6 +576,7 @@ async function searchGuestIdsByQueryWindow(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .eq("email_normalized", normalizedEmail)
       .limit(Math.max(windowEnd, 1));
     if (error) throw new Error(error.message);
@@ -581,6 +602,7 @@ async function searchGuestIdsByQueryWindow(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .ilike("email", `${term}%`)
       .order("display_name", { ascending: true })
       .range(input.offset, windowEnd);
@@ -594,6 +616,7 @@ async function searchGuestIdsByQueryWindow(input: {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .ilike("phone", `%${phoneQuery}%`)
       .order("display_name", { ascending: true })
       .range(input.offset, windowEnd);
@@ -606,6 +629,7 @@ async function searchGuestIdsByQueryWindow(input: {
   const { data, error } = await supabase
     .from("guests")
     .select("id")
+    .eq("tenant_id", tenantId)
     .or(
       [
         `display_name.ilike.${namePattern}`,
@@ -626,7 +650,7 @@ async function listGuestIdsByFilter(
   page: number,
   pageSize: number
 ): Promise<{ ids: string[]; hasMore: boolean }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const offset = (page - 1) * pageSize;
   const to = offset + pageSize;
 
@@ -634,6 +658,7 @@ async function listGuestIdsByFilter(
     const { data, error } = await supabase
       .from("guests")
       .select("id")
+      .eq("tenant_id", tenantId)
       .order("updated_at", { ascending: false })
       .range(offset, to);
     if (error) throw new Error(error.message);
@@ -641,7 +666,10 @@ async function listGuestIdsByFilter(
     return { ids: ids.slice(0, pageSize), hasMore: ids.length > pageSize };
   }
 
-  let query = supabase.from("guest_profiles").select("guest_id");
+  let query = supabase
+    .from("guest_profiles")
+    .select("guest_id")
+    .eq("tenant_id", tenantId);
   if (filter === "flagged") {
     query = query.in("flag_level", ["watchlist", "blacklist"]).order("updated_at", {
       ascending: false,
@@ -794,10 +822,11 @@ async function listSegmentsForBookings(
   const ids = [...new Set(bookingIds.filter(Boolean))];
   if (ids.length === 0) return new Map();
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("booking_room_segments")
     .select("id, booking_id, room_id, segment_start, segment_end, nightly_rate")
+    .eq("tenant_id", tenantId)
     .in("booking_id", ids)
     .order("segment_start", { ascending: true });
 
@@ -828,7 +857,7 @@ export type GuestBookingHistoryItem = {
 export async function getGuestBookingHistory(
   guestId: string
 ): Promise<GuestBookingHistoryItem[]> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -837,6 +866,7 @@ export async function getGuestBookingHistory(
       booking_rooms ( room_id, rooms ( name ) )
     `
     )
+    .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .order("check_in", { ascending: false });
 
@@ -918,7 +948,7 @@ export async function updateGuestIdentity(
   guestId: string,
   input: GuestIdentityInput
 ): Promise<{ identityStatus: GuestIdentityStatus }> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const identityStatus = computeIdentityStatus(input);
 
   // Sync cnp field from national_id when type is cnp (backward compat)
@@ -950,6 +980,7 @@ export async function updateGuestIdentity(
   const { error } = await supabase
     .from("guests")
     .update(patch)
+    .eq("tenant_id", tenantId)
     .eq("id", guestId);
 
   if (error) throw new Error(error.message);
@@ -976,12 +1007,13 @@ export async function findGuestByNationalId(
   const cleaned = nationalId.replace(/[\s\-]/g, "");
   if (!cleaned) return null;
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   // Search in both national_id and legacy cnp column
   let query = supabase
     .from("guests")
     .select("*")
+    .eq("tenant_id", tenantId)
     .or(`national_id.eq.${cleaned},cnp.eq.${cleaned}`)
     .limit(1)
     .maybeSingle();
@@ -990,6 +1022,7 @@ export async function findGuestByNationalId(
     query = supabase
       .from("guests")
       .select("*")
+      .eq("tenant_id", tenantId)
       .or(`national_id.eq.${cleaned},cnp.eq.${cleaned}`)
       .neq("id", excludeGuestId)
       .limit(1)
@@ -1004,14 +1037,34 @@ export async function findGuestByNationalId(
 /** @deprecated Use findGuestByNationalId */
 export const findGuestByCnp = findGuestByNationalId;
 
+export async function updateGuestPhone(
+  guestId: string,
+  rawPhone: string
+): Promise<void> {
+  assertValidGuestPhone(rawPhone);
+  const phone = rawPhone.trim();
+  const phoneNorm = normalizePhone(phone);
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("guests")
+    .update({
+      phone,
+      phone_normalized: phoneNorm,
+    })
+    .eq("tenant_id", tenantId)
+    .eq("id", guestId);
+  if (error) throw new Error(error.message);
+}
+
 export async function updateGuestNotes(
   guestId: string,
   notes: string
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guests")
     .update({ notes: notes.trim() || null })
+    .eq("tenant_id", tenantId)
     .eq("id", guestId);
   if (error) throw new Error(error.message);
   await logAdminActivityFromSession({
@@ -1027,10 +1080,11 @@ export async function updateGuestTags(
   guestId: string,
   tags: GuestTag[]
 ): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guests")
     .update({ tags })
+    .eq("tenant_id", tenantId)
     .eq("id", guestId);
   if (error) throw new Error(error.message);
   await logAdminActivityFromSession({
@@ -1050,7 +1104,7 @@ export async function mergeGuests(
     throw new Error("guest.select_different_guest_for_merge");
   }
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const [source, target] = await Promise.all([
     getGuestBaseById(sourceId),
     getGuestBaseById(targetId),
@@ -1060,6 +1114,7 @@ export async function mergeGuests(
   const { error: moveErr } = await supabase
     .from("bookings")
     .update({ guest_id: targetId })
+    .eq("tenant_id", tenantId)
     .eq("guest_id", sourceId);
   if (moveErr) throw new Error(moveErr.message);
 
@@ -1116,6 +1171,7 @@ export async function mergeGuests(
   const { error: updErr } = await supabase
     .from("guests")
     .update(patch)
+    .eq("tenant_id", tenantId)
     .eq("id", targetId);
   if (updErr) throw new Error(updErr.message);
 
@@ -1124,6 +1180,7 @@ export async function mergeGuests(
   const { error: delErr } = await supabase
     .from("guests")
     .delete()
+    .eq("tenant_id", tenantId)
     .eq("id", sourceId);
   if (delErr) throw new Error(delErr.message);
 
@@ -1142,10 +1199,11 @@ async function estimateTotalForRooms(
   roomIds: string[]
 ): Promise<number | null> {
   if (roomIds.length === 0) return null;
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("rooms")
     .select("price_per_night")
+    .eq("tenant_id", tenantId)
     .in("id", roomIds);
   if (error) throw new Error(error.message);
   const nights = stayNightCount(checkIn, checkOut);
@@ -1157,10 +1215,11 @@ async function estimateTotalForRooms(
 }
 
 async function getLastGuestBooking(guestId: string) {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select("id")
+    .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .neq("status", "anulata")
     .order("check_out", { ascending: false })
@@ -1297,7 +1356,7 @@ export async function findDuplicateGuestsForGuest(
   const guest = await getGuestBaseById(guestId);
   if (!guest) return [];
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const orParts: string[] = [];
   if (guest.phone_normalized) {
     orParts.push(`phone_normalized.eq.${guest.phone_normalized}`);
@@ -1310,6 +1369,7 @@ export async function findDuplicateGuestsForGuest(
   const { data, error } = await supabase
     .from("guests")
     .select("id, display_name, phone, email, tags, identity_status, created_at, updated_at")
+    .eq("tenant_id", tenantId)
     .or(orParts.join(","))
     .neq("id", guestId);
   if (error) throw new Error(error.message);

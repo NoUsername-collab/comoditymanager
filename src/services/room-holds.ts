@@ -1,6 +1,8 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import { addDays } from "@/lib/stay-dates";
-import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  getTenantScope,
+  withTenantId,
+} from "@/lib/tenant/scope";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
 export type RoomHoldRow = {
@@ -12,6 +14,21 @@ export type RoomHoldRow = {
   expires_at: string | null;
   released_at: string | null;
 };
+
+async function requireRoomsInTenant(roomIds: string[]) {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("rooms")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .in("id", roomIds);
+  if (error) throw new Error(error.message);
+  const scoped = (data ?? []).map((r) => r.id as string);
+  if (scoped.length !== roomIds.length) {
+    throw new Error("rooms.not_found");
+  }
+  return { tenantId, supabase };
+}
 
 export async function createRoomHold(input: {
   roomId: string;
@@ -59,15 +76,17 @@ export async function createRoomHolds(input: {
       ? new Date(Date.now() + input.expiresHours * 60 * 60 * 1000).toISOString()
       : null;
 
-  const supabase = await createAdminClient();
-  const rows = roomIds.map((room_id) => ({
-    room_id,
-    check_in: input.checkIn,
-    check_out: input.checkOut,
-    reason: input.reason?.trim() || null,
-    expires_at: expiresAt,
-    created_by: input.createdBy ?? null,
-  }));
+  const { tenantId, supabase } = await requireRoomsInTenant(roomIds);
+  const rows = roomIds.map((room_id) =>
+    withTenantId(tenantId, {
+      room_id,
+      check_in: input.checkIn,
+      check_out: input.checkOut,
+      reason: input.reason?.trim() || null,
+      expires_at: expiresAt,
+      created_by: input.createdBy ?? null,
+    })
+  );
 
   const { data, error } = await supabase
     .from("room_holds")
@@ -79,13 +98,14 @@ export async function createRoomHolds(input: {
 }
 
 export async function releaseRoomHold(holdId: string, releasedBy?: string | null): Promise<void> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("room_holds")
     .update({
       released_at: new Date().toISOString(),
       released_by: releasedBy ?? null,
     })
+    .eq("tenant_id", tenantId)
     .eq("id", holdId)
     .is("released_at", null);
 
@@ -94,7 +114,7 @@ export async function releaseRoomHold(holdId: string, releasedBy?: string | null
 
 /** Marchează hold-urile expirate ca eliberate (lazy cleanup la citire occupancy). */
 export async function releaseExpiredRoomHolds(asOfIso?: string): Promise<number> {
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
   // Use end-of-day cutoff to match isHoldActive() in room-occupancy.ts
   const cutoff = asOfIso
     ? new Date(`${asOfIso}T23:59:59.999`).toISOString()
@@ -108,6 +128,7 @@ export async function releaseExpiredRoomHolds(asOfIso?: string): Promise<number>
       released_at: releasedAt,
       released_by: "system:expired",
     })
+    .eq("tenant_id", tenantId)
     .is("released_at", null)
     .not("expires_at", "is", null)
     .lt("expires_at", cutoff)

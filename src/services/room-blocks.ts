@@ -1,6 +1,22 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  getTenantScope,
+  withTenantId,
+} from "@/lib/tenant/scope";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
+
+async function requireRoomInTenant(roomId: string) {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("rooms")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("id", roomId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("rooms.not_found");
+  return { tenantId, supabase };
+}
 
 export async function createRoomBlock(input: {
   roomId: string;
@@ -21,16 +37,18 @@ export async function createRoomBlock(input: {
     [input.roomId]
   );
 
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await requireRoomInTenant(input.roomId);
   const { data, error } = await supabase
     .from("room_blocks")
-    .insert({
-      room_id: input.roomId,
-      check_in: input.checkIn,
-      check_out: input.checkOut,
-      reason,
-      created_by: input.createdBy ?? null,
-    })
+    .insert(
+      withTenantId(tenantId, {
+        room_id: input.roomId,
+        check_in: input.checkIn,
+        check_out: input.checkOut,
+        reason,
+        created_by: input.createdBy ?? null,
+      })
+    )
     .select("id")
     .single();
 
@@ -39,7 +57,11 @@ export async function createRoomBlock(input: {
 }
 
 export async function deleteRoomBlock(blockId: string): Promise<void> {
-  const supabase = await createAdminClient();
-  const { error } = await supabase.from("room_blocks").delete().eq("id", blockId);
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("room_blocks")
+    .delete()
+    .eq("tenant_id", tenantId)
+    .eq("id", blockId);
   if (error) throw new Error(error.message);
 }

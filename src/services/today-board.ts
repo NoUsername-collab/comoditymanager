@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import type { GuestFlagLevel } from "@/domain/guest/types";
 import type { BookingRow } from "@/services/bookings";
@@ -87,7 +87,7 @@ export async function loadTodayBoard(
   checkOutTime: string
 ): Promise<TodayBoard> {
   const today = await getEffectiveToday();
-  const supabase = await createAdminClient();
+  const { tenantId, supabase } = await getTenantScope();
 
   const { data, error } = await supabase
     .from("bookings")
@@ -102,6 +102,7 @@ export async function loadTodayBoard(
       )
     `
     )
+    .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
     .or(`check_in.eq.${today},check_out.eq.${today}`)
     .order("check_in", { ascending: true });
