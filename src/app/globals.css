@@ -3,6 +3,7 @@
 @import "../styles/themes/globals.css";
 @import "./public-site.css";
 @import "./signup.css";
+@import "./landing.css";
 @import "./device-mobile.css";
 
 :root {
