@@ -15,7 +15,7 @@ const STATS_NOTE =
   "Occupancy uses today's active rooms as reference for the full history. Bookings stay in the database and reports expand automatically as operational history grows.";
 
 export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(

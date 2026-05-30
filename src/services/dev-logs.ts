@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
 
@@ -36,7 +36,7 @@ type LogInput = {
  */
 export async function writeDevLog(input: LogInput): Promise<void> {
   try {
-    const supabase = createAdminClient();
+    const supabase = createPublicAdminClient();
     await supabase.from("dev_logs").insert({
       level: input.level ?? "error",
       source: input.source ?? "server",
@@ -100,7 +100,7 @@ export async function listDevLogs(options?: {
   limit?: number;
   offset?: number;
 }): Promise<{ logs: DevLogEntry[]; total: number }> {
-  const supabase = createAdminClient();
+  const supabase = createPublicAdminClient();
   const limit = options?.limit ?? 50;
   const offset = options?.offset ?? 0;
 
@@ -130,7 +130,7 @@ export async function listDevLogs(options?: {
  * Șterge loguri mai vechi de N zile.
  */
 export async function purgeOldDevLogs(daysOld = 30): Promise<number> {
-  const supabase = createAdminClient();
+  const supabase = createPublicAdminClient();
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - daysOld);
 

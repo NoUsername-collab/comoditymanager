@@ -2277,6 +2277,11 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
     0 0 8px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 8%, transparent);
 }
 
+.gantt-summary-cell--past {
+  background: var(--past-bg, #e8eaf0) !important;
+  color: var(--past-text, #7a809a) !important;
+}
+
 .gantt-summary-cell--selected {
   box-shadow:
     inset 0 0 0 2px var(--admin-accent, #4f7ef8),

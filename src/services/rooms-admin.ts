@@ -32,7 +32,7 @@ async function listAllRoomsUncached(): Promise<
     room_type_name: string | null;
   })[]
 > {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("rooms")
     .select(
@@ -125,7 +125,7 @@ export async function createRoom(input: CreateRoomInput): Promise<{ id: string }
   const { type, price, capacity, room_type, has_ac } =
     await resolveRoomInsertFields(input);
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("rooms")
     .insert({
@@ -193,7 +193,7 @@ export async function createRoomsBulk(input: {
 }
 
 export async function getRoomById(id: string) {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("rooms")
     .select(
@@ -255,7 +255,7 @@ export async function updateRoom(
   const capacity = type?.capacity_base ?? input.capacity_base;
   const room_type = type?.slug ?? "double";
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("rooms")
     .update({
@@ -281,7 +281,7 @@ export async function updateRoom(
 }
 
 export async function deleteRoom(id: string): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const { count, error: brErr } = await supabase
     .from("booking_rooms")

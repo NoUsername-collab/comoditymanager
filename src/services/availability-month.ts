@@ -388,7 +388,7 @@ export async function loadDayAvailabilityDetail(
       )
   );
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data } = await supabase
     .from("booking_rooms")
     .select(

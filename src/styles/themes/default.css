@@ -130,6 +130,27 @@ html[data-theme="default"]
   opacity: 0.4;
 }
 
+/* Past day cells: flat gray, no zones/hatching */
+html[data-theme="default"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--past {
+  background-image: none !important;
+  background-color: var(--past-bg) !important;
+}
+
+html[data-theme="default"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--past::after {
+  background: none !important;
+  opacity: 0;
+}
+
+html[data-theme="default"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--past::before {
+  box-shadow: none !important;
+}
+
 html[data-theme="default"] .gantt-shell,
 html[data-theme="default"] .gantt-shell--premium {
   border-radius: var(--admin-radius) !important;

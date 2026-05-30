@@ -8,6 +8,8 @@ import {
   advanceDayAction,
   advanceWeekAction,
   advanceMonthAction,
+  advanceToNextCheckInAction,
+  advanceToNextCheckOutAction,
 } from "@/app/[locale]/admin/(panel)/simulation/actions";
 
 /**
@@ -131,6 +133,7 @@ export function SimTriggerChip({
         )}
 
         <div className="sim-active-bar__controls">
+          {/* Fixed-step advances */}
           <button
             type="button"
             className="sim-active-bar__btn"
@@ -158,6 +161,32 @@ export function SimTriggerChip({
           >
             +30d
           </button>
+
+          {/* Separator */}
+          <span className="sim-active-bar__sep" />
+
+          {/* Jump to next event */}
+          <button
+            type="button"
+            className="sim-active-bar__btn sim-active-bar__btn--event"
+            onClick={() => handleAdvance(advanceToNextCheckInAction)}
+            disabled={isPending}
+            title={t("nextCheckIn")}
+          >
+            → CI
+          </button>
+          <button
+            type="button"
+            className="sim-active-bar__btn sim-active-bar__btn--event"
+            onClick={() => handleAdvance(advanceToNextCheckOutAction)}
+            disabled={isPending}
+            title={t("nextCheckOut")}
+          >
+            → CO
+          </button>
+
+          {/* Separator */}
+          <span className="sim-active-bar__sep" />
 
           {showConfirmStop ? (
             <>

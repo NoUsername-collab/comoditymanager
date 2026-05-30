@@ -19,6 +19,7 @@ export type GanttDayColumn = {
   dayNum: number;
   isWeekend: boolean;
   isToday: boolean;
+  isPast: boolean;
 };
 
 export type GanttViewRange = {
@@ -65,6 +66,7 @@ function buildDayColumns(isoDates: string[], locale: string, today?: string): Ga
       dayNum: d.getDate(),
       isWeekend: dow === 0 || dow === 6,
       isToday: iso === ref,
+      isPast: iso < ref,
     };
   });
 }

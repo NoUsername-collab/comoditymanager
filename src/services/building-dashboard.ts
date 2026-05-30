@@ -54,7 +54,7 @@ async function loadStaysForAvailability(
   rangeStart: string,
   rangeEnd: string
 ): Promise<NightStay[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("booking_rooms")
     .select(

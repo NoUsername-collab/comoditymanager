@@ -7,7 +7,7 @@ export function occupancyPhase(
   checkOut: string,
   referenceDate = todayIso()
 ): OccupancyPhase {
-  if (checkOut <= referenceDate) return "past";
-  if (checkIn <= referenceDate && checkOut > referenceDate) return "active";
+  if (checkOut < referenceDate) return "past";
+  if (checkIn <= referenceDate && checkOut >= referenceDate) return "active";
   return "future";
 }

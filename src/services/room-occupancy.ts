@@ -47,7 +47,7 @@ export async function getRoomOccupancy(
   const kinds = options.kinds ?? ALL_KINDS;
   const ref = options.referenceDate ?? (await getEffectiveToday());
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const out: OccupancySegment[] = [];
 
   if (kinds.includes("request") || kinds.includes("stay")) {

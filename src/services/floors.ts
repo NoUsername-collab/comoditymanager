@@ -2,7 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import type { Floor } from "@/types/database";
 
 export async function listFloorsByBuilding(buildingId: string): Promise<Floor[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("floors")
     .select("id, building_id, name, level_number, sort_order, is_active")
@@ -20,7 +20,7 @@ export async function createFloor(input: {
   level_number: number | null;
   sort_order: number;
 }): Promise<{ id: string }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("floors")
     .insert({

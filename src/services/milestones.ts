@@ -1,7 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function countConfirmedStays(): Promise<number> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { count, error } = await supabase
     .from("bookings")
     .select("id", { count: "exact", head: true })

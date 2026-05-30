@@ -9,48 +9,32 @@ import {
   useState,
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
-  type RefObject,
 } from "react";
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
-import {
-  formatDateWithDay,
-  formatWeekdayNarrow,
-  formatWeekdayShort,
-} from "@/lib/ro-calendar";
+import { formatDateWithDay } from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import {
-  type DailyFreeCount,
   computeDailyFreeCounts,
-  dailyFreeHeatLevel,
 } from "@/domain/gantt/daily-free-counts";
-import { guestInitials } from "@/domain/guest-name";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import type { BookingRow } from "@/services/bookings";
-import { formatGuestGanttLabel } from "@/domain/guest-name";
-import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import {
   filterOccupancyForLayer,
   type GanttLayerFilter,
 } from "@/domain/gantt/occupancy-layer";
-import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancySegment } from "@/domain/occupancy/types";
-import { ganttDayTimeStyle } from "@/lib/gantt-time";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import { focusDayInRange } from "@/domain/gantt/filters";
 import type { GanttRoom } from "@/domain/gantt/types";
-import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import { guestPartyTotal } from "@/lib/guest-party";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
-import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
-import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttPinnedSelectionChip } from "@/components/admin/gantt/GanttPinnedSelectionChip";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
@@ -58,7 +42,6 @@ import {
   clearGanttRoomPinnedSpan,
 } from "@/domain/gantt/room-at-point";
 import { ghostBarPosition } from "@/domain/gantt/drag-create";
-import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
 import {
   GanttOccupancyDetailPanel,
   type GanttOccDetail,
@@ -69,7 +52,6 @@ import {
 } from "@/components/admin/gantt/MoveRoomDialog";
 import {
   GanttCreateDialog,
-  type GanttCreateDraft,
 } from "@/components/admin/gantt/GanttCreateDialog";
 import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
 import { GanttContextMenuPanel } from "@/components/admin/gantt/GanttContextMenuPanel";
@@ -77,7 +59,6 @@ import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMen
 import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
 import {
   GanttBuildingMarker,
-  GanttRoomMarker,
 } from "@/components/admin/gantt/GanttBuildingMarker";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
@@ -87,11 +68,9 @@ import {
   type GanttOpsPickerMode,
 } from "@/components/admin/gantt/GanttOpsPickerPanel";
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
-import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import {
   type RoomTodayFlags,
-  stayTodayHighlight,
   summarizeGanttToday,
 } from "@/domain/gantt/today-activity";
 import type { GanttZoom } from "@/domain/gantt/view-range";
@@ -102,751 +81,23 @@ import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
 import { HudIconCalendar, HudIconGrid } from "@/components/admin/AdminHudIcons";
 import { useLocale, useTranslations } from "next-intl";
 
+// Extracted sub-components
+import {
+  ROOM_COL_W,
+  DAY_COL_MIN_W,
+  type InlineZoomChoice,
+  QUICK_SHIFT_STEPS,
+  ToolbarFilterIcon,
+  normalizeZoomChoice,
+  periodStepMeta,
+  quickShiftMeta,
+} from "@/components/admin/gantt/GanttGridHelpers";
+import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
+import { GanttStickyViewportHeader } from "@/components/admin/gantt/GanttStickyViewportHeader";
+import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
+import { GanttFooterLegend } from "@/components/admin/gantt/GanttFooterLegend";
+
 export type { GanttRoom };
-
-const ROOM_COL_W = "7.7rem";
-const DAY_COL_MIN_W = "2.25rem";
-
-const GANTT_DAY_CELL =
-  "gantt-day-cell min-w-0 bg-white shadow-[inset_0_0_0_1px_#d4d4d8]";
-
-type InlineZoomChoice = "today" | "days7" | "days15" | "days30" | "quarter";
-
-const QUICK_SHIFT_STEPS = [{ days: 1 }, { days: 7 }, { days: 15 }, { days: 30 }] as const;
-
-function ToolbarFilterIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M4 6h12" />
-      <path d="M6.5 10h7" />
-      <path d="M8.5 14h3" />
-      <circle cx="6.5" cy="6" r="1" fill="currentColor" stroke="none" />
-      <circle cx="11.5" cy="10" r="1" fill="currentColor" stroke="none" />
-      <circle cx="9.5" cy="14" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-type StickyViewportState = {
-  active: boolean;
-  left: number;
-  width: number;
-  roomColumnWidth: number;
-  daysContentWidth: number;
-  scrollLeft: number;
-};
-
-function normalizeZoomChoice(zoom: GanttZoom): InlineZoomChoice {
-  if (zoom === "week") return "days7";
-  if (zoom === "month") return "days30";
-  if (zoom === "today" || zoom === "days7" || zoom === "days15" || zoom === "days30") {
-    return zoom;
-  }
-  return "quarter";
-}
-
-function periodStepMeta(
-  zoom: InlineZoomChoice,
-  tCommon: (key: string) => string
-): { label: string; aria: string } {
-  switch (zoom) {
-    case "today":
-      return { label: tCommon("stepOneDay"), aria: tCommon("oneDayAria") };
-    case "days7":
-      return { label: tCommon("stepOneWeek"), aria: tCommon("oneWeekAria") };
-    case "days15":
-      return { label: tCommon("stepFifteenDays"), aria: tCommon("fifteenDaysAria") };
-    case "days30":
-      return { label: tCommon("stepOneMonth"), aria: tCommon("oneMonthAria") };
-    case "quarter":
-      return { label: tCommon("stepOneQuarter"), aria: tCommon("oneQuarterAria") };
-  }
-}
-
-function quickShiftMeta(
-  days: number,
-  tCommon: (key: string) => string
-): { label: string; shortLabel: string } {
-  if (days === 1) return { label: tCommon("oneDayAria"), shortLabel: "1d" };
-  if (days === 7) return { label: tCommon("oneWeekAria"), shortLabel: "1w" };
-  if (days === 15) return { label: tCommon("fifteenDaysAria"), shortLabel: "15d" };
-  return { label: tCommon("oneMonthAria"), shortLabel: "30d" };
-}
-
-function ganttDayGridStyle(dayCount: number): CSSProperties {
-  return {
-    gridTemplateColumns: `repeat(${dayCount}, minmax(0, 1fr))`,
-  };
-}
-
-function dayCellClass(
-  col: { isWeekend: boolean; isToday: boolean },
-  compact: boolean,
-  touch: boolean
-) {
-  return [
-    GANTT_DAY_CELL,
-    compact && "gantt-day-cell--compact",
-    touch && "gantt-day-cell--touch",
-    col.isWeekend && "gantt-day-cell--weekend",
-    col.isToday && "gantt-day-cell--today",
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
-
-/** Header zile — fără zone/hasură din grila de cazare */
-function dayHeaderCellClass(
-  col: { isWeekend: boolean; isToday: boolean },
-  compact: boolean
-) {
-  return [
-    "gantt-day-header-cell min-w-0",
-    compact && "gantt-day-header-cell--compact",
-    col.isWeekend && "gantt-day-header-cell--weekend",
-    col.isToday && "gantt-day-header-cell--today",
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
-
-function DayGrid({
-  columns,
-  compact,
-  touch,
-  checkInTime,
-  checkOutTime,
-}: {
-  columns: GanttViewRange["days"];
-  compact: boolean;
-  touch: boolean;
-  checkInTime: string;
-  checkOutTime: string;
-}) {
-  return (
-    <div
-      className="gantt-day-grid gantt-day-grid--timed grid h-full w-full min-w-0 bg-white shadow-[inset_1px_0_0_0_#d4d4d8]"
-      style={{
-        ...ganttDayGridStyle(columns.length),
-        ...ganttDayTimeStyle(checkInTime, checkOutTime),
-      }}
-    >
-      {columns.map((col) => (
-        <div key={col.iso} className={dayCellClass(col, compact, touch)} />
-      ))}
-    </div>
-  );
-}
-
-function DayHeader({
-  columns,
-  compact,
-  onPanPointerDown,
-  panActive = false,
-  scrollTitle,
-  todayLabel,
-  locale,
-}: {
-  columns: GanttViewRange["days"];
-  compact: boolean;
-  onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
-  panActive?: boolean;
-  scrollTitle: string;
-  todayLabel: string;
-  locale: string;
-}) {
-  return (
-    <div
-      className={[
-        "gantt-day-header-grid grid w-full min-w-0 border-b border-zinc-300 bg-gradient-to-b from-slate-50 to-zinc-100/90",
-        "gantt-day-header-grid--pan",
-        panActive && "gantt-day-header-grid--panning",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      style={ganttDayGridStyle(columns.length)}
-      data-gantt-day-grid=""
-      data-gantt-day-count={columns.length}
-      onPointerDown={onPanPointerDown}
-      title={scrollTitle}
-    >
-      {columns.map((col) => (
-        <div key={col.iso} className="gantt-day-header-col flex min-w-0 flex-col">
-          <span
-            className={[
-              "gantt-day-azi-above",
-              !col.isToday && "invisible",
-            ].join(" ")}
-            aria-hidden={!col.isToday}
-          >
-            {todayLabel}
-          </span>
-          <div
-            className={[
-              dayHeaderCellClass(col, compact),
-              "gantt-day-header-cell__body flex flex-1 flex-col items-center justify-center text-center leading-tight",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <span className="gantt-day-header-cell__date tabular-nums">
-              {col.dayNum}
-            </span>
-            <span className="gantt-day-header-cell__weekday">
-              {compact
-                ? formatWeekdayNarrow(col.iso, locale)
-                : formatWeekdayShort(col.iso, locale)}
-            </span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SummaryGrid({
-  counts,
-  viewRange,
-  compact,
-  activeFocusIso,
-  filterActive,
-  onDayClick,
-  onPanPointerDown,
-  panActive = false,
-  ariaLabel,
-  scrollTitle,
-  dayTitle,
-  dayAriaLabel,
-}: {
-  counts: DailyFreeCount[];
-  viewRange: GanttViewRange;
-  compact: boolean;
-  activeFocusIso: string | null;
-  filterActive: boolean;
-  onDayClick: (iso: string) => void;
-  onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
-  panActive?: boolean;
-  ariaLabel: string;
-  scrollTitle: string;
-  dayTitle: (iso: string, free: number, total: number) => string;
-  dayAriaLabel: (iso: string, free: number) => string;
-}) {
-  return (
-    <div
-      className={[
-        "gantt-summary-row__grid grid w-full min-w-0",
-        "gantt-summary-row__grid--pan",
-        panActive && "gantt-summary-row__grid--panning",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      style={ganttDayGridStyle(viewRange.days.length)}
-      role="row"
-      aria-label={ariaLabel}
-      onPointerDown={onPanPointerDown}
-      title={scrollTitle}
-    >
-      {viewRange.days.map((col, i) => {
-        const { free, total } = counts[i]!;
-        const heat = dailyFreeHeatLevel(free, total);
-        const isSelected = filterActive && activeFocusIso === col.iso;
-        const title = dayTitle(col.iso, free, total);
-
-        return (
-          <button
-            key={col.iso}
-            type="button"
-            title={title}
-            aria-pressed={isSelected}
-            aria-label={dayAriaLabel(col.iso, free)}
-            onClick={() => onDayClick(col.iso)}
-            className={[
-              "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
-              compact ? "gantt-summary-cell--compact py-[0.25rem]" : "py-[0.36rem]",
-              col.isWeekend && "gantt-summary-cell--weekend",
-              col.isToday && "gantt-summary-cell--today",
-              `gantt-summary-cell--${heat}`,
-              isSelected && "gantt-summary-cell--selected",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <span className="gantt-summary-cell__value tabular-nums">{free}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function StickyViewportHeader({
-  scrollRef,
-  shellRef,
-  theadRef,
-  counts,
-  viewRange,
-  compact,
-  activeFocusIso,
-  filterActive,
-  onDayClick,
-  onPanPointerDown,
-  panActive,
-}: {
-  scrollRef: RefObject<HTMLDivElement | null>;
-  shellRef: RefObject<HTMLDivElement | null>;
-  theadRef: RefObject<HTMLTableSectionElement | null>;
-  counts: DailyFreeCount[];
-  viewRange: GanttViewRange;
-  compact: boolean;
-  activeFocusIso: string | null;
-  filterActive: boolean;
-  onDayClick: (iso: string) => void;
-  onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
-  panActive?: boolean;
-}) {
-  const tCommon = useTranslations("admin.common");
-  const locale = useLocale();
-  const [state, setState] = useState<StickyViewportState>({
-    active: false,
-    left: 0,
-    width: 0,
-    roomColumnWidth: 0,
-    daysContentWidth: 0,
-    scrollLeft: 0,
-  });
-
-  useEffect(() => {
-    const scrollEl = scrollRef.current;
-    const shell = shellRef.current;
-    const thead = theadRef.current;
-    if (!scrollEl || !shell || !thead) return;
-
-    let frame = 0;
-    const update = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const scrollRect = scrollEl.getBoundingClientRect();
-        const shellRect = shell.getBoundingClientRect();
-        const theadRect = thead.getBoundingClientRect();
-        const roomHeader =
-          thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
-        const roomColumnWidth = roomHeader?.getBoundingClientRect().width ?? 0;
-        const daysContentWidth = Math.max(0, scrollEl.scrollWidth - roomColumnWidth);
-        const next: StickyViewportState = {
-          active:
-            theadRect.top <= 0 && shellRect.bottom > Math.max(theadRect.height, 1),
-          left: scrollRect.left,
-          width: scrollRect.width,
-          roomColumnWidth,
-          daysContentWidth,
-          scrollLeft: scrollEl.scrollLeft,
-        };
-
-        setState((prev) =>
-          prev.active === next.active &&
-          prev.left === next.left &&
-          prev.width === next.width &&
-          prev.roomColumnWidth === next.roomColumnWidth &&
-          prev.daysContentWidth === next.daysContentWidth &&
-          prev.scrollLeft === next.scrollLeft
-            ? prev
-            : next
-        );
-      });
-    };
-
-    update();
-    scrollEl.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      scrollEl.removeEventListener("scroll", update);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [scrollRef, shellRef, theadRef, viewRange.periodKey, compact, counts.length]);
-
-  if (
-    !state.active ||
-    state.width <= 0 ||
-    state.daysContentWidth <= 0 ||
-    state.roomColumnWidth <= 0
-  ) {
-    return null;
-  }
-
-  return (
-    <AdminPortal>
-      <div
-        className="gantt-viewport-header"
-        style={{ left: state.left, width: state.width }}
-        aria-hidden={false}
-      >
-        <div className="gantt-viewport-header__row gantt-viewport-header__row--main">
-          <div
-            className="gantt-head-main-row__room gantt-room-column-header gantt-viewport-header__room px-3 py-[0.72rem]"
-            style={{ width: state.roomColumnWidth }}
-          >
-            {tCommon("room")}
-          </div>
-          <div className="gantt-viewport-header__days-viewport">
-            <div
-              className="gantt-viewport-header__days-inner"
-              style={{
-                width: state.daysContentWidth,
-                transform: `translateX(-${state.scrollLeft}px)`,
-              }}
-            >
-              <div className="gantt-head-main-row__days">
-                <DayHeader
-                  columns={viewRange.days}
-                  compact={compact}
-                  onPanPointerDown={onPanPointerDown}
-                  panActive={panActive}
-                  scrollTitle={tCommon("scrollDrag")}
-                  todayLabel={tCommon("todayPanel")}
-                  locale={locale}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="gantt-viewport-header__row gantt-viewport-header__row--summary">
-          <div
-            className="gantt-summary-row__label gantt-viewport-header__summary-label"
-            style={{ width: state.roomColumnWidth }}
-          >
-            <span className="gantt-summary-row__label-title">
-              {tCommon("free")}
-            </span>
-            {filterActive && activeFocusIso && (
-              <span className="gantt-summary-row__label-state">
-                {tCommon("activeFilter")}
-              </span>
-            )}
-          </div>
-          <div className="gantt-viewport-header__days-viewport">
-            <div
-              className="gantt-viewport-header__days-inner"
-              style={{
-                width: state.daysContentWidth,
-                transform: `translateX(-${state.scrollLeft}px)`,
-              }}
-            >
-              <div className="gantt-summary-row__days">
-                <SummaryGrid
-                  counts={counts}
-                  viewRange={viewRange}
-                  compact={compact}
-                  activeFocusIso={activeFocusIso}
-                  filterActive={filterActive}
-                  onDayClick={onDayClick}
-                  onPanPointerDown={onPanPointerDown}
-                  panActive={panActive}
-                  ariaLabel={tCommon("freeRoomsByDay")}
-                  scrollTitle={tCommon("scrollDrag")}
-                  dayTitle={(iso, free, total) =>
-                    total === 0 ? iso : tCommon("freeRoomsFilterTitle", { count: free })
-                  }
-                  dayAriaLabel={(iso, free) =>
-                    tCommon("freeRoomsForDate", { iso, count: free })
-                  }
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </AdminPortal>
-  );
-}
-
-function RoomRow({
-  room,
-  viewRange,
-  occupancyByRoom,
-  staySegments,
-  overlays,
-  checkInTime,
-  checkOutTime,
-  compact,
-  touch,
-  dimmed,
-  todayFlags,
-  onOccOpen,
-  bookingById,
-  onMoveRoom,
-  onCreateDraft,
-  pinnedSelection,
-  onCtrlDragEnd,
-  today,
-}: {
-  room: GanttRoom;
-  viewRange: GanttViewRange;
-  occupancyByRoom: Map<string, OccupancySegment[]>;
-  staySegments: OccupancySegment[];
-  overlays: OccupancySegment[];
-  checkInTime: string;
-  checkOutTime: string;
-  compact: boolean;
-  touch: boolean;
-  dimmed?: boolean;
-  todayFlags: RoomTodayFlags;
-  onOccOpen: (seg: OccupancySegment, roomName: string) => void;
-  bookingById: Map<string, BookingRow>;
-  onMoveRoom: (draft: MoveRoomDraft) => void;
-  onCreateDraft: (draft: GanttCreateDraft) => void;
-  pinnedSelection?: PinnedSelection | null;
-  onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
-  today: string;
-}) {
-  const tCommon = useTranslations("admin.common");
-  const tLayers = useTranslations("admin.gantt.layers");
-  const dayCount = viewRange.days.length;
-
-  const roomColor = resolveGanttBuildingColor(
-    room.building_color,
-    room.building_ac_mode
-  );
-  const sidebarMarkerColor = resolveGanttAcMarkerColor(room.building_ac_mode, {
-    roomHasAc: room.has_ac,
-  });
-
-  const rowTodayClass = [
-    todayFlags.arrival && "gantt-room-row--arrival-today",
-    todayFlags.departure && "gantt-room-row--departure-today",
-    todayFlags.occupiedTonight &&
-      !todayFlags.arrival &&
-      !todayFlags.departure &&
-      "gantt-room-row--in-house",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return (
-    <tr
-      data-gantt-room-row={room.id}
-      data-gantt-room-name={room.name}
-      className={[
-        "gantt-room-row border-t border-zinc-300",
-        rowTodayClass,
-        dimmed && "gantt-room-row--dimmed",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <td
-        className="gantt-room-cell sticky left-0 z-10 px-2 py-[0.45rem] align-top"
-        style={{ "--marker-color": sidebarMarkerColor } as CSSProperties}
-      >
-        <div className="flex items-start gap-1.5">
-          <GanttRoomMarker
-            acMode={room.building_ac_mode}
-            size="sm"
-            roomHasAc={room.has_ac}
-          />
-          <div className="gantt-room-cell__text min-w-0">
-            <span className="gantt-room-cell__name">{room.name}</span>
-            <span className="gantt-room-cell__building">{room.building_name}</span>
-            <RoomFeatureBadges
-              roomTypeName={room.room_type_name}
-              optionSlugs={room.option_slugs}
-              hasAc={room.has_ac}
-              compact
-              iconOnly
-              hideRoomType
-            />
-            {(todayFlags.arrival || todayFlags.departure) && (
-              <span className="gantt-room-today-badges mt-1 flex flex-wrap gap-1">
-                {todayFlags.arrival && (
-                  <span className="gantt-room-today-badge gantt-room-today-badge--in">
-                    Sosire azi
-                  </span>
-                )}
-                {todayFlags.departure && (
-                  <span className="gantt-room-today-badge gantt-room-today-badge--out">
-                    Plecare azi
-                  </span>
-                )}
-              </span>
-            )}
-          </div>
-        </div>
-      </td>
-      <td className="relative w-full overflow-visible p-0 align-top">
-        <GanttDragCreateLayer
-          roomId={room.id}
-          roomName={room.name}
-          viewRange={viewRange}
-          occupancyByRoom={occupancyByRoom}
-          checkInTime={checkInTime}
-          checkOutTime={checkOutTime}
-          touch={touch}
-          onCreateDraft={onCreateDraft}
-          pinnedSelection={pinnedSelection}
-          onCtrlDragEnd={onCtrlDragEnd}
-          renderGrid={
-            <DayGrid
-              columns={viewRange.days}
-              compact={compact}
-              touch={touch}
-              checkInTime={checkInTime}
-              checkOutTime={checkOutTime}
-            />
-          }
-        >
-          {overlays.map((seg) => {
-            const pos = bookingBarInRange(
-              seg.checkIn,
-              seg.checkOut,
-              viewRange.rangeStart,
-              viewRange.rangeEnd,
-              dayCount,
-              checkInTime,
-              checkOutTime
-            );
-            if (!pos || pos.widthPct <= 0) return null;
-            const label =
-              seg.kind === "hold"
-                ? seg.reason?.trim() || tLayers("hold")
-                : seg.reason?.trim() || tCommon("blocked");
-            const title =
-              seg.kind === "hold"
-                ? tCommon("holdTitleRange", {
-                    label,
-                    checkIn: seg.checkIn,
-                    checkOut: seg.checkOut,
-                  })
-                : tCommon("blockTitleRange", {
-                    label,
-                    checkIn: seg.checkIn,
-                    checkOut: seg.checkOut,
-                  });
-            return (
-              <GanttOccupancyBar
-                key={`${seg.kind}-${seg.id}`}
-                label={label}
-                title={title}
-                pos={pos}
-                kind={seg.kind as "hold" | "block"}
-                segment={seg}
-                roomName={room.name}
-                expiresAt={seg.expiresAt}
-                onOpen={() => onOccOpen(seg, room.name)}
-              />
-            );
-          })}
-          {staySegments.map((seg) => {
-            const b = seg.bookingId ? bookingById.get(seg.bookingId) : undefined;
-            if (!b) return null;
-            const pos = bookingBarInRange(
-              seg.checkIn,
-              seg.checkOut,
-              viewRange.rangeStart,
-              viewRange.rangeEnd,
-              dayCount,
-              checkInTime,
-              checkOutTime
-            );
-            if (!pos || pos.widthPct <= 0) return null;
-            const isCerere = b.status === "cerere_noua";
-            const ganttLabel = formatGuestGanttLabel(
-              b.guest_last_name,
-              b.guest_first_name,
-              b.guest_name
-            );
-            const guests = guestPartyTotal(b.num_adults, b.num_children);
-            const todayHl = stayTodayHighlight(b, today);
-            const initials = guestInitials(
-              b.guest_last_name,
-              b.guest_first_name,
-              b.guest_name
-            );
-            const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut, today);
-            const canMoveRoom =
-              b.status === "confirmata" && phase !== "past";
-            const moveDraft: MoveRoomDraft | null = canMoveRoom
-              ? {
-                  bookingId: b.id,
-                  guestName: b.guest_name,
-                  sourceRoomId: room.id,
-                  sourceRoomName: room.name,
-                  roomIds: b.room_ids,
-                }
-              : null;
-            return (
-              <GanttDraggableStay
-                key={`${seg.id}-${room.id}`}
-                href={`/admin/bookings/${b.id}`}
-                label={ganttLabel}
-                pos={pos}
-                isCerere={isCerere}
-                guestTotal={guests}
-                bookingId={b.id}
-                dayIsos={viewRange.days.map((day) => day.iso)}
-                bookingCheckIn={b.check_in}
-                buildingColor={roomColor}
-                todayHighlight={todayHl}
-                initials={initials}
-                occupancyPhase={phase}
-                guestId={b.guest_id}
-                sourceRoomId={room.id}
-                canVerticalMove={canMoveRoom}
-                moveRoomDraft={moveDraft}
-                onMoveRoom={
-                  moveDraft
-                    ? () => onMoveRoom(moveDraft)
-                    : undefined
-                }
-                actualCheckInAt={b.actual_check_in_at}
-                actualCheckOutAt={b.actual_check_out_at}
-                today={today}
-                popover={{
-                  bookingId: b.id,
-                  guestName: b.guest_name,
-                  label: ganttLabel,
-                  checkIn: seg.checkIn,
-                  checkOut: seg.checkOut,
-                  status: b.status as "cerere_noua" | "confirmata",
-                  actualCheckInAt: b.actual_check_in_at,
-                  actualCheckOutAt: b.actual_check_out_at,
-                  numAdults: b.num_adults,
-                  numChildren: b.num_children,
-                  checkInTime,
-                  checkOutTime,
-                  continuesBefore: pos.continuesBefore,
-                  continuesAfter: pos.continuesAfter,
-                  buildingColor: roomColor,
-                  roomId: room.id,
-                  roomName: room.name,
-                  roomNames: b.room_names,
-                  guestPhone: b.guest_phone,
-                  totalPrice: b.total_price,
-                  canMoveRoom,
-                  onMoveRoom: moveDraft
-                    ? () => onMoveRoom(moveDraft)
-                    : undefined,
-                }}
-              />
-            );
-          })}
-        </GanttDragCreateLayer>
-      </td>
-    </tr>
-  );
-}
 
 export function GanttCalendar({
   viewRange,
@@ -889,6 +140,8 @@ export function GanttCalendar({
   const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
   const focusIso =
     filter !== "all" && focusDay ? focusDay : defaultFocusIso;
+
+  // ─── Derived data ──────────────────────────────────────────────────
   const activeBookings = useMemo(
     () => bookings.filter((booking) => booking.status !== "anulata"),
     [bookings]
@@ -975,6 +228,7 @@ export function GanttCalendar({
     return map;
   }, [rooms, bookingsByRoom, todaySummary.todayIso]);
 
+  // ─── Refs ──────────────────────────────────────────────────────────
   const scrollRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
@@ -989,10 +243,55 @@ export function GanttCalendar({
     move: (event: PointerEvent) => void;
     end: (event: PointerEvent) => void;
   } | null>(null);
+
+  // ─── Local state ───────────────────────────────────────────────────
   const [isHeaderPanActive, setIsHeaderPanActive] = useState(false);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filtersAnchorRect, setFiltersAnchorRect] = useState<DOMRect | null>(null);
+  const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
+  const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
+  const [occFormMode, setOccFormMode] = useState<
+    "hold" | "block" | "cerere" | "direct" | "move" | null
+  >(null);
+  const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
+  const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
+    null
+  );
+  const [pinnedSelection, setPinnedSelection] = useState<PinnedSelection | null>(null);
+  const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
+    () => new Set()
+  );
+  const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
+    null
+  );
+  const [opsCheckDialog, setOpsCheckDialog] = useState<{
+    mode: GanttOpsPickerMode;
+    bookingId: string;
+    guestName: string;
+    plannedCheckIn: string;
+    plannedCheckOut: string;
+  } | null>(null);
 
+  // ─── Building groups ───────────────────────────────────────────────
+  const buildingGroups = groupByBuilding
+    ? Array.from(
+        filteredRooms.reduce((map, room) => {
+          const list = map.get(room.building_id) ?? [];
+          list.push(room);
+          map.set(room.building_id, list);
+          return map;
+        }, new Map<string, GanttRoom[]>())
+      ).map(([buildingId, buildingRooms]) => ({
+        buildingId,
+        buildingName: buildingRooms[0]?.building_name ?? tCommon("building"),
+        buildingColor: buildingRooms[0]?.building_color ?? null,
+        buildingAcMode: buildingRooms[0]?.building_ac_mode ?? "per_room",
+        hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
+        rooms: buildingRooms,
+      }))
+    : [];
+
+  // ─── Scroll / pan callbacks ────────────────────────────────────────
   const scrollToTodayColumn = useCallback(() => {
     const el = scrollRef.current;
     if (!el || todayIndex < 0 || dayCount === 0) return;
@@ -1062,48 +361,7 @@ export function GanttCalendar({
     [endHeaderPan, touch]
   );
 
-  const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
-  const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
-  const [occFormMode, setOccFormMode] = useState<
-    "hold" | "block" | "cerere" | "direct" | "move" | null
-  >(null);
-  const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
-  const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
-    null
-  );
-  const [pinnedSelection, setPinnedSelection] = useState<PinnedSelection | null>(null);
-  const [collapsedBuildings, setCollapsedBuildings] = useState<Set<string>>(
-    () => new Set()
-  );
-  const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
-    null
-  );
-  const [opsCheckDialog, setOpsCheckDialog] = useState<{
-    mode: GanttOpsPickerMode;
-    bookingId: string;
-    guestName: string;
-    plannedCheckIn: string;
-    plannedCheckOut: string;
-  } | null>(null);
-
-  const buildingGroups = groupByBuilding
-    ? Array.from(
-        filteredRooms.reduce((map, room) => {
-          const list = map.get(room.building_id) ?? [];
-          list.push(room);
-          map.set(room.building_id, list);
-          return map;
-        }, new Map<string, GanttRoom[]>())
-      ).map(([buildingId, buildingRooms]) => ({
-        buildingId,
-        buildingName: buildingRooms[0]?.building_name ?? tCommon("building"),
-        buildingColor: buildingRooms[0]?.building_color ?? null,
-        buildingAcMode: buildingRooms[0]?.building_ac_mode ?? "per_room",
-        hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
-        rooms: buildingRooms,
-      }))
-    : [];
-
+  // ─── Effects ───────────────────────────────────────────────────────
   useEffect(() => {
     const onScrollToday = () => scrollToTodayColumn();
     window.addEventListener("gantt:scroll-today", onScrollToday);
@@ -1173,6 +431,7 @@ export function GanttCalendar({
     [bookings]
   );
 
+  // ─── Event handlers ────────────────────────────────────────────────
   const handleOccOpen = useCallback(
     (seg: OccupancySegment, roomName: string) => {
       setOccDetail({ segment: seg, roomName });
@@ -1250,6 +509,7 @@ export function GanttCalendar({
     });
   }, [pinnedSelection, dayIsos]);
 
+  // ─── Navigation callbacks ──────────────────────────────────────────
   const handleSummaryDayClick = useCallback(
     (iso: string) => {
       if (Date.now() < suppressHeaderClickUntilRef.current) return;
@@ -1478,6 +738,7 @@ export function GanttCalendar({
 
   const activePeriodStep = periodStepMeta(zoomChoice, tCommon);
 
+  // ─── Render ────────────────────────────────────────────────────────
   return (
     <GanttContextMenuProvider
       onRequestCreate={setCreateDraft}
@@ -1489,7 +750,7 @@ export function GanttCalendar({
         viewRange={viewRange}
         occupancy={occupancy}
       />
-      <StickyViewportHeader
+      <GanttStickyViewportHeader
         scrollRef={scrollRef}
         shellRef={shellRef}
         theadRef={theadRef}
@@ -1511,6 +772,7 @@ export function GanttCalendar({
         ref={shellRef}
         className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
       >
+        {/* ── Inline toolbar ─────────────────────────────────────── */}
         <div className="gantt-inline-controls mx-3 mt-0">
           <div className="gantt-inline-controls__row gantt-inline-controls__row--primary">
             <div className="gantt-inline-controls__center">
@@ -1700,6 +962,7 @@ export function GanttCalendar({
           </div>
         </div>
 
+        {/* ── Filters floating panel ─────────────────────────────── */}
         <AdminFloatingPanel
           open={isFiltersOpen}
           onClose={() => {
@@ -1765,6 +1028,7 @@ export function GanttCalendar({
           </div>
         )}
 
+        {/* ── Table ──────────────────────────────────────────────── */}
         <table
           className={[
             "w-full table-fixed border-separate border-spacing-0 text-xs",
@@ -1784,7 +1048,7 @@ export function GanttCalendar({
                 {tCommon("room")}
               </th>
               <th className="gantt-head-main-row__days p-0">
-                <DayHeader
+                <GanttDayHeader
                   columns={viewRange.days}
                   compact={compact}
                   onPanPointerDown={handleHeaderPanPointerDown}
@@ -1885,7 +1149,7 @@ export function GanttCalendar({
                     </tr>
                     {!collapsed &&
                       group.rooms.map((room) => (
-                      <RoomRow
+                      <GanttRoomRow
                         key={room.id}
                         room={room}
                         viewRange={viewRange}
@@ -1918,7 +1182,7 @@ export function GanttCalendar({
                   );
                 })
               : filteredRooms.map((room) => (
-                  <RoomRow
+                  <GanttRoomRow
                     key={room.id}
                     room={room}
                     viewRange={viewRange}
@@ -1966,74 +1230,10 @@ export function GanttCalendar({
           />
         )}
 
-        <div className="gantt-footer-legend border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 text-[11px] text-zinc-600">
-          <p className="gantt-stay-hint mb-2 text-xs">
-            {tGantt("footer.dragHint")} · {tGantt("footer.buildingFocusHint")} ·{" "}
-            <kbd className="rounded border px-1">T</kbd> {tCommon("todayShort").toLowerCase()}
-          </p>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            <span className="inline-flex items-center gap-1.5">
-              <span className="gantt-legend-swatch gantt-legend-swatch--checkout" />
-              {tGantt("footer.dayDepartureUntil", { time: checkOutTime })}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="gantt-legend-swatch gantt-legend-swatch--clean" />
-              {tGantt("footer.cleaning")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="gantt-legend-swatch gantt-legend-swatch--checkin" />
-              {tGantt("footer.nightArrivalFrom", { time: checkInTime })}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="gantt-legend-swatch gantt-legend-swatch--weekend" />
-              {tGantt("footer.weekend")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="gantt-legend-today-line" aria-hidden />
-              {tCommon("todayShort")}
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <span className="gantt-room-today-badge gantt-room-today-badge--in">
-                {tCommon("arrival")}
-              </span>
-              <span className="gantt-room-today-badge gantt-room-today-badge--out">
-                {tCommon("departure")}
-              </span>
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <GanttBuildingMarker acMode="all_rooms" size="sm" />
-              {tGantt("markers.buildingWithAc")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <GanttBuildingMarker acMode="none" size="sm" />
-              {tGantt("markers.buildingWithoutAc")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <GanttRoomMarker acMode="all_rooms" size="sm" />
-              {tCommon("room")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="mr-0.5 inline-block h-3 w-7 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-[inset_2px_0_0_#059669]" />
-              {tLayers("confirmate")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-3 w-7 rounded-full bg-gradient-to-r from-amber-300 to-amber-400" />
-              {tCommon("request")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-3 w-7 rounded-full bg-slate-300" />
-              {tLayers("trecute")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-3 w-7 rounded-full bg-yellow-300" />
-              {tLayers("hold")}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-3 w-7 rounded-full bg-yellow-400" />
-              {tLayers("block")}
-            </span>
-          </div>
-        </div>
+        <GanttFooterLegend
+          checkInTime={checkInTime}
+          checkOutTime={checkOutTime}
+        />
       </div>
     </div>
       <GanttContextMenuPanel />

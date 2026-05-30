@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 
 import { isFactoryResetEnabled as envFactoryResetEnabled } from "@/lib/env/server";
 
@@ -18,7 +18,7 @@ export function assertFactoryResetAllowed(): void {
 export async function runFactoryReset(): Promise<void> {
   assertFactoryResetAllowed();
 
-  const supabase = createAdminClient();
+  const supabase = createPublicAdminClient();
   const { error } = await supabase.rpc("admin_factory_reset");
 
   if (error) {

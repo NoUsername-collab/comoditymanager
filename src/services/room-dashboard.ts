@@ -54,7 +54,7 @@ export type RoomDashboard = {
 type StayRow = RoomStayInfo & { room_id: string };
 
 async function loadStaysForRooms(): Promise<StayRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("booking_rooms")
     .select(

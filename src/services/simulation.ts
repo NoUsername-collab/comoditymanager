@@ -1,15 +1,17 @@
 /**
  * Simulation service — manages the lifecycle of a simulation session.
  *
- * Uses in-place backup: on start, all tables are copied to _sim_backup_*
- * tables. During simulation, the app operates on the real tables normally.
- * On stop, all tables are restored from backup and backups are dropped.
+ * v2: Schema-based sandbox.
  *
- * Advance: moves the simulated clock forward by N days and calls sim_advance()
- * which processes time-dependent events (auto check-in, check-out, hold expiry).
+ * Start → CREATE SCHEMA sim_sandbox + copy all tables with data/FKs
+ * During → app's Supabase client targets sim_sandbox (real data untouched)
+ * Stop  → DROP SCHEMA sim_sandbox CASCADE (instant, clean)
+ *
+ * Advance: moves the simulated clock forward and calls sim_advance()
+ * which processes time-dependent events in sim_sandbox.
  */
 
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import {
   getSimStatus,
   setSimCookie,
@@ -27,8 +29,8 @@ export type SimAdvanceResult = {
 
 /**
  * Start a new simulation session.
- * Creates backup copies of all tables via sim_start() RPC.
- * Falls back to cookie-only mode if the RPC doesn't exist yet.
+ * Creates sim_sandbox schema with full copy of all business tables.
+ * Real data in 'public' is never modified.
  */
 export async function startSimulation(): Promise<SimState> {
   // Safety: don't start if already active
@@ -37,63 +39,35 @@ export async function startSimulation(): Promise<SimState> {
     throw new Error("simulation.already_active");
   }
 
-  // Create backup via Postgres function
-  const supabase = createAdminClient();
-  let rpcWorked = false;
+  // RPC lives in public schema — use public-only client
+  const supabase = createPublicAdminClient();
+  const { error } = await supabase.rpc("sim_start");
 
-  try {
-    const { error } = await supabase.rpc("sim_start");
-
-    if (error) {
-      // Log but don't throw — fall back to cookie-only mode
-      console.error(
-        "sim_start RPC failed (migration may not be applied):",
-        error.message
-      );
-    } else {
-      rpcWorked = true;
-    }
-  } catch (e) {
-    // RPC doesn't exist — graceful degradation
-    console.error("sim_start not available:", e);
+  if (error) {
+    throw new Error(`simulation.start_failed: ${error.message}`);
   }
 
-  // Set the simulation cookie regardless
+  // Set the simulation cookie AFTER schema is created
   const state = createSimState();
   await setSimCookie(state);
-
-  if (!rpcWorked) {
-    console.warn(
-      "⚠ Simulation started in cookie-only mode (no DB backup).",
-      "Run the 023_simulation.sql migration to enable full simulation."
-    );
-  }
 
   return state;
 }
 
 /**
- * Stop the current simulation and restore all data from backup.
+ * Stop the current simulation and drop the sandbox schema.
+ * Instant, clean — one DROP SCHEMA CASCADE.
  */
 export async function stopSimulation(): Promise<void> {
-  // Restore from backup via Postgres function
-  const supabase = createAdminClient();
+  // RPC lives in public schema — use public-only client
+  const supabase = createPublicAdminClient();
+  const { error } = await supabase.rpc("sim_stop");
 
-  try {
-    const { error } = await supabase.rpc("sim_stop");
-
-    if (error) {
-      console.error(
-        "Failed to restore from simulation backup:",
-        error.message
-      );
-      // Still clear the cookie even if restore fails
-    }
-  } catch (e) {
-    console.error("sim_stop not available:", e);
+  if (error) {
+    console.error("sim_stop RPC failed:", error.message);
+    // Still clear the cookie
   }
 
-  // Clear the cookie
   await clearSimCookie();
 }
 
@@ -111,8 +85,8 @@ export async function advanceSimulation(
 
   const newState = advanceSimState(current, days);
 
-  // Process time-dependent events in the database
-  const supabase = createAdminClient();
+  // RPC lives in public schema, but operates on sim_sandbox internally
+  const supabase = createPublicAdminClient();
   let dbResult: SimAdvanceResult | undefined;
 
   try {
@@ -122,18 +96,83 @@ export async function advanceSimulation(
 
     if (error) {
       console.error("sim_advance RPC failed:", error.message);
-      // Don't throw — still update the cookie so the date moves forward.
-      // The RPC might not exist yet if migration hasn't been run.
     } else if (data) {
       dbResult = data as SimAdvanceResult;
     }
   } catch (e) {
-    // RPC doesn't exist yet — graceful degradation
     console.error("sim_advance not available:", e);
   }
 
   await setSimCookie(newState);
   return { ...newState, dbResult };
+}
+
+/**
+ * Advance simulation to a specific target date (ISO string).
+ */
+export async function advanceSimulationToDate(
+  targetDate: string
+): Promise<SimState & { dbResult?: SimAdvanceResult }> {
+  const current = await getSimStatus();
+  if (!current.active) {
+    throw new Error("simulation.not_active");
+  }
+
+  const curD = new Date(current.currentDate + "T12:00:00");
+  const tgtD = new Date(targetDate + "T12:00:00");
+  const diffMs = tgtD.getTime() - curD.getTime();
+  const days = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+  if (days <= 0) {
+    throw new Error("simulation.target_not_future");
+  }
+
+  return advanceSimulation(days);
+}
+
+/**
+ * Find the next check-in date after the current simulation date.
+ * Uses sim-aware client (reads from sim_sandbox when active).
+ */
+export async function findNextCheckIn(
+  afterDate: string
+): Promise<string | null> {
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("check_in")
+    .eq("status", "confirmata")
+    .gt("check_in", afterDate)
+    .is("actual_check_in_at", null)
+    .order("check_in", { ascending: true })
+    .limit(1)
+    .single();
+
+  if (error || !data) return null;
+  return data.check_in as string;
+}
+
+/**
+ * Find the next check-out date after the current simulation date.
+ * Uses sim-aware client (reads from sim_sandbox when active).
+ */
+export async function findNextCheckOut(
+  afterDate: string
+): Promise<string | null> {
+  const supabase = await createAdminClient();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select("check_out")
+    .eq("status", "confirmata")
+    .gt("check_out", afterDate)
+    .not("actual_check_in_at", "is", null)
+    .is("actual_check_out_at", null)
+    .order("check_out", { ascending: true })
+    .limit(1)
+    .single();
+
+  if (error || !data) return null;
+  return data.check_out as string;
 }
 
 /**
@@ -144,10 +183,10 @@ export async function getSimulationStatus(): Promise<SimStatus> {
 }
 
 /**
- * Check if simulation backup tables exist in the database.
+ * Check if simulation sandbox schema exists in the database.
  */
 export async function isSimBackupPresent(): Promise<boolean> {
-  const supabase = createAdminClient();
+  const supabase = createPublicAdminClient();
   try {
     const { data, error } = await supabase.rpc("sim_is_active");
     if (error) return false;
@@ -158,11 +197,10 @@ export async function isSimBackupPresent(): Promise<boolean> {
 }
 
 /**
- * Emergency cleanup — force-drop backup tables without restoring.
- * Use only if sim_stop fails.
+ * Emergency cleanup — force-drop sandbox schema.
  */
 export async function forceCleanupSimulation(): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = createPublicAdminClient();
   try {
     await supabase.rpc("sim_force_cleanup");
   } catch (e) {

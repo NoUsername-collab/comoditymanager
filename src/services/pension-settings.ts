@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
@@ -20,7 +20,8 @@ function parseDayNight(raw: unknown): ThemeMode {
 }
 
 async function getPensionSettingsUncached(): Promise<PensionSettings | null> {
-  const supabase = createAdminClient();
+  // Always read from public — pension settings are global, not sim-scoped
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("pension_settings")
     .select(
@@ -78,7 +79,7 @@ export async function updatePensionSettings(
     admin_day_night: ThemeMode;
   }
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("pension_settings")
     .update({

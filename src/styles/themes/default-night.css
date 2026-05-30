@@ -28,9 +28,9 @@ html[data-theme="default"][data-mode="night"] {
   --pending-border: #f59e0b;
   --pending-text: #fcd34d;
 
-  --past-bg: #181a24;
+  --past-bg: #1e2030;
   --past-border: #3d4460;
-  --past-text: #4a5070;
+  --past-text: #606888;
 
   --blocked-bg: #1e1428;
   --blocked-border: #7c3aed;

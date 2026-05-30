@@ -36,7 +36,7 @@ async function searchCandidateRows(
   input: DedupInput,
   limit = 20
 ): Promise<DedupGuestRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const orParts: string[] = [];
 
   // National ID match (highest priority)
@@ -90,7 +90,7 @@ async function searchByNameBirthDate(
 ): Promise<DedupGuestRow[]> {
   if (!input.lastName || !input.birthDate) return [];
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   let query = supabase
     .from("guests")
     .select(DEDUP_SELECT)

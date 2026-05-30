@@ -175,7 +175,7 @@ export async function updateGuestIdentityAction(formData: FormData) {
   const phoneRaw = String(formData.get("phone") ?? "").trim();
   assertValidGuestPhone(phoneRaw);
   const phoneNorm = normalizePhone(phoneRaw);
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error: phoneError } = await supabase
     .from("guests")
     .update({

@@ -278,7 +278,7 @@ export async function createDirectStayFromGanttAction(input: {
       room_ids: [input.roomId],
     });
 
-    const supabase = createAdminClient();
+    const supabase = await createAdminClient();
     const { data: room, error: roomErr } = await supabase
       .from("rooms")
       .select("price_per_night")

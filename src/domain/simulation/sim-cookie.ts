@@ -1,16 +1,72 @@
 /**
  * Read/write the simulation state cookie.
  * Works in both Server Components and Server Actions.
+ *
+ * The cookie payload is HMAC-signed to prevent operators or
+ * devtools manipulation from forging a simulation state.
  */
 
+import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import type { SimState, SimStatus } from "./sim-types";
 import { SIM_COOKIE } from "./sim-types";
 import { todayReal } from "./sim-clock";
 
+/** Secret for signing sim cookies — falls back to a build-time random */
+function getSimSecret(): string {
+  return (
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    process.env.SIM_COOKIE_SECRET ??
+    "sim-dev-fallback-secret"
+  );
+}
+
+function signPayload(payload: string): string {
+  return createHmac("sha256", getSimSecret()).update(payload).digest("hex");
+}
+
+function encodeSimCookie(state: SimState): string {
+  const payload = JSON.stringify(state);
+  const sig = signPayload(payload);
+  return `${Buffer.from(payload).toString("base64")}.${sig}`;
+}
+
+function decodeSimCookie(raw: string): SimState | null {
+  const dotIdx = raw.lastIndexOf(".");
+  if (dotIdx === -1) return null;
+
+  const b64 = raw.slice(0, dotIdx);
+  const sig = raw.slice(dotIdx + 1);
+
+  let payload: string;
+  try {
+    payload = Buffer.from(b64, "base64").toString("utf-8");
+  } catch {
+    return null;
+  }
+
+  // Verify HMAC
+  const expected = signPayload(payload);
+  try {
+    const a = Buffer.from(sig, "hex");
+    const b = Buffer.from(expected, "hex");
+    if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+  } catch {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(payload) as SimState;
+    if (parsed.active !== true || !parsed.currentDate) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Read the current simulation status from cookies.
- * Safe to call in any server context — returns inactive if cookie is absent.
+ * Safe to call in any server context — returns inactive if cookie is absent or invalid.
  */
 export async function getSimStatus(): Promise<SimStatus> {
   try {
@@ -18,18 +74,16 @@ export async function getSimStatus(): Promise<SimStatus> {
     const raw = jar.get(SIM_COOKIE)?.value;
     if (!raw) return { active: false };
 
-    const parsed = JSON.parse(raw) as SimState;
-    if (parsed.active !== true || !parsed.currentDate) {
-      return { active: false };
-    }
-    return parsed;
+    const state = decodeSimCookie(raw);
+    if (!state) return { active: false };
+    return state;
   } catch {
     return { active: false };
   }
 }
 
 /**
- * Synchronous check — reads from cookies and returns whether sim is active.
+ * Check whether sim is active (reads cookie).
  */
 export async function isSimActive(): Promise<boolean> {
   const status = await getSimStatus();
@@ -45,17 +99,17 @@ export async function getSimDate(): Promise<string | null> {
 }
 
 /**
- * Set the simulation state cookie.
+ * Set the simulation state cookie (HMAC-signed).
  */
 export async function setSimCookie(state: SimState): Promise<void> {
   const jar = await cookies();
-  jar.set(SIM_COOKIE, JSON.stringify(state), {
+  jar.set(SIM_COOKIE, encodeSimCookie(state), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    // 24h max — simulation auto-expires
-    maxAge: 24 * 60 * 60,
+    // 8h max — simulation auto-expires
+    maxAge: 8 * 60 * 60,
   });
 }
 

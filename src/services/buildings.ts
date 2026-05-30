@@ -4,7 +4,7 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import type { AcMode, Building } from "@/types/database";
 
 async function listBuildingsUncached(): Promise<Building[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("buildings")
     .select("id, name, sort_order, color_hex, ac_mode, is_active, default_price_per_night")
@@ -32,7 +32,7 @@ export async function updateBuildingDefaultPrice(
   buildingId: string,
   default_price_per_night: number
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("buildings")
     .update({ default_price_per_night: Math.max(0, default_price_per_night) })
@@ -47,7 +47,7 @@ export async function createBuilding(input: {
   ac_mode: AcMode;
   default_price_per_night?: number;
 }): Promise<{ id: string }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("buildings")
     .insert({
@@ -65,7 +65,7 @@ export async function createBuilding(input: {
 }
 
 export async function deleteBuilding(id: string): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const { count: roomCount, error: roomErr } = await supabase
     .from("rooms")

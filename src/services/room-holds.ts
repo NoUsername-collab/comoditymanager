@@ -59,7 +59,7 @@ export async function createRoomHolds(input: {
       ? new Date(Date.now() + input.expiresHours * 60 * 60 * 1000).toISOString()
       : null;
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const rows = roomIds.map((room_id) => ({
     room_id,
     check_in: input.checkIn,
@@ -79,7 +79,7 @@ export async function createRoomHolds(input: {
 }
 
 export async function releaseRoomHold(holdId: string, releasedBy?: string | null): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("room_holds")
     .update({
@@ -94,9 +94,10 @@ export async function releaseRoomHold(holdId: string, releasedBy?: string | null
 
 /** Marchează hold-urile expirate ca eliberate (lazy cleanup la citire occupancy). */
 export async function releaseExpiredRoomHolds(asOfIso?: string): Promise<number> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
+  // Use end-of-day cutoff to match isHoldActive() in room-occupancy.ts
   const cutoff = asOfIso
-    ? new Date(`${asOfIso}T00:00:00.000`).toISOString()
+    ? new Date(`${asOfIso}T23:59:59.999`).toISOString()
     : new Date().toISOString();
   const releasedAt = asOfIso
     ? new Date(`${asOfIso}T12:00:00.000`).toISOString()

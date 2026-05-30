@@ -37,7 +37,7 @@ export type GuestAlertSnapshot = {
 async function fetchGuestProfileRow(
   guestId: string
 ): Promise<GuestProfileRow | null> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guest_profiles")
     .select("*")
@@ -52,7 +52,7 @@ export async function ensureGuestProfiles(guestIds: string[]): Promise<void> {
   const uniqueIds = [...new Set(guestIds.filter(Boolean))];
   if (uniqueIds.length === 0) return;
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("guest_profiles")
     .upsert(uniqueIds.map((guest_id) => ({ guest_id })), { onConflict: "guest_id" });
@@ -81,7 +81,7 @@ export async function listGuestProfileSummaries(
   if (uniqueIds.length === 0) return new Map();
   await ensureGuestProfiles(uniqueIds);
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guest_profiles")
     .select("*")
@@ -113,7 +113,7 @@ export async function listGuestStayReviewsByBookingIds(
   const uniqueIds = [...new Set(bookingIds.filter(Boolean))];
   if (uniqueIds.length === 0) return new Map();
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guest_stay_reviews")
     .select("*")
@@ -134,7 +134,7 @@ export async function listGuestStayReviewsForGuest(
 ): Promise<GuestStayReviewRow[]> {
   if (!guestId) return [];
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guest_stay_reviews")
     .select("*")
@@ -153,7 +153,7 @@ async function listCompletedStayStats(guestId: string): Promise<{
   totalNights: number;
   lastStayCheckOut: string | null;
 }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select("check_in, check_out")
@@ -193,7 +193,7 @@ export async function recomputeGuestProfile(
     reviews,
   });
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guest_profiles")
     .update({
@@ -218,7 +218,7 @@ export async function recomputeGuestProfile(
 async function getBookingReviewCheck(
   bookingId: string
 ): Promise<BookingReviewCheckRow | null> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select("id, guest_id, guest_name, status, check_out")
@@ -244,12 +244,12 @@ export async function saveGuestStayReview(input: {
   if (booking.guest_id !== input.guestId) {
     throw new Error("guest.review_not_belong_to_guest");
   }
-  if (booking.status !== "confirmata" || booking.check_out >= await getEffectiveToday()) {
+  if (booking.status !== "confirmata" || booking.check_out > await getEffectiveToday()) {
     throw new Error("guest.only_past_confirmed_stays_can_be_reviewed");
   }
 
   const actor = await getAdminUser();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const now = new Date().toISOString();
   const { error } = await supabase.from("guest_stay_reviews").upsert({
     booking_id: input.bookingId,
@@ -328,7 +328,7 @@ export async function updateGuestProfileControls(input: {
     patch.unblacklisted_by_email = actor?.email ?? null;
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("guest_profiles")
     .update(patch)
@@ -406,7 +406,7 @@ export async function resolveGuestAlertSnapshot(input: {
     return { level: "normal", note: null };
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .select("id, display_name")
@@ -474,7 +474,7 @@ export async function mergeGuestProfiles(
         : source
       : null;
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error: reviewsError } = await supabase
     .from("guest_stay_reviews")
     .update({ guest_id: targetId })

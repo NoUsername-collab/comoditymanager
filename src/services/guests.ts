@@ -1,5 +1,8 @@
 import { formatGuestFullName } from "@/domain/guest-name";
-import { shiftStayDatesByYears } from "@/domain/guest/rebook-dates";
+import {
+  shiftStayDatesByYears,
+  shiftStayToNextFutureYear,
+} from "@/domain/guest/rebook-dates";
 import {
   assertValidGuestPhone,
   hasGuestIdentity,
@@ -87,7 +90,7 @@ function mapGuestRow(row: Record<string, unknown>): GuestRow {
 }
 
 export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -100,7 +103,7 @@ export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
 async function findGuestByPhone(
   phoneNormalized: string
 ): Promise<GuestRow | null> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -113,7 +116,7 @@ async function findGuestByPhone(
 async function findGuestByEmail(
   emailNormalized: string
 ): Promise<GuestRow | null> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -132,7 +135,7 @@ async function createGuestRecord(input: GuestBookingInput): Promise<string> {
     emailNorm && !isPlaceholderEmail(emailNorm) ? input.guest_email.trim() : null;
   const phone = phoneNorm ? input.guest_phone.trim() : null;
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .insert({
@@ -159,7 +162,7 @@ async function touchGuestFromBooking(
 ): Promise<void> {
   const emailNorm = normalizeEmail(input.guest_email);
   const phoneNorm = normalizePhone(input.guest_phone);
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const patch: Record<string, unknown> = {
     last_name: input.guest_last_name.trim(),
@@ -245,7 +248,7 @@ export async function resolveGuestForBooking(
 async function findGuestByIdsOrdered(ids: string[]): Promise<GuestRow | null> {
   const unique = [...new Set(ids.filter(Boolean))];
   if (unique.length === 0) return null;
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -267,7 +270,7 @@ export async function findGuestAutofillMatch(input: {
   const phoneNorm = normalizePhone(input.guest_phone ?? "");
   const last = String(input.guest_last_name ?? "").trim();
   const first = String(input.guest_first_name ?? "").trim();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   let candidate: GuestRow | null = null;
 
   if (
@@ -405,7 +408,7 @@ function matchesGuestFilter(
 ): boolean {
   const profile = guest.profile;
   if (filter === "all") return true;
-  if (filter === "flagged") return profile?.flag_level !== "normal";
+  if (filter === "flagged") return !!profile && profile.flag_level !== "normal";
   if (filter === "blacklist") return profile?.flag_level === "blacklist";
   if (filter === "watchlist") return profile?.flag_level === "watchlist";
   if (filter === "rated") return (profile?.review_count ?? 0) > 0;
@@ -435,7 +438,7 @@ async function fetchGuestListItemsByIds(
   const ids = [...new Set(guestIds.filter(Boolean))];
   if (ids.length === 0) return [];
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("guests")
     .select("id, display_name, phone, email, tags, identity_status, created_at, updated_at")
@@ -476,7 +479,7 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
   recent: string[];
   rated: string[];
 }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const [blacklistRes, loyalRes, recentRes, ratedRes] = await Promise.all([
     supabase
@@ -530,7 +533,7 @@ async function searchGuestIdsByQueryWindow(input: {
   offset: number;
   limit: number;
 }): Promise<{ ids: string[]; exhausted: boolean }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const term = sanitizeGuestSearchTerm(input.query);
   if (!term) return { ids: [], exhausted: true };
   const windowEnd = input.offset + input.limit;
@@ -623,7 +626,7 @@ async function listGuestIdsByFilter(
   page: number,
   pageSize: number
 ): Promise<{ ids: string[]; hasMore: boolean }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const offset = (page - 1) * pageSize;
   const to = offset + pageSize;
 
@@ -791,7 +794,7 @@ async function listSegmentsForBookings(
   const ids = [...new Set(bookingIds.filter(Boolean))];
   if (ids.length === 0) return new Map();
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("booking_room_segments")
     .select("id, booking_id, room_id, segment_start, segment_end, nightly_rate")
@@ -825,7 +828,7 @@ export type GuestBookingHistoryItem = {
 export async function getGuestBookingHistory(
   guestId: string
 ): Promise<GuestBookingHistoryItem[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -915,7 +918,7 @@ export async function updateGuestIdentity(
   guestId: string,
   input: GuestIdentityInput
 ): Promise<{ identityStatus: GuestIdentityStatus }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const identityStatus = computeIdentityStatus(input);
 
   // Sync cnp field from national_id when type is cnp (backward compat)
@@ -973,7 +976,7 @@ export async function findGuestByNationalId(
   const cleaned = nationalId.replace(/[\s\-]/g, "");
   if (!cleaned) return null;
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   // Search in both national_id and legacy cnp column
   let query = supabase
@@ -1005,7 +1008,7 @@ export async function updateGuestNotes(
   guestId: string,
   notes: string
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("guests")
     .update({ notes: notes.trim() || null })
@@ -1024,7 +1027,7 @@ export async function updateGuestTags(
   guestId: string,
   tags: GuestTag[]
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("guests")
     .update({ tags })
@@ -1047,7 +1050,7 @@ export async function mergeGuests(
     throw new Error("guest.select_different_guest_for_merge");
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const [source, target] = await Promise.all([
     getGuestBaseById(sourceId),
     getGuestBaseById(targetId),
@@ -1076,6 +1079,38 @@ export async function mergeGuests(
   if (!target.email && source.email) {
     patch.email = source.email;
     patch.email_normalized = source.email_normalized;
+  }
+  // Preserve identity fields from source when target lacks them
+  if (!target.doc_type && source.doc_type) {
+    patch.doc_type = source.doc_type;
+    patch.doc_series = source.doc_series;
+    patch.doc_number = source.doc_number;
+    patch.doc_issued_by = source.doc_issued_by;
+    patch.doc_issue_date = source.doc_issue_date;
+    patch.doc_expiry_date = source.doc_expiry_date;
+  }
+  if (!target.national_id && source.national_id) {
+    patch.national_id_type = source.national_id_type;
+    patch.national_id = source.national_id;
+    patch.cnp = source.cnp;
+  }
+  if (!target.birth_date && source.birth_date) {
+    patch.birth_date = source.birth_date;
+  }
+  if (!target.birth_place && source.birth_place) {
+    patch.birth_place = source.birth_place;
+  }
+  if (!target.sex && source.sex) {
+    patch.sex = source.sex;
+  }
+  if (!target.nationality && source.nationality) {
+    patch.nationality = source.nationality;
+  }
+  if (!target.address && source.address) {
+    patch.address = source.address;
+    patch.city = source.city;
+    patch.county = source.county;
+    patch.country = source.country;
   }
 
   const { error: updErr } = await supabase
@@ -1107,7 +1142,7 @@ async function estimateTotalForRooms(
   roomIds: string[]
 ): Promise<number | null> {
   if (roomIds.length === 0) return null;
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("rooms")
     .select("price_per_night")
@@ -1122,7 +1157,7 @@ async function estimateTotalForRooms(
 }
 
 async function getLastGuestBooking(guestId: string) {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select("id")
@@ -1145,20 +1180,26 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
     throw new Error("guest.no_previous_stay_for_rebook");
   }
 
+  const shifted = shiftStayToNextFutureYear(last.check_in, last.check_out);
   const roomIds = last.room_ids;
+
   if (roomIds.length > 0) {
-    await assertRoomsAvailableForStay(last.check_in, last.check_out, roomIds);
+    await assertRoomsAvailableForStay(
+      shifted.check_in,
+      shifted.check_out,
+      roomIds
+    );
   }
 
   const total = await estimateTotalForRooms(
-    last.check_in,
-    last.check_out,
+    shifted.check_in,
+    shifted.check_out,
     roomIds
   );
 
   const bookingId = await createBookingRequest({
-    check_in: last.check_in,
-    check_out: last.check_out,
+    check_in: shifted.check_in,
+    check_out: shifted.check_out,
     guest_name: guest.display_name,
     guest_last_name: guest.last_name,
     guest_first_name: guest.first_name,
@@ -1178,7 +1219,12 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
     entityType: "booking",
     entityId: bookingId,
     summary: `Rebook ultimul sejur: ${guest.display_name}`,
-    metadata: { guest_id: guestId, source_booking_id: last.id },
+    metadata: {
+      guest_id: guestId,
+      source_booking_id: last.id,
+      check_in: shifted.check_in,
+      check_out: shifted.check_out,
+    },
   });
 
   return bookingId;
@@ -1251,7 +1297,7 @@ export async function findDuplicateGuestsForGuest(
   const guest = await getGuestBaseById(guestId);
   if (!guest) return [];
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const orParts: string[] = [];
   if (guest.phone_normalized) {
     orParts.push(`phone_normalized.eq.${guest.phone_normalized}`);

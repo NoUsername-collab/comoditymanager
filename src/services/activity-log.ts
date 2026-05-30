@@ -42,7 +42,7 @@ function mapRow(row: {
 /** Înregistrează o acțiune; nu aruncă — jurnalul nu trebuie să blocheze fluxul principal. */
 export async function logAdminActivity(input: LogInput): Promise<void> {
   try {
-    const supabase = createAdminClient();
+    const supabase = await createAdminClient();
     const { error } = await supabase.from("admin_activity_log").insert({
       actor_id: input.actor?.id ?? null,
       actor_email: input.actor?.email ?? null,
@@ -71,7 +71,7 @@ export async function logAdminActivityFromSession(
 export async function listRecentActivity(
   limit = 100
 ): Promise<ActivityLogEntry[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("admin_activity_log")
     .select(
@@ -88,7 +88,7 @@ export async function listBookingActivity(
   bookingId: string,
   limit = 40
 ): Promise<ActivityLogEntry[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("admin_activity_log")
     .select(

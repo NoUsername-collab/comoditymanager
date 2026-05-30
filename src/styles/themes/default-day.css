@@ -28,9 +28,9 @@ html[data-theme="default"][data-mode="day"] {
   --pending-border: #f59e0b;
   --pending-text: #92400e;
 
-  --past-bg: #f4f6ff;
-  --past-border: #dde2f0;
-  --past-text: #adb3cc;
+  --past-bg: #e8eaf0;
+  --past-border: #c5c9d8;
+  --past-text: #7a809a;
 
   --blocked-bg: #faf5ff;
   --blocked-border: #7c3aed;

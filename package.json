@@ -7,6 +7,8 @@
     "prebuild": "node scripts/check-env.mjs",
     "build": "next build",
     "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint",
     "env:check": "node scripts/check-env.mjs",
     "env:check:staging": "node scripts/check-env.mjs --file=.env.staging.local --profile=staging",
@@ -18,10 +20,13 @@
     "setup-staff": "node scripts/create-staff-users.mjs",
     "setup-staff:staging": "node scripts/create-staff-users.mjs .env.staging.local",
     "setup-admin:staging": "node scripts/create-admin-user.mjs .env.staging.local",
-    "reset-staging-bookings": "node scripts/reset-staging-bookings.mjs .env.staging.local"
+    "reset-staging-bookings": "node scripts/reset-staging-bookings.mjs .env.staging.local",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@sentry/nextjs": "^10.55.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
     "date-fns": "^4.2.1",
@@ -33,6 +38,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -40,6 +46,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }

@@ -21,7 +21,7 @@ export async function createRoomBlock(input: {
     [input.roomId]
   );
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("room_blocks")
     .insert({
@@ -39,7 +39,7 @@ export async function createRoomBlock(input: {
 }
 
 export async function deleteRoomBlock(blockId: string): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase.from("room_blocks").delete().eq("id", blockId);
   if (error) throw new Error(error.message);
 }

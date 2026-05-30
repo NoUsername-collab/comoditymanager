@@ -59,7 +59,8 @@ const NEGATIVE_TRAIT_TRUST_WEIGHTS: Record<GuestNegativeTrait, number> = {
 
 export const DEFAULT_TRUST_SCORE = 60;
 export const DEFAULT_LOYALTY_SCORE = 0;
-export const DEFAULT_STARS_AVG = 1;
+/** 0 = unrated (no reviews yet). Never penalize new guests with a low star score. */
+export const DEFAULT_STARS_AVG = 0;
 
 export function parseGuestPositiveTraits(raw: unknown): GuestPositiveTrait[] {
   if (!Array.isArray(raw)) return [];

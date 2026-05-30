@@ -3,7 +3,8 @@ import type {
   GuestBookingFlagSummary,
   GuestFlagLevel,
 } from "@/domain/guest/types";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
+import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
@@ -160,7 +161,7 @@ export async function listBookingsForRange(
   rangeStart: string,
   rangeEnd: string
 ): Promise<BookingRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -209,7 +210,7 @@ export async function assignBookingRoomHold(
     bookingId
   );
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error: delError } = await supabase
     .from("booking_rooms")
     .delete()
@@ -228,7 +229,7 @@ export async function assignBookingRoomHold(
 }
 
 async function rollbackFailedBookingRequest(bookingId: string): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   await supabase.from("booking_rooms").delete().eq("booking_id", bookingId);
   await supabase
     .from("bookings")
@@ -267,7 +268,7 @@ export async function createBookingRequest(input: {
     );
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const { guestId, mergeConflict } = await resolveGuestForBooking({
     guest_name: input.guest_name,
@@ -362,7 +363,7 @@ export type BookingDetail = BookingRow & {
 };
 
 export async function getBookingById(id: string): Promise<BookingDetail | null> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -429,7 +430,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
 }
 
 async function countCereriNoiUncached(): Promise<number> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { count, error } = await supabase
     .from("bookings")
     .select("id", { count: "exact", head: true })
@@ -457,7 +458,7 @@ export async function listUnassignedCereri(): Promise<BookingRow[]> {
 }
 
 export async function listCereriNoi(): Promise<BookingRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -473,7 +474,7 @@ export type OperationalStayRow = BookingRow;
 
 /** Cazări active: cereri noi + confirmate (fără anulate). */
 export async function listOperationalStays(): Promise<OperationalStayRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -491,7 +492,7 @@ export type CompletedStayHistoryRow = BookingRow;
 export async function listCompletedStayHistory(
   limit = 24
 ): Promise<CompletedStayHistoryRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -510,7 +511,7 @@ export type CancelledStayHistoryRow = BookingRow & { updated_at: string };
 export async function listCancelledStayHistory(
   limit = 24
 ): Promise<CancelledStayHistoryRow[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_WITH_UPDATED_SELECT)
@@ -542,34 +543,56 @@ export async function confirmBookingWithRooms(
   );
   await assertRoomsAssignableForBooking(bookingId, roomIds);
 
-  const supabase = createAdminClient();
   const booking = await getBookingById(bookingId);
   if (!booking) throw new Error("booking.request_not_found");
   if (booking.status === "anulata") throw new Error("booking.request_cancelled");
+  if (booking.status === "confirmata") throw new Error("booking.already_confirmed");
 
-  await supabase.from("booking_rooms").delete().eq("booking_id", bookingId);
+  const simActive = await isSimActive();
 
-  const { error: brError } = await supabase.from("booking_rooms").insert(
-    roomIds.map((room_id) => ({
-      booking_id: bookingId,
-      room_id,
-      extra_beds: 0,
-    }))
-  );
-  if (brError) throw new Error(brError.message);
+  if (simActive) {
+    // Simulation mode: use individual operations on sim_sandbox schema.
+    // Atomicity is not critical for throwaway simulation data.
+    const supabase = await createAdminClient();
 
-  const { error: upError } = await supabase
-    .from("bookings")
-    .update({
-      status: "confirmata",
-      total_price: totalPrice,
-      confirmed_at: new Date().toISOString(),
-    })
-    .eq("id", bookingId);
+    await supabase.from("booking_rooms").delete().eq("booking_id", bookingId);
 
-  if (upError) throw new Error(upError.message);
+    const { error: brError } = await supabase.from("booking_rooms").insert(
+      roomIds.map((room_id) => ({
+        booking_id: bookingId,
+        room_id,
+        extra_beds: 0,
+      }))
+    );
+    if (brError) throw new Error(brError.message);
 
-  await syncBookingRoomSegments(bookingId);
+    const { error: upError } = await supabase
+      .from("bookings")
+      .update({
+        status: "confirmata",
+        total_price: totalPrice,
+        confirmed_at: new Date().toISOString(),
+      })
+      .eq("id", bookingId);
+
+    if (upError) throw new Error(upError.message);
+
+    await syncBookingRoomSegments(bookingId);
+  } else {
+    // Production: use atomic RPC — all DB operations run in a single
+    // transaction so a crash can never orphan room assignments.
+    const supabase = createPublicAdminClient();
+
+    const { error: rpcError } = await supabase.rpc(
+      "confirm_booking_with_rooms",
+      {
+        p_booking_id: bookingId,
+        p_room_ids: roomIds,
+        p_total_price: totalPrice,
+      }
+    );
+    if (rpcError) throw new Error(rpcError.message);
+  }
 
   await logAdminActivityFromSession({
     action: "booking.confirmed",
@@ -610,7 +633,7 @@ export async function rescheduleBookingDates(
     bookingId
   );
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -669,7 +692,7 @@ export async function adjustBookingStayNights(
   if (booking.room_ids.length > 0) {
     await rescheduleBookingDates(bookingId, booking.check_in, newCheckOut);
   } else {
-    const supabase = createAdminClient();
+    const supabase = await createAdminClient();
     const { error } = await supabase
       .from("bookings")
       .update({ check_out: newCheckOut })
@@ -751,7 +774,7 @@ export async function cancelBooking(bookingId: string): Promise<void> {
     throw new Error("booking.already_cancelled");
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({ status: "anulata" })
@@ -791,7 +814,7 @@ async function ensureBookingPhoneForCheckIn(bookingId: string): Promise<void> {
   if (isValidGuestPhone(booking.guest_phone)) return;
 
   if (booking.guest_id) {
-    const supabase = createAdminClient();
+    const supabase = await createAdminClient();
     const { data: guest, error } = await supabase
       .from("guests")
       .select("phone, phone_normalized")
@@ -825,7 +848,7 @@ export async function updateBookingGuestPhone(
 
   const phone = rawPhone.trim();
   const phoneNorm = normalizePhone(phone);
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const { error: bookingError } = await supabase
     .from("bookings")
@@ -868,7 +891,7 @@ export async function setBookingCheckIn(
 
   const ts = parseOperationalTimestamp(at);
   const user = await getAdminUser();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -912,7 +935,7 @@ export async function setBookingCheckOut(
   }
 
   const user = await getAdminUser();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -955,7 +978,7 @@ export async function editBookingCheckIn(
   }
 
   const user = await getAdminUser();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -999,7 +1022,7 @@ export async function editBookingCheckOut(
   }
 
   const user = await getAdminUser();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -1032,7 +1055,7 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
     throw new Error("booking.undo_checkout_first");
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -1058,7 +1081,7 @@ export async function undoBookingCheckOut(bookingId: string): Promise<void> {
     throw new Error("booking.checkout_not_recorded");
   }
 
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("bookings")
     .update({

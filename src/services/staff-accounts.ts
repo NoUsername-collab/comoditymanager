@@ -1,4 +1,4 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import {
   ADMIN_LOGIN_USERNAME,
   getAdminEmail,
@@ -41,7 +41,7 @@ export async function updateStaffPasswordByEmail(
     throw new Error("staff.unknown_account");
   }
 
-  const supabase = createAdminClient();
+  const supabase = createPublicAdminClient();
   const { data: list, error: listError } = await supabase.auth.admin.listUsers({
     perPage: 200,
   });

@@ -642,6 +642,21 @@ html[data-theme="default"][data-mode="night"] {
     0 0 12px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 18%, transparent);
 }
 
+/* Past days: gray wash over the day cell background — disabled look.
+   Uses a pseudo-element overlay so booking cards on top are NOT affected. */
+.gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--past {
+  background-image: none !important;
+  background-color: var(--past-bg, #e8eaf0) !important;
+}
+
+.gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--past::after {
+  background: none !important;
+}
+
+.gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--past::before {
+  box-shadow: none !important;
+}
+
 /* Header zile — curat, fără hasură / benzi check-in */
 .gantt-day-header-grid .gantt-day-header-cell {
   position: relative;
@@ -669,6 +684,11 @@ html[data-theme="default"][data-mode="night"] {
     inset -2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
     inset 0 0 0 1px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 18%, var(--border)),
     0 0 12px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 16%, transparent);
+}
+
+.gantt-day-header-grid .gantt-day-header-cell--past {
+  background: var(--past-bg, #e8eaf0) !important;
+  color: var(--past-text, #7a809a);
 }
 
 .gantt-day-azi-above {

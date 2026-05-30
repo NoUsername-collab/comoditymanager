@@ -52,6 +52,7 @@ export function GanttUnassignedRow({
                   "gantt-day-cell min-w-0 shadow-[inset_0_0_0_1px_#fde68a]",
                   col.isWeekend && "gantt-day-cell--weekend",
                   col.isToday && "gantt-day-cell--today",
+                  col.isPast && "gantt-day-cell--past",
                 ]
                   .filter(Boolean)
                   .join(" ")}

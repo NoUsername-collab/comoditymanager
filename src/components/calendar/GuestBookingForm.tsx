@@ -5,7 +5,6 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   previewGuestStayAction,
-  suggestExistingGuestAction,
   submitGuestRequestAction,
 } from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
@@ -41,13 +40,10 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [previewPending, startPreviewTransition] = useTransition();
-  const [identityPending, startIdentityTransition] = useTransition();
   const [guestLastName, setGuestLastName] = useState("");
   const [guestFirstName, setGuestFirstName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
-  const [identityHint, setIdentityHint] = useState<string | null>(null);
-  const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">("neutral");
 
   const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
@@ -89,40 +85,6 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       setStep("preview");
       if (res.preview.options.length === 1) {
         setSelected(res.preview.options[0]);
-      }
-    });
-  }
-
-  function maybeAutofillGuest() {
-    const hasIdentity =
-      guestEmail.trim().length > 0 ||
-      guestPhone.trim().length > 0 ||
-      (guestLastName.trim().length > 1 && guestFirstName.trim().length > 1);
-    if (!hasIdentity) return;
-
-    startIdentityTransition(async () => {
-      const res = await suggestExistingGuestAction({
-        guest_last_name: guestLastName,
-        guest_first_name: guestFirstName,
-        guest_email: guestEmail,
-        guest_phone: guestPhone,
-      });
-      if (!res.ok || !res.match) return;
-
-      setGuestLastName(res.match.lastName);
-      setGuestFirstName(res.match.firstName);
-      setGuestEmail(res.match.email ?? guestEmail);
-      setGuestPhone(res.match.phone ?? guestPhone);
-
-      if (res.match.flagLevel === "blacklist") {
-        setIdentityHintTone("warn");
-        setIdentityHint(t("existingGuestBlacklist", { name: res.match.displayName }));
-      } else if (res.match.flagLevel === "watchlist") {
-        setIdentityHintTone("warn");
-        setIdentityHint(t("existingGuestWatchlist", { name: res.match.displayName }));
-      } else {
-        setIdentityHintTone("neutral");
-        setIdentityHint(t("existingGuestFound", { name: res.match.displayName }));
       }
     });
   }
@@ -382,15 +344,8 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
           <GuestNameFields
             lastName={guestLastName}
             firstName={guestFirstName}
-            onLastNameChange={(value) => {
-              setGuestLastName(value);
-              if (identityHint) setIdentityHint(null);
-            }}
-            onFirstNameChange={(value) => {
-              setGuestFirstName(value);
-              if (identityHint) setIdentityHint(null);
-            }}
-            onIdentityBlur={maybeAutofillGuest}
+            onLastNameChange={setGuestLastName}
+            onFirstNameChange={setGuestFirstName}
           />
           <label className="site-field">
             {tCommon("email")} *
@@ -400,11 +355,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               required
               className="mt-1 w-full"
               value={guestEmail}
-              onChange={(e) => {
-                setGuestEmail(e.target.value);
-                if (identityHint) setIdentityHint(null);
-              }}
-              onBlur={maybeAutofillGuest}
+              onChange={(e) => setGuestEmail(e.target.value)}
             />
           </label>
           <label className="site-field">
@@ -415,26 +366,9 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
               required
               className="mt-1 w-full"
               value={guestPhone}
-              onChange={(e) => {
-                setGuestPhone(e.target.value);
-                if (identityHint) setIdentityHint(null);
-              }}
-              onBlur={maybeAutofillGuest}
+              onChange={(e) => setGuestPhone(e.target.value)}
             />
           </label>
-          {(identityPending || identityHint) && (
-            <p
-              className={[
-                "text-xs",
-                identityHintTone === "warn"
-                  ? "text-amber-700"
-                  : "text-[var(--site-muted)]",
-              ].join(" ")}
-              aria-live="polite"
-            >
-              {identityPending ? t("checkingExistingGuest") : identityHint}
-            </p>
-          )}
           <label className="site-field">
             {t("messageOptional")}
             <textarea

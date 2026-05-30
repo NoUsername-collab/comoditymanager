@@ -47,7 +47,7 @@ function mapOption(row: Record<string, unknown>): RoomOptionDefinition {
 async function listRoomTypesUncached(
   includeInactive = false
 ): Promise<RoomTypeDefinition[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   let q = supabase
     .from("room_type_definitions")
     .select("*")
@@ -87,7 +87,7 @@ export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDe
 async function listRoomOptionsUncached(
   includeInactive = false
 ): Promise<RoomOptionDefinition[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   let q = supabase
     .from("room_option_definitions")
     .select("*")
@@ -124,7 +124,7 @@ export async function getRoomCatalogContext(
 export async function getBuildingOptionPolicies(
   buildingId: string
 ): Promise<BuildingOptionPolicy[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("building_option_policies")
     .select("building_id, option_id, mode")
@@ -172,7 +172,7 @@ export async function setBuildingOptionPolicies(
   buildingId: string,
   policies: { option_id: string; mode: OptionPolicyMode }[]
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const { error: delErr } = await supabase
     .from("building_option_policies")
@@ -202,7 +202,7 @@ export async function setBuildingOptionPolicies(
 }
 
 export async function getRoomEnabledOptionIds(roomId: string): Promise<string[]> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("room_enabled_options")
     .select("option_id")
@@ -215,7 +215,7 @@ export async function setRoomEnabledOptions(
   roomId: string,
   optionIds: string[]
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error: delErr } = await supabase
     .from("room_enabled_options")
     .delete()
@@ -278,7 +278,7 @@ export async function createRoomType(input: {
   sort_order?: number;
   default_option_ids?: string[];
 }): Promise<{ id: string }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const slug = slugifyCatalogName(input.name);
   if (!slug) throw new Error("room_type.invalid_name");
 
@@ -319,7 +319,7 @@ export async function updateRoomType(
     default_option_ids: string[];
   }
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("room_type_definitions")
     .update({
@@ -348,7 +348,7 @@ export async function createRoomOption(input: {
   price_per_night_addon: number;
   sort_order?: number;
 }): Promise<{ id: string }> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const slug = slugifyCatalogName(input.name);
   if (!slug) throw new Error("room_option.invalid_name");
 
@@ -379,7 +379,7 @@ export async function updateRoomOption(
     is_active: boolean;
   }
 ): Promise<void> {
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { error } = await supabase
     .from("room_option_definitions")
     .update({
@@ -399,7 +399,7 @@ async function getRoomOptionSlugsByRoomIdsUncached(
   roomIds: string[]
 ): Promise<Record<string, string[]>> {
   if (roomIds.length === 0) return {};
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("room_enabled_options")
     .select("room_id, room_option_definitions ( slug )")

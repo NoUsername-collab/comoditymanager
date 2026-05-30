@@ -87,7 +87,7 @@ export async function loadTodayBoard(
   checkOutTime: string
 ): Promise<TodayBoard> {
   const today = await getEffectiveToday();
-  const supabase = createAdminClient();
+  const supabase = await createAdminClient();
 
   const { data, error } = await supabase
     .from("bookings")
