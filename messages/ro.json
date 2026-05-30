@@ -2383,5 +2383,25 @@
     "finalCtaTitle": "Gata de start?",
     "finalCtaText": "Creeaza cont in 30 de secunde. Fara card de credit, fara obligatii.",
     "finalCtaButton": "Creeaza cont gratuit"
+  },
+  "platform": {
+    "header": {
+      "pricing": "Preturi",
+      "gdpr": "GDPR",
+      "login": "Autentificare",
+      "signup": "Incepe gratuit"
+    },
+    "footer": {
+      "tagline": "Software modern pentru pensiuni si hoteluri mici din Romania, Moldova si Bulgaria.",
+      "product": "Produs",
+      "pricing": "Preturi",
+      "signup": "Creeaza cont",
+      "login": "Autentificare",
+      "legal": "Legal",
+      "terms": "Termeni",
+      "privacy": "Confidentialitate",
+      "contact": "Contact",
+      "rights": "Toate drepturile rezervate."
+    }
   }
 }

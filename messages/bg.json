@@ -2327,5 +2327,25 @@
     "finalCtaTitle": "Gotovi li ste?",
     "finalCtaText": "Syzdajte akaunt za 30 sekundi. Bez kreditna karta.",
     "finalCtaButton": "Syzdajte bezplaten akaunt"
+  },
+  "platform": {
+    "header": {
+      "pricing": "Ceni",
+      "gdpr": "GDPR",
+      "login": "Vhod",
+      "signup": "Bezplatno"
+    },
+    "footer": {
+      "tagline": "Modernen softuer za pansioni i malki hoteli v Rymaniya, Moldova i Bylgariya.",
+      "product": "Produkt",
+      "pricing": "Ceni",
+      "signup": "Syzdaj akaunt",
+      "login": "Vhod",
+      "legal": "Pravna informaciya",
+      "terms": "Usloviya",
+      "privacy": "Poveritelnost",
+      "contact": "Kontakt",
+      "rights": "Vsichki prava zapazeni."
+    }
   }
 }

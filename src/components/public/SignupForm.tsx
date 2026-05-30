@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { signupAction } from "@/app/[locale]/(public)/signup/actions";
+import { signupAction } from "@/app/[locale]/(platform)/signup/actions";
 
 export function SignupForm() {
   const t = useTranslations("signup");

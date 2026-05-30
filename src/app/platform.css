@@ -1,0 +1,188 @@
+/* ── Hospira Platform Header & Footer ─────────────────────────────── */
+/* Used on hospira.ro — landing, signup, pricing                     */
+/* NOT used on tenant subdomains (casa-emil.hospira.ro)               */
+
+/* ── Header ────────────────────────────────────────────────────────── */
+
+.platform-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid color-mix(in srgb, var(--site-accent, #d6b55a) 15%, transparent);
+  background: color-mix(in srgb, var(--site-bg, #07060a) 88%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.platform-header__inner {
+  margin-inline: auto;
+  display: flex;
+  max-width: 72rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1.5rem;
+}
+
+.platform-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.platform-header__brand:hover {
+  opacity: 0.85;
+}
+
+.platform-header__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: var(--site-accent, #d6b55a);
+  color: var(--site-accent-fg, #0b0a0f);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.platform-header__name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--site-fg, #f3efe3);
+  letter-spacing: -0.02em;
+}
+
+.platform-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.platform-header__link {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--site-muted, #b7af9a);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.platform-header__link:hover {
+  color: var(--site-fg, #f3efe3);
+  background: color-mix(in srgb, var(--site-fg, #f3efe3) 5%, transparent);
+}
+
+.platform-header__cta {
+  margin-left: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--site-accent-fg, #0b0a0f);
+  background: var(--site-accent, #d6b55a);
+  border-radius: 0.625rem;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.platform-header__cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Mobile: hide text links, show only CTA */
+@media (max-width: 639px) {
+  .platform-header__link {
+    display: none;
+  }
+  .platform-header__cta {
+    margin-left: 0;
+  }
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+
+.platform-footer {
+  border-top: 1px solid color-mix(in srgb, var(--site-accent, #d6b55a) 12%, transparent);
+  background: color-mix(in srgb, var(--site-bg, #07060a) 95%, var(--site-card, #0e0c14));
+  padding: 3rem 1.5rem 2rem;
+}
+
+.platform-footer__inner {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.platform-footer__grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .platform-footer__grid {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+  }
+}
+
+.platform-footer__brand {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--site-fg, #f3efe3);
+  letter-spacing: -0.02em;
+}
+
+.platform-footer__desc {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--site-muted, #b7af9a);
+  max-width: 20rem;
+}
+
+.platform-footer__label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--site-muted, #b7af9a);
+  margin-bottom: 0.75rem;
+}
+
+.platform-footer__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.platform-footer__links a {
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--site-fg, #f3efe3) 70%, transparent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.platform-footer__links a:hover {
+  color: var(--site-accent, #d6b55a);
+}
+
+.platform-footer__contact a {
+  font-size: 0.875rem;
+  color: var(--site-accent, #d6b55a);
+  text-decoration: none;
+}
+
+.platform-footer__bottom {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--site-border, #1b1824) 50%, transparent);
+  text-align: center;
+}
+
+.platform-footer__bottom p {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--site-muted, #b7af9a) 60%, transparent);
+}

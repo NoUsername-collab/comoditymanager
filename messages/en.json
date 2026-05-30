@@ -2384,5 +2384,25 @@
     "finalCtaTitle": "Ready to start?",
     "finalCtaText": "Create account in 30 seconds. No credit card, no obligations.",
     "finalCtaButton": "Create free account"
+  },
+  "platform": {
+    "header": {
+      "pricing": "Pricing",
+      "gdpr": "GDPR",
+      "login": "Log in",
+      "signup": "Start free"
+    },
+    "footer": {
+      "tagline": "Modern software for guesthouses and small hotels in Romania, Moldova and Bulgaria.",
+      "product": "Product",
+      "pricing": "Pricing",
+      "signup": "Create account",
+      "login": "Log in",
+      "legal": "Legal",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "contact": "Contact",
+      "rights": "All rights reserved."
+    }
   }
 }

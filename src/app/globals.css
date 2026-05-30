@@ -4,6 +4,7 @@
 @import "./public-site.css";
 @import "./signup.css";
 @import "./landing.css";
+@import "./platform.css";
 @import "./device-mobile.css";
 
 :root {
