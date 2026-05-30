@@ -2,6 +2,7 @@
 @import "../styles/themes/_base.css";
 @import "../styles/themes/globals.css";
 @import "./public-site.css";
+@import "./signup.css";
 @import "./device-mobile.css";
 
 :root {
