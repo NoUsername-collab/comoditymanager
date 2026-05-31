@@ -1,6 +1,14 @@
 # HOSPIRA — Staging pe domeniu (setup profesional)
 
-Mediu: **Supabase Cloud** + **Vercel** + **DNS** — fără localhost, fără workaround-uri.
+Mediu: **Supabase Cloud** + **Vercel** + **DNS** — fără localhost.
+
+**Staging Supabase (o singură dată, după migrări):**
+```sql
+UPDATE public.platform_settings
+SET value = 'test.hospira.ro'
+WHERE key = 'tenant_domain_suffix';
+```
+Aceasta e config per proiect — nu per pensiune. Orice signup nou creează automat `{slug}.test.hospira.ro`.
 
 ---
 
@@ -29,6 +37,14 @@ Signup pe test.hospira.ro
 3. Obligatoriu inclusiv:
    - `034_catalog_slug_per_tenant.sql`
    - `035_tenant_platform_domain.sql`
+   - `036_platform_settings.sql`
+
+4. **O singură dată pe staging** (config proiect, nu pensiune):
+```sql
+UPDATE public.platform_settings
+SET value = 'test.hospira.ro'
+WHERE key = 'tenant_domain_suffix';
+```
 
 **Authentication → URL configuration**
 
