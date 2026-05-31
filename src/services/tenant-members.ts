@@ -310,38 +310,18 @@ export async function countActiveTenantMembers(
   return count ?? 0;
 }
 
-/** First tenant slug for user (owner > admin > operator) — platform login redirect. */
+/** Platform login redirect: relink Auth ↔ tenant in DB, then return primary slug. */
 export async function getPrimaryTenantSlugForUser(
-  supabase: SupabaseClient,
-  userId: string
+  supabase: SupabaseClient
 ): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("tenant_members")
-    .select("role, tenants(slug)")
-    .eq("user_id", userId)
-    .eq("is_active", true);
+  const { data: slug, error } = await supabase.rpc("prepare_platform_session");
 
-  if (error || !data?.length) return null;
-
-  const roleOrder: Record<string, number> = {
-    owner: 0,
-    admin: 1,
-    operator: 2,
-  };
-
-  const sorted = [...data].sort(
-    (a, b) =>
-      (roleOrder[String(a.role)] ?? 9) - (roleOrder[String(b.role)] ?? 9)
-  );
-
-  for (const row of sorted) {
-    const nested = row.tenants as { slug: string } | { slug: string }[] | null;
-    if (!nested) continue;
-    const slug = Array.isArray(nested) ? nested[0]?.slug : nested.slug;
-    if (slug) return slug;
+  if (error) {
+    console.error("[tenant-members] prepare_platform_session:", error.message);
+    return null;
   }
 
-  return null;
+  return typeof slug === "string" && slug.length > 0 ? slug : null;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────

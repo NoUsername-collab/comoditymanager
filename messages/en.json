@@ -2378,7 +2378,8 @@
     "passwordMinLength": "Password must be at least 8 characters.",
     "invalidPensionName": "Guesthouse name contains invalid characters.",
     "slugTaken": "This name is already taken. Try another.",
-    "emailAlreadyRegistered": "This email is already registered. Sign in or use another email."
+    "emailAlreadyRegistered": "This email is already registered. Sign in or use another email.",
+    "emailStaleOwnerRow": "A property exists for this email without a login account. Sign in or contact support."
   },
   "landing": {
     "heroBadge": "Software for guesthouses",

@@ -202,20 +202,44 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
     }
   }
 
-  const { data: userByEmail } = await supabase
-    .from("tenant_members")
-    .select("id")
-    .eq("email", email)
-    .eq("role", "owner")
-    .maybeSingle();
+  const { data: emailStatus, error: emailStatusError } = await supabase.rpc(
+    "check_owner_email_for_signup",
+    { p_email: email }
+  );
 
-  if (userByEmail) {
-    return {
-      ok: false,
-      error: t("emailAlreadyRegistered"),
-      field: "email",
-      errorCode: "email_taken",
-    };
+  if (!emailStatusError) {
+    if (emailStatus === "login_required") {
+      return {
+        ok: false,
+        error: t("emailAlreadyRegistered"),
+        field: "email",
+        errorCode: "email_taken",
+      };
+    }
+    if (emailStatus === "stale_owner_row") {
+      return {
+        ok: false,
+        error: t("emailStaleOwnerRow"),
+        field: "email",
+        errorCode: "stale_owner",
+      };
+    }
+  } else {
+    const { data: userByEmail } = await supabase
+      .from("tenant_members")
+      .select("id")
+      .eq("email", email)
+      .eq("role", "owner")
+      .maybeSingle();
+
+    if (userByEmail) {
+      return {
+        ok: false,
+        error: t("emailAlreadyRegistered"),
+        field: "email",
+        errorCode: "email_taken",
+      };
+    }
   }
 
   const { data: authData, error: authError } =

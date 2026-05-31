@@ -2377,7 +2377,8 @@
     "passwordMinLength": "Parola trebuie sa aiba minim 8 caractere.",
     "invalidPensionName": "Numele pensiunii contine caractere invalide.",
     "slugTaken": "Acest nume e deja folosit. Incearca altul.",
-    "emailAlreadyRegistered": "Acest email e deja inregistrat. Autentifica-te sau foloseste alt email."
+    "emailAlreadyRegistered": "Acest email e deja inregistrat. Autentifica-te sau foloseste alt email.",
+    "emailStaleOwnerRow": "Exista o pensiune pe acest email fara cont de autentificare. Autentifica-te sau contacteaza suportul."
   },
   "landing": {
     "heroBadge": "Software pentru pensiuni",

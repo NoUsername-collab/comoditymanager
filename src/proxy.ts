@@ -307,7 +307,7 @@ async function redirectPlatformUserToTenantAdmin(
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
+  const slug = await getPrimaryTenantSlugForUser(supabase);
   if (!slug) return null;
 
   const safe =
@@ -381,7 +381,7 @@ export async function proxy(request: NextRequest) {
         } = await supabase.auth.getUser();
 
         if (user) {
-          const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
+          const slug = await getPrimaryTenantSlugForUser(supabase);
           if (slug) {
             const next = request.nextUrl.searchParams.get("next") || "/admin";
             const safe =
