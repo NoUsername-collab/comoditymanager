@@ -18,6 +18,12 @@ import { pathBlockedForOperator } from "@/lib/auth/roles";
 import { resolveStaffRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
 import { buildTenantAdminUrl, parseTenantFromHost } from "@/lib/tenant/host";
+import {
+  isStaffOnlyPath,
+  pathAllowedOnCustomDomain,
+  type TenantDomainRoutingKind,
+} from "@/lib/tenant/domain-routing";
+import { resolveDomainRoutingOnEdge } from "@/lib/tenant/domain-routing-edge";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { routing } from "./i18n/routing";
 
@@ -140,12 +146,14 @@ function requestHostFrom(request: NextRequest): string | null {
 async function runTenantAppProxy(
   request: NextRequest,
   slug: string | undefined,
-  customDomain: string | undefined
+  customDomain: string | undefined,
+  routingKind: TenantDomainRoutingKind = "hospira_subdomain"
 ): Promise<NextResponse> {
   const path = stripLocalePrefix(request.nextUrl.pathname);
   const requestHeaders = new Headers(request.headers);
   if (slug) requestHeaders.set("x-tenant-slug", slug);
   if (customDomain) requestHeaders.set("x-tenant-domain", customDomain);
+  requestHeaders.set("x-tenant-domain-kind", routingKind);
 
   const tenantRequest = new NextRequest(request.url, {
     headers: requestHeaders,
@@ -347,9 +355,40 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── TENANT (slug.hospira.ro or custom domain) ────────────────
+  const requestHost = requestHostFrom(request);
+
+  if (domain.type === "custom") {
+    const resolved = await resolveDomainRoutingOnEdge(domain.domain);
+    if (!resolved) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.rewrite(url);
+    }
+
+    const path = stripLocalePrefix(request.nextUrl.pathname);
+    const slug = resolved.slug;
+    const routingKind = resolved.routingKind;
+
+    if (!pathAllowedOnCustomDomain(path, routingKind)) {
+      if (isStaffOnlyPath(path) || path.startsWith("/admin")) {
+        const safe = path.startsWith("/admin") ? path : "/admin";
+        return NextResponse.redirect(
+          buildTenantAdminUrl(slug, safe, requestHost)
+        );
+      }
+      if (routingKind === "custom_brand" && path.startsWith("/calendar")) {
+        return NextResponse.redirect(
+          buildTenantAdminUrl(slug, "/calendar", requestHost)
+        );
+      }
+      return NextResponse.redirect(buildTenantAdminUrl(slug, "/", requestHost));
+    }
+
+    return runTenantAppProxy(request, slug, domain.domain, routingKind);
+  }
+
   const slug = domain.type === "tenant" ? domain.slug : undefined;
-  const customDomain = domain.type === "custom" ? domain.domain : undefined;
-  return runTenantAppProxy(request, slug, customDomain);
+  return runTenantAppProxy(request, slug, undefined, "hospira_subdomain");
 }
 
 export const config = {

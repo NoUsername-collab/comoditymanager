@@ -146,6 +146,24 @@ export default async function SettingsPage({
             </SettingsSlidePanel>
           )}
 
+          {role === "admin" && (
+            <SettingsSlidePanel
+              title={t("domainsTitle")}
+              subtitle={t("domainsSubtitle")}
+              icon="*"
+            >
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-600">{t("domainsPanelInfo")}</p>
+                <Link
+                  href="/admin/settings/domains"
+                  className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                >
+                  {t("openDomainsManagement")}
+                </Link>
+              </div>
+            </SettingsSlidePanel>
+          )}
+
           <SettingsSlidePanel
             title={t("locationTitle")}
             subtitle={locationUnlocked ? t("locationSubtitleUnlocked") : t("locationSubtitleLocked")}

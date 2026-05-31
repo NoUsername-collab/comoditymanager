@@ -287,6 +287,38 @@
       "submit": "Enter dashboard"
     },
     "logout": "Sign out",
+    "domains": {
+      "pageTitle": "Domains",
+      "pageDescription": "Hospira subdomain and custom domains (all modes).",
+      "backToSettings": "← Back to settings",
+      "hospiraSubdomain": "Hospira subdomain (default, always on)",
+      "hospiraSubdomainHint": "Public site, booking calendar, and admin.",
+      "openSite": "Open site",
+      "upgradeForCustom": "Custom domain: available from Professional plan.",
+      "addCustomTitle": "Add custom domain",
+      "routingKind": "Display mode",
+      "addDomain": "Add domain",
+      "adding": "Adding…",
+      "dnsHint": "At registrar: CNAME to cname.vercel-dns.com, then add domain in Vercel → Domains.",
+      "statusVerified": "Verified",
+      "statusPending": "Pending DNS / SSL",
+      "markVerified": "Mark verified (after DNS + Vercel)",
+      "remove": "Remove",
+      "kinds": {
+        "hospira_subdomain": "Hospira subdomain (full app)",
+        "custom_full": "Custom — site + admin + bookings",
+        "custom_public": "Custom — site + bookings; admin on Hospira",
+        "custom_brand": "Custom — homepage only; rest on subdomain"
+      },
+      "errors": {
+        "admin_only": "Only admins can manage domains.",
+        "invalid_domain": "Invalid domain.",
+        "plan_not_allowed": "Your plan does not include this mode.",
+        "reserved_domain": "You cannot use the Hospira platform domain.",
+        "domain_taken": "Domain already in use.",
+        "error": "Error. Try again."
+      }
+    },
     "operational": {
       "title": "Arrival / departure (front desk)",
       "checkInLabel": "Operational check-in",
@@ -359,7 +391,11 @@
         "staffTitle": "Team",
         "staffSubtitle": "Manage team members",
         "staffPanelInfo": "Invite operators and admins, change roles, deactivate accounts.",
-        "openStaffManagement": "Manage team"
+        "openStaffManagement": "Manage team",
+        "domainsTitle": "Domains & site",
+        "domainsSubtitle": "Hospira subdomain and custom domain",
+        "domainsPanelInfo": "Choose how guests see your property online.",
+        "openDomainsManagement": "Manage domains"
       },
       "guests": {
         "title": "Guests — Hospira",

@@ -287,6 +287,38 @@
       "submit": "Intră în panou"
     },
     "logout": "Deconectare",
+    "domains": {
+      "pageTitle": "Domenii",
+      "pageDescription": "Subdomeniu Hospira si domenii proprii (toate variantele).",
+      "backToSettings": "← Inapoi la setari",
+      "hospiraSubdomain": "Subdomeniu Hospira (implicit, intotdeauna activ)",
+      "hospiraSubdomainHint": "Admin, calendar si site public — totul merge aici.",
+      "openSite": "Deschide site-ul",
+      "upgradeForCustom": "Domeniu propriu: disponibil de la planul Professional.",
+      "addCustomTitle": "Adauga domeniu propriu",
+      "routingKind": "Mod afisare",
+      "addDomain": "Adauga domeniu",
+      "adding": "Se adauga…",
+      "dnsHint": "La registrar: CNAME catre cname.vercel-dns.com, apoi adauga domeniul si in Vercel → Domains.",
+      "statusVerified": "Verificat",
+      "statusPending": "In asteptare verificare DNS / SSL",
+      "markVerified": "Marcheaza verificat (dupa DNS + Vercel)",
+      "remove": "Sterge",
+      "kinds": {
+        "hospira_subdomain": "Subdomeniu Hospira (complet)",
+        "custom_full": "Domeniu propriu — site + admin + rezervari",
+        "custom_public": "Domeniu propriu — site + rezervari; admin pe Hospira",
+        "custom_brand": "Domeniu propriu — doar homepage; restul pe subdomeniu"
+      },
+      "errors": {
+        "admin_only": "Doar administratorul poate gestiona domeniile.",
+        "invalid_domain": "Domeniu invalid.",
+        "plan_not_allowed": "Planul tau nu include acest mod.",
+        "reserved_domain": "Nu poti folosi domeniul platformei Hospira.",
+        "domain_taken": "Domeniul e deja folosit.",
+        "error": "Eroare. Incearca din nou."
+      }
+    },
     "operational": {
       "title": "Sosire / plecare (recepție)",
       "checkInLabel": "Check-in operațional",
@@ -359,7 +391,11 @@
         "staffTitle": "Echipa",
         "staffSubtitle": "Gestioneaza membrii echipei",
         "staffPanelInfo": "Invita operatori si admini, schimba roluri, dezactiveaza conturi.",
-        "openStaffManagement": "Gestioneaza echipa"
+        "openStaffManagement": "Gestioneaza echipa",
+        "domainsTitle": "Domenii & site",
+        "domainsSubtitle": "Subdomeniu Hospira si domeniu propriu",
+        "domainsPanelInfo": "Alege cum vede clientii pensiunea: site complet, doar public, sau doar homepage.",
+        "openDomainsManagement": "Gestioneaza domeniile"
       },
       "guests": {
         "title": "Clienți — Hospira",
