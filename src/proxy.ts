@@ -15,9 +15,9 @@ import {
   isAdminLocationUnlockCookieFresh,
 } from "@/lib/auth/admin-location-unlock-cookie";
 import { pathBlockedForOperator } from "@/lib/auth/roles";
-import { resolveStaffRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
+import { resolveStaffRoleOnTenantHost, resolveTenantMemberRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
-import { buildTenantAdminUrl, parseTenantFromHost } from "@/lib/tenant/host";
+import { buildTenantAdminUrl, parseTenantFromHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
 import {
   isStaffOnlyPath,
   pathAllowedOnCustomDomain,
@@ -230,12 +230,29 @@ async function runTenantAppProxy(
       !isLoginPage &&
       (isLocationAdminPath(path) || pathBlockedForOperator(path))
     ) {
-      const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
-      if (!isAdminLocationUnlockCookieFresh(unlock)) {
-        const redirectUrl = request.nextUrl.clone();
-        redirectUrl.pathname = "/admin/settings";
-        redirectUrl.searchParams.set("location", "locked");
-        return NextResponse.redirect(redirectUrl);
+      const memberRole =
+        slug != null
+          ? await resolveTenantMemberRoleOnTenantHost(
+              user.id,
+              { slug },
+              supabase
+            )
+          : customDomain != null
+            ? await resolveTenantMemberRoleOnTenantHost(
+                user.id,
+                { customDomain },
+                supabase
+              )
+            : null;
+
+      if (memberRole !== "owner") {
+        const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
+        if (!isAdminLocationUnlockCookieFresh(unlock)) {
+          const redirectUrl = request.nextUrl.clone();
+          redirectUrl.pathname = "/admin/settings";
+          redirectUrl.searchParams.set("location", "locked");
+          return NextResponse.redirect(redirectUrl);
+        }
       }
     }
   }
@@ -320,6 +337,17 @@ async function redirectPlatformUserToTenantAdmin(
 // ─── Main proxy ────────────────────────────────────────────────────
 
 export async function proxy(request: NextRequest) {
+  const correctedHost = stagingTenantHostCorrection(
+    request.headers.get("x-forwarded-host") ??
+      request.headers.get("host") ??
+      ""
+  );
+  if (correctedHost) {
+    const url = request.nextUrl.clone();
+    url.hostname = correctedHost;
+    return NextResponse.redirect(url, 308);
+  }
+
   const domain = detectDomain(request);
   const path = stripLocalePrefix(request.nextUrl.pathname);
 

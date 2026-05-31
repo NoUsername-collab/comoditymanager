@@ -5,8 +5,8 @@ import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import {
   clearAdminLocationUnlock,
   setAdminLocationUnlock,
-  verifyAdminPassword,
 } from "@/lib/auth/admin-config-session";
+import { verifyLocationUnlockPassword } from "@/lib/auth/location-unlock";
 import {
   requireLocationAdmin,
   requireStaff,
@@ -20,12 +20,12 @@ import { getTranslations } from "next-intl/server";
 
 export async function unlockLocationAdminAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireStaff();
-  const admin_password = String(formData.get("admin_password") ?? "");
+  const { user } = await requireStaff();
+  const owner_password = String(formData.get("owner_password") ?? "");
 
-  const ok = await verifyAdminPassword(admin_password);
+  const ok = await verifyLocationUnlockPassword(owner_password, user);
   if (!ok) {
-    return { error: t("adminPasswordIncorrect") };
+    return { error: t("ownerPasswordIncorrect") };
   }
 
   await setAdminLocationUnlock();

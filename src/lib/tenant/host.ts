@@ -8,16 +8,27 @@ const EXTRA_PLATFORM_HOSTS = (
   .map((h) => h.trim().toLowerCase())
   .filter(Boolean);
 
-function isPlatformHost(host: string): boolean {
-  const normalized = host.replace(/^www\./, "");
-  if (
-    normalized === PLATFORM_DOMAIN ||
-    host === `www.${PLATFORM_DOMAIN}`
-  ) {
-    return true;
+/** All platform apex hosts, longest first (test.hospira.ro before hospira.ro). */
+export function getPlatformRoots(): string[] {
+  const roots = new Set<string>([PLATFORM_DOMAIN, ...EXTRA_PLATFORM_HOSTS]);
+
+  // Staging apex: when prod root is hospira.ro, test.hospira.ro is platform — not tenant slug "test"
+  if (PLATFORM_DOMAIN && !PLATFORM_DOMAIN.startsWith("test.")) {
+    roots.add(`test.${PLATFORM_DOMAIN}`);
   }
-  return EXTRA_PLATFORM_HOSTS.some(
-    (p) => normalized === p || host === `www.${p}`
+
+  return [...roots].sort((a, b) => b.length - a.length);
+}
+
+function normalizeHost(host: string): string {
+  return host.replace(/^www\./, "").split(":")[0]?.trim().toLowerCase() ?? "";
+}
+
+function isPlatformHost(host: string): boolean {
+  const normalized = normalizeHost(host);
+  return getPlatformRoots().some(
+    (platform) =>
+      normalized === platform || normalized === `www.${platform}`
   );
 }
 
@@ -89,9 +100,7 @@ export function parseTenantFromHost(hostInput: string): ParsedTenantHost {
     return { type: "platform" };
   }
 
-  const platformRoots = [
-    ...new Set([PLATFORM_DOMAIN, ...EXTRA_PLATFORM_HOSTS]),
-  ].sort((a, b) => b.length - a.length);
+  const platformRoots = getPlatformRoots();
 
   for (const platform of platformRoots) {
     if (host.endsWith(`.${platform}`)) {
@@ -152,4 +161,21 @@ export function buildTenantAdminUrl(
   const host = tenantHost(slug, platformDomain);
   const safePath = path.startsWith("/") ? path : `/${path}`;
   return `${protocol}://${host}${safePath}`;
+}
+
+/** Staging: redirect slug.hospira.ro → slug.test.hospira.ro when platform is test.hospira.ro */
+export function stagingTenantHostCorrection(
+  hostInput: string
+): string | null {
+  if (PLATFORM_DOMAIN !== "test.hospira.ro") return null;
+
+  const host = normalizeHost(hostInput);
+  if (!host.endsWith(".hospira.ro") || host.includes(".test.")) return null;
+  if (isPlatformHost(host)) return null;
+
+  const suffix = ".hospira.ro";
+  const slug = host.slice(0, -suffix.length);
+  if (!slug || slug.includes(".")) return null;
+
+  return `${slug}.test.hospira.ro`;
 }

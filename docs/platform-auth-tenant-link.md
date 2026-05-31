@@ -23,8 +23,10 @@ App code: `getPrimaryTenantSlugForUser(supabase)` → `prepare_platform_session`
 ## Deploy checklist
 
 1. Supabase SQL Editor → paste full `supabase/migrations/038_platform_login_tenant_slug.sql` → Run.
-2. Vercel: `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_PLATFORM_DOMAIN`, redeploy.
-3. Test: platform login → redirect to `{slug}.test.hospira.ro/admin`.
+2. Staging: `039_fix_staging_tenant_domains.sql` + `UPDATE platform_settings SET value = 'test.hospira.ro' WHERE key = 'tenant_domain_suffix';`
+3. Vercel **Production + Preview**: `NEXT_PUBLIC_PLATFORM_DOMAIN=test.hospira.ro`, `NEXT_PUBLIC_SITE_URL=https://test.hospira.ro` → **Redeploy**.
+4. Vercel Domains: `test.hospira.ro` and `*.test.hospira.ro` **Valid**.
+5. Test login → redirect must be `https://{slug}.test.hospira.ro/admin` (not `*.hospira.ro`).
 
 ## Do not use
 

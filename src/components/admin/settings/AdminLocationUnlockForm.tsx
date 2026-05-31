@@ -7,10 +7,12 @@ import {
   unlockLocationAdminAction,
 } from "@/app/[locale]/admin/(panel)/settings/actions";
 
-export function AdminLocationUnlockForm() {
+export function AdminLocationUnlockForm({ isOwner = false }: { isOwner?: boolean }) {
   const tPage = useTranslations("admin.pages.settingsLocation.unlock");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  if (isOwner) return null;
 
   return (
     <form
@@ -30,9 +32,9 @@ export function AdminLocationUnlockForm() {
         {tPage.rich("hintHtml", { strong: (chunks) => <strong>{chunks}</strong> })}
       </p>
       <label className="block text-sm">
-        {tPage("adminPassword")}
+        {tPage("ownerPassword")}
         <input
-          name="admin_password"
+          name="owner_password"
           type="password"
           autoComplete="current-password"
           className="mt-1 w-full max-w-sm rounded-lg border border-zinc-300 px-3 py-2"

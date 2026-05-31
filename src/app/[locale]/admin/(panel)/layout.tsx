@@ -14,7 +14,7 @@ import {
 } from "@/services/pension-settings";
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { getStaffUser } from "@/lib/auth/require-staff";
-import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
+import { isLocationConfigurationAccessible } from "@/lib/auth/location-unlock";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
@@ -57,7 +57,9 @@ export default async function AdminLayout({
     const user = await getStaffUser();
     const role = user ? await resolveStaffRole(user) : null;
     isAdmin = role === "admin";
-    locationUnlocked = await isAdminLocationUnlocked();
+    locationUnlocked = user
+      ? await isLocationConfigurationAccessible(user.id)
+      : false;
   } catch {
     /* proxy redirects if unauthenticated */
   }

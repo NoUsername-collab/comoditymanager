@@ -109,6 +109,26 @@ async function getTenantMemberRoleOnEdge(
   return null;
 }
 
+export async function resolveTenantMemberRoleOnTenantHost(
+  userId: string,
+  ref: TenantHostRef,
+  sessionClient?: SupabaseClient
+): Promise<TenantMemberRole | null> {
+  const tenantId = await resolveTenantIdOnEdge(ref);
+  if (!tenantId) return null;
+
+  if (sessionClient) {
+    const sessionRole = await getTenantMemberRoleViaSession(
+      sessionClient,
+      tenantId,
+      userId
+    );
+    if (sessionRole) return sessionRole;
+  }
+
+  return getTenantMemberRoleOnEdge(tenantId, userId);
+}
+
 /** Staff role for tenant subdomain/custom domain (Edge proxy). */
 export async function resolveStaffRoleOnTenantHost(
   userId: string,

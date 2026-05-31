@@ -10,10 +10,10 @@ import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFram
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import { AdminLocationUnlockForm } from "@/components/admin/settings/AdminLocationUnlockForm";
+import { AdminLocationUnlockForm, AdminLocationLockButton } from "@/components/admin/settings/AdminLocationUnlockForm";
 import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
-import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
+import { isLocationConfigurationAccessible } from "@/lib/auth/location-unlock";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { updateAppearanceSettingsAction } from "./actions";
 
@@ -28,8 +28,9 @@ export default async function SettingsPage({
 }) {
   const t = await getTranslations("admin.pages.settings");
   const params = await searchParams;
-  const { user, role } = await requireStaff();
-  const locationUnlocked = await isAdminLocationUnlocked();
+  const { user, role, memberRole } = await requireStaff();
+  const locationUnlocked = await isLocationConfigurationAccessible(user.id);
+  const isOwner = memberRole === "owner";
 
   let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
   let error: string | null = null;
@@ -97,7 +98,13 @@ export default async function SettingsPage({
             </div>
             <div className="admin-settings-summary__chip">
               <span className="admin-settings-summary__label">{t("role")}</span>
-              <span className="admin-settings-summary__value">{role === "admin" ? t("roleAdmin") : t("roleOperator")}</span>
+              <span className="admin-settings-summary__value">
+                {isOwner
+                  ? t("roleOwner")
+                  : role === "admin"
+                    ? t("roleAdmin")
+                    : t("roleOperator")}
+              </span>
             </div>
           </div>
 
@@ -164,26 +171,37 @@ export default async function SettingsPage({
             </SettingsSlidePanel>
           )}
 
-          <SettingsSlidePanel
-            title={t("locationTitle")}
-            subtitle={locationUnlocked ? t("locationSubtitleUnlocked") : t("locationSubtitleLocked")}
-            icon="*"
-            defaultOpen={params.location === "locked"}
-          >
-            {locationUnlocked ? (
-              <div className="space-y-3">
-                <p className="text-sm text-zinc-600">{t("locationPanelInfo")}</p>
-                <Link
-                  href="/admin/settings/location"
-                  className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-                >
-                  {t("openConfigCenter")}
-                </Link>
-              </div>
-            ) : (
-              <AdminLocationUnlockForm />
-            )}
-          </SettingsSlidePanel>
+          {(role === "admin" || isOwner) && (
+            <SettingsSlidePanel
+              title={t("locationTitle")}
+              subtitle={
+                locationUnlocked
+                  ? isOwner
+                    ? t("locationSubtitleOwner")
+                    : t("locationSubtitleUnlocked")
+                  : t("locationSubtitleLocked")
+              }
+              icon="*"
+              defaultOpen={params.location === "locked"}
+            >
+              {locationUnlocked ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-zinc-600">
+                    {isOwner ? t("locationPanelInfoOwner") : t("locationPanelInfo")}
+                  </p>
+                  <Link
+                    href="/admin/settings/location"
+                    className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                  >
+                    {t("openConfigCenter")}
+                  </Link>
+                  {!isOwner && <AdminLocationLockButton />}
+                </div>
+              ) : (
+                <AdminLocationUnlockForm isOwner={false} />
+              )}
+            </SettingsSlidePanel>
+          )}
         </>
       )}
     </AdminRetroPageFrame>

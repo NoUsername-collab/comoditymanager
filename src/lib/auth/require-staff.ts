@@ -5,7 +5,10 @@ import {
   type StaffRole,
 } from "@/lib/auth/roles";
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
-import { isAdminLocationUnlocked } from "@/lib/auth/admin-config-session";
+import {
+  getTenantMemberRoleForRequest,
+  isLocationConfigurationAccessible,
+} from "@/lib/auth/location-unlock";
 
 export async function requireStaff() {
   const supabase = await createClient();
@@ -22,7 +25,9 @@ export async function requireStaff() {
     throw new Error("auth.tenant_member_required");
   }
 
-  return { user, role, supabase };
+  const memberRole = await getTenantMemberRoleForRequest(user.id);
+
+  return { user, role, memberRole, supabase };
 }
 
 export async function requireStaffRole(allowed: StaffRole[]) {
@@ -59,11 +64,11 @@ export async function getAdminUser() {
   return getStaffUser();
 }
 
-/** @deprecated alias — configurare locație necesită unlock separat */
+/** Configurare locație: owner acces direct; staff admin după confirmare parolă owner. */
 export async function requireLocationAdmin() {
   const ctx = await requireStaff();
-  const unlocked = await isAdminLocationUnlocked();
-  if (!unlocked) {
+  const accessible = await isLocationConfigurationAccessible(ctx.user.id);
+  if (!accessible) {
     await redirect("/admin/settings?location=locked");
   }
   return ctx;

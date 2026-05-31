@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getAdminEmail } from "@/lib/auth/constants";
+import { verifyPasswordForEmail } from "@/lib/auth/location-unlock";
 import {
   ADMIN_LOCATION_UNLOCK_COOKIE,
   isAdminLocationUnlockCookieFresh,
@@ -68,18 +68,5 @@ export async function clearAdminLocationUnlock(): Promise<void> {
 
 /** Verifică parola contului admin în Supabase fără a schimba sesiunea operatorului. */
 export async function verifyAdminPassword(password: string): Promise<boolean> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key || !password) return false;
-
-  const client = createSupabaseClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  const { error } = await client.auth.signInWithPassword({
-    email: getAdminEmail(),
-    password,
-  });
-
-  return !error;
+  return verifyPasswordForEmail(getAdminEmail(), password);
 }
