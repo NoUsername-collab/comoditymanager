@@ -123,7 +123,7 @@ export const DEFAULT_TENANT: TenantRecord = {
   id: "casa-emil-001",
   slug: "casa-emil",
   displayName: "Casa Emil",
-  planId: "pro",
+  planId: "professional",
   activeModules: [],
   mode: "cloud",
   locale: "ro",

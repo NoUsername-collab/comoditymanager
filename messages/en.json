@@ -281,6 +281,7 @@
       "username": "Username or email",
       "usernameOrEmailPlaceholder": "Admin, Operator, or staff email",
       "notMemberOfPension": "This account does not have access to this property. Use the correct subdomain or contact the owner.",
+      "signupSuccess": "Account created! Sign in with the email and password you chose.",
       "password": "Password",
       "submitting": "Signing in…",
       "submit": "Enter dashboard"
@@ -1882,6 +1883,24 @@
         "login": "Sign in",
         "logout": "Sign out"
       },
+      "occupancy": {
+        "hold_created": "Room hold",
+        "block_created": "Room block"
+      },
+      "activity": {
+        "undone": "Action undone"
+      },
+      "undo": "Undo",
+      "undoConfirm": "Undo this action? The previous state will be restored when possible.",
+      "undoPending": "Undoing…",
+      "undoSuccessTitle": "Action undone",
+      "undoSuccessMessage": "Previous state restored.",
+      "undoFailedTitle": "Could not undo",
+      "undoFailed": "Undo failed.",
+      "undoNotAllowed": "This action can no longer be undone (expired or already undone).",
+      "undoStateChanged": "Data changed in the meantime — undo is not safe.",
+      "undoMissingId": "Event not found.",
+      "undoneBadge": "Undone",
       "actorPublicSite": "Public website",
       "actorSystem": "System",
       "emptyTitle": "No events yet",
@@ -2297,11 +2316,23 @@
     "countryBG": "Bulgaria",
     "starterPlan": "Starter Plan — Free",
     "starterDetail": "3 rooms, calendar, online bookings",
+    "freePlan": "Free Plan",
+    "freePlanDetail": "3 rooms, calendar, online bookings",
     "submitButton": "Create account",
-    "submitting": "Creating...",
+    "submitting": "Creating your account...",
     "alreadyHaveAccount": "Already have an account?",
     "loginLink": "Sign in",
-    "genericError": "An error occurred. Please try again.",
+    "successBadge": "Account created",
+    "successTitle": "Your account was created successfully",
+    "successMessage": "“{name}” is ready. You can sign in to your admin panel.",
+    "successEmail": "Account email: {email}",
+    "successRedirecting": "Redirecting you to login in a few seconds...",
+    "successManualLink": "Click here if you are not redirected automatically",
+    "genericError": "We could not create your account. Please try again.",
+    "errorPlanConfig": "Database plan configuration issue. Contact your administrator.",
+    "errorDatabase": "Could not create the guesthouse in the database. Try again or contact support.",
+    "errorCatalogMigration": "Run migration 034_catalog_slug_per_tenant.sql in Supabase staging (SQL Editor).",
+    "errorServerConfig": "Server misconfigured (missing SUPABASE_SERVICE_ROLE_KEY on Vercel).",
     "rateLimited": "Too many attempts. Please wait a few minutes.",
     "pensionNameRequired": "Guesthouse name is required (min 2 characters).",
     "pensionNameTooLong": "Guesthouse name is too long (max 100 characters).",
@@ -2356,34 +2387,142 @@
     "step2Desc": "Configure buildings, floors and rooms. Get a presentation site automatically.",
     "step3Title": "Receive bookings",
     "step3Desc": "Guests book online, you confirm from calendar. Simple.",
-    "pricingTitle": "Simple pricing",
-    "pricingLead": "No contracts, no surprises. Pay monthly, cancel anytime.",
-    "planStarterName": "Starter",
-    "planForever": "Free, forever",
-    "planTrial": "14 days free, then pay",
-    "planStarter1": "3 rooms included",
-    "planStarter2": "Visual calendar",
-    "planStarter3": "Online bookings",
-    "planStarter4": "Presentation page",
-    "planStarterCta": "Start free",
-    "planStandardName": "Standard",
-    "planStandard1": "Up to 10 rooms",
-    "planStandard2": "Everything in Starter",
-    "planStandard3": "Email notifications",
-    "planStandard4": "Team (2 members)",
-    "planStandardCta": "Try 14 days",
-    "planProName": "Pro",
-    "planRecommended": "Recommended",
-    "planPro1": "Unlimited rooms",
-    "planPro2": "Everything in Standard",
-    "planPro3": "Unlimited team",
-    "planPro4": "Custom domain",
-    "planPro5": "No Hospira branding",
-    "planProCta": "Try 14 days",
-    "month": "month",
+    "statSetup": "Account setup",
+    "trustLead": "Built for small guesthouses that want control, not commissions.",
+    "trust1": "Zero commission on direct bookings",
+    "trust2": "EU data · GDPR-ready",
+    "trust3": "Support in Romanian, English, Bulgarian",
+    "pricingCompareCta": "Compare all plans",
     "finalCtaTitle": "Ready to start?",
     "finalCtaText": "Create account in 30 seconds. No credit card, no obligations.",
     "finalCtaButton": "Create free account"
+  },
+  "pricing": {
+    "heroBadge": "Transparent pricing",
+    "pageTitle": "Plans that grow with your property",
+    "pageLead": "Start free with 3 rooms. Upgrade only when you need to — no contract, no penalties.",
+    "statsAria": "Pricing summary",
+    "statFree": "To get started",
+    "statRooms": "Rooms on Free",
+    "statCommission": "Direct booking commission",
+    "gridTitle": "Pick the right plan",
+    "gridLead": "Prices in EUR, billed monthly. Cancel anytime.",
+    "priceFree": "Free, forever",
+    "billedMonthly": "Billed monthly · cancel anytime",
+    "perMonth": "/ month",
+    "roomsUnlimited": "Unlimited",
+    "recommended": "Most popular",
+    "vatNote": "Prices shown exclude VAT. Local and hybrid deployments available on request.",
+    "comparisonTitle": "Quick comparison",
+    "comparisonLead": "All plans include calendar, bookings and a public presentation page.",
+    "faqTitle": "Frequently asked questions",
+    "faq1Q": "Can I really start at 0 EUR?",
+    "faq1A": "Yes. Free includes 3 rooms, calendar and online bookings — no card, no time limit.",
+    "faq2Q": "When should I move to Essential (19 EUR)?",
+    "faq2A": "When you need Gantt, email notifications, visual themes, or up to 10 rooms and 3 team members.",
+    "faq3Q": "What does Professional (49 EUR) add?",
+    "faq3A": "Up to 30 rooms, unlimited team, custom domain, no Hospira branding, plus iCal and advanced reports.",
+    "faq4Q": "Who is Business (99 EUR) for?",
+    "faq4A": "Larger properties or small chains: unlimited rooms, up to 5 properties, invoicing, WhatsApp, API and dedicated onboarding.",
+    "finalTitle": "Start free today",
+    "finalText": "3 rooms, 0 EUR, setup in minutes.",
+    "finalCta": "Create free account",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "For your first 3 rooms",
+        "roomLine": "Up to {count} rooms",
+        "f1": "Visual calendar",
+        "f2": "Bookings & guest profiles",
+        "f3": "Public presentation page",
+        "f4": "1 team member",
+        "f5": "",
+        "f6": "",
+        "cta": "Start free"
+      },
+      "essential": {
+        "name": "Essential",
+        "tagline": "Growing guesthouses",
+        "roomLine": "Up to {count} rooms",
+        "f1": "Everything in Free",
+        "f2": "Gantt calendar + heatmap",
+        "f3": "Automated email notifications",
+        "f4": "Visual themes for your site",
+        "f5": "Up to 3 team members",
+        "f6": "",
+        "cta": "Try Essential"
+      },
+      "professional": {
+        "name": "Professional",
+        "tagline": "Full brand control",
+        "roomLine": "Up to {count} rooms",
+        "f1": "Everything in Essential",
+        "f2": "Unlimited team",
+        "f3": "Custom domain + no Hospira branding",
+        "f4": "iCal sync (Booking, Airbnb)",
+        "f5": "Advanced reports",
+        "f6": "Priority support",
+        "cta": "Choose Professional"
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Operations at scale",
+        "roomLine": "{count} rooms",
+        "f1": "Everything in Professional",
+        "f2": "Up to 5 properties",
+        "f3": "Invoicing + e-invoice",
+        "f4": "WhatsApp + REST API",
+        "f5": "Full white label",
+        "f6": "Dedicated onboarding + 99.9% SLA",
+        "cta": "Contact us"
+      }
+    },
+    "comparison": {
+      "featureCol": "Feature",
+      "plans": {
+        "free": "Free",
+        "essential": "Essential",
+        "professional": "Professional",
+        "business": "Business"
+      },
+      "rows": {
+        "rooms": "Rooms",
+        "team": "Team",
+        "gantt": "Gantt & heatmap",
+        "branding": "Hospira branding",
+        "modules": "Included modules"
+      },
+      "rooms": {
+        "free": "3",
+        "essential": "10",
+        "professional": "30",
+        "business": "Unlimited"
+      },
+      "team": {
+        "free": "1",
+        "essential": "3",
+        "professional": "Unlimited",
+        "business": "Unlimited"
+      },
+      "gantt": {
+        "free": "—",
+        "essential": "Yes",
+        "professional": "Yes",
+        "business": "Yes"
+      },
+      "branding": {
+        "free": "Yes",
+        "essential": "Yes",
+        "professional": "No",
+        "business": "No"
+      },
+      "modules": {
+        "free": "Public page",
+        "essential": "Public page",
+        "professional": "+ iCal, reports",
+        "business": "All modules"
+      }
+    }
   },
   "platform": {
     "header": {
@@ -2404,5 +2543,14 @@
       "contact": "Contact",
       "rights": "All rights reserved."
     }
+  },
+  "alphaGate": {
+    "eyebrow": "Alpha · restricted access",
+    "title": "Enter access password",
+    "lead": "Hospira is in private testing. If you received the password from the team, enter it below.",
+    "passwordLabel": "Alpha password",
+    "submit": "Enter",
+    "checking": "Checking…",
+    "wrongPassword": "Incorrect password."
   }
 }

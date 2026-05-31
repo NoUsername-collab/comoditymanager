@@ -7,9 +7,11 @@ import { loginAction } from "@/app/[locale]/admin/login/actions";
 export function AdminLoginForm({
   next,
   initialError = null,
+  initialUsername = "",
 }: {
   next: string;
   initialError?: string | null;
+  initialUsername?: string;
 }) {
   const t = useTranslations("admin.login");
   const [error, setError] = useState<string | null>(initialError);
@@ -37,6 +39,7 @@ export function AdminLoginForm({
           type="text"
           autoComplete="username"
           placeholder={t("usernameOrEmailPlaceholder")}
+          defaultValue={initialUsername}
           className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
           required
         />

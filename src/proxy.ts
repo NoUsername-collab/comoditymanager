@@ -1,6 +1,15 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse, NextRequest } from "next/server";
+import {
+  ALPHA_GATE_COOKIE,
+  isAlphaGateCookieFresh,
+} from "@/lib/auth/alpha-gate-cookie";
+import {
+  isAlphaGateEnabled,
+  isAlphaGateExemptPath,
+} from "@/lib/auth/alpha-gate-edge";
 import {
   ADMIN_LOCATION_UNLOCK_COOKIE,
   isAdminLocationUnlockCookieFresh,
@@ -8,50 +17,37 @@ import {
 import { pathBlockedForOperator } from "@/lib/auth/roles";
 import { resolveStaffRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
+import { buildTenantAdminUrl, parseTenantFromHost } from "@/lib/tenant/host";
+import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
 // ─── Domain detection ──────────────────────────────────────────────
 
-const PLATFORM_DOMAIN = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ?? "hospira.ro";
-
 type DomainContext =
-  | { type: "platform" }        // hospira.ro — landing, signup, pricing
-  | { type: "tenant"; slug: string }  // casa-emil.hospira.ro — app per client
-  | { type: "custom"; domain: string }; // custom domain — resolved from DB
+  | { type: "platform" }
+  | { type: "tenant"; slug: string }
+  | { type: "custom"; domain: string };
 
 function detectDomain(request: NextRequest): DomainContext {
   const host = request.headers.get("host")?.split(":")[0] ?? "";
 
-  // localhost — treat as platform in dev
   if (host === "localhost" || host === "127.0.0.1") {
-    // Check if there's a x-tenant-slug header (for local dev testing)
     const devSlug = request.headers.get("x-tenant-slug");
     if (devSlug) return { type: "tenant", slug: devSlug };
     return { type: "platform" };
   }
 
-  // Exact match: hospira.ro or www.hospira.ro → platform
-  if (host === PLATFORM_DOMAIN || host === `www.${PLATFORM_DOMAIN}`) {
-    return { type: "platform" };
+  if (host.endsWith(".localhost")) {
+    const slug = host.slice(0, -".localhost".length);
+    if (slug && !slug.includes(".")) return { type: "tenant", slug };
   }
 
-  // Subdomain: slug.hospira.ro → tenant
-  if (host.endsWith(`.${PLATFORM_DOMAIN}`)) {
-    const slug = host.replace(`.${PLATFORM_DOMAIN}`, "");
-    if (slug && !slug.includes(".")) {
-      return { type: "tenant", slug };
-    }
-  }
-
-  // Vercel preview deployments
-  if (host.endsWith(".vercel.app")) {
-    return { type: "platform" };
-  }
-
-  // Custom domain → resolve later from DB
-  return { type: "custom", domain: host };
+  const parsed = parseTenantFromHost(host);
+  if (parsed.type === "platform") return { type: "platform" };
+  if (parsed.type === "tenant") return { type: "tenant", slug: parsed.slug };
+  return { type: "custom", domain: parsed.domain };
 }
 
 // ─── Platform routes (hospira.ro) ──────────────────────────────────
@@ -91,21 +87,49 @@ function isLocationAdminPath(path: string): boolean {
   );
 }
 
+function alphaGateRedirectIfNeeded(
+  request: NextRequest,
+  path: string
+): NextResponse | null {
+  if (!isAlphaGateEnabled() || isAlphaGateExemptPath(path)) return null;
+
+  const token = request.cookies.get(ALPHA_GATE_COOKIE)?.value;
+  if (isAlphaGateCookieFresh(token)) return null;
+
+  const url = request.nextUrl.clone();
+  const segments = url.pathname.split("/").filter(Boolean);
+  const first = segments[0];
+  const hasLocale =
+    Boolean(first) &&
+    routing.locales.includes(first as (typeof routing.locales)[number]);
+  const localePrefix = hasLocale ? `/${first}` : "";
+  const returnTo =
+    request.nextUrl.pathname +
+    (request.nextUrl.search ? request.nextUrl.search : "");
+
+  url.pathname = `${localePrefix}/alpha-gate`;
+  url.search = "";
+  url.searchParams.set("next", returnTo);
+  return NextResponse.redirect(url);
+}
+
 async function resolveEffectiveStaffRole(
   userId: string,
   _email: string | undefined,
   slug: string | undefined,
-  customDomain: string | undefined
+  customDomain: string | undefined,
+  sessionClient?: SupabaseClient
 ): Promise<"admin" | "operator" | null> {
   if (slug) {
-    return resolveStaffRoleOnTenantHost(userId, { slug });
+    return resolveStaffRoleOnTenantHost(userId, { slug }, sessionClient);
   }
   if (customDomain) {
-    return resolveStaffRoleOnTenantHost(userId, { customDomain });
+    return resolveStaffRoleOnTenantHost(
+      userId,
+      { customDomain },
+      sessionClient
+    );
   }
-  // No tenant context (platform domain or local dev without header)
-  // Check app_metadata.role as fallback (set during signup/invite)
-  // NO legacy env var bypass — prevents "god mode" access
   return null;
 }
 
@@ -114,6 +138,9 @@ async function resolveEffectiveStaffRole(
 export async function proxy(request: NextRequest) {
   const domain = detectDomain(request);
   const path = stripLocalePrefix(request.nextUrl.pathname);
+
+  const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
+  if (alphaRedirect) return alphaRedirect;
 
   // ── PLATFORM (hospira.ro) ────────────────────────────────────
   if (domain.type === "platform") {
@@ -124,16 +151,58 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Block tenant-only routes on platform domain
+    // Block tenant-only routes on platform domain (login stays reachable)
     if (
-      path.startsWith("/admin") ||
+      (path.startsWith("/admin") && path !== "/admin/login") ||
       path.startsWith("/calendar") ||
       path.startsWith("/receptie")
     ) {
-      // If someone tries hospira.ro/admin → redirect to login/signup
       const url = request.nextUrl.clone();
       url.pathname = "/signup";
       return NextResponse.redirect(url);
+    }
+
+    // Platform login: already authenticated → tenant subdomain admin
+    if (path === "/admin/login") {
+      const { configured, url, key } = getEdgeSupabaseConfig();
+      if (configured && url && key) {
+        let loginResponse = intlMiddleware(request);
+        const supabase = createServerClient(url, key, {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
+            },
+            setAll(cookiesToSet) {
+              cookiesToSet.forEach(({ name, value }) =>
+                request.cookies.set(name, value)
+              );
+              cookiesToSet.forEach(({ name, value, options }) =>
+                loginResponse.cookies.set(name, value, options)
+              );
+            },
+          },
+        });
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
+          if (slug) {
+            const next = request.nextUrl.searchParams.get("next") || "/admin";
+            const safe =
+              next.startsWith("/") &&
+              !next.startsWith("//") &&
+              !next.includes("://")
+                ? next
+                : "/admin";
+            return NextResponse.redirect(buildTenantAdminUrl(slug, safe));
+          }
+        }
+
+        return loginResponse;
+      }
     }
 
     // Allow platform routes normally
@@ -207,7 +276,8 @@ export async function proxy(request: NextRequest) {
       user.id,
       user.email,
       slug,
-      customDomain
+      customDomain,
+      supabase
     );
 
     if (!effectiveRole) {
@@ -234,6 +304,23 @@ export async function proxy(request: NextRequest) {
   }
 
   if (isLoginPage && user) {
+    const effectiveRole = await resolveEffectiveStaffRole(
+      user.id,
+      user.email,
+      slug,
+      customDomain,
+      supabase
+    );
+    if (slug || customDomain) {
+      if (!effectiveRole) {
+        await supabase.auth.signOut();
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/admin/login";
+        redirectUrl.searchParams.set("error", "unauthorized");
+        return NextResponse.redirect(redirectUrl);
+      }
+    }
+
     const next = request.nextUrl.searchParams.get("next") || "/receptie";
     const safe =
       next.startsWith("/") && !next.startsWith("//") && !next.includes("://")

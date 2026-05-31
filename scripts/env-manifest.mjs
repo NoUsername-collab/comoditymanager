@@ -82,6 +82,12 @@ export const ENV_MANIFEST = [
     public: true,
     description: "alpha | stable — omit pe producție",
   },
+  {
+    key: "ALPHA_GATE_PASSWORD",
+    requirement: "optional",
+    description:
+      "Parolă acces site în alpha — dacă e setată, toate paginile publice cer parola",
+  },
 ];
 
 export const PLACEHOLDER_PATTERNS = [

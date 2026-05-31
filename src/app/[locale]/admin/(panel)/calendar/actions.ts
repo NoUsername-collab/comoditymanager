@@ -20,11 +20,16 @@ import {
 } from "@/services/booking-segments";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
+import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
 
 const getT = () => getTranslations("admin.serverActions");
 
-type ActionOk = { ok: true; id: string; undo?: { kind: "hold" | "block"; id: string } };
+type ActionOk = {
+  ok: true;
+  id: string;
+  undo?: { kind: "hold" | "block"; id: string; logId?: string };
+};
 type ActionErr = { ok: false; error: string };
 
 function actorEmail(user: { email?: string | null } | null): string | null {
@@ -38,7 +43,8 @@ export async function createRoomHoldsFromGanttAction(input: {
   reason?: string;
   expiresHours?: number | null;
 }): Promise<
-  { ok: true; ids: string[]; undo?: { kind: "hold"; ids: string[] } } | ActionErr
+  | { ok: true; ids: string[]; undo?: { kind: "hold"; ids: string[]; logId?: string } }
+  | ActionErr
 > {
   const t = await getT();
   await requireAdmin();
@@ -53,7 +59,19 @@ export async function createRoomHoldsFromGanttAction(input: {
       createdBy: actorEmail(user),
     });
     revalidatePath("/admin/calendar");
-    return { ok: true, ids, undo: { kind: "hold", ids } };
+    const logId = await logAdminActivityFromSession({
+      action: "occupancy.hold_created",
+      entityType: "room",
+      entityId: input.roomIds[0] ?? null,
+      summary: `Hold ${input.roomIds.length} camere · ${input.checkIn} → ${input.checkOut}`,
+      undoable: true,
+      metadata: {
+        hold_ids: ids,
+        check_in: input.checkIn,
+        check_out: input.checkOut,
+      },
+    });
+    return { ok: true, ids, undo: { kind: "hold", ids, logId: logId ?? undefined } };
   } catch (e) {
     return {
       ok: false,
@@ -82,7 +100,20 @@ export async function createRoomHoldFromGanttAction(input: {
       createdBy: actorEmail(user),
     });
     revalidatePath("/admin/calendar");
-    return { ok: true, id, undo: { kind: "hold", id } };
+    const logId = await logAdminActivityFromSession({
+      action: "occupancy.hold_created",
+      entityType: "room",
+      entityId: input.roomId,
+      summary: `Hold cameră · ${input.checkIn} → ${input.checkOut}`,
+      undoable: true,
+      metadata: {
+        hold_id: id,
+        hold_ids: [id],
+        check_in: input.checkIn,
+        check_out: input.checkOut,
+      },
+    });
+    return { ok: true, id, undo: { kind: "hold", id, logId: logId ?? undefined } };
   } catch (e) {
     return {
       ok: false,
@@ -109,7 +140,20 @@ export async function createRoomBlockFromGanttAction(input: {
       createdBy: actorEmail(user),
     });
     revalidatePath("/admin/calendar");
-    return { ok: true, id, undo: { kind: "block", id } };
+    const logId = await logAdminActivityFromSession({
+      action: "occupancy.block_created",
+      entityType: "room",
+      entityId: input.roomId,
+      summary: `Blocare · ${input.checkIn} → ${input.checkOut}`,
+      undoable: true,
+      metadata: {
+        block_id: id,
+        check_in: input.checkIn,
+        check_out: input.checkOut,
+        reason: input.reason,
+      },
+    });
+    return { ok: true, id, undo: { kind: "block", id, logId: logId ?? undefined } };
   } catch (e) {
     return {
       ok: false,

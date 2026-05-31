@@ -630,7 +630,9 @@ export async function confirmBookingWithRooms(
     entityType: "booking",
     entityId: bookingId,
     summary: `Confirmată: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
+      previous_status: booking.status,
       room_ids: roomIds,
       total_price: totalPrice,
       check_in: booking.check_in,
@@ -692,6 +694,7 @@ export async function rescheduleBookingDates(
     entityType: "booking",
     entityId: bookingId,
     summary: `Mutată: ${booking.guest_name} → ${newCheckIn} … ${newCheckOut}`,
+    undoable: true,
     metadata: {
       from_check_in: booking.check_in,
       from_check_out: booking.check_out,
@@ -738,8 +741,13 @@ export async function adjustBookingStayNights(
     entityType: "booking",
     entityId: bookingId,
     summary: `${nightDelta > 0 ? "Prelungit" : "Scurtat"}: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
       night_delta: nightDelta,
+      from_check_in: booking.check_in,
+      from_check_out: booking.check_out,
+      to_check_in: booking.check_in,
+      to_check_out: newCheckOut,
       check_in: booking.check_in,
       check_out: newCheckOut,
     },
@@ -822,6 +830,7 @@ export async function cancelBooking(bookingId: string): Promise<void> {
     entityType: "booking",
     entityId: bookingId,
     summary: `Anulată: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
       previous_status: booking.status,
       check_in: booking.check_in,
@@ -946,6 +955,7 @@ export async function setBookingCheckIn(
     entityType: "booking",
     entityId: bookingId,
     summary: `Check-in: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
       at: ts,
       planned_check_in: booking.check_in,
@@ -991,6 +1001,7 @@ export async function setBookingCheckOut(
     entityType: "booking",
     entityId: bookingId,
     summary: `Check-out: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
       at: ts,
       actual_check_in_at: booking.actual_check_in_at,
@@ -1035,6 +1046,7 @@ export async function editBookingCheckIn(
     entityType: "booking",
     entityId: bookingId,
     summary: `Check-in editat: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
       previous_at: booking.actual_check_in_at,
       new_at: ts,
@@ -1080,6 +1092,7 @@ export async function editBookingCheckOut(
     entityType: "booking",
     entityId: bookingId,
     summary: `Check-out editat: ${booking.guest_name}`,
+    undoable: true,
     metadata: {
       previous_at: booking.actual_check_out_at,
       new_at: ts,

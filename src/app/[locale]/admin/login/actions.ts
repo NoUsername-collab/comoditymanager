@@ -1,6 +1,7 @@
 "use server";
 
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import { redirect } from "next/navigation";
+import { localeRedirect as localeRedirectInternal } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import {
   isValidLoginIdentifier,
@@ -9,6 +10,8 @@ import {
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { logAdminActivity } from "@/services/activity-log";
 import { resolveRequestTenant } from "@/lib/tenant/active";
+import { buildTenantAdminUrl } from "@/lib/tenant/host";
+import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { getTranslations } from "next-intl/server";
 
 export async function loginAction(formData: FormData) {
@@ -43,34 +46,49 @@ export async function loginAction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
-    const tenant = await resolveRequestTenant();
-    const role = await resolveStaffRole(user);
-
-    if (tenant && !role) {
-      await supabase.auth.signOut();
-      return { error: t("notMemberOfPension") };
-    }
-
-    if (!tenant && !role) {
-      await supabase.auth.signOut();
-      return { error: t("invalidUserOrPassword") };
-    }
-
-    await logAdminActivity({
-      action: "auth.login",
-      entityType: "session",
-      entityId: user.id,
-      summary: t("loginSummary", { role: role ?? "staff" }),
-      actor: { id: user.id, email: user.email },
-    });
+  if (!user) {
+    return { error: t("invalidUserOrPassword") };
   }
+
+  const tenant = await resolveRequestTenant();
+  const role = await resolveStaffRole(user);
+
+  if (tenant && !role) {
+    await supabase.auth.signOut();
+    return { error: t("notMemberOfPension") };
+  }
+
+  if (!tenant && !role) {
+    await supabase.auth.signOut();
+    return { error: t("invalidUserOrPassword") };
+  }
+
+  await logAdminActivity({
+    action: "auth.login",
+    entityType: "session",
+    entityId: user.id,
+    summary: t("loginSummary", { role: role ?? "staff" }),
+    actor: { id: user.id, email: user.email },
+  });
 
   const safeNext =
     next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
       ? next
       : "/admin";
-  await redirect(safeNext);
+
+  // Already on tenant host (slug.hospira.ro) — stay on same domain
+  if (tenant) {
+    await localeRedirectInternal(safeNext);
+    return;
+  }
+
+  // Platform login (test.hospira.ro) → admin lives on tenant subdomain
+  const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
+  if (slug) {
+    redirect(buildTenantAdminUrl(slug, safeNext));
+  }
+
+  await localeRedirectInternal("/signup");
 }
 
 export async function logoutAction() {

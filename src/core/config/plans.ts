@@ -1,8 +1,8 @@
 /**
  * ╔══════════════════════════════════════════════════════════════════╗
- * ║  REZOVA — Plan & Feature Gating                                ║
+ * ║  HOSPIRA — Plan & Feature Gating                               ║
  * ║                                                                ║
- * ║  Maps directly to pricing.html tiers.                          ║
+ * ║  4 cloud plans: Free / Essential / Professional / Business     ║
  * ║  Every feature in the app checks against this config.          ║
  * ╚══════════════════════════════════════════════════════════════════╝
  */
@@ -10,120 +10,128 @@
 // ─── Deployment Modes ────────────────────────────────────────────
 export type DeploymentMode = "cloud" | "local" | "hybrid";
 
-// ─── Plan Tiers (from pricing.html) ──────────────────────────────
-export type CloudPlan = "starter" | "standard" | "pro" | "business";
-export type LocalPlan = "local_basic" | "local_pro" | "local_business";
-export type HybridPlan = "hybrid_basic" | "hybrid_pro" | "hybrid_business";
+// ─── Plan Tiers ─────────────────────────────────────────────────
+export type CloudPlan = "free" | "essential" | "professional" | "business";
+export type LocalPlan = "local_essential" | "local_professional" | "local_business";
+export type HybridPlan = "hybrid_essential" | "hybrid_professional" | "hybrid_business";
 export type PlanId = CloudPlan | LocalPlan | HybridPlan;
 
-// ─── Add-on Modules (from pricing.html) ──────────────────────────
-export type ModuleId =
-  | "ical_sync"        // +€8/mo  — iCal sync (Booking, Airbnb)
-  | "invoicing"        // +€6/mo  — Facturare + e-Factura ANAF
-  | "whatsapp"         // +€5/mo  — WhatsApp notifications
-  | "public_page"      // +€7/mo  — Public booking page
-  | "advanced_reports" // +€5/mo  — Advanced statistics
-  | "multi_property"   // +€20/mo — Multiple buildings/locations
-  | "white_label"      // +€15/mo — Remove Rezova branding
-  | "api_access";      // +€10/mo — REST/GraphQL API
+/** @deprecated Use "free" instead */
+export type { CloudPlan as DeprecatedCloudPlan };
 
-// ─── Core Features (always available, gated by plan) ─────────────
+// ─── Add-on Modules ─────────────────────────────────────────────
+export type ModuleId =
+  | "ical_sync"        // iCal sync (Booking, Airbnb)
+  | "invoicing"        // Facturare + e-Factura ANAF
+  | "whatsapp"         // WhatsApp notifications
+  | "public_page"      // Public booking page
+  | "advanced_reports" // Advanced statistics
+  | "multi_property"   // Multiple buildings/locations
+  | "white_label"      // Remove Hospira branding
+  | "api_access";      // REST API
+
+// ─── Core Features (gated by plan) ──────────────────────────────
 export type CoreFeature =
   | "calendar"           // Basic calendar view
   | "gantt"              // Full Gantt timeline
   | "guest_files"        // Guest management
   | "bookings"           // Booking management
-  | "rooms_unlimited"    // Unlimited rooms (Starter = max 3)
+  | "rooms_unlimited"    // Unlimited rooms (Free = max 3)
   | "email_notifications"// Auto email notifications
   | "themes"             // Visual theme selection
   | "heatmap"            // Availability heatmap
   | "priority_support"   // Priority support channel
   | "custom_domain"      // Custom domain
-  | "professional_email" // Professional email
   | "sla_guarantee"      // SLA 99.9%
   | "dedicated_manager"  // Dedicated account manager
   | "onboarding"         // Dedicated onboarding
   | "automations";       // Advanced automations
 
-// ─── Plan Feature Matrix ─────────────────────────────────────────
+// ─── Plan Feature Matrix ────────────────────────────────────────
 export interface PlanConfig {
   id: PlanId;
   mode: DeploymentMode;
   label: string;
-  maxRooms: number;            // Infinity for unlimited
+  priceEur: number;          // Monthly price in EUR (0 = free)
+  maxRooms: number;          // Infinity for unlimited
+  maxTeamMembers: number;    // Including owner
   coreFeatures: CoreFeature[];
-  includedModules: ModuleId[]; // Modules bundled in the plan
-  showBranding: boolean;       // Rezova branding visible?
-  maxProperties: number;       // Multi-property limit
+  includedModules: ModuleId[];
+  showBranding: boolean;
+  maxProperties: number;
 }
 
-const STARTER_FEATURES: CoreFeature[] = [
+// ─── Feature sets per tier ──────────────────────────────────────
+
+const FREE_FEATURES: CoreFeature[] = [
   "calendar",
   "guest_files",
   "bookings",
 ];
 
-const STANDARD_FEATURES: CoreFeature[] = [
-  ...STARTER_FEATURES,
+const ESSENTIAL_FEATURES: CoreFeature[] = [
+  ...FREE_FEATURES,
   "gantt",
-  "rooms_unlimited",
   "email_notifications",
   "themes",
   "heatmap",
 ];
 
-const PRO_FEATURES: CoreFeature[] = [
-  ...STANDARD_FEATURES,
+const PROFESSIONAL_FEATURES: CoreFeature[] = [
+  ...ESSENTIAL_FEATURES,
+  "rooms_unlimited",
   "priority_support",
   "custom_domain",
-  "professional_email",
 ];
 
 const BUSINESS_FEATURES: CoreFeature[] = [
-  ...PRO_FEATURES,
+  ...PROFESSIONAL_FEATURES,
   "sla_guarantee",
   "dedicated_manager",
   "onboarding",
   "automations",
 ];
 
-/**
- * Full plan definitions — source of truth for feature gating.
- */
+// ─── Plan definitions — source of truth ─────────────────────────
+
 export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   // ── Cloud ──────────────────────────────────────────────────────
-  starter: {
-    id: "starter",
+  free: {
+    id: "free",
     mode: "cloud",
-    label: "Starter",
+    label: "Free",
+    priceEur: 0,
     maxRooms: 3,
-    coreFeatures: STARTER_FEATURES,
-    includedModules: [],
+    maxTeamMembers: 1,
+    coreFeatures: FREE_FEATURES,
+    includedModules: ["public_page"],
     showBranding: true,
     maxProperties: 1,
   },
-  standard: {
-    id: "standard",
+  essential: {
+    id: "essential",
     mode: "cloud",
-    label: "Standard",
-    maxRooms: Infinity,
-    coreFeatures: STANDARD_FEATURES,
+    label: "Essential",
+    priceEur: 19,
+    maxRooms: 10,
+    maxTeamMembers: 3,
+    coreFeatures: ESSENTIAL_FEATURES,
     includedModules: ["public_page"],
-    showBranding: false,
+    showBranding: true,
     maxProperties: 1,
   },
-  pro: {
-    id: "pro",
+  professional: {
+    id: "professional",
     mode: "cloud",
-    label: "Pro",
-    maxRooms: Infinity,
-    coreFeatures: PRO_FEATURES,
+    label: "Professional",
+    priceEur: 49,
+    maxRooms: 30,
+    maxTeamMembers: Infinity,
+    coreFeatures: PROFESSIONAL_FEATURES,
     includedModules: [
       "public_page",
       "ical_sync",
-      "invoicing",
       "advanced_reports",
-      "whatsapp",
     ],
     showBranding: false,
     maxProperties: 1,
@@ -132,7 +140,9 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     id: "business",
     mode: "cloud",
     label: "Business",
+    priceEur: 99,
     maxRooms: Infinity,
+    maxTeamMembers: Infinity,
     coreFeatures: BUSINESS_FEATURES,
     includedModules: [
       "public_page",
@@ -149,26 +159,27 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   },
 
   // ── Local ──────────────────────────────────────────────────────
-  local_basic: {
-    id: "local_basic",
+  local_essential: {
+    id: "local_essential",
     mode: "local",
-    label: "Local Basic",
-    maxRooms: Infinity,
-    coreFeatures: STANDARD_FEATURES,
+    label: "Local Essential",
+    priceEur: 29,
+    maxRooms: 10,
+    maxTeamMembers: 3,
+    coreFeatures: ESSENTIAL_FEATURES,
     includedModules: [],
     showBranding: false,
     maxProperties: 1,
   },
-  local_pro: {
-    id: "local_pro",
+  local_professional: {
+    id: "local_professional",
     mode: "local",
-    label: "Local Pro",
-    maxRooms: Infinity,
-    coreFeatures: PRO_FEATURES,
-    includedModules: [
-      "invoicing",
-      "advanced_reports",
-    ],
+    label: "Local Professional",
+    priceEur: 69,
+    maxRooms: 30,
+    maxTeamMembers: Infinity,
+    coreFeatures: PROFESSIONAL_FEATURES,
+    includedModules: ["invoicing", "advanced_reports"],
     showBranding: false,
     maxProperties: 1,
   },
@@ -176,7 +187,9 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     id: "local_business",
     mode: "local",
     label: "Local Business",
+    priceEur: 129,
     maxRooms: Infinity,
+    maxTeamMembers: Infinity,
     coreFeatures: BUSINESS_FEATURES,
     includedModules: [
       "invoicing",
@@ -188,35 +201,38 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     maxProperties: 5,
   },
 
-  // ── Hybrid ─────────────────────────────────────────────────────
-  hybrid_basic: {
-    id: "hybrid_basic",
+  // ── Hybrid ────────────────────────────────────────────────────
+  hybrid_essential: {
+    id: "hybrid_essential",
     mode: "hybrid",
-    label: "Local Basic + Sync",
-    maxRooms: Infinity,
-    coreFeatures: STANDARD_FEATURES,
+    label: "Hybrid Essential",
+    priceEur: 39,
+    maxRooms: 10,
+    maxTeamMembers: 3,
+    coreFeatures: ESSENTIAL_FEATURES,
     includedModules: [],
     showBranding: false,
     maxProperties: 1,
   },
-  hybrid_pro: {
-    id: "hybrid_pro",
+  hybrid_professional: {
+    id: "hybrid_professional",
     mode: "hybrid",
-    label: "Local Pro + Sync",
-    maxRooms: Infinity,
-    coreFeatures: PRO_FEATURES,
-    includedModules: [
-      "invoicing",
-      "advanced_reports",
-    ],
+    label: "Hybrid Professional",
+    priceEur: 79,
+    maxRooms: 30,
+    maxTeamMembers: Infinity,
+    coreFeatures: PROFESSIONAL_FEATURES,
+    includedModules: ["invoicing", "advanced_reports"],
     showBranding: false,
     maxProperties: 1,
   },
   hybrid_business: {
     id: "hybrid_business",
     mode: "hybrid",
-    label: "Local Business + Sync",
+    label: "Hybrid Business",
+    priceEur: 149,
     maxRooms: Infinity,
+    maxTeamMembers: Infinity,
     coreFeatures: BUSINESS_FEATURES,
     includedModules: [
       "invoicing",
@@ -229,7 +245,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
   },
 };
 
-// ─── Module Pricing (for add-on purchases) ───────────────────────
+// ─── Module Catalog ─────────────────────────────────────────────
 export interface ModuleInfo {
   id: ModuleId;
   label: string;
@@ -258,41 +274,41 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     label: "WhatsApp",
     icon: "message",
     pricePerMonth: 5,
-    description: "Notificări automate WhatsApp",
+    description: "Notificari automate WhatsApp",
   },
   public_page: {
     id: "public_page",
-    label: "Pagină Publică",
+    label: "Pagina Publica",
     icon: "globe",
-    pricePerMonth: 7,
-    description: "Pagină de prezentare + rezervări online",
+    pricePerMonth: 0,
+    description: "Pagina de prezentare + rezervari online",
   },
   advanced_reports: {
     id: "advanced_reports",
     label: "Rapoarte Avansate",
     icon: "chart",
     pricePerMonth: 5,
-    description: "Statistici detaliate și export",
+    description: "Statistici detaliate si export",
   },
   multi_property: {
     id: "multi_property",
     label: "Multi-proprietate",
     icon: "building",
     pricePerMonth: 20,
-    description: "Gestionează mai multe proprietăți",
+    description: "Gestioneaza mai multe proprietati",
   },
   white_label: {
     id: "white_label",
     label: "White Label",
     icon: "palette",
     pricePerMonth: 15,
-    description: "Elimină branding-ul Rezova",
+    description: "Elimina branding-ul Hospira",
   },
   api_access: {
     id: "api_access",
     label: "API Access",
     icon: "code",
     pricePerMonth: 10,
-    description: "REST API pentru integrări externe",
+    description: "REST API pentru integrari externe",
   },
 };

@@ -281,7 +281,8 @@
       "username": "Потребител",
       "password": "Парола",
       "submitting": "Влизане…",
-      "submit": "Влез в панела"
+      "submit": "Влез в панела",
+      "signupSuccess": "Акаунтът е създаден! Влез с избрания email и парола."
     },
     "logout": "Изход",
     "operational": {
@@ -2240,11 +2241,23 @@
     "countryBG": "Bylgariya",
     "starterPlan": "Plan Starter — Bezplatno",
     "starterDetail": "3 stai, kalendar, onlajn rezervacii",
+    "freePlan": "Plan Free — Bezplatno",
+    "freePlanDetail": "3 stai, kalendar, onlajn rezervacii",
     "submitButton": "Syzdaj akount",
-    "submitting": "Syzdavane...",
+    "submitting": "Syzdavane na akaunta...",
     "alreadyHaveAccount": "Veche imash akount?",
     "loginLink": "Vlez",
-    "genericError": "Vyznkna greshka. Opitatye otnovo.",
+    "successBadge": "Akauntat e syzdat",
+    "successTitle": "Akauntat e syzdat uspeshno",
+    "successMessage": "„{name}“ e gotov. Mozhete da vlezete v admin panela.",
+    "successEmail": "Email na akaunta: {email}",
+    "successRedirecting": "Prenasocvame vi kym vhod za nyakolko sekundi...",
+    "successManualLink": "Natisnete tuk ako ne budete prenasocheni avtomatichno",
+    "genericError": "Ne uspyahme da syzdadem akaunta. Opitajte otnovo.",
+    "errorPlanConfig": "Problem s planovete v bazata. Svyarzhete se s administrator.",
+    "errorDatabase": "Greshka pri syzdavane na pansiona v bazata. Opitajte otnovo.",
+    "errorCatalogMigration": "Pusnete migraciyata 034_catalog_slug_per_tenant.sql v Supabase staging (SQL Editor).",
+    "errorServerConfig": "Syarvarat ne e konfiguriran (lipswa SUPABASE_SERVICE_ROLE_KEY na Vercel).",
     "rateLimited": "Tvyrde mnogo opiti. Izchakajte.",
     "pensionNameRequired": "Imeto na pansiona e zadylzhitelno.",
     "pensionNameTooLong": "Imeto e tvyrde dylgo.",
@@ -2299,34 +2312,142 @@
     "step2Desc": "Konfigurirajte sgradi, etazhi i stai.",
     "step3Title": "Poluchavajte rezervacii",
     "step3Desc": "Gostite rezervirat onlajn, vie potvyrzhdavate ot kalendara.",
-    "pricingTitle": "Prosti ceni",
-    "pricingLead": "Bez dogovori, bez iznenaadi. Plashtate mesechno.",
-    "planStarterName": "Starter",
-    "planForever": "Bezplatno, zavinagi",
-    "planTrial": "14 dni bezplatno",
-    "planStarter1": "3 stai vklyucheni",
-    "planStarter2": "Vizualen kalendar",
-    "planStarter3": "Onlajn rezervacii",
-    "planStarter4": "Stranica za prezentaciya",
-    "planStarterCta": "Zapochnete bezplatno",
-    "planStandardName": "Standard",
-    "planStandard1": "Do 10 stai",
-    "planStandard2": "Vsichko ot Starter",
-    "planStandard3": "Email uvedomleniya",
-    "planStandard4": "Ekip (2 chlena)",
-    "planStandardCta": "Probajtye 14 dni",
-    "planProName": "Pro",
-    "planRecommended": "Preporychano",
-    "planPro1": "Neogranicheni stai",
-    "planPro2": "Vsichko ot Standard",
-    "planPro3": "Neogranichen ekip",
-    "planPro4": "Sobstven domejn",
-    "planPro5": "Bez branding Hospira",
-    "planProCta": "Probajtye 14 dni",
-    "month": "mesec",
+    "statSetup": "Setup na akaunt",
+    "trustLead": "Za malki pansioni, koito iskat kontrol, ne komisioni.",
+    "trust1": "0% komision za direktni rezervacii",
+    "trust2": "Danni v ES · GDPR",
+    "trust3": "Poddrzhka na rumansky, angliyski, balgarski",
+    "pricingCompareCta": "Sravenete vsichki planove",
     "finalCtaTitle": "Gotovi li ste?",
     "finalCtaText": "Syzdajte akaunt za 30 sekundi. Bez kreditna karta.",
     "finalCtaButton": "Syzdajte bezplaten akaunt"
+  },
+  "pricing": {
+    "heroBadge": "Prozrachni ceni",
+    "pageTitle": "Planove, koito rastat s vasheto imote",
+    "pageLead": "Zapochnete bezplatno s 3 stai. Nadgradete samo kogato e nuzhno.",
+    "statsAria": "Obobhtenie na cenite",
+    "statFree": "Za start",
+    "statRooms": "Stai v Free",
+    "statCommission": "Komision direktni rezervacii",
+    "gridTitle": "Izberete podhodyasht plan",
+    "gridLead": "Ceni v EUR, mesechen abonament. Otmena kogato poiskate.",
+    "priceFree": "Bezplatno, zavinagi",
+    "billedMonthly": "Mesechen abonament · otmena kogato poiskate",
+    "perMonth": "/ mesec",
+    "roomsUnlimited": "Neogranicheno",
+    "recommended": "Nai-populyaren",
+    "vatNote": "Cenite sa bez DDS. Lokalni i hibridni planove po zayavka.",
+    "comparisonTitle": "Burzo sravnenie",
+    "comparisonLead": "Vsichki planove vklyuchvat kalendar, rezervacii i publichna stranica.",
+    "faqTitle": "Chesto zadavani vaprosi",
+    "faq1Q": "Naistina li e 0 EUR?",
+    "faq1A": "Da. Free vklyuchva 3 stai, kalendar i onlajn rezervacii — bez karta.",
+    "faq2Q": "Kogato da mina na Essential (19 EUR)?",
+    "faq2A": "Kogato vi trqbvat Gantt, email uvedomleniya, temi ili do 10 stai i 3 chlena.",
+    "faq3Q": "Kakvo dava Professional (49 EUR)?",
+    "faq3A": "Do 30 stai, neogranichen ekip, custom domejn, bez branding, iCal i raporti.",
+    "faq4Q": "Za kogo e Business (99 EUR)?",
+    "faq4A": "Po-golqmi imoti: neogranicheni stai, do 5 imota, fakturirane, WhatsApp, API.",
+    "finalTitle": "Zapochnete bezplatno",
+    "finalText": "3 stai, 0 EUR, setup za minuti.",
+    "finalCta": "Syzdaj bezplaten akaunt",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Za parvite 3 stai",
+        "roomLine": "Do {count} stai",
+        "f1": "Vizualen kalendar",
+        "f2": "Rezervacii i gosti",
+        "f3": "Publichna stranica",
+        "f4": "1 chlen na ekipa",
+        "f5": "",
+        "f6": "",
+        "cta": "Zapochnete bezplatno"
+      },
+      "essential": {
+        "name": "Essential",
+        "tagline": "Rastashti pansioni",
+        "roomLine": "Do {count} stai",
+        "f1": "Vsichko ot Free",
+        "f2": "Gantt + heatmap",
+        "f3": "Email uvedomleniya",
+        "f4": "Vizualni temi",
+        "f5": "Do 3 chlena ekip",
+        "f6": "",
+        "cta": "Probaj Essential"
+      },
+      "professional": {
+        "name": "Professional",
+        "tagline": "Pylen kontrol na markata",
+        "roomLine": "Do {count} stai",
+        "f1": "Vsichko ot Essential",
+        "f2": "Neogranichen ekip",
+        "f3": "Custom domejn + bez branding",
+        "f4": "iCal sync",
+        "f5": "Razshireni raporti",
+        "f6": "Prioritetna poddrzhka",
+        "cta": "Izberi Professional"
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Operacii v mashtab",
+        "roomLine": "{count} stai",
+        "f1": "Vsichko ot Professional",
+        "f2": "Do 5 imota",
+        "f3": "Fakturirane + e-faktura",
+        "f4": "WhatsApp + REST API",
+        "f5": "White label",
+        "f6": "Onboarding + SLA 99.9%",
+        "cta": "Svyazhete se s nas"
+      }
+    },
+    "comparison": {
+      "featureCol": "Funkciya",
+      "plans": {
+        "free": "Free",
+        "essential": "Essential",
+        "professional": "Professional",
+        "business": "Business"
+      },
+      "rows": {
+        "rooms": "Stai",
+        "team": "Ekip",
+        "gantt": "Gantt & heatmap",
+        "branding": "Branding Hospira",
+        "modules": "Moduli"
+      },
+      "rooms": {
+        "free": "3",
+        "essential": "10",
+        "professional": "30",
+        "business": "Neogranicheno"
+      },
+      "team": {
+        "free": "1",
+        "essential": "3",
+        "professional": "Neogranichen",
+        "business": "Neogranichen"
+      },
+      "gantt": {
+        "free": "—",
+        "essential": "Da",
+        "professional": "Da",
+        "business": "Da"
+      },
+      "branding": {
+        "free": "Da",
+        "essential": "Da",
+        "professional": "Ne",
+        "business": "Ne"
+      },
+      "modules": {
+        "free": "Publichna stranica",
+        "essential": "Publichna stranica",
+        "professional": "+ iCal, raporti",
+        "business": "Vsichki moduli"
+      }
+    }
   },
   "platform": {
     "header": {
@@ -2347,5 +2468,14 @@
       "contact": "Kontakt",
       "rights": "Vsichki prava zapazeni."
     }
+  },
+  "alphaGate": {
+    "eyebrow": "Alpha · ogranichen dostap",
+    "title": "Vavedete parola za dostap",
+    "lead": "Hospira e v chastno testvane. Ako ste poluchili parolata ot ekipa, vavedete ya po-dolu.",
+    "passwordLabel": "Alpha parola",
+    "submit": "Vlez",
+    "checking": "Proverka…",
+    "wrongPassword": "Greshna parola."
   }
 }

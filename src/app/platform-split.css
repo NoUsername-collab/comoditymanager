@@ -1,0 +1,342 @@
+/* ── Hospira split theme: luminous top · noir bottom ─────────────── */
+
+.platform-shell--split {
+  --light-bg: #faf7f0;
+  --light-bg-soft: #f3ede3;
+  --light-fg: #1a1612;
+  --light-muted: #6b6358;
+  --light-card: #ffffff;
+  --light-border: #e5dcc8;
+  --light-accent: #b8942e;
+  --light-accent-deep: #96761f;
+  --light-glow: rgba(255, 248, 230, 0.85);
+  background: #07060a;
+}
+
+/* ── Header (reads light while user is on luminous half) ─────────── */
+
+.platform-header--split {
+  border-bottom-color: color-mix(in srgb, var(--light-border) 80%, transparent);
+  background: color-mix(in srgb, var(--light-bg) 82%, transparent);
+  backdrop-filter: blur(18px) saturate(1.2);
+}
+
+.platform-header--split .platform-header__name {
+  color: var(--light-fg);
+}
+
+.platform-header--split .platform-header__link {
+  color: var(--light-muted);
+}
+
+.platform-header--split .platform-header__link:hover {
+  color: var(--light-fg);
+  background: color-mix(in srgb, var(--light-fg) 6%, transparent);
+}
+
+.platform-header--split .platform-header__logo {
+  background: linear-gradient(145deg, #d6b55a 0%, #b8942e 100%);
+  color: #1a1612;
+  box-shadow: 0 4px 14px color-mix(in srgb, #b8942e 35%, transparent);
+}
+
+.platform-header--split .platform-header__cta {
+  background: linear-gradient(145deg, #1a1612 0%, #2d2820 100%);
+  color: #faf7f0;
+}
+
+.platform-header--split .platform-header__cta:hover {
+  opacity: 1;
+  box-shadow: 0 6px 20px color-mix(in srgb, #1a1612 25%, transparent);
+}
+
+/* ── Surface blocks ──────────────────────────────────────────────── */
+
+.landing-surface--light {
+  --site-bg: var(--light-bg);
+  --site-fg: var(--light-fg);
+  --site-muted: var(--light-muted);
+  --site-card: var(--light-card);
+  --site-border: var(--light-border);
+  --site-accent: var(--light-accent);
+  --site-accent-fg: var(--light-fg);
+  position: relative;
+  color: var(--light-fg);
+  background:
+    radial-gradient(
+      ellipse 90% 60% at 12% -8%,
+      var(--light-glow) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 88% 12%,
+      color-mix(in srgb, #d6b55a 12%, transparent) 0%,
+      transparent 55%
+    ),
+    linear-gradient(180deg, var(--light-bg) 0%, var(--light-bg-soft) 100%);
+}
+
+.landing-surface--light::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 7rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, #07060a 8%, transparent) 45%,
+    #07060a 100%
+  );
+}
+
+.landing-surface--dark {
+  --site-bg: #07060a;
+  --site-fg: #f3efe3;
+  --site-muted: #b7af9a;
+  --site-card: #0e0c14;
+  --site-border: color-mix(in srgb, #d6b55a 22%, #1b1824);
+  --site-accent: #d6b55a;
+  --site-accent-fg: #0b0a0f;
+  position: relative;
+  color: var(--site-fg);
+  background:
+    radial-gradient(
+      ellipse 70% 45% at 50% 0%,
+      color-mix(in srgb, #d6b55a 7%, transparent) 0%,
+      transparent 62%
+    ),
+    #07060a;
+}
+
+.landing-surface--dark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, #d6b55a 35%, transparent) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.landing-surface__inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Hero: literal half-light split on desktop ───────────────────── */
+
+.landing-surface--light .landing-hero {
+  min-height: min(88vh, 52rem);
+}
+
+.landing-surface--light .landing-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 46%,
+    color-mix(in srgb, #1a1612 4%, transparent) 49%,
+    color-mix(in srgb, #07060a 12%, transparent) 52%,
+    transparent 52%
+  );
+}
+
+@media (min-width: 960px) {
+  .landing-surface--light .landing-hero::before {
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      transparent 48%,
+      color-mix(in srgb, var(--light-border) 70%, transparent) 49.2%,
+      color-mix(in srgb, #07060a 18%, #1a1520) 50%,
+      color-mix(in srgb, #07060a 35%, transparent) 100%
+    );
+  }
+}
+
+.landing-surface--light .landing-hero__glow {
+  top: -20%;
+  left: 0;
+  transform: none;
+  width: 55%;
+  height: 70%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  background: radial-gradient(
+    ellipse at 20% 30%,
+    color-mix(in srgb, #fff 75%, #d6b55a 12%) 0%,
+    transparent 68%
+  );
+}
+
+.landing-surface--light .landing-hero__badge {
+  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
+  background: color-mix(in srgb, var(--light-accent) 10%, #fff);
+  color: var(--light-accent-deep);
+}
+
+.landing-surface--light .landing-hero__title {
+  color: var(--light-fg);
+}
+
+.landing-surface--light .landing-hero__subtitle,
+.landing-surface--light .landing-hero__note {
+  color: var(--light-muted);
+}
+
+.landing-surface--light .landing-cta--ghost {
+  color: var(--light-fg);
+  border-color: color-mix(in srgb, var(--light-fg) 18%, var(--light-border));
+  background: color-mix(in srgb, #fff 55%, transparent);
+}
+
+.landing-surface--light .landing-cta--ghost:hover {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--light-fg) 28%, var(--light-border));
+}
+
+.landing-surface--light .landing-cta--primary {
+  background: linear-gradient(145deg, #1a1612 0%, #3d362c 100%);
+  color: #faf7f0;
+  box-shadow: 0 10px 28px color-mix(in srgb, #1a1612 18%, transparent);
+}
+
+.landing-surface--light .landing-stat {
+  background: color-mix(in srgb, #fff 88%, var(--light-bg-soft));
+  border-color: var(--light-border);
+  box-shadow: 0 8px 24px color-mix(in srgb, #1a1612 6%, transparent);
+}
+
+.landing-surface--light .landing-stat__value {
+  color: var(--light-accent-deep);
+}
+
+.landing-surface--light .landing-stat__label {
+  color: var(--light-muted);
+}
+
+.landing-surface--light .landing-trust {
+  border-block-color: var(--light-border);
+  background: color-mix(in srgb, #fff 50%, var(--light-bg-soft));
+}
+
+.landing-surface--light .landing-trust__lead {
+  color: var(--light-muted);
+}
+
+.landing-surface--light .landing-trust__items {
+  color: var(--light-fg);
+}
+
+.landing-surface--light .landing-trust__items span::before {
+  color: var(--light-accent);
+}
+
+.landing-surface--light .landing-comparison__col {
+  background: var(--light-card);
+  border-color: var(--light-border);
+  box-shadow: 0 12px 32px color-mix(in srgb, #1a1612 5%, transparent);
+}
+
+.landing-surface--light .landing-comparison__col--bad {
+  background: color-mix(in srgb, #fef2f2 80%, #fff);
+  border-color: color-mix(in srgb, #fca5a5 45%, var(--light-border));
+}
+
+.landing-surface--light .landing-comparison__col--good {
+  background: color-mix(in srgb, #f0fdf4 75%, #fff);
+  border-color: color-mix(in srgb, #86efac 40%, var(--light-border));
+}
+
+.landing-surface--light .landing-comparison__heading {
+  color: var(--light-fg);
+}
+
+.landing-surface--light .landing-comparison__list {
+  color: var(--light-muted);
+}
+
+.landing-surface--light .landing-section__title {
+  color: var(--light-fg);
+}
+
+.landing-surface--light .landing-section__lead {
+  color: var(--light-muted);
+}
+
+/* Pricing on light surface (preturi top) */
+.landing-surface--light .landing-price-card {
+  background: #fff;
+  border-color: var(--light-border);
+  box-shadow: 0 16px 40px color-mix(in srgb, #1a1612 7%, transparent);
+}
+
+.landing-surface--light .landing-price-card--featured {
+  border-color: var(--light-accent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--light-accent) 25%, transparent),
+    0 20px 48px color-mix(in srgb, var(--light-accent) 14%, transparent);
+}
+
+.landing-surface--light .landing-price-card__amount,
+.landing-surface--light .landing-price-card__name,
+.landing-surface--light .landing-price-card__rooms {
+  color: var(--light-fg);
+}
+
+.landing-surface--light .landing-price-card__currency,
+.landing-surface--light .landing-price-card__features li {
+  color: var(--light-muted);
+}
+
+.landing-surface--light .landing-price-card__tier,
+.landing-surface--light .landing-price-card__period {
+  color: var(--light-accent-deep);
+}
+
+.landing-surface--light .landing-cta--outline {
+  color: var(--light-accent-deep);
+  border-color: color-mix(in srgb, var(--light-accent) 40%, var(--light-border));
+}
+
+.landing-surface--light .landing-pricing-note {
+  color: var(--light-muted);
+}
+
+.landing-showcase--dark {
+  --site-card: #0e0c14;
+  --site-border: #1b1824;
+  --site-muted: #b7af9a;
+  --site-accent: #d6b55a;
+  border-color: color-mix(in srgb, #1a1612 25%, var(--light-border));
+  box-shadow:
+    0 28px 70px color-mix(in srgb, #1a1612 22%, transparent),
+    0 0 0 1px color-mix(in srgb, #d6b55a 12%, transparent);
+}
+
+.landing-hero__inner--centered {
+  max-width: 42rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.landing-hero__inner--centered .landing-hero__subtitle {
+  margin-inline: auto;
+}
+
+.landing-hero__inner--centered .landing-stats {
+  justify-content: center;
+}

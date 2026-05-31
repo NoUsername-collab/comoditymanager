@@ -8,6 +8,7 @@
  */
 
 import { createPublicAdminClient } from "@/lib/supabase/admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // ─── Types ─────────────────────────────────────────────────────────
 export type TenantMemberRole = "owner" | "admin" | "operator";
@@ -307,6 +308,40 @@ export async function countActiveTenantMembers(
 
   if (error) return 0;
   return count ?? 0;
+}
+
+/** First tenant slug for user (owner > admin > operator) — platform login redirect. */
+export async function getPrimaryTenantSlugForUser(
+  supabase: SupabaseClient,
+  userId: string
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("tenant_members")
+    .select("role, tenants(slug)")
+    .eq("user_id", userId)
+    .eq("is_active", true);
+
+  if (error || !data?.length) return null;
+
+  const roleOrder: Record<string, number> = {
+    owner: 0,
+    admin: 1,
+    operator: 2,
+  };
+
+  const sorted = [...data].sort(
+    (a, b) =>
+      (roleOrder[String(a.role)] ?? 9) - (roleOrder[String(b.role)] ?? 9)
+  );
+
+  for (const row of sorted) {
+    const nested = row.tenants as { slug: string } | { slug: string }[] | null;
+    if (!nested) continue;
+    const slug = Array.isArray(nested) ? nested[0]?.slug : nested.slug;
+    if (slug) return slug;
+  }
+
+  return null;
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────

@@ -5,6 +5,7 @@
 @import "./signup.css";
 @import "./landing.css";
 @import "./platform.css";
+@import "./platform-split.css";
 @import "./device-mobile.css";
 
 :root {

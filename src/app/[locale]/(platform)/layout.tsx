@@ -22,10 +22,10 @@ export default function PlatformLayout({
 }) {
   return (
     <div
-      className="site-themed site-themed--noir flex min-h-screen flex-1 flex-col"
+      className="site-themed site-themed--noir platform-shell platform-shell--split flex min-h-screen flex-1 flex-col"
       style={platformVars}
     >
-      <PlatformHeader />
+      <PlatformHeader variant="split" />
       <div className="flex-1">{children}</div>
       <PlatformFooter />
     </div>

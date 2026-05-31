@@ -16,7 +16,7 @@ export async function PlatformFooter() {
           <div>
             <p className="platform-footer__label">{t("product")}</p>
             <nav className="platform-footer__links">
-              <a href="#preturi">{t("pricing")}</a>
+              <Link href="/preturi">{t("pricing")}</Link>
               <Link href="/signup">{t("signup")}</Link>
               <Link href="/admin/login">{t("login")}</Link>
             </nav>

@@ -1,14 +1,51 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { signupAction } from "@/app/[locale]/(platform)/signup/actions";
+
+type SignupSuccess = {
+  pensionName: string;
+  email: string;
+  slug: string;
+  redirectTo: string;
+};
 
 export function SignupForm() {
   const t = useTranslations("signup");
+  const locale = useLocale();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<string | null>(null);
+  const [success, setSuccess] = useState<SignupSuccess | null>(null);
+  const redirectTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimer.current !== null) {
+        window.clearTimeout(redirectTimer.current);
+      }
+    };
+  }, []);
+
+  if (success) {
+    return (
+      <div className="signup-form__success" role="status" aria-live="polite">
+        <p className="signup-form__success-badge">{t("successBadge")}</p>
+        <h3 className="signup-form__success-title">{t("successTitle")}</h3>
+        <p className="signup-form__success-text">
+          {t("successMessage", { name: success.pensionName })}
+        </p>
+        <p className="signup-form__success-email">
+          {t("successEmail", { email: success.email })}
+        </p>
+        <p className="signup-form__success-redirect">{t("successRedirecting")}</p>
+        <a href={success.redirectTo} className="signup-form__success-link">
+          {t("successManualLink")}
+        </a>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -17,20 +54,32 @@ export function SignupForm() {
         setPending(true);
         setError(null);
         setErrorField(null);
+        formData.set("locale", locale);
+
         try {
           const result = await signupAction(formData);
-          if (!result.ok) {
-            setError(result.error);
-            setErrorField(result.field ?? null);
+          if (result.ok) {
+            setSuccess({
+              pensionName: result.pensionName,
+              email: result.email,
+              slug: result.slug,
+              redirectTo: result.redirectTo,
+            });
+            redirectTimer.current = window.setTimeout(() => {
+              window.location.assign(result.redirectTo);
+            }, 2000);
+            return;
           }
-        } catch {
+          setError(result.error);
+          setErrorField(result.field ?? null);
+        } catch (err) {
+          console.error("[SIGNUP] Client error:", err);
           setError(t("genericError"));
         } finally {
           setPending(false);
         }
       }}
     >
-      {/* Pension name */}
       <div className="signup-form__field">
         <label htmlFor="signup-pension" className="signup-form__label">
           {t("pensionNameLabel")}
@@ -49,7 +98,6 @@ export function SignupForm() {
         <p className="signup-form__hint">{t("pensionNameHint")}</p>
       </div>
 
-      {/* Email */}
       <div className="signup-form__field">
         <label htmlFor="signup-email" className="signup-form__label">
           {t("emailLabel")}
@@ -65,7 +113,6 @@ export function SignupForm() {
         />
       </div>
 
-      {/* Password */}
       <div className="signup-form__field">
         <label htmlFor="signup-password" className="signup-form__label">
           {t("passwordLabel")}
@@ -83,7 +130,6 @@ export function SignupForm() {
         <p className="signup-form__hint">{t("passwordHint")}</p>
       </div>
 
-      {/* Country */}
       <div className="signup-form__field">
         <label htmlFor="signup-country" className="signup-form__label">
           {t("countryLabel")}
@@ -100,23 +146,19 @@ export function SignupForm() {
         </select>
       </div>
 
-      {/* Hidden locale — auto-detected */}
-      <input type="hidden" name="locale" value="ro" />
+      <input type="hidden" name="locale" value={locale} readOnly />
 
-      {/* Error */}
       {error && (
         <div className="signup-form__error" role="alert">
           {error}
         </div>
       )}
 
-      {/* Free plan badge */}
       <div className="signup-form__plan-badge">
-        <span className="signup-form__plan-badge-label">{t("starterPlan")}</span>
-        <span className="signup-form__plan-badge-detail">{t("starterDetail")}</span>
+        <span className="signup-form__plan-badge-label">{t("freePlan")}</span>
+        <span className="signup-form__plan-badge-detail">{t("freePlanDetail")}</span>
       </div>
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={pending}
@@ -125,7 +167,6 @@ export function SignupForm() {
         {pending ? t("submitting") : t("submitButton")}
       </button>
 
-      {/* Login link */}
       <p className="signup-form__login-link">
         {t("alreadyHaveAccount")}{" "}
         <a href="/admin/login" className="signup-form__link">

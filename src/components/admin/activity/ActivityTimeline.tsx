@@ -1,5 +1,6 @@
 "use client";
 
+import { ActivityUndoButton } from "@/components/admin/activity/ActivityUndoButton";
 import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -12,6 +13,10 @@ import {
   activityTone,
   ACTIVITY_TONE_CLASS,
 } from "@/domain/activity/presentation";
+import {
+  canUndoActivityEntry,
+  isUndoneEntry,
+} from "@/domain/activity/undo/registry";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 
 function formatWhen(iso: string, locale: string): string {
@@ -73,6 +78,8 @@ export function ActivityTimeline({
           entry.entity_type === "booking" && entry.entity_id
             ? formatBookingRef(entry.entity_id)
             : null;
+        const showUndo = canUndoActivityEntry(entry);
+        const wasUndone = isUndoneEntry(entry);
 
         return (
           <li
@@ -118,6 +125,14 @@ export function ActivityTimeline({
                 >
                   {formatWhen(entry.created_at, locale)}
                 </time>
+                {showUndo && (
+                  <ActivityUndoButton logId={entry.id} compact />
+                )}
+                {wasUndone && (
+                  <span className="rounded-full border border-zinc-200 bg-zinc-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+                    {t("undoneBadge")}
+                  </span>
+                )}
               </div>
               <p className="mt-2 text-sm font-semibold leading-snug text-zinc-900">
                 {entry.summary}

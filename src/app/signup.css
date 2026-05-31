@@ -184,6 +184,57 @@
   font-size: 0.8125rem;
 }
 
+.signup-form__success {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, #22c55e 35%, transparent);
+  background: color-mix(in srgb, #22c55e 10%, transparent);
+}
+
+.signup-form__success-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, #22c55e 20%, transparent);
+  color: #86efac;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.signup-form__success-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--site-fg, #f3efe3);
+}
+
+.signup-form__success-text,
+.signup-form__success-email,
+.signup-form__success-redirect {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--site-muted, #b7af9a);
+  line-height: 1.5;
+}
+
+.signup-form__success-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #86efac;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.signup-form__success-link:hover {
+  color: #bbf7d0;
+}
+
 .signup-form__plan-badge {
   display: flex;
   align-items: center;

@@ -1,5 +1,8 @@
 # Mediu test live (~2 săptămâni)
 
+> **Hospira (signup + subdomenii tenant):** ghid actualizat → **[test-domeniu-hospira.md](./test-domeniu-hospira.md)**  
+> (Supabase Cloud, `test.hospira.ro`, `*.test.hospira.ro`, Vercel — fără localhost)
+
 Scop: **URL stabil** + **bază de date doar de test**, separată de dev-ul tău zilnic și de producția clientului. Prietenul (sau oricine) poate folosi app-ul ca în realitate, fără să atingă datele importante.
 
 ## Arhitectură (3 straturi)

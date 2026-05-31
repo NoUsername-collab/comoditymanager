@@ -2,11 +2,17 @@ import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { getTranslations } from "next-intl/server";
 
-export async function PlatformHeader() {
+export async function PlatformHeader({
+  variant = "dark",
+}: {
+  variant?: "dark" | "split";
+}) {
   const t = await getTranslations("platform.header");
 
   return (
-    <header className="platform-header">
+    <header
+      className={`platform-header${variant === "split" ? " platform-header--split" : ""}`}
+    >
       <div className="platform-header__inner">
         <Link href="/landing" className="platform-header__brand">
           <span className="platform-header__logo">H</span>
@@ -14,9 +20,9 @@ export async function PlatformHeader() {
         </Link>
 
         <nav className="platform-header__nav">
-          <a href="#preturi" className="platform-header__link">
+          <Link href="/preturi" className="platform-header__link">
             {t("pricing")}
-          </a>
+          </Link>
           <Link href="/confidentialitate" className="platform-header__link">
             {t("gdpr")}
           </Link>

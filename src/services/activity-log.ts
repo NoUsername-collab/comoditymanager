@@ -6,16 +6,18 @@ import type {
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
-type LogInput = {
+export type LogInput = {
   action: ActivityAction;
   entityType: ActivityEntityType;
   entityId?: string | null;
   summary: string;
   metadata?: Record<string, unknown>;
   actor?: { id: string; email?: string | null } | null;
+  undoable?: boolean;
+  revertsLogId?: string | null;
 };
 
-function mapRow(row: {
+type ActivityRow = {
   id: string;
   created_at: string;
   actor_id: string | null;
@@ -25,7 +27,18 @@ function mapRow(row: {
   entity_id: string | null;
   summary: string;
   metadata: Record<string, unknown> | null;
-}): ActivityLogEntry {
+  undoable: boolean;
+  undone_at: string | null;
+  undone_by: string | null;
+  reverts_log_id: string | null;
+};
+
+const ACTIVITY_SELECT = `
+  id, created_at, actor_id, actor_email, action, entity_type, entity_id,
+  summary, metadata, undoable, undone_at, undone_by, reverts_log_id
+`;
+
+function mapRow(row: ActivityRow): ActivityLogEntry {
   return {
     id: row.id,
     created_at: row.created_at,
@@ -36,38 +49,69 @@ function mapRow(row: {
     entity_id: row.entity_id,
     summary: row.summary,
     metadata: (row.metadata ?? {}) as Record<string, unknown>,
+    undoable: Boolean(row.undoable),
+    undone_at: row.undone_at,
+    undone_by: row.undone_by,
+    reverts_log_id: row.reverts_log_id,
   };
 }
 
-/** Înregistrează o acțiune; nu aruncă — jurnalul nu trebuie să blocheze fluxul principal. */
-export async function logAdminActivity(input: LogInput): Promise<void> {
+/** Înregistrează o acțiune; returnează id-ul rândului sau null la eșec. */
+export async function logAdminActivity(input: LogInput): Promise<string | null> {
   try {
     const { tenantId, supabase } = await getTenantScope();
-    const { error } = await supabase.from("admin_activity_log").insert(
-      withTenantId(tenantId, {
-        actor_id: input.actor?.id ?? null,
-        actor_email: input.actor?.email ?? null,
-        action: input.action,
-        entity_type: input.entityType,
-        entity_id: input.entityId ?? null,
-        summary: input.summary.slice(0, 500),
-        metadata: input.metadata ?? {},
-      })
-    );
-    if (error) console.error("[activity-log]", error.message);
+    const { data, error } = await supabase
+      .from("admin_activity_log")
+      .insert(
+        withTenantId(tenantId, {
+          actor_id: input.actor?.id ?? null,
+          actor_email: input.actor?.email ?? null,
+          action: input.action,
+          entity_type: input.entityType,
+          entity_id: input.entityId ?? null,
+          summary: input.summary.slice(0, 500),
+          metadata: input.metadata ?? {},
+          undoable: input.undoable ?? false,
+          reverts_log_id: input.revertsLogId ?? null,
+        })
+      )
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("[activity-log]", error.message);
+      return null;
+    }
+    return data?.id ?? null;
   } catch (e) {
     console.error("[activity-log]", e);
+    return null;
   }
 }
 
 export async function logAdminActivityFromSession(
   input: Omit<LogInput, "actor">
-): Promise<void> {
+): Promise<string | null> {
   const user = await getAdminUser();
-  await logAdminActivity({
+  return logAdminActivity({
     ...input,
     actor: user ? { id: user.id, email: user.email } : null,
   });
+}
+
+export async function getActivityLogEntryById(
+  id: string
+): Promise<ActivityLogEntry | null> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("admin_activity_log")
+    .select(ACTIVITY_SELECT)
+    .eq("tenant_id", tenantId)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data ? mapRow(data as ActivityRow) : null;
 }
 
 export async function listRecentActivity(
@@ -76,15 +120,13 @@ export async function listRecentActivity(
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
-    .select(
-      "id, created_at, actor_id, actor_email, action, entity_type, entity_id, summary, metadata"
-    )
+    .select(ACTIVITY_SELECT)
     .eq("tenant_id", tenantId)
     .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map(mapRow);
+  return (data ?? []).map((row) => mapRow(row as ActivityRow));
 }
 
 export async function listBookingActivity(
@@ -94,9 +136,7 @@ export async function listBookingActivity(
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
-    .select(
-      "id, created_at, actor_id, actor_email, action, entity_type, entity_id, summary, metadata"
-    )
+    .select(ACTIVITY_SELECT)
     .eq("tenant_id", tenantId)
     .eq("entity_type", "booking")
     .eq("entity_id", bookingId)
@@ -104,5 +144,5 @@ export async function listBookingActivity(
     .limit(limit);
 
   if (error) throw new Error(error.message);
-  return (data ?? []).map(mapRow);
+  return (data ?? []).map((row) => mapRow(row as ActivityRow));
 }

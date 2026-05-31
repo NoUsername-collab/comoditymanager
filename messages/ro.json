@@ -281,6 +281,7 @@
       "username": "Utilizator sau email",
       "usernameOrEmailPlaceholder": "Admin, Operator sau email staff",
       "notMemberOfPension": "Contul nu are acces la această pensiune. Folosește subdomeniul corect sau contactează owner-ul.",
+      "signupSuccess": "Cont creat! Autentifică-te cu emailul și parola alese.",
       "password": "Parolă",
       "submitting": "Se conectează…",
       "submit": "Intră în panou"
@@ -1881,6 +1882,24 @@
         "login": "Autentificare",
         "logout": "Deconectare"
       },
+      "occupancy": {
+        "hold_created": "Hold cameră",
+        "block_created": "Blocare cameră"
+      },
+      "activity": {
+        "undone": "Acțiune anulată (undo)"
+      },
+      "undo": "Anulează",
+      "undoConfirm": "Anulezi această acțiune? Se revine la starea anterioară dacă e posibil.",
+      "undoPending": "Se anulează…",
+      "undoSuccessTitle": "Acțiune anulată",
+      "undoSuccessMessage": "Starea a fost readusă la cea de dinainte.",
+      "undoFailedTitle": "Nu s-a putut anula",
+      "undoFailed": "Eroare la anulare.",
+      "undoNotAllowed": "Această acțiune nu mai poate fi anulată (expirată sau deja anulată).",
+      "undoStateChanged": "Datele s-au schimbat între timp — anularea nu e sigură.",
+      "undoMissingId": "Eveniment negăsit.",
+      "undoneBadge": "Anulat",
       "actorPublicSite": "Site public",
       "actorSystem": "Sistem",
       "emptyTitle": "Niciun eveniment încă",
@@ -2296,11 +2315,23 @@
     "countryBG": "Bulgaria",
     "starterPlan": "Plan Starter — Gratuit",
     "starterDetail": "3 camere, calendar, rezervari online",
+    "freePlan": "Plan Free — Gratuit",
+    "freePlanDetail": "3 camere, calendar, rezervari online",
     "submitButton": "Creaza cont",
-    "submitting": "Se creeaza...",
+    "submitting": "Se creeaza contul...",
     "alreadyHaveAccount": "Ai deja cont?",
     "loginLink": "Autentifica-te",
-    "genericError": "A aparut o eroare. Incearca din nou.",
+    "successBadge": "Cont creat",
+    "successTitle": "Contul a fost creat cu succes",
+    "successMessage": "Pensiunea „{name}” este gata. Poti intra in panoul de administrare.",
+    "successEmail": "Email cont: {email}",
+    "successRedirecting": "Te redirectionam la login in cateva secunde...",
+    "successManualLink": "Apasa aici daca nu esti redirectionat automat",
+    "genericError": "Nu am putut crea contul. Incearca din nou.",
+    "errorPlanConfig": "Configuratie planuri in baza de date. Contacteaza suportul sau administratorul.",
+    "errorDatabase": "Eroare la crearea pensiunii in baza de date. Contacteaza suportul sau reincearca.",
+    "errorCatalogMigration": "Ruleaza migrarea 034_catalog_slug_per_tenant.sql in Supabase staging (SQL Editor).",
+    "errorServerConfig": "Server neconfigurat (lipseste SUPABASE_SERVICE_ROLE_KEY pe Vercel).",
     "rateLimited": "Prea multe incercari. Asteapta cateva minute.",
     "pensionNameRequired": "Numele pensiunii e obligatoriu (minim 2 caractere).",
     "pensionNameTooLong": "Numele pensiunii e prea lung (maxim 100 caractere).",
@@ -2355,34 +2386,142 @@
     "step2Desc": "Configurezi cladirile, etajele si camerele. Primesti site de prezentare automat.",
     "step3Title": "Primesti rezervari",
     "step3Desc": "Oaspetii rezerva online, tu confirmi din calendar. Simplu.",
-    "pricingTitle": "Preturi simple",
-    "pricingLead": "Fara contracte, fara surprize. Platesti lunar, anulezi oricand.",
-    "planStarterName": "Starter",
-    "planForever": "Gratuit, permanent",
-    "planTrial": "14 zile gratuit, apoi platesti",
-    "planStarter1": "3 camere incluse",
-    "planStarter2": "Calendar vizual",
-    "planStarter3": "Rezervari online",
-    "planStarter4": "Pagina de prezentare",
-    "planStarterCta": "Incepe gratuit",
-    "planStandardName": "Standard",
-    "planStandard1": "Pana la 10 camere",
-    "planStandard2": "Tot ce include Starter",
-    "planStandard3": "Notificari email",
-    "planStandard4": "Echipa (2 membri)",
-    "planStandardCta": "Incearca 14 zile",
-    "planProName": "Pro",
-    "planRecommended": "Recomandat",
-    "planPro1": "Camere nelimitate",
-    "planPro2": "Tot ce include Standard",
-    "planPro3": "Echipa nelimitata",
-    "planPro4": "Domeniu custom",
-    "planPro5": "Fara branding Hospira",
-    "planProCta": "Incearca 14 zile",
-    "month": "luna",
+    "statSetup": "Setup cont",
+    "trustLead": "Construit pentru pensiuni mici care vor control, nu comisioane.",
+    "trust1": "Fara comision pe rezervarile directe",
+    "trust2": "Date in UE · GDPR-ready",
+    "trust3": "Suport in romana, engleza, bulgara",
+    "pricingCompareCta": "Compara toate planurile",
     "finalCtaTitle": "Gata de start?",
     "finalCtaText": "Creeaza cont in 30 de secunde. Fara card de credit, fara obligatii.",
     "finalCtaButton": "Creeaza cont gratuit"
+  },
+  "pricing": {
+    "heroBadge": "Preturi transparente",
+    "pageTitle": "Planuri care cresc odata cu pensiunea ta",
+    "pageLead": "Incepi gratuit cu 3 camere. Treci la urmatorul plan doar cand ai nevoie — fara contract, fara penalitati.",
+    "statsAria": "Rezumat preturi",
+    "statFree": "Pentru start",
+    "statRooms": "Camere incluse in Free",
+    "statCommission": "Comision rezervari directe",
+    "gridTitle": "Alege planul potrivit",
+    "gridLead": "Preturi in EUR, facturate lunar. Anulezi oricand.",
+    "priceFree": "Gratuit, permanent",
+    "billedMonthly": "Facturat lunar · anulezi oricand",
+    "perMonth": "/ luna",
+    "roomsUnlimited": "Nelimitat",
+    "recommended": "Cel mai popular",
+    "vatNote": "Preturile sunt afisate fara TVA. Planurile locale si hibride sunt disponibile la cerere.",
+    "comparisonTitle": "Comparatie rapida",
+    "comparisonLead": "Toate planurile includ calendar, rezervari si pagina publica de prezentare.",
+    "faqTitle": "Intrebari frecvente",
+    "faq1Q": "Chiar pot incepe cu 0 EUR?",
+    "faq1A": "Da. Planul Free include 3 camere, calendar si rezervari online — fara card, fara limita de timp.",
+    "faq2Q": "Cand trec la Essential (19 EUR)?",
+    "faq2A": "Cand ai nevoie de Gantt, notificari email, teme vizuale sau pana la 10 camere si 3 membri in echipa.",
+    "faq3Q": "Ce aduce Professional (49 EUR)?",
+    "faq3A": "Pana la 30 camere, echipa nelimitata, domeniu custom, fara branding Hospira, plus iCal si rapoarte avansate.",
+    "faq4Q": "Pentru cine e Business (99 EUR)?",
+    "faq4A": "Pensiuni mai mari sau lanturi mici: camere nelimitate, pana la 5 proprietati, facturare, WhatsApp, API si manager dedicat.",
+    "finalTitle": "Incepe gratuit azi",
+    "finalText": "3 camere, 0 EUR, setup in cateva minute.",
+    "finalCta": "Creeaza cont gratuit",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Pentru primele 3 camere",
+        "roomLine": "Pana la {count} camere",
+        "f1": "Calendar vizual",
+        "f2": "Rezervari si fise oaspeti",
+        "f3": "Pagina publica de prezentare",
+        "f4": "1 membru in echipa",
+        "f5": "",
+        "f6": "",
+        "cta": "Incepe gratuit"
+      },
+      "essential": {
+        "name": "Essential",
+        "tagline": "Pensiuni in crestere",
+        "roomLine": "Pana la {count} camere",
+        "f1": "Tot ce include Free",
+        "f2": "Gantt calendar + heatmap",
+        "f3": "Notificari email automate",
+        "f4": "Teme vizuale pentru site",
+        "f5": "Pana la 3 membri echipa",
+        "f6": "",
+        "cta": "Incearca Essential"
+      },
+      "professional": {
+        "name": "Professional",
+        "tagline": "Control total al brandului",
+        "roomLine": "Pana la {count} camere",
+        "f1": "Tot ce include Essential",
+        "f2": "Echipa nelimitata",
+        "f3": "Domeniu custom + fara branding Hospira",
+        "f4": "Sync iCal (Booking, Airbnb)",
+        "f5": "Rapoarte avansate",
+        "f6": "Suport prioritar",
+        "cta": "Alege Professional"
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Operatiuni la scara",
+        "roomLine": "{count} camere",
+        "f1": "Tot ce include Professional",
+        "f2": "Pana la 5 proprietati",
+        "f3": "Facturare + e-Factura ANAF",
+        "f4": "WhatsApp + API REST",
+        "f5": "White label complet",
+        "f6": "Onboarding dedicat + SLA 99.9%",
+        "cta": "Contacteaza-ne"
+      }
+    },
+    "comparison": {
+      "featureCol": "Functionalitate",
+      "plans": {
+        "free": "Free",
+        "essential": "Essential",
+        "professional": "Professional",
+        "business": "Business"
+      },
+      "rows": {
+        "rooms": "Camere",
+        "team": "Echipa",
+        "gantt": "Gantt & heatmap",
+        "branding": "Branding Hospira",
+        "modules": "Module incluse"
+      },
+      "rooms": {
+        "free": "3",
+        "essential": "10",
+        "professional": "30",
+        "business": "Nelimitat"
+      },
+      "team": {
+        "free": "1",
+        "essential": "3",
+        "professional": "Nelimitat",
+        "business": "Nelimitat"
+      },
+      "gantt": {
+        "free": "—",
+        "essential": "Da",
+        "professional": "Da",
+        "business": "Da"
+      },
+      "branding": {
+        "free": "Da",
+        "essential": "Da",
+        "professional": "Nu",
+        "business": "Nu"
+      },
+      "modules": {
+        "free": "Pagina publica",
+        "essential": "Pagina publica",
+        "professional": "+ iCal, rapoarte",
+        "business": "Toate modulele"
+      }
+    }
   },
   "platform": {
     "header": {
@@ -2403,5 +2542,14 @@
       "contact": "Contact",
       "rights": "Toate drepturile rezervate."
     }
+  },
+  "alphaGate": {
+    "eyebrow": "Alpha · acces restricționat",
+    "title": "Introdu parola de acces",
+    "lead": "Hospira este în testare privată. Dacă ai primit parola de la echipă, o poți introduce mai jos.",
+    "passwordLabel": "Parolă alpha",
+    "submit": "Intră",
+    "checking": "Se verifică…",
+    "wrongPassword": "Parolă incorectă."
   }
 }

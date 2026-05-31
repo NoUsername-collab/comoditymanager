@@ -21,6 +21,9 @@ export type ActivityAction =
   | "booking.checkin.undo"
   | "booking.checkout.set"
   | "booking.checkout.undo"
+  | "occupancy.hold_created"
+  | "occupancy.block_created"
+  | "activity.undone"
   | "guest.created"
   | "guest.updated"
   | "guest.identity_updated"
@@ -60,4 +63,8 @@ export type ActivityLogEntry = {
   entity_id: string | null;
   summary: string;
   metadata: Record<string, unknown>;
+  undoable: boolean;
+  undone_at: string | null;
+  undone_by: string | null;
+  reverts_log_id: string | null;
 };

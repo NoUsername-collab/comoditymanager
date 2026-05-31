@@ -105,7 +105,7 @@ export function checkModule(module: ModuleId): boolean {
  * Useful for "Upgrade to X" messaging.
  */
 export function getMinimumPlanForFeature(feature: CoreFeature): PlanId | null {
-  const cloudPlans: PlanId[] = ["starter", "standard", "pro", "business"];
+  const cloudPlans: PlanId[] = ["free", "essential", "professional", "business"];
   for (const planId of cloudPlans) {
     if (PLAN_CONFIGS[planId].coreFeatures.includes(feature)) {
       return planId;
@@ -118,7 +118,7 @@ export function getMinimumPlanForFeature(feature: CoreFeature): PlanId | null {
  * Get the minimum plan required for a module.
  */
 export function getMinimumPlanForModule(module: ModuleId): PlanId | null {
-  const cloudPlans: PlanId[] = ["starter", "standard", "pro", "business"];
+  const cloudPlans: PlanId[] = ["free", "essential", "professional", "business"];
   for (const planId of cloudPlans) {
     if (PLAN_CONFIGS[planId].includedModules.includes(module)) {
       return planId;

@@ -1,6 +1,10 @@
 import { cache } from "react";
 import { headers } from "next/headers";
 import {
+  tenantDomainFromHost,
+  tenantSlugFromHost,
+} from "@/lib/tenant/host";
+import {
   getDefaultTenant,
   getTenantByDomain,
   getTenantBySlug,
@@ -14,7 +18,15 @@ export class TenantNotFoundError extends Error {
   }
 }
 
-/** Tenant from subdomain/custom domain headers (set in proxy.ts). */
+function requestHost(headerStore: Headers): string {
+  return (
+    headerStore.get("x-forwarded-host") ??
+    headerStore.get("host") ??
+    ""
+  );
+}
+
+/** Tenant from subdomain/custom domain headers (set in proxy.ts) or Host. */
 export const resolveRequestTenant = cache(async (): Promise<TenantRow | null> => {
   const h = await headers();
   const slug = h.get("x-tenant-slug")?.trim();
@@ -25,6 +37,17 @@ export const resolveRequestTenant = cache(async (): Promise<TenantRow | null> =>
   if (domain) {
     return getTenantByDomain(domain);
   }
+
+  const hostSlug = tenantSlugFromHost(requestHost(h));
+  if (hostSlug) {
+    return getTenantBySlug(hostSlug);
+  }
+
+  const hostDomain = tenantDomainFromHost(requestHost(h));
+  if (hostDomain) {
+    return getTenantByDomain(hostDomain);
+  }
+
   return null;
 });
 
