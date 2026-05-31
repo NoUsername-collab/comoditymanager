@@ -16,6 +16,7 @@ import { updatePensionSettings } from "@/services/pension-settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
+import { resolveRequestTenant } from "@/lib/tenant/active";
 import { getTranslations } from "next-intl/server";
 
 export async function unlockLocationAdminAction(formData: FormData) {
@@ -140,6 +141,22 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   await redirect("/admin/settings/location?saved=1");
 }
 
+function mapStaffPasswordError(
+  message: string,
+  t: Awaited<ReturnType<typeof getTranslations<"admin.serverActions">>>
+): string {
+  switch (message) {
+    case "staff.password_min_8_chars":
+      return t("staffPasswordMin8");
+    case "staff.unknown_account":
+      return t("staffUnknownAccount");
+    case "staff.account_missing_in_supabase_run_setup_staff":
+      return t("staffAccountMissingAuth");
+    default:
+      return message;
+  }
+}
+
 export async function changeStaffPasswordAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
   await requireLocationAdmin();
@@ -152,11 +169,21 @@ export async function changeStaffPasswordAction(formData: FormData) {
     return { error: t("passwordsDoNotMatch") };
   }
 
+  const tenant = await resolveRequestTenant();
+  if (!tenant) {
+    return { error: t("tenantNotResolved") };
+  }
+
   try {
-    await updateStaffPasswordByEmail(staff_email, new_password);
+    await updateStaffPasswordByEmail(
+      staff_email,
+      new_password,
+      tenant.id
+    );
   } catch (e) {
+    const raw = e instanceof Error ? e.message : t("changePasswordError");
     return {
-      error: e instanceof Error ? e.message : t("changePasswordError"),
+      error: mapStaffPasswordError(raw, t),
     };
   }
 

@@ -729,7 +729,8 @@
           "subtitle": "Room types, options (AC, fridge...) — per-building policies"
         },
         "staff": {
-          "subtitle": "Change Admin or Operator password"
+          "subtitle": "Passwords for this property's team (from database, not .env)",
+          "manageTeamLink": "Manage team (invite admin / operator) →"
         },
         "danger": {
           "title": "Danger zone"
@@ -744,7 +745,10 @@
         },
         "staffPanel": {
           "passwordUpdated": "Password was updated.",
-          "staffAccount": "Staff account",
+          "staffAccount": "Account for this property",
+          "tenantStaffHint": "Only accounts registered for your property (owner, admin, operator). Global env emails are not used.",
+          "noStaffForTenant": "No staff accounts for this property yet (besides owner).",
+          "inviteStaffLink": "Invite team → Settings → Team",
           "newPassword": "New password",
           "minLength": "Minimum 8 characters.",
           "confirmPassword": "Confirm password",
@@ -1615,6 +1619,10 @@
       "settingsMissing": "Settings missing",
       "passwordsDoNotMatch": "Passwords do not match",
       "changePasswordError": "Password change error",
+      "tenantNotResolved": "Could not resolve property from URL. Reload from your property subdomain.",
+      "staffPasswordMin8": "Password must be at least 8 characters.",
+      "staffUnknownAccount": "This email is not on the current property team.",
+      "staffAccountMissingAuth": "Account missing in auth — re-invite the member from Team settings.",
       "typeResetExactly": "Type exactly \"RESET\" to confirm.",
       "roomTypeNameRequired": "Room type name is required",
       "newRoomTypeSummary": "New room type: {name}",

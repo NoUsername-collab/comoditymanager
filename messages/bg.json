@@ -658,7 +658,8 @@
           "subtitle": "Типове стаи, опции (AC, хладилник...) — политики по сгради"
         },
         "staff": {
-          "subtitle": "Смени парола на Admin или Operator"
+          "subtitle": "Пароли за екипа на този обект (от базата, не .env)",
+          "manageTeamLink": "Управление на екип →"
         },
         "danger": {
           "title": "Опасна зона"
@@ -673,7 +674,10 @@
         },
         "staffPanel": {
           "passwordUpdated": "Паролата е обновена.",
-          "staffAccount": "Staff акаунт",
+          "staffAccount": "Акаунт за този обект",
+          "tenantStaffHint": "Само акаунти регистрирани за вашия обект (owner, admin, operator).",
+          "noStaffForTenant": "Все още няма staff акаунти за този обект.",
+          "inviteStaffLink": "Покани екип → Настройки → Екип",
           "newPassword": "Нова парола",
           "minLength": "Минимум 8 символа.",
           "confirmPassword": "Потвърди паролата",
@@ -1532,6 +1536,10 @@
       "settingsMissing": "Липсват настройки",
       "passwordsDoNotMatch": "Паролите не съвпадат",
       "changePasswordError": "Грешка при смяна на паролата",
+      "tenantNotResolved": "Обектът не е разпознат от URL. Презареди от поддомейна на обекта.",
+      "staffPasswordMin8": "Паролата трябва да е поне 8 символа.",
+      "staffUnknownAccount": "Този email не е в екипа на текущия обект.",
+      "staffAccountMissingAuth": "Липсва акаунт в auth — покани отново от Екип.",
       "typeResetExactly": "Въведи точно \"RESET\" за потвърждение.",
       "roomTypeNameRequired": "Името на типа стая е задължително",
       "newRoomTypeSummary": "Нов тип стая: {name}",

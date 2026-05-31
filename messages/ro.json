@@ -729,7 +729,8 @@
           "subtitle": "Tipuri cameră, opțiuni (AC, frigider…) — politici per clădire"
         },
         "staff": {
-          "subtitle": "Schimbă parola Admin sau Operator"
+          "subtitle": "Parole pentru echipa acestei pensiuni (din baza de date, nu .env)",
+          "manageTeamLink": "Gestionează echipa (invită admin / operator) →"
         },
         "danger": {
           "title": "Zonă periculoasă"
@@ -744,7 +745,10 @@
         },
         "staffPanel": {
           "passwordUpdated": "Parola a fost actualizată.",
-          "staffAccount": "Cont staff",
+          "staffAccount": "Cont din această pensiune",
+          "tenantStaffHint": "Doar conturile înregistrate la pensiunea ta (owner, admin, operator). Nu folosim emailuri globale din mediu.",
+          "noStaffForTenant": "Nu există încă conturi staff pentru această pensiune (în afară de proprietar).",
+          "inviteStaffLink": "Invită echipă → Setări → Echipa",
           "newPassword": "Parolă nouă",
           "minLength": "Minim 8 caractere.",
           "confirmPassword": "Confirmă parola",
@@ -1614,6 +1618,10 @@
       "settingsMissing": "Setări lipsă",
       "passwordsDoNotMatch": "Parolele nu coincid",
       "changePasswordError": "Eroare la schimbarea parolei",
+      "tenantNotResolved": "Nu s-a putut identifica pensiunea din URL. Reîncarcă pagina de pe subdomeniul pensiunii.",
+      "staffPasswordMin8": "Parola trebuie să aibă minim 8 caractere.",
+      "staffUnknownAccount": "Acest email nu aparține echipei pensiunii curente.",
+      "staffAccountMissingAuth": "Contul nu există încă în autentificare — invită din nou membrul din Echipa.",
       "typeResetExactly": "Tastează exact \"RESET\" pentru confirmare.",
       "roomTypeNameRequired": "Numele tipului e obligatoriu",
       "newRoomTypeSummary": "Tip cameră nou: {name}",

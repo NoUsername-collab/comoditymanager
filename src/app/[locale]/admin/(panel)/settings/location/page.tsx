@@ -8,7 +8,7 @@ import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton
 import { AdminLocationLockButton } from "@/components/admin/settings/AdminLocationUnlockForm";
 import { AdminStaffPasswordPanel } from "@/components/admin/settings/AdminStaffPasswordPanel";
 import { isFactoryResetEnabled } from "@/services/database-reset";
-import { listStaffAccounts } from "@/services/staff-accounts";
+import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { AdminRoomCatalogPanel } from "@/components/admin/catalog/AdminRoomCatalogPanel";
 import { listRoomOptions, listRoomTypes } from "@/services/room-catalog";
@@ -24,7 +24,7 @@ export default async function LocationAdminPage({
   const tCommon = await getTranslations("admin.common");
   await requireLocationAdmin();
   const params = await searchParams;
-  const staffAccounts = listStaffAccounts();
+  const staffAccounts = await listStaffAccountsForCurrentTenant();
 
   let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
   let error: string | null = null;
@@ -249,6 +249,14 @@ export default async function LocationAdminPage({
             icon="🔐"
           >
             <AdminStaffPasswordPanel accounts={staffAccounts} />
+            <p className="mt-3 text-sm">
+              <Link
+                href="/admin/settings/staff"
+                className="font-medium text-zinc-700 underline hover:text-zinc-900"
+              >
+                {tPage("staff.manageTeamLink")}
+              </Link>
+            </p>
           </SettingsSlidePanel>
 
           {isFactoryResetEnabled() && (
