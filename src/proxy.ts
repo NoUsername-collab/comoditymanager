@@ -18,12 +18,6 @@ import { pathBlockedForOperator } from "@/lib/auth/roles";
 import { resolveStaffRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
 import { buildTenantAdminUrl, parseTenantFromHost } from "@/lib/tenant/host";
-import {
-  isValidTenantSlug,
-  TENANT_SLUG_COOKIE,
-  tenantSlugFromPlatformRequest,
-  usesPlatformTenantRouting,
-} from "@/lib/tenant/routing";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { routing } from "./i18n/routing";
 
@@ -143,24 +137,6 @@ function requestHostFrom(request: NextRequest): string | null {
   return request.headers.get("x-forwarded-host") ?? request.headers.get("host");
 }
 
-function isTenantAppPath(path: string): boolean {
-  return (
-    path.startsWith("/admin") ||
-    path.startsWith("/calendar") ||
-    path.startsWith("/receptie")
-  );
-}
-
-function setTenantSlugCookie(response: NextResponse, slug: string): void {
-  response.cookies.set(TENANT_SLUG_COOKIE, slug, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 365,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-  });
-}
-
 async function runTenantAppProxy(
   request: NextRequest,
   slug: string | undefined,
@@ -182,12 +158,6 @@ async function runTenantAppProxy(
   }
 
   const intlResponse = intlMiddleware(tenantRequest);
-  const tenantParam = request.nextUrl.searchParams.get("tenant");
-  if (isValidTenantSlug(tenantParam)) {
-    setTenantSlugCookie(intlResponse, tenantParam);
-  } else if (isValidTenantSlug(slug)) {
-    setTenantSlugCookie(intlResponse, slug);
-  }
 
   const { configured, url, key } = getEdgeSupabaseConfig();
   if (!configured || !url || !key) {
@@ -227,9 +197,6 @@ async function runTenantAppProxy(
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/admin/login";
     redirectUrl.searchParams.set("next", path);
-    if (isValidTenantSlug(slug)) {
-      redirectUrl.searchParams.set("tenant", slug);
-    }
     return NextResponse.redirect(redirectUrl);
   }
 
@@ -247,9 +214,6 @@ async function runTenantAppProxy(
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/admin/login";
       redirectUrl.searchParams.set("error", "unauthorized");
-      if (isValidTenantSlug(slug)) {
-        redirectUrl.searchParams.set("tenant", slug);
-      }
       return NextResponse.redirect(redirectUrl);
     }
 
@@ -269,20 +233,14 @@ async function runTenantAppProxy(
   }
 
   if (isLoginPage && user) {
-    let effectiveSlug = slug;
-    if (!effectiveSlug) {
-      effectiveSlug =
-        (await getPrimaryTenantSlugForUser(supabase, user.id)) ?? undefined;
-    }
-
-    if (effectiveSlug || customDomain) {
-      const effectiveRole = await resolveEffectiveStaffRole(
-        user.id,
-        user.email,
-        effectiveSlug,
-        customDomain,
-        supabase
-      );
+    const effectiveRole = await resolveEffectiveStaffRole(
+      user.id,
+      user.email,
+      slug,
+      customDomain,
+      supabase
+    );
+    if (slug || customDomain) {
       if (!effectiveRole) {
         await supabase.auth.signOut();
         const redirectUrl = request.nextUrl.clone();
@@ -292,24 +250,11 @@ async function runTenantAppProxy(
       }
     }
 
-    const next =
-      request.nextUrl.searchParams.get("next") ||
-      (usesPlatformTenantRouting(requestHostFrom(request))
-        ? "/admin"
-        : "/receptie");
+    const next = request.nextUrl.searchParams.get("next") || "/receptie";
     const safe =
       next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
         ? next
-        : usesPlatformTenantRouting(requestHostFrom(request))
-          ? "/admin"
-          : "/receptie";
-
-    if (effectiveSlug) {
-      return NextResponse.redirect(
-        buildTenantAdminUrl(effectiveSlug, safe, requestHostFrom(request))
-      );
-    }
-
+        : "/receptie";
     return NextResponse.redirect(new URL(safe, request.url));
   }
 
@@ -332,10 +277,9 @@ export async function proxy(request: NextRequest) {
   const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
   if (alphaRedirect) return alphaRedirect;
 
-  // ── PLATFORM (hospira.ro) ────────────────────────────────────
+  // ── PLATFORM (hospira.ro / test.hospira.ro) ──────────────────
   if (domain.type === "platform") {
     const requestHost = requestHostFrom(request);
-    const platformRouting = usesPlatformTenantRouting(requestHost);
 
     if (path === "/") {
       const url = request.nextUrl.clone();
@@ -343,18 +287,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Staging: admin on test.hospira.ro (no wildcard subdomain SSL needed)
-    if (platformRouting && isTenantAppPath(path)) {
-      const slug = tenantSlugFromPlatformRequest(request);
-      if (!slug && path !== "/admin/login") {
-        const url = request.nextUrl.clone();
-        url.pathname = "/admin/login";
-        url.searchParams.set("next", path);
-        return NextResponse.redirect(url);
-      }
-      return runTenantAppProxy(request, slug, undefined);
-    }
-
+    // Admin lives on tenant subdomains — not on platform host
     if (
       (path.startsWith("/admin") && path !== "/admin/login") ||
       path.startsWith("/calendar") ||
@@ -365,6 +298,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
+    // Platform login → redirect authenticated owners to tenant subdomain
     if (path === "/admin/login") {
       const { configured, url, key } = getEdgeSupabaseConfig();
       if (configured && url && key) {

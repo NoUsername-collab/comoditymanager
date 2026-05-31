@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { signupAction } from "@/app/[locale]/(platform)/signup/actions";
-import { normalizeTenantRedirectUrl } from "@/lib/tenant/normalize-redirect";
 
 type SignupSuccess = {
   pensionName: string;
@@ -60,15 +59,14 @@ export function SignupForm() {
         try {
           const result = await signupAction(formData);
           if (result.ok) {
-            const redirectTo = normalizeTenantRedirectUrl(result.redirectTo);
             setSuccess({
               pensionName: result.pensionName,
               email: result.email,
               slug: result.slug,
-              redirectTo,
+              redirectTo: result.redirectTo,
             });
             redirectTimer.current = window.setTimeout(() => {
-              window.location.assign(redirectTo);
+              window.location.assign(result.redirectTo);
             }, 2000);
             return;
           }

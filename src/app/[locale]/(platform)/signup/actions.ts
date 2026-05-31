@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import { buildTenantLoginUrl } from "@/lib/tenant/host";
+import { buildTenantLoginUrl, platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { getTranslations } from "next-intl/server";
 import {
   checkRateLimit,
@@ -249,6 +249,10 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
     BG: "Europe/Sofia",
   };
 
+  const requestHost =
+    (await headers()).get("x-forwarded-host") ??
+    (await headers()).get("host");
+
   const { data: tenantId, error: rpcError } = await supabase.rpc(
     "onboard_new_tenant",
     {
@@ -259,6 +263,7 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
       p_locale: locale,
       p_country: country,
       p_timezone: timezoneMap[country] ?? "Europe/Bucharest",
+      p_platform_domain: platformDomainFromRequestHost(requestHost),
     }
   );
 
@@ -277,10 +282,6 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
       errorCode: mapped.errorCode,
     };
   }
-
-  const requestHost =
-    (await headers()).get("x-forwarded-host") ??
-    (await headers()).get("host");
 
   return {
     ok: true,

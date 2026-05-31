@@ -1,11 +1,9 @@
-import { usesPlatformTenantRouting } from "@/lib/tenant/routing";
-
 const PLATFORM_DOMAIN =
   process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
 
-/** Extra platform hostnames (e.g. staging) when env default is production root. */
+/** Optional extra platform hostnames (comma-separated env). */
 const EXTRA_PLATFORM_HOSTS = (
-  process.env.NEXT_PUBLIC_PLATFORM_HOSTS?.split(",") ?? ["test.hospira.ro"]
+  process.env.NEXT_PUBLIC_PLATFORM_HOSTS?.split(",") ?? []
 )
   .map((h) => h.trim().toLowerCase())
   .filter(Boolean);
@@ -23,7 +21,7 @@ function isPlatformHost(host: string): boolean {
   );
 }
 
-/** Platform domain for tenant URLs — prefer the host the user is actually on. */
+/** Platform domain for tenant URLs — derived from the signup/login request host. */
 export function platformDomainFromRequestHost(
   requestHost: string | null | undefined
 ): string {
@@ -121,7 +119,7 @@ export function tenantDomainFromHost(hostInput: string): string | null {
   return parsed.type === "custom" ? parsed.domain : null;
 }
 
-/** Admin login URL on the tenant host (after signup). */
+/** Admin login on tenant subdomain, e.g. slug.test.hospira.ro/admin/login */
 export function buildTenantLoginUrl(
   slug: string,
   params?: Record<string, string | undefined>,
@@ -130,25 +128,19 @@ export function buildTenantLoginUrl(
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
   const platformDomain = platformDomainFromRequestHost(requestHost);
+  const host = tenantHost(slug, platformDomain);
 
   const search = new URLSearchParams();
-  search.set("tenant", slug);
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (value) search.set(key, value);
     }
   }
   const query = search.toString();
-
-  if (usesPlatformTenantRouting(requestHost)) {
-    return `${protocol}://${platformDomain}/admin/login?${query}`;
-  }
-
-  const host = tenantHost(slug, platformDomain);
-  return `${protocol}://${host}/admin/login?${query}`;
+  return `${protocol}://${host}/admin/login${query ? `?${query}` : ""}`;
 }
 
-/** Admin (or other) path on tenant host — after platform login. */
+/** Admin path on tenant subdomain, e.g. slug.test.hospira.ro/admin */
 export function buildTenantAdminUrl(
   slug: string,
   path = "/admin",
@@ -157,14 +149,7 @@ export function buildTenantAdminUrl(
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
   const platformDomain = platformDomainFromRequestHost(requestHost);
-  const safePath = path.startsWith("/") ? path : `/${path}`;
-
-  if (usesPlatformTenantRouting(requestHost)) {
-    const url = new URL(`${protocol}://${platformDomain}${safePath}`);
-    url.searchParams.set("tenant", slug);
-    return url.toString();
-  }
-
   const host = tenantHost(slug, platformDomain);
+  const safePath = path.startsWith("/") ? path : `/${path}`;
   return `${protocol}://${host}${safePath}`;
 }
