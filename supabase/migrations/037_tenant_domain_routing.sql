@@ -26,6 +26,9 @@ set routing_kind = 'hospira_subdomain'
 where routing_kind is distinct from 'hospira_subdomain'
   and td.domain ~ '^[a-z0-9-]+\.(hospira\.ro|test\.hospira\.ro)$';
 
+-- Return type adds routing_kind; CREATE OR REPLACE cannot alter OUT columns.
+drop function if exists public.resolve_tenant_by_domain(text);
+
 create or replace function public.resolve_tenant_by_domain(p_domain text)
 returns table (
   tenant_id uuid,

@@ -56,22 +56,6 @@ function detectDomain(request: NextRequest): DomainContext {
   return { type: "custom", domain: parsed.domain };
 }
 
-// ─── Platform routes (hospira.ro) ──────────────────────────────────
-
-const PLATFORM_ROUTES = new Set([
-  "/",
-  "/landing",
-  "/signup",
-  "/login",
-  "/preturi",
-  "/confidentialitate",
-  "/termeni",
-]);
-
-function isPlatformRoute(path: string): boolean {
-  return PLATFORM_ROUTES.has(path) || path.startsWith("/api/");
-}
-
 // ─── Helpers ───────────────────────────────────────────────────────
 
 function stripLocalePrefix(pathname: string): string {

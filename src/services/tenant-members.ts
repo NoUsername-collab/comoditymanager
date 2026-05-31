@@ -377,15 +377,21 @@ async function resolvePrimaryTenantSlugAdmin(
     if (!emailError && byEmail?.length) {
       const needsRelink = byEmail.some((row) => row.user_id !== userId);
       if (needsRelink) {
-        await admin
-          .from("tenant_members")
-          .update({ user_id: userId })
-          .eq("email", normalized)
-          .eq("is_active", true);
-        await admin
-          .from("tenants")
-          .update({ owner_id: userId })
-          .ilike("owner_email", normalized);
+        for (const row of byEmail) {
+          if (row.user_id === userId) continue;
+          if (row.role === "owner") {
+            const { data: oldAuth } = await admin.auth.admin.getUserById(
+              row.user_id
+            );
+            if (oldAuth.user) continue;
+          }
+          await admin
+            .from("tenant_members")
+            .update({ user_id: userId })
+            .eq("email", normalized)
+            .eq("role", row.role)
+            .eq("is_active", true);
+        }
       }
       const slug = pickSlug(byEmail);
       if (slug) return slug;

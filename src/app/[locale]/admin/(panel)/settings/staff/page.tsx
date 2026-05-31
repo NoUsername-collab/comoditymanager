@@ -4,7 +4,7 @@ import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFram
 import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
 import { StaffList } from "@/components/admin/settings/StaffList";
 import { StaffInviteForm } from "@/components/admin/settings/StaffInviteForm";
-import { getDefaultTenant } from "@/services/tenants";
+import { resolveRequestTenant } from "@/lib/tenant/active";
 import { listActiveTenantMembers } from "@/services/tenant-members";
 
 export default async function StaffManagementPage() {
@@ -13,7 +13,7 @@ export default async function StaffManagementPage() {
   // Only admin (owner) can manage staff
   await requireStaffRole(["admin"]);
 
-  const tenant = await getDefaultTenant();
+  const tenant = await resolveRequestTenant();
   const members = tenant
     ? await listActiveTenantMembers(tenant.id)
     : [];
