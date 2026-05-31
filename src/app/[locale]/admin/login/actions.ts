@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { localeRedirect as localeRedirectInternal } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
@@ -85,7 +86,10 @@ export async function loginAction(formData: FormData) {
   // Platform login (test.hospira.ro) → admin lives on tenant subdomain
   const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
   if (slug) {
-    redirect(buildTenantAdminUrl(slug, safeNext));
+    const requestHost =
+      (await headers()).get("x-forwarded-host") ??
+      (await headers()).get("host");
+    redirect(buildTenantAdminUrl(slug, safeNext, requestHost));
   }
 
   await localeRedirectInternal("/signup");

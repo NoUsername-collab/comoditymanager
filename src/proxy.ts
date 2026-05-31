@@ -197,7 +197,14 @@ export async function proxy(request: NextRequest) {
               !next.includes("://")
                 ? next
                 : "/admin";
-            return NextResponse.redirect(buildTenantAdminUrl(slug, safe));
+            return NextResponse.redirect(
+              buildTenantAdminUrl(
+                slug,
+                safe,
+                request.headers.get("x-forwarded-host") ??
+                  request.headers.get("host")
+              )
+            );
           }
         }
 

@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { buildTenantLoginUrl } from "@/lib/tenant/host";
 import { getTranslations } from "next-intl/server";
@@ -277,15 +278,23 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
     };
   }
 
+  const requestHost =
+    (await headers()).get("x-forwarded-host") ??
+    (await headers()).get("host");
+
   return {
     ok: true,
     tenantId: String(tenantId),
     slug,
     email,
     pensionName,
-    redirectTo: buildTenantLoginUrl(slug, {
-      signup: "1",
-      email,
-    }),
+    redirectTo: buildTenantLoginUrl(
+      slug,
+      {
+        signup: "1",
+        email,
+      },
+      requestHost
+    ),
   };
 }

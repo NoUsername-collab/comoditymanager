@@ -1,6 +1,66 @@
 const PLATFORM_DOMAIN =
   process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
 
+/** Extra platform hostnames (e.g. staging) when env default is production root. */
+const EXTRA_PLATFORM_HOSTS = (
+  process.env.NEXT_PUBLIC_PLATFORM_HOSTS?.split(",") ?? ["test.hospira.ro"]
+)
+  .map((h) => h.trim().toLowerCase())
+  .filter(Boolean);
+
+function isPlatformHost(host: string): boolean {
+  const normalized = host.replace(/^www\./, "");
+  if (
+    normalized === PLATFORM_DOMAIN ||
+    host === `www.${PLATFORM_DOMAIN}`
+  ) {
+    return true;
+  }
+  return EXTRA_PLATFORM_HOSTS.some(
+    (p) => normalized === p || host === `www.${p}`
+  );
+}
+
+/** Platform domain for tenant URLs — prefer the host the user is actually on. */
+export function platformDomainFromRequestHost(
+  requestHost: string | null | undefined
+): string {
+  const host =
+    requestHost?.split(":")[0]?.trim().toLowerCase().replace(/^www\./, "") ??
+    "";
+
+  if (!host || host === "127.0.0.1") return PLATFORM_DOMAIN;
+  if (host === "localhost") return "localhost";
+  if (host.endsWith(".vercel.app")) return PLATFORM_DOMAIN;
+
+  if (isPlatformHost(host)) return host.replace(/^www\./, "");
+
+  const parsed = parseTenantFromHost(host);
+  if (parsed.type === "platform") return host;
+  if (parsed.type === "tenant") {
+    return host.slice(parsed.slug.length + 1);
+  }
+
+  return PLATFORM_DOMAIN;
+}
+
+function tenantHost(slug: string, platformDomain: string): string {
+  const port =
+    process.env.NODE_ENV !== "production" && process.env.PORT
+      ? `:${process.env.PORT}`
+      : process.env.NODE_ENV !== "production"
+        ? ":3000"
+        : "";
+
+  if (process.env.NODE_ENV !== "production") {
+    if (platformDomain === "localhost") {
+      return `${slug}.localhost${port}`;
+    }
+  }
+
+  return `${slug}.${platformDomain}`;
+}
+
 export type ParsedTenantHost =
   | { type: "platform" }
   | { type: "tenant"; slug: string }
@@ -25,14 +85,20 @@ export function parseTenantFromHost(hostInput: string): ParsedTenantHost {
     }
   }
 
-  if (host === PLATFORM_DOMAIN || host === `www.${PLATFORM_DOMAIN}`) {
+  if (isPlatformHost(host)) {
     return { type: "platform" };
   }
 
-  if (host.endsWith(`.${PLATFORM_DOMAIN}`)) {
-    const slug = host.slice(0, -(PLATFORM_DOMAIN.length + 1));
-    if (slug && !slug.includes(".")) {
-      return { type: "tenant", slug };
+  const platformRoots = [
+    ...new Set([PLATFORM_DOMAIN, ...EXTRA_PLATFORM_HOSTS]),
+  ].sort((a, b) => b.length - a.length);
+
+  for (const platform of platformRoots) {
+    if (host.endsWith(`.${platform}`)) {
+      const slug = host.slice(0, -(platform.length + 1));
+      if (slug && !slug.includes(".")) {
+        return { type: "tenant", slug };
+      }
     }
   }
 
@@ -56,21 +122,13 @@ export function tenantDomainFromHost(hostInput: string): string | null {
 /** Admin login URL on the tenant host (after signup). */
 export function buildTenantLoginUrl(
   slug: string,
-  params?: Record<string, string | undefined>
+  params?: Record<string, string | undefined>,
+  requestHost?: string | null
 ): string {
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
-  const port =
-    process.env.NODE_ENV !== "production" && process.env.PORT
-      ? `:${process.env.PORT}`
-      : process.env.NODE_ENV !== "production"
-        ? ":3000"
-        : "";
-
-  const host =
-    process.env.NODE_ENV === "production"
-      ? `${slug}.${PLATFORM_DOMAIN}`
-      : `${slug}.localhost${port}`;
+  const platformDomain = platformDomainFromRequestHost(requestHost);
+  const host = tenantHost(slug, platformDomain);
 
   const search = new URLSearchParams();
   if (params) {
@@ -85,21 +143,13 @@ export function buildTenantLoginUrl(
 /** Admin (or other) path on tenant host — after platform login. */
 export function buildTenantAdminUrl(
   slug: string,
-  path = "/admin"
+  path = "/admin",
+  requestHost?: string | null
 ): string {
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
-  const port =
-    process.env.NODE_ENV !== "production" && process.env.PORT
-      ? `:${process.env.PORT}`
-      : process.env.NODE_ENV !== "production"
-        ? ":3000"
-        : "";
-
-  const host =
-    process.env.NODE_ENV === "production"
-      ? `${slug}.${PLATFORM_DOMAIN}`
-      : `${slug}.localhost${port}`;
+  const platformDomain = platformDomainFromRequestHost(requestHost);
+  const host = tenantHost(slug, platformDomain);
 
   const safePath = path.startsWith("/") ? path : `/${path}`;
   return `${protocol}://${host}${safePath}`;
