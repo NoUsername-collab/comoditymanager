@@ -1,3 +1,5 @@
+import { usesPlatformTenantRouting } from "@/lib/tenant/routing";
+
 const PLATFORM_DOMAIN =
   process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
 
@@ -128,16 +130,22 @@ export function buildTenantLoginUrl(
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
   const platformDomain = platformDomainFromRequestHost(requestHost);
-  const host = tenantHost(slug, platformDomain);
 
   const search = new URLSearchParams();
+  search.set("tenant", slug);
   if (params) {
     for (const [key, value] of Object.entries(params)) {
       if (value) search.set(key, value);
     }
   }
   const query = search.toString();
-  return `${protocol}://${host}/admin/login${query ? `?${query}` : ""}`;
+
+  if (usesPlatformTenantRouting(requestHost)) {
+    return `${protocol}://${platformDomain}/admin/login?${query}`;
+  }
+
+  const host = tenantHost(slug, platformDomain);
+  return `${protocol}://${host}/admin/login?${query}`;
 }
 
 /** Admin (or other) path on tenant host — after platform login. */
@@ -149,8 +157,14 @@ export function buildTenantAdminUrl(
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
   const platformDomain = platformDomainFromRequestHost(requestHost);
-  const host = tenantHost(slug, platformDomain);
-
   const safePath = path.startsWith("/") ? path : `/${path}`;
+
+  if (usesPlatformTenantRouting(requestHost)) {
+    const url = new URL(`${protocol}://${platformDomain}${safePath}`);
+    url.searchParams.set("tenant", slug);
+    return url.toString();
+  }
+
+  const host = tenantHost(slug, platformDomain);
   return `${protocol}://${host}${safePath}`;
 }

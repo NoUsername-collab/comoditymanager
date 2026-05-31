@@ -1,4 +1,6 @@
-/** Fix tenant redirect when staging signup returns production host. */
+import { isValidTenantSlug } from "@/lib/tenant/routing";
+
+/** Fix tenant redirect when staging signup returns a broken subdomain host. */
 export function normalizeTenantRedirectUrl(url: string): string {
   if (typeof window === "undefined") return url;
 
@@ -9,21 +11,26 @@ export function normalizeTenantRedirectUrl(url: string): string {
 
   try {
     const parsed = new URL(url);
-    const parts = parsed.hostname.split(".");
-    // slug.hospira.ro → slug.test.hospira.ro
-    if (
-      parts.length === 3 &&
-      parts[1] === "hospira" &&
-      parts[2] === "ro" &&
-      parts[0] !== "test" &&
-      parts[0] !== "www"
-    ) {
-      parsed.hostname = `${parts[0]}.test.hospira.ro`;
-      return parsed.toString();
+
+    // Already on platform host with tenant param
+    if (parsed.hostname === "test.hospira.ro" && parsed.searchParams.get("tenant")) {
+      return url;
     }
+
+    let slug: string | null = null;
+
+    if (parsed.hostname.endsWith(".test.hospira.ro")) {
+      slug = parsed.hostname.slice(0, -".test.hospira.ro".length);
+    } else if (parsed.hostname.endsWith(".hospira.ro")) {
+      slug = parsed.hostname.slice(0, -".hospira.ro".length);
+    }
+
+    if (!isValidTenantSlug(slug)) return url;
+
+    parsed.hostname = "test.hospira.ro";
+    parsed.searchParams.set("tenant", slug);
+    return parsed.toString();
   } catch {
     return url;
   }
-
-  return url;
 }
