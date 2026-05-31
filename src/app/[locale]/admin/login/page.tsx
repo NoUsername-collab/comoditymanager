@@ -16,7 +16,11 @@ export default async function AdminLoginPage({
   const params = await searchParams;
   const next = params.next?.startsWith("/admin") ? params.next : "/admin";
   const authError =
-    params.error === "unauthorized" ? t("notMemberOfPension") : null;
+    params.error === "unauthorized"
+      ? t("notMemberOfPension")
+      : params.error === "no_tenant"
+        ? t("noTenantLinked")
+        : null;
   const signupSuccess = params.signup === "1" ? t("signupSuccess") : null;
   const initialUsername = params.email?.trim() ?? "";
 

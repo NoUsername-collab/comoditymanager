@@ -59,9 +59,19 @@ export async function loginAction(formData: FormData) {
     return { error: t("notMemberOfPension") };
   }
 
-  if (!tenant && !role) {
-    await supabase.auth.signOut();
-    return { error: t("invalidUserOrPassword") };
+  const safeNext =
+    next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
+      ? next
+      : "/admin";
+
+  // Platform host: owner/staff may lack app_metadata.role but have tenant_members
+  let platformSlug: string | null = null;
+  if (!tenant) {
+    platformSlug = await getPrimaryTenantSlugForUser(supabase, user.id);
+    if (!platformSlug && !role) {
+      await supabase.auth.signOut();
+      return { error: t("noTenantLinked") };
+    }
   }
 
   await logAdminActivity({
@@ -72,11 +82,6 @@ export async function loginAction(formData: FormData) {
     actor: { id: user.id, email: user.email },
   });
 
-  const safeNext =
-    next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
-      ? next
-      : "/admin";
-
   // Already on tenant host (slug.hospira.ro) — stay on same domain
   if (tenant) {
     await localeRedirectInternal(safeNext);
@@ -84,15 +89,15 @@ export async function loginAction(formData: FormData) {
   }
 
   // Platform login (test.hospira.ro) → admin lives on tenant subdomain
-  const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
-  if (slug) {
+  if (platformSlug) {
     const requestHost =
       (await headers()).get("x-forwarded-host") ??
       (await headers()).get("host");
-    redirect(buildTenantAdminUrl(slug, safeNext, requestHost));
+    redirect(buildTenantAdminUrl(platformSlug, safeNext, requestHost));
   }
 
-  await localeRedirectInternal("/signup");
+  await supabase.auth.signOut();
+  return { error: t("noTenantLinked") };
 }
 
 export async function logoutAction() {

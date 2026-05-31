@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { signupAction } from "@/app/[locale]/(platform)/signup/actions";
 
 type SignupSuccess = {
@@ -169,9 +170,9 @@ export function SignupForm() {
 
       <p className="signup-form__login-link">
         {t("alreadyHaveAccount")}{" "}
-        <a href="/admin/login" className="signup-form__link">
+        <Link href="/admin/login" className="signup-form__link">
           {t("loginLink")}
-        </a>
+        </Link>
       </p>
     </form>
   );

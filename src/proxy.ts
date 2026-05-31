@@ -276,6 +276,47 @@ async function runTenantAppProxy(
   return supabaseResponse;
 }
 
+async function redirectPlatformUserToTenantAdmin(
+  request: NextRequest,
+  requestHost: string | null,
+  path: string,
+): Promise<NextResponse | null> {
+  const { configured, url, key } = getEdgeSupabaseConfig();
+  if (!configured || !url || !key) return null;
+
+  let response = NextResponse.next();
+  const supabase = createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value)
+        );
+        response = NextResponse.next();
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const slug = await getPrimaryTenantSlugForUser(supabase, user.id);
+  if (!slug) return null;
+
+  const safe =
+    path.startsWith("/") && !path.startsWith("//") && !path.includes("://")
+      ? path
+      : "/admin";
+  return NextResponse.redirect(buildTenantAdminUrl(slug, safe, requestHost));
+}
+
 // ─── Main proxy ────────────────────────────────────────────────────
 
 export async function proxy(request: NextRequest) {
@@ -295,14 +336,22 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Admin lives on tenant subdomains — not on platform host
+    // Admin lives on tenant subdomains — send guests to login, owners to subdomain
     if (
       (path.startsWith("/admin") && path !== "/admin/login") ||
       path.startsWith("/calendar") ||
       path.startsWith("/receptie")
     ) {
+      const tenantRedirect = await redirectPlatformUserToTenantAdmin(
+        request,
+        requestHost,
+        path.startsWith("/admin") ? path : "/admin",
+      );
+      if (tenantRedirect) return tenantRedirect;
+
       const url = request.nextUrl.clone();
-      url.pathname = "/signup";
+      url.pathname = "/admin/login";
+      if (path !== "/admin") url.searchParams.set("next", path);
       return NextResponse.redirect(url);
     }
 
