@@ -7,13 +7,17 @@ import type { RoomOptionDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
 import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 
 export function BuildingForm({
   action,
   catalogOptions = [],
+  returnTo,
 }: {
   action: (formData: FormData) => Promise<void>;
   catalogOptions?: RoomOptionDefinition[];
+  /** După salvare, serverul redirecționează (ex. structure). */
+  returnTo?: "structure";
 }) {
   const tCommon = useTranslations("admin.common");
   const tBuildings = useTranslations("admin.buildingsForm");
@@ -27,6 +31,7 @@ export function BuildingForm({
 
   return (
     <AdminPendingForm action={action} className="mt-8 space-y-5">
+      {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
       <label className="block">
         <span className="text-sm font-medium">{tBuildings("buildingNameRequired")}</span>
         <input
@@ -102,12 +107,9 @@ export function BuildingForm({
         />
       </label>
 
-      <button
-        type="submit"
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-      >
+      <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
         {tBuildings("saveBuilding")}
-      </button>
+      </AdminSubmitButton>
     </AdminPendingForm>
   );
 }

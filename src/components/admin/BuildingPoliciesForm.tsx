@@ -6,6 +6,7 @@ import type { OptionPolicyMode } from "@/types/room-catalog";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { updateBuildingPoliciesAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 
 export function BuildingPoliciesForm({
@@ -92,12 +93,9 @@ export function BuildingPoliciesForm({
             <input type="hidden" name={`policy_${acOption.id}`} value={acMode} />
           )}
 
-          <button
-            type="submit"
-            className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white"
-          >
+          <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50">
             {tPolicies("savePolicies")}
-          </button>
+          </AdminSubmitButton>
         </AdminPendingForm>
       )}
     </div>

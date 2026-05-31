@@ -185,7 +185,10 @@ export function BuildingDashboardCardInteractive({
               hideSummary
             />
 
-            <AddFloorForm buildingId={building.id} />
+            <AddFloorForm
+              buildingId={building.id}
+              nextSortOrder={data.floor_count + 1}
+            />
 
             {catalogOptions.length > 0 && (
               <BuildingPoliciesForm

@@ -19,10 +19,15 @@ const AdminPendingContext = createContext<AdminPendingContextValue | null>(null)
 
 export function AdminPendingProvider({ children }: { children: ReactNode }) {
   const depthRef = useRef(0);
+  const lockRef = useRef(false);
   const [pending, setPending] = useState(false);
 
   const runAdminAction = useCallback(
     async <T,>(fn: () => Promise<T> | T): Promise<T> => {
+      if (lockRef.current) {
+        return undefined as T;
+      }
+      lockRef.current = true;
       depthRef.current += 1;
       setPending(true);
       try {
@@ -31,6 +36,7 @@ export function AdminPendingProvider({ children }: { children: ReactNode }) {
         depthRef.current = Math.max(0, depthRef.current - 1);
         if (depthRef.current === 0) {
           setPending(false);
+          lockRef.current = false;
         }
       }
     },

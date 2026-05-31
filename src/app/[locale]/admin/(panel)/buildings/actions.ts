@@ -4,7 +4,8 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { createBuilding } from "@/services/buildings";
+import { revalidateStructurePaths } from "@/lib/cache/revalidate-structure";
+import { createBuilding, updateBuilding } from "@/services/buildings";
 import {
   defaultColorForAcMode,
   normalizeBuildingColor,
@@ -68,10 +69,10 @@ export async function createBuildingAction(formData: FormData) {
     summary: t("buildingCreatedSummary", { name }),
     metadata: { ac_mode, default_price_per_night },
   });
-  revalidateTag(CACHE_TAGS.buildings, "max");
-  revalidatePath("/admin/buildings");
+  revalidateStructurePaths();
   revalidatePath("/");
-  await redirect("/admin/buildings");
+  const back = structureReturnPath(formData);
+  await redirect(back || "/admin/buildings");
 }
 
 export async function updateBuildingPoliciesAction(formData: FormData) {
@@ -104,38 +105,191 @@ export async function updateBuildingPoliciesAction(formData: FormData) {
     metadata: { ac_mode },
   });
 
-  revalidateTag(CACHE_TAGS.buildings, "max");
-  revalidatePath("/admin/buildings");
-  revalidatePath("/admin/calendar");
-  revalidatePath("/admin/rooms");
+  revalidateStructurePaths();
 }
 
-export async function createFloorAction(formData: FormData) {
+export type FloorFormState = {
+  ok: boolean;
+  messageKey?:
+    | "floorCreated"
+    | "floorUpdated"
+    | "floorDeleted"
+    | "floorDuplicate";
+  message?: string;
+} | null;
+
+export type BuildingFormState = {
+  ok: boolean;
+  messageKey?: "buildingUpdated";
+  message?: string;
+} | null;
+
+function structureReturnPath(formData: FormData): string {
+  const raw = String(formData.get("return_to") ?? "").trim();
+  if (raw === "structure") return "/admin/settings/location/structure";
+  return "";
+}
+
+export async function createFloorFormAction(
+  _prev: FloorFormState,
+  formData: FormData
+): Promise<FloorFormState> {
+  const t = await getTranslations("admin.serverActions");
+  try {
+    await requireLocationAdmin();
+    const { createFloor } = await import("@/services/floors");
+
+    const building_id = String(formData.get("building_id") ?? "");
+    const name = String(formData.get("name") ?? "").trim();
+    const level_number = formData.get("level_number")
+      ? Number(formData.get("level_number"))
+      : null;
+    const sort_order = Number(formData.get("sort_order") ?? 0);
+
+    if (!building_id || !name) {
+      return { ok: false, message: t("buildingAndFloorNameRequired") };
+    }
+
+    const floor = await createFloor({
+      building_id,
+      name,
+      level_number,
+      sort_order,
+    });
+    await logAdminActivityFromSession({
+      action: "floor.created",
+      entityType: "floor",
+      entityId: floor.id,
+      summary: t("floorSummary", { name }),
+      metadata: { building_id },
+    });
+    revalidateStructurePaths();
+    return { ok: true, messageKey: "floorCreated" };
+  } catch (e) {
+    if (e instanceof Error && e.message === "floors.duplicate_name") {
+      return { ok: false, messageKey: "floorDuplicate" };
+    }
+    return {
+      ok: false,
+      message: e instanceof Error ? e.message : t("deleteError"),
+    };
+  }
+}
+
+export async function updateFloorFormAction(
+  _prev: FloorFormState,
+  formData: FormData
+): Promise<FloorFormState> {
+  const t = await getTranslations("admin.serverActions");
+  try {
+    await requireLocationAdmin();
+    const { updateFloor } = await import("@/services/floors");
+
+    const floor_id = String(formData.get("floor_id") ?? "");
+    const name = String(formData.get("name") ?? "").trim();
+    const level_number = formData.get("level_number")
+      ? Number(formData.get("level_number"))
+      : null;
+    const sort_order = Number(formData.get("sort_order") ?? 0);
+
+    if (!floor_id || !name) {
+      return { ok: false, message: t("buildingAndFloorNameRequired") };
+    }
+
+    await updateFloor({ floor_id, name, level_number, sort_order });
+    await logAdminActivityFromSession({
+      action: "floor.updated",
+      entityType: "floor",
+      entityId: floor_id,
+      summary: t("floorUpdatedSummary", { name }),
+    });
+    revalidateStructurePaths();
+    return { ok: true, messageKey: "floorUpdated" };
+  } catch (e) {
+    if (e instanceof Error && e.message === "floors.duplicate_name") {
+      return { ok: false, messageKey: "floorDuplicate" };
+    }
+    return {
+      ok: false,
+      message: e instanceof Error ? e.message : t("deleteError"),
+    };
+  }
+}
+
+export async function deleteFloorAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
   await requireLocationAdmin();
-  const { createFloor } = await import("@/services/floors");
+  const { deleteFloor } = await import("@/services/floors");
+  const floor_id = String(formData.get("floor_id") ?? "");
+  if (!floor_id) throw new Error(t("idMissing"));
 
-  const building_id = String(formData.get("building_id") ?? "");
-  const name = String(formData.get("name") ?? "");
-  const level_number = formData.get("level_number")
-    ? Number(formData.get("level_number"))
-    : null;
-  const sort_order = Number(formData.get("sort_order") ?? 0);
-
-  if (!building_id || !name) {
-    throw new Error(t("buildingAndFloorNameRequired"));
-  }
-
-  const floor = await createFloor({ building_id, name, level_number, sort_order });
+  const { roomsUnassigned } = await deleteFloor(floor_id);
   await logAdminActivityFromSession({
-    action: "floor.created",
+    action: "floor.deleted",
     entityType: "floor",
-    entityId: floor.id,
-    summary: t("floorSummary", { name }),
-    metadata: { building_id },
+    entityId: floor_id,
+    summary: t("floorDeletedSummary"),
+    metadata: { roomsUnassigned },
   });
-  revalidatePath("/admin/buildings");
-  await redirect("/admin/buildings");
+  revalidateStructurePaths();
+}
+
+export async function updateBuildingFormAction(
+  _prev: BuildingFormState,
+  formData: FormData
+): Promise<BuildingFormState> {
+  const t = await getTranslations("admin.serverActions");
+  try {
+    await requireLocationAdmin();
+    const building_id = String(formData.get("building_id") ?? "");
+    const name = String(formData.get("name") ?? "").trim();
+    const sort_order = Number(formData.get("sort_order") ?? 0);
+    const ac_mode = String(formData.get("ac_mode") ?? "per_room") as AcMode;
+    const color_hex =
+      normalizeBuildingColor(String(formData.get("color_hex") ?? "")) ??
+      defaultColorForAcMode(ac_mode);
+    const default_price_per_night = Number(
+      formData.get("default_price_per_night") ?? 0
+    );
+
+    if (!building_id || !name) {
+      return { ok: false, message: t("buildingNameRequired") };
+    }
+
+    await updateBuilding({
+      id: building_id,
+      name,
+      sort_order,
+      ac_mode,
+      color_hex,
+      default_price_per_night,
+    });
+
+    await logAdminActivityFromSession({
+      action: "building.updated",
+      entityType: "building",
+      entityId: building_id,
+      summary: t("buildingUpdatedSummary", { name }),
+      metadata: { ac_mode },
+    });
+
+    revalidateStructurePaths();
+    revalidatePath("/admin/calendar");
+    return { ok: true, messageKey: "buildingUpdated" };
+  } catch (e) {
+    return {
+      ok: false,
+      message: e instanceof Error ? e.message : t("deleteError"),
+    };
+  }
+}
+
+/** @deprecated Prefer createFloorFormAction — kept for any legacy forms */
+export async function createFloorAction(formData: FormData) {
+  const result = await createFloorFormAction(null, formData);
+  if (!result?.ok) {
+    throw new Error(result?.message ?? "Error");
+  }
 }
 
 export async function deleteBuildingAction(formData: FormData) {
@@ -158,10 +312,28 @@ export async function deleteBuildingAction(formData: FormData) {
     throw e instanceof Error ? e : new Error(t("deleteError"));
   }
 
-  revalidateTag(CACHE_TAGS.buildings, "max");
-  revalidatePath("/admin/buildings");
-  revalidatePath("/admin/rooms");
+  revalidateStructurePaths();
   revalidatePath("/");
+}
+
+export async function assignRoomFloorAction(formData: FormData) {
+  const t = await getTranslations("admin.serverActions");
+  await requireLocationAdmin();
+  const { assignRoomToFloor } = await import("@/services/rooms-admin");
+  const room_id = String(formData.get("room_id") ?? "");
+  const floor_id = String(formData.get("floor_id") ?? "").trim();
+
+  if (!room_id) throw new Error(t("idMissing"));
+
+  await assignRoomToFloor(room_id, floor_id || null);
+  await logAdminActivityFromSession({
+    action: "room.updated",
+    entityType: "room",
+    entityId: room_id,
+    summary: t("roomFloorAssigned"),
+    metadata: { floor_id: floor_id || null },
+  });
+  revalidateStructurePaths();
 }
 
 export async function deleteRoomFromBuildingAction(formData: FormData) {
@@ -184,9 +356,7 @@ export async function deleteRoomFromBuildingAction(formData: FormData) {
     throw e instanceof Error ? e : new Error(t("deleteError"));
   }
 
-  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateStructurePaths();
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-  revalidatePath("/admin/buildings");
-  revalidatePath("/admin/rooms");
   revalidatePath("/");
 }

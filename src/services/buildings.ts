@@ -36,6 +36,29 @@ export async function listBuildings(): Promise<Building[]> {
   return getCachedBuildings(tenantId)();
 }
 
+export async function updateBuilding(input: {
+  id: string;
+  name: string;
+  sort_order: number;
+  ac_mode: AcMode;
+  color_hex: string | null;
+  default_price_per_night: number;
+}): Promise<void> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("buildings")
+    .update({
+      name: input.name.trim(),
+      sort_order: input.sort_order,
+      ac_mode: input.ac_mode,
+      color_hex: input.color_hex || null,
+      default_price_per_night: Math.max(0, input.default_price_per_night),
+    })
+    .eq("tenant_id", tenantId)
+    .eq("id", input.id);
+  if (error) throw new Error(error.message);
+}
+
 export async function updateBuildingDefaultPrice(
   buildingId: string,
   default_price_per_night: number

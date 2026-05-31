@@ -8,7 +8,14 @@ import { listBuildings } from "@/services/buildings";
 import { parseSelectedOptionIds } from "@/services/room-catalog";
 import { createRoom, createRoomsBulk } from "@/services/rooms-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { revalidateStructurePaths } from "@/lib/cache/revalidate-structure";
 import { getTranslations } from "next-intl/server";
+
+function roomReturnPath(formData: FormData): string {
+  const raw = String(formData.get("return_to") ?? "").trim();
+  if (raw === "structure") return "/admin/settings/location/structure";
+  return "";
+}
 
 export async function createRoomAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
@@ -67,11 +74,11 @@ export async function createRoomAction(formData: FormData) {
       metadata: { building_id, bulk_count, room_type_definition_id },
     });
 
-    revalidateTag(CACHE_TAGS.rooms, "max");
+    revalidateStructurePaths();
     revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-    revalidatePath("/admin/rooms");
     revalidatePath("/");
-    await redirect(`/admin/rooms?bulk=${ids.length}`);
+    const back = roomReturnPath(formData);
+    await redirect(back || `/admin/rooms?bulk=${ids.length}`);
   }
 
   const name = String(formData.get("name") ?? "");
@@ -99,9 +106,9 @@ export async function createRoomAction(formData: FormData) {
     metadata: { building_id, room_type_definition_id },
   });
 
-  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateStructurePaths();
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-  revalidatePath("/admin/rooms");
   revalidatePath("/");
-  await redirect("/admin/rooms");
+  const back = roomReturnPath(formData);
+  await redirect(back || "/admin/rooms");
 }

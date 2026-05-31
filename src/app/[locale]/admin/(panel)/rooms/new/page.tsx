@@ -15,11 +15,17 @@ import { getTranslations } from "next-intl/server";
 export default async function NewRoomPage({
   searchParams,
 }: {
-  searchParams: Promise<{ building?: string }>;
+  searchParams: Promise<{ building?: string; floor?: string; return_to?: string }>;
 }) {
   const tPage = await getTranslations("admin.pages.roomsNew");
   const tCommon = await getTranslations("admin.common");
-  const { building: defaultBuildingId } = await searchParams;
+  const tStruct = await getTranslations("admin.locationStructure");
+  const {
+    building: defaultBuildingId,
+    floor: defaultFloorId,
+    return_to,
+  } = await searchParams;
+  const backToStructure = return_to === "structure";
   let buildings: Awaited<ReturnType<typeof listBuildings>> = [];
   let types: Awaited<ReturnType<typeof listRoomTypes>> = [];
   let options: Awaited<ReturnType<typeof listRoomOptions>> = [];
@@ -67,8 +73,14 @@ export default async function NewRoomPage({
   return (
     <AdminRetroPageFrame
       title={tCommon("newRoomTitle")}
-      backHref="/admin/rooms"
-      backLabel={tCommon("rooms")}
+      backHref={
+        backToStructure
+          ? "/admin/settings/location/structure"
+          : "/admin/rooms"
+      }
+      backLabel={
+        backToStructure ? tStruct("pageTitle") : tCommon("rooms")
+      }
       className="max-w-lg"
     >
       {catalogMissing && (
@@ -100,6 +112,8 @@ export default async function NewRoomPage({
             policiesByBuilding={policiesByBuilding}
             createRoomAction={createRoomAction}
             defaultBuildingId={defaultBuildingId}
+            defaultFloorId={defaultFloorId}
+            returnTo={backToStructure ? "structure" : undefined}
           />
         )
       )}

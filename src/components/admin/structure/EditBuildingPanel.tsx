@@ -1,0 +1,140 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
+import type { Building } from "@/types/database";
+import type { AcMode } from "@/types/database";
+import {
+  updateBuildingFormAction,
+  type BuildingFormState,
+} from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { deleteBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
+import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
+import { BUILDING_COLOR_PALETTE } from "@/lib/building-color-palette";
+
+export function EditBuildingPanel({ building }: { building: Building }) {
+  const t = useTranslations("admin.locationStructure");
+  const tCommon = useTranslations("admin.common");
+  const tBuildings = useTranslations("admin.buildingsForm");
+  const tActions = useTranslations("admin.serverActions");
+  const tBuildingsPage = useTranslations("admin.buildings");
+  const [open, setOpen] = useState(false);
+  const [acMode, setAcMode] = useState<AcMode>(building.ac_mode);
+  const runAdminAction = useRunAdminAction();
+  const [state, dispatch] = useActionState(
+    updateBuildingFormAction,
+    null as BuildingFormState
+  );
+
+  const initialColor =
+    building.color_hex &&
+    BUILDING_COLOR_PALETTE.some(
+      (c) => c.hex.toLowerCase() === building.color_hex?.toLowerCase()
+    )
+      ? building.color_hex
+      : null;
+
+  const feedback =
+    state?.messageKey === "buildingUpdated"
+      ? tActions("buildingUpdated")
+      : state?.message;
+
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="text-xs font-semibold text-zinc-600 underline hover:text-zinc-900"
+      >
+        {open ? t("hideBuildingEdit") : t("editBuilding")}
+      </button>
+
+      {open && (
+        <div className="mt-3 rounded-xl border border-zinc-200 bg-white/80 p-4">
+          {feedback && (
+            <p
+              role="status"
+              className={[
+                "mb-3 rounded-lg px-3 py-2 text-sm",
+                state?.ok
+                  ? "border border-emerald-200 bg-emerald-50 text-emerald-900"
+                  : "border border-red-200 bg-red-50 text-red-800",
+              ].join(" ")}
+            >
+              {feedback}
+            </p>
+          )}
+
+          <form
+            className="space-y-3"
+            action={(formData) => runAdminAction(() => dispatch(formData))}
+          >
+            <input type="hidden" name="building_id" value={building.id} />
+            <label className="block text-sm">
+              <span className="font-medium">{tBuildings("buildingNameRequired")}</span>
+              <input
+                name="name"
+                required
+                defaultValue={building.name}
+                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-medium">{tBuildings("acPolicyRequired")}</span>
+              <select
+                name="ac_mode"
+                value={acMode}
+                onChange={(e) => setAcMode(e.target.value as AcMode)}
+                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              >
+                <option value="all_rooms">{tBuildings("acPolicyAllRooms")}</option>
+                <option value="none">{tCommon("withoutAc")}</option>
+                <option value="per_room">{tBuildings("acPolicyPerRoom")}</option>
+              </select>
+            </label>
+            <ColorPalettePicker acMode={acMode} defaultValue={initialColor} />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block text-sm">
+                <span className="font-medium">{tBuildings("defaultPricePerNightRon")}</span>
+                <input
+                  name="default_price_per_night"
+                  type="number"
+                  min={0}
+                  step={1}
+                  defaultValue={building.default_price_per_night ?? 0}
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                />
+              </label>
+              <label className="block text-sm">
+                <span className="font-medium">{tCommon("displayOrder")}</span>
+                <input
+                  name="sort_order"
+                  type="number"
+                  defaultValue={building.sort_order}
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                />
+              </label>
+            </div>
+            <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+              {t("saveBuilding")}
+            </AdminSubmitButton>
+          </form>
+
+          <div className="mt-4 border-t border-zinc-200 pt-3">
+            <DeleteConfirmButton
+              label={tCommon("deleteBuilding")}
+              confirmMessage={tBuildingsPage("deleteBuildingConfirm", {
+                name: building.name,
+              })}
+              formAction={deleteBuildingAction}
+              hiddenFields={{ building_id: building.id }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

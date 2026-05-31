@@ -4,9 +4,16 @@ import { listRoomOptions } from "@/services/room-catalog";
 import { createBuildingAction } from "../actions";
 import { getTranslations } from "next-intl/server";
 
-export default async function NewBuildingPage() {
+export default async function NewBuildingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ return_to?: string }>;
+}) {
   const tPage = await getTranslations("admin.pages.buildingsNew");
   const tCommon = await getTranslations("admin.common");
+  const tStruct = await getTranslations("admin.locationStructure");
+  const { return_to } = await searchParams;
+  const backToStructure = return_to === "structure";
   let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
   try {
     catalogOptions = await listRoomOptions();
@@ -17,8 +24,14 @@ export default async function NewBuildingPage() {
   return (
     <AdminRetroPageFrame
       title={tCommon("newBuilding")}
-      backHref="/admin/buildings"
-      backLabel={tCommon("buildings")}
+      backHref={
+        backToStructure
+          ? "/admin/settings/location/structure"
+          : "/admin/buildings"
+      }
+      backLabel={
+        backToStructure ? tStruct("pageTitle") : tCommon("buildings")
+      }
       className="max-w-lg"
       description={
         <>
@@ -26,7 +39,11 @@ export default async function NewBuildingPage() {
         </>
       }
     >
-      <BuildingForm action={createBuildingAction} catalogOptions={catalogOptions} />
+      <BuildingForm
+        action={createBuildingAction}
+        catalogOptions={catalogOptions}
+        returnTo={backToStructure ? "structure" : undefined}
+      />
     </AdminRetroPageFrame>
   );
 }

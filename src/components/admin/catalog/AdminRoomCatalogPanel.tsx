@@ -2,6 +2,7 @@
 
 import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { useTranslations } from "next-intl";
 import {
   createRoomOptionAction,
@@ -89,9 +90,9 @@ export function AdminRoomCatalogPanel({
                   <input type="checkbox" name="is_active" defaultChecked={t.is_active} />
                   {tCommon("active")} {t.is_system && <span className="text-zinc-400">({tCatalog("system")})</span>}
                 </label>
-                <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
+                <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
                   {tCatalog("saveType")}
-                </button>
+                </AdminSubmitButton>
               </AdminPendingForm>
             </li>
           ))}
@@ -117,9 +118,9 @@ export function AdminRoomCatalogPanel({
               <input name="sort_order" type="number" defaultValue={types.length + 1} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
           </div>
-          <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
+          <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
             {tCatalog("addType")}
-          </button>
+          </AdminSubmitButton>
         </AdminPendingForm>
       </section>
 
@@ -155,9 +156,9 @@ export function AdminRoomCatalogPanel({
                   <input type="checkbox" name="is_active" defaultChecked={o.is_active} />
                   {tCommon("active")} {o.is_system && <span className="text-zinc-400">({tCatalog("system")} · {o.slug})</span>}
                 </label>
-                <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
+                <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
                   {tCatalog("saveOption")}
-                </button>
+                </AdminSubmitButton>
               </AdminPendingForm>
             </li>
           ))}
@@ -179,9 +180,9 @@ export function AdminRoomCatalogPanel({
               <input name="description" className="mt-1 w-full rounded-lg border px-2 py-1.5" />
             </label>
           </div>
-          <button type="submit" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white">
+          <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
             {tCatalog("addOption")}
-          </button>
+          </AdminSubmitButton>
         </AdminPendingForm>
       </section>
     </div>

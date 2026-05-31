@@ -6,6 +6,7 @@ import type { OptionPolicyMode } from "@/types/room-catalog";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
 type RoomData = {
@@ -31,6 +32,7 @@ type Props = {
   options: RoomOptionDefinition[];
   policiesByBuilding: Record<string, { option_id: string; mode: OptionPolicyMode }[]>;
   updateRoomAction: (formData: FormData) => Promise<void>;
+  returnTo?: "structure";
 };
 
 export function RoomEditForm({
@@ -41,6 +43,7 @@ export function RoomEditForm({
   options,
   policiesByBuilding,
   updateRoomAction,
+  returnTo,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tEdit = useTranslations("admin.roomEditForm");
@@ -55,6 +58,7 @@ export function RoomEditForm({
   return (
     <AdminPendingForm action={updateRoomAction} className="mt-8 space-y-5">
       <input type="hidden" name="id" value={room.id} />
+      {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
       <label className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
         <input
@@ -186,12 +190,9 @@ export function RoomEditForm({
         />
       </label>
 
-      <button
-        type="submit"
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-      >
+      <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
         {tEdit("saveChanges")}
-      </button>
+      </AdminSubmitButton>
     </AdminPendingForm>
   );
 }

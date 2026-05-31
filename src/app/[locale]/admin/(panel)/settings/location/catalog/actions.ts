@@ -10,6 +10,7 @@ import {
   updateRoomType,
 } from "@/services/room-catalog";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { revalidateStructurePaths } from "@/lib/cache/revalidate-structure";
 import { getTranslations } from "next-intl/server";
 
 export async function createRoomTypeAction(formData: FormData) {
@@ -39,8 +40,8 @@ export async function createRoomTypeAction(formData: FormData) {
   });
 
   revalidateTag(CACHE_TAGS.roomCatalog, "max");
+  revalidateStructurePaths();
   revalidatePath("/admin/settings/location");
-  revalidatePath("/admin/rooms");
 }
 
 export async function updateRoomTypeAction(formData: FormData) {
@@ -66,8 +67,8 @@ export async function updateRoomTypeAction(formData: FormData) {
   });
 
   revalidateTag(CACHE_TAGS.roomCatalog, "max");
+  revalidateStructurePaths();
   revalidatePath("/admin/settings/location");
-  revalidatePath("/admin/rooms");
 }
 
 export async function createRoomOptionAction(formData: FormData) {
@@ -89,8 +90,8 @@ export async function createRoomOptionAction(formData: FormData) {
 
   revalidateTag(CACHE_TAGS.roomCatalog, "max");
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+  revalidateStructurePaths();
   revalidatePath("/admin/settings/location");
-  revalidatePath("/admin/rooms");
 }
 
 export async function updateRoomOptionAction(formData: FormData) {
@@ -115,6 +116,6 @@ export async function updateRoomOptionAction(formData: FormData) {
 
   revalidateTag(CACHE_TAGS.roomCatalog, "max");
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+  revalidateStructurePaths();
   revalidatePath("/admin/settings/location");
-  revalidatePath("/admin/rooms");
 }

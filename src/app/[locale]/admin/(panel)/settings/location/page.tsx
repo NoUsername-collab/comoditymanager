@@ -191,28 +191,42 @@ export default async function LocationAdminPage({
               </p>
               <div className="grid gap-3 md:grid-cols-2">
                 <Link
+                  href="/admin/settings/location/structure"
+                  className="rounded-xl border-2 border-zinc-900 bg-zinc-900 px-4 py-4 text-white shadow-sm hover:bg-zinc-800"
+                >
+                  <span className="block text-sm font-semibold">
+                    {tPage("structure.cardStructureTitle")}
+                  </span>
+                  <span className="mt-1 block text-sm text-zinc-200">
+                    {tPage("structure.cardStructureBody")}
+                  </span>
+                  <span className="mt-2 inline-block text-xs font-bold uppercase tracking-wide text-emerald-300">
+                    {tPage("structure.recommended")}
+                  </span>
+                </Link>
+                <Link
                   href="/admin/buildings"
                   className="rounded-xl border border-zinc-300 bg-white px-4 py-4 hover:bg-zinc-50"
                 >
                   <span className="block text-sm font-semibold text-zinc-900">
-                    {tPage("structure.cardStructureTitle")}
+                    {tPage("structure.cardOccupancyTitle")}
                   </span>
                   <span className="mt-1 block text-sm text-zinc-600">
-                    {tPage("structure.cardStructureBody")}
-                  </span>
-                </Link>
-                <Link
-                  href="/admin/rooms"
-                  className="rounded-xl border border-zinc-300 bg-white px-4 py-4 hover:bg-zinc-50"
-                >
-                  <span className="block text-sm font-semibold text-zinc-900">
-                    {tCommon("rooms")}
-                  </span>
-                  <span className="mt-1 block text-sm text-zinc-600">
-                    {tPage("structure.cardRoomsBody")}
+                    {tPage("structure.cardOccupancyBody")}
                   </span>
                 </Link>
               </div>
+              <Link
+                href="/admin/rooms"
+                className="mt-3 block rounded-xl border border-zinc-300 bg-white px-4 py-3 hover:bg-zinc-50"
+              >
+                <span className="text-sm font-semibold text-zinc-900">
+                  {tCommon("rooms")}
+                </span>
+                <span className="mt-0.5 block text-sm text-zinc-600">
+                  {tPage("structure.cardRoomsBody")}
+                </span>
+              </Link>
             </div>
           </SettingsSlidePanel>
 

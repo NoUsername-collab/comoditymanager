@@ -9,6 +9,13 @@ import { listBuildings } from "@/services/buildings";
 import { parseSelectedOptionIds } from "@/services/room-catalog";
 import { updateRoom } from "@/services/rooms-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { revalidateStructurePaths } from "@/lib/cache/revalidate-structure";
+
+function roomReturnPath(formData: FormData): string {
+  const raw = String(formData.get("return_to") ?? "").trim();
+  if (raw === "structure") return "/admin/settings/location/structure";
+  return "";
+}
 
 export async function updateRoomAction(formData: FormData) {
   await requireLocationAdmin();
@@ -61,10 +68,9 @@ export async function updateRoomAction(formData: FormData) {
     metadata: { is_active, room_type_definition_id },
   });
 
-  revalidateTag(CACHE_TAGS.rooms, "max");
+  revalidateStructurePaths();
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-  revalidatePath("/admin/rooms");
   revalidatePath("/");
-  revalidatePath("/admin/calendar");
-  await redirect("/admin/rooms");
+  const back = roomReturnPath(formData);
+  await redirect(back || "/admin/rooms");
 }

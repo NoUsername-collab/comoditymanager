@@ -14,12 +14,17 @@ import { getTranslations } from "next-intl/server";
 
 export default async function EditRoomPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ return_to?: string }>;
 }) {
   const tPage = await getTranslations("admin.pages.roomEdit");
   const tCommon = await getTranslations("admin.common");
+  const tStruct = await getTranslations("admin.locationStructure");
   const { id } = await params;
+  const { return_to } = await searchParams;
+  const backToStructure = return_to === "structure";
   let room: Awaited<ReturnType<typeof getRoomById>> | null = null;
 
   try {
@@ -48,8 +53,14 @@ export default async function EditRoomPage({
   return (
     <AdminRetroPageFrame
       title={room ? tPage("titleWithName", { name: room.name }) : tPage("title")}
-      backHref="/admin/rooms"
-      backLabel={tCommon("rooms")}
+      backHref={
+        backToStructure
+          ? "/admin/settings/location/structure"
+          : "/admin/rooms"
+      }
+      backLabel={
+        backToStructure ? tStruct("pageTitle") : tCommon("rooms")
+      }
       className="max-w-lg"
     >
       {room && types.length > 0 && (
@@ -61,6 +72,7 @@ export default async function EditRoomPage({
           options={options}
           policiesByBuilding={policiesByBuilding}
           updateRoomAction={updateRoomAction}
+          returnTo={backToStructure ? "structure" : undefined}
         />
       )}
     </AdminRetroPageFrame>

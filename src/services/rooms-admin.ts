@@ -309,6 +309,42 @@ export async function updateRoom(
   await setRoomEnabledOptions(id, input.enabled_option_ids);
 }
 
+export async function assignRoomToFloor(
+  roomId: string,
+  floorId: string | null
+): Promise<void> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data: room, error: roomErr } = await supabase
+    .from("rooms")
+    .select("id, building_id")
+    .eq("tenant_id", tenantId)
+    .eq("id", roomId)
+    .maybeSingle();
+  if (roomErr) throw new Error(roomErr.message);
+  if (!room) throw new Error("rooms.not_found");
+
+  if (floorId) {
+    const { data: floor, error: floorErr } = await supabase
+      .from("floors")
+      .select("id, building_id")
+      .eq("tenant_id", tenantId)
+      .eq("id", floorId)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (floorErr) throw new Error(floorErr.message);
+    if (!floor || floor.building_id !== room.building_id) {
+      throw new Error("floors.building_mismatch");
+    }
+  }
+
+  const { error } = await supabase
+    .from("rooms")
+    .update({ floor_id: floorId })
+    .eq("tenant_id", tenantId)
+    .eq("id", roomId);
+  if (error) throw new Error(error.message);
+}
+
 export async function deleteRoom(id: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
 

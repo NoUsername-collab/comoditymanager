@@ -7,6 +7,7 @@ import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/l
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
 type Props = {
@@ -17,6 +18,8 @@ type Props = {
   policiesByBuilding: Record<string, { option_id: string; mode: OptionPolicyMode }[]>;
   createRoomAction: (formData: FormData) => Promise<void>;
   defaultBuildingId?: string;
+  defaultFloorId?: string;
+  returnTo?: "structure";
 };
 
 function suggestPrice(
@@ -50,6 +53,8 @@ export function RoomForm({
   policiesByBuilding,
   createRoomAction,
   defaultBuildingId,
+  defaultFloorId,
+  returnTo,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tRooms = useTranslations("admin.roomForm");
@@ -59,6 +64,12 @@ export function RoomForm({
       ? defaultBuildingId
       : (buildings[0]?.id ?? "");
   const [buildingId, setBuildingId] = useState(initial);
+  const initialFloor =
+    defaultFloorId &&
+    (floorsByBuilding[initial] ?? []).some((f) => f.id === defaultFloorId)
+      ? defaultFloorId
+      : "";
+  const [floorId, setFloorId] = useState(initialFloor);
   const defaultTypeId = types.find((t) => t.slug === "double")?.id ?? types[0]?.id ?? "";
   const [typeId, setTypeId] = useState(defaultTypeId);
 
@@ -93,6 +104,7 @@ export function RoomForm({
 
       <AdminPendingForm action={createRoomAction} className="space-y-5">
         <input type="hidden" name="create_mode" value={mode} />
+        {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 
         <label className="block">
           <span className="text-sm font-medium">{tCommon("building")} *</span>
@@ -100,7 +112,10 @@ export function RoomForm({
             name="building_id"
             required
             value={buildingId}
-            onChange={(e) => setBuildingId(e.target.value)}
+            onChange={(e) => {
+              setBuildingId(e.target.value);
+              setFloorId("");
+            }}
             className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
           >
             {buildings.map((b) => (
@@ -116,7 +131,8 @@ export function RoomForm({
           <select
             name="floor_id"
             className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
-            defaultValue=""
+            value={floorId}
+            onChange={(e) => setFloorId(e.target.value)}
           >
             <option value="">{tRooms("withoutFloor")}</option>
             {floors.map((f) => (
@@ -241,12 +257,9 @@ export function RoomForm({
           />
         </label>
 
-        <button
-          type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-        >
+        <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
           {mode === "bulk" ? tRooms("createRooms") : tRooms("saveRoom")}
-        </button>
+        </AdminSubmitButton>
       </AdminPendingForm>
     </div>
   );
