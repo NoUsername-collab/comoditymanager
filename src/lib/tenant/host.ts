@@ -1,6 +1,29 @@
 const PLATFORM_DOMAIN =
   process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
 
+/** Staging project (test.hospira.ro) — used even if PLATFORM_DOMAIN env is wrong. */
+export function isStagingDeployment(): boolean {
+  if (PLATFORM_DOMAIN === "test.hospira.ro") return true;
+  const site = process.env.NEXT_PUBLIC_SITE_URL?.toLowerCase() ?? "";
+  return site.includes("test.hospira.ro");
+}
+
+function defaultPlatformDomain(): string {
+  if (PLATFORM_DOMAIN && PLATFORM_DOMAIN !== "hospira.ro") {
+    return PLATFORM_DOMAIN;
+  }
+  if (isStagingDeployment()) return "test.hospira.ro";
+  return PLATFORM_DOMAIN;
+}
+
+/** Never emit tenant URLs on bare hospira.ro when this deploy is staging. */
+function applyStagingTenantSuffix(platformDomain: string): string {
+  if (isStagingDeployment() && platformDomain === "hospira.ro") {
+    return "test.hospira.ro";
+  }
+  return platformDomain;
+}
+
 /** Optional extra platform hostnames (comma-separated env). */
 const EXTRA_PLATFORM_HOSTS = (
   process.env.NEXT_PUBLIC_PLATFORM_HOSTS?.split(",") ?? []
@@ -40,19 +63,19 @@ export function platformDomainFromRequestHost(
     requestHost?.split(":")[0]?.trim().toLowerCase().replace(/^www\./, "") ??
     "";
 
-  if (!host || host === "127.0.0.1") return PLATFORM_DOMAIN;
+  if (!host || host === "127.0.0.1") return defaultPlatformDomain();
   if (host === "localhost") return "localhost";
-  if (host.endsWith(".vercel.app")) return PLATFORM_DOMAIN;
+  if (host.endsWith(".vercel.app")) return defaultPlatformDomain();
 
   if (isPlatformHost(host)) return host.replace(/^www\./, "");
 
   const parsed = parseTenantFromHost(host);
   if (parsed.type === "platform") return host;
   if (parsed.type === "tenant") {
-    return host.slice(parsed.slug.length + 1);
+    return applyStagingTenantSuffix(host.slice(parsed.slug.length + 1));
   }
 
-  return PLATFORM_DOMAIN;
+  return defaultPlatformDomain();
 }
 
 function tenantHost(slug: string, platformDomain: string): string {
@@ -136,7 +159,9 @@ export function buildTenantLoginUrl(
 ): string {
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
-  const platformDomain = platformDomainFromRequestHost(requestHost);
+  const platformDomain = applyStagingTenantSuffix(
+    platformDomainFromRequestHost(requestHost)
+  );
   const host = tenantHost(slug, platformDomain);
 
   const search = new URLSearchParams();
@@ -157,17 +182,19 @@ export function buildTenantAdminUrl(
 ): string {
   const protocol =
     process.env.NODE_ENV === "production" ? "https" : "http";
-  const platformDomain = platformDomainFromRequestHost(requestHost);
+  const platformDomain = applyStagingTenantSuffix(
+    platformDomainFromRequestHost(requestHost)
+  );
   const host = tenantHost(slug, platformDomain);
   const safePath = path.startsWith("/") ? path : `/${path}`;
   return `${protocol}://${host}${safePath}`;
 }
 
-/** Staging: redirect slug.hospira.ro → slug.test.hospira.ro when platform is test.hospira.ro */
+/** Staging: redirect slug.hospira.ro → slug.test.hospira.ro */
 export function stagingTenantHostCorrection(
   hostInput: string
 ): string | null {
-  if (PLATFORM_DOMAIN !== "test.hospira.ro") return null;
+  if (!isStagingDeployment()) return null;
 
   const host = normalizeHost(hostInput);
   if (!host.endsWith(".hospira.ro") || host.includes(".test.")) return null;

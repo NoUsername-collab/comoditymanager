@@ -312,16 +312,96 @@ export async function countActiveTenantMembers(
 
 /** Platform login redirect: relink Auth ↔ tenant in DB, then return primary slug. */
 export async function getPrimaryTenantSlugForUser(
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  userId: string,
+  email?: string | null
 ): Promise<string | null> {
   const { data: slug, error } = await supabase.rpc("prepare_platform_session");
 
-  if (error) {
-    console.error("[tenant-members] prepare_platform_session:", error.message);
-    return null;
+  if (!error && typeof slug === "string" && slug.length > 0) {
+    return slug;
   }
 
-  return typeof slug === "string" && slug.length > 0 ? slug : null;
+  if (error) {
+    console.error(
+      "[tenant-members] prepare_platform_session:",
+      error.message,
+      "— using service-role fallback (run migration 038 on Supabase)"
+    );
+  }
+
+  return resolvePrimaryTenantSlugAdmin(userId, email);
+}
+
+/** Works without RPC 038; relinks by email when Auth UUID diverged. */
+async function resolvePrimaryTenantSlugAdmin(
+  userId: string,
+  email?: string | null
+): Promise<string | null> {
+  const admin = createPublicAdminClient();
+  const normalized = email?.toLowerCase().trim();
+
+  const roleOrder: Record<string, number> = {
+    owner: 0,
+    admin: 1,
+    operator: 2,
+  };
+
+  const pickSlug = (
+    rows: Array<{
+      role: string;
+      tenants: { slug: string } | { slug: string }[] | null;
+    }>
+  ): string | null => {
+    const sorted = [...rows].sort(
+      (a, b) =>
+        (roleOrder[String(a.role)] ?? 9) - (roleOrder[String(b.role)] ?? 9)
+    );
+    for (const row of sorted) {
+      const nested = row.tenants;
+      if (!nested) continue;
+      const rowSlug = Array.isArray(nested) ? nested[0]?.slug : nested.slug;
+      if (rowSlug) return rowSlug;
+    }
+    return null;
+  };
+
+  // 1) Prefer lookup by email — fixes “pension exists but wrong user_id”
+  if (normalized) {
+    const { data: byEmail, error: emailError } = await admin
+      .from("tenant_members")
+      .select("role, user_id, tenants(slug)")
+      .eq("email", normalized)
+      .eq("is_active", true);
+
+    if (!emailError && byEmail?.length) {
+      const needsRelink = byEmail.some((row) => row.user_id !== userId);
+      if (needsRelink) {
+        await admin
+          .from("tenant_members")
+          .update({ user_id: userId })
+          .eq("email", normalized)
+          .eq("is_active", true);
+        await admin
+          .from("tenants")
+          .update({ owner_id: userId })
+          .ilike("owner_email", normalized);
+      }
+      const slug = pickSlug(byEmail);
+      if (slug) return slug;
+    }
+  }
+
+  // 2) By auth user id
+  const { data, error: adminError } = await admin
+    .from("tenant_members")
+    .select("role, tenants(slug)")
+    .eq("user_id", userId)
+    .eq("is_active", true);
+
+  if (adminError || !data?.length) return null;
+
+  return pickSlug(data);
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────

@@ -67,8 +67,12 @@ export async function loginAction(formData: FormData) {
   // Platform host: owner/staff may lack app_metadata.role but have tenant_members
   let platformSlug: string | null = null;
   if (!tenant) {
-    platformSlug = await getPrimaryTenantSlugForUser(supabase);
-    if (!platformSlug && !role) {
+    platformSlug = await getPrimaryTenantSlugForUser(
+      supabase,
+      user.id,
+      user.email
+    );
+    if (!platformSlug) {
       await supabase.auth.signOut();
       return { error: t("noTenantLinked") };
     }

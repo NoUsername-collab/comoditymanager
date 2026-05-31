@@ -18,7 +18,7 @@ Migration **`038_platform_login_tenant_slug.sql`** — run **once** per Supabase
 | `prepare_platform_session()` | App calls this only: sync + slug in one RPC |
 | `check_owner_email_for_signup()` | Signup: `available` / `login_required` / `stale_owner_row` |
 
-App code: `getPrimaryTenantSlugForUser(supabase)` → `prepare_platform_session` only. No hardcoded emails, no manual UPDATE snippets.
+App code: `prepare_platform_session` RPC when present; **service-role fallback** relinks by email for any user (no hardcoded slugs/emails).
 
 ## Deploy checklist
 
@@ -27,6 +27,25 @@ App code: `getPrimaryTenantSlugForUser(supabase)` → `prepare_platform_session`
 3. Vercel **Production + Preview**: `NEXT_PUBLIC_PLATFORM_DOMAIN=test.hospira.ro`, `NEXT_PUBLIC_SITE_URL=https://test.hospira.ro` → **Redeploy**.
 4. Vercel Domains: `test.hospira.ro` and `*.test.hospira.ro` **Valid**.
 5. Test login → redirect must be `https://{slug}.test.hospira.ro/admin` (not `*.hospira.ro`).
+
+## Diagnose “no property linked” for a client
+
+```sql
+SELECT u.id AS auth_id, u.email,
+       tm.id AS member_id, tm.user_id, tm.role, tm.is_active,
+       t.slug, t.display_name
+FROM auth.users u
+LEFT JOIN public.tenant_members tm
+  ON lower(trim(tm.email)) = lower(trim(u.email)) AND tm.role = 'owner'
+LEFT JOIN public.tenants t ON t.id = tm.tenant_id
+WHERE lower(trim(u.email)) = lower(trim('CLIENT_EMAIL_HERE'));
+```
+
+| Result | Meaning |
+|--------|---------|
+| Auth row, no `member_id` | Signup never finished `onboard_new_tenant` — client must sign up again (after deploy) or run 038 backfill if orphan email row |
+| `member_id` but `user_id` ≠ `auth_id` | Run migration **038** (or redeploy app with fallback — auto-relinks on login) |
+| Row OK | Login on **tenant URL** `{slug}.test.hospira.ro/admin/login` or redeploy |
 
 ## Do not use
 

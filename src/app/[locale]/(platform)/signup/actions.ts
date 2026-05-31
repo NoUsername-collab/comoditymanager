@@ -307,6 +307,28 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
     };
   }
 
+  const { data: ownerMember, error: memberError } = await supabase
+    .from("tenant_members")
+    .select("id")
+    .eq("tenant_id", String(tenantId))
+    .eq("user_id", userId)
+    .eq("role", "owner")
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (memberError || !ownerMember) {
+    console.error(
+      "[SIGNUP] owner membership missing after onboard:",
+      memberError?.message ?? "no row"
+    );
+    await supabase.auth.admin.deleteUser(userId).catch(() => {});
+    return {
+      ok: false,
+      error: t("errorDatabase"),
+      errorCode: "owner_member_missing",
+    };
+  }
+
   return {
     ok: true,
     tenantId: String(tenantId),
