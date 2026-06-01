@@ -1,10 +1,10 @@
 import { getOnboardingProgress } from "@/services/onboarding";
-import { OnboardingChecklist } from "./OnboardingChecklist";
+import { OnboardingChecklist, type ChecklistStep } from "./OnboardingChecklist";
 
 /**
  * Persistent onboarding progress bar — shown in admin layout
  * until all required steps are complete.
- * Server component: fetches progress, renders conditionally.
+ * Server component: fetches progress, serializes for client.
  */
 export async function OnboardingBar() {
   let progress;
@@ -16,6 +16,15 @@ export async function OnboardingBar() {
 
   // Don't show if onboarding is complete
   if (progress.isComplete) return null;
+
+  // Serialize steps for client (strip functions)
+  const clientSteps: ChecklistStep[] = progress.steps.map((s) => ({
+    id: s.step.id,
+    emoji: s.step.emoji,
+    href: s.step.href,
+    optional: s.step.optional ?? false,
+    completed: s.completed,
+  }));
 
   return (
     <div className="onboarding-bar border-b border-amber-800/30 bg-amber-950/40">
@@ -39,7 +48,7 @@ export async function OnboardingBar() {
         </div>
 
         {/* Steps checklist */}
-        <OnboardingChecklist steps={progress.steps} />
+        <OnboardingChecklist steps={clientSteps} />
       </div>
     </div>
   );
