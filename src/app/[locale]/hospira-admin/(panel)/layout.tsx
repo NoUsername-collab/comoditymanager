@@ -38,6 +38,12 @@ export default async function HospiraAdminLayout({
               >
                 Tenanți
               </Link>
+              <Link
+                href="/hospira-admin/logs"
+                className="text-neutral-400 transition-colors hover:text-white"
+              >
+                Logs
+              </Link>
             </nav>
           </div>
 
