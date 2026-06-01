@@ -19,7 +19,7 @@ export function AdminLoginForm({
 
   return (
     <form
-      className="mt-8 space-y-4"
+      className="admin-login-form mt-8 space-y-4"
       action={async (formData) => {
         setPending(true);
         setError(null);
@@ -40,7 +40,7 @@ export function AdminLoginForm({
           autoComplete="username"
           placeholder={t("usernameOrEmailPlaceholder")}
           defaultValue={initialUsername}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-400"
           required
         />
       </label>
@@ -50,7 +50,7 @@ export function AdminLoginForm({
           name="password"
           type="password"
           autoComplete="current-password"
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
           required
         />
       </label>

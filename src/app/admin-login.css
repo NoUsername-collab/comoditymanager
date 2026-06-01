@@ -1,0 +1,41 @@
+/* Admin login — always light UI (independent of global night theme on body) */
+
+.admin-login-page {
+  color: #18181b;
+  color-scheme: light;
+  background: #f4f4f5;
+}
+
+.admin-login-card {
+  color: #18181b;
+}
+
+.admin-login-card h1 {
+  color: #09090b;
+}
+
+.admin-login-card .admin-login-lead {
+  color: #52525b;
+}
+
+.admin-login-form label {
+  color: #3f3f46;
+  font-weight: 500;
+}
+
+.admin-login-form input {
+  color: #18181b;
+  background-color: #ffffff;
+}
+
+.admin-login-form input::placeholder {
+  color: #a1a1aa;
+  opacity: 1;
+}
+
+.admin-login-form input:-webkit-autofill,
+.admin-login-form input:-webkit-autofill:hover,
+.admin-login-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #18181b;
+  box-shadow: 0 0 0 1000px #ffffff inset;
+}

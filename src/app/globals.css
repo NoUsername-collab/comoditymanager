@@ -7,6 +7,7 @@
 @import "./platform.css";
 @import "./platform-split.css";
 @import "./locale-loading.css";
+@import "./admin-login.css";
 @import "./device-mobile.css";
 
 :root {
