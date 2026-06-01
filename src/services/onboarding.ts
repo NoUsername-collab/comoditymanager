@@ -14,6 +14,9 @@ import {
 export async function getOnboardingSnapshot(): Promise<OnboardingSnapshot> {
   const { tenantId, supabase } = await getTenantScope();
 
+  const safeCount = (p: PromiseLike<{ count: number | null }>) =>
+    Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
+
   const [
     pensionSettings,
     buildingCount,
@@ -22,45 +25,16 @@ export async function getOnboardingSnapshot(): Promise<OnboardingSnapshot> {
     confirmedCount,
     memberCount,
   ] = await Promise.all([
-    supabase
-      .from("pension_settings")
-      .select("display_name")
-      .eq("tenant_id", tenantId)
-      .maybeSingle()
-      .then((r) => r.data),
+    Promise.resolve(
+      supabase.from("pension_settings").select("display_name").eq("tenant_id", tenantId).maybeSingle()
+        .then((r) => r.data)
+    ).catch(() => null),
 
-    supabase
-      .from("buildings")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .then((r) => r.count ?? 0),
-
-    supabase
-      .from("rooms")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .then((r) => r.count ?? 0),
-
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .then((r) => r.count ?? 0),
-
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .eq("status", "confirmata")
-      .then((r) => r.count ?? 0),
-
-    supabase
-      .from("tenant_members")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .eq("is_active", true)
-      .neq("role", "owner")
-      .then((r) => r.count ?? 0),
+    safeCount(supabase.from("buildings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
+    safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
+    safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
+    safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("status", "confirmata")),
+    safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("is_active", true).neq("role", "owner")),
   ]);
 
   const displayName = pensionSettings?.display_name?.trim() ?? "";

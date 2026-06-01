@@ -47,53 +47,55 @@ export async function runTenantHealthChecks(): Promise<TenantHealthCheck[]> {
 
   const checks = await Promise.all(
     tenants.map(async (t) => {
-      const issues: string[] = [];
+      try {
+        const safeCount = (p: PromiseLike<{ count: number | null }>) =>
+          Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
 
-      const [settings, buildings, rooms, members] = await Promise.all([
-        supabase
-          .from("pension_settings")
-          .select("id")
-          .eq("tenant_id", t.id)
-          .maybeSingle()
-          .then((r) => r.data),
-        supabase
-          .from("buildings")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", t.id)
-          .then((r) => r.count ?? 0),
-        supabase
-          .from("rooms")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", t.id)
-          .then((r) => r.count ?? 0),
-        supabase
-          .from("tenant_members")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", t.id)
-          .eq("is_active", true)
-          .then((r) => r.count ?? 0),
-      ]);
+        const [settings, buildings, rooms, members] = await Promise.all([
+          Promise.resolve(
+            supabase.from("pension_settings").select("id").eq("tenant_id", t.id).maybeSingle()
+              .then((r) => r.data)
+          ).catch(() => null),
+          safeCount(supabase.from("buildings").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
+          safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
+          safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", t.id).eq("is_active", true)),
+        ]);
 
-      const hasSettings = !!settings;
-      if (!hasSettings) issues.push("Lipsesc pension_settings");
-      if (buildings === 0) issues.push("Zero clădiri");
-      if (rooms === 0) issues.push("Zero camere");
-      if (members === 0) issues.push("Zero membri activi");
-      if (t.status === "suspended") issues.push("Cont suspendat");
-      if (t.status === "cancelled") issues.push("Cont anulat");
+        const issues: string[] = [];
+        const hasSettings = !!settings;
+        if (!hasSettings) issues.push("Lipsesc pension_settings");
+        if (buildings === 0) issues.push("Zero clădiri");
+        if (rooms === 0) issues.push("Zero camere");
+        if (members === 0) issues.push("Zero membri activi");
+        if (t.status === "suspended") issues.push("Cont suspendat");
+        if (t.status === "cancelled") issues.push("Cont anulat");
 
-      return {
-        tenantId: t.id,
-        slug: t.slug,
-        displayName: t.display_name,
-        status: t.status,
-        hasSettings,
-        buildingCount: buildings,
-        roomCount: rooms,
-        memberCount: members,
-        healthy: issues.length === 0,
-        issues,
-      };
+        return {
+          tenantId: t.id,
+          slug: t.slug,
+          displayName: t.display_name,
+          status: t.status,
+          hasSettings,
+          buildingCount: buildings,
+          roomCount: rooms,
+          memberCount: members,
+          healthy: issues.length === 0,
+          issues,
+        };
+      } catch {
+        return {
+          tenantId: t.id,
+          slug: t.slug,
+          displayName: t.display_name,
+          status: t.status,
+          hasSettings: false,
+          buildingCount: 0,
+          roomCount: 0,
+          memberCount: 0,
+          healthy: false,
+          issues: ["Eroare la verificare — DB timeout sau query eșuat"],
+        };
+      }
     })
   );
 
@@ -116,6 +118,11 @@ export async function getPlatformLogs(
     .order("created_at", { ascending: false })
     .limit(limit);
 
+  // Validate UUID format to prevent Supabase query errors
+  if (tenantId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId)) {
+    return [];
+  }
+
   if (tenantId) {
     query = query.eq("tenant_id", tenantId);
   }
@@ -126,6 +133,8 @@ export async function getPlatformLogs(
 
   // Fetch tenant names for display
   const tenantIds = [...new Set(data.map((d) => d.tenant_id).filter(Boolean))];
+  if (tenantIds.length === 0) return [];
+
   const { data: tenants } = await supabase
     .from("tenants")
     .select("id, slug, display_name")

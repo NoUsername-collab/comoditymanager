@@ -39,26 +39,15 @@ export async function listAllTenants(): Promise<PlatformTenantSummary[]> {
 
   if (error || !tenants) return [];
 
-  // Fetch counts per tenant in parallel
+  const safeCount = (p: PromiseLike<{ count: number | null }>) =>
+    Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
+
   const enriched = await Promise.all(
     tenants.map(async (t) => {
       const [members, rooms, bookings] = await Promise.all([
-        supabase
-          .from("tenant_members")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", t.id)
-          .eq("is_active", true)
-          .then((r) => r.count ?? 0),
-        supabase
-          .from("rooms")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", t.id)
-          .then((r) => r.count ?? 0),
-        supabase
-          .from("bookings")
-          .select("id", { count: "exact", head: true })
-          .eq("tenant_id", t.id)
-          .then((r) => r.count ?? 0),
+        safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", t.id).eq("is_active", true)),
+        safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
+        safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
       ]);
 
       return {
@@ -119,23 +108,13 @@ export async function getPlatformTenantById(
 
   if (error || !tenant) return null;
 
+  const safeCount = (p: PromiseLike<{ count: number | null }>) =>
+    Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
+
   const [members, rooms, bookings] = await Promise.all([
-    supabase
-      .from("tenant_members")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .eq("is_active", true)
-      .then((r) => r.count ?? 0),
-    supabase
-      .from("rooms")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .then((r) => r.count ?? 0),
-    supabase
-      .from("bookings")
-      .select("id", { count: "exact", head: true })
-      .eq("tenant_id", tenantId)
-      .then((r) => r.count ?? 0),
+    safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("is_active", true)),
+    safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
+    safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
   ]);
 
   return {

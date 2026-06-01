@@ -24,9 +24,9 @@ export default async function LogsPage({
   const tenantFilter = params.tenant || null;
 
   const [healthChecks, logs, tenants] = await Promise.all([
-    runTenantHealthChecks(),
-    getPlatformLogs(100, tenantFilter),
-    listAllTenants(),
+    runTenantHealthChecks().catch(() => []),
+    getPlatformLogs(100, tenantFilter).catch(() => []),
+    listAllTenants().catch(() => []),
   ]);
 
   const unhealthy = healthChecks.filter((h) => !h.healthy);
