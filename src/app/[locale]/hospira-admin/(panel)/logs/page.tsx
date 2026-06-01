@@ -1,4 +1,6 @@
 import { getPlatformLogs, runTenantHealthChecks } from "@/services/platform-debug";
+import { listAllTenants } from "@/services/platform-admin";
+import { TenantLogFilter } from "@/components/hospira-admin/TenantLogFilter";
 
 const HEALTH_ICON: Record<string, string> = {
   true: "🟢",
@@ -13,13 +15,31 @@ const ACTION_COLOR: Record<string, string> = {
   "booking.cancelled": "text-red-400",
 };
 
-export default async function LogsPage() {
-  const [healthChecks, logs] = await Promise.all([
+export default async function LogsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tenant?: string }>;
+}) {
+  const params = await searchParams;
+  const tenantFilter = params.tenant || null;
+
+  const [healthChecks, logs, tenants] = await Promise.all([
     runTenantHealthChecks(),
-    getPlatformLogs(100),
+    getPlatformLogs(100, tenantFilter),
+    listAllTenants(),
   ]);
 
   const unhealthy = healthChecks.filter((h) => !h.healthy);
+
+  const filterOptions = tenants.map((t) => ({
+    id: t.id,
+    slug: t.slug,
+    displayName: t.display_name,
+  }));
+
+  const activeTenantName = tenantFilter
+    ? tenants.find((t) => t.id === tenantFilter)?.display_name ?? "?"
+    : null;
 
   return (
     <div className="space-y-8">
@@ -72,12 +92,20 @@ export default async function LogsPage() {
 
       {/* Activity Logs */}
       <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
-        <h2 className="mb-4 text-lg font-semibold">
-          Activitate recentă
-          <span className="ml-2 text-sm font-normal text-neutral-500">
-            (ultimele {logs.length})
-          </span>
-        </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            Activitate
+            {activeTenantName && (
+              <span className="ml-2 text-sm font-normal text-sky-400">
+                — {activeTenantName}
+              </span>
+            )}
+            <span className="ml-2 text-sm font-normal text-neutral-500">
+              ({logs.length} log-uri)
+            </span>
+          </h2>
+          <TenantLogFilter tenants={filterOptions} />
+        </div>
 
         <div className="max-h-[600px] overflow-y-auto">
           <table className="w-full text-xs">
@@ -128,7 +156,7 @@ export default async function LogsPage() {
                     colSpan={5}
                     className="px-3 py-8 text-center text-neutral-500"
                   >
-                    Niciun log încă.
+                    Niciun log {activeTenantName ? `pentru ${activeTenantName}` : ""}.
                   </td>
                 </tr>
               )}

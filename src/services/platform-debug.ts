@@ -103,17 +103,24 @@ export async function runTenantHealthChecks(): Promise<TenantHealthCheck[]> {
 // ─── Activity Logs ──────────────────────────────────────────────
 
 export async function getPlatformLogs(
-  limit = 100
+  limit = 100,
+  tenantId?: string | null
 ): Promise<PlatformLogEntry[]> {
   const supabase = createPublicAdminClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("admin_activity_log")
     .select(
       "id, tenant_id, action, entity_type, entity_id, summary, created_at, actor_email:metadata->actor->email"
     )
     .order("created_at", { ascending: false })
     .limit(limit);
+
+  if (tenantId) {
+    query = query.eq("tenant_id", tenantId);
+  }
+
+  const { data, error } = await query;
 
   if (error || !data) return [];
 
