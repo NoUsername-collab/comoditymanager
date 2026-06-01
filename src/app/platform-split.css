@@ -1,24 +1,26 @@
-/* ── Hospira split theme: luminous top · noir bottom ─────────────── */
+/* ── Hospira platform: white · blue · professional ───────────────── */
 
 .platform-shell--split {
-  --light-bg: #faf7f0;
-  --light-bg-soft: #f3ede3;
-  --light-fg: #1a1612;
-  --light-muted: #6b6358;
+  --light-bg: #f8fafc;
+  --light-bg-soft: #eff6ff;
+  --light-fg: #0f172a;
+  --light-muted: #64748b;
   --light-card: #ffffff;
-  --light-border: #e5dcc8;
-  --light-accent: #b8942e;
-  --light-accent-deep: #96761f;
-  --light-glow: rgba(255, 248, 230, 0.85);
-  background: #07060a;
+  --light-border: #e2e8f0;
+  --light-accent: #2563eb;
+  --light-accent-deep: #1d4ed8;
+  --light-accent-soft: #dbeafe;
+  --light-glow: rgba(219, 234, 254, 0.9);
+  background: var(--light-bg);
+  color: var(--light-fg);
 }
 
-/* ── Header (reads light while user is on luminous half) ─────────── */
+/* ── Header ──────────────────────────────────────────────────────── */
 
 .platform-header--split {
-  border-bottom-color: color-mix(in srgb, var(--light-border) 80%, transparent);
-  background: color-mix(in srgb, var(--light-bg) 82%, transparent);
-  backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom-color: color-mix(in srgb, var(--light-accent) 12%, var(--light-border));
+  background: color-mix(in srgb, #ffffff 78%, transparent);
+  backdrop-filter: blur(16px) saturate(1.25);
 }
 
 .platform-header--split .platform-header__name {
@@ -30,27 +32,65 @@
 }
 
 .platform-header--split .platform-header__link:hover {
-  color: var(--light-fg);
-  background: color-mix(in srgb, var(--light-fg) 6%, transparent);
+  color: var(--light-accent-deep);
+  background: color-mix(in srgb, var(--light-accent) 8%, transparent);
 }
 
 .platform-header--split .platform-header__logo {
-  background: linear-gradient(145deg, #d6b55a 0%, #b8942e 100%);
-  color: #1a1612;
-  box-shadow: 0 4px 14px color-mix(in srgb, #b8942e 35%, transparent);
+  background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px color-mix(in srgb, #2563eb 35%, transparent);
 }
 
 .platform-header--split .platform-header__cta {
-  background: linear-gradient(145deg, #1a1612 0%, #2d2820 100%);
-  color: #faf7f0;
+  background: linear-gradient(145deg, #1d4ed8 0%, #2563eb 100%);
+  color: #ffffff;
 }
 
 .platform-header--split .platform-header__cta:hover {
   opacity: 1;
-  box-shadow: 0 6px 20px color-mix(in srgb, #1a1612 25%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, #2563eb 32%, transparent);
 }
 
-/* ── Surface blocks ──────────────────────────────────────────────── */
+/* ── Footer (light on split routes) ──────────────────────────────── */
+
+.platform-shell--split .platform-footer {
+  border-top-color: var(--light-border);
+  background: linear-gradient(180deg, #ffffff 0%, var(--light-bg-soft) 100%);
+}
+
+.platform-shell--split .platform-footer__brand,
+.platform-shell--split .platform-footer__links a {
+  color: var(--light-fg);
+}
+
+.platform-shell--split .platform-footer__desc,
+.platform-shell--split .platform-footer__label,
+.platform-shell--split .platform-footer__bottom p {
+  color: var(--light-muted);
+}
+
+.platform-shell--split .platform-footer__links a:hover,
+.platform-shell--split .platform-footer__contact a {
+  color: var(--light-accent);
+}
+
+/* ── Route loading (platform pages) ──────────────────────────────── */
+
+.platform-route-loading {
+  display: grid;
+  place-items: center;
+  min-height: min(68vh, 28rem);
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 50% 20%,
+      var(--light-glow) 0%,
+      transparent 65%
+    ),
+    linear-gradient(180deg, var(--light-bg) 0%, var(--light-bg-soft) 100%);
+}
+
+/* ── Surfaces ────────────────────────────────────────────────────── */
 
 .landing-surface--light {
   --site-bg: var(--light-bg);
@@ -59,59 +99,47 @@
   --site-card: var(--light-card);
   --site-border: var(--light-border);
   --site-accent: var(--light-accent);
-  --site-accent-fg: var(--light-fg);
+  --site-accent-fg: #ffffff;
   position: relative;
   color: var(--light-fg);
   background:
     radial-gradient(
-      ellipse 90% 60% at 12% -8%,
+      ellipse 85% 55% at 8% -5%,
       var(--light-glow) 0%,
       transparent 58%
     ),
     radial-gradient(
-      ellipse 50% 40% at 88% 12%,
-      color-mix(in srgb, #d6b55a 12%, transparent) 0%,
+      ellipse 45% 35% at 92% 8%,
+      color-mix(in srgb, #93c5fd 35%, transparent) 0%,
       transparent 55%
     ),
-    linear-gradient(180deg, var(--light-bg) 0%, var(--light-bg-soft) 100%);
+    linear-gradient(180deg, #ffffff 0%, var(--light-bg) 42%, var(--light-bg-soft) 100%);
 }
 
 .landing-surface--light::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 7rem;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    color-mix(in srgb, #07060a 8%, transparent) 45%,
-    #07060a 100%
-  );
+  content: none;
 }
 
-.landing-surface--dark {
-  --site-bg: #07060a;
-  --site-fg: #f3efe3;
-  --site-muted: #b7af9a;
-  --site-card: #0e0c14;
-  --site-border: color-mix(in srgb, #d6b55a 22%, #1b1824);
-  --site-accent: #d6b55a;
-  --site-accent-fg: #0b0a0f;
+.landing-surface--soft {
+  --site-bg: var(--light-bg-soft);
+  --site-fg: var(--light-fg);
+  --site-muted: var(--light-muted);
+  --site-card: var(--light-card);
+  --site-border: var(--light-border);
+  --site-accent: var(--light-accent);
+  --site-accent-fg: #ffffff;
   position: relative;
   color: var(--site-fg);
   background:
     radial-gradient(
-      ellipse 70% 45% at 50% 0%,
-      color-mix(in srgb, #d6b55a 7%, transparent) 0%,
+      ellipse 80% 50% at 50% 0%,
+      color-mix(in srgb, #bfdbfe 55%, transparent) 0%,
       transparent 62%
     ),
-    #07060a;
+    linear-gradient(180deg, var(--light-bg-soft) 0%, #ffffff 100%);
 }
 
-.landing-surface--dark::before {
+.landing-surface--soft::before {
   content: "";
   position: absolute;
   top: 0;
@@ -121,7 +149,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, #d6b55a 35%, transparent) 50%,
+    color-mix(in srgb, var(--light-accent) 25%, transparent) 50%,
     transparent 100%
   );
   pointer-events: none;
@@ -132,64 +160,49 @@
   z-index: 1;
 }
 
-/* ── Hero: literal half-light split on desktop ───────────────────── */
+/* ── Hero ────────────────────────────────────────────────────────── */
 
 .landing-surface--light .landing-hero {
-  min-height: min(88vh, 52rem);
+  min-height: min(86vh, 52rem);
 }
 
 .landing-surface--light .landing-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    105deg,
-    transparent 0%,
-    transparent 46%,
-    color-mix(in srgb, #1a1612 4%, transparent) 49%,
-    color-mix(in srgb, #07060a 12%, transparent) 52%,
-    transparent 52%
-  );
-}
-
-@media (min-width: 960px) {
-  .landing-surface--light .landing-hero::before {
-    background: linear-gradient(
-      100deg,
-      transparent 0%,
-      transparent 48%,
-      color-mix(in srgb, var(--light-border) 70%, transparent) 49.2%,
-      color-mix(in srgb, #07060a 18%, #1a1520) 50%,
-      color-mix(in srgb, #07060a 35%, transparent) 100%
-    );
-  }
+  content: none;
 }
 
 .landing-surface--light .landing-hero__glow {
-  top: -20%;
-  left: 0;
+  top: -15%;
+  left: -5%;
   transform: none;
-  width: 55%;
-  height: 70%;
+  width: 58%;
+  height: 72%;
   max-width: none;
   max-height: none;
   border-radius: 0;
   background: radial-gradient(
-    ellipse at 20% 30%,
-    color-mix(in srgb, #fff 75%, #d6b55a 12%) 0%,
+    ellipse at 25% 35%,
+    color-mix(in srgb, #ffffff 90%, #93c5fd 25%) 0%,
     transparent 68%
   );
 }
 
 .landing-surface--light .landing-hero__badge {
-  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
-  background: color-mix(in srgb, var(--light-accent) 10%, #fff);
+  border-color: color-mix(in srgb, var(--light-accent) 28%, var(--light-border));
+  background: color-mix(in srgb, var(--light-accent-soft) 65%, #fff);
   color: var(--light-accent-deep);
 }
 
 .landing-surface--light .landing-hero__title {
   color: var(--light-fg);
+  background: linear-gradient(
+    120deg,
+    #0f172a 0%,
+    #1e3a8a 55%,
+    #2563eb 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .landing-surface--light .landing-hero__subtitle,
@@ -198,26 +211,26 @@
 }
 
 .landing-surface--light .landing-cta--ghost {
-  color: var(--light-fg);
-  border-color: color-mix(in srgb, var(--light-fg) 18%, var(--light-border));
-  background: color-mix(in srgb, #fff 55%, transparent);
+  color: var(--light-accent-deep);
+  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
+  background: color-mix(in srgb, #fff 70%, var(--light-accent-soft));
 }
 
 .landing-surface--light .landing-cta--ghost:hover {
   background: #fff;
-  border-color: color-mix(in srgb, var(--light-fg) 28%, var(--light-border));
+  border-color: var(--light-accent);
 }
 
 .landing-surface--light .landing-cta--primary {
-  background: linear-gradient(145deg, #1a1612 0%, #3d362c 100%);
-  color: #faf7f0;
-  box-shadow: 0 10px 28px color-mix(in srgb, #1a1612 18%, transparent);
+  background: linear-gradient(145deg, #1d4ed8 0%, #3b82f6 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 32px color-mix(in srgb, #2563eb 28%, transparent);
 }
 
 .landing-surface--light .landing-stat {
-  background: color-mix(in srgb, #fff 88%, var(--light-bg-soft));
-  border-color: var(--light-border);
-  box-shadow: 0 8px 24px color-mix(in srgb, #1a1612 6%, transparent);
+  background: #ffffff;
+  border-color: color-mix(in srgb, var(--light-accent) 18%, var(--light-border));
+  box-shadow: 0 10px 28px color-mix(in srgb, #1d4ed8 8%, transparent);
 }
 
 .landing-surface--light .landing-stat__value {
@@ -230,7 +243,7 @@
 
 .landing-surface--light .landing-trust {
   border-block-color: var(--light-border);
-  background: color-mix(in srgb, #fff 50%, var(--light-bg-soft));
+  background: color-mix(in srgb, #fff 72%, var(--light-accent-soft));
 }
 
 .landing-surface--light .landing-trust__lead {
@@ -248,17 +261,17 @@
 .landing-surface--light .landing-comparison__col {
   background: var(--light-card);
   border-color: var(--light-border);
-  box-shadow: 0 12px 32px color-mix(in srgb, #1a1612 5%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, #1d4ed8 6%, transparent);
 }
 
 .landing-surface--light .landing-comparison__col--bad {
-  background: color-mix(in srgb, #fef2f2 80%, #fff);
-  border-color: color-mix(in srgb, #fca5a5 45%, var(--light-border));
+  background: color-mix(in srgb, #fef2f2 85%, #fff);
+  border-color: color-mix(in srgb, #fca5a5 40%, var(--light-border));
 }
 
 .landing-surface--light .landing-comparison__col--good {
-  background: color-mix(in srgb, #f0fdf4 75%, #fff);
-  border-color: color-mix(in srgb, #86efac 40%, var(--light-border));
+  background: color-mix(in srgb, #eff6ff 80%, #fff);
+  border-color: color-mix(in srgb, #93c5fd 45%, var(--light-border));
 }
 
 .landing-surface--light .landing-comparison__heading {
@@ -266,6 +279,58 @@
 }
 
 .landing-surface--light .landing-comparison__list {
+  color: var(--light-muted);
+}
+
+/* Soft band (features, pricing, CTA) */
+.landing-surface--soft .landing-section__title,
+.landing-surface--soft .landing-final-cta__title {
+  color: var(--light-fg);
+}
+
+.landing-surface--soft .landing-section__lead,
+.landing-surface--soft .landing-final-cta__text,
+.landing-surface--soft .landing-feature__desc,
+.landing-surface--soft .landing-step__desc {
+  color: var(--light-muted);
+}
+
+.landing-surface--soft .landing-feature {
+  background: #ffffff;
+  border-color: var(--light-border);
+  box-shadow: 0 12px 36px color-mix(in srgb, #1d4ed8 7%, transparent);
+}
+
+.landing-surface--soft .landing-feature:hover {
+  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
+}
+
+.landing-surface--soft .landing-feature__title,
+.landing-surface--soft .landing-step__title {
+  color: var(--light-fg);
+}
+
+.landing-surface--soft .landing-step__num {
+  background: var(--light-accent-soft);
+  color: var(--light-accent-deep);
+}
+
+.landing-surface--soft .landing-final-cta {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--light-accent-soft) 55%, transparent) 50%,
+    transparent 100%
+  );
+}
+
+.landing-surface--soft .landing-cta--ghost {
+  color: var(--light-accent-deep);
+  border-color: color-mix(in srgb, var(--light-accent) 30%, var(--light-border));
+  background: #fff;
+}
+
+.landing-surface--soft .landing-pricing-note {
   color: var(--light-muted);
 }
 
@@ -277,18 +342,17 @@
   color: var(--light-muted);
 }
 
-/* Pricing on light surface (preturi top) */
 .landing-surface--light .landing-price-card {
   background: #fff;
   border-color: var(--light-border);
-  box-shadow: 0 16px 40px color-mix(in srgb, #1a1612 7%, transparent);
+  box-shadow: 0 16px 40px color-mix(in srgb, #1d4ed8 7%, transparent);
 }
 
 .landing-surface--light .landing-price-card--featured {
   border-color: var(--light-accent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--light-accent) 25%, transparent),
-    0 20px 48px color-mix(in srgb, var(--light-accent) 14%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--light-accent) 22%, transparent),
+    0 20px 48px color-mix(in srgb, #2563eb 16%, transparent);
 }
 
 .landing-surface--light .landing-price-card__amount,
@@ -309,22 +373,51 @@
 
 .landing-surface--light .landing-cta--outline {
   color: var(--light-accent-deep);
-  border-color: color-mix(in srgb, var(--light-accent) 40%, var(--light-border));
+  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
 }
 
 .landing-surface--light .landing-pricing-note {
   color: var(--light-muted);
 }
 
-.landing-showcase--dark {
-  --site-card: #0e0c14;
-  --site-border: #1b1824;
-  --site-muted: #b7af9a;
-  --site-accent: #d6b55a;
-  border-color: color-mix(in srgb, #1a1612 25%, var(--light-border));
+.landing-showcase--pro {
+  border-color: color-mix(in srgb, var(--light-accent) 22%, var(--light-border));
+  background: linear-gradient(
+    155deg,
+    #ffffff 0%,
+    var(--light-bg-soft) 100%
+  );
   box-shadow:
-    0 28px 70px color-mix(in srgb, #1a1612 22%, transparent),
-    0 0 0 1px color-mix(in srgb, #d6b55a 12%, transparent);
+    0 28px 64px color-mix(in srgb, #1d4ed8 14%, transparent),
+    0 0 0 1px color-mix(in srgb, #93c5fd 35%, transparent);
+}
+
+.landing-showcase--pro .landing-showcase__chrome {
+  border-bottom-color: var(--light-border);
+}
+
+.landing-showcase--pro .landing-showcase__chrome span {
+  background: color-mix(in srgb, var(--light-muted) 28%, transparent);
+}
+
+.landing-showcase--pro .landing-showcase__sidebar {
+  border-right-color: var(--light-border);
+}
+
+.landing-showcase--pro .landing-showcase__nav {
+  background: color-mix(in srgb, var(--light-muted) 16%, transparent);
+}
+
+.landing-showcase--pro .landing-showcase__nav--active {
+  background: color-mix(in srgb, var(--light-accent) 45%, transparent);
+}
+
+.landing-showcase--pro .landing-showcase__row {
+  background: color-mix(in srgb, var(--light-muted) 12%, transparent);
+}
+
+.landing-showcase--pro .landing-showcase__row--accent {
+  background: color-mix(in srgb, var(--light-accent) 32%, transparent);
 }
 
 .landing-hero__inner--centered {
@@ -339,4 +432,41 @@
 
 .landing-hero__inner--centered .landing-stats {
   justify-content: center;
+}
+
+.landing-surface--soft .landing-section--muted {
+  background: color-mix(in srgb, #fff 60%, var(--light-accent-soft));
+  border-block-color: var(--light-border);
+}
+
+.landing-surface--soft .pricing-table-wrap {
+  border-color: var(--light-border);
+  background: #fff;
+}
+
+.landing-surface--soft .pricing-table th,
+.landing-surface--soft .pricing-table td {
+  border-bottom-color: var(--light-border);
+  color: var(--light-fg);
+}
+
+.landing-surface--soft .pricing-table tbody th {
+  color: var(--light-muted);
+}
+
+.landing-surface--soft .pricing-table thead th {
+  background: color-mix(in srgb, var(--light-accent-soft) 50%, #fff);
+}
+
+.landing-surface--soft .landing-faq__item {
+  background: #fff;
+  border-color: var(--light-border);
+}
+
+.landing-surface--soft .landing-faq__q {
+  color: var(--light-fg);
+}
+
+.landing-surface--soft .landing-faq__a {
+  color: var(--light-muted);
 }

@@ -3,16 +3,16 @@ import { PlatformFooter } from "@/components/platform/PlatformFooter";
 import type { CSSProperties } from "react";
 
 const platformVars = {
-  "--site-bg": "#07060a",
-  "--site-fg": "#f3efe3",
-  "--site-muted": "#b7af9a",
-  "--site-accent": "#d6b55a",
-  "--site-accent-fg": "#0b0a0f",
-  "--site-header-bg": "color-mix(in srgb, #07060a 86%, transparent)",
-  "--site-card": "#0e0c14",
-  "--site-border": "color-mix(in srgb, #d6b55a 22%, #1b1824)",
-  backgroundColor: "#07060a",
-  color: "#f3efe3",
+  "--site-bg": "#f8fafc",
+  "--site-fg": "#0f172a",
+  "--site-muted": "#64748b",
+  "--site-accent": "#2563eb",
+  "--site-accent-fg": "#ffffff",
+  "--site-header-bg": "color-mix(in srgb, #ffffff 82%, transparent)",
+  "--site-card": "#ffffff",
+  "--site-border": "#e2e8f0",
+  backgroundColor: "#f8fafc",
+  color: "#0f172a",
 } as CSSProperties;
 
 export default function PlatformLayout({
@@ -22,7 +22,7 @@ export default function PlatformLayout({
 }) {
   return (
     <div
-      className="site-themed site-themed--noir platform-shell platform-shell--split flex min-h-screen flex-1 flex-col"
+      className="site-themed platform-shell platform-shell--split flex min-h-screen flex-1 flex-col"
       style={platformVars}
     >
       <PlatformHeader variant="split" />

@@ -1,0 +1,143 @@
+/* Locale-aware loading — flag-colored ring, no card panel */
+
+.locale-flag-spinner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.locale-flag-spinner--lg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.locale-flag-spinner--md {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.locale-flag-spinner__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    var(--flag-c1) 0deg 115deg,
+    var(--flag-c2) 115deg 235deg,
+    var(--flag-c3) 235deg 360deg
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 0.42em),
+    #000 calc(100% - 0.38em)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 0.42em),
+    #000 calc(100% - 0.38em)
+  );
+  animation: locale-flag-spin 0.9s cubic-bezier(0.45, 0.05, 0.25, 0.95) infinite;
+  filter: drop-shadow(0 0 14px var(--flag-glow));
+}
+
+.locale-flag-spinner--lg .locale-flag-spinner__ring {
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 0.48em),
+    #000 calc(100% - 0.44em)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 0.48em),
+    #000 calc(100% - 0.44em)
+  );
+}
+
+.locale-flag-spinner__core {
+  width: 28%;
+  height: 28%;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--flag-c1) 18%, transparent);
+  opacity: 0.35;
+  animation: locale-flag-pulse 1.4s ease-in-out infinite;
+}
+
+.admin-theme-loading {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.admin-theme-loading--screen {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  cursor: wait;
+  pointer-events: auto;
+  background: color-mix(
+    in srgb,
+    var(--admin-page-bg, #0f172a) 88%,
+    transparent
+  );
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+
+.admin-theme-loading--screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 45%,
+    color-mix(in srgb, var(--admin-panel-bg, #fff) 8%, transparent) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.admin-theme-loading__stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-theme-loading__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--admin-text, #0f172a) 72%, transparent);
+  opacity: 0.85;
+}
+
+@keyframes locale-flag-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes locale-flag-pulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locale-flag-spinner__ring {
+    animation-duration: 1.6s;
+  }
+
+  .locale-flag-spinner__core {
+    animation: none;
+  }
+}

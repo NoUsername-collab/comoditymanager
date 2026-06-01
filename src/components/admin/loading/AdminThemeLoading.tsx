@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 type Props = {
   label?: string;
@@ -22,17 +23,10 @@ export function AdminThemeLoading({
       ]
         .filter(Boolean)
         .join(" ")}
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-      aria-label={resolvedLabel}
     >
-      <div className="admin-theme-loading__card">
-        <span className="admin-theme-loading__spinner" aria-hidden />
-        <span className="admin-theme-loading__text">{resolvedLabel}</span>
-        <span className="admin-theme-loading__track" aria-hidden>
-          <span className="admin-theme-loading__track-bar" />
-        </span>
+      <div className="admin-theme-loading__stack">
+        <LocaleFlagSpinner label={resolvedLabel} size="lg" />
+        <span className="admin-theme-loading__label">{resolvedLabel}</span>
       </div>
     </div>
   );

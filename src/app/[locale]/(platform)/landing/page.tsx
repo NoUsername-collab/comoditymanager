@@ -42,7 +42,7 @@ export default async function LandingPage() {
                 </div>
               </div>
 
-              <div className="landing-showcase landing-showcase--dark" aria-hidden>
+              <div className="landing-showcase landing-showcase--pro" aria-hidden>
                 <div className="landing-showcase__chrome">
                   <span />
                   <span />
@@ -102,7 +102,7 @@ export default async function LandingPage() {
         </div>
       </div>
 
-      <div className="landing-surface landing-surface--dark">
+      <div className="landing-surface landing-surface--soft">
         <div className="landing-surface__inner">
           <section className="landing-section">
             <h2 className="landing-section__title">{t("featuresTitle")}</h2>

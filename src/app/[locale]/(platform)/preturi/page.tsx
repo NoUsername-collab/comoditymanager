@@ -44,7 +44,7 @@ export default async function PreturiPage() {
         </div>
       </div>
 
-      <div className="landing-surface landing-surface--dark">
+      <div className="landing-surface landing-surface--soft">
         <div className="landing-surface__inner">
           <section className="landing-section landing-section--muted">
             <h2 className="landing-section__title">{t("comparisonTitle")}</h2>
