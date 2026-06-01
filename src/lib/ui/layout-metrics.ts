@@ -1,7 +1,12 @@
 import {
+  getDisplayLayoutPreference,
+  type DisplayLayoutPreference,
+} from "@/lib/ui/display-layout-preference";
+import {
   displayProfileLabel,
   isDisplayProfile,
   resolveDisplayProfile,
+  resolveEffectiveDisplayProfile,
   resolveViewportHeightTier,
   type DisplayProfile,
   type ViewportHeightTier,
@@ -24,6 +29,9 @@ export type LayoutMetrics = {
   documentClientWidth: number;
   hasHorizontalOverflow: boolean;
   displayProfile: DisplayProfile;
+  displayLayoutPreference: DisplayLayoutPreference;
+  displayLayoutMode: "auto" | "manual";
+  detectedProfile: DisplayProfile;
   viewportHeightTier: ViewportHeightTier;
   compactViewportClass: boolean;
   device: string | null;
@@ -41,10 +49,16 @@ export function collectLayoutMetrics(): LayoutMetrics {
   const hasHorizontalOverflow = documentScrollWidth > documentClientWidth + 1;
 
   const innerHeight = window.innerHeight;
-  const displayProfile = resolveDisplayProfile(innerWidth, innerHeight);
+  const detectedProfile = resolveDisplayProfile(innerWidth, innerHeight);
   const viewportHeightTier = resolveViewportHeightTier(innerHeight);
+  const displayLayoutPreference = getDisplayLayoutPreference();
   const domProfile = doc.getAttribute("data-display-profile");
-  const profile = isDisplayProfile(domProfile) ? domProfile : displayProfile;
+  const profile = isDisplayProfile(domProfile)
+    ? domProfile
+    : resolveEffectiveDisplayProfile(innerWidth, innerHeight);
+  const layoutModeAttr = doc.getAttribute("data-display-layout-mode");
+  const displayLayoutMode =
+    layoutModeAttr === "manual" ? "manual" : "auto";
 
   return {
     innerWidth,
@@ -65,6 +79,9 @@ export function collectLayoutMetrics(): LayoutMetrics {
     documentClientWidth,
     hasHorizontalOverflow,
     displayProfile: profile,
+    displayLayoutPreference,
+    displayLayoutMode,
+    detectedProfile,
     viewportHeightTier,
     compactViewportClass: doc.classList.contains("compact-viewport"),
     device: doc.getAttribute("data-device"),
@@ -83,7 +100,8 @@ export function formatLayoutMetrics(m: LayoutMetrics): string {
       : "visualViewport: —",
     `doc: scroll ${m.documentScrollWidth} / client ${m.documentClientWidth}`,
     m.hasHorizontalOverflow ? "⚠ horizontal overflow" : "✓ no horizontal overflow",
-    `display: ${m.displayProfile} (${displayProfileLabel(m.displayProfile)})`,
+    `layout: ${m.displayLayoutPreference} (${m.displayLayoutMode}) → ${m.displayProfile}`,
+    `auto-detect: ${m.detectedProfile} (${displayProfileLabel(m.detectedProfile)})`,
     `height tier: ${m.viewportHeightTier} · compact CSS: ${m.compactViewportClass ? "yes" : "no"}`,
     `device: ${m.device ?? "?"} · touch CSS: ${m.touchDeviceClass ? "yes" : "no"}`,
     `reduced motion: ${m.prefersReducedMotion ? "yes" : "no"}`,

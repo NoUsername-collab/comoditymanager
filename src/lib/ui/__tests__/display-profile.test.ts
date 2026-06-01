@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isCompactDisplayProfile,
   resolveDisplayProfile,
   resolveViewportHeightTier,
 } from "@/lib/ui/display-profile";
@@ -19,6 +20,15 @@ describe("resolveDisplayProfile", () => {
 
   it("classifies narrow tablet width as narrow", () => {
     expect(resolveDisplayProfile(800, 600)).toBe("narrow");
+  });
+});
+
+describe("isCompactDisplayProfile", () => {
+  it("is compact only for compact-laptop and narrow", () => {
+    expect(isCompactDisplayProfile("compact-laptop")).toBe(true);
+    expect(isCompactDisplayProfile("narrow")).toBe(true);
+    expect(isCompactDisplayProfile("wide")).toBe(false);
+    expect(isCompactDisplayProfile("laptop")).toBe(false);
   });
 });
 

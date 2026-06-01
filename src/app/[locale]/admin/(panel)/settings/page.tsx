@@ -5,6 +5,7 @@ import {
   pensionAppearanceSettings,
 } from "@/services/pension-settings";
 import { AdminPalettePicker } from "@/components/admin/settings/AdminPalettePicker";
+import { AdminDisplayLayoutPicker } from "@/components/admin/settings/AdminDisplayLayoutPicker";
 import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
@@ -124,7 +125,8 @@ export default async function SettingsPage({
           <AdminPendingForm action={updateAppearanceSettingsAction} className="admin-settings-form mt-6">
             <input type="hidden" name="id" value={settings.id} />
 
-            <SettingsSlidePanel title={t("appearanceTitle")} subtitle={t("appearanceSubtitle")} icon="*" defaultOpen>
+            <SettingsSlidePanel title={t("visualsTitle")} subtitle={t("visualsSubtitle")} icon="*" defaultOpen>
+              <AdminDisplayLayoutPicker />
               <AdminPalettePicker />
             </SettingsSlidePanel>
 

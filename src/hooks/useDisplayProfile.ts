@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { DISPLAY_LAYOUT_CHANGED_EVENT } from "@/lib/ui/display-layout-preference";
 import {
   applyDisplayProfileToDocument,
+  isCompactDisplayProfile,
   isDisplayProfile,
   type DisplayProfile,
   type ViewportHeightTier,
@@ -21,19 +23,25 @@ function readHeightTierFromDom(): ViewportHeightTier {
   return "standard";
 }
 
+function syncDom(): void {
+  applyDisplayProfileToDocument();
+}
+
 export function useDisplayProfile(): DisplayProfile {
   const [profile, setProfile] = useState<DisplayProfile>("laptop");
 
   useEffect(() => {
     const sync = () => {
-      applyDisplayProfileToDocument();
+      syncDom();
       setProfile(readProfileFromDom());
     };
     sync();
     window.addEventListener("resize", sync);
+    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
     window.visualViewport?.addEventListener("resize", sync);
     return () => {
       window.removeEventListener("resize", sync);
+      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
       window.visualViewport?.removeEventListener("resize", sync);
     };
   }, []);
@@ -46,14 +54,16 @@ export function useViewportHeightTier(): ViewportHeightTier {
 
   useEffect(() => {
     const sync = () => {
-      applyDisplayProfileToDocument();
+      syncDom();
       setTier(readHeightTierFromDom());
     };
     sync();
     window.addEventListener("resize", sync);
+    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
     window.visualViewport?.addEventListener("resize", sync);
     return () => {
       window.removeEventListener("resize", sync);
+      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
       window.visualViewport?.removeEventListener("resize", sync);
     };
   }, []);
@@ -66,18 +76,16 @@ export function useIsCompactViewport(): boolean {
 
   useEffect(() => {
     const sync = () => {
-      applyDisplayProfileToDocument();
-      const profile = readProfileFromDom();
-      const tier = readHeightTierFromDom();
-      setCompact(
-        profile === "compact-laptop" || profile === "narrow" || tier === "short"
-      );
+      syncDom();
+      setCompact(isCompactDisplayProfile(readProfileFromDom()));
     };
     sync();
     window.addEventListener("resize", sync);
+    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
     window.visualViewport?.addEventListener("resize", sync);
     return () => {
       window.removeEventListener("resize", sync);
+      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
       window.visualViewport?.removeEventListener("resize", sync);
     };
   }, []);

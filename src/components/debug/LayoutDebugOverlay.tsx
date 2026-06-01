@@ -73,10 +73,16 @@ export function LayoutDebugOverlay() {
         <span className="layout-debug-overlay__hint">?layout_debug=1</span>
       </div>
       <pre className="layout-debug-overlay__body">{formatLayoutMetrics(metrics)}</pre>
+      {metrics.displayLayoutMode === "manual" && (
+        <p className="layout-debug-overlay__hint-block">
+          Layout manual: <strong>{metrics.displayLayoutPreference}</strong> (Setări →
+          Visuals).
+        </p>
+      )}
       {metrics.displayProfile === "compact-laptop" && (
         <p className="layout-debug-overlay__hint-block">
-          Profil <strong>compact-laptop</strong> (tipic 14&quot; 1366×768) — UI folosește
-          layout compact (toolbar Gantt pe rânduri, HUD reflow).
+          Profil activ <strong>compact-laptop</strong> — toolbar Gantt pe rânduri, HUD
+          reflow.
         </p>
       )}
       {metrics.hasHorizontalOverflow && (
