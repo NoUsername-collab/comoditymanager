@@ -1624,6 +1624,8 @@
       "staffUnknownAccount": "This email is not on the current property team.",
       "staffAccountMissingAuth": "Account missing in auth — re-invite the member from Team settings.",
       "typeResetExactly": "Type exactly \"RESET\" to confirm.",
+      "factoryResetDisabled": "Factory reset is disabled. Set ADMIN_FACTORY_RESET_ENABLED=true in the environment (staging/dev only).",
+      "factoryResetMigration042": "Reset function is missing in the database. Run migration 042 in the Supabase SQL Editor.",
       "roomTypeNameRequired": "Room type name is required",
       "newRoomTypeSummary": "New room type: {name}",
       "roomOptionNameRequired": "Room option name is required",

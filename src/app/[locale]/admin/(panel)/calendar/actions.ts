@@ -1,9 +1,12 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { requireAdmin, getAdminUser } from "@/lib/auth/require-admin";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import {
+  revalidateAdminCalendar,
+  revalidateBookingSurfaces,
+  revalidateBookingSurfacesExtended,
+} from "@/lib/cache/revalidate-admin";
 import {
   confirmBookingWithRooms,
   createBookingRequest,
@@ -58,7 +61,7 @@ export async function createRoomHoldsFromGanttAction(input: {
       expiresHours: input.expiresHours,
       createdBy: actorEmail(user),
     });
-    revalidatePath("/admin/calendar");
+    revalidateAdminCalendar();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
@@ -99,7 +102,7 @@ export async function createRoomHoldFromGanttAction(input: {
       expiresHours: input.expiresHours,
       createdBy: actorEmail(user),
     });
-    revalidatePath("/admin/calendar");
+    revalidateAdminCalendar();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
@@ -139,7 +142,7 @@ export async function createRoomBlockFromGanttAction(input: {
       reason: input.reason,
       createdBy: actorEmail(user),
     });
-    revalidatePath("/admin/calendar");
+    revalidateAdminCalendar();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.block_created",
       entityType: "room",
@@ -170,7 +173,7 @@ export async function releaseRoomHoldAction(
   try {
     const user = await getAdminUser();
     await releaseRoomHold(holdId, actorEmail(user));
-    revalidatePath("/admin/calendar");
+    revalidateAdminCalendar();
     return { ok: true };
   } catch (e) {
     return {
@@ -187,7 +190,7 @@ export async function deleteRoomBlockAction(
   await requireAdmin();
   try {
     await deleteRoomBlock(blockId);
-    revalidatePath("/admin/calendar");
+    revalidateAdminCalendar();
     return { ok: true };
   } catch (e) {
     return {
@@ -216,7 +219,7 @@ export async function undoGanttCreateAction(input: {
       if (!blockId) throw new Error(t("blockIdMissing"));
       await deleteRoomBlock(blockId);
     }
-    revalidatePath("/admin/calendar");
+    revalidateAdminCalendar();
     return { ok: true };
   } catch (e) {
     return {
@@ -270,9 +273,7 @@ export async function createCerereFromGanttAction(input: {
       notes: t("createdFromGanttNote"),
       room_ids: [input.roomId],
     });
-    revalidateTag(CACHE_TAGS.bookingCounts, "max");
-    revalidatePath("/admin/calendar");
-    revalidatePath("/admin/bookings");
+    revalidateBookingSurfaces();
     return { ok: true, id };
   } catch (e) {
     return {
@@ -332,10 +333,7 @@ export async function createDirectStayFromGanttAction(input: {
 
     await confirmBookingWithRooms(bookingId, [input.roomId], total);
 
-    revalidateTag(CACHE_TAGS.bookingCounts, "max");
-    revalidatePath("/admin/calendar");
-    revalidatePath("/admin/bookings");
-    revalidatePath("/admin/cazari");
+    revalidateBookingSurfaces();
     return { ok: true, id: bookingId };
   } catch (e) {
     return {
@@ -374,12 +372,11 @@ export async function shiftBookingOnGanttAction(
       return { ok: false, error: t("invalidMove") };
     }
     const result = await shiftBookingByDays(bookingId, dayDelta);
-    revalidatePath("/admin/calendar");
-    revalidatePath("/admin/bookings");
-    revalidatePath("/admin/cazari");
-    revalidatePath("/admin/istoric");
-    revalidatePath("/admin/statistics");
-    revalidatePath(`/admin/bookings/${bookingId}`);
+    revalidateBookingSurfacesExtended({
+      bookingId,
+      includeHistoric: true,
+      includeStatistics: true,
+    });
     return { ok: true, ...result };
   } catch (e) {
     return {
@@ -421,11 +418,10 @@ export async function moveBookingRoomFromPivotAction(input: {
   await requireAdmin();
   try {
     await moveBookingRoomFromPivot(input);
-    revalidatePath("/admin/calendar");
-    revalidatePath("/admin/bookings");
-    revalidatePath(`/admin/bookings/${input.bookingId}`);
-    revalidatePath("/admin/cazari");
-    revalidatePath("/admin/statistics");
+    revalidateBookingSurfacesExtended({
+      bookingId: input.bookingId,
+      includeStatistics: true,
+    });
     return { ok: true };
   } catch (e) {
     return {
@@ -446,12 +442,11 @@ export async function adjustBookingStayNightsAction(
       return { ok: false, error: t("invalidAdjustment") };
     }
     const result = await adjustBookingStayNights(bookingId, nightDelta);
-    revalidatePath("/admin/calendar");
-    revalidatePath("/admin/bookings");
-    revalidatePath("/admin/cazari");
-    revalidatePath("/admin/istoric");
-    revalidatePath("/admin/statistics");
-    revalidatePath(`/admin/bookings/${bookingId}`);
+    revalidateBookingSurfacesExtended({
+      bookingId,
+      includeHistoric: true,
+      includeStatistics: true,
+    });
     return { ok: true, ...result };
   } catch (e) {
     return {
@@ -468,11 +463,10 @@ export async function duplicateBookingAsCerereAction(
   await requireAdmin();
   try {
     const id = await duplicateBookingAsCerere(bookingId);
-    revalidateTag(CACHE_TAGS.bookingCounts, "max");
-    revalidatePath("/admin/calendar");
-    revalidatePath("/admin/bookings");
-    revalidatePath("/admin/cereri");
-    revalidatePath("/admin/statistics");
+    revalidateBookingSurfacesExtended({
+      includeCereri: true,
+      includeStatistics: true,
+    });
     return { ok: true, id };
   } catch (e) {
     return {

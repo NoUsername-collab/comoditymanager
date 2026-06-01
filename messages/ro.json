@@ -1623,6 +1623,8 @@
       "staffUnknownAccount": "Acest email nu aparține echipei pensiunii curente.",
       "staffAccountMissingAuth": "Contul nu există încă în autentificare — invită din nou membrul din Echipa.",
       "typeResetExactly": "Tastează exact \"RESET\" pentru confirmare.",
+      "factoryResetDisabled": "Resetarea fabrică este dezactivată. Setează ADMIN_FACTORY_RESET_ENABLED=true în mediu (doar staging/dev).",
+      "factoryResetMigration042": "Funcția de reset lipsește în baza de date. Rulează migrarea 042 în Supabase SQL Editor.",
       "roomTypeNameRequired": "Numele tipului e obligatoriu",
       "newRoomTypeSummary": "Tip cameră nou: {name}",
       "roomOptionNameRequired": "Numele opțiunii e obligatoriu",

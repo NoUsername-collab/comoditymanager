@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import {
@@ -14,11 +15,8 @@ import { getTranslations } from "next-intl/server";
 function revalidateAfterRebook(guestId: string, bookingId: string) {
   revalidatePath("/admin/guests");
   revalidatePath(`/admin/guests/${guestId}`);
-  revalidatePath(`/admin/guests/${guestId}/rebook`);
-  revalidatePath("/admin/bookings");
-  revalidatePath(`/admin/bookings/${bookingId}`);
-  revalidatePath("/admin/cazari");
-  revalidatePath("/admin/calendar");
+  revalidatePath(`/admin/guests/${guestId}/rebook/${bookingId}`);
+  revalidateBookingSurfacesExtended({ bookingId });
 }
 
 export async function loadGuestRebookPanelAction(

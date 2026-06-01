@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 import type {
   GuestDocType,
   GuestFlagLevel,
@@ -41,13 +42,10 @@ import {
 } from "@/services/guest-profiles";
 import { getTranslations } from "next-intl/server";
 
-function revalidateGuestPaths(guestId: string) {
+function revalidateGuestPaths(guestId: string, bookingId?: string) {
   revalidatePath("/admin/guests");
   revalidatePath(`/admin/guests/${guestId}`);
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin/cazari");
-  revalidatePath("/admin/calendar");
-  revalidatePath("/admin/istoric");
+  revalidateBookingSurfacesExtended({ includeHistoric: true, bookingId });
 }
 
 function parseIntField(
@@ -269,6 +267,5 @@ export async function saveGuestStayReviewAction(formData: FormData) {
     loyaltyDelta: parseIntField(formData.get("loyalty_delta"), 0, -20, 20),
   });
 
-  revalidateGuestPaths(guestId);
-  revalidatePath(`/admin/bookings/${bookingId}`);
+  revalidateGuestPaths(guestId, bookingId);
 }

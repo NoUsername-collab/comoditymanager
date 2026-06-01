@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { revalidateBookingDetailSurfaces } from "@/lib/cache/revalidate-admin";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   cancelBooking,
@@ -17,19 +16,6 @@ import {
 } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 import { getTranslations } from "next-intl/server";
-
-function revalidateBookingPaths(bookingId: string) {
-  revalidateTag(CACHE_TAGS.bookingCounts, "max");
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin/cazari");
-  revalidatePath(`/admin/bookings/${bookingId}`);
-  revalidatePath(`/admin/bookings/${bookingId}/factura`);
-  revalidatePath("/admin");
-  revalidatePath("/admin/istoric");
-  revalidatePath("/admin/calendar");
-  revalidatePath("/admin/statistics");
-  revalidatePath("/calendar");
-}
 
 export async function confirmBookingAction(formData: FormData) {
   await requireAdmin();
@@ -60,7 +46,7 @@ export async function confirmBookingAction(formData: FormData) {
     } catch { /* email failure must never crash */ }
   })();
 
-  revalidateBookingPaths(id);
+  revalidateBookingDetailSurfaces(id);
   await redirect("/admin/calendar?confirmed=1");
 }
 
@@ -98,7 +84,7 @@ export async function cancelBookingAction(formData: FormData) {
     })();
   }
 
-  revalidateBookingPaths(id);
+  revalidateBookingDetailSurfaces(id);
   const base = returnTo.startsWith("/admin") ? returnTo : "/admin/bookings";
   await redirect(appendQueryParam(base, "toast", "cancelled"));
 }
@@ -139,7 +125,7 @@ export async function updateBookingGuestPhoneAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await updateBookingGuestPhone(id, phone);
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -158,7 +144,7 @@ export async function setBookingCheckInAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await setBookingCheckIn(id, readAt(formData));
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -177,7 +163,7 @@ export async function setBookingCheckOutAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await setBookingCheckOut(id, readAt(formData));
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -196,7 +182,7 @@ export async function undoBookingCheckInAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await undoBookingCheckIn(id);
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     if (e instanceof Error && e.message === "booking.undo_checkout_first") {
@@ -221,7 +207,7 @@ export async function undoBookingCheckOutAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await undoBookingCheckOut(id);
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -240,7 +226,7 @@ export async function editBookingCheckInAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await editBookingCheckIn(id, readAt(formData));
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -259,7 +245,7 @@ export async function editBookingCheckOutAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await editBookingCheckOut(id, readAt(formData));
-    revalidateBookingPaths(id);
+    revalidateBookingDetailSurfaces(id);
     return { ok: true };
   } catch (e) {
     return {

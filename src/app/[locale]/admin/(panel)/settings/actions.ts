@@ -12,6 +12,7 @@ import {
   requireStaff,
 } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
 import { updatePensionSettings } from "@/services/pension-settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
@@ -205,20 +206,24 @@ export async function factoryResetAction(confirmText: string): Promise<void> {
     throw new Error(t("typeResetExactly"));
   }
 
-  await runFactoryReset();
+  try {
+    await runFactoryReset();
+  } catch (e) {
+    if (e instanceof Error) {
+      if (e.message === "factory_reset.disabled_set_admin_factory_reset_enabled_true") {
+        throw new Error(t("factoryResetDisabled"));
+      }
+      if (
+        e.message ===
+        "factory_reset.rpc_admin_factory_reset_for_tenant_missing_run_migration_042"
+      ) {
+        throw new Error(t("factoryResetMigration042"));
+      }
+    }
+    throw e;
+  }
 
-  revalidateTag(CACHE_TAGS.pensionSettings, "max");
-  revalidateTag(CACHE_TAGS.buildings, "max");
-  revalidateTag(CACHE_TAGS.rooms, "max");
-  revalidateTag(CACHE_TAGS.roomCatalog, "max");
-  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-  revalidateTag(CACHE_TAGS.bookingCounts, "max");
-  revalidatePath("/admin", "layout");
-  revalidatePath("/admin/settings");
-  revalidatePath("/admin/settings/location");
-  revalidatePath("/admin/buildings");
-  revalidatePath("/admin/calendar");
-  revalidatePath("/admin/bookings");
+  revalidateAfterFactoryReset();
   await redirect("/admin/settings/location?reset=1");
 }
 

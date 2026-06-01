@@ -1,19 +1,11 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateAfterActivityUndo } from "@/lib/cache/revalidate-admin";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { undoActivityLogEntry } from "@/services/activity-undo";
 import { getTranslations } from "next-intl/server";
 
 export type UndoActivityResult = { ok: true } | { ok: false; error: string };
-
-function revalidateAfterUndo() {
-  revalidatePath("/admin/istoric");
-  revalidatePath("/admin/settings");
-  revalidatePath("/admin/calendar");
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin/cazari");
-}
 
 export async function undoActivityLogAction(
   logId: string
@@ -27,7 +19,7 @@ export async function undoActivityLogAction(
 
   try {
     await undoActivityLogEntry(logId.trim());
-    revalidateAfterUndo();
+    revalidateAfterActivityUndo();
     return { ok: true };
   } catch (e) {
     const msg = e instanceof Error ? e.message : t("undoFailed");

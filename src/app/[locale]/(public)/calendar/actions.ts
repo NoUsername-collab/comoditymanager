@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePublicBookingSurfaces } from "@/lib/cache/revalidate-admin";
 import { getTranslations } from "next-intl/server";
 import { createBookingRequest } from "@/services/bookings";
 import { findGuestAutofillMatch } from "@/services/guests";
@@ -9,7 +9,6 @@ import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   checkRateLimit,
   getClientIp,
@@ -185,11 +184,7 @@ export async function submitGuestRequestAction(formData: FormData) {
     } catch { /* email/import failure — non-fatal */ }
   })();
 
-  revalidateTag(CACHE_TAGS.bookingCounts, "max");
-  revalidatePath("/calendar");
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin/calendar");
-  revalidatePath("/admin/disponibilitate");
+  revalidatePublicBookingSurfaces({ disponibilitate: true });
   return { ok: true as const };
 }
 
@@ -238,10 +233,7 @@ export async function submitPhoneBookingAction(formData: FormData) {
     notes,
   });
 
-  revalidateTag(CACHE_TAGS.bookingCounts, "max");
-  revalidatePath("/receptie");
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin/calendar");
+  revalidatePublicBookingSurfaces({ receptie: true });
 
   if (confirm_now) {
     return { ok: true as const, bookingId: id, redirectConfirm: true };

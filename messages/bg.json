@@ -1541,6 +1541,8 @@
       "staffUnknownAccount": "Този email не е в екипа на текущия обект.",
       "staffAccountMissingAuth": "Липсва акаунт в auth — покани отново от Екип.",
       "typeResetExactly": "Въведи точно \"RESET\" за потвърждение.",
+      "factoryResetDisabled": "Фабричният ресет е изключен. Задай ADMIN_FACTORY_RESET_ENABLED=true в средата (само staging/dev).",
+      "factoryResetMigration042": "Функцията за ресет липсва в базата. Пусни миграция 042 в Supabase SQL Editor.",
       "roomTypeNameRequired": "Името на типа стая е задължително",
       "newRoomTypeSummary": "Нов тип стая: {name}",
       "roomOptionNameRequired": "Името на опцията е задължително",

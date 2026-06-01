@@ -1,8 +1,7 @@
 "use server";
 
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { revalidatePublicBookingSurfaces } from "@/lib/cache/revalidate-admin";
 import { confirmBookingWithRooms } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 import { requireAdmin } from "@/lib/auth/require-admin";
@@ -16,9 +15,6 @@ export async function quickConfirmAction(formData: FormData) {
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
-  revalidateTag(CACHE_TAGS.bookingCounts, "max");
-  revalidatePath("/calendar");
-  revalidatePath("/admin/bookings");
-  revalidatePath("/admin/calendar");
+  revalidatePublicBookingSurfaces({ receptie: true });
   await redirect("/receptie?confirmed=1");
 }
