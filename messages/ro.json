@@ -368,7 +368,8 @@
         "saved": "Theme saved.",
         "locationLocked": "Location admin is locked.",
         "locationForbidden": "This section requires unlock.",
-        "locationClosed": "Location admin closed.",
+        "locationClosed": "Administrare locație închisă pentru administratorii angajați (sesiunea de 2 ore a expirat sau a fost închisă manual).",
+        "locationClosedOwner": "Lacătul pentru echipă este închis. Ca proprietar, accesul tău la configurare rămâne deschis.",
         "notConfigured": "Property settings are not configured yet.",
         "property": "Property",
         "checkTimes": "Check-in / out",
@@ -701,9 +702,9 @@
           "structureTitle": "1. Structură",
           "structureHeadline": "Configurezi spațiile și camerele.",
           "structureBody": "Acesta este singurul loc din care pornește configurarea.",
-          "catalogTitle": "2. Catalog",
-          "catalogHeadline": "Tipuri de cameră și opțiuni.",
-          "catalogBody": "AC, frigider și politicile lor rămân centralizate aici.",
+          "modularTitle": "2. Catalog modular",
+          "modularHeadline": "Tipuri, opțiuni, camere noi.",
+          "modularBody": "Tot ce e modular (AC, frigider, bulk) e în pagina dedicată.",
           "staffTitle": "3. Staff",
           "staffHeadline": "Parole și acces operațional.",
           "staffBody": "Operatorul folosește aplicația, adminul configurează din acest hub."
@@ -721,10 +722,17 @@
           "cardStructureTitle": "Organizare structură",
           "cardStructureBody": "Clădiri → etaje → camere, într-o singură pagină clară.",
           "recommended": "Recomandat",
-          "cardOccupancyTitle": "Disponibilitate pe clădiri",
-          "cardOccupancyBody": "Ocupare, camere libere și statistici pe dată.",
+          "cardModularTitle": "Creează clădiri, camere și opțiuni modulare",
+          "cardModularBody": "Catalog tipuri cameră, opțiuni AC/frigider și adăugare camere.",
           "cardRoomsBody": "Listă camere cu disponibilitate la data aleasă."
         },
+        "setup": {
+          "title": "Clădiri, camere și catalog modular",
+          "description": "Configurează tipurile de cameră, opțiunile modulare și adaugă camere în structură.",
+          "addRoomsTitle": "+ Camere noi",
+          "addRoomsBody": "O cameră sau bulk cu previzualizare nume și verificare duplicate."
+        },
+        "backToLocationHub": "← Hub administrare locație",
         "catalog": {
           "subtitle": "Tipuri cameră, opțiuni (AC, frigider…) — politici per clădire"
         },
@@ -741,7 +749,10 @@
           "checking": "Se verifică…",
           "openLocationAdmin": "Deschide administrare locație",
           "closing": "Se închide…",
-          "closeLocationAdmin": "Închide administrare locație"
+          "closeLocationAdmin": "Închide administrare locație",
+          "ownerLockHint": "Ești proprietar: accesul la acest hub rămâne permanent. Lacătul (2 h) se aplică doar administratorilor angajați.",
+          "sessionActive": "Sesiune configurare activă până la {time}",
+          "ownerLockClosed": "Lacătul pentru administratorii angajați este închis. Pentru tine, ca proprietar, accesul la hub rămâne neschimbat."
         },
         "staffPanel": {
           "passwordUpdated": "Parola a fost actualizată.",
@@ -1439,6 +1450,10 @@
       "roomPrefixDefault": "Camera ",
       "startNumber": "De la nr.",
       "howManyRooms": "Câte camere",
+      "bulkNamingLegend": "Format nume (bulk)",
+      "bulkNamingPrefix": "Prefix + număr (ex. Camera 6)",
+      "bulkNamingNumbersOnly": "Doar număr (ex. 6, 7, 8 …)",
+      "bulkPreviewLabel": "Previzualizare",
       "pricePerNightRon": "Preț / noapte (RON)",
       "autoPriceHint": "0 = calculează automat ({suggestedPrice} RON sugerat)",
       "roomOptions": "Opțiuni cameră",
@@ -1495,7 +1510,7 @@
       "pageTitle": "Structură locație",
       "pageDescription": "Organizează clădirile, etajele și camerele — modular, pentru orice tip de pensiune sau complex.",
       "backToLocationHub": "← Hub administrare locație",
-      "workflowHint": "Flux recomandat: 1) adaugi clădirea · 2) etajele · 3) camerele pe fiecare etaj. Catalogul de tipuri și opțiuni (AC, frigider…) rămâne în hub-ul locației.",
+      "workflowHint": "Flux: 1) clădire · 2) etaje · 3) camere. Tipuri și opțiuni modulare: Administrare locație → Creează clădiri, camere și opțiuni modulare.",
       "emptyBuilding": "Niciun etaj încă. Adaugă primul etaj mai jos, apoi camerele.",
       "noRoomsOnFloor": "Nicio cameră pe acest etaj.",
       "withoutFloorSection": "Camere fără etaj atribuit",
@@ -1515,7 +1530,10 @@
       "deleteFloor": "Șterge etajul",
       "deleteFloorConfirm": "Ștergi „{name}”? {count, plural, =0 {Nu are camere.} one {# cameră trece la «fără etaj».} other {# camere trec la «fără etaj».}}",
       "assignFloor": "Etaj",
-      "noFloorOption": "Fără etaj"
+      "noFloorOption": "Fără etaj",
+      "deactivateRoom": "Inactivează",
+      "activateRoom": "Activează",
+      "deleteRoomConfirm": "Ștergi camera „{name}”? Acțiunea e definitivă dacă nu are rezervări."
     },
     "addFloorForm": {
       "newFloor": "Etaj nou",
@@ -1568,6 +1586,10 @@
       "buildingAndRoomTypeRequired": "Clădirea și tipul camerei sunt obligatorii",
       "roomPrefixDefault": "Camera ",
       "bulkRoomsSummary": "{count} camere bulk ({prefix}{start}…)",
+      "bulkDuplicateNames": "Există deja camere cu aceste nume în clădire: {names}",
+      "roomActivated": "Cameră reactivată",
+      "roomDeactivated": "Cameră marcată inactivă",
+      "roomDeleteHasBookings": "Camera are rezervări — nu poate fi ștearsă. Marcheaz-o inactivă în schimb.",
       "roomNameRequired": "Numele camerei e obligatoriu",
       "newRoomSummary": "Cameră nouă: {name}",
       "holdError": "Eroare la hold",

@@ -9,6 +9,7 @@ import { AC_LABELS } from "@/lib/admin-ui";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
 import type { AcMode } from "@/types/database";
+import { RoomManageActions } from "@/components/admin/rooms/RoomManageActions";
 
 export function RoomsBuildingSection({
   buildingId,
@@ -24,7 +25,9 @@ export function RoomsBuildingSection({
   viewDateLabel: string;
 }) {
   const tCommon = useTranslations("admin.common");
+  const tBuildings = useTranslations("admin.buildings");
   const [open, setOpen] = useState(true);
+  const [listOpen, setListOpen] = useState(false);
   const theme = getBuildingTheme(acMode, buildingName);
   const active = rooms.filter((r) => r.is_active);
 
@@ -87,6 +90,39 @@ export function RoomsBuildingSection({
                 />
               ))}
             </RoomAvailabilityGrid>
+
+            <details
+              className="mt-4 text-xs text-zinc-500"
+              open={listOpen}
+              onToggle={(e) => setListOpen(e.currentTarget.open)}
+            >
+              <summary className="cursor-pointer font-medium text-zinc-600 hover:text-zinc-900">
+                {tBuildings("detailsAndDeleteList")}
+              </summary>
+              <ul className="mt-2 space-y-1.5">
+                {rooms.map((room) => (
+                  <li
+                    key={room.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-zinc-100 bg-zinc-50/80 px-2 py-1.5"
+                  >
+                    <span className="text-zinc-800">
+                      {room.name}
+                      {!room.is_active && (
+                        <span className="ml-1 text-zinc-400">({tCommon("inactive")})</span>
+                      )}
+                      {room.floor_name ? ` · ${room.floor_name}` : ""}
+                    </span>
+                    <RoomManageActions
+                      roomId={room.id}
+                      roomName={room.name}
+                      isActive={room.is_active}
+                      buildingId={buildingId}
+                      editHref={`/admin/rooms/${room.id}/edit`}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
         )}
       </div>

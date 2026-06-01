@@ -3,6 +3,10 @@
 import type { Building, Floor } from "@/types/database";
 import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
+import {
+  buildBulkRoomNames,
+  type BulkNamingMode,
+} from "@/domain/room/bulk-names";
 import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -72,6 +76,10 @@ export function RoomForm({
   const [floorId, setFloorId] = useState(initialFloor);
   const defaultTypeId = types.find((t) => t.slug === "double")?.id ?? types[0]?.id ?? "";
   const [typeId, setTypeId] = useState(defaultTypeId);
+  const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>("prefix");
+  const [namePrefix, setNamePrefix] = useState(tRooms("roomPrefixDefault"));
+  const [startNumber, setStartNumber] = useState(1);
+  const [bulkCount, setBulkCount] = useState(5);
 
   const building = buildings.find((b) => b.id === buildingId);
   const floors = floorsByBuilding[buildingId] ?? [];
@@ -82,6 +90,17 @@ export function RoomForm({
     () => suggestPrice(building, selectedType, options, policies),
     [building, selectedType, options, policies]
   );
+
+  const bulkPreview = useMemo(() => {
+    if (mode !== "bulk") return [];
+    const count = Math.min(50, Math.max(1, bulkCount || 1));
+    return buildBulkRoomNames(
+      bulkNaming,
+      bulkNaming === "number_only" ? "" : namePrefix,
+      startNumber || 1,
+      count
+    );
+  }, [mode, bulkNaming, namePrefix, startNumber, bulkCount]);
 
   return (
     <div className="mt-6 space-y-4">
@@ -172,37 +191,78 @@ export function RoomForm({
             />
           </label>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3">
-            <label className="block">
-              <span className="text-sm font-medium">{tRooms("namePrefixRequired")}</span>
-              <input
-                name="name_prefix"
-                required
-                defaultValue={tRooms("roomPrefixDefault")}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium">{tRooms("startNumber")}</span>
-              <input
-                name="start_number"
-                type="number"
-                min={1}
-                defaultValue={1}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium">{tRooms("howManyRooms")}</span>
-              <input
-                name="bulk_count"
-                type="number"
-                min={1}
-                max={50}
-                defaultValue={5}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
-              />
-            </label>
+          <div className="space-y-4">
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium text-zinc-900">
+                {tRooms("bulkNamingLegend")}
+              </legend>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="bulk_naming_mode"
+                  value="prefix"
+                  checked={bulkNaming === "prefix"}
+                  onChange={() => setBulkNaming("prefix")}
+                />
+                {tRooms("bulkNamingPrefix")}
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="bulk_naming_mode"
+                  value="number_only"
+                  checked={bulkNaming === "number_only"}
+                  onChange={() => setBulkNaming("number_only")}
+                />
+                {tRooms("bulkNamingNumbersOnly")}
+              </label>
+            </fieldset>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {bulkNaming === "prefix" ? (
+                <label className="block sm:col-span-1">
+                  <span className="text-sm font-medium">{tRooms("namePrefixRequired")}</span>
+                  <input
+                    name="name_prefix"
+                    required
+                    value={namePrefix}
+                    onChange={(e) => setNamePrefix(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                  />
+                </label>
+              ) : (
+                <input type="hidden" name="name_prefix" value="" />
+              )}
+              <label className="block">
+                <span className="text-sm font-medium">{tRooms("startNumber")}</span>
+                <input
+                  name="start_number"
+                  type="number"
+                  min={1}
+                  value={startNumber}
+                  onChange={(e) => setStartNumber(Number(e.target.value) || 1)}
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium">{tRooms("howManyRooms")}</span>
+                <input
+                  name="bulk_count"
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={bulkCount}
+                  onChange={(e) => setBulkCount(Number(e.target.value) || 1)}
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                />
+              </label>
+            </div>
+            {bulkPreview.length > 0 && (
+              <p className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-700">
+                <span className="font-semibold">{tRooms("bulkPreviewLabel")}: </span>
+                {bulkPreview.join(", ")}
+                {bulkPreview.length >= 12 && bulkCount > 12 ? " …" : ""}
+              </p>
+            )}
           </div>
         )}
 

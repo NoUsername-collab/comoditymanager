@@ -14,6 +14,11 @@ import {
   listRoomTypes,
   setRoomEnabledOptions,
 } from "@/services/room-catalog";
+import {
+  buildBulkRoomNames,
+  findDuplicateRoomNames,
+  type BulkNamingMode,
+} from "@/domain/room/bulk-names";
 import type { Room } from "@/types/database";
 
 export type CreateRoomInput = {
@@ -146,9 +151,24 @@ async function resolveRoomInsertFields(input: CreateRoomInput) {
   return { type, price, capacity, room_type, has_ac, options };
 }
 
+async function assertRoomNameAvailable(
+  buildingId: string,
+  name: string
+): Promise<void> {
+  const trimmed = name.trim();
+  if (!trimmed) throw new Error("rooms.name_required");
+  const existing = await listRoomNamesInBuilding(buildingId);
+  const conflicts = findDuplicateRoomNames(existing, [trimmed]);
+  if (conflicts.length > 0) {
+    throw new Error(`rooms.duplicate_name:${trimmed}`);
+  }
+}
+
 export async function createRoom(input: CreateRoomInput): Promise<{ id: string }> {
   const { type, price, capacity, room_type, has_ac } =
     await resolveRoomInsertFields(input);
+
+  await assertRoomNameAvailable(input.building_id, input.name);
 
   const { tenantId, supabase } = await requireBuildingInTenant(input.building_id);
   const { data, error } = await supabase
@@ -179,6 +199,17 @@ export async function createRoom(input: CreateRoomInput): Promise<{ id: string }
   return { id: data.id };
 }
 
+export async function listRoomNamesInBuilding(buildingId: string): Promise<string[]> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("rooms")
+    .select("name")
+    .eq("tenant_id", tenantId)
+    .eq("building_id", buildingId);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => String(row.name));
+}
+
 export async function createRoomsBulk(input: {
   building_id: string;
   floor_id: string | null;
@@ -186,6 +217,7 @@ export async function createRoomsBulk(input: {
   count: number;
   name_prefix: string;
   start_number: number;
+  naming_mode: BulkNamingMode;
   allows_extra_beds: boolean;
   max_extra_beds_per_room: number;
   enabled_option_ids: string[];
@@ -197,10 +229,27 @@ export async function createRoomsBulk(input: {
     throw new Error("rooms.bulk_count_must_be_between_1_and_50");
   }
 
+  const proposedNames = buildBulkRoomNames(
+    input.naming_mode,
+    input.name_prefix,
+    input.start_number,
+    input.count
+  );
+  if (proposedNames.length !== input.count) {
+    throw new Error("rooms.bulk_invalid_names");
+  }
+
+  const existing = await listRoomNamesInBuilding(input.building_id);
+  const conflicts = findDuplicateRoomNames(existing, proposedNames);
+  if (conflicts.length > 0) {
+    throw new Error(
+      `rooms.bulk_duplicate_names:${conflicts.slice(0, 12).join("|")}`
+    );
+  }
+
   const ids: string[] = [];
   for (let i = 0; i < input.count; i++) {
-    const num = input.start_number + i;
-    const name = `${input.name_prefix}${num}`.trim();
+    const name = proposedNames[i]!;
     const room = await createRoom({
       building_id: input.building_id,
       floor_id: input.floor_id,
@@ -342,6 +391,19 @@ export async function assignRoomToFloor(
     .update({ floor_id: floorId })
     .eq("tenant_id", tenantId)
     .eq("id", roomId);
+  if (error) throw new Error(error.message);
+}
+
+export async function setRoomActive(
+  id: string,
+  is_active: boolean
+): Promise<void> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("rooms")
+    .update({ is_active })
+    .eq("tenant_id", tenantId)
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 

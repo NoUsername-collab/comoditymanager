@@ -5,20 +5,18 @@ import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFram
 import { AdminFactoryResetPanel } from "@/components/admin/settings/AdminFactoryResetPanel";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import { AdminLocationLockButton } from "@/components/admin/settings/AdminLocationUnlockForm";
+import { AdminLocationLockBar } from "@/components/admin/settings/AdminLocationLockBar";
 import { AdminStaffPasswordPanel } from "@/components/admin/settings/AdminStaffPasswordPanel";
 import { isFactoryResetEnabled } from "@/services/database-reset";
 import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
-import { AdminRoomCatalogPanel } from "@/components/admin/catalog/AdminRoomCatalogPanel";
-import { listRoomOptions, listRoomTypes } from "@/services/room-catalog";
 import { updateOperationalSettingsAction } from "../actions";
 import { getTranslations } from "next-intl/server";
 
 export default async function LocationAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; reset?: string; unlocked?: string }>;
+  searchParams: Promise<{ saved?: string; reset?: string; unlocked?: string; locked?: string }>;
 }) {
   const tPage = await getTranslations("admin.pages.settingsLocation");
   const tCommon = await getTranslations("admin.common");
@@ -35,17 +33,6 @@ export default async function LocationAdminPage({
     error = e instanceof Error ? e.message : tCommon("error");
   }
 
-  let catalogError: string | null = null;
-  let catalogTypes: Awaited<ReturnType<typeof listRoomTypes>> = [];
-  let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
-
-  try {
-    catalogTypes = await listRoomTypes(true);
-    catalogOptions = await listRoomOptions(true);
-  } catch (e) {
-    catalogError = e instanceof Error ? e.message : tPage("catalogUnavailable");
-  }
-
   return (
     <AdminRetroPageFrame
       title={tPage("title")}
@@ -59,12 +46,18 @@ export default async function LocationAdminPage({
         >
           {tPage("backToSettings")}
         </Link>
-        <AdminLocationLockButton />
+        <AdminLocationLockBar />
       </div>
 
       {params.unlocked === "1" && (
         <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
           {tPage("unlockedForTwoHours")}
+        </p>
+      )}
+
+      {params.locked === "1" && (
+        <p className="mb-4 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
+          {tPage("unlock.ownerLockClosed")}
         </p>
       )}
 
@@ -102,13 +95,13 @@ export default async function LocationAdminPage({
             </div>
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
-                {tPage("steps.catalogTitle")}
+                {tPage("steps.modularTitle")}
               </p>
               <p className="mt-2 text-sm font-semibold text-zinc-900">
-                {tPage("steps.catalogHeadline")}
+                {tPage("steps.modularHeadline")}
               </p>
               <p className="mt-1 text-sm text-zinc-600">
-                {tPage("steps.catalogBody")}
+                {tPage("steps.modularBody")}
               </p>
             </div>
             <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
@@ -205,14 +198,14 @@ export default async function LocationAdminPage({
                   </span>
                 </Link>
                 <Link
-                  href="/admin/buildings"
-                  className="rounded-xl border border-zinc-300 bg-white px-4 py-4 hover:bg-zinc-50"
+                  href="/admin/settings/location/setup"
+                  className="rounded-xl border border-emerald-600 bg-emerald-50 px-4 py-4 hover:bg-emerald-100"
                 >
-                  <span className="block text-sm font-semibold text-zinc-900">
-                    {tPage("structure.cardOccupancyTitle")}
+                  <span className="block text-sm font-semibold text-emerald-950">
+                    {tPage("structure.cardModularTitle")}
                   </span>
-                  <span className="mt-1 block text-sm text-zinc-600">
-                    {tPage("structure.cardOccupancyBody")}
+                  <span className="mt-1 block text-sm text-emerald-900">
+                    {tPage("structure.cardModularBody")}
                   </span>
                 </Link>
               </div>
@@ -228,19 +221,6 @@ export default async function LocationAdminPage({
                 </span>
               </Link>
             </div>
-          </SettingsSlidePanel>
-
-          <SettingsSlidePanel
-            title={tCommon("modularCatalog")}
-            subtitle={tPage("catalog.subtitle")}
-            icon="📦"
-            defaultOpen
-          >
-            <AdminRoomCatalogPanel
-              types={catalogTypes}
-              options={catalogOptions}
-              catalogError={catalogError}
-            />
           </SettingsSlidePanel>
 
           <SettingsSlidePanel

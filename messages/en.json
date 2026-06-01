@@ -368,7 +368,8 @@
         "saved": "Theme saved.",
         "locationLocked": "Location admin is locked.",
         "locationForbidden": "This section requires unlock.",
-        "locationClosed": "Location admin closed.",
+        "locationClosed": "Location administration is locked for staff admins (the 2-hour session expired or was closed manually).",
+        "locationClosedOwner": "The team lock is closed. As the owner, your access to configuration stays open.",
         "notConfigured": "Property settings are not configured yet.",
         "property": "Property",
         "checkTimes": "Check-in / out",
@@ -701,9 +702,9 @@
           "structureTitle": "1. Structure",
           "structureHeadline": "Configure spaces and rooms.",
           "structureBody": "This is the single starting point for setup.",
-          "catalogTitle": "2. Catalog",
-          "catalogHeadline": "Room types and options.",
-          "catalogBody": "AC, fridge and their policies stay centralized here.",
+          "modularTitle": "2. Modular catalog",
+          "modularHeadline": "Types, options, new rooms.",
+          "modularBody": "All modular setup (AC, fridge, bulk) lives on the dedicated page.",
           "staffTitle": "3. Staff",
           "staffHeadline": "Passwords and operational access.",
           "staffBody": "Operator uses the app, admin configures from this hub."
@@ -721,10 +722,17 @@
           "cardStructureTitle": "Organize structure",
           "cardStructureBody": "Buildings → floors → rooms on one clear page.",
           "recommended": "Recommended",
-          "cardOccupancyTitle": "Building availability",
-          "cardOccupancyBody": "Occupancy, free rooms and stats by date.",
+          "cardModularTitle": "Create buildings, rooms and modular options",
+          "cardModularBody": "Room types, AC/fridge options and adding rooms.",
           "cardRoomsBody": "Room list with availability for the selected date."
         },
+        "setup": {
+          "title": "Buildings, rooms and modular catalog",
+          "description": "Configure room types, modular options and add rooms.",
+          "addRoomsTitle": "+ New rooms",
+          "addRoomsBody": "Single or bulk with preview and duplicate checks."
+        },
+        "backToLocationHub": "← Location admin hub",
         "catalog": {
           "subtitle": "Room types, options (AC, fridge...) — per-building policies"
         },
@@ -741,7 +749,10 @@
           "checking": "Checking…",
           "openLocationAdmin": "Open location administration",
           "closing": "Closing…",
-          "closeLocationAdmin": "Close location administration"
+          "closeLocationAdmin": "Close location administration",
+          "ownerLockHint": "You are the owner: this hub stays permanently available to you. The 2-hour lock only applies to staff administrators.",
+          "sessionActive": "Configuration session active until {time}",
+          "ownerLockClosed": "The lock for staff administrators is closed. As the owner, your hub access is unchanged."
         },
         "staffPanel": {
           "passwordUpdated": "Password was updated.",
@@ -1440,6 +1451,10 @@
       "roomPrefixDefault": "Room ",
       "startNumber": "Start from no.",
       "howManyRooms": "How many rooms",
+      "bulkNamingLegend": "Bulk naming",
+      "bulkNamingPrefix": "Prefix + number (e.g. Room 6)",
+      "bulkNamingNumbersOnly": "Number only (e.g. 6, 7, 8 …)",
+      "bulkPreviewLabel": "Preview",
       "pricePerNightRon": "Price / night (RON)",
       "autoPriceHint": "0 = auto-calculate ({suggestedPrice} RON suggested)",
       "roomOptions": "Room options",
@@ -1569,6 +1584,10 @@
       "buildingAndRoomTypeRequired": "Building and room type are required",
       "roomPrefixDefault": "Room ",
       "bulkRoomsSummary": "{count} bulk rooms ({prefix}{start}…)",
+      "bulkDuplicateNames": "These room names already exist in this building: {names}",
+      "roomActivated": "Room reactivated",
+      "roomDeactivated": "Room marked inactive",
+      "roomDeleteHasBookings": "Room has bookings — cannot delete. Mark it inactive instead.",
       "roomNameRequired": "Room name is required",
       "newRoomSummary": "New room: {name}",
       "holdError": "Hold error",

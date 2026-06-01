@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { BuildingRoomRow } from "@/services/building-dashboard";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
-import { DeleteConfirmButton } from "./DeleteConfirmButton";
-import { deleteRoomFromBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { RoomManageActions } from "@/components/admin/rooms/RoomManageActions";
 
 export function BuildingRoomsCollapsible({
   rooms,
@@ -106,25 +104,18 @@ export function BuildingRoomsCollapsible({
                 >
                   <span>
                     {room.name}
+                    {!room.is_active && (
+                      <span className="ml-1 text-zinc-400">({tCommon("inactive")})</span>
+                    )}
                     {room.floor_name ? ` · ${room.floor_name}` : ""}
                   </span>
-                  <span className="flex gap-2">
-                    <Link
-                      href={`/admin/rooms/${room.id}/edit`}
-                      className="underline"
-                    >
-                      {tCommon("edit")}
-                    </Link>
-                    <DeleteConfirmButton
-                      label={tCommon("delete")}
-                      confirmMessage={tBuildings("deleteRoomConfirm", { room: room.name })}
-                      formAction={deleteRoomFromBuildingAction}
-                      hiddenFields={{
-                        room_id: room.id,
-                        building_id: buildingId,
-                      }}
-                    />
-                  </span>
+                  <RoomManageActions
+                    roomId={room.id}
+                    roomName={room.name}
+                    isActive={room.is_active}
+                    buildingId={buildingId}
+                    editHref={`/admin/rooms/${room.id}/edit`}
+                  />
                 </li>
               ))}
             </ul>

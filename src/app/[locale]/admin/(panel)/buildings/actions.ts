@@ -336,6 +336,29 @@ export async function assignRoomFloorAction(formData: FormData) {
   revalidateStructurePaths();
 }
 
+export async function setRoomActiveAction(formData: FormData) {
+  const t = await getTranslations("admin.serverActions");
+  await requireLocationAdmin();
+  const { setRoomActive } = await import("@/services/rooms-admin");
+  const room_id = String(formData.get("room_id") ?? "");
+  const is_active = String(formData.get("is_active") ?? "1") === "1";
+  if (!room_id) throw new Error(t("idMissing"));
+
+  await setRoomActive(room_id, is_active);
+  await logAdminActivityFromSession({
+    action: "room.updated",
+    entityType: "room",
+    entityId: room_id,
+    summary: is_active ? t("roomActivated") : t("roomDeactivated"),
+    metadata: { is_active },
+  });
+
+  revalidateStructurePaths();
+  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+  revalidatePath("/admin/calendar");
+  revalidatePath("/");
+}
+
 export async function deleteRoomFromBuildingAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
   await requireLocationAdmin();
@@ -353,10 +376,17 @@ export async function deleteRoomFromBuildingAction(formData: FormData) {
       metadata: { room_id },
     });
   } catch (e) {
+    if (
+      e instanceof Error &&
+      e.message === "rooms.cannot_delete_room_with_bookings_disable_instead"
+    ) {
+      throw new Error(t("roomDeleteHasBookings"));
+    }
     throw e instanceof Error ? e : new Error(t("deleteError"));
   }
 
   revalidateStructurePaths();
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+  revalidatePath("/admin/calendar");
   revalidatePath("/");
 }

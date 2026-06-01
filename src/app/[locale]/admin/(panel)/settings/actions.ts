@@ -42,13 +42,16 @@ export async function unlockLocationAdminAction(formData: FormData) {
 
 export async function lockLocationAdminAction() {
   const t = await getTranslations("admin.serverActions");
-  await requireStaff();
+  const { memberRole } = await requireStaff();
   await clearAdminLocationUnlock();
   await logAdminActivityFromSession({
     action: "location_admin.locked",
     entityType: "session",
     summary: t("locationAdminLocked"),
   });
+  if (memberRole === "owner") {
+    await redirect("/admin/settings/location?locked=1");
+  }
   await redirect("/admin/settings?location=closed");
 }
 

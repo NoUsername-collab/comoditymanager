@@ -69,7 +69,7 @@ export default async function SettingsPage({
 
       {params.location === "closed" && (
         <p className="mb-4 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
-          {t("locationClosed")}
+          {isOwner ? t("locationClosedOwner") : t("locationClosed")}
         </p>
       )}
 

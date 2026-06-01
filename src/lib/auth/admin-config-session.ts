@@ -49,6 +49,16 @@ export async function isAdminLocationUnlocked(): Promise<boolean> {
   return isAdminLocationUnlockTokenValid(jar.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value);
 }
 
+/** Timestamp expirare sesiune unlock (ms), sau null dacă lipsește / expirată. */
+export async function getAdminLocationUnlockUntilMs(): Promise<number | null> {
+  const jar = await cookies();
+  const token = jar.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
+  if (!isAdminLocationUnlockCookieFresh(token) || !token) return null;
+  const until = decodeToken(token);
+  if (until == null || until <= Date.now()) return null;
+  return until;
+}
+
 export async function setAdminLocationUnlock(): Promise<void> {
   const until = Date.now() + TTL_MS;
   const jar = await cookies();

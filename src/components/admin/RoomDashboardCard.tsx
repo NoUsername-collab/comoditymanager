@@ -1,12 +1,12 @@
-import { Link } from "@/i18n/navigation";
+"use client";
+
 import { useTranslations } from "next-intl";
 import type { RoomDashboard } from "@/services/room-dashboard";
 import { getBuildingTheme } from "@/lib/building-theme";
 import { AC_LABELS, ROOM_STATUS, occupancyCaption } from "@/lib/admin-ui";
 import { OccupancyRow } from "@/components/admin/ui/OccupancyRow";
 import { StayBlock } from "@/components/admin/ui/StayBlock";
-import { DeleteConfirmButton } from "./DeleteConfirmButton";
-import { deleteRoomFromBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { RoomManageActions } from "@/components/admin/rooms/RoomManageActions";
 
 export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
   const tCommon = useTranslations("admin.common");
@@ -34,6 +34,11 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-lg font-semibold text-zinc-900">{room.name}</h2>
+              {!room.is_active && (
+                <span className="rounded-full bg-zinc-200 px-2 py-0.5 text-[10px] font-semibold uppercase text-zinc-600">
+                  {tCommon("inactive")}
+                </span>
+              )}
               <span
                 className={[
                   "rounded-full px-2.5 py-0.5 text-[11px] font-semibold",
@@ -55,12 +60,6 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
               {AC_LABELS[room.building_ac_mode]} · {theme.label}
             </p>
           </div>
-          <Link
-            href={`/admin/rooms/${room.id}/edit`}
-            className="rounded-lg border border-white/80 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm hover:bg-zinc-50"
-          >
-            {tCommon("edit")}
-          </Link>
         </header>
 
         <div className="mt-3 flex flex-wrap gap-4 text-sm">
@@ -121,11 +120,12 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
         />
 
         <div className="border-t border-zinc-100 pt-3">
-          <DeleteConfirmButton
-            label={tCommon("deleteRoom")}
-            confirmMessage={tRooms("deleteRoomConfirm", { room: room.name })}
-            formAction={deleteRoomFromBuildingAction}
-            hiddenFields={{ room_id: room.id, building_id: room.building_id }}
+          <RoomManageActions
+            roomId={room.id}
+            roomName={room.name}
+            isActive={room.is_active}
+            buildingId={room.building_id}
+            editHref={`/admin/rooms/${room.id}/edit`}
           />
         </div>
       </div>

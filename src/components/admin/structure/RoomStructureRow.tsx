@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { StructureFloor, StructureRoom } from "@/services/location-structure";
 import { assignRoomFloorAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { RoomManageActions } from "@/components/admin/rooms/RoomManageActions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function RoomStructureRow({
@@ -52,12 +52,12 @@ export function RoomStructureRow({
             ))}
           </select>
         </form>
-        <Link
-          href={`/admin/rooms/${room.id}/edit?return_to=structure`}
-          className="font-semibold text-zinc-700 underline hover:text-zinc-900"
-        >
-          {tCommon("edit")}
-        </Link>
+        <RoomManageActions
+          roomId={room.id}
+          roomName={room.name}
+          isActive={room.is_active}
+          editHref={`/admin/rooms/${room.id}/edit?return_to=structure`}
+        />
       </span>
     </li>
   );

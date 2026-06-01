@@ -333,7 +333,8 @@
         "saved": "Theme saved.",
         "locationLocked": "Location admin is locked.",
         "locationForbidden": "This section requires unlock.",
-        "locationClosed": "Location admin closed.",
+        "locationClosed": "Администрацията на локацията е заключена за администратори от екипа (сесията от 2 часа е изтекла или е затворена ръчно).",
+        "locationClosedOwner": "Катинчарът за екипа е затворен. Като собственик, достъпът ти до конфигурация остава отворен.",
         "notConfigured": "Property settings are not configured yet.",
         "property": "Property",
         "checkTimes": "Check-in / out",
@@ -630,9 +631,9 @@
           "structureTitle": "1. Структура",
           "structureHeadline": "Конфигурираш пространства и стаи.",
           "structureBody": "Това е единствената отправна точка за конфигурация.",
-          "catalogTitle": "2. Каталог",
-          "catalogHeadline": "Типове стаи и опции.",
-          "catalogBody": "AC, хладилник и техните политики остават централизирани тук.",
+          "modularTitle": "2. Модулен каталог",
+          "modularHeadline": "Типове, опции, нови стаи.",
+          "modularBody": "Модулната конфигурация е на отделната страница.",
           "staffTitle": "3. Staff",
           "staffHeadline": "Пароли и оперативен достъп.",
           "staffBody": "Операторът използва приложението, админът конфигурира от този хъб."
@@ -650,10 +651,17 @@
           "cardStructureTitle": "Организация на структурата",
           "cardStructureBody": "Сгради → етажи → стаи на една ясна страница.",
           "recommended": "Препоръчано",
-          "cardOccupancyTitle": "Наличност по сгради",
-          "cardOccupancyBody": "Заетост, свободни стаи и статистика по дата.",
+          "cardModularTitle": "Създай сгради, стаи и модулни опции",
+          "cardModularBody": "Каталог типове, опции AC/хладилник и добавяне на стаи.",
           "cardRoomsBody": "Списък стаи с наличност за избраната дата."
         },
+        "setup": {
+          "title": "Сгради, стаи и модулен каталог",
+          "description": "Конфигурирай типове стаи, модулни опции и добавяй стаи.",
+          "addRoomsTitle": "+ Нови стаи",
+          "addRoomsBody": "Единична или bulk с преглед и проверка за дубликати."
+        },
+        "backToLocationHub": "← Хъб администрация локация",
         "catalog": {
           "subtitle": "Типове стаи, опции (AC, хладилник...) — политики по сгради"
         },
@@ -670,7 +678,10 @@
           "checking": "Проверка…",
           "openLocationAdmin": "Отвори администрация на локацията",
           "closing": "Затваряне…",
-          "closeLocationAdmin": "Затвори администрация на локацията"
+          "closeLocationAdmin": "Затвори администрация на локацията",
+          "ownerLockHint": "Ти си собственик: този хъб остава постоянно достъпен. Катинчарът (2 ч.) важи само за администратори от екипа.",
+          "sessionActive": "Сесия за конфигурация до {time}",
+          "ownerLockClosed": "Катинчарът за екипа е затворен. За теб, като собственик, достъпът до хъба не се променя."
         },
         "staffPanel": {
           "passwordUpdated": "Паролата е обновена.",

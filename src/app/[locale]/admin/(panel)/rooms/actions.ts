@@ -44,24 +44,41 @@ export async function createRoomAction(formData: FormData) {
   const building_default_price = b?.default_price_per_night ?? 0;
 
   if (create_mode === "bulk") {
-    const name_prefix = String(formData.get("name_prefix") ?? t("roomPrefixDefault"));
+    const naming_mode =
+      String(formData.get("bulk_naming_mode") ?? "prefix") === "number_only"
+        ? "number_only"
+        : "prefix";
+    const name_prefix =
+      naming_mode === "number_only"
+        ? ""
+        : String(formData.get("name_prefix") ?? t("roomPrefixDefault"));
     const start_number = Number(formData.get("start_number") ?? 1);
     const bulk_count = Number(formData.get("bulk_count") ?? 1);
 
-    const { ids } = await createRoomsBulk({
+    let ids: string[];
+    try {
+      ({ ids } = await createRoomsBulk({
       building_id,
       floor_id: floor_id || null,
       room_type_definition_id,
       count: bulk_count,
       name_prefix,
       start_number,
+      naming_mode,
       allows_extra_beds,
       max_extra_beds_per_room,
       enabled_option_ids,
       price_per_night,
       sort_order_start: sort_order,
       building_default_price,
-    });
+    }));
+    } catch (e) {
+      if (e instanceof Error && e.message.startsWith("rooms.bulk_duplicate_names:")) {
+        const list = e.message.replace("rooms.bulk_duplicate_names:", "");
+        throw new Error(t("bulkDuplicateNames", { names: list.replace(/\|/g, ", ") }));
+      }
+      throw e;
+    }
 
     await logAdminActivityFromSession({
       action: "room.created",
@@ -84,7 +101,9 @@ export async function createRoomAction(formData: FormData) {
   const name = String(formData.get("name") ?? "");
   if (!name) throw new Error(t("roomNameRequired"));
 
-  const room = await createRoom({
+  let room: { id: string };
+  try {
+    room = await createRoom({
     building_id,
     floor_id: floor_id || null,
     name,
@@ -97,6 +116,13 @@ export async function createRoomAction(formData: FormData) {
     sort_order,
     building_default_price,
   });
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith("rooms.duplicate_name:")) {
+      const dup = e.message.replace("rooms.duplicate_name:", "");
+      throw new Error(t("bulkDuplicateNames", { names: dup }));
+    }
+    throw e;
+  }
 
   await logAdminActivityFromSession({
     action: "room.created",
