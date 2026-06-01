@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { loginAction } from "@/app/[locale]/admin/login/actions";
+import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 export function AdminLoginForm({
   next,
@@ -23,10 +24,9 @@ export function AdminLoginForm({
       action={async (formData) => {
         setPending(true);
         setError(null);
-        try {
-          const result = await loginAction(formData);
-          if (result?.error) setError(result.error);
-        } finally {
+        const result = await loginAction(formData);
+        if (result?.error) {
+          setError(result.error);
           setPending(false);
         }
       }}
@@ -40,7 +40,8 @@ export function AdminLoginForm({
           autoComplete="username"
           placeholder={t("usernameOrEmailPlaceholder")}
           defaultValue={initialUsername}
-          className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-400"
+          disabled={pending}
+          className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-400 disabled:opacity-60"
           required
         />
       </label>
@@ -50,21 +51,32 @@ export function AdminLoginForm({
           name="password"
           type="password"
           autoComplete="current-password"
-          className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+          disabled={pending}
+          className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 disabled:opacity-60"
           required
         />
       </label>
       {error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="admin-login-form__error text-sm text-red-600" role="alert">
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-medium text-white disabled:opacity-60"
+        aria-busy={pending}
+        className="admin-login-submit"
       >
-        {pending ? t("submitting") : t("submit")}
+        {pending ? (
+          <>
+            <span className="admin-login-submit__spinner" aria-hidden>
+              <LocaleFlagSpinner label={t("submitting")} size="md" />
+            </span>
+            <span>{t("submitting")}</span>
+          </>
+        ) : (
+          <span>{t("submit")}</span>
+        )}
       </button>
     </form>
   );

@@ -45,10 +45,7 @@ export default async function AdminLoginPage({
           initialError={authError}
           initialUsername={initialUsername}
         />
-        <Link
-          href="/"
-          className="mt-6 block text-center text-xs text-zinc-600 hover:text-zinc-900"
-        >
+        <Link href="/" className="admin-login-back">
           {t("backToSite")}
         </Link>
       </div>

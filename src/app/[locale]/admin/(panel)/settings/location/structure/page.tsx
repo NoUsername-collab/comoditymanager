@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { BuildingStructureCard } from "@/components/admin/structure/BuildingStructureCard";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
+import { formatAdminError } from "@/lib/admin/format-error";
 import { listLocationStructure } from "@/services/location-structure";
 import {
   ensureBuildingPoliciesFromLegacy,
@@ -42,7 +43,7 @@ export default async function LocationStructurePage() {
       catalogOptions = [];
     }
   } catch (e) {
-    error = e instanceof Error ? e.message : tCommon("error");
+    error = formatAdminError(e, tCommon);
   }
 
   const totalRooms = structures.reduce((n, s) => n + s.roomCount, 0);

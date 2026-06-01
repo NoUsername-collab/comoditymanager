@@ -20,9 +20,14 @@ export async function assertStaffTenantAccess(tenantId: string): Promise<void> {
   const user = await getStaffUser();
   if (!user) return;
 
-  const role = await getTenantMemberRole(tenantId, user.id);
+  const memberTenantId = tenant.id;
+  const role = await getTenantMemberRole(memberTenantId, user.id);
   if (!role) {
     throw new Error("auth.tenant_member_required");
+  }
+
+  if (tenantId !== memberTenantId) {
+    throw new Error("auth.tenant_scope_mismatch");
   }
 }
 
