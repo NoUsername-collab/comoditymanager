@@ -7,6 +7,7 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+import { platformPensionNameFallback } from "@/lib/platform/branding";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
 export type TenantRow = {
@@ -28,10 +29,7 @@ export type TenantRow = {
   updated_at: string;
 };
 
-/**
- * Get the default tenant (first tenant in DB — Casa Emil for now).
- * In multi-tenant mode, this will be resolved from the request domain/slug.
- */
+/** First tenant by creation time — dev/local fallback when host has no slug. */
 export async function getDefaultTenant(): Promise<TenantRow | null> {
   try {
     const supabase = createPublicAdminClient();
@@ -70,7 +68,7 @@ export async function getTenantById(
   }
 }
 
-/** Lookup by URL slug (casa-emil.hospira.ro → casa-emil). */
+/** Lookup by URL slug ({slug}.hospira.ro). */
 export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
   try {
     const supabase = createPublicAdminClient();
@@ -147,7 +145,7 @@ export async function getTenantDisplayName(
     // DB unavailable — fall through to env var
   }
 
-  return process.env.NEXT_PUBLIC_PENSION_NAME ?? "Rezova";
+  return platformPensionNameFallback();
 }
 
 /**

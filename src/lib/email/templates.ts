@@ -7,6 +7,8 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+import { platformPoweredByLabel } from "@/lib/platform/branding";
+
 interface EmailContent {
   subject: string;
   html: string;
@@ -29,7 +31,7 @@ function wrap(pensionName: string, body: string): string {
           ${body}
         </td></tr>
         <tr><td style="padding:16px 28px;background:#fafafa;border-top:1px solid #e4e4e7;text-align:center">
-          <span style="color:#a1a1aa;font-size:12px">Powered by Rezova</span>
+          <span style="color:#a1a1aa;font-size:12px">${platformPoweredByLabel()}</span>
         </td></tr>
       </table>
     </td></tr>

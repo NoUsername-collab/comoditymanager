@@ -9,7 +9,7 @@ export const CATALOG_PALETTES: AdminPaletteDefinition[] = [
   {
     id: "default",
     name: "Default",
-    description: "Casa Emil default theme on a unified day/night structure.",
+    description: "Default tenant theme on a unified day/night structure.",
     group: "catalog",
     day: t({
       pageBg: "#eef0f8",

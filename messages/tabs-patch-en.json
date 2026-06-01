@@ -27,9 +27,9 @@
       "floorPlaceholder": "Ground floor / Floor 1",
       "newBuilding": "New building",
       "newBuildingHint": "New rooms can be added after creation. Color appears on the calendar.",
-      "buildingsTitle": "Buildings — Casa Emil",
-      "availabilityTitle": "Availability — Casa Emil",
-      "newRoomTitle": "New room — Casa Emil",
+      "buildingsTitle": "Buildings",
+      "availabilityTitle": "Availability",
+      "newRoomTitle": "New room",
       "catalogSqlHint": "for types and options in Supabase SQL Editor",
       "checkInHour": "Check-in (time)",
       "checkOutHour": "Check-out (time)",
@@ -305,7 +305,7 @@
         "descriptionSuffix": "Color appears in calendar."
       },
       "settingsLocation": {
-        "title": "Location administration — Casa Emil",
+        "title": "Location administration",
         "description": "Admin hub for full setup: location structure, rooms, modular catalog and staff accounts.",
         "backToSettings": "← Back to settings",
         "unlockedForTwoHours": "Location administration unlocked for 2 hours.",
@@ -418,7 +418,7 @@
         "cancelRequestMsg": "Cancel request {ref} · {name} · {period}?"
       },
       "bookingDetail": {
-        "title": "Booking — Casa Emil",
+        "title": "Booking",
         "bookingReference": "Reference:",
         "viewInCalendar": "View in calendar",
         "status": "Status:",
@@ -475,12 +475,12 @@
         "factoryResetSubtitle": "Factory reset — staging / dev only"
       },
       "buildings": {
-        "newTitle": "New building — Casa Emil",
+        "newTitle": "New building",
         "newHint": "You can add <strong>new rooms</strong> after creation. Color appears on the calendar.",
-        "listTitle": "Buildings — Casa Emil"
+        "listTitle": "Buildings"
       },
       "disponibilitate": {
-        "title": "Availability — Casa Emil",
+        "title": "Availability",
         "description": "Heat map, KPIs, free weekends, building filter, Shift+click range, live updates."
       },
       "buildings": {

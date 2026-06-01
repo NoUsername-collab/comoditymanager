@@ -5,7 +5,7 @@ export const THEMES: ThemeDefinition[] = [
   {
     id: "default",
     name: "Default",
-    description: "Casa Emil default theme, currently the only active option",
+    description: "Default Hospira tenant theme",
   },
 ];
 

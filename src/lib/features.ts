@@ -1,6 +1,6 @@
 import { RELEASE_CHANNEL } from "@/lib/app-version";
 
-/** Doar facturarea neoficială rămâne în canalul alpha (v0.1.5). */
+/** Informal invoicing is gated behind NEXT_PUBLIC_RELEASE_CHANNEL=alpha. */
 export function isInvoicingAlphaEnabled(): boolean {
   return RELEASE_CHANNEL === "alpha";
 }

@@ -19,7 +19,22 @@ import {
   findDuplicateRoomNames,
   type BulkNamingMode,
 } from "@/domain/room/bulk-names";
+import { ROOM_LOCKING_BOOKING_STATUSES } from "@/domain/booking/room-guards";
 import type { Room } from "@/types/database";
+
+async function countLockingBookingRooms(roomIds: string[]): Promise<number> {
+  if (roomIds.length === 0) return 0;
+  const { tenantId, supabase } = await getTenantScope();
+  const { count, error } = await supabase
+    .from("booking_rooms")
+    .select("id, bookings!inner(status)", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
+    .in("room_id", roomIds)
+    .in("bookings.status", ROOM_LOCKING_BOOKING_STATUSES);
+
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+}
 
 export type CreateRoomInput = {
   building_id: string;
@@ -410,14 +425,8 @@ export async function setRoomActive(
 export async function deleteRoom(id: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
 
-  const { count, error: brErr } = await supabase
-    .from("booking_rooms")
-    .select("id", { count: "exact", head: true })
-    .eq("tenant_id", tenantId)
-    .eq("room_id", id);
-
-  if (brErr) throw new Error(brErr.message);
-  if ((count ?? 0) > 0) {
+  const lockingCount = await countLockingBookingRooms([id]);
+  if (lockingCount > 0) {
     throw new Error(
       "rooms.cannot_delete_room_with_bookings_disable_instead"
     );

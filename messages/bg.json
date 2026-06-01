@@ -210,7 +210,7 @@
       "selectedVariantNote": "Стаите са временно задържани до потвърждение от къщата. Крайната цена може да бъде коригирана.",
       "phoneNoteWithDetails": "[Телефон] {notes}",
       "phoneNoteDefault": "[Телефон] Рецепция резервация",
-      "receptionFallbackEmail": "reception@casaemil.local"
+      "receptionFallbackEmail": "reception@no-email.local"
     },
     "confirm": {
       "backReceptie": "Quick reception",
@@ -228,7 +228,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Hospira · Tasnad — <email>contact@hospira.ro</email>"
+      "s4Body": "Hospira — <email>contact@hospira.ro</email>"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -1503,7 +1503,7 @@
       "buildingDeleted": "Сграда изтрита",
       "roomDeleted": "Стая изтрита",
       "deleteError": "Грешка при изтриване",
-      "roomDeleteHasBookings": "Стаята има резервации — не може да се изтрие. Маркирай я като неактивна.",
+      "roomDeleteHasBookings": "Стаята има нови заявки или потвърдени престои — не може да се изтрие. Отказаните в историята не блокират.",
       "buildingDeleteHasRooms": "Сградата все още има стаи. Изтрий всички стаи без резервации (или ги деактивирай) и опитай отново.",
       "buildingDeleteHasBookings": "Някои стаи имат свързани резервации. Не можеш да изтриеш сградата — изтрий стаите без история и деактивирай останалите.",
       "buildingAndRoomTypeRequired": "Сградата и типът стая са задължителни",

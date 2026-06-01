@@ -8,6 +8,8 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+import { PLATFORM_EMAIL_FROM } from "@/lib/platform/branding";
+
 export interface EmailMessage {
   to: string;
   subject: string;
@@ -89,7 +91,7 @@ export function getEmailProvider(): IEmailProvider {
   if (_provider) return _provider;
 
   const resendKey = process.env.RESEND_API_KEY;
-  const fromAddress = process.env.EMAIL_FROM ?? "Rezova <noreply@rezova.ro>";
+  const fromAddress = process.env.EMAIL_FROM ?? PLATFORM_EMAIL_FROM;
 
   if (resendKey) {
     _provider = new ResendProvider(resendKey, fromAddress);

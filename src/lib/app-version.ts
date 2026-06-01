@@ -1,12 +1,12 @@
 /** Versiune aplicație — aliniată cu branch / release. */
-export const STABLE_VERSION = "0.1.3";
+export const STABLE_VERSION = "0.1.7";
 export const RELEASE_STAGE = "Alpha Stage";
 export const ALPHA_VERSION = "0.1.5-alpha.0";
 
 export type ReleaseChannel = "stable" | "alpha";
 
 /**
- * stable = timeline v0.2 Alpha Stage (v0.1.3)
+ * stable = v0.1.7 Alpha Stage
  * alpha = doar facturare neoficială (v0.1.5) — NEXT_PUBLIC_RELEASE_CHANNEL=alpha
  */
 export const RELEASE_CHANNEL: ReleaseChannel =

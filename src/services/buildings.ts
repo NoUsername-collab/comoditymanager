@@ -1,3 +1,4 @@
+import { ROOM_LOCKING_BOOKING_STATUSES } from "@/domain/booking/room-guards";
 import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -113,9 +114,10 @@ export async function deleteBuilding(id: string): Promise<void> {
   if (roomIds.length > 0) {
     const { count: bookingCount, error: brErr } = await supabase
       .from("booking_rooms")
-      .select("id", { count: "exact", head: true })
+      .select("id, bookings!inner(status)", { count: "exact", head: true })
       .eq("tenant_id", tenantId)
-      .in("room_id", roomIds);
+      .in("room_id", roomIds)
+      .in("bookings.status", ROOM_LOCKING_BOOKING_STATUSES);
 
     if (brErr) throw new Error(brErr.message);
     if ((bookingCount ?? 0) > 0) {

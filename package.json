@@ -1,6 +1,6 @@
 {
   "name": "casa-emil",
-  "version": "0.1.2",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "dev": "next dev",

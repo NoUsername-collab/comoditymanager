@@ -19,6 +19,7 @@ import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
 import { loadTodayBoard } from "@/services/today-board";
+import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
   theme: "default",
@@ -31,6 +32,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("admin.layout");
+  await bindTenantContextFromRequest().catch(() => null);
   // Simulation state
   const simStatus = await getSimStatus();
   const simDbBackup =

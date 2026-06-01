@@ -49,7 +49,7 @@ async function resolveProvider(mode: DeploymentMode): Promise<IDataProvider> {
       // );
       // return createSQLiteProvider();
       throw new Error(
-        "Local mode is not yet available. Coming in Rezova v2.0."
+        "Local mode is not yet available. Coming in a future Hospira release."
       );
     }
 
@@ -60,7 +60,7 @@ async function resolveProvider(mode: DeploymentMode): Promise<IDataProvider> {
       // );
       // return createHybridProvider();
       throw new Error(
-        "Hybrid mode is not yet available. Coming in Rezova v2.5."
+        "Hybrid mode is not yet available. Coming in a future Hospira release."
       );
     }
 

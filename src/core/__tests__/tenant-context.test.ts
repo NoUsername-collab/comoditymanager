@@ -14,10 +14,10 @@ describe("TenantContext", () => {
   });
 
   describe("buildTenantContext", () => {
-    it("builds context from DEFAULT_TENANT (Casa Emil)", () => {
+    it("builds context from DEV_FALLBACK_TENANT", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
-      expect(ctx.tenant.slug).toBe("casa-emil");
-      expect(ctx.plan.id).toBe("pro");
+      expect(ctx.tenant.slug).toBe("__dev__");
+      expect(ctx.plan.id).toBe("professional");
       expect(ctx.plan.mode).toBe("cloud");
     });
 
@@ -123,9 +123,9 @@ describe("TenantContext", () => {
   });
 
   describe("singleton management", () => {
-    it("falls back to DEFAULT_TENANT when not set", () => {
+    it("falls back to DEV tenant when not set (development)", () => {
       const ctx = getTenantContext();
-      expect(ctx.tenant.slug).toBe("casa-emil");
+      expect(ctx.tenant.slug).toBe("__dev__");
     });
 
     it("returns set context after setTenantContext", () => {
@@ -149,7 +149,7 @@ describe("TenantContext", () => {
 
       resetTenantContext();
       const ctx = getTenantContext();
-      expect(ctx.tenant.slug).toBe("casa-emil");
+      expect(ctx.tenant.slug).toBe("__dev__");
     });
   });
 

@@ -213,7 +213,7 @@
       "reputationExcellent": "Excellent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklisted",
-      "welcomeHome": "Welcome to Casa Emil!",
+      "welcomeHome": "Welcome to Hospira!",
       "loadDataError": "Could not load data",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -266,7 +266,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Casa Emil",
+      "locationAdminTitle": "Location administration — Hospira",
       "noRoomsConfigured": "No rooms configured yet",
       "achievements": "Achievements",
       "homeEyebrow": "Home · reception panel",
@@ -314,7 +314,7 @@
       "moodFullWeek": "Full week — rooms are moving well. Keep it up!",
       "moodQuietEvening": "Quiet evening — all rooms are free tonight. Take a breath.",
       "moodAllFree": "No rooms occupied tonight — perfect for prep or rest.",
-      "moodDefault": "Everything looks good at reception. Have a great day at Casa Emil!",
+      "moodDefault": "Everything looks good at reception. Have a great day at Hospira!",
       "briefingArrivals": "{count, plural, one {# arrival} other {# arrivals}}",
       "briefingDepartures": "{count, plural, one {# departure} other {# departures}}",
       "briefingClean": "{count} to clean",
@@ -420,8 +420,8 @@
     },
     "pages": {
       "calendar": {
-        "title": "Calendar — Casa Emil",
-        "ganttTitle": "Gantt calendar — Casa Emil",
+        "title": "Calendar — Hospira",
+        "ganttTitle": "Gantt calendar — Hospira",
         "windowGantt": "Gantt",
         "unassignedTitle": "Unconfirmed requests",
         "unassignedSubtitle": "No room in displayed period",
@@ -431,7 +431,7 @@
         "heatmapError": "Error loading heatmap."
       },
       "cazari": {
-        "title": "Stays — Casa Emil",
+        "title": "Stays — Hospira",
         "searchFilter": "Search and filter",
         "results": "Results",
         "operational": "Operational",
@@ -443,7 +443,7 @@
         "historyEmpty": "History is empty"
       },
       "statistics": {
-        "title": "Statistics — Casa Emil",
+        "title": "Statistics — Hospira",
         "monthCompare": "Month comparison",
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
@@ -456,7 +456,7 @@
         "nights": "Nights"
       },
       "location": {
-        "title": "Location administration — Casa Emil",
+        "title": "Location administration — Hospira",
         "operational": "Operational",
         "operationalSubtitle": "{name} · hours and extra beds",
         "displayName": "Display name",
@@ -479,7 +479,7 @@
         "confirmAllocate": "Confirm and assign rooms"
       },
       "roomsNew": {
-        "title": "New room — Casa Emil",
+        "title": "New room — Hospira",
         "migrationHint": "for types and"
       },
       "home": {

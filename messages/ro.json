@@ -42,7 +42,7 @@
       "brandFallback": "Hospira"
     },
     "header": {
-      "subtitle": "Pensiune · Tasnad"
+      "subtitle": "Pensiune"
     },
     "nav": {
       "mainAria": "Navigare principală",
@@ -51,17 +51,17 @@
       "book": "Rezervare"
     },
     "footer": {
-      "tagline": "Cazare liniștită în Tasnad. Cerere online — confirmare personală de la pensiune, fără plată pe site.",
+      "tagline": "Cerere online — confirmare personală de la pensiune, fără plată pe site.",
       "links": "Linkuri",
       "bookingRequest": "Cerere cazare",
       "terms": "Termeni și condiții",
       "privacy": "Confidențialitate (GDPR)",
       "contact": "Contact",
       "contactEmail": "contact@hospira.ro",
-      "copyright": "© {year} {name} · Tasnad, România"
+      "copyright": "© {year} {name}"
     },
     "home": {
-      "badge": "Tasnad · cazare pensiune",
+      "badge": "Cazare pensiune",
       "subtitle": "Cazare liniștită pentru familie și concediu scurt. Alegi datele online, primești răspuns personal de la recepție — fără plată automată, fără surprize.",
       "tagline": "Cald, simplu, ca acasă — exact cum promite numele.",
       "checkTimes": "Check-in de la {checkIn} · Check-out până la {checkOut}",
@@ -210,7 +210,7 @@
       "selectedVariantNote": "Camerele sunt reținute provizoriu până la confirmarea pensiunii. Prețul final poate fi ajustat.",
       "phoneNoteWithDetails": "[Telefon] {notes}",
       "phoneNoteDefault": "[Telefon] Rezervare recepție",
-      "receptionFallbackEmail": "receptie@hospira.local"
+      "receptionFallbackEmail": "reception@no-email.local"
     },
     "confirm": {
       "backReceptie": "Recepție rapidă",
@@ -228,7 +228,7 @@
       "s3Title": "3. Anulare",
       "s3Body": "Condițiile de anulare sau modificare a sejurului sunt comunicate de pensiune odată cu confirmarea rezervării.",
       "s4Title": "4. Contact",
-      "s4Body": "Hospira · Tasnad — <email>contact@hospira.ro</email>"
+      "s4Body": "Hospira — <email>contact@hospira.ro</email>"
     },
     "privacy": {
       "title": "Politica de confidențialitate",
@@ -1595,7 +1595,7 @@
       "bulkDuplicateNames": "Există deja camere cu aceste nume în clădire: {names}",
       "roomActivated": "Cameră reactivată",
       "roomDeactivated": "Cameră marcată inactivă",
-      "roomDeleteHasBookings": "Camera are rezervări — nu poate fi ștearsă. Marcheaz-o inactivă în schimb.",
+      "roomDeleteHasBookings": "Camera are cereri noi sau cazări confirmate — nu poate fi ștearsă. Refuzatele din istoric nu blochează. Marcheaz-o inactivă sau anulează cererea activă.",
       "buildingDeleteHasRooms": "Clădirea încă are camere. Șterge toate camerele (fără rezervări) sau dezactivează-le, apoi încearcă din nou.",
       "buildingDeleteHasBookings": "Unele camere au rezervări legate. Nu poți șterge clădirea — șterge camerele fără istoric și folosește Dezactivează pentru restul.",
       "roomNameRequired": "Numele camerei e obligatoriu",

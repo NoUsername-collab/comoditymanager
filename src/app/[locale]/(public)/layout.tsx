@@ -1,3 +1,4 @@
+import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { AdminCorner } from "@/components/public/AdminCorner";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicHeader } from "@/components/public/PublicHeader";
@@ -21,11 +22,13 @@ const publicNoirVars = {
   color: "#f3efe3",
 } as CSSProperties;
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await bindTenantContextFromRequest().catch(() => null);
+
   return (
     <div
       className="site-themed site-themed--noir flex min-h-screen flex-1 flex-col"

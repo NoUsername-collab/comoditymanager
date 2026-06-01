@@ -24,9 +24,9 @@
       "informalDocument": "Информативен документ",
       "addFloor": "Добави етаж",
       "floorPlaceholder": "Партер / Етаж 1",
-      "buildingsTitle": "Сгради — Casa Emil",
-      "availabilityTitle": "Наличност — Casa Emil",
-      "newRoomTitle": "Нова стая — Casa Emil",
+      "buildingsTitle": "Сгради",
+      "availabilityTitle": "Наличност",
+      "newRoomTitle": "Нова стая",
       "seeAllRequests": "Виж всички",
       "roomGridTitle": "Мрежа стаи",
       "todayTitle": "Днес — {dayLabel}",
@@ -282,7 +282,7 @@
         "descriptionSuffix": "Цветът се вижда в календара."
       },
       "settingsLocation": {
-        "title": "Администрация на локацията — Casa Emil",
+        "title": "Администрация на локацията",
         "description": "Админ хъб за цялата конфигурация: структура, стаи, модулен каталог и staff акаунти.",
         "backToSettings": "← Назад към настройки",
         "unlockedForTwoHours": "Администрацията на локацията е отключена за 2 часа.",
@@ -376,7 +376,7 @@
         "historyRecent": "Скорошна история ({count})"
       },
       "bookingDetail": {
-        "title": "Резервация — Casa Emil",
+        "title": "Резервация",
         "bookingReference": "Референция:",
         "viewInCalendar": "Виж в календара",
         "status": "Статус:",

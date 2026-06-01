@@ -312,3 +312,21 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     description: "REST API pentru integrari externe",
   },
 };
+
+/** Legacy DB / test plan ids → current `PlanId`. */
+const LEGACY_PLAN_IDS: Record<string, PlanId> = {
+  starter: "free",
+  standard: "essential",
+  pro: "professional",
+};
+
+export function resolvePlanId(raw: string): PlanId {
+  const legacy = LEGACY_PLAN_IDS[raw];
+  if (legacy) return legacy;
+  if (raw in PLAN_CONFIGS) return raw as PlanId;
+  return "professional";
+}
+
+export function getPlanConfig(planId: string): PlanConfig {
+  return PLAN_CONFIGS[resolvePlanId(planId)];
+}

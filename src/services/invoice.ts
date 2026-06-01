@@ -1,6 +1,7 @@
 import { buildInformalInvoice, type InformalInvoice } from "@/domain/invoice/informal-invoice";
 import { getBookingById } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getTenantDisplayName } from "@/services/tenants";
 import { listAllRooms } from "@/services/rooms-admin";
 
 export type InvoiceContext = {
@@ -48,7 +49,7 @@ export async function loadInformalInvoice(
 
   return {
     invoice,
-    pensionName: settings?.display_name ?? "Casa Emil",
+    pensionName: settings?.display_name ?? (await getTenantDisplayName()),
     pensionAddress: null,
   };
 }

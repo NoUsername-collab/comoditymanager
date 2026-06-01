@@ -162,7 +162,11 @@ export async function submitGuestRequestAction(formData: FormData) {
         getTenantDisplayName(),
       ]);
       if (emails.length === 0) return;
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rezova.ro";
+      const { platformSiteUrl } = await import("@/lib/platform/branding");
+      const { headers } = await import("next/headers");
+      const h = await headers();
+      const host = h.get("x-forwarded-host") ?? h.get("host");
+      const baseUrl = platformSiteUrl(host);
       const { notifyOwnerNewRequest } = await import("@/lib/email/notify");
       // Send to ALL tenant owners/admins
       for (const ownerEmail of emails) {

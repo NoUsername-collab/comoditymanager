@@ -22,6 +22,8 @@ import {
   type HomeMilestone,
 } from "@/lib/admin-home-copy";
 import type { MonthComparison } from "@/domain/statistics/month-compare";
+import { platformPensionNameFallback } from "@/lib/platform/branding";
+import { getTenantDisplayName } from "@/services/tenants";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export type AdminDashboardStats = {
@@ -65,8 +67,10 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   const tDash = await getTranslations("admin.dashboard");
   const tCommon = await getTranslations("admin.common");
 
+  const pensionFallback = platformPensionNameFallback();
+
   const fallback: AdminDashboardData = {
-    pensionName: "Casa Emil",
+    pensionName: pensionFallback,
     todayLabel: todayLabelForLocale(locale),
     checkInTime: DEFAULT_CHECK_IN_TIME,
     checkOutTime: DEFAULT_CHECK_OUT_TIME,
@@ -138,7 +142,8 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
     };
 
     return {
-      pensionName: settings?.display_name ?? "Casa Emil",
+      pensionName:
+        settings?.display_name ?? (await getTenantDisplayName()),
       todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,

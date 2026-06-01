@@ -49,6 +49,7 @@ export async function confirmBookingWithRooms(
   );
   await assertRoomsAssignableForBooking(bookingId, roomIds);
 
+  const { tenantId } = await getTenantScope();
   const booking = await getBookingById(bookingId);
   if (!booking) throw new Error("booking.request_not_found");
   if (booking.status === "confirmata") throw new Error("booking.already_confirmed");
@@ -104,6 +105,7 @@ export async function confirmBookingWithRooms(
         p_booking_id: bookingId,
         p_room_ids: roomIds,
         p_total_price: totalPrice,
+        p_tenant_id: tenantId,
       }
     );
     if (rpcError) throw new Error(rpcError.message);

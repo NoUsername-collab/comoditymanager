@@ -42,7 +42,7 @@
       "brandFallback": "Hospira"
     },
     "header": {
-      "subtitle": "Guesthouse · Tasnad"
+      "subtitle": "Guesthouse"
     },
     "nav": {
       "mainAria": "Main navigation",
@@ -51,17 +51,17 @@
       "book": "Book a stay"
     },
     "footer": {
-      "tagline": "Quiet stays in Tasnad. Request online — personal confirmation from the guesthouse, no payment on the website.",
+      "tagline": "Request online — personal confirmation from the guesthouse, no payment on the website.",
       "links": "Links",
       "bookingRequest": "Booking request",
       "terms": "Terms and conditions",
       "privacy": "Privacy (GDPR)",
       "contact": "Contact",
       "contactEmail": "contact@hospira.ro",
-      "copyright": "© {year} {name} · Tasnad, Romania"
+      "copyright": "© {year} {name}"
     },
     "home": {
-      "badge": "Tasnad · guesthouse stay",
+      "badge": "Guesthouse stay",
       "subtitle": "Peaceful stays for families and short breaks. Pick dates online, get a personal reply from reception — no automatic payment, no surprises.",
       "tagline": "Warm, simple, like home — just as the name promises.",
       "checkTimes": "Check-in from {checkIn} · Check-out until {checkOut}",
@@ -210,7 +210,7 @@
       "selectedVariantNote": "Rooms are temporarily held until guesthouse confirmation. Final price may be adjusted.",
       "phoneNoteWithDetails": "[Phone] {notes}",
       "phoneNoteDefault": "[Phone] Reception booking",
-      "receptionFallbackEmail": "reception@casaemil.local"
+      "receptionFallbackEmail": "reception@no-email.local"
     },
     "confirm": {
       "backReceptie": "Quick reception",
@@ -228,7 +228,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Hospira · Tasnad — <email>contact@hospira.ro</email>"
+      "s4Body": "Hospira — <email>contact@hospira.ro</email>"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -1593,7 +1593,7 @@
       "bulkDuplicateNames": "These room names already exist in this building: {names}",
       "roomActivated": "Room reactivated",
       "roomDeactivated": "Room marked inactive",
-      "roomDeleteHasBookings": "Room has bookings — cannot delete. Mark it inactive instead.",
+      "roomDeleteHasBookings": "Room has new requests or confirmed stays — cannot delete. Refused/cancelled history does not block. Mark inactive or cancel the active request.",
       "buildingDeleteHasRooms": "This building still has rooms. Delete all rooms without bookings (or deactivate them), then try again.",
       "buildingDeleteHasBookings": "Some rooms have linked bookings. You cannot delete the building — delete rooms without history and use Deactivate for the rest.",
       "roomNameRequired": "Room name is required",

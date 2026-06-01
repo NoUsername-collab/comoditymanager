@@ -16,6 +16,8 @@ export {
   setTenantContext,
   resetTenantContext,
   DEFAULT_TENANT,
+  DEV_FALLBACK_TENANT,
+  TenantContextMissingError,
 } from "@/core/tenant/context";
 
 // ── Plans & Pricing ──────────────────────────────────────────────

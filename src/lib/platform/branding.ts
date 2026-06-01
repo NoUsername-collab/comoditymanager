@@ -1,0 +1,35 @@
+import { platformDomainFromRequestHost } from "@/lib/tenant/host";
+
+/** Product name shown in UI, emails, and dev fallbacks. */
+export const PLATFORM_NAME = "Hospira";
+
+export const PLATFORM_CONTACT_EMAIL = "contact@hospira.ro";
+
+/** Default outbound email when EMAIL_FROM is unset. */
+export const PLATFORM_EMAIL_FROM = `${PLATFORM_NAME} <noreply@${platformDomainFromRequestHost(null)}>`;
+
+/** Public site base URL for links in notifications. */
+export function platformSiteUrl(requestHost?: string | null): string {
+  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (fromEnv) return fromEnv.replace(/\/$/, "");
+
+  const domain = platformDomainFromRequestHost(requestHost);
+  if (domain === "localhost") {
+    const port = process.env.PORT ?? "3000";
+    return `http://localhost:${port}`;
+  }
+  return `https://${domain}`;
+}
+
+/** Footer line in transactional emails. */
+export function platformPoweredByLabel(): string {
+  return `Powered by ${PLATFORM_NAME}`;
+}
+
+/** When tenant display name cannot be resolved (last resort). */
+export function platformPensionNameFallback(): string {
+  return (
+    process.env.NEXT_PUBLIC_PENSION_NAME?.trim() ||
+    PLATFORM_NAME
+  );
+}

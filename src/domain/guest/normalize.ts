@@ -1,4 +1,11 @@
-export const PLACEHOLDER_GUEST_EMAIL = "receptie@casaemil.local";
+/** Canonical placeholder — no real inbox. */
+export const PLACEHOLDER_GUEST_EMAIL = "reception@no-email.local";
+
+/** Legacy rows created before tenant-agnostic placeholder. */
+const LEGACY_PLACEHOLDER_EMAILS = new Set([
+  "receptie@casaemil.local",
+  "reception@casaemil.local",
+]);
 
 export function normalizeEmail(raw: string | null | undefined): string | null {
   const s = (raw ?? "").trim().toLowerCase();
@@ -8,7 +15,8 @@ export function normalizeEmail(raw: string | null | undefined): string | null {
 
 export function isPlaceholderEmail(email: string | null | undefined): boolean {
   const norm = normalizeEmail(email);
-  return norm === PLACEHOLDER_GUEST_EMAIL;
+  if (!norm) return false;
+  return norm === PLACEHOLDER_GUEST_EMAIL || LEGACY_PLACEHOLDER_EMAILS.has(norm);
 }
 
 /** Normalizează telefon românesc spre E.164 (+40…). */
