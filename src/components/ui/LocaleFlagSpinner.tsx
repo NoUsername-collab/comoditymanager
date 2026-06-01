@@ -38,7 +38,10 @@ export function LocaleFlagSpinner({ label, size = "lg" }: Props) {
         } as CSSProperties
       }
     >
+      <span className="locale-flag-spinner__halo" aria-hidden />
+      <span className="locale-flag-spinner__track" aria-hidden />
       <span className="locale-flag-spinner__ring" aria-hidden />
+      <span className="locale-flag-spinner__sheen" aria-hidden />
       <span className="locale-flag-spinner__core" aria-hidden />
     </div>
   );

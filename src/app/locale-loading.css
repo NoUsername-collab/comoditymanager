@@ -1,21 +1,65 @@
-/* Locale-aware loading — flag-colored ring, no card panel */
+/* Language switcher — hide default disclosure marker */
+.language-switcher__menu--portal {
+  z-index: 2147483000;
+}
+
+.admin-hud__tools .language-switcher__menu--portal {
+  background: var(--admin-panel-bg, #fff);
+  border-color: var(--admin-panel-border, #e4e4e7);
+  box-shadow: 0 12px 40px color-mix(in srgb, #0f172a 22%, transparent);
+}
+
+.language-switcher__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.language-switcher__trigger::marker {
+  content: "";
+}
+
+/* Locale-aware loading — flag ring only, transparent route overlay */
 
 .locale-flag-spinner {
+  --spinner-ring: 0.38em;
   position: relative;
   display: grid;
   place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  filter: drop-shadow(0 4px 18px var(--flag-glow))
+    drop-shadow(0 0 28px color-mix(in srgb, var(--flag-c2) 35%, transparent));
 }
 
 .locale-flag-spinner--lg {
-  width: 4rem;
-  height: 4rem;
+  --spinner-ring: 0.44em;
+  width: 4.25rem;
+  height: 4.25rem;
 }
 
 .locale-flag-spinner--md {
-  width: 2.75rem;
-  height: 2.75rem;
+  --spinner-ring: 0.34em;
+  width: 3rem;
+  height: 3rem;
+}
+
+.locale-flag-spinner__halo {
+  position: absolute;
+  inset: -18%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--flag-c2) 22%, transparent) 0%,
+    transparent 68%
+  );
+  animation: locale-flag-halo 2.2s ease-in-out infinite;
+}
+
+.locale-flag-spinner__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--flag-track);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flag-c3) 12%, transparent);
 }
 
 .locale-flag-spinner__ring {
@@ -23,95 +67,79 @@
   inset: 0;
   border-radius: 9999px;
   background: conic-gradient(
-    from 0deg,
-    var(--flag-c1) 0deg 115deg,
-    var(--flag-c2) 115deg 235deg,
-    var(--flag-c3) 235deg 360deg
+    from -20deg,
+    var(--flag-c1) 0deg 108deg,
+    var(--flag-c2) 108deg 228deg,
+    var(--flag-c3) 228deg 360deg
   );
   -webkit-mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - 0.42em),
-    #000 calc(100% - 0.38em)
+    transparent calc(100% - var(--spinner-ring)),
+    #000 calc(100% - var(--spinner-ring) + 0.04em)
   );
   mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - 0.42em),
-    #000 calc(100% - 0.38em)
+    transparent calc(100% - var(--spinner-ring)),
+    #000 calc(100% - var(--spinner-ring) + 0.04em)
   );
-  animation: locale-flag-spin 0.9s cubic-bezier(0.45, 0.05, 0.25, 0.95) infinite;
-  filter: drop-shadow(0 0 14px var(--flag-glow));
+  animation: locale-flag-spin 0.85s cubic-bezier(0.42, 0.08, 0.2, 1) infinite;
 }
 
-.locale-flag-spinner--lg .locale-flag-spinner__ring {
+.locale-flag-spinner__sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 40deg,
+    transparent 0deg 250deg,
+    color-mix(in srgb, #fff 70%, var(--flag-c2)) 250deg 290deg,
+    transparent 290deg 360deg
+  );
   -webkit-mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - 0.48em),
-    #000 calc(100% - 0.44em)
+    transparent calc(100% - var(--spinner-ring) - 0.06em),
+    #000 calc(100% - var(--spinner-ring))
   );
   mask: radial-gradient(
     farthest-side,
-    transparent calc(100% - 0.48em),
-    #000 calc(100% - 0.44em)
+    transparent calc(100% - var(--spinner-ring) - 0.06em),
+    #000 calc(100% - var(--spinner-ring))
   );
+  opacity: 0.85;
+  animation: locale-flag-spin 1.35s linear infinite reverse;
 }
 
 .locale-flag-spinner__core {
-  width: 28%;
-  height: 28%;
+  width: 30%;
+  height: 30%;
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--flag-c1) 18%, transparent);
-  opacity: 0.35;
-  animation: locale-flag-pulse 1.4s ease-in-out infinite;
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, #fff 55%, var(--flag-c2)) 0%,
+    color-mix(in srgb, var(--flag-c1) 40%, transparent) 100%
+  );
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--flag-c3) 18%, transparent),
+    0 0 12px color-mix(in srgb, var(--flag-c1) 30%, transparent);
+  animation: locale-flag-pulse 1.5s ease-in-out infinite;
 }
 
 .admin-theme-loading {
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: 0;
+  background: transparent;
 }
 
-.admin-theme-loading--screen {
+/* Spinner peste app — fără panou alb, fără blur opac */
+.admin-theme-loading--overlay {
   position: fixed;
   inset: 0;
-  z-index: 2147483000;
+  z-index: 2147482000;
+  margin: 0;
   cursor: wait;
   pointer-events: auto;
-  background: color-mix(
-    in srgb,
-    var(--admin-page-bg, #0f172a) 88%,
-    transparent
-  );
-  backdrop-filter: blur(10px) saturate(1.1);
-}
-
-.admin-theme-loading--screen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at 50% 45%,
-    color-mix(in srgb, var(--admin-panel-bg, #fff) 8%, transparent) 0%,
-    transparent 55%
-  );
-  pointer-events: none;
-}
-
-.admin-theme-loading__stack {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.admin-theme-loading__label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--admin-text, #0f172a) 72%, transparent);
-  opacity: 0.85;
+  background: transparent;
 }
 
 @keyframes locale-flag-spin {
@@ -123,21 +151,35 @@
 @keyframes locale-flag-pulse {
   0%,
   100% {
-    transform: scale(0.92);
-    opacity: 0.25;
+    transform: scale(0.9);
+    opacity: 0.55;
   }
   50% {
-    transform: scale(1.08);
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes locale-flag-halo {
+  0%,
+  100% {
+    transform: scale(0.94);
     opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.9;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .locale-flag-spinner__ring {
+  .locale-flag-spinner__ring,
+  .locale-flag-spinner__sheen {
     animation-duration: 1.6s;
   }
 
-  .locale-flag-spinner__core {
+  .locale-flag-spinner__core,
+  .locale-flag-spinner__halo {
     animation: none;
   }
 }

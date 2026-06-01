@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
@@ -53,20 +54,63 @@ function Flag({ code, size = 20 }: { code: string; size?: number }) {
   return <Comp size={size} />;
 }
 
+type MenuPos = { top: number; right: number };
+
 export function LanguageSwitcher() {
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const detailsRef = useRef<HTMLDetailsElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState<MenuPos | null>(null);
+  const [portalReady, setPortalReady] = useState(false);
 
-  function switchLocale(next: string) {
-    if (next === locale) {
-      if (detailsRef.current) detailsRef.current.open = false;
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  const positionMenu = useCallback(() => {
+    const rect = triggerRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    setMenuPos({
+      top: rect.bottom + 8,
+      right: Math.max(8, window.innerWidth - rect.right),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setMenuPos(null);
       return;
     }
+    positionMenu();
+    const onLayout = () => positionMenu();
+    window.addEventListener("resize", onLayout);
+    window.addEventListener("scroll", onLayout, true);
+    return () => {
+      window.removeEventListener("resize", onLayout);
+      window.removeEventListener("scroll", onLayout, true);
+    };
+  }, [open, positionMenu]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [open]);
+
+  function switchLocale(next: string) {
+    setOpen(false);
+    if (next === locale) return;
     router.replace(pathname, { locale: next });
-    if (detailsRef.current) detailsRef.current.open = false;
   }
 
   const labels: Record<string, string> = {
@@ -75,20 +119,21 @@ export function LanguageSwitcher() {
     bg: tCommon("bulgarian"),
   };
 
-  return (
-    <details ref={detailsRef} className="relative z-[130001]">
-      <summary
+  const menu =
+    open && menuPos ? (
+      <div
+        ref={menuRef}
+        role="listbox"
         aria-label={tCommon("language")}
-        className="list-none cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-2 py-1 text-base leading-none flex items-center"
+        className="language-switcher__menu language-switcher__menu--portal fixed min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-card,#fff)] p-1 shadow-lg"
+        style={{ top: menuPos.top, right: menuPos.right, left: "auto" }}
       >
-        <Flag code={locale} />
-      </summary>
-
-      <div className="absolute right-0 z-[130002] mt-2 min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-header-bg)] p-1 shadow-lg">
         {routing.locales.map((l) => (
           <button
             key={l}
             type="button"
+            role="option"
+            aria-selected={l === locale}
             onClick={() => switchLocale(l)}
             aria-label={labels[l]}
             title={labels[l]}
@@ -103,6 +148,23 @@ export function LanguageSwitcher() {
           </button>
         ))}
       </div>
-    </details>
+    ) : null;
+
+  return (
+    <div className="language-switcher relative">
+      <button
+        ref={triggerRef}
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-label={tCommon("language")}
+        onClick={() => setOpen((wasOpen) => !wasOpen)}
+        className="language-switcher__trigger cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-2 py-1 text-base leading-none flex items-center"
+      >
+        <Flag code={locale} />
+      </button>
+
+      {portalReady && menu ? createPortal(menu, document.body) : null}
+    </div>
   );
 }

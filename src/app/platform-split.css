@@ -75,21 +75,6 @@
   color: var(--light-accent);
 }
 
-/* ── Route loading (platform pages) ──────────────────────────────── */
-
-.platform-route-loading {
-  display: grid;
-  place-items: center;
-  min-height: min(68vh, 28rem);
-  background:
-    radial-gradient(
-      ellipse 70% 50% at 50% 20%,
-      var(--light-glow) 0%,
-      transparent 65%
-    ),
-    linear-gradient(180deg, var(--light-bg) 0%, var(--light-bg-soft) 100%);
-}
-
 /* ── Surfaces ────────────────────────────────────────────────────── */
 
 .landing-surface--light {

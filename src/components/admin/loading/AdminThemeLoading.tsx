@@ -5,13 +5,11 @@ import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 type Props = {
   label?: string;
-  fullScreen?: boolean;
+  /** Fixed transparent overlay — spinner only, app stays visible underneath */
+  overlay?: boolean;
 };
 
-export function AdminThemeLoading({
-  label,
-  fullScreen = false,
-}: Props) {
+export function AdminThemeLoading({ label, overlay = false }: Props) {
   const tCommon = useTranslations("admin.common");
   const resolvedLabel = label ?? tCommon("loading");
 
@@ -19,15 +17,13 @@ export function AdminThemeLoading({
     <div
       className={[
         "admin-theme-loading",
-        fullScreen && "admin-theme-loading--screen",
+        overlay && "admin-theme-loading--overlay",
       ]
         .filter(Boolean)
         .join(" ")}
+      aria-busy="true"
     >
-      <div className="admin-theme-loading__stack">
-        <LocaleFlagSpinner label={resolvedLabel} size="lg" />
-        <span className="admin-theme-loading__label">{resolvedLabel}</span>
-      </div>
+      <LocaleFlagSpinner label={resolvedLabel} size="lg" />
     </div>
   );
 }
