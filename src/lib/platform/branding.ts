@@ -28,8 +28,5 @@ export function platformPoweredByLabel(): string {
 
 /** When tenant display name cannot be resolved (last resort). */
 export function platformPensionNameFallback(): string {
-  return (
-    process.env.NEXT_PUBLIC_PENSION_NAME?.trim() ||
-    PLATFORM_NAME
-  );
+  return PLATFORM_NAME;
 }

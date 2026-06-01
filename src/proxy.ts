@@ -16,6 +16,7 @@ import {
 } from "@/lib/auth/admin-location-unlock-cookie";
 import { pathBlockedForOperator } from "@/lib/auth/roles";
 import { resolveStaffRoleOnTenantHost, resolveTenantMemberRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
+import { isPlatformAdminEmailEdge } from "@/lib/auth/require-platform-admin";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
 import { buildTenantAdminUrl, parseTenantFromHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
 import {
@@ -352,6 +353,45 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
+    // Hospira internal admin — platform domain only, email-gated
+    if (path.startsWith("/hospira-admin")) {
+      const { configured, url, key } = getEdgeSupabaseConfig();
+      if (!configured || !url || !key) {
+        const noAuth = request.nextUrl.clone();
+        noAuth.pathname = "/landing";
+        return NextResponse.redirect(noAuth);
+      }
+
+      let haResponse = intlMiddleware(request);
+      const haSupa = createServerClient(url, key, {
+        cookies: {
+          getAll() { return request.cookies.getAll(); },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            cookiesToSet.forEach(({ name, value, options }) => haResponse.cookies.set(name, value, options));
+          },
+        },
+      });
+      const { data: { user: haUser } } = await haSupa.auth.getUser();
+
+      // Not authenticated → send to login, come back after
+      if (!haUser) {
+        const loginUrl = request.nextUrl.clone();
+        loginUrl.pathname = "/admin/login";
+        loginUrl.searchParams.set("next", path);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      // Authenticated but not platform admin → deny
+      if (!isPlatformAdminEmailEdge(haUser.email)) {
+        const deny = request.nextUrl.clone();
+        deny.pathname = "/landing";
+        return NextResponse.redirect(deny);
+      }
+
+      return haResponse;
+    }
+
     // Admin lives on tenant subdomains — send guests to login, owners to subdomain
     if (
       (path.startsWith("/admin") && path !== "/admin/login") ||
@@ -397,19 +437,25 @@ export async function proxy(request: NextRequest) {
         } = await supabase.auth.getUser();
 
         if (user) {
+          const next = request.nextUrl.searchParams.get("next") || "/admin";
+          const safe =
+            next.startsWith("/") &&
+            !next.startsWith("//") &&
+            !next.includes("://")
+              ? next
+              : "/admin";
+
+          // Platform admin routes stay on platform domain
+          if (safe.startsWith("/hospira-admin")) {
+            return NextResponse.redirect(new URL(safe, request.url));
+          }
+
           const slug = await getPrimaryTenantSlugForUser(
             supabase,
             user.id,
             user.email
           );
           if (slug) {
-            const next = request.nextUrl.searchParams.get("next") || "/admin";
-            const safe =
-              next.startsWith("/") &&
-              !next.startsWith("//") &&
-              !next.includes("://")
-                ? next
-                : "/admin";
             return NextResponse.redirect(
               buildTenantAdminUrl(slug, safe, requestHost)
             );

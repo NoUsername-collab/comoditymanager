@@ -1,30 +1,23 @@
 import { z } from "zod";
 
-const serverEnvSchema = z
-  .object({
-    NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .optional()
-      .default("development"),
-    VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
-    NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
-    SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-    ADMIN_EMAIL: z.string().email(),
-    OPERATOR_EMAIL: z.string().email(),
-    ADMIN_LOCATION_UNLOCK_SECRET: z.string().min(32).optional(),
-    ADMIN_FACTORY_RESET_ENABLED: z.string().optional(),
-    NEXT_PUBLIC_PENSION_NAME: z.string().optional(),
-    NEXT_PUBLIC_RELEASE_CHANNEL: z.enum(["alpha", "stable"]).optional(),
-  })
-  .refine(
-    (data) =>
-      data.ADMIN_EMAIL.toLowerCase() !== data.OPERATOR_EMAIL.toLowerCase(),
-    {
-      message: "ADMIN_EMAIL and OPERATOR_EMAIL must be different",
-      path: ["OPERATOR_EMAIL"],
-    }
-  );
+const serverEnvSchema = z.object({
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .optional()
+    .default("development"),
+  VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
+  // Platform admin
+  HOSPIRA_ADMIN_EMAILS: z.string().optional(),
+  // Legacy staff emails — optional in multi-tenant (role comes from tenant_members DB).
+  ADMIN_EMAIL: z.string().email().optional(),
+  OPERATOR_EMAIL: z.string().email().optional(),
+  ADMIN_LOCATION_UNLOCK_SECRET: z.string().min(32).optional(),
+  ADMIN_FACTORY_RESET_ENABLED: z.string().optional(),
+  NEXT_PUBLIC_RELEASE_CHANNEL: z.enum(["alpha", "stable"]).optional(),
+});
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
@@ -75,11 +68,12 @@ export function getSupabaseServiceRoleKey(): string {
   return getServerEnv().SUPABASE_SERVICE_ROLE_KEY;
 }
 
+/** @deprecated Legacy — staff role comes from tenant_members table now. */
 export function getStaffEmails() {
   const env = getServerEnv();
   return {
-    adminEmail: env.ADMIN_EMAIL.toLowerCase(),
-    operatorEmail: env.OPERATOR_EMAIL.toLowerCase(),
+    adminEmail: env.ADMIN_EMAIL?.toLowerCase() ?? null,
+    operatorEmail: env.OPERATOR_EMAIL?.toLowerCase() ?? null,
   };
 }
 

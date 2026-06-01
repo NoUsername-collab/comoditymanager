@@ -16,6 +16,8 @@
     "env:check:setup": "node scripts/check-env.mjs --setup",
     "env:check:setup:staging": "node scripts/check-env.mjs --file=.env.staging.local --profile=staging --setup",
     "env:secret": "node scripts/env-secret.mjs",
+    "setup-platform-admin": "node scripts/create-platform-admin.mjs",
+    "setup-platform-admin:staging": "node scripts/create-platform-admin.mjs .env.staging.local",
     "setup-admin": "node scripts/create-admin-user.mjs",
     "setup-staff": "node scripts/create-staff-users.mjs",
     "setup-staff:staging": "node scripts/create-staff-users.mjs .env.staging.local",

@@ -101,8 +101,15 @@ if (service && !isValidJwtLikeKey(service)) {
   errors.push("SUPABASE_SERVICE_ROLE_KEY prea scurtă sau invalidă");
 }
 
-const adminEmail = requireVar("ADMIN_EMAIL");
-const operatorEmail = requireVar("OPERATOR_EMAIL");
+// Platform admin emails (obligatoriu)
+const hospiraAdminEmails = process.env.HOSPIRA_ADMIN_EMAILS?.trim();
+if (!hospiraAdminEmails) {
+  warnings.push("HOSPIRA_ADMIN_EMAILS lipseste — nu vei putea accesa /hospira-admin");
+}
+
+// Legacy staff emails (optional in multi-tenant — role comes from tenant_members DB)
+const adminEmail = process.env.ADMIN_EMAIL?.trim();
+const operatorEmail = process.env.OPERATOR_EMAIL?.trim();
 
 if (adminEmail && !isValidEmail(adminEmail)) {
   errors.push("ADMIN_EMAIL nu e un email valid");
@@ -115,7 +122,7 @@ if (
   operatorEmail &&
   adminEmail.toLowerCase() === operatorEmail.toLowerCase()
 ) {
-  errors.push("ADMIN_EMAIL și OPERATOR_EMAIL trebuie să fie conturi diferite");
+  errors.push("ADMIN_EMAIL si OPERATOR_EMAIL trebuie sa fie conturi diferite");
 }
 
 if (args.setup) {
@@ -178,7 +185,10 @@ if (warnings.length) {
 console.log("");
 ok(`Profil: ${profile}`);
 ok(`Supabase: ${url?.replace(/https:\/\//, "").split(".")[0]}…`);
-ok(`Staff: Admin → ${adminEmail}, Operator → ${operatorEmail}`);
+ok(`Platform admin: ${hospiraAdminEmails ?? "(nesetat)"}`);
+if (adminEmail || operatorEmail) {
+  ok(`Staff legacy: Admin → ${adminEmail ?? "—"}, Operator → ${operatorEmail ?? "—"}`);
+}
 if (profile === "production") {
   ok("Verificare producție OK — safe pentru Vercel deploy");
 } else if (profile === "staging") {

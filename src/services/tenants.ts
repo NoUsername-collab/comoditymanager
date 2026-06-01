@@ -104,7 +104,7 @@ export async function getTenantByDomain(domain: string): Promise<TenantRow | nul
 
 /**
  * Get the owner's notification email for a tenant.
- * Falls back to ADMIN_EMAIL env var, then to null.
+ * Returns null if tenant not found or no owner_email set.
  */
 export async function getTenantOwnerEmail(
   tenantId?: string
@@ -115,15 +115,13 @@ export async function getTenantOwnerEmail(
       if (tenant?.owner_email) return tenant.owner_email;
     }
 
-    // No tenantId — get default tenant
     const tenant = await getDefaultTenant();
     if (tenant?.owner_email) return tenant.owner_email;
   } catch {
-    // DB unavailable — fall through to env var
+    // DB unavailable
   }
 
-  // Fallback: env var (backward compatibility)
-  return process.env.ADMIN_EMAIL?.trim() || null;
+  return null;
 }
 
 /**
