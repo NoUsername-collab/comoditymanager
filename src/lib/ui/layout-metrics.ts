@@ -1,3 +1,12 @@
+import {
+  displayProfileLabel,
+  isDisplayProfile,
+  resolveDisplayProfile,
+  resolveViewportHeightTier,
+  type DisplayProfile,
+  type ViewportHeightTier,
+} from "@/lib/ui/display-profile";
+
 export type LayoutMetrics = {
   innerWidth: number;
   innerHeight: number;
@@ -14,6 +23,9 @@ export type LayoutMetrics = {
   documentScrollWidth: number;
   documentClientWidth: number;
   hasHorizontalOverflow: boolean;
+  displayProfile: DisplayProfile;
+  viewportHeightTier: ViewportHeightTier;
+  compactViewportClass: boolean;
   device: string | null;
   touchDeviceClass: boolean;
   prefersReducedMotion: boolean;
@@ -28,9 +40,15 @@ export function collectLayoutMetrics(): LayoutMetrics {
   const documentScrollWidth = doc.scrollWidth;
   const hasHorizontalOverflow = documentScrollWidth > documentClientWidth + 1;
 
+  const innerHeight = window.innerHeight;
+  const displayProfile = resolveDisplayProfile(innerWidth, innerHeight);
+  const viewportHeightTier = resolveViewportHeightTier(innerHeight);
+  const domProfile = doc.getAttribute("data-display-profile");
+  const profile = isDisplayProfile(domProfile) ? domProfile : displayProfile;
+
   return {
     innerWidth,
-    innerHeight: window.innerHeight,
+    innerHeight,
     outerWidth: window.outerWidth,
     outerHeight: window.outerHeight,
     devicePixelRatio: window.devicePixelRatio,
@@ -46,6 +64,9 @@ export function collectLayoutMetrics(): LayoutMetrics {
     documentScrollWidth,
     documentClientWidth,
     hasHorizontalOverflow,
+    displayProfile: profile,
+    viewportHeightTier,
+    compactViewportClass: doc.classList.contains("compact-viewport"),
     device: doc.getAttribute("data-device"),
     touchDeviceClass: doc.classList.contains("touch-device"),
     prefersReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -62,6 +83,8 @@ export function formatLayoutMetrics(m: LayoutMetrics): string {
       : "visualViewport: —",
     `doc: scroll ${m.documentScrollWidth} / client ${m.documentClientWidth}`,
     m.hasHorizontalOverflow ? "⚠ horizontal overflow" : "✓ no horizontal overflow",
+    `display: ${m.displayProfile} (${displayProfileLabel(m.displayProfile)})`,
+    `height tier: ${m.viewportHeightTier} · compact CSS: ${m.compactViewportClass ? "yes" : "no"}`,
     `device: ${m.device ?? "?"} · touch CSS: ${m.touchDeviceClass ? "yes" : "no"}`,
     `reduced motion: ${m.prefersReducedMotion ? "yes" : "no"}`,
   ];

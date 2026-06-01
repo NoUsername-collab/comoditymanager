@@ -1255,6 +1255,7 @@
       "floors": "Floors",
       "tenantMemberRequired": "This account is not a member of this property. Use the correct subdomain or ask the owner for access.",
       "tenantScopeMismatch": "The tenant in the URL does not match loaded data. Reload the page or sign in on the property subdomain.",
+      "tenantHostRequired": "Open the app on your property subdomain (e.g. property.hospira.ro), not the generic site URL.",
       "loginRequired": "You need to sign in.",
       "roleForbidden": "You do not have permission for this action.",
       "attention": "Attention",

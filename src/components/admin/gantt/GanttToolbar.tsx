@@ -15,6 +15,7 @@ import type { BookingRow } from "@/services/bookings";
 import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
+import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
 
 export type GanttViewMode = "all" | "building" | "room";
 
@@ -145,6 +146,7 @@ export function GanttToolbar({
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
+  const compactViewport = useIsCompactViewport();
   const cereriCount = cereri.length;
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -263,6 +265,7 @@ export function GanttToolbar({
             <SegmentGroup
               label={tCommon("displayLayer", { layer: "" }).replace(/:\s*$/, "")}
               compact
+              forceShortLabels={compactViewport}
               value={layer}
               onChange={(l) => push({ layer: l })}
               options={[
@@ -279,6 +282,7 @@ export function GanttToolbar({
             <SegmentGroup
               label={tCommon("roomsLabel")}
               compact
+              forceShortLabels={compactViewport}
               value={filter}
               onChange={(f) =>
                 push({
@@ -296,6 +300,7 @@ export function GanttToolbar({
             <SegmentGroup
               label={tCommon("options")}
               compact
+              forceShortLabels={compactViewport}
               value={feat}
               onChange={(f) => push({ feat: f })}
               options={[
@@ -308,6 +313,7 @@ export function GanttToolbar({
             <SegmentGroup
               label={tCommon("view")}
               compact
+              forceShortLabels={compactViewport}
               value={view}
               onChange={(v) => {
                 if (v === "all") push({ view: "all", building: null, room: null });

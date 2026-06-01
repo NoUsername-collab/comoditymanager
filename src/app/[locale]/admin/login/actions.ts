@@ -4,19 +4,51 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { localeRedirect as localeRedirectInternal } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import {
   isValidLoginIdentifier,
   resolveLoginIdentifier,
 } from "@/lib/auth/constants";
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
-import { logAdminActivity } from "@/services/activity-log";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";
+import { withTenantId } from "@/lib/tenant/scope";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { getTranslations } from "next-intl/server";
 
-export async function loginAction(formData: FormData) {
+export type LoginFormState = { error: string | null };
+
+async function logLoginActivity(
+  tenantId: string | undefined,
+  user: { id: string; email?: string | null },
+  summary: string
+): Promise<void> {
+  if (!tenantId) return;
+  try {
+    const supabase = await createAdminClient();
+    await supabase.from("admin_activity_log").insert(
+      withTenantId(tenantId, {
+        actor_id: user.id,
+        actor_email: user.email ?? null,
+        action: "auth.login",
+        entity_type: "session",
+        entity_id: user.id,
+        summary: summary.slice(0, 500),
+        metadata: {},
+        undoable: false,
+        reverts_log_id: null,
+      })
+    );
+  } catch (e) {
+    console.error("[login] activity log", e);
+  }
+}
+
+export async function loginAction(
+  _prevState: LoginFormState,
+  formData: FormData
+): Promise<LoginFormState> {
   const t = await getTranslations("admin.serverActions");
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
@@ -65,15 +97,16 @@ export async function loginAction(formData: FormData) {
       ? next
       : "/admin";
 
+  const loginSummary = t("loginSummary", { role: role ?? "staff" });
+
   // Platform admin — redirect to /hospira-admin without tenant check
-  if (!tenant && safeNext.startsWith("/hospira-admin") && user.email && isPlatformAdminEmail(user.email)) {
-    await logAdminActivity({
-      action: "auth.login",
-      entityType: "session",
-      entityId: user.id,
-      summary: t("loginSummary", { role: "platform_admin" }),
-      actor: { id: user.id, email: user.email },
-    });
+  if (
+    !tenant &&
+    safeNext.startsWith("/hospira-admin") &&
+    user.email &&
+    isPlatformAdminEmail(user.email)
+  ) {
+    await logLoginActivity(undefined, user, loginSummary);
     redirect(safeNext);
   }
 
@@ -91,18 +124,11 @@ export async function loginAction(formData: FormData) {
     }
   }
 
-  await logAdminActivity({
-    action: "auth.login",
-    entityType: "session",
-    entityId: user.id,
-    summary: t("loginSummary", { role: role ?? "staff" }),
-    actor: { id: user.id, email: user.email },
-  });
+  await logLoginActivity(tenant?.id, user, loginSummary);
 
   // Already on tenant host (slug.hospira.ro) — stay on same domain
   if (tenant) {
     await localeRedirectInternal(safeNext);
-    return;
   }
 
   // Platform login (test.hospira.ro) → admin lives on tenant subdomain
@@ -123,15 +149,29 @@ export async function logoutAction() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const tenant = await resolveRequestTenant();
   if (user) {
-    await logAdminActivity({
-      action: "auth.logout",
-      entityType: "session",
-      entityId: user.id,
-      summary: t("adminLogout"),
-      actor: { id: user.id, email: user.email },
-    });
+    try {
+      const supabaseAdmin = await createAdminClient();
+      if (tenant) {
+        await supabaseAdmin.from("admin_activity_log").insert(
+          withTenantId(tenant.id, {
+            actor_id: user.id,
+            actor_email: user.email ?? null,
+            action: "auth.logout",
+            entity_type: "session",
+            entity_id: user.id,
+            summary: t("adminLogout").slice(0, 500),
+            metadata: {},
+            undoable: false,
+            reverts_log_id: null,
+          })
+        );
+      }
+    } catch (e) {
+      console.error("[logout] activity log", e);
+    }
   }
   await supabase.auth.signOut();
-  await redirect("/");
+  redirect("/");
 }

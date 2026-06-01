@@ -1,8 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
+  getTenantPublicScope,
   getTenantScope,
   tenantCacheKey,
   tenantCacheTag,
@@ -128,6 +128,7 @@ const getCachedRooms = (tenantId: string) =>
     }
   );
 
+/** Admin / staff — requires tenant host + membership. */
 export async function listAllRooms(): Promise<
   (Room & {
     building_name: string;
@@ -135,7 +136,19 @@ export async function listAllRooms(): Promise<
     room_type_name: string | null;
   })[]
 > {
-  const tenantId = await resolveTenantIdForData();
+  const { tenantId } = await getTenantScope();
+  return getCachedRooms(tenantId)();
+}
+
+/** Public calendar preview — tenant from host only. */
+export async function listAllRoomsForPublic(): Promise<
+  (Room & {
+    building_name: string;
+    floor_name: string | null;
+    room_type_name: string | null;
+  })[]
+> {
+  const { tenantId } = await getTenantPublicScope();
   return getCachedRooms(tenantId)();
 }
 

@@ -156,10 +156,14 @@ export async function submitGuestRequestAction(formData: FormData) {
   // Non-blocking — never delays user response
   (async () => {
     try {
-      const { getTenantNotificationEmails, getTenantDisplayName } = await import("@/services/tenants");
+      const { requireTenantIdForData } = await import("@/lib/tenant/guards");
+      const { getTenantNotificationEmails, getTenantDisplayName } = await import(
+        "@/services/tenants"
+      );
+      const tenantId = await requireTenantIdForData();
       const [emails, pensionName] = await Promise.all([
-        getTenantNotificationEmails(),
-        getTenantDisplayName(),
+        getTenantNotificationEmails(tenantId),
+        getTenantDisplayName(tenantId),
       ]);
       if (emails.length === 0) return;
       const { platformSiteUrl } = await import("@/lib/platform/branding");

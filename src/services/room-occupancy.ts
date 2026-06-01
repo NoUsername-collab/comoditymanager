@@ -11,7 +11,7 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
-import { getTenantDataScope, getTenantScope } from "@/lib/tenant/scope";
+import { getTenantPublicScope, getTenantScope } from "@/lib/tenant/scope";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { releaseExpiredRoomHolds } from "@/services/room-holds";
@@ -48,7 +48,7 @@ export async function getRoomOccupancy(
   const ref = options.referenceDate ?? (await getEffectiveToday());
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
   const { tenantId, supabase } = options.forPublicCalendar
-    ? await getTenantDataScope()
+    ? await getTenantPublicScope()
     : await getTenantScope();
   const out: OccupancySegment[] = [];
 
@@ -239,6 +239,7 @@ export async function assertRoomsAvailableForOccupancy(
     rangeStart: checkIn,
     rangeEnd: checkOut,
     roomIds: unique,
+    forPublicCalendar: true,
   });
   if (
     hasOccupancyConflict(unique, checkIn, checkOut, segments, {

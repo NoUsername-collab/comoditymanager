@@ -27,7 +27,7 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await bindTenantContextFromRequest().catch(() => null);
+  await bindTenantContextFromRequest();
 
   return (
     <div

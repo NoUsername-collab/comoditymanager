@@ -5,11 +5,11 @@ import {
   tenantSlugFromHost,
 } from "@/lib/tenant/host";
 import {
-  getDefaultTenant,
   getTenantByDomain,
   getTenantBySlug,
   type TenantRow,
 } from "@/services/tenants";
+import { requireTenantIdForData } from "@/lib/tenant/guards";
 
 export class TenantNotFoundError extends Error {
   constructor(public readonly key: string) {
@@ -48,26 +48,24 @@ export const resolveRequestTenant = cache(async (): Promise<TenantRow | null> =>
     return getTenantByDomain(hostDomain);
   }
 
+  if (process.env.NODE_ENV === "development") {
+    const devSlug = process.env.DEV_TENANT_SLUG?.trim();
+    if (devSlug) {
+      return getTenantBySlug(devSlug);
+    }
+  }
+
   return null;
 });
 
-/**
- * Tenant id for data queries on tenant hosts (slug.hospira.ro).
- * Falls back to default tenant when no host tenant (legacy / local dev).
- */
+/** @deprecated Use requireTenantIdForData() */
 export async function getActiveTenantIdForData(): Promise<string> {
-  const fromHost = await resolveRequestTenant();
-  if (fromHost) return fromHost.id;
-
   const h = await headers();
   if (h.get("x-tenant-slug") || h.get("x-tenant-domain")) {
     const key = h.get("x-tenant-slug") ?? h.get("x-tenant-domain") ?? "?";
     throw new TenantNotFoundError(key);
   }
-
-  const fallback = await getDefaultTenant();
-  if (!fallback) throw new Error("No tenant configured");
-  return fallback.id;
+  return requireTenantIdForData();
 }
 
 export async function getActiveTenantSlug(): Promise<string | null> {

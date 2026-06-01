@@ -1,7 +1,7 @@
 import { computeGuestStayOptions } from "@/domain/availability/guest-stay-options";
 import type { GuestStayPreview } from "@/domain/availability/guest-stay-options";
 import { listOccupiedRoomRanges } from "@/services/bookings";
-import { listAllRooms } from "@/services/rooms-admin";
+import { listAllRoomsForPublic } from "@/services/rooms-admin";
 import { getPensionSettings } from "@/services/pension-settings";
 import {
   DEFAULT_CHECK_IN_TIME,
@@ -17,7 +17,7 @@ export async function loadGuestStayPreview(
   const guestCount = Math.max(1, numAdults + numChildren);
 
   const [roomsRaw, occupied, settings] = await Promise.all([
-    listAllRooms(),
+    listAllRoomsForPublic(),
     listOccupiedRoomRanges(undefined, {
       forPublicCalendar: true,
       rangeStart: checkIn,

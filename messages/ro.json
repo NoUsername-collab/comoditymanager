@@ -1254,6 +1254,7 @@
       "floors": "Etaje",
       "tenantMemberRequired": "Contul nu este membru al acestei pensiuni. Folosește subdomeniul corect sau cere acces de la owner.",
       "tenantScopeMismatch": "Tenantul din URL nu coincide cu datele încărcate. Reîncarcă pagina sau autentifică-te pe subdomeniul pensiunii.",
+      "tenantHostRequired": "Deschide aplicația pe subdomeniul pensiunii (ex. pensiunea.hospira.ro), nu pe domeniul generic.",
       "loginRequired": "Trebuie să te autentifici.",
       "roleForbidden": "Nu ai permisiunea pentru această acțiune.",
       "attention": "Atenție",

@@ -107,43 +107,28 @@ export async function getTenantByDomain(domain: string): Promise<TenantRow | nul
  * Get the owner's notification email for a tenant.
  * Returns null if tenant not found or no owner_email set.
  */
-export async function getTenantOwnerEmail(
-  tenantId?: string
-): Promise<string | null> {
+export async function getTenantOwnerEmail(tenantId: string): Promise<string | null> {
+  if (!tenantId) return null;
   try {
-    if (tenantId) {
-      const tenant = await getTenantById(tenantId);
-      if (tenant?.owner_email) return tenant.owner_email;
-    }
-
-    const tenant = await getDefaultTenant();
-    if (tenant?.owner_email) return tenant.owner_email;
+    const tenant = await getTenantById(tenantId);
+    return tenant?.owner_email ?? null;
   } catch {
-    // DB unavailable
+    return null;
   }
-
-  return null;
 }
 
 /**
  * Get the pension display name for a tenant.
  * Falls back to NEXT_PUBLIC_PENSION_NAME env var.
  */
-export async function getTenantDisplayName(
-  tenantId?: string
-): Promise<string> {
+export async function getTenantDisplayName(tenantId: string): Promise<string> {
+  if (!tenantId) return platformPensionNameFallback();
   try {
-    if (tenantId) {
-      const tenant = await getTenantById(tenantId);
-      if (tenant?.display_name) return tenant.display_name;
-    }
-
-    const tenant = await getDefaultTenant();
+    const tenant = await getTenantById(tenantId);
     if (tenant?.display_name) return tenant.display_name;
   } catch {
-    // DB unavailable — fall through to env var
+    /* fall through */
   }
-
   return platformPensionNameFallback();
 }
 
@@ -152,47 +137,29 @@ export async function getTenantDisplayName(
  * Returns owner + all active admin members.
  */
 export async function getTenantNotificationEmails(
-  tenantId?: string
+  tenantId: string
 ): Promise<string[]> {
+  if (!tenantId) return [];
+
   const emails = new Set<string>();
 
   try {
     const supabase = createPublicAdminClient();
+    const tenant = await getTenantById(tenantId);
+    if (tenant?.owner_email) emails.add(tenant.owner_email);
 
-    // Resolve tenant
-    let resolvedTenantId = tenantId;
-    if (!resolvedTenantId) {
-      const tenant = await getDefaultTenant();
-      resolvedTenantId = tenant?.id;
-      if (tenant?.owner_email) emails.add(tenant.owner_email);
-    } else {
-      const tenant = await getTenantById(resolvedTenantId);
-      if (tenant?.owner_email) emails.add(tenant.owner_email);
-    }
+    const { data: members } = await supabase
+      .from("tenant_members")
+      .select("email, role")
+      .eq("tenant_id", tenantId)
+      .eq("is_active", true)
+      .in("role", ["owner", "admin"]);
 
-    // Also get admin-role members who should receive notifications
-    if (resolvedTenantId) {
-      const { data: members } = await supabase
-        .from("tenant_members")
-        .select("email, role")
-        .eq("tenant_id", resolvedTenantId)
-        .eq("is_active", true)
-        .in("role", ["owner", "admin"]);
-
-      if (members) {
-        for (const m of members) {
-          if (m.email) emails.add(m.email);
-        }
-      }
+    for (const m of members ?? []) {
+      if (m.email) emails.add(m.email);
     }
   } catch {
-    // DB unavailable
-  }
-
-  // Fallback
-  if (emails.size === 0) {
-    const env = process.env.ADMIN_EMAIL?.trim();
-    if (env) emails.add(env);
+    /* DB unavailable */
   }
 
   return Array.from(emails);

@@ -6,11 +6,11 @@ import {
 } from "@/core/tenant/context";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { tenantRowToRecord } from "@/lib/tenant/record";
-import { getDefaultTenant } from "@/services/tenants";
+import { getTenantBySlug } from "@/services/tenants";
 
 /**
  * Bind tenant context for the current request from host headers / DB.
- * Call at the start of server layouts and server actions that use feature gates.
+ * Production: host tenant only — never "first row in tenants table".
  */
 export async function bindTenantContextFromRequest(): Promise<TenantContext> {
   resetTenantContext();
@@ -20,14 +20,16 @@ export async function bindTenantContextFromRequest(): Promise<TenantContext> {
     return setTenantContext(tenantRowToRecord(fromHost));
   }
 
-  const defaultRow = await getDefaultTenant();
-  if (defaultRow) {
-    return setTenantContext(tenantRowToRecord(defaultRow));
-  }
-
   if (process.env.NODE_ENV === "development") {
+    const devSlug = process.env.DEV_TENANT_SLUG?.trim();
+    if (devSlug) {
+      const row = await getTenantBySlug(devSlug);
+      if (row) {
+        return setTenantContext(tenantRowToRecord(row));
+      }
+    }
     return setTenantContext(DEV_FALLBACK_TENANT);
   }
 
-  throw new Error("No tenant configured for this host");
+  throw new Error("auth.tenant_host_required");
 }

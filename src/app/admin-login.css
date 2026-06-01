@@ -6,6 +6,47 @@
   background: #f4f4f5;
 }
 
+/* Full-viewport loading — transparent, spinner only (no white flash) */
+.admin-login-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  background: rgba(9, 9, 11, 0.28);
+  backdrop-filter: blur(3px);
+}
+
+.admin-login-overlay__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.admin-login-overlay__label {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #3f3f46;
+  letter-spacing: 0.02em;
+}
+
+.admin-login-form__fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
 .admin-login-card {
   color: #18181b;
 }

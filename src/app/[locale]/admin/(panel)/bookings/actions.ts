@@ -44,8 +44,9 @@ export async function confirmBookingAction(formData: FormData) {
   // Notify guest (non-blocking) — pension name from DB
   (async () => {
     try {
+      const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
       const { getTenantDisplayName } = await import("@/services/tenants");
-      const pensionName = await getTenantDisplayName();
+      const pensionName = await getTenantDisplayName(await resolveTenantIdForData());
       const { getBookingById } = await import("@/services/bookings");
       const booking = await getBookingById(id);
       if (!booking || !booking.guest_email) return;
@@ -90,8 +91,9 @@ export async function cancelBookingAction(formData: FormData) {
   if (bookingBefore?.guest_email) {
     (async () => {
       try {
+        const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
         const { getTenantDisplayName } = await import("@/services/tenants");
-        const pensionName = await getTenantDisplayName();
+        const pensionName = await getTenantDisplayName(await resolveTenantIdForData());
         const { notifyGuestCancelled } = await import("@/lib/email/notify");
         await notifyGuestCancelled({
           guestEmail: bookingBefore.guest_email,

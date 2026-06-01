@@ -1,28 +1,34 @@
-# Multi-tenant security (Hospira)
+# Tenant isolation (bulletproof rules)
 
-## Layers
+## Production
 
-1. **Host routing** — `x-tenant-slug` / domain → `getActiveTenantIdForData()`
-2. **Staff membership** — `assertStaffTenantAccess()` on every `getTenantScope()` call (tenant hosts only)
-3. **Query filters** — `.eq("tenant_id", tenantId)` in services
-4. **RLS** — `tenant_row_visible()` requires JWT `app_metadata.tenant_id` + active `tenant_members` row
-5. **RPC guards** — e.g. `confirm_booking_with_rooms(..., p_tenant_id)` must match booking tenant
-6. **Triggers** — `reject_tenant_id_change` blocks moving rows between tenants
+1. **Tenant is resolved only from the request host** (`x-tenant-slug`, `x-tenant-domain`, or parsed `Host`). There is **no** fallback to “first tenant in database”.
+2. **Admin data** uses `getTenantScope()` → `requireTenantIdForData()` + **active `tenant_members` row** for the logged-in user.
+3. **Public calendar** uses `getTenantPublicScope()` → host tenant only, no staff login.
+4. **Emails / display names** always receive an explicit `tenantId` from `requireTenantIdForData()` — never `getDefaultTenant()`.
+5. **`bindTenantContextFromRequest()`** must run in layouts; failures are not swallowed.
 
-## Migrations (run in order)
+## Local development
 
-- `045_tenant_rls_bulletproof.sql`
-- `046_rpc_and_session_tenant_guards.sql`
+Set in `.env.local`:
 
-## After deploy
-
-Admin panel binds JWT tenant on load via `StaffTenantSessionBinder` → `bind_auth_tenant_for_host`.
-
-Service-role server code still bypasses RLS; never expose `SUPABASE_SERVICE_ROLE_KEY` to the client.
-
-## Verify
-
-```sql
--- As authenticated user with tenant A claim: must not see tenant B bookings
-select count(*) from public.bookings;
+```env
+DEV_TENANT_SLUG=your-pension-slug
 ```
+
+Use the same slug as in Supabase `tenants.slug`. Without it, only `DEV_FALLBACK_TENANT` (`__dev__`) is used when the host is plain `localhost`.
+
+## Key modules
+
+| Module | Role |
+|--------|------|
+| `lib/tenant/guards.ts` | `requireTenantIdForData()` — single ID source |
+| `lib/tenant/scope.ts` | Staff vs public Supabase scope |
+| `lib/tenant/bind-request-context.ts` | Plan gates / feature context |
+| `proxy.ts` | Injects tenant headers on tenant hosts |
+
+## Errors (user-facing via `formatAdminError`)
+
+- `auth.tenant_host_required` — wrong URL (not on property subdomain)
+- `auth.tenant_member_required` — logged in but not a member of this property
+- `auth.tenant_scope_mismatch` — internal tenant ID mismatch (should not happen after fixes)

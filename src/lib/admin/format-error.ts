@@ -1,6 +1,7 @@
 const MESSAGE_KEYS: Record<string, string> = {
   "auth.tenant_member_required": "tenantMemberRequired",
   "auth.tenant_scope_mismatch": "tenantScopeMismatch",
+  "auth.tenant_host_required": "tenantHostRequired",
   "auth.login_required": "loginRequired",
   "auth.role_forbidden": "roleForbidden",
 };

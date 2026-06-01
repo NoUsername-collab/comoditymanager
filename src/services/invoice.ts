@@ -1,6 +1,7 @@
 import { buildInformalInvoice, type InformalInvoice } from "@/domain/invoice/informal-invoice";
 import { getBookingById } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantDisplayName } from "@/services/tenants";
 import { listAllRooms } from "@/services/rooms-admin";
 
@@ -47,9 +48,12 @@ export async function loadInformalInvoice(
     rooms: roomsForInvoice,
   });
 
+  const tenantId = await resolveTenantIdForData();
+
   return {
     invoice,
-    pensionName: settings?.display_name ?? (await getTenantDisplayName()),
+    pensionName:
+      settings?.display_name ?? (await getTenantDisplayName(tenantId)),
     pensionAddress: null,
   };
 }

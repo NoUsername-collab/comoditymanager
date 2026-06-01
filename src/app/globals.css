@@ -10,6 +10,7 @@
 @import "./layout-debug.css";
 @import "./admin-login.css";
 @import "./device-mobile.css";
+@import "./display-profile.css";
 
 :root {
   --background: var(--bg, #ffffff);
@@ -1391,8 +1392,8 @@ html[data-theme="default"][data-mode="night"] {
   padding: 0.4rem 0.8rem;
 }
 
-/* Laptop îngust / zoom — HUD pe rânduri, nu doar telefon (touch-device) */
-@media (max-width: 1280px) {
+/* Laptop îngust / zoom — HUD pe rânduri (și data-display-profile compact) */
+@media (max-width: 1400px) {
   .admin-hud__center {
     order: 3;
     flex: 1 1 100%;

@@ -38,6 +38,8 @@ export default function RootLayout({
       data-theme={DEFAULT_THEME_ID}
       data-mode={DEFAULT_THEME_MODE}
       data-device="desktop"
+      data-display-profile="laptop"
+      data-viewport-height="standard"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >

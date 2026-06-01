@@ -33,7 +33,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const t = await getTranslations("admin.layout");
-  await bindTenantContextFromRequest().catch(() => null);
+  await bindTenantContextFromRequest();
   // Simulation state
   const simStatus = await getSimStatus();
   const simDbBackup =

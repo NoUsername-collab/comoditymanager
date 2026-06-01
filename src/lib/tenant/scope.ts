@@ -3,8 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getStaffUser } from "@/lib/auth/require-staff";
 import { getTenantMemberRole } from "@/services/tenant-members";
-import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { resolveRequestTenant } from "./active";
+import { requireTenantIdForData } from "./guards";
 
 /** Resolved tenant + service-role client for admin data access. */
 export type TenantScope = {
@@ -12,27 +12,33 @@ export type TenantScope = {
   supabase: SupabaseClient;
 };
 
-/** On tenant hosts, staff must be an active member of that tenant. */
+/**
+ * Staff on tenant host must be an active member; tenant id must match host.
+ * No silent pass — prevents service-role access without membership.
+ */
 export async function assertStaffTenantAccess(tenantId: string): Promise<void> {
   const tenant = await resolveRequestTenant();
-  if (!tenant) return;
-
-  const user = await getStaffUser();
-  if (!user) return;
-
-  const memberTenantId = tenant.id;
-  const role = await getTenantMemberRole(memberTenantId, user.id);
-  if (!role) {
-    throw new Error("auth.tenant_member_required");
+  if (!tenant) {
+    throw new Error("auth.tenant_host_required");
   }
 
-  if (tenantId !== memberTenantId) {
+  const user = await getStaffUser();
+  if (!user) {
+    throw new Error("auth.login_required");
+  }
+
+  if (tenant.id !== tenantId) {
     throw new Error("auth.tenant_scope_mismatch");
+  }
+
+  const role = await getTenantMemberRole(tenant.id, user.id);
+  if (!role) {
+    throw new Error("auth.tenant_member_required");
   }
 }
 
 type TenantScopeOptions = {
-  /** When false, allow public reads (calendar) without staff membership. Default true. */
+  /** When false, public reads on tenant host only (calendar). Default true for admin. */
   requireStaff?: boolean;
 };
 
@@ -40,7 +46,7 @@ export async function getTenantScope(
   options: TenantScopeOptions = {}
 ): Promise<TenantScope> {
   const { requireStaff = true } = options;
-  const tenantId = await resolveTenantIdForData();
+  const tenantId = await requireTenantIdForData();
   if (requireStaff) {
     await assertStaffTenantAccess(tenantId);
   }
@@ -48,24 +54,26 @@ export async function getTenantScope(
   return { tenantId, supabase };
 }
 
-/** Read-only tenant scope (public booking, cached loaders). */
-export async function getTenantDataScope(): Promise<TenantScope> {
+/** Public booking / availability — tenant from host only, no staff login. */
+export async function getTenantPublicScope(): Promise<TenantScope> {
   return getTenantScope({ requireStaff: false });
 }
 
-/** User-scoped client; RLS applies when JWT has app_metadata.tenant_id. */
+/** @deprecated Use getTenantPublicScope */
+export async function getTenantDataScope(): Promise<TenantScope> {
+  return getTenantPublicScope();
+}
+
 export async function getTenantUserClient() {
   return createClient();
 }
 
-/** Run a block with tenant context — preferred entry for service functions. */
 export async function withTenantScope<T>(
   fn: (ctx: TenantScope) => Promise<T>
 ): Promise<T> {
   return fn(await getTenantScope());
 }
 
-/** Attach tenant_id to insert payloads. */
 export function withTenantId<T extends Record<string, unknown>>(
   tenantId: string,
   row: T

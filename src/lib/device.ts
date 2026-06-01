@@ -15,5 +15,5 @@ export function isTouchDeviceClass(device: DeviceClass): boolean {
   return device !== "desktop";
 }
 
-/** Rulează în <head> înainte de paint — desktop rămâne fără atribute extra. */
-export const DEVICE_BOOT_SCRIPT = `(function(){try{var ua=navigator.userAgent||"";var d="desktop";if(/Android/i.test(ua))d="android";else if(/iPhone|iPod|iPad/i.test(ua))d="ios";else if(/Mobile|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua))d="mobile";document.documentElement.setAttribute("data-device",d);if(d!=="desktop")document.documentElement.classList.add("touch-device");}catch(e){}})();`;
+/** Rulează în <head> înainte de paint — device UA + display profile viewport. */
+export { CLIENT_LAYOUT_BOOT_SCRIPT as DEVICE_BOOT_SCRIPT } from "@/lib/ui/display-profile";

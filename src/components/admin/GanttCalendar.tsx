@@ -21,6 +21,7 @@ import {
 } from "@/domain/gantt/daily-free-counts";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
+import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
 import type { BookingRow } from "@/services/bookings";
 import {
   filterOccupancyForLayer,
@@ -135,7 +136,8 @@ export function GanttCalendar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const touch = useIsTouchDevice();
-  const compact = viewRange.zoom === "quarter" || touch;
+  const compactViewport = useIsCompactViewport();
+  const compact = viewRange.zoom === "quarter" || touch || compactViewport;
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
   const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
   const focusIso =

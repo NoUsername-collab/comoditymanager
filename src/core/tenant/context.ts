@@ -110,12 +110,6 @@ export class TenantContextMissingError extends Error {
 
 export function getTenantContext(): TenantContext {
   if (_currentContext) return _currentContext;
-
-  if (process.env.NODE_ENV !== "production") {
-    _currentContext = buildTenantContext(DEV_FALLBACK_TENANT);
-    return _currentContext;
-  }
-
   throw new TenantContextMissingError();
 }
 

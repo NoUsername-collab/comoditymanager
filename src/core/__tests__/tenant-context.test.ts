@@ -125,9 +125,8 @@ describe("TenantContext", () => {
   });
 
   describe("singleton management", () => {
-    it("falls back to DEV tenant when not set (development)", () => {
-      const ctx = getTenantContext();
-      expect(ctx.tenant.slug).toBe("__dev__");
+    it("throws when context is not bound", () => {
+      expect(() => getTenantContext()).toThrow("Tenant context is not bound");
     });
 
     it("returns set context after setTenantContext", () => {
@@ -143,15 +142,14 @@ describe("TenantContext", () => {
       expect(ctx.tenant.slug).toBe("pensiunea-mare");
     });
 
-    it("resets to default after resetTenantContext", () => {
+    it("throws after resetTenantContext until bound again", () => {
       setTenantContext({
         ...DEFAULT_TENANT,
         slug: "temporary",
       });
 
       resetTenantContext();
-      const ctx = getTenantContext();
-      expect(ctx.tenant.slug).toBe("__dev__");
+      expect(() => getTenantContext()).toThrow("Tenant context is not bound");
     });
   });
 

@@ -23,6 +23,7 @@ import {
 } from "@/lib/admin-home-copy";
 import type { MonthComparison } from "@/domain/statistics/month-compare";
 import { platformPensionNameFallback } from "@/lib/platform/branding";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantDisplayName } from "@/services/tenants";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -141,9 +142,11 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
       weekOccupancyPct,
     };
 
+    const tenantId = await resolveTenantIdForData();
+
     return {
       pensionName:
-        settings?.display_name ?? (await getTenantDisplayName()),
+        settings?.display_name ?? (await getTenantDisplayName(tenantId)),
       todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,

@@ -1,0 +1,123 @@
+/**
+ * Layout tuned by data-display-profile (set in CLIENT_LAYOUT_BOOT_SCRIPT).
+ * Targets 14" laptops (1366×768) without relying on touch-device UA.
+ */
+
+/* ── Admin HUD — compact laptop & narrow ── */
+html[data-display-profile="compact-laptop"] .admin-hud__center,
+html[data-display-profile="narrow"] .admin-hud__center,
+html.compact-viewport .admin-hud__center {
+  order: 3;
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+html[data-display-profile="compact-laptop"] .admin-hud__nav,
+html[data-display-profile="narrow"] .admin-hud__nav,
+html.compact-viewport .admin-hud__nav {
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: min(100%, max-content);
+}
+
+html[data-display-profile="compact-laptop"] .admin-hud__right,
+html[data-display-profile="narrow"] .admin-hud__right,
+html.compact-viewport .admin-hud__right {
+  margin-left: auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+html[data-display-profile="compact-laptop"] .admin-hud__tools,
+html[data-display-profile="narrow"] .admin-hud__tools,
+html.compact-viewport .admin-hud__tools {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+html[data-display-profile="narrow"] .admin-hud__title,
+html.compact-viewport[data-display-profile="narrow"] .admin-hud__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 12rem;
+}
+
+/* Short viewport (768px height, browser chrome) — less vertical padding */
+html[data-viewport-height="short"] .admin-shell .flex-1 > main {
+  padding-top: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+html[data-viewport-height="short"] .gantt-toolbar__panel {
+  padding-bottom: 0.35rem;
+}
+
+/* ── Gantt toolbar — stack controls on compact laptop ── */
+html[data-display-profile="compact-laptop"] .gantt-toolbar__row--controls,
+html[data-display-profile="narrow"] .gantt-toolbar__row--controls,
+html.compact-viewport .gantt-toolbar__row--controls {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-toolbar__segments,
+html[data-display-profile="narrow"] .gantt-toolbar__segments,
+html.compact-viewport .gantt-toolbar__segments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-seg__track,
+html[data-display-profile="narrow"] .gantt-seg__track,
+html.compact-viewport .gantt-seg__track {
+  flex-wrap: wrap;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-toolbar__period-shell,
+html[data-display-profile="narrow"] .gantt-toolbar__period-shell {
+  min-width: 0;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-toolbar__nav-strip,
+html[data-display-profile="narrow"] .gantt-toolbar__nav-strip {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-toolbar__actions--nav,
+html[data-display-profile="narrow"] .gantt-toolbar__actions--nav {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* Force short labels on segment buttons (same as narrow breakpoints) */
+html[data-display-profile="compact-laptop"] .gantt-seg__btn-text--long,
+html[data-display-profile="narrow"] .gantt-seg__btn-text--long {
+  display: none !important;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-seg__btn-text--short,
+html[data-display-profile="narrow"] .gantt-seg__btn-text--short {
+  display: inline !important;
+}
+
+/* Gantt grid — slightly narrower day columns on compact laptop */
+html[data-display-profile="compact-laptop"] .gantt-shell--premium,
+html.compact-viewport .gantt-shell--premium {
+  --gantt-day-min: 2rem;
+}
+
+html[data-display-profile="compact-laptop"] .gantt-day-header-cell--compact .gantt-day-header-cell__body,
+html.compact-viewport .gantt-day-header-cell--compact .gantt-day-header-cell__body {
+  font-size: 0.62rem;
+}
