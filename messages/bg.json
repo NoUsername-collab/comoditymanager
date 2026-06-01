@@ -477,7 +477,10 @@
         "historyCancelledHint": "Винаги в историята — за повторен контакт при освобождаване на стая.",
         "historyCancelledBadge": "Анулирана",
         "historyCancelledAt": "Анулирана на {date}",
-        "historyCompletedSection": "Приключени престои"
+        "historyCompletedSection": "Приключени престои",
+        "acceptAgain": "Приеми отново",
+        "acceptAgainHint": "Избери свободни стаи и потвърди — като нова заявка.",
+        "reacceptedBanner": "Престоят е приет отново — виж го при потвърдените."
       },
       "statistics": {
         "title": "Статистика — Hospira",
@@ -579,6 +582,9 @@
       "bookingDetail": {
         "period": "Период",
         "confirmAllocate": "Потвърди и разпредели стаи",
+        "reacceptTitle": "Приеми отново (освободена стая)",
+        "reacceptHint": "Резервацията беше анулирана. Провери наличността и разпредели стаи.",
+        "reacceptSubmit": "Потвърди престоя",
         "guestProfile": "Профил на гост",
         "persons": "Гости",
         "contact": "Контакт",

@@ -20,15 +20,27 @@ import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-ded
 import { cancelBookingAction, confirmBookingAction } from "../actions";
 import { getTranslations } from "next-intl/server";
 
+function safeReturnTo(raw: string | undefined): string {
+  const path = (raw ?? "").trim();
+  if (!path.startsWith("/admin") || path.startsWith("//") || path.includes("://")) {
+    return "/admin/cazari";
+  }
+  return path;
+}
+
 export default async function BookingDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ return_to?: string }>;
 }) {
   const tPage = await getTranslations("admin.pages.bookingDetail");
   const tCommon = await getTranslations("admin.common");
   const tFlow = await getTranslations("booking.flowStatus");
   const { id } = await params;
+  const sp = await searchParams;
+  const returnTo = safeReturnTo(sp.return_to);
   const ctx = await loadBookingConfirmContext(id).catch(() => null);
   if (!ctx) notFound();
 
@@ -46,7 +58,8 @@ export default async function BookingDetailPage({
     })
   ).catch(() => []);
 
-  const canConfirm = booking.status === "cerere_noua";
+  const isCancelled = booking.status === "anulata";
+  const canConfirm = booking.status === "cerere_noua" || isCancelled;
   const canCancel = booking.status !== "anulata";
   const cancelMessage =
     booking.status === "confirmata"
@@ -160,8 +173,18 @@ export default async function BookingDetailPage({
         )}
 
         {canConfirm && (
-          <div className="mt-6 space-y-4 border border-zinc-200 bg-white p-4">
-            <h2 className="font-bold">{tPage("confirmAllocate")}</h2>
+          <div
+            className={[
+              "mt-6 space-y-4 border bg-white p-4",
+              isCancelled ? "border-emerald-200" : "border-zinc-200",
+            ].join(" ")}
+          >
+            <h2 className="font-bold">
+              {isCancelled ? tPage("reacceptTitle") : tPage("confirmAllocate")}
+            </h2>
+            {isCancelled && (
+              <p className="text-sm text-zinc-600">{tPage("reacceptHint")}</p>
+            )}
             <ConfirmRoomsForm
               bookingId={booking.id}
               checkIn={booking.check_in}
@@ -173,6 +196,8 @@ export default async function BookingDetailPage({
               checkInTime={checkInTime}
               checkOutTime={checkOutTime}
               defaultSelectedIds={booking.room_ids}
+              returnTo={returnTo}
+              submitLabel={isCancelled ? tPage("reacceptSubmit") : undefined}
               action={confirmBookingAction}
             />
           </div>

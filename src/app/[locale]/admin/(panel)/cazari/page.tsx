@@ -63,6 +63,8 @@ type CazariLabels = {
   historyEmpty: string;
   checkout: string;
   openBooking: string;
+  acceptAgain: string;
+  acceptAgainHint: string;
   openClientProfile: string;
   checkIn: string;
   edit: string;
@@ -286,7 +288,11 @@ function StayList({
                 variant={variant === "refuzate" ? "refuzate" : "operational"}
               />
               {variant === "refuzate" ? (
-                <RefusedStayActions stay={stay as CancelledStay} labels={labels} />
+                <RefusedStayActions
+                  stay={stay as CancelledStay}
+                  labels={labels}
+                  returnTo={returnTo}
+                />
               ) : (
                 <StayActions
                   stay={stay as OperationalStay}
@@ -305,20 +311,30 @@ function StayList({
 function RefusedStayActions({
   stay,
   labels,
+  returnTo,
 }: {
   stay: CancelledStay;
   labels: CazariLabels;
+  returnTo: string;
 }) {
+  const bookingHref = `/admin/bookings/${stay.id}?return_to=${encodeURIComponent(returnTo)}`;
+
   return (
-    <div className="flex shrink-0 flex-col items-stretch justify-center gap-1 sm:min-w-[140px]">
+    <div className="flex shrink-0 flex-col items-stretch justify-center gap-1.5 sm:min-w-[148px]">
       <Link
-        href={`/admin/bookings/${stay.id}`}
-        className="inline-flex justify-center rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-semibold text-red-900 hover:bg-red-50"
+        href={bookingHref}
+        className="inline-flex justify-center rounded-md border border-emerald-400 bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 active:translate-y-px active:bg-emerald-800"
+      >
+        {labels.acceptAgain}
+      </Link>
+      <Link
+        href={bookingHref}
+        className="inline-flex justify-center rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-semibold text-red-900 transition hover:bg-red-50 active:translate-y-px active:bg-red-100/80"
       >
         {labels.openBooking}
       </Link>
-      <p className="text-center text-[10px] text-red-800/80">
-        {labels.historyCancelledAt(formatRoDate(stay.updated_at.slice(0, 10)))}
+      <p className="text-center text-[10px] leading-snug text-red-800/80">
+        {labels.acceptAgainHint}
       </p>
     </div>
   );
@@ -571,12 +587,20 @@ function StayHistoryPanel({
                     </span>
                     <span className="font-mono">{formatBookingRef(stay.id)}</span>
                   </div>
-                  <Link
-                    href={`/admin/bookings/${stay.id}`}
-                    className="mt-2 inline-flex text-[11px] font-bold text-red-900 underline underline-offset-2 hover:text-red-950"
-                  >
-                    {labels.openBooking}
-                  </Link>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Link
+                      href={`/admin/bookings/${stay.id}?return_to=${encodeURIComponent("/admin/cazari")}`}
+                      className="inline-flex rounded-md border border-emerald-400 bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-emerald-700 active:translate-y-px"
+                    >
+                      {labels.acceptAgain}
+                    </Link>
+                    <Link
+                      href={`/admin/bookings/${stay.id}?return_to=${encodeURIComponent("/admin/cazari")}`}
+                      className="admin-text-action admin-text-action--danger text-[11px]"
+                    >
+                      {labels.openBooking}
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -750,6 +774,7 @@ export default async function AdminCazariPage({
     q?: string | string[];
     h?: string | string[];
     tab?: string | string[];
+    reaccepted?: string;
   }>;
 }) {
   const tPages = await getTranslations("admin.pages.cazari");
@@ -813,6 +838,8 @@ export default async function AdminCazariPage({
     historyEmpty: tPages("historyEmpty"),
     checkout: tCommon("checkout"),
     openBooking: tCommon("openBooking"),
+    acceptAgain: tPages("acceptAgain"),
+    acceptAgainHint: tPages("acceptAgainHint"),
     openClientProfile: tPages("openClientProfile"),
     checkIn: tCommon("checkIn"),
     edit: tCommon("edit"),
@@ -1017,6 +1044,12 @@ export default async function AdminCazariPage({
               </div>
             </div>
           </RetroXpWindow>
+
+          {params.reaccepted === "1" && (
+            <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+              {tPages("reacceptedBanner")}
+            </p>
+          )}
 
           {staysError && <p className="mb-4 text-sm text-red-800">{staysError}</p>}
 

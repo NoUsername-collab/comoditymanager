@@ -24,6 +24,7 @@ type Props = {
   checkOutTime: string;
   defaultSelectedIds?: string[];
   submitLabel?: string;
+  returnTo?: string;
   action: (formData: FormData) => Promise<void>;
 };
 
@@ -46,6 +47,7 @@ export function ConfirmRoomsForm({
   checkOutTime,
   defaultSelectedIds = [],
   submitLabel,
+  returnTo,
   action,
 }: Props) {
   const tCommon = useTranslations("admin.common");
@@ -113,6 +115,7 @@ export function ConfirmRoomsForm({
   return (
     <AdminPendingForm action={action} className="space-y-4">
       <input type="hidden" name="id" value={bookingId} />
+      {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
 
       <p className="text-xs text-zinc-500">
         {tConfirm("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}

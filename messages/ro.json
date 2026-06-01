@@ -519,7 +519,10 @@
         "historyCancelledHint": "Apare mereu în istoric — pentru recontact când se eliberează o cameră.",
         "historyCancelledBadge": "Anulată",
         "historyCancelledAt": "Anulată la {date}",
-        "historyCompletedSection": "Cazări încheiate"
+        "historyCompletedSection": "Cazări încheiate",
+        "acceptAgain": "Acceptă din nou",
+        "acceptAgainHint": "Alege camere libere și confirmă — ca la o cerere nouă.",
+        "reacceptedBanner": "Cazarea a fost acceptată din nou și apare la cazări confirmate."
       },
       "statistics": {
         "title": "Statistici — Hospira",
@@ -632,6 +635,9 @@
       "bookingDetail": {
         "period": "Perioadă",
         "confirmAllocate": "Confirmă și alocă camere",
+        "reacceptTitle": "Acceptă din nou (cameră eliberată)",
+        "reacceptHint": "Rezervarea era anulată. Verifică disponibilitatea și alocă camerele — dacă intervalul e ocupat, alege alte camere sau mută datele.",
+        "reacceptSubmit": "Confirmă cazarea",
         "title": "Rezervare — Hospira",
         "guestProfile": "Profil client",
         "persons": "Persoane",

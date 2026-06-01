@@ -519,7 +519,10 @@
         "historyCancelledHint": "Always shown in history — for follow-up when a room becomes available.",
         "historyCancelledBadge": "Cancelled",
         "historyCancelledAt": "Cancelled on {date}",
-        "historyCompletedSection": "Completed stays"
+        "historyCompletedSection": "Completed stays",
+        "acceptAgain": "Accept again",
+        "acceptAgainHint": "Pick free rooms and confirm — same as a new request.",
+        "reacceptedBanner": "Stay accepted again — it now appears under confirmed stays."
       },
       "statistics": {
         "title": "Statistics — Hospira",
@@ -632,6 +635,9 @@
       "bookingDetail": {
         "period": "Period",
         "confirmAllocate": "Confirm and assign rooms",
+        "reacceptTitle": "Accept again (room available)",
+        "reacceptHint": "This booking was cancelled. Check availability and assign rooms — if dates are taken, pick other rooms or change dates.",
+        "reacceptSubmit": "Confirm stay",
         "title": "Booking — Hospira",
         "guestProfile": "Guest profile",
         "persons": "Guests",

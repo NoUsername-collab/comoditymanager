@@ -17,11 +17,27 @@ import {
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 import { getTranslations } from "next-intl/server";
 
+function safeAdminReturnPath(raw: string, fallback: string): string {
+  const path = raw.trim();
+  if (!path.startsWith("/admin") || path.startsWith("//") || path.includes("://")) {
+    return fallback;
+  }
+  return path;
+}
+
 export async function confirmBookingAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const roomIds = formData.getAll("room_ids").map(String).filter(Boolean);
   const total_price = await resolveTotalPriceForConfirm(id, roomIds, formData);
+  const returnTo = safeAdminReturnPath(
+    String(formData.get("return_to") ?? ""),
+    "/admin/calendar?confirmed=1"
+  );
+
+  const { getBookingById } = await import("@/services/bookings");
+  const before = await getBookingById(id);
+  const wasCancelled = before?.status === "anulata";
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
@@ -47,7 +63,11 @@ export async function confirmBookingAction(formData: FormData) {
   })();
 
   revalidateBookingDetailSurfaces(id);
-  await redirect("/admin/calendar?confirmed=1");
+  const dest =
+    wasCancelled && !returnTo.includes("confirmed=")
+      ? appendQueryParam(returnTo, "reaccepted", "1")
+      : returnTo;
+  await redirect(dest);
 }
 
 function appendQueryParam(path: string, key: string, value: string): string {

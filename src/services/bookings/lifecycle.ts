@@ -51,8 +51,10 @@ export async function confirmBookingWithRooms(
 
   const booking = await getBookingById(bookingId);
   if (!booking) throw new Error("booking.request_not_found");
-  if (booking.status === "anulata") throw new Error("booking.request_cancelled");
   if (booking.status === "confirmata") throw new Error("booking.already_confirmed");
+  if (booking.status !== "cerere_noua" && booking.status !== "anulata") {
+    throw new Error("booking.request_not_found");
+  }
 
   const simActive = await isSimActive();
 
