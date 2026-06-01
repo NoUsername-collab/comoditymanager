@@ -27,26 +27,26 @@ describe("Feature Gates", () => {
 
   describe("assertFeature", () => {
     it("passes for features in the current plan", () => {
-      // Default = Pro, has gantt
+      // Default = Professional, has gantt
       setTenantContext(DEFAULT_TENANT);
       expect(() => assertFeature("gantt")).not.toThrow();
       expect(() => assertFeature("calendar")).not.toThrow();
     });
 
     it("throws FeatureGateError for missing features", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       expect(() => assertFeature("gantt")).toThrow(FeatureGateError);
     });
 
     it("error includes plan info", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       try {
         assertFeature("gantt");
       } catch (e) {
         expect(e).toBeInstanceOf(FeatureGateError);
         const err = e as FeatureGateError;
         expect(err.feature).toBe("gantt");
-        expect(err.currentPlan).toBe("starter");
+        expect(err.currentPlan).toBe("free");
         expect(err.code).toBe("FEATURE_GATE");
       }
     });
@@ -54,19 +54,20 @@ describe("Feature Gates", () => {
 
   describe("assertModule", () => {
     it("passes for modules in the current plan", () => {
-      setTenantContext(DEFAULT_TENANT); // Pro has invoicing
-      expect(() => assertModule("invoicing")).not.toThrow();
+      // Professional has ical_sync
+      setTenantContext(DEFAULT_TENANT);
+      expect(() => assertModule("ical_sync")).not.toThrow();
     });
 
     it("throws ModuleGateError for missing modules", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       expect(() => assertModule("invoicing")).toThrow(ModuleGateError);
     });
 
     it("passes for purchased add-on modules", () => {
       setTenantContext({
         ...DEFAULT_TENANT,
-        planId: "standard",
+        planId: "essential",
         activeModules: ["invoicing"],
       });
       expect(() => assertModule("invoicing")).not.toThrow();
@@ -75,24 +76,25 @@ describe("Feature Gates", () => {
 
   describe("assertCanAddRoom", () => {
     it("allows rooms within limit", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       expect(() => assertCanAddRoom(2)).not.toThrow();
     });
 
     it("blocks rooms at limit", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       expect(() => assertCanAddRoom(3)).toThrow(LimitGateError);
     });
 
-    it("allows unlimited rooms for paid plans", () => {
-      setTenantContext(DEFAULT_TENANT); // Pro
-      expect(() => assertCanAddRoom(999)).not.toThrow();
+    it("allows rooms up to Professional limit", () => {
+      setTenantContext(DEFAULT_TENANT); // Professional, max 30
+      expect(() => assertCanAddRoom(29)).not.toThrow();
+      expect(() => assertCanAddRoom(30)).toThrow(LimitGateError);
     });
   });
 
   describe("assertCanAddProperty", () => {
-    it("blocks second property for Standard plan", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "standard" });
+    it("blocks second property for Essential plan", () => {
+      setTenantContext({ ...DEFAULT_TENANT, planId: "essential" });
       expect(() => assertCanAddProperty(1)).toThrow(LimitGateError);
     });
 
@@ -105,7 +107,7 @@ describe("Feature Gates", () => {
 
   describe("checkFeature / checkModule (non-throwing)", () => {
     it("returns boolean without throwing", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       expect(checkFeature("gantt")).toBe(false);
       expect(checkFeature("calendar")).toBe(true);
       expect(checkModule("invoicing")).toBe(false);
@@ -113,16 +115,16 @@ describe("Feature Gates", () => {
   });
 
   describe("getMinimumPlanForFeature", () => {
-    it("returns starter for calendar", () => {
-      expect(getMinimumPlanForFeature("calendar")).toBe("starter");
+    it("returns free for calendar", () => {
+      expect(getMinimumPlanForFeature("calendar")).toBe("free");
     });
 
-    it("returns standard for gantt", () => {
-      expect(getMinimumPlanForFeature("gantt")).toBe("standard");
+    it("returns essential for gantt", () => {
+      expect(getMinimumPlanForFeature("gantt")).toBe("essential");
     });
 
-    it("returns pro for priority_support", () => {
-      expect(getMinimumPlanForFeature("priority_support")).toBe("pro");
+    it("returns professional for priority_support", () => {
+      expect(getMinimumPlanForFeature("priority_support")).toBe("professional");
     });
 
     it("returns business for sla_guarantee", () => {
@@ -131,12 +133,12 @@ describe("Feature Gates", () => {
   });
 
   describe("getMinimumPlanForModule", () => {
-    it("returns standard for public_page", () => {
-      expect(getMinimumPlanForModule("public_page")).toBe("standard");
+    it("returns free for public_page", () => {
+      expect(getMinimumPlanForModule("public_page")).toBe("free");
     });
 
-    it("returns pro for ical_sync", () => {
-      expect(getMinimumPlanForModule("ical_sync")).toBe("pro");
+    it("returns professional for ical_sync", () => {
+      expect(getMinimumPlanForModule("ical_sync")).toBe("professional");
     });
 
     it("returns business for api_access", () => {
@@ -150,15 +152,15 @@ describe("Feature Gates", () => {
   });
 
   describe("buildFeatureMap", () => {
-    it("returns serializable object for Pro plan", () => {
+    it("returns serializable object for Professional plan", () => {
       setTenantContext(DEFAULT_TENANT);
       const map = buildFeatureMap();
 
-      expect(map.planId).toBe("pro");
-      expect(map.planLabel).toBe("Pro");
+      expect(map.planId).toBe("professional");
+      expect(map.planLabel).toBe("Professional");
       expect(map.mode).toBe("cloud");
       expect(map.showBranding).toBe(false);
-      expect(map.maxRooms).toBe(Infinity);
+      expect(map.maxRooms).toBe(30);
 
       // Features
       expect(map.features.gantt).toBe(true);
@@ -166,12 +168,12 @@ describe("Feature Gates", () => {
       expect(map.features.sla_guarantee).toBe(false);
 
       // Modules
-      expect(map.modules.invoicing).toBe(true);
+      expect(map.modules.ical_sync).toBe(true);
       expect(map.modules.api_access).toBe(false);
     });
 
-    it("returns correct map for Starter plan", () => {
-      setTenantContext({ ...DEFAULT_TENANT, planId: "starter" });
+    it("returns correct map for Free plan", () => {
+      setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       const map = buildFeatureMap();
 
       expect(map.showBranding).toBe(true);

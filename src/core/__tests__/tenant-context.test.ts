@@ -21,7 +21,7 @@ describe("TenantContext", () => {
       expect(ctx.plan.mode).toBe("cloud");
     });
 
-    it("has correct features for Pro plan", () => {
+    it("has correct features for Professional plan", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
       expect(ctx.hasFeature("gantt")).toBe(true);
       expect(ctx.hasFeature("calendar")).toBe(true);
@@ -29,32 +29,34 @@ describe("TenantContext", () => {
       expect(ctx.hasFeature("sla_guarantee")).toBe(false); // Business only
     });
 
-    it("has correct modules for Pro plan", () => {
+    it("has correct modules for Professional plan", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
       expect(ctx.hasModule("ical_sync")).toBe(true);
-      expect(ctx.hasModule("invoicing")).toBe(true);
-      expect(ctx.hasModule("whatsapp")).toBe(true);
-      expect(ctx.hasModule("api_access")).toBe(false); // Business only
+      expect(ctx.hasModule("advanced_reports")).toBe(true);
+      // invoicing and whatsapp are Business-only
+      expect(ctx.hasModule("invoicing")).toBe(false);
+      expect(ctx.hasModule("whatsapp")).toBe(false);
+      expect(ctx.hasModule("api_access")).toBe(false);
     });
 
-    it("allows unlimited rooms on Pro", () => {
+    it("allows rooms up to Professional limit (30)", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
-      expect(ctx.canAddRoom(100)).toBe(true);
-      expect(ctx.canAddRoom(999)).toBe(true);
+      expect(ctx.canAddRoom(29)).toBe(true);
+      expect(ctx.canAddRoom(30)).toBe(false);
     });
 
-    it("does not show branding on Pro", () => {
+    it("does not show branding on Professional", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
       expect(ctx.showBranding).toBe(false);
     });
   });
 
-  describe("Starter tenant", () => {
-    const starterTenant: TenantRecord = {
-      id: "test-starter",
+  describe("Free tenant", () => {
+    const freeTenant: TenantRecord = {
+      id: "test-free",
       slug: "pensiunea-test",
       displayName: "Pensiunea Test",
-      planId: "starter",
+      planId: "free",
       activeModules: [],
       mode: "cloud",
       locale: "ro",
@@ -67,27 +69,27 @@ describe("TenantContext", () => {
     };
 
     it("limits rooms to 3", () => {
-      const ctx = buildTenantContext(starterTenant);
+      const ctx = buildTenantContext(freeTenant);
       expect(ctx.canAddRoom(2)).toBe(true);
       expect(ctx.canAddRoom(3)).toBe(false);
       expect(ctx.canAddRoom(10)).toBe(false);
     });
 
     it("does not have Gantt", () => {
-      const ctx = buildTenantContext(starterTenant);
+      const ctx = buildTenantContext(freeTenant);
       expect(ctx.hasFeature("gantt")).toBe(false);
     });
 
-    it("shows Rezova branding", () => {
-      const ctx = buildTenantContext(starterTenant);
+    it("shows platform branding", () => {
+      const ctx = buildTenantContext(freeTenant);
       expect(ctx.showBranding).toBe(true);
     });
 
-    it("has no modules", () => {
-      const ctx = buildTenantContext(starterTenant);
+    it("has public_page module only", () => {
+      const ctx = buildTenantContext(freeTenant);
+      expect(ctx.hasModule("public_page")).toBe(true);
       expect(ctx.hasModule("invoicing")).toBe(false);
       expect(ctx.hasModule("ical_sync")).toBe(false);
-      expect(ctx.hasModule("public_page")).toBe(false);
     });
   });
 
@@ -95,13 +97,13 @@ describe("TenantContext", () => {
     it("merges purchased add-ons with plan includes", () => {
       const tenant: TenantRecord = {
         ...DEFAULT_TENANT,
-        planId: "standard",
+        planId: "essential",
         activeModules: ["invoicing", "ical_sync"], // purchased separately
       };
 
       const ctx = buildTenantContext(tenant);
 
-      // Standard includes public_page
+      // Essential includes public_page
       expect(ctx.hasModule("public_page")).toBe(true);
       // Purchased add-ons
       expect(ctx.hasModule("invoicing")).toBe(true);
@@ -113,12 +115,12 @@ describe("TenantContext", () => {
     it("deduplicates modules", () => {
       const tenant: TenantRecord = {
         ...DEFAULT_TENANT,
-        planId: "pro",
-        activeModules: ["invoicing"], // already in Pro, should not duplicate
+        planId: "professional",
+        activeModules: ["ical_sync"], // already in Professional, should not duplicate
       };
 
       const ctx = buildTenantContext(tenant);
-      expect(ctx.allModules.filter((m) => m === "invoicing")).toHaveLength(1);
+      expect(ctx.allModules.filter((m) => m === "ical_sync")).toHaveLength(1);
     });
   });
 
@@ -157,8 +159,8 @@ describe("TenantContext", () => {
     const localTenant: TenantRecord = {
       id: "local-001",
       slug: "pensiune-locala",
-      displayName: "Pensiune Locală",
-      planId: "local_pro",
+      displayName: "Pensiune Locala",
+      planId: "local_professional",
       activeModules: [],
       mode: "local",
       locale: "ro",
@@ -175,7 +177,7 @@ describe("TenantContext", () => {
       expect(ctx.plan.mode).toBe("local");
     });
 
-    it("has Pro-level features", () => {
+    it("has Professional-level features", () => {
       const ctx = buildTenantContext(localTenant);
       expect(ctx.hasFeature("gantt")).toBe(true);
       expect(ctx.hasFeature("priority_support")).toBe(true);
@@ -200,7 +202,7 @@ describe("TenantContext", () => {
         ...DEFAULT_TENANT,
         id: "bg-001",
         slug: "hotel-varna",
-        displayName: "Хотел Варна",
+        displayName: "Hotel Varna",
         locale: "bg",
         country: "BG",
         timezone: "Europe/Sofia",

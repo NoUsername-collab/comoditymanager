@@ -5,6 +5,7 @@ import {
   type CloudPlan,
   type ModuleId,
 } from "@/core/config/plans";
+import { PLATFORM_NAME } from "@/lib/platform/branding";
 
 describe("PLAN_CONFIGS", () => {
   it("defines all 10 plan tiers (4 cloud + 3 local + 3 hybrid)", () => {
@@ -32,79 +33,88 @@ describe("PLAN_CONFIGS", () => {
     expect(hybridPlans).toHaveLength(3);
   });
 
-  describe("Starter plan", () => {
-    const starter = PLAN_CONFIGS.starter;
+  describe("Free plan", () => {
+    const free = PLAN_CONFIGS.free;
 
     it("limits rooms to 3", () => {
-      expect(starter.maxRooms).toBe(3);
+      expect(free.maxRooms).toBe(3);
     });
 
-    it("shows Rezova branding", () => {
-      expect(starter.showBranding).toBe(true);
+    it("shows platform branding", () => {
+      expect(free.showBranding).toBe(true);
     });
 
     it("has basic features only", () => {
-      expect(starter.coreFeatures).toContain("calendar");
-      expect(starter.coreFeatures).toContain("guest_files");
-      expect(starter.coreFeatures).toContain("bookings");
-      expect(starter.coreFeatures).not.toContain("gantt");
-    });
-
-    it("has no included modules", () => {
-      expect(starter.includedModules).toHaveLength(0);
-    });
-
-    it("limited to 1 property", () => {
-      expect(starter.maxProperties).toBe(1);
-    });
-  });
-
-  describe("Standard plan", () => {
-    const standard = PLAN_CONFIGS.standard;
-
-    it("has unlimited rooms", () => {
-      expect(standard.maxRooms).toBe(Infinity);
-    });
-
-    it("hides Rezova branding", () => {
-      expect(standard.showBranding).toBe(false);
-    });
-
-    it("includes Gantt", () => {
-      expect(standard.coreFeatures).toContain("gantt");
+      expect(free.coreFeatures).toContain("calendar");
+      expect(free.coreFeatures).toContain("guest_files");
+      expect(free.coreFeatures).toContain("bookings");
+      expect(free.coreFeatures).not.toContain("gantt");
     });
 
     it("includes public_page module", () => {
-      expect(standard.includedModules).toContain("public_page");
+      expect(free.includedModules).toContain("public_page");
     });
 
-    it("does NOT include iCal or invoicing", () => {
-      expect(standard.includedModules).not.toContain("ical_sync");
-      expect(standard.includedModules).not.toContain("invoicing");
+    it("limited to 1 property", () => {
+      expect(free.maxProperties).toBe(1);
     });
   });
 
-  describe("Pro plan (recommended)", () => {
-    const pro = PLAN_CONFIGS.pro;
+  describe("Essential plan", () => {
+    const essential = PLAN_CONFIGS.essential;
+
+    it("limits rooms to 10", () => {
+      expect(essential.maxRooms).toBe(10);
+    });
+
+    it("shows platform branding", () => {
+      expect(essential.showBranding).toBe(true);
+    });
+
+    it("includes Gantt", () => {
+      expect(essential.coreFeatures).toContain("gantt");
+    });
+
+    it("includes public_page module", () => {
+      expect(essential.includedModules).toContain("public_page");
+    });
+
+    it("does NOT include iCal or invoicing", () => {
+      expect(essential.includedModules).not.toContain("ical_sync");
+      expect(essential.includedModules).not.toContain("invoicing");
+    });
+  });
+
+  describe("Professional plan", () => {
+    const professional = PLAN_CONFIGS.professional;
+
+    it("limits rooms to 30", () => {
+      expect(professional.maxRooms).toBe(30);
+    });
+
+    it("hides platform branding", () => {
+      expect(professional.showBranding).toBe(false);
+    });
 
     it("includes iCal sync", () => {
-      expect(pro.includedModules).toContain("ical_sync");
+      expect(professional.includedModules).toContain("ical_sync");
     });
 
-    it("includes invoicing", () => {
-      expect(pro.includedModules).toContain("invoicing");
+    it("includes advanced_reports", () => {
+      expect(professional.includedModules).toContain("advanced_reports");
     });
 
-    it("includes WhatsApp", () => {
-      expect(pro.includedModules).toContain("whatsapp");
+    it("does NOT include invoicing or whatsapp", () => {
+      expect(professional.includedModules).not.toContain("invoicing");
+      expect(professional.includedModules).not.toContain("whatsapp");
     });
 
     it("has priority support", () => {
-      expect(pro.coreFeatures).toContain("priority_support");
+      expect(professional.coreFeatures).toContain("priority_support");
     });
 
     it("has custom domain", () => {
-      expect(pro.coreFeatures).toContain("custom_domain");
+      expect(professional.coreFeatures).toContain("custom_domain");
     });
   });
 
@@ -131,7 +141,7 @@ describe("PLAN_CONFIGS", () => {
   });
 
   describe("plan feature hierarchy", () => {
-    const plans: CloudPlan[] = ["starter", "standard", "pro", "business"];
+    const plans: CloudPlan[] = ["free", "essential", "professional", "business"];
 
     it("each plan has at least as many features as the previous", () => {
       for (let i = 1; i < plans.length; i++) {
@@ -155,16 +165,16 @@ describe("PLAN_CONFIGS", () => {
   });
 
   describe("local plans mirror cloud features", () => {
-    it("local_basic has same features as Standard cloud", () => {
-      const localBasic = PLAN_CONFIGS.local_basic;
-      const standard = PLAN_CONFIGS.standard;
-      expect(localBasic.coreFeatures).toEqual(standard.coreFeatures);
+    it("local_essential has same features as Essential cloud", () => {
+      const localEssential = PLAN_CONFIGS.local_essential;
+      const essential = PLAN_CONFIGS.essential;
+      expect(localEssential.coreFeatures).toEqual(essential.coreFeatures);
     });
 
-    it("local_pro has same features as Pro cloud", () => {
-      const localPro = PLAN_CONFIGS.local_pro;
-      const pro = PLAN_CONFIGS.pro;
-      expect(localPro.coreFeatures).toEqual(pro.coreFeatures);
+    it("local_professional has same features as Professional cloud", () => {
+      const localProfessional = PLAN_CONFIGS.local_professional;
+      const professional = PLAN_CONFIGS.professional;
+      expect(localProfessional.coreFeatures).toEqual(professional.coreFeatures);
     });
   });
 });

@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from "fs";
 
 const signup_ro = {
   heroTitle: "Gestioneaza-ti pensiunea simplu si gratuit",
-  heroSubtitle: "Rezova inlocuieste caietul, Excel-ul si haosul cu un calendar vizual, rezervari online si notificari automate.",
+  heroSubtitle: "Hospira inlocuieste caietul, Excel-ul si haosul cu un calendar vizual, rezervari online si notificari automate.",
   benefit1Title: "Gratuit pentru 3 camere",
   benefit1Desc: "Planul Starter e gratuit permanent. Fara card, fara perioada de proba.",
   benefit2Title: "Calendar vizual",
@@ -44,7 +44,7 @@ const signup_ro = {
 
 const signup_en = {
   heroTitle: "Manage your pension simply and for free",
-  heroSubtitle: "Rezova replaces the notebook, Excel, and chaos with a visual calendar, online bookings, and automatic notifications.",
+  heroSubtitle: "Hospira replaces the notebook, Excel, and chaos with a visual calendar, online bookings, and automatic notifications.",
   benefit1Title: "Free for 3 rooms",
   benefit1Desc: "The Starter plan is permanently free. No card, no trial period.",
   benefit2Title: "Visual calendar",
@@ -86,7 +86,7 @@ const signup_en = {
 
 const signup_bg = {
   heroTitle: "Upravlyavajte pensiona si lestno i bezplatno",
-  heroSubtitle: "Rezova zamenyava tetradkata, Excel i haosa s vizualen kalendar, onlajn rezervacii i avtomatichni uvedomleniya.",
+  heroSubtitle: "Hospira zamenyava tetradkata, Excel i haosa s vizualen kalendar, onlajn rezervacii i avtomatichni uvedomleniya.",
   benefit1Title: "Bezplatno za 3 stai",
   benefit1Desc: "Planat Starter e permanentno bezplaten. Bez karta, bez proben period.",
   benefit2Title: "Vizualen kalendar",
