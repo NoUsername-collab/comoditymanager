@@ -1,7 +1,7 @@
 "use client";
 
 import { ActivityUndoButton } from "@/components/admin/activity/ActivityUndoButton";
-import { Link } from "@/i18n/navigation";
+import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useLocale, useTranslations } from "next-intl";
 import {
   activityCalendarHref,
@@ -147,21 +147,23 @@ export function ActivityTimeline({
                 {entry.entity_type === "booking" && entry.entity_id && (
                   <span className="inline-flex flex-wrap items-center gap-x-1">
                     <span aria-hidden>·</span>
-                    <Link
+                    <AdminTextActionLink
                       href={`/admin/bookings/${entry.entity_id}`}
-                      className="font-semibold text-sky-700 hover:text-sky-900 hover:underline"
+                      variant="accent"
+                      className="text-xs"
                     >
                       {t("viewBooking")} →
-                    </Link>
+                    </AdminTextActionLink>
                     {calendarHref && (
                       <>
                         <span aria-hidden>·</span>
-                        <Link
+                        <AdminTextActionLink
                           href={calendarHref}
-                          className="font-semibold text-emerald-700 hover:text-emerald-900 hover:underline"
+                          variant="primary"
+                          className="text-xs"
                         >
                           {t("viewCalendar")} →
-                        </Link>
+                        </AdminTextActionLink>
                       </>
                     )}
                   </span>

@@ -154,7 +154,7 @@ export function GanttStayPopover({
               <dd>
                 <a
                   href={`tel:${data.guestPhone.replace(/\s/g, "")}`}
-                  className="font-medium text-sky-700 hover:underline"
+                  className="admin-text-action admin-text-action--accent font-medium"
                 >
                   {data.guestPhone}
                 </a>
@@ -184,7 +184,7 @@ export function GanttStayPopover({
         <div className="mt-3 grid grid-cols-2 gap-2 border-t border-zinc-100 pt-3">
           <button
             type="button"
-            className="col-span-2 rounded-lg bg-zinc-900 px-3 py-2 text-center text-xs font-semibold text-white hover:bg-zinc-800"
+            className="col-span-2 rounded-lg bg-zinc-900 px-3 py-2 text-center text-xs font-semibold text-white transition hover:bg-zinc-800 active:translate-y-px active:bg-zinc-950"
             onClick={() => router.push(`/admin/bookings/${data.bookingId}`)}
           >
             {tCommon("openDetails")}
@@ -192,7 +192,7 @@ export function GanttStayPopover({
           {data.canMoveRoom && data.onMoveRoom ? (
             <button
               type="button"
-              className="rounded-lg border border-sky-200 bg-sky-50 px-2 py-2 text-center text-xs font-semibold text-sky-900 hover:bg-sky-100"
+              className="rounded-lg border border-sky-200 bg-sky-50 px-2 py-2 text-center text-xs font-semibold text-sky-900 transition hover:bg-sky-100 active:translate-y-px active:bg-sky-200/80"
               onClick={data.onMoveRoom}
             >
               {tCommon("moveRoom")}
@@ -202,7 +202,7 @@ export function GanttStayPopover({
             <Link
               href={`/admin/bookings/${data.bookingId}`}
               className={[
-                "rounded-lg border border-emerald-300 bg-emerald-600 px-2 py-2 text-center text-xs font-semibold text-white hover:bg-emerald-700",
+                "rounded-lg border border-emerald-300 bg-emerald-600 px-2 py-2 text-center text-xs font-semibold text-white transition hover:bg-emerald-700 active:translate-y-px active:bg-emerald-800",
                 !data.canMoveRoom && "col-span-2",
               ]
                 .filter(Boolean)
@@ -214,7 +214,7 @@ export function GanttStayPopover({
         </div>
 
         <details className="mt-2 text-xs">
-          <summary className="cursor-pointer text-zinc-400 hover:text-zinc-600">
+          <summary className="admin-disclosure-summary text-xs text-zinc-500">
             {tCommon("quickActions")}
           </summary>
           <div className="mt-2">

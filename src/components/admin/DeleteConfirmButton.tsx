@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
+
+export type AdminDeleteFormAction = (
+  formData: FormData
+) => Promise<{ error?: string } | void>;
 
 export function DeleteConfirmButton({
   label,
@@ -12,24 +18,30 @@ export function DeleteConfirmButton({
 }: {
   label: string;
   confirmMessage: string;
-  formAction: (formData: FormData) => Promise<void>;
+  formAction: AdminDeleteFormAction;
   hiddenFields: Record<string, string>;
 }) {
   const tCommon = useTranslations("admin.common");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
 
   if (!open) {
     return (
-      <button
+      <AdminTextActionButton
         type="button"
+        variant="danger"
         disabled={pending}
-        onClick={() => setOpen(true)}
-        className="text-sm text-red-600 hover:text-red-800"
+        onClick={() => {
+          setError(null);
+          setOpen(true);
+        }}
+        className="text-sm"
       >
         {label}
-      </button>
+      </AdminTextActionButton>
     );
   }
 
@@ -38,8 +50,14 @@ export function DeleteConfirmButton({
       data-admin-pending="true"
       action={(fd) =>
         runAdminAction(async () => {
-          await formAction(fd);
+          setError(null);
+          const result = await formAction(fd);
+          if (result?.error) {
+            setError(result.error);
+            return;
+          }
           setOpen(false);
+          router.refresh();
         })
       }
       className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm"
@@ -48,11 +66,16 @@ export function DeleteConfirmButton({
         <input key={k} type="hidden" name={k} value={v} />
       ))}
       <p className="text-red-900">{confirmMessage}</p>
+      {error && (
+        <p className="mt-2 rounded-md border border-red-300 bg-white px-2 py-1.5 text-xs font-medium text-red-800" role="alert">
+          {error}
+        </p>
+      )}
       <div className="mt-2 flex gap-2">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
+          className="rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white transition hover:bg-red-700 active:translate-y-px active:bg-red-800 disabled:opacity-50"
         >
           {pending ? tCommon("deleting") : tCommon("confirmDelete")}
         </button>
@@ -60,7 +83,7 @@ export function DeleteConfirmButton({
           type="button"
           disabled={pending}
           onClick={() => setOpen(false)}
-          className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-xs text-zinc-700"
+          className="rounded-md border border-zinc-300 bg-white px-3 py-1 text-xs text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px active:bg-zinc-100"
         >
           {tCommon("cancel")}
         </button>

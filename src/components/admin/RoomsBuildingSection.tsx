@@ -96,7 +96,7 @@ export function RoomsBuildingSection({
               open={listOpen}
               onToggle={(e) => setListOpen(e.currentTarget.open)}
             >
-              <summary className="cursor-pointer font-medium text-zinc-600 hover:text-zinc-900">
+              <summary className="admin-disclosure-summary font-medium">
                 {tBuildings("detailsAndDeleteList")}
               </summary>
               <ul className="mt-2 space-y-1.5">

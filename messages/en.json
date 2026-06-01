@@ -1588,6 +1588,8 @@
       "roomActivated": "Room reactivated",
       "roomDeactivated": "Room marked inactive",
       "roomDeleteHasBookings": "Room has bookings — cannot delete. Mark it inactive instead.",
+      "buildingDeleteHasRooms": "This building still has rooms. Delete all rooms without bookings (or deactivate them), then try again.",
+      "buildingDeleteHasBookings": "Some rooms have linked bookings. You cannot delete the building — delete rooms without history and use Deactivate for the rest.",
       "roomNameRequired": "Room name is required",
       "newRoomSummary": "New room: {name}",
       "holdError": "Hold error",

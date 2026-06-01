@@ -49,7 +49,7 @@ export function AdminLocationUnlockForm({ isOwner = false }: { isOwner?: boolean
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 active:translate-y-px active:bg-zinc-950 disabled:opacity-60"
       >
         {pending ? tPage("checking") : tPage("openLocationAdmin")}
       </button>
@@ -75,7 +75,7 @@ export function AdminLocationLockButton() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-50 disabled:opacity-60"
+        className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px active:bg-zinc-100 disabled:opacity-60"
       >
         {pending ? tPage("closing") : tPage("closeLocationAdmin")}
       </button>

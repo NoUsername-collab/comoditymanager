@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -382,12 +383,13 @@ function DayDetailPanel({
       </div>
 
       <div className="flex flex-wrap gap-3 border-t border-zinc-100 px-5 py-3">
-        <Link
+        <AdminTextActionLink
           href={`/admin/calendar?y=${day.iso.slice(0, 4)}&m=${Number(day.iso.slice(5, 7)) - 1}&ws=${mondayOfWeekIso(day.iso)}`}
-          className="text-sm font-semibold text-emerald-700 hover:underline"
+          variant="primary"
+          className="text-sm"
         >
           {labels.focusGanttWeek} →
-        </Link>
+        </AdminTextActionLink>
       </div>
     </div>
   );

@@ -1,7 +1,10 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { Link } from "@/i18n/navigation";
+import {
+  AdminTextActionButton,
+  AdminTextActionLink,
+} from "@/components/admin/ui/AdminTextAction";
 import { useTranslations } from "next-intl";
 import type { StructureFloor } from "@/services/location-structure";
 import {
@@ -63,19 +66,21 @@ export function FloorStructureSection({
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button
+          <AdminTextActionButton
             type="button"
+            variant="neutral"
+            className="text-xs"
             onClick={() => setEditing((v) => !v)}
-            className="text-xs font-semibold text-zinc-600 underline hover:text-zinc-900"
           >
             {editing ? tCommon("cancel") : tCommon("edit")}
-          </button>
-          <Link
+          </AdminTextActionButton>
+          <AdminTextActionLink
             href={`/admin/rooms/new?building=${buildingId}&floor=${floor.id}&return_to=structure`}
-            className="text-xs font-semibold text-zinc-600 underline hover:text-zinc-900"
+            variant="neutral"
+            className="text-xs"
           >
             + {t("addRoomOnFloor")}
-          </Link>
+          </AdminTextActionLink>
         </div>
       </div>
 

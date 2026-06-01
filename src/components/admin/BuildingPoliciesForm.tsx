@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { updateBuildingPoliciesAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 
 export function BuildingPoliciesForm({
   buildingId,
@@ -42,13 +43,14 @@ export function BuildingPoliciesForm({
 
   return (
     <div className="mt-3">
-      <button
+      <AdminTextActionButton
         type="button"
+        variant="neutral"
+        className="text-xs"
         onClick={() => setOpen((v) => !v)}
-        className="text-xs font-medium text-zinc-700 underline hover:text-zinc-900"
       >
         {open ? tPolicies("hideOptionPolicies") : tPolicies("editPoliciesAcFridge")}
-      </button>
+      </AdminTextActionButton>
 
       {open && (
         <AdminPendingForm

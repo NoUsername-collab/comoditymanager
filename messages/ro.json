@@ -1531,7 +1531,7 @@
       "deleteFloorConfirm": "Ștergi „{name}”? {count, plural, =0 {Nu are camere.} one {# cameră trece la «fără etaj».} other {# camere trec la «fără etaj».}}",
       "assignFloor": "Etaj",
       "noFloorOption": "Fără etaj",
-      "deactivateRoom": "Inactivează",
+      "deactivateRoom": "Dezactivează",
       "activateRoom": "Activează",
       "deleteRoomConfirm": "Ștergi camera „{name}”? Acțiunea e definitivă dacă nu are rezervări."
     },
@@ -1590,6 +1590,8 @@
       "roomActivated": "Cameră reactivată",
       "roomDeactivated": "Cameră marcată inactivă",
       "roomDeleteHasBookings": "Camera are rezervări — nu poate fi ștearsă. Marcheaz-o inactivă în schimb.",
+      "buildingDeleteHasRooms": "Clădirea încă are camere. Șterge toate camerele (fără rezervări) sau dezactivează-le, apoi încearcă din nou.",
+      "buildingDeleteHasBookings": "Unele camere au rezervări legate. Nu poți șterge clădirea — șterge camerele fără istoric și folosește Dezactivează pentru restul.",
       "roomNameRequired": "Numele camerei e obligatoriu",
       "newRoomSummary": "Cameră nouă: {name}",
       "holdError": "Eroare la hold",

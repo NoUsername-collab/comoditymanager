@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import {
   deleteRoomFromBuildingAction,
@@ -8,6 +7,10 @@ import {
 } from "@/app/[locale]/admin/(panel)/buildings/actions";
 import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import {
+  AdminTextActionButton,
+  AdminTextActionLink,
+} from "@/components/admin/ui/AdminTextAction";
 
 type Props = {
   roomId: string;
@@ -18,7 +21,7 @@ type Props = {
   className?: string;
 };
 
-/** Editează, inactivează/activează și șterge — același comportament peste structură / camere / clădiri. */
+/** Editează, dezactivează/activează și șterge — același comportament peste structură / camere / clădiri. */
 export function RoomManageActions({
   roomId,
   roomName,
@@ -39,22 +42,19 @@ export function RoomManageActions({
       className={`inline-flex flex-wrap items-center gap-2 ${className}`.trim()}
     >
       {editHref && (
-        <Link
-          href={editHref}
-          className="font-semibold text-zinc-700 underline hover:text-zinc-900"
-        >
+        <AdminTextActionLink href={editHref} variant="neutral">
           {tCommon("edit")}
-        </Link>
+        </AdminTextActionLink>
       )}
       <form action={(formData) => runAdminAction(() => setRoomActiveAction(formData))}>
         <input type="hidden" name="room_id" value={roomId} />
         <input type="hidden" name="is_active" value={isActive ? "0" : "1"} />
-        <button
+        <AdminTextActionButton
           type="submit"
-          className="font-semibold text-amber-800 underline hover:text-amber-950"
+          variant={isActive ? "warning" : "primary"}
         >
           {isActive ? tStruct("deactivateRoom") : tStruct("activateRoom")}
-        </button>
+        </AdminTextActionButton>
       </form>
       <DeleteConfirmButton
         label={tCommon("delete")}

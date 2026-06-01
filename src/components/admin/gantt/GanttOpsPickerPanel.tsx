@@ -105,7 +105,7 @@ export function GanttOpsPickerPanel({
         <div className="border-t border-zinc-100 px-4 py-2">
           <button
             type="button"
-            className="text-xs font-medium text-zinc-500 hover:text-zinc-800"
+            className="admin-text-action admin-text-action--neutral text-xs"
             onClick={onClose}
           >
             {tCommon("close")}

@@ -1,4 +1,5 @@
 import { Link } from "@/i18n/navigation";
+import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { getLocale, getTranslations } from "next-intl/server";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import type { TodayBoard } from "@/services/today-board";
@@ -138,12 +139,13 @@ export async function TodayBoardSection({ board }: { board: TodayBoard }) {
                     <p className="mt-0.5 text-zinc-600">
                       {tHome("departureGuest", { name: r.guest_name })}
                     </p>
-                    <Link
+                    <AdminTextActionLink
                       href={`/admin/bookings/${r.booking_id}`}
-                      className="mt-1 inline-block text-xs font-medium text-violet-700 hover:underline"
+                      variant="accent"
+                      className="mt-1 text-xs"
                     >
                       {t("openBooking")} →
-                    </Link>
+                    </AdminTextActionLink>
                   </li>
                 ))}
               </ul>

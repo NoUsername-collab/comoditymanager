@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useTranslations } from "next-intl";
 import { formatRoDate } from "@/lib/stay-dates";
 
@@ -64,12 +64,13 @@ export function StayBlock({
               ? tGuests("stayBlock.confirmed")
               : tGuests("stayBlock.newRequest")}
           </span>
-          <Link
+          <AdminTextActionLink
             href={`/admin/bookings/${stay.booking_id}`}
-            className="mt-2 block text-xs font-medium text-zinc-600 underline hover:text-zinc-900"
+            variant="neutral"
+            className="mt-2 text-xs"
           >
             {tGuests("stayBlock.viewBooking")} →
-          </Link>
+          </AdminTextActionLink>
         </div>
       )}
     </div>

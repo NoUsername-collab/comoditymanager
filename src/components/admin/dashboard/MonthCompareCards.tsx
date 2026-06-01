@@ -1,4 +1,4 @@
-import { Link } from "@/i18n/navigation";
+import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { getTranslations } from "next-intl/server";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { AdminMetricHint } from "@/components/admin/ui/AdminMetricHint";
@@ -45,12 +45,9 @@ export async function MonthCompareCards({
               {py ? ` (${py.monthLabel} ${py.year})` : ""}
             </p>
           </div>
-          <Link
-            href="/admin/statistics"
-            className="text-sm font-medium text-emerald-800 hover:underline"
-          >
+          <AdminTextActionLink href="/admin/statistics" variant="primary" className="text-sm">
             {t("fullStatistics")}
-          </Link>
+          </AdminTextActionLink>
         </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

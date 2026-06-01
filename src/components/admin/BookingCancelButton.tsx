@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 
 export function BookingCancelButton({
   label,
@@ -26,8 +27,8 @@ export function BookingCancelButton({
 
   const triggerClass =
     variant === "compact"
-      ? "w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
-      : "text-sm text-red-600 hover:text-red-800 disabled:opacity-50";
+      ? "w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100 active:translate-y-px active:bg-red-200/80 disabled:opacity-50"
+      : undefined;
 
   const panelClass =
     variant === "compact"
@@ -40,15 +41,28 @@ export function BookingCancelButton({
       : "rounded-md px-3 py-1 text-xs font-medium";
 
   if (!open) {
+    if (variant === "compact") {
+      return (
+        <button
+          type="button"
+          disabled={pending}
+          onClick={() => setOpen(true)}
+          className={triggerClass}
+        >
+          {label}
+        </button>
+      );
+    }
     return (
-      <button
+      <AdminTextActionButton
         type="button"
+        variant="danger"
         disabled={pending}
         onClick={() => setOpen(true)}
-        className={triggerClass}
+        className="text-sm"
       >
         {label}
-      </button>
+      </AdminTextActionButton>
     );
   }
 

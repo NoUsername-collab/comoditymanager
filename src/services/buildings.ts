@@ -101,17 +101,27 @@ export async function createBuilding(input: {
 export async function deleteBuilding(id: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
 
-  const { count: roomCount, error: roomErr } = await supabase
+  const { data: rooms, error: roomErr } = await supabase
     .from("rooms")
-    .select("id", { count: "exact", head: true })
+    .select("id")
     .eq("tenant_id", tenantId)
     .eq("building_id", id);
 
   if (roomErr) throw new Error(roomErr.message);
-  if ((roomCount ?? 0) > 0) {
-    throw new Error(
-      "buildings.delete_all_rooms_or_disable_them_first"
-    );
+
+  const roomIds = (rooms ?? []).map((r) => r.id);
+  if (roomIds.length > 0) {
+    const { count: bookingCount, error: brErr } = await supabase
+      .from("booking_rooms")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .in("room_id", roomIds);
+
+    if (brErr) throw new Error(brErr.message);
+    if ((bookingCount ?? 0) > 0) {
+      throw new Error("buildings.delete_rooms_have_bookings");
+    }
+    throw new Error("buildings.delete_all_rooms_or_disable_them_first");
   }
 
   const { error } = await supabase

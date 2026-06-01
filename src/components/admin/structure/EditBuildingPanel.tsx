@@ -12,6 +12,7 @@ import { deleteBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/act
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
+import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
 import { BUILDING_COLOR_PALETTE } from "@/lib/building-color-palette";
 
@@ -44,13 +45,14 @@ export function EditBuildingPanel({ building }: { building: Building }) {
 
   return (
     <div className="mt-2">
-      <button
+      <AdminTextActionButton
         type="button"
+        variant="neutral"
+        className="text-xs"
         onClick={() => setOpen((v) => !v)}
-        className="text-xs font-semibold text-zinc-600 underline hover:text-zinc-900"
       >
         {open ? t("hideBuildingEdit") : t("editBuilding")}
-      </button>
+      </AdminTextActionButton>
 
       {open && (
         <div className="mt-3 rounded-xl border border-zinc-200 bg-white/80 p-4">

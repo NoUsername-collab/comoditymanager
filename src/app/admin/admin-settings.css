@@ -248,6 +248,12 @@
   transform: translateY(-1px);
 }
 
+.admin-settings-submit__btn:active {
+  opacity: 1;
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 /* Palete — r="theme rows" */
 .admin-palette-picker {
   display: flex;
