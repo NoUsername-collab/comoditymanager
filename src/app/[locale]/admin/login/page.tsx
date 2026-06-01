@@ -14,7 +14,10 @@ export default async function AdminLoginPage({
 }) {
   const t = await getTranslations("admin.login");
   const params = await searchParams;
-  const next = params.next?.startsWith("/admin") ? params.next : "/admin";
+  const next =
+    params.next?.startsWith("/admin") || params.next?.startsWith("/hospira-admin")
+      ? params.next
+      : "/admin";
   const authError =
     params.error === "unauthorized"
       ? t("notMemberOfPension")

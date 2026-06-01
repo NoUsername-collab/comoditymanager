@@ -9,6 +9,7 @@ import {
   resolveLoginIdentifier,
 } from "@/lib/auth/constants";
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
+import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
 import { logAdminActivity } from "@/services/activity-log";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";
@@ -63,6 +64,18 @@ export async function loginAction(formData: FormData) {
     next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
       ? next
       : "/admin";
+
+  // Platform admin — redirect to /hospira-admin without tenant check
+  if (!tenant && safeNext.startsWith("/hospira-admin") && user.email && isPlatformAdminEmail(user.email)) {
+    await logAdminActivity({
+      action: "auth.login",
+      entityType: "session",
+      entityId: user.id,
+      summary: t("loginSummary", { role: "platform_admin" }),
+      actor: { id: user.id, email: user.email },
+    });
+    redirect(safeNext);
+  }
 
   // Platform host: owner/staff may lack app_metadata.role but have tenant_members
   let platformSlug: string | null = null;
