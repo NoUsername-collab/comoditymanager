@@ -33,6 +33,25 @@ export interface PlatformLogEntry {
   created_at: string;
 }
 
+export interface PlatformDevLogEntry {
+  id: string;
+  tenant_id: string;
+  tenant_slug: string;
+  tenant_name: string;
+  level: string;
+  source: string;
+  message: string;
+  created_at: string;
+  user_email: string | null;
+}
+
+export type PlatformLogsResult = {
+  activity: PlatformLogEntry[];
+  dev: PlatformDevLogEntry[];
+  activityError: string | null;
+  devError: string | null;
+};
+
 // ─── Health Checks ──────────────────────────────────────────────
 
 export async function runTenantHealthChecks(): Promise<TenantHealthCheck[]> {
@@ -102,49 +121,91 @@ export async function runTenantHealthChecks(): Promise<TenantHealthCheck[]> {
   return checks;
 }
 
+function isUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+async function loadTenantMap(tenantIds: string[]) {
+  if (tenantIds.length === 0) {
+    return new Map<string, { slug: string; name: string }>();
+  }
+
+  const supabase = createPublicAdminClient();
+  const { data: tenants } = await supabase
+    .from("tenants")
+    .select("id, slug, display_name")
+    .in("id", tenantIds);
+
+  return new Map(
+    (tenants ?? []).map((t) => [t.id, { slug: t.slug, name: t.display_name }])
+  );
+}
+
 // ─── Activity Logs ──────────────────────────────────────────────
 
 export async function getPlatformLogs(
   limit = 100,
   tenantId?: string | null
 ): Promise<PlatformLogEntry[]> {
-  const supabase = createPublicAdminClient();
+  const result = await getPlatformLogsBundle(limit, tenantId);
+  return result.activity;
+}
 
-  let query = supabase
+export async function getPlatformDevLogs(
+  limit = 100,
+  tenantId?: string | null
+): Promise<PlatformDevLogEntry[]> {
+  const result = await getPlatformLogsBundle(limit, tenantId);
+  return result.dev;
+}
+
+/** Activity + dev logs for Hospira admin (surfaces query errors). */
+export async function getPlatformLogsBundle(
+  limit = 100,
+  tenantId?: string | null
+): Promise<PlatformLogsResult> {
+  const supabase = createPublicAdminClient();
+  const filterId = tenantId && isUuid(tenantId) ? tenantId : null;
+
+  let activityQuery = supabase
     .from("admin_activity_log")
     .select(
-      "id, tenant_id, action, entity_type, entity_id, summary, created_at, actor_email:metadata->actor->email"
+      "id, tenant_id, action, entity_type, entity_id, summary, created_at, actor_email"
     )
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  // Validate UUID format to prevent Supabase query errors
-  if (tenantId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId)) {
-    return [];
+  if (filterId) {
+    activityQuery = activityQuery.eq("tenant_id", filterId);
   }
 
-  if (tenantId) {
-    query = query.eq("tenant_id", tenantId);
+  let devQuery = supabase
+    .from("dev_logs")
+    .select("id, tenant_id, level, source, message, created_at, user_email")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (filterId) {
+    devQuery = devQuery.eq("tenant_id", filterId);
   }
 
-  const { data, error } = await query;
+  const [activityRes, devRes] = await Promise.all([activityQuery, devQuery]);
 
-  if (error || !data) return [];
+  const activityError = activityRes.error?.message ?? null;
+  const devError = devRes.error?.message ?? null;
+  const activityRows = activityRes.data ?? [];
+  const devRows = devRes.data ?? [];
 
-  // Fetch tenant names for display
-  const tenantIds = [...new Set(data.map((d) => d.tenant_id).filter(Boolean))];
-  if (tenantIds.length === 0) return [];
+  const tenantIds = [
+    ...new Set([
+      ...activityRows.map((d) => d.tenant_id).filter(Boolean),
+      ...devRows.map((d) => d.tenant_id).filter(Boolean),
+    ]),
+  ] as string[];
 
-  const { data: tenants } = await supabase
-    .from("tenants")
-    .select("id, slug, display_name")
-    .in("id", tenantIds);
+  const tenantMap = await loadTenantMap(tenantIds);
 
-  const tenantMap = new Map(
-    (tenants ?? []).map((t) => [t.id, { slug: t.slug, name: t.display_name }])
-  );
-
-  return data.map((d) => {
+  const activity: PlatformLogEntry[] = activityRows.map((d) => {
     const tenant = tenantMap.get(d.tenant_id);
     return {
       id: d.id,
@@ -155,8 +216,25 @@ export async function getPlatformLogs(
       entity_type: d.entity_type,
       entity_id: d.entity_id,
       summary: d.summary ?? "",
-      actor_email: typeof d.actor_email === "string" ? d.actor_email : null,
+      actor_email: d.actor_email ?? null,
       created_at: d.created_at,
     };
   });
+
+  const dev: PlatformDevLogEntry[] = devRows.map((d) => {
+    const tenant = tenantMap.get(d.tenant_id);
+    return {
+      id: d.id,
+      tenant_id: d.tenant_id,
+      tenant_slug: tenant?.slug ?? "—",
+      tenant_name: tenant?.name ?? "—",
+      level: d.level,
+      source: d.source,
+      message: d.message,
+      created_at: d.created_at,
+      user_email: d.user_email ?? null,
+    };
+  });
+
+  return { activity, dev, activityError, devError };
 }

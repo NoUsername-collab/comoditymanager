@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
@@ -61,7 +62,7 @@ const getCachedPensionSettings = (tenantId: string) =>
   );
 
 export async function getPensionSettings(): Promise<PensionSettings | null> {
-  const { tenantId } = await getTenantScope();
+  const tenantId = await resolveTenantIdForData();
   return getCachedPensionSettings(tenantId)();
 }
 

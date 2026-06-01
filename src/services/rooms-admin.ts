@@ -1,5 +1,7 @@
 import { unstable_cache } from "next/cache";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
   getTenantScope,
   tenantCacheKey,
@@ -70,7 +72,7 @@ async function listAllRoomsUncached(tenantId: string): Promise<
     room_type_name: string | null;
   })[]
 > {
-  const { supabase } = await getTenantScope();
+  const supabase = await createAdminClient();
   const { data, error } = await supabase
     .from("rooms")
     .select(
@@ -133,7 +135,7 @@ export async function listAllRooms(): Promise<
     room_type_name: string | null;
   })[]
 > {
-  const { tenantId } = await getTenantScope();
+  const tenantId = await resolveTenantIdForData();
   return getCachedRooms(tenantId)();
 }
 
