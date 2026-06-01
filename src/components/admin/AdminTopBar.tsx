@@ -3,6 +3,7 @@ import { AdminTodayNotifications } from "@/components/admin/AdminTodayNotificati
 import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminLiveRefresh } from "@/components/admin/AdminLiveRefresh";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
+import { AdminPlanBadge } from "@/components/admin/AdminPlanBadge";
 import { HudIconGlobe } from "@/components/admin/AdminHudIcons";
 import { LogoutButton } from "@/app/[locale]/admin/(panel)/logout-button";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
@@ -51,6 +52,7 @@ export async function AdminTopBar({
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
           <AdminLiveRefresh />
+          <AdminPlanBadge />
           <AdminVersionBadge />
           <LanguageSwitcher />
           {isAdmin && <SimTriggerChip simActive={simActive} simDate={simDate} simDays={simDays} />}

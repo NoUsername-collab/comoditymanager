@@ -5,6 +5,7 @@ import {
   updateTenantPlan,
   updateTenantStatus,
   updateTenantModules,
+  updateTenantBilling,
 } from "@/services/platform-admin";
 import type { PlanId } from "@/core/config/plans";
 import { revalidatePath } from "next/cache";
@@ -25,6 +26,19 @@ export async function changeTenantStatusAction(
 ) {
   await requirePlatformAdmin();
   const result = await updateTenantStatus(tenantId, status);
+  if (result.success) {
+    revalidatePath("/hospira-admin");
+    revalidatePath(`/hospira-admin/tenants/${tenantId}`);
+  }
+  return result;
+}
+
+export async function changeTenantBillingAction(
+  tenantId: string,
+  isPaying: boolean
+) {
+  await requirePlatformAdmin();
+  const result = await updateTenantBilling(tenantId, isPaying);
   if (result.success) {
     revalidatePath("/hospira-admin");
     revalidatePath(`/hospira-admin/tenants/${tenantId}`);

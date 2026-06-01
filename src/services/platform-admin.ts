@@ -84,7 +84,8 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     const planId = t.plan_id || "free";
     planDistribution[planId] = (planDistribution[planId] || 0) + 1;
 
-    if (t.status === "active" || t.status === "trial") {
+    // MRR only counts paying tenants
+    if (t.is_paying && (t.status === "active" || t.status === "trial")) {
       const planConfig = PLAN_CONFIGS[planId as PlanId];
       if (planConfig) {
         mrr += planConfig.priceEur;
@@ -190,6 +191,25 @@ export async function updateTenantModules(
     .from("tenants")
     .update({
       active_modules: modules,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", tenantId);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+/** Update a tenant's billing flag. */
+export async function updateTenantBilling(
+  tenantId: string,
+  isPaying: boolean
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = createPublicAdminClient();
+
+  const { error } = await supabase
+    .from("tenants")
+    .update({
+      is_paying: isPaying,
       updated_at: new Date().toISOString(),
     })
     .eq("id", tenantId);

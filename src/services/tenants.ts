@@ -23,6 +23,7 @@ export type TenantRow = {
   trial_ends_at: string | null;
   owner_id: string | null;
   owner_email: string;
+  is_paying: boolean;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   created_at: string;

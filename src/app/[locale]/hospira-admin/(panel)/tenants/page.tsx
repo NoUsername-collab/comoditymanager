@@ -1,5 +1,6 @@
 import { listAllTenants } from "@/services/platform-admin";
 import { Link } from "@/i18n/navigation";
+import { TenantBillingToggle } from "@/components/hospira-admin/TenantBillingToggle";
 
 const STATUS_BADGE: Record<string, string> = {
   active: "bg-emerald-900 text-emerald-300",
@@ -28,6 +29,7 @@ export default async function TenantsListPage() {
               <th className="px-4 py-3 text-right">Camere</th>
               <th className="px-4 py-3 text-right">Rezervări</th>
               <th className="px-4 py-3 text-right">Membri</th>
+              <th className="px-4 py-3">Billing</th>
               <th className="px-4 py-3">Creat</th>
               <th className="px-4 py-3"></th>
             </tr>
@@ -65,6 +67,9 @@ export default async function TenantsListPage() {
                 <td className="px-4 py-3 text-right text-neutral-300">
                   {t.member_count}
                 </td>
+                <td className="px-4 py-3">
+                  <TenantBillingToggle tenantId={t.id} isPaying={t.is_paying ?? false} />
+                </td>
                 <td className="px-4 py-3 text-xs text-neutral-500">
                   {new Date(t.created_at).toLocaleDateString("ro")}
                 </td>
@@ -81,7 +86,7 @@ export default async function TenantsListPage() {
             {tenants.length === 0 && (
               <tr>
                 <td
-                  colSpan={9}
+                  colSpan={10}
                   className="px-4 py-8 text-center text-neutral-500"
                 >
                   Niciun tenant înregistrat.

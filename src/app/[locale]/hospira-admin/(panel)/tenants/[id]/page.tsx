@@ -5,6 +5,7 @@ import { TenantPlanForm } from "@/components/hospira-admin/TenantPlanForm";
 import { TenantStatusForm } from "@/components/hospira-admin/TenantStatusForm";
 import { TenantModulesForm } from "@/components/hospira-admin/TenantModulesForm";
 import { TenantImpersonateLink } from "@/components/hospira-admin/TenantImpersonateLink";
+import { TenantBillingToggle } from "@/components/hospira-admin/TenantBillingToggle";
 import { Link } from "@/i18n/navigation";
 
 export default async function TenantDetailPage({
@@ -65,6 +66,10 @@ export default async function TenantDetailPage({
             label="Plan preț"
             value={currentPlan ? `${currentPlan.priceEur}€/lună` : "—"}
           />
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-neutral-500">Billing</span>
+            <TenantBillingToggle tenantId={tenant.id} isPaying={tenant.is_paying ?? false} />
+          </div>
           <InfoRow
             label="Max camere plan"
             value={
