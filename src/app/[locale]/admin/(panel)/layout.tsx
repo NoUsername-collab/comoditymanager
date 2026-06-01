@@ -20,6 +20,7 @@ import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
 import { loadTodayBoard } from "@/services/today-board";
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
+import { OnboardingBar } from "@/components/admin/onboarding/OnboardingBar";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
   theme: "default",
@@ -82,6 +83,8 @@ export default async function AdminLayout({
             />
           </div>
         </div>
+
+        <OnboardingBar />
 
         {cereriCount > 0 && (
           <div className="admin-hud-alert px-6 py-2.5 text-center text-sm">
