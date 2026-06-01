@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { DEFAULT_THEME_ID, DEFAULT_THEME_MODE } from "@/lib/themes";
+import { LayoutDebugHost } from "@/components/debug/LayoutDebugHost";
 import { DEVICE_BOOT_SCRIPT } from "@/lib/device";
 import { ADMIN_THEME_BOOT_SCRIPT } from "@/lib/admin-theme";
 import "./globals.css";
@@ -46,6 +47,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         {children}
+        <LayoutDebugHost />
       </body>
     </html>
   );

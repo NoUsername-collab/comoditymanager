@@ -2,10 +2,11 @@
 
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { computeFixedDropdownPosition } from "@/lib/ui/viewport-position";
 
 function FlagRO({ size = 20 }: { size?: number }) {
   return (
@@ -54,7 +55,9 @@ function Flag({ code, size = 20 }: { code: string; size?: number }) {
   return <Comp size={size} />;
 }
 
-type MenuPos = { top: number; right: number };
+type MenuPos = { top: number; left: number };
+
+const MENU_ESTIMATE = { width: 52, height: 132 };
 
 export function LanguageSwitcher() {
   const tCommon = useTranslations("common");
@@ -72,13 +75,22 @@ export function LanguageSwitcher() {
   }, []);
 
   const positionMenu = useCallback(() => {
-    const rect = triggerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setMenuPos({
-      top: rect.bottom + 8,
-      right: Math.max(8, window.innerWidth - rect.right),
-    });
+    const trigger = triggerRef.current?.getBoundingClientRect();
+    if (!trigger) return;
+
+    const measured = menuRef.current?.getBoundingClientRect();
+    const menuSize = measured
+      ? { width: measured.width, height: measured.height }
+      : MENU_ESTIMATE;
+
+    const pos = computeFixedDropdownPosition(trigger, menuSize);
+    setMenuPos(pos);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    positionMenu();
+  }, [open, positionMenu]);
 
   useEffect(() => {
     if (!open) {
@@ -89,9 +101,13 @@ export function LanguageSwitcher() {
     const onLayout = () => positionMenu();
     window.addEventListener("resize", onLayout);
     window.addEventListener("scroll", onLayout, true);
+    window.visualViewport?.addEventListener("resize", onLayout);
+    window.visualViewport?.addEventListener("scroll", onLayout);
     return () => {
       window.removeEventListener("resize", onLayout);
       window.removeEventListener("scroll", onLayout, true);
+      window.visualViewport?.removeEventListener("resize", onLayout);
+      window.visualViewport?.removeEventListener("scroll", onLayout);
     };
   }, [open, positionMenu]);
 
@@ -126,7 +142,7 @@ export function LanguageSwitcher() {
         role="listbox"
         aria-label={tCommon("language")}
         className="language-switcher__menu language-switcher__menu--portal fixed min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-card,#fff)] p-1 shadow-lg"
-        style={{ top: menuPos.top, right: menuPos.right, left: "auto" }}
+        style={{ top: menuPos.top, left: menuPos.left }}
       >
         {routing.locales.map((l) => (
           <button
