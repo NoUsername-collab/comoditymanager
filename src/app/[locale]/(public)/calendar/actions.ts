@@ -93,8 +93,10 @@ export async function submitGuestRequestAction(formData: FormData) {
     const guest = guestNamesFromForm(formData);
     const guest_email = String(formData.get("guest_email") ?? "");
     const guest_phone = String(formData.get("guest_phone") ?? "");
-    const num_adults = Number(formData.get("num_adults") ?? 1);
-    const num_children = Number(formData.get("num_children") ?? 0);
+    const num_adults_raw = Number(formData.get("num_adults") ?? 1);
+    const num_children_raw = Number(formData.get("num_children") ?? 0);
+    const num_adults = Number.isFinite(num_adults_raw) && num_adults_raw >= 1 ? Math.floor(num_adults_raw) : 1;
+    const num_children = Number.isFinite(num_children_raw) && num_children_raw >= 0 ? Math.floor(num_children_raw) : 0;
     const has_minor = formData.get("has_minor") === "on";
     const minor_age = String(formData.get("minor_age") ?? "");
     const notesRaw = String(formData.get("notes") ?? "").trim();
@@ -102,6 +104,9 @@ export async function submitGuestRequestAction(formData: FormData) {
 
     if (!check_in || !check_out || !guest_email || !guest_phone.trim()) {
       return { ok: false as const, error: t("fillRequired") };
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(guest_email.trim())) {
+      return { ok: false as const, error: t("invalidEmail") };
     }
     try {
       assertValidGuestPhone(guest_phone);

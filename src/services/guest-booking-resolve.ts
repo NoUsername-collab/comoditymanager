@@ -10,14 +10,14 @@ import {
 } from "@/domain/guest/normalize";
 import { mapGuestRow } from "@/domain/guest/map-row";
 import type { GuestBookingInput, GuestRow } from "@/domain/guest/types";
-import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { getTenantPublicScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivity } from "@/services/activity-log";
 import { ensureGuestProfiles } from "@/services/guest-profiles";
 
 async function findGuestByPhone(
   phoneNormalized: string
 ): Promise<GuestRow | null> {
-  const { tenantId, supabase } = await getTenantScope();
+  const { tenantId, supabase } = await getTenantPublicScope();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -31,7 +31,7 @@ async function findGuestByPhone(
 async function findGuestByEmail(
   emailNormalized: string
 ): Promise<GuestRow | null> {
-  const { tenantId, supabase } = await getTenantScope();
+  const { tenantId, supabase } = await getTenantPublicScope();
   const { data, error } = await supabase
     .from("guests")
     .select("*")
@@ -51,7 +51,7 @@ async function createGuestRecord(input: GuestBookingInput): Promise<string> {
     emailNorm && !isPlaceholderEmail(emailNorm) ? input.guest_email.trim() : null;
   const phone = phoneNorm ? input.guest_phone.trim() : null;
 
-  const { tenantId, supabase } = await getTenantScope();
+  const { tenantId, supabase } = await getTenantPublicScope();
   const { data, error } = await supabase
     .from("guests")
     .insert(
@@ -80,7 +80,7 @@ async function touchGuestFromBooking(
 ): Promise<void> {
   const emailNorm = normalizeEmail(input.guest_email);
   const phoneNorm = normalizePhone(input.guest_phone);
-  const { tenantId, supabase } = await getTenantScope();
+  const { tenantId, supabase } = await getTenantPublicScope();
 
   const patch: Record<string, unknown> = {
     last_name: input.guest_last_name.trim(),
