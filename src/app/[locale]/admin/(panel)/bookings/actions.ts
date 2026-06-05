@@ -276,3 +276,62 @@ export async function editBookingCheckOutAction(
     };
   }
 }
+
+export async function editBookingDatesAction(
+  formData: FormData
+): Promise<OpsActionResult> {
+  const t = await getTranslations("admin.serverActions");
+  await requireAdmin();
+  const id = readBookingId(formData);
+  const check_in = String(formData.get("check_in") ?? "").trim();
+  const check_out = String(formData.get("check_out") ?? "").trim();
+  const num_adults = Math.max(1, Math.floor(Number(formData.get("num_adults") ?? 1)));
+  const num_children = Math.max(0, Math.floor(Number(formData.get("num_children") ?? 0)));
+
+  if (!id) return { ok: false, error: t("bookingIdMissing") };
+  if (!check_in || !check_out) return { ok: false, error: "fillRequired" };
+
+  const { isAtLeastOneNight } = await import("@/domain/booking/conflict");
+  if (!isAtLeastOneNight(check_in, check_out)) {
+    return { ok: false, error: "minOneNight" };
+  }
+
+  try {
+    const { getTenantScope } = await import("@/lib/tenant/scope");
+    const { tenantId, supabase } = await getTenantScope();
+    const { logAdminActivityFromSession } = await import("@/services/activity-log");
+
+    const { error } = await supabase
+      .from("bookings")
+      .update({
+        check_in,
+        check_out,
+        num_adults,
+        num_children,
+      })
+      .eq("tenant_id", tenantId)
+      .eq("id", id);
+
+    if (error) throw new Error(error.message);
+
+    // Sync segments if rooms are already assigned
+    const { syncBookingRoomSegments } = await import("@/services/booking-segments");
+    await syncBookingRoomSegments(id).catch(() => {});
+
+    await logAdminActivityFromSession({
+      action: "booking.dates_edited",
+      entityType: "booking",
+      entityId: id,
+      summary: `Date modificate: ${check_in} → ${check_out}, ${num_adults}A/${num_children}C`,
+      metadata: { check_in, check_out, num_adults, num_children },
+    });
+
+    revalidateBookingDetailSurfaces(id);
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "editDatesFailed",
+    };
+  }
+}

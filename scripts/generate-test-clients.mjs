@@ -633,7 +633,321 @@ function buildClients() {
   }
 
   if (clients.length !== 100) throw new Error(`Expected 100, got ${clients.length}`);
+  applyFraudPatches(clients);
   return clients;
+}
+
+/** Eliberează telefon/email vechi când suprascriem un client. */
+function releaseClientUniques(c) {
+  const p = c.cerere_publica;
+  if (p?.guest_phone) usedPhones.delete(p.guest_phone);
+  if (p?.guest_email) usedEmails.delete(p.guest_email.toLowerCase());
+  const nid = c.check_in?.national_id;
+  const nit = c.check_in?.national_id_type;
+  if (nid && nit) usedNatIds.delete(`${nit}:${nid}`);
+}
+
+function patchClient(clients, index, patch) {
+  releaseClientUniques(clients[index]);
+  const prev = clients[index];
+  clients[index] = {
+    ...prev,
+    ...patch,
+    cerere_publica: { ...prev.cerere_publica, ...patch.cerere_publica },
+    check_in: patch.check_in !== undefined ? patch.check_in : prev.check_in,
+  };
+}
+
+/**
+ * Înlocuiește clienții RO T061–T076 cu scenarii dedup / fraudă / date proaste.
+ * T001–T060 și străinii rămân neschimbați.
+ */
+function applyFraudPatches(clients) {
+  const stay = (i) => pickStay(i);
+  const refCnp = clients[0].check_in?.national_id;
+
+  const patches = [
+    {
+      // T061 — același nume, telefon A
+      test_tags: ["dedup_acelasi_nume", "grup_dedup_vasile"],
+      test_scenario: "FRAUD · Ionescu Vasile #1 · același nume, telefon diferit față de #2",
+      cerere_publica: {
+        guest_last_name: "Ionescu",
+        guest_first_name: "Vasile",
+        guest_name: "Ionescu Vasile",
+        guest_email: uniqEmail("fraud.dedup.vasile.a@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900101"),
+        notes: "[FRAUD] Dedup: același nume ca T062, telefoane diferite — nu merge automat",
+      },
+      check_in: roCiIdentity(601, "M", 1983, 3, 15, false),
+    },
+    {
+      // T062 — același nume, telefon B, CNP diferit
+      test_tags: ["dedup_acelasi_nume", "grup_dedup_vasile"],
+      test_scenario: "FRAUD · Ionescu Vasile #2 · persoană diferită, același nume",
+      cerere_publica: {
+        guest_last_name: "Ionescu",
+        guest_first_name: "Vasile",
+        guest_name: "Ionescu Vasile",
+        guest_email: uniqEmail("fraud.dedup.vasile.b@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900102"),
+        notes: "[FRAUD] Dedup: verifică că NU se fuzionează greșit cu T061",
+      },
+      check_in: roCiIdentity(602, "M", 1983, 3, 15, false),
+    },
+    {
+      test_tags: ["dedup_acelasi_nume", "grup_dedup_maria"],
+      test_scenario: "FRAUD · Popescu Maria #1 · același nume complet",
+      cerere_publica: {
+        guest_last_name: "Popescu",
+        guest_first_name: "Maria",
+        guest_name: "Popescu Maria",
+        guest_email: uniqEmail("fraud.dedup.maria.a@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900103"),
+        notes: "[FRAUD] Pereche dedup nume — vezi și T064",
+      },
+      check_in: roCiIdentity(603, "F", 1991, 7, 22, false),
+    },
+    {
+      test_tags: ["dedup_acelasi_nume", "grup_dedup_maria"],
+      test_scenario: "FRAUD · Popescu Maria #2 · același nume, alt CNP",
+      cerere_publica: {
+        guest_last_name: "Popescu",
+        guest_first_name: "Maria",
+        guest_name: "Popescu Maria",
+        guest_email: uniqEmail("fraud.dedup.maria.b@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900104"),
+        notes: "[FRAUD] Pereche dedup nume — vezi și T063",
+      },
+      check_in: roCiIdentity(604, "F", 1988, 11, 5, false),
+    },
+    {
+      test_tags: ["dedup_email_conflict"],
+      test_scenario: "FRAUD · Același email ca T061, telefon diferit — conflict dedup",
+      cerere_publica: {
+        guest_last_name: "Conflict",
+        guest_first_name: "Email",
+        guest_name: "Conflict Email",
+        guest_email: "fraud.dedup.vasile.a@test.casaemil.local",
+        guest_phone: uniqPhone("0725900105"),
+        notes: "[FRAUD] Email duplicat T061 · telefon nou — ce guest se leagă?",
+      },
+      check_in: roCiIdentity(605, "M", 1975, 1, 10, false),
+      test_negativ: {
+        asteptat: "mergeConflict sau potrivire după telefon/email",
+        referinta: "T061",
+      },
+    },
+    {
+      test_tags: ["dedup_telefon_format"],
+      test_scenario: "FRAUD · Același telefon ca T061, format +40 cu spații",
+      cerere_publica: {
+        guest_last_name: "TelefonFormat",
+        guest_first_name: "Test",
+        guest_name: "TelefonFormat Test",
+        guest_email: uniqEmail("fraud.phone.format@test.casaemil.local"),
+        guest_phone: uniqPhone("+40 725 900 101"),
+        notes: "[FRAUD] Normalizare: același E.164 ca T061 (0725900101)",
+      },
+      check_in: roCiIdentity(606, "M", 1980, 6, 6, false),
+      test_negativ: {
+        telefon_raw_alternativ: "0725900101",
+        telefon_normalizat_asteptat: "+40725900101",
+        referinta: "T061",
+      },
+    },
+    {
+      test_tags: ["document_expirat"],
+      test_scenario: "FRAUD · Document EXPIRAT (2020) — check-in cu act invalid",
+      cerere_publica: {
+        guest_last_name: "DocExpirat",
+        guest_first_name: "Ion",
+        guest_name: "DocExpirat Ion",
+        guest_email: uniqEmail("fraud.doc.expired@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900107"),
+        notes: "[FRAUD] doc_expiry_date în trecut — avertizare UI?",
+      },
+      check_in: {
+        ...roCiIdentity(607, "M", 1978, 4, 20, false),
+        doc_expiry_date: "2020-01-01",
+        doc_issue_date: "2010-01-01",
+      },
+      test_negativ: { asteptat: "avertizare document expirat la check-in" },
+    },
+    {
+      test_tags: ["document_expira_curand"],
+      test_scenario: "FRAUD · Document expiră în ~5 zile (2026-06-10)",
+      cerere_publica: {
+        guest_last_name: "DocExpiraCurand",
+        guest_first_name: "Elena",
+        guest_name: "DocExpiraCurand Elena",
+        guest_email: uniqEmail("fraud.doc.soon@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900108"),
+        notes: "[FRAUD] Expiră curând — test avertizare",
+      },
+      check_in: {
+        ...roCiIdentity(608, "F", 1992, 8, 14, false),
+        doc_expiry_date: "2026-06-10",
+      },
+      test_negativ: { asteptat: "avertizare expirare apropiată" },
+    },
+    {
+      test_tags: ["document_expirat"],
+      test_scenario: "FRAUD · Document expirat ieri (2026-06-04)",
+      cerere_publica: {
+        guest_last_name: "DocExpiratIeri",
+        guest_first_name: "Ana",
+        guest_name: "DocExpiratIeri Ana",
+        guest_email: uniqEmail("fraud.doc.yesterday@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900109"),
+        notes: "[FRAUD] Expirat recent",
+      },
+      check_in: {
+        ...roCiIdentity(609, "F", 1986, 2, 28, false),
+        doc_expiry_date: "2026-06-04",
+      },
+    },
+    {
+      test_tags: ["cnp_duplicat", "fraud_identitate"],
+      test_scenario: "FRAUD · CNP deja folosit (T001) — încearcă duplicat la check-in",
+      cerere_publica: {
+        guest_last_name: "CnpDuplicat",
+        guest_first_name: "Test",
+        guest_name: "CnpDuplicat Test",
+        guest_email: uniqEmail("fraud.cnp.dup@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900110"),
+        notes: "[FRAUD] CNP propriu valid; vezi test_negativ",
+      },
+      check_in: roCiIdentity(610, "M", 1990, 5, 5, false),
+      test_negativ: {
+        incearca_cnp: refCnp,
+        referinta_cnp_existent: "T001",
+        asteptat: "respinge CNP duplicat (findGuestByNationalId)",
+      },
+    },
+    {
+      test_tags: ["cnp_invalid", "fraud_identitate"],
+      test_scenario: "FRAUD · CNP cu check-digit greșit — date proaste la check-in",
+      cerere_publica: {
+        guest_last_name: "CnpInvalid",
+        guest_first_name: "Ion",
+        guest_name: "CnpInvalid Ion",
+        guest_email: uniqEmail("fraud.cnp.bad@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900111"),
+        notes: "[FRAUD] Date rezervare OK; la check-in testează CNP invalid",
+      },
+      check_in: roCiIdentity(611, "M", 1985, 1, 1, false),
+      test_negativ: {
+        incearca_cnp: "1850101410019",
+        asteptat: "respinge — check digit invalid",
+        incearca_cnp_2: "0000000000000",
+      },
+    },
+    {
+      test_tags: ["cnp_data_neconcordanta", "fraud_identitate"],
+      test_scenario: "FRAUD · CNP valid dar data nașterii greșită",
+      cerere_publica: {
+        guest_last_name: "CnpMismatch",
+        guest_first_name: "Elena",
+        guest_name: "CnpMismatch Elena",
+        guest_email: uniqEmail("fraud.cnp.mismatch@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900112"),
+        notes: "[FRAUD] CNP corect în check_in; încearcă birth_date diferit",
+      },
+      check_in: roCiIdentity(612, "F", 1990, 3, 15, false),
+      test_negativ: {
+        incearca_birth_date: "2000-01-01",
+        cnp_corect_din_fisier: "(vezi check_in)",
+        asteptat: "inconsistență CNP vs dată naștere",
+      },
+    },
+    {
+      test_tags: ["document_duplicat", "fraud_identitate"],
+      test_scenario: "FRAUD · Același nr. CI ca T001 — document duplicat",
+      cerere_publica: {
+        guest_last_name: "DocDuplicat",
+        guest_first_name: "Vasile",
+        guest_name: "DocDuplicat Vasile",
+        guest_email: uniqEmail("fraud.doc.dup@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900113"),
+        notes: "[FRAUD] Alt CNP, același nr. document ca T001",
+      },
+      check_in: {
+        ...roCiIdentity(613, "M", 1977, 9, 9, false),
+        doc_number: clients[0].check_in?.doc_number ?? "100000",
+        doc_series: clients[0].check_in?.doc_series ?? "RX",
+      },
+      test_negativ: {
+        referinta_document: "T001",
+        asteptat: "dedup warning pe doc_type + doc_number",
+      },
+    },
+    {
+      test_tags: ["identitate_la_checkin", "fraud_identitate"],
+      test_scenario: "FRAUD · Zero identitate la rezervare — totul la check-in",
+      cerere_publica: {
+        guest_last_name: "FaraIdentitate",
+        guest_first_name: "Rezervare",
+        guest_name: "FaraIdentitate Rezervare",
+        guest_email: uniqEmail("fraud.no.identity@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900114"),
+        notes: "[FRAUD] Poți introduce date false la check-in — validare?",
+      },
+      check_in: null,
+      test_negativ: {
+        incearca_cnp: "1234567890123",
+        asteptat: "respinge format/check digit",
+      },
+    },
+    {
+      test_tags: ["identitate_partiala", "fraud_identitate"],
+      test_scenario: "FRAUD · Identitate parțială — completezi restul la check-in",
+      cerere_publica: {
+        guest_last_name: "PartialCheckin",
+        guest_first_name: "Guest",
+        guest_name: "PartialCheckin Guest",
+        guest_email: uniqEmail("fraud.partial@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900115"),
+        notes: "[FRAUD] Doar CNP la profil; restul la check-in",
+      },
+      check_in: roCiIdentity(615, "F", 1993, 12, 1, true),
+      test_negativ: { asteptat: "identity_status partial până completezi adresă + doc" },
+    },
+    {
+      test_tags: ["telefon_invalid", "fraud_rezervare"],
+      test_scenario: "FRAUD · Telefon placeholder la rezervare — test validare",
+      cerere_publica: {
+        guest_last_name: "TelefonPlaceholder",
+        guest_first_name: "Test",
+        guest_name: "TelefonPlaceholder Test",
+        guest_email: uniqEmail("fraud.phone.bad@test.casaemil.local"),
+        guest_phone: uniqPhone("0725900116"),
+        notes: "[FRAUD] Telefon valid în fișier; vezi test_negativ pentru ce NU merge",
+      },
+      check_in: roCiIdentity(616, "M", 1988, 7, 7, false),
+      test_negativ: {
+        incearca_telefon_la_rezervare: ["—", "n/a", "", "0725900116"],
+        telefoane_respinse: ["—", "n/a", "", "."],
+        asteptat: "guest.phone_required / normalizare respinsă",
+      },
+    },
+  ];
+
+  if (patches.length !== 16) throw new Error("Fraud patches count");
+  for (let i = 0; i < patches.length; i++) {
+    patchClient(clients, 60 + i, patches[i]);
+  }
+}
+
+function buildTestCatalog(clients) {
+  const catalog = {};
+  for (const c of clients) {
+    for (const tag of c.test_tags ?? []) {
+      if (!catalog[tag]) catalog[tag] = [];
+      catalog[tag].push(c.id);
+    }
+  }
+  return catalog;
 }
 
 function buildScenario(citizenship, doc, stay) {
@@ -678,6 +992,7 @@ function renderMarkdown(clients, meta) {
     "2. **Admin** — acceptă cererea, apoi la check-in completează *Check-in / Identitate*.",
     "3. Clienții cu `check_in: null` — identitatea se introduce integral la check-in.",
     "4. **Suprapuneri** — caută `CLUSTER-A` / `CLUSTER-B` pentru teste disponibilitate.",
+    "5. **Fraudă/dedup** — clienții **T061–T076** + filtru în HTML · vezi `test_catalog` în JSON.",
     "",
     "---",
     "",
@@ -693,6 +1008,7 @@ function renderMarkdown(clients, meta) {
     lines.push(`| Cetățenie | ${c.cetatenie} |`);
     lines.push(`| Tip | ${c.tip_persoane} |`);
     if (c.suprapunere) lines.push(`| Suprapunere | **${c.suprapunere}** |`);
+    if (c.test_tags?.length) lines.push(`| Test tags | ${c.test_tags.map((t) => `\`${t}\``).join(", ")} |`);
     lines.push("");
     lines.push("### Cerere publică (formular rezervare)");
     lines.push("");
@@ -739,6 +1055,14 @@ function renderMarkdown(clients, meta) {
       }
       if (ci._expected_status) lines.push(`| Status așteptat | ${ci._expected_status} |`);
     }
+    if (c.test_negativ) {
+      lines.push("");
+      lines.push("### Test negativ (încearcă manual)");
+      lines.push("");
+      lines.push("```json");
+      lines.push(JSON.stringify(c.test_negativ, null, 2));
+      lines.push("```");
+    }
     lines.push("");
     lines.push("---");
     lines.push("");
@@ -754,38 +1078,60 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-function renderKvTable(rows) {
-  return `<table class="kv"><tbody>${rows
+function renderKvTable(rows, compact = false) {
+  const cls = compact ? "fields fields--compact fields--grid" : "fields";
+  return `<div class="${cls}">${rows
     .filter(([, v]) => v != null && v !== "")
-    .map(([k, v]) => `<tr><th>${esc(k)}</th><td><code class="copy" tabindex="0" title="Click copiază">${esc(v)}</code></td></tr>`)
-    .join("")}</tbody></table>`;
+    .map(([k, v, full]) => {
+      const wide = full ? " field--full" : "";
+      return `<button type="button" class="field${wide}" data-copy="${esc(String(v))}"><span class="field-k">${esc(k)}</span><span class="field-v">${esc(v)}</span>${compact ? "" : `<span class="field-hint">apasă copiază</span>`}</button>`;
+    })
+    .join("")}</div>`;
 }
 
 function renderHtml(rawClients, meta) {
-  const toc = rawClients
-    .map((c) => {
+  const sorted = [...rawClients].sort((a, b) => {
+    const pa = a.cerere_publica;
+    const pb = b.cerere_publica;
+    const byLast = pa.guest_last_name.localeCompare(pb.guest_last_name, "ro", { sensitivity: "base" });
+    if (byLast !== 0) return byLast;
+    return pa.guest_first_name.localeCompare(pb.guest_first_name, "ro", { sensitivity: "base" });
+  });
+
+  const toc = sorted
+    .map((c, i) => {
       const p = c.cerere_publica;
-      const badge = c.suprapunere ? `<span class="b ov">${esc(c.suprapunere)}</span>` : "";
+      const page = i < 50 ? 1 : 2;
       const cc = c.cetatenie_cod === "RO" ? "ro" : "fx";
-      return `<a href="#${c.id}" class="toc-i ${cc}">${c.id}<span class="toc-s">${esc(p.guest_last_name)}</span>${badge}</a>`;
+      const fr = c.test_tags?.length ? " fr" : "";
+      return `<a href="#${c.id}" class="toc-link ${cc}${fr}" data-page="${page}"><strong>${c.id}</strong> ${esc(p.guest_last_name)} ${esc(p.guest_first_name)}</a>`;
     })
     .join("");
 
-  const cards = rawClients
-    .map((c) => {
+  const page1Letter = sorted[0].cerere_publica.guest_last_name[0];
+  const page1End = sorted[49].cerere_publica.guest_last_name;
+  const page2Letter = sorted[50].cerere_publica.guest_last_name[0];
+  const page2End = sorted[99].cerere_publica.guest_last_name;
+
+  const cards = sorted
+    .map((c, i) => {
+      const page = i < 50 ? 1 : 2;
+      const pageIdx = (i % 50) + 1;
       const p = c.cerere_publica;
       const ci = c.check_in;
+      const fullName = `${p.guest_last_name} ${p.guest_first_name}`;
+      const searchBlob = [p.guest_last_name, p.guest_first_name, p.guest_email, p.guest_phone]
+        .filter(Boolean)
+        .join(" ");
       const pubRows = [
         ["Check-in", p.check_in],
         ["Check-out", p.check_out],
         ["Adulți", p.num_adults],
         ["Copii", p.num_children],
         ...(p.has_minor ? [["Minor", `Da · ${p.minor_age} ani`]] : []),
-        ["Nume", p.guest_last_name],
-        ["Prenume", p.guest_first_name],
         ["Email", p.guest_email],
         ["Telefon", p.guest_phone],
-        ...(p.notes ? [["Mesaj", p.notes]] : []),
+        ...(p.notes ? [["Mesaj", p.notes, true]] : []),
       ];
 
       let checkHtml;
@@ -819,22 +1165,42 @@ function renderHtml(rawClients, meta) {
         `<span class="b">${esc(c.tip_persoane)}</span>`,
         ci?.doc_type ? `<span class="b doc">${esc(ci.doc_type)}</span>` : `<span class="b warn">fără ID</span>`,
         c.suprapunere ? `<span class="b ov">${esc(c.suprapunere)}</span>` : "",
+        ...(c.test_tags ?? []).map((t) => `<span class="b fr">${esc(t.replace(/_/g, " "))}</span>`),
       ]
         .filter(Boolean)
         .join("");
 
-      const dates = `${p.check_in}→${p.check_out}`;
+      const dates = `${p.check_in} → ${p.check_out}`;
 
-      return `<details class="c" id="${c.id}">
-<summary><span class="cid">${c.id}</span> <span class="name">${esc(p.guest_last_name)} ${esc(p.guest_first_name)}</span> ${tags} <span class="dates">${esc(dates)}</span></summary>
-<div class="body">
-<p class="sc">${esc(c.test_scenario)}</p>
-<div class="cols">
-<section><h4>PUBLIC</h4>${renderKvTable(pubRows)}</section>
-<section><h4>CHECK-IN</h4>${checkHtml}</section>
+      const negHtml = c.test_negativ
+        ? `<div class="neg-block"><p class="panel-hint panel-hint--neg">Test negativ — fraudă</p><pre class="neg-pre">${esc(JSON.stringify(c.test_negativ, null, 2))}</pre></div>`
+        : "";
+
+      return `<article class="card" id="${c.id}" data-page="${page}" data-idx="${pageIdx}" data-fraud="${c.test_tags?.length ? "1" : "0"}" data-last="${esc(p.guest_last_name)}" data-first="${esc(p.guest_first_name)}" data-email="${esc(p.guest_email)}" data-search="${esc(searchBlob)}">
+<div class="card-rez">
+<div class="card-top">
+<span class="card-num">${pageIdx}</span>
+<div class="card-top-text">
+<div class="sum-main"><span class="cid">${c.id}</span><button type="button" class="name" data-copy="${esc(fullName)}">${esc(p.guest_last_name)} ${esc(p.guest_first_name)}</button></div>
+<div class="sum-meta">${esc(dates)} · ${esc(c.tip_persoane)}</div>
+<div class="sum-tags">${tags}</div>
 </div>
 </div>
-</details>`;
+${renderKvTable(pubRows, true)}
+</div>
+<button type="button" class="card-chk-bar" aria-expanded="false" aria-label="Deschide date check-in">
+<span class="role-badge chk">CHECK-IN</span>
+<span class="chk-hint">Apasă aici → identitate check-in</span>
+<span class="chev" aria-hidden="true"></span>
+</button>
+<div class="card-collapse"><div class="card-inner">
+<div class="chk-body">
+<p class="panel-hint panel-hint--chk"><span class="role-badge chk">ADMIN</span> Identitate la check-in</p>
+${checkHtml}
+${negHtml}
+</div>
+</div></div>
+</article>`;
     })
     .join("\n");
 
@@ -845,107 +1211,291 @@ function renderHtml(rawClients, meta) {
 <html lang="ro">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>100 clienți test — Casa Emil</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1e3a8a">
+<title>100 clienți test</title>
 <style>
-:root{--bg:#f4f5f7;--card:#fff;--b:#d8dbe0;--t:#1a1d21;--m:#5c6370;--a:#2563eb;--ro:#059669;--fx:#7c3aed;--ov:#dc2626;--f:11px/1.35 system-ui,sans-serif}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font:var(--f);color:var(--t);background:var(--bg)}
-.wrap{max-width:1200px;margin:0 auto;padding:6px 8px 24px}
-.hdr{background:var(--card);border:1px solid var(--b);border-radius:4px;padding:8px 10px;margin-bottom:6px}
-.hdr h1{font-size:14px;font-weight:700}
-.hdr p{font-size:10px;color:var(--m);margin-top:2px}
-.meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:10px;color:var(--m);margin-top:4px}
-.bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;position:sticky;top:0;z-index:10;background:var(--bg);padding:4px 0;border-bottom:1px solid var(--b)}
-.bar button,.bar input{font:inherit;font-size:10px;padding:3px 8px;border:1px solid var(--b);border-radius:3px;background:var(--card);cursor:pointer}
-.bar input{flex:1;min-width:120px}
-.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:2px;margin-bottom:8px}
-.toc-i{display:block;font-size:9px;text-align:center;padding:2px 1px;border:1px solid var(--b);border-radius:2px;background:var(--card);color:var(--t);text-decoration:none;line-height:1.2}
-.toc-i.ro{border-left:2px solid var(--ro)}
-.toc-i.fx{border-left:2px solid var(--fx)}
-.toc-s{display:block;color:var(--m);font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.c{background:var(--card);border:1px solid var(--b);border-radius:3px;margin-bottom:3px}
-.c[open]{border-color:#aab}
-.c>summary{cursor:pointer;padding:4px 6px;font-size:10px;list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:4px;user-select:none}
-.c>summary::-webkit-details-marker{display:none}
-.c>summary::before{content:"▸";font-size:8px;color:var(--m);width:8px}
-.c[open]>summary::before{content:"▾"}
-.cid{font-weight:700;color:var(--a);min-width:28px}
-.name{font-weight:600}
-.dates{color:var(--m);font-size:9px;margin-left:auto}
-.b{font-size:8px;padding:1px 4px;border-radius:2px;background:#eef0f3;color:var(--m);text-transform:uppercase;letter-spacing:.02em}
-.b.ro{background:#d1fae5;color:var(--ro)}
-.b.fx{background:#ede9fe;color:var(--fx)}
-.b.doc{background:#dbeafe;color:#1d4ed8}
-.b.ov{background:#fee2e2;color:var(--ov)}
-.b.warn{background:#fef3c7;color:#b45309}
-.body{padding:0 6px 6px;border-top:1px solid var(--b)}
-.sc{font-size:9px;color:var(--m);padding:4px 0 2px}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-@media(max-width:640px){.cols{grid-template-columns:1fr}}
-.cols h4{font-size:9px;color:var(--m);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
-.kv{width:100%;border-collapse:collapse;font-size:10px}
-.kv th,.kv td{border:1px solid var(--b);padding:1px 4px;vertical-align:top;text-align:left}
-.kv th{width:32%;background:#f8f9fa;color:var(--m);font-weight:500;white-space:nowrap}
-.kv code.copy{font-family:ui-monospace,monospace;font-size:9px;word-break:break-all;cursor:pointer;background:transparent}
-.kv code.copy:hover{background:#eff6ff}
-.empty{font-size:9px;color:var(--m);font-style:italic;padding:4px 0}
-.note{font-size:9px;color:var(--m);margin-top:6px;padding:6px 8px;background:var(--card);border:1px solid var(--b);border-radius:3px}
-@media print{
-  :root{--bg:#fff;--f:9px/1.25 system-ui,sans-serif}
-  .bar,.toc{display:none}
-  .c{break-inside:avoid;margin-bottom:2px}
-  .c>summary{padding:2px 4px}
-  details.c{display:block}
-  details.c>.body{display:block!important}
+:root{
+  --bg:#e8edf4;--card:#fff;--b:#cbd5e1;--t:#0f172a;--m:#64748b;
+  --rez:#2563eb;--chk:#059669;--neg:#d97706;--safe-b:env(safe-area-inset-bottom,0px);
+  --touch:45px;--bar-h:calc(176px + var(--safe-b));--ease:cubic-bezier(.4,0,.2,1);
 }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--t);background:var(--bg);padding-bottom:var(--bar-h);-webkit-text-size-adjust:100%}
+.app{min-height:100dvh}
+.top{background:linear-gradient(145deg,#1e3a8a,#2563eb);color:#fff;padding:13px 13px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-radius:0 0 20px 20px;box-shadow:0 6px 20px rgba(30,58,138,.22)}
+.top h1{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.top>p{font-size:12px;opacity:.9;margin-top:3px}
+.role-pills{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}
+.role-pill{padding:10px 11px;border-radius:11px;font-size:11px;font-weight:600;line-height:1.35;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff}
+.role-pill strong{display:block;font-size:12px;margin-bottom:2px}
+.main{padding:9px 9px 14px}
+.page-bar{background:var(--card);border-radius:13px;padding:10px;margin-bottom:10px;box-shadow:0 2px 10px rgba(15,23,42,.07)}
+.page-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.page-tab{min-height:var(--touch);padding:8px 10px;border:2px solid var(--b);border-radius:11px;background:#f8fafc;font:inherit;font-size:13px;font-weight:700;color:var(--m);text-align:left;touch-action:manipulation;transition:all .25s var(--ease)}
+.page-tab span{display:block;font-size:11px;font-weight:500;margin-top:2px;opacity:.85}
+.page-tab.on{background:var(--rez);border-color:var(--rez);color:#fff;box-shadow:0 3px 11px rgba(37,99,235,.3)}
+.page-tab.has-hit:not(.on){border-color:#fbbf24;background:#fffbeb}
+.batch-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.batch-row>span{font-size:11px;font-weight:700;color:var(--m);flex:0 0 auto}
+.batch-btns{display:flex;flex:1;gap:5px}
+.batch-btns button{flex:1;min-height:36px;font:inherit;font-size:13px;font-weight:700;border:2px solid var(--b);border-radius:10px;background:#fff;color:var(--t);touch-action:manipulation;transition:all .2s var(--ease)}
+.batch-btns button.on{background:#0f172a;border-color:#0f172a;color:#fff}
+.batch-btns button:active{transform:scale(.96)}
+.page-info{font-size:11px;color:var(--m);margin-top:8px;text-align:center;font-weight:600}
+.cards{display:flex;flex-direction:column;gap:7px}
+.card{background:var(--card);border-radius:11px;box-shadow:0 2px 8px rgba(15,23,42,.06);overflow:hidden;border:2px solid transparent;transition:border-color .25s var(--ease),box-shadow .25s var(--ease);cursor:pointer;touch-action:manipulation}
+.card.open{border-color:#6ee7b7;box-shadow:0 4px 16px rgba(5,150,105,.1)}
+.card[hidden]{display:none!important}
+.card-rez{padding:8px 10px 0}
+.card-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.card-num{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#eff6ff,#dbeafe);color:var(--rez);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.card-top-text{flex:1;min-width:0}
+.sum-main{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px}
+.cid{font-size:10px;font-weight:800;color:var(--rez);background:#eff6ff;padding:1px 5px;border-radius:4px}
+.name{font:inherit;font-size:14px;font-weight:800;line-height:1.2;letter-spacing:-.02em;color:inherit;background:none;border:none;padding:0;text-align:left;cursor:pointer;touch-action:manipulation}
+.name:active{opacity:.7}
+.sum-meta{font-size:11px;color:var(--m);margin-top:3px;font-weight:500}
+.sum-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.b{font-size:8px;padding:2px 5px;border-radius:5px;background:#f1f5f9;color:var(--m);font-weight:700;line-height:1.2}
+.b.ro{background:#d1fae5;color:#047857}
+.b.fx{background:#ede9fe;color:#6d28d9}
+.b.doc{background:#dbeafe;color:#1d4ed8}
+.b.ov{background:#fee2e2;color:#b91c1c}
+.b.fr{background:#fce7f3;color:#9d174d}
+.b.warn{background:#fef3c7;color:#b45309}
+.card-chk-bar{display:flex;align-items:center;gap:6px;width:100%;padding:7px 10px;border:none;border-top:1px dashed var(--b);background:linear-gradient(180deg,#f8fafc,#f1f5f9);font:inherit;color:var(--m);text-align:left;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.card.open .card-chk-bar{background:linear-gradient(180deg,#ecfdf5,#d1fae5);color:#065f46}
+.card-chk-bar:active{opacity:.85}
+.chk-hint{flex:1;font-size:10px;font-weight:600;pointer-events:none}
+.chev{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#fff;position:relative;transition:transform .35s var(--ease);box-shadow:0 1px 2px rgba(0,0,0,.06);pointer-events:none}
+.chev::after{content:"";position:absolute;inset:0;margin:auto;width:5px;height:5px;border-right:2px solid var(--m);border-bottom:2px solid var(--m);transform:rotate(45deg) translate(-1px,-1px)}
+.card.open .chev{transform:rotate(180deg)}
+.card-collapse{display:none}
+.card.open .card-collapse{display:block}
+.card-inner{padding:0 10px 10px}
+.chk-body{padding-top:8px;border-top:1px solid var(--b)}
+.panel-hint{font-size:10px;line-height:1.35;padding:8px 10px;border-radius:9px;margin-bottom:8px;font-weight:500}
+.panel-hint--chk{background:#ecfdf5;color:#065f46}
+.panel-hint--neg{background:#fff7ed;color:#9a3412;margin-top:10px}
+.role-badge{display:inline-block;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;margin-right:6px}
+.role-badge.rez{background:var(--rez);color:#fff}
+.role-badge.chk{background:var(--chk);color:#fff}
+.fields{display:flex;flex-direction:column;gap:5px}
+.fields--grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.fields--grid .field--full{grid-column:1/-1}
+.fields--compact .field{min-height:34px;padding:5px 7px;border-radius:8px;border-width:1.5px}
+.field{display:flex;flex-direction:column;width:100%;min-height:51px;padding:10px 12px;border:2px solid var(--b);border-radius:11px;background:#f8fafc;text-align:left;font:inherit;color:inherit;touch-action:manipulation;transition:all .15s var(--ease);cursor:pointer}
+.field:active{background:#dbeafe;border-color:var(--rez);transform:scale(.985)}
+.field-k{font-size:10px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.04em;margin-bottom:1px}
+.fields--compact .field-k{font-size:8px;letter-spacing:.03em}
+.field-v{font-size:14px;font-weight:600;word-break:break-word;line-height:1.25;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.fields--compact .field-v{font-size:11px;line-height:1.2}
+.field-hint{font-size:10px;color:var(--rez);margin-top:4px;font-weight:600}
+.empty{font-size:13px;color:var(--m);font-style:italic;padding:8px 0}
+.neg-pre{font-size:12px;background:#fff7ed;border:2px solid #fed7aa;border-radius:11px;padding:11px;white-space:pre-wrap;line-height:1.4}
+.card-top{cursor:pointer}
+.card-rez .fields{pointer-events:auto}
+.toolbar{position:fixed;left:0;right:0;bottom:0;z-index:100;padding:10px 12px calc(10px + var(--safe-b));background:rgba(255,255,255,.97);border-top:1px solid var(--b);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 -4px 24px rgba(15,23,42,.08)}
+.mode-bar{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin-bottom:8px}
+.mode-bar>span{font-size:13px;font-weight:800;color:var(--m);display:flex;align-items:center}
+.toolbar button,.toolbar input{font:inherit;touch-action:manipulation;border-radius:14px;border:2px solid var(--b)}
+.mode-rez,.mode-chk{min-height:48px;font-size:15px;font-weight:800;background:#fff;color:var(--m)}
+.mode-rez.on{background:var(--rez)!important;border-color:var(--rez)!important;color:#fff!important}
+.mode-chk.on{background:var(--chk)!important;border-color:var(--chk)!important;color:#fff!important}
+.toolbar input{width:100%;min-height:50px;padding:0 16px;font-size:16px;margin-bottom:8px;background:#fff}
+.toolbar input:focus{outline:none;border-color:var(--rez);box-shadow:0 0 0 3px rgba(37,99,235,.2)}
+.toolbar-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.toolbar-actions button{min-height:48px;font-size:14px;font-weight:700;background:#fff;color:var(--t)}
+.toolbar-actions button.on{background:#0f172a;border-color:#0f172a;color:#fff}
+.toast{position:fixed;left:50%;bottom:calc(var(--bar-h) + 8px);transform:translateX(-50%) translateY(24px);background:#0f172a;color:#fff;padding:14px 24px;border-radius:999px;font-size:16px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.sheet{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;pointer-events:none;opacity:0;transition:opacity .3s var(--ease)}
+.sheet.open{pointer-events:auto;opacity:1}
+.sheet-bg{position:absolute;inset:0;background:rgba(15,23,42,.45)}
+.sheet-panel{position:relative;width:100%;max-height:75dvh;background:#fff;border-radius:24px 24px 0 0;padding:20px 16px calc(16px + var(--safe-b));transform:translateY(100%);transition:transform .35s var(--ease);overflow:hidden;display:flex;flex-direction:column}
+.sheet.open .sheet-panel{transform:translateY(0)}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sheet-head h2{font-size:18px;font-weight:800}
+.sheet-close{min-width:48px;min-height:48px;border:none;background:#f1f5f9;border-radius:12px;font-size:22px;font-weight:700;color:var(--m)}
+.sheet-list{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
+.sheet-list .toc-link{border-radius:12px;margin-bottom:6px;border:1px solid var(--b);font-size:16px;padding:14px 16px;min-height:56px}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header class="hdr">
-<h1>100 clienți test — Casa Emil</h1>
-<p>Public = cerere rezervare · Check-in = identitate admin · Click pe valoare = copiază</p>
-<div class="meta">
-<span>RO ${meta.distributie.romania.count} (76%)</span>
-<span>Străini ${meta.distributie.straini.count} (24%)</span>
-<span>CLUSTER-A: ${esc(clusterA)}</span>
-<span>CLUSTER-B: ${esc(clusterB)}</span>
-<span>${esc(meta.generated_at.slice(0, 10))}</span>
+<div class="app">
+<header class="top">
+<h1>100 clienți test</h1>
+<p>Rezervare pe card · header sau CHECK-IN = detalii</p>
+<div class="role-pills">
+<div class="role-pill"><strong>Pe card</strong>Date rezervare (public)</div>
+<div class="role-pill"><strong>Check-in</strong>Apasă bara verde CHECK-IN</div>
 </div>
 </header>
-<div class="bar">
-<input type="search" id="q" placeholder="Caută nume, telefon, ID, cluster…" aria-label="Caută">
-<button type="button" id="exp">Deschide tot</button>
-<button type="button" id="col">Închide tot</button>
+<div class="main">
+<div class="page-bar">
+<div class="page-tabs" role="tablist">
+<button type="button" class="page-tab on" data-page="1" role="tab">Pagina 1<span>${esc(page1Letter)}…${esc(page1End)} · 1–50</span></button>
+<button type="button" class="page-tab" data-page="2" role="tab">Pagina 2<span>${esc(page2Letter)}…${esc(page2End)} · 51–100</span></button>
 </div>
-<nav class="toc" aria-label="Index">${toc}</nav>
-<div class="note">Suprapuneri: <strong>CLUSTER-A</strong> (${esc(clusterA)}) aceeași perioadă · <strong>CLUSTER-B</strong> (${esc(clusterB)}) parțial</div>
-<main id="list">${cards}</main>
+<div class="batch-row">
+<span>Deschide check-in</span>
+<div class="batch-btns">
+<button type="button" data-batch="10">10</button>
+<button type="button" data-batch="25">25</button>
+<button type="button" data-batch="50" class="on">50</button>
+</div>
+</div>
+<p class="page-info" id="pageInfo">Pagina 1 · 50 clienți</p>
+</div>
+<div class="cards" id="list">${cards}</div>
+</div>
+</div>
+<div class="toolbar">
+<div class="mode-bar">
+<span>Eu fac</span>
+<button type="button" id="modeRez" class="mode-rez on">Rezervare</button>
+<button type="button" id="modeChk" class="mode-chk">Check-in</button>
+</div>
+<input type="search" id="q" placeholder="Nume, prenume sau email…" enterkeyhint="search" autocomplete="off">
+<div class="toolbar-actions">
+<button type="button" id="col">Închide</button>
+<button type="button" id="ff">Fraudă</button>
+<button type="button" id="idxBtn">Index</button>
+</div>
+</div>
+<div class="toast" id="toast">Copiat!</div>
+<div class="sheet" id="indexSheet" aria-hidden="true">
+<div class="sheet-bg" id="sheetBg"></div>
+<div class="sheet-panel">
+<div class="sheet-head"><h2>Index alfabetic</h2><button type="button" class="sheet-close" id="sheetClose" aria-label="Închide">×</button></div>
+<nav class="sheet-list" id="sheetList">${toc}</nav>
+</div>
 </div>
 <script>
 const list=document.getElementById('list');
-document.getElementById('exp').onclick=()=>list.querySelectorAll('details').forEach(d=>d.open=true);
-document.getElementById('col').onclick=()=>list.querySelectorAll('details').forEach(d=>d.open=false);
-document.getElementById('q').oninput=e=>{
-  const q=e.target.value.toLowerCase().trim();
-  list.querySelectorAll('details.c').forEach(d=>{
-    d.hidden=q&&!d.textContent.toLowerCase().includes(q);
+const toast=document.getElementById('toast');
+const pageInfo=document.getElementById('pageInfo');
+let toastT,fraudOnly=false,globalRole='rez',currentPage=1,batchSize=50,searchActive=false;
+
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
+function cardMatches(card,q){
+  if(!q)return true;
+  const last=norm(card.dataset.last);
+  const first=norm(card.dataset.first);
+  const email=norm(card.dataset.email);
+  const blob=norm(card.dataset.search);
+  return last.includes(q)||first.includes(q)||email.includes(q)||blob.includes(q);
+}
+function cardsVisible(){return cardsAll().filter(c=>!c.hidden);}
+function cardsPageVisible(){return cardsVisible().filter(c=>+c.dataset.page===currentPage);}
+
+function cardsAll(){return[...list.querySelectorAll('.card')];}
+
+function setCardOpen(card,open){
+  card.classList.toggle('open',open);
+  const bar=card.querySelector('.card-chk-bar');
+  if(bar)bar.setAttribute('aria-expanded',open?'true':'false');
+}
+function applyGlobalRole(role){
+  globalRole=role;
+  document.getElementById('modeRez').classList.toggle('on',role==='rez');
+  document.getElementById('modeChk').classList.toggle('on',role==='chk');
+  if(role==='chk')expandBatch(batchSize);
+  else cardsAll().forEach(c=>setCardOpen(c,false));
+}
+function showToast(msg){toast.textContent=msg||'Copiat!';toast.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),1500);}
+function updatePageInfo(){
+  const vis=searchActive?cardsVisible():cardsPageVisible();
+  const open=vis.filter(c=>c.classList.contains('open')).length;
+  if(searchActive){pageInfo.textContent='Căutare · '+vis.length+' găsiți · '+open+' deschise';return;}
+  pageInfo.textContent='Pagina '+currentPage+' · '+vis.length+' clienți · '+open+' deschise';
+}
+function applyPage(){
+  document.querySelectorAll('.page-tab').forEach(b=>b.classList.toggle('on',+b.dataset.page===currentPage));
+  applyFilters();
+  expandBatch(globalRole==='chk'?batchSize:0);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function applyFilters(){
+  const q=norm(document.getElementById('q').value);
+  searchActive=!!q;
+  cardsAll().forEach(c=>{
+    const matchQ=cardMatches(c,q);
+    const matchF=!fraudOnly||c.dataset.fraud==='1';
+    const matchPage=searchActive||+c.dataset.page===currentPage;
+    c.hidden=!(matchQ&&matchF&&matchPage);
   });
+  document.querySelectorAll('.page-tab').forEach(b=>{
+    if(!searchActive){b.classList.remove('has-hit');return;}
+    const pg=+b.dataset.page;
+    const hits=cardsAll().filter(c=>+c.dataset.page===pg&&cardMatches(c,q)&&(!fraudOnly||c.dataset.fraud==='1')).length;
+    b.classList.toggle('has-hit',hits>0);
+  });
+  updatePageInfo();
+}
+function expandBatch(n){
+  document.querySelectorAll('.batch-btns button').forEach(b=>b.classList.toggle('on',+b.dataset.batch===n));
+  batchSize=n;
+  const vis=searchActive?cardsVisible():cardsPageVisible();
+  vis.forEach((c,i)=>setCardOpen(c,globalRole==='chk'&&i<n));
+  updatePageInfo();
+}
+document.querySelectorAll('.page-tab').forEach(b=>b.onclick=()=>{currentPage=+b.dataset.page;applyPage();});
+document.querySelectorAll('.batch-btns button').forEach(b=>b.onclick=()=>expandBatch(+b.dataset.batch));
+document.getElementById('modeRez').onclick=()=>applyGlobalRole('rez');
+document.getElementById('modeChk').onclick=()=>applyGlobalRole('chk');
+document.getElementById('col').onclick=()=>{cardsAll().forEach(c=>setCardOpen(c,false));updatePageInfo();};
+document.getElementById('ff').onclick=function(){fraudOnly=!fraudOnly;this.classList.toggle('on',fraudOnly);applyFilters();};
+document.getElementById('idxBtn').onclick=()=>{
+  const sheet=document.getElementById('indexSheet');
+  sheet.querySelectorAll('.toc-link').forEach(a=>{a.hidden=+a.dataset.page!==currentPage;});
+  sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');
 };
-document.body.addEventListener('click',e=>{
-  const c=e.target.closest('code.copy');
-  if(!c)return;
-  navigator.clipboard.writeText(c.textContent).then(()=>{
-    c.style.background='#bbf7d0';
-    setTimeout(()=>c.style.background='',400);
-  });
+document.getElementById('sheetClose').onclick=closeSheet;
+document.getElementById('sheetBg').onclick=closeSheet;
+function closeSheet(){document.getElementById('indexSheet').classList.remove('open');document.getElementById('indexSheet').setAttribute('aria-hidden','true');}
+document.getElementById('sheetList').addEventListener('click',e=>{
+  const a=e.target.closest('.toc-link');if(!a)return;e.preventDefault();
+  closeSheet();
+  const id=a.getAttribute('href').slice(1);
+  const card=document.getElementById(id);
+  if(!card)return;
+  if(+card.dataset.page!==currentPage){currentPage=+card.dataset.page;applyPage();}
+  setTimeout(()=>{setCardOpen(card,true);card.scrollIntoView({behavior:'smooth',block:'start'});updatePageInfo();},120);
 });
-document.body.addEventListener('keydown',e=>{
-  if(e.key!=='Enter'&&e.key!==' ')return;
-  const c=e.target.closest('code.copy');
-  if(c){e.preventDefault();c.click();}
+function toggleCard(card){
+  if(!card||card.hidden)return;
+  setCardOpen(card,!card.classList.contains('open'));
+  updatePageInfo();
+}
+document.getElementById('q').oninput=applyFilters;
+list.addEventListener('click',e=>{
+  const copyEl=e.target.closest('[data-copy]');
+  if(copyEl){
+    e.stopPropagation();
+    const t=copyEl.getAttribute('data-copy')||'';
+    const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('Copiat!');}catch(err){showToast('Apasă lung');}document.body.removeChild(ta);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>showToast('Copiat!')).catch(fb);else fb();
+    return;
+  }
+  const bar=e.target.closest('.card-chk-bar');
+  if(bar){
+    e.preventDefault();
+    toggleCard(bar.closest('.card'));
+    return;
+  }
+  const top=e.target.closest('.card-top');
+  if(top){
+    toggleCard(top.closest('.card'));
+    return;
+  }
 });
+applyPage();
 </script>
 </body>
 </html>`;
@@ -981,6 +1531,7 @@ const meta = {
     "CLUSTER-B": clients.filter((c) => c.suprapunere === "CLUSTER-B").map((c) => c.id),
   },
   doc_types: ["ci", "passport", "foreign_id", "other"],
+  test_catalog: buildTestCatalog(clients),
 };
 
 mkdirSync(OUT_DIR, { recursive: true });

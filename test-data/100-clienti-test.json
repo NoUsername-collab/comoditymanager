@@ -1,7 +1,7 @@
 {
   "meta": {
     "version": "2.0.0",
-    "generated_at": "2026-06-05T20:14:25.719Z",
+    "generated_at": "2026-06-05T20:44:50.133Z",
     "count": 100,
     "distributie": {
       "romania": {
@@ -53,7 +53,68 @@
       "passport",
       "foreign_id",
       "other"
-    ]
+    ],
+    "test_catalog": {
+      "dedup_acelasi_nume": [
+        "T061",
+        "T062",
+        "T063",
+        "T064"
+      ],
+      "grup_dedup_vasile": [
+        "T061",
+        "T062"
+      ],
+      "grup_dedup_maria": [
+        "T063",
+        "T064"
+      ],
+      "dedup_email_conflict": [
+        "T065"
+      ],
+      "dedup_telefon_format": [
+        "T066"
+      ],
+      "document_expirat": [
+        "T067",
+        "T069"
+      ],
+      "document_expira_curand": [
+        "T068"
+      ],
+      "cnp_duplicat": [
+        "T070"
+      ],
+      "fraud_identitate": [
+        "T070",
+        "T071",
+        "T072",
+        "T073",
+        "T074",
+        "T075"
+      ],
+      "cnp_invalid": [
+        "T071"
+      ],
+      "cnp_data_neconcordanta": [
+        "T072"
+      ],
+      "document_duplicat": [
+        "T073"
+      ],
+      "identitate_la_checkin": [
+        "T074"
+      ],
+      "identitate_partiala": [
+        "T075"
+      ],
+      "telefon_invalid": [
+        "T076"
+      ],
+      "fraud_rezervare": [
+        "T076"
+      ]
+    }
   },
   "clients": [
     {
@@ -2488,7 +2549,7 @@
       "cetatenie": "România",
       "cetatenie_cod": "RO",
       "tip_persoane": "grup",
-      "test_scenario": "Român · CI parțial (completezi la check-in) · grup · 2026-06-16 → 2026-06-19",
+      "test_scenario": "FRAUD · Ionescu Vasile #1 · același nume, telefon diferit față de #2",
       "cerere_publica": {
         "check_in": "2026-06-16",
         "check_out": "2026-06-19",
@@ -2496,39 +2557,43 @@
         "num_children": 1,
         "has_minor": true,
         "minor_age": "11",
-        "guest_last_name": "Manole",
-        "guest_first_name": "Teodor",
-        "guest_name": "Manole Teodor",
-        "guest_email": "ro.client.061@test.casaemil.local",
-        "guest_phone": "0780108220",
-        "notes": ""
+        "guest_last_name": "Ionescu",
+        "guest_first_name": "Vasile",
+        "guest_name": "Ionescu Vasile",
+        "guest_email": "fraud.dedup.vasile.a@test.casaemil.local",
+        "guest_phone": "0725900101",
+        "notes": "[FRAUD] Dedup: același nume ca T062, telefoane diferite — nu merge automat"
       },
       "check_in": {
         "doc_type": "ci",
-        "doc_series": "RX",
-        "doc_number": "100060",
-        "doc_issued_by": null,
-        "doc_issue_date": null,
-        "doc_expiry_date": null,
+        "doc_series": "RK",
+        "doc_number": "100601",
+        "doc_issued_by": "SPCLEP Arad",
+        "doc_issue_date": "2018-02-10",
+        "doc_expiry_date": "2028-02-09",
         "national_id_type": "cnp",
-        "national_id": "1850107090619",
-        "birth_date": "1985-01-07",
-        "birth_place": null,
+        "national_id": "1830315300693",
+        "birth_date": "1983-03-15",
+        "birth_place": "Arad",
         "nationality": "România",
-        "address": null,
-        "city": null,
-        "county": null,
+        "address": "Str. Arad nr. 602",
+        "city": "Arad",
+        "county": "Arad",
         "country": "România",
         "sex": "M",
-        "expected_identity_status": "partial"
-      }
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "dedup_acelasi_nume",
+        "grup_dedup_vasile"
+      ]
     },
     {
       "id": "T062",
       "cetatenie": "România",
       "cetatenie_cod": "RO",
       "tip_persoane": "single",
-      "test_scenario": "Român · CI parțial (completezi la check-in) · single · 2026-06-17 → 2026-06-21",
+      "test_scenario": "FRAUD · Ionescu Vasile #2 · persoană diferită, același nume",
       "cerere_publica": {
         "check_in": "2026-06-17",
         "check_out": "2026-06-21",
@@ -2536,39 +2601,43 @@
         "num_children": 0,
         "has_minor": false,
         "minor_age": "",
-        "guest_last_name": "Niculescu",
-        "guest_first_name": "Silvia",
-        "guest_name": "Niculescu Silvia",
-        "guest_email": "ro.client.062@test.casaemil.local",
-        "guest_phone": "0781108357",
-        "notes": ""
+        "guest_last_name": "Ionescu",
+        "guest_first_name": "Vasile",
+        "guest_name": "Ionescu Vasile",
+        "guest_email": "fraud.dedup.vasile.b@test.casaemil.local",
+        "guest_phone": "0725900102",
+        "notes": "[FRAUD] Dedup: verifică că NU se fuzionează greșit cu T061"
       },
       "check_in": {
         "doc_type": "ci",
-        "doc_series": "RK",
-        "doc_number": "100061",
-        "doc_issued_by": null,
-        "doc_issue_date": null,
-        "doc_expiry_date": null,
+        "doc_series": "SB",
+        "doc_number": "100602",
+        "doc_issued_by": "SPCLEP Argeș",
+        "doc_issue_date": "2018-03-10",
+        "doc_expiry_date": "2028-03-09",
         "national_id_type": "cnp",
-        "national_id": "2860208100622",
-        "birth_date": "1986-02-08",
-        "birth_place": null,
+        "national_id": "1830315310703",
+        "birth_date": "1983-03-15",
+        "birth_place": "Argeș",
         "nationality": "România",
-        "address": null,
-        "city": null,
-        "county": null,
+        "address": "Str. Argeș nr. 603",
+        "city": "Argeș",
+        "county": "Argeș",
         "country": "România",
-        "sex": "F",
-        "expected_identity_status": "partial"
-      }
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "dedup_acelasi_nume",
+        "grup_dedup_vasile"
+      ]
     },
     {
       "id": "T063",
       "cetatenie": "România",
       "cetatenie_cod": "RO",
       "tip_persoane": "cuplu",
-      "test_scenario": "Român · CI parțial (completezi la check-in) · cuplu · 2026-06-18 → 2026-06-23",
+      "test_scenario": "FRAUD · Popescu Maria #1 · același nume complet",
       "cerere_publica": {
         "check_in": "2026-06-18",
         "check_out": "2026-06-23",
@@ -2576,39 +2645,43 @@
         "num_children": 0,
         "has_minor": false,
         "minor_age": "",
-        "guest_last_name": "Olaru",
-        "guest_first_name": "Victor",
-        "guest_name": "Olaru Victor",
-        "guest_email": "ro.client.063@test.casaemil.local",
-        "guest_phone": "0782108494",
-        "notes": ""
+        "guest_last_name": "Popescu",
+        "guest_first_name": "Maria",
+        "guest_name": "Popescu Maria",
+        "guest_email": "fraud.dedup.maria.a@test.casaemil.local",
+        "guest_phone": "0725900103",
+        "notes": "[FRAUD] Pereche dedup nume — vezi și T064"
       },
       "check_in": {
         "doc_type": "ci",
-        "doc_series": "SB",
-        "doc_number": "100062",
-        "doc_issued_by": null,
-        "doc_issue_date": null,
-        "doc_expiry_date": null,
+        "doc_series": "TM",
+        "doc_number": "100603",
+        "doc_issued_by": "SPCLEP Bacău",
+        "doc_issue_date": "2018-04-10",
+        "doc_expiry_date": "2028-04-09",
         "national_id_type": "cnp",
-        "national_id": "1870309110630",
-        "birth_date": "1987-03-09",
-        "birth_place": null,
+        "national_id": "2910722320712",
+        "birth_date": "1991-07-22",
+        "birth_place": "Bacău",
         "nationality": "România",
-        "address": null,
-        "city": null,
-        "county": null,
+        "address": "Str. Bacău nr. 604",
+        "city": "Bacău",
+        "county": "Bacău",
         "country": "România",
-        "sex": "M",
-        "expected_identity_status": "partial"
-      }
+        "sex": "F",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "dedup_acelasi_nume",
+        "grup_dedup_maria"
+      ]
     },
     {
       "id": "T064",
       "cetatenie": "România",
       "cetatenie_cod": "RO",
       "tip_persoane": "familie",
-      "test_scenario": "Român · CI parțial (completezi la check-in) · familie · 2026-06-19 → 2026-06-26",
+      "test_scenario": "FRAUD · Popescu Maria #2 · același nume, alt CNP",
       "cerere_publica": {
         "check_in": "2026-06-19",
         "check_out": "2026-06-26",
@@ -2616,23 +2689,522 @@
         "num_children": 1,
         "has_minor": true,
         "minor_age": "8",
-        "guest_last_name": "Preda",
-        "guest_first_name": "Viorica",
-        "guest_name": "Preda Viorica",
-        "guest_email": "ro.client.064@test.casaemil.local",
-        "guest_phone": "0783108631",
-        "notes": ""
+        "guest_last_name": "Popescu",
+        "guest_first_name": "Maria",
+        "guest_name": "Popescu Maria",
+        "guest_email": "fraud.dedup.maria.b@test.casaemil.local",
+        "guest_phone": "0725900104",
+        "notes": "[FRAUD] Pereche dedup nume — vezi și T063"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "IS",
+        "doc_number": "100604",
+        "doc_issued_by": "SPCLEP Bihor",
+        "doc_issue_date": "2018-05-10",
+        "doc_expiry_date": "2028-05-09",
+        "national_id_type": "cnp",
+        "national_id": "2881105330725",
+        "birth_date": "1988-11-05",
+        "birth_place": "Bihor",
+        "nationality": "România",
+        "address": "Str. Bihor nr. 605",
+        "city": "Bihor",
+        "county": "Bihor",
+        "country": "România",
+        "sex": "F",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "dedup_acelasi_nume",
+        "grup_dedup_maria"
+      ]
+    },
+    {
+      "id": "T065",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "familie",
+      "test_scenario": "FRAUD · Același email ca T061, telefon diferit — conflict dedup",
+      "cerere_publica": {
+        "check_in": "2026-06-20",
+        "check_out": "2026-06-22",
+        "num_adults": 2,
+        "num_children": 2,
+        "has_minor": true,
+        "minor_age": "11",
+        "guest_last_name": "Conflict",
+        "guest_first_name": "Email",
+        "guest_name": "Conflict Email",
+        "guest_email": "fraud.dedup.vasile.a@test.casaemil.local",
+        "guest_phone": "0725900105",
+        "notes": "[FRAUD] Email duplicat T061 · telefon nou — ce guest se leagă?"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "CT",
+        "doc_number": "100605",
+        "doc_issued_by": "SPCLEP Brașov",
+        "doc_issue_date": "2018-06-10",
+        "doc_expiry_date": "2028-06-09",
+        "national_id_type": "cnp",
+        "national_id": "1750110340739",
+        "birth_date": "1975-01-10",
+        "birth_place": "Brașov",
+        "nationality": "România",
+        "address": "Str. Brașov nr. 606",
+        "city": "Brașov",
+        "county": "Brașov",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "dedup_email_conflict"
+      ],
+      "test_negativ": {
+        "asteptat": "mergeConflict sau potrivire după telefon/email",
+        "referinta": "T061"
+      }
+    },
+    {
+      "id": "T066",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "grup",
+      "test_scenario": "FRAUD · Același telefon ca T061, format +40 cu spații",
+      "cerere_publica": {
+        "check_in": "2026-06-21",
+        "check_out": "2026-06-24",
+        "num_adults": 3,
+        "num_children": 0,
+        "has_minor": false,
+        "minor_age": "",
+        "guest_last_name": "TelefonFormat",
+        "guest_first_name": "Test",
+        "guest_name": "TelefonFormat Test",
+        "guest_email": "fraud.phone.format@test.casaemil.local",
+        "guest_phone": "+40 725 900 101",
+        "notes": "[FRAUD] Normalizare: același E.164 ca T061 (0725900101)"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "BV",
+        "doc_number": "100606",
+        "doc_issued_by": "SPCLEP București",
+        "doc_issue_date": "2018-07-10",
+        "doc_expiry_date": "2028-07-09",
+        "national_id_type": "cnp",
+        "national_id": "1800606350749",
+        "birth_date": "1980-06-06",
+        "birth_place": "București",
+        "nationality": "România",
+        "address": "Str. București nr. 607",
+        "city": "Sector 2",
+        "county": "București",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "dedup_telefon_format"
+      ],
+      "test_negativ": {
+        "telefon_raw_alternativ": "0725900101",
+        "telefon_normalizat_asteptat": "+40725900101",
+        "referinta": "T061"
+      }
+    },
+    {
+      "id": "T067",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "grup",
+      "test_scenario": "FRAUD · Document EXPIRAT (2020) — check-in cu act invalid",
+      "cerere_publica": {
+        "check_in": "2026-06-22",
+        "check_out": "2026-06-26",
+        "num_adults": 4,
+        "num_children": 1,
+        "has_minor": true,
+        "minor_age": "11",
+        "guest_last_name": "DocExpirat",
+        "guest_first_name": "Ion",
+        "guest_name": "DocExpirat Ion",
+        "guest_email": "fraud.doc.expired@test.casaemil.local",
+        "guest_phone": "0725900107",
+        "notes": "[FRAUD] doc_expiry_date în trecut — avertizare UI?"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "CJ",
+        "doc_number": "100607",
+        "doc_issued_by": "SPCLEP Cluj",
+        "doc_issue_date": "2010-01-01",
+        "doc_expiry_date": "2020-01-01",
+        "national_id_type": "cnp",
+        "national_id": "1780420360750",
+        "birth_date": "1978-04-20",
+        "birth_place": "Cluj",
+        "nationality": "România",
+        "address": "Str. Cluj nr. 608",
+        "city": "Cluj",
+        "county": "Cluj",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "document_expirat"
+      ],
+      "test_negativ": {
+        "asteptat": "avertizare document expirat la check-in"
+      }
+    },
+    {
+      "id": "T068",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "single",
+      "test_scenario": "FRAUD · Document expiră în ~5 zile (2026-06-10)",
+      "cerere_publica": {
+        "check_in": "2026-06-23",
+        "check_out": "2026-06-28",
+        "num_adults": 1,
+        "num_children": 0,
+        "has_minor": false,
+        "minor_age": "",
+        "guest_last_name": "DocExpiraCurand",
+        "guest_first_name": "Elena",
+        "guest_name": "DocExpiraCurand Elena",
+        "guest_email": "fraud.doc.soon@test.casaemil.local",
+        "guest_phone": "0725900108",
+        "notes": "[FRAUD] Expiră curând — test avertizare"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "MM",
+        "doc_number": "100608",
+        "doc_issued_by": "SPCLEP Constanța",
+        "doc_issue_date": "2018-09-10",
+        "doc_expiry_date": "2026-06-10",
+        "national_id_type": "cnp",
+        "national_id": "2920814370761",
+        "birth_date": "1992-08-14",
+        "birth_place": "Constanța",
+        "nationality": "România",
+        "address": "Str. Constanța nr. 609",
+        "city": "Constanța",
+        "county": "Constanța",
+        "country": "România",
+        "sex": "F",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "document_expira_curand"
+      ],
+      "test_negativ": {
+        "asteptat": "avertizare expirare apropiată"
+      }
+    },
+    {
+      "id": "T069",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "cuplu",
+      "test_scenario": "FRAUD · Document expirat ieri (2026-06-04)",
+      "cerere_publica": {
+        "check_in": "2026-06-24",
+        "check_out": "2026-07-01",
+        "num_adults": 2,
+        "num_children": 0,
+        "has_minor": false,
+        "minor_age": "",
+        "guest_last_name": "DocExpiratIeri",
+        "guest_first_name": "Ana",
+        "guest_name": "DocExpiratIeri Ana",
+        "guest_email": "fraud.doc.yesterday@test.casaemil.local",
+        "guest_phone": "0725900109",
+        "notes": "[FRAUD] Expirat recent"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "DJ",
+        "doc_number": "100609",
+        "doc_issued_by": "SPCLEP Covasna",
+        "doc_issue_date": "2018-10-10",
+        "doc_expiry_date": "2026-06-04",
+        "national_id_type": "cnp",
+        "national_id": "2860228380778",
+        "birth_date": "1986-02-28",
+        "birth_place": "Covasna",
+        "nationality": "România",
+        "address": "Str. Covasna nr. 610",
+        "city": "Covasna",
+        "county": "Covasna",
+        "country": "România",
+        "sex": "F",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "document_expirat"
+      ]
+    },
+    {
+      "id": "T070",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "familie",
+      "test_scenario": "FRAUD · CNP deja folosit (T001) — încearcă duplicat la check-in",
+      "cerere_publica": {
+        "check_in": "2026-06-25",
+        "check_out": "2026-06-27",
+        "num_adults": 2,
+        "num_children": 1,
+        "has_minor": true,
+        "minor_age": "4",
+        "guest_last_name": "CnpDuplicat",
+        "guest_first_name": "Test",
+        "guest_name": "CnpDuplicat Test",
+        "guest_email": "fraud.cnp.dup@test.casaemil.local",
+        "guest_phone": "0725900110",
+        "notes": "[FRAUD] CNP propriu valid; vezi test_negativ"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "BC",
+        "doc_number": "100610",
+        "doc_issued_by": "SPCLEP Dolj",
+        "doc_issue_date": "2018-11-10",
+        "doc_expiry_date": "2028-11-09",
+        "national_id_type": "cnp",
+        "national_id": "1900505390780",
+        "birth_date": "1990-05-05",
+        "birth_place": "Dolj",
+        "nationality": "România",
+        "address": "Str. Dolj nr. 611",
+        "city": "Dolj",
+        "county": "Dolj",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "cnp_duplicat",
+        "fraud_identitate"
+      ],
+      "test_negativ": {
+        "incearca_cnp": "1650101010013",
+        "referinta_cnp_existent": "T001",
+        "asteptat": "respinge CNP duplicat (findGuestByNationalId)"
+      }
+    },
+    {
+      "id": "T071",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "familie",
+      "test_scenario": "FRAUD · CNP cu check-digit greșit — date proaste la check-in",
+      "cerere_publica": {
+        "check_in": "2026-06-26",
+        "check_out": "2026-06-29",
+        "num_adults": 2,
+        "num_children": 2,
+        "has_minor": true,
+        "minor_age": "9",
+        "guest_last_name": "CnpInvalid",
+        "guest_first_name": "Ion",
+        "guest_name": "CnpInvalid Ion",
+        "guest_email": "fraud.cnp.bad@test.casaemil.local",
+        "guest_phone": "0725900111",
+        "notes": "[FRAUD] Date rezervare OK; la check-in testează CNP invalid"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "GL",
+        "doc_number": "100611",
+        "doc_issued_by": "SPCLEP Galați",
+        "doc_issue_date": "2018-12-10",
+        "doc_expiry_date": "2028-12-09",
+        "national_id_type": "cnp",
+        "national_id": "1850101400797",
+        "birth_date": "1985-01-01",
+        "birth_place": "Galați",
+        "nationality": "România",
+        "address": "Str. Galați nr. 612",
+        "city": "Galați",
+        "county": "Galați",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "cnp_invalid",
+        "fraud_identitate"
+      ],
+      "test_negativ": {
+        "incearca_cnp": "1850101410019",
+        "asteptat": "respinge — check digit invalid",
+        "incearca_cnp_2": "0000000000000"
+      }
+    },
+    {
+      "id": "T072",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "grup",
+      "test_scenario": "FRAUD · CNP valid dar data nașterii greșită",
+      "cerere_publica": {
+        "check_in": "2026-06-27",
+        "check_out": "2026-07-01",
+        "num_adults": 3,
+        "num_children": 0,
+        "has_minor": false,
+        "minor_age": "",
+        "guest_last_name": "CnpMismatch",
+        "guest_first_name": "Elena",
+        "guest_name": "CnpMismatch Elena",
+        "guest_email": "fraud.cnp.mismatch@test.casaemil.local",
+        "guest_phone": "0725900112",
+        "notes": "[FRAUD] CNP corect în check_in; încearcă birth_date diferit"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "RX",
+        "doc_number": "100612",
+        "doc_issued_by": "SPCLEP Harghita",
+        "doc_issue_date": "2018-01-10",
+        "doc_expiry_date": "2028-01-09",
+        "national_id_type": "cnp",
+        "national_id": "2900315410808",
+        "birth_date": "1990-03-15",
+        "birth_place": "Harghita",
+        "nationality": "România",
+        "address": "Str. Harghita nr. 613",
+        "city": "Harghita",
+        "county": "Harghita",
+        "country": "România",
+        "sex": "F",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "cnp_data_neconcordanta",
+        "fraud_identitate"
+      ],
+      "test_negativ": {
+        "incearca_birth_date": "2000-01-01",
+        "cnp_corect_din_fisier": "(vezi check_in)",
+        "asteptat": "inconsistență CNP vs dată naștere"
+      }
+    },
+    {
+      "id": "T073",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "grup",
+      "test_scenario": "FRAUD · Același nr. CI ca T001 — document duplicat",
+      "cerere_publica": {
+        "check_in": "2026-06-28",
+        "check_out": "2026-07-03",
+        "num_adults": 4,
+        "num_children": 1,
+        "has_minor": true,
+        "minor_age": "11",
+        "guest_last_name": "DocDuplicat",
+        "guest_first_name": "Vasile",
+        "guest_name": "DocDuplicat Vasile",
+        "guest_email": "fraud.doc.dup@test.casaemil.local",
+        "guest_phone": "0725900113",
+        "notes": "[FRAUD] Alt CNP, același nr. document ca T001"
+      },
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "RX",
+        "doc_number": "100000",
+        "doc_issued_by": "SPCLEP Iași",
+        "doc_issue_date": "2018-02-10",
+        "doc_expiry_date": "2028-02-09",
+        "national_id_type": "cnp",
+        "national_id": "1770909420813",
+        "birth_date": "1977-09-09",
+        "birth_place": "Iași",
+        "nationality": "România",
+        "address": "Str. Iași nr. 614",
+        "city": "Iași",
+        "county": "Iași",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "document_duplicat",
+        "fraud_identitate"
+      ],
+      "test_negativ": {
+        "referinta_document": "T001",
+        "asteptat": "dedup warning pe doc_type + doc_number"
+      }
+    },
+    {
+      "id": "T074",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "single",
+      "test_scenario": "FRAUD · Zero identitate la rezervare — totul la check-in",
+      "cerere_publica": {
+        "check_in": "2026-06-29",
+        "check_out": "2026-07-06",
+        "num_adults": 1,
+        "num_children": 0,
+        "has_minor": false,
+        "minor_age": "",
+        "guest_last_name": "FaraIdentitate",
+        "guest_first_name": "Rezervare",
+        "guest_name": "FaraIdentitate Rezervare",
+        "guest_email": "fraud.no.identity@test.casaemil.local",
+        "guest_phone": "0725900114",
+        "notes": "[FRAUD] Poți introduce date false la check-in — validare?"
+      },
+      "check_in": null,
+      "test_tags": [
+        "identitate_la_checkin",
+        "fraud_identitate"
+      ],
+      "test_negativ": {
+        "incearca_cnp": "1234567890123",
+        "asteptat": "respinge format/check digit"
+      }
+    },
+    {
+      "id": "T075",
+      "cetatenie": "România",
+      "cetatenie_cod": "RO",
+      "tip_persoane": "cuplu",
+      "test_scenario": "FRAUD · Identitate parțială — completezi restul la check-in",
+      "cerere_publica": {
+        "check_in": "2026-06-30",
+        "check_out": "2026-07-02",
+        "num_adults": 2,
+        "num_children": 0,
+        "has_minor": false,
+        "minor_age": "",
+        "guest_last_name": "PartialCheckin",
+        "guest_first_name": "Guest",
+        "guest_name": "PartialCheckin Guest",
+        "guest_email": "fraud.partial@test.casaemil.local",
+        "guest_phone": "0725900115",
+        "notes": "[FRAUD] Doar CNP la profil; restul la check-in"
       },
       "check_in": {
         "doc_type": "ci",
         "doc_series": "TM",
-        "doc_number": "100063",
+        "doc_number": "100615",
         "doc_issued_by": null,
         "doc_issue_date": null,
         "doc_expiry_date": null,
         "national_id_type": "cnp",
-        "national_id": "2880410120640",
-        "birth_date": "1988-04-10",
+        "national_id": "2931201440821",
+        "birth_date": "1993-12-01",
         "birth_place": null,
         "nationality": "România",
         "address": null,
@@ -2641,400 +3213,21 @@
         "country": "România",
         "sex": "F",
         "expected_identity_status": "partial"
+      },
+      "test_tags": [
+        "identitate_partiala",
+        "fraud_identitate"
+      ],
+      "test_negativ": {
+        "asteptat": "identity_status partial până completezi adresă + doc"
       }
-    },
-    {
-      "id": "T065",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "familie",
-      "test_scenario": "Român · Pașaport · familie · 2026-06-20 → 2026-06-22",
-      "cerere_publica": {
-        "check_in": "2026-06-20",
-        "check_out": "2026-06-22",
-        "num_adults": 2,
-        "num_children": 2,
-        "has_minor": true,
-        "minor_age": "11",
-        "guest_last_name": "Rotaru",
-        "guest_first_name": "Yannis",
-        "guest_name": "Rotaru Yannis",
-        "guest_email": "ro.client.065@test.casaemil.local",
-        "guest_phone": "0784108768",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "passport",
-        "doc_series": null,
-        "doc_number": "RO800064",
-        "doc_issued_by": "Ministerul Afacerilor Interne",
-        "doc_issue_date": "2020-02-01",
-        "doc_expiry_date": "2030-01-31",
-        "national_id_type": "cnp",
-        "national_id": "1890511010651",
-        "birth_date": "1989-05-11",
-        "birth_place": "București",
-        "nationality": "România",
-        "address": "Bd. Unirii 64",
-        "city": "București",
-        "county": "București",
-        "country": "România",
-        "sex": "M",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T066",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "grup",
-      "test_scenario": "Român · Pașaport · grup · 2026-06-21 → 2026-06-24",
-      "cerere_publica": {
-        "check_in": "2026-06-21",
-        "check_out": "2026-06-24",
-        "num_adults": 3,
-        "num_children": 0,
-        "has_minor": false,
-        "minor_age": "",
-        "guest_last_name": "Sandu",
-        "guest_first_name": "Zenobia",
-        "guest_name": "Sandu Zenobia",
-        "guest_email": "ro.client.066@test.casaemil.local",
-        "guest_phone": "0785108905",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "passport",
-        "doc_series": null,
-        "doc_number": "RO800065",
-        "doc_issued_by": "Ministerul Afacerilor Interne",
-        "doc_issue_date": "2020-02-01",
-        "doc_expiry_date": "2030-01-31",
-        "national_id_type": "cnp",
-        "national_id": "2900612010669",
-        "birth_date": "1990-06-12",
-        "birth_place": "București",
-        "nationality": "România",
-        "address": "Bd. Unirii 65",
-        "city": "București",
-        "county": "București",
-        "country": "România",
-        "sex": "F",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T067",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "grup",
-      "test_scenario": "Român · Pașaport · grup · 2026-06-22 → 2026-06-26",
-      "cerere_publica": {
-        "check_in": "2026-06-22",
-        "check_out": "2026-06-26",
-        "num_adults": 4,
-        "num_children": 1,
-        "has_minor": true,
-        "minor_age": "11",
-        "guest_last_name": "Tataru",
-        "guest_first_name": "Arcadie",
-        "guest_name": "Tataru Arcadie",
-        "guest_email": "ro.client.067@test.casaemil.local",
-        "guest_phone": "0786109042",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "passport",
-        "doc_series": null,
-        "doc_number": "RO800066",
-        "doc_issued_by": "Ministerul Afacerilor Interne",
-        "doc_issue_date": "2020-02-01",
-        "doc_expiry_date": "2030-01-31",
-        "national_id_type": "cnp",
-        "national_id": "1910713010671",
-        "birth_date": "1991-07-13",
-        "birth_place": "București",
-        "nationality": "România",
-        "address": "Bd. Unirii 66",
-        "city": "București",
-        "county": "București",
-        "country": "România",
-        "sex": "M",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T068",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "single",
-      "test_scenario": "Român · Pașaport · single · 2026-06-23 → 2026-06-28",
-      "cerere_publica": {
-        "check_in": "2026-06-23",
-        "check_out": "2026-06-28",
-        "num_adults": 1,
-        "num_children": 0,
-        "has_minor": false,
-        "minor_age": "",
-        "guest_last_name": "Ursache",
-        "guest_first_name": "Brindusa",
-        "guest_name": "Ursache Brindusa",
-        "guest_email": "ro.client.068@test.casaemil.local",
-        "guest_phone": "0787109179",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "passport",
-        "doc_series": null,
-        "doc_number": "RO800067",
-        "doc_issued_by": "Ministerul Afacerilor Interne",
-        "doc_issue_date": "2020-02-01",
-        "doc_expiry_date": "2030-01-31",
-        "national_id_type": "cnp",
-        "national_id": "2920814010684",
-        "birth_date": "1992-08-14",
-        "birth_place": "București",
-        "nationality": "România",
-        "address": "Bd. Unirii 67",
-        "city": "București",
-        "county": "București",
-        "country": "România",
-        "sex": "F",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T069",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "cuplu",
-      "test_scenario": "Român · Alt document · cuplu · 2026-06-24 → 2026-07-01",
-      "cerere_publica": {
-        "check_in": "2026-06-24",
-        "check_out": "2026-07-01",
-        "num_adults": 2,
-        "num_children": 0,
-        "has_minor": false,
-        "minor_age": "",
-        "guest_last_name": "Vlad",
-        "guest_first_name": "Carol",
-        "guest_name": "Vlad Carol",
-        "guest_email": "ro.client.069@test.casaemil.local",
-        "guest_phone": "0788109316",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "other",
-        "doc_series": null,
-        "doc_number": "PERM-2023-68",
-        "doc_issued_by": "IGI Timișoara",
-        "doc_issue_date": "2023-01-15",
-        "doc_expiry_date": "2026-12-31",
-        "national_id_type": null,
-        "national_id": null,
-        "birth_date": "1993-09-15",
-        "birth_place": "Siria",
-        "nationality": "Siria",
-        "address": "Str. Azilului 68",
-        "city": "Timișoara",
-        "county": "Timiș",
-        "country": "România",
-        "sex": "M",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T070",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "familie",
-      "test_scenario": "Român · Alt document · familie · 2026-06-25 → 2026-06-27",
-      "cerere_publica": {
-        "check_in": "2026-06-25",
-        "check_out": "2026-06-27",
-        "num_adults": 2,
-        "num_children": 1,
-        "has_minor": true,
-        "minor_age": "4",
-        "guest_last_name": "Zaharia",
-        "guest_first_name": "Dorina",
-        "guest_name": "Zaharia Dorina",
-        "guest_email": "ro.client.070@test.casaemil.local",
-        "guest_phone": "0789109453",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "other",
-        "doc_series": null,
-        "doc_number": "PERM-2024-69",
-        "doc_issued_by": "IGI Timișoara",
-        "doc_issue_date": "2023-01-15",
-        "doc_expiry_date": "2026-12-31",
-        "national_id_type": null,
-        "national_id": null,
-        "birth_date": "1994-10-16",
-        "birth_place": "Siria",
-        "nationality": "Siria",
-        "address": "Str. Azilului 69",
-        "city": "Timișoara",
-        "county": "Timiș",
-        "country": "România",
-        "sex": "F",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T071",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "familie",
-      "test_scenario": "Român · Alt document · familie · 2026-06-26 → 2026-06-29",
-      "cerere_publica": {
-        "check_in": "2026-06-26",
-        "check_out": "2026-06-29",
-        "num_adults": 2,
-        "num_children": 2,
-        "has_minor": true,
-        "minor_age": "9",
-        "guest_last_name": "Ardelean",
-        "guest_first_name": "Eusebiu",
-        "guest_name": "Ardelean Eusebiu",
-        "guest_email": "ro.client.071@test.casaemil.local",
-        "guest_phone": "0720109590",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "other",
-        "doc_series": null,
-        "doc_number": "PERM-2020-70",
-        "doc_issued_by": "IGI Timișoara",
-        "doc_issue_date": "2023-01-15",
-        "doc_expiry_date": "2026-12-31",
-        "national_id_type": null,
-        "national_id": null,
-        "birth_date": "1995-11-17",
-        "birth_place": "Siria",
-        "nationality": "Siria",
-        "address": "Str. Azilului 70",
-        "city": "Timișoara",
-        "county": "Timiș",
-        "country": "România",
-        "sex": "M",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T072",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "grup",
-      "test_scenario": "Român · Alt document · grup · 2026-06-27 → 2026-07-01",
-      "cerere_publica": {
-        "check_in": "2026-06-27",
-        "check_out": "2026-07-01",
-        "num_adults": 3,
-        "num_children": 0,
-        "has_minor": false,
-        "minor_age": "",
-        "guest_last_name": "Birsan",
-        "guest_first_name": "Flavia",
-        "guest_name": "Birsan Flavia",
-        "guest_email": "ro.client.072@test.casaemil.local",
-        "guest_phone": "0721109727",
-        "notes": ""
-      },
-      "check_in": {
-        "doc_type": "other",
-        "doc_series": null,
-        "doc_number": "PERM-2021-71",
-        "doc_issued_by": "IGI Timișoara",
-        "doc_issue_date": "2023-01-15",
-        "doc_expiry_date": "2026-12-31",
-        "national_id_type": null,
-        "national_id": null,
-        "birth_date": "1996-12-18",
-        "birth_place": "Siria",
-        "nationality": "Siria",
-        "address": "Str. Azilului 71",
-        "city": "Timișoara",
-        "county": "Timiș",
-        "country": "România",
-        "sex": "F",
-        "expected_identity_status": "complete"
-      }
-    },
-    {
-      "id": "T073",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "grup",
-      "test_scenario": "Român · Fără identitate — doar la check-in · grup · 2026-06-28 → 2026-07-03",
-      "cerere_publica": {
-        "check_in": "2026-06-28",
-        "check_out": "2026-07-03",
-        "num_adults": 4,
-        "num_children": 1,
-        "has_minor": true,
-        "minor_age": "11",
-        "guest_last_name": "Carp",
-        "guest_first_name": "Haralambie",
-        "guest_name": "Carp Haralambie",
-        "guest_email": "ro.client.073@test.casaemil.local",
-        "guest_phone": "0722109864",
-        "notes": ""
-      },
-      "check_in": null
-    },
-    {
-      "id": "T074",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "single",
-      "test_scenario": "Român · Fără identitate — doar la check-in · single · 2026-06-29 → 2026-07-06",
-      "cerere_publica": {
-        "check_in": "2026-06-29",
-        "check_out": "2026-07-06",
-        "num_adults": 1,
-        "num_children": 0,
-        "has_minor": false,
-        "minor_age": "",
-        "guest_last_name": "Dumitrache",
-        "guest_first_name": "Henrieta",
-        "guest_name": "Dumitrache Henrieta",
-        "guest_email": "ro.client.074@test.casaemil.local",
-        "guest_phone": "0723110001",
-        "notes": ""
-      },
-      "check_in": null
-    },
-    {
-      "id": "T075",
-      "cetatenie": "România",
-      "cetatenie_cod": "RO",
-      "tip_persoane": "cuplu",
-      "test_scenario": "Român · Fără identitate — doar la check-in · cuplu · 2026-06-30 → 2026-07-02",
-      "cerere_publica": {
-        "check_in": "2026-06-30",
-        "check_out": "2026-07-02",
-        "num_adults": 2,
-        "num_children": 0,
-        "has_minor": false,
-        "minor_age": "",
-        "guest_last_name": "Fodor",
-        "guest_first_name": "Jean",
-        "guest_name": "Fodor Jean",
-        "guest_email": "ro.client.075@test.casaemil.local",
-        "guest_phone": "0724110138",
-        "notes": ""
-      },
-      "check_in": null
     },
     {
       "id": "T076",
       "cetatenie": "România",
       "cetatenie_cod": "RO",
       "tip_persoane": "familie",
-      "test_scenario": "Român · Fără identitate — doar la check-in · familie · 2026-07-01 → 2026-07-04",
+      "test_scenario": "FRAUD · Telefon placeholder la rezervare — test validare",
       "cerere_publica": {
         "check_in": "2026-07-01",
         "check_out": "2026-07-04",
@@ -3042,14 +3235,51 @@
         "num_children": 1,
         "has_minor": true,
         "minor_age": "10",
-        "guest_last_name": "Ghita",
-        "guest_first_name": "Jacqueline",
-        "guest_name": "Ghita Jacqueline",
-        "guest_email": "ro.client.076@test.casaemil.local",
-        "guest_phone": "0725110275",
-        "notes": ""
+        "guest_last_name": "TelefonPlaceholder",
+        "guest_first_name": "Test",
+        "guest_name": "TelefonPlaceholder Test",
+        "guest_email": "fraud.phone.bad@test.casaemil.local",
+        "guest_phone": "0725900116",
+        "notes": "[FRAUD] Telefon valid în fișier; vezi test_negativ pentru ce NU merge"
       },
-      "check_in": null
+      "check_in": {
+        "doc_type": "ci",
+        "doc_series": "IS",
+        "doc_number": "100616",
+        "doc_issued_by": "SPCLEP Neamț",
+        "doc_issue_date": "2018-05-10",
+        "doc_expiry_date": "2028-05-09",
+        "national_id_type": "cnp",
+        "national_id": "1880707450833",
+        "birth_date": "1988-07-07",
+        "birth_place": "Neamț",
+        "nationality": "România",
+        "address": "Str. Neamț nr. 617",
+        "city": "Neamț",
+        "county": "Neamț",
+        "country": "România",
+        "sex": "M",
+        "expected_identity_status": "complete"
+      },
+      "test_tags": [
+        "telefon_invalid",
+        "fraud_rezervare"
+      ],
+      "test_negativ": {
+        "incearca_telefon_la_rezervare": [
+          "—",
+          "n/a",
+          "",
+          "0725900116"
+        ],
+        "telefoane_respinse": [
+          "—",
+          "n/a",
+          "",
+          "."
+        ],
+        "asteptat": "guest.phone_required / normalizare respinsă"
+      }
     },
     {
       "id": "T077",

@@ -21,6 +21,7 @@ export type ActivityAction =
   | "booking.checkin.undo"
   | "booking.checkout.set"
   | "booking.checkout.undo"
+  | "booking.dates_edited"
   | "occupancy.hold_created"
   | "occupancy.block_created"
   | "activity.undone"

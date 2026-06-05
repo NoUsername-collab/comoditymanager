@@ -2,7 +2,7 @@
 
 Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-in** (identitate).
 
-- Generat: 2026-06-05T20:14:25.719Z
+- Generat: 2026-06-05T20:44:50.133Z
 - Români: **76** (76%) · Străini: **24** (24%, câte 3 per țară)
 - Țări străine: MD, BG, HU, DE, FR, IT, UA, GB
 
@@ -12,6 +12,7 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 2. **Admin** — acceptă cererea, apoi la check-in completează *Check-in / Identitate*.
 3. Clienții cu `check_in: null` — identitatea se introduce integral la check-in.
 4. **Suprapuneri** — caută `CLUSTER-A` / `CLUSTER-B` pentru teste disponibilitate.
+5. **Fraudă/dedup** — clienții **T061–T076** + filtru în HTML · vezi `test_catalog` în JSON.
 
 ---
 
@@ -2694,12 +2695,13 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 
 ---
 
-## T061 — Român · CI parțial (completezi la check-in) · grup · 2026-06-16 → 2026-06-19
+## T061 — FRAUD · Ionescu Vasile #1 · același nume, telefon diferit față de #2
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | grup |
+| Test tags | `dedup_acelasi_nume`, `grup_dedup_vasile` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2710,34 +2712,43 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 4 |
 | Copii | 1 |
 | Minor (bifat) | Da, vârsta: 11 |
-| Nume | `Manole` |
-| Prenume | `Teodor` |
-| Email | `ro.client.061@test.casaemil.local` |
-| Telefon | `0780108220` |
+| Nume | `Ionescu` |
+| Prenume | `Vasile` |
+| Email | `fraud.dedup.vasile.a@test.casaemil.local` |
+| Telefon | `0725900101` |
+| Mesaj | [FRAUD] Dedup: același nume ca T062, telefoane diferite — nu merge automat |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
 | Tip document | `ci` |
-| Serie CI | `RX` |
-| Nr. document | `100060` |
+| Serie CI | `RK` |
+| Nr. document | `100601` |
+| Emis de | `SPCLEP Arad` |
+| Data emitere | `2018-02-10` |
+| Data expirare | `2028-02-09` |
 | Tip ID național | `cnp` |
-| ID național | `1850107090619` |
-| Data nașterii | `1985-01-07` |
+| ID național | `1830315300693` |
+| Data nașterii | `1983-03-15` |
+| Loc naștere | `Arad` |
 | Naționalitate | `România` |
+| Adresă | `Str. Arad nr. 602` |
+| Localitate | `Arad` |
+| Județ | `Arad` |
 | Țară | `România` |
 | Sex | `M` |
-| Status așteptat | partial |
+| Status așteptat | complete |
 
 ---
 
-## T062 — Român · CI parțial (completezi la check-in) · single · 2026-06-17 → 2026-06-21
+## T062 — FRAUD · Ionescu Vasile #2 · persoană diferită, același nume
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | single |
+| Test tags | `dedup_acelasi_nume`, `grup_dedup_vasile` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2747,34 +2758,43 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-06-21` |
 | Adulți | 1 |
 | Copii | 0 |
-| Nume | `Niculescu` |
-| Prenume | `Silvia` |
-| Email | `ro.client.062@test.casaemil.local` |
-| Telefon | `0781108357` |
+| Nume | `Ionescu` |
+| Prenume | `Vasile` |
+| Email | `fraud.dedup.vasile.b@test.casaemil.local` |
+| Telefon | `0725900102` |
+| Mesaj | [FRAUD] Dedup: verifică că NU se fuzionează greșit cu T061 |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
 | Tip document | `ci` |
-| Serie CI | `RK` |
-| Nr. document | `100061` |
+| Serie CI | `SB` |
+| Nr. document | `100602` |
+| Emis de | `SPCLEP Argeș` |
+| Data emitere | `2018-03-10` |
+| Data expirare | `2028-03-09` |
 | Tip ID național | `cnp` |
-| ID național | `2860208100622` |
-| Data nașterii | `1986-02-08` |
+| ID național | `1830315310703` |
+| Data nașterii | `1983-03-15` |
+| Loc naștere | `Argeș` |
 | Naționalitate | `România` |
+| Adresă | `Str. Argeș nr. 603` |
+| Localitate | `Argeș` |
+| Județ | `Argeș` |
 | Țară | `România` |
-| Sex | `F` |
-| Status așteptat | partial |
+| Sex | `M` |
+| Status așteptat | complete |
 
 ---
 
-## T063 — Român · CI parțial (completezi la check-in) · cuplu · 2026-06-18 → 2026-06-23
+## T063 — FRAUD · Popescu Maria #1 · același nume complet
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | cuplu |
+| Test tags | `dedup_acelasi_nume`, `grup_dedup_maria` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2784,34 +2804,43 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-06-23` |
 | Adulți | 2 |
 | Copii | 0 |
-| Nume | `Olaru` |
-| Prenume | `Victor` |
-| Email | `ro.client.063@test.casaemil.local` |
-| Telefon | `0782108494` |
+| Nume | `Popescu` |
+| Prenume | `Maria` |
+| Email | `fraud.dedup.maria.a@test.casaemil.local` |
+| Telefon | `0725900103` |
+| Mesaj | [FRAUD] Pereche dedup nume — vezi și T064 |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
 | Tip document | `ci` |
-| Serie CI | `SB` |
-| Nr. document | `100062` |
+| Serie CI | `TM` |
+| Nr. document | `100603` |
+| Emis de | `SPCLEP Bacău` |
+| Data emitere | `2018-04-10` |
+| Data expirare | `2028-04-09` |
 | Tip ID național | `cnp` |
-| ID național | `1870309110630` |
-| Data nașterii | `1987-03-09` |
+| ID național | `2910722320712` |
+| Data nașterii | `1991-07-22` |
+| Loc naștere | `Bacău` |
 | Naționalitate | `România` |
+| Adresă | `Str. Bacău nr. 604` |
+| Localitate | `Bacău` |
+| Județ | `Bacău` |
 | Țară | `România` |
-| Sex | `M` |
-| Status așteptat | partial |
+| Sex | `F` |
+| Status așteptat | complete |
 
 ---
 
-## T064 — Român · CI parțial (completezi la check-in) · familie · 2026-06-19 → 2026-06-26
+## T064 — FRAUD · Popescu Maria #2 · același nume, alt CNP
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | familie |
+| Test tags | `dedup_acelasi_nume`, `grup_dedup_maria` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2822,34 +2851,43 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 2 |
 | Copii | 1 |
 | Minor (bifat) | Da, vârsta: 8 |
-| Nume | `Preda` |
-| Prenume | `Viorica` |
-| Email | `ro.client.064@test.casaemil.local` |
-| Telefon | `0783108631` |
+| Nume | `Popescu` |
+| Prenume | `Maria` |
+| Email | `fraud.dedup.maria.b@test.casaemil.local` |
+| Telefon | `0725900104` |
+| Mesaj | [FRAUD] Pereche dedup nume — vezi și T063 |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
 | Tip document | `ci` |
-| Serie CI | `TM` |
-| Nr. document | `100063` |
+| Serie CI | `IS` |
+| Nr. document | `100604` |
+| Emis de | `SPCLEP Bihor` |
+| Data emitere | `2018-05-10` |
+| Data expirare | `2028-05-09` |
 | Tip ID național | `cnp` |
-| ID național | `2880410120640` |
-| Data nașterii | `1988-04-10` |
+| ID național | `2881105330725` |
+| Data nașterii | `1988-11-05` |
+| Loc naștere | `Bihor` |
 | Naționalitate | `România` |
+| Adresă | `Str. Bihor nr. 605` |
+| Localitate | `Bihor` |
+| Județ | `Bihor` |
 | Țară | `România` |
 | Sex | `F` |
-| Status așteptat | partial |
+| Status așteptat | complete |
 
 ---
 
-## T065 — Român · Pașaport · familie · 2026-06-20 → 2026-06-22
+## T065 — FRAUD · Același email ca T061, telefon diferit — conflict dedup
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | familie |
+| Test tags | `dedup_email_conflict` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2860,40 +2898,52 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 2 |
 | Copii | 2 |
 | Minor (bifat) | Da, vârsta: 11 |
-| Nume | `Rotaru` |
-| Prenume | `Yannis` |
-| Email | `ro.client.065@test.casaemil.local` |
-| Telefon | `0784108768` |
+| Nume | `Conflict` |
+| Prenume | `Email` |
+| Email | `fraud.dedup.vasile.a@test.casaemil.local` |
+| Telefon | `0725900105` |
+| Mesaj | [FRAUD] Email duplicat T061 · telefon nou — ce guest se leagă? |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `passport` |
-| Nr. document | `RO800064` |
-| Emis de | `Ministerul Afacerilor Interne` |
-| Data emitere | `2020-02-01` |
-| Data expirare | `2030-01-31` |
+| Tip document | `ci` |
+| Serie CI | `CT` |
+| Nr. document | `100605` |
+| Emis de | `SPCLEP Brașov` |
+| Data emitere | `2018-06-10` |
+| Data expirare | `2028-06-09` |
 | Tip ID național | `cnp` |
-| ID național | `1890511010651` |
-| Data nașterii | `1989-05-11` |
-| Loc naștere | `București` |
+| ID național | `1750110340739` |
+| Data nașterii | `1975-01-10` |
+| Loc naștere | `Brașov` |
 | Naționalitate | `România` |
-| Adresă | `Bd. Unirii 64` |
-| Localitate | `București` |
-| Județ | `București` |
+| Adresă | `Str. Brașov nr. 606` |
+| Localitate | `Brașov` |
+| Județ | `Brașov` |
 | Țară | `România` |
 | Sex | `M` |
 | Status așteptat | complete |
 
+### Test negativ (încearcă manual)
+
+```json
+{
+  "asteptat": "mergeConflict sau potrivire după telefon/email",
+  "referinta": "T061"
+}
+```
+
 ---
 
-## T066 — Român · Pașaport · grup · 2026-06-21 → 2026-06-24
+## T066 — FRAUD · Același telefon ca T061, format +40 cu spații
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | grup |
+| Test tags | `dedup_telefon_format` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2903,40 +2953,53 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-06-24` |
 | Adulți | 3 |
 | Copii | 0 |
-| Nume | `Sandu` |
-| Prenume | `Zenobia` |
-| Email | `ro.client.066@test.casaemil.local` |
-| Telefon | `0785108905` |
+| Nume | `TelefonFormat` |
+| Prenume | `Test` |
+| Email | `fraud.phone.format@test.casaemil.local` |
+| Telefon | `+40 725 900 101` |
+| Mesaj | [FRAUD] Normalizare: același E.164 ca T061 (0725900101) |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `passport` |
-| Nr. document | `RO800065` |
-| Emis de | `Ministerul Afacerilor Interne` |
-| Data emitere | `2020-02-01` |
-| Data expirare | `2030-01-31` |
+| Tip document | `ci` |
+| Serie CI | `BV` |
+| Nr. document | `100606` |
+| Emis de | `SPCLEP București` |
+| Data emitere | `2018-07-10` |
+| Data expirare | `2028-07-09` |
 | Tip ID național | `cnp` |
-| ID național | `2900612010669` |
-| Data nașterii | `1990-06-12` |
+| ID național | `1800606350749` |
+| Data nașterii | `1980-06-06` |
 | Loc naștere | `București` |
 | Naționalitate | `România` |
-| Adresă | `Bd. Unirii 65` |
-| Localitate | `București` |
+| Adresă | `Str. București nr. 607` |
+| Localitate | `Sector 2` |
 | Județ | `București` |
 | Țară | `România` |
-| Sex | `F` |
+| Sex | `M` |
 | Status așteptat | complete |
+
+### Test negativ (încearcă manual)
+
+```json
+{
+  "telefon_raw_alternativ": "0725900101",
+  "telefon_normalizat_asteptat": "+40725900101",
+  "referinta": "T061"
+}
+```
 
 ---
 
-## T067 — Român · Pașaport · grup · 2026-06-22 → 2026-06-26
+## T067 — FRAUD · Document EXPIRAT (2020) — check-in cu act invalid
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | grup |
+| Test tags | `document_expirat` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2947,40 +3010,51 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 4 |
 | Copii | 1 |
 | Minor (bifat) | Da, vârsta: 11 |
-| Nume | `Tataru` |
-| Prenume | `Arcadie` |
-| Email | `ro.client.067@test.casaemil.local` |
-| Telefon | `0786109042` |
+| Nume | `DocExpirat` |
+| Prenume | `Ion` |
+| Email | `fraud.doc.expired@test.casaemil.local` |
+| Telefon | `0725900107` |
+| Mesaj | [FRAUD] doc_expiry_date în trecut — avertizare UI? |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `passport` |
-| Nr. document | `RO800066` |
-| Emis de | `Ministerul Afacerilor Interne` |
-| Data emitere | `2020-02-01` |
-| Data expirare | `2030-01-31` |
+| Tip document | `ci` |
+| Serie CI | `CJ` |
+| Nr. document | `100607` |
+| Emis de | `SPCLEP Cluj` |
+| Data emitere | `2010-01-01` |
+| Data expirare | `2020-01-01` |
 | Tip ID național | `cnp` |
-| ID național | `1910713010671` |
-| Data nașterii | `1991-07-13` |
-| Loc naștere | `București` |
+| ID național | `1780420360750` |
+| Data nașterii | `1978-04-20` |
+| Loc naștere | `Cluj` |
 | Naționalitate | `România` |
-| Adresă | `Bd. Unirii 66` |
-| Localitate | `București` |
-| Județ | `București` |
+| Adresă | `Str. Cluj nr. 608` |
+| Localitate | `Cluj` |
+| Județ | `Cluj` |
 | Țară | `România` |
 | Sex | `M` |
 | Status așteptat | complete |
 
+### Test negativ (încearcă manual)
+
+```json
+{
+  "asteptat": "avertizare document expirat la check-in"
+}
+```
+
 ---
 
-## T068 — Român · Pașaport · single · 2026-06-23 → 2026-06-28
+## T068 — FRAUD · Document expiră în ~5 zile (2026-06-10)
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | single |
+| Test tags | `document_expira_curand` |
 
 ### Cerere publică (formular rezervare)
 
@@ -2990,40 +3064,51 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-06-28` |
 | Adulți | 1 |
 | Copii | 0 |
-| Nume | `Ursache` |
-| Prenume | `Brindusa` |
-| Email | `ro.client.068@test.casaemil.local` |
-| Telefon | `0787109179` |
+| Nume | `DocExpiraCurand` |
+| Prenume | `Elena` |
+| Email | `fraud.doc.soon@test.casaemil.local` |
+| Telefon | `0725900108` |
+| Mesaj | [FRAUD] Expiră curând — test avertizare |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `passport` |
-| Nr. document | `RO800067` |
-| Emis de | `Ministerul Afacerilor Interne` |
-| Data emitere | `2020-02-01` |
-| Data expirare | `2030-01-31` |
+| Tip document | `ci` |
+| Serie CI | `MM` |
+| Nr. document | `100608` |
+| Emis de | `SPCLEP Constanța` |
+| Data emitere | `2018-09-10` |
+| Data expirare | `2026-06-10` |
 | Tip ID național | `cnp` |
-| ID național | `2920814010684` |
+| ID național | `2920814370761` |
 | Data nașterii | `1992-08-14` |
-| Loc naștere | `București` |
+| Loc naștere | `Constanța` |
 | Naționalitate | `România` |
-| Adresă | `Bd. Unirii 67` |
-| Localitate | `București` |
-| Județ | `București` |
+| Adresă | `Str. Constanța nr. 609` |
+| Localitate | `Constanța` |
+| Județ | `Constanța` |
 | Țară | `România` |
 | Sex | `F` |
 | Status așteptat | complete |
 
+### Test negativ (încearcă manual)
+
+```json
+{
+  "asteptat": "avertizare expirare apropiată"
+}
+```
+
 ---
 
-## T069 — Român · Alt document · cuplu · 2026-06-24 → 2026-07-01
+## T069 — FRAUD · Document expirat ieri (2026-06-04)
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | cuplu |
+| Test tags | `document_expirat` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3033,38 +3118,43 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-07-01` |
 | Adulți | 2 |
 | Copii | 0 |
-| Nume | `Vlad` |
-| Prenume | `Carol` |
-| Email | `ro.client.069@test.casaemil.local` |
-| Telefon | `0788109316` |
+| Nume | `DocExpiratIeri` |
+| Prenume | `Ana` |
+| Email | `fraud.doc.yesterday@test.casaemil.local` |
+| Telefon | `0725900109` |
+| Mesaj | [FRAUD] Expirat recent |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `other` |
-| Nr. document | `PERM-2023-68` |
-| Emis de | `IGI Timișoara` |
-| Data emitere | `2023-01-15` |
-| Data expirare | `2026-12-31` |
-| Data nașterii | `1993-09-15` |
-| Loc naștere | `Siria` |
-| Naționalitate | `Siria` |
-| Adresă | `Str. Azilului 68` |
-| Localitate | `Timișoara` |
-| Județ | `Timiș` |
+| Tip document | `ci` |
+| Serie CI | `DJ` |
+| Nr. document | `100609` |
+| Emis de | `SPCLEP Covasna` |
+| Data emitere | `2018-10-10` |
+| Data expirare | `2026-06-04` |
+| Tip ID național | `cnp` |
+| ID național | `2860228380778` |
+| Data nașterii | `1986-02-28` |
+| Loc naștere | `Covasna` |
+| Naționalitate | `România` |
+| Adresă | `Str. Covasna nr. 610` |
+| Localitate | `Covasna` |
+| Județ | `Covasna` |
 | Țară | `România` |
-| Sex | `M` |
+| Sex | `F` |
 | Status așteptat | complete |
 
 ---
 
-## T070 — Român · Alt document · familie · 2026-06-25 → 2026-06-27
+## T070 — FRAUD · CNP deja folosit (T001) — încearcă duplicat la check-in
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | familie |
+| Test tags | `cnp_duplicat`, `fraud_identitate` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3075,38 +3165,53 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 2 |
 | Copii | 1 |
 | Minor (bifat) | Da, vârsta: 4 |
-| Nume | `Zaharia` |
-| Prenume | `Dorina` |
-| Email | `ro.client.070@test.casaemil.local` |
-| Telefon | `0789109453` |
+| Nume | `CnpDuplicat` |
+| Prenume | `Test` |
+| Email | `fraud.cnp.dup@test.casaemil.local` |
+| Telefon | `0725900110` |
+| Mesaj | [FRAUD] CNP propriu valid; vezi test_negativ |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `other` |
-| Nr. document | `PERM-2024-69` |
-| Emis de | `IGI Timișoara` |
-| Data emitere | `2023-01-15` |
-| Data expirare | `2026-12-31` |
-| Data nașterii | `1994-10-16` |
-| Loc naștere | `Siria` |
-| Naționalitate | `Siria` |
-| Adresă | `Str. Azilului 69` |
-| Localitate | `Timișoara` |
-| Județ | `Timiș` |
+| Tip document | `ci` |
+| Serie CI | `BC` |
+| Nr. document | `100610` |
+| Emis de | `SPCLEP Dolj` |
+| Data emitere | `2018-11-10` |
+| Data expirare | `2028-11-09` |
+| Tip ID național | `cnp` |
+| ID național | `1900505390780` |
+| Data nașterii | `1990-05-05` |
+| Loc naștere | `Dolj` |
+| Naționalitate | `România` |
+| Adresă | `Str. Dolj nr. 611` |
+| Localitate | `Dolj` |
+| Județ | `Dolj` |
 | Țară | `România` |
-| Sex | `F` |
+| Sex | `M` |
 | Status așteptat | complete |
+
+### Test negativ (încearcă manual)
+
+```json
+{
+  "incearca_cnp": "1650101010013",
+  "referinta_cnp_existent": "T001",
+  "asteptat": "respinge CNP duplicat (findGuestByNationalId)"
+}
+```
 
 ---
 
-## T071 — Român · Alt document · familie · 2026-06-26 → 2026-06-29
+## T071 — FRAUD · CNP cu check-digit greșit — date proaste la check-in
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | familie |
+| Test tags | `cnp_invalid`, `fraud_identitate` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3117,38 +3222,53 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 2 |
 | Copii | 2 |
 | Minor (bifat) | Da, vârsta: 9 |
-| Nume | `Ardelean` |
-| Prenume | `Eusebiu` |
-| Email | `ro.client.071@test.casaemil.local` |
-| Telefon | `0720109590` |
+| Nume | `CnpInvalid` |
+| Prenume | `Ion` |
+| Email | `fraud.cnp.bad@test.casaemil.local` |
+| Telefon | `0725900111` |
+| Mesaj | [FRAUD] Date rezervare OK; la check-in testează CNP invalid |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `other` |
-| Nr. document | `PERM-2020-70` |
-| Emis de | `IGI Timișoara` |
-| Data emitere | `2023-01-15` |
-| Data expirare | `2026-12-31` |
-| Data nașterii | `1995-11-17` |
-| Loc naștere | `Siria` |
-| Naționalitate | `Siria` |
-| Adresă | `Str. Azilului 70` |
-| Localitate | `Timișoara` |
-| Județ | `Timiș` |
+| Tip document | `ci` |
+| Serie CI | `GL` |
+| Nr. document | `100611` |
+| Emis de | `SPCLEP Galați` |
+| Data emitere | `2018-12-10` |
+| Data expirare | `2028-12-09` |
+| Tip ID național | `cnp` |
+| ID național | `1850101400797` |
+| Data nașterii | `1985-01-01` |
+| Loc naștere | `Galați` |
+| Naționalitate | `România` |
+| Adresă | `Str. Galați nr. 612` |
+| Localitate | `Galați` |
+| Județ | `Galați` |
 | Țară | `România` |
 | Sex | `M` |
 | Status așteptat | complete |
 
+### Test negativ (încearcă manual)
+
+```json
+{
+  "incearca_cnp": "1850101410019",
+  "asteptat": "respinge — check digit invalid",
+  "incearca_cnp_2": "0000000000000"
+}
+```
+
 ---
 
-## T072 — Român · Alt document · grup · 2026-06-27 → 2026-07-01
+## T072 — FRAUD · CNP valid dar data nașterii greșită
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | grup |
+| Test tags | `cnp_data_neconcordanta`, `fraud_identitate` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3158,38 +3278,53 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-07-01` |
 | Adulți | 3 |
 | Copii | 0 |
-| Nume | `Birsan` |
-| Prenume | `Flavia` |
-| Email | `ro.client.072@test.casaemil.local` |
-| Telefon | `0721109727` |
+| Nume | `CnpMismatch` |
+| Prenume | `Elena` |
+| Email | `fraud.cnp.mismatch@test.casaemil.local` |
+| Telefon | `0725900112` |
+| Mesaj | [FRAUD] CNP corect în check_in; încearcă birth_date diferit |
 
 ### Check-in / Înregistrare client (admin)
 
 | Câmp | Valoare |
 |------|---------|
-| Tip document | `other` |
-| Nr. document | `PERM-2021-71` |
-| Emis de | `IGI Timișoara` |
-| Data emitere | `2023-01-15` |
-| Data expirare | `2026-12-31` |
-| Data nașterii | `1996-12-18` |
-| Loc naștere | `Siria` |
-| Naționalitate | `Siria` |
-| Adresă | `Str. Azilului 71` |
-| Localitate | `Timișoara` |
-| Județ | `Timiș` |
+| Tip document | `ci` |
+| Serie CI | `RX` |
+| Nr. document | `100612` |
+| Emis de | `SPCLEP Harghita` |
+| Data emitere | `2018-01-10` |
+| Data expirare | `2028-01-09` |
+| Tip ID național | `cnp` |
+| ID național | `2900315410808` |
+| Data nașterii | `1990-03-15` |
+| Loc naștere | `Harghita` |
+| Naționalitate | `România` |
+| Adresă | `Str. Harghita nr. 613` |
+| Localitate | `Harghita` |
+| Județ | `Harghita` |
 | Țară | `România` |
 | Sex | `F` |
 | Status așteptat | complete |
 
+### Test negativ (încearcă manual)
+
+```json
+{
+  "incearca_birth_date": "2000-01-01",
+  "cnp_corect_din_fisier": "(vezi check_in)",
+  "asteptat": "inconsistență CNP vs dată naștere"
+}
+```
+
 ---
 
-## T073 — Român · Fără identitate — doar la check-in · grup · 2026-06-28 → 2026-07-03
+## T073 — FRAUD · Același nr. CI ca T001 — document duplicat
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | grup |
+| Test tags | `document_duplicat`, `fraud_identitate` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3200,23 +3335,52 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 4 |
 | Copii | 1 |
 | Minor (bifat) | Da, vârsta: 11 |
-| Nume | `Carp` |
-| Prenume | `Haralambie` |
-| Email | `ro.client.073@test.casaemil.local` |
-| Telefon | `0722109864` |
+| Nume | `DocDuplicat` |
+| Prenume | `Vasile` |
+| Email | `fraud.doc.dup@test.casaemil.local` |
+| Telefon | `0725900113` |
+| Mesaj | [FRAUD] Alt CNP, același nr. document ca T001 |
 
 ### Check-in / Înregistrare client (admin)
 
-*Completezi toate câmpurile identitate la check-in (client nou, fără date preexistente).*
+| Câmp | Valoare |
+|------|---------|
+| Tip document | `ci` |
+| Serie CI | `RX` |
+| Nr. document | `100000` |
+| Emis de | `SPCLEP Iași` |
+| Data emitere | `2018-02-10` |
+| Data expirare | `2028-02-09` |
+| Tip ID național | `cnp` |
+| ID național | `1770909420813` |
+| Data nașterii | `1977-09-09` |
+| Loc naștere | `Iași` |
+| Naționalitate | `România` |
+| Adresă | `Str. Iași nr. 614` |
+| Localitate | `Iași` |
+| Județ | `Iași` |
+| Țară | `România` |
+| Sex | `M` |
+| Status așteptat | complete |
+
+### Test negativ (încearcă manual)
+
+```json
+{
+  "referinta_document": "T001",
+  "asteptat": "dedup warning pe doc_type + doc_number"
+}
+```
 
 ---
 
-## T074 — Român · Fără identitate — doar la check-in · single · 2026-06-29 → 2026-07-06
+## T074 — FRAUD · Zero identitate la rezervare — totul la check-in
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | single |
+| Test tags | `identitate_la_checkin`, `fraud_identitate` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3226,23 +3390,34 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-07-06` |
 | Adulți | 1 |
 | Copii | 0 |
-| Nume | `Dumitrache` |
-| Prenume | `Henrieta` |
-| Email | `ro.client.074@test.casaemil.local` |
-| Telefon | `0723110001` |
+| Nume | `FaraIdentitate` |
+| Prenume | `Rezervare` |
+| Email | `fraud.no.identity@test.casaemil.local` |
+| Telefon | `0725900114` |
+| Mesaj | [FRAUD] Poți introduce date false la check-in — validare? |
 
 ### Check-in / Înregistrare client (admin)
 
 *Completezi toate câmpurile identitate la check-in (client nou, fără date preexistente).*
 
+### Test negativ (încearcă manual)
+
+```json
+{
+  "incearca_cnp": "1234567890123",
+  "asteptat": "respinge format/check digit"
+}
+```
+
 ---
 
-## T075 — Român · Fără identitate — doar la check-in · cuplu · 2026-06-30 → 2026-07-02
+## T075 — FRAUD · Identitate parțială — completezi restul la check-in
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | cuplu |
+| Test tags | `identitate_partiala`, `fraud_identitate` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3252,23 +3427,44 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Data check-out | `2026-07-02` |
 | Adulți | 2 |
 | Copii | 0 |
-| Nume | `Fodor` |
-| Prenume | `Jean` |
-| Email | `ro.client.075@test.casaemil.local` |
-| Telefon | `0724110138` |
+| Nume | `PartialCheckin` |
+| Prenume | `Guest` |
+| Email | `fraud.partial@test.casaemil.local` |
+| Telefon | `0725900115` |
+| Mesaj | [FRAUD] Doar CNP la profil; restul la check-in |
 
 ### Check-in / Înregistrare client (admin)
 
-*Completezi toate câmpurile identitate la check-in (client nou, fără date preexistente).*
+| Câmp | Valoare |
+|------|---------|
+| Tip document | `ci` |
+| Serie CI | `TM` |
+| Nr. document | `100615` |
+| Tip ID național | `cnp` |
+| ID național | `2931201440821` |
+| Data nașterii | `1993-12-01` |
+| Naționalitate | `România` |
+| Țară | `România` |
+| Sex | `F` |
+| Status așteptat | partial |
+
+### Test negativ (încearcă manual)
+
+```json
+{
+  "asteptat": "identity_status partial până completezi adresă + doc"
+}
+```
 
 ---
 
-## T076 — Român · Fără identitate — doar la check-in · familie · 2026-07-01 → 2026-07-04
+## T076 — FRAUD · Telefon placeholder la rezervare — test validare
 
 | | |
 |---|---|
 | Cetățenie | România |
 | Tip | familie |
+| Test tags | `telefon_invalid`, `fraud_rezervare` |
 
 ### Cerere publică (formular rezervare)
 
@@ -3279,14 +3475,53 @@ Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-i
 | Adulți | 2 |
 | Copii | 1 |
 | Minor (bifat) | Da, vârsta: 10 |
-| Nume | `Ghita` |
-| Prenume | `Jacqueline` |
-| Email | `ro.client.076@test.casaemil.local` |
-| Telefon | `0725110275` |
+| Nume | `TelefonPlaceholder` |
+| Prenume | `Test` |
+| Email | `fraud.phone.bad@test.casaemil.local` |
+| Telefon | `0725900116` |
+| Mesaj | [FRAUD] Telefon valid în fișier; vezi test_negativ pentru ce NU merge |
 
 ### Check-in / Înregistrare client (admin)
 
-*Completezi toate câmpurile identitate la check-in (client nou, fără date preexistente).*
+| Câmp | Valoare |
+|------|---------|
+| Tip document | `ci` |
+| Serie CI | `IS` |
+| Nr. document | `100616` |
+| Emis de | `SPCLEP Neamț` |
+| Data emitere | `2018-05-10` |
+| Data expirare | `2028-05-09` |
+| Tip ID național | `cnp` |
+| ID național | `1880707450833` |
+| Data nașterii | `1988-07-07` |
+| Loc naștere | `Neamț` |
+| Naționalitate | `România` |
+| Adresă | `Str. Neamț nr. 617` |
+| Localitate | `Neamț` |
+| Județ | `Neamț` |
+| Țară | `România` |
+| Sex | `M` |
+| Status așteptat | complete |
+
+### Test negativ (încearcă manual)
+
+```json
+{
+  "incearca_telefon_la_rezervare": [
+    "—",
+    "n/a",
+    "",
+    "0725900116"
+  ],
+  "telefoane_respinse": [
+    "—",
+    "n/a",
+    "",
+    "."
+  ],
+  "asteptat": "guest.phone_required / normalizare respinsă"
+}
+```
 
 ---
 
