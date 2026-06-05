@@ -14,20 +14,26 @@ export type TenantScope = {
 
 /**
  * Request-scoped flag: when true, getTenantScope() skips staff auth.
- * Set by public booking flow so downstream service functions
- * (which independently call getTenantScope()) don't require login.
+ * Uses AsyncLocalStorage so concurrent requests are isolated — one
+ * request's public booking mode cannot leak into another request.
  *
  * Security: tenant ID still comes from host (cannot be spoofed).
  * Auth for admin actions is enforced at the action level (requireAdmin).
  */
-let _publicBookingMode = false;
+import { AsyncLocalStorage } from "node:async_hooks";
 
-export function enterPublicBookingMode(): void {
-  _publicBookingMode = true;
+const publicBookingStorage = new AsyncLocalStorage<boolean>();
+
+/**
+ * Run a function in public booking mode — all getTenantScope() calls
+ * within this async context skip staff auth. Request-isolated.
+ */
+export function runInPublicBookingMode<T>(fn: () => Promise<T>): Promise<T> {
+  return publicBookingStorage.run(true, fn);
 }
 
-export function exitPublicBookingMode(): void {
-  _publicBookingMode = false;
+function isPublicBookingMode(): boolean {
+  return publicBookingStorage.getStore() === true;
 }
 
 /**
@@ -65,7 +71,7 @@ export async function getTenantScope(
 ): Promise<TenantScope> {
   const { requireStaff = true } = options;
   const tenantId = await requireTenantIdForData();
-  if (requireStaff && !_publicBookingMode) {
+  if (requireStaff && !isPublicBookingMode()) {
     await assertStaffTenantAccess(tenantId);
   }
   const supabase = await createAdminClient();
