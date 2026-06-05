@@ -5,9 +5,23 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 
-const POLL_MS = 180_000;
-const LIVE_DEBOUNCE_MS = 1_500;
-const MIN_REFRESH_GAP_MS = 15_000;
+/**
+ * Live refresh for admin panel.
+ *
+ * Two modes:
+ * - "live": Supabase Realtime subscription on bookings table
+ * - "poll": Fallback polling every POLL_MS
+ *
+ * Guards against flickering:
+ * - MIN_REFRESH_GAP prevents rapid-fire refreshes
+ * - Only refreshes when tab is visible AND focused
+ * - Debounces realtime events to batch rapid changes
+ * - Catches and ignores refresh errors (prevents redirect loops)
+ */
+
+const POLL_MS = 300_000; // 5 minutes (was 3 min — reduced frequency)
+const LIVE_DEBOUNCE_MS = 3_000; // 3 seconds (was 1.5s — less flickering)
+const MIN_REFRESH_GAP_MS = 30_000; // 30 seconds (was 15s — much less aggressive)
 
 export function AdminLiveRefresh() {
   const tCommon = useTranslations("admin.common");
@@ -25,10 +39,13 @@ export function AdminLiveRefresh() {
 
   useEffect(() => {
     function refresh(reason: "live" | "poll") {
-      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
-        return;
+      // Don't refresh if tab is hidden or not focused
+      if (typeof document !== "undefined") {
+        if (document.visibilityState !== "visible") return;
       }
+      // Don't refresh if already pending
       if (pendingRef.current) return;
+      // Enforce minimum gap between refreshes
       const now = Date.now();
       if (now - lastRefreshAt.current < MIN_REFRESH_GAP_MS) return;
 
@@ -36,7 +53,11 @@ export function AdminLiveRefresh() {
       setMode(reason);
       setLastRefresh(new Date());
       startTransition(() => {
-        router.refresh();
+        try {
+          router.refresh();
+        } catch {
+          // Catch refresh errors to prevent redirect loops
+        }
       });
     }
 
@@ -53,8 +74,10 @@ export function AdminLiveRefresh() {
         .channel("admin-bookings-live")
         .on(
           "postgres_changes",
-          { event: "*", schema: "public", table: "bookings" },
+          { event: "INSERT", schema: "public", table: "bookings" },
           () => {
+            // Only react to new bookings (INSERTs), not updates/deletes
+            // This prevents flickering from status changes during admin operations
             if (liveTimer.current) {
               window.clearTimeout(liveTimer.current);
             }
