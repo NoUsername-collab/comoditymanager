@@ -92,7 +92,10 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [state, formAction, pending] = useActionState(
     async (_prev: { ok?: boolean; error?: string } | null, formData: FormData) => {
       try {
-        await submitGuestRequestAction(formData);
+        const result = await submitGuestRequestAction(formData);
+        if (!result.ok) {
+          return { error: result.error };
+        }
         return { ok: true };
       } catch (e) {
         return {

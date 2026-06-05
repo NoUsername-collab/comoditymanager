@@ -83,117 +83,125 @@ async function assertSelectedOptionStillValid(
 export async function submitGuestRequestAction(formData: FormData) {
   const t = await getTranslations("errors");
   const tServer = await getTranslations("public.serverActions");
-  await assertRateLimit(RATE_LIMIT_BOOKING_SUBMIT, "submit");
-  await mustAcceptLegal(formData);
 
-  const check_in = String(formData.get("check_in") ?? "");
-  const check_out = String(formData.get("check_out") ?? "");
-  const guest = guestNamesFromForm(formData);
-  const guest_email = String(formData.get("guest_email") ?? "");
-  const guest_phone = String(formData.get("guest_phone") ?? "");
-  const num_adults = Number(formData.get("num_adults") ?? 1);
-  const num_children = Number(formData.get("num_children") ?? 0);
-  const has_minor = formData.get("has_minor") === "on";
-  const minor_age = String(formData.get("minor_age") ?? "");
-  const notesRaw = String(formData.get("notes") ?? "").trim();
-  const option_id = String(formData.get("selected_option_id") ?? "");
-
-  if (!check_in || !check_out || !guest_email || !guest_phone.trim()) {
-    throw new Error(t("fillRequired"));
-  }
   try {
-    assertValidGuestPhone(guest_phone);
-  } catch {
-    throw new Error(t("invalidPhone"));
-  }
-  if (!isAtLeastOneNight(check_in, check_out)) {
-    throw new Error(t("minOneNight"));
-  }
-  if (!option_id) {
-    throw new Error(t("selectVariant"));
-  }
+    await assertRateLimit(RATE_LIMIT_BOOKING_SUBMIT, "submit");
+    await mustAcceptLegal(formData);
 
-  const selected = await assertSelectedOptionStillValid(
-    check_in,
-    check_out,
-    option_id,
-    num_adults,
-    num_children
-  );
+    const check_in = String(formData.get("check_in") ?? "");
+    const check_out = String(formData.get("check_out") ?? "");
+    const guest = guestNamesFromForm(formData);
+    const guest_email = String(formData.get("guest_email") ?? "");
+    const guest_phone = String(formData.get("guest_phone") ?? "");
+    const num_adults = Number(formData.get("num_adults") ?? 1);
+    const num_children = Number(formData.get("num_children") ?? 0);
+    const has_minor = formData.get("has_minor") === "on";
+    const minor_age = String(formData.get("minor_age") ?? "");
+    const notesRaw = String(formData.get("notes") ?? "").trim();
+    const option_id = String(formData.get("selected_option_id") ?? "");
 
-  const roomList = selected.rooms
-    .map((r) => `${r.name} (${r.building_name})`)
-    .join(", ");
-  const variantBlock = [
-    tServer("selectedVariantHeader"),
-    selected.title,
-    tServer("selectedVariantRooms", { roomList }),
-    tServer("selectedVariantNights", { nights: selected.nights }),
-    tServer("selectedVariantEstimate", { total: selected.total_estimate_ron }),
-    tServer("selectedVariantNote"),
-  ].join("\n");
-
-  const notes = notesRaw
-    ? `${notesRaw}\n\n${variantBlock}`
-    : variantBlock;
-
-  const bookingId = await createBookingRequest({
-    check_in,
-    check_out,
-    ...guest,
-    guest_email,
-    guest_phone,
-    num_adults,
-    num_children,
-    has_minor,
-    minor_age,
-    notes,
-    total_price: selected.total_estimate_ron,
-    room_ids: selected.rooms.map((r) => r.id),
-  });
-
-  // Notify pension owner(s) — reads email from DB, not env var
-  // Non-blocking — never delays user response
-  (async () => {
+    if (!check_in || !check_out || !guest_email || !guest_phone.trim()) {
+      return { ok: false as const, error: t("fillRequired") };
+    }
     try {
-      const { requireTenantIdForData } = await import("@/lib/tenant/guards");
-      const { getTenantNotificationEmails, getTenantDisplayName } = await import(
-        "@/services/tenants"
-      );
-      const tenantId = await requireTenantIdForData();
-      const [emails, pensionName] = await Promise.all([
-        getTenantNotificationEmails(tenantId),
-        getTenantDisplayName(tenantId),
-      ]);
-      if (emails.length === 0) return;
-      const { platformSiteUrl } = await import("@/lib/platform/branding");
-      const { headers } = await import("next/headers");
-      const h = await headers();
-      const host = h.get("x-forwarded-host") ?? h.get("host");
-      const baseUrl = platformSiteUrl(host);
-      const { notifyOwnerNewRequest } = await import("@/lib/email/notify");
-      // Send to ALL tenant owners/admins
-      for (const ownerEmail of emails) {
-        notifyOwnerNewRequest({
-          ownerEmail,
-          pensionName,
-          guestName: `${guest.guest_last_name ?? ""} ${guest.guest_first_name ?? ""}`.trim() || guest.guest_name,
-          guestEmail: guest_email,
-          guestPhone: guest_phone || null,
-          checkIn: check_in,
-          checkOut: check_out,
-          adults: num_adults,
-          children: num_children,
-          rooms: selected.rooms.map((r) => r.name),
-          bookingId: bookingId ?? "unknown",
-          baseUrl,
-        }).catch(() => {});
-      }
-    } catch { /* email/import failure — non-fatal */ }
-  })();
+      assertValidGuestPhone(guest_phone);
+    } catch {
+      return { ok: false as const, error: t("invalidPhone") };
+    }
+    if (!isAtLeastOneNight(check_in, check_out)) {
+      return { ok: false as const, error: t("minOneNight") };
+    }
+    if (!option_id) {
+      return { ok: false as const, error: t("selectVariant") };
+    }
 
-  revalidatePublicBookingSurfaces({ disponibilitate: true });
-  return { ok: true as const };
+    const selected = await assertSelectedOptionStillValid(
+      check_in,
+      check_out,
+      option_id,
+      num_adults,
+      num_children
+    );
+
+    const roomList = selected.rooms
+      .map((r) => `${r.name} (${r.building_name})`)
+      .join(", ");
+    const variantBlock = [
+      tServer("selectedVariantHeader"),
+      selected.title,
+      tServer("selectedVariantRooms", { roomList }),
+      tServer("selectedVariantNights", { nights: selected.nights }),
+      tServer("selectedVariantEstimate", { total: selected.total_estimate_ron }),
+      tServer("selectedVariantNote"),
+    ].join("\n");
+
+    const notes = notesRaw
+      ? `${notesRaw}\n\n${variantBlock}`
+      : variantBlock;
+
+    const bookingId = await createBookingRequest({
+      check_in,
+      check_out,
+      ...guest,
+      guest_email,
+      guest_phone,
+      num_adults,
+      num_children,
+      has_minor,
+      minor_age,
+      notes,
+      total_price: selected.total_estimate_ron,
+      room_ids: selected.rooms.map((r) => r.id),
+    });
+
+    // Notify pension owner(s) — reads email from DB, not env var
+    // Non-blocking — never delays user response
+    (async () => {
+      try {
+        const { requireTenantIdForData } = await import("@/lib/tenant/guards");
+        const { getTenantNotificationEmails, getTenantDisplayName } = await import(
+          "@/services/tenants"
+        );
+        const tenantId = await requireTenantIdForData();
+        const [emails, pensionName] = await Promise.all([
+          getTenantNotificationEmails(tenantId),
+          getTenantDisplayName(tenantId),
+        ]);
+        if (emails.length === 0) return;
+        const { platformSiteUrl } = await import("@/lib/platform/branding");
+        const { headers } = await import("next/headers");
+        const h = await headers();
+        const host = h.get("x-forwarded-host") ?? h.get("host");
+        const baseUrl = platformSiteUrl(host);
+        const { notifyOwnerNewRequest } = await import("@/lib/email/notify");
+        // Send to ALL tenant owners/admins
+        for (const ownerEmail of emails) {
+          notifyOwnerNewRequest({
+            ownerEmail,
+            pensionName,
+            guestName: `${guest.guest_last_name ?? ""} ${guest.guest_first_name ?? ""}`.trim() || guest.guest_name,
+            guestEmail: guest_email,
+            guestPhone: guest_phone || null,
+            checkIn: check_in,
+            checkOut: check_out,
+            adults: num_adults,
+            children: num_children,
+            rooms: selected.rooms.map((r) => r.name),
+            bookingId: bookingId ?? "unknown",
+            baseUrl,
+          }).catch(() => {});
+        }
+      } catch { /* email/import failure — non-fatal */ }
+    })();
+
+    revalidatePublicBookingSurfaces({ disponibilitate: true });
+    return { ok: true as const };
+  } catch (e) {
+    return {
+      ok: false as const,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
 }
 
 /** Rezervare introdusă de admin (telefon, recepție). */

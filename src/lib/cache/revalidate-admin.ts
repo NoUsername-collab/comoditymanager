@@ -1,5 +1,5 @@
 import { revalidatePath, revalidateTag } from "next/cache";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 
 /** Gantt holds/blocks — occupancy only, no booking list churn. */
 export function revalidateAdminCalendar() {
@@ -27,35 +27,54 @@ export function revalidatePublicBookingSurfaces(options?: {
   }
 }
 
-/** Factory reset — invalidate all tenant-scoped cached admin data. */
-export function revalidateAfterFactoryReset() {
-  revalidateTag(CACHE_TAGS.pensionSettings, "max");
-  revalidateTag(CACHE_TAGS.buildings, "max");
-  revalidateTag(CACHE_TAGS.rooms, "max");
-  revalidateTag(CACHE_TAGS.roomCatalog, "max");
-  revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+/**
+ * Factory reset — invalidate all tenant-scoped cached admin data.
+ * @param tenantId — when provided, only busts this tenant's cache (recommended)
+ */
+export function revalidateAfterFactoryReset(tenantId?: string) {
+  if (tenantId) {
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.pensionSettings), "max");
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.buildings), "max");
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.rooms), "max");
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.roomCatalog), "max");
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.roomOptionsByRoom), "max");
+  } else {
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidateTag(CACHE_TAGS.buildings, "max");
+    revalidateTag(CACHE_TAGS.rooms, "max");
+    revalidateTag(CACHE_TAGS.roomCatalog, "max");
+    revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
+  }
   revalidatePath("/admin", "layout");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");
   revalidatePath("/admin/buildings");
-  revalidateBookingSurfaces();
+  revalidateBookingSurfaces(tenantId);
 }
 
-/** Shared cache invalidation after booking/calendar mutations. */
-export function revalidateBookingSurfaces() {
-  revalidateTag(CACHE_TAGS.bookingCounts, "max");
+/**
+ * Shared cache invalidation after booking/calendar mutations.
+ * @param tenantId — when provided, only busts this tenant's booking cache
+ */
+export function revalidateBookingSurfaces(tenantId?: string) {
+  if (tenantId) {
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.bookingCounts), "max");
+  } else {
+    revalidateTag(CACHE_TAGS.bookingCounts, "max");
+  }
   revalidatePath("/admin/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/cazari");
 }
 
 export function revalidateBookingSurfacesExtended(options?: {
+  tenantId?: string;
   bookingId?: string;
   includeHistoric?: boolean;
   includeStatistics?: boolean;
   includeCereri?: boolean;
 }) {
-  revalidateBookingSurfaces();
+  revalidateBookingSurfaces(options?.tenantId);
   if (options?.includeHistoric) {
     revalidatePath("/admin/istoric");
   }
@@ -71,8 +90,9 @@ export function revalidateBookingSurfacesExtended(options?: {
 }
 
 /** Confirm/cancel/check-in ops on one booking — admin, public calendar, invoice. */
-export function revalidateBookingDetailSurfaces(bookingId: string) {
+export function revalidateBookingDetailSurfaces(bookingId: string, tenantId?: string) {
   revalidateBookingSurfacesExtended({
+    tenantId,
     bookingId,
     includeHistoric: true,
     includeStatistics: true,
