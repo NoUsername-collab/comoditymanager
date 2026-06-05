@@ -13,6 +13,24 @@ export type TenantScope = {
 };
 
 /**
+ * Request-scoped flag: when true, getTenantScope() skips staff auth.
+ * Set by public booking flow so downstream service functions
+ * (which independently call getTenantScope()) don't require login.
+ *
+ * Security: tenant ID still comes from host (cannot be spoofed).
+ * Auth for admin actions is enforced at the action level (requireAdmin).
+ */
+let _publicBookingMode = false;
+
+export function enterPublicBookingMode(): void {
+  _publicBookingMode = true;
+}
+
+export function exitPublicBookingMode(): void {
+  _publicBookingMode = false;
+}
+
+/**
  * Staff on tenant host must be an active member; tenant id must match host.
  * No silent pass — prevents service-role access without membership.
  */
@@ -47,7 +65,7 @@ export async function getTenantScope(
 ): Promise<TenantScope> {
   const { requireStaff = true } = options;
   const tenantId = await requireTenantIdForData();
-  if (requireStaff) {
+  if (requireStaff && !_publicBookingMode) {
     await assertStaffTenantAccess(tenantId);
   }
   const supabase = await createAdminClient();

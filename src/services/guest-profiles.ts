@@ -18,7 +18,7 @@ import {
 import { stayNightCount, todayIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { getTenantScope, getTenantPublicScope, withTenantId } from "@/lib/tenant/scope";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 
 type BookingReviewCheckRow = {
@@ -37,8 +37,7 @@ export type GuestAlertSnapshot = {
 async function fetchGuestProfileRow(
   guestId: string
 ): Promise<GuestProfileRow | null> {
-  // Public scope: called from both admin and public booking paths
-  const { tenantId, supabase } = await getTenantPublicScope();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
     .select("*")
@@ -54,8 +53,7 @@ export async function ensureGuestProfiles(guestIds: string[]): Promise<void> {
   const uniqueIds = [...new Set(guestIds.filter(Boolean))];
   if (uniqueIds.length === 0) return;
 
-  // Public scope: called during public booking guest creation
-  const { tenantId, supabase } = await getTenantPublicScope();
+  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("guest_profiles")
     .upsert(
@@ -87,8 +85,7 @@ export async function listGuestProfileSummaries(
   if (uniqueIds.length === 0) return new Map();
   await ensureGuestProfiles(uniqueIds);
 
-  // Public scope: called from resolveGuestAlertSnapshot during public booking
-  const { tenantId, supabase } = await getTenantPublicScope();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
     .select("*")
@@ -422,8 +419,7 @@ export async function resolveGuestAlertSnapshot(input: {
     return { level: "normal", note: null };
   }
 
-  // Public scope: called during public booking guest alert check
-  const { tenantId, supabase } = await getTenantPublicScope();
+  const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
     .select("id, display_name")

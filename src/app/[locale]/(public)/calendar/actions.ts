@@ -15,6 +15,10 @@ import {
   RATE_LIMIT_BOOKING_SUBMIT,
   RATE_LIMIT_BOOKING_PREVIEW,
 } from "@/lib/rate-limit";
+import {
+  enterPublicBookingMode,
+  exitPublicBookingMode,
+} from "@/lib/tenant/scope";
 
 async function assertRateLimit(preset: { limit: number; windowMs: number }, action: string) {
   const ip = await getClientIp();
@@ -84,6 +88,7 @@ export async function submitGuestRequestAction(formData: FormData) {
   const t = await getTranslations("errors");
   const tServer = await getTranslations("public.serverActions");
 
+  enterPublicBookingMode();
   try {
     await assertRateLimit(RATE_LIMIT_BOOKING_SUBMIT, "submit");
     await mustAcceptLegal(formData);
@@ -206,6 +211,8 @@ export async function submitGuestRequestAction(formData: FormData) {
       ok: false as const,
       error: e instanceof Error ? e.message : t("genericError"),
     };
+  } finally {
+    exitPublicBookingMode();
   }
 }
 

@@ -121,10 +121,7 @@ export async function createBookingRequest(input: {
     );
   }
 
-  // Public booking requests come from anonymous guests — no staff auth required.
-  // Admin phone bookings also pass through here after their own auth check.
-  const isStaff = !!(await getAdminUser());
-  const { tenantId, supabase } = await getTenantScope({ requireStaff: isStaff });
+  const { tenantId, supabase } = await getTenantScope();
 
   const { guestId, mergeConflict } = await resolveGuestForBooking({
     guest_name: input.guest_name,
