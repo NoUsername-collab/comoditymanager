@@ -1089,6 +1089,72 @@ function renderKvTable(rows, compact = false) {
     .join("")}</div>`;
 }
 
+function normStr(s) {
+  return String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function buildClientBundle(sorted) {
+  return sorted.map((c, i) => {
+    const p = c.cerere_publica;
+    const ci = c.check_in;
+    const searchBlob = [p.guest_last_name, p.guest_first_name, p.guest_email, p.guest_phone]
+      .filter(Boolean)
+      .join(" ");
+    let chk = null;
+    if (ci) {
+      chk = [
+        ["Document", ci.doc_type],
+        ["Serie", ci.doc_series],
+        ["Nr.", ci.doc_number],
+        ["Emis de", ci.doc_issued_by],
+        ["Emitere", ci.doc_issue_date],
+        ["Expirare", ci.doc_expiry_date],
+        ["ID tip", ci.national_id_type],
+        ["ID național", ci.national_id],
+        ["Naștere", ci.birth_date],
+        ["Loc naștere", ci.birth_place],
+        ["Naționalitate", ci.nationality],
+        ["Adresă", ci.address],
+        ["Localitate", ci.city],
+        ["Județ", ci.county],
+        ["Țară", ci.country],
+        ["Sex", ci.sex],
+        ...(ci._expected_status ? [["Status", ci._expected_status]] : []),
+      ].filter(([, v]) => v != null && v !== "");
+    }
+    return {
+      id: c.id,
+      page: i < 50 ? 1 : 2,
+      pageIdx: (i % 50) + 1,
+      fraud: c.test_tags?.length ? 1 : 0,
+      nq: normStr(searchBlob),
+      cet: c.cetatenie_cod,
+      tip: c.tip_persoane,
+      sup: c.suprapunere || "",
+      tags: c.test_tags || [],
+      doc: ci?.doc_type || "",
+      pub: {
+        checkIn: p.check_in,
+        checkOut: p.check_out,
+        adults: p.num_adults,
+        children: p.num_children,
+        minor: p.has_minor ? p.minor_age : null,
+        last: p.guest_last_name,
+        first: p.guest_first_name,
+        email: p.guest_email,
+        phone: p.guest_phone,
+        notes: p.notes || "",
+      },
+      chk,
+      neg: c.test_negativ || null,
+    };
+  });
+}
+
 function renderHtml(rawClients, meta) {
   const sorted = [...rawClients].sort((a, b) => {
     const pa = a.cerere_publica;
@@ -1112,100 +1178,8 @@ function renderHtml(rawClients, meta) {
   const page1End = sorted[49].cerere_publica.guest_last_name;
   const page2Letter = sorted[50].cerere_publica.guest_last_name[0];
   const page2End = sorted[99].cerere_publica.guest_last_name;
-
-  const cards = sorted
-    .map((c, i) => {
-      const page = i < 50 ? 1 : 2;
-      const pageIdx = (i % 50) + 1;
-      const p = c.cerere_publica;
-      const ci = c.check_in;
-      const fullName = `${p.guest_last_name} ${p.guest_first_name}`;
-      const searchBlob = [p.guest_last_name, p.guest_first_name, p.guest_email, p.guest_phone]
-        .filter(Boolean)
-        .join(" ");
-      const pubRows = [
-        ["Check-in", p.check_in],
-        ["Check-out", p.check_out],
-        ["Adulți", p.num_adults],
-        ["Copii", p.num_children],
-        ...(p.has_minor ? [["Minor", `Da · ${p.minor_age} ani`]] : []),
-        ["Email", p.guest_email],
-        ["Telefon", p.guest_phone],
-        ...(p.notes ? [["Mesaj", p.notes, true]] : []),
-      ];
-
-      let checkHtml;
-      if (!ci) {
-        checkHtml = `<p class="empty">Identitate completă la check-in (fără date preexistente).</p>`;
-      } else {
-        const ciRows = [
-          ["Document", ci.doc_type],
-          ["Serie", ci.doc_series],
-          ["Nr.", ci.doc_number],
-          ["Emis de", ci.doc_issued_by],
-          ["Emitere", ci.doc_issue_date],
-          ["Expirare", ci.doc_expiry_date],
-          ["ID tip", ci.national_id_type],
-          ["ID național", ci.national_id],
-          ["Naștere", ci.birth_date],
-          ["Loc naștere", ci.birth_place],
-          ["Naționalitate", ci.nationality],
-          ["Adresă", ci.address],
-          ["Localitate", ci.city],
-          ["Județ", ci.county],
-          ["Țară", ci.country],
-          ["Sex", ci.sex],
-          ...(ci._expected_status ? [["Status", ci._expected_status]] : []),
-        ];
-        checkHtml = renderKvTable(ciRows);
-      }
-
-      const tags = [
-        `<span class="b ${c.cetatenie_cod === "RO" ? "ro" : "fx"}">${esc(c.cetatenie_cod)}</span>`,
-        `<span class="b">${esc(c.tip_persoane)}</span>`,
-        ci?.doc_type ? `<span class="b doc">${esc(ci.doc_type)}</span>` : `<span class="b warn">fără ID</span>`,
-        c.suprapunere ? `<span class="b ov">${esc(c.suprapunere)}</span>` : "",
-        ...(c.test_tags ?? []).map((t) => `<span class="b fr">${esc(t.replace(/_/g, " "))}</span>`),
-      ]
-        .filter(Boolean)
-        .join("");
-
-      const dates = `${p.check_in} → ${p.check_out}`;
-
-      const negHtml = c.test_negativ
-        ? `<div class="neg-block"><p class="panel-hint panel-hint--neg">Test negativ — fraudă</p><pre class="neg-pre">${esc(JSON.stringify(c.test_negativ, null, 2))}</pre></div>`
-        : "";
-
-      return `<article class="card" id="${c.id}" data-page="${page}" data-idx="${pageIdx}" data-fraud="${c.test_tags?.length ? "1" : "0"}" data-last="${esc(p.guest_last_name)}" data-first="${esc(p.guest_first_name)}" data-email="${esc(p.guest_email)}" data-search="${esc(searchBlob)}">
-<div class="card-rez">
-<div class="card-top">
-<span class="card-num">${pageIdx}</span>
-<div class="card-top-text">
-<div class="sum-main"><span class="cid">${c.id}</span><button type="button" class="name" data-copy="${esc(fullName)}">${esc(p.guest_last_name)} ${esc(p.guest_first_name)}</button></div>
-<div class="sum-meta">${esc(dates)} · ${esc(c.tip_persoane)}</div>
-<div class="sum-tags">${tags}</div>
-</div>
-</div>
-${renderKvTable(pubRows, true)}
-</div>
-<button type="button" class="card-chk-bar" aria-expanded="false" aria-label="Deschide date check-in">
-<span class="role-badge chk">CHECK-IN</span>
-<span class="chk-hint">Apasă aici → identitate check-in</span>
-<span class="chev" aria-hidden="true"></span>
-</button>
-<div class="card-collapse"><div class="card-inner">
-<div class="chk-body">
-<p class="panel-hint panel-hint--chk"><span class="role-badge chk">ADMIN</span> Identitate la check-in</p>
-${checkHtml}
-${negHtml}
-</div>
-</div></div>
-</article>`;
-    })
-    .join("\n");
-
-  const clusterA = meta.suprapuneri["CLUSTER-A"].join(", ");
-  const clusterB = meta.suprapuneri["CLUSTER-B"].join(", ");
+  const bundle = buildClientBundle(sorted);
+  const bundleJson = JSON.stringify(bundle).replace(/<\//g, "<\\/");
 
   return `<!DOCTYPE html>
 <html lang="ro">
@@ -1224,8 +1198,7 @@ ${negHtml}
   --touch:45px;--bar-h:calc(176px + var(--safe-b));--ease:cubic-bezier(.4,0,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--t);background:var(--bg);padding-bottom:var(--bar-h);-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%}
 .app{min-height:100dvh}
 .top{background:linear-gradient(145deg,#1e3a8a,#2563eb);color:#fff;padding:13px 13px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));border-radius:0 0 20px 20px;box-shadow:0 6px 20px rgba(30,58,138,.22)}
 .top h1{font-size:18px;font-weight:800;letter-spacing:-.02em}
@@ -1248,7 +1221,8 @@ body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-seri
 .batch-btns button:active{transform:scale(.96)}
 .page-info{font-size:11px;color:var(--m);margin-top:8px;text-align:center;font-weight:600}
 .cards{display:flex;flex-direction:column;gap:7px}
-.card{background:var(--card);border-radius:11px;box-shadow:0 2px 8px rgba(15,23,42,.06);overflow:hidden;border:2px solid transparent;transition:border-color .25s var(--ease),box-shadow .25s var(--ease);cursor:pointer;touch-action:manipulation}
+body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--t);background:var(--bg);padding-bottom:var(--bar-h)}
+.card{background:var(--card);border-radius:11px;box-shadow:0 2px 8px rgba(15,23,42,.06);overflow:hidden;border:2px solid transparent;cursor:pointer;touch-action:manipulation;content-visibility:auto;contain-intrinsic-size:auto 100px}
 .card.open{border-color:#6ee7b7;box-shadow:0 4px 16px rgba(5,150,105,.1)}
 .card[hidden]{display:none!important}
 .card-rez{padding:8px 10px 0}
@@ -1352,7 +1326,7 @@ body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-seri
 </div>
 <p class="page-info" id="pageInfo">Pagina 1 · 50 clienți</p>
 </div>
-<div class="cards" id="list">${cards}</div>
+<div class="cards" id="list"></div>
 </div>
 </div>
 <div class="toolbar">
@@ -1377,79 +1351,176 @@ body{font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-seri
 </div>
 </div>
 <script>
+const CLIENTS=${bundleJson};
+const CLIENT_MAP=Object.fromEntries(CLIENTS.map(c=>[c.id,c]));
 const list=document.getElementById('list');
 const toast=document.getElementById('toast');
 const pageInfo=document.getElementById('pageInfo');
-let toastT,fraudOnly=false,globalRole='rez',currentPage=1,batchSize=50,searchActive=false;
+const qInput=document.getElementById('q');
+let toastT,fraudOnly=false,globalRole='rez',currentPage=1,batchSize=50,searchActive=false,openCount=0,searchT;
 
-function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
-function cardMatches(card,q){
-  if(!q)return true;
-  const last=norm(card.dataset.last);
-  const first=norm(card.dataset.first);
-  const email=norm(card.dataset.email);
-  const blob=norm(card.dataset.search);
-  return last.includes(q)||first.includes(q)||email.includes(q)||blob.includes(q);
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function norm(s){s=String(s||'').toLowerCase().trim();return s?s.normalize('NFD').replace(/[\u0300-\u036f]/g,''):'';}
+
+function renderFields(rows,compact){
+  const cls=compact?'fields fields--compact fields--grid':'fields fields--compact';
+  return '<div class="'+cls+'">'+rows.map(([k,v,full])=>{
+    const wide=full?' field--full':'';
+    return '<button type="button" class="field'+wide+'" data-copy="'+esc(String(v))+'"><span class="field-k">'+esc(k)+'</span><span class="field-v">'+esc(v)+'</span></button>';
+  }).join('')+'</div>';
 }
-function cardsVisible(){return cardsAll().filter(c=>!c.hidden);}
-function cardsPageVisible(){return cardsVisible().filter(c=>+c.dataset.page===currentPage);}
 
-function cardsAll(){return[...list.querySelectorAll('.card')];}
+function renderCard(c){
+  const p=c.pub;
+  const fullName=p.last+' '+p.first;
+  const dates=p.checkIn+' → '+p.checkOut;
+  const pubRows=[
+    ['Check-in',p.checkIn],['Check-out',p.checkOut],['Adulți',p.adults],['Copii',p.children],
+    ...(p.minor!=null?[['Minor','Da · '+p.minor+' ani']]:[]),
+    ['Email',p.email],['Telefon',p.phone],...(p.notes?[['Mesaj',p.notes,true]]:[])
+  ];
+  const tags=[
+    '<span class="b '+(c.cet==='RO'?'ro':'fx')+'">'+esc(c.cet)+'</span>',
+    '<span class="b">'+esc(c.tip)+'</span>',
+    c.chk?'<span class="b doc">'+esc(c.doc||'ci')+'</span>':'<span class="b warn">fără ID</span>',
+    c.sup?'<span class="b ov">'+esc(c.sup)+'</span>':'',
+    ...c.tags.map(t=>'<span class="b fr">'+esc(t.replace(/_/g,' '))+'</span>')
+  ].filter(Boolean).join('');
+  return '<article class="card" id="'+c.id+'" data-page="'+c.page+'" data-idx="'+c.pageIdx+'" data-fraud="'+c.fraud+'" data-nq="'+esc(c.nq)+'">'+
+'<div class="card-rez"><div class="card-top"><span class="card-num">'+c.pageIdx+'</span><div class="card-top-text">'+
+'<div class="sum-main"><span class="cid">'+c.id+'</span><button type="button" class="name" data-copy="'+esc(fullName)+'">'+esc(p.last)+' '+esc(p.first)+'</button></div>'+
+'<div class="sum-meta">'+esc(dates)+' · '+esc(c.tip)+'</div><div class="sum-tags">'+tags+'</div></div></div>'+
+renderFields(pubRows,true)+'</div>'+
+'<button type="button" class="card-chk-bar" aria-expanded="false" aria-label="Deschide date check-in">'+
+'<span class="role-badge chk">CHECK-IN</span><span class="chk-hint">Apasă aici → identitate check-in</span><span class="chev" aria-hidden="true"></span></button>'+
+'<div class="card-collapse"><div class="card-inner"><div class="chk-body"></div></div></div></article>';
+}
 
-function setCardOpen(card,open){
+function mountCheckIn(card){
+  const id=card.id;
+  const body=card.querySelector('.chk-body');
+  if(!body||body.dataset.loaded)return;
+  body.dataset.loaded='1';
+  const c=CLIENT_MAP[id];
+  if(!c)return;
+  let html='<p class="panel-hint panel-hint--chk"><span class="role-badge chk">ADMIN</span> Identitate la check-in</p>';
+  if(!c.chk)html+='<p class="empty">Identitate completă la check-in (fără date preexistente).</p>';
+  else html+=renderFields(c.chk,false);
+  if(c.neg)html+='<div class="neg-block"><p class="panel-hint panel-hint--neg">Test negativ — fraudă</p><pre class="neg-pre">'+esc(JSON.stringify(c.neg,null,2))+'</pre></div>';
+  body.innerHTML=html;
+}
+
+function setCardOpen(card,open,loadChk){
   card.classList.toggle('open',open);
   const bar=card.querySelector('.card-chk-bar');
   if(bar)bar.setAttribute('aria-expanded',open?'true':'false');
+  if(open&&loadChk!==false)mountCheckIn(card);
 }
+
+function visibleClients(){
+  const q=norm(qInput.value);
+  searchActive=!!q;
+  return CLIENTS.filter(c=>{
+    if(fraudOnly&&!c.fraud)return false;
+    if(q)return c.nq.includes(q);
+    return c.page===currentPage;
+  });
+}
+
+function renderView(){
+  const items=visibleClients();
+  list.innerHTML=items.map(renderCard).join('');
+  openCount=0;
+  if(globalRole==='chk')expandBatch(batchSize,true);
+  updatePageInfo();
+  updateTabHits(norm(qInput.value));
+}
+
+function updateTabHits(q){
+  document.querySelectorAll('.page-tab').forEach(b=>{
+    if(!q){b.classList.remove('has-hit');return;}
+    const pg=+b.dataset.page;
+    const hits=CLIENTS.some(c=>c.page===pg&&c.nq.includes(q)&&(!fraudOnly||c.fraud));
+    b.classList.toggle('has-hit',hits);
+  });
+}
+
+function toggleCard(card){
+  if(!card)return;
+  const open=!card.classList.contains('open');
+  setCardOpen(card,open);
+  openCount+=open?1:-1;
+  updatePageInfo();
+}
+
 function applyGlobalRole(role){
   globalRole=role;
   document.getElementById('modeRez').classList.toggle('on',role==='rez');
   document.getElementById('modeChk').classList.toggle('on',role==='chk');
   if(role==='chk')expandBatch(batchSize);
-  else cardsAll().forEach(c=>setCardOpen(c,false));
+  else{openCount=0;list.querySelectorAll('.card.open').forEach(c=>setCardOpen(c,false));updatePageInfo();}
 }
-function showToast(msg){toast.textContent=msg||'Copiat!';toast.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),1500);}
+
+function showToast(msg){toast.textContent=msg||'Copiat!';toast.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),1200);}
+
+function copyText(t){
+  const ta=document.createElement('textarea');
+  ta.value=t;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;left:-9999px;top:0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');showToast('Copiat!');}catch(e){showToast('Apasă lung');}
+  document.body.removeChild(ta);
+}
+
 function updatePageInfo(){
-  const vis=searchActive?cardsVisible():cardsPageVisible();
-  const open=vis.filter(c=>c.classList.contains('open')).length;
-  if(searchActive){pageInfo.textContent='Căutare · '+vis.length+' găsiți · '+open+' deschise';return;}
-  pageInfo.textContent='Pagina '+currentPage+' · '+vis.length+' clienți · '+open+' deschise';
+  const total=list.children.length;
+  if(searchActive){pageInfo.textContent='Căutare · '+total+' găsiți · '+openCount+' deschise';return;}
+  pageInfo.textContent='Pagina '+currentPage+' · '+total+' clienți · '+openCount+' deschise';
 }
+
 function applyPage(){
+  qInput.value='';
+  searchActive=false;
   document.querySelectorAll('.page-tab').forEach(b=>b.classList.toggle('on',+b.dataset.page===currentPage));
-  applyFilters();
-  expandBatch(globalRole==='chk'?batchSize:0);
-  window.scrollTo({top:0,behavior:'smooth'});
+  renderView();
+  window.scrollTo(0,0);
 }
+
 function applyFilters(){
-  const q=norm(document.getElementById('q').value);
-  searchActive=!!q;
-  cardsAll().forEach(c=>{
-    const matchQ=cardMatches(c,q);
-    const matchF=!fraudOnly||c.dataset.fraud==='1';
-    const matchPage=searchActive||+c.dataset.page===currentPage;
-    c.hidden=!(matchQ&&matchF&&matchPage);
-  });
-  document.querySelectorAll('.page-tab').forEach(b=>{
-    if(!searchActive){b.classList.remove('has-hit');return;}
-    const pg=+b.dataset.page;
-    const hits=cardsAll().filter(c=>+c.dataset.page===pg&&cardMatches(c,q)&&(!fraudOnly||c.dataset.fraud==='1')).length;
-    b.classList.toggle('has-hit',hits>0);
-  });
-  updatePageInfo();
+  renderView();
 }
-function expandBatch(n){
+
+function debouncedFilter(){
+  clearTimeout(searchT);
+  searchT=setTimeout(applyFilters,100);
+}
+
+function expandBatch(n,fromRender){
   document.querySelectorAll('.batch-btns button').forEach(b=>b.classList.toggle('on',+b.dataset.batch===n));
   batchSize=n;
-  const vis=searchActive?cardsVisible():cardsPageVisible();
-  vis.forEach((c,i)=>setCardOpen(c,globalRole==='chk'&&i<n));
+  if(globalRole!=='chk'){if(!fromRender)updatePageInfo();return;}
+  const cards=[...list.children];
+  openCount=0;
+  const toLoad=[];
+  cards.forEach((c,i)=>{
+    const open=i<n;
+    setCardOpen(c,open,false);
+    if(open){openCount++;toLoad.push(c);}
+  });
+  let j=0;
+  function loadStep(){
+    if(j>=toLoad.length)return;
+    mountCheckIn(toLoad[j++]);
+    if(j<toLoad.length)requestAnimationFrame(loadStep);
+  }
+  if(toLoad.length)requestAnimationFrame(loadStep);
   updatePageInfo();
 }
+
 document.querySelectorAll('.page-tab').forEach(b=>b.onclick=()=>{currentPage=+b.dataset.page;applyPage();});
 document.querySelectorAll('.batch-btns button').forEach(b=>b.onclick=()=>expandBatch(+b.dataset.batch));
 document.getElementById('modeRez').onclick=()=>applyGlobalRole('rez');
 document.getElementById('modeChk').onclick=()=>applyGlobalRole('chk');
-document.getElementById('col').onclick=()=>{cardsAll().forEach(c=>setCardOpen(c,false));updatePageInfo();};
+document.getElementById('col').onclick=()=>{openCount=0;list.querySelectorAll('.card.open').forEach(c=>setCardOpen(c,false));updatePageInfo();};
 document.getElementById('ff').onclick=function(){fraudOnly=!fraudOnly;this.classList.toggle('on',fraudOnly);applyFilters();};
 document.getElementById('idxBtn').onclick=()=>{
   const sheet=document.getElementById('indexSheet');
@@ -1463,39 +1534,21 @@ document.getElementById('sheetList').addEventListener('click',e=>{
   const a=e.target.closest('.toc-link');if(!a)return;e.preventDefault();
   closeSheet();
   const id=a.getAttribute('href').slice(1);
+  const c=CLIENT_MAP[id];if(!c)return;
+  if(c.page!==currentPage){currentPage=c.page;document.querySelectorAll('.page-tab').forEach(b=>b.classList.toggle('on',+b.dataset.page===currentPage));qInput.value='';renderView();}
   const card=document.getElementById(id);
-  if(!card)return;
-  if(+card.dataset.page!==currentPage){currentPage=+card.dataset.page;applyPage();}
-  setTimeout(()=>{setCardOpen(card,true);card.scrollIntoView({behavior:'smooth',block:'start'});updatePageInfo();},120);
+  if(card){setCardOpen(card,true);openCount=list.querySelectorAll('.card.open').length;updatePageInfo();card.scrollIntoView({block:'start'});}
 });
-function toggleCard(card){
-  if(!card||card.hidden)return;
-  setCardOpen(card,!card.classList.contains('open'));
-  updatePageInfo();
-}
-document.getElementById('q').oninput=applyFilters;
+qInput.oninput=debouncedFilter;
 list.addEventListener('click',e=>{
   const copyEl=e.target.closest('[data-copy]');
-  if(copyEl){
-    e.stopPropagation();
-    const t=copyEl.getAttribute('data-copy')||'';
-    const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');showToast('Copiat!');}catch(err){showToast('Apasă lung');}document.body.removeChild(ta);};
-    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>showToast('Copiat!')).catch(fb);else fb();
-    return;
-  }
+  if(copyEl){e.stopPropagation();copyText(copyEl.getAttribute('data-copy')||'');return;}
   const bar=e.target.closest('.card-chk-bar');
-  if(bar){
-    e.preventDefault();
-    toggleCard(bar.closest('.card'));
-    return;
-  }
+  if(bar){e.preventDefault();toggleCard(bar.closest('.card'));return;}
   const top=e.target.closest('.card-top');
-  if(top){
-    toggleCard(top.closest('.card'));
-    return;
-  }
+  if(top)toggleCard(top.closest('.card'));
 });
-applyPage();
+renderView();
 </script>
 </body>
 </html>`;

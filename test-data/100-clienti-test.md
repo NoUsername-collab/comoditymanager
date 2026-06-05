@@ -2,7 +2,7 @@
 
 Ghid pentru testare manuală: **pagina publică** (cerere rezervare) + **check-in** (identitate).
 
-- Generat: 2026-06-05T20:44:50.133Z
+- Generat: 2026-06-05T21:02:01.501Z
 - Români: **76** (76%) · Străini: **24** (24%, câte 3 per țară)
 - Țări străine: MD, BG, HU, DE, FR, IT, UA, GB
 

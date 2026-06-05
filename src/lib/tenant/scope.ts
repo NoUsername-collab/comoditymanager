@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -39,8 +40,11 @@ function isPublicBookingMode(): boolean {
 /**
  * Staff on tenant host must be an active member; tenant id must match host.
  * No silent pass — prevents service-role access without membership.
+ *
+ * Cached per request via React cache() — multiple calls in the same
+ * server action / server component render share the result.
  */
-export async function assertStaffTenantAccess(tenantId: string): Promise<void> {
+const cachedAssertStaff = cache(async (tenantId: string): Promise<void> => {
   const tenant = await resolveRequestTenant();
   if (!tenant) {
     throw new Error("auth.tenant_host_required");
@@ -59,13 +63,32 @@ export async function assertStaffTenantAccess(tenantId: string): Promise<void> {
   if (!role) {
     throw new Error("auth.tenant_member_required");
   }
+});
+
+export async function assertStaffTenantAccess(tenantId: string): Promise<void> {
+  return cachedAssertStaff(tenantId);
 }
+
+/**
+ * Cached admin Supabase client — created once per request.
+ * Prevents creating 5-10 identical clients in a single action chain.
+ */
+const cachedAdminClient = cache(async (): Promise<SupabaseClient> => {
+  return createAdminClient();
+});
 
 type TenantScopeOptions = {
   /** When false, public reads on tenant host only (calendar). Default true for admin. */
   requireStaff?: boolean;
 };
 
+/**
+ * Get tenant scope (tenant ID + admin Supabase client).
+ *
+ * Performance: tenantId, staff assertion, and admin client are all
+ * cached per-request via React cache(). Calling getTenantScope() 10x
+ * in one action chain = 1 set of DB queries, not 10.
+ */
 export async function getTenantScope(
   options: TenantScopeOptions = {}
 ): Promise<TenantScope> {
@@ -74,7 +97,7 @@ export async function getTenantScope(
   if (requireStaff && !isPublicBookingMode()) {
     await assertStaffTenantAccess(tenantId);
   }
-  const supabase = await createAdminClient();
+  const supabase = await cachedAdminClient();
   return { tenantId, supabase };
 }
 
