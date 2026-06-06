@@ -616,8 +616,14 @@ export function AvailabilityDashboard({
       }
     } else {
       selectDay(iso);
-      // Update URL for deep-linking (separate from fetch to avoid loops)
-      pushParams({ day: iso });
+      // Update URL for deep-linking WITHOUT triggering Next.js navigation.
+      // router.push causes server re-render → component remount → infinite loop.
+      // replaceState updates the address bar silently.
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("day", iso);
+        window.history.replaceState(null, "", url.toString());
+      } catch { /* SSR safety */ }
     }
   };
 
