@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { AdminTodayNotifications } from "@/components/admin/AdminTodayNotifications";
+import { AdminTodayBar } from "@/components/admin/AdminTodayBar";
 import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminLiveRefresh } from "@/components/admin/AdminLiveRefresh";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
@@ -48,7 +48,7 @@ export async function AdminTopBar({
       </div>
 
       <div className="admin-hud__right">
-        <AdminTodayNotifications
+        <AdminTodayBar
           cereriCount={cereriCount}
           arrivalsCount={board?.arrivals.length ?? 0}
           departuresCount={board?.departures.length ?? 0}
