@@ -1,9 +1,15 @@
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabasePublicConfig } from "@/lib/env/server";
 import { isSimActive } from "@/domain/simulation/sim-cookie";
 
-export async function createClient() {
+/**
+ * Cached per-request Supabase server client.
+ * Before: every call to createClient() created a new client + read cookies.
+ * Now: one client per request, reused across all server components/actions.
+ */
+export const createClient = cache(async () => {
   const cookieStore = await cookies();
   const { url, anonKey } = getSupabasePublicConfig();
   const simActive = await isSimActive();
@@ -27,4 +33,4 @@ export async function createClient() {
       },
     },
   });
-}
+});

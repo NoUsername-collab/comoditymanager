@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -10,24 +11,44 @@ import {
   isLocationConfigurationAccessible,
 } from "@/lib/auth/location-unlock";
 
-export async function requireStaff() {
+/**
+ * Cached per-request: resolves the authenticated staff user, role,
+ * and tenant member role. Calling requireStaff() 5x in one request
+ * = 1 set of network calls, not 5.
+ */
+const cachedStaffContext = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error("auth.login_required");
+    return { user: null, role: null, memberRole: null, supabase };
   }
 
   const role = await resolveStaffRole(user);
-  if (!role) {
+  const memberRole = role ? await getTenantMemberRoleForRequest(user.id) : null;
+
+  return { user, role, memberRole, supabase };
+});
+
+export async function requireStaff() {
+  const ctx = await cachedStaffContext();
+
+  if (!ctx.user) {
+    throw new Error("auth.login_required");
+  }
+
+  if (!ctx.role) {
     throw new Error("auth.tenant_member_required");
   }
 
-  const memberRole = await getTenantMemberRoleForRequest(user.id);
-
-  return { user, role, memberRole, supabase };
+  return {
+    user: ctx.user,
+    role: ctx.role,
+    memberRole: ctx.memberRole,
+    supabase: ctx.supabase,
+  };
 }
 
 export async function requireStaffRole(allowed: StaffRole[]) {
@@ -46,14 +67,9 @@ export async function requireAdmin() {
 
 export async function getStaffUser() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return null;
-    const role = await resolveStaffRole(user);
-    if (!role) return null;
-    return user;
+    const ctx = await cachedStaffContext();
+    if (!ctx.user || !ctx.role) return null;
+    return ctx.user;
   } catch {
     return null;
   }
