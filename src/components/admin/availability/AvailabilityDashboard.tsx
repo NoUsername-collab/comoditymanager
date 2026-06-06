@@ -596,13 +596,22 @@ export function AvailabilityDashboard({
     }
   };
 
+  // Restore selected day from URL on initial mount only.
+  // Must NOT re-run when selectDay changes (it depends on pushParams
+  // which recreates on every render → would cause infinite loop).
+  const initialDayRef = useRef(initialDay);
+  const mountedRef = useRef(false);
   useEffect(() => {
-    if (!initialDay) return;
+    if (mountedRef.current) return; // only on first mount
+    mountedRef.current = true;
+    const day = initialDayRef.current;
+    if (!day) return;
     const frame = window.requestAnimationFrame(() => {
-      void selectDay(initialDay);
+      void selectDay(day);
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [initialDay, selectDay]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const rangeDays = useMemo(() => {
     if (!rangeStart) return [];
