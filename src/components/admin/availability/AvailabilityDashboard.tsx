@@ -560,13 +560,22 @@ export function AvailabilityDashboard({
       setSelectedIso(iso);
       setLoading(true);
       try {
-        const d = await fetchDayAvailabilityDetailAction(
+        const result = await fetchDayAvailabilityDetailAction(
           iso,
           buildingId,
           featureFilter
         );
-        setDetail(d);
-        pushParams({ day: iso });
+        if (result.ok) {
+          setDetail(result.data);
+          pushParams({ day: iso });
+        } else {
+          // Silently ignore auth/network errors — don't crash the whole app
+          console.warn("[availability] load failed:", result.error);
+          setDetail(null);
+        }
+      } catch {
+        // Server action transport error — swallow it
+        setDetail(null);
       } finally {
         setLoading(false);
       }
