@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useSearchParams } from "next/navigation"
@@ -73,7 +73,7 @@ function AvailabilityHeatLegend({
   );
 }
 
-function HeatDayCell({
+const HeatDayCell = memo(function HeatDayCell({
   day,
   selected,
   inRange,
@@ -215,7 +215,7 @@ function HeatDayCell({
     </AdminFloatingPanel>
     </>
   );
-}
+});
 
 function DayDetailPanel({
   detail,
