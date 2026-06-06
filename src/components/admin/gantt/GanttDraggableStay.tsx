@@ -245,7 +245,7 @@ export function GanttDraggableStay({
           const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
           setVerticalMode(isVertical);
           if (isVertical) {
-            const target = findGanttRoomAtPoint(e.clientX, e.clientY);
+            const target = findGanttRoomAtPoint(e.clientX, e.clientY, sourceRoomId);
             targetRoomRef.current = target;
             setGanttRoomDropTarget(
               target && target !== sourceRoomId ? target : null
@@ -270,7 +270,7 @@ export function GanttDraggableStay({
       const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
       setVerticalMode(isVertical);
       if (isVertical) {
-        const target = findGanttRoomAtPoint(e.clientX, e.clientY);
+        const target = findGanttRoomAtPoint(e.clientX, e.clientY, sourceRoomId);
         targetRoomRef.current = target;
         setGanttRoomDropTarget(
           target && target !== sourceRoomId ? target : null
@@ -308,7 +308,7 @@ export function GanttDraggableStay({
       const clientY = e?.clientY ?? lastPointerY.current;
       const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
       const targetRoom =
-        targetRoomRef.current ?? findGanttRoomAtPoint(clientX, clientY);
+        targetRoomRef.current ?? findGanttRoomAtPoint(clientX, clientY, sourceRoomId);
       setDragDelta(0);
       setDragDeltaY(0);
       setVerticalMode(false);

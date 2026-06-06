@@ -41,18 +41,40 @@ export function getGanttRoomDragLayer(roomId: string): HTMLElement | null {
   return getRoomDragLayer(roomId);
 }
 
-export function findGanttRoomAtPoint(clientX: number, clientY: number): string | null {
+/**
+ * Find the room row at a given point. When dragging a booking bar,
+ * the dragged element sits on top and its closest room row is the
+ * SOURCE — not the target. We iterate ALL elements at the point
+ * and return the DEEPEST room row (the one underneath the drag layer),
+ * which is the actual drop target.
+ *
+ * @param excludeRoomId — skip this room (the source) to find the target underneath
+ */
+export function findGanttRoomAtPoint(
+  clientX: number,
+  clientY: number,
+  excludeRoomId?: string
+): string | null {
   if (typeof document === "undefined") return null;
   const els = document.elementsFromPoint(clientX, clientY);
+  let firstFound: string | null = null;
   for (const el of els) {
     if (el instanceof HTMLElement) {
       const row = el.closest(ROOM_ROW_SELECTOR) as HTMLElement | null;
       if (row?.dataset.ganttRoomRow) {
-        return row.dataset.ganttRoomRow;
+        const roomId = row.dataset.ganttRoomRow;
+        // When excluding source room, skip it and find the one underneath
+        if (excludeRoomId && roomId === excludeRoomId) {
+          if (!firstFound) firstFound = roomId;
+          continue;
+        }
+        return roomId;
       }
     }
   }
-  return null;
+  // Fallback: if we only found the excluded room, return it anyway
+  // (user didn't drag far enough to reach another row)
+  return firstFound;
 }
 
 export function listGanttRoomIdsInDomOrder(): string[] {
