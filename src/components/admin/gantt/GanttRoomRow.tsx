@@ -228,7 +228,7 @@ export function GanttRoomRow({
             );
             const phase = seg.phase ?? occupancyPhase(seg.checkIn, seg.checkOut, today);
             const canMoveRoom =
-              b.status === "confirmata" && phase !== "past";
+              (b.status === "confirmata" || b.status === "cerere_noua") && phase !== "past";
             const moveDraft: MoveRoomDraft | null = canMoveRoom
               ? {
                   bookingId: b.id,

@@ -349,7 +349,7 @@ export async function moveBookingRoomFromPivot(input: {
   if (booking.status === "anulata") {
     throw new Error("booking.cancelled");
   }
-  if (booking.status !== "confirmata") {
+  if (booking.status !== "confirmata" && booking.status !== "cerere_noua") {
     throw new Error("segments.room_move_only_for_confirmed_stays");
   }
 

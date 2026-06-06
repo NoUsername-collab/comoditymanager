@@ -42,13 +42,14 @@ export function getGanttRoomDragLayer(roomId: string): HTMLElement | null {
 }
 
 /**
- * Find the room row at a given point. When dragging a booking bar,
- * the dragged element sits on top and its closest room row is the
- * SOURCE — not the target. We iterate ALL elements at the point
- * and return the DEEPEST room row (the one underneath the drag layer),
- * which is the actual drop target.
+ * Find the room row at a given screen coordinate.
  *
- * @param excludeRoomId — skip this room (the source) to find the target underneath
+ * Uses geometric bounding-rect comparison of all room rows in the DOM,
+ * NOT elementsFromPoint (which fails during drag because the dragged
+ * booking bar is visually at the cursor but its DOM parent is the
+ * source row — closest() always returns source).
+ *
+ * @param excludeRoomId — optional room to deprioritize (returns it only as fallback)
  */
 export function findGanttRoomAtPoint(
   clientX: number,
@@ -56,25 +57,35 @@ export function findGanttRoomAtPoint(
   excludeRoomId?: string
 ): string | null {
   if (typeof document === "undefined") return null;
-  const els = document.elementsFromPoint(clientX, clientY);
-  let firstFound: string | null = null;
-  for (const el of els) {
-    if (el instanceof HTMLElement) {
-      const row = el.closest(ROOM_ROW_SELECTOR) as HTMLElement | null;
-      if (row?.dataset.ganttRoomRow) {
-        const roomId = row.dataset.ganttRoomRow;
-        // When excluding source room, skip it and find the one underneath
-        if (excludeRoomId && roomId === excludeRoomId) {
-          if (!firstFound) firstFound = roomId;
-          continue;
-        }
-        return roomId;
-      }
+
+  const rows = document.querySelectorAll<HTMLElement>(ROOM_ROW_SELECTOR);
+  let best: string | null = null;
+  let bestDist = Infinity;
+
+  for (const row of rows) {
+    const roomId = row.dataset.ganttRoomRow;
+    if (!roomId) continue;
+
+    const rect = row.getBoundingClientRect();
+    // Check if cursor Y is within this row's vertical bounds
+    if (clientY >= rect.top && clientY <= rect.bottom) {
+      // Direct hit — if not excluded, return immediately
+      if (roomId !== excludeRoomId) return roomId;
+      // It's the excluded room — remember as fallback
+      if (!best) best = roomId;
+      continue;
+    }
+
+    // Track closest row by Y distance (for near-misses at row edges)
+    const centerY = rect.top + rect.height / 2;
+    const dist = Math.abs(clientY - centerY);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = roomId;
     }
   }
-  // Fallback: if we only found the excluded room, return it anyway
-  // (user didn't drag far enough to reach another row)
-  return firstFound;
+
+  return best;
 }
 
 export function listGanttRoomIdsInDomOrder(): string[] {

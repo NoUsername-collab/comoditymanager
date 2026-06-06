@@ -59,7 +59,9 @@ function shouldUseVerticalDrag(canVerticalMove: boolean, dx: number, dy: number)
   if (!canVerticalMove) return false;
   const absX = Math.abs(dx);
   const absY = Math.abs(dy);
-  return absY >= 24 && absY > absX * 1.35;
+  // Relaxed: 16px vertical threshold (half a row), and vertical must
+  // simply exceed horizontal (not 1.35x). Makes room-to-room drag natural.
+  return absY >= 16 && absY > absX;
 }
 
 type Props = {
