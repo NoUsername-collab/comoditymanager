@@ -48,7 +48,12 @@ export async function AdminTopBar({
       </div>
 
       <div className="admin-hud__right">
-        <AdminTodayNotifications board={board} cereriCount={cereriCount} />
+        <AdminTodayNotifications
+          cereriCount={cereriCount}
+          arrivalsCount={board?.arrivals.length ?? 0}
+          departuresCount={board?.departures.length ?? 0}
+          cleanCount={board?.roomsToClean.length ?? 0}
+        />
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
           <AdminLiveRefresh />
