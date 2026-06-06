@@ -555,50 +555,32 @@ export function AvailabilityDashboard({
     ]
   );
 
-  // ── Day selection with race-condition protection ────────────────
-  // Only the LATEST click wins. Previous in-flight requests are ignored.
+  // ── Day selection ──────────────────────────────────────────────
+  // Race-condition safe: only the latest click wins.
   const requestIdRef = useRef(0);
-  const pendingFetchRef = useRef(false);
 
   const selectDay = useCallback(
     async (iso: string) => {
-      // Immediately update selected state (UI feedback)
       setSelectedIso(iso);
       setDetail(null);
       setLoading(true);
 
-      // Bump request ID — any in-flight request with an older ID is stale
       const thisRequest = ++requestIdRef.current;
 
-      // Prevent overlapping fetches
-      if (pendingFetchRef.current) {
-        // A previous fetch is still running — it will be ignored when it resolves
-        // because its request ID won't match
-      }
-
-      pendingFetchRef.current = true;
       try {
-        const result = await fetchDayAvailabilityDetailAction(
+        const data = await fetchDayAvailabilityDetailAction(
           iso,
           buildingId,
           featureFilter
         );
-
-        // Stale? Another click happened while we were fetching — discard
+        // Ignore stale results from previous clicks
         if (thisRequest !== requestIdRef.current) return;
-
-        if (result.ok) {
-          setDetail(result.data);
-        } else {
-          console.warn("[availability] load failed:", result.error);
-          setDetail(null);
-        }
+        setDetail(data);
       } catch {
         if (thisRequest !== requestIdRef.current) return;
         setDetail(null);
       } finally {
         if (thisRequest === requestIdRef.current) {
-          pendingFetchRef.current = false;
           setLoading(false);
         }
       }
@@ -616,28 +598,17 @@ export function AvailabilityDashboard({
       }
     } else {
       selectDay(iso);
-      // Update URL for deep-linking WITHOUT triggering Next.js navigation.
-      // router.push causes server re-render → component remount → infinite loop.
-      // replaceState updates the address bar silently.
-      try {
-        const url = new URL(window.location.href);
-        url.searchParams.set("day", iso);
-        window.history.replaceState(null, "", url.toString());
-      } catch { /* SSR safety */ }
     }
   };
 
-  // Restore selected day from URL on initial mount only.
-  const initialDayRef = useRef(initialDay);
-  const mountedRef = useRef(false);
+  // Restore selected day on initial mount only (no re-trigger on prop changes).
+  const initialDayLoaded = useRef(false);
   useEffect(() => {
-    if (mountedRef.current) return;
-    mountedRef.current = true;
-    const day = initialDayRef.current;
-    if (!day) return;
-    void selectDay(day);
+    if (initialDayLoaded.current || !initialDay) return;
+    initialDayLoaded.current = true;
+    void selectDay(initialDay);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialDay]);
 
   const rangeDays = useMemo(() => {
     if (!rangeStart) return [];
