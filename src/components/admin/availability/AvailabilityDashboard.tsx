@@ -555,32 +555,55 @@ export function AvailabilityDashboard({
     ]
   );
 
+  // ── Day selection with race-condition protection ────────────────
+  // Only the LATEST click wins. Previous in-flight requests are ignored.
+  const requestIdRef = useRef(0);
+  const pendingFetchRef = useRef(false);
+
   const selectDay = useCallback(
     async (iso: string) => {
+      // Immediately update selected state (UI feedback)
       setSelectedIso(iso);
+      setDetail(null);
       setLoading(true);
+
+      // Bump request ID — any in-flight request with an older ID is stale
+      const thisRequest = ++requestIdRef.current;
+
+      // Prevent overlapping fetches
+      if (pendingFetchRef.current) {
+        // A previous fetch is still running — it will be ignored when it resolves
+        // because its request ID won't match
+      }
+
+      pendingFetchRef.current = true;
       try {
         const result = await fetchDayAvailabilityDetailAction(
           iso,
           buildingId,
           featureFilter
         );
+
+        // Stale? Another click happened while we were fetching — discard
+        if (thisRequest !== requestIdRef.current) return;
+
         if (result.ok) {
           setDetail(result.data);
-          pushParams({ day: iso });
         } else {
-          // Silently ignore auth/network errors — don't crash the whole app
           console.warn("[availability] load failed:", result.error);
           setDetail(null);
         }
       } catch {
-        // Server action transport error — swallow it
+        if (thisRequest !== requestIdRef.current) return;
         setDetail(null);
       } finally {
-        setLoading(false);
+        if (thisRequest === requestIdRef.current) {
+          pendingFetchRef.current = false;
+          setLoading(false);
+        }
       }
     },
-    [buildingId, featureFilter, pushParams]
+    [buildingId, featureFilter]
   );
 
   const handleDayClick = (iso: string, shift: boolean) => {
@@ -593,23 +616,20 @@ export function AvailabilityDashboard({
       }
     } else {
       selectDay(iso);
+      // Update URL for deep-linking (separate from fetch to avoid loops)
+      pushParams({ day: iso });
     }
   };
 
   // Restore selected day from URL on initial mount only.
-  // Must NOT re-run when selectDay changes (it depends on pushParams
-  // which recreates on every render → would cause infinite loop).
   const initialDayRef = useRef(initialDay);
   const mountedRef = useRef(false);
   useEffect(() => {
-    if (mountedRef.current) return; // only on first mount
+    if (mountedRef.current) return;
     mountedRef.current = true;
     const day = initialDayRef.current;
     if (!day) return;
-    const frame = window.requestAnimationFrame(() => {
-      void selectDay(day);
-    });
-    return () => window.cancelAnimationFrame(frame);
+    void selectDay(day);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
