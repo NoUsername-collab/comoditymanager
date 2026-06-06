@@ -337,7 +337,13 @@ export async function moveBookingRoomFromPivot(input: {
     throw new Error("segments.choose_different_room");
   }
 
-  const { tenantId, supabase } = await getTenantScope();
+  // Parallel: resolve scope + fetch booking + list segments + get today
+  const [{ tenantId, supabase }, segments, effectiveToday2] = await Promise.all([
+    getTenantScope(),
+    listSegmentsForBooking(input.bookingId),
+    getEffectiveToday(),
+  ]);
+
   const { data: booking, error: bErr } = await supabase
     .from("bookings")
     .select("id, status, guest_name")
@@ -353,11 +359,9 @@ export async function moveBookingRoomFromPivot(input: {
     throw new Error("segments.room_move_only_for_confirmed_stays");
   }
 
-  const segments = await listSegmentsForBooking(input.bookingId);
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
   if (!source) throw new Error("segments.source_not_found");
 
-  const effectiveToday2 = await getEffectiveToday();
   const plan = resolveRoomMovePlan(
     source.segment_start,
     source.segment_end,
@@ -365,14 +369,16 @@ export async function moveBookingRoomFromPivot(input: {
     effectiveToday2
   );
 
-  await assertRoomsAvailableForOccupancy(
-    plan.effectiveStart,
-    source.segment_end,
-    [input.targetRoomId],
-    input.bookingId
-  );
-
-  const targetRate = await roomNightlyRate(input.targetRoomId);
+  // Parallel: check availability + get target room price
+  const [, targetRate] = await Promise.all([
+    assertRoomsAvailableForOccupancy(
+      plan.effectiveStart,
+      source.segment_end,
+      [input.targetRoomId],
+      input.bookingId
+    ),
+    roomNightlyRate(input.targetRoomId),
+  ]);
 
   if (plan.mode === "full") {
     const { error: updateErr } = await supabase
@@ -423,21 +429,23 @@ export async function moveBookingRoomFromPivot(input: {
     if (brErr) throw new Error(brErr.message);
   }
 
-  await recalcBookingEnvelopeAndTotal(input.bookingId);
-
-  await logAdminActivityFromSession({
-    action: "booking.room_moved",
-    entityType: "booking",
-    entityId: input.bookingId,
-    summary:
-      plan.mode === "full"
-        ? `Mutare cameră: ${booking.guest_name} · tot sejurul`
-        : `Mutare cameră: ${booking.guest_name} · pivot ${plan.pivot}`,
-    metadata: {
-      source_room_id: input.sourceRoomId,
-      target_room_id: input.targetRoomId,
-      move_mode: plan.mode,
-      pivot: plan.mode === "split" ? plan.pivot : null,
-    },
-  });
+  // Parallel: recalc totals + log activity (neither blocks the other)
+  await Promise.all([
+    recalcBookingEnvelopeAndTotal(input.bookingId),
+    logAdminActivityFromSession({
+      action: "booking.room_moved",
+      entityType: "booking",
+      entityId: input.bookingId,
+      summary:
+        plan.mode === "full"
+          ? `Mutare cameră: ${booking.guest_name} · tot sejurul`
+          : `Mutare cameră: ${booking.guest_name} · pivot ${plan.pivot}`,
+      metadata: {
+        source_room_id: input.sourceRoomId,
+        target_room_id: input.targetRoomId,
+        move_mode: plan.mode,
+        pivot: plan.mode === "split" ? plan.pivot : null,
+      },
+    }).catch(() => {}), // Activity log failure is non-fatal
+  ]);
 }

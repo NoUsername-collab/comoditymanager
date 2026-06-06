@@ -330,8 +330,10 @@ export function GanttDraggableStay({
           setSnapped(true);
           window.setTimeout(() => setSnapped(false), 360);
           notifyMoved(tGantt("moveRoom.moved"), popover.guestName);
-          router.refresh();
         });
+        // Refresh OUTSIDE the lock — doesn't block UI or further actions
+        // Server already revalidated cache; this just fetches fresh data
+        window.setTimeout(() => router.refresh(), 300);
         return;
       }
 
@@ -371,8 +373,9 @@ export function GanttDraggableStay({
         setSnapped(true);
         window.setTimeout(() => setSnapped(false), 360);
         notifyMoved();
-        router.refresh();
       });
+      // Refresh OUTSIDE the lock
+      window.setTimeout(() => router.refresh(), 300);
     };
 
     window.addEventListener("pointermove", onMove);
