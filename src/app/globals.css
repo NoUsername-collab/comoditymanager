@@ -1574,7 +1574,6 @@ html[data-theme="default"][data-mode="night"] {
   align-items: center;
   gap: 0.25rem;
   position: relative;
-  overflow: hidden;
   min-height: 1.75rem;
 }
 

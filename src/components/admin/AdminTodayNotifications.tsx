@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
 type Props = {
@@ -15,8 +14,8 @@ type Props = {
  * Today board badges + action buttons with reveal/collapse animation.
  *
  * Default state: shows 4 badges (new, in, out, clean).
- * Reveal: arrow → badges slide out right, action buttons slide in from left.
- * Collapse: buttons slide out right, badges slide back in.
+ * Reveal: arrow → badges slide out, action buttons slide in from left.
+ * Collapse: buttons slide out, badges slide back in.
  */
 export function AdminTodayNotifications({
   cereriCount,
@@ -24,7 +23,6 @@ export function AdminTodayNotifications({
   departuresCount,
   cleanCount,
 }: Props) {
-  const t = useTranslations("admin.common");
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -46,16 +44,16 @@ export function AdminTodayNotifications({
             .filter(Boolean)
             .join(" ")}
         >
-          <strong>{cereriCount}</strong> {t("newShort")}
+          <strong>{cereriCount}</strong> new
         </span>
         <span className="admin-today-badge admin-today-badge--in">
-          <strong>{arrivalsCount}</strong> {t("arrivalsShort")}
+          <strong>{arrivalsCount}</strong> in
         </span>
         <span className="admin-today-badge admin-today-badge--out">
-          <strong>{departuresCount}</strong> {t("departuresShort")}
+          <strong>{departuresCount}</strong> out
         </span>
         <span className="admin-today-badge admin-today-badge--clean">
-          <strong>{cleanCount}</strong> {t("toCleanShort")}
+          <strong>{cleanCount}</strong> clean
         </span>
       </div>
 
@@ -73,7 +71,7 @@ export function AdminTodayNotifications({
           className="admin-today-action admin-today-action--new"
           style={{ transitionDelay: "0ms" }}
         >
-          {t("newShort")} ({cereriCount})
+          Cereri ({cereriCount})
         </Link>
         <Link
           href="/admin/cazari"
@@ -94,7 +92,7 @@ export function AdminTodayNotifications({
           className="admin-today-action admin-today-action--clean"
           style={{ transitionDelay: "120ms" }}
         >
-          {t("toCleanShort")} ({cleanCount})
+          Curățenie ({cleanCount})
         </Link>
       </div>
 
@@ -108,7 +106,7 @@ export function AdminTodayNotifications({
         ]
           .filter(Boolean)
           .join(" ")}
-        aria-label={expanded ? t("collapse") : t("expand")}
+        title={expanded ? "Ascunde" : "Acțiuni rapide"}
       >
         <svg
           width="14"
