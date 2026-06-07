@@ -11,6 +11,7 @@ import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { StayQuickOps } from "@/components/admin/cazari/StayQuickOps";
+import { CancelledStayUndoButton } from "@/components/admin/cazari/CancelledStayUndoButton";
 import {
   listCancelledStayHistory,
   listCompletedStayHistory,
@@ -65,6 +66,7 @@ type CazariLabels = {
   openBooking: string;
   acceptAgain: string;
   acceptAgainHint: string;
+  undoCancelConfirm: string;
   openClientProfile: string;
   checkIn: string;
   edit: string;
@@ -257,8 +259,10 @@ function StayList({
 
   const rowClass =
     variant === "refuzate"
-      ? "grid gap-2 rounded-md border border-red-300 bg-red-50/80 px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto]"
-      : "grid gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 sm:grid-cols-[minmax(0,1fr)_auto]";
+      ? "stay-card stay-card--red grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]"
+      : variant === "cereri"
+        ? "stay-card stay-card--yellow grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]"
+        : "stay-card stay-card--green grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]";
 
   return (
     <RetroXpWindow title={title} className="mb-6">
@@ -320,22 +324,18 @@ function RefusedStayActions({
   const bookingHref = `/admin/bookings/${stay.id}?return_to=${encodeURIComponent(returnTo)}`;
 
   return (
-    <div className="flex shrink-0 flex-col items-stretch justify-center gap-1.5 sm:min-w-[148px]">
+    <div className="flex shrink-0 flex-col items-stretch justify-center gap-1 sm:min-w-[140px]">
+      <CancelledStayUndoButton
+        bookingId={stay.id}
+        label={labels.acceptAgain}
+        confirmLabel={labels.undoCancelConfirm}
+      />
       <Link
         href={bookingHref}
-        className="inline-flex justify-center rounded-md border border-emerald-400 bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 active:translate-y-px active:bg-emerald-800"
-      >
-        {labels.acceptAgain}
-      </Link>
-      <Link
-        href={bookingHref}
-        className="inline-flex justify-center rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-semibold text-red-900 transition hover:bg-red-50 active:translate-y-px active:bg-red-100/80"
+        className="inline-flex justify-center rounded-md border border-zinc-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px"
       >
         {labels.openBooking}
       </Link>
-      <p className="text-center text-[10px] leading-snug text-red-800/80">
-        {labels.acceptAgainHint}
-      </p>
     </div>
   );
 }
@@ -354,58 +354,27 @@ function StayInfo({
 
   return (
     <div className="min-w-0 flex-1">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p
-            className={[
-              "truncate text-sm font-bold",
-              isCancelled ? "text-red-950" : "text-zinc-900",
-            ].join(" ")}
-          >
-            {stay.guest_name}
-          </p>
-          <p className="truncate text-[11px] text-zinc-600">
+      <div className="flex flex-wrap items-center justify-between gap-1">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5">
+            <p
+              className={[
+                "truncate text-[13px] font-bold leading-tight",
+                isCancelled ? "text-red-950" : "text-zinc-900",
+              ].join(" ")}
+            >
+              {stay.guest_name}
+            </p>
+            <GuestFlagPill flagLevel={stay.guest_alert_level} />
+          </div>
+          <p className="truncate text-[10px] leading-tight text-zinc-500">
             {[stay.guest_phone, stay.guest_email].filter(Boolean).join(" · ") ||
               labels.noContact}
           </p>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-zinc-600">
-            <GuestFlagPill flagLevel={stay.guest_alert_level} />
-            {stay.guest_profile ? (
-              <>
-                <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1.5 py-0.5">
-                  {labels.behaviorShort}: {stay.guest_profile.trust_score}
-                  <GuestScoreHint kind="trust" />
-                </span>
-                <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1.5 py-0.5">
-                  {labels.loyaltyShort}: {stay.guest_profile.loyalty_score}
-                  <GuestScoreHint kind="loyalty" />
-                </span>
-                <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1.5 py-0.5">
-                  {labels.starsShort}: {stay.guest_profile.stars_avg.toFixed(1)}
-                  <GuestScoreHint kind="stars" />
-                </span>
-              </>
-            ) : null}
-            {stay.guest_alert_note ? (
-              <span className="truncate rounded bg-amber-50 px-1.5 py-0.5 text-amber-900">
-                {stay.guest_alert_note}
-              </span>
-            ) : null}
-          </div>
-          {stay.guest_id && (
-            <p className="mt-1">
-              <Link
-                href={`/admin/guests/${stay.guest_id}`}
-                className="text-[11px] font-bold text-emerald-700 underline underline-offset-2 hover:text-emerald-800"
-              >
-                {labels.openClientProfile}
-              </Link>
-            </p>
-          )}
         </div>
         <span
           className={[
-            "inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide",
+            "inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide leading-none",
             isCancelled
               ? "border-red-300 bg-red-100 text-red-900"
               : isConfirmed
@@ -421,28 +390,59 @@ function StayInfo({
         </span>
       </div>
 
-      <p className="mt-1 text-[11px] font-medium text-zinc-700">
-        {formatStayPeriod(stay.check_in, stay.check_out)} ·{" "}
-        {labels.guestsShort(stay.num_adults, stay.num_children)}
-      </p>
-
-      <div className="mt-1 flex flex-wrap items-center gap-1 text-[10px] text-zinc-600">
+      <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[10px] text-zinc-600">
+        <span className="font-medium text-zinc-700">
+          {formatStayPeriod(stay.check_in, stay.check_out)}
+        </span>
+        <span aria-hidden>·</span>
+        <span>{labels.guestsShort(stay.num_adults, stay.num_children)}</span>
         {stay.room_names.length > 0 ? (
-          <span className="rounded bg-zinc-100 px-1.5 py-0.5">
+          <span className="rounded bg-zinc-100 px-1 py-0.5 text-[9px]">
             {stay.room_names.join(", ")}
           </span>
         ) : (
-          <span className="rounded bg-zinc-100 px-1.5 py-0.5">{labels.noRoom}</span>
+          <span className="rounded bg-zinc-100 px-1 py-0.5 text-[9px]">{labels.noRoom}</span>
         )}
         {isConfirmed && stay.total_price != null ? (
-          <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-emerald-800">
+          <span className="rounded bg-emerald-50 px-1 py-0.5 text-[9px] text-emerald-800">
             {stay.total_price} RON
           </span>
         ) : null}
-        <span className="font-mono text-[10px] text-zinc-400">
+        <span className="font-mono text-[9px] text-zinc-400">
           {formatBookingRef(stay.id)}
         </span>
       </div>
+
+      {stay.guest_profile ? (
+        <div className="mt-0.5 flex flex-wrap items-center gap-1 text-[9px] text-zinc-500">
+          <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1 py-0.5">
+            {labels.behaviorShort}: {stay.guest_profile.trust_score}
+            <GuestScoreHint kind="trust" />
+          </span>
+          <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1 py-0.5">
+            {labels.loyaltyShort}: {stay.guest_profile.loyalty_score}
+            <GuestScoreHint kind="loyalty" />
+          </span>
+          <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1 py-0.5">
+            {labels.starsShort}: {stay.guest_profile.stars_avg.toFixed(1)}
+            <GuestScoreHint kind="stars" />
+          </span>
+          {stay.guest_alert_note ? (
+            <span className="truncate rounded bg-amber-50 px-1 py-0.5 text-amber-900">
+              {stay.guest_alert_note}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+
+      {stay.guest_id && (
+        <Link
+          href={`/admin/guests/${stay.guest_id}`}
+          className="mt-0.5 inline-block text-[10px] font-bold text-emerald-700 underline underline-offset-2 hover:text-emerald-800"
+        >
+          {labels.openClientProfile}
+        </Link>
+      )}
     </div>
   );
 }
@@ -540,63 +540,54 @@ function StayHistoryPanel({
         ) : null}
 
         {cancelledItems.length > 0 ? (
-          <section className="space-y-2">
-            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2">
-              <p className="text-xs font-bold text-red-900">
+          <section className="space-y-1.5">
+            <div className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5">
+              <p className="text-[11px] font-bold text-red-900">
                 {labels.historyCancelledSection(cancelledItems.length)}
               </p>
-              <p className="mt-0.5 text-[11px] text-red-800/90">
+              <p className="text-[10px] text-red-800/90 leading-tight">
                 {labels.historyCancelledHint}
               </p>
             </div>
-            <ul className="space-y-2">
+            <ul className="space-y-1.5">
               {cancelledItems.map((stay) => (
                 <li
                   key={stay.id}
-                  className="rounded-md border border-red-300 bg-red-50/70 px-3 py-2"
+                  className="stay-card stay-card--red"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-red-950">
-                        {stay.guest_name}
-                      </p>
-                      <p className="truncate text-[11px] text-red-900/80">
-                        {[stay.guest_phone, stay.guest_email]
-                          .filter(Boolean)
-                          .join(" · ") || labels.noContact}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full border border-red-300 bg-red-100 px-2 py-0.5 text-[10px] font-bold text-red-900">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="truncate text-[12px] font-bold leading-tight text-red-950">
+                      {stay.guest_name}
+                    </p>
+                    <span className="shrink-0 rounded-full border border-red-300 bg-red-100 px-1.5 py-0.5 text-[9px] font-bold leading-none text-red-900">
                       {labels.historyCancelledBadge}
                     </span>
                   </div>
-                  <p className="mt-1 text-[11px] text-red-900/90">
-                    {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                  <p className="truncate text-[10px] leading-tight text-red-900/70">
+                    {[stay.guest_phone, stay.guest_email]
+                      .filter(Boolean)
+                      .join(" · ") || labels.noContact}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-red-800/80">
-                    {labels.historyCancelledAt(
-                      formatRoDate(stay.updated_at.slice(0, 10))
-                    )}
-                  </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-red-800/70">
-                    <span>
-                      {stay.room_names.join(", ") || labels.noRoom}
-                    </span>
-                    <span>
-                      {labels.guestsShort(stay.num_adults, stay.num_children)}
-                    </span>
-                    <span className="font-mono">{formatBookingRef(stay.id)}</span>
+                  <div className="mt-0.5 flex flex-wrap items-center gap-x-1 gap-y-0 text-[10px] text-red-900/80">
+                    <span className="font-medium">{formatStayPeriod(stay.check_in, stay.check_out, true)}</span>
+                    <span aria-hidden>·</span>
+                    <span>{labels.guestsShort(stay.num_adults, stay.num_children)}</span>
                   </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-x-1 text-[9px] text-red-800/60">
+                    <span>{stay.room_names.join(", ") || labels.noRoom}</span>
+                    <span className="font-mono">{formatBookingRef(stay.id)}</span>
+                    <span aria-hidden>·</span>
+                    <span>{labels.historyCancelledAt(formatRoDate(stay.updated_at.slice(0, 10)))}</span>
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <CancelledStayUndoButton
+                      bookingId={stay.id}
+                      label={labels.acceptAgain}
+                      confirmLabel={labels.undoCancelConfirm}
+                    />
                     <Link
                       href={`/admin/bookings/${stay.id}?return_to=${encodeURIComponent("/admin/cazari")}`}
-                      className="inline-flex rounded-md border border-emerald-400 bg-emerald-600 px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-emerald-700 active:translate-y-px"
-                    >
-                      {labels.acceptAgain}
-                    </Link>
-                    <Link
-                      href={`/admin/bookings/${stay.id}?return_to=${encodeURIComponent("/admin/cazari")}`}
-                      className="admin-text-action admin-text-action--danger text-[11px]"
+                      className="text-[10px] font-semibold text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
                     >
                       {labels.openBooking}
                     </Link>
@@ -608,48 +599,46 @@ function StayHistoryPanel({
         ) : null}
 
         {completedItems.length > 0 ? (
-          <section className="space-y-2">
+          <section className="space-y-1.5">
             {cancelledItems.length > 0 ? (
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
                 {labels.historyCompletedSection}
               </p>
             ) : null}
-            <ul className="space-y-2">
+            <ul className="space-y-1.5">
               {completedItems.map((stay) => (
                 <li
                   key={stay.id}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-2"
+                  className="stay-card stay-card--green"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-zinc-900">
-                        {stay.guest_name}
-                      </p>
-                      <p className="truncate text-[11px] text-zinc-600">
-                        {[stay.guest_phone, stay.guest_email]
-                          .filter(Boolean)
-                          .join(" · ") || labels.noContact}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-700">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="truncate text-[12px] font-bold leading-tight text-zinc-900">
+                      {stay.guest_name}
+                    </p>
+                    <span className="shrink-0 rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[9px] font-bold leading-none text-emerald-800">
                       {labels.checkout} {formatRoDate(stay.check_out)}
                     </span>
                   </div>
-                  <p className="mt-1 text-[11px] text-zinc-700">
-                    {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                  <p className="truncate text-[10px] leading-tight text-zinc-500">
+                    {[stay.guest_phone, stay.guest_email]
+                      .filter(Boolean)
+                      .join(" · ") || labels.noContact}
                   </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-zinc-500">
-                    <span>
-                      {labels.guestsShort(stay.num_adults, stay.num_children)}
-                    </span>
+                  <div className="mt-0.5 flex flex-wrap items-center gap-x-1 gap-y-0 text-[10px] text-zinc-600">
+                    <span className="font-medium">{formatStayPeriod(stay.check_in, stay.check_out, true)}</span>
+                    <span aria-hidden>·</span>
+                    <span>{labels.guestsShort(stay.num_adults, stay.num_children)}</span>
                     {stay.total_price != null ? (
-                      <span>{stay.total_price} RON</span>
+                      <>
+                        <span aria-hidden>·</span>
+                        <span className="text-emerald-700">{stay.total_price} RON</span>
+                      </>
                     ) : null}
-                    <span className="font-mono">{formatBookingRef(stay.id)}</span>
+                    <span className="font-mono text-[9px] text-zinc-400">{formatBookingRef(stay.id)}</span>
                   </div>
                   <Link
                     href={`/admin/bookings/${stay.id}`}
-                    className="mt-2 inline-flex text-[11px] font-bold text-zinc-700 underline underline-offset-2 hover:text-zinc-900"
+                    className="mt-0.5 inline-flex text-[10px] font-semibold text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
                   >
                     {labels.openBooking}
                   </Link>
@@ -840,6 +829,7 @@ export default async function AdminCazariPage({
     openBooking: tCommon("openBooking"),
     acceptAgain: tPages("acceptAgain"),
     acceptAgainHint: tPages("acceptAgainHint"),
+    undoCancelConfirm: tPages("undoCancelConfirm"),
     openClientProfile: tPages("openClientProfile"),
     checkIn: tCommon("checkIn"),
     edit: tCommon("edit"),

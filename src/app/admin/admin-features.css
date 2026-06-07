@@ -227,6 +227,54 @@
   flex-shrink: 0;
 }
 
+.activity-undo-btn--stay-card {
+  justify-content: center;
+  padding: 0.3rem 0.625rem;
+  font-size: 0.6875rem;
+  border-radius: 0.375rem;
+}
+
+/* ── Stay cards (colour-coded outlines) ────────────────────────── */
+
+.stay-card {
+  border-radius: 0.5rem;
+  border: 1.5px solid;
+  padding: 0.4rem 0.625rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.stay-card--red {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(254, 242, 242, 0.6);
+}
+
+.stay-card--red:hover {
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+}
+
+.stay-card--yellow {
+  border-color: rgba(245, 158, 11, 0.45);
+  background: rgba(255, 251, 235, 0.6);
+}
+
+.stay-card--yellow:hover {
+  border-color: rgba(245, 158, 11, 0.7);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.stay-card--green {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(240, 253, 244, 0.5);
+}
+
+.stay-card--green:hover {
+  border-color: rgba(34, 197, 94, 0.6);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+}
+
 .admin-panel-section {
   border-radius: 1rem;
   border: 1px solid #e4e4e7;

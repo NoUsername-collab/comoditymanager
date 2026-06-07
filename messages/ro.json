@@ -539,6 +539,7 @@
         "historyCompletedSection": "Cazări încheiate",
         "acceptAgain": "Acceptă din nou",
         "acceptAgainHint": "Alege camere libere și confirmă — ca la o cerere nouă.",
+        "undoCancelConfirm": "Sigur vrei să anulezi refuzul acestei rezervări? Rezervarea va reveni la statusul anterior.",
         "reacceptedBanner": "Cazarea a fost acceptată din nou și apare la cazări confirmate."
       },
       "statistics": {

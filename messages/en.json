@@ -539,6 +539,7 @@
         "historyCompletedSection": "Completed stays",
         "acceptAgain": "Accept again",
         "acceptAgainHint": "Pick free rooms and confirm — same as a new request.",
+        "undoCancelConfirm": "Are you sure you want to undo this cancellation? The booking will return to its previous status.",
         "reacceptedBanner": "Stay accepted again — it now appears under confirmed stays."
       },
       "statistics": {
