@@ -1,5 +1,4 @@
 import { Link } from "@/i18n/navigation";
-import { AdminTodayBar } from "@/components/admin/AdminTodayBar";
 import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminLiveRefresh } from "@/components/admin/AdminLiveRefresh";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
@@ -15,7 +14,6 @@ import { getTranslations } from "next-intl/server";
 import { getTenantContext } from "@/core/tenant/context";
 
 export async function AdminTopBar({
-  board,
   cereriCount,
   locationUnlocked = false,
   isAdmin = false,
@@ -45,9 +43,6 @@ export async function AdminTopBar({
     <header className="admin-hud__header">
       {/* ── Left: pension name + plan badge ── */}
       <div className="admin-hud__brand">
-        <div className="admin-hud__logo" aria-hidden>
-          <span className="admin-hud__logo-inner">HO</span>
-        </div>
         <div className="admin-hud__brand-text">
           <h1 className="admin-hud__title">{pensionName}</h1>
           <AdminPlanBadge />
@@ -59,14 +54,8 @@ export async function AdminTopBar({
         <AdminNav cereriCount={cereriCount} locationUnlocked={locationUnlocked} />
       </div>
 
-      {/* ── Right: today bar, theme, version, gear ── */}
+      {/* ── Right: theme, version, gear ── */}
       <div className="admin-hud__right">
-        <AdminTodayBar
-          cereriCount={cereriCount}
-          arrivalsCount={board?.arrivals.length ?? 0}
-          departuresCount={board?.departures.length ?? 0}
-          cleanCount={board?.roomsToClean.length ?? 0}
-        />
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
           <AdminVersionBadge />

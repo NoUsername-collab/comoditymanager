@@ -74,77 +74,59 @@ export async function AdminDashboard({
 
   return (
     <div className="admin-home">
-      {/* ── Hero: compact 2-row layout ──────────────────────────── */}
+      {/* ── Hero: ultra-compact strip ─────────────────────────── */}
       <header className="admin-home-hero admin-home-hero--liquid">
-        {/* Row 1: identity + CTAs */}
-        <div className="admin-home-hero__row1">
+        {/* Single row: name · date · KPIs · CTAs */}
+        <div className="admin-home-hero__strip">
+          {/* Left: identity */}
           <div className="admin-home-hero__identity">
             <h1 className="admin-home-hero__title">{data.pensionName}</h1>
-            <p className="admin-home-hero__meta">
+            <span className="admin-home-hero__meta">
               <span className="capitalize">{data.todayLabel}</span>
-              {" · "}
-              {tCommon("checkIn")} {data.checkInTime} · {tCommon("checkout")} {data.checkOutTime}
-            </p>
+              {" · CI "}
+              {data.checkInTime}
+              {" · CO "}
+              {data.checkOutTime}
+            </span>
           </div>
+
+          {/* Center: KPI pills inline */}
+          <div className="admin-home-kpis" role="list" aria-label={tCommon("quickKpis")}>
+            <span
+              className={["admin-home-kpi", hasCereri && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
+              role="listitem"
+            >
+              <strong>{cereriCount}</strong> {tCommon("newRequestsLabel")}
+            </span>
+            <span className="admin-home-kpi" role="listitem">
+              <strong>{stats.freeTonight}</strong> {tCommon("freeTonight")}
+            </span>
+            <span className="admin-home-kpi" role="listitem">
+              <strong>{stats.occupiedTonight}</strong> {tCommon("occupiedTonight")} · {stats.occupancyTonightPct}%
+            </span>
+            <span className="admin-home-kpi" role="listitem">
+              <strong>{stats.weekOccupancyPct}%</strong> {tCommon("weekOccupancy")}
+            </span>
+          </div>
+
+          {/* Right: CTAs */}
           <div className="admin-home-hero__actions">
-            {hasCereri ? (
+            {hasCereri && (
               <Link href="/admin/bookings" className="admin-home-cta admin-home-cta--cereri">
                 <span aria-hidden>📬</span>
                 {tDashboard("pendingPuls", { count: cereriCount })}
               </Link>
-            ) : null}
+            )}
             <Link href={calHref} className="admin-home-cta admin-home-cta--secondary">
               {tCommon("currentMonthCalendar")}
             </Link>
           </div>
         </div>
 
-        {/* Briefing + milestones — inline between rows */}
-        {(data.briefingLine || data.milestones.length > 0) && (
-          <div className="admin-home-hero__brief">
-            {data.briefingLine && (
-              <p className="admin-home-briefing">{data.briefingLine}</p>
-            )}
-            {data.milestones.length > 0 && (
-              <div className="admin-home-milestones" aria-label={tCommon("achievements")}>
-                {data.milestones.map((m) => (
-                  <span key={m.id} className="admin-home-milestone">
-                    <span aria-hidden>{m.emoji}</span> {m.label}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* Briefing — subtle inline note, only if present */}
+        {data.briefingLine && (
+          <p className="admin-home-briefing">{data.briefingLine}</p>
         )}
-
-        {/* Row 2: KPIs — compact horizontal strip */}
-        <div className="admin-home-kpis" role="list" aria-label={tCommon("quickKpis")}>
-          <div
-            className={["admin-home-kpi", hasCereri && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
-            role="listitem"
-          >
-            <span className="admin-home-kpi__value">{cereriCount}</span>
-            <span className="admin-home-kpi__label">{tCommon("newRequestsLabel")}</span>
-          </div>
-          <div className="admin-home-kpi" role="listitem">
-            <span className="admin-home-kpi__value">{stats.freeTonight}</span>
-            <span className="admin-home-kpi__label">
-              {tCommon("freeTonight")} / {stats.activeRooms}
-            </span>
-          </div>
-          <div className="admin-home-kpi" role="listitem">
-            <span className="admin-home-kpi__value">{stats.occupiedTonight}</span>
-            <span className="admin-home-kpi__label">
-              {tCommon("occupiedTonight")} · {stats.occupancyTonightPct}%
-            </span>
-          </div>
-          <div className="admin-home-kpi" role="listitem">
-            <span className="admin-home-kpi__value">{stats.weekOccupancyPct}%</span>
-            <span className="admin-home-kpi__label">
-              {tCommon("weekOccupancy")} · {tCommon("activeRoomsCount", { count: stats.activeRooms })}
-            </span>
-          </div>
-        </div>
       </header>
 
       {data.error && (
