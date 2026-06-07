@@ -7,6 +7,8 @@ export const UNDOABLE_ACTIONS = new Set<ActivityAction>([
   "booking.checkout.set",
   "booking.cancelled",
   "booking.confirmed",
+  "booking.dates_edited",
+  "booking.room_moved",
   "occupancy.hold_created",
   "occupancy.block_created",
   "building.price_updated",

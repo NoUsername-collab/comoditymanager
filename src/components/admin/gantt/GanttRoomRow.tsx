@@ -1,6 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useMemo, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
@@ -14,16 +14,56 @@ import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
 import { stayTodayHighlight } from "@/domain/gantt/today-activity";
 import { guestPartyTotal } from "@/lib/guest-party";
+import { nightOccupied } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
 import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
-import { GanttRoomMarker } from "@/components/admin/gantt/GanttBuildingMarker";
 import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
 import { DayGrid } from "./GanttGridHelpers";
+
+/* ── Compact status LED ───────────────────────────────────────── */
+type RoomLedStatus = "checked-in" | "booked" | "free";
+
+function RoomStatusLed({ status }: { status: RoomLedStatus }) {
+  const cls =
+    status === "checked-in"
+      ? "gantt-room-led gantt-room-led--red"
+      : status === "booked"
+        ? "gantt-room-led gantt-room-led--yellow"
+        : "gantt-room-led gantt-room-led--green";
+  const label =
+    status === "checked-in"
+      ? "Checked in"
+      : status === "booked"
+        ? "Rezervat"
+        : "Liberă";
+  return <span className={cls} title={label} aria-label={label} />;
+}
+
+/* ── Broom / cleaning icon ────────────────────────────────────── */
+function BroomIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="gantt-room-broom"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M4 22 L10 16" />
+      <path d="M10 16 L10 12 L14 16 Z" />
+      <path d="M12 10 L20 2" />
+      <path d="M16 6 L18 8" />
+    </svg>
+  );
+}
 
 export function GanttRoomRow({
   room,
@@ -76,6 +116,24 @@ export function GanttRoomRow({
     roomHasAc: room.has_ac,
   });
 
+  /* ── Derive LED status from today's bookings for this room ── */
+  const ledStatus = useMemo((): RoomLedStatus => {
+    const isOccupied = todayFlags.occupiedTonight || todayFlags.arrival;
+    if (!isOccupied) return "free";
+    // Check if any booking for this room today has been checked in
+    for (const seg of staySegments) {
+      if (!seg.bookingId) continue;
+      const b = bookingById.get(seg.bookingId);
+      if (!b) continue;
+      if (b.room_ids.includes(room.id) && nightOccupied(today, b.check_in, b.check_out)) {
+        if (b.actual_check_in_at) return "checked-in";
+      }
+    }
+    return "booked";
+  }, [todayFlags, staySegments, bookingById, room.id, today]);
+
+  const needsCleaning = todayFlags.departure;
+
   const rowTodayClass = [
     todayFlags.arrival && "gantt-room-row--arrival-today",
     todayFlags.departure && "gantt-room-row--departure-today",
@@ -100,18 +158,16 @@ export function GanttRoomRow({
         .join(" ")}
     >
       <td
-        className="gantt-room-cell sticky left-0 z-10 px-2 py-[0.45rem] align-top"
+        className="gantt-room-cell sticky left-0 z-10 px-1.5 py-[0.25rem] align-middle"
         style={{ "--marker-color": sidebarMarkerColor } as CSSProperties}
       >
-        <div className="flex items-start gap-1.5">
-          <GanttRoomMarker
-            acMode={room.building_ac_mode}
-            size="sm"
-            roomHasAc={room.has_ac}
-          />
+        <div className="gantt-room-cell__row">
+          <RoomStatusLed status={ledStatus} />
           <div className="gantt-room-cell__text min-w-0">
             <span className="gantt-room-cell__name">{room.name}</span>
             <span className="gantt-room-cell__building">{room.building_name}</span>
+          </div>
+          <div className="gantt-room-cell__icons">
             <RoomFeatureBadges
               roomTypeName={room.room_type_name}
               optionSlugs={room.option_slugs}
@@ -120,20 +176,7 @@ export function GanttRoomRow({
               iconOnly
               hideRoomType
             />
-            {(todayFlags.arrival || todayFlags.departure) && (
-              <span className="gantt-room-today-badges mt-1 flex flex-wrap gap-1">
-                {todayFlags.arrival && (
-                  <span className="gantt-room-today-badge gantt-room-today-badge--in">
-                    Sosire azi
-                  </span>
-                )}
-                {todayFlags.departure && (
-                  <span className="gantt-room-today-badge gantt-room-today-badge--out">
-                    Plecare azi
-                  </span>
-                )}
-              </span>
-            )}
+            {needsCleaning && <BroomIcon />}
           </div>
         </div>
       </td>

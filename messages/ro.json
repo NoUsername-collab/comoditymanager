@@ -2015,7 +2015,8 @@
         "checkout": {
           "set": "Check-out recepție",
           "undo": "Check-out anulat"
-        }
+        },
+        "dates_edited": "Date sejur modificate"
       },
       "guest": {
         "created": "Client nou",

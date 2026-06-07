@@ -440,6 +440,7 @@ export async function moveBookingRoomFromPivot(input: {
         plan.mode === "full"
           ? `Mutare cameră: ${booking.guest_name} · tot sejurul`
           : `Mutare cameră: ${booking.guest_name} · pivot ${plan.pivot}`,
+      undoable: plan.mode === "full",
       metadata: {
         source_room_id: input.sourceRoomId,
         target_room_id: input.targetRoomId,

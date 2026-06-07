@@ -300,6 +300,10 @@ export async function editBookingDatesAction(
     const { getTenantScope } = await import("@/lib/tenant/scope");
     const { tenantId, supabase } = await getTenantScope();
     const { logAdminActivityFromSession } = await import("@/services/activity-log");
+    const { getBookingById } = await import("@/services/bookings");
+
+    const before = await getBookingById(id);
+    if (!before) throw new Error("booking.not_found");
 
     const { error } = await supabase
       .from("bookings")
@@ -323,7 +327,17 @@ export async function editBookingDatesAction(
       entityType: "booking",
       entityId: id,
       summary: `Date modificate: ${check_in} → ${check_out}, ${num_adults}A/${num_children}C`,
-      metadata: { check_in, check_out, num_adults, num_children },
+      undoable: true,
+      metadata: {
+        check_in,
+        check_out,
+        num_adults,
+        num_children,
+        prev_check_in: before.check_in,
+        prev_check_out: before.check_out,
+        prev_num_adults: before.num_adults,
+        prev_num_children: before.num_children,
+      },
     });
 
     revalidateBookingDetailSurfaces(id);

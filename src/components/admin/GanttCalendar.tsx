@@ -1018,7 +1018,7 @@ export function GanttCalendar({
                       <td
                         colSpan={2}
                         className={[
-                          "gantt-building-header px-2 py-2 text-left",
+                          "gantt-building-header px-2 py-1 text-left",
                           focused && "gantt-building-header--focused",
                           dimHeader && "gantt-building-header--dimmed",
                         ]
@@ -1040,7 +1040,7 @@ export function GanttCalendar({
                           )
                         }
                       >
-                        <div className="gantt-building-header__inner flex items-center gap-2">
+                        <div className="gantt-building-header__inner flex items-center gap-1.5">
                           <button
                             type="button"
                             className={[
@@ -1067,18 +1067,16 @@ export function GanttCalendar({
                           </button>
                           <GanttBuildingMarker
                             acMode={group.buildingAcMode}
-                            size="lg"
+                            size="sm"
                             buildingHasAnyRoomAc={group.hasAnyRoomAc}
                           />
-                          <div className="min-w-0 flex-1">
-                            <span className="gantt-building-header__title">
-                              {group.buildingName}
-                            </span>
-                            <span className="gantt-building-header__count">
-                              {group.rooms.length}{" "}
-                              {group.rooms.length === 1 ? tCommon("room") : tCommon("rooms")}
-                            </span>
-                          </div>
+                          <span className="gantt-building-header__title">
+                            {group.buildingName}
+                          </span>
+                          <span className="gantt-building-header__count">
+                            {group.rooms.length}{" "}
+                            {group.rooms.length === 1 ? tCommon("room") : tCommon("rooms")}
+                          </span>
                         </div>
                       </td>
                     </tr>

@@ -1916,7 +1916,8 @@
         "checkout": {
           "set": "Front desk check-out",
           "undo": "Check-out undone"
-        }
+        },
+        "dates_edited": "Stay dates edited"
       },
       "guest": {
         "created": "New guest",

@@ -6,6 +6,32 @@ import { useTranslations } from "next-intl";
 import { undoActivityLogAction } from "@/app/[locale]/admin/(panel)/activity/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
+function UndoIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      className={className}
+      aria-hidden
+    >
+      <path
+        d="M3.5 5.5h6a3.5 3.5 0 0 1 0 7H7"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6 3 3.5 5.5 6 8"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 type Props = {
   logId: string;
   compact?: boolean;
@@ -25,8 +51,9 @@ export function ActivityUndoButton({ logId, compact = false, className = "" }: P
       aria-label={t("undo")}
       disabled={pending}
       className={[
-        "inline-flex items-center gap-1 rounded-md border border-amber-200/90 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900 transition hover:bg-amber-100 disabled:opacity-50",
-        compact && "px-1.5",
+        "activity-undo-btn",
+        compact && "activity-undo-btn--compact",
+        pending && "activity-undo-btn--pending",
         className,
       ]
         .filter(Boolean)
@@ -53,7 +80,7 @@ export function ActivityUndoButton({ logId, compact = false, className = "" }: P
         });
       }}
     >
-      <span aria-hidden>↩</span>
+      <UndoIcon className="activity-undo-btn__icon" />
       {!compact && <span>{pending ? t("undoPending") : t("undo")}</span>}
     </button>
   );

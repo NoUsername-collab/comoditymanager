@@ -11,6 +11,7 @@ import {
   logAdminActivityFromSession,
 } from "@/services/activity-log";
 import {
+  getBookingById,
   rescheduleBookingDates,
   undoBookingCheckIn,
   undoBookingCheckOut,
@@ -18,6 +19,7 @@ import {
 import { updateBuildingDefaultPrice } from "@/services/buildings";
 import { deleteRoomBlock } from "@/services/room-blocks";
 import { releaseRoomHold } from "@/services/room-holds";
+import { syncBookingRoomSegments } from "@/services/booking-segments";
 
 function metaString(m: Record<string, unknown>, key: string): string | null {
   const v = m[key];
@@ -59,12 +61,40 @@ async function undoBookingShifted(entry: ActivityLogEntry): Promise<void> {
 async function undoBookingCheckInSet(entry: ActivityLogEntry): Promise<void> {
   const bookingId = entry.entity_id;
   if (!bookingId) throw new Error("activity.undo_missing_booking");
+
+  // If this was an edit (has previous_at), restore the previous value
+  const previousAt = metaString(entry.metadata, "previous_at");
+  if (previousAt) {
+    const { tenantId, supabase } = await getTenantScope();
+    const { error } = await supabase
+      .from("bookings")
+      .update({ actual_check_in_at: previousAt })
+      .eq("tenant_id", tenantId)
+      .eq("id", bookingId);
+    if (error) throw new Error(error.message);
+    return;
+  }
+
   await undoBookingCheckIn(bookingId);
 }
 
 async function undoBookingCheckOutSet(entry: ActivityLogEntry): Promise<void> {
   const bookingId = entry.entity_id;
   if (!bookingId) throw new Error("activity.undo_missing_booking");
+
+  // If this was an edit (has previous_at), restore the previous value
+  const previousAt = metaString(entry.metadata, "previous_at");
+  if (previousAt) {
+    const { tenantId, supabase } = await getTenantScope();
+    const { error } = await supabase
+      .from("bookings")
+      .update({ actual_check_out_at: previousAt })
+      .eq("tenant_id", tenantId)
+      .eq("id", bookingId);
+    if (error) throw new Error(error.message);
+    return;
+  }
+
   await undoBookingCheckOut(bookingId);
 }
 
@@ -138,6 +168,74 @@ async function undoOccupancyBlock(entry: ActivityLogEntry): Promise<void> {
   await deleteRoomBlock(blockId);
 }
 
+async function undoBookingDatesEdited(entry: ActivityLogEntry): Promise<void> {
+  const bookingId = entry.entity_id;
+  if (!bookingId) throw new Error("activity.undo_missing_booking");
+
+  const prevIn = metaString(entry.metadata, "prev_check_in");
+  const prevOut = metaString(entry.metadata, "prev_check_out");
+  const prevAdults = entry.metadata.prev_num_adults;
+  const prevChildren = entry.metadata.prev_num_children;
+
+  if (!prevIn || !prevOut) throw new Error("activity.undo_missing_metadata");
+
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("bookings")
+    .update({
+      check_in: prevIn,
+      check_out: prevOut,
+      num_adults: prevAdults != null ? Number(prevAdults) : undefined,
+      num_children: prevChildren != null ? Number(prevChildren) : undefined,
+    })
+    .eq("tenant_id", tenantId)
+    .eq("id", bookingId);
+
+  if (error) throw new Error(error.message);
+
+  await syncBookingRoomSegments(bookingId).catch(() => {});
+}
+
+async function undoBookingRoomMoved(entry: ActivityLogEntry): Promise<void> {
+  const bookingId = entry.entity_id;
+  if (!bookingId) throw new Error("activity.undo_missing_booking");
+
+  const moveMode = metaString(entry.metadata, "move_mode");
+  if (moveMode !== "full") {
+    throw new Error("activity.undo_not_supported");
+  }
+
+  const sourceRoomId = metaString(entry.metadata, "source_room_id");
+  const targetRoomId = metaString(entry.metadata, "target_room_id");
+  if (!sourceRoomId || !targetRoomId) {
+    throw new Error("activity.undo_missing_metadata");
+  }
+
+  const booking = await getBookingById(bookingId);
+  if (!booking) throw new Error("booking.not_found");
+
+  // Reverse the move: target → source
+  const { tenantId, supabase } = await getTenantScope();
+
+  // Update segment
+  const { error: segErr } = await supabase
+    .from("booking_room_segments")
+    .update({ room_id: sourceRoomId })
+    .eq("tenant_id", tenantId)
+    .eq("booking_id", bookingId)
+    .eq("room_id", targetRoomId);
+  if (segErr) throw new Error(segErr.message);
+
+  // Update booking_rooms
+  const { error: brErr } = await supabase
+    .from("booking_rooms")
+    .update({ room_id: sourceRoomId })
+    .eq("tenant_id", tenantId)
+    .eq("booking_id", bookingId)
+    .eq("room_id", targetRoomId);
+  if (brErr) throw new Error(brErr.message);
+}
+
 async function undoBuildingPrice(entry: ActivityLogEntry): Promise<void> {
   const buildingId = entry.entity_id;
   const previous = entry.metadata.previous_price_per_night;
@@ -159,6 +257,10 @@ async function executeUndoHandler(entry: ActivityLogEntry): Promise<void> {
       return undoBookingCancelled(entry);
     case "booking.confirmed":
       return undoBookingConfirmed(entry);
+    case "booking.dates_edited":
+      return undoBookingDatesEdited(entry);
+    case "booking.room_moved":
+      return undoBookingRoomMoved(entry);
     case "occupancy.hold_created":
       return undoOccupancyHold(entry);
     case "occupancy.block_created":
