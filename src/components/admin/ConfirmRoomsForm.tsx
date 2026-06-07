@@ -148,6 +148,31 @@ export function ConfirmRoomsForm({
         </div>
       )}
 
+      {/* ── Room selection progress slider ────────────────────── */}
+      {canFulfill && minRoomsNeeded > 0 && (
+        <div className="bd-room-progress">
+          <div className="bd-room-progress__track">
+            <div
+              className={`bd-room-progress__fill ${selected.size >= minRoomsNeeded ? "bd-room-progress__fill--done" : ""}`}
+              style={{ width: `${Math.min((selected.size / minRoomsNeeded) * 100, 100)}%` }}
+            />
+            {/* Notch marks for each room needed */}
+            {Array.from({ length: minRoomsNeeded }, (_, i) => (
+              <span
+                key={i}
+                className={`bd-room-progress__notch ${i < selected.size ? "bd-room-progress__notch--filled" : ""}`}
+                style={{ left: `${((i + 1) / minRoomsNeeded) * 100}%` }}
+              />
+            ))}
+          </div>
+          <span className={`bd-room-progress__label ${selected.size >= minRoomsNeeded ? "bd-room-progress__label--done" : ""}`}>
+            {selected.size >= minRoomsNeeded
+              ? tConfirm("roomGoalReached")
+              : tConfirm("roomProgress", { current: selected.size, needed: minRoomsNeeded })}
+          </span>
+        </div>
+      )}
+
       {/* ── Room tiles grid ──────────────────────────────────── */}
       {canFulfill && availableRooms.length > 0 && (
         <>

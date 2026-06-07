@@ -1379,7 +1379,9 @@
       "supplementLabel": "Доплащане (+ RON, върху стандартната цена)",
       "zero": "0",
       "enterValidAmount": "Въведи валидна сума.",
-      "recordedTotal": "Записана сума"
+      "recordedTotal": "Записана сума",
+      "roomProgress": "{current} / {needed} стаи избрани",
+      "roomGoalReached": "Достатъчно стаи избрани!"
     },
     "buildingsForm": {
       "buildingNameRequired": "Име на сграда *",
@@ -1682,7 +1684,9 @@
       "adultSingular": "възрастен",
       "adultPlural": "възрастни",
       "childSingular": "дете",
-      "childPlural": "деца"
+      "childPlural": "деца",
+      "editCheckout": "Редактирай напускане",
+      "checkedInHint": "Гостът е настанен — може да се промени само датата на напускане."
     },
     "gantt": {
       "range": {

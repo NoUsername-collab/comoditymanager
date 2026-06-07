@@ -76,7 +76,8 @@ export default async function BookingDetailPage({
   const isCancelled = booking.status === "anulata";
   const canConfirm = booking.status === "cerere_noua" || isCancelled;
   const canCancel = booking.status !== "anulata";
-  const canEditDates = booking.status === "cerere_noua";
+  const canEditDates = true;
+  const checkedIn = !!booking.actual_check_in_at;
   const cancelMessage =
     booking.status === "confirmata"
       ? tPage("cancelConfirmedMsg", {
@@ -143,19 +144,18 @@ export default async function BookingDetailPage({
             >
               {tPage("viewInCalendar")} →
             </Link>
-            {canEditDates && (
-              <span className="bd-banner__edit-hint">
-                <BookingStayEditor
-                  bookingId={booking.id}
-                  checkIn={booking.check_in}
-                  checkOut={booking.check_out}
-                  numAdults={booking.num_adults}
-                  numChildren={booking.num_children}
-                  editable={canEditDates}
-                  editAction={editBookingDatesAction}
-                />
-              </span>
-            )}
+            <span className="bd-banner__edit-hint">
+              <BookingStayEditor
+                bookingId={booking.id}
+                checkIn={booking.check_in}
+                checkOut={booking.check_out}
+                numAdults={booking.num_adults}
+                numChildren={booking.num_children}
+                editable={canEditDates}
+                checkedIn={checkedIn}
+                editAction={editBookingDatesAction}
+              />
+            </span>
           </div>
         </div>
       </div>

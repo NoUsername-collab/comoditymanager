@@ -11,6 +11,8 @@ type Props = {
   numAdults: number;
   numChildren: number;
   editable: boolean;
+  /** Guest already checked in — only allow checkout date changes */
+  checkedIn?: boolean;
   editAction: (formData: FormData) => Promise<{ ok: boolean; error?: string }>;
 };
 
@@ -21,6 +23,7 @@ export function BookingStayEditor({
   numAdults: initialAdults,
   numChildren: initialChildren,
   editable,
+  checkedIn = false,
   editAction,
 }: Props) {
   const t = useTranslations("admin.stayEditor");
@@ -85,7 +88,7 @@ export function BookingStayEditor({
             onClick={() => setEditing(true)}
             className="bd-stay__edit-btn"
           >
-            {t("editDates")}
+            {checkedIn ? t("editCheckout") : t("editDates")}
           </button>
         )}
         {saved && (
@@ -97,12 +100,18 @@ export function BookingStayEditor({
 
   return (
     <div className="admin-stay-editor">
+      {checkedIn && (
+        <p className="admin-stay-editor__checked-in-hint">
+          {t("checkedInHint")}
+        </p>
+      )}
       <div className="admin-stay-editor__grid">
-        <label className="admin-stay-editor__field">
+        <label className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}>
           <span className="admin-stay-editor__label">{t("checkIn")}</span>
           <input
             type="date"
             value={checkIn}
+            disabled={checkedIn}
             onChange={(e) => {
               setCheckIn(e.target.value);
               if (e.target.value >= checkOut) {
@@ -124,22 +133,24 @@ export function BookingStayEditor({
             className="admin-stay-editor__input"
           />
         </label>
-        <label className="admin-stay-editor__field">
+        <label className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}>
           <span className="admin-stay-editor__label">{t("adults")}</span>
           <input
             type="number"
             min={1}
             value={numAdults}
+            disabled={checkedIn}
             onChange={(e) => setNumAdults(Math.max(1, Number(e.target.value) || 1))}
             className="admin-stay-editor__input"
           />
         </label>
-        <label className="admin-stay-editor__field">
+        <label className={`admin-stay-editor__field ${checkedIn ? "admin-stay-editor__field--locked" : ""}`}>
           <span className="admin-stay-editor__label">{t("children")}</span>
           <input
             type="number"
             min={0}
             value={numChildren}
+            disabled={checkedIn}
             onChange={(e) => setNumChildren(Math.max(0, Number(e.target.value) || 0))}
             className="admin-stay-editor__input"
           />

@@ -1458,7 +1458,9 @@
       "supplementLabel": "Supliment (+ RON, pe lângă prețul standard)",
       "zero": "0",
       "enterValidAmount": "Introdu o sumă validă.",
-      "recordedTotal": "Total înregistrat"
+      "recordedTotal": "Total înregistrat",
+      "roomProgress": "{current} / {needed} camere selectate",
+      "roomGoalReached": "Suficiente camere selectate!"
     },
     "buildingsForm": {
       "buildingNameRequired": "Nume clădire *",
@@ -1774,7 +1776,9 @@
       "adultSingular": "adult",
       "adultPlural": "adulți",
       "childSingular": "copil",
-      "childPlural": "copii"
+      "childPlural": "copii",
+      "editCheckout": "Editează checkout",
+      "checkedInHint": "Oaspetele a făcut check-in — poți modifica doar data de checkout."
     },
     "gantt": {
       "range": {

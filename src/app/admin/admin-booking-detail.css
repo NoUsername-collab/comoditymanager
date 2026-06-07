@@ -442,6 +442,29 @@
 .admin-stay-editor__save:active { filter: brightness(0.9); transform: scale(0.97); transition-duration: 0.06s; }
 .admin-stay-editor__save:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Checked-in hint */
+.admin-stay-editor__checked-in-hint {
+  margin: 0 0 0.35rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 0.35rem;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+/* Locked fields (check-in, adults, children when checked in) */
+.admin-stay-editor__field--locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.admin-stay-editor__field--locked .admin-stay-editor__input {
+  background: var(--surface-2, #f4f4f5);
+  cursor: not-allowed;
+}
+
 /* ── Operational panel (check-in/out steps) ───────────────────── */
 .bd-ops {
   margin-top: 0.5rem;
@@ -707,6 +730,75 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
+}
+
+/* ── Room selection progress slider ─────────────────────────── */
+.bd-room-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.bd-room-progress__track {
+  position: relative;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 60%, transparent);
+  overflow: visible;
+}
+
+.bd-room-progress__fill {
+  position: absolute;
+  inset: 0;
+  right: auto;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+  transition: width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bd-room-progress__fill--done {
+  background: linear-gradient(90deg, #10b981, #059669);
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4);
+  animation: bd-progress-glow 0.6s ease-out;
+}
+
+.bd-room-progress__notch {
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 0.75rem;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--admin-panel-border, #d4d4d8) 80%, transparent);
+  transform: translate(-50%, -50%);
+  transition: background 0.3s;
+}
+
+.bd-room-progress__notch--filled {
+  background: color-mix(in srgb, var(--admin-accent, #059669) 50%, transparent);
+}
+
+.bd-room-progress__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--admin-text-muted, #71717a);
+  transition: color 0.3s;
+}
+
+.bd-room-progress__label--done {
+  color: var(--admin-accent, #059669);
+  animation: bd-progress-label-pop 0.4s ease-out;
+}
+
+@keyframes bd-progress-glow {
+  0% { box-shadow: 0 0 0 rgba(5, 150, 105, 0); }
+  50% { box-shadow: 0 0 14px rgba(5, 150, 105, 0.6); }
+  100% { box-shadow: 0 0 8px rgba(5, 150, 105, 0.4); }
+}
+
+@keyframes bd-progress-label-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 /* ── Room tile grid (new visual approach) ────────────────────── */
@@ -1022,5 +1114,21 @@
 
   .bd-room-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .bd-room-progress__fill {
+    transition: none;
+  }
+
+  .bd-room-progress__fill--done {
+    animation: none;
+    box-shadow: none;
+  }
+
+  .bd-room-progress__label--done {
+    animation: none;
   }
 }
