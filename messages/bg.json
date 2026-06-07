@@ -622,7 +622,9 @@
         "guestInfo": "Информация за госта",
         "roomsAndPrice": "Стая и цена",
         "email": "Имейл",
-        "phone": "Телефон"
+        "phone": "Телефон",
+        "night": "нощ",
+        "nights": "нощи"
       },
       "roomsNew": {
         "title": "New room — Hospira",
@@ -1674,7 +1676,11 @@
       "saved": "Запазено успешно!",
       "cancel": "Отказ",
       "saveDates": "Запази",
-      "saving": "Запазване..."
+      "saving": "Запазване...",
+      "adultSingular": "възрастен",
+      "adultPlural": "възрастни",
+      "childSingular": "дете",
+      "childPlural": "деца"
     },
     "gantt": {
       "range": {

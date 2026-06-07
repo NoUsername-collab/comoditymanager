@@ -98,7 +98,8 @@ export function BookingStayEditor({
         <div className="bd-stay__meta">
           <span className="bd-stay__pill">{nights} {nights === 1 ? t("nightSingular") : t("nightPlural")}</span>
           <span className="bd-stay__pill bd-stay__pill--muted">
-            {numAdults}A{numChildren > 0 ? ` + ${numChildren}C` : ""}
+            {numAdults} {numAdults === 1 ? t("adultSingular") : t("adultPlural")}
+            {numChildren > 0 ? `, ${numChildren} ${numChildren === 1 ? t("childSingular") : t("childPlural")}` : ""}
           </span>
           {editable && (
             <button

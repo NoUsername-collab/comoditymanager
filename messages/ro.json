@@ -675,7 +675,9 @@
         "guestInfo": "Informații client",
         "roomsAndPrice": "Cameră & preț",
         "email": "Email",
-        "phone": "Telefon"
+        "phone": "Telefon",
+        "night": "noapte",
+        "nights": "nopți"
       },
       "roomsNew": {
         "title": "Cameră nouă — Hospira",
@@ -1766,7 +1768,11 @@
       "saved": "Salvat cu succes!",
       "cancel": "Anulează",
       "saveDates": "Salvează",
-      "saving": "Se salvează..."
+      "saving": "Se salvează...",
+      "adultSingular": "adult",
+      "adultPlural": "adulți",
+      "childSingular": "copil",
+      "childPlural": "copii"
     },
     "gantt": {
       "range": {

@@ -34,6 +34,13 @@ function safeReturnTo(raw: string | undefined): string {
   return path;
 }
 
+function guestsLabel(adults: number, children: number): string {
+  const parts: string[] = [];
+  parts.push(`${adults} ${adults === 1 ? "adult" : "adults"}`);
+  if (children > 0) parts.push(`${children} ${children === 1 ? "child" : "children"}`);
+  return parts.join(", ");
+}
+
 export default async function BookingDetailPage({
   params,
   searchParams,
@@ -70,6 +77,7 @@ export default async function BookingDetailPage({
     })
   ).catch(() => []);
 
+  const nights = stayNightCount(booking.check_in, booking.check_out);
   const isCancelled = booking.status === "anulata";
   const canConfirm = booking.status === "cerere_noua" || isCancelled;
   const canCancel = booking.status !== "anulata";
@@ -92,25 +100,23 @@ export default async function BookingDetailPage({
       title={`${tPage("title")} — ${booking.guest_name}`}
       backHref="/admin/bookings"
       backLabel={tCommon("requests")}
-      className="max-w-6xl"
+      className="bd-page-frame"
     >
-      {/* ── Top banner: reference + stay summary + status ───────── */}
+      {/* ── Top banner ──────────────────────────────────────────── */}
       <div className={`bd-banner bd-banner--${booking.status}`}>
         <div className="bd-banner__left">
           <span className="bd-banner__name">{booking.guest_name}</span>
-          <span className="bd-banner__ref">
-            {formatBookingRef(booking.id)}
-          </span>
+          <span className="bd-banner__ref">{formatBookingRef(booking.id)}</span>
         </div>
         <div className="bd-banner__center">
           <span className="bd-banner__stay">
             {formatStayPeriod(booking.check_in, booking.check_out, true)}
           </span>
           <span className="bd-banner__nights">
-            {stayNightCount(booking.check_in, booking.check_out)}N
+            {nights} {nights === 1 ? tPage("night") : tPage("nights")}
           </span>
           <span className="bd-banner__guests">
-            {booking.num_adults}A{booking.num_children > 0 ? ` +${booking.num_children}C` : ""}
+            {guestsLabel(booking.num_adults, booking.num_children)}
           </span>
           <Link
             href={bookingCalendarHref(booking.check_in)}
@@ -124,7 +130,7 @@ export default async function BookingDetailPage({
         </span>
       </div>
 
-      {/* ── Guest alert banner (danger/watchlist only) ──────────── */}
+      {/* ── Guest alert banner ──────────────────────────────────── */}
       {booking.guest_alert_level !== "normal" && (
         <div
           className={[
@@ -143,11 +149,11 @@ export default async function BookingDetailPage({
         </div>
       )}
 
-      {/* ── Two-column main layout ─────────────────────────────── */}
-      <div className="bd-grid">
-        {/* ─── LEFT COLUMN: info at a glance ───────────────────── */}
-        <div className="bd-col bd-col--info">
-          {/* Guest profile — compact inline chips */}
+      {/* ═══ 3-column layout ════════════════════════════════════ */}
+      <div className="bd-grid3">
+        {/* ─── COL 1: guest info ───────────────────────────────── */}
+        <div className="bd-col">
+          {/* Profile badges */}
           {booking.guest_alert_level === "normal" && booking.guest_profile && (
             <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("guestProfile")}</p>
@@ -160,53 +166,50 @@ export default async function BookingDetailPage({
             </div>
           )}
 
-          {/* Stay details + Guest info — merged into one card */}
+          {/* Stay details */}
           <div className="bd-card">
-            <div className="bd-split-row">
-              <div className="bd-split-row__section">
-                <p className="bd-card__title">{tPage("stayDetails")}</p>
-                <BookingStayEditor
-                  bookingId={booking.id}
-                  checkIn={booking.check_in}
-                  checkOut={booking.check_out}
-                  numAdults={booking.num_adults}
-                  numChildren={booking.num_children}
-                  editable={canEditDates}
-                  editAction={editBookingDatesAction}
-                />
-              </div>
-              <div className="bd-split-row__divider" />
-              <div className="bd-split-row__section">
-                <p className="bd-card__title">{tPage("guestInfo")}</p>
-                <div className="bd-info-row">
-                  <div>
-                    <span className="bd-info-label">{tPage("email")}</span>
-                    <span className="bd-info-value">{booking.guest_email}</span>
-                  </div>
-                  <div>
-                    <span className="bd-info-label">{tPage("phone")}</span>
-                    <span className="bd-info-value">{booking.guest_phone || "—"}</span>
-                  </div>
-                  {booking.has_minor && booking.minor_age && (
-                    <div>
-                      <span className="bd-info-label">{tPage("minorLabel")}</span>
-                      <span className="bd-info-value">{booking.minor_age}</span>
-                    </div>
-                  )}
-                </div>
-                {booking.guest_id && (
-                  <Link
-                    href={`/admin/guests/${booking.guest_id}`}
-                    className="bd-link"
-                  >
-                    {tPage("guestProfile")} →
-                  </Link>
-                )}
-              </div>
-            </div>
+            <p className="bd-card__title">{tPage("stayDetails")}</p>
+            <BookingStayEditor
+              bookingId={booking.id}
+              checkIn={booking.check_in}
+              checkOut={booking.check_out}
+              numAdults={booking.num_adults}
+              numChildren={booking.num_children}
+              editable={canEditDates}
+              editAction={editBookingDatesAction}
+            />
           </div>
 
-          {/* Dedup warning */}
+          {/* Guest contact info */}
+          <div className="bd-card">
+            <p className="bd-card__title">{tPage("guestInfo")}</p>
+            <div className="bd-info-stack">
+              <div className="bd-info-item">
+                <span className="bd-info-label">{tPage("email")}</span>
+                <span className="bd-info-value">{booking.guest_email}</span>
+              </div>
+              <div className="bd-info-item">
+                <span className="bd-info-label">{tPage("phone")}</span>
+                <span className="bd-info-value">{booking.guest_phone || "—"}</span>
+              </div>
+              {booking.has_minor && booking.minor_age && (
+                <div className="bd-info-item">
+                  <span className="bd-info-label">{tPage("minorLabel")}</span>
+                  <span className="bd-info-value">{booking.minor_age}</span>
+                </div>
+              )}
+            </div>
+            {booking.guest_id && (
+              <Link
+                href={`/admin/guests/${booking.guest_id}`}
+                className="bd-link"
+              >
+                {tPage("guestProfile")} →
+              </Link>
+            )}
+          </div>
+
+          {/* Dedup */}
           {dedupCandidates.length > 0 && (
             <GuestDedupWarning
               candidates={dedupCandidates}
@@ -247,7 +250,7 @@ export default async function BookingDetailPage({
             </div>
           )}
 
-          {/* Cancel — bottom of left column */}
+          {/* Cancel */}
           {canCancel && (
             <div className="bd-cancel-zone">
               <BookingCancelButton
@@ -265,18 +268,15 @@ export default async function BookingDetailPage({
           )}
         </div>
 
-        {/* ─── RIGHT COLUMN: actions + history ─────────────────── */}
-        <div className="bd-col bd-col--actions">
-          {/* Room allocation / confirm (for new requests & cancelled) */}
+        {/* ─── COL 2: actions (room selector / operational) ────── */}
+        <div className="bd-col">
           {canConfirm && (
             <div className={`bd-card bd-card--action ${isCancelled ? "bd-card--reaccept" : ""}`}>
               <p className="bd-card__title">
                 {isCancelled ? tPage("reacceptTitle") : tPage("confirmAllocate")}
               </p>
               {isCancelled && (
-                <p className="text-xs text-zinc-500 mb-2">
-                  {tPage("reacceptHint")}
-                </p>
+                <p className="bd-confirm__hint">{tPage("reacceptHint")}</p>
               )}
               <ConfirmRoomsForm
                 bookingId={booking.id}
@@ -296,7 +296,6 @@ export default async function BookingDetailPage({
             </div>
           )}
 
-          {/* Operational panel (confirmed bookings: phone, check-in/out) */}
           {booking.status === "confirmata" && (
             <div className="bd-card bd-card--action">
               <BookingGuestPhoneForm
@@ -314,9 +313,11 @@ export default async function BookingDetailPage({
               />
             </div>
           )}
+        </div>
 
-          {/* Activity / History — always in right column */}
-          <div className="bd-card">
+        {/* ─── COL 3: activity / history ───────────────────────── */}
+        <div className="bd-col">
+          <div className="bd-card bd-card--history">
             <BookingActivitySection
               bookingId={booking.id}
               checkIn={booking.check_in}

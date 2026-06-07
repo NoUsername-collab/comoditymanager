@@ -675,7 +675,9 @@
         "guestInfo": "Guest information",
         "roomsAndPrice": "Room & price",
         "email": "Email",
-        "phone": "Phone"
+        "phone": "Phone",
+        "night": "night",
+        "nights": "nights"
       },
       "roomsNew": {
         "title": "New room — Hospira",
@@ -1764,7 +1766,11 @@
       "saved": "Saved successfully!",
       "cancel": "Cancel",
       "saveDates": "Save",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "adultSingular": "adult",
+      "adultPlural": "adults",
+      "childSingular": "child",
+      "childPlural": "children"
     },
     "gantt": {
       "range": {
