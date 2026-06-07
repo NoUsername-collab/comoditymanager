@@ -5,10 +5,11 @@
    Col 3: activity history
    Banner: name + status top, stay dates + meta bottom
    Collapses: 3→2→1 on smaller screens
+   Room selector: visual tile cards in a grid
    ═══════════════════════════════════════════════════════════════════ */
 
 .bd-page-frame {
-  max-width: 80rem;
+  max-width: 90rem;
   margin-inline: auto;
 }
 
@@ -16,13 +17,13 @@
 .bd-banner {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-  padding: 0.55rem 0.8rem;
-  border-radius: 0.5rem;
+  gap: 0.4rem;
+  padding: 0.7rem 1rem;
+  border-radius: 0.6rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
-  border-left: 3px solid var(--admin-panel-border, #e4e4e7);
+  border-left: 4px solid var(--admin-panel-border, #e4e4e7);
   background: var(--surface, #fff);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
 .bd-banner--cerere_noua { border-left-color: #f59e0b; }
@@ -34,19 +35,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
 
 .bd-banner__identity {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.55rem;
   min-width: 0;
 }
 
 .bd-banner__name {
-  font-size: 0.92rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--admin-text, #18181b);
   letter-spacing: -0.01em;
@@ -54,38 +55,38 @@
 
 .bd-banner__ref {
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--admin-text-muted, #71717a);
   background: var(--surface-2, #f4f4f5);
-  padding: 0.1rem 0.4rem;
-  border-radius: 0.3rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 0.35rem;
 }
 
 /* Row 2: stay dates + meta pills */
 .bd-banner__stay-row {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
-  padding-top: 0.2rem;
+  padding-top: 0.25rem;
   border-top: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 50%, transparent);
 }
 
 .bd-banner__dates {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
 }
 
 .bd-banner__date-pair {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
 
 .bd-banner__date-label {
-  font-size: 0.5rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -93,42 +94,42 @@
 }
 
 .bd-banner__date-val {
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--admin-text, #18181b);
   white-space: nowrap;
 }
 
 .bd-banner__date-sep {
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   color: var(--admin-text-muted, #a1a1aa);
-  margin: 0 0.1rem;
+  margin: 0 0.12rem;
 }
 
 .bd-banner__meta {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
 .bd-banner__nights {
-  font-size: 0.56rem;
+  font-size: 0.7rem;
   font-weight: 800;
   color: #fff;
   background: var(--admin-accent, #059669);
-  padding: 0.1rem 0.4rem;
+  padding: 0.12rem 0.5rem;
   border-radius: 9999px;
 }
 
 .bd-banner__guests {
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--admin-text-muted, #71717a);
 }
 
 .bd-banner__cal-link {
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--admin-accent, #059669);
   text-decoration: none;
@@ -151,9 +152,9 @@
 .bd-status {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -167,10 +168,10 @@
 
 /* ── Alert banners ─────────────────────────────────────────────── */
 .bd-alert {
-  padding: 0.5rem 0.7rem;
-  border-radius: 0.45rem;
-  font-size: 0.78rem;
-  margin-bottom: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.55rem;
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
 }
 
 .bd-alert--danger { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
@@ -180,7 +181,7 @@
 .bd-grid3 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
-  gap: 0.5rem;
+  gap: 0.6rem;
   align-items: start;
   margin-inline: auto;
 }
@@ -188,13 +189,13 @@
 .bd-col {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 /* ── Cards ─────────────────────────────────────────────────────── */
 .bd-card {
-  padding: 0.55rem 0.7rem;
-  border-radius: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.6rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   background: var(--surface, #fff);
 }
@@ -210,28 +211,28 @@
 }
 
 .bd-card--tight {
-  padding: 0.4rem 0.7rem;
+  padding: 0.5rem 0.9rem;
 }
 
 .bd-card--history {
   position: sticky;
-  top: 0.5rem;
+  top: 0.6rem;
 }
 
 .bd-card__title {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--admin-text-muted, #71717a);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
 /* ── Info stack (vertical list of label/value) ────────────────── */
 .bd-info-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.4rem;
 }
 
 .bd-info-item {
@@ -240,7 +241,7 @@
 }
 
 .bd-info-label {
-  font-size: 0.52rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -248,7 +249,7 @@
 }
 
 .bd-info-value {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--admin-text, #18181b);
   word-break: break-all;
@@ -257,11 +258,11 @@
 /* ── Links ─────────────────────────────────────────────────────── */
 .bd-link {
   display: inline-block;
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--admin-accent, #059669);
   text-decoration: none;
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
 }
 
 .bd-link:hover { text-decoration: underline; }
@@ -274,11 +275,11 @@
 
 /* ── Notes ──────────────────────────────────────────────────────── */
 .bd-notes {
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.35rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.45rem;
   background: var(--surface-2, #f4f4f5);
   border: 1px solid var(--admin-panel-border, #e4e4e7);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   color: var(--admin-text, #18181b);
   white-space: pre-wrap;
   line-height: 1.45;
@@ -288,48 +289,48 @@
 .bd-room-price {
   display: flex;
   align-items: baseline;
-  gap: 0.4rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .bd-room-price__rooms {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--admin-text, #18181b);
 }
 
 .bd-room-price__total {
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--admin-accent, #059669);
   background: color-mix(in srgb, var(--admin-accent, #059669) 8%, transparent);
-  padding: 0.08rem 0.4rem;
-  border-radius: 0.25rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.3rem;
 }
 
 /* ── Cancel zone ───────────────────────────────────────────────── */
 .bd-cancel-zone {
-  padding: 0.25rem 0;
+  padding: 0.3rem 0;
   border-top: 1px dashed color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 60%, transparent);
-  margin-top: 0.1rem;
+  margin-top: 0.12rem;
 }
 
 /* ── Stay inline (edit button + saved indicator in banner) ────── */
 .bd-stay-inline {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
 }
 
 .bd-stay__edit-btn {
-  font-size: 0.56rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--admin-accent, #059669);
   background: color-mix(in srgb, var(--admin-accent, #059669) 8%, transparent);
   border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 20%, transparent);
-  border-radius: 0.3rem;
+  border-radius: 0.35rem;
   cursor: pointer;
-  padding: 0.12rem 0.45rem;
+  padding: 0.15rem 0.55rem;
   transition: background 0.12s;
 }
 
@@ -344,15 +345,15 @@
 }
 
 .bd-stay__saved {
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--admin-accent, #059669);
 }
 
 /* ── Stay Editor (edit mode) ───────────────────────────────────── */
 .admin-stay-editor {
-  padding: 0.5rem;
-  border-radius: 0.45rem;
+  padding: 0.6rem;
+  border-radius: 0.55rem;
   border: 2px solid var(--admin-accent, #059669);
   background: color-mix(in srgb, var(--admin-accent, #059669) 4%, var(--surface, #fff));
 }
@@ -360,27 +361,27 @@
 .admin-stay-editor__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .admin-stay-editor__field { display: block; }
 
 .admin-stay-editor__label {
   display: block;
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--admin-text-muted, #71717a);
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.12rem;
 }
 
 .admin-stay-editor__input {
   width: 100%;
-  padding: 0.3rem 0.45rem;
+  padding: 0.4rem 0.55rem;
   border: 1px solid var(--admin-panel-border, #d4d4d8);
-  border-radius: 0.35rem;
-  font-size: 0.72rem;
+  border-radius: 0.45rem;
+  font-size: 0.9rem;
   color: var(--admin-text, #18181b);
   background: var(--surface, #ffffff);
 }
@@ -392,31 +393,31 @@
 }
 
 .admin-stay-editor__summary {
-  margin-top: 0.3rem;
-  font-size: 0.68rem;
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--admin-text-muted, #71717a);
 }
 
 .admin-stay-editor__error {
-  margin-top: 0.25rem;
-  font-size: 0.68rem;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #dc2626;
 }
 
 .admin-stay-editor__actions {
   display: flex;
-  gap: 0.3rem;
-  margin-top: 0.4rem;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .admin-stay-editor__cancel {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.68rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   border: 1px solid var(--admin-panel-border, #d4d4d8);
-  border-radius: 0.35rem;
+  border-radius: 0.45rem;
   background: var(--surface, #ffffff);
   color: var(--admin-text, #18181b);
   cursor: pointer;
@@ -427,11 +428,11 @@
 
 .admin-stay-editor__save {
   flex: 1;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.68rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   border: none;
-  border-radius: 0.35rem;
+  border-radius: 0.45rem;
   background: var(--admin-accent, #059669);
   color: #ffffff;
   cursor: pointer;
@@ -443,41 +444,41 @@
 
 /* ── Operational panel (check-in/out steps) ───────────────────── */
 .bd-ops {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .bd-ops__steps {
   display: flex;
   align-items: flex-start;
-  margin: 0.4rem 0 0.5rem;
+  margin: 0.5rem 0 0.6rem;
 }
 
 .bd-ops__step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.1rem;
+  gap: 0.12rem;
   flex: 1;
   text-align: center;
 }
 
 .bd-ops__step-dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.6rem;
+  height: 0.6rem;
   border-radius: 50%;
   background: var(--admin-panel-border, #d4d4d8);
   border: 2px solid var(--surface, #fff);
-  box-shadow: 0 0 0 1.5px var(--admin-panel-border, #d4d4d8);
+  box-shadow: 0 0 0 2px var(--admin-panel-border, #d4d4d8);
   transition: background 0.2s, box-shadow 0.2s;
 }
 
 .bd-ops__step--active .bd-ops__step-dot {
   background: var(--admin-accent, #059669);
-  box-shadow: 0 0 0 1.5px var(--admin-accent, #059669);
+  box-shadow: 0 0 0 2px var(--admin-accent, #059669);
 }
 
 .bd-ops__step-label {
-  font-size: 0.5rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -485,7 +486,7 @@
 }
 
 .bd-ops__step-value {
-  font-size: 0.68rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--admin-text, #18181b);
   font-variant-numeric: tabular-nums;
@@ -495,7 +496,7 @@
   flex: 1;
   height: 2px;
   background: var(--admin-panel-border, #d4d4d8);
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
   align-self: flex-start;
   border-radius: 1px;
 }
@@ -504,15 +505,15 @@
 
 .bd-ops__actions {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
 .bd-ops__btn {
-  padding: 0.3rem 0.65rem;
-  font-size: 0.68rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  border-radius: 0.35rem;
+  border-radius: 0.45rem;
   border: none;
   cursor: pointer;
   transition: filter 0.12s, transform 0.06s;
@@ -535,44 +536,44 @@
 
 /* ── Phone warning ────────────────────────────────────────────── */
 .bd-phone-warn {
-  border-radius: 0.45rem;
+  border-radius: 0.55rem;
   border: 1px solid #fca5a5;
   background: #fef2f2;
-  padding: 0.45rem 0.6rem;
-  margin-bottom: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
-.bd-phone-warn__header { display: flex; align-items: flex-start; gap: 0.4rem; }
+.bd-phone-warn__header { display: flex; align-items: flex-start; gap: 0.5rem; }
 
 .bd-phone-warn__icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
   border-radius: 50%;
   background: #dc2626;
   color: #fff;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   font-weight: 900;
   flex-shrink: 0;
 }
 
-.bd-phone-warn__title { font-size: 0.68rem; font-weight: 800; color: #7f1d1d; margin: 0; }
-.bd-phone-warn__hint { font-size: 0.6rem; color: #991b1b; margin: 0.05rem 0 0; }
+.bd-phone-warn__title { font-size: 0.85rem; font-weight: 800; color: #7f1d1d; margin: 0; }
+.bd-phone-warn__hint { font-size: 0.75rem; color: #991b1b; margin: 0.06rem 0 0; }
 
 .bd-phone-warn__form {
   display: flex;
   align-items: flex-end;
-  gap: 0.35rem;
-  margin-top: 0.4rem;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
   flex-wrap: wrap;
 }
 
 .bd-phone-warn__label {
   flex: 1;
   min-width: 8rem;
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -582,11 +583,11 @@
 .bd-phone-warn__input {
   display: block;
   width: 100%;
-  margin-top: 0.15rem;
-  padding: 0.25rem 0.4rem;
-  font-size: 0.72rem;
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem;
   border: 1px solid #fca5a5;
-  border-radius: 0.3rem;
+  border-radius: 0.35rem;
   background: #fff;
   color: var(--admin-text, #18181b);
 }
@@ -594,13 +595,13 @@
 .bd-phone-warn__input:focus { outline: 2px solid #dc2626; outline-offset: -1px; border-color: transparent; }
 
 .bd-phone-warn__save {
-  padding: 0.28rem 0.6rem;
-  font-size: 0.62rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
   background: #991b1b;
   color: #fff;
   border: none;
-  border-radius: 0.3rem;
+  border-radius: 0.35rem;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -613,18 +614,18 @@
 .bd-activity__header {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.4rem;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
 }
 
 .bd-activity__count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.1rem;
-  height: 1.1rem;
-  padding: 0 0.25rem;
-  font-size: 0.52rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  font-size: 0.65rem;
   font-weight: 800;
   color: #fff;
   background: var(--admin-accent, #059669);
@@ -632,64 +633,75 @@
 }
 
 .bd-activity .activity-timeline__card {
-  padding: 0.4rem 0.5rem;
-  border-radius: 0.45rem;
-  font-size: 0.7rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.55rem;
+  font-size: 0.88rem;
 }
 
 .bd-activity .activity-timeline__card p {
-  font-size: 0.68rem;
+  font-size: 0.85rem;
 }
 
 .bd-activity .activity-timeline {
-  max-height: 32rem;
+  max-height: 40rem;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
-/* ── Confirm rooms form ───────────────────────────────────────── */
+/* ═══ Confirm rooms form ═════════════════════════════════════════ */
 .bd-confirm {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .bd-confirm__hint {
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   color: var(--admin-text-muted, #71717a);
   margin: 0;
 }
 
-.bd-confirm__summary {
-  font-size: 0.75rem;
-  color: var(--admin-text, #18181b);
-  margin: 0;
+.bd-confirm__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.bd-confirm__summary-sub { color: var(--admin-text-muted, #71717a); }
+.bd-confirm__guest-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--admin-text, #18181b);
+}
+
+.bd-confirm__min-rooms {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+  background: var(--surface-2, #f4f4f5);
+  padding: 0.1rem 0.45rem;
+  border-radius: 0.3rem;
+}
+
+.bd-confirm__times {
+  font-size: 0.72rem;
+  color: var(--admin-text-muted, #a1a1aa);
+  margin-left: auto;
+}
 
 .bd-confirm__alert {
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.4rem;
-  font-size: 0.72rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .bd-confirm__alert--danger { border: 2px solid #fca5a5; background: #fef2f2; color: #7f1d1d; }
 .bd-confirm__alert--warn { border: 1px solid #fca5a5; background: #fef2f2; color: #7f1d1d; }
-.bd-confirm__alert-detail { font-weight: 400; margin-top: 0.15rem; font-size: 0.68rem; }
-
-.bd-confirm__rooms {
-  max-height: 13rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  scrollbar-width: thin;
-}
+.bd-confirm__alert-detail { font-weight: 400; margin-top: 0.2rem; font-size: 0.85rem; }
 
 .bd-confirm__rooms-label {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--admin-text-muted, #71717a);
   text-transform: uppercase;
@@ -697,123 +709,216 @@
   margin: 0;
 }
 
-.bd-confirm__room-option {
+/* ── Room tile grid (new visual approach) ────────────────────── */
+.bd-room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.bd-room-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+  border: 2px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--surface, #fff);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  user-select: none;
+}
+
+.bd-room-tile:hover {
+  border-color: color-mix(in srgb, var(--admin-accent, #059669) 40%, var(--admin-panel-border, #e4e4e7));
+  background: color-mix(in srgb, var(--admin-accent, #059669) 3%, var(--surface, #fff));
+}
+
+.bd-room-tile--on {
+  border-color: var(--admin-accent, #059669);
+  background: color-mix(in srgb, var(--admin-accent, #059669) 6%, var(--surface, #fff));
+  box-shadow: 0 0 0 1px var(--admin-accent, #059669);
+}
+
+.bd-room-tile:active {
+  transform: scale(0.98);
+  transition-duration: 0.06s;
+}
+
+/* Hidden checkbox */
+.bd-room-tile__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Checkmark badge — top-right corner */
+.bd-room-tile__check {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #fff;
+  background: var(--admin-panel-border, #d4d4d8);
+  transition: background 0.15s;
+}
+
+.bd-room-tile--on .bd-room-tile__check {
+  background: var(--admin-accent, #059669);
+}
+
+/* Room name — big and bold */
+.bd-room-tile__name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--admin-text, #18181b);
+  line-height: 1.2;
+  padding-right: 1.6rem; /* space for checkmark */
+}
+
+/* Building name */
+.bd-room-tile__building {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #a1a1aa);
+}
+
+/* Capacity + price row */
+.bd-room-tile__details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.4rem;
-  padding: 0.3rem 0.45rem;
-  border-radius: 0.4rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  cursor: pointer;
-  transition: border-color 0.12s, background 0.12s;
+  margin-top: 0.15rem;
 }
 
-.bd-confirm__room-option:hover { background: var(--surface-2, #f4f4f5); }
-
-.bd-confirm__room-option--selected {
-  border-color: var(--admin-accent, #059669);
-  background: color-mix(in srgb, var(--admin-accent, #059669) 5%, var(--surface, #fff));
-}
-
-.bd-confirm__room-option:active { transform: scale(0.99); transition-duration: 0.06s; }
-.bd-confirm__room-check { flex-shrink: 0; accent-color: var(--admin-accent, #059669); }
-.bd-confirm__room-info { min-width: 0; flex: 1; }
-
-.bd-confirm__room-name {
-  display: block;
+.bd-room-tile__capacity {
   font-size: 0.72rem;
   font-weight: 700;
+  color: var(--admin-text-muted, #71717a);
+  background: var(--surface-2, #f4f4f5);
+  padding: 0.08rem 0.35rem;
+  border-radius: 0.25rem;
+}
+
+.bd-room-tile__price {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--admin-accent, #059669);
+}
+
+/* Feature badges row */
+.bd-room-tile__features {
+  margin-top: 0.1rem;
+}
+
+.bd-room-tile__features .badge {
+  font-size: 0.62rem;
+}
+
+.bd-confirm__nudge {
+  font-size: 0.9rem;
+  color: #92400e;
+  margin: 0;
+}
+
+/* ── Price summary box ───────────────────────────────────────── */
+.bd-confirm__price-box {
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--surface-2, #f4f4f5);
+}
+
+.bd-confirm__price-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.bd-confirm__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.85rem;
   color: var(--admin-text, #18181b);
 }
 
-.bd-confirm__room-meta {
-  display: block;
-  font-size: 0.62rem;
+.bd-confirm__price-calc {
   color: var(--admin-text-muted, #71717a);
-  margin-top: 0.02rem;
-}
-
-.bd-confirm__nudge { font-size: 0.72rem; color: #92400e; margin: 0; }
-
-.bd-confirm__price-box {
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.4rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: var(--surface-2, #f4f4f5);
-  font-size: 0.68rem;
-}
-
-.bd-confirm__price-title { font-weight: 700; color: var(--admin-text, #18181b); margin: 0 0 0.2rem; }
-
-.bd-confirm__price-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  color: var(--admin-text-muted, #71717a);
-  font-size: 0.65rem;
+  font-size: 0.78rem;
+  margin-left: auto;
 }
 
 .bd-confirm__price-total {
-  margin: 0.25rem 0 0;
-  padding-top: 0.25rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0.3rem 0 0;
+  padding-top: 0.3rem;
   border-top: 1px solid var(--admin-panel-border, #e4e4e7);
-  font-size: 0.72rem;
+  font-size: 0.95rem;
   color: var(--admin-text, #18181b);
 }
 
-.bd-confirm__price-note { font-size: 0.58rem; color: var(--admin-text-muted, #71717a); margin: 0.1rem 0 0; }
-
-.bd-confirm__adjust { display: flex; flex-direction: column; gap: 0.3rem; }
+/* ── Price adjustment ────────────────────────────────────────── */
+.bd-confirm__adjust { display: flex; flex-direction: column; gap: 0.4rem; }
 
 .bd-confirm__adjust-toggle {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
+  gap: 0.45rem;
+  font-size: 0.9rem;
   cursor: pointer;
   color: var(--admin-text, #18181b);
 }
 
 .bd-confirm__adjust-panel {
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.5rem;
   border: 1px solid #fcd34d;
   background: #fffbeb;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
 
-.bd-confirm__adjust-field { display: block; font-size: 0.68rem; color: var(--admin-text, #18181b); }
+.bd-confirm__adjust-field { display: block; font-size: 0.85rem; color: var(--admin-text, #18181b); }
 
 .bd-confirm__adjust-input {
   display: block;
   width: 100%;
-  margin-top: 0.15rem;
-  padding: 0.3rem 0.45rem;
+  margin-top: 0.2rem;
+  padding: 0.4rem 0.55rem;
   border: 1px solid var(--admin-panel-border, #d4d4d8);
-  border-radius: 0.35rem;
-  font-size: 0.72rem;
+  border-radius: 0.45rem;
+  font-size: 0.9rem;
   background: #fff;
   color: var(--admin-text, #18181b);
 }
 
 .bd-confirm__adjust-input:focus { outline: 2px solid var(--admin-accent, #059669); outline-offset: -1px; border-color: transparent; }
-.bd-confirm__adjust-error { font-size: 0.62rem; color: #dc2626; margin: 0; }
+.bd-confirm__adjust-error { font-size: 0.78rem; color: #dc2626; margin: 0; }
 
-.bd-confirm__adjust-result { font-size: 0.72rem; color: var(--admin-text, #18181b); margin: 0; }
-.bd-confirm__adjust-breakdown { margin-left: 0.2rem; font-weight: 400; color: var(--admin-text-muted, #71717a); }
+.bd-confirm__adjust-result { font-size: 0.9rem; color: var(--admin-text, #18181b); margin: 0; }
+.bd-confirm__adjust-breakdown { margin-left: 0.25rem; font-weight: 400; color: var(--admin-text-muted, #71717a); }
 
+/* ── Submit button ───────────────────────────────────────────── */
 .bd-confirm__submit {
   width: 100%;
-  padding: 0.5rem 0.8rem;
-  font-size: 0.72rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   border: none;
-  border-radius: 0.4rem;
+  border-radius: 0.5rem;
   background: var(--admin-accent, #059669);
   color: #fff;
   cursor: pointer;
@@ -826,30 +931,30 @@
 
 /* ── Legacy compat ────────────────────────────────────────────── */
 .booking-section {
-  padding: 0.55rem 0.7rem;
-  border-radius: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.6rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   background: var(--surface, #fff);
 }
 
-.booking-section + .booking-section { margin-top: 0.4rem; }
+.booking-section + .booking-section { margin-top: 0.5rem; }
 
 .booking-section__title {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--admin-text-muted, #71717a);
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
 .booking-status-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.6rem;
+  gap: 0.4rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  font-size: 0.58rem;
+  font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -859,16 +964,16 @@
 .booking-status-badge--confirmata  { background: #d1fae5; color: #065f46; }
 .booking-status-badge--anulata     { background: #fee2e2; color: #991b1b; }
 
-.booking-guest-info { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: 0.72rem; }
-.booking-guest-info dt { color: var(--admin-text-muted, #71717a); font-size: 0.55rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.booking-guest-info { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; font-size: 0.9rem; }
+.booking-guest-info dt { color: var(--admin-text-muted, #71717a); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 .booking-guest-info dd { font-weight: 600; color: var(--admin-text, #18181b); }
 
 .booking-notes {
-  padding: 0.4rem 0.55rem;
-  border-radius: 0.35rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.45rem;
   background: var(--surface-2, #f4f4f5);
   border: 1px solid var(--admin-panel-border, #e4e4e7);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   color: var(--admin-text, #18181b);
   white-space: pre-wrap;
   line-height: 1.45;
@@ -878,7 +983,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
@@ -898,6 +1003,11 @@
   .bd-card--history {
     position: static;
   }
+
+  /* Room tiles: single column on smaller screens */
+  .bd-room-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Small laptop / tablet: single column */
@@ -908,5 +1018,9 @@
 
   .bd-grid3 > .bd-col:nth-child(3) {
     grid-column: auto;
+  }
+
+  .bd-room-grid {
+    grid-template-columns: 1fr;
   }
 }

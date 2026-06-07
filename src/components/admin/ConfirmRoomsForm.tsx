@@ -117,22 +117,22 @@ export function ConfirmRoomsForm({
       <input type="hidden" name="id" value={bookingId} />
       {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
 
-      <p className="bd-confirm__hint">
-        {tConfirm("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
-      </p>
-
-      <p className="bd-confirm__summary">
-        <strong>{guestCount}</strong> {tCommon("persons")}
+      {/* Header: guest count + check times */}
+      <div className="bd-confirm__header">
+        <span className="bd-confirm__guest-count">
+          {guestCount} {tCommon("persons")}
+        </span>
         {canFulfill && minRoomsNeeded > 0 && (
-          <span className="bd-confirm__summary-sub">
-            {" "}· {tConfirm("minimumRoomsInPeriod", {
-              count: minRoomsNeeded,
-              rooms: minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
-            })}
+          <span className="bd-confirm__min-rooms">
+            min. {minRoomsNeeded} {minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase()}
           </span>
         )}
-      </p>
+        <span className="bd-confirm__times">
+          {tConfirm("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
+        </span>
+      </div>
 
+      {/* Unavailable alert */}
       {showGlobalUnavailable && (
         <div role="alert" className="bd-confirm__alert bd-confirm__alert--danger">
           {tConfirm("noAvailability")}
@@ -148,41 +148,65 @@ export function ConfirmRoomsForm({
         </div>
       )}
 
+      {/* ── Room tiles grid ──────────────────────────────────── */}
       {canFulfill && availableRooms.length > 0 && (
-        <div className="bd-confirm__rooms">
+        <>
           <p className="bd-confirm__rooms-label">
             {tConfirm("availableRooms", { count: availableRooms.length })}
           </p>
-          {availableRooms.map((r) => (
-            <label
-              key={r.id}
-              className={`bd-confirm__room-option ${selected.has(r.id) ? "bd-confirm__room-option--selected" : ""}`}
-            >
-              <input
-                type="checkbox"
-                name="room_ids"
-                value={r.id}
-                checked={selected.has(r.id)}
-                onChange={() => toggle(r.id)}
-                className="bd-confirm__room-check"
-              />
-              <span className="bd-confirm__room-info">
-                <span className="bd-confirm__room-name">{r.name}</span>
-                <span className="bd-confirm__room-meta">
-                  {r.building_name} · {r.max_capacity} {tCommon("personsShort")} · {formatCurrency(r.price_per_night, "ro-RO")} {tCommon("ronPerNight")}
-                </span>
-                <RoomFeatureBadges
-                  roomTypeName={r.room_type_name}
-                  optionSlugs={r.option_slugs}
-                  hasAc={r.has_ac}
-                  compact
-                />
-              </span>
-            </label>
-          ))}
-        </div>
+          <div className="bd-room-grid">
+            {availableRooms.map((r) => {
+              const isSelected = selected.has(r.id);
+              return (
+                <label
+                  key={r.id}
+                  className={`bd-room-tile ${isSelected ? "bd-room-tile--on" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    name="room_ids"
+                    value={r.id}
+                    checked={isSelected}
+                    onChange={() => toggle(r.id)}
+                    className="bd-room-tile__input"
+                  />
+
+                  {/* Checkmark badge */}
+                  <span className="bd-room-tile__check" aria-hidden>
+                    {isSelected ? "✓" : ""}
+                  </span>
+
+                  {/* Room name + building */}
+                  <span className="bd-room-tile__name">{r.name}</span>
+                  <span className="bd-room-tile__building">{r.building_name}</span>
+
+                  {/* Capacity + price row */}
+                  <span className="bd-room-tile__details">
+                    <span className="bd-room-tile__capacity">
+                      {r.max_capacity} {tCommon("personsShort")}
+                    </span>
+                    <span className="bd-room-tile__price">
+                      {formatCurrency(r.price_per_night, "ro-RO")} RON
+                    </span>
+                  </span>
+
+                  {/* Features */}
+                  <span className="bd-room-tile__features">
+                    <RoomFeatureBadges
+                      roomTypeName={r.room_type_name}
+                      optionSlugs={r.option_slugs}
+                      hasAc={r.has_ac}
+                      compact
+                    />
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </>
       )}
 
+      {/* Capacity error */}
       {showSelectionError && (
         <div role="alert" className="bd-confirm__alert bd-confirm__alert--warn">
           {tConfirm("selectedCapacityInsufficient", {
@@ -197,29 +221,28 @@ export function ConfirmRoomsForm({
         <p className="bd-confirm__nudge">{tConfirm("selectAtLeastOneRoom")}</p>
       )}
 
+      {/* ── Price summary ────────────────────────────────────── */}
       {canFulfill && selected.size > 0 && nights > 0 && (
         <div className="bd-confirm__price-box">
-          <p className="bd-confirm__price-title">{tConfirm("standardPriceRooms")}</p>
-          <ul className="bd-confirm__price-list">
+          <div className="bd-confirm__price-rows">
             {selectedRooms.map((r) => (
-              <li key={r.id}>
-                {r.name}: {formatCurrency(r.price_per_night, "ro-RO")} RON × {nights}{" "}
-                {nights === 1 ? tConfirm("night") : tConfirm("nights")} ={" "}
+              <div key={r.id} className="bd-confirm__price-row">
+                <span>{r.name}</span>
+                <span className="bd-confirm__price-calc">
+                  {formatCurrency(r.price_per_night, "ro-RO")} × {nights} =
+                </span>
                 <strong>{formatCurrency(r.price_per_night * nights, "ro-RO")} RON</strong>
-              </li>
+              </div>
             ))}
-          </ul>
-          <p className="bd-confirm__price-total">
-            {tConfirm("subtotal")}: <strong>{formatCurrency(standardTotal, "ro-RO")} RON</strong>
-          </p>
-          {!modifyPrice && (
-            <p className="bd-confirm__price-note">
-              {tConfirm("standardTotalRecorded", { total: formatCurrency(standardTotal, "ro-RO") })}
-            </p>
-          )}
+          </div>
+          <div className="bd-confirm__price-total">
+            <span>{tConfirm("subtotal")}</span>
+            <strong>{formatCurrency(standardTotal, "ro-RO")} RON</strong>
+          </div>
         </div>
       )}
 
+      {/* ── Price adjustment ─────────────────────────────────── */}
       {canFulfill && selected.size > 0 && (
         <div className="bd-confirm__adjust">
           <label className="bd-confirm__adjust-toggle">
