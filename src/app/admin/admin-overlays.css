@@ -85,6 +85,12 @@
   color: var(--admin-text, #18181b);
 }
 
+.admin-floating-panel__close:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .admin-floating-panel__body {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -113,6 +119,12 @@
 
 .admin-floating-panel__btn--primary:hover {
   background: color-mix(in srgb, var(--admin-btn-primary-bg, #059669) 88%, black);
+}
+
+.admin-floating-panel__btn--primary:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .admin-alert-dialog__message {

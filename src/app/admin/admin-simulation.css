@@ -360,6 +360,12 @@
   opacity: 1;
 }
 
+.sim-error-toast__dismiss:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 /* ─── Legacy: hide old chip class if still used ─── */
 .admin-hud__chip--sim {
   display: none;

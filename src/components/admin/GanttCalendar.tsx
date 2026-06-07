@@ -79,7 +79,7 @@ import { navigateRange } from "@/domain/gantt/view-range";
 import { addDays, nightOccupied, parseIso, todayIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
-import { HudIconCalendar, HudIconGrid } from "@/components/admin/AdminHudIcons";
+import { HudIconGrid } from "@/components/admin/AdminHudIcons";
 import { useLocale, useTranslations } from "next-intl";
 
 // Extracted sub-components
@@ -87,11 +87,9 @@ import {
   ROOM_COL_W,
   DAY_COL_MIN_W,
   type InlineZoomChoice,
-  QUICK_SHIFT_STEPS,
   ToolbarFilterIcon,
   normalizeZoomChoice,
   periodStepMeta,
-  quickShiftMeta,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
 import { GanttStickyViewportHeader } from "@/components/admin/gantt/GanttStickyViewportHeader";
@@ -690,20 +688,6 @@ export function GanttCalendar({
     return () => window.clearTimeout(t);
   }, [viewRange.periodKey, todayIndex, isTodayStartMode, scrollToTodayColumn]);
 
-  const shiftGrid = useCallback(
-    (days: number) => {
-      const nextStart = addDays(firstIso, days);
-      const nextDate = parseIso(nextStart);
-      pushCalendarPatch({
-        y: nextDate.getFullYear(),
-        m: nextDate.getMonth(),
-        ws: nextStart,
-        q: viewRange.zoom === "quarter" ? Math.floor(nextDate.getMonth() / 3) : undefined,
-      });
-    },
-    [firstIso, pushCalendarPatch, viewRange.zoom]
-  );
-
   const navigatePeriod = useCallback(
     (direction: -1 | 1) => {
       const next = navigateRange(
@@ -783,197 +767,133 @@ export function GanttCalendar({
         ref={shellRef}
         className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
       >
-        {/* ── Inline toolbar ─────────────────────────────────────── */}
-        <div className="gantt-inline-controls mx-3 mt-0">
-          <div className="gantt-inline-controls__row gantt-inline-controls__row--primary">
-            <div className="gantt-inline-controls__center">
-              <GanttRadialController
-                onOpenRequest={() => setOccFormMode("cerere")}
-                onOpenHold={() => setOccFormMode("hold")}
-                onOpenMove={() => setOccFormMode("move")}
-                onOpenBlock={() => setOccFormMode("block")}
-                onOpenReception={() => setOccFormMode("direct")}
-                onOpenCheckIn={() => setOpsPickerMode("checkin")}
-                onOpenCheckOut={() => setOpsPickerMode("checkout")}
-                cereriCount={cereriCount}
-                arrivalsCount={arrivalsCount}
-                departuresCount={departuresCount}
-                cleanCount={cleanCount}
-              />
-            </div>
-
-            <div className="gantt-inline-controls__primary-section gantt-inline-controls__primary-section--rooms">
-              <button
-                type="button"
-                className={[
-                  "gantt-toolbar__edge-anchor",
-                  "gantt-toolbar__filters-anchor",
-                  "gantt-toolbar__filters-anchor--icon",
-                  (isFiltersOpen || hasActiveFilters) && "gantt-toolbar__edge-anchor--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={(event) => {
-                  setFiltersAnchorRect(event.currentTarget.getBoundingClientRect());
-                  setIsFiltersOpen((prev) => !prev);
-                }}
-                aria-label={tCommon("filters")}
-                title={tCommon("roomsAndOptions")}
-              >
-                <ToolbarFilterIcon className="gantt-toolbar__filters-icon" />
-              </button>
-            </div>
+        {/* ── Compact toolbar — single strip ─────────────────────── */}
+        <div className="gantt-compact-toolbar mx-3">
+          {/* LEFT — action strip (badges / action buttons) */}
+          <div className="gantt-compact-toolbar__left">
+            <GanttRadialController
+              onOpenRequest={() => setOccFormMode("cerere")}
+              onOpenHold={() => setOccFormMode("hold")}
+              onOpenMove={() => setOccFormMode("move")}
+              onOpenBlock={() => setOccFormMode("block")}
+              onOpenReception={() => setOccFormMode("direct")}
+              onOpenCheckIn={() => setOpsPickerMode("checkin")}
+              onOpenCheckOut={() => setOpsPickerMode("checkout")}
+              cereriCount={cereriCount}
+              arrivalsCount={arrivalsCount}
+              departuresCount={departuresCount}
+              cleanCount={cleanCount}
+            />
           </div>
 
-          <div className="gantt-inline-controls__row gantt-inline-controls__row--navigator">
-            <div className="gantt-inline-controls__navigator-band">
-              <div className="gantt-inline-controls__side-dock gantt-inline-controls__side-dock--left">
-                <SegmentGroup
-                  label={tCommon("interval")}
-                  compact
-                  inline
-                  forceShortLabels
-                  value={zoomChoice}
-                  onChange={(next) => handleInlineZoomChange(next as InlineZoomChoice)}
-                  options={[
-                    { value: "today", label: tCommon("todayPanel"), shortLabel: tCommon("todayShort") },
-                    { value: "days7", label: tCommon("sevenDays"), shortLabel: tCommon("sevenDaysShort") },
-                    { value: "days15", label: tCommon("fifteenDays"), shortLabel: tCommon("fifteenDaysShort") },
-                    { value: "days30", label: tCommon("thirtyDays"), shortLabel: tCommon("thirtyDaysShort") },
-                    { value: "quarter", label: tCommon("quarter"), shortLabel: tCommon("quarterShort") },
-                  ]}
-                />
-                <button
-                  type="button"
-                  className={[
-                    "gantt-toolbar__edge-anchor",
-                    "gantt-toolbar__gap-anchor",
-                    "gantt-toolbar__gap-anchor--icon",
-                    isTodayStartMode && "gantt-toolbar__edge-anchor--active",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={toggleTodayStartMode}
-                  aria-label={tCommon("todayAtStart")}
-                  title={tCommon("alignToday")}
-                >
-                  <HudIconCalendar className="gantt-toolbar__gap-icon" />
-                </button>
-              </div>
-
-              <div className="gantt-inline-controls__navigator-main">
-              <div className="gantt-toolbar__period-shell gantt-toolbar__period-shell--hero">
-                <div className="gantt-toolbar__period gantt-toolbar__period--hero">
-                  <div
-                    className="gantt-toolbar__quick-jumps gantt-toolbar__quick-jumps--back"
-                    aria-label={tCommon("quickJumpBack")}
-                  >
-                    {QUICK_SHIFT_STEPS.map((step) => {
-                      const meta = quickShiftMeta(step.days, tCommon);
-                      return (
-                      <button
-                        key={`back-${step.days}`}
-                        type="button"
-                        className="gantt-toolbar__jump-btn"
-                        aria-label={tCommon("goBackBy", { period: meta.label })}
-                        title={tCommon("goBackBy", { period: meta.label })}
-                        onClick={() => shiftGrid(-step.days)}
-                      >
-                        <span className="gantt-toolbar__jump-arrow" aria-hidden>
-                          ←
-                        </span>
-                        <span className="gantt-toolbar__jump-label">{meta.shortLabel}</span>
-                      </button>
-                    )})}
-                  </div>
-
-                  <button
-                    type="button"
-                    className="gantt-toolbar__nav"
-                    aria-label={tCommon("goBackBy", { period: activePeriodStep.aria })}
-                    title={tCommon("goBackBy", { period: activePeriodStep.label.toLowerCase() })}
-                    onClick={() => navigatePeriod(-1)}
-                  >
-                    ←
-                  </button>
-
-                  <div className="gantt-toolbar__period-center">
-                    <span className="gantt-toolbar__period-step">{activePeriodStep.label}</span>
-                    <span className="gantt-toolbar__title capitalize">{viewRange.title}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="gantt-toolbar__nav"
-                    aria-label={tCommon("goForwardBy", { period: activePeriodStep.aria })}
-                    title={tCommon("goForwardBy", { period: activePeriodStep.label.toLowerCase() })}
-                    onClick={() => navigatePeriod(1)}
-                  >
-                    →
-                  </button>
-
-                  <div
-                    className="gantt-toolbar__quick-jumps gantt-toolbar__quick-jumps--forward"
-                    aria-label={tCommon("quickJumpForward")}
-                  >
-                    {QUICK_SHIFT_STEPS.map((step) => {
-                      const meta = quickShiftMeta(step.days, tCommon);
-                      return (
-                      <button
-                        key={`forward-${step.days}`}
-                        type="button"
-                        className="gantt-toolbar__jump-btn"
-                        aria-label={tCommon("goForwardBy", { period: meta.label })}
-                        title={tCommon("goForwardBy", { period: meta.label })}
-                        onClick={() => shiftGrid(step.days)}
-                      >
-                        <span className="gantt-toolbar__jump-label">{meta.shortLabel}</span>
-                        <span className="gantt-toolbar__jump-arrow" aria-hidden>
-                          →
-                        </span>
-                      </button>
-                    )})}
-                  </div>
-                </div>
-              </div>
-              </div>
-
-              <div className="gantt-inline-controls__side-dock gantt-inline-controls__side-dock--right">
-                <button
-                  type="button"
-                  className={[
-                    "gantt-toolbar__edge-anchor",
-                    "gantt-toolbar__gap-anchor",
-                    "gantt-toolbar__gap-anchor--icon",
-                    isAvailabilityPanelOpen && "gantt-toolbar__edge-anchor--active",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  onClick={toggleAvailabilityPanel}
-                  aria-label={tCommon("heatmap")}
-                  title={tCommon("openHeatmapFloating")}
-                >
-                  <HudIconGrid className="gantt-toolbar__gap-icon" />
-                </button>
-                <SegmentGroup
-                  label={tCommon("display")}
-                  compact
-                  inline
-                  forceShortLabels
-                  value={layerFilter}
-                  onChange={(next) => pushCalendarPatch({ layer: next as GanttLayerFilter })}
-                  options={[
-                    { value: "all", label: tLayers("all"), shortLabel: tLayers("all") },
-                    { value: "cereri", label: tLayers("cereri"), shortLabel: tCommon("requestsShort") },
-                    { value: "confirmate", label: tLayers("confirmate"), shortLabel: tCommon("confirmedShort") },
-                    { value: "in_house", label: tLayers("in_house"), shortLabel: tCommon("inShort") },
-                    { value: "trecute", label: tLayers("trecute"), shortLabel: tCommon("pastShort") },
-                    { value: "hold", label: tLayers("hold"), shortLabel: tLayers("hold") },
-                    { value: "block", label: tLayers("block"), shortLabel: tCommon("blocksShort") },
-                  ]}
-                />
-              </div>
+          {/* CENTER — interval dropdown + date title/picker + today button */}
+          <div className="gantt-compact-toolbar__center">
+            {/* Interval dropdown */}
+            <div className="gantt-compact-toolbar__dropdown-wrap">
+              <select
+                className="gantt-compact-toolbar__select"
+                value={zoomChoice}
+                onChange={(e) => handleInlineZoomChange(e.target.value as InlineZoomChoice)}
+                aria-label={tCommon("interval")}
+              >
+                <option value="today">{tCommon("todayShort")}</option>
+                <option value="days7">{tCommon("sevenDaysShort")}</option>
+                <option value="days15">{tCommon("fifteenDaysShort")}</option>
+                <option value="days30">{tCommon("thirtyDaysShort")}</option>
+                <option value="quarter">{tCommon("quarterShort")}</option>
+              </select>
             </div>
+
+            {/* Period title with date input for jumping */}
+            <div className="gantt-compact-toolbar__period">
+              <button
+                type="button"
+                className="gantt-compact-toolbar__nav-btn"
+                onClick={() => navigatePeriod(-1)}
+                aria-label={tCommon("goBackBy", { period: activePeriodStep.aria })}
+              >
+                ‹
+              </button>
+              <label className="gantt-compact-toolbar__date-label">
+                <span className="gantt-compact-toolbar__title capitalize">{viewRange.title}</span>
+                <input
+                  type="date"
+                  className="gantt-compact-toolbar__date-input"
+                  value={firstIso}
+                  onChange={(e) => {
+                    if (!e.target.value) return;
+                    const d = parseIso(e.target.value);
+                    pushCalendarPatch({
+                      y: d.getFullYear(),
+                      m: d.getMonth(),
+                      ws: e.target.value,
+                    });
+                  }}
+                  aria-label={tCommon("alignToday")}
+                />
+              </label>
+              <button
+                type="button"
+                className="gantt-compact-toolbar__nav-btn"
+                onClick={() => navigatePeriod(1)}
+                aria-label={tCommon("goForwardBy", { period: activePeriodStep.aria })}
+              >
+                ›
+              </button>
+            </div>
+
+            {/* Today button */}
+            <button
+              type="button"
+              className={`gantt-compact-toolbar__today-btn ${isTodayStartMode ? "gantt-compact-toolbar__today-btn--active" : ""}`}
+              onClick={toggleTodayStartMode}
+              title={tCommon("alignToday")}
+            >
+              {tCommon("todayShort")}
+            </button>
+          </div>
+
+          {/* RIGHT — display dropdown + heatmap + filter */}
+          <div className="gantt-compact-toolbar__right">
+            <div className="gantt-compact-toolbar__dropdown-wrap">
+              <select
+                className="gantt-compact-toolbar__select"
+                value={layerFilter}
+                onChange={(e) => pushCalendarPatch({ layer: e.target.value as GanttLayerFilter })}
+                aria-label={tCommon("display")}
+              >
+                <option value="all">{tLayers("all")}</option>
+                <option value="cereri">{tLayers("cereri")}</option>
+                <option value="confirmate">{tLayers("confirmate")}</option>
+                <option value="in_house">{tLayers("in_house")}</option>
+                <option value="trecute">{tLayers("trecute")}</option>
+                <option value="hold">{tLayers("hold")}</option>
+                <option value="block">{tLayers("block")}</option>
+              </select>
+            </div>
+
+            <button
+              type="button"
+              className={`gantt-compact-toolbar__icon-btn ${isAvailabilityPanelOpen ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
+              onClick={toggleAvailabilityPanel}
+              aria-label={tCommon("heatmap")}
+              title={tCommon("openHeatmapFloating")}
+            >
+              <HudIconGrid className="h-3.5 w-3.5" />
+            </button>
+
+            <button
+              type="button"
+              className={`gantt-compact-toolbar__icon-btn ${(isFiltersOpen || hasActiveFilters) ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
+              onClick={(event) => {
+                setFiltersAnchorRect(event.currentTarget.getBoundingClientRect());
+                setIsFiltersOpen((prev) => !prev);
+              }}
+              aria-label={tCommon("filters")}
+              title={tCommon("roomsAndOptions")}
+            >
+              <ToolbarFilterIcon className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
 

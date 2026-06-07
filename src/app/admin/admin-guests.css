@@ -124,6 +124,12 @@
   opacity: 0.85;
 }
 
+.guest-search__submit:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .guest-search__submit:disabled {
   opacity: 0.5;
 }
@@ -142,6 +148,12 @@
 
 .guest-search__reset:hover {
   background: var(--surface-2);
+}
+
+.guest-search__reset:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
 }
 
 /* ─── Filter Pills ─── */
@@ -168,6 +180,12 @@
   border-color: var(--accent);
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.guest-filter-pill:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
 }
 
 .guest-filter-pill--active {
@@ -368,6 +386,12 @@
   transform: translateY(-1px);
 }
 
+.guest-card:active {
+  filter: brightness(0.97);
+  transform: translateY(0);
+  transition-duration: 0.06s;
+}
+
 .guest-card__link {
   display: block;
   padding: 0.6rem 0.65rem 0.4rem;
@@ -480,6 +504,12 @@
   background: color-mix(in srgb, var(--surface-2) 80%, var(--text));
 }
 
+.guest-card__btn--secondary:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .guest-card__btn--primary {
   color: var(--surface);
   background: var(--text);
@@ -489,6 +519,12 @@
 
 .guest-card__btn--primary:hover {
   opacity: 0.85;
+}
+
+.guest-card__btn--primary:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
 }
 
 /* ─── Pagination ─── */
@@ -529,6 +565,12 @@
   background: var(--surface-2);
 }
 
+.guest-pagination__btn:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .guest-pagination__btn--next {
   background: var(--text);
   color: var(--surface);
@@ -537,6 +579,12 @@
 
 .guest-pagination__btn--next:hover {
   opacity: 0.85;
+}
+
+.guest-pagination__btn--next:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 /* ─── Results ─── */
@@ -572,6 +620,12 @@
 
 .guest-profile-page__back:hover {
   color: var(--text);
+}
+
+.guest-profile-page__back:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .guest-profile-page__warn {
@@ -721,6 +775,12 @@
   color: var(--accent);
 }
 
+.guest-profile-tabs__item:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .guest-profile-tabs__item--active {
   border-color: var(--accent);
   background: color-mix(in srgb, var(--accent) 10%, var(--surface));
@@ -757,6 +817,12 @@
   text-decoration: underline;
 }
 
+.guest-history-compact__link:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .guest-rebook-collapse {
   margin-top: 0.35rem;
   width: 100%;
@@ -778,6 +844,12 @@
 
 .guest-rebook-collapse__trigger:hover {
   text-decoration: underline;
+}
+
+.guest-rebook-collapse__trigger:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .guest-rebook-collapse__chevron {
@@ -1057,6 +1129,12 @@
   text-decoration: underline;
 }
 
+.guest-hero__identity-link:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .guest-hero__identity-list {
   display: flex;
   flex-direction: column;
@@ -1305,6 +1383,12 @@
 
 .cerere-item__profile-link:hover {
   text-decoration: underline;
+}
+
+.cerere-item__profile-link:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 /* ─── Guest Traits ─── */
@@ -1571,6 +1655,12 @@
   text-decoration: underline;
 }
 
+.guest-history__detail-link:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .guest-history__segments {
   margin-top: 0.4rem;
   padding-top: 0.4rem;
@@ -1697,6 +1787,12 @@
   background: color-mix(in srgb, var(--accent) 8%, var(--surface));
 }
 
+.guest-id-type-picker__option:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .guest-id-type-picker__option--active {
   background: color-mix(in srgb, var(--accent) 12%, var(--surface));
   color: var(--accent);
@@ -1794,6 +1890,12 @@
 
 .guest-identity-form__submit:hover {
   opacity: 0.85;
+}
+
+.guest-identity-form__submit:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .guest-identity-form__submit:disabled {
@@ -1952,6 +2054,12 @@
   text-decoration: underline;
 }
 
+.dedup-match__name:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .dedup-match__score {
   margin-left: auto;
   padding: 0.08rem 0.35rem;
@@ -2003,4 +2111,10 @@
 
 .dedup-match__merge-link:hover {
   text-decoration: underline;
+}
+
+.dedup-match__merge-link:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }

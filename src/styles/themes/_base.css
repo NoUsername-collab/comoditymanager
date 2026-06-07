@@ -205,3 +205,18 @@ html {
 html[data-theme] {
   font-family: var(--card-font);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL PRESSED STATE — universal tactile feedback
+   Every button, clickable anchor, and interactive control gets a
+   subtle scale-down on :active so the user always feels the press.
+   Individual component CSS can override with more specific rules.
+   ═══════════════════════════════════════════════════════════════════ */
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled),
+a[class]:active,
+summary:active,
+select:active {
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}

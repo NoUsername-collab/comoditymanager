@@ -36,6 +36,14 @@
   background: color-mix(in srgb, var(--light-accent) 8%, transparent);
 }
 
+.platform-header--split .platform-header__link:active {
+  color: var(--light-accent-deep);
+  background: color-mix(in srgb, var(--light-accent) 12%, transparent);
+  transform: scale(0.95);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .platform-header--split .platform-header__logo {
   background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
   color: #ffffff;
@@ -50,6 +58,14 @@
 .platform-header--split .platform-header__cta:hover {
   opacity: 1;
   box-shadow: 0 8px 24px color-mix(in srgb, #2563eb 32%, transparent);
+}
+
+.platform-header--split .platform-header__cta:active {
+  opacity: 1;
+  box-shadow: 0 4px 12px color-mix(in srgb, #2563eb 25%, transparent);
+  transform: translateY(0);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 /* ── Footer (light on split routes) ──────────────────────────────── */
@@ -206,6 +222,14 @@
   border-color: var(--light-accent);
 }
 
+.landing-surface--light .landing-cta--ghost:active {
+  background: #f8f8f8;
+  border-color: var(--light-accent);
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .landing-surface--light .landing-cta--primary {
   background: linear-gradient(145deg, #1d4ed8 0%, #3b82f6 100%);
   color: #ffffff;
@@ -288,6 +312,13 @@
 
 .landing-surface--soft .landing-feature:hover {
   border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
+}
+
+.landing-surface--soft .landing-feature:active {
+  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
+  transform: translateY(0);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 .landing-surface--soft .landing-feature__title,

@@ -617,7 +617,12 @@
         "informalDocumentAlpha": "Информативен документ (Alpha)",
         "phoneRequiredTitle": "Телефон задължителен преди check-in",
         "phoneRequiredHint": "Въведете валиден телефон (напр. 07xx xxx xxx). Без телефон няма check-in.",
-        "phoneRequiredSave": "Запази телефон"
+        "phoneRequiredSave": "Запази телефон",
+        "stayDetails": "Детайли за престоя",
+        "guestInfo": "Информация за госта",
+        "roomsAndPrice": "Стая и цена",
+        "email": "Имейл",
+        "phone": "Телефон"
       },
       "roomsNew": {
         "title": "New room — Hospira",
@@ -1652,6 +1657,24 @@
       "milestoneInboxZero": "Inbox zero — без заявки",
       "configureRoomsFromSettings": "Конфигурирането на структурата и стаите става от Настройки, в административния център.",
       "openConfiguration": "Отвори конфигурацията"
+    },
+    "stayEditor": {
+      "checkIn": "Настаняване",
+      "checkOut": "Напускане",
+      "nights": "Нощувки",
+      "guests": "Гости",
+      "editDates": "Редактирай дати",
+      "adults": "Възрастни",
+      "children": "Деца",
+      "nightSingular": "нощувка",
+      "nightPlural": "нощувки",
+      "personsTotal": "лица общо",
+      "minOneNight": "Престоят трябва да е поне 1 нощувка",
+      "saveFailed": "Запазването не успя",
+      "saved": "Запазено успешно!",
+      "cancel": "Отказ",
+      "saveDates": "Запази",
+      "saving": "Запазване..."
     },
     "gantt": {
       "range": {

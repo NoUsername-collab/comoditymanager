@@ -40,6 +40,12 @@
   transform: translateY(-1px);
 }
 
+.activity-journal__tab:active {
+  filter: brightness(0.92);
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .activity-journal__tab--active.activity-journal__tab--rezervari {
   border-color: color-mix(in srgb, #0ea5e9 55%, var(--admin-panel-border));
   background: linear-gradient(

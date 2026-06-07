@@ -670,7 +670,12 @@
         "informalDocumentAlpha": "Informal document (Alpha)",
         "phoneRequiredTitle": "Phone required before check-in",
         "phoneRequiredHint": "Enter a valid phone number (e.g. 07xx xxx xxx). Check-in is blocked without it.",
-        "phoneRequiredSave": "Save phone"
+        "phoneRequiredSave": "Save phone",
+        "stayDetails": "Stay details",
+        "guestInfo": "Guest information",
+        "roomsAndPrice": "Room & price",
+        "email": "Email",
+        "phone": "Phone"
       },
       "roomsNew": {
         "title": "New room — Hospira",
@@ -1742,6 +1747,24 @@
       "milestoneInboxZero": "Inbox zero — no requests",
       "configureRoomsFromSettings": "Configure structure and rooms from Settings, in the administration center.",
       "openConfiguration": "Open configuration"
+    },
+    "stayEditor": {
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "Nights",
+      "guests": "Guests",
+      "editDates": "Edit dates",
+      "adults": "Adults",
+      "children": "Children",
+      "nightSingular": "night",
+      "nightPlural": "nights",
+      "personsTotal": "persons total",
+      "minOneNight": "Stay must be at least 1 night",
+      "saveFailed": "Save failed",
+      "saved": "Saved successfully!",
+      "cancel": "Cancel",
+      "saveDates": "Save",
+      "saving": "Saving..."
     },
     "gantt": {
       "range": {

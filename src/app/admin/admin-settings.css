@@ -101,6 +101,12 @@
   background: color-mix(in srgb, var(--admin-accent-muted, #f4f4f5) 35%, transparent);
 }
 
+.admin-settings-panel__trigger:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .admin-settings-panel__trigger-main {
   display: flex;
   min-width: 0;
@@ -289,6 +295,12 @@
   border-color: color-mix(in srgb, var(--admin-text, #18181b) 35%, transparent);
 }
 
+.admin-display-layout__option:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .admin-display-layout__option--active {
   border-color: var(--admin-text, #18181b);
   background: var(--admin-text, #18181b);
@@ -381,6 +393,12 @@
 
 .admin-palette-theme__head:hover {
   background: color-mix(in srgb, var(--admin-accent-muted, #f4f4f5) 45%, transparent);
+}
+
+.admin-palette-theme__head:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .admin-palette-theme__name {
@@ -554,6 +572,12 @@
   background: color-mix(in srgb, var(--admin-accent, #059669) 18%, var(--admin-panel-bg, #fff));
 }
 
+.admin-palette-extend__apply:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .admin-settings-panel__body,
   .admin-palette-theme__body,
@@ -589,6 +613,12 @@
 
 .admin-factory-reset__trigger:hover {
   background: #fee2e2;
+}
+
+.admin-factory-reset__trigger:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .admin-factory-reset--open {
@@ -666,6 +696,12 @@
   background: #b91c1c;
 }
 
+.admin-factory-reset__submit:not(:disabled):active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
 .admin-factory-reset__cancel {
   border-radius: 0.5rem;
   border: 1px solid var(--admin-panel-border, #cbd5e1);
@@ -703,6 +739,11 @@
 .admin-staff-row:hover {
   border-color: color-mix(in srgb, var(--admin-accent, #059669) 25%, var(--admin-panel-border, #e4e4e7));
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+}
+
+.admin-staff-row:active {
+  filter: brightness(0.97);
+  transition-duration: 0.06s;
 }
 
 .admin-staff-row__info {

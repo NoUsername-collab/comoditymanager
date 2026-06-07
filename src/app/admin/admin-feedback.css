@@ -98,6 +98,12 @@
   color: #047857;
 }
 
+.admin-toast__action:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .admin-toast__close {
   border: none;
   background: transparent;
@@ -110,6 +116,12 @@
 
 .admin-toast__close:hover {
   color: #52525b;
+}
+
+.admin-toast__close:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
 }
 
 @keyframes admin-toast-in {
@@ -178,6 +190,12 @@
 .admin-empty-state__action:hover {
   opacity: 0.92;
   text-decoration: none;
+}
+
+.admin-empty-state__action:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .admin-home-mood {

@@ -78,6 +78,12 @@
   color: var(--accent);
 }
 
+.devlog-filters__pill:active {
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
 .devlog-filters__pill--active {
   border-color: var(--text);
   background: var(--text);
@@ -229,6 +235,12 @@
 
 .devlog-pagination__btn:hover {
   background: var(--surface-2);
+}
+
+.devlog-pagination__btn:active {
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
 }
 
 .devlog-pagination__info {

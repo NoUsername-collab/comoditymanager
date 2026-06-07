@@ -35,6 +35,13 @@
   opacity: 0.85;
 }
 
+.platform-header__brand:active {
+  opacity: 0.8;
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .platform-header__logo {
   display: flex;
   align-items: center;
@@ -76,6 +83,14 @@
   background: color-mix(in srgb, var(--site-fg, #f3efe3) 5%, transparent);
 }
 
+.platform-header__link:active {
+  color: var(--site-fg, #f3efe3);
+  background: color-mix(in srgb, var(--site-fg, #f3efe3) 8%, transparent);
+  transform: scale(0.95);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .platform-header__cta {
   margin-left: 0.5rem;
   padding: 0.5rem 1.25rem;
@@ -91,6 +106,13 @@
 .platform-header__cta:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+}
+
+.platform-header__cta:active {
+  opacity: 0.9;
+  transform: translateY(0);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 /* Mobile: hide text links, show only CTA */
@@ -167,6 +189,13 @@
 
 .platform-footer__links a:hover {
   color: var(--site-accent, #d6b55a);
+}
+
+.platform-footer__links a:active {
+  color: var(--site-accent, #d6b55a);
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 .platform-footer__contact a {

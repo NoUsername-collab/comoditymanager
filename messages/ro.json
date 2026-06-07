@@ -670,7 +670,12 @@
         "informalDocumentAlpha": "Document informativ (Alpha)",
         "phoneRequiredTitle": "Telefon obligatoriu înainte de check-in",
         "phoneRequiredHint": "Completează un număr de telefon valid (ex. 07xx xxx xxx). Fără telefon nu se poate face check-in.",
-        "phoneRequiredSave": "Salvează telefonul"
+        "phoneRequiredSave": "Salvează telefonul",
+        "stayDetails": "Detalii sejur",
+        "guestInfo": "Informații client",
+        "roomsAndPrice": "Cameră & preț",
+        "email": "Email",
+        "phone": "Telefon"
       },
       "roomsNew": {
         "title": "Cameră nouă — Hospira",
@@ -1744,6 +1749,24 @@
       "milestoneInboxZero": "Inbox zero — fără cereri",
       "configureRoomsFromSettings": "Configurarea structurii și a camerelor se face din Setări, în centrul de administrare.",
       "openConfiguration": "Deschide configurarea"
+    },
+    "stayEditor": {
+      "checkIn": "Check-in",
+      "checkOut": "Check-out",
+      "nights": "Nopți",
+      "guests": "Oaspeți",
+      "editDates": "Editează date",
+      "adults": "Adulți",
+      "children": "Copii",
+      "nightSingular": "noapte",
+      "nightPlural": "nopți",
+      "personsTotal": "persoane total",
+      "minOneNight": "Sejurul trebuie să aibă cel puțin 1 noapte",
+      "saveFailed": "Salvarea a eșuat",
+      "saved": "Salvat cu succes!",
+      "cancel": "Anulează",
+      "saveDates": "Salvează",
+      "saving": "Se salvează..."
     },
     "gantt": {
       "range": {

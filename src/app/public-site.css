@@ -36,6 +36,13 @@
   color: var(--site-fg);
 }
 
+.public-back-link:active {
+  color: var(--site-fg);
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .public-page__head {
   margin-top: 1.5rem;
 }
@@ -99,6 +106,12 @@
   color: var(--site-accent);
 }
 
+.public-header__brand:active {
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .public-header__name {
   display: block;
   font-family: var(--public-font-serif);
@@ -136,6 +149,14 @@
 .public-header__link:hover {
   background: color-mix(in srgb, var(--site-accent) 12%, transparent);
   color: var(--site-fg);
+}
+
+.public-header__link:active {
+  background: color-mix(in srgb, var(--site-accent) 18%, transparent);
+  color: var(--site-fg);
+  transform: scale(0.95);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 .public-header__link--active {
@@ -222,6 +243,13 @@
   color: var(--site-fg);
 }
 
+.public-footer__links a:active {
+  color: var(--site-fg);
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .public-footer__contact {
   margin-top: 0.625rem;
   font-size: 0.8125rem;
@@ -270,6 +298,14 @@
 .public-theme-switcher__btn:hover {
   border-color: color-mix(in srgb, var(--site-accent) 40%, var(--site-border));
   color: var(--site-fg);
+}
+
+.public-theme-switcher__btn:active {
+  border-color: color-mix(in srgb, var(--site-accent) 40%, var(--site-border));
+  color: var(--site-fg);
+  transform: scale(0.95);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 .public-theme-switcher__btn--active {
@@ -391,6 +427,14 @@
   filter: none;
 }
 
+.site-cta--ghost:active {
+  background: color-mix(in srgb, var(--site-accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--site-accent) 35%, var(--site-border));
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .public-section {
   margin-inline: auto;
   max-width: 72rem;
@@ -437,6 +481,13 @@
 .public-feature-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 32px -16px color-mix(in srgb, var(--site-accent) 35%, transparent);
+}
+
+.public-feature-card:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--site-accent) 25%, transparent);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 .public-feature-card__icon {
@@ -633,6 +684,14 @@
   border-color: color-mix(in srgb, var(--site-accent) 30%, var(--site-border));
 }
 
+.site-btn-secondary:active {
+  background: color-mix(in srgb, var(--site-accent) 12%, var(--site-card));
+  border-color: color-mix(in srgb, var(--site-accent) 30%, var(--site-border));
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
 .site-field label {
   display: block;
   font-size: 0.8125rem;
@@ -697,6 +756,14 @@
 .public-option-card:hover {
   border-color: color-mix(in srgb, var(--site-accent) 40%, var(--site-border));
   background: color-mix(in srgb, var(--site-accent) 6%, var(--site-bg));
+}
+
+.public-option-card:active {
+  border-color: color-mix(in srgb, var(--site-accent) 40%, var(--site-border));
+  background: color-mix(in srgb, var(--site-accent) 10%, var(--site-bg));
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
 }
 
 .public-option-card--selected {
