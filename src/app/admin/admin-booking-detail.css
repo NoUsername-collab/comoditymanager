@@ -145,6 +145,10 @@
   background: #f0fdf4;
 }
 
+.bd-card--tight {
+  padding: 0.45rem 0.8rem;
+}
+
 .bd-card__title {
   font-size: 0.6rem;
   font-weight: 800;
@@ -152,6 +156,36 @@
   letter-spacing: 0.08em;
   color: var(--admin-text-muted, #71717a);
   margin-bottom: 0.4rem;
+}
+
+/* ── Split row (stay + guest side-by-side) ────────────────────── */
+.bd-split-row {
+  display: flex;
+  gap: 1.2rem;
+  align-items: stretch;
+}
+
+.bd-split-row__section {
+  flex: 1;
+  min-width: 0;
+}
+
+.bd-split-row__divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--admin-panel-border, #e4e4e7);
+  flex-shrink: 0;
+}
+
+@media (max-width: 860px) {
+  .bd-split-row {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .bd-split-row__divider {
+    width: 100%;
+    height: 1px;
+  }
 }
 
 /* ── Info row (email/phone/minor inline) ───────────────────────── */

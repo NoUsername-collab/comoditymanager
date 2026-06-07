@@ -114,7 +114,7 @@ export default async function BookingDetailPage({
         </span>
       </div>
 
-      {/* ── Guest alert banner ─────────────────────────────────── */}
+      {/* ── Guest alert banner (danger/watchlist only) ──────────── */}
       {booking.guest_alert_level !== "normal" && (
         <div
           className={[
@@ -128,6 +128,7 @@ export default async function BookingDetailPage({
             profile={booking.guest_profile}
             alertLevel={booking.guest_alert_level}
             alertNote={booking.guest_alert_note}
+            variant="compact"
           />
         </div>
       )}
@@ -136,59 +137,63 @@ export default async function BookingDetailPage({
       <div className="bd-grid">
         {/* ─── LEFT COLUMN: info at a glance ───────────────────── */}
         <div className="bd-col bd-col--info">
-          {/* Guest profile badges */}
+          {/* Guest profile — compact inline chips */}
           {booking.guest_alert_level === "normal" && booking.guest_profile && (
-            <div className="bd-card">
+            <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("guestProfile")}</p>
               <GuestProfileBadges
                 profile={booking.guest_profile}
                 alertLevel={booking.guest_alert_level}
                 alertNote={booking.guest_alert_note}
+                variant="compact"
               />
             </div>
           )}
 
-          {/* Stay details (editable for new requests) */}
+          {/* Stay details + Guest info — merged into one card */}
           <div className="bd-card">
-            <p className="bd-card__title">{tPage("stayDetails")}</p>
-            <BookingStayEditor
-              bookingId={booking.id}
-              checkIn={booking.check_in}
-              checkOut={booking.check_out}
-              numAdults={booking.num_adults}
-              numChildren={booking.num_children}
-              editable={canEditDates}
-              editAction={editBookingDatesAction}
-            />
-          </div>
-
-          {/* Guest info */}
-          <div className="bd-card">
-            <p className="bd-card__title">{tPage("guestInfo")}</p>
-            <div className="bd-info-row">
-              <div>
-                <span className="bd-info-label">{tPage("email")}</span>
-                <span className="bd-info-value">{booking.guest_email}</span>
+            <div className="bd-split-row">
+              <div className="bd-split-row__section">
+                <p className="bd-card__title">{tPage("stayDetails")}</p>
+                <BookingStayEditor
+                  bookingId={booking.id}
+                  checkIn={booking.check_in}
+                  checkOut={booking.check_out}
+                  numAdults={booking.num_adults}
+                  numChildren={booking.num_children}
+                  editable={canEditDates}
+                  editAction={editBookingDatesAction}
+                />
               </div>
-              <div>
-                <span className="bd-info-label">{tPage("phone")}</span>
-                <span className="bd-info-value">{booking.guest_phone || "—"}</span>
-              </div>
-              {booking.has_minor && booking.minor_age && (
-                <div>
-                  <span className="bd-info-label">{tPage("minorLabel")}</span>
-                  <span className="bd-info-value">{booking.minor_age}</span>
+              <div className="bd-split-row__divider" />
+              <div className="bd-split-row__section">
+                <p className="bd-card__title">{tPage("guestInfo")}</p>
+                <div className="bd-info-row">
+                  <div>
+                    <span className="bd-info-label">{tPage("email")}</span>
+                    <span className="bd-info-value">{booking.guest_email}</span>
+                  </div>
+                  <div>
+                    <span className="bd-info-label">{tPage("phone")}</span>
+                    <span className="bd-info-value">{booking.guest_phone || "—"}</span>
+                  </div>
+                  {booking.has_minor && booking.minor_age && (
+                    <div>
+                      <span className="bd-info-label">{tPage("minorLabel")}</span>
+                      <span className="bd-info-value">{booking.minor_age}</span>
+                    </div>
+                  )}
                 </div>
-              )}
+                {booking.guest_id && (
+                  <Link
+                    href={`/admin/guests/${booking.guest_id}`}
+                    className="bd-link"
+                  >
+                    {tPage("guestProfile")} →
+                  </Link>
+                )}
+              </div>
             </div>
-            {booking.guest_id && (
-              <Link
-                href={`/admin/guests/${booking.guest_id}`}
-                className="bd-link"
-              >
-                {tPage("guestProfile")} →
-              </Link>
-            )}
           </div>
 
           {/* Dedup warning */}
@@ -201,7 +206,7 @@ export default async function BookingDetailPage({
 
           {/* Room & Price (confirmed) */}
           {booking.status === "confirmata" && booking.room_names.length > 0 && (
-            <div className="bd-card">
+            <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("roomsAndPrice")}</p>
               <p className="text-sm font-medium">
                 {booking.room_names.join(", ")}
@@ -222,14 +227,31 @@ export default async function BookingDetailPage({
 
           {/* Notes */}
           {booking.notes && (
-            <div className="bd-card">
+            <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("message")}</p>
               <div className="bd-notes">{booking.notes}</div>
             </div>
           )}
+
+          {/* Cancel — bottom of left column */}
+          {canCancel && (
+            <div className="bd-cancel-zone">
+              <BookingCancelButton
+                label={
+                  booking.status === "confirmata"
+                    ? tPage("cancelConfirmed")
+                    : tPage("cancelRequest")
+                }
+                confirmMessage={cancelMessage}
+                formAction={cancelBookingAction}
+                bookingId={booking.id}
+                returnTo="/admin/cazari"
+              />
+            </div>
+          )}
         </div>
 
-        {/* ─── RIGHT COLUMN: actions ───────────────────────────── */}
+        {/* ─── RIGHT COLUMN: actions + history ─────────────────── */}
         <div className="bd-col bd-col--actions">
           {/* Room allocation / confirm (for new requests & cancelled) */}
           {canConfirm && (
@@ -279,29 +301,13 @@ export default async function BookingDetailPage({
             </div>
           )}
 
-          {/* Activity & Cancel — stacked at bottom */}
+          {/* Activity / History — always in right column */}
           <div className="bd-card">
             <BookingActivitySection
               bookingId={booking.id}
               checkIn={booking.check_in}
             />
           </div>
-
-          {canCancel && (
-            <div className="bd-cancel-zone">
-              <BookingCancelButton
-                label={
-                  booking.status === "confirmata"
-                    ? tPage("cancelConfirmed")
-                    : tPage("cancelRequest")
-                }
-                confirmMessage={cancelMessage}
-                formAction={cancelBookingAction}
-                bookingId={booking.id}
-                returnTo="/admin/cazari"
-              />
-            </div>
-          )}
         </div>
       </div>
     </AdminRetroPageFrame>
