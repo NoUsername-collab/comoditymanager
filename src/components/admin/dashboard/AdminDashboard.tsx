@@ -74,42 +74,50 @@ export async function AdminDashboard({
 
   return (
     <div className="admin-home">
+      {/* ── Hero: compact 2-row layout ──────────────────────────── */}
       <header className="admin-home-hero admin-home-hero--liquid">
-        <div className="admin-home-hero__main">
-          <p className="admin-home-hero__eyebrow">{tCommon("homeEyebrow")}</p>
-          <h1 className="admin-home-hero__title">{data.pensionName}</h1>
-          <p className="admin-home-hero__meta">
-            <span className="capitalize">{data.todayLabel}</span>
-            {" · "}
-            {tCommon("checkIn")} {data.checkInTime} · {tCommon("checkout")} {data.checkOutTime}
-          </p>
-          <p className="admin-home-mood">{data.moodLine}</p>
-          {data.briefingLine && (
-            <p className="admin-home-briefing">{data.briefingLine}</p>
-          )}
-          {data.milestones.length > 0 && (
-            <div className="admin-home-milestones" aria-label={tCommon("achievements")}>
-              {data.milestones.map((m) => (
-                <span key={m.id} className="admin-home-milestone">
-                  <span aria-hidden>{m.emoji}</span> {m.label}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="admin-home-hero__actions">
-          {hasCereri ? (
-            <Link href="/admin/bookings" className="admin-home-cta admin-home-cta--cereri">
-              <span aria-hidden>📬</span>
-              {tDashboard("pendingPuls", { count: cereriCount })}
+        {/* Row 1: identity + CTAs */}
+        <div className="admin-home-hero__row1">
+          <div className="admin-home-hero__identity">
+            <h1 className="admin-home-hero__title">{data.pensionName}</h1>
+            <p className="admin-home-hero__meta">
+              <span className="capitalize">{data.todayLabel}</span>
+              {" · "}
+              {tCommon("checkIn")} {data.checkInTime} · {tCommon("checkout")} {data.checkOutTime}
+            </p>
+          </div>
+          <div className="admin-home-hero__actions">
+            {hasCereri ? (
+              <Link href="/admin/bookings" className="admin-home-cta admin-home-cta--cereri">
+                <span aria-hidden>📬</span>
+                {tDashboard("pendingPuls", { count: cereriCount })}
+              </Link>
+            ) : null}
+            <Link href={calHref} className="admin-home-cta admin-home-cta--secondary">
+              {tCommon("currentMonthCalendar")}
             </Link>
-          ) : null}
-          <Link href={calHref} className="admin-home-cta admin-home-cta--secondary">
-            {tCommon("currentMonthCalendar")}
-          </Link>
+          </div>
         </div>
 
+        {/* Briefing + milestones — inline between rows */}
+        {(data.briefingLine || data.milestones.length > 0) && (
+          <div className="admin-home-hero__brief">
+            {data.briefingLine && (
+              <p className="admin-home-briefing">{data.briefingLine}</p>
+            )}
+            {data.milestones.length > 0 && (
+              <div className="admin-home-milestones" aria-label={tCommon("achievements")}>
+                {data.milestones.map((m) => (
+                  <span key={m.id} className="admin-home-milestone">
+                    <span aria-hidden>{m.emoji}</span> {m.label}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Row 2: KPIs — compact horizontal strip */}
         <div className="admin-home-kpis" role="list" aria-label={tCommon("quickKpis")}>
           <div
             className={["admin-home-kpi", hasCereri && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
