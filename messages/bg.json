@@ -271,7 +271,9 @@
     "shell": {
       "eyebrow": "Hospira · Control",
       "title": "Админ панел",
-      "publicSite": "Публичен сайт"
+      "publicSite": "Публичен сайт",
+      "settings": "Настройки",
+      "brandFallback": "Hospira"
     },
     "login": {
       "eyebrow": "Hospira",

@@ -22,12 +22,13 @@ export function AdminDayNightSwitch() {
           .filter(Boolean)
           .join(" ")}
         aria-pressed={mode === "day"}
+        aria-label={tCommon("day")}
+        title={tCommon("day")}
         onClick={() => setMode("day")}
       >
         <span className="admin-dn-switch__icon" aria-hidden>
           ☀
         </span>
-        {tCommon("day")}
       </button>
       <button
         type="button"
@@ -38,12 +39,13 @@ export function AdminDayNightSwitch() {
           .filter(Boolean)
           .join(" ")}
         aria-pressed={mode === "night"}
+        aria-label={tCommon("night")}
+        title={tCommon("night")}
         onClick={() => setMode("night")}
       >
         <span className="admin-dn-switch__icon" aria-hidden>
           ☽
         </span>
-        {tCommon("night")}
       </button>
     </div>
   );

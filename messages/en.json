@@ -271,7 +271,9 @@
     "shell": {
       "eyebrow": "Hospira · Control",
       "title": "Admin dashboard",
-      "publicSite": "Public site"
+      "publicSite": "Public site",
+      "settings": "Settings",
+      "brandFallback": "Hospira"
     },
     "login": {
       "eyebrow": "Hospira",

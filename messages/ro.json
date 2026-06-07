@@ -271,7 +271,9 @@
     "shell": {
       "eyebrow": "Hospira · Control",
       "title": "Panou administrare",
-      "publicSite": "Site public"
+      "publicSite": "Site public",
+      "settings": "Setări",
+      "brandFallback": "Hospira"
     },
     "login": {
       "eyebrow": "Hospira",

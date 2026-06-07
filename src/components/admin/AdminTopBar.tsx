@@ -9,8 +9,10 @@ import { LogoutButton } from "@/app/[locale]/admin/(panel)/logout-button";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { SimTriggerChip } from "@/components/admin/SimTriggerChip";
+import { AdminGearMenu } from "@/components/admin/AdminGearMenu";
 import type { TodayBoard } from "@/services/today-board";
 import { getTranslations } from "next-intl/server";
+import { getTenantContext } from "@/core/tenant/context";
 
 export async function AdminTopBar({
   board,
@@ -31,22 +33,33 @@ export async function AdminTopBar({
 }) {
   const t = await getTranslations("admin.shell");
 
+  let pensionName = t("brandFallback");
+  try {
+    const ctx = getTenantContext();
+    pensionName = ctx.tenant.displayName;
+  } catch {
+    // Tenant context not bound yet — use fallback
+  }
+
   return (
     <header className="admin-hud__header">
+      {/* ── Left: pension name + plan badge ── */}
       <div className="admin-hud__brand">
         <div className="admin-hud__logo" aria-hidden>
           <span className="admin-hud__logo-inner">HO</span>
         </div>
         <div className="admin-hud__brand-text">
-          <p className="admin-hud__eyebrow">{t("eyebrow")}</p>
-          <h1 className="admin-hud__title">{t("title")}</h1>
+          <h1 className="admin-hud__title">{pensionName}</h1>
+          <AdminPlanBadge />
         </div>
       </div>
 
+      {/* ── Center: navigation ── */}
       <div className="admin-hud__center">
         <AdminNav cereriCount={cereriCount} locationUnlocked={locationUnlocked} />
       </div>
 
+      {/* ── Right: today bar, theme, version, gear ── */}
       <div className="admin-hud__right">
         <AdminTodayBar
           cereriCount={cereriCount}
@@ -56,16 +69,33 @@ export async function AdminTopBar({
         />
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
-          <AdminLiveRefresh />
-          <AdminPlanBadge />
           <AdminVersionBadge />
-          <LanguageSwitcher />
-          {isAdmin && <SimTriggerChip simActive={simActive} simDate={simDate} simDays={simDays} />}
-          <Link href="/calendar" className="admin-hud__chip admin-hud__chip--ghost">
-            <HudIconGlobe className="h-3.5 w-3.5 shrink-0 opacity-90" />
-            <span className="admin-hud__chip-label-text">{t("publicSite")}</span>
-          </Link>
-          <LogoutButton />
+          <AdminGearMenu>
+            <div className="admin-gear__item" role="menuitem">
+              <AdminLiveRefresh />
+            </div>
+            {isAdmin && (
+              <div className="admin-gear__item" role="menuitem">
+                <SimTriggerChip simActive={simActive} simDate={simDate} simDays={simDays} />
+              </div>
+            )}
+            <div className="admin-gear__sep" />
+            <Link
+              href="/calendar"
+              className="admin-gear__item admin-gear__item--link"
+              role="menuitem"
+            >
+              <HudIconGlobe className="admin-gear__item-icon" />
+              <span>{t("publicSite")}</span>
+            </Link>
+            <div className="admin-gear__item" role="menuitem">
+              <LanguageSwitcher />
+            </div>
+            <div className="admin-gear__sep" />
+            <div className="admin-gear__item" role="menuitem">
+              <LogoutButton />
+            </div>
+          </AdminGearMenu>
         </div>
       </div>
     </header>
