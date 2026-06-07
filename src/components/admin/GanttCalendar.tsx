@@ -113,6 +113,10 @@ export function GanttCalendar({
   layerFilter = "all",
   focusDay = null,
   today: todayProp,
+  cereriCount = 0,
+  arrivalsCount = 0,
+  departuresCount = 0,
+  cleanCount = 0,
 }: {
   viewRange: GanttViewRange;
   rooms: GanttRoom[];
@@ -127,6 +131,11 @@ export function GanttCalendar({
   focusDay?: string | null;
   /** Effective "today" — sim date when simulation is active */
   today?: string;
+  /** Today board badge counts for the radial controller */
+  cereriCount?: number;
+  arrivalsCount?: number;
+  departuresCount?: number;
+  cleanCount?: number;
 }) {
   const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
@@ -786,6 +795,10 @@ export function GanttCalendar({
                 onOpenReception={() => setOccFormMode("direct")}
                 onOpenCheckIn={() => setOpsPickerMode("checkin")}
                 onOpenCheckOut={() => setOpsPickerMode("checkout")}
+                cereriCount={cereriCount}
+                arrivalsCount={arrivalsCount}
+                departuresCount={departuresCount}
+                cleanCount={cleanCount}
               />
             </div>
 

@@ -211,6 +211,28 @@ export default async function AdminCalendarPage({
   const unassignedCereri = allBookings.filter(
     (booking) => booking.status === "cerere_noua" && booking.room_ids.length === 0
   );
+
+  // Compute today badge counts for the Gantt radial controller
+  const todayCereriCount = allBookings.filter(
+    (b) => b.status === "cerere_noua"
+  ).length;
+  const todayArrivalsCount = allBookings.filter(
+    (b) =>
+      b.check_in === effectiveToday &&
+      b.status === "confirmata" &&
+      !b.actual_check_in_at
+  ).length;
+  const todayDeparturesCount = allBookings.filter(
+    (b) =>
+      b.check_out === effectiveToday &&
+      b.status === "confirmata" &&
+      !b.actual_check_out_at
+  ).length;
+  const todayCleanCount = allBookings.filter(
+    (b) =>
+      b.check_out === effectiveToday &&
+      !!b.actual_check_out_at
+  ).reduce((sum, b) => sum + (b.room_ids?.length || 1), 0);
   const baseCalendarSearch = toUrlSearchParams(params);
   const prevMonth = availabilityState.month === 0 ? 11 : availabilityState.month - 1;
   const prevYear =
@@ -278,6 +300,10 @@ export default async function AdminCalendarPage({
           layerFilter={layer}
           focusDay={focusDay}
           today={effectiveToday}
+          cereriCount={todayCereriCount}
+          arrivalsCount={todayArrivalsCount}
+          departuresCount={todayDeparturesCount}
+          cleanCount={todayCleanCount}
         />
       </RetroXpWindow>
       <GanttAvailabilityHeatmapPanel
