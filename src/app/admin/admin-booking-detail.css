@@ -1,23 +1,23 @@
 /* ═══════════════════════════════════════════════════════════════════
-   BOOKING DETAIL — 3-column layout
-   Col 1: guest info, stay, contacts (narrow)
+   BOOKING DETAIL — 3-column centered layout
+   Col 1: guest info + contacts (narrow)
    Col 2: actions (room allocation, operational)
    Col 3: activity history
+   Banner: name + status top, stay dates + meta bottom
    Collapses: 3→2→1 on smaller screens
    ═══════════════════════════════════════════════════════════════════ */
 
 .bd-page-frame {
   max-width: 80rem;
+  margin-inline: auto;
 }
 
-/* ── Top banner ────────────────────────────────────────────────── */
+/* ── Top banner (2-row) ───────────────────────────────────────── */
 .bd-banner {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.4rem 0.75rem;
-  flex-wrap: wrap;
-  padding: 0.5rem 0.75rem;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.55rem 0.8rem;
   border-radius: 0.5rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   border-left: 3px solid var(--admin-panel-border, #e4e4e7);
@@ -29,22 +29,24 @@
 .bd-banner--confirmata  { border-left-color: #059669; }
 .bd-banner--anulata     { border-left-color: #ef4444; }
 
-.bd-banner__left {
+/* Row 1: name + ref + status */
+.bd-banner__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bd-banner__identity {
   display: flex;
   align-items: center;
   gap: 0.45rem;
   min-width: 0;
 }
 
-.bd-banner__center {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-
 .bd-banner__name {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 800;
   color: var(--admin-text, #18181b);
   letter-spacing: -0.01em;
@@ -52,22 +54,66 @@
 
 .bd-banner__ref {
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: var(--admin-text-muted, #71717a);
   background: var(--surface-2, #f4f4f5);
-  padding: 0.12rem 0.4rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 0.3rem;
 }
 
-.bd-banner__stay {
-  font-size: 0.68rem;
-  font-weight: 600;
+/* Row 2: stay dates + meta pills */
+.bd-banner__stay-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  padding-top: 0.2rem;
+  border-top: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 50%, transparent);
+}
+
+.bd-banner__dates {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.bd-banner__date-pair {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.bd-banner__date-label {
+  font-size: 0.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted, #a1a1aa);
+}
+
+.bd-banner__date-val {
+  font-size: 0.72rem;
+  font-weight: 700;
   color: var(--admin-text, #18181b);
+  white-space: nowrap;
+}
+
+.bd-banner__date-sep {
+  font-size: 0.72rem;
+  color: var(--admin-text-muted, #a1a1aa);
+  margin: 0 0.1rem;
+}
+
+.bd-banner__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
 }
 
 .bd-banner__nights {
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 800;
   color: #fff;
   background: var(--admin-accent, #059669);
@@ -82,7 +128,7 @@
 }
 
 .bd-banner__cal-link {
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   font-weight: 700;
   color: var(--admin-accent, #059669);
   text-decoration: none;
@@ -94,6 +140,11 @@
   transform: scale(0.97);
   filter: brightness(0.92);
   transition-duration: 0.06s;
+}
+
+/* Edit dates inline — only shows for editable bookings */
+.bd-banner__edit-hint {
+  display: inline-flex;
 }
 
 /* ── Status badge ──────────────────────────────────────────────── */
@@ -125,12 +176,13 @@
 .bd-alert--danger { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
 .bd-alert--warning { background: #fffbeb; border: 1px solid #fcd34d; color: #78350f; }
 
-/* ═══ 3-column grid ═══════════════════════════════════════════════ */
+/* ═══ 3-column grid (centered) ════════════════════════════════════ */
 .bd-grid3 {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 0.9fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
   gap: 0.5rem;
   align-items: start;
+  margin-inline: auto;
 }
 
 .bd-col {
@@ -262,74 +314,28 @@
   margin-top: 0.1rem;
 }
 
-/* ── Stay Display (human-friendly read mode) ─────────────────── */
-.bd-stay__row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.bd-stay__date {
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-}
-
-.bd-stay__date-label {
-  font-size: 0.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--admin-text-muted, #71717a);
-  min-width: 4.5rem;
-}
-
-.bd-stay__date-value {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--admin-text, #18181b);
-}
-
-.bd-stay__arrow {
-  display: none;
-}
-
-.bd-stay__meta {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  margin-top: 0.35rem;
-  flex-wrap: wrap;
-}
-
-.bd-stay__pill {
+/* ── Stay inline (edit button + saved indicator in banner) ────── */
+.bd-stay-inline {
   display: inline-flex;
   align-items: center;
-  font-size: 0.58rem;
-  font-weight: 800;
-  padding: 0.12rem 0.45rem;
-  border-radius: 9999px;
-  background: var(--admin-accent, #059669);
-  color: #fff;
-}
-
-.bd-stay__pill--muted {
-  background: var(--surface-2, #f4f4f5);
-  color: var(--admin-text, #18181b);
-  font-weight: 600;
+  gap: 0.3rem;
 }
 
 .bd-stay__edit-btn {
-  font-size: 0.58rem;
+  font-size: 0.56rem;
   font-weight: 700;
   color: var(--admin-accent, #059669);
-  background: none;
-  border: none;
+  background: color-mix(in srgb, var(--admin-accent, #059669) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 20%, transparent);
+  border-radius: 0.3rem;
   cursor: pointer;
-  padding: 0;
+  padding: 0.12rem 0.45rem;
+  transition: background 0.12s;
 }
 
-.bd-stay__edit-btn:hover { text-decoration: underline; }
+.bd-stay__edit-btn:hover {
+  background: color-mix(in srgb, var(--admin-accent, #059669) 15%, transparent);
+}
 
 .bd-stay__edit-btn:active {
   filter: brightness(0.92);
@@ -338,8 +344,7 @@
 }
 
 .bd-stay__saved {
-  margin-top: 0.25rem;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 600;
   color: var(--admin-accent, #059669);
 }

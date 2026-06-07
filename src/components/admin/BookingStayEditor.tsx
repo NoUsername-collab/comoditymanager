@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { stayNightCount } from "@/lib/stay-dates";
-import { formatDateWithDay } from "@/lib/ro-calendar";
 
 type Props = {
   bookingId: string;
@@ -25,7 +24,6 @@ export function BookingStayEditor({
   editAction,
 }: Props) {
   const t = useTranslations("admin.stayEditor");
-  const locale = useLocale();
   const [editing, setEditing] = useState(false);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
@@ -79,42 +77,21 @@ export function BookingStayEditor({
   }
 
   if (!editing) {
-    const fmtIn = formatDateWithDay(checkIn, locale, true);
-    const fmtOut = formatDateWithDay(checkOut, locale, true);
-
     return (
-      <div className="bd-stay">
-        <div className="bd-stay__row">
-          <div className="bd-stay__date">
-            <span className="bd-stay__date-label">{t("checkIn")}</span>
-            <span className="bd-stay__date-value">{fmtIn}</span>
-          </div>
-          <span className="bd-stay__arrow" aria-hidden>→</span>
-          <div className="bd-stay__date">
-            <span className="bd-stay__date-label">{t("checkOut")}</span>
-            <span className="bd-stay__date-value">{fmtOut}</span>
-          </div>
-        </div>
-        <div className="bd-stay__meta">
-          <span className="bd-stay__pill">{nights} {nights === 1 ? t("nightSingular") : t("nightPlural")}</span>
-          <span className="bd-stay__pill bd-stay__pill--muted">
-            {numAdults} {numAdults === 1 ? t("adultSingular") : t("adultPlural")}
-            {numChildren > 0 ? `, ${numChildren} ${numChildren === 1 ? t("childSingular") : t("childPlural")}` : ""}
-          </span>
-          {editable && (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className="bd-stay__edit-btn"
-            >
-              {t("editDates")}
-            </button>
-          )}
-        </div>
-        {saved && (
-          <p className="bd-stay__saved">{t("saved")}</p>
+      <span className="bd-stay-inline">
+        {editable && (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="bd-stay__edit-btn"
+          >
+            {t("editDates")}
+          </button>
         )}
-      </div>
+        {saved && (
+          <span className="bd-stay__saved">{t("saved")}</span>
+        )}
+      </span>
     );
   }
 

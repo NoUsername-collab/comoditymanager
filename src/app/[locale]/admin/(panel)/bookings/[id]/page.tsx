@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
+import { formatDateWithDay } from "@/lib/ro-calendar";
 import {
   bookingCalendarHref,
   formatBookingRef,
@@ -34,13 +35,6 @@ function safeReturnTo(raw: string | undefined): string {
   return path;
 }
 
-function guestsLabel(adults: number, children: number): string {
-  const parts: string[] = [];
-  parts.push(`${adults} ${adults === 1 ? "adult" : "adults"}`);
-  if (children > 0) parts.push(`${children} ${children === 1 ? "child" : "children"}`);
-  return parts.join(", ");
-}
-
 export default async function BookingDetailPage({
   params,
   searchParams,
@@ -51,6 +45,7 @@ export default async function BookingDetailPage({
   const tPage = await getTranslations("admin.pages.bookingDetail");
   const tCommon = await getTranslations("admin.common");
   const tFlow = await getTranslations("booking.flowStatus");
+  const tStay = await getTranslations("admin.stayEditor");
   const { id } = await params;
   const sp = await searchParams;
   const returnTo = safeReturnTo(sp.return_to);
@@ -95,6 +90,13 @@ export default async function BookingDetailPage({
           period: formatStayPeriod(booking.check_in, booking.check_out, true),
         });
 
+  const fmtCheckIn = formatDateWithDay(booking.check_in, "ro", true);
+  const fmtCheckOut = formatDateWithDay(booking.check_out, "ro", true);
+  const adultsLabel = `${booking.num_adults} ${booking.num_adults === 1 ? tStay("adultSingular") : tStay("adultPlural")}`;
+  const childrenLabel = booking.num_children > 0
+    ? `, ${booking.num_children} ${booking.num_children === 1 ? tStay("childSingular") : tStay("childPlural")}`
+    : "";
+
   return (
     <AdminRetroPageFrame
       title={`${tPage("title")} — ${booking.guest_name}`}
@@ -102,35 +104,63 @@ export default async function BookingDetailPage({
       backLabel={tCommon("requests")}
       className="bd-page-frame"
     >
-      {/* ── Top banner ──────────────────────────────────────────── */}
+      {/* ── Top banner — all key info at a glance ──────────────── */}
       <div className={`bd-banner bd-banner--${booking.status}`}>
-        <div className="bd-banner__left">
-          <span className="bd-banner__name">{booking.guest_name}</span>
-          <span className="bd-banner__ref">{formatBookingRef(booking.id)}</span>
+        {/* Row 1: name + ref + status */}
+        <div className="bd-banner__top">
+          <div className="bd-banner__identity">
+            <span className="bd-banner__name">{booking.guest_name}</span>
+            <span className="bd-banner__ref">{formatBookingRef(booking.id)}</span>
+          </div>
+          <span className={`bd-status bd-status--${booking.status}`}>
+            {tFlow(booking.status)}
+          </span>
         </div>
-        <div className="bd-banner__center">
-          <span className="bd-banner__stay">
-            {formatStayPeriod(booking.check_in, booking.check_out, true)}
-          </span>
-          <span className="bd-banner__nights">
-            {nights} {nights === 1 ? tPage("night") : tPage("nights")}
-          </span>
-          <span className="bd-banner__guests">
-            {guestsLabel(booking.num_adults, booking.num_children)}
-          </span>
-          <Link
-            href={bookingCalendarHref(booking.check_in)}
-            className="bd-banner__cal-link"
-          >
-            {tPage("viewInCalendar")} →
-          </Link>
+
+        {/* Row 2: stay dates + meta */}
+        <div className="bd-banner__stay-row">
+          <div className="bd-banner__dates">
+            <span className="bd-banner__date-pair">
+              <span className="bd-banner__date-label">{tStay("checkIn")}</span>
+              <span className="bd-banner__date-val">{fmtCheckIn}</span>
+            </span>
+            <span className="bd-banner__date-sep">→</span>
+            <span className="bd-banner__date-pair">
+              <span className="bd-banner__date-label">{tStay("checkOut")}</span>
+              <span className="bd-banner__date-val">{fmtCheckOut}</span>
+            </span>
+          </div>
+          <div className="bd-banner__meta">
+            <span className="bd-banner__nights">
+              {nights} {nights === 1 ? tPage("night") : tPage("nights")}
+            </span>
+            <span className="bd-banner__guests">
+              {adultsLabel}{childrenLabel}
+            </span>
+            <Link
+              href={bookingCalendarHref(booking.check_in)}
+              className="bd-banner__cal-link"
+            >
+              {tPage("viewInCalendar")} →
+            </Link>
+            {canEditDates && (
+              <span className="bd-banner__edit-hint">
+                <BookingStayEditor
+                  bookingId={booking.id}
+                  checkIn={booking.check_in}
+                  checkOut={booking.check_out}
+                  numAdults={booking.num_adults}
+                  numChildren={booking.num_children}
+                  editable={canEditDates}
+                  editAction={editBookingDatesAction}
+                />
+              </span>
+            )}
+          </div>
         </div>
-        <span className={`bd-status bd-status--${booking.status}`}>
-          {tFlow(booking.status)}
-        </span>
       </div>
 
-      {/* ── Guest alert banner ──────────────────────────────────── */}
+      {/* ── Guest alert ────────────────────────────────────────── */}
       {booking.guest_alert_level !== "normal" && (
         <div
           className={[
@@ -151,7 +181,7 @@ export default async function BookingDetailPage({
 
       {/* ═══ 3-column layout ════════════════════════════════════ */}
       <div className="bd-grid3">
-        {/* ─── COL 1: guest info ───────────────────────────────── */}
+        {/* ─── COL 1: guest info ────────────────────────────────── */}
         <div className="bd-col">
           {/* Profile badges */}
           {booking.guest_alert_level === "normal" && booking.guest_profile && (
@@ -165,20 +195,6 @@ export default async function BookingDetailPage({
               />
             </div>
           )}
-
-          {/* Stay details */}
-          <div className="bd-card">
-            <p className="bd-card__title">{tPage("stayDetails")}</p>
-            <BookingStayEditor
-              bookingId={booking.id}
-              checkIn={booking.check_in}
-              checkOut={booking.check_out}
-              numAdults={booking.num_adults}
-              numChildren={booking.num_children}
-              editable={canEditDates}
-              editAction={editBookingDatesAction}
-            />
-          </div>
 
           {/* Guest contact info */}
           <div className="bd-card">
@@ -315,7 +331,7 @@ export default async function BookingDetailPage({
           )}
         </div>
 
-        {/* ─── COL 3: activity / history ───────────────────────── */}
+        {/* ─── COL 3: activity / history ────────────────────────── */}
         <div className="bd-col">
           <div className="bd-card bd-card--history">
             <BookingActivitySection
