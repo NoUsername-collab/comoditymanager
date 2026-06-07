@@ -2,6 +2,7 @@ import "@/app/admin/admin-booking-detail.css";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { stayNightCount } from "@/lib/stay-dates";
 import {
   bookingCalendarHref,
   formatBookingRef,
@@ -93,12 +94,23 @@ export default async function BookingDetailPage({
       backLabel={tCommon("requests")}
       className="max-w-6xl"
     >
-      {/* ── Top banner: reference + status ─────────────────────── */}
-      <div className="bd-banner">
+      {/* ── Top banner: reference + stay summary + status ───────── */}
+      <div className={`bd-banner bd-banner--${booking.status}`}>
         <div className="bd-banner__left">
           <span className="bd-banner__name">{booking.guest_name}</span>
           <span className="bd-banner__ref">
             {formatBookingRef(booking.id)}
+          </span>
+        </div>
+        <div className="bd-banner__center">
+          <span className="bd-banner__stay">
+            {formatStayPeriod(booking.check_in, booking.check_out, true)}
+          </span>
+          <span className="bd-banner__nights">
+            {stayNightCount(booking.check_in, booking.check_out)}N
+          </span>
+          <span className="bd-banner__guests">
+            {booking.num_adults}A{booking.num_children > 0 ? ` +${booking.num_children}C` : ""}
           </span>
           <Link
             href={bookingCalendarHref(booking.check_in)}
@@ -107,9 +119,7 @@ export default async function BookingDetailPage({
             {tPage("viewInCalendar")} →
           </Link>
         </div>
-        <span
-          className={`bd-status bd-status--${booking.status}`}
-        >
+        <span className={`bd-status bd-status--${booking.status}`}>
           {tFlow(booking.status)}
         </span>
       </div>
@@ -208,16 +218,20 @@ export default async function BookingDetailPage({
           {booking.status === "confirmata" && booking.room_names.length > 0 && (
             <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("roomsAndPrice")}</p>
-              <p className="text-sm font-medium">
-                {booking.room_names.join(", ")}
+              <div className="bd-room-price">
+                <span className="bd-room-price__rooms">
+                  {booking.room_names.join(", ")}
+                </span>
                 {booking.total_price != null && (
-                  <strong className="ml-1">· {booking.total_price} RON</strong>
+                  <span className="bd-room-price__total">
+                    {booking.total_price} RON
+                  </span>
                 )}
-              </p>
+              </div>
               {isInvoicingAlphaEnabled() && (
                 <Link
                   href={`/admin/bookings/${booking.id}/factura`}
-                  className="bd-link mt-1"
+                  className="bd-link"
                 >
                   {tPage("informalDocumentAlpha")} →
                 </Link>

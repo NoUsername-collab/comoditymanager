@@ -77,33 +77,38 @@ export function BookingOperationalPanel({
     });
   }
 
-  return (
-    <div className="mt-6 space-y-3 border border-emerald-200 bg-emerald-50/60 p-4">
-      <h2 className="font-bold text-emerald-950">{t("title")}</h2>
-      <dl className="grid gap-2 text-sm">
-        <div>
-          <dt className="font-semibold text-emerald-900">{t("checkInLabel")}</dt>
-          <dd>
-            {actualCheckInAt
-              ? formatOperationalTimestamp(actualCheckInAt)
-              : t("notRecorded")}
-          </dd>
-        </div>
-        <div>
-          <dt className="font-semibold text-emerald-900">{t("checkOutLabel")}</dt>
-          <dd>
-            {actualCheckOutAt
-              ? formatOperationalTimestamp(actualCheckOutAt)
-              : t("notRecorded")}
-          </dd>
-        </div>
-      </dl>
+  // Determine visual step: 0 = waiting, 1 = checked-in, 2 = checked-out
+  const step = actualCheckOutAt ? 2 : actualCheckInAt ? 1 : 0;
 
-      <div className="flex flex-wrap gap-2">
+  return (
+    <div className="bd-ops">
+      <p className="bd-card__title">{t("title")}</p>
+
+      {/* ── Step progress indicators ──────────────────────── */}
+      <div className="bd-ops__steps">
+        <div className={`bd-ops__step ${step >= 0 ? "bd-ops__step--active" : ""}`}>
+          <span className="bd-ops__step-dot" />
+          <span className="bd-ops__step-label">{t("checkInLabel")}</span>
+          <span className="bd-ops__step-value">
+            {actualCheckInAt ? formatOperationalTimestamp(actualCheckInAt) : "—"}
+          </span>
+        </div>
+        <div className={`bd-ops__step-line ${step >= 1 ? "bd-ops__step-line--done" : ""}`} />
+        <div className={`bd-ops__step ${step >= 2 ? "bd-ops__step--active" : ""}`}>
+          <span className="bd-ops__step-dot" />
+          <span className="bd-ops__step-label">{t("checkOutLabel")}</span>
+          <span className="bd-ops__step-value">
+            {actualCheckOutAt ? formatOperationalTimestamp(actualCheckOutAt) : "—"}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Action buttons ─────────────────────────────────── */}
+      <div className="bd-ops__actions">
         {!actualCheckInAt && (
           <button
             type="button"
-            className="rounded-md bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+            className="bd-ops__btn bd-ops__btn--primary"
             disabled={pending || !hasPhone}
             title={checkInBlockedTitle}
             onClick={() => setDialogMode("checkin")}
@@ -115,7 +120,7 @@ export function BookingOperationalPanel({
           <>
             <button
               type="button"
-              className="rounded-md bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+              className="bd-ops__btn bd-ops__btn--primary"
               disabled={pending}
               onClick={() => setDialogMode("checkout")}
             >
@@ -123,7 +128,7 @@ export function BookingOperationalPanel({
             </button>
             <button
               type="button"
-              className="rounded-md border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-900 disabled:opacity-50"
+              className="bd-ops__btn bd-ops__btn--ghost"
               disabled={pending}
               onClick={undoCheckIn}
             >
@@ -134,7 +139,7 @@ export function BookingOperationalPanel({
         {actualCheckOutAt && (
           <button
             type="button"
-            className="rounded-md border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-900 disabled:opacity-50"
+            className="bd-ops__btn bd-ops__btn--ghost"
             disabled={pending}
             onClick={undoCheckOut}
           >

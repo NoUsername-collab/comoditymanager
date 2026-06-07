@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { stayNightCount } from "@/lib/stay-dates";
+import { formatDateWithDay } from "@/lib/ro-calendar";
 
 type Props = {
   bookingId: string;
@@ -24,6 +25,7 @@ export function BookingStayEditor({
   editAction,
 }: Props) {
   const t = useTranslations("admin.stayEditor");
+  const locale = useLocale();
   const [editing, setEditing] = useState(false);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
@@ -77,39 +79,39 @@ export function BookingStayEditor({
   }
 
   if (!editing) {
+    const fmtIn = formatDateWithDay(checkIn, locale, true);
+    const fmtOut = formatDateWithDay(checkOut, locale, true);
+
     return (
-      <div className="admin-stay-display">
-        <div className="admin-stay-display__grid">
-          <div>
-            <span className="admin-stay-display__label">{t("checkIn")}</span>
-            <span className="admin-stay-display__value">{checkIn}</span>
+      <div className="bd-stay">
+        <div className="bd-stay__row">
+          <div className="bd-stay__date">
+            <span className="bd-stay__date-label">{t("checkIn")}</span>
+            <span className="bd-stay__date-value">{fmtIn}</span>
           </div>
-          <div>
-            <span className="admin-stay-display__label">{t("checkOut")}</span>
-            <span className="admin-stay-display__value">{checkOut}</span>
-          </div>
-          <div>
-            <span className="admin-stay-display__label">{t("nights")}</span>
-            <span className="admin-stay-display__value">{nights}</span>
-          </div>
-          <div>
-            <span className="admin-stay-display__label">{t("guests")}</span>
-            <span className="admin-stay-display__value">
-              {numAdults}A {numChildren > 0 ? `+ ${numChildren}C` : ""}
-            </span>
+          <span className="bd-stay__arrow" aria-hidden>→</span>
+          <div className="bd-stay__date">
+            <span className="bd-stay__date-label">{t("checkOut")}</span>
+            <span className="bd-stay__date-value">{fmtOut}</span>
           </div>
         </div>
-        {editable && (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="admin-stay-display__edit-btn"
-          >
-            {t("editDates")}
-          </button>
-        )}
+        <div className="bd-stay__meta">
+          <span className="bd-stay__pill">{nights} {nights === 1 ? t("nightSingular") : t("nightPlural")}</span>
+          <span className="bd-stay__pill bd-stay__pill--muted">
+            {numAdults}A{numChildren > 0 ? ` + ${numChildren}C` : ""}
+          </span>
+          {editable && (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="bd-stay__edit-btn"
+            >
+              {t("editDates")}
+            </button>
+          )}
+        </div>
         {saved && (
-          <p className="mt-2 text-xs font-medium text-emerald-600">{t("saved")}</p>
+          <p className="bd-stay__saved">{t("saved")}</p>
         )}
       </div>
     );

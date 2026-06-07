@@ -113,20 +113,19 @@ export function ConfirmRoomsForm({
   }
 
   return (
-    <AdminPendingForm action={action} className="space-y-4">
+    <AdminPendingForm action={action} className="bd-confirm">
       <input type="hidden" name="id" value={bookingId} />
       {returnTo ? <input type="hidden" name="return_to" value={returnTo} /> : null}
 
-      <p className="text-xs text-zinc-500">
+      <p className="bd-confirm__hint">
         {tConfirm("checkTimes", { checkIn: checkInTime, checkOut: checkOutTime })}
       </p>
 
-      <p className="text-sm text-zinc-700">
+      <p className="bd-confirm__summary">
         <strong>{guestCount}</strong> {tCommon("persons")}
         {canFulfill && minRoomsNeeded > 0 && (
-          <span className="text-zinc-500">
-            {" "}
-            · {tConfirm("minimumRoomsInPeriod", {
+          <span className="bd-confirm__summary-sub">
+            {" "}· {tConfirm("minimumRoomsInPeriod", {
               count: minRoomsNeeded,
               rooms: minRoomsNeeded === 1 ? tCommon("room") : tCommon("rooms").toLowerCase(),
             })}
@@ -135,12 +134,9 @@ export function ConfirmRoomsForm({
       </p>
 
       {showGlobalUnavailable && (
-        <div
-          role="alert"
-          className="rounded-lg border-2 border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-900"
-        >
+        <div role="alert" className="bd-confirm__alert bd-confirm__alert--danger">
           {tConfirm("noAvailability")}
-          <p className="mt-1 font-normal text-red-800">
+          <p className="bd-confirm__alert-detail">
             {noRoomsAvailable
               ? tConfirm("noRoomInRequestedRange")
               : tConfirm("capacityDoesNotCoverGuests", {
@@ -153,14 +149,14 @@ export function ConfirmRoomsForm({
       )}
 
       {canFulfill && availableRooms.length > 0 && (
-        <div className="max-h-64 space-y-2 overflow-y-auto">
-          <p className="text-xs font-medium text-zinc-600">
+        <div className="bd-confirm__rooms">
+          <p className="bd-confirm__rooms-label">
             {tConfirm("availableRooms", { count: availableRooms.length })}
           </p>
           {availableRooms.map((r) => (
             <label
               key={r.id}
-              className="flex cursor-pointer items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-sm hover:bg-zinc-50"
+              className={`bd-confirm__room-option ${selected.has(r.id) ? "bd-confirm__room-option--selected" : ""}`}
             >
               <input
                 type="checkbox"
@@ -168,10 +164,13 @@ export function ConfirmRoomsForm({
                 value={r.id}
                 checked={selected.has(r.id)}
                 onChange={() => toggle(r.id)}
+                className="bd-confirm__room-check"
               />
-              <span className="min-w-0 flex-1">
-                {r.name} — {r.building_name} · {r.max_capacity} {tCommon("personsShort")} ·{" "}
-                {formatCurrency(r.price_per_night, "ro-RO")} {tCommon("ronPerNight")}
+              <span className="bd-confirm__room-info">
+                <span className="bd-confirm__room-name">{r.name}</span>
+                <span className="bd-confirm__room-meta">
+                  {r.building_name} · {r.max_capacity} {tCommon("personsShort")} · {formatCurrency(r.price_per_night, "ro-RO")} {tCommon("ronPerNight")}
+                </span>
                 <RoomFeatureBadges
                   roomTypeName={r.room_type_name}
                   optionSlugs={r.option_slugs}
@@ -185,10 +184,7 @@ export function ConfirmRoomsForm({
       )}
 
       {showSelectionError && (
-        <div
-          role="alert"
-          className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-900"
-        >
+        <div role="alert" className="bd-confirm__alert bd-confirm__alert--warn">
           {tConfirm("selectedCapacityInsufficient", {
             capacity: selectedCapacity,
             guests: guestCount,
@@ -198,26 +194,26 @@ export function ConfirmRoomsForm({
       )}
 
       {canFulfill && selected.size === 0 && (
-        <p className="text-sm text-amber-800">{tConfirm("selectAtLeastOneRoom")}</p>
+        <p className="bd-confirm__nudge">{tConfirm("selectAtLeastOneRoom")}</p>
       )}
 
       {canFulfill && selected.size > 0 && nights > 0 && (
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm">
-          <p className="font-medium text-zinc-800">{tConfirm("standardPriceRooms")}</p>
-          <ul className="mt-2 space-y-1 text-zinc-600">
+        <div className="bd-confirm__price-box">
+          <p className="bd-confirm__price-title">{tConfirm("standardPriceRooms")}</p>
+          <ul className="bd-confirm__price-list">
             {selectedRooms.map((r) => (
               <li key={r.id}>
                 {r.name}: {formatCurrency(r.price_per_night, "ro-RO")} RON × {nights}{" "}
                 {nights === 1 ? tConfirm("night") : tConfirm("nights")} ={" "}
-                {formatCurrency(r.price_per_night * nights, "ro-RO")} RON
+                <strong>{formatCurrency(r.price_per_night * nights, "ro-RO")} RON</strong>
               </li>
             ))}
           </ul>
-          <p className="mt-2 border-t border-zinc-200 pt-2 font-medium text-zinc-800">
-            {tConfirm("subtotal")}: {formatCurrency(standardTotal, "ro-RO")} RON
+          <p className="bd-confirm__price-total">
+            {tConfirm("subtotal")}: <strong>{formatCurrency(standardTotal, "ro-RO")} RON</strong>
           </p>
           {!modifyPrice && (
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="bd-confirm__price-note">
               {tConfirm("standardTotalRecorded", { total: formatCurrency(standardTotal, "ro-RO") })}
             </p>
           )}
@@ -225,8 +221,8 @@ export function ConfirmRoomsForm({
       )}
 
       {canFulfill && selected.size > 0 && (
-        <div className="space-y-3">
-          <label className="flex cursor-pointer items-center gap-2 text-sm">
+        <div className="bd-confirm__adjust">
+          <label className="bd-confirm__adjust-toggle">
             <input
               type="checkbox"
               name="modify_price"
@@ -237,8 +233,8 @@ export function ConfirmRoomsForm({
           </label>
 
           {modifyPrice && (
-            <div className="space-y-2 rounded-lg border border-amber-200 bg-amber-50/60 px-4 py-3">
-              <label className="block text-sm">
+            <div className="bd-confirm__adjust-panel">
+              <label className="bd-confirm__adjust-field">
                 {tConfirm("supplementLabel")}
                 <input
                   name="price_adjustment"
@@ -247,15 +243,15 @@ export function ConfirmRoomsForm({
                   placeholder={tConfirm("zero")}
                   value={adjustment}
                   onChange={(e) => setAdjustment(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2"
+                  className="bd-confirm__adjust-input"
                 />
               </label>
               {!adjustmentValid && (
-                <p className="text-xs text-red-700">{tConfirm("enterValidAmount")}</p>
+                <p className="bd-confirm__adjust-error">{tConfirm("enterValidAmount")}</p>
               )}
-              <p className="text-sm font-medium text-zinc-800">
-                {tConfirm("recordedTotal")}: {formatCurrency(finalTotal, "ro-RO")} RON
-                <span className="ml-1 font-normal text-zinc-600">
+              <p className="bd-confirm__adjust-result">
+                {tConfirm("recordedTotal")}: <strong>{formatCurrency(finalTotal, "ro-RO")} RON</strong>
+                <span className="bd-confirm__adjust-breakdown">
                   ({formatCurrency(standardTotal, "ro-RO")} + {formatCurrency(adjustmentNum, "ro-RO")})
                 </span>
               </p>
@@ -267,7 +263,7 @@ export function ConfirmRoomsForm({
       <button
         type="submit"
         disabled={!canSubmit}
-        className="w-full rounded-lg bg-emerald-700 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-zinc-300 disabled:text-zinc-500"
+        className="bd-confirm__submit"
       >
         {resolvedSubmitLabel}
       </button>

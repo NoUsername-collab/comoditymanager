@@ -19,18 +19,20 @@ export async function BookingActivitySection({
   }
 
   return (
-    <section className="admin-panel-section mt-10">
-      <h2 className="admin-panel-section__title">{t("title")}</h2>
-      <p className="admin-panel-section__desc">
-        {t("description")}
-      </p>
-      <div className="mt-4">
-        <ActivityTimeline
-          entries={entries}
-          compact
-          bookingCheckIn={checkIn}
-        />
+    <section className="bd-activity">
+      <div className="bd-activity__header">
+        <h2 className="bd-card__title" style={{ marginBottom: 0 }}>
+          {t("title")}
+        </h2>
+        {entries.length > 0 && (
+          <span className="bd-activity__count">{entries.length}</span>
+        )}
       </div>
+      <ActivityTimeline
+        entries={entries}
+        compact
+        bookingCheckIn={checkIn}
+      />
     </section>
   );
 }

@@ -52,11 +52,16 @@ export function BookingGuestPhoneForm({
   }
 
   return (
-    <div className="mt-4 rounded-md border border-red-300 bg-red-50 px-3 py-3">
-      <p className="text-sm font-bold text-red-950">{tPage("phoneRequiredTitle")}</p>
-      <p className="mt-1 text-xs text-red-900/90">{tPage("phoneRequiredHint")}</p>
-      <form onSubmit={savePhone} className="mt-3 flex flex-wrap gap-2">
-        <label className="min-w-[200px] flex-1 text-xs font-semibold text-red-950">
+    <div className="bd-phone-warn">
+      <div className="bd-phone-warn__header">
+        <span className="bd-phone-warn__icon" aria-hidden>!</span>
+        <div>
+          <p className="bd-phone-warn__title">{tPage("phoneRequiredTitle")}</p>
+          <p className="bd-phone-warn__hint">{tPage("phoneRequiredHint")}</p>
+        </div>
+      </div>
+      <form onSubmit={savePhone} className="bd-phone-warn__form">
+        <label className="bd-phone-warn__label">
           {tCommon("phone")}
           <input
             name="guest_phone"
@@ -64,21 +69,19 @@ export function BookingGuestPhoneForm({
             required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="mt-1 w-full rounded border border-red-300 bg-white px-2 py-1.5 text-sm text-zinc-900"
+            className="bd-phone-warn__input"
             placeholder="07xx xxx xxx"
             disabled={pending}
           />
         </label>
-        <div className="flex items-end">
-          <AdminSubmitButton
-            type="submit"
-            className="rounded-md bg-red-900 px-3 py-1.5 text-xs font-semibold text-white"
-            pendingLabel={tCommon("saving")}
-            disabled={pending}
-          >
-            {tPage("phoneRequiredSave")}
-          </AdminSubmitButton>
-        </div>
+        <AdminSubmitButton
+          type="submit"
+          className="bd-phone-warn__save"
+          pendingLabel={tCommon("saving")}
+          disabled={pending}
+        >
+          {tPage("phoneRequiredSave")}
+        </AdminSubmitButton>
       </form>
     </div>
   );
