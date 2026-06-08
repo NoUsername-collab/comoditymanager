@@ -162,10 +162,6 @@ html[data-layout-chrome="compact"] .admin-corner {
 }
 
 /* ── Tablet portrait uses compact chrome too ── */
-html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-hud__center {
-  display: none;
-}
-
 html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
   padding-bottom: calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom));
 }

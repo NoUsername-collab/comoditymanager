@@ -41,10 +41,13 @@ html[data-layout-chrome="compact"] .admin-settings-form button {
 }
 
 /* ── Bookings / cereri ── */
+html[data-layout-chrome="compact"] .cerere-list {
+  gap: 0.55rem;
+}
+
 html[data-layout-chrome="compact"] .cerere-item__head {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 0.6rem 0.65rem 0.5rem;
 }
 
 html[data-layout-chrome="compact"] .cerere-item__action {
@@ -52,8 +55,27 @@ html[data-layout-chrome="compact"] .cerere-item__action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  font-size: 0.875rem;
+  padding-inline: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__body {
+  padding: 0.45rem 0.65rem 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__profile-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .guest-badges--cerere {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+  padding: 0.45rem 0.65rem 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .guest-badges--cerere__stat {
+  padding: 0.4rem 0.45rem;
 }
 
 /* ── Cazări ── */

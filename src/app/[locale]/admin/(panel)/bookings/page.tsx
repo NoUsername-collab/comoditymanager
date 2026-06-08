@@ -27,7 +27,12 @@ export default async function AdminBookingsPage() {
           {cereri.map((c) => (
             <li key={c.id} className="cerere-item">
               <div className="cerere-item__head">
-                <p className="cerere-item__name">{c.guest_name}</p>
+                <div className="cerere-item__lead">
+                  <p className="cerere-item__name">{c.guest_name}</p>
+                  <p className="cerere-item__dates">
+                    {formatStayPeriod(c.check_in, c.check_out)}
+                  </p>
+                </div>
                 <Link
                   href={`/admin/bookings/${c.id}`}
                   className="cerere-item__action admin-cereri-fill"
@@ -35,30 +40,30 @@ export default async function AdminBookingsPage() {
                   {t("process")}
                 </Link>
               </div>
-              <p className="cerere-item__meta">
-                {formatStayPeriod(c.check_in, c.check_out)} · {c.num_adults}{" "}
-                {t("adultsShort")} + {c.num_children} {t("childrenShort")}
+
+              <div className="cerere-item__body">
+                <p className="cerere-item__guests">
+                  {c.num_adults} {t("adultsShort")}
+                  {" · "}
+                  {c.num_children} {t("childrenShort")}
+                </p>
                 {c.guest_email ? (
-                  <>
-                    {" "}
-                    · <span className="cerere-item__email">{c.guest_email}</span>
-                  </>
+                  <p className="cerere-item__email" title={c.guest_email}>
+                    {c.guest_email}
+                  </p>
                 ) : null}
                 {c.guest_id ? (
-                  <>
-                    {" "}
-                    ·{" "}
-                    <Link
-                      href={`/admin/guests/${c.guest_id}`}
-                      className="cerere-item__profile-link"
-                    >
-                      {t("openClientProfile")} →
-                    </Link>
-                  </>
+                  <Link
+                    href={`/admin/guests/${c.guest_id}`}
+                    className="cerere-item__profile-link"
+                  >
+                    {t("openClientProfile")} →
+                  </Link>
                 ) : null}
-              </p>
+              </div>
+
               <GuestProfileBadges
-                variant="compact"
+                variant="cerere"
                 profile={c.guest_profile}
                 alertLevel={c.guest_alert_level}
                 alertNote={c.guest_alert_note}

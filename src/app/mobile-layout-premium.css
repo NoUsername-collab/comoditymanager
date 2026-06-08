@@ -4,7 +4,6 @@
  */
 
 /* ── HUD (was globals.css @media 1400 / 900) ── */
-html[data-layout-chrome="compact"] .admin-hud__center,
 html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__center {
   order: 3;
   flex: 1 1 100%;
@@ -14,7 +13,6 @@ html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__center {
   scrollbar-width: thin;
 }
 
-html[data-layout-chrome="compact"] .admin-hud__nav,
 html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__nav {
   flex-wrap: nowrap;
   width: max-content;

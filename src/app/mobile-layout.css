@@ -140,9 +140,7 @@ html[data-layout-chrome="compact"] .admin-shell {
   padding-bottom: calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom));
 }
 
-html[data-layout-chrome="compact"] .admin-hud__center {
-  display: none;
-}
+/* admin-hud__center: visible scroll row — mobile-layout-pages.css */
 
 /* Landscape: compact bottom bar, icons-first */
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] {
