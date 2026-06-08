@@ -15,7 +15,7 @@ export default async function HospiraAdminLayout({
   return (
     <MobileShell
       surface="hospira-admin"
-      className="ml-shell--hospira-admin min-h-screen bg-neutral-950 text-neutral-100"
+      className="ml-shell--hospira-admin min-h-dvh bg-neutral-950 text-neutral-100"
     >
       <header className="hospira-admin-header border-b border-neutral-800 bg-neutral-900">
         <div className="hospira-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-3 px-6 py-3">

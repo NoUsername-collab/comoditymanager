@@ -47,7 +47,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="ml-content flex flex-1 flex-col">
       <section className="public-hero">
         <div className="public-hero__glow" aria-hidden />
         <div className="public-hero__inner">

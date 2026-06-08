@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { useTranslations } from "next-intl";
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -96,12 +97,27 @@ export function PublicMobileMenu() {
             {t("gdpr")}
           </Link>
           <Link
+            href="/termeni"
+            className={[
+              "ml-drawer__link",
+              isActive(pathname, "/termeni") && "ml-drawer__link--active",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onClick={() => setOpen(false)}
+          >
+            {t("terms")}
+          </Link>
+          <Link
             href="/calendar"
             className="ml-drawer__link ml-drawer__link--cta site-cta"
             onClick={() => setOpen(false)}
           >
             {t("book")}
           </Link>
+          <div className="ml-drawer__locale">
+            <LanguageSwitcher />
+          </div>
         </nav>
       </div>
     </div>

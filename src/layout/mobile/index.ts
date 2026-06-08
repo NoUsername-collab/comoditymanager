@@ -42,3 +42,8 @@ export {
   isAdminTabActive,
   type AdminNavTab,
 } from "./admin-tabs";
+export {
+  ADMIN_MORE_LINKS,
+  filterAdminMoreLinks,
+  type AdminMoreLink,
+} from "./admin-more-links";

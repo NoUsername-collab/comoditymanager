@@ -94,12 +94,18 @@ export function GanttStickyViewportHeader({
     scrollEl.addEventListener("scroll", update, { passive: true });
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    window.visualViewport?.addEventListener("resize", update);
+    window.visualViewport?.addEventListener("scroll", update);
 
     return () => {
       cancelAnimationFrame(frame);
       scrollEl.removeEventListener("scroll", update);
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+      window.visualViewport?.removeEventListener("resize", update);
+      window.visualViewport?.removeEventListener("scroll", update);
     };
   }, [scrollRef, shellRef, theadRef, viewRange.periodKey, compact, counts.length]);
 

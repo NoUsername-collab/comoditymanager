@@ -296,12 +296,7 @@ html[data-layout-chrome="compact"] .admin-page-main .lg\:grid-cols-2 {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-html[data-layout-chrome="compact"] .retro-xp-window .flex.items-end.justify-between {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  padding-bottom: 0.25rem;
-}
+/* statistics charts in XP windows: mobile-layout-flawless.css */
 
 /* ── Rebook / receptie / confirm ── */
 html[data-layout-chrome="compact"] .guest-rebook-page {

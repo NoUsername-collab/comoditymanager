@@ -29,24 +29,13 @@ html[data-layout-chrome="compact"] .admin-retro-page-toolbar {
   align-items: stretch;
 }
 
-html[data-layout-chrome="compact"] .retro-xp-window {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-html[data-layout-chrome="compact"] .retro-xp-window__body {
-  padding: 0.65rem !important;
-}
+/* retro windows: see mobile-layout-flawless.css (.admin-xp-window) */
 
 html[data-layout-chrome="compact"] .admin-retro-back {
   font-size: 0.8125rem;
 }
 
-/* ── Admin settings / forms ── */
-html[data-layout-chrome="compact"] .admin-settings-grid,
-html[data-layout-chrome="compact"] .admin-settings-layout {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
+/* ── Admin settings / forms (see mobile-layout-admin-pages.css) ── */
 
 html[data-layout-chrome="compact"] .admin-panel-section {
   padding: 1rem;
@@ -64,9 +53,7 @@ html[data-layout-chrome="compact"] .checkin-modal {
   margin-inline: auto;
 }
 
-html[data-layout-chrome="compact"] .sim-overlay__panel {
-  width: min(100vw - 1.5rem, 24rem);
-}
+/* sim strip: see mobile-layout-flawless.css */
 
 /* ── Hospira admin ── */
 .ml-shell--hospira-admin .hospira-admin-header__nav--wide {
@@ -150,6 +137,28 @@ html[data-layout-chrome="compact"] .ml-shell--public .ml-main {
 html[data-layout-chrome="compact"] .ml-shell--auth {
   min-height: 100dvh;
   padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .alpha-gate-page {
+  min-height: 100dvh;
+  padding: max(1rem, var(--ml-safe-top)) 1rem max(1rem, var(--ml-safe-bottom));
+  align-items: flex-start;
+  padding-top: max(2rem, var(--ml-safe-top));
+}
+
+html[data-layout-chrome="compact"] .alpha-gate-card {
+  padding: 1.25rem !important;
+  border-radius: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .alpha-gate-form button[type="submit"] {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-corner {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
 }
 
 /* ── Tablet portrait uses compact chrome too ── */

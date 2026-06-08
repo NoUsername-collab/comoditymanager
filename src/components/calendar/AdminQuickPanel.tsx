@@ -38,7 +38,7 @@ export async function AdminQuickPanel({
         <h2 className="text-sm font-semibold">{t("title")}</h2>
       </div>
 
-      <div className="grid gap-4 p-4 lg:grid-cols-2">
+      <div className="admin-quick-panel grid gap-4 p-4 lg:grid-cols-2">
         <div className="rounded-lg bg-zinc-800/50 p-4">
           <p className="mb-3 text-xs font-medium text-zinc-300">
             {t("phoneTitle")}
@@ -72,7 +72,7 @@ export async function AdminQuickPanel({
                   </div>
                   <Link
                     href={`/calendar/confirm/${c.id}`}
-                    className="shrink-0 rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-500"
+                    className="admin-quick-panel__confirm-link shrink-0 rounded-md bg-emerald-600 px-2.5 py-1 font-medium text-white hover:bg-emerald-500"
                   >
                     {t("confirm")}
                   </Link>

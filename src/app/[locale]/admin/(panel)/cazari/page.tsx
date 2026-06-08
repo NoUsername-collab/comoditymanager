@@ -468,7 +468,7 @@ function StayActions({
       : labels.cancelRequestMsg(ref, stay.guest_name, period);
 
   return (
-    <div className="flex shrink-0 flex-col items-stretch gap-1 sm:min-w-[270px]">
+    <div className="stay-card__actions flex shrink-0 flex-col items-stretch gap-1 sm:min-w-[270px]">
       <StayQuickOps
         bookingId={stay.id}
         bookingStatus={stay.status}
@@ -1017,7 +1017,7 @@ export default async function AdminCazariPage({
   );
 
   return (
-    <AdminRetroPageFrame title={tPages("title")} description={description}>
+    <AdminRetroPageFrame title={tPages("title")} description={description} className="cazari-page">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,30%)]">
         <div className="min-w-0">
           <RetroXpWindow title={tPages("searchFilter")} className="mb-6">
@@ -1026,7 +1026,7 @@ export default async function AdminCazariPage({
                 defaultQuery={q}
                 preserveParams={{ tab: tab === "refuzate" ? "refuzate" : undefined, h: horizon }}
               />
-              <div className="flex flex-wrap gap-2 border-b border-zinc-200 pb-2">
+              <div className="cazari-tabs flex flex-wrap gap-2 border-b border-zinc-200 pb-2">
                 <Link
                   href={buildTabHref("ops")}
                   className={[
@@ -1077,7 +1077,7 @@ export default async function AdminCazariPage({
                   tone="red"
                 />
               </div>
-              <div className="flex flex-wrap items-center gap-2 pt-1">
+              <div className="cazari-horizon flex flex-wrap items-center gap-2 pt-1">
                 <span className="text-[11px] font-semibold text-zinc-600">{labels.visibleWindow}</span>
                 <Link
                   href={buildHorizonHref("1d")}

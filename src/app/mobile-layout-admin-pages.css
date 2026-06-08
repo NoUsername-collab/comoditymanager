@@ -1,0 +1,162 @@
+/**
+ * Admin page compact rules — settings, cazări, statistics, receptie, buildings.
+ */
+
+/* ── Settings (real class names) ── */
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  padding: 0.85rem !important;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-palette-tokens,
+html[data-layout-chrome="compact"] .admin-palette-zones,
+html[data-layout-chrome="compact"] .admin-palette-extend__modes {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row,
+html[data-layout-chrome="compact"] .admin-domain-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+/* ── Statistics ── */
+html[data-layout-chrome="compact"] .statistics-year-nav {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* statistics touch + bar chart: mobile-layout-flawless.css */
+
+/* ── Cazări ── */
+html[data-layout-chrome="compact"] .stay-card .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card .stay-card__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem;
+}
+
+html[data-layout-chrome="compact"] .stay-card__toolbar {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Disponibilitate ── */
+html[data-layout-chrome="compact"] .availability-week-nav button,
+html[data-layout-chrome="compact"] .avail-weekend-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* availability detail: mobile-layout-flawless.css */
+
+html[data-layout-chrome="compact"] .availability-month-matrix {
+  font-size: 0.68rem;
+}
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card__actions button,
+html[data-layout-chrome="compact"] .building-dashboard-card__actions a,
+html[data-layout-chrome="compact"] .rooms-building-section button,
+html[data-layout-chrome="compact"] .rooms-building-section a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Guests search ── */
+html[data-layout-chrome="compact"] .guest-search__input {
+  min-width: 0 !important;
+  width: 100%;
+}
+
+/* ── Receptie / phone booking ── */
+html[data-layout-chrome="compact"] .phone-booking-form input,
+html[data-layout-chrome="compact"] .phone-booking-form select,
+html[data-layout-chrome="compact"] .phone-booking-form textarea,
+html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ── HUD touch targets ── */
+html[data-layout-chrome="compact"] .admin-gear__trigger {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-gear__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: 2.5rem;
+  padding-inline: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .language-switcher__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+}
+
+/* ── Admin more drawer ── */
+.ml-drawer--admin {
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  border-right-color: var(--admin-panel-border, #e4e4e7);
+}
+
+.ml-drawer--admin .ml-drawer__link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--admin-text, #18181b);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+.ml-drawer--admin .ml-drawer__link-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.ml-bottom-nav__link--more {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  width: 100%;
+}
+
+/* ── Gantt panels on compact ── */
+html[data-layout-chrome="compact"] .gantt-filters-panel,
+html[data-layout-chrome="compact"] .admin-floating-panel {
+  max-width: min(360px, calc(100vw - 1rem));
+}
+
+html[data-layout-chrome="compact"] .gantt-inline-controls__period-main {
+  min-width: 0;
+}
+
+/* ── Hospira admin tables ── */
+html[data-layout-chrome="compact"] .ml-shell--hospira-admin table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* simulation: mobile-layout-flawless.css */

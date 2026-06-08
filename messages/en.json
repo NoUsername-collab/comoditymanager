@@ -51,6 +51,7 @@
       "menuClose": "Close menu",
       "home": "Home",
       "gdpr": "Privacy",
+      "terms": "Terms",
       "book": "Book a stay"
     },
     "footer": {
@@ -270,7 +271,14 @@
       "clients": "Guests",
       "calendar": "Calendar",
       "statistics": "Statistics",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "More",
+      "moreMenuAria": "More admin sections",
+      "moreClose": "Close menu",
+      "disponibilitate": "Availability",
+      "buildings": "Buildings",
+      "rooms": "Rooms",
+      "devlog": "Journal"
     },
     "shell": {
       "eyebrow": "Hospira · Control",

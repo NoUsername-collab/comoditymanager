@@ -53,7 +53,7 @@ export default async function LocationStructurePage() {
     <AdminRetroPageFrame
       title={t("pageTitle")}
       description={t("pageDescription")}
-      className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="location-structure-page admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
       action={{
         href: "/admin/buildings/new?return_to=structure",
         label: tCommon("newBuilding"),

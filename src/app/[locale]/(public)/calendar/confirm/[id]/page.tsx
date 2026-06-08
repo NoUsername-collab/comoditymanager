@@ -34,7 +34,7 @@ export default async function QuickConfirmPage({
   } = ctx;
 
   return (
-    <main className="mx-auto max-w-lg flex-1 px-6 py-10">
+    <main className="public-confirm-page ml-content mx-auto max-w-lg flex-1 px-6 py-10">
       <Link href="/receptie" className="text-sm text-zinc-500 hover:text-zinc-800">
         ← {t("backReceptie")}
       </Link>

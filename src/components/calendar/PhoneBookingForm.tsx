@@ -105,7 +105,7 @@ export function PhoneBookingForm({
   }
 
   return (
-    <form action={formAction} className="space-y-3 text-sm">
+    <form action={formAction} className="phone-booking-form space-y-3 text-sm">
       <p className="text-xs text-zinc-500">
         {t("receptionHours", { checkIn: checkInTime, checkOut: checkOutTime })}
       </p>

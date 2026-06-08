@@ -1,0 +1,231 @@
+/**
+ * Mobile flawless pass — fixes dead selectors, grids, touch, overlays.
+ */
+
+/* ── Sim strip above bottom nav ── */
+html[data-layout-chrome="compact"] .sim-bottom-strip {
+  bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px));
+  z-index: 55;
+  padding-block: 0.45rem;
+  font-size: 0.62rem;
+}
+
+html[data-layout-chrome="compact"] .admin-shell:has(.sim-bottom-strip) {
+  padding-bottom: calc(
+    var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 1.75rem
+  );
+}
+
+/* ── Universal grid stack (Tailwind sm/md/lg breakpoints still fire on tablet) ── */
+html[data-layout-chrome="compact"] .admin-page-main [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page-main [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page-main [class*="lg:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="lg:grid-cols"],
+html[data-layout-chrome="compact"] .admin-retro-page [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-retro-page [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-retro-page [class*="lg:grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* KPI chips: 2 cols max on compact */
+html[data-layout-chrome="compact"] .public-staff-preview .sm\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-4,
+html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ── Retro XP windows (real class names) ── */
+html[data-layout-chrome="compact"] .admin-xp-window {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-win98-body {
+  padding: 0.65rem !important;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-xp-window .flex.items-end.justify-between {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.25rem;
+  gap: 0.35rem;
+}
+
+/* ── Statistics bar chart scroll ── */
+html[data-layout-chrome="compact"] .statistics-bar-chart {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .statistics-bar-chart .flex.items-end {
+  min-width: min-content;
+}
+
+html[data-layout-chrome="compact"] .statistics-year-nav a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Availability detail overlay ── */
+html[data-layout-chrome="compact"] .availability-detail-panel,
+html[data-layout-chrome="compact"] .availability-detail-panel--overlay {
+  max-height: min(55dvh, 24rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* ── Staff settings rows ── */
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions button,
+html[data-layout-chrome="compact"] .admin-staff-row__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Cazări touch ── */
+html[data-layout-chrome="compact"] .cazari-horizon a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card__actions a,
+html[data-layout-chrome="compact"] .stay-card__actions form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem !important;
+}
+
+/* ── Check-in ── */
+html[data-layout-chrome="compact"] .checkin-start-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicators {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicator {
+  flex: 1 1 calc(50% - 0.2rem);
+  min-width: 0;
+  font-size: 0.625rem;
+  padding: 0.45rem 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicator-label {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+html[data-layout-chrome="compact"] .checkin-guest-form__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__input,
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__select,
+html[data-layout-chrome="compact"] .checkin-modal button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+}
+
+/* ── Devlog ── */
+html[data-layout-chrome="compact"] .devlog-filters__pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .devlog-pagination__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem !important;
+}
+
+/* ── Receptie quick panel ── */
+html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
+  min-height: var(--ml-touch-min, 2.75rem) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.5rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel li {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 0.5rem;
+}
+
+/* ── Public booking options ── */
+html[data-layout-chrome="compact"] .public-option-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .public-step-track {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Invoice ── */
+html[data-layout-chrome="compact"] .informal-invoice-root table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-layout-chrome="compact"] .informal-invoice-sheet header {
+  padding: 1.25rem 1rem !important;
+}
+
+html[data-layout-chrome="compact"] .informal-invoice-sheet > div {
+  padding-inline: 1rem !important;
+}
+
+/* ── Hospira logs tables ── */
+html[data-layout-chrome="compact"] .hospira-logs-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .hospira-logs-table-wrap table {
+  min-width: 36rem;
+}
+
+/* ── Gantt landscape: keep touch targets ── */
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
+  min-height: var(--ml-touch-min, 2.75rem) !important;
+}

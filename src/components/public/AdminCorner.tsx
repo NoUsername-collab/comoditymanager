@@ -20,7 +20,7 @@ export async function AdminCorner() {
   }
 
   return (
-    <div className="fixed right-4 top-3 z-50 flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-1 py-1 text-[11px] shadow-md backdrop-blur-sm">
+    <div className="admin-corner fixed right-4 top-3 z-50 flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-1 py-1 text-[11px] shadow-md backdrop-blur-sm">
       <Link
         href="/admin"
         className="rounded-full px-2.5 py-1 font-medium text-[var(--site-fg)] hover:opacity-80"

@@ -28,7 +28,7 @@ export default async function AdminLoginPage({
   const initialUsername = params.email?.trim() ?? "";
 
   return (
-    <main className="admin-login-page flex min-h-screen items-center justify-center p-6">
+    <main className="admin-login-page ml-content flex min-h-dvh items-center justify-center p-6">
       <div className="admin-login-card w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
         <p className="text-xs font-medium uppercase tracking-wide text-blue-700">
           {t("eyebrow")}

@@ -284,7 +284,7 @@ export default async function AdminCalendarPage({
           </div>
         ) : undefined
       }
-      className="w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="gantt-calendar-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
     >
       <RetroXpWindow title={t("windowGantt")} className="w-full">
         <GanttCalendarLazy

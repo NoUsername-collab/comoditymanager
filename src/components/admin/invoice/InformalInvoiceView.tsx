@@ -71,7 +71,8 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
           </div>
 
           {invoice.lines.length > 0 ? (
-            <table className="mt-8 w-full text-left text-sm">
+            <div className="mt-8 overflow-x-auto">
+            <table className="w-full min-w-[28rem] text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500">
                   <th className="pb-2 pr-4">{tInvoice("room")}</th>
@@ -104,6 +105,7 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <p className="mt-8 rounded-lg border border-dashed border-zinc-200 px-4 py-6 text-center text-sm text-zinc-500">
               {tInvoice("allocateRoomsToCalculate")}

@@ -8,7 +8,7 @@ export function StatisticsYearNav({
   focusYear: number;
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="statistics-year-nav flex flex-wrap gap-2">
       {years.map((y) => (
         <Link
           key={y}

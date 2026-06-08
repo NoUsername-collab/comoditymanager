@@ -5,6 +5,9 @@
 
 @import "./mobile-layout-pages.css";
 @import "./mobile-layout-premium.css";
+@import "./mobile-layout-admin-pages.css";
+@import "./mobile-layout-remaining.css";
+@import "./mobile-layout-flawless.css";
 @import "./mobile-layout-guards.css";
 
 :root {
@@ -68,6 +71,14 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__list {
   margin: 0;
   padding: 0.35rem 0.25rem 0.25rem;
   list-style: none;
+}
+
+html[data-layout-chrome="compact"] .ml-bottom-nav__list--six {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+html[data-layout-chrome="compact"] .ml-bottom-nav__list--six .ml-bottom-nav__label {
+  font-size: 0.56rem;
 }
 
 html[data-layout-chrome="compact"] .ml-bottom-nav__link {
@@ -143,7 +154,7 @@ html[data-layout-mode="mobile"][data-layout-orientation="landscape"] .ml-bottom-
 }
 
 html[data-layout-mode="mobile"][data-layout-orientation="landscape"] .ml-bottom-nav__link {
-  min-height: 2.35rem;
+  min-height: var(--ml-touch-min, 2.75rem);
   gap: 0;
   padding-block: 0.15rem;
 }
@@ -287,6 +298,10 @@ html[data-layout-chrome="compact"] .site-themed input,
 html[data-layout-chrome="compact"] .site-themed select,
 html[data-layout-chrome="compact"] .site-themed textarea,
 html[data-layout-chrome="compact"] .site-themed button,
+html[data-layout-chrome="compact"] .ml-shell--auth input,
+html[data-layout-chrome="compact"] .ml-shell--auth select,
+html[data-layout-chrome="compact"] .ml-shell--auth textarea,
+html[data-layout-chrome="compact"] .ml-shell--auth button,
 html[data-layout-chrome="compact"] .ml-shell--hospira-admin input,
 html[data-layout-chrome="compact"] .ml-shell--hospira-admin button {
   font-size: 16px;

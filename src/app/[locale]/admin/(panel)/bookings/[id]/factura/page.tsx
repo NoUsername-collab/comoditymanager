@@ -24,7 +24,7 @@ export default async function BookingInvoicePage({
       description={tPage("description")}
       backHref={`/admin/bookings/${id}`}
       backLabel={tPage("backToBooking")}
-      className="print:p-0"
+      className="admin-invoice-page print:p-0"
       bodyClassName="print:border-0 print:shadow-none"
     >
       <div className="print:border-0 print:bg-white">

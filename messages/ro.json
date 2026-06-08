@@ -51,6 +51,7 @@
       "menuClose": "Închide meniul",
       "home": "Acasă",
       "gdpr": "GDPR",
+      "terms": "Termeni",
       "book": "Rezervare"
     },
     "footer": {
@@ -270,7 +271,14 @@
       "clients": "Clienți",
       "calendar": "Calendar",
       "statistics": "Statistici",
-      "settings": "Setări"
+      "settings": "Setări",
+      "more": "Mai mult",
+      "moreMenuAria": "Mai multe secțiuni admin",
+      "moreClose": "Închide meniul",
+      "disponibilitate": "Disponibilitate",
+      "buildings": "Clădiri",
+      "rooms": "Camere",
+      "devlog": "Jurnal"
     },
     "shell": {
       "eyebrow": "Hospira · Control",

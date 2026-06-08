@@ -28,7 +28,7 @@ export default async function ReceptiePage({
   const checkOutTime = settings?.default_check_out_time ?? "11:00";
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10 public-page">
+    <main className="receptie-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10 public-page">
       <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-800">
         {t("backToSite")}
       </Link>

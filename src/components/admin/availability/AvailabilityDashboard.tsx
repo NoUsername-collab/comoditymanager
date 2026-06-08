@@ -263,7 +263,7 @@ function DayDetailPanel({
   }
 
   return (
-    <div className="availability-detail-panel--overlay avail-detail flex flex-col">
+    <div className="availability-detail-panel availability-detail-panel--overlay avail-detail flex flex-col">
       <div className="border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
         <p className="text-sm font-medium text-emerald-800">
           {pressureLabel(day.pressure)}

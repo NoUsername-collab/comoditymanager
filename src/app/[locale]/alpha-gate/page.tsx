@@ -32,11 +32,11 @@ export default async function AlphaGatePage({
 
   return (
     <main
-      className="site-themed site-themed--noir flex min-h-screen items-center justify-center p-6"
+      className="alpha-gate-page ml-content site-themed site-themed--noir flex min-h-dvh items-center justify-center p-6"
       style={gateVars}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-[var(--site-border)] bg-[var(--site-card)] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+        className="alpha-gate-card w-full max-w-md rounded-2xl border border-[var(--site-border)] bg-[var(--site-card)] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
         role="dialog"
         aria-labelledby="alpha-gate-title"
       >

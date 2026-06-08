@@ -6,7 +6,7 @@ export default function AdminLoginLayout({
   children: React.ReactNode;
 }) {
   return (
-    <MobileShell surface="auth" className="min-h-screen">
+    <MobileShell surface="auth" className="min-h-dvh">
       {children}
     </MobileShell>
   );

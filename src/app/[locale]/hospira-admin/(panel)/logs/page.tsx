@@ -139,7 +139,7 @@ export default async function LogsPage({
           Login, rezervări, camere, setări — se populează când folosești admin-ul tenantului.
         </p>
 
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="hospira-logs-table-wrap max-h-[600px] overflow-y-auto">
           <table className="w-full text-xs">
             <thead className="sticky top-0 border-b border-neutral-700 bg-neutral-900 text-left uppercase text-neutral-500">
               <tr>
@@ -211,7 +211,7 @@ export default async function LogsPage({
           Erori server, acțiuni lente — din /admin/devlog per tenant.
         </p>
 
-        <div className="max-h-[500px] overflow-y-auto">
+        <div className="hospira-logs-table-wrap max-h-[500px] overflow-y-auto">
           <table className="w-full text-xs">
             <thead className="sticky top-0 border-b border-neutral-700 bg-neutral-900 text-left uppercase text-neutral-500">
               <tr>

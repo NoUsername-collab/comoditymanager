@@ -15,7 +15,7 @@ export default function AdminPanelError({
   }, [error]);
 
   return (
-    <div className="flex min-h-[40vh] flex-col items-center justify-center px-4 text-center">
+    <div className="ml-content flex min-h-[40dvh] flex-col items-center justify-center px-4 text-center">
       <h2 className="text-base font-bold text-zinc-900">Eroare în această secțiune</h2>
       <p className="mt-2 max-w-md text-sm text-zinc-600">
         Secțiunea nu s-a putut încărca. Poți reîncerca sau reveni la pagina
@@ -25,13 +25,13 @@ export default function AdminPanelError({
         <button
           type="button"
           onClick={reset}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white"
+          className="min-h-[2.75rem] rounded-lg bg-zinc-900 px-4 py-2 text-base font-semibold text-white"
         >
           Reîncearcă
         </button>
         <a
           href="/admin"
-          className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-800"
+          className="min-h-[2.75rem] rounded-lg border border-zinc-300 bg-white px-4 py-2 text-base font-semibold text-zinc-800"
         >
           Acasă admin
         </a>

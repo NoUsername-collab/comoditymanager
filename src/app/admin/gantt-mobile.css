@@ -1,0 +1,239 @@
+/**
+ * Gantt — compact chrome (phone / tablet portrait).
+ * Portrait + landscape; loaded only on /admin/calendar.
+ */
+
+/* ── Page shell: reclaim horizontal space ── */
+html[data-layout-chrome="compact"] .gantt-calendar-page.admin-retro-page {
+  padding: 0.35rem 0.25rem 0.5rem !important;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
+  padding: 0.35rem 0.15rem 0.5rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  margin-bottom: 0.5rem;
+  padding-inline: 0.35rem;
+}
+
+/* ── Scroll container: reliable horizontal pan on touch ── */
+html[data-layout-chrome="compact"] .gantt-scroll {
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: none;
+  max-width: 100%;
+  margin-inline: 0;
+  border-radius: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--landscape {
+  /* Landscape: keep grid visible above bottom nav */
+  scroll-padding-bottom: calc(var(--ml-bottom-nav-height, 2.85rem) + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-shell {
+  margin-inline: 0;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-shell table {
+  min-width: 0 !important;
+}
+
+/* ── Room column: narrower on phone ── */
+html[data-layout-chrome="compact"] .gantt-scroll--portrait .gantt-room-column-header,
+html[data-layout-chrome="compact"] .gantt-scroll--portrait .gantt-room-cell {
+  padding-inline: 0.45rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--portrait .gantt-room-cell__name {
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--portrait .gantt-room-cell__building {
+  font-size: 0.58rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--landscape .gantt-room-column-header,
+html[data-layout-chrome="compact"] .gantt-scroll--landscape .gantt-room-cell {
+  padding-inline: 0.35rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--landscape .gantt-room-cell__name {
+  font-size: 0.62rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--landscape .gantt-room-cell__building {
+  display: none;
+}
+
+/* ── Day cells: portrait vs landscape density ── */
+html[data-layout-chrome="compact"] .gantt-scroll--portrait .gantt-day-cell--touch {
+  min-width: 22px;
+  max-width: 28px;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--landscape .gantt-day-cell--touch {
+  min-width: 16px;
+  max-width: 20px;
+}
+
+html[data-layout-chrome="compact"] .gantt-day-header-grid--pan,
+html[data-layout-chrome="compact"] .gantt-summary-row__grid--pan {
+  touch-action: pan-x;
+}
+
+html[data-layout-chrome="compact"] .gantt-day-header-cell__date {
+  font-size: 0.62rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll--landscape .gantt-day-header-cell__date {
+  font-size: 0.56rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-day-header-cell__weekday {
+  font-size: 0.52rem;
+}
+
+/* ── Compact toolbar ── */
+html[data-layout-chrome="compact"] .gantt-compact-toolbar {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.25rem 0.15rem;
+  margin-inline: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__left {
+  order: 1;
+  flex: 0 0 auto;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__right {
+  order: 2;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__center {
+  order: 3;
+  flex: 1 0 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar {
+  flex-wrap: nowrap;
+  padding-block: 0.15rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__center {
+  order: 2;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__right {
+  order: 3;
+  margin-left: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__select {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__nav-btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
+  min-height: var(--ml-touch-min, 2.75rem);
+  max-width: min(11rem, 42vw);
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
+  min-height: var(--ml-touch-min, 2.75rem);
+  max-width: 9rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(10rem, 38vw);
+}
+
+/* ── Sticky viewport header (portal) ── */
+html[data-layout-chrome="compact"] .gantt-viewport-header {
+  z-index: 75;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+html[data-layout-chrome="compact"] .gantt-viewport-header__room,
+html[data-layout-chrome="compact"] .gantt-viewport-header__summary-label {
+  font-size: 0.68rem;
+  padding-inline: 0.45rem !important;
+}
+
+/* ── Row heights: landscape compress ── */
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-shell--premium {
+  --gantt-stay-h: 28px;
+  --gantt-stay-top: 6px;
+  --gantt-occ-bar-h: 22px;
+  --gantt-occ-bar-top: 9px;
+  --gantt-unassigned-row-h: 32px;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-shell--premium {
+  --gantt-stay-h: 30px;
+  --gantt-stay-top: 7px;
+  --gantt-occ-bar-h: 24px;
+  --gantt-occ-bar-top: 10px;
+}
+
+/* ── Building headers + summary banner ── */
+html[data-layout-chrome="compact"] .gantt-building-header__title {
+  font-size: 0.68rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-summary-filter-banner {
+  margin-inline: 0.15rem !important;
+  font-size: 0.68rem;
+}
+
+/* ── Active pan: lock vertical scroll bleed ── */
+body.gantt-pan-active html[data-layout-chrome="compact"] .gantt-scroll {
+  touch-action: none;
+}
+
+body.gantt-pan-active {
+  user-select: none;
+}
+
+/* ── Filters panel: fit narrow screens ── */
+html[data-layout-chrome="compact"] .gantt-filters-panel {
+  max-width: min(360px, calc(100vw - 1rem));
+}

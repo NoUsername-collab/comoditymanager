@@ -44,7 +44,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
   ];
 
   return (
-    <section className="public-section pt-0">
+    <section className="public-staff-preview public-section pt-0">
       <div className="site-card overflow-hidden border-[1.5px] shadow-[0_18px_48px_-28px_color-mix(in_srgb,var(--site-accent)_38%,transparent)]">
         <div className="border-b border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_82%,var(--accent-muted))] px-5 py-5 sm:px-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

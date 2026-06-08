@@ -7,6 +7,25 @@ import { ganttDayTimeStyle } from "@/lib/gantt-time";
 export const ROOM_COL_W = "7.7rem";
 export const DAY_COL_MIN_W = "2.25rem";
 
+export type GanttColumnMetrics = {
+  roomCol: string;
+  dayMin: string;
+};
+
+/** Column widths for compact chrome (portrait / landscape). */
+export function resolveGanttColumnMetrics(
+  compactChrome: boolean,
+  orientation: "portrait" | "landscape"
+): GanttColumnMetrics {
+  if (!compactChrome) {
+    return { roomCol: ROOM_COL_W, dayMin: DAY_COL_MIN_W };
+  }
+  if (orientation === "landscape") {
+    return { roomCol: "4.25rem", dayMin: "1.125rem" };
+  }
+  return { roomCol: "5.25rem", dayMin: "1.375rem" };
+}
+
 export const GANTT_DAY_CELL =
   "gantt-day-cell min-w-0 bg-white shadow-[inset_0_0_0_1px_#d4d4d8]";
 

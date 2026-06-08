@@ -33,9 +33,10 @@ export function RoomsBuildingSection({
 
   return (
     <section
-      className={["overflow-hidden rounded-2xl border shadow-sm", theme.border].join(
-        " "
-      )}
+      className={[
+        "rooms-building-section overflow-hidden rounded-2xl border shadow-sm",
+        theme.border,
+      ].join(" ")}
     >
       <div
         className={["flex flex-wrap items-center justify-between gap-3 px-5 py-4", theme.headerBg].join(

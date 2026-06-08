@@ -24,7 +24,7 @@ import {
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
-import { useIsCompactChrome } from "@/hooks/useMobileLayout";
+import { useIsCompactChrome, useMobileLayout } from "@/hooks/useMobileLayout";
 import type { BookingRow } from "@/services/bookings";
 import {
   filterOccupancyForLayer,
@@ -91,8 +91,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 // Extracted sub-components
 import {
-  ROOM_COL_W,
-  DAY_COL_MIN_W,
+  resolveGanttColumnMetrics,
   type InlineZoomChoice,
   ToolbarFilterIcon,
   normalizeZoomChoice,
@@ -152,8 +151,17 @@ export function GanttCalendar({
   const touch = useIsTouchDevice();
   const compactChrome = useIsCompactChrome();
   const compactViewport = useIsCompactViewport();
+  const { orientation, isLandscape, isPortrait } = useMobileLayout();
   const compact =
     viewRange.zoom === "quarter" || compactChrome || compactViewport;
+  const columnMetrics = useMemo(
+    () =>
+      resolveGanttColumnMetrics(
+        compactChrome,
+        orientation === "landscape" ? "landscape" : "portrait"
+      ),
+    [compactChrome, orientation]
+  );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
   const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
   const focusIso =
@@ -330,12 +338,13 @@ export function GanttCalendar({
 
   const handleHeaderPanPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      if (touch) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
       const el = scrollRef.current;
       if (!el) return;
 
       endHeaderPan();
+
+      const panThreshold = event.pointerType === "touch" ? 6 : 3;
 
       const move = (nextEvent: PointerEvent) => {
         const state = panStateRef.current;
@@ -343,7 +352,14 @@ export function GanttCalendar({
         const dx = nextEvent.clientX - state.startX;
         const dy = nextEvent.clientY - state.startY;
         if (!state.moved) {
-          if (Math.abs(dx) < 3 && Math.abs(dy) < 3) return;
+          if (Math.abs(dx) < panThreshold && Math.abs(dy) < panThreshold) return;
+          if (
+            event.pointerType === "touch" &&
+            Math.abs(dy) > Math.abs(dx)
+          ) {
+            endHeaderPan();
+            return;
+          }
           state.moved = true;
           suppressHeaderClickUntilRef.current = Date.now() + 260;
         }
@@ -368,12 +384,22 @@ export function GanttCalendar({
       };
       setIsHeaderPanActive(true);
       document.body.classList.add("gantt-pan-active");
+      if (
+        event.pointerType === "touch" &&
+        "setPointerCapture" in event.currentTarget
+      ) {
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+          /* ignore */
+        }
+      }
       window.addEventListener("pointermove", move, { passive: false });
       window.addEventListener("pointerup", end);
       window.addEventListener("pointercancel", end);
       event.preventDefault();
     },
-    [endHeaderPan, touch]
+    [endHeaderPan]
   );
 
   // ─── Effects ───────────────────────────────────────────────────────
@@ -429,13 +455,18 @@ export function GanttCalendar({
     ro.observe(shell);
     ro.observe(thead);
     window.addEventListener("resize", syncBodyTop);
+    window.addEventListener("orientationchange", syncBodyTop);
+    window.visualViewport?.addEventListener("resize", syncBodyTop);
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", syncBodyTop);
+      window.removeEventListener("orientationchange", syncBodyTop);
+      window.visualViewport?.removeEventListener("resize", syncBodyTop);
     };
   }, [
     viewRange.periodKey,
     compact,
+    orientation,
     todaySummary.arrivals.length,
     todaySummary.departures.length,
     groupByBuilding,
@@ -782,7 +813,14 @@ export function GanttCalendar({
     <div
       key={viewRange.periodKey}
       ref={scrollRef}
-      className="gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible"
+      className={[
+        "gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible",
+        compactChrome && "gantt-scroll--compact",
+        compactChrome && isPortrait && "gantt-scroll--portrait",
+        compactChrome && isLandscape && "gantt-scroll--landscape",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div
         ref={shellRef}
@@ -968,11 +1006,11 @@ export function GanttCalendar({
             "min-w-full",
           ].join(" ")}
           style={{
-            minWidth: `max(100%, calc(${ROOM_COL_W} + ${viewRange.days.length} * ${DAY_COL_MIN_W}))`,
+            minWidth: `max(100%, calc(${columnMetrics.roomCol} + ${viewRange.days.length} * ${columnMetrics.dayMin}))`,
           }}
         >
           <colgroup>
-            <col style={{ width: ROOM_COL_W }} />
+            <col style={{ width: columnMetrics.roomCol }} />
             <col />
           </colgroup>
           <thead ref={theadRef} className="gantt-thead-sticky">

@@ -27,7 +27,7 @@ export async function PublicPageShell({
   const resolvedBackLabel = backLabel ?? tCommon("back");
 
   return (
-    <main className="public-page">
+    <main className="public-page ml-content">
       <div
         className={[
           "public-page__inner",

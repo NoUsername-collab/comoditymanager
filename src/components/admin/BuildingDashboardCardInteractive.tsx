@@ -35,7 +35,7 @@ export function BuildingDashboardCardInteractive({
   return (
     <article
       className={[
-        "overflow-hidden rounded-2xl border shadow-md ring-1 ring-zinc-900/5",
+        "building-dashboard-card overflow-hidden rounded-2xl border shadow-md ring-1 ring-zinc-900/5",
         theme.border,
       ].join(" ")}
     >
@@ -47,7 +47,7 @@ export function BuildingDashboardCardInteractive({
         ].join(" ")}
         style={{ borderBottom: `3px solid ${theme.accent}` }}
       >
-        <header className="flex flex-wrap items-start justify-between gap-3">
+        <header className="building-dashboard-card__header flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span
