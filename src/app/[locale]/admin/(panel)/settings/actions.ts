@@ -16,6 +16,7 @@ import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
 import {
   updatePensionSettings,
   updateStatisticsVisibility,
+  STATISTICS_VISIBILITY_MIGRATION_ERROR,
 } from "@/services/pension-settings";
 import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibility";
 import { logAdminActivityFromSession } from "@/services/activity-log";
@@ -125,6 +126,12 @@ export async function updateStatisticsVisibilityAction(
     revalidatePath("/admin/statistics");
     return { ok: true };
   } catch (e) {
+    if (
+      e instanceof Error &&
+      e.message === STATISTICS_VISIBILITY_MIGRATION_ERROR
+    ) {
+      return { ok: false, error: t("statisticsVisibilityMigrationRequired") };
+    }
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("genericError"),

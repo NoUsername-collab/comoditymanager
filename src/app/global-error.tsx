@@ -18,6 +18,9 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     Sentry.captureException(error);
+    void import("@/lib/tenant/report-client-error").then(({ reportTenantClientError }) =>
+      reportTenantClientError(error, "global")
+    );
   }, [error]);
 
   return (

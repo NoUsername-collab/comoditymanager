@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
@@ -14,8 +14,14 @@ import {
   setBookingCheckInAction,
   setBookingCheckOutAction,
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
+import {
+  canOfferOperativeCheckIn,
+  isOperativeCheckInTimestampValid,
+  operativeCheckInDatetimeBounds,
+} from "@/domain/booking/operative-checkin";
 import { datetimeLocalNow } from "@/lib/operational-check";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { todayIso } from "@/lib/stay-dates";
 
 export type GanttCheckTimeDialogProps = {
   open: boolean;
@@ -25,6 +31,10 @@ export type GanttCheckTimeDialogProps = {
   guestName: string;
   plannedCheckIn: string;
   plannedCheckOut: string;
+  today?: string;
+  status?: string;
+  actualCheckInAt?: string | null;
+  actualCheckOutAt?: string | null;
   onClose: () => void;
   onSuccess?: () => void;
 };
@@ -37,20 +47,65 @@ export function GanttCheckTimeDialog({
   guestName,
   plannedCheckIn,
   plannedCheckOut,
+  today: todayProp,
+  status = "confirmata",
+  actualCheckInAt = null,
+  actualCheckOutAt = null,
   onClose,
   onSuccess,
 }: GanttCheckTimeDialogProps) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
+  const tServer = useTranslations("admin.serverActions");
   const locale = useLocale();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
   const [atLocal, setAtLocal] = useState(datetimeLocalNow);
 
+  const effectiveToday = todayProp ?? todayIso();
+
+  const checkInAllowed = useMemo(
+    () =>
+      mode !== "checkin" ||
+      intent === "edit" ||
+      canOfferOperativeCheckIn({
+        status,
+        plannedCheckIn,
+        today: effectiveToday,
+        actualCheckInAt,
+        actualCheckOutAt,
+      }),
+    [
+      mode,
+      intent,
+      status,
+      plannedCheckIn,
+      effectiveToday,
+      actualCheckInAt,
+      actualCheckOutAt,
+    ]
+  );
+
+  const datetimeBounds = useMemo(
+    () =>
+      mode === "checkin" && intent === "set"
+        ? operativeCheckInDatetimeBounds(plannedCheckIn)
+        : null,
+    [mode, intent, plannedCheckIn]
+  );
+
   useEffect(() => {
-    if (open) setAtLocal(datetimeLocalNow());
-  }, [open, bookingId, mode]);
+    if (!open) return;
+    if (mode === "checkin" && intent === "set" && datetimeBounds) {
+      const now = datetimeLocalNow();
+      const inBounds =
+        now >= datetimeBounds.min && now <= datetimeBounds.max;
+      setAtLocal(inBounds ? now : `${plannedCheckIn}T12:00`);
+      return;
+    }
+    setAtLocal(datetimeLocalNow());
+  }, [open, bookingId, mode, intent, plannedCheckIn, datetimeBounds]);
 
   useEffect(() => {
     if (!open) return;
@@ -63,10 +118,29 @@ export function GanttCheckTimeDialog({
 
   if (!open) return null;
 
-  const title = mode === "checkin" ? tGantt("checkTime.confirmCheckIn") : tGantt("checkTime.confirmCheckOut");
-  const cta = mode === "checkin" ? tGantt("checkTime.confirmCheckIn") : tGantt("checkTime.confirmCheckOut");
+  const title =
+    mode === "checkin"
+      ? tGantt("checkTime.confirmCheckIn")
+      : tGantt("checkTime.confirmCheckOut");
+  const cta =
+    mode === "checkin"
+      ? tGantt("checkTime.confirmCheckIn")
+      : tGantt("checkTime.confirmCheckOut");
 
   function submit(at?: string) {
+    if (
+      mode === "checkin" &&
+      intent === "set" &&
+      !isOperativeCheckInTimestampValid(plannedCheckIn, at)
+    ) {
+      showToast({
+        kind: "error",
+        title: tCommon("error"),
+        message: tServer("checkInOnlyOnArrivalDay"),
+      });
+      return;
+    }
+
     void runAdminAction(async () => {
       const fd = new FormData();
       fd.set("id", bookingId);
@@ -88,13 +162,18 @@ export function GanttCheckTimeDialog({
 
       showToast({
         kind: "success",
-        title: mode === "checkin" ? tGantt("checkTime.checkInRecorded") : tGantt("checkTime.checkOutRecorded"),
+        title:
+          mode === "checkin"
+            ? tGantt("checkTime.checkInRecorded")
+            : tGantt("checkTime.checkOutRecorded"),
         message: guestName,
       });
       onClose();
       onSuccess?.();
     });
   }
+
+  const submitDisabled = pending || (mode === "checkin" && intent === "set" && !checkInAllowed);
 
   return (
     <AdminPortal>
@@ -114,8 +193,15 @@ export function GanttCheckTimeDialog({
         </h2>
         <p className="mt-1 text-xs text-zinc-600">{guestName}</p>
         <p className="mt-0.5 text-[11px] text-zinc-500">
-          {tGantt("checkTime.planned")}: {formatStayPeriod(plannedCheckIn, plannedCheckOut, locale, true)}
+          {tGantt("checkTime.planned")}:{" "}
+          {formatStayPeriod(plannedCheckIn, plannedCheckOut, locale, true)}
         </p>
+
+        {mode === "checkin" && intent === "set" && !checkInAllowed && (
+          <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            {tServer("checkInOnlyOnArrivalDay")}
+          </p>
+        )}
 
         <label className="mt-4 block text-xs font-semibold text-zinc-800">
           {tGantt("checkTime.dateTime")}
@@ -123,8 +209,10 @@ export function GanttCheckTimeDialog({
             type="datetime-local"
             value={atLocal}
             onChange={(e) => setAtLocal(e.target.value)}
+            min={datetimeBounds?.min}
+            max={datetimeBounds?.max}
             className="mt-1 w-full rounded-md border border-zinc-300 px-2 py-1.5 text-sm"
-            disabled={pending}
+            disabled={pending || (mode === "checkin" && intent === "set" && !checkInAllowed)}
           />
         </label>
 
@@ -132,7 +220,7 @@ export function GanttCheckTimeDialog({
           <button
             type="button"
             className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-            disabled={pending}
+            disabled={submitDisabled}
             onClick={() => submit(atLocal)}
           >
             {pending ? tCommon("saving") : cta}
@@ -140,7 +228,7 @@ export function GanttCheckTimeDialog({
           <button
             type="button"
             className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-semibold text-zinc-800 disabled:opacity-50"
-            disabled={pending}
+            disabled={submitDisabled}
             onClick={() => submit()}
           >
             {tCommon("now")}

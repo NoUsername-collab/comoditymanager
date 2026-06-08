@@ -12,6 +12,7 @@
 @import "./admin-home.css";
 @import "./admin-gantt-stay-island.css";
 @import "../../styles/themes/gantt-cards-theme.css";
+@import "./admin-gantt-stay-chip.css";
 @import "./admin-settings.css";
 @import "./admin-action-links.css";
 @import "./admin-guests.css";

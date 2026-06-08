@@ -1611,6 +1611,7 @@
       "extendHoldError": "Грешка при удължаване на hold",
       "extendBlockError": "Грешка при удължаване на блокировка",
       "checkInOnlyOnArrivalDay": "Check-in е разрешен само в планирания ден на пристигане.",
+      "statisticsVisibilityMigrationRequired": "Стартирайте миграция 049_statistics_visibility.sql в Supabase (липсва колоната statistics_visibility).",
       "holdError": "Грешка при hold",
       "blockError": "Грешка при блокиране",
       "releaseHoldError": "Грешка при освобождаване на hold",

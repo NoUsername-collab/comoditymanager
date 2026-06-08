@@ -1696,6 +1696,7 @@
       "extendHoldError": "Eroare la extindere hold",
       "extendBlockError": "Eroare la extindere blocare",
       "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua planificată de sosire.",
+      "statisticsVisibilityMigrationRequired": "Rulează migrarea 049_statistics_visibility.sql în Supabase (coloana statistics_visibility lipsește).",
       "holdError": "Eroare la hold",
       "blockError": "Eroare la blocare",
       "releaseHoldError": "Eroare la eliberare hold",

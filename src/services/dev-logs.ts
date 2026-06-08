@@ -1,4 +1,10 @@
+import { getStaffUser } from "@/lib/auth/require-staff";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { resolveRequestTenant } from "@/lib/tenant/active";
+import {
+  resolveTenantIdFromHost,
+  shouldSkipTenantErrorLog,
+} from "@/lib/tenant/error-safeguard";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
@@ -26,53 +32,99 @@ type LogInput = {
   context?: Record<string, unknown>;
   requestPath?: string | null;
   requestMethod?: string | null;
+  requestHost?: string | null;
   userId?: string | null;
   userEmail?: string | null;
   durationMs?: number | null;
 };
 
+async function resolveTenantIdForLog(
+  requestHost?: string | null
+): Promise<string | null> {
+  if (requestHost) {
+    return resolveTenantIdFromHost(requestHost);
+  }
+  const tenant = await resolveRequestTenant();
+  return tenant?.id ?? null;
+}
+
 /**
- * Scrie un log în dev_logs. Nu aruncă excepții — logarea nu trebuie
- * să blocheze niciodată fluxul principal.
+ * Scrie un log în dev_logs (public schema, service role).
+ * Nu necesită staff auth — vizibil în Hospira admin logs.
+ * Nu aruncă excepții.
  */
 export async function writeDevLog(input: LogInput): Promise<void> {
   try {
-    const { tenantId, supabase } = await getTenantScope();
-    await supabase.from("dev_logs").insert(
-      withTenantId(tenantId, {
-        level: input.level ?? "error",
-        source: input.source ?? "server",
-        message: input.message.slice(0, 2000),
-        stack: input.stack?.slice(0, 4000) ?? null,
-        context: input.context ?? {},
-        request_path: input.requestPath ?? null,
-        request_method: input.requestMethod ?? null,
-        user_id: input.userId ?? null,
-        user_email: input.userEmail ?? null,
-        duration_ms: input.durationMs ?? null,
-      })
-    );
-  } catch {
-    // Silenced — logging must never crash the app
+    const tenantId = await resolveTenantIdForLog(input.requestHost);
+    if (!tenantId) return;
+
+    let userId = input.userId ?? null;
+    let userEmail = input.userEmail ?? null;
+    if (!userId && !userEmail) {
+      const user = await getStaffUser();
+      userId = user?.id ?? null;
+      userEmail = user?.email ?? null;
+    }
+
+    const supabase = createPublicAdminClient();
+    const { error } = await supabase.from("dev_logs").insert({
+      tenant_id: tenantId,
+      level: input.level ?? "error",
+      source: input.source ?? "server",
+      message: input.message.slice(0, 2000),
+      stack: input.stack?.slice(0, 4000) ?? null,
+      context: input.context ?? {},
+      request_path: input.requestPath ?? null,
+      request_method: input.requestMethod ?? null,
+      user_id: userId,
+      user_email: userEmail,
+      duration_ms: input.durationMs ?? null,
+    });
+
+    if (error) {
+      console.error("[dev-logs] insert failed:", error.message);
+    }
+  } catch (e) {
+    console.error("[dev-logs] write failed:", e);
   }
 }
 
 /**
- * Captează o eroare: extrage mesajul și stack-ul, scrie în dev_logs.
+ * Captează o eroare tenant în dev_logs (Hospira admin).
+ * Safe guard: nu aruncă, nu blochează fluxul.
  */
-export async function captureError(
+export async function captureTenantError(
   error: unknown,
   extra?: Omit<LogInput, "message" | "stack" | "level">
 ): Promise<void> {
+  if (shouldSkipTenantErrorLog(error)) return;
+
   const message =
     error instanceof Error ? error.message : String(error);
   const stack = error instanceof Error ? error.stack ?? null : null;
+  const digest =
+    error instanceof Error && "digest" in error
+      ? String((error as Error & { digest?: string }).digest ?? "")
+      : null;
+
   await writeDevLog({
     level: "error",
     message,
     stack,
+    context: {
+      ...(extra?.context ?? {}),
+      ...(digest ? { digest } : {}),
+    },
     ...extra,
   });
+}
+
+/** @deprecated Prefer captureTenantError */
+export async function captureError(
+  error: unknown,
+  extra?: Omit<LogInput, "message" | "stack" | "level">
+): Promise<void> {
+  await captureTenantError(error, extra);
 }
 
 /**

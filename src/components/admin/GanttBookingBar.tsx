@@ -5,10 +5,12 @@ import { useTranslations } from "next-intl";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import type { CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
+import { stayNightProgress } from "@/domain/gantt/stay-progress";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { GANTT_STAY_H, GANTT_STAY_TOP } from "@/domain/gantt/layout";
+import { todayIso } from "@/lib/stay-dates";
 
 type Props = {
   href: string;
@@ -18,6 +20,9 @@ type Props = {
   isCerere: boolean;
   guestTotal: number;
   buildingColor?: string | null;
+  checkIn?: string;
+  checkOut?: string;
+  today?: string;
   todayHighlight?: StayTodayHighlight;
   initials?: string;
   interactive?: boolean;
@@ -27,7 +32,8 @@ type Props = {
 
 function semanticStayVars(
   isCerere: boolean,
-  occupancyPhase?: OccupancyPhase
+  occupancyPhase?: OccupancyPhase,
+  buildingColor?: string | null
 ): CSSProperties & Record<string, string> {
   const tone =
     occupancyPhase === "past"
@@ -61,6 +67,8 @@ function semanticStayVars(
               "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
           };
 
+  const spine = buildingColor?.trim() || tone.border;
+
   return {
     background: tone.fill,
     backgroundColor: tone.fill,
@@ -73,6 +81,7 @@ function semanticStayVars(
     "--stay-badge-bg": tone.badge,
     "--stay-badge-text": tone.text,
     "--stay-glow": tone.glow,
+    "--stay-spine": spine,
     "--gs-bg": tone.fill,
     "--gs-border": tone.border,
     "--gs-fg": tone.text,
@@ -89,6 +98,10 @@ export function GanttBookingBar({
   pos,
   isCerere,
   guestTotal,
+  buildingColor,
+  checkIn,
+  checkOut,
+  today,
   todayHighlight,
   initials,
   interactive,
@@ -98,9 +111,19 @@ export function GanttBookingBar({
   const tCommon = useTranslations("admin.common");
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
+  const progress =
+    checkIn && checkOut
+      ? stayNightProgress(checkIn, checkOut, today ?? todayIso())
+      : null;
+  const showProgress =
+    !!progress &&
+    progress.total > 1 &&
+    occupancyPhase !== "past" &&
+    (occupancyPhase === "active" || progress.current > 0);
+
   const className = [
     ganttStayChromeClass(),
-    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
+    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-stay--chip gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] w-full" : "absolute z-[1] max-w-full",
     isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
     occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
@@ -118,9 +141,12 @@ export function GanttBookingBar({
     .join(" ");
 
   const style = {
-    ...semanticStayVars(isCerere, occupancyPhase),
+    ...semanticStayVars(isCerere, occupancyPhase, buildingColor),
     borderRadius: ganttStaySlantRadius(continuesBefore, continuesAfter),
     height: GANTT_STAY_H,
+    ...(showProgress && progress
+      ? { "--stay-progress-pct": `${progress.pct}%` }
+      : {}),
     ...(!interactive ? { top: GANTT_STAY_TOP } : {}),
     ...(interactive
       ? { left: 0, width: "100%" }
@@ -133,6 +159,8 @@ export function GanttBookingBar({
 
   const inner = (
     <>
+      <span className="gantt-stay__spine" aria-hidden />
+
       {continuesBefore && (
         <span className="gantt-stay-edge gantt-stay-edge--left shrink-0" aria-hidden />
       )}
@@ -146,19 +174,39 @@ export function GanttBookingBar({
             ‹
           </span>
         )}
+
+        {todayHighlight === "arrival" && (
+          <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
+            ↓
+          </span>
+        )}
+        {todayHighlight === "departure" && (
+          <span className="gantt-stay__today-icon" aria-hidden title="Plecare azi">
+            ↑
+          </span>
+        )}
+
         {initials && (
-          <span className="gantt-stay__avatar shrink-0" aria-hidden>
+          <span className="gantt-stay__avatar gantt-stay__avatar--hex shrink-0" aria-hidden>
             {initials}
           </span>
         )}
-        <span className="gantt-stay-chrome__label min-w-0 flex-1 truncate">
-          {label}
+
+        <span className="gantt-stay__content min-w-0 flex-1">
+          <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
+          {showProgress && (
+            <span
+              className="gantt-stay__progress"
+              aria-hidden
+              title={`Noaptea ${progress!.current} din ${progress!.total}`}
+            />
+          )}
         </span>
+
         {occupancyPhase === "active" && !isCerere && (
-          <span className="gantt-stay__phase-badge shrink-0 rounded px-1 py-0.5 text-[10px] font-extrabold uppercase tracking-wide">
-            {tCommon("todayPanel")}
-          </span>
+          <span className="gantt-stay__phase-badge shrink-0">IN</span>
         )}
+
         <span
           className="gantt-stay__badge shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-bold tabular-nums leading-none"
           title={`${guestTotal} persoane`}
@@ -175,6 +223,12 @@ export function GanttBookingBar({
 
       {continuesAfter && (
         <span className="gantt-stay-edge gantt-stay-edge--right shrink-0" aria-hidden />
+      )}
+
+      {isCerere && (
+        <span className="gantt-stay__stamp" aria-hidden>
+          CERERE
+        </span>
       )}
     </>
   );

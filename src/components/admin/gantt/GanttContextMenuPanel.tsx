@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import {
@@ -17,8 +17,8 @@ import {
 import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
-import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
+import { useGanttOperativeCheck } from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
@@ -66,13 +66,7 @@ export function GanttContextMenuPanel() {
   const { showToast, notifyCancel } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
-  const [checkDialog, setCheckDialog] = useState<{
-    mode: "checkin" | "checkout";
-    bookingId: string;
-    guestName: string;
-    plannedCheckIn: string;
-    plannedCheckOut: string;
-  } | null>(null);
+  const { requestCheckIn, requestCheckOut } = useGanttOperativeCheck();
 
   useEffect(() => {
     if (!menu) return;
@@ -323,12 +317,15 @@ export function GanttContextMenuPanel() {
                       primary
                       disabled={pending}
                       onClick={() => {
-                        setCheckDialog({
-                          mode: "checkin",
+                        requestCheckIn({
                           bookingId: menu.bookingId,
                           guestName: menu.guestName,
                           plannedCheckIn: menu.plannedCheckIn,
                           plannedCheckOut: menu.plannedCheckOut,
+                          status: menu.status,
+                          actualCheckInAt: menu.actualCheckInAt,
+                          actualCheckOutAt: menu.actualCheckOutAt,
+                          today: menu.today,
                         });
                         closeMenu();
                       }}
@@ -340,12 +337,13 @@ export function GanttContextMenuPanel() {
                       primary
                       disabled={pending}
                       onClick={() => {
-                        setCheckDialog({
-                          mode: "checkout",
+                        requestCheckOut({
                           bookingId: menu.bookingId,
                           guestName: menu.guestName,
                           plannedCheckIn: menu.plannedCheckIn,
                           plannedCheckOut: menu.plannedCheckOut,
+                          actualCheckInAt: menu.actualCheckInAt,
+                          actualCheckOutAt: menu.actualCheckOutAt,
                         });
                         closeMenu();
                       }}
@@ -394,18 +392,6 @@ export function GanttContextMenuPanel() {
           )}
         </div>
       </AdminPortal>
-      {checkDialog && (
-        <GanttCheckTimeDialog
-          open
-          mode={checkDialog.mode}
-          bookingId={checkDialog.bookingId}
-          guestName={checkDialog.guestName}
-          plannedCheckIn={checkDialog.plannedCheckIn}
-          plannedCheckOut={checkDialog.plannedCheckOut}
-          onClose={() => setCheckDialog(null)}
-          onSuccess={() => router.refresh()}
-        />
-      )}
     </>
   );
 }

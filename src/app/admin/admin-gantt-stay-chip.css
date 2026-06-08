@@ -1,0 +1,365 @@
+/**
+ * Gantt stay cards — „Operațiune Chip” (CSS/SVG gratuit, fără artă externă).
+ */
+
+.gantt-stay--chip {
+  container-type: inline-size;
+  container-name: gantt-stay;
+  position: relative;
+  padding: 0 !important;
+  border-width: 1px !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 38%, transparent),
+    0 1px 4px color-mix(in srgb, var(--stay-glow, #000) 22%, transparent) !important;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
+}
+
+.gantt-stay--chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, white 22%, transparent) 0%,
+    transparent 42%
+  );
+  z-index: 0;
+}
+
+.gantt-stay--chip .gantt-stay__spine {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 4px;
+  align-self: stretch;
+  background: var(--stay-spine, var(--stay-border));
+  box-shadow: inset -1px 0 0 color-mix(in srgb, black 12%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.35rem 0 0.3rem !important;
+}
+
+.gantt-stay--chip .gantt-stay__content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.12rem;
+  padding: 0.1rem 0;
+}
+
+.gantt-stay--chip .gantt-stay-chrome__label {
+  min-width: 0;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.gantt-stay--chip .gantt-stay__progress {
+  display: block;
+  height: 2px;
+  width: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--stay-text, currentColor) 14%, transparent);
+  overflow: hidden;
+}
+
+.gantt-stay--chip .gantt-stay__progress::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: var(--stay-progress-pct, 0%);
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--stay-spine, var(--stay-border)) 88%, white);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--stay-spine, var(--stay-border)) 45%, transparent);
+  transition: width 0.25s ease;
+}
+
+.gantt-stay--chip .gantt-stay__avatar--hex {
+  display: inline-flex;
+  height: 1.15rem;
+  width: 1.15rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.4375rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: inherit;
+  background: color-mix(in srgb, var(--stay-text, currentColor) 16%, transparent);
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--stay-border) 35%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__badge {
+  display: inline-flex;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem !important;
+  padding: 0 0.2rem !important;
+  font-size: 0.5625rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  background: color-mix(in srgb, var(--stay-text, currentColor) 14%, transparent) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--stay-border) 28%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__phase-badge {
+  flex-shrink: 0;
+  border-radius: 0.2rem;
+  padding: 0.1rem 0.28rem;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  background: color-mix(in srgb, #10b981 22%, transparent) !important;
+  color: color-mix(in srgb, #047857 90%, white) !important;
+  border: 1px solid color-mix(in srgb, #10b981 40%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, #10b981 25%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__today-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  font-size: 0.5625rem;
+  font-weight: 900;
+  line-height: 1;
+  border-radius: 0.15rem;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.gantt-stay--chip.gantt-stay--today-arrival .gantt-stay__today-icon {
+  color: #b45309;
+  background: color-mix(in srgb, #f59e0b 22%, transparent);
+}
+
+.gantt-stay--chip.gantt-stay--today-departure .gantt-stay__today-icon {
+  color: #047857;
+  background: color-mix(in srgb, #10b981 22%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__end-tab {
+  position: relative;
+  z-index: 1;
+  min-width: 0.7rem;
+  border-left: 1px solid color-mix(in srgb, var(--stay-tab-end, #000) 55%, transparent);
+  background: var(--stay-tab-end, var(--stay-fill)) !important;
+}
+
+.gantt-stay--chip .gantt-stay-edge {
+  position: relative;
+  z-index: 1;
+}
+
+.gantt-stay--chip.gantt-stay--cerere {
+  border-style: dashed !important;
+  border-width: 1.5px !important;
+}
+
+.gantt-stay--chip.gantt-stay--cerere .gantt-stay__stamp {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--stay-text, currentColor) 12%, transparent);
+  transform: rotate(-12deg);
+  user-select: none;
+}
+
+.gantt-stay--chip.gantt-stay--phase-past {
+  opacity: 0.86;
+  filter: saturate(0.82);
+  box-shadow: none !important;
+}
+
+.gantt-stay--chip.gantt-stay--phase-past .gantt-stay__progress::after {
+  box-shadow: none;
+}
+
+.gantt-stay--chip.gantt-stay--today-turnover {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--booking-pending-bg, #fef3c7) 92%, white) 0%,
+    color-mix(in srgb, var(--booking-pending-bg, #fef3c7) 92%, white) 48%,
+    color-mix(in srgb, var(--booking-active-bg, #d1fae5) 92%, white) 52%,
+    color-mix(in srgb, var(--booking-active-bg, #d1fae5) 92%, white) 100%
+  ) !important;
+}
+
+.gantt-stay--chip.gantt-stay--today-turnover .gantt-stay__spine {
+  background: linear-gradient(
+    180deg,
+    #f59e0b 0%,
+    #f59e0b 48%,
+    #10b981 52%,
+    #10b981 100%
+  );
+}
+
+.gantt-room-row:hover .gantt-stay--chip,
+.gantt-stay--chip:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 42%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--stay-glow) 40%, transparent),
+    0 5px 16px color-mix(in srgb, var(--stay-glow) 32%, transparent) !important;
+  z-index: 3 !important;
+}
+
+.gantt-stay-chrome--snapped.gantt-stay--chip {
+  filter: saturate(1.12) brightness(1.04);
+}
+
+/* Lățime responsivă (container queries) */
+@container gantt-stay (max-width: 56px) {
+  .gantt-stay--chip .gantt-stay-chrome__label,
+  .gantt-stay--chip .gantt-stay__progress,
+  .gantt-stay--chip .gantt-stay__phase-badge,
+  .gantt-stay--chip .gantt-stay__end-tab,
+  .gantt-stay--chip .gantt-stay__stamp {
+    display: none !important;
+  }
+
+  .gantt-stay--chip .gantt-stay__body {
+    justify-content: center;
+    gap: 0.15rem;
+    padding-inline: 0.2rem !important;
+  }
+}
+
+@container gantt-stay (max-width: 96px) {
+  .gantt-stay--chip .gantt-stay-chrome__label {
+    max-width: 4.5ch;
+  }
+
+  .gantt-stay--chip .gantt-stay__progress,
+  .gantt-stay--chip .gantt-stay__phase-badge {
+    display: none;
+  }
+}
+
+@container gantt-stay (min-width: 140px) {
+  .gantt-stay--chip .gantt-stay-chrome__label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Cereri queue — același limbaj chip */
+.gantt-cereri-card.gantt-stay--chip {
+  min-width: min(16rem, 78vw);
+  border-radius: 0 10px 0 10px !important;
+}
+
+.gantt-cereri-card.gantt-stay--chip .gantt-stay__spine {
+  flex: 0 0 5px;
+  background: var(--stay-spine, var(--booking-pending-border, #f59e0b));
+}
+
+.gantt-cereri-card.gantt-stay--chip .gantt-cereri-card__main {
+  position: relative;
+  z-index: 1;
+  padding: 0.4rem 0.35rem 0.4rem 0.45rem !important;
+}
+
+.gantt-cereri-card.gantt-stay--chip .gantt-cereri-card__party {
+  position: relative;
+  z-index: 1;
+  min-width: 1.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+}
+
+/* Hold / block — lane chip */
+.gantt-occ-bar--chip {
+  container-type: inline-size;
+  container-name: gantt-occ;
+  border-radius: 0 0.35rem 0 0.35rem !important;
+  padding: 0 !important;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 35%, transparent),
+    0 1px 3px color-mix(in srgb, #000 8%, transparent);
+}
+
+.gantt-occ-bar--chip .gantt-occ-bar__spine {
+  flex: 0 0 3px;
+  align-self: stretch;
+}
+
+.gantt-occ-bar--chip.gantt-occ-bar--hold .gantt-occ-bar__spine {
+  background: #ca8a04;
+}
+
+.gantt-occ-bar--chip.gantt-occ-bar--block .gantt-occ-bar__spine {
+  background: #52525b;
+}
+
+.gantt-occ-bar--chip .gantt-occ-bar__label {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.35rem !important;
+}
+
+.gantt-occ-bar--chip .gantt-occ-bar__glyph {
+  flex-shrink: 0;
+  font-size: 0.5rem;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+@container gantt-occ (max-width: 48px) {
+  .gantt-occ-bar--chip .gantt-occ-bar__label-text {
+    display: none;
+  }
+}
+
+html[data-theme="default"] .gantt-stay--chip .gantt-stay__phase-badge {
+  display: inline-flex !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gantt-stay--chip,
+  .gantt-occ-bar--chip {
+    transition: none;
+  }
+
+  .gantt-stay--chip .gantt-stay__progress::after {
+    transition: none;
+  }
+}

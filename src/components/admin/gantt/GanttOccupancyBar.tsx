@@ -32,7 +32,7 @@ export function GanttOccupancyBar({
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const className = [
-    "gantt-booking-card gantt-occ-bar pointer-events-auto absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-center overflow-hidden text-[9px] font-bold leading-none",
+    "gantt-booking-card gantt-occ-bar gantt-occ-bar--chip pointer-events-auto absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-stretch overflow-hidden text-[9px] font-bold leading-none",
     kind === "hold" && "gantt-booking-card--hold gantt-occ-bar--hold",
     kind === "block" && "gantt-booking-card--block gantt-occ-bar--block",
     continuesBefore && "gantt-occ-bar--from-prev",
@@ -95,7 +95,13 @@ export function GanttOccupancyBar({
         }
       }}
     >
-      <span className="gantt-occ-bar__label truncate px-1.5 py-1">{label}</span>
+      <span className="gantt-occ-bar__spine" aria-hidden />
+      <span className="gantt-occ-bar__label truncate">
+        <span className="gantt-occ-bar__glyph" aria-hidden>
+          {kind === "block" ? "⊘" : "⏳"}
+        </span>
+        <span className="gantt-occ-bar__label-text">{label}</span>
+      </span>
     </div>
   );
 }

@@ -65,11 +65,15 @@ import {
 } from "@/components/admin/gantt/GanttBuildingMarker";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
-import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import {
+  GanttOperativeCheckProvider,
+  useGanttOperativeCheck,
+} from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import {
   GanttOpsPickerPanel,
   type GanttOpsPickerMode,
 } from "@/components/admin/gantt/GanttOpsPickerPanel";
+import { filterBookingsForOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import {
@@ -223,6 +227,10 @@ export function GanttCalendar({
     () => summarizeGanttToday(activeBookings, dayIsos, effectiveToday),
     [activeBookings, dayIsos, effectiveToday]
   );
+  const operativeCheckInEligible = useMemo(
+    () => filterBookingsForOperativeCheckIn(activeBookings, effectiveToday),
+    [activeBookings, effectiveToday]
+  );
   const todayFlagsByRoom = useMemo(() => {
     const map = new Map<string, RoomTodayFlags>();
     const today = todaySummary.todayIso;
@@ -275,13 +283,6 @@ export function GanttCalendar({
   const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
     null
   );
-  const [opsCheckDialog, setOpsCheckDialog] = useState<{
-    mode: GanttOpsPickerMode;
-    bookingId: string;
-    guestName: string;
-    plannedCheckIn: string;
-    plannedCheckOut: string;
-  } | null>(null);
 
   // ─── Building groups ───────────────────────────────────────────────
   const buildingGroups = groupByBuilding
@@ -751,6 +752,7 @@ export function GanttCalendar({
 
   // ─── Render ────────────────────────────────────────────────────────
   return (
+    <GanttOperativeCheckProvider today={effectiveToday}>
     <GanttContextMenuProvider
       onRequestCreate={setCreateDraft}
       onOpenMoveRoom={setMoveRoomDraft}
@@ -793,7 +795,11 @@ export function GanttCalendar({
               onOpenMove={() => setOccFormMode("move")}
               onOpenBlock={() => setOccFormMode("block")}
               onOpenReception={() => setOccFormMode("direct")}
-              onOpenCheckIn={() => setOpsPickerMode("checkin")}
+              onOpenCheckIn={
+                operativeCheckInEligible.length > 0
+                  ? () => setOpsPickerMode("checkin")
+                  : undefined
+              }
               onOpenCheckOut={() => setOpsPickerMode("checkout")}
               cereriCount={cereriCount}
               arrivalsCount={arrivalsCount}
@@ -1158,36 +1164,12 @@ export function GanttCalendar({
         />
       </div>
     </div>
-      <GanttContextMenuPanel />
-      <GanttOpsPickerPanel
-        open={opsPickerMode !== null}
-        mode={opsPickerMode ?? "checkin"}
-        bookings={activeBookings}
-        onClose={() => setOpsPickerMode(null)}
+      <GanttOperativeSurfaces
+        opsPickerMode={opsPickerMode}
+        setOpsPickerMode={setOpsPickerMode}
+        activeBookings={activeBookings}
         today={effectiveToday}
-        onSelect={(b) => {
-          if (!opsPickerMode) return;
-          setOpsCheckDialog({
-            mode: opsPickerMode,
-            bookingId: b.id,
-            guestName: b.guest_name,
-            plannedCheckIn: b.check_in,
-            plannedCheckOut: b.check_out,
-          });
-        }}
       />
-      {opsCheckDialog && (
-        <GanttCheckTimeDialog
-          open
-          mode={opsCheckDialog.mode}
-          bookingId={opsCheckDialog.bookingId}
-          guestName={opsCheckDialog.guestName}
-          plannedCheckIn={opsCheckDialog.plannedCheckIn}
-          plannedCheckOut={opsCheckDialog.plannedCheckOut}
-          onClose={() => setOpsCheckDialog(null)}
-          onSuccess={() => router.refresh()}
-        />
-      )}
       <GanttCreateDialog
         draft={createDraft}
         rooms={rooms.map((r) => ({
@@ -1229,5 +1211,58 @@ export function GanttCalendar({
         today={effectiveToday}
       />
     </GanttContextMenuProvider>
+    </GanttOperativeCheckProvider>
+  );
+}
+
+function GanttOperativeSurfaces({
+  opsPickerMode,
+  setOpsPickerMode,
+  activeBookings,
+  today,
+}: {
+  opsPickerMode: GanttOpsPickerMode | null;
+  setOpsPickerMode: (mode: GanttOpsPickerMode | null) => void;
+  activeBookings: BookingRow[];
+  today: string;
+}) {
+  const { requestCheckIn, requestCheckOut } = useGanttOperativeCheck();
+
+  return (
+    <>
+      <GanttContextMenuPanel />
+      <GanttOpsPickerPanel
+        open={opsPickerMode !== null}
+        mode={opsPickerMode ?? "checkin"}
+        bookings={activeBookings}
+        onClose={() => setOpsPickerMode(null)}
+        today={today}
+        onSelect={(b) => {
+          if (!opsPickerMode) return;
+          if (opsPickerMode === "checkin") {
+            requestCheckIn({
+              bookingId: b.id,
+              guestName: b.guest_name,
+              plannedCheckIn: b.check_in,
+              plannedCheckOut: b.check_out,
+              status: b.status,
+              actualCheckInAt: b.actual_check_in_at,
+              actualCheckOutAt: b.actual_check_out_at,
+              today,
+            });
+            return;
+          }
+          requestCheckOut({
+            bookingId: b.id,
+            guestName: b.guest_name,
+            plannedCheckIn: b.check_in,
+            plannedCheckOut: b.check_out,
+            actualCheckInAt: b.actual_check_in_at,
+            actualCheckOutAt: b.actual_check_out_at,
+            today,
+          });
+        }}
+      />
+    </>
   );
 }

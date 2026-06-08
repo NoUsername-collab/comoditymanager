@@ -1,4 +1,4 @@
-import { captureError } from "@/services/dev-logs";
+import { captureTenantError } from "@/services/dev-logs";
 
 /**
  * Wrapper pentru server actions — captează erori automat în dev_logs.
@@ -33,7 +33,7 @@ export function withDevLog<T extends (...args: unknown[]) => Promise<unknown>>(
 
       return result as ReturnType<T>;
     } catch (error) {
-      await captureError(error, {
+      await captureTenantError(error, {
         source: "action",
         context: { actionName },
       });

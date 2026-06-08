@@ -1694,6 +1694,7 @@
       "extendHoldError": "Error extending hold",
       "extendBlockError": "Error extending block",
       "checkInOnlyOnArrivalDay": "Check-in is only allowed on the planned arrival date.",
+      "statisticsVisibilityMigrationRequired": "Run migration 049_statistics_visibility.sql in Supabase (statistics_visibility column is missing).",
       "holdError": "Hold error",
       "blockError": "Block error",
       "releaseHoldError": "Release hold error",

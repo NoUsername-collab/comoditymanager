@@ -27,18 +27,36 @@ function parseDayNight(raw: unknown): ThemeMode {
   return raw === "day" || raw === "night" ? raw : "night";
 }
 
+const PENSION_SETTINGS_BASE_SELECT =
+  "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night";
+
+function isStatisticsVisibilityColumnMissing(message: string): boolean {
+  return message.includes("statistics_visibility");
+}
+
 async function getPensionSettingsUncached(tenantId: string): Promise<PensionSettings | null> {
   // Always read from public — pension settings are global, not sim-scoped
   const supabase = createPublicAdminClient();
-  const { data, error } = await supabase
+  let result = await supabase
     .from("pension_settings")
-    .select(
-      "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night, statistics_visibility"
-    )
+    .select(`${PENSION_SETTINGS_BASE_SELECT}, statistics_visibility`)
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  let statisticsVisibility = DEFAULT_STATISTICS_VISIBILITY;
+
+  if (result.error && isStatisticsVisibilityColumnMissing(result.error.message)) {
+    result = await supabase
+      .from("pension_settings")
+      .select(PENSION_SETTINGS_BASE_SELECT)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+  } else if (result.data && "statistics_visibility" in result.data) {
+    statisticsVisibility = parseStatisticsVisibility(result.data.statistics_visibility);
+  }
+
+  if (result.error) throw new Error(result.error.message);
+  const data = result.data;
   if (!data) return null;
 
   return {
@@ -54,7 +72,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
         : "default"
     ),
     admin_day_night: parseDayNight(data.admin_day_night),
-    statistics_visibility: parseStatisticsVisibility(data.statistics_visibility),
+    statistics_visibility: statisticsVisibility,
   };
 }
 
@@ -112,6 +130,9 @@ export async function updatePensionSettings(
   if (error) throw new Error(error.message);
 }
 
+export const STATISTICS_VISIBILITY_MIGRATION_ERROR =
+  "settings.statistics_visibility_migration_required";
+
 export async function updateStatisticsVisibility(
   visibility: StatisticsVisibility
 ): Promise<void> {
@@ -121,7 +142,12 @@ export async function updateStatisticsVisibility(
     .update({ statistics_visibility: visibility })
     .eq("tenant_id", tenantId);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (isStatisticsVisibilityColumnMissing(error.message)) {
+      throw new Error(STATISTICS_VISIBILITY_MIGRATION_ERROR);
+    }
+    throw new Error(error.message);
+  }
 }
 
 export function pensionStatisticsVisibility(

@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { reportTenantClientError } from "@/lib/tenant/report-client-error";
+
 export default function PublicError({
   error,
   reset,
@@ -7,6 +10,12 @@ export default function PublicError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    if (error.name !== "TenantNotFoundError") {
+      reportTenantClientError(error, "public");
+    }
+  }, [error]);
+
   const isTenantMissing = error.name === "TenantNotFoundError";
 
   if (isTenantMissing) {

@@ -235,6 +235,10 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   line-height: 1;
 }
 
+.gantt-stay--chip .gantt-stay__avatar:not(.gantt-stay__avatar--hex) {
+  border-radius: 9999px;
+}
+
 .gantt-stay--filled .gantt-stay__avatar {
   background: var(--stay-badge-bg);
   color: inherit;
@@ -2270,6 +2274,11 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   color: #854d0e;
 }
 
+.gantt-occ-bar--chip.gantt-occ-bar--hold {
+  border-width: 1.5px;
+  border-style: dashed;
+}
+
 .gantt-occ-bar--block {
   border: 2px solid #71717a;
   background: repeating-linear-gradient(
@@ -2280,6 +2289,10 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
     #d4d4d8 8px
   );
   color: #3f3f46;
+}
+
+.gantt-occ-bar--chip.gantt-occ-bar--block {
+  border-width: 1.5px;
 }
 
 .gantt-occ-bar__label {

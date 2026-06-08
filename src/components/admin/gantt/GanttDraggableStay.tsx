@@ -486,6 +486,9 @@ export function GanttDraggableStay({
           isCerere={isCerere}
           guestTotal={guestTotal}
           buildingColor={buildingColor}
+          checkIn={popover.checkIn}
+          checkOut={popover.checkOut}
+          today={today}
           todayHighlight={todayHighlight}
           initials={initials}
           interactive

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
+import { filterBookingsForOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { todayIso } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
@@ -18,15 +19,19 @@ type Props = {
   today?: string;
 };
 
-function filterForMode(bookings: BookingRow[], mode: GanttOpsPickerMode, today: string = todayIso()): BookingRow[] {
+function filterForMode(
+  bookings: BookingRow[],
+  mode: GanttOpsPickerMode,
+  today: string = todayIso()
+): BookingRow[] {
+  if (mode === "checkin") {
+    return filterBookingsForOperativeCheckIn(bookings, today).sort((a, b) =>
+      a.guest_name.localeCompare(b.guest_name, "ro")
+    );
+  }
   return bookings
     .filter((b) => b.status === "confirmata")
-    .filter((b) => {
-      if (mode === "checkin") {
-        return !b.actual_check_in_at && b.check_in === today;
-      }
-      return Boolean(b.actual_check_in_at) && !b.actual_check_out_at;
-    })
+    .filter((b) => Boolean(b.actual_check_in_at) && !b.actual_check_out_at)
     .sort((a, b) => a.guest_name.localeCompare(b.guest_name, "ro"));
 }
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { guestInitials } from "@/domain/guest-name";
@@ -9,6 +8,7 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { todayIso } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
+import { useGanttOperativeCheck } from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 
@@ -65,6 +65,7 @@ export function GanttStayPopover({
   const tFlow = useTranslations("booking.flowStatus");
   const locale = useLocale();
   const router = useRouter();
+  const { requestCheckIn } = useGanttOperativeCheck();
   const effectiveToday = todayProp ?? todayIso();
   const isCerere = data.status === "cerere_noua";
   const stripe = data.buildingColor ?? (isCerere ? "#d97706" : "#059669");
@@ -208,17 +209,29 @@ export function GanttStayPopover({
             </button>
           ) : null}
           {isCheckInToday ? (
-            <Link
-              href={`/admin/bookings/${data.bookingId}`}
+            <button
+              type="button"
               className={[
                 "rounded-lg border border-emerald-300 bg-emerald-600 px-2 py-2 text-center text-xs font-semibold text-white transition hover:bg-emerald-700 active:translate-y-px active:bg-emerald-800",
                 !data.canMoveRoom && "col-span-2",
               ]
                 .filter(Boolean)
                 .join(" ")}
+              onClick={() =>
+                requestCheckIn({
+                  bookingId: data.bookingId,
+                  guestName: data.guestName,
+                  plannedCheckIn: arrivalDate,
+                  plannedCheckOut: data.checkOut,
+                  status: data.status,
+                  actualCheckInAt: data.actualCheckInAt,
+                  actualCheckOutAt: data.actualCheckOutAt,
+                  today: effectiveToday,
+                })
+              }
             >
               {tCommon("checkInToday")}
-            </Link>
+            </button>
           ) : null}
         </div>
 
