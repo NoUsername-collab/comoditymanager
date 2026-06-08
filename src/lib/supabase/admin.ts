@@ -54,6 +54,7 @@ export async function createAdminClient() {
  * - Calling RPC functions (they live in public)
  * - Simulation lifecycle operations (start/stop)
  * - Operations that must never touch sim_sandbox
+ * - unstable_cache() callbacks (no cookies/headers — Next.js requirement)
  */
 export function createPublicAdminClient() {
   const { url } = getSupabasePublicConfig();

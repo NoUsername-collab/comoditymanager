@@ -50,7 +50,7 @@ async function listBookingsForRangeImpl(
   rangeStart: string,
   rangeEnd: string
 ): Promise<BookingRow[]> {
-  const { supabase } = await getTenantScope();
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -159,7 +159,7 @@ export async function getBookingById(id: string): Promise<BookingDetail | null> 
 }
 
 async function countCereriNoiUncached(tenantId: string): Promise<number> {
-  const supabase = await createAdminClient();
+  const supabase = createPublicAdminClient();
   const { count, error } = await supabase
     .from("bookings")
     .select("id", { count: "exact", head: true })

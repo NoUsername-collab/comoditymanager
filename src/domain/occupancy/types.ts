@@ -36,6 +36,8 @@ export type OccupancyQueryOptions = {
   forPublicCalendar?: boolean;
   /** Data referință pentru fază (default azi local) */
   referenceDate?: string;
+  /** Set outside unstable_cache — never resolve tenant inside cached callbacks */
+  tenantId?: string;
 };
 
 export type OccupancyConflict = {

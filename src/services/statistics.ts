@@ -1,5 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
@@ -18,7 +19,7 @@ const STATS_NOTE =
 async function loadAllBookingsForStatisticsImpl(
   tenantId: string
 ): Promise<StatBooking[]> {
-  const { supabase } = await getTenantScope();
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(

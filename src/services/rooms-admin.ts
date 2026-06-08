@@ -1,5 +1,5 @@
 import { unstable_cache } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   getTenantPublicScope,
@@ -73,7 +73,7 @@ async function listAllRoomsUncached(tenantId: string): Promise<
     room_type_name: string | null;
   })[]
 > {
-  const supabase = await createAdminClient();
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("rooms")
     .select(

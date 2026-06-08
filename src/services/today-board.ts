@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import type { GuestFlagLevel } from "@/domain/guest/types";
@@ -107,7 +108,7 @@ async function loadTodayBoardImpl(
   checkInTime: string,
   checkOutTime: string
 ): Promise<TodayBoard> {
-  const { supabase } = await getTenantScope();
+  const supabase = createPublicAdminClient();
 
   const { data, error } = await supabase
     .from("bookings")

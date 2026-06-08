@@ -45,11 +45,13 @@ export async function previewGuestStayAction(input: {
   const t = await getTranslations("errors");
   try {
     await assertRateLimit(RATE_LIMIT_BOOKING_PREVIEW, "preview");
-    const preview = await loadGuestStayPreview(
-      input.check_in,
-      input.check_out,
-      input.num_adults,
-      input.num_children
+    const preview = await runInPublicBookingMode(() =>
+      loadGuestStayPreview(
+        input.check_in,
+        input.check_out,
+        input.num_adults,
+        input.num_children
+      )
     );
     return { ok: true as const, preview };
   } catch (e) {

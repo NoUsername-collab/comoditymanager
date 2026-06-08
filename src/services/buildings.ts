@@ -1,12 +1,12 @@
 import { ROOM_LOCKING_BOOKING_STATUSES } from "@/domain/booking/room-guards";
 import { unstable_cache } from "next/cache";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import type { AcMode, Building } from "@/types/database";
 
 async function listBuildingsUncached(tenantId: string): Promise<Building[]> {
-  const supabase = await createAdminClient();
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("buildings")
     .select("id, name, sort_order, color_hex, ac_mode, is_active, default_price_per_night")

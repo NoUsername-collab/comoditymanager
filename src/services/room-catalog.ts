@@ -1,6 +1,6 @@
 import { unstable_cache } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import {
   getTenantScope,
@@ -100,7 +100,7 @@ async function listRoomTypesUncached(
   tenantId: string,
   includeInactive = false
 ): Promise<RoomTypeDefinition[]> {
-  const supabase = await createAdminClient();
+  const supabase = createPublicAdminClient();
   let q = supabase
     .from("room_type_definitions")
     .select("*")
@@ -151,7 +151,7 @@ async function listRoomOptionsUncached(
   tenantId: string,
   includeInactive = false
 ): Promise<RoomOptionDefinition[]> {
-  const supabase = await createAdminClient();
+  const supabase = createPublicAdminClient();
   let q = supabase
     .from("room_option_definitions")
     .select("*")
@@ -490,7 +490,7 @@ async function getRoomOptionSlugsByRoomIdsUncached(
   roomIds: string[]
 ): Promise<Record<string, string[]>> {
   if (roomIds.length === 0) return {};
-  const supabase = await createAdminClient();
+  const supabase = createPublicAdminClient();
 
   const { data: scopedRooms, error: roomErr } = await supabase
     .from("rooms")

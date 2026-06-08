@@ -13,6 +13,7 @@ import {
 } from "@/lib/constants";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantPublicScope, getTenantScope } from "@/lib/tenant/scope";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -45,9 +46,14 @@ async function getRoomOccupancyImpl(
   const kinds = options.kinds ?? ALL_KINDS;
   const ref = options.referenceDate ?? (await getEffectiveToday());
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
-  const { tenantId, supabase } = options.forPublicCalendar
-    ? await getTenantPublicScope()
-    : await getTenantScope();
+  let tenantId = options.tenantId;
+  if (!tenantId) {
+    const scope = options.forPublicCalendar
+      ? await getTenantPublicScope()
+      : await getTenantScope();
+    tenantId = scope.tenantId;
+  }
+  const supabase = createPublicAdminClient();
   const fetchSegments = async (): Promise<OccupancySegment[]> => {
     if (!kinds.includes("request") && !kinds.includes("stay")) return [];
 
@@ -231,17 +237,18 @@ export async function getRoomOccupancy(
   rangeEnd: string,
   options: OccupancyQueryOptions = {}
 ): Promise<OccupancySegment[]> {
-  if (options.excludeBookingId) {
-    return getRoomOccupancyImpl(rangeStart, rangeEnd, options);
-  }
-
   const ref = options.referenceDate ?? (await getEffectiveToday());
   const { tenantId } = options.forPublicCalendar
     ? await getTenantPublicScope()
     : await getTenantScope();
+  const resolvedOptions = { ...options, referenceDate: ref, tenantId };
+
+  if (options.excludeBookingId) {
+    return getRoomOccupancyImpl(rangeStart, rangeEnd, resolvedOptions);
+  }
 
   const cached = unstable_cache(
-    () => getRoomOccupancyImpl(rangeStart, rangeEnd, { ...options, referenceDate: ref }),
+    () => getRoomOccupancyImpl(rangeStart, rangeEnd, resolvedOptions),
     occupancyCacheKey(tenantId, rangeStart, rangeEnd, options, ref),
     {
       tags: [
