@@ -460,21 +460,6 @@
   margin-bottom: 0.85rem;
 }
 
-.admin-home-panel__head--centered {
-  text-align: center;
-  justify-content: center;
-}
-
-.admin-home-panel__head--centered > div {
-  flex: 1 1 100%;
-}
-
-.admin-home-availability-preview-wrap {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
 .admin-home-panel__title {
   margin: 0;
   font-size: 0.9375rem;
@@ -763,6 +748,298 @@
   z-index: 1;
 }
 
+/* —— Check-in quest (gamified milestones) —— */
+.admin-home-checkin-quest-wrap {
+  margin-top: 0.35rem;
+}
+
+.checkin-quest {
+  --quest-accent: #059669;
+  --quest-glow: #34d399;
+  padding: 1rem 1.1rem 1.15rem;
+  border-radius: calc(var(--admin-radius, 0.75rem) + 6px);
+  border: 1px solid color-mix(in srgb, var(--quest-accent) 28%, var(--admin-panel-border));
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--quest-accent) 8%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg, #fff) 55%,
+    color-mix(in srgb, #fbbf24 6%, var(--admin-panel-bg)) 100%
+  );
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--admin-page-bg) 5%, transparent),
+    0 14px 36px color-mix(in srgb, var(--quest-accent) 10%, transparent);
+}
+
+.checkin-quest--victory {
+  border-color: color-mix(in srgb, var(--quest-accent) 45%, #86efac);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #86efac 22%, var(--admin-panel-bg)) 0%,
+    var(--admin-panel-bg) 50%,
+    color-mix(in srgb, #fde68a 18%, var(--admin-panel-bg)) 100%
+  );
+  animation: checkin-quest-victory-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes checkin-quest-victory-pulse {
+  0%,
+  100% {
+    box-shadow: 0 14px 36px color-mix(in srgb, var(--quest-accent) 12%, transparent);
+  }
+  50% {
+    box-shadow: 0 16px 42px color-mix(in srgb, var(--quest-glow) 28%, transparent);
+  }
+}
+
+.checkin-quest__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.checkin-quest__eyebrow {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--quest-accent) 70%, #047857);
+}
+
+.checkin-quest__title {
+  margin: 0.15rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--admin-text, #18181b);
+}
+
+.checkin-quest__subtitle {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #71717a;
+  max-width: 36rem;
+}
+
+.checkin-quest__progress-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.checkin-quest__ring {
+  --quest-pct: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(
+    var(--quest-accent) calc(var(--quest-pct) * 1%),
+    #e4e4e7 0
+  );
+  box-shadow: inset 0 0 0 4px var(--admin-panel-bg, #fff);
+}
+
+.checkin-quest__ring-value {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #047857;
+}
+
+.checkin-quest__progress-label {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #52525b;
+  text-align: center;
+}
+
+.checkin-quest__victory {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.65rem;
+  background: linear-gradient(90deg, #ecfdf5, #fef9c3);
+  border: 1px solid #86efac;
+}
+
+.checkin-quest__victory-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(145deg, #059669, #10b981);
+  box-shadow: 0 4px 14px color-mix(in srgb, #059669 35%, transparent);
+}
+
+.checkin-quest__victory-title {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #065f46;
+}
+
+.checkin-quest__victory-msg {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: #047857;
+}
+
+.checkin-quest__idle {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.8rem;
+  color: #71717a;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--admin-panel-border) 35%, transparent);
+}
+
+.checkin-quest__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.checkin-quest__step {
+  position: relative;
+  padding-left: 0.35rem;
+}
+
+.checkin-quest__connector {
+  position: absolute;
+  left: 1.15rem;
+  top: -0.65rem;
+  width: 2px;
+  height: 0.65rem;
+  background: linear-gradient(180deg, transparent, #a7f3d0);
+}
+
+.checkin-quest__step:first-child .checkin-quest__connector {
+  display: none;
+}
+
+.checkin-quest__card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem 0.85rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  border: 1px solid #e4e4e7;
+  background: var(--admin-panel-bg, #fff);
+  box-shadow: 0 2px 8px color-mix(in srgb, #000 4%, transparent);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+}
+
+.checkin-quest__card:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--quest-accent) 35%, #e4e4e7);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--quest-accent) 12%, transparent);
+}
+
+.checkin-quest__card-badge {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: #047857;
+  background: linear-gradient(145deg, #d1fae5, #a7f3d0);
+  border: 2px solid #6ee7b7;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #6ee7b7 25%, transparent);
+}
+
+.checkin-quest__guest {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #18181b;
+}
+
+.checkin-quest__meta,
+.checkin-quest__dates {
+  margin: 0.12rem 0 0;
+  font-size: 0.72rem;
+  color: #71717a;
+}
+
+.checkin-quest__card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+  min-width: 6.5rem;
+}
+
+.checkin-quest__cta {
+  padding: 0.4rem 0.65rem;
+  border: none;
+  border-radius: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(145deg, #059669, #10b981);
+  box-shadow: 0 3px 10px color-mix(in srgb, #059669 30%, transparent);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.checkin-quest__cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px color-mix(in srgb, #059669 38%, transparent);
+}
+
+.checkin-quest__cta:active {
+  transform: translateY(0);
+}
+
+.checkin-quest__link {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-align: center;
+  color: #52525b;
+  text-decoration: none;
+}
+
+.checkin-quest__link:hover {
+  color: var(--quest-accent);
+}
+
+@media (max-width: 640px) {
+  .checkin-quest__card {
+    grid-template-columns: auto 1fr;
+  }
+
+  .checkin-quest__card-actions {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .checkin-quest__cta {
+    flex: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .admin-nav-tab--cereri-light::before {
     animation: none;
@@ -776,5 +1053,13 @@
 
   .admin-home-section {
     animation: none;
+  }
+
+  .checkin-quest--victory {
+    animation: none;
+  }
+
+  .checkin-quest__card:hover {
+    transform: none;
   }
 }

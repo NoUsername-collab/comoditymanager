@@ -474,7 +474,6 @@ export function GanttDragCreateLayer({
       ]
         .filter(Boolean)
         .join(" ")}
-      style={{ height: 56 }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMoveRow}
       onPointerUp={onPointerUpRow}
@@ -490,7 +489,7 @@ export function GanttDragCreateLayer({
       {ghost && drag && (
         <div
           className={[
-            "gantt-drag-preview pointer-events-none absolute top-2 z-[50] flex min-w-0 items-center overflow-hidden",
+            "gantt-drag-preview pointer-events-none absolute z-[50] flex min-w-0 items-center overflow-hidden",
             drag.hasConflict
               ? "gantt-drag-preview--conflict"
               : "gantt-drag-preview--free",

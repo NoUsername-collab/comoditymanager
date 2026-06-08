@@ -6,7 +6,7 @@ import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
-import { TodayBoardSection } from "@/components/admin/dashboard/TodayBoardSection";
+import { CheckInMilestoneBoard } from "@/components/admin/dashboard/CheckInMilestoneBoard";
 import { TodayBoardBadges } from "@/components/admin/dashboard/TodayBoardBadges";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 
@@ -103,9 +103,14 @@ export async function AdminDashboard({
       )}
 
       {data.todayBoard && (
-        <div className="admin-home-section">
-          <TodayBoardSection board={data.todayBoard} />
-        </div>
+        <section className="admin-home-section admin-home-checkin-quest-wrap">
+          <CheckInMilestoneBoard
+            todayIso={data.todayBoard.todayIso}
+            checkInTime={data.todayBoard.checkInTime}
+            pending={data.todayBoard.pendingCheckIns}
+            completedCount={data.todayBoard.completedCheckInsToday}
+          />
+        </section>
       )}
 
       {availabilityPanel && (
@@ -114,7 +119,7 @@ export async function AdminDashboard({
           className="admin-home-panel admin-home-section"
           aria-labelledby="admin-home-availability-title"
         >
-          <div className="admin-home-panel__head admin-home-panel__head--centered">
+          <div className="admin-home-panel__head">
             <div>
               <h2 id="admin-home-availability-title" className="admin-home-panel__title">
                 {tDashboard("quickAvail")}
@@ -127,7 +132,7 @@ export async function AdminDashboard({
               {tDashboard("openFullAvailability")} →
             </Link>
           </div>
-          <div className="admin-home-availability-preview-wrap">{availabilityPanel}</div>
+          {availabilityPanel}
         </section>
       )}
 

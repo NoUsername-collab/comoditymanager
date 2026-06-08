@@ -5,10 +5,12 @@ import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-cata
 import type { OptionPolicyMode } from "@/types/room-catalog";
 import {
   buildBulkRoomNames,
+  findDuplicateRoomNames,
+  suggestNextBulkStartNumber,
   type BulkNamingMode,
 } from "@/domain/room/bulk-names";
 import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -21,9 +23,12 @@ type Props = {
   options: RoomOptionDefinition[];
   policiesByBuilding: Record<string, { option_id: string; mode: OptionPolicyMode }[]>;
   createRoomAction: (formData: FormData) => Promise<void>;
+  existingNamesByBuilding?: Record<string, string[]>;
+  nextSortByBuilding?: Record<string, number>;
   defaultBuildingId?: string;
   defaultFloorId?: string;
   returnTo?: "structure";
+  formError?: string | null;
 };
 
 function suggestPrice(
@@ -56,9 +61,12 @@ export function RoomForm({
   options,
   policiesByBuilding,
   createRoomAction,
+  existingNamesByBuilding = {},
+  nextSortByBuilding = {},
   defaultBuildingId,
   defaultFloorId,
   returnTo,
+  formError,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tRooms = useTranslations("admin.roomForm");
@@ -80,6 +88,7 @@ export function RoomForm({
   const [namePrefix, setNamePrefix] = useState(tRooms("roomPrefixDefault"));
   const [startNumber, setStartNumber] = useState(1);
   const [endNumber, setEndNumber] = useState(10);
+  const [sortOrder, setSortOrder] = useState(1);
 
   const building = buildings.find((b) => b.id === buildingId);
   const floors = floorsByBuilding[buildingId] ?? [];
@@ -90,6 +99,24 @@ export function RoomForm({
     () => suggestPrice(building, selectedType, options, policies),
     [building, selectedType, options, policies]
   );
+
+  const existingNames = useMemo(
+    () => existingNamesByBuilding[buildingId] ?? [],
+    [existingNamesByBuilding, buildingId]
+  );
+
+  useEffect(() => {
+    const nextSort = nextSortByBuilding[buildingId] ?? 1;
+    setSortOrder(nextSort);
+    if (mode !== "bulk") return;
+    const nextStart = suggestNextBulkStartNumber(
+      existingNames,
+      bulkNaming,
+      bulkNaming === "number_only" ? "" : namePrefix
+    );
+    setStartNumber(nextStart);
+    setEndNumber(nextStart + 9);
+  }, [buildingId, mode, bulkNaming, namePrefix, existingNames, nextSortByBuilding]);
 
   const bulkCount = Math.max(1, (endNumber || startNumber) - startNumber + 1);
 
@@ -104,8 +131,20 @@ export function RoomForm({
     );
   }, [mode, bulkNaming, namePrefix, startNumber, bulkCount]);
 
+  const bulkConflicts = useMemo(() => {
+    if (mode !== "bulk" || bulkPreview.length === 0) return [];
+    return findDuplicateRoomNames(existingNames, bulkPreview);
+  }, [mode, bulkPreview, existingNames]);
+
+  const bulkBlocked = mode === "bulk" && bulkConflicts.length > 0;
+
   return (
     <div className="mt-6 space-y-4">
+      {formError ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {formError}
+        </p>
+      ) : null}
       <div className="flex gap-2">
         <button
           type="button"
@@ -264,11 +303,27 @@ export function RoomForm({
               <input type="hidden" name="bulk_count" value={bulkCount} />
             </div>
             {bulkPreview.length > 0 && (
-              <p className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-700">
+              <div
+                className={[
+                  "rounded-lg border px-3 py-2 text-xs",
+                  bulkConflicts.length > 0
+                    ? "border-red-200 bg-red-50 text-red-800"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-700",
+                ].join(" ")}
+              >
                 <span className="font-semibold">{tRooms("bulkPreviewLabel")}: </span>
                 {bulkPreview.join(", ")}
                 {bulkPreview.length >= 50 ? " …" : ""}
-              </p>
+                {bulkConflicts.length > 0 ? (
+                  <p className="mt-1.5 font-semibold">
+                    {tRooms("bulkConflictWarning", {
+                      names: bulkConflicts.join(", "),
+                    })}
+                  </p>
+                ) : (
+                  <p className="mt-1.5 text-zinc-500">{tRooms("bulkAutoStartHint")}</p>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -301,7 +356,8 @@ export function RoomForm({
             <input
               name="sort_order"
               type="number"
-              defaultValue={1}
+              value={sortOrder}
+              onChange={(e) => setSortOrder(Number(e.target.value) || 1)}
               className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
             />
           </label>
@@ -324,7 +380,10 @@ export function RoomForm({
           />
         </label>
 
-        <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+        <AdminSubmitButton
+          disabled={bulkBlocked}
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        >
           {mode === "bulk" ? tRooms("createRooms") : tRooms("saveRoom")}
         </AdminSubmitButton>
       </AdminPendingForm>

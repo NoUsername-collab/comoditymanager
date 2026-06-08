@@ -10,12 +10,19 @@ import {
 import {
   confirmBookingWithRooms,
   createBookingRequest,
+  getBookingById,
   adjustBookingStayNights,
   duplicateBookingAsCerere,
   shiftBookingByDays,
 } from "@/services/bookings";
-import { createRoomBlock, deleteRoomBlock } from "@/services/room-blocks";
-import { createRoomHold, createRoomHolds, releaseRoomHold } from "@/services/room-holds";
+import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
+import { createRoomBlock, deleteRoomBlock, extendRoomBlockOneNight } from "@/services/room-blocks";
+import {
+  createRoomHold,
+  createRoomHolds,
+  extendRoomHoldOneNight,
+  releaseRoomHold,
+} from "@/services/room-holds";
 import { getRoomById } from "@/services/rooms-admin";
 import {
   moveBookingRoomFromPivot,
@@ -161,6 +168,71 @@ export async function createRoomBlockFromGanttAction(input: {
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("blockError"),
+    };
+  }
+}
+
+export async function quickConfirmCerereFromGanttAction(
+  bookingId: string
+): Promise<{ ok: true } | ActionErr> {
+  const t = await getT();
+  await requireAdmin();
+  try {
+    const booking = await getBookingById(bookingId);
+    if (!booking) return { ok: false, error: t("bookingNotFound") };
+    if (booking.status !== "cerere_noua") {
+      return { ok: false, error: t("onlyNewRequests") };
+    }
+    const roomIds = booking.room_ids ?? [];
+    if (roomIds.length === 0) {
+      return { ok: false, error: t("assignRoomsBeforeConfirm") };
+    }
+    const total = await resolveTotalPriceForConfirm(
+      bookingId,
+      roomIds,
+      new FormData()
+    );
+    await confirmBookingWithRooms(bookingId, roomIds, total);
+    revalidateBookingSurfacesExtended({ bookingId, includeHistoric: true });
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("confirmError"),
+    };
+  }
+}
+
+export async function extendRoomHoldAction(
+  holdId: string
+): Promise<{ ok: true; check_out: string } | ActionErr> {
+  const t = await getT();
+  await requireAdmin();
+  try {
+    const check_out = await extendRoomHoldOneNight(holdId);
+    revalidateAdminCalendar();
+    return { ok: true, check_out };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("extendHoldError"),
+    };
+  }
+}
+
+export async function extendRoomBlockAction(
+  blockId: string
+): Promise<{ ok: true; check_out: string } | ActionErr> {
+  const t = await getT();
+  await requireAdmin();
+  try {
+    const check_out = await extendRoomBlockOneNight(blockId);
+    revalidateAdminCalendar();
+    return { ok: true, check_out };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("extendBlockError"),
     };
   }
 }

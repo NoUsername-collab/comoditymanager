@@ -6,10 +6,11 @@ import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import { guestPartyTotal } from "@/lib/guest-party";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
+import { occupancyPhase } from "@/domain/occupancy/phase";
 import { stayTodayHighlight } from "@/domain/gantt/today-activity";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 
-const ROW_H = 44;
+import { GANTT_UNASSIGNED_ROW_H } from "@/domain/gantt/layout";
 
 export function GanttUnassignedRow({
   bookings,
@@ -24,6 +25,8 @@ export function GanttUnassignedRow({
 }) {
   const tGantt = useTranslations("admin.gantt");
   const dayCount = viewRange.days.length;
+  const today =
+    viewRange.days.find((d) => d.isToday)?.iso ?? viewRange.days[0]?.iso ?? "";
   if (bookings.length === 0) return null;
 
   return (
@@ -37,7 +40,7 @@ export function GanttUnassignedRow({
       <td className="relative p-0 align-top">
         <div
           className="relative w-full overflow-hidden"
-          style={{ height: ROW_H }}
+          style={{ height: GANTT_UNASSIGNED_ROW_H }}
         >
           <div
             className="gantt-day-grid gantt-day-grid--timed grid h-full w-full min-w-0 opacity-60"
@@ -89,6 +92,9 @@ export function GanttUnassignedRow({
                 bookingCheckIn={b.check_in}
                   buildingColor="#d97706"
                   todayHighlight={stayTodayHighlight(b)}
+                  occupancyPhase={occupancyPhase(b.check_in, b.check_out, today)}
+                  roomIds={b.room_ids ?? []}
+                  today={today}
                   popover={{
                     bookingId: b.id,
                     guestName: b.guest_name,

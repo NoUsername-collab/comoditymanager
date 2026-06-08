@@ -14,12 +14,25 @@ export type RoomToClean = {
   check_out: string;
 };
 
+export type CheckInQuestItem = {
+  bookingId: string;
+  guestName: string;
+  guestLabel: string;
+  roomNames: string[];
+  checkIn: string;
+  checkOut: string;
+  numAdults: number;
+  numChildren: number;
+};
+
 export type TodayBoard = {
   todayIso: string;
   checkInTime: string;
   checkOutTime: string;
   cleaningWindowLabel: string;
   arrivals: BookingRow[];
+  pendingCheckIns: CheckInQuestItem[];
+  completedCheckInsToday: number;
   departures: BookingRow[];
   roomsToClean: RoomToClean[];
 };
@@ -40,6 +53,9 @@ function mapBookingRow(b: {
   num_adults: number;
   num_children: number;
   total_price: number | null;
+  actual_check_in_at?: string | null;
+  actual_check_out_at?: string | null;
+  actual_check_in_by?: string | null;
   booking_rooms: {
     room_id: string;
     rooms: { name: string; building_name?: string } | { name: string }[] | null;
@@ -75,9 +91,9 @@ function mapBookingRow(b: {
     room_ids,
     room_names,
     total_price: b.total_price != null ? Number(b.total_price) : null,
-    actual_check_in_at: null,
-    actual_check_out_at: null,
-    actual_check_in_by: null,
+    actual_check_in_at: b.actual_check_in_at ?? null,
+    actual_check_out_at: b.actual_check_out_at ?? null,
+    actual_check_in_by: b.actual_check_in_by ?? null,
     actual_check_out_by: null,
   };
 }
@@ -96,6 +112,7 @@ export async function loadTodayBoard(
       id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
       guest_email, guest_phone, guest_id, guest_alert_level, guest_alert_note,
       num_adults, num_children, total_price,
+      actual_check_in_at,
       booking_rooms (
         room_id,
         rooms ( name, buildings ( name ) )
@@ -141,7 +158,9 @@ export async function loadTodayBoard(
       }),
     });
 
-    if (raw.check_in === today) arrivals.push(row);
+    if (raw.check_in === today) {
+      arrivals.push(row);
+    }
     if (raw.check_out === today) {
       departures.push(row);
       const guestLabel = formatGuestGanttLabel(
@@ -171,12 +190,38 @@ export async function loadTodayBoard(
     }
   }
 
+  const pendingCheckIns: CheckInQuestItem[] = [];
+  let completedCheckInsToday = 0;
+
+  for (const row of arrivals) {
+    if (row.actual_check_in_at) {
+      completedCheckInsToday += 1;
+      continue;
+    }
+    pendingCheckIns.push({
+      bookingId: row.id,
+      guestName: row.guest_name,
+      guestLabel: formatGuestGanttLabel(
+        row.guest_last_name,
+        row.guest_first_name,
+        row.guest_name
+      ),
+      roomNames: row.room_names,
+      checkIn: row.check_in,
+      checkOut: row.check_out,
+      numAdults: row.num_adults,
+      numChildren: row.num_children,
+    });
+  }
+
   return {
     todayIso: today,
     checkInTime,
     checkOutTime,
     cleaningWindowLabel: `Cleaning after check-out ${checkOutTime} until check-in ${checkInTime}`,
     arrivals,
+    pendingCheckIns,
+    completedCheckInsToday,
     departures,
     roomsToClean,
   };

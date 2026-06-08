@@ -11,12 +11,7 @@ type Props = {
   hasExistingCheckin: boolean;
 };
 
-/**
- * Check-in is only shown when:
- * - No existing check-in
- * - Booking is confirmed
- * - Today is within the check-in window: from 1 day before check-in to the day before check-out
- */
+/** Check-in doar în ziua planificată de sosire, pentru cazări confirmate fără check-in înregistrat. */
 export function BookingCheckinButton({
   booking,
   settings,

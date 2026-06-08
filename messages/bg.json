@@ -300,7 +300,8 @@
       "confirmUndoCheckOut": "Отменяте записания check-out?",
       "undoCheckInSuccess": "Check-in отменен",
       "undoCheckOutSuccess": "Check-out отменен",
-      "phoneRequiredForCheckIn": "Check-in блокиран: добавете телефон към резервацията или профила."
+      "phoneRequiredForCheckIn": "Check-in блокиран: добавете телефон към резервацията или профила.",
+      "checkInOnlyOnArrivalDay": "Check-in е възможен само в деня на пристигане ({date})."
     },
     "layout": {
       "pendingCount": "{count, plural, one {# new request} other {# new requests}}",
@@ -406,7 +407,21 @@
         "staffTitle": "Ekip",
         "staffSubtitle": "Upravlyavajte chlenove na ekipa",
         "staffPanelInfo": "Pokanete operatori i admini, promenete roli, deaktivirajte akaunti.",
-        "openStaffManagement": "Upravlyavaj ekipa"
+        "openStaffManagement": "Upravlyavaj ekipa",
+        "statisticsTitle": "Статистика",
+        "statisticsSubtitle": "Годишни отчети и месечно сравнение",
+        "statisticsForbidden": "Нямате достъп до статистиката. Само собственикът може да я отвори или да даде достъп от тази секция.",
+        "statistics": {
+          "openReports": "Отвори статистика",
+          "saved": "Видимостта на статистиката е обновена",
+          "saveError": "Настройката не можа да бъде запазена",
+          "ownerOnlyHint": "Статистиката е достъпна само за собственика.",
+          "visibilityLabel": "Кой може да вижда статистиката",
+          "visibilityHint": "Собственикът винаги вижда отчетите. Изберете дали да разрешите и на администратори или на целия екип.",
+          "visibilityOwner": "Само собственик",
+          "visibilityAdmin": "Собственик + администратори",
+          "visibilityAll": "Целият екип (вкл. оператори)"
+        }
       },
       "guests": {
         "title": "Клиенти — Hospira",
@@ -664,7 +679,8 @@
         "title": "New room — Hospira",
         "migrationHint": "for types and",
         "catalogRunMigration": "Стартирай миграцията",
-        "addBuildingFirst": "Първо добави"
+        "addBuildingFirst": "Първо добави",
+        "bulkCountError": "Можете да създадете между 1 и 50 стаи наведнъж."
       },
       "home": {
         "loadError": "Could not load dashboard data"
@@ -888,7 +904,12 @@
       "noRoom": "No room",
       "cancelStay": "Отмени престоя",
       "cancelRequest": "Отмени заявката",
-      "openDetails": "Open details",
+      "openDetails": "Отвори детайли",
+      "viewDetails": "Виж детайли",
+      "quickAccept": "Бързо приемане",
+      "extendHold": "Удължи hold",
+      "extendBlock": "Удължи блокировка",
+      "stayConfirmedQuick": "Престоят е потвърден",
       "duplicateAsRequest": "Duplicated as request",
       "openNewRequest": "open the new request",
       "stayExtended": "Stay extended",
@@ -1443,6 +1464,12 @@
       "startNumber": "От номер",
       "endNumber": "До номер",
       "howManyRooms": "Колко стаи",
+      "bulkNamingLegend": "Формат на имена (bulk)",
+      "bulkNamingPrefix": "Префикс + номер",
+      "bulkNamingNumbersOnly": "Само номер",
+      "bulkPreviewLabel": "Преглед",
+      "bulkConflictWarning": "Тези имена вече съществуват в сградата: {names}. Промени интервала „От номер“.",
+      "bulkAutoStartHint": "Интервалът започва автоматично след последната стая в сградата.",
       "pricePerNightRon": "Цена / нощ (RON)",
       "autoPriceHint": "0 = автоматично изчисление ({suggestedPrice} RON предложено)",
       "roomOptions": "Опции за стая",
@@ -1577,6 +1604,13 @@
       "bulkRoomsSummary": "{count} bulk стаи ({prefix}{start}…)",
       "roomNameRequired": "Името на стаята е задължително",
       "newRoomSummary": "Нова стая: {name}",
+      "bookingNotFound": "Резервацията не е намерена.",
+      "onlyNewRequests": "Само нови заявки могат да бъдат бързо потвърдени.",
+      "assignRoomsBeforeConfirm": "Разпределете стаи преди потвърждение.",
+      "confirmError": "Грешка при потвърждение",
+      "extendHoldError": "Грешка при удължаване на hold",
+      "extendBlockError": "Грешка при удължаване на блокировка",
+      "checkInOnlyOnArrivalDay": "Check-in е разрешен само в планирания ден на пристигане.",
       "holdError": "Грешка при hold",
       "blockError": "Грешка при блокиране",
       "releaseHoldError": "Грешка при освобождаване на hold",
@@ -1697,7 +1731,20 @@
       "milestoneWeekFull": "Седмица на капацитет",
       "milestoneInboxZero": "Inbox zero — без заявки",
       "configureRoomsFromSettings": "Конфигурирането на структурата и стаите става от Настройки, в административния център.",
-      "openConfiguration": "Отвори конфигурацията"
+      "openConfiguration": "Отвори конфигурацията",
+      "checkInQuest": {
+        "eyebrow": "Днешни мисии",
+        "title": "Check-in при пристигане",
+        "subtitle": "Планирано пристигане от {time} — отбелязвайте всеки гост при влизане.",
+        "progress": "{done} от {total} завършени",
+        "checkInCta": "Check-in ✓",
+        "openBooking": "Детайли",
+        "noRoom": "Без стая",
+        "checkedInTitle": "Check-in записан!",
+        "allDoneTitle": "Перфектен ден на рецепцията!",
+        "allDoneMessage": "Всички днешни пристигания са регистрирани. Браво!",
+        "noArrivalsToday": "Няма планирани пристигания днес — време за подготовка или нови заявки."
+      }
     },
     "stayEditor": {
       "checkIn": "Настаняване",

@@ -14,17 +14,12 @@ function buildHomeHref(year: number, month: number) {
   return `/admin?${buildMonthQuery(year, month)}#disponibilitate`;
 }
 
-function buildFullPanelHref(year: number, month: number) {
-  return `/admin/disponibilitate?${buildMonthQuery(year, month)}`;
-}
-
 export async function AvailabilityHomePreview({
   searchParams,
 }: {
   searchParams: AvailabilityShellSearchParams;
 }) {
   const tCommon = await getTranslations("admin.common");
-  const tDashboard = await getTranslations("admin.dashboard");
   const effectiveToday = await getEffectiveToday();
   const refDate = new Date(effectiveToday + "T00:00:00");
   const year = Number(searchParams.y) || refDate.getFullYear();
@@ -64,46 +59,47 @@ export async function AvailabilityHomePreview({
         : [];
 
   return (
-    <div className="availability-home-preview admin-home-availability-preview">
-      <div className="availability-home-preview__nav">
-        <div className="availability-home-preview__month-nav">
-          <Link
-            href={buildHomeHref(prevY, prevM)}
-            className="availability-home-preview__nav-btn"
-            aria-label={tCommon("previous")}
-          >
-            ←
-          </Link>
-          <span className="availability-home-preview__month-title capitalize">
+    <div className="availability-home-preview">
+      <div className="availability-home-preview__toolbar">
+        <div className="availability-home-preview__period">
+          <div className="availability-home-preview__arrows">
+            <Link
+              href={buildHomeHref(prevY, prevM)}
+              className="availability-home-preview__arrow"
+              aria-label={tCommon("previous")}
+            >
+              ‹
+            </Link>
+            <Link
+              href={buildHomeHref(nextY, nextM)}
+              className="availability-home-preview__arrow"
+              aria-label={tCommon("next")}
+            >
+              ›
+            </Link>
+          </div>
+          <span className="availability-home-preview__month capitalize">
             {dashboard.title}
           </span>
-          <Link
-            href={buildHomeHref(nextY, nextM)}
-            className="availability-home-preview__nav-btn"
-            aria-label={tCommon("next")}
-          >
-            →
-          </Link>
         </div>
-        <p className="availability-home-preview__rooms">
+        <span className="availability-home-preview__rooms-pill">
           <strong>{dashboard.total_rooms}</strong> {tCommon("rooms")}
-        </p>
+        </span>
       </div>
 
-      <AvailabilityMonthGridReadonly dashboard={dashboard} today={effectiveToday} />
-
-      <AvailabilityWeekendsPanel
-        weekends={weekends}
-        nextSaturdayIso={dashboard.next_weekend?.saturday_iso ?? null}
-        accentColor={null}
-        readOnly
-      />
-
-      <p className="availability-home-preview__footer">
-        <Link href={buildFullPanelHref(year, month)} className="availability-home-preview__full-link">
-          {tDashboard("openFullAvailability")} →
-        </Link>
-      </p>
+      <div className="availability-home-preview__body">
+        <div className="availability-home-preview__calendar">
+          <AvailabilityMonthGridReadonly dashboard={dashboard} today={effectiveToday} />
+        </div>
+        <div className="availability-home-preview__weekends">
+          <AvailabilityWeekendsPanel
+            weekends={weekends}
+            nextSaturdayIso={dashboard.next_weekend?.saturday_iso ?? null}
+            accentColor={null}
+            readOnly
+          />
+        </div>
+      </div>
     </div>
   );
 }

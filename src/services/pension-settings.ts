@@ -3,6 +3,11 @@ import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantScope } from "@/lib/tenant/scope";
+import {
+  DEFAULT_STATISTICS_VISIBILITY,
+  parseStatisticsVisibility,
+  type StatisticsVisibility,
+} from "@/domain/settings/statistics-visibility";
 import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
 
@@ -15,6 +20,7 @@ export type PensionSettings = {
   admin_palette_source: "catalog";
   admin_palette_key: ThemeId;
   admin_day_night: ThemeMode;
+  statistics_visibility: StatisticsVisibility;
 };
 
 function parseDayNight(raw: unknown): ThemeMode {
@@ -27,7 +33,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
   const { data, error } = await supabase
     .from("pension_settings")
     .select(
-      "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night"
+      "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night, statistics_visibility"
     )
     .eq("tenant_id", tenantId)
     .maybeSingle();
@@ -48,6 +54,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
         : "default"
     ),
     admin_day_night: parseDayNight(data.admin_day_night),
+    statistics_visibility: parseStatisticsVisibility(data.statistics_visibility),
   };
 }
 
@@ -103,4 +110,22 @@ export async function updatePensionSettings(
     .eq("id", id);
 
   if (error) throw new Error(error.message);
+}
+
+export async function updateStatisticsVisibility(
+  visibility: StatisticsVisibility
+): Promise<void> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { error } = await supabase
+    .from("pension_settings")
+    .update({ statistics_visibility: visibility })
+    .eq("tenant_id", tenantId);
+
+  if (error) throw new Error(error.message);
+}
+
+export function pensionStatisticsVisibility(
+  settings: PensionSettings | null
+): StatisticsVisibility {
+  return settings?.statistics_visibility ?? DEFAULT_STATISTICS_VISIBILITY;
 }

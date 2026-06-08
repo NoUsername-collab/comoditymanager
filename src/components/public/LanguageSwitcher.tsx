@@ -59,7 +59,7 @@ type MenuPos = { top: number; left: number };
 
 const MENU_ESTIMATE = { width: 52, height: 132 };
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
@@ -167,7 +167,7 @@ export function LanguageSwitcher() {
     ) : null;
 
   return (
-    <div className="language-switcher relative">
+    <div className={["language-switcher relative", compact && "language-switcher--compact"].filter(Boolean).join(" ")}>
       <button
         ref={triggerRef}
         type="button"
@@ -175,7 +175,10 @@ export function LanguageSwitcher() {
         aria-haspopup="listbox"
         aria-label={tCommon("language")}
         onClick={() => setOpen((wasOpen) => !wasOpen)}
-        className="language-switcher__trigger cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] px-2 py-1 text-base leading-none flex items-center"
+        className={[
+          "language-switcher__trigger cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] leading-none flex items-center",
+          compact ? "language-switcher__trigger--compact px-1.5 py-0.5" : "px-2 py-1 text-base",
+        ].join(" ")}
       >
         <Flag code={locale} />
       </button>

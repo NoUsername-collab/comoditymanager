@@ -8,6 +8,7 @@ import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
+import { GANTT_STAY_H, GANTT_STAY_TOP } from "@/domain/gantt/layout";
 
 type Props = {
   href: string;
@@ -100,7 +101,7 @@ export function GanttBookingBar({
   const className = [
     ganttStayChromeClass(),
     "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
-    interactive ? "z-[1] h-[30px] w-full" : "absolute top-2 z-[1] max-w-full",
+    interactive ? "z-[1] w-full" : "absolute z-[1] max-w-full",
     isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
     occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
     occupancyPhase === "active" && "gantt-stay--phase-active",
@@ -119,13 +120,14 @@ export function GanttBookingBar({
   const style = {
     ...semanticStayVars(isCerere, occupancyPhase),
     borderRadius: ganttStaySlantRadius(continuesBefore, continuesAfter),
+    height: GANTT_STAY_H,
+    ...(!interactive ? { top: GANTT_STAY_TOP } : {}),
     ...(interactive
-      ? { left: 0, width: "100%", height: 30 }
+      ? { left: 0, width: "100%" }
       : {
           left: `${leftPct}%`,
           width: `${widthPct}%`,
           maxWidth: `${100 - leftPct}%`,
-          height: 30,
         }),
   } as CSSProperties;
 

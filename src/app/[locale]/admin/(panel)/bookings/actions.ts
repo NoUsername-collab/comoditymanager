@@ -133,6 +133,9 @@ function mapBookingOpsError(
     if (e.message === "guest.phone_required") {
       return t("phoneRequired");
     }
+    if (e.message === "booking.checkin_only_on_arrival_day") {
+      return t("checkInOnlyOnArrivalDay");
+    }
   }
   return e instanceof Error ? e.message : t("checkInError");
 }

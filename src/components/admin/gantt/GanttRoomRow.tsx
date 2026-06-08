@@ -158,7 +158,7 @@ export function GanttRoomRow({
         .join(" ")}
     >
       <td
-        className="gantt-room-cell sticky left-0 z-10 px-1.5 py-[0.25rem] align-middle"
+        className="gantt-room-cell sticky left-0 z-10 px-1.5 py-[0.21rem] align-middle"
         style={{ "--marker-color": sidebarMarkerColor } as CSSProperties}
       >
         <div className="gantt-room-cell__row">
@@ -296,6 +296,7 @@ export function GanttRoomRow({
                 todayHighlight={todayHl}
                 initials={initials}
                 occupancyPhase={phase}
+                roomIds={b.room_ids ?? []}
                 guestId={b.guest_id}
                 sourceRoomId={room.id}
                 canVerticalMove={canMoveRoom}
@@ -314,6 +315,7 @@ export function GanttRoomRow({
                   label: ganttLabel,
                   checkIn: seg.checkIn,
                   checkOut: seg.checkOut,
+                  bookingCheckIn: b.check_in,
                   status: b.status as "cerere_noua" | "confirmata",
                   actualCheckInAt: b.actual_check_in_at,
                   actualCheckOutAt: b.actual_check_out_at,

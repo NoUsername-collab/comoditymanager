@@ -13,7 +13,11 @@ import {
 } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
-import { updatePensionSettings } from "@/services/pension-settings";
+import {
+  updatePensionSettings,
+  updateStatisticsVisibility,
+} from "@/services/pension-settings";
+import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibility";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
@@ -93,6 +97,39 @@ export async function updateAppearanceSettingsAction(formData: FormData) {
   revalidatePath("/admin/settings");
   revalidatePath("/");
   await redirect("/admin/settings?saved=1");
+}
+
+export async function updateStatisticsVisibilityAction(
+  formData: FormData
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("admin.serverActions");
+  const { memberRole } = await requireStaff();
+  if (memberRole !== "owner") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  const visibility = parseStatisticsVisibility(
+    String(formData.get("statistics_visibility") ?? "owner")
+  );
+
+  try {
+    await updateStatisticsVisibility(visibility);
+    await logAdminActivityFromSession({
+      action: "settings.updated",
+      entityType: "settings",
+      summary: `Statistici vizibile: ${visibility}`,
+      metadata: { statistics_visibility: visibility },
+    });
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidatePath("/admin/settings");
+    revalidatePath("/admin/statistics");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
 }
 
 export async function updateOperationalSettingsAction(formData: FormData) {

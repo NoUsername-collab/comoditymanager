@@ -1,7 +1,7 @@
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttStayPopoverData } from "@/components/admin/gantt/GanttStayPopover";
-import type { OccupancySegment } from "@/domain/occupancy/types";
+import type { OccupancyPhase, OccupancySegment } from "@/domain/occupancy/types";
 
 export type GanttContextMenuPoint = {
   clientX: number;
@@ -26,6 +26,9 @@ export type GanttStayTarget = GanttContextMenuPoint & {
   guestId: string | null;
   guestName: string;
   status: "cerere_noua" | "confirmata";
+  occupancyPhase: OccupancyPhase;
+  today: string;
+  roomIds: string[];
   actualCheckInAt: string | null;
   actualCheckOutAt: string | null;
   plannedCheckIn: string;

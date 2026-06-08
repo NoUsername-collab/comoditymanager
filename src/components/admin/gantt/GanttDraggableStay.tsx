@@ -32,7 +32,7 @@ import {
   GanttStayPopover,
   type GanttStayPopoverData,
 } from "./GanttStayPopover";
-import { addDays } from "@/lib/stay-dates";
+import { addDays, todayIso } from "@/lib/stay-dates";
 import { dayIndexFromPointerX } from "@/domain/gantt/drag-create";
 
 const DRAG_BLOCK_SELECTOR = [
@@ -80,6 +80,7 @@ type Props = {
   actualCheckInAt?: string | null;
   actualCheckOutAt?: string | null;
   occupancyPhase?: OccupancyPhase;
+  roomIds?: string[];
   guestId?: string | null;
   moveRoomDraft?: MoveRoomDraft | null;
   sourceRoomId?: string;
@@ -103,7 +104,8 @@ export function GanttDraggableStay({
   popover,
   actualCheckInAt = null,
   actualCheckOutAt = null,
-  occupancyPhase,
+  occupancyPhase = "active",
+  roomIds = [],
   guestId,
   moveRoomDraft,
   sourceRoomId = "",
@@ -165,9 +167,12 @@ export function GanttDraggableStay({
         guestId: guestId ?? null,
         guestName: popover.guestName,
         status: popover.status,
+        occupancyPhase,
+        today: today ?? todayIso(),
+        roomIds,
         actualCheckInAt,
         actualCheckOutAt,
-        plannedCheckIn: popover.checkIn,
+        plannedCheckIn: bookingCheckIn,
         plannedCheckOut: popover.checkOut,
         canMoveRoom: !!popover.canMoveRoom && !!moveRoomDraft,
         moveRoomDraft: moveRoomDraft ?? null,
@@ -180,8 +185,12 @@ export function GanttDraggableStay({
     [
       openMenu,
       bookingId,
+      bookingCheckIn,
       guestId,
       popover,
+      occupancyPhase,
+      today,
+      roomIds,
       actualCheckInAt,
       actualCheckOutAt,
       moveRoomDraft,
@@ -431,7 +440,7 @@ export function GanttDraggableStay({
         data-gantt-block-interaction=""
         data-gantt-stay=""
         className={[
-          "gantt-draggable-stay pointer-events-auto absolute top-2 z-[1] flex min-w-0 items-stretch",
+          "gantt-draggable-stay pointer-events-auto absolute z-[1] flex min-w-0 items-stretch",
           dragging && "cursor-grabbing",
           dragging && "gantt-draggable-stay--dragging",
           dragging && !verticalMode && "z-[20]",

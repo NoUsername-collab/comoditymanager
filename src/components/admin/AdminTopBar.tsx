@@ -1,6 +1,5 @@
 import { Link } from "@/i18n/navigation";
 import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
-import { AdminLiveRefresh } from "@/components/admin/AdminLiveRefresh";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { AdminPlanBadge } from "@/components/admin/AdminPlanBadge";
 import { HudIconGear, HudIconGlobe } from "@/components/admin/AdminHudIcons";
@@ -30,6 +29,7 @@ export async function AdminTopBar({
   simDays?: number;
 }) {
   const t = await getTranslations("admin.shell");
+  const tCommon = await getTranslations("common");
 
   let pensionName = t("brandFallback");
   try {
@@ -60,27 +60,6 @@ export async function AdminTopBar({
           <AdminDayNightSwitch />
           <AdminVersionBadge />
           <AdminGearMenu>
-            <div className="admin-gear__item" role="menuitem">
-              <AdminLiveRefresh />
-            </div>
-            {isAdmin && (
-              <div className="admin-gear__item" role="menuitem">
-                <SimTriggerChip simActive={simActive} simDate={simDate} simDays={simDays} />
-              </div>
-            )}
-            <div className="admin-gear__sep" />
-            <Link
-              href="/calendar"
-              className="admin-gear__item admin-gear__item--link"
-              role="menuitem"
-            >
-              <HudIconGlobe className="admin-gear__item-icon" />
-              <span>{t("publicSite")}</span>
-            </Link>
-            <div className="admin-gear__item" role="menuitem">
-              <LanguageSwitcher />
-            </div>
-            <div className="admin-gear__sep" />
             <Link
               href="/admin/settings"
               className="admin-gear__item admin-gear__item--link"
@@ -89,8 +68,31 @@ export async function AdminTopBar({
               <HudIconGear className="admin-gear__item-icon" />
               <span>{t("settings")}</span>
             </Link>
-            <div className="admin-gear__item" role="menuitem">
+            <Link
+              href="/calendar"
+              className="admin-gear__item admin-gear__item--link"
+              role="menuitem"
+            >
+              <HudIconGlobe className="admin-gear__item-icon" />
+              <span>{t("publicSite")}</span>
+            </Link>
+            <div className="admin-gear__item admin-gear__item--logout" role="menuitem">
               <LogoutButton />
+            </div>
+            <div className="admin-gear__sep" />
+            <div className="admin-gear__footer">
+              <div className="admin-gear__footer-lang">
+                <span className="admin-gear__footer-label">{tCommon("language")}</span>
+                <LanguageSwitcher compact />
+              </div>
+              {isAdmin ? (
+                <SimTriggerChip
+                  compact
+                  simActive={simActive}
+                  simDate={simDate}
+                  simDays={simDays}
+                />
+              ) : null}
             </div>
           </AdminGearMenu>
         </div>

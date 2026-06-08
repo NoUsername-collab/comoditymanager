@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { guestInitials } from "@/domain/guest-name";
 import { formatGuestPartyDetail } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { todayIso } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
@@ -17,6 +18,8 @@ export type GanttStayPopoverData = {
   label: string;
   checkIn: string;
   checkOut: string;
+  /** Data reală de sosire a rezervării (nu segmentul vizibil pe timeline). */
+  bookingCheckIn?: string;
   status: "cerere_noua" | "confirmata";
   actualCheckInAt?: string | null;
   actualCheckOutAt?: string | null;
@@ -66,8 +69,14 @@ export function GanttStayPopover({
   const isCerere = data.status === "cerere_noua";
   const stripe = data.buildingColor ?? (isCerere ? "#d97706" : "#059669");
   const initials = guestInitials(null, null, data.guestName);
-  const isCheckInToday =
-    !isCerere && data.checkIn === effectiveToday;
+  const arrivalDate = data.bookingCheckIn ?? data.checkIn;
+  const isCheckInToday = canOfferOperativeCheckIn({
+    status: data.status,
+    plannedCheckIn: arrivalDate,
+    today: effectiveToday,
+    actualCheckInAt: data.actualCheckInAt,
+    actualCheckOutAt: data.actualCheckOutAt,
+  });
   const roomsLabel =
     data.roomNames && data.roomNames.length > 0
       ? data.roomNames.join(", ")

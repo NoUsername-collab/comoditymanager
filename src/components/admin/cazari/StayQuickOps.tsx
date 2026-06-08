@@ -6,7 +6,9 @@ import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
+import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
+import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -54,7 +56,13 @@ export function StayQuickOps({
   const isConfirmed = bookingStatus === "confirmata";
   const hasPhone = isValidGuestPhone(guestPhone);
   const canCheckIn =
-    isConfirmed && !actualCheckInAt && !actualCheckOutAt && hasPhone;
+    canOfferOperativeCheckIn({
+      status: bookingStatus,
+      plannedCheckIn,
+      today: todayIso(),
+      actualCheckInAt,
+      actualCheckOutAt,
+    }) && hasPhone;
   const canCheckOut = isConfirmed && !!actualCheckInAt && !actualCheckOutAt;
   const canEditCheckIn = isConfirmed && !!actualCheckInAt;
   const canEditCheckOut = isConfirmed && !!actualCheckOutAt;

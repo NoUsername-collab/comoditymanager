@@ -14,6 +14,9 @@ import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton
 import { AdminLocationUnlockForm, AdminLocationLockButton } from "@/components/admin/settings/AdminLocationUnlockForm";
 import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
 import { CheckinSettingsPanel } from "@/components/admin/checkin/CheckinSettingsPanel";
+import { StatisticsSettingsPanel } from "@/components/admin/settings/StatisticsSettingsPanel";
+import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
+import { pensionStatisticsVisibility } from "@/services/pension-settings";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { isLocationConfigurationAccessible } from "@/lib/auth/location-unlock";
@@ -27,6 +30,7 @@ export default async function SettingsPage({
     saved?: string;
     location?: string;
     section?: string;
+    statistics?: string;
   }>;
 }) {
   const t = await getTranslations("admin.pages.settings");
@@ -43,6 +47,9 @@ export default async function SettingsPage({
   } catch (e) {
     error = e instanceof Error ? e.message : t("genericError");
   }
+
+  const statisticsVisibility = pensionStatisticsVisibility(settings);
+  const statisticsAccess = canAccessStatistics(memberRole, statisticsVisibility);
 
   const checkinSettings = await getCheckinSettings().catch(
     () => DEFAULT_CHECKIN_SETTINGS,
@@ -80,6 +87,12 @@ export default async function SettingsPage({
         </p>
       )}
 
+      {params.statistics === "forbidden" && (
+        <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          {t("statisticsForbidden")}
+        </p>
+      )}
+
       {error && <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p>}
 
       {!settings && !error && <p className="text-zinc-500">{t("notConfigured")}</p>}
@@ -114,6 +127,21 @@ export default async function SettingsPage({
               </span>
             </div>
           </div>
+
+          {(isOwner || statisticsAccess) && (
+            <SettingsSlidePanel
+              title={t("statisticsTitle")}
+              subtitle={t("statisticsSubtitle")}
+              icon="*"
+              defaultOpen={params.section === "statistics"}
+            >
+              <StatisticsSettingsPanel
+                visibility={statisticsVisibility}
+                canConfigure={isOwner}
+                canAccess={statisticsAccess}
+              />
+            </SettingsSlidePanel>
+          )}
 
           <SettingsSlidePanel title={t("fxTitle")} subtitle={t("fxSubtitle")} icon="*" defaultOpen>
             <AdminFxSettings />

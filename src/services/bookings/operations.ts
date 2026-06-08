@@ -4,6 +4,7 @@ import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin
 import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
+import { operativeCheckInDateFromAt } from "@/domain/booking/operative-checkin";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -128,6 +129,11 @@ export async function setBookingCheckIn(
   }
   if (booking.actual_check_out_at) {
     throw new Error("booking.checkin_after_checkout_not_allowed");
+  }
+
+  const opDate = operativeCheckInDateFromAt(at);
+  if (opDate !== booking.check_in) {
+    throw new Error("booking.checkin_only_on_arrival_day");
   }
 
   const ts = parseOperationalTimestamp(at);

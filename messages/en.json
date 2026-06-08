@@ -335,7 +335,8 @@
       "confirmUndoCheckOut": "Undo the recorded check-out?",
       "undoCheckInSuccess": "Check-in undone",
       "undoCheckOutSuccess": "Check-out undone",
-      "phoneRequiredForCheckIn": "Check-in blocked: add a phone number on the booking or guest profile."
+      "phoneRequiredForCheckIn": "Check-in blocked: add a phone number on the booking or guest profile.",
+      "checkInOnlyOnArrivalDay": "Check-in is only available on the arrival date ({date})."
     },
     "layout": {
       "pendingCount": "{count, plural, one {# new request} other {# new requests}}",
@@ -448,7 +449,21 @@
         "domainsTitle": "Domains & site",
         "domainsSubtitle": "Hospira subdomain and custom domain",
         "domainsPanelInfo": "Choose how guests see your property online.",
-        "openDomainsManagement": "Manage domains"
+        "openDomainsManagement": "Manage domains",
+        "statisticsTitle": "Statistics",
+        "statisticsSubtitle": "Annual reports and monthly comparison",
+        "statisticsForbidden": "You do not have access to statistics. Only the owner can open them or grant access in this section.",
+        "statistics": {
+          "openReports": "Open statistics",
+          "saved": "Statistics visibility updated",
+          "saveError": "Could not save setting",
+          "ownerOnlyHint": "Statistics are only available to the owner.",
+          "visibilityLabel": "Who can view statistics",
+          "visibilityHint": "The owner always sees reports. Choose whether to also allow admins or all staff.",
+          "visibilityOwner": "Owner only",
+          "visibilityAdmin": "Owner + admins",
+          "visibilityAll": "All staff (including operators)"
+        }
       },
       "guests": {
         "title": "Guests — Hospira",
@@ -716,7 +731,8 @@
       "roomsNew": {
         "title": "New room — Hospira",
         "migrationHint": "for types and",
-        "catalogHint": "Run <code>015_room_catalog.sql</code> in Supabase SQL Editor for types and"
+        "catalogHint": "Run <code>015_room_catalog.sql</code> in Supabase SQL Editor for types and",
+        "bulkCountError": "You can create between 1 and 50 rooms at once."
       },
       "home": {
         "loadError": "Could not load dashboard data"
@@ -956,6 +972,11 @@
       "cancelStay": "Cancel stay",
       "cancelRequest": "Cancel request",
       "openDetails": "Open details",
+      "viewDetails": "View details",
+      "quickAccept": "Quick accept",
+      "extendHold": "Extend hold",
+      "extendBlock": "Extend block",
+      "stayConfirmedQuick": "Stay confirmed",
       "duplicateAsRequest": "Duplicated as request",
       "openNewRequest": "open the new request",
       "stayExtended": "Stay extended",
@@ -1527,6 +1548,8 @@
       "bulkNamingPrefix": "Prefix + number (e.g. Room 6)",
       "bulkNamingNumbersOnly": "Number only (e.g. 6, 7, 8 …)",
       "bulkPreviewLabel": "Preview",
+      "bulkConflictWarning": "These names already exist in this building: {names}. Change the “From no.” range.",
+      "bulkAutoStartHint": "The range starts automatically after the last room in this building.",
       "pricePerNightRon": "Price / night (RON)",
       "autoPriceHint": "0 = auto-calculate ({suggestedPrice} RON suggested)",
       "roomOptions": "Room options",
@@ -1664,6 +1687,13 @@
       "buildingDeleteHasBookings": "Some rooms have linked bookings. You cannot delete the building — delete rooms without history and use Deactivate for the rest.",
       "roomNameRequired": "Room name is required",
       "newRoomSummary": "New room: {name}",
+      "bookingNotFound": "Booking not found.",
+      "onlyNewRequests": "Only new requests can be quick-confirmed.",
+      "assignRoomsBeforeConfirm": "Assign rooms before confirming.",
+      "confirmError": "Confirmation error",
+      "extendHoldError": "Error extending hold",
+      "extendBlockError": "Error extending block",
+      "checkInOnlyOnArrivalDay": "Check-in is only allowed on the planned arrival date.",
       "holdError": "Hold error",
       "blockError": "Block error",
       "releaseHoldError": "Release hold error",
@@ -1787,7 +1817,20 @@
       "milestoneWeekFull": "Week at capacity",
       "milestoneInboxZero": "Inbox zero — no requests",
       "configureRoomsFromSettings": "Configure structure and rooms from Settings, in the administration center.",
-      "openConfiguration": "Open configuration"
+      "openConfiguration": "Open configuration",
+      "checkInQuest": {
+        "eyebrow": "Today's quests",
+        "title": "Arrival check-ins",
+        "subtitle": "Planned arrival from {time} — mark each guest when they arrive.",
+        "progress": "{done} of {total} done",
+        "checkInCta": "Check in ✓",
+        "openBooking": "Details",
+        "noRoom": "No room",
+        "checkedInTitle": "Check-in recorded!",
+        "allDoneTitle": "Perfect reception day!",
+        "allDoneMessage": "All of today's arrivals are checked in. Well done!",
+        "noArrivalsToday": "No arrivals scheduled today — time to prep or catch up on requests."
+      }
     },
     "stayEditor": {
       "checkIn": "Check-in",

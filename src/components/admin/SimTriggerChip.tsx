@@ -22,10 +22,13 @@ export function SimTriggerChip({
   simActive,
   simDate,
   simDays,
+  compact = false,
 }: {
   simActive: boolean;
   simDate?: string | null;
   simDays?: number;
+  /** Meniu gear — pill compact în footer */
+  compact?: boolean;
 }) {
   const t = useTranslations("admin.simulation");
   const [isPending, startTransition] = useTransition();
@@ -87,10 +90,10 @@ export function SimTriggerChip({
   /* ── INACTIVE: show start button ── */
   if (!simActive) {
     return (
-      <div className="sim-trigger-wrap">
+      <div className={["sim-trigger-wrap", compact && "sim-trigger-wrap--compact"].filter(Boolean).join(" ")}>
         <button
           type="button"
-          className="sim-trigger-chip"
+          className={["sim-trigger-chip", compact && "sim-trigger-chip--compact"].filter(Boolean).join(" ")}
           onClick={handleStart}
           disabled={isPending}
           title={t("startSim")}
@@ -120,17 +123,19 @@ export function SimTriggerChip({
 
   /* ── ACTIVE: danger bar with controls ── */
   return (
-    <div className="sim-trigger-wrap">
-      <div className="sim-active-bar">
-        <div className="sim-active-bar__indicator">
-          <span className="sim-active-bar__dot" />
-          <span className="sim-active-bar__label">SIM</span>
-        </div>
+    <div className={["sim-trigger-wrap", compact && "sim-trigger-wrap--compact"].filter(Boolean).join(" ")}>
+      <div className={["sim-active-bar", compact && "sim-active-bar--compact"].filter(Boolean).join(" ")}>
+        <div className="sim-active-bar__head">
+          <div className="sim-active-bar__indicator">
+            <span className="sim-active-bar__dot" />
+            <span className="sim-active-bar__label">SIM</span>
+          </div>
 
-        <span className="sim-active-bar__date">{simDate ?? "—"}</span>
-        {typeof simDays === "number" && simDays > 0 && (
-          <span className="sim-active-bar__days">+{simDays}d</span>
-        )}
+          <span className="sim-active-bar__date">{simDate ?? "—"}</span>
+          {typeof simDays === "number" && simDays > 0 && (
+            <span className="sim-active-bar__days">+{simDays}d</span>
+          )}
+        </div>
 
         <div className="sim-active-bar__controls">
           {/* Fixed-step advances */}

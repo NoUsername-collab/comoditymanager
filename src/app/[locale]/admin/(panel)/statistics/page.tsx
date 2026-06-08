@@ -6,6 +6,13 @@ import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
 import { StatisticsBarChart } from "@/components/admin/statistics/StatisticsBarChart";
 import { StatisticsYearNav } from "@/components/admin/statistics/StatisticsYearNav";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
+import { requireStaff } from "@/lib/auth/require-staff";
+import {
+  getPensionSettings,
+  pensionStatisticsVisibility,
+} from "@/services/pension-settings";
 import { getLocale, getTranslations } from "next-intl/server";
 
 function formatRon(n: number, locale: string): string {
@@ -25,6 +32,13 @@ export default async function AdminStatisticsPage({
   const locale = await getLocale();
   const tPages = await getTranslations("admin.pages.statistics");
   const tCommon = await getTranslations("admin.common");
+  const { memberRole } = await requireStaff();
+  const pension = await getPensionSettings().catch(() => null);
+  const visibility = pensionStatisticsVisibility(pension);
+  if (!canAccessStatistics(memberRole, visibility)) {
+    await redirect("/admin/settings?statistics=forbidden");
+  }
+
   const params = await searchParams;
   let report: Awaited<ReturnType<typeof loadStatisticsReport>> | null = null;
   let monthCompare: Awaited<ReturnType<typeof loadMonthComparison>> | null = null;

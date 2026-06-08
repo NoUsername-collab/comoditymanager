@@ -3,6 +3,7 @@ import {
   getTenantScope,
   withTenantId,
 } from "@/lib/tenant/scope";
+import { addDays } from "@/lib/stay-dates";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
 export type RoomHoldRow = {
@@ -136,4 +137,33 @@ export async function releaseExpiredRoomHolds(asOfIso?: string): Promise<number>
 
   if (error) throw new Error(error.message);
   return data?.length ?? 0;
+}
+
+export async function extendRoomHoldOneNight(holdId: string): Promise<string> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data: hold, error: fetchErr } = await supabase
+    .from("room_holds")
+    .select("id, room_id, check_in, check_out")
+    .eq("tenant_id", tenantId)
+    .eq("id", holdId)
+    .is("released_at", null)
+    .maybeSingle();
+  if (fetchErr) throw new Error(fetchErr.message);
+  if (!hold) throw new Error("room_holds.not_found");
+
+  const newCheckOut = addDays(hold.check_out as string, 1);
+  await assertRoomsAvailableForOccupancy(
+    hold.check_out as string,
+    newCheckOut,
+    [hold.room_id as string]
+  );
+
+  const { error } = await supabase
+    .from("room_holds")
+    .update({ check_out: newCheckOut })
+    .eq("tenant_id", tenantId)
+    .eq("id", holdId);
+
+  if (error) throw new Error(error.message);
+  return newCheckOut;
 }

@@ -335,7 +335,8 @@
       "confirmUndoCheckOut": "Anulezi check-out-ul înregistrat?",
       "undoCheckInSuccess": "Check-in anulat",
       "undoCheckOutSuccess": "Check-out anulat",
-      "phoneRequiredForCheckIn": "Check-in blocat: completează telefonul pe rezervare sau în profilul clientului."
+      "phoneRequiredForCheckIn": "Check-in blocat: completează telefonul pe rezervare sau în profilul clientului.",
+      "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua sosirii ({date})."
     },
     "layout": {
       "pendingCount": "{count, plural, one {# new request} other {# new requests}}",
@@ -448,7 +449,21 @@
         "domainsTitle": "Domenii & site",
         "domainsSubtitle": "Subdomeniu Hospira si domeniu propriu",
         "domainsPanelInfo": "Alege cum vede clientii pensiunea: site complet, doar public, sau doar homepage.",
-        "openDomainsManagement": "Gestioneaza domeniile"
+        "openDomainsManagement": "Gestioneaza domeniile",
+        "statisticsTitle": "Statistici",
+        "statisticsSubtitle": "Rapoarte anuale și comparativ lunar",
+        "statisticsForbidden": "Nu ai acces la statistici. Doar proprietarul le poate deschide sau le poate delega din această secțiune.",
+        "statistics": {
+          "openReports": "Deschide statistici",
+          "saved": "Vizibilitate statistici actualizată",
+          "saveError": "Nu s-a putut salva setarea",
+          "ownerOnlyHint": "Statisticile sunt disponibile doar proprietarului.",
+          "visibilityLabel": "Cine poate vedea statisticile",
+          "visibilityHint": "Proprietarul vede mereu rapoartele. Alege dacă le deschizi și pentru admini sau pentru tot stafful.",
+          "visibilityOwner": "Doar proprietar",
+          "visibilityAdmin": "Proprietar + admini",
+          "visibilityAll": "Tot stafful (inclusiv operatori)"
+        }
       },
       "guests": {
         "title": "Clienți — Hospira",
@@ -716,7 +731,8 @@
       "roomsNew": {
         "title": "Cameră nouă — Hospira",
         "migrationHint": "pentru tipuri și",
-        "catalogHint": "Rulează <code>015_room_catalog.sql</code> în Supabase SQL Editor pentru tipuri și"
+        "catalogHint": "Rulează <code>015_room_catalog.sql</code> în Supabase SQL Editor pentru tipuri și",
+        "bulkCountError": "Poți crea între 1 și 50 de camere dintr-o dată."
       },
       "home": {
         "loadError": "Nu s-au putut încărca datele"
@@ -956,6 +972,11 @@
       "cancelStay": "Anulează cazarea",
       "cancelRequest": "Anulează cererea",
       "openDetails": "Deschide detalii",
+      "viewDetails": "Vezi detalii",
+      "quickAccept": "Acceptă rapid",
+      "extendHold": "Extinde hold",
+      "extendBlock": "Extinde blocare",
+      "stayConfirmedQuick": "Cazare confirmată",
       "duplicateAsRequest": "Duplicat ca cerere",
       "openNewRequest": "deschide cererea nouă",
       "stayExtended": "Sejur prelungit",
@@ -1526,6 +1547,8 @@
       "bulkNamingPrefix": "Prefix + număr (ex. Camera 6)",
       "bulkNamingNumbersOnly": "Doar număr (ex. 6, 7, 8 …)",
       "bulkPreviewLabel": "Previzualizare",
+      "bulkConflictWarning": "Aceste nume există deja în clădire: {names}. Schimbă intervalul „De la nr.”",
+      "bulkAutoStartHint": "Intervalul pornește automat după ultima cameră din clădire.",
       "pricePerNightRon": "Preț / noapte (RON)",
       "autoPriceHint": "0 = calculează automat ({suggestedPrice} RON sugerat)",
       "roomOptions": "Opțiuni cameră",
@@ -1666,6 +1689,13 @@
       "buildingDeleteHasBookings": "Unele camere au rezervări legate. Nu poți șterge clădirea — șterge camerele fără istoric și folosește Dezactivează pentru restul.",
       "roomNameRequired": "Numele camerei e obligatoriu",
       "newRoomSummary": "Cameră nouă: {name}",
+      "bookingNotFound": "Rezervarea nu a fost găsită.",
+      "onlyNewRequests": "Doar cererile noi pot fi confirmate rapid.",
+      "assignRoomsBeforeConfirm": "Alocă camere înainte de confirmare.",
+      "confirmError": "Eroare la confirmare",
+      "extendHoldError": "Eroare la extindere hold",
+      "extendBlockError": "Eroare la extindere blocare",
+      "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua planificată de sosire.",
       "holdError": "Eroare la hold",
       "blockError": "Eroare la blocare",
       "releaseHoldError": "Eroare la eliberare hold",
@@ -1789,7 +1819,20 @@
       "milestoneWeekFull": "Săptămână la capacitate",
       "milestoneInboxZero": "Inbox zero — fără cereri",
       "configureRoomsFromSettings": "Configurarea structurii și a camerelor se face din Setări, în centrul de administrare.",
-      "openConfiguration": "Deschide configurarea"
+      "openConfiguration": "Deschide configurarea",
+      "checkInQuest": {
+        "eyebrow": "Misiuni azi",
+        "title": "Check-in sosiri",
+        "subtitle": "Sosire planificată de la {time} — bifează fiecare oaspete când intră.",
+        "progress": "{done} din {total} finalizate",
+        "checkInCta": "Check-in ✓",
+        "openBooking": "Detalii",
+        "noRoom": "Fără cameră",
+        "checkedInTitle": "Check-in înregistrat!",
+        "allDoneTitle": "Zi perfectă la recepție!",
+        "allDoneMessage": "Toate sosirile de azi sunt înregistrate. Bravo!",
+        "noArrivalsToday": "Nicio sosire programată azi — poți relaxa sau pregăti viitoarele cereri."
+      }
     },
     "stayEditor": {
       "checkIn": "Check-in",

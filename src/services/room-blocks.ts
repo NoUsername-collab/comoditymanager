@@ -3,6 +3,7 @@ import {
   getTenantScope,
   withTenantId,
 } from "@/lib/tenant/scope";
+import { addDays } from "@/lib/stay-dates";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 
 async function requireRoomInTenant(roomId: string) {
@@ -64,4 +65,32 @@ export async function deleteRoomBlock(blockId: string): Promise<void> {
     .eq("tenant_id", tenantId)
     .eq("id", blockId);
   if (error) throw new Error(error.message);
+}
+
+export async function extendRoomBlockOneNight(blockId: string): Promise<string> {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data: block, error: fetchErr } = await supabase
+    .from("room_blocks")
+    .select("id, room_id, check_in, check_out")
+    .eq("tenant_id", tenantId)
+    .eq("id", blockId)
+    .maybeSingle();
+  if (fetchErr) throw new Error(fetchErr.message);
+  if (!block) throw new Error("room_blocks.not_found");
+
+  const newCheckOut = addDays(block.check_out as string, 1);
+  await assertRoomsAvailableForOccupancy(
+    block.check_out as string,
+    newCheckOut,
+    [block.room_id as string]
+  );
+
+  const { error } = await supabase
+    .from("room_blocks")
+    .update({ check_out: newCheckOut })
+    .eq("tenant_id", tenantId)
+    .eq("id", blockId);
+
+  if (error) throw new Error(error.message);
+  return newCheckOut;
 }

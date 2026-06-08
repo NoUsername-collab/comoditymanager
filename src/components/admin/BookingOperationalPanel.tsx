@@ -13,7 +13,9 @@ import {
   undoBookingCheckOutAction,
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
+import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
+import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -45,7 +47,19 @@ export function BookingOperationalPanel({
     null
   );
   const hasPhone = isValidGuestPhone(guestPhone);
-  const checkInBlockedTitle = !hasPhone ? t("phoneRequiredForCheckIn") : "";
+  const today = todayIso();
+  const canCheckIn = canOfferOperativeCheckIn({
+    status: "confirmata",
+    plannedCheckIn,
+    today,
+    actualCheckInAt,
+    actualCheckOutAt,
+  });
+  const checkInBlockedTitle = !hasPhone
+    ? t("phoneRequiredForCheckIn")
+    : !canCheckIn
+      ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
+      : "";
 
   function undoCheckIn() {
     if (!confirm(t("confirmUndoCheckIn"))) return;
@@ -105,7 +119,7 @@ export function BookingOperationalPanel({
 
       {/* ── Action buttons ─────────────────────────────────── */}
       <div className="bd-ops__actions">
-        {!actualCheckInAt && (
+        {canCheckIn && (
           <button
             type="button"
             className="bd-ops__btn bd-ops__btn--primary"

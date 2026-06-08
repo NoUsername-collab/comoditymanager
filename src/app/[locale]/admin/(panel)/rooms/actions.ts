@@ -17,6 +17,19 @@ function roomReturnPath(formData: FormData): string {
   return "";
 }
 
+function roomFormRedirectPath(formData: FormData, params: URLSearchParams): string {
+  const back = roomReturnPath(formData);
+  const base = back || "/admin/rooms/new";
+  const building = String(formData.get("building_id") ?? "").trim();
+  const floor = String(formData.get("floor_id") ?? "").trim();
+  const returnTo = String(formData.get("return_to") ?? "").trim();
+  if (building) params.set("building", building);
+  if (floor) params.set("floor", floor);
+  if (returnTo) params.set("return_to", returnTo);
+  const q = params.toString();
+  return q ? `${base}?${q}` : base;
+}
+
 export async function createRoomAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
   await requireLocationAdmin();
@@ -75,7 +88,16 @@ export async function createRoomAction(formData: FormData) {
     } catch (e) {
       if (e instanceof Error && e.message.startsWith("rooms.bulk_duplicate_names:")) {
         const list = e.message.replace("rooms.bulk_duplicate_names:", "");
-        throw new Error(t("bulkDuplicateNames", { names: list.replace(/\|/g, ", ") }));
+        const params = new URLSearchParams({
+          error: "bulk_duplicate",
+          names: list,
+        });
+        await redirect(roomFormRedirectPath(formData, params));
+      }
+      if (e instanceof Error && e.message === "rooms.bulk_count_must_be_between_1_and_50") {
+        await redirect(
+          roomFormRedirectPath(formData, new URLSearchParams({ error: "bulk_count" }))
+        );
       }
       throw e;
     }
@@ -119,7 +141,11 @@ export async function createRoomAction(formData: FormData) {
   } catch (e) {
     if (e instanceof Error && e.message.startsWith("rooms.duplicate_name:")) {
       const dup = e.message.replace("rooms.duplicate_name:", "");
-      throw new Error(t("bulkDuplicateNames", { names: dup }));
+      const params = new URLSearchParams({
+        error: "duplicate_name",
+        names: dup,
+      });
+      await redirect(roomFormRedirectPath(formData, params));
     }
     throw e;
   }

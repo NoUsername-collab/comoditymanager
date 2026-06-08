@@ -5,6 +5,7 @@ import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuCo
 import { useGanttMenuTrigger } from "@/components/admin/gantt/useGanttMenuTrigger";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { OccupancyKind, OccupancySegment } from "@/domain/occupancy/types";
+import { GANTT_OCC_BAR_H, GANTT_OCC_BAR_TOP } from "@/domain/gantt/layout";
 
 type Props = {
   label: string;
@@ -44,8 +45,8 @@ export function GanttOccupancyBar({
     left: `${leftPct}%`,
     width: `${widthPct}%`,
     maxWidth: `${100 - leftPct}%`,
-    height: 24,
-    top: 18,
+    height: GANTT_OCC_BAR_H,
+    top: GANTT_OCC_BAR_TOP,
   } as CSSProperties;
 
   const fullTitle = expiresAt

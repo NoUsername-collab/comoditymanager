@@ -46,3 +46,39 @@ export function findDuplicateRoomNames(
 
   return [...new Set(conflicts)];
 }
+
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Următorul număr liber pentru bulk, după camerele existente în clădire. */
+export function suggestNextBulkStartNumber(
+  existingNames: string[],
+  mode: BulkNamingMode,
+  namePrefix: string
+): number {
+  if (mode === "number_only") {
+    let max = 0;
+    for (const name of existingNames) {
+      const n = Number.parseInt(name.trim(), 10);
+      if (!Number.isNaN(n) && n > max) max = n;
+    }
+    return max > 0 ? max + 1 : 1;
+  }
+
+  const prefix = namePrefix.trim();
+  let max = 0;
+  const re = prefix
+    ? new RegExp(`^${escapeRegex(prefix)}(\\d+)\\s*$`, "i")
+    : /^(\d+)\s*$/;
+
+  for (const name of existingNames) {
+    const m = name.trim().match(re);
+    if (m) {
+      const n = Number.parseInt(m[1]!, 10);
+      if (!Number.isNaN(n) && n > max) max = n;
+    }
+  }
+
+  return max > 0 ? max + 1 : 1;
+}

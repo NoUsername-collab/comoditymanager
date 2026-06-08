@@ -23,11 +23,7 @@ function filterForMode(bookings: BookingRow[], mode: GanttOpsPickerMode, today: 
     .filter((b) => b.status === "confirmata")
     .filter((b) => {
       if (mode === "checkin") {
-        return (
-          !b.actual_check_in_at &&
-          b.check_in <= today &&
-          b.check_out > today
-        );
+        return !b.actual_check_in_at && b.check_in === today;
       }
       return Boolean(b.actual_check_in_at) && !b.actual_check_out_at;
     })

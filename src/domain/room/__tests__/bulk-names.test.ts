@@ -3,6 +3,7 @@ import {
   buildBulkRoomNames,
   normalizeRoomNameKey,
   findDuplicateRoomNames,
+  suggestNextBulkStartNumber,
 } from "@/domain/room/bulk-names";
 
 // ---------------------------------------------------------------------------
@@ -90,5 +91,29 @@ describe("findDuplicateRoomNames", () => {
   it("ignores empty/whitespace-only names", () => {
     const result = findDuplicateRoomNames([], ["  ", ""]);
     expect(result).toEqual([]);
+  });
+});
+
+describe("suggestNextBulkStartNumber", () => {
+  it("continues after prefixed bulk names", () => {
+    expect(
+      suggestNextBulkStartNumber(
+        ["Camera1", "Camera2", "Camera10"],
+        "prefix",
+        "Camera "
+      )
+    ).toBe(11);
+  });
+
+  it("continues after number-only names", () => {
+    expect(suggestNextBulkStartNumber(["1", "2", "5"], "number_only", "")).toBe(
+      6
+    );
+  });
+
+  it("returns 1 when building has no matching names", () => {
+    expect(
+      suggestNextBulkStartNumber(["Suite A"], "prefix", "Camera ")
+    ).toBe(1);
   });
 });
