@@ -749,8 +749,14 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   outline-offset: 1px;
 }
 
-/* ── Period center (title + date picker + nav) ── */
-.gantt-compact-toolbar__period {
+/* ── Period nav: arrows separate from jump-to-date button ── */
+.gantt-compact-toolbar__period-group {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.gantt-compact-toolbar__period-arrows {
   display: flex;
   align-items: center;
   gap: 0;
@@ -788,15 +794,33 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   transition-duration: 0.06s;
 }
 
-.gantt-compact-toolbar__date-label {
-  position: relative;
-  display: flex;
+.gantt-compact-toolbar__period-jump {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 0.45rem;
-  cursor: pointer;
-  min-width: 6rem;
+  gap: 0.35rem;
+  min-width: 6.5rem;
   height: 1.7rem;
+  padding: 0 0.55rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--surface, #fff);
+  color: var(--admin-text, #18181b);
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.gantt-compact-toolbar__period-jump:hover {
+  border-color: color-mix(in srgb, var(--accent, #059669) 45%, var(--admin-panel-border));
+  background: color-mix(in srgb, var(--accent-muted, #d1fae5) 35%, var(--surface, #fff));
+}
+
+.gantt-compact-toolbar__period-jump:active {
+  filter: brightness(0.96);
+  transform: scale(0.98);
 }
 
 .gantt-compact-toolbar__title {
@@ -805,20 +829,25 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   letter-spacing: -0.01em;
   color: var(--admin-text, #18181b);
   white-space: nowrap;
-  pointer-events: none;
 }
 
-.gantt-compact-toolbar__date-input {
+.gantt-compact-toolbar__jump-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.gantt-compact-toolbar__date-input-hidden {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  border: none;
+  width: 1px;
+  height: 1px;
   padding: 0;
-  margin: 0;
-  font-size: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* ── Today button ── */

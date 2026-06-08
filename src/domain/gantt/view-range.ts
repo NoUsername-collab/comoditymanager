@@ -412,3 +412,17 @@ export function navigateRange(
     zoom: isMonthLikeZoom(range.zoom) ? range.zoom : "month",
   };
 }
+
+/** Anchor the visible range to a picked date while keeping the current zoom. */
+export function jumpToDateInView(
+  iso: string,
+  zoom: GanttZoom
+): { y: number; m: number; zoom: GanttZoom; ws: string; q?: number } {
+  const d = parseIso(iso);
+  const y = d.getFullYear();
+  const m = d.getMonth();
+  if (zoom === "quarter") {
+    return { y, m, zoom, ws: iso, q: Math.floor(m / 3) };
+  }
+  return { y, m, zoom, ws: iso };
+}

@@ -3,7 +3,7 @@ import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminLiveRefresh } from "@/components/admin/AdminLiveRefresh";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { AdminPlanBadge } from "@/components/admin/AdminPlanBadge";
-import { HudIconGlobe } from "@/components/admin/AdminHudIcons";
+import { HudIconGear, HudIconGlobe } from "@/components/admin/AdminHudIcons";
 import { LogoutButton } from "@/app/[locale]/admin/(panel)/logout-button";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
@@ -81,6 +81,14 @@ export async function AdminTopBar({
               <LanguageSwitcher />
             </div>
             <div className="admin-gear__sep" />
+            <Link
+              href="/admin/settings"
+              className="admin-gear__item admin-gear__item--link"
+              role="menuitem"
+            >
+              <HudIconGear className="admin-gear__item-icon" />
+              <span>{t("settings")}</span>
+            </Link>
             <div className="admin-gear__item" role="menuitem">
               <LogoutButton />
             </div>

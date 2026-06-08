@@ -17,8 +17,11 @@ import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { BookingCheckinButton } from "@/components/admin/checkin/BookingCheckinButton";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
+import { getCheckinByBookingId, getCheckinSettings } from "@/services/checkin";
+import type { BookingForCheckin } from "@/domain/checkin/types";
 import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
 import {
   cancelBookingAction,
@@ -71,6 +74,25 @@ export default async function BookingDetailPage({
       excludeGuestId: booking.guest_id ?? undefined,
     })
   ).catch(() => []);
+
+  // Check-in state
+  const [existingCheckin, checkinSettings] = await Promise.all([
+    getCheckinByBookingId(booking.id).catch(() => null),
+    getCheckinSettings().catch(() => null),
+  ]);
+
+  const bookingForCheckin: BookingForCheckin = {
+    id: booking.id,
+    status: booking.status,
+    total_price: booking.total_price ?? 0,
+    check_in: booking.check_in,
+    check_out: booking.check_out,
+    guest_name: booking.guest_name,
+    guest_phone: booking.guest_phone ?? null,
+    guest_email: booking.guest_email ?? null,
+    num_adults: booking.num_adults,
+    num_children: booking.num_children ?? 0,
+  };
 
   const nights = stayNightCount(booking.check_in, booking.check_out);
   const isCancelled = booking.status === "anulata";
@@ -308,6 +330,16 @@ export default async function BookingDetailPage({
                 returnTo={returnTo}
                 submitLabel={isCancelled ? tPage("reacceptSubmit") : undefined}
                 action={confirmBookingAction}
+              />
+            </div>
+          )}
+
+          {booking.status === "confirmata" && checkinSettings && (
+            <div className="bd-card bd-card--action">
+              <BookingCheckinButton
+                booking={bookingForCheckin}
+                settings={checkinSettings}
+                hasExistingCheckin={!!existingCheckin}
               />
             </div>
           )}

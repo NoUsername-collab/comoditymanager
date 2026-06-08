@@ -13,6 +13,8 @@ import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminLocationUnlockForm, AdminLocationLockButton } from "@/components/admin/settings/AdminLocationUnlockForm";
 import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
+import { CheckinSettingsPanel } from "@/components/admin/checkin/CheckinSettingsPanel";
+import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { isLocationConfigurationAccessible } from "@/lib/auth/location-unlock";
 import { requireStaff } from "@/lib/auth/require-staff";
@@ -41,6 +43,10 @@ export default async function SettingsPage({
   } catch (e) {
     error = e instanceof Error ? e.message : t("genericError");
   }
+
+  const checkinSettings = await getCheckinSettings().catch(
+    () => DEFAULT_CHECKIN_SETTINGS,
+  );
 
   const appearance = settings ? pensionAppearanceSettings(settings) : null;
 
@@ -121,6 +127,17 @@ export default async function SettingsPage({
           >
             <AdminActivityHistoryPanel />
           </SettingsSlidePanel>
+
+          {role === "admin" && (
+            <SettingsSlidePanel
+              title={t("checkin.title")}
+              subtitle={t("checkin.docRuleDesc")}
+              icon="*"
+              defaultOpen={params.section === "checkin"}
+            >
+              <CheckinSettingsPanel settings={checkinSettings} />
+            </SettingsSlidePanel>
+          )}
 
           <AdminPendingForm action={updateAppearanceSettingsAction} className="admin-settings-form mt-6">
             <input type="hidden" name="id" value={settings.id} />

@@ -4,6 +4,7 @@ export type ActivityTone = "booking" | "auth" | "structure" | "settings";
 
 export function activityTone(action: ActivityAction): ActivityTone {
   if (action.startsWith("booking.")) return "booking";
+  if (action.startsWith("checkin.")) return "booking";
   if (action.startsWith("guest.")) return "booking";
   if (action.startsWith("auth.")) return "auth";
   if (action === "settings.updated") return "settings";
@@ -24,6 +25,8 @@ export function activityIcon(action: ActivityAction): string {
     "booking.checkout.set": "←",
     "booking.checkout.undo": "↩",
     "booking.dates_edited": "✎",
+    "checkin.created": "🔑",
+    "checkin.updated": "🔑",
     "occupancy.hold_created": "⏸",
     "occupancy.block_created": "⊘",
     "activity.undone": "↩",

@@ -236,6 +236,33 @@ async function undoBookingRoomMoved(entry: ActivityLogEntry): Promise<void> {
   if (brErr) throw new Error(brErr.message);
 }
 
+async function undoCheckinCreated(entry: ActivityLogEntry): Promise<void> {
+  const checkinId = entry.entity_id;
+  if (!checkinId) throw new Error("activity.undo_missing_metadata");
+
+  const bookingId = metaString(entry.metadata, "booking_id");
+
+  const { tenantId, supabase } = await getTenantScope();
+
+  // Delete the checkin record (cascade deletes checkin_guests)
+  const { error: delErr } = await supabase
+    .from("checkins")
+    .delete()
+    .eq("tenant_id", tenantId)
+    .eq("id", checkinId);
+  if (delErr) throw new Error(delErr.message);
+
+  // Clear the booking's actual_check_in_at
+  if (bookingId) {
+    const { error: upErr } = await supabase
+      .from("bookings")
+      .update({ actual_check_in_at: null, actual_check_in_by: null })
+      .eq("tenant_id", tenantId)
+      .eq("id", bookingId);
+    if (upErr) throw new Error(upErr.message);
+  }
+}
+
 async function undoBuildingPrice(entry: ActivityLogEntry): Promise<void> {
   const buildingId = entry.entity_id;
   const previous = entry.metadata.previous_price_per_night;
@@ -267,6 +294,8 @@ async function executeUndoHandler(entry: ActivityLogEntry): Promise<void> {
       return undoOccupancyBlock(entry);
     case "building.price_updated":
       return undoBuildingPrice(entry);
+    case "checkin.created":
+      return undoCheckinCreated(entry);
     default:
       throw new Error("activity.undo_not_supported");
   }

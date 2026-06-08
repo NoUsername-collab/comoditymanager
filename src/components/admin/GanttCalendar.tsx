@@ -13,6 +13,8 @@ import {
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
 import { buildCalendarQuery } from "@/lib/gantt-query";
+import { jumpToDateInView } from "@/domain/gantt/view-range";
+import { GanttPeriodJumpControl } from "@/components/admin/gantt/GanttPeriodJumpControl";
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
@@ -707,6 +709,20 @@ export function GanttCalendar({
     [currentMonth, currentYear, firstDate, pushCalendarPatch, viewRange]
   );
 
+  const jumpToDate = useCallback(
+    (iso: string) => {
+      const patch = jumpToDateInView(iso, viewRange.zoom);
+      pushCalendarPatch({
+        y: patch.y,
+        m: patch.m,
+        zoom: patch.zoom,
+        ws: patch.ws,
+        q: patch.q,
+      });
+    },
+    [pushCalendarPatch, viewRange.zoom]
+  );
+
   const toggleAvailabilityPanel = useCallback(() => {
     const next = mergeAvailabilityPanelSearch(new URLSearchParams(searchParams.toString()), {
       open: !isAvailabilityPanelOpen ? true : false,
@@ -804,43 +820,16 @@ export function GanttCalendar({
               </select>
             </div>
 
-            {/* Period title with date input for jumping */}
-            <div className="gantt-compact-toolbar__period">
-              <button
-                type="button"
-                className="gantt-compact-toolbar__nav-btn"
-                onClick={() => navigatePeriod(-1)}
-                aria-label={tCommon("goBackBy", { period: activePeriodStep.aria })}
-              >
-                ‹
-              </button>
-              <label className="gantt-compact-toolbar__date-label">
-                <span className="gantt-compact-toolbar__title capitalize">{viewRange.title}</span>
-                <input
-                  type="date"
-                  className="gantt-compact-toolbar__date-input"
-                  value={firstIso}
-                  onChange={(e) => {
-                    if (!e.target.value) return;
-                    const d = parseIso(e.target.value);
-                    pushCalendarPatch({
-                      y: d.getFullYear(),
-                      m: d.getMonth(),
-                      ws: e.target.value,
-                    });
-                  }}
-                  aria-label={tCommon("alignToday")}
-                />
-              </label>
-              <button
-                type="button"
-                className="gantt-compact-toolbar__nav-btn"
-                onClick={() => navigatePeriod(1)}
-                aria-label={tCommon("goForwardBy", { period: activePeriodStep.aria })}
-              >
-                ›
-              </button>
-            </div>
+            <GanttPeriodJumpControl
+              title={viewRange.title}
+              valueIso={firstIso}
+              onPrev={() => navigatePeriod(-1)}
+              onNext={() => navigatePeriod(1)}
+              onJump={jumpToDate}
+              prevAria={tCommon("goBackBy", { period: activePeriodStep.aria })}
+              nextAria={tCommon("goForwardBy", { period: activePeriodStep.aria })}
+              jumpAria={tCommon("jumpToDate")}
+            />
 
             {/* Today button */}
             <button

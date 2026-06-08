@@ -7,8 +7,8 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
 import { TodayBoardSection } from "@/components/admin/dashboard/TodayBoardSection";
+import { TodayBoardBadges } from "@/components/admin/dashboard/TodayBoardBadges";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
-import { MonthCompareCards } from "@/components/admin/dashboard/MonthCompareCards";
 
 export async function AdminDashboard({
   data,
@@ -34,44 +34,6 @@ export async function AdminDashboard({
     )
     .sort((a, b) => a.name.localeCompare(b.name, "ro-RO"));
 
-  const quickActions = [
-    {
-      href: "/admin/bookings",
-      title: tDashboard("quickCereri"),
-      desc: tDashboard("quickCereriDesc"),
-      icon: "📬",
-      accent: "linear-gradient(135deg, #f87171, #dc2626)",
-    },
-    {
-      href: "/receptie",
-      title: tDashboard("quickReceptie"),
-      desc: tDashboard("quickReceptieDesc"),
-      icon: "☎️",
-      accent: "linear-gradient(135deg, #fbbf24, #ea580c)",
-    },
-    {
-      href: "/admin/calendar",
-      title: tDashboard("quickCalendar"),
-      desc: tDashboard("quickCalendarDesc"),
-      icon: "📅",
-      accent: "linear-gradient(135deg, #a78bfa, #7c3aed)",
-    },
-    {
-      href: "/admin#disponibilitate",
-      title: tDashboard("quickAvail"),
-      desc: tDashboard("quickAvailDesc"),
-      icon: "▦",
-      accent: "linear-gradient(135deg, #34d399, #059669)",
-    },
-    {
-      href: "/admin/settings",
-      title: tDashboard("quickSettings"),
-      desc: tDashboard("quickSettingsDesc"),
-      icon: "⚙️",
-      accent: "linear-gradient(135deg, #71717a, #27272a)",
-    },
-  ] as const;
-
   return (
     <div className="admin-home">
       {/* ── Hero: ultra-compact strip ─────────────────────────── */}
@@ -80,14 +42,23 @@ export async function AdminDashboard({
         <div className="admin-home-hero__strip">
           {/* Left: identity */}
           <div className="admin-home-hero__identity">
-            <h1 className="admin-home-hero__title">{data.pensionName}</h1>
-            <span className="admin-home-hero__meta">
-              <span className="capitalize">{data.todayLabel}</span>
-              {" · CI "}
-              {data.checkInTime}
-              {" · CO "}
-              {data.checkOutTime}
-            </span>
+            <div className="admin-home-hero__identity-row">
+              <h1 className="admin-home-hero__title">{data.pensionName}</h1>
+              <span className="admin-home-hero__meta">
+                <span className="capitalize">{data.todayLabel}</span>
+                {" · CI "}
+                {data.checkInTime}
+                {" · CO "}
+                {data.checkOutTime}
+              </span>
+            </div>
+            {data.todayBoard && (
+              <TodayBoardBadges
+                arrivals={data.todayBoard.arrivals.length}
+                departures={data.todayBoard.departures.length}
+                toClean={data.todayBoard.roomsToClean.length}
+              />
+            )}
           </div>
 
           {/* Center: KPI pills inline */}
@@ -123,10 +94,6 @@ export async function AdminDashboard({
           </div>
         </div>
 
-        {/* Briefing — subtle inline note, only if present */}
-        {data.briefingLine && (
-          <p className="admin-home-briefing">{data.briefingLine}</p>
-        )}
       </header>
 
       {data.error && (
@@ -141,19 +108,13 @@ export async function AdminDashboard({
         </div>
       )}
 
-      {data.monthCompare && (
-        <div className="admin-home-section">
-          <MonthCompareCards compare={data.monthCompare} />
-        </div>
-      )}
-
       {availabilityPanel && (
         <section
           id="disponibilitate"
           className="admin-home-panel admin-home-section"
           aria-labelledby="admin-home-availability-title"
         >
-          <div className="admin-home-panel__head">
+          <div className="admin-home-panel__head admin-home-panel__head--centered">
             <div>
               <h2 id="admin-home-availability-title" className="admin-home-panel__title">
                 {tDashboard("quickAvail")}
@@ -162,112 +123,56 @@ export async function AdminDashboard({
                 {tDashboard("quickAvailDesc")}
               </p>
             </div>
-            <Link href={calHref} className="admin-home-panel__link">
-              {tDashboard("quickCalendar")} →
+            <Link href="/admin/disponibilitate" className="admin-home-panel__link">
+              {tDashboard("openFullAvailability")} →
             </Link>
           </div>
-          <div className="mt-4">{availabilityPanel}</div>
+          <div className="admin-home-availability-preview-wrap">{availabilityPanel}</div>
         </section>
       )}
 
-      <div
-        className={[
-          "admin-home-split",
-          cereriPreview.length === 0 && "admin-home-split--cereri-only",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-      >
-        <section className="admin-home-panel" aria-labelledby="admin-home-actions-title">
+      {cereriPreview.length > 0 && (
+        <section
+          className="admin-home-panel admin-home-panel--cereri admin-home-section"
+          aria-labelledby="admin-home-cereri-title"
+        >
           <div className="admin-home-panel__head">
             <div>
-              <h2 id="admin-home-actions-title" className="admin-home-panel__title">
-                {tCommon("quickActions")}
+              <h2 id="admin-home-cereri-title" className="admin-home-panel__title">
+                {tCommon("cereriQueue")}
               </h2>
               <p className="admin-home-panel__desc">
-                {tCommon("seeAll")}
+                {tDashboard("quickCereriDesc")}
               </p>
             </div>
+            <Link href="/admin/bookings" className="admin-home-panel__link">
+              {tCommon("seeAll")} →
+            </Link>
           </div>
-          <div className="admin-home-actions">
-            {quickActions.map((a) => {
-              const isCereri = a.href === "/admin/bookings";
-              const showBadge = isCereri && hasCereri;
-
-              return (
-                <Link
-                  key={a.href}
-                  href={a.href}
-                  className={[
-                    "admin-home-action",
-                    showBadge && "admin-home-action--cereri",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  <span
-                    className="admin-home-action__icon"
-                    style={{ background: a.accent }}
-                    aria-hidden
-                  >
-                    {a.icon}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="admin-home-action__title">{a.title}</span>
-                    <span className="admin-home-action__desc">{a.desc}</span>
-                    {showBadge && (
-                      <span className="admin-home-action__badge">{cereriCount}</span>
+          <ul className="admin-home-cereri-list">
+            {cereriPreview.map((c) => (
+              <li key={c.id}>
+                <Link href={`/admin/bookings/${c.id}`} className="admin-home-cereri-item">
+                  <span className="admin-home-cereri-item__guest">
+                    {formatGuestGanttLabel(
+                      c.guest_last_name,
+                      c.guest_first_name,
+                      c.guest_name
                     )}
+                    <span className="admin-home-cereri-item__meta">
+                      {" "}
+                      · {c.num_adults}+{c.num_children} pers.
+                    </span>
+                  </span>
+                  <span className="admin-home-cereri-item__dates">
+                    {formatStayPeriod(c.check_in, c.check_out)}
                   </span>
                 </Link>
-              );
-            })}
-          </div>
+              </li>
+            ))}
+          </ul>
         </section>
-
-        {cereriPreview.length > 0 && (
-          <section
-            className="admin-home-panel admin-home-panel--cereri"
-            aria-labelledby="admin-home-cereri-title"
-          >
-            <div className="admin-home-panel__head">
-              <div>
-                <h2 id="admin-home-cereri-title" className="admin-home-panel__title">
-                  {tCommon("cereriQueue")}
-                </h2>
-                <p className="admin-home-panel__desc">
-                  {tDashboard("quickCereriDesc")}
-                </p>
-              </div>
-              <Link href="/admin/bookings" className="admin-home-panel__link">
-                {tCommon("seeAll")} →
-              </Link>
-            </div>
-            <ul className="admin-home-cereri-list">
-              {cereriPreview.map((c) => (
-                <li key={c.id}>
-                  <Link href={`/admin/bookings/${c.id}`} className="admin-home-cereri-item">
-                    <span className="admin-home-cereri-item__guest">
-                      {formatGuestGanttLabel(
-                        c.guest_last_name,
-                        c.guest_first_name,
-                        c.guest_name
-                      )}
-                      <span className="admin-home-cereri-item__meta">
-                        {" "}
-                        · {c.num_adults}+{c.num_children} pers.
-                      </span>
-                    </span>
-                    <span className="admin-home-cereri-item__dates">
-                      {formatStayPeriod(c.check_in, c.check_out)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-      </div>
+      )}
 
       <section
         className="admin-home-panel admin-home-section"

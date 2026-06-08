@@ -28,14 +28,51 @@ type Props = {
   weekends: WeekendPick[];
   nextSaturdayIso: string | null;
   accentColor: string | null;
-  onSelect: (saturdayIso: string) => void;
+  onSelect?: (saturdayIso: string) => void;
+  readOnly?: boolean;
 };
+
+function WeekendCardContent({
+  w,
+  isNext,
+  locale,
+  tPage,
+  tCommon,
+}: {
+  w: WeekendPick;
+  isNext: boolean;
+  locale: string;
+  tPage: (key: string) => string;
+  tCommon: (key: string) => string;
+}) {
+  return (
+    <>
+      <span className="avail-weekend-card__main">
+        {isNext && (
+          <span className="avail-weekend-card__flag">{tCommon("next")}</span>
+        )}
+        <span className="avail-weekend-card__range">
+          {weekendRangeTitle(w, locale)}
+        </span>
+        <span className="avail-weekend-card__dow">{weekendSubtitle(w, tPage("satSun"))}</span>
+      </span>
+      <span className="avail-weekend-card__count" aria-hidden>
+        {w.min_free_rooms}
+        <span className="avail-weekend-card__count-unit">{tCommon("roomsShort")}</span>
+      </span>
+      <span className="gantt-stay__end-tab avail-weekend-card__tab" aria-hidden>
+        <span className="gantt-stay__end-tab-arrow">›</span>
+      </span>
+    </>
+  );
+}
 
 export function AvailabilityWeekendsPanel({
   weekends,
   nextSaturdayIso,
   accentColor,
   onSelect,
+  readOnly = false,
 }: Props) {
   const locale = useLocale();
   const tPage = useTranslations("admin.availability");
@@ -105,36 +142,50 @@ export function AvailabilityWeekendsPanel({
               : `inset 3px 0 0 color-mix(in srgb, ${surface.border} 70%, transparent), 0 1px 4px color-mix(in srgb, ${surface.glow} 30%, transparent)`,
           } as CSSProperties & Record<`--${string}`, string>;
 
+          const cardClass = [
+            "avail-weekend-card gantt-stay--slant gantt-stay--filled",
+            isNext && "avail-weekend-card--next",
+            readOnly && "avail-weekend-card--readonly",
+          ]
+            .filter(Boolean)
+            .join(" ");
+          const cardTitle = `${weekendRangeTitle(w, locale)} · ${w.min_free_rooms} ${tPage("freeRooms")}`;
+
+          if (readOnly) {
+            return (
+              <div
+                key={w.saturday_iso}
+                className={cardClass}
+                style={cardStyle}
+                title={cardTitle}
+              >
+                <WeekendCardContent
+                  w={w}
+                  isNext={isNext}
+                  locale={locale}
+                  tPage={tPage}
+                  tCommon={tCommon}
+                />
+              </div>
+            );
+          }
+
           return (
             <button
               key={w.saturday_iso}
               type="button"
-              className={[
-                "avail-weekend-card gantt-stay--slant gantt-stay--filled",
-                isNext && "avail-weekend-card--next",
-              ]
-                .filter(Boolean)
-                .join(" ")}
+              className={cardClass}
               style={cardStyle}
-              onClick={() => onSelect(w.saturday_iso)}
-              title={`${weekendRangeTitle(w, locale)} · ${w.min_free_rooms} ${tPage("freeRooms")}`}
+              onClick={() => onSelect?.(w.saturday_iso)}
+              title={cardTitle}
             >
-              <span className="avail-weekend-card__main">
-                {isNext && (
-                  <span className="avail-weekend-card__flag">{tCommon("next")}</span>
-                )}
-                <span className="avail-weekend-card__range">
-                  {weekendRangeTitle(w, locale)}
-                </span>
-                <span className="avail-weekend-card__dow">{weekendSubtitle(w, tPage("satSun"))}</span>
-              </span>
-              <span className="avail-weekend-card__count" aria-hidden>
-                {w.min_free_rooms}
-                <span className="avail-weekend-card__count-unit">{tCommon("roomsShort")}</span>
-              </span>
-              <span className="gantt-stay__end-tab avail-weekend-card__tab" aria-hidden>
-                <span className="gantt-stay__end-tab-arrow">›</span>
-              </span>
+              <WeekendCardContent
+                w={w}
+                isNext={isNext}
+                locale={locale}
+                tPage={tPage}
+                tCommon={tCommon}
+              />
             </button>
           );
         })}

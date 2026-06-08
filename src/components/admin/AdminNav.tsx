@@ -15,8 +15,7 @@ type Tab = {
     | "stays"
     | "clients"
     | "calendar"
-    | "statistics"
-    | "settings";
+    | "statistics";
   icon: HudIconName;
   alert?: boolean;
   badge?: number;
@@ -46,7 +45,6 @@ export function AdminNav({
     { href: "/admin/guests", labelKey: "clients", icon: "person" },
     { href: "/admin/calendar", labelKey: "calendar", icon: "calendar" },
     { href: "/admin/statistics", labelKey: "statistics", icon: "chart" },
-    { href: "/admin/settings", labelKey: "settings", icon: "gear" },
   ];
 
   const visibleTabs = tabs.filter((tab) => {

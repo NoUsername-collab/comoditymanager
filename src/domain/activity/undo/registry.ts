@@ -12,6 +12,7 @@ export const UNDOABLE_ACTIONS = new Set<ActivityAction>([
   "occupancy.hold_created",
   "occupancy.block_created",
   "building.price_updated",
+  "checkin.created",
 ]);
 
 /** Max age for undo (72h). */

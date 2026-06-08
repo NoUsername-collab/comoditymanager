@@ -1,8 +1,6 @@
 import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
-import {
-  AvailabilityDashboardShell,
-  type AvailabilityShellSearchParams,
-} from "@/components/admin/availability/AvailabilityDashboardShell";
+import { AvailabilityHomePreview } from "@/components/admin/availability/AvailabilityHomePreview";
+import type { AvailabilityShellSearchParams } from "@/components/admin/availability/AvailabilityDashboardShell";
 import { loadAdminDashboard } from "@/services/admin-dashboard";
 
 export default async function AdminHomePage({
@@ -16,11 +14,7 @@ export default async function AdminHomePage({
     <AdminDashboard
       data={data}
       availabilityPanel={
-        <AvailabilityDashboardShell
-          searchParams={availabilityParams}
-          basePath="/admin"
-          anchorHash="#disponibilitate"
-        />
+        <AvailabilityHomePreview searchParams={availabilityParams} />
       }
     />
   );

@@ -1,0 +1,548 @@
+/* ── Check-in System ──────────────────────────────────────── */
+
+/* Start button on booking detail */
+.checkin-start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #15803d;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.1s ease;
+}
+
+.checkin-start-btn:hover {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-color: rgba(34, 197, 94, 0.7);
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.2);
+}
+
+.checkin-start-btn:active {
+  transform: scale(0.96);
+  transition-duration: 0.05s;
+}
+
+.checkin-start-btn__icon {
+  font-size: 1rem;
+}
+
+/* ── Modal ────────────────────────────────────────────────── */
+
+.checkin-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* ── Stepper ──────────────────────────────────────────────── */
+
+.checkin-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+}
+
+.checkin-stepper__indicators {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.checkin-stepper__indicator {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  background: #f4f4f5;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  transition: all 0.2s ease;
+}
+
+.checkin-stepper__indicator--active {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.checkin-stepper__indicator--done {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  color: #15803d;
+}
+
+.checkin-stepper__indicator-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: currentColor;
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.checkin-stepper__indicator--active .checkin-stepper__indicator-num {
+  background: #3b82f6;
+}
+
+.checkin-stepper__indicator--done .checkin-stepper__indicator-num {
+  background: #22c55e;
+}
+
+.checkin-stepper__indicator-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkin-stepper__content {
+  min-height: 12rem;
+}
+
+.checkin-stepper__error {
+  border-radius: 0.5rem;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(254, 242, 242, 0.8);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: #b91c1c;
+}
+
+.checkin-stepper__nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e4e4e7;
+}
+
+.checkin-stepper__btn {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.checkin-stepper__btn--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.checkin-stepper__btn--primary:hover {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.checkin-stepper__btn--primary:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.checkin-stepper__btn--secondary {
+  background: #f4f4f5;
+  color: #3f3f46;
+  border-color: #e4e4e7;
+}
+
+.checkin-stepper__btn--secondary:hover {
+  background: #e4e4e7;
+}
+
+/* ── Guest Form ───────────────────────────────────────────── */
+
+.checkin-guest-form {
+  border-radius: 0.75rem;
+  border: 1px solid #e4e4e7;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.checkin-guest-form__header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #3f3f46;
+  margin-bottom: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.checkin-guest-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+/* ── Field ────────────────────────────────────────────────── */
+
+.checkin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.checkin-field__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.checkin-field__input {
+  border-radius: 0.375rem;
+  border: 1px solid #d4d4d8;
+  background: #fafafa;
+  padding: 0.375rem 0.5rem;
+  font-size: 0.8125rem;
+  color: #18181b;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.checkin-field__input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+.checkin-field__input--textarea {
+  resize: vertical;
+  min-height: 3rem;
+}
+
+/* ── Checkbox ─────────────────────────────────────────────── */
+
+.checkin-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #3f3f46;
+  cursor: pointer;
+}
+
+.checkin-checkbox input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #22c55e;
+}
+
+/* ── Validation Step ──────────────────────────────────────── */
+
+.checkin-validation {
+  border-radius: 0.75rem;
+  border: 1.5px solid;
+  padding: 1rem 1.25rem;
+}
+
+.checkin-validation--ok {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.checkin-validation--warning {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.checkin-validation--blocked {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+}
+
+.checkin-validation__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.checkin-validation--ok .checkin-validation__status { color: #15803d; }
+.checkin-validation--warning .checkin-validation__status { color: #92400e; }
+.checkin-validation--blocked .checkin-validation__status { color: #b91c1c; }
+
+.checkin-validation__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.checkin-validation__list li {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.checkin-validation__list--blockers li {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+}
+
+.checkin-validation__list--flags li {
+  background: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+}
+
+.checkin-validation__note {
+  font-size: 0.75rem;
+  color: #92400e;
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+/* ── Payment Step ─────────────────────────────────────────── */
+
+.checkin-step-payment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkin-payment__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: #f4f4f5;
+}
+
+.checkin-payment__total-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.checkin-payment__total-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #18181b;
+}
+
+.checkin-payment__options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.checkin-payment__option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e4e4e7;
+  background: #fafafa;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #3f3f46;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.checkin-payment__option:has(input:checked) {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  color: #1d4ed8;
+}
+
+.checkin-payment__option input {
+  accent-color: #3b82f6;
+}
+
+/* ── Summary Step ─────────────────────────────────────────── */
+
+.checkin-step-finish {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkin-summary {
+  border-radius: 0.5rem;
+  border: 1px solid #e4e4e7;
+  overflow: hidden;
+}
+
+.checkin-summary__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.checkin-summary__row:last-child {
+  border-bottom: none;
+}
+
+.checkin-summary__row--flags {
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.checkin-summary__label {
+  font-weight: 600;
+  color: #71717a;
+}
+
+/* ── Settings Panel ───────────────────────────────────────── */
+
+.checkin-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: opacity 0.2s ease;
+}
+
+.checkin-settings--pending {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.checkin-settings__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #18181b;
+  margin-bottom: 0.75rem;
+}
+
+.checkin-setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid #f4f4f5;
+}
+
+.checkin-setting-row:last-child {
+  border-bottom: none;
+}
+
+.checkin-setting-row__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.checkin-setting-row__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #3f3f46;
+}
+
+.checkin-setting-row__desc {
+  font-size: 0.6875rem;
+  color: #a1a1aa;
+}
+
+.checkin-setting-row__right {
+  flex-shrink: 0;
+}
+
+.checkin-setting-row__right .checkin-field__input {
+  width: 10rem;
+}
+
+/* ── Toggle Switch ────────────────────────────────────────── */
+
+.checkin-toggle {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.checkin-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkin-toggle__slider {
+  width: 2.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background: #d4d4d8;
+  transition: background 0.2s ease;
+  position: relative;
+}
+
+.checkin-toggle__slider::after {
+  content: "";
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+}
+
+.checkin-toggle input:checked + .checkin-toggle__slider {
+  background: #22c55e;
+}
+
+.checkin-toggle input:checked + .checkin-toggle__slider::after {
+  transform: translateX(1rem);
+}
+
+/* ── Flag Badge (for Gantt / booking detail) ──────────────── */
+
+.checkin-flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.checkin-flag-badge--error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+}
+
+.checkin-flag-badge--warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #d97706;
+}
+
+.checkin-flag-badge--info {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #2563eb;
+}

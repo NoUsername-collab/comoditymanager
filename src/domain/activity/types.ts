@@ -1,6 +1,7 @@
 export type ActivityEntityType =
   | "booking"
   | "building"
+  | "checkin"
   | "room"
   | "floor"
   | "settings"
@@ -22,6 +23,8 @@ export type ActivityAction =
   | "booking.checkout.set"
   | "booking.checkout.undo"
   | "booking.dates_edited"
+  | "checkin.created"
+  | "checkin.updated"
   | "occupancy.hold_created"
   | "occupancy.block_created"
   | "activity.undone"

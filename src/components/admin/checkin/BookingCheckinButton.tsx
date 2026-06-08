@@ -1,0 +1,56 @@
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { CheckinModal } from "./CheckinModal";
+import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
+
+type Props = {
+  booking: BookingForCheckin;
+  settings: CheckinSettings;
+  hasExistingCheckin: boolean;
+};
+
+/**
+ * Check-in is only shown when:
+ * - No existing check-in
+ * - Booking is confirmed
+ * - Today is within the check-in window: from 1 day before check-in to the day before check-out
+ */
+export function BookingCheckinButton({
+  booking,
+  settings,
+  hasExistingCheckin,
+}: Props) {
+  const t = useTranslations("admin.checkIn");
+  const [open, setOpen] = useState(false);
+
+  if (hasExistingCheckin) return null;
+  if (booking.status !== "confirmata") return null;
+
+  // Only show check-in button on the check-in date
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  if (todayStr !== booking.check_in) return null;
+
+  return (
+    <>
+      <button
+        type="button"
+        className="checkin-start-btn"
+        onClick={() => setOpen(true)}
+      >
+        <span className="checkin-start-btn__icon">🔑</span>
+        {t("startCheckin")}
+      </button>
+
+      {open && (
+        <CheckinModal
+          booking={booking}
+          settings={settings}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
+  );
+}

@@ -402,6 +402,37 @@
         "displayLayoutProfile_compact-laptop": "laptop compact",
         "displayLayoutProfile_narrow": "îngust",
         "saveTheme": "Save theme",
+        "checkin": {
+          "title": "Reguli Check-in",
+          "saved": "Setare salvată",
+          "docRule": "Document identitate",
+          "docRuleDesc": "Obligativitate document la check-in",
+          "phoneRule": "Telefon contact",
+          "phoneRuleDesc": "Obligativitate telefon la check-in",
+          "paymentRule": "Plata la check-in",
+          "paymentRuleDesc": "Cerinta de plata la sosire",
+          "ruleRequired": "Obligatoriu (blochează)",
+          "ruleRecommended": "Recomandat (avertisment)",
+          "ruleOptional": "Opțional",
+          "paymentFull": "Integral obligatoriu",
+          "paymentPartial": "Parțial (% minim)",
+          "paymentAtCheckout": "La check-out",
+          "minPaymentPct": "% minim plată",
+          "walkinAllowed": "Walk-in permis",
+          "walkinAllowedDesc": "Permite check-in fără rezervare prealabilă",
+          "groupMode": "Mod check-in grup",
+          "groupModeDesc": "Cum se procesează check-in de grup",
+          "groupRep": "Pe reprezentant",
+          "groupIndividual": "Individual",
+          "groupBoth": "Ambele (operatorul alege)",
+          "checkinTime": "Ora check-in de la",
+          "checkinTimeDesc": "Ora minimă de check-in",
+          "checkoutTime": "Ora check-out până la",
+          "checkoutTimeDesc": "Ora maximă de check-out",
+          "deposit": "Depozit garanție",
+          "depositDesc": "Solicită garanție la check-in",
+          "depositAmount": "Suma depozit"
+        },
         "locationTitle": "Location administration",
         "locationSubtitleUnlocked": "Deblocat pentru configurare (2 ore)",
         "locationSubtitleLocked": "Necesită parola proprietarului",
@@ -955,6 +986,7 @@
       "backPeriod": "Înapoi {period}",
       "forwardPeriod": "Înainte {period}",
       "alignToday": "Comută intervalul astfel încât azi să fie la începutul ferestrei",
+      "jumpToDate": "Sari la dată — alege din calendar (păstrează intervalul setat)",
       "backOneDay": "Înapoi o zi",
       "forwardOneDay": "Înainte o zi",
       "oneWeek": "1 săpt.",
@@ -1488,6 +1520,7 @@
       "namePrefixRequired": "Prefix nume *",
       "roomPrefixDefault": "Camera ",
       "startNumber": "De la nr.",
+      "endNumber": "Până la nr.",
       "howManyRooms": "Câte camere",
       "bulkNamingLegend": "Format nume (bulk)",
       "bulkNamingPrefix": "Prefix + număr (ex. Camera 6)",
@@ -1728,8 +1761,9 @@
       "quickReceptieDesc": "Telefon & check-in",
       "quickCalendar": "Calendar",
       "quickCalendarDesc": "Vedere lună / camere",
-      "quickAvail": "Disponibilitate live",
-      "quickAvailDesc": "Panou complet aici, în Acasă",
+      "quickAvail": "Disponibilitate lună",
+      "quickAvailDesc": "Vizualizare rapidă — camere libere (doar citire)",
+      "openFullAvailability": "Panou complet",
       "quickSettings": "Setări",
       "quickSettingsDesc": "Admin only · configurare",
       "pendingPuls": "{count, plural, one {# cerere de procesat} other {# cereri de procesat}}",
@@ -1780,6 +1814,70 @@
       "childPlural": "copii",
       "editCheckout": "Editează checkout",
       "checkedInHint": "Oaspetele a făcut check-in — poți modifica doar data de checkout."
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "startCheckin": "Check-in",
+      "cancel": "Anulează",
+      "back": "Înapoi",
+      "next": "Continuă",
+      "confirm": "Confirmă check-in",
+      "saving": "Se procesează...",
+      "success": "Check-in înregistrat cu succes",
+      "flags": "Avertismente",
+      "guestN": "Oaspete #{n}",
+      "step": {
+        "identity": "Date identitate",
+        "validate": "Validare",
+        "payment": "Plată",
+        "finish": "Finalizare"
+      },
+      "type": {
+        "reservation": "Rezervare",
+        "walkin": "Walk-in",
+        "group": "Grup"
+      },
+      "flag": {
+        "no_document": "Document identitate lipsă",
+        "unpaid": "Neplătit",
+        "no_phone": "Telefon lipsă",
+        "group_partial": "Grup parțial",
+        "checkout_blocked": "Check-out blocat",
+        "early_checkin": "Check-in devreme"
+      },
+      "validation": {
+        "ok": "Toate regulile respectate",
+        "warning": "Avertismente — check-in posibil",
+        "blocked": "Blocat — nu se poate continua",
+        "warningNote": "Check-in-ul va fi marcat ca incomplet. Oaspetele trebuie să completeze informațiile lipsă."
+      },
+      "payment": {
+        "totalDue": "Total de plată",
+        "status": "Plată",
+        "paid": "Plătit integral",
+        "partial": "Plătit parțial",
+        "unpaid": "Neplătit",
+        "amountPaid": "Suma achitată",
+        "deposit": "Garanție / Depozit"
+      },
+      "keyHanded": "Cheie / cod înmânat",
+      "field": {
+        "fullName": "Nume complet",
+        "phone": "Telefon",
+        "documentType": "Tip document",
+        "documentNumber": "Număr document",
+        "nationality": "Cetățenie",
+        "birthDate": "Data nașterii",
+        "selectDoc": "— Selectează —",
+        "docCi": "Carte de identitate",
+        "docPassport": "Pașaport",
+        "docPermit": "Permis de conducere",
+        "guest": "Oaspete",
+        "dates": "Perioada",
+        "guestCount": "Nr. persoane",
+        "notes": "Observații",
+        "notesPlaceholder": "Notite pentru operator..."
+      }
     },
     "gantt": {
       "range": {
@@ -2058,6 +2156,10 @@
       "auth": {
         "login": "Autentificare",
         "logout": "Deconectare"
+      },
+      "checkin": {
+        "created": "Check-in efectuat",
+        "updated": "Check-in actualizat"
       },
       "occupancy": {
         "hold_created": "Hold cameră",

@@ -402,6 +402,37 @@
         "displayLayoutProfile_compact-laptop": "compact laptop",
         "displayLayoutProfile_narrow": "narrow",
         "saveTheme": "Save theme",
+        "checkin": {
+          "title": "Check-in Rules",
+          "saved": "Setting saved",
+          "docRule": "ID document",
+          "docRuleDesc": "Document requirement at check-in",
+          "phoneRule": "Contact phone",
+          "phoneRuleDesc": "Phone requirement at check-in",
+          "paymentRule": "Payment at check-in",
+          "paymentRuleDesc": "Payment requirement on arrival",
+          "ruleRequired": "Required (blocks)",
+          "ruleRecommended": "Recommended (warning)",
+          "ruleOptional": "Optional",
+          "paymentFull": "Full payment required",
+          "paymentPartial": "Partial (min %)",
+          "paymentAtCheckout": "At checkout",
+          "minPaymentPct": "Min payment %",
+          "walkinAllowed": "Walk-in allowed",
+          "walkinAllowedDesc": "Allow check-in without prior reservation",
+          "groupMode": "Group check-in mode",
+          "groupModeDesc": "How to process group check-ins",
+          "groupRep": "Representative",
+          "groupIndividual": "Individual",
+          "groupBoth": "Both (operator chooses)",
+          "checkinTime": "Check-in time from",
+          "checkinTimeDesc": "Earliest check-in time",
+          "checkoutTime": "Checkout time until",
+          "checkoutTimeDesc": "Latest checkout time",
+          "deposit": "Security deposit",
+          "depositDesc": "Require deposit at check-in",
+          "depositAmount": "Deposit amount"
+        },
         "locationTitle": "Location administration",
         "locationSubtitleUnlocked": "Unlocked for configuration (2 hours)",
         "locationSubtitleLocked": "Requires owner password",
@@ -955,6 +986,7 @@
       "backPeriod": "Back {period}",
       "forwardPeriod": "Forward {period}",
       "alignToday": "Set range so today starts the window",
+      "jumpToDate": "Jump to date — pick from calendar (keeps current interval)",
       "backOneDay": "Back one day",
       "forwardOneDay": "Forward one day",
       "oneWeek": "1 week",
@@ -1489,6 +1521,7 @@
       "namePrefixRequired": "Name prefix *",
       "roomPrefixDefault": "Room ",
       "startNumber": "Start from no.",
+      "endNumber": "End at no.",
       "howManyRooms": "How many rooms",
       "bulkNamingLegend": "Bulk naming",
       "bulkNamingPrefix": "Prefix + number (e.g. Room 6)",
@@ -1726,8 +1759,9 @@
       "quickReceptieDesc": "Phone & check-in",
       "quickCalendar": "Calendar",
       "quickCalendarDesc": "Month / rooms view",
-      "quickAvail": "Live availability",
-      "quickAvailDesc": "Full panel here on Home",
+      "quickAvail": "Month availability",
+      "quickAvailDesc": "Quick view — free rooms (read-only)",
+      "openFullAvailability": "Full panel",
       "quickSettings": "Settings",
       "quickSettingsDesc": "Admin only · configuration",
       "pendingPuls": "{count, plural, one {# request to process} other {# requests to process}}",
@@ -1778,6 +1812,70 @@
       "childPlural": "children",
       "editCheckout": "Edit checkout",
       "checkedInHint": "Guest has checked in — only the checkout date can be changed."
+    },
+    "checkIn": {
+      "title": "Check-in",
+      "startCheckin": "Check-in",
+      "cancel": "Cancel",
+      "back": "Back",
+      "next": "Continue",
+      "confirm": "Confirm check-in",
+      "saving": "Processing...",
+      "success": "Check-in recorded successfully",
+      "flags": "Warnings",
+      "guestN": "Guest #{n}",
+      "step": {
+        "identity": "Identity data",
+        "validate": "Validation",
+        "payment": "Payment",
+        "finish": "Finalize"
+      },
+      "type": {
+        "reservation": "Reservation",
+        "walkin": "Walk-in",
+        "group": "Group"
+      },
+      "flag": {
+        "no_document": "Missing ID document",
+        "unpaid": "Unpaid",
+        "no_phone": "Missing phone",
+        "group_partial": "Partial group",
+        "checkout_blocked": "Checkout blocked",
+        "early_checkin": "Early check-in"
+      },
+      "validation": {
+        "ok": "All rules satisfied",
+        "warning": "Warnings — check-in possible",
+        "blocked": "Blocked — cannot proceed",
+        "warningNote": "Check-in will be marked as incomplete. Guest must provide missing information."
+      },
+      "payment": {
+        "totalDue": "Total due",
+        "status": "Payment",
+        "paid": "Paid in full",
+        "partial": "Partially paid",
+        "unpaid": "Unpaid",
+        "amountPaid": "Amount paid",
+        "deposit": "Security deposit"
+      },
+      "keyHanded": "Key / code handed over",
+      "field": {
+        "fullName": "Full name",
+        "phone": "Phone",
+        "documentType": "Document type",
+        "documentNumber": "Document number",
+        "nationality": "Nationality",
+        "birthDate": "Date of birth",
+        "selectDoc": "— Select —",
+        "docCi": "ID card",
+        "docPassport": "Passport",
+        "docPermit": "Driving license",
+        "guest": "Guest",
+        "dates": "Dates",
+        "guestCount": "Guest count",
+        "notes": "Notes",
+        "notesPlaceholder": "Notes for operator..."
+      }
     },
     "gantt": {
       "range": {
@@ -2056,6 +2154,10 @@
       "auth": {
         "login": "Sign in",
         "logout": "Sign out"
+      },
+      "checkin": {
+        "created": "Check-in completed",
+        "updated": "Check-in updated"
       },
       "occupancy": {
         "hold_created": "Room hold",

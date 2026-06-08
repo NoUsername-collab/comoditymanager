@@ -96,7 +96,7 @@
 }
 
 .admin-home-hero--liquid .admin-home-hero__strip,
-.admin-home-hero--liquid .admin-home-briefing,
+.admin-home-hero--liquid .admin-home-hero__badges,
 .admin-home-hero--liquid .admin-home-kpis {
   position: relative;
   z-index: 1;
@@ -112,10 +112,29 @@
 
 .admin-home-hero__identity {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
   min-width: 0;
   flex-shrink: 0;
+}
+
+.admin-home-hero__identity-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-home-hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.admin-home-hero__badges .admin-today-board__badge {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.6rem;
 }
 
 .admin-home-hero__title {
@@ -267,8 +286,140 @@
   padding: 1.15rem 1.4rem !important;
 }
 
+.admin-home .admin-home-window-body--compact {
+  padding: 0.3rem 0.55rem !important;
+}
+
 .admin-home .admin-today-board {
   padding: 0.15rem 0.25rem;
+}
+
+.admin-home .admin-today-board--compact {
+  padding: 0.1rem 0.15rem;
+}
+
+.admin-today-board--compact .admin-today-board__cleaning-hint {
+  margin: 0 0 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: color-mix(in srgb, #0369a1 75%, #0f172a);
+}
+
+.admin-today-board--compact .admin-today-board__grid {
+  display: grid;
+  gap: 0.35rem;
+}
+
+@media (min-width: 1024px) {
+  .admin-today-board--compact .admin-today-board__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.admin-today-board--compact .admin-today-board__col-title {
+  margin: 0;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-today-board--compact .admin-today-board__col-title--in {
+  color: #065f46;
+}
+
+.admin-today-board--compact .admin-today-board__col-title--out {
+  color: #92400e;
+}
+
+.admin-today-board--compact .admin-today-board__col-title--clean {
+  color: #5b21b6;
+}
+
+.admin-today-board--compact .admin-today-board__col-hint {
+  margin: 0.05rem 0 0;
+  font-size: 0.52rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #71717a;
+}
+
+.admin-today-board--compact .admin-today-board__col-body {
+  margin-top: 0.15rem;
+}
+
+.admin-today-board--compact .admin-today-board__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-today-board--compact .admin-today-board__empty {
+  margin: 0.15rem 0 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #71717a;
+}
+
+.admin-today-board--compact .admin-today-board__card {
+  border-radius: 0.45rem;
+  border: 1px solid #e4e4e7;
+  background: #fff;
+  padding: 0.28rem 0.45rem;
+  font-size: 0.62rem;
+  line-height: 1.25;
+  box-shadow: 0 1px 2px color-mix(in srgb, #0f172a 4%, transparent);
+}
+
+.admin-today-board--compact .admin-today-board__card--link {
+  display: block;
+  text-decoration: none;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.admin-today-board--compact .admin-today-board__card--link:hover {
+  border-color: #a7f3d0;
+  box-shadow: 0 2px 6px color-mix(in srgb, #059669 10%, transparent);
+  text-decoration: none;
+}
+
+.admin-today-board--compact .admin-today-board__card--clean {
+  border-color: color-mix(in srgb, #c4b5fd 65%, #e4e4e7);
+}
+
+.admin-today-board--compact .admin-today-board__card p {
+  margin: 0;
+}
+
+.admin-today-board--compact .admin-today-board__card p + p {
+  margin-top: 0.08rem;
+}
+
+.admin-today-board--compact .admin-today-board__card .font-semibold {
+  font-weight: 700;
+  color: #18181b;
+}
+
+.admin-today-board--compact .admin-today-board__card .text-zinc-600 {
+  color: #52525b;
+}
+
+.admin-today-board--compact .admin-today-board__card .text-zinc-500,
+.admin-today-board--compact .admin-today-board__card .text-xs {
+  font-size: 0.55rem;
+  color: #71717a;
+}
+
+.admin-today-board--compact .admin-today-board__card-link {
+  margin-top: 0.08rem !important;
+  font-size: 0.55rem !important;
 }
 
 .admin-home-section .admin-xp-window {
@@ -307,6 +458,21 @@
   justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.85rem;
+}
+
+.admin-home-panel__head--centered {
+  text-align: center;
+  justify-content: center;
+}
+
+.admin-home-panel__head--centered > div {
+  flex: 1 1 100%;
+}
+
+.admin-home-availability-preview-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .admin-home-panel__title {

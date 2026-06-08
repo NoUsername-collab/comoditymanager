@@ -366,6 +366,37 @@
         "displayLayoutProfile_compact-laptop": "compact laptop",
         "displayLayoutProfile_narrow": "narrow",
         "saveTheme": "Save theme",
+        "checkin": {
+          "title": "Правила за настаняване",
+          "saved": "Настройката е запазена",
+          "docRule": "Документ за самоличност",
+          "docRuleDesc": "Изискване за документ при настаняване",
+          "phoneRule": "Телефон за контакт",
+          "phoneRuleDesc": "Изискване за телефон при настаняване",
+          "paymentRule": "Плащане при настаняване",
+          "paymentRuleDesc": "Изискване за плащане при пристигане",
+          "ruleRequired": "Задължително (блокира)",
+          "ruleRecommended": "Препоръчително (предупреждение)",
+          "ruleOptional": "По избор",
+          "paymentFull": "Пълно плащане",
+          "paymentPartial": "Частично (мин. %)",
+          "paymentAtCheckout": "При напускане",
+          "minPaymentPct": "Мин. % плащане",
+          "walkinAllowed": "Walk-in разрешен",
+          "walkinAllowedDesc": "Позволява настаняване без предварителна резервация",
+          "groupMode": "Групово настаняване",
+          "groupModeDesc": "Как се обработва групово настаняване",
+          "groupRep": "Представител",
+          "groupIndividual": "Индивидуално",
+          "groupBoth": "И двете (операторът избира)",
+          "checkinTime": "Час за настаняване от",
+          "checkinTimeDesc": "Най-ранен час за настаняване",
+          "checkoutTime": "Час за напускане до",
+          "checkoutTimeDesc": "Най-късен час за напускане",
+          "deposit": "Гаранционен депозит",
+          "depositDesc": "Изисква депозит при настаняване",
+          "depositAmount": "Сума на депозита"
+        },
         "locationTitle": "Location administration",
         "locationSubtitleUnlocked": "Unlocked for configuration",
         "locationSubtitleLocked": "Requires Admin password",
@@ -888,6 +919,7 @@
       "backPeriod": "Back {period}",
       "forwardPeriod": "Forward {period}",
       "alignToday": "Премести периода така, че днес да е в началото",
+      "jumpToDate": "Отиди на дата — избери от календара (запазва текущия интервал)",
       "backOneDay": "Back one day",
       "forwardOneDay": "Forward one day",
       "oneWeek": "1 седм.",
@@ -1409,6 +1441,7 @@
       "namePrefixRequired": "Префикс на име *",
       "roomPrefixDefault": "Стая ",
       "startNumber": "От номер",
+      "endNumber": "До номер",
       "howManyRooms": "Колко стаи",
       "pricePerNightRon": "Цена / нощ (RON)",
       "autoPriceHint": "0 = автоматично изчисление ({suggestedPrice} RON предложено)",
@@ -1636,8 +1669,9 @@
       "quickReceptieDesc": "Телефон и check-in",
       "quickCalendar": "Календар",
       "quickCalendarDesc": "Изглед месец / стаи",
-      "quickAvail": "Наличност на живо",
-      "quickAvailDesc": "Пълен панел тук на Начало",
+      "quickAvail": "Месечна наличност",
+      "quickAvailDesc": "Бърз преглед — свободни стаи (само за четене)",
+      "openFullAvailability": "Пълен панел",
       "quickSettings": "Настройки",
       "quickSettingsDesc": "Само Admin · конфигурация",
       "pendingPuls": "{count, plural, one {# заявка за обработка} other {# заявки за обработка}}",
@@ -1688,6 +1722,70 @@
       "childPlural": "деца",
       "editCheckout": "Редактирай напускане",
       "checkedInHint": "Гостът е настанен — може да се промени само датата на напускане."
+    },
+    "checkIn": {
+      "title": "Настаняване",
+      "startCheckin": "Настаняване",
+      "cancel": "Отказ",
+      "back": "Назад",
+      "next": "Продължи",
+      "confirm": "Потвърди настаняване",
+      "saving": "Обработка...",
+      "success": "Настаняването е записано успешно",
+      "flags": "Предупреждения",
+      "guestN": "Гост #{n}",
+      "step": {
+        "identity": "Лични данни",
+        "validate": "Валидация",
+        "payment": "Плащане",
+        "finish": "Завършване"
+      },
+      "type": {
+        "reservation": "Резервация",
+        "walkin": "Walk-in",
+        "group": "Група"
+      },
+      "flag": {
+        "no_document": "Липсващ документ",
+        "unpaid": "Неплатено",
+        "no_phone": "Липсващ телефон",
+        "group_partial": "Частична група",
+        "checkout_blocked": "Напускането блокирано",
+        "early_checkin": "Ранно настаняване"
+      },
+      "validation": {
+        "ok": "Всички правила изпълнени",
+        "warning": "Предупреждения — настаняване възможно",
+        "blocked": "Блокирано — не може да продължи",
+        "warningNote": "Настаняването ще бъде маркирано като непълно. Гостът трябва да предостави липсващата информация."
+      },
+      "payment": {
+        "totalDue": "Обща сума",
+        "status": "Плащане",
+        "paid": "Платено изцяло",
+        "partial": "Частично платено",
+        "unpaid": "Неплатено",
+        "amountPaid": "Платена сума",
+        "deposit": "Депозит"
+      },
+      "keyHanded": "Ключ / код предаден",
+      "field": {
+        "fullName": "Пълно име",
+        "phone": "Телефон",
+        "documentType": "Тип документ",
+        "documentNumber": "Номер на документ",
+        "nationality": "Националност",
+        "birthDate": "Дата на раждане",
+        "selectDoc": "— Избери —",
+        "docCi": "Лична карта",
+        "docPassport": "Паспорт",
+        "docPermit": "Шофьорска книжка",
+        "guest": "Гост",
+        "dates": "Период",
+        "guestCount": "Брой гости",
+        "notes": "Бележки",
+        "notesPlaceholder": "Бележки за оператора..."
+      }
     },
     "gantt": {
       "range": {
@@ -1959,6 +2057,10 @@
       "auth": {
         "login": "Вход",
         "logout": "Изход"
+      },
+      "checkin": {
+        "created": "Настаняване извършено",
+        "updated": "Настаняване актуализирано"
       },
       "actorPublicSite": "Публичен сайт",
       "actorSystem": "Система",

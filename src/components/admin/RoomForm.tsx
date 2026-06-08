@@ -79,7 +79,7 @@ export function RoomForm({
   const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>("prefix");
   const [namePrefix, setNamePrefix] = useState(tRooms("roomPrefixDefault"));
   const [startNumber, setStartNumber] = useState(1);
-  const [bulkCount, setBulkCount] = useState(5);
+  const [endNumber, setEndNumber] = useState(10);
 
   const building = buildings.find((b) => b.id === buildingId);
   const floors = floorsByBuilding[buildingId] ?? [];
@@ -91,9 +91,11 @@ export function RoomForm({
     [building, selectedType, options, policies]
   );
 
+  const bulkCount = Math.max(1, (endNumber || startNumber) - startNumber + 1);
+
   const bulkPreview = useMemo(() => {
     if (mode !== "bulk") return [];
-    const count = Math.min(50, Math.max(1, bulkCount || 1));
+    const count = Math.min(50, Math.max(1, bulkCount));
     return buildBulkRoomNames(
       bulkNaming,
       bulkNaming === "number_only" ? "" : namePrefix,
@@ -239,28 +241,33 @@ export function RoomForm({
                   type="number"
                   min={1}
                   value={startNumber}
-                  onChange={(e) => setStartNumber(Number(e.target.value) || 1)}
+                  onChange={(e) => {
+                    const v = Number(e.target.value) || 1;
+                    setStartNumber(v);
+                    if (endNumber < v) setEndNumber(v);
+                  }}
                   className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
                 />
               </label>
               <label className="block">
-                <span className="text-sm font-medium">{tRooms("howManyRooms")}</span>
+                <span className="text-sm font-medium">{tRooms("endNumber")}</span>
                 <input
-                  name="bulk_count"
+                  name="end_number"
                   type="number"
-                  min={1}
-                  max={50}
-                  value={bulkCount}
-                  onChange={(e) => setBulkCount(Number(e.target.value) || 1)}
+                  min={startNumber}
+                  max={startNumber + 49}
+                  value={endNumber}
+                  onChange={(e) => setEndNumber(Number(e.target.value) || startNumber)}
                   className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
                 />
               </label>
+              <input type="hidden" name="bulk_count" value={bulkCount} />
             </div>
             {bulkPreview.length > 0 && (
               <p className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-700">
                 <span className="font-semibold">{tRooms("bulkPreviewLabel")}: </span>
                 {bulkPreview.join(", ")}
-                {bulkPreview.length >= 12 && bulkCount > 12 ? " …" : ""}
+                {bulkPreview.length >= 50 ? " …" : ""}
               </p>
             )}
           </div>
