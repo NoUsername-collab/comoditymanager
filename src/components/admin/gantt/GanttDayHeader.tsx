@@ -1,14 +1,18 @@
 "use client";
 
-import type { PointerEvent as ReactPointerEvent } from "react";
+import { memo, type PointerEvent as ReactPointerEvent } from "react";
 import {
   formatWeekdayNarrow,
   formatWeekdayShort,
 } from "@/lib/ro-calendar";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import { ganttDayGridStyle, dayHeaderCellClass } from "./GanttGridHelpers";
+import {
+  ganttDayGridStyle,
+  dayHeaderCellClass,
+  type GanttDayGridOptions,
+} from "./GanttGridHelpers";
 
-export function GanttDayHeader({
+export const GanttDayHeader = memo(function GanttDayHeader({
   columns,
   compact,
   onPanPointerDown,
@@ -16,6 +20,7 @@ export function GanttDayHeader({
   scrollTitle,
   todayLabel,
   locale,
+  dayGridOptions,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
@@ -24,17 +29,19 @@ export function GanttDayHeader({
   scrollTitle: string;
   todayLabel: string;
   locale: string;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   return (
     <div
       className={[
         "gantt-day-header-grid grid w-full min-w-0 border-b border-zinc-300 bg-gradient-to-b from-slate-50 to-zinc-100/90",
+        dayGridOptions?.fixed && "gantt-day-grid--fixed",
         "gantt-day-header-grid--pan",
         panActive && "gantt-day-header-grid--panning",
       ]
         .filter(Boolean)
         .join(" ")}
-      style={ganttDayGridStyle(columns.length)}
+      style={ganttDayGridStyle(columns.length, dayGridOptions)}
       data-gantt-day-grid=""
       data-gantt-day-count={columns.length}
       onPointerDown={onPanPointerDown}
@@ -72,4 +79,4 @@ export function GanttDayHeader({
       ))}
     </div>
   );
-}
+});

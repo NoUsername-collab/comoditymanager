@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type CSSProperties } from "react";
+import { memo, useMemo, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
@@ -23,12 +23,13 @@ import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges"
 import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
-import { DayGrid } from "./GanttGridHelpers";
+import { DayGrid, type GanttDayGridOptions } from "./GanttGridHelpers";
 
 /* ── Compact status LED ───────────────────────────────────────── */
 type RoomLedStatus = "checked-in" | "booked" | "free";
 
 function RoomStatusLed({ status }: { status: RoomLedStatus }) {
+  const tCommon = useTranslations("admin.common");
   const cls =
     status === "checked-in"
       ? "gantt-room-led gantt-room-led--red"
@@ -37,10 +38,10 @@ function RoomStatusLed({ status }: { status: RoomLedStatus }) {
         : "gantt-room-led gantt-room-led--green";
   const label =
     status === "checked-in"
-      ? "Checked in"
+      ? tCommon("roomLedCheckedIn")
       : status === "booked"
-        ? "Rezervat"
-        : "Liberă";
+        ? tCommon("roomLedBooked")
+        : tCommon("roomLedFree");
   return <span className={cls} title={label} aria-label={label} />;
 }
 
@@ -65,7 +66,7 @@ function BroomIcon() {
   );
 }
 
-export function GanttRoomRow({
+export const GanttRoomRow = memo(function GanttRoomRow({
   room,
   viewRange,
   occupancyByRoom,
@@ -84,6 +85,7 @@ export function GanttRoomRow({
   pinnedSelection,
   onCtrlDragEnd,
   today,
+  dayGridOptions,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -103,6 +105,7 @@ export function GanttRoomRow({
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
@@ -199,6 +202,7 @@ export function GanttRoomRow({
               touch={touch}
               checkInTime={checkInTime}
               checkOutTime={checkOutTime}
+              dayGridOptions={dayGridOptions}
             />
           }
         >
@@ -343,4 +347,4 @@ export function GanttRoomRow({
       </td>
     </tr>
   );
-}
+});

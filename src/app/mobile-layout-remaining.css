@@ -46,8 +46,19 @@ html[data-layout-chrome="compact"] .cerere-list {
 }
 
 html[data-layout-chrome="compact"] .cerere-item__head {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
   padding: 0.6rem 0.65rem 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__dates {
+  overflow-wrap: anywhere;
 }
 
 html[data-layout-chrome="compact"] .cerere-item__action {
@@ -55,6 +66,8 @@ html[data-layout-chrome="compact"] .cerere-item__action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  justify-self: stretch;
+  width: 100%;
   padding-inline: 0.75rem !important;
   font-size: 0.8125rem !important;
 }
@@ -68,6 +81,12 @@ html[data-layout-chrome="compact"] .cerere-item__profile-link {
   padding-inline: 0.15rem;
 }
 
+html[data-layout-chrome="compact"] .cerere-item__email {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 html[data-layout-chrome="compact"] .guest-badges--cerere {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.3rem;
@@ -76,6 +95,20 @@ html[data-layout-chrome="compact"] .guest-badges--cerere {
 
 html[data-layout-chrome="compact"] .guest-badges--cerere__stat {
   padding: 0.4rem 0.45rem;
+}
+
+/* ── Admin home cereri preview ── */
+html[data-layout-chrome="compact"] .admin-home-cereri-list {
+  gap: 0.4rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.55rem 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item__guest {
+  font-size: 0.78rem;
 }
 
 /* ── Cazări ── */
@@ -94,14 +127,36 @@ html[data-layout-chrome="compact"] .stay-card button {
   padding-block: 0.5rem !important;
 }
 
-html[data-layout-chrome="compact"] .cazari-tabs,
+html[data-layout-chrome="compact"] .cazari-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  gap: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-tabs::-webkit-scrollbar {
+  display: none;
+}
+
 html[data-layout-chrome="compact"] .cazari-filters {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
 html[data-layout-chrome="compact"] .cazari-tabs a,
-html[data-layout-chrome="compact"] .cazari-tabs button,
+html[data-layout-chrome="compact"] .cazari-tabs button {
+  flex-shrink: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
 html[data-layout-chrome="compact"] .cazari-filters a,
 html[data-layout-chrome="compact"] .cazari-filters button {
   min-height: var(--ml-touch-min, 2.75rem);
@@ -208,9 +263,27 @@ html[data-layout-chrome="compact"] .public-confirm-page {
   max-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .public-confirm-page .bd-room-grid,
 html[data-layout-chrome="compact"] .public-confirm-page .bd-confirm__submit {
   min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-grid,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .public-confirm-page .bd-room-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__name,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__building,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__details {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* ── Admin corner (staff on public site) ── */
@@ -240,6 +313,35 @@ html[data-layout-chrome="compact"] .landing-showcase__aside {
   min-width: 0;
 }
 
+html[data-layout-chrome="compact"] .landing-stats,
+html[data-layout-chrome="compact"] .landing-stats--inline {
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .landing-stat {
+  min-width: 0;
+  flex: 1 1 calc(50% - 0.35rem);
+  max-width: 100%;
+  padding: 0.75rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .landing-stat__label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+html[data-layout-chrome="compact"] .layout-debug-overlay {
+  width: min(18rem, calc(100vw - 1rem));
+  max-width: calc(100vw - 1rem);
+}
+
+html[data-layout-chrome="compact"] .layout-debug-overlay__body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 html[data-layout-chrome="compact"] .platform-header--split .platform-header__inner {
   padding-inline: 0.85rem;
 }
@@ -251,7 +353,60 @@ html[data-layout-chrome="compact"] .platform-header--split .platform-header__lin
   align-items: center;
 }
 
+/* ── Platform footer wrap ── */
+html[data-layout-chrome="compact"] .platform-footer {
+  padding: 2rem 1rem calc(1.5rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .platform-footer__inner {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 1.5rem;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__desc {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__links a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.2rem;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__contact a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__bottom {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  text-align: left;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__bottom p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
 /* ── Hospira admin ── */
+.hospira-tenant-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 2.75rem;
+}
+
 html[data-layout-chrome="compact"] .hospira-admin-header__inner {
   padding-inline: 0.85rem;
   flex-wrap: wrap;

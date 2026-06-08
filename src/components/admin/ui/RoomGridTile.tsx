@@ -42,7 +42,7 @@ export function RoomGridTile({
     .join(" · ");
 
   const className = [
-    "flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-[11px] font-bold leading-none shadow-sm transition",
+    "room-grid-tile flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-[11px] font-bold leading-none shadow-sm transition",
     href && "hover:scale-105 hover:shadow",
     statusOnDate === "inactive" &&
       "border-zinc-200 bg-zinc-100 text-zinc-400 line-through",

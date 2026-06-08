@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -18,13 +18,18 @@ function FlagRO({ size = 20 }: { size?: number }) {
   );
 }
 
-function FlagGB({ size = 20 }: { size?: number }) {
+function FlagGB({ size = 20, clipId }: { size?: number; clipId: string }) {
   return (
     <svg viewBox="0 0 60 30" width={size} height={Math.round(size / 2)} aria-hidden>
       <rect width="60" height="30" fill="#012169" />
       <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
-      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" strokeWidth="4" clipPath="url(#gbclip)" />
-      <clipPath id="gbclip">
+      <path
+        d="M0,0 L60,30 M60,0 L0,30"
+        stroke="#C8102E"
+        strokeWidth="4"
+        clipPath={`url(#${clipId})`}
+      />
+      <clipPath id={clipId}>
         <path d="M30,0 L30,15 60,15 60,30 30,30 30,15 0,15 0,0Z" />
       </clipPath>
       <path d="M30,0 V30 M0,15 H60" stroke="#fff" strokeWidth="10" />
@@ -43,16 +48,11 @@ function FlagBG({ size = 20 }: { size?: number }) {
   );
 }
 
-const FLAG_COMPONENTS: Record<string, (props: { size?: number }) => React.JSX.Element> = {
-  ro: FlagRO,
-  en: FlagGB,
-  bg: FlagBG,
-};
-
-function Flag({ code, size = 20 }: { code: string; size?: number }) {
-  const Comp = FLAG_COMPONENTS[code];
-  if (!Comp) return <span>{code.toUpperCase()}</span>;
-  return <Comp size={size} />;
+function Flag({ code, size = 20, gbClipId }: { code: string; size?: number; gbClipId: string }) {
+  if (code === "ro") return <FlagRO size={size} />;
+  if (code === "en") return <FlagGB size={size} clipId={gbClipId} />;
+  if (code === "bg") return <FlagBG size={size} />;
+  return <span>{code.toUpperCase()}</span>;
 }
 
 type MenuPos = { top: number; left: number };
@@ -64,6 +64,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const gbClipId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -160,7 +161,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
                 : "hover:bg-[color-mix(in_srgb,var(--site-card)_76%,var(--accent-muted))]",
             ].join(" ")}
           >
-            <Flag code={l} />
+            <Flag code={l} gbClipId={`${gbClipId}-${l}`} />
           </button>
         ))}
       </div>
@@ -180,7 +181,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
           compact ? "language-switcher__trigger--compact px-1.5 py-0.5" : "px-2 py-1 text-base",
         ].join(" ")}
       >
-        <Flag code={locale} />
+        <Flag code={locale} gbClipId={gbClipId} />
       </button>
 
       {portalReady && menu ? createPortal(menu, document.body) : null}

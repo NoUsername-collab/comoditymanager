@@ -22,7 +22,7 @@ export default async function TenantDetailPage({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="hospira-tenant-detail__head flex items-center gap-4">
         <Link
           href="/hospira-admin/tenants"
           className="text-sm text-neutral-500 hover:text-neutral-300"

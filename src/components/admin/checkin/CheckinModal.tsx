@@ -1,9 +1,26 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import { CheckinStepper } from "./CheckinStepper";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
+
+const CheckinStepper = dynamic(
+  () =>
+    import("./CheckinStepper").then((m) => ({
+      default: m.CheckinStepper,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="checkin-stepper-skeleton min-h-[16rem] animate-pulse rounded-lg bg-zinc-50"
+        aria-busy="true"
+        aria-live="polite"
+      />
+    ),
+  }
+);
 
 type Props = {
   booking: BookingForCheckin;

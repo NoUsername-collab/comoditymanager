@@ -6,12 +6,15 @@ import {
   type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from "react";
+import { debounce } from "@/lib/debounce";
+import { LAYOUT_RESIZE_DEBOUNCE_MS } from "@/layout/mobile/viewport";
 import type { DailyFreeCount } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { GanttDayHeader } from "./GanttDayHeader";
 import { GanttSummaryGrid } from "./GanttSummaryGrid";
-import type { StickyViewportState } from "./GanttGridHelpers";
+import type { GanttDayGridOptions, StickyViewportState } from "./GanttGridHelpers";
+import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import { useLocale, useTranslations } from "next-intl";
 
 export function GanttStickyViewportHeader({
@@ -26,6 +29,7 @@ export function GanttStickyViewportHeader({
   onDayClick,
   onPanPointerDown,
   panActive,
+  dayGridOptions,
 }: {
   scrollRef: RefObject<HTMLDivElement | null>;
   shellRef: RefObject<HTMLDivElement | null>;
@@ -38,9 +42,11 @@ export function GanttStickyViewportHeader({
   onDayClick: (iso: string) => void;
   onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
   panActive?: boolean;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   const tCommon = useTranslations("admin.common");
   const locale = useLocale();
+  const { compactChrome } = useCompactLayoutHints();
   const [state, setState] = useState<StickyViewportState>({
     active: false,
     left: 0,
@@ -93,23 +99,27 @@ export function GanttStickyViewportHeader({
     update();
     scrollEl.addEventListener("scroll", update, { passive: true });
     window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    window.addEventListener("orientationchange", update);
-    window.visualViewport?.addEventListener("resize", update);
-    window.visualViewport?.addEventListener("scroll", update);
+    const scheduleLayout = debounce(update, LAYOUT_RESIZE_DEBOUNCE_MS);
+    window.addEventListener("resize", scheduleLayout, { passive: true });
+    window.addEventListener("orientationchange", scheduleLayout, { passive: true });
+    window.visualViewport?.addEventListener("resize", scheduleLayout, {
+      passive: true,
+    });
+    window.visualViewport?.addEventListener("scroll", update, { passive: true });
 
     return () => {
       cancelAnimationFrame(frame);
       scrollEl.removeEventListener("scroll", update);
       window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-      window.removeEventListener("orientationchange", update);
-      window.visualViewport?.removeEventListener("resize", update);
+      window.removeEventListener("resize", scheduleLayout);
+      window.removeEventListener("orientationchange", scheduleLayout);
+      window.visualViewport?.removeEventListener("resize", scheduleLayout);
       window.visualViewport?.removeEventListener("scroll", update);
     };
   }, [scrollRef, shellRef, theadRef, viewRange.periodKey, compact, counts.length]);
 
   if (
+    compactChrome ||
     !state.active ||
     state.width <= 0 ||
     state.daysContentWidth <= 0 ||
@@ -149,6 +159,7 @@ export function GanttStickyViewportHeader({
                   scrollTitle={tCommon("scrollDrag")}
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
+                  dayGridOptions={dayGridOptions}
                 />
               </div>
             </div>
@@ -195,6 +206,7 @@ export function GanttStickyViewportHeader({
                   dayAriaLabel={(iso, free) =>
                     tCommon("freeRoomsForDate", { iso, count: free })
                   }
+                  dayGridOptions={dayGridOptions}
                 />
               </div>
             </div>

@@ -377,6 +377,8 @@
   border: 1px solid var(--border);
   background: var(--surface);
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 5.5rem;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
@@ -1336,6 +1338,8 @@
   border-radius: 0.75rem;
   background: var(--surface);
   box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 5rem;
 }
 
 .cerere-item__head {

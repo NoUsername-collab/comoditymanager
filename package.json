@@ -15,6 +15,7 @@
     "env:check:prod": "node scripts/check-env.mjs --profile=production",
     "env:check:setup": "node scripts/check-env.mjs --setup",
     "env:check:setup:staging": "node scripts/check-env.mjs --file=.env.staging.local --profile=staging --setup",
+    "env:use-staging": "node scripts/sync-staging-env.mjs",
     "env:secret": "node scripts/env-secret.mjs",
     "setup-platform-admin": "node scripts/create-platform-admin.mjs",
     "setup-platform-admin:staging": "node scripts/create-platform-admin.mjs .env.staging.local",

@@ -19,35 +19,40 @@ export default async function EditRoomPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ return_to?: string }>;
 }) {
-  const tPage = await getTranslations("admin.pages.roomEdit");
-  const tCommon = await getTranslations("admin.common");
-  const tStruct = await getTranslations("admin.locationStructure");
-  const { id } = await params;
-  const { return_to } = await searchParams;
+  const [tPage, tCommon, tStruct, { id }, { return_to }] = await Promise.all([
+    getTranslations("admin.pages.roomEdit"),
+    getTranslations("admin.common"),
+    getTranslations("admin.locationStructure"),
+    params,
+    searchParams,
+  ]);
   const backToStructure = return_to === "structure";
-  let room: Awaited<ReturnType<typeof getRoomById>> | null = null;
 
-  try {
-    room = await getRoomById(id);
-  } catch {
-    notFound();
-  }
-
-  const buildings = await listBuildings().catch(() => []);
-  const types = await listRoomTypes().catch(() => []);
-  const options = await listRoomOptions().catch(() => []);
+  const [room, buildings, types, options] = await Promise.all([
+    getRoomById(id).catch(() => null),
+    listBuildings().catch(() => []),
+    listRoomTypes().catch(() => []),
+    listRoomOptions().catch(() => []),
+  ]);
+  if (!room) notFound();
   const floorsByBuilding: Record<string, Awaited<ReturnType<typeof listFloorsByBuilding>>> = {};
   const policiesByBuilding: Record<
     string,
     Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>
   > = {};
 
-  for (const b of buildings) {
-    floorsByBuilding[b.id] = await listFloorsByBuilding(b.id).catch(() => []);
-    policiesByBuilding[b.id] = await ensureBuildingPoliciesFromLegacy(
-      b.id,
-      b.ac_mode
-    ).catch(() => []);
+  const buildingMeta = await Promise.all(
+    buildings.map(async (b) => {
+      const [floors, policies] = await Promise.all([
+        listFloorsByBuilding(b.id).catch(() => []),
+        ensureBuildingPoliciesFromLegacy(b.id, b.ac_mode).catch(() => []),
+      ]);
+      return { id: b.id, floors, policies };
+    })
+  );
+  for (const { id: buildingId, floors, policies } of buildingMeta) {
+    floorsByBuilding[buildingId] = floors;
+    policiesByBuilding[buildingId] = policies;
   }
 
   return (

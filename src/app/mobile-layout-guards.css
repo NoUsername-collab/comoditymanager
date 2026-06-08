@@ -29,6 +29,41 @@ html[data-layout-chrome="compact"] .admin-retro-page-toolbar {
   align-items: stretch;
 }
 
+/* ── Paint isolation: off-screen sections skip layout on compact ── */
+html[data-layout-chrome="compact"] .bd-col,
+html[data-layout-chrome="compact"] .bd-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 12rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-kpi,
+html[data-layout-chrome="compact"] .admin-home-panel,
+html[data-layout-chrome="compact"] .admin-home-section {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 6rem;
+}
+
+html[data-layout-chrome="compact"] .admin-retro-page .rounded-2xl.border {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 5rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-page-main,
+html[data-layout-chrome="compact"] .ml-main,
+html[data-layout-chrome="compact"] .admin-xp-window__body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
 /* retro windows: see mobile-layout-flawless.css (.admin-xp-window) */
 
 html[data-layout-chrome="compact"] .admin-retro-back {
@@ -38,11 +73,27 @@ html[data-layout-chrome="compact"] .admin-retro-back {
 /* ── Admin settings / forms (see mobile-layout-admin-pages.css) ── */
 
 html[data-layout-chrome="compact"] .admin-panel-section {
-  padding: 1rem;
+  padding: 1rem 0.85rem;
+  min-width: 0;
 }
 
-html[data-layout-chrome="compact"] .admin-gear__panel {
+html[data-layout-chrome="compact"] .admin-panel-section__title,
+html[data-layout-chrome="compact"] .admin-panel-section__desc {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-gear__dropdown:not(.admin-gear__dropdown--portal) {
   max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: 0;
+  left: auto;
+}
+
+html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: auto;
+  overflow: visible;
+  contain: none;
 }
 
 /* ── Booking detail & modals ── */
@@ -132,6 +183,31 @@ html[data-layout-chrome="compact"] .ml-shell--public .ml-main {
   padding-inline: 0;
   min-width: 0;
   overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase,
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase__main,
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase__aside {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .landing-showcase--pro {
+  aspect-ratio: 4 / 3;
+  contain: layout style;
+  min-height: 12rem;
+}
+
+html[data-layout-chrome="compact"] .landing img,
+html[data-layout-chrome="compact"] .signup-page img {
+  max-width: 100%;
+  height: auto;
+}
+
+html[data-layout-chrome="compact"] .landing img:not([fetchpriority="high"]),
+html[data-layout-chrome="compact"] .signup-page img:not([fetchpriority="high"]) {
+  content-visibility: auto;
 }
 
 html[data-layout-chrome="compact"] .ml-shell--auth {

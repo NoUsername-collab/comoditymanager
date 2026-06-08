@@ -26,13 +26,11 @@ html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"])
 
 html[data-layout-chrome="compact"] .admin-hud__right {
   margin-left: auto;
-  flex-wrap: wrap;
   justify-content: flex-end;
   max-width: 100%;
 }
 
 html[data-layout-chrome="compact"] .admin-hud__tools {
-  flex-wrap: wrap;
   justify-content: flex-end;
 }
 
@@ -40,81 +38,26 @@ html[data-layout-chrome="compact"] .admin-hud__brand-text {
   min-width: 0;
 }
 
-/* ── Gantt inline controls (gantt-premium.css @media 1180 / 860) ── */
-html[data-layout-chrome="compact"] .gantt-inline-controls__row--primary {
-  grid-template-columns: minmax(0, 1fr) auto;
-  justify-content: center;
-  min-height: auto;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__primary-section--rooms {
-  grid-column: 1 / -1;
-  justify-content: flex-start;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__row--navigator {
-  align-items: stretch;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__navigator-band {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.55rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__side-dock--left,
-html[data-layout-chrome="compact"] .gantt-inline-controls__side-dock--right,
-html[data-layout-chrome="compact"] .gantt-inline-controls__navigator-main {
-  justify-content: center;
-  justify-self: stretch;
-  grid-row: auto;
-  grid-column: 1;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__center {
-  flex: 0 0 auto;
-  position: static;
-  transform: none;
-  justify-content: flex-start;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__room-picker-shell,
-html[data-layout-chrome="compact"] .gantt-inline-controls__period-main .gantt-toolbar__period-shell {
-  min-width: 0;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__side-dock > * {
-  width: 100%;
-}
-
-html[data-layout-chrome="compact"] .gantt-inline-controls__navigator-main {
-  pointer-events: auto;
-}
-
-html[data-layout-chrome="compact"] .gantt-compact-toolbar {
+/* Gantt compact toolbar portrait grid: admin/gantt-mobile.css */
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__left {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__left {
   order: 1;
   flex: 0 0 auto;
 }
 
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__center {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__center {
   order: 3;
   flex: 1 0 100%;
   justify-content: center;
 }
 
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__right {
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__right {
   order: 2;
   margin-left: auto;
-}
-
-html[data-layout-chrome="compact"] .gantt-toolbar__period--hero,
-html[data-layout-chrome="compact"] .gantt-toolbar__quick-jumps {
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 html[data-layout-chrome="compact"] .gantt-shell table {

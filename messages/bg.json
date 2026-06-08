@@ -163,6 +163,7 @@
     },
     "receptie": {
       "confirmedBanner": "Booking confirmed.",
+      "backToAdmin": "← Админ панел",
       "backToSite": "← Public site"
     },
     "staffPreview": {
@@ -275,10 +276,16 @@
       "more": "Още",
       "moreMenuAria": "Още админ секции",
       "moreClose": "Затвори менюто",
+      "receptie": "Рецепция",
       "disponibilitate": "Наличност",
       "buildings": "Сгради",
       "rooms": "Стаи",
       "devlog": "Дневник"
+    },
+    "devlog": {
+      "paginationPrev": "← Предишна",
+      "paginationNext": "Следваща →",
+      "paginationPage": "Страница {page} / {total}"
     },
     "shell": {
       "eyebrow": "Hospira · Control",
@@ -296,7 +303,10 @@
       "password": "Парола",
       "submitting": "Влизане…",
       "submit": "Влез в панела",
-      "signupSuccess": "Акаунтът е създаден! Влез с избрания email и парола."
+      "signupSuccess": "Акаунтът е създаден! Влез с избрания email и парола.",
+      "noTenantLinked": "Няма обект, свързан с този акаунт. Създай от Регистрация или свържи се с поддръжката.",
+      "notMemberOfPension": "Този акаунт няма достъп до този обект. Използвай правилния поддомейн или се свържи със собственика.",
+      "usernameOrEmailPlaceholder": "Admin, Operator или staff email"
     },
     "logout": "Изход",
     "operational": {
@@ -435,7 +445,14 @@
           "visibilityOwner": "Само собственик",
           "visibilityAdmin": "Собственик + администратори",
           "visibilityAll": "Целият екип (вкл. оператори)"
-        }
+        },
+        "domainsPanelInfo": "Избери как гостите виждат обекта онлайн.",
+        "domainsSubtitle": "Hospira поддомейн и собствен домейн",
+        "domainsTitle": "Домейни и сайт",
+        "locationPanelInfoOwner": "Като собственик имаш постоянен достъп до структура, стаи и каталог.",
+        "locationSubtitleOwner": "Пълен достъп — без допълнителна парола",
+        "openDomainsManagement": "Управление на домейни",
+        "roleOwner": "Собственик"
       },
       "guests": {
         "title": "Клиенти — Hospira",
@@ -583,7 +600,12 @@
         "allYearsSummary": "Всички години — обобщение",
         "byCalendarMonths": "По календарни месеци",
         "noDataForYear": "Няма данни за {year}.",
-        "noBookingsYet": "Все още няма резервации — статистиката се появява след първата заявка."
+        "noBookingsYet": "Все още няма резервации — статистиката се появява след първата заявка.",
+        "confirmedCompareCaption": "Потвърдени резервации с престой в тази година",
+        "confirmedCompareTitle": "Потвърдени престои — сравнение по години",
+        "dateRangeMeta": "Период: {first}–{last} · {rooms} активни стаи (референция) · обновено {at}",
+        "occupancyCompareCaption": "Процент от годишния капацитет (активни стаи × дни)",
+        "occupancyCompareTitle": "Заетост на стаи — сравнение по години"
       },
       "location": {
         "title": "Администрация локация — Hospira",
@@ -595,7 +617,13 @@
         "catalogTitle": "Room catalog",
         "catalogSubtitle": "Room types, options — policies per building",
         "staffPassword": "Change Admin or Operator password",
-        "dangerZone": "Danger zone"
+        "dangerZone": "Danger zone",
+        "checkInHour": "Check-in (час)",
+        "checkOutHour": "Check-out (час)",
+        "extraBedsCap": "Лимит допълнителни легла (цял обект)",
+        "factoryResetSubtitle": "Factory reset — само staging / dev",
+        "modularCatalog": "Модулен каталог",
+        "staffAccounts": "Staff акаунти"
       },
       "guestDetail": {
         "identityData": "Данни за самоличност",
@@ -697,7 +725,8 @@
         "migrationHint": "for types and",
         "catalogRunMigration": "Стартирай миграцията",
         "addBuildingFirst": "Първо добави",
-        "bulkCountError": "Можете да създадете между 1 и 50 стаи наведнъж."
+        "bulkCountError": "Можете да създадете между 1 и 50 стаи наведнъж.",
+        "catalogHint": "Стартирай <code>015_room_catalog.sql</code> в Supabase SQL Editor за типове и"
       },
       "home": {
         "loadError": "Could not load dashboard data"
@@ -776,7 +805,8 @@
           "closeLocationAdmin": "Затвори администрация на локацията",
           "ownerLockHint": "Ти си собственик: този хъб остава постоянно достъпен. Катинчарът (2 ч.) важи само за администратори от екипа.",
           "sessionActive": "Сесия за конфигурация до {time}",
-          "ownerLockClosed": "Катинчарът за екипа е затворен. За теб, като собственик, достъпът до хъба не се променя."
+          "ownerLockClosed": "Катинчарът за екипа е затворен. За теб, като собственик, достъпът до хъба не се променя.",
+          "ownerPassword": "Парола на собственика"
         },
         "staffPanel": {
           "passwordUpdated": "Паролата е обновена.",
@@ -806,7 +836,8 @@
       },
       "invoice": {
         "description": "Презентация за клиента — не замества фискална фактура.",
-        "backToBooking": "Назад към резервацията"
+        "backToBooking": "Назад към резервацията",
+        "title": "Информативен документ"
       },
       "staffManagement": {
         "title": "Ekip",
@@ -836,6 +867,20 @@
         "roleHint": "Operatoryt mozhe da pravi check-in/out. Adminyt upravlyava rezervaciite.",
         "inviteButton": "Pokani",
         "inviteSuccess": "Pokanata e izpratena uspeshno!"
+      },
+      "buildings": {
+        "addBuilding": "+ Добави сграда",
+        "buildingFloorsTitle": "{name} — етажи и стаи",
+        "listDescription": "Избери дата — виж свободни / заети стаи по сграда и в мрежата.",
+        "listTitle": "Сгради — Hospira",
+        "newHint": "Можеш да добавиш <strong>нови стаи</strong> след създаването. Цветът се вижда в календара.",
+        "newTitle": "Нова сграда — Hospira",
+        "noBuildings": "Все още няма сгради — добави първата с бутона по-горе.",
+        "unknownError": "Неизвестна грешка"
+      },
+      "disponibilitate": {
+        "description": "Heat map, KPI, свободни уикенди, филтър сграда, Shift+click интервал, live обновяване.",
+        "title": "Наличност — Hospira"
       }
     },
     "common": {
@@ -1327,7 +1372,23 @@
       "displayOrder": "Ред на показване",
       "availabilityHeatmap": "Heat map наличност",
       "activeRooms": "активни стаи",
-      "calendar": "Календар"
+      "calendar": "Календар",
+      "catalogSqlHint": "за типове и опции в Supabase SQL Editor",
+      "checkIn": "Check-in",
+      "checkInHour": "Check-in (час)",
+      "checkOutHour": "Check-out (час)",
+      "emDash": "—",
+      "extraBedsCap": "Лимит допълнителни легла (цял обект)",
+      "factoryResetSubtitle": "Factory reset — само staging / dev",
+      "modularCatalog": "Модулен каталог",
+      "moveRoomIntroHtml": "От <strong>{room}</strong> — ако престоят не е започнал, преместваме целия престой; иначе разделяме сегментите.",
+      "newBuildingHint": "Нови стаи могат да се добавят след създаването. Цветът се вижда в календара.",
+      "roomGridDesc": "Статус за {date} — натисни стая за детайли.",
+      "roomsPending": "Стаи без checkout днес",
+      "roomLedCheckedIn": "Check-in записан",
+      "roomLedBooked": "Резервирана",
+      "roomLedFree": "Свободна",
+      "staffAccounts": "Staff акаунти"
     },
     "rooms": {
       "extraBed": "Допълнително легло",
@@ -1493,7 +1554,11 @@
       "allowExtraBeds": "Позволи допълнителни легла",
       "maxExtraBeds": "Макс. допълнителни легла",
       "createRooms": "Създай стаите",
-      "saveRoom": "Запази стаята"
+      "saveRoom": "Запази стаята",
+      "namePrefixEmptyHint": "Празно = само числа (1, 2, 3 …)",
+      "namePrefixOptional": "Префикс (по избор)",
+      "namePrefixPlaceholder": "Стая или остави празно",
+      "roomNamePlaceholderPlain": "напр. 1 или Стая 1"
     },
     "roomOptionFields": {
       "noOptionsInCatalog": "Няма опции в каталога — добави от Администрация на локация.",
@@ -1563,7 +1628,10 @@
       "deleteFloor": "Изтрий етаж",
       "deleteFloorConfirm": "Изтриване на „{name}“? {count} стаи без етаж след това.",
       "assignFloor": "Етаж",
-      "noFloorOption": "Без етаж"
+      "noFloorOption": "Без етаж",
+      "activateRoom": "Активирай",
+      "deactivateRoom": "Деактивирай",
+      "deleteRoomConfirm": "Изтриваш стая {name}? Действието е необратимо, ако няма резервации."
     },
     "addFloorForm": {
       "newFloor": "Нов етаж",
@@ -1695,7 +1763,15 @@
       "memberIdRequired": "ID na chlen lipstva.",
       "cannotDemoteLastOwner": "Ne mozhete da promenite poslednata rolya na sobstvenika.",
       "cannotDeactivateOwner": "Ne mozhete da deaktivirate sobstvenika.",
-      "genericError": "Vyznkna greshka. Opitatye otnovo."
+      "genericError": "Vyznkna greshka. Opitatye otnovo.",
+      "bulkDuplicateNames": "Тези имена на стаи вече съществуват на същия етаж: {names}",
+      "floorBuildingMismatch": "Избраният етаж не принадлежи на избраната сграда. Презареди страницата и опитай отново.",
+      "noTenantLinked": "Няма обект, свързан с този акаунт. Създай от Регистрация или свържи се с поддръжката.",
+      "notMemberOfPension": "Този акаунт няма достъп до този обект.",
+      "ownerPasswordIncorrect": "Невалидна парола на собственика",
+      "roomActivated": "Стаята е реактивирана",
+      "roomDeactivated": "Стаята е маркирана като неактивна",
+      "roomTypeConstraint": "Типът стая не е съвместим със схемата на базата. Стартирай миграция 050_rooms_room_type_slug.sql в Supabase и опитай отново."
     },
     "availabilityLightSummary": {
       "minFree": "Минимум свободни",
@@ -2062,7 +2138,14 @@
         "cleaning": "Почистване",
         "nightArrivalFrom": "Нощ — пристигане (от {time})",
         "weekend": "Уикенд"
-      }
+      },
+      "aria15Days": "15 дни",
+      "ariaOneDay": "един ден",
+      "ariaOneMonth": "един месец",
+      "ariaOneQuarter": "едно тримесечие",
+      "ariaOneWeek": "една седмица",
+      "step15Days": "Стъпка 15 дни",
+      "stepQuarter": "Стъпка 1 тримесечие"
     },
     "activity": {
       "booking": {
@@ -2153,7 +2236,25 @@
       "bookingsSummaryHint": "заявки · потвърждения · премествания",
       "adminSummaryHint": "вход · настройки · стаи",
       "mostRecent": "Най-скорошен",
-      "lastEventInJournal": "последно събитие в журнала"
+      "lastEventInJournal": "последно събитие в журнала",
+      "activity": {
+        "undone": "Действието е отменено"
+      },
+      "occupancy": {
+        "block_created": "Блокиране на стая",
+        "hold_created": "Hold на стая"
+      },
+      "undo": "Отмени",
+      "undoConfirm": "Отменяш това действие? Предишното състояние ще бъде възстановено, когато е възможно.",
+      "undoFailed": "Отмяната не успя.",
+      "undoFailedTitle": "Не може да се отмени",
+      "undoMissingId": "Събитието не е намерено.",
+      "undoNotAllowed": "Това действие вече не може да се отмени (изтекло или вече отменено).",
+      "undoPending": "Отмяна…",
+      "undoStateChanged": "Данните са се променили междувременно — отмяната не е безопасна.",
+      "undoSuccessMessage": "Предишното състояние е възстановено.",
+      "undoSuccessTitle": "Действието е отменено",
+      "undoneBadge": "Отменено"
     },
     "bookingActivity": {
       "title": "История на действията",
@@ -2174,7 +2275,16 @@
       "currentMonthOccupancy": "Заетост за текущия месец",
       "confirmedStaysCard": "Потвърдени престои",
       "currentMonthRevenue": "Приходи за текущия месец",
-      "roomNightsOccupied": "Заети стаи-нощувки"
+      "roomNightsOccupied": "Заети стаи-нощувки",
+      "capacityHint": "Месечен капацитет = активни стаи × дни в месеца. Пример: {rooms} стаи × {days} дни = {total} възможни нощувки.",
+      "checkInToday": "Check-in днес ({time})",
+      "checkOutToday": "Check-out днес ({time})",
+      "departureGuest": "Напускане: {name}",
+      "occupancyPctHint": "Процент от възможните нощувки този месец ({rooms} стаи × {days} дни). 100% = пълни всяка нощ.",
+      "revenueHint": "Сума от общите цени при потвърждение за престои в текущия месец.",
+      "roomNightHint": "Всяка заета стая за една нощ = 1 нощувка. 2 стаи × 4 нощи = 8 нощувки. Само потвърдени резервации.",
+      "roomsToCleanHint": "След напускане на госта, преди следващия check-in.",
+      "roomsToCleanTitle": "Стаи за почистване"
     },
     "guests": {
       "searchPlaceholder": "Търси име, email, телефон…",
@@ -2446,6 +2556,38 @@
           "lastnameCityYear": "Фамилия + град + година"
         }
       }
+    },
+    "domains": {
+      "addCustomTitle": "Добави собствен домейн",
+      "addDomain": "Добави домейн",
+      "adding": "Добавяне…",
+      "backToSettings": "← Назад към настройки",
+      "dnsHint": "При регистратора: CNAME към cname.vercel-dns.com, после добави домейна в Vercel → Domains.",
+      "errors": {
+        "admin_only": "Само администратори могат да управляват домейни.",
+        "domain_taken": "Домейнът вече се използва.",
+        "error": "Грешка. Опитай отново.",
+        "invalid_domain": "Невалиден домейн.",
+        "plan_not_allowed": "Планът ти не включва този режим.",
+        "reserved_domain": "Не можеш да използваш домейна на платформата Hospira."
+      },
+      "hospiraSubdomain": "Hospira поддомейн (по подразбиране, винаги активен)",
+      "hospiraSubdomainHint": "Публичен сайт, календар за резервации и админ.",
+      "kinds": {
+        "custom_brand": "Собствен — само начална страница; останалото на поддомейн",
+        "custom_full": "Собствен — сайт + админ + резервации",
+        "custom_public": "Собствен — сайт + резервации; админ на Hospira",
+        "hospira_subdomain": "Hospira поддомейн (пълно приложение)"
+      },
+      "markVerified": "Маркирай като верифициран (след DNS + Vercel)",
+      "openSite": "Отвори сайта",
+      "pageDescription": "Hospira поддомейн и собствени домейни (всички режими).",
+      "pageTitle": "Домейни",
+      "remove": "Премахни",
+      "routingKind": "Режим на показване",
+      "statusPending": "Изчаква DNS / SSL",
+      "statusVerified": "Верифициран",
+      "upgradeForCustom": "Собствен домейн: наличен от план Professional."
     }
   },
   "booking": {
@@ -2557,7 +2699,8 @@
     "passwordMinLength": "Parolata tryabva da e pone 8 simvola.",
     "invalidPensionName": "Imeto sydyrzha nevalzhni simvoli.",
     "slugTaken": "Tova ime veche se izpolzva.",
-    "emailAlreadyRegistered": "Tozi email veche e registriran."
+    "emailAlreadyRegistered": "Tozi email veche e registriran.",
+    "emailStaleOwnerRow": "Съществува обект за този email без акаунт за вход. Влез или се свържи с поддръжката."
   },
   "landing": {
     "heroBadge": "Softuer za pansioni",

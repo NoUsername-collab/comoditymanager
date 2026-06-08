@@ -11,9 +11,11 @@ import {
 } from "@/services/room-catalog";
 
 export default async function LocationStructurePage() {
-  const t = await getTranslations("admin.locationStructure");
-  const tPage = await getTranslations("admin.pages.settingsLocation");
-  const tCommon = await getTranslations("admin.common");
+  const [t, tPage, tCommon] = await Promise.all([
+    getTranslations("admin.locationStructure"),
+    getTranslations("admin.pages.settingsLocation"),
+    getTranslations("admin.common"),
+  ]);
   await requireLocationAdmin();
 
   let structures: Awaited<ReturnType<typeof listLocationStructure>> = [];
@@ -25,22 +27,33 @@ export default async function LocationStructurePage() {
   let error: string | null = null;
 
   try {
-    structures = await listLocationStructure();
-    try {
-      catalogOptions = await listRoomOptions(true);
-      for (const s of structures) {
+    const [structuresResult, catalogResult] = await Promise.allSettled([
+      listLocationStructure(),
+      listRoomOptions(true),
+    ]);
+    if (structuresResult.status === "rejected") {
+      throw structuresResult.reason;
+    }
+    structures = structuresResult.value;
+    catalogOptions =
+      catalogResult.status === "fulfilled" ? catalogResult.value : [];
+    const policyEntries = await Promise.all(
+      structures.map(async (s) => {
         try {
-          policiesByBuilding[s.building.id] =
-            await ensureBuildingPoliciesFromLegacy(
-              s.building.id,
-              s.building.ac_mode
-            );
+          const policies = await ensureBuildingPoliciesFromLegacy(
+            s.building.id,
+            s.building.ac_mode
+          );
+          return [s.building.id, policies] as const;
         } catch {
-          policiesByBuilding[s.building.id] = [];
+          return [s.building.id, [] as Awaited<
+            ReturnType<typeof ensureBuildingPoliciesFromLegacy>
+          >] as const;
         }
-      }
-    } catch {
-      catalogOptions = [];
+      })
+    );
+    for (const [buildingId, policies] of policyEntries) {
+      policiesByBuilding[buildingId] = policies;
     }
   } catch (e) {
     error = formatAdminError(e, tCommon);

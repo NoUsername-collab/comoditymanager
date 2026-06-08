@@ -29,10 +29,15 @@ describe("resolveEffectiveLayoutChrome", () => {
     expect(resolveEffectiveLayoutChrome("narrow", 1920, 1080)).toBe("compact");
   });
 
-  it("forces wide chrome for manual desktop preferences", () => {
-    expect(resolveEffectiveLayoutChrome("wide", 390, 844)).toBe("wide");
-    expect(resolveEffectiveLayoutChrome("laptop", 390, 844)).toBe("wide");
-    expect(resolveEffectiveLayoutChrome("compact-laptop", 390, 844)).toBe("wide");
+  it("caps phones to compact chrome even when desktop layout is forced", () => {
+    expect(resolveEffectiveLayoutChrome("wide", 390, 844)).toBe("compact");
+    expect(resolveEffectiveLayoutChrome("laptop", 390, 844)).toBe("compact");
+    expect(resolveEffectiveLayoutChrome("compact-laptop", 390, 844)).toBe("compact");
+  });
+
+  it("allows wide chrome for manual desktop preferences on large viewports", () => {
+    expect(resolveEffectiveLayoutChrome("wide", 1440, 900)).toBe("wide");
+    expect(resolveEffectiveLayoutChrome("laptop", 1280, 800)).toBe("wide");
   });
 });
 

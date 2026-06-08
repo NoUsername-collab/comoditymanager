@@ -1,17 +1,14 @@
-﻿import { AvailabilityDashboard } from "@/components/admin/availability/AvailabilityDashboard";
+﻿import { Suspense } from "react";
+import { CalendarAvailabilityStream } from "@/components/admin/calendar/CalendarAvailabilityStream";
 import { GanttCalendarLazy } from "@/components/admin/GanttCalendarLazy";
-import { GanttAvailabilityHeatmapPanel } from "@/components/admin/gantt/GanttAvailabilityHeatmapPanel";
+import { GanttAvailabilityHeatmapPanelLazy } from "@/components/admin/gantt/GanttAvailabilityHeatmapPanelLazy";
 import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import type { GanttViewMode } from "@/components/admin/gantt/GanttToolbar";
 import { readAvailabilityPanelState, mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { resolveGanttRange } from "@/domain/gantt/view-range";
-import { listBuildings } from "@/services/buildings";
-import { listAllRooms } from "@/services/rooms-admin";
-import { listBookingsForRange } from "@/services/bookings";
-import { getPensionSettings } from "@/services/pension-settings";
-import { loadAvailabilityDashboard } from "@/services/availability-month";
+import { loadCalendarCoreData } from "@/services/calendar-page-data";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
@@ -20,7 +17,6 @@ import { parseGanttFilter, parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
-import { getRoomOccupancy } from "@/services/room-occupancy";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { parseIso } from "@/lib/stay-dates";
@@ -64,12 +60,15 @@ export default async function AdminCalendarPage({
     avail_feat?: string;
   }>;
 }) {
-  const t = await getTranslations("admin.pages.calendar");
-  const tCommon = await getTranslations("admin.common");
-  const tGanttRange = await getTranslations("admin.gantt.range");
-  const locale = await getLocale();
-  const params = await searchParams;
-  const effectiveToday = await getEffectiveToday();
+  const [t, tCommon, tGanttRange, locale, params, effectiveToday] =
+    await Promise.all([
+      getTranslations("admin.pages.calendar"),
+      getTranslations("admin.common"),
+      getTranslations("admin.gantt.range"),
+      getLocale(),
+      searchParams,
+      getEffectiveToday(),
+    ]);
   const refDate = parseIso(effectiveToday);
   const year = Number(params.y) || refDate.getFullYear();
   const month = params.m !== undefined ? Number(params.m) : refDate.getMonth();
@@ -108,26 +107,14 @@ export default async function AdminCalendarPage({
     { year, month, featureFilter: feat }
   );
 
-  let data:
-    | [
-        Awaited<ReturnType<typeof listAllRooms>>,
-        Awaited<ReturnType<typeof listBookingsForRange>>,
-        Awaited<ReturnType<typeof getPensionSettings>>,
-        Awaited<ReturnType<typeof listBuildings>>,
-        Awaited<ReturnType<typeof getRoomOccupancy>>,
-      ]
-    | undefined;
+  let data: Awaited<ReturnType<typeof loadCalendarCoreData>> | undefined;
 
   try {
-    data = await Promise.all([
-      listAllRooms(),
-      listBookingsForRange(viewRange.rangeStart, viewRange.rangeEnd),
-      getPensionSettings().catch(() => null),
-      listBuildings(),
-      getRoomOccupancy(viewRange.rangeStart, viewRange.rangeEnd, {
-        referenceDate: effectiveToday,
-      }),
-    ]);
+    data = await loadCalendarCoreData(
+      viewRange.rangeStart,
+      viewRange.rangeEnd,
+      effectiveToday
+    );
   } catch (e) {
     const msg = e instanceof Error ? e.message : t("genericError");
     return (
@@ -142,42 +129,19 @@ export default async function AdminCalendarPage({
 
   if (!data) return null;
 
-  const [
-    allRoomsRaw,
-    allBookings,
-    settings,
-    buildingsRaw,
-    occupancy,
-  ] = data;
-  let availabilityDashboard = null;
-  let availabilityError: string | null = null;
-
-  if (availabilityState.open) {
-    try {
-      availabilityDashboard = await loadAvailabilityDashboard(
-        availabilityState.year,
-        availabilityState.month,
-        availabilityState.buildingId,
-        availabilityState.featureFilter
-      );
-    } catch (e) {
-      availabilityError = e instanceof Error ? e.message : t("heatmapError");
-    }
-  }
-
+  const [allRoomsRaw, allBookings, settings, buildingsRaw, occupancy] = data;
   const activeBuildings = buildingsRaw.filter((b) => b.is_active);
   const allRooms = allRoomsRaw.filter((r) => r.is_active);
+  const roomIds = allRooms.map((r) => r.id);
+  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(roomIds).catch(
+    () => ({} as Record<string, string[]>)
+  );
   const checkInTime =
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
   const checkOutTime =
     settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
   const buildingById = new Map(activeBuildings.map((b) => [b.id, b]));
-
-  const roomIds = allRooms.map((r) => r.id);
-  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(roomIds).catch(
-    () => ({} as Record<string, string[]>)
-  );
 
   const ganttRoomsAll = allRooms.map((r) => {
     const building = buildingById.get(r.building_id);
@@ -306,40 +270,37 @@ export default async function AdminCalendarPage({
           cleanCount={todayCleanCount}
         />
       </RetroXpWindow>
-      <GanttAvailabilityHeatmapPanel
+      <GanttAvailabilityHeatmapPanelLazy
         open={availabilityState.open}
         closeHref={closeAvailabilityHref}
-        title={availabilityDashboard?.title ?? t("windowGantt")}
+        title={t("windowGantt")}
         prevHref={prevAvailabilityHref}
         nextHref={nextAvailabilityHref}
-        roomCountLabel={
-          availabilityDashboard
-            ? t("roomCountLabel", {
-                count: availabilityDashboard.total_rooms,
-                suffix: availabilityState.buildingId ? t("buildingFilterSuffix") : "",
-              })
-            : t("windowGantt")
-        }
+        roomCountLabel={t("windowGantt")}
       >
-        {availabilityError ? (
-          <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-            {availabilityError}
-          </p>
-        ) : availabilityDashboard ? (
-          <AvailabilityDashboard
-            dashboard={availabilityDashboard}
-            initialDay={availabilityState.day ?? undefined}
-            buildingId={availabilityState.buildingId}
-            featureFilter={availabilityState.featureFilter}
-            view={availabilityState.view}
-            weekStart={availabilityState.weekStart}
-            basePath="/admin/calendar"
-            queryPrefix="avail_"
-            extraQueryParams={{ avail: "1" }}
-            today={effectiveToday}
-          />
+        {availabilityState.open ? (
+          <Suspense
+            fallback={
+              <div
+                className="availability-stream-skeleton min-h-[14rem] animate-pulse rounded-xl border border-zinc-200 bg-zinc-50"
+                aria-busy="true"
+                aria-live="polite"
+              />
+            }
+          >
+            <CalendarAvailabilityStream
+              year={availabilityState.year}
+              month={availabilityState.month}
+              buildingId={availabilityState.buildingId}
+              featureFilter={availabilityState.featureFilter}
+              view={availabilityState.view}
+              weekStart={availabilityState.weekStart}
+              initialDay={availabilityState.day ?? undefined}
+              today={effectiveToday}
+            />
+          </Suspense>
         ) : null}
-      </GanttAvailabilityHeatmapPanel>
+      </GanttAvailabilityHeatmapPanelLazy>
     </AdminRetroPageFrame>
   );
 }

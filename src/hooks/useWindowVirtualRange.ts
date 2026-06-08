@@ -1,0 +1,109 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+export function useWindowVirtualRange({
+  count,
+  estimateSize,
+  scrollMargin,
+  overscan = 4,
+  enabled = true,
+}: {
+  count: number;
+  estimateSize: (index: number) => number;
+  scrollMargin: number;
+  overscan?: number;
+  enabled?: boolean;
+}) {
+  const offsets = useMemo(() => {
+    const result = new Array<number>(count + 1);
+    result[0] = 0;
+    for (let i = 0; i < count; i++) {
+      result[i + 1] = result[i]! + estimateSize(i);
+    }
+    return result;
+  }, [count, estimateSize]);
+
+  const totalSize = offsets[count] ?? 0;
+
+  const [range, setRange] = useState(() => ({
+    start: 0,
+    end: enabled ? Math.min(count, overscan * 2 + 1) : count,
+  }));
+
+  const measure = useCallback(() => {
+    if (!enabled || count === 0) {
+      setRange({ start: 0, end: count });
+      return;
+    }
+
+    const viewTop = window.scrollY;
+    const viewBottom = viewTop + window.innerHeight;
+    const listTop = scrollMargin;
+    const listBottom = listTop + totalSize;
+
+    if (viewBottom < listTop) {
+      setRange({ start: 0, end: Math.min(count, overscan * 2) });
+      return;
+    }
+    if (viewTop > listBottom) {
+      setRange({
+        start: Math.max(0, count - overscan * 2),
+        end: count,
+      });
+      return;
+    }
+
+    const relTop = Math.max(0, viewTop - listTop);
+    const relBottom = Math.min(totalSize, viewBottom - listTop);
+
+    let lo = 0;
+    let hi = count;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if ((offsets[mid + 1] ?? 0) <= relTop) lo = mid + 1;
+      else hi = mid;
+    }
+    const start = lo;
+
+    lo = start;
+    hi = count;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if ((offsets[mid] ?? 0) < relBottom) lo = mid + 1;
+      else hi = mid;
+    }
+    const end = lo;
+
+    setRange({
+      start: Math.max(0, start - overscan),
+      end: Math.min(count, end + overscan),
+    });
+  }, [count, enabled, offsets, overscan, scrollMargin, totalSize]);
+
+  useEffect(() => {
+    let frame = 0;
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    window.visualViewport?.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      window.visualViewport?.removeEventListener("resize", schedule);
+    };
+  }, [measure]);
+
+  const paddingTop = enabled ? (offsets[range.start] ?? 0) : 0;
+  const paddingBottom = enabled
+    ? totalSize - (offsets[range.end] ?? totalSize)
+    : 0;
+
+  return { range, paddingTop, paddingBottom, remeasure: measure };
+}

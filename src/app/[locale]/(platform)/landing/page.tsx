@@ -3,8 +3,10 @@ import { PricingGrid } from "@/components/platform/PricingGrid";
 import { getTranslations } from "next-intl/server";
 
 export default async function LandingPage() {
-  const t = await getTranslations("landing");
-  const tp = await getTranslations("pricing");
+  const [t, tp] = await Promise.all([
+    getTranslations("landing"),
+    getTranslations("pricing"),
+  ]);
 
   return (
     <main className="landing landing--split">

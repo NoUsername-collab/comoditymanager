@@ -1,6 +1,7 @@
 import "@/app/admin/admin-devlog.css";
 import { listDevLogs, type DevLogLevel } from "@/services/dev-logs";
 import { DevLogFilters } from "@/components/admin/devlog/DevLogFilters";
+import { getTranslations } from "next-intl/server";
 
 const LEVEL_STYLES: Record<DevLogLevel, { bg: string; text: string; border: string }> = {
   error: { bg: "#fef2f2", text: "#991b1b", border: "#fca5a5" },
@@ -25,6 +26,7 @@ export default async function DevLogPage({
 }: {
   searchParams: Promise<{ level?: string; source?: string; page?: string }>;
 }) {
+  const t = await getTranslations("admin.devlog");
   const raw = await searchParams;
   const level = (raw.level as DevLogLevel) || undefined;
   const source = raw.source || undefined;
@@ -123,11 +125,11 @@ export default async function DevLogPage({
               })}`}
               className="devlog-pagination__btn"
             >
-              ← Anterior
+              {t("paginationPrev")}
             </a>
           )}
           <span className="devlog-pagination__info">
-            Pagina {page} / {totalPages}
+            {t("paginationPage", { page, total: totalPages })}
           </span>
           {page < totalPages && (
             <a
@@ -138,7 +140,7 @@ export default async function DevLogPage({
               })}`}
               className="devlog-pagination__btn"
             >
-              Următor →
+              {t("paginationNext")}
             </a>
           )}
         </div>

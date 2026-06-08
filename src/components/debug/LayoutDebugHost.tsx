@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
 const LayoutDebugOverlay = dynamic(
   () =>
@@ -10,6 +11,12 @@ const LayoutDebugOverlay = dynamic(
 
 /** Renders layout diagnostics when ?layout_debug=1 or localStorage flag is set. */
 export function LayoutDebugHost() {
-  if (process.env.NODE_ENV !== "development") return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (process.env.NODE_ENV !== "development" || !mounted) return null;
   return <LayoutDebugOverlay />;
 }

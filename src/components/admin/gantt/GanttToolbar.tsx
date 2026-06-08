@@ -16,7 +16,6 @@ import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
 import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
-import { useIsCompactChrome } from "@/hooks/useMobileLayout";
 
 export type GanttViewMode = "all" | "building" | "room";
 
@@ -147,9 +146,8 @@ export function GanttToolbar({
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
-  const compactChrome = useIsCompactChrome();
   const compactViewport = useIsCompactViewport();
-  const forceShortLabels = compactChrome || compactViewport;
+  const forceShortLabels = compactViewport;
   const cereriCount = cereri.length;
   const router = useRouter();
   const searchParams = useSearchParams();

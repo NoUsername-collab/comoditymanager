@@ -721,6 +721,7 @@ export function GanttQuickActionPanel({
       title={titleMap[mode]}
       variant="modal"
       width={640}
+      className="gantt-quick-panel"
     >
       <div className="gantt-toolbar-occ-form space-y-4 p-1">
         {mode !== "move" ? (

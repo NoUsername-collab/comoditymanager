@@ -163,6 +163,7 @@
     },
     "receptie": {
       "confirmedBanner": "Rezervare confirmată.",
+      "backToAdmin": "← Panou admin",
       "backToSite": "← Site public"
     },
     "staffPreview": {
@@ -275,10 +276,16 @@
       "more": "Mai mult",
       "moreMenuAria": "Mai multe secțiuni admin",
       "moreClose": "Închide meniul",
+      "receptie": "Recepție",
       "disponibilitate": "Disponibilitate",
       "buildings": "Clădiri",
       "rooms": "Camere",
       "devlog": "Jurnal"
+    },
+    "devlog": {
+      "paginationPrev": "← Anterior",
+      "paginationNext": "Următor →",
+      "paginationPage": "Pagina {page} / {total}"
     },
     "shell": {
       "eyebrow": "Hospira · Control",
@@ -749,7 +756,9 @@
         "title": "Cameră nouă — Hospira",
         "migrationHint": "pentru tipuri și",
         "catalogHint": "Rulează <code>015_room_catalog.sql</code> în Supabase SQL Editor pentru tipuri și",
-        "bulkCountError": "Poți crea între 1 și 50 de camere dintr-o dată."
+        "bulkCountError": "Poți crea între 1 și 50 de camere dintr-o dată.",
+        "catalogRunMigration": "Rulează migrarea",
+        "addBuildingFirst": "Adaugă mai întâi o"
       },
       "home": {
         "loadError": "Nu s-au putut încărca datele"
@@ -840,6 +849,7 @@
         },
         "unlock": {
           "hintHtml": "Introdu <strong>parola proprietarului</strong> pensiunii (contul creat la înregistrare). Sesiunea durează 2 ore.",
+          "adminPassword": "Parolă admin",
           "ownerPassword": "Parolă proprietar",
           "checking": "Se verifică…",
           "openLocationAdmin": "Deschide administrare locație",
@@ -1274,6 +1284,9 @@
       "noDepartures": "Nicio plecare programată.",
       "noRoomsToClean": "Nicio cameră de curățat.",
       "roomsPending": "Camere fără checkout azi",
+      "roomLedCheckedIn": "Check-in făcut",
+      "roomLedBooked": "Rezervat",
+      "roomLedFree": "Liberă",
       "freeOnDay": "Libere pe {day}",
       "freeOnFocusedDay": "Libere la ziua focală",
       "occupiedOnDay": "Ocupate pe {day}",
@@ -1406,7 +1419,8 @@
       "displayOrder": "Ordine afișare",
       "availabilityHeatmap": "Heat map disponibilitate",
       "activeRooms": "camere active",
-      "calendar": "Calendar"
+      "calendar": "Calendar",
+      "moveRoomIntroHtml": "Din <strong>{room}</strong> — dacă sejurul nu a început, mutăm tot sejurul; altfel împărțim segmentele."
     },
     "rooms": {
       "extraBed": "Pat extra",

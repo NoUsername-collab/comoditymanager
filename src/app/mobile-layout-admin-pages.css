@@ -18,8 +18,7 @@ html[data-layout-chrome="compact"] .admin-palette-extend__modes {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-html[data-layout-chrome="compact"] .admin-staff-row,
-html[data-layout-chrome="compact"] .admin-domain-row {
+html[data-layout-chrome="compact"] .admin-staff-row {
   flex-direction: column;
   align-items: stretch;
   gap: 0.5rem;
@@ -38,11 +37,6 @@ html[data-layout-chrome="compact"] .stay-card .stay-card__actions button,
 html[data-layout-chrome="compact"] .stay-card .stay-card__actions a {
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: 0.8125rem;
-}
-
-html[data-layout-chrome="compact"] .stay-card__toolbar {
-  flex-direction: column;
-  align-items: stretch;
 }
 
 /* ── Disponibilitate ── */
@@ -71,9 +65,34 @@ html[data-layout-chrome="compact"] .building-dashboard-card__header {
 }
 
 /* ── Guests search ── */
+html[data-layout-chrome="compact"] .guest-search__bar {
+  flex-wrap: wrap;
+  min-width: 0 !important;
+  width: 100%;
+}
+
 html[data-layout-chrome="compact"] .guest-search__input {
   min-width: 0 !important;
   width: 100%;
+  flex: 1 1 calc(100% - 2.5rem);
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  flex: 1 1 100%;
+  border-left: none;
+  border-top: 1px solid var(--border, #e4e4e7);
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+  padding-inline: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search__submit {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.875rem;
 }
 
 /* ── Receptie / phone booking ── */
@@ -145,6 +164,11 @@ html[data-layout-chrome="compact"] .language-switcher__trigger {
 html[data-layout-chrome="compact"] .gantt-filters-panel,
 html[data-layout-chrome="compact"] .admin-floating-panel {
   max-width: min(360px, calc(100vw - 1rem));
+  margin-inline: auto;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel--gantt {
+  max-width: min(340px, calc(100vw - 1rem));
 }
 
 html[data-layout-chrome="compact"] .gantt-inline-controls__period-main {

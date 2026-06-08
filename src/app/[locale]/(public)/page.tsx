@@ -6,32 +6,30 @@ import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
 export default async function HomePage() {
-  const t = await getTranslations("public.home");
-  const tShell = await getTranslations("public.shell");
+  const [t, tShell, settings, staffUser] = await Promise.all([
+    getTranslations("public.home"),
+    getTranslations("public.shell"),
+    getPensionSettings().catch(() => null),
+    getAdminUser().catch(() => null),
+  ]);
+
   let title = tShell("brandFallback");
   let checkIn = "14:00";
   let checkOut = "11:00";
-  let staffPreview: Awaited<ReturnType<typeof loadStaffPublicPreview>> | null =
-    null;
-
-  try {
-    const s = await getPensionSettings();
-    if (s) {
-      title = s.display_name;
-      checkIn = s.default_check_in_time;
-      checkOut = s.default_check_out_time;
-    }
-  } catch {
-    /* dev fără DB */
+  if (settings) {
+    title = settings.display_name;
+    checkIn = settings.default_check_in_time;
+    checkOut = settings.default_check_out_time;
   }
 
-  try {
-    const staffUser = await getAdminUser();
-    if (staffUser) {
+  let staffPreview: Awaited<ReturnType<typeof loadStaffPublicPreview>> | null =
+    null;
+  if (staffUser) {
+    try {
       staffPreview = await loadStaffPublicPreview();
+    } catch {
+      staffPreview = null;
     }
-  } catch {
-    staffPreview = null;
   }
 
   const features = [

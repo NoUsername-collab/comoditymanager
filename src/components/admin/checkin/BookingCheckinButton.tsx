@@ -1,9 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CheckinModal } from "./CheckinModal";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
+
+const CheckinModal = dynamic(
+  () => import("./CheckinModal").then((m) => ({ default: m.CheckinModal })),
+  { ssr: false, loading: () => null }
+);
 
 type Props = {
   booking: BookingForCheckin;

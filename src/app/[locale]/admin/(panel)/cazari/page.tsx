@@ -829,14 +829,16 @@ export default async function AdminCazariPage({
     reaccepted?: string;
   }>;
 }) {
-  const tPages = await getTranslations("admin.pages.cazari");
-  const tCommon = await getTranslations("admin.common");
-  const tFlow = await getTranslations("booking.flowStatus");
-  const params = await searchParams;
+  const [tPages, tCommon, tFlow, params, effectiveToday] = await Promise.all([
+    getTranslations("admin.pages.cazari"),
+    getTranslations("admin.common"),
+    getTranslations("booking.flowStatus"),
+    searchParams,
+    getEffectiveToday(),
+  ]);
   const q = firstQueryValue(params.q).trim();
   const horizon = readHorizon(params.h);
   const tab = readCazariTab(params.tab);
-  const effectiveToday = await getEffectiveToday();
   const horizonEnd = addDays(effectiveToday, HORIZON_DAYS[horizon]);
 
   const labels: CazariLabels = {

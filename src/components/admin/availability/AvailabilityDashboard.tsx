@@ -1,399 +1,38 @@
 "use client";
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "@/i18n/navigation";
-import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { fetchDayAvailabilityDetailAction } from "@/app/[locale]/admin/(panel)/disponibilitate/actions";
-import { heatLevelClass, pressureLabel } from "@/domain/availability/heat";
 import { minFreeAcrossDays } from "@/domain/availability/compute";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
-import { guestInitials } from "@/domain/guest-name";
 import { formatDateWithDay } from "@/lib/ro-calendar";
-import { todayIso, addDays, parseIso } from "@/lib/stay-dates";
+import { todayIso, addDays } from "@/lib/stay-dates";
 import type {
   AvailabilityDashboard,
-  DayAvailability,
   DayAvailabilityDetail,
 } from "@/services/availability-month";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
-import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { AvailabilityLiveSync } from "./AvailabilityLiveSync";
 import { AvailabilityWeekendsPanel } from "./AvailabilityWeekendsPanel";
+import {
+  AvailabilityHeatLegend,
+  HeatDayCell,
+  type AvailabilityDisplayMode,
+} from "./AvailabilityHeatCells";
+import { AvailabilityKpiStrip } from "./AvailabilityKpiStrip";
 
-type DisplayMode = "heat" | "free" | "binary";
-
-function AvailabilityHeatLegend({
-  displayMode,
-  labels,
-}: {
-  displayMode: DisplayMode;
-  labels: {
-    modeHeat: string;
-    modeFree: string;
-    modeBinary: string;
-    ariaLabel: string;
-    departures: string;
-    arrivals: string;
-    legendItems: { key: string; className: string; label: string }[];
-  };
-}) {
-  const modeHint =
-    displayMode === "heat"
-      ? labels.modeHeat
-      : displayMode === "free"
-        ? labels.modeFree
-        : labels.modeBinary;
-
-  return (
-    <div className="avail-heat-legend" aria-label={labels.ariaLabel}>
-      <span className="avail-heat-legend__mode">{modeHint}</span>
-      <div className="avail-heat-legend__items">
-        {labels.legendItems.map((item) => (
-          <span key={item.key} className="avail-heat-legend__item">
-            <span
-              className={`avail-heat-legend__swatch ${item.className}`}
-              aria-hidden
-            />
-            {item.label}
-          </span>
-        ))}
-      </div>
-      <span className="avail-heat-legend__zones">
-        <span className="avail-heat-legend__zone avail-heat-legend__zone--out" />
-        {labels.departures}
-        <span className="avail-heat-legend__zone avail-heat-legend__zone--in" />
-        {labels.arrivals}
-      </span>
-    </div>
-  );
-}
-
-const HeatDayCell = memo(function HeatDayCell({
-  day,
-  selected,
-  inRange,
-  displayMode,
-  onSelect,
-  labels,
-  locale,
-  today,
-}: {
-  day: DayAvailability;
-  selected: boolean;
-  inRange: boolean;
-  displayMode: DisplayMode;
-  onSelect: (iso: string, shift: boolean) => void;
-  locale: string;
-  labels: {
-    full: string;
-    freeRooms: string;
-    departures: string;
-    arrivals: string;
-    occupancy: string;
-    dayCardHint: string;
-  };
-  today?: string;
-}) {
-  const btnRef = useRef<HTMLButtonElement>(null);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [hoverPreview, setHoverPreview] = useState(false);
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
-
-  const isToday = day.iso === (today ?? todayIso());
-  const isWeekend = (() => {
-    const d = parseIso(day.iso);
-    const dow = d.getDay();
-    return dow === 0 || dow === 6;
-  })();
-  const heat = heatLevelClass(day.free_rooms, day.total_rooms);
-  const outW = Math.max(0.15, Math.min(2, day.checkouts / 3));
-  const inW = Math.max(0.15, Math.min(2, day.checkins / 3));
-
-  const label =
-    displayMode === "free"
-      ? `${day.free_rooms}`
-      : displayMode === "heat"
-        ? `${day.occupancy_pct}%`
-        : day.status === "full"
-          ? labels.full
-          : `${day.free_rooms}`;
-
-  const clearHoverTimer = () => {
-    if (hoverTimer.current) {
-      clearTimeout(hoverTimer.current);
-      hoverTimer.current = null;
-    }
-  };
-
-  return (
-    <>
-    <button
-      ref={btnRef}
-      type="button"
-      onClick={(e) => onSelect(day.iso, e.shiftKey)}
-      onMouseEnter={() => {
-        clearHoverTimer();
-        hoverTimer.current = setTimeout(() => {
-          setAnchorRect(btnRef.current?.getBoundingClientRect() ?? null);
-          setHoverPreview(true);
-        }, 400);
-      }}
-      onMouseLeave={() => {
-        clearHoverTimer();
-        setHoverPreview(false);
-      }}
-      className={[
-        "availability-day-cell avail-heat-cell",
-        heat,
-        isWeekend && "avail-heat-cell--weekend",
-        selected && "avail-heat-cell--selected",
-        isToday && !selected && "avail-heat-cell--today",
-        inRange && "avail-heat-cell--in-range",
-      ]
-        .filter(Boolean)
-        .join(" ")}
-      title={`${formatDateWithDay(day.iso, locale)} · ${day.free_rooms}/${day.total_rooms} ${labels.freeRooms.toLowerCase()} · ${pressureLabel(day.pressure)}`}
-    >
-      <span className="avail-heat-cell__core">
-        <span className="avail-heat-cell__dow">{day.weekday}</span>
-        <span className="avail-heat-cell__num">{day.day}</span>
-        <span className="avail-heat-cell__metric">{label}</span>
-      </span>
-      {(day.checkouts > 0 || day.checkins > 0) && (
-        <div
-          className="avail-heat-cell__ribbon"
-          style={
-            {
-              "--out-w": String(outW),
-              "--in-w": String(inW),
-            } as React.CSSProperties
-          }
-          aria-hidden
-        >
-          <span title={labels.departures} />
-          <span />
-          <span title={labels.arrivals} />
-        </div>
-      )}
-      {day.unassigned_cereri > 0 && (
-        <span className="absolute right-0.5 top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600 text-[8px] font-bold text-white">
-          !
-        </span>
-      )}
-    </button>
-    <AdminFloatingPanel
-      open={hoverPreview}
-      onClose={() => setHoverPreview(false)}
-      anchorRect={anchorRect}
-      variant="popover"
-      showBackdrop={false}
-      closeOnEscape={false}
-      width={240}
-    >
-      <div className="admin-day-preview">
-        <strong>{formatDateWithDay(day.iso, locale)}</strong>
-        <span>
-          {day.free_rooms}/{day.total_rooms} {labels.freeRooms.toLowerCase()} · {day.occupancy_pct}% {labels.occupancy.toLowerCase()}
-        </span>
-        <span className="mt-1 block text-zinc-600">{pressureLabel(day.pressure)}</span>
-        {(day.checkins > 0 || day.checkouts > 0) && (
-          <span className="mt-1 block text-zinc-500">
-            {day.checkins > 0 && `${day.checkins} ${labels.arrivals.toLowerCase()}`}
-            {day.checkins > 0 && day.checkouts > 0 && " · "}
-            {day.checkouts > 0 && `${day.checkouts} ${labels.departures.toLowerCase()}`}
-          </span>
-        )}
-        <span className="mt-1.5 block text-[10px] font-semibold text-emerald-700">
-          {labels.dayCardHint}
-        </span>
-      </div>
-    </AdminFloatingPanel>
-    </>
-  );
-});
-
-function DayDetailPanel({
-  detail,
-  year,
-  month,
-  labels,
-}: {
-  detail: DayAvailabilityDetail;
-  year: number;
-  month: number;
-  labels: {
-    free: string;
-    occupied: string;
-    rooms: string;
-    arrivals: string;
-    departures: string;
-    unassignedRequest: string;
-    unassignedRequestSuffix: string;
-    processArrow: string;
-    pendingRequestWithRooms: string;
-    freeTitle: string;
-    addBooking: string;
-    requestsPerRoom: string;
-    occupiedTitle: string;
-    focusGanttWeek: string;
-  };
-}) {
-  const { day, rooms } = detail;
-  const free = rooms.filter((r) => r.status === "free");
-  const occupied = rooms.filter((r) => r.status === "occupied");
-  const cereri = rooms.filter((r) => r.status === "cerere");
-
-  function roomSubtitle(r: (typeof rooms)[number]) {
-    return (
-      <>
-        {r.building_name}
-        <RoomFeatureBadges
-          roomTypeName={r.room_type_name}
-          optionSlugs={r.option_slugs}
-          hasAc={r.has_ac}
-          compact
-        />
-      </>
-    );
-  }
-
-  return (
-    <div className="availability-detail-panel availability-detail-panel--overlay avail-detail flex flex-col">
-      <div className="border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
-        <p className="text-sm font-medium text-emerald-800">
-          {pressureLabel(day.pressure)}
-        </p>
-        <p className="mt-0.5 text-sm text-zinc-600">
-          {day.free_rooms} {labels.free.toLowerCase()} · {day.occupied_rooms} {labels.occupied.toLowerCase()} · {day.total_rooms}{" "}
-          {labels.rooms.toLowerCase()}
-          {day.checkins > 0 && ` · ${day.checkins} ${labels.arrivals.toLowerCase()}`}
-          {day.checkouts > 0 && ` · ${day.checkouts} ${labels.departures.toLowerCase()}`}
-        </p>
-      </div>
-
-      <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-        {detail.unassigned_cereri > 0 && (
-          <Link
-            href="/admin/bookings"
-            className="admin-cereri-glow block rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-900 hover:bg-red-100"
-          >
-            {detail.unassigned_cereri} {labels.unassignedRequest}
-            {detail.unassigned_cereri !== 1 ? labels.unassignedRequestSuffix : ""} — {labels.processArrow}
-          </Link>
-        )}
-        {detail.pending_cereri > 0 && (
-          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
-            {detail.pending_cereri} {labels.pendingRequestWithRooms}
-          </p>
-        )}
-
-        {free.length > 0 && (
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-              {labels.freeTitle} ({free.length})
-            </h3>
-            <ul className="mt-2 space-y-1.5">
-              {free.map((r) => (
-                <li key={r.id}>
-                  <Link
-                    href={`/admin/calendar?y=${year}&m=${month}`}
-                    className="avail-room-tile avail-room-tile--free w-full"
-                  >
-                    <span
-                      className="avail-room-tile__dot"
-                      style={{ background: r.building_color }}
-                    />
-                    <span className="min-w-0 flex-1 text-left text-sm font-medium">
-                      {r.name}
-                      <span className="block text-[10px] text-zinc-500">
-                        {roomSubtitle(r)}
-                      </span>
-                    </span>
-                    <span className="text-[10px] font-bold text-emerald-700">
-                      + {labels.addBooking}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {cereri.length > 0 && (
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-amber-700">
-              {labels.requestsPerRoom} ({cereri.length})
-            </h3>
-            <ul className="mt-2 space-y-1.5">
-              {cereri.map((r) => (
-                <li key={r.id}>
-                  <Link
-                    href={r.booking_id ? `/admin/bookings/${r.booking_id}` : "/admin/bookings"}
-                    className="avail-room-tile avail-room-tile--cerere w-full"
-                  >
-                    <span
-                      className="avail-room-tile__avatar"
-                      style={{ background: r.building_color }}
-                    >
-                      {guestInitials(null, null, r.guest_name)}
-                    </span>
-                    <span className="min-w-0 flex-1 text-left text-sm">
-                      {r.name} · {r.guest_name}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {occupied.length > 0 && (
-          <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-rose-700">
-              {labels.occupiedTitle} ({occupied.length})
-            </h3>
-            <ul className="mt-2 space-y-1.5">
-              {occupied.map((r) => (
-                <li key={r.id}>
-                  <Link
-                    href={r.booking_id ? `/admin/bookings/${r.booking_id}` : "#"}
-                    className="avail-room-tile avail-room-tile--occupied w-full"
-                  >
-                    <span
-                      className="avail-room-tile__avatar"
-                      style={{ background: r.building_color }}
-                    >
-                      {guestInitials(null, null, r.guest_name)}
-                    </span>
-                    <span className="min-w-0 flex-1 text-left text-sm font-medium">
-                      {r.name}
-                      <span className="block text-xs text-zinc-500">{r.guest_name}</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-wrap gap-3 border-t border-zinc-100 px-5 py-3">
-        <AdminTextActionLink
-          href={`/admin/calendar?y=${day.iso.slice(0, 4)}&m=${Number(day.iso.slice(5, 7)) - 1}&ws=${mondayOfWeekIso(day.iso)}`}
-          variant="primary"
-          className="text-sm"
-        >
-          {labels.focusGanttWeek} →
-        </AdminTextActionLink>
-      </div>
-    </div>
-  );
-}
+const DayDetailPanel = dynamic(
+  () =>
+    import("./AvailabilityDayDetailPanel").then((m) => ({
+      default: m.DayDetailPanel,
+    })),
+  { ssr: false }
+);
 
 export function AvailabilityDashboard({
   dashboard: initial,
@@ -430,10 +69,9 @@ export function AvailabilityDashboard({
   const [selectedIso, setSelectedIso] = useState<string | null>(initialDay ?? null);
   const [detail, setDetail] = useState<DayAvailabilityDetail | null>(null);
   const [loading, setLoading] = useState(false);
-  const [displayMode, setDisplayMode] = useState<DisplayMode>("heat");
+  const [displayMode, setDisplayMode] = useState<AvailabilityDisplayMode>("heat");
   const [rangeStart, setRangeStart] = useState<string | null>(null);
   const [rangeEnd, setRangeEnd] = useState<string | null>(null);
-  const [kpiHelp, setKpiHelp] = useState<string | null>(null);
   const weekHeaders = [
     tAvail("weekdayMon"),
     tAvail("weekdayTue"),
@@ -443,12 +81,6 @@ export function AvailabilityDashboard({
     tAvail("weekdaySat"),
     tAvail("weekdaySun"),
   ];
-  const kpiHelpMap: Record<string, { title: string; body: string }> = {
-    relaxed: { title: tAvail("kpiRelaxedTitle"), body: tAvail("kpiRelaxedBody") },
-    full: { title: tAvail("kpiFullTitle"), body: tAvail("kpiFullBody") },
-    min: { title: tAvail("kpiMinTitle"), body: tAvail("kpiMinBody") },
-    cereri: { title: tAvail("kpiRequestsTitle"), body: tAvail("kpiRequestsBody") },
-  };
   const heatLegendLabels = {
     modeHeat: tAvail("metricOccupancyPct"),
     modeFree: tAvail("metricFreeRooms"),
@@ -555,8 +187,6 @@ export function AvailabilityDashboard({
     ]
   );
 
-  // ── Day selection ──────────────────────────────────────────────
-  // Race-condition safe: only the latest click wins.
   const requestIdRef = useRef(0);
 
   const selectDay = useCallback(
@@ -573,7 +203,6 @@ export function AvailabilityDashboard({
           buildingId,
           featureFilter
         );
-        // Ignore stale results from previous clicks
         if (thisRequest !== requestIdRef.current) return;
         setDetail(data);
       } catch {
@@ -601,7 +230,6 @@ export function AvailabilityDashboard({
     }
   };
 
-  // Restore selected day on initial mount only (no re-trigger on prop changes).
   const initialDayLoaded = useRef(false);
   useEffect(() => {
     if (initialDayLoaded.current || !initialDay) return;
@@ -662,8 +290,6 @@ export function AvailabilityDashboard({
     void navigator.clipboard.writeText(text);
   };
 
-  const { kpis } = dashboard;
-
   return (
     <div className="avail-dashboard space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -719,61 +345,7 @@ export function AvailabilityDashboard({
         </div>
       </div>
 
-      <div className="avail-kpi-strip">
-        {(
-          [
-            ["relaxed", kpis.days_relaxed, tAvail("kpiRelaxedLabel"), "avail-kpi-card--good"],
-            ["full", kpis.days_full, tAvail("kpiFullLabel"), ""],
-            [
-              "min",
-              kpis.min_free_rooms,
-              tAvail("kpiMinLabel"),
-              "",
-              kpis.min_free_day_iso
-                ? tAvail("onDate", { date: new Date(kpis.min_free_day_iso).toLocaleDateString(locale) })
-                : undefined,
-            ],
-            [
-              "cereri",
-              kpis.unassigned_nights,
-              tAvail("kpiUnassignedNightsLabel"),
-              kpis.unassigned_nights > 0 ? "avail-kpi-card--alert" : "",
-            ],
-          ] as const
-        ).map(([key, value, label, extra, sub]) => (
-          <button
-            key={key}
-            type="button"
-            className={["avail-kpi-card text-left", extra].filter(Boolean).join(" ")}
-            onClick={() => setKpiHelp(key)}
-            title={tAvail("clickForExplanation")}
-          >
-            <p className="avail-kpi-card__value">{value}</p>
-            <p className="avail-kpi-card__label">
-              {label}
-              {sub && (
-                <span className="block font-normal normal-case text-zinc-500">
-                  {sub}
-                </span>
-              )}
-            </p>
-          </button>
-        ))}
-      </div>
-
-      {kpis.vs_prev_full_delta !== 0 && (
-        <p className="text-xs text-zinc-600">
-          {tAvail("vsLastMonth")}:{" "}
-          <strong
-            className={
-              kpis.vs_prev_full_delta > 0 ? "text-rose-700" : "text-emerald-700"
-            }
-          >
-            {kpis.vs_prev_full_delta > 0 ? "+" : ""}
-            {kpis.vs_prev_full_delta} {tAvail("fullDays")}
-          </strong>
-        </p>
-      )}
+      <AvailabilityKpiStrip kpis={dashboard.kpis} />
 
       <AvailabilityWeekendsPanel
         weekends={weekendSlots}
@@ -1061,18 +633,6 @@ export function AvailabilityDashboard({
               focusGanttWeek: tAvail("focusGanttWeek"),
             }}
           />
-        )}
-      </AdminFloatingPanel>
-
-      <AdminFloatingPanel
-        open={!!kpiHelp && !!kpiHelpMap[kpiHelp]}
-        onClose={() => setKpiHelp(null)}
-        title={kpiHelp ? kpiHelpMap[kpiHelp].title : undefined}
-        variant="modal"
-        width={400}
-      >
-        {kpiHelp && (
-          <p className="admin-alert-dialog__message">{kpiHelpMap[kpiHelp].body}</p>
         )}
       </AdminFloatingPanel>
     </div>

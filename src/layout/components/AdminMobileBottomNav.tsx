@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { memo, useMemo, useState } from "react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import {
   AdminHudIcon,
 } from "@/components/admin/AdminHudIcons";
@@ -13,7 +14,7 @@ import {
 } from "@/layout/mobile";
 import { AdminMobileMoreDrawer } from "@/layout/components/AdminMobileMoreDrawer";
 
-export function AdminMobileBottomNav({
+export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   cereriCount,
   locationUnlocked = false,
 }: {
@@ -21,9 +22,12 @@ export function AdminMobileBottomNav({
   locationUnlocked?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("admin.nav");
   const tabs = filterAdminTabs(ADMIN_PRIMARY_TABS, locationUnlocked);
   const [moreOpen, setMoreOpen] = useState(false);
+  const prefetchHrefs = useMemo(() => tabs.map((tab) => tab.href), [tabs]);
+  useAdminRoutePrefetch(prefetchHrefs);
 
   return (
     <>
@@ -42,6 +46,10 @@ export function AdminMobileBottomNav({
             <li key={tab.href} className="ml-bottom-nav__item">
               <Link
                 href={tab.href}
+                prefetch={!active}
+                onMouseEnter={() => {
+                  if (!active) router.prefetch(tab.href);
+                }}
                 className={[
                   "ml-bottom-nav__link",
                   active && "ml-bottom-nav__link--active",
@@ -87,4 +95,4 @@ export function AdminMobileBottomNav({
     />
     </>
   );
-}
+});

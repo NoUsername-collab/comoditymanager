@@ -38,7 +38,7 @@ export default async function TenantsListPage() {
             {tenants.map((t) => (
               <tr
                 key={t.id}
-                className="transition-colors hover:bg-neutral-900/50"
+                className="hospira-tenant-row transition-colors hover:bg-neutral-900/50"
               >
                 <td className="px-4 py-3 font-medium text-white">
                   {t.display_name}

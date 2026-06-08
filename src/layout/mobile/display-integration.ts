@@ -32,6 +32,10 @@ export function resolveEffectiveLayoutChrome(
   width: number,
   height: number
 ): LayoutChrome {
+  const minSide = Math.min(width, height);
+  /* Phones always use compact shell — wide prefs apply on larger viewports only */
+  if (minSide < 640) return "compact";
+
   if (preference === "narrow") return "compact";
   if (preference !== "auto") return "wide";
 

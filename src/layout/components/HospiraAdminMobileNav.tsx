@@ -14,8 +14,13 @@ export function HospiraAdminMobileNav() {
   const pathname = usePathname();
   const t = useTranslations("hospiraAdmin.nav");
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -44,7 +49,7 @@ export function HospiraAdminMobileNav() {
         type="button"
         className="ml-mobile-menu__trigger ml-mobile-menu__trigger--dark"
         aria-expanded={open}
-        aria-controls={panelId}
+        aria-controls={mounted ? panelId : undefined}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="sr-only">{open ? t("menuClose") : t("menuOpen")}</span>
@@ -55,52 +60,62 @@ export function HospiraAdminMobileNav() {
         </span>
       </button>
 
-      {open ? (
-        <button
-          type="button"
-          className="ml-drawer__backdrop"
-          aria-label={t("menuClose")}
-          onClick={() => setOpen(false)}
-        />
-      ) : null}
+      {mounted ? (
+        <>
+          <button
+            type="button"
+            className={[
+              "ml-drawer__backdrop",
+              open && "ml-drawer__backdrop--visible",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            aria-label={t("menuClose")}
+            aria-hidden={!open}
+            tabIndex={open ? 0 : -1}
+            onClick={() => setOpen(false)}
+          />
 
-      <div
-        id={panelId}
-        className={[
-          "ml-drawer",
-          "ml-drawer--hospira",
-          open && "ml-drawer--open",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        role="dialog"
-        aria-modal={open}
-        aria-hidden={!open}
-        hidden={!open}
-      >
-        <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
-          {LINKS.map((link) => {
-            const active = link.exact
-              ? pathname === link.href
-              : pathname.startsWith(link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={[
-                  "ml-drawer__link",
-                  active && "ml-drawer__link--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={() => setOpen(false)}
-              >
-                {t(link.labelKey)}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+          <div
+            id={panelId}
+            suppressHydrationWarning
+            className={[
+              "ml-drawer",
+              "ml-drawer--hospira",
+              open && "ml-drawer--open",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            role="dialog"
+            aria-modal={open}
+            aria-hidden={!open}
+            hidden={!open}
+          >
+            <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
+              {LINKS.map((link) => {
+                const active = link.exact
+                  ? pathname === link.href
+                  : pathname.startsWith(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={[
+                      "ml-drawer__link",
+                      active && "ml-drawer__link--active",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    onClick={() => setOpen(false)}
+                  >
+                    {t(link.labelKey)}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

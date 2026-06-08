@@ -12,6 +12,12 @@ export type GanttColumnMetrics = {
   dayMin: string;
 };
 
+export type GanttDayGridOptions = {
+  dayMin: string;
+  /** Fixed column width — enables horizontal scroll instead of squeezing into viewport */
+  fixed?: boolean;
+};
+
 /** Column widths for compact chrome (portrait / landscape). */
 export function resolveGanttColumnMetrics(
   compactChrome: boolean,
@@ -23,7 +29,20 @@ export function resolveGanttColumnMetrics(
   if (orientation === "landscape") {
     return { roomCol: "4.25rem", dayMin: "1.125rem" };
   }
-  return { roomCol: "5.25rem", dayMin: "1.375rem" };
+  /* Portrait: same min as desktop — month view scrolls horizontally */
+  return { roomCol: "4.75rem", dayMin: DAY_COL_MIN_W };
+}
+
+/** Portrait mobile: fixed day columns so 30d month is readable (pan horizontally). */
+export function resolveGanttDayGridOptions(
+  compactChrome: boolean,
+  isPortrait: boolean,
+  dayMin: string
+): GanttDayGridOptions | undefined {
+  if (compactChrome && isPortrait) {
+    return { dayMin, fixed: true };
+  }
+  return undefined;
 }
 
 export const GANTT_DAY_CELL =
@@ -101,7 +120,20 @@ export function quickShiftMeta(
   return { label: tCommon("oneMonthAria"), shortLabel: "30d" };
 }
 
-export function ganttDayGridStyle(dayCount: number): CSSProperties {
+export function ganttDayGridStyle(
+  dayCount: number,
+  options?: GanttDayGridOptions
+): CSSProperties {
+  if (options?.fixed && options.dayMin) {
+    return {
+      gridTemplateColumns: `repeat(${dayCount}, ${options.dayMin})`,
+    };
+  }
+  if (options?.dayMin) {
+    return {
+      gridTemplateColumns: `repeat(${dayCount}, minmax(${options.dayMin}, 1fr))`,
+    };
+  }
   return {
     gridTemplateColumns: `repeat(${dayCount}, minmax(0, 1fr))`,
   };
@@ -146,18 +178,25 @@ export function DayGrid({
   touch,
   checkInTime,
   checkOutTime,
+  dayGridOptions,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
   touch: boolean;
   checkInTime: string;
   checkOutTime: string;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   return (
     <div
-      className="gantt-day-grid gantt-day-grid--timed grid h-full w-full min-w-0 bg-white shadow-[inset_1px_0_0_0_#d4d4d8]"
+      className={[
+        "gantt-day-grid gantt-day-grid--timed grid h-full w-full min-w-0 bg-white shadow-[inset_1px_0_0_0_#d4d4d8]",
+        dayGridOptions?.fixed && "gantt-day-grid--fixed",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       style={{
-        ...ganttDayGridStyle(columns.length),
+        ...ganttDayGridStyle(columns.length, dayGridOptions),
         ...ganttDayTimeStyle(checkInTime, checkOutTime),
       }}
     >

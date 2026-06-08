@@ -1,8 +1,8 @@
 import { BrandLogo } from "./BrandLogo";
 import { PublicNav } from "./PublicNav";
 import { StaffLogoEntry } from "./StaffLogoEntry";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 import { PublicMobileMenu } from "@/layout/components/PublicMobileMenu";
+import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
@@ -31,7 +31,7 @@ export async function PublicHeader() {
         <div className="flex items-center gap-2 sm:gap-3">
           <PublicMobileMenu />
           <PublicNav />
-          <LanguageSwitcher />
+          <HeaderLocaleSwitch slot="nav" />
         </div>
       </div>
     </header>

@@ -4,7 +4,7 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import type { DailyFreeCount } from "@/domain/gantt/daily-free-counts";
 import { dailyFreeHeatLevel } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import { ganttDayGridStyle } from "./GanttGridHelpers";
+import { ganttDayGridStyle, type GanttDayGridOptions } from "./GanttGridHelpers";
 
 export function GanttSummaryGrid({
   counts,
@@ -19,6 +19,7 @@ export function GanttSummaryGrid({
   scrollTitle,
   dayTitle,
   dayAriaLabel,
+  dayGridOptions,
 }: {
   counts: DailyFreeCount[];
   viewRange: GanttViewRange;
@@ -32,17 +33,19 @@ export function GanttSummaryGrid({
   scrollTitle: string;
   dayTitle: (iso: string, free: number, total: number) => string;
   dayAriaLabel: (iso: string, free: number) => string;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   return (
     <div
       className={[
         "gantt-summary-row__grid grid w-full min-w-0",
+        dayGridOptions?.fixed && "gantt-day-grid--fixed",
         "gantt-summary-row__grid--pan",
         panActive && "gantt-summary-row__grid--panning",
       ]
         .filter(Boolean)
         .join(" ")}
-      style={ganttDayGridStyle(viewRange.days.length)}
+      style={ganttDayGridStyle(viewRange.days.length, dayGridOptions)}
       role="row"
       aria-label={ariaLabel}
       onPointerDown={onPanPointerDown}

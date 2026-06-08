@@ -106,6 +106,8 @@
 }
 
 .devlog-entry {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 3.5rem;
   border-radius: 0.4rem;
   border: 1px solid var(--border);
   background: var(--surface);

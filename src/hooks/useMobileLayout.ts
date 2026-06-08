@@ -1,17 +1,70 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { DISPLAY_LAYOUT_CHANGED_EVENT } from "@/lib/ui/display-layout-preference";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import {
-  applyLayoutModeToDocument,
   getLayoutViewportSize,
   readLayoutChromeFromDom,
   readLayoutModeFromDom,
   readLayoutOrientationFromDom,
   resolveLayoutBreakpoint,
+  type LayoutChrome,
   type LayoutMode,
+  type LayoutOrientation,
   type MobileLayoutState,
 } from "@/layout/mobile";
+import { subscribeLayoutViewportChanges } from "@/layout/mobile/resize-sync";
+
+export type CompactLayoutHints = {
+  compactChrome: boolean;
+  orientation: LayoutOrientation;
+  isPortrait: boolean;
+  isLandscape: boolean;
+};
+
+const SERVER_COMPACT_HINTS: CompactLayoutHints = {
+  compactChrome: false,
+  orientation: "landscape",
+  isPortrait: false,
+  isLandscape: true,
+};
+
+function readCompactLayoutHints(): CompactLayoutHints {
+  const chrome: LayoutChrome = readLayoutChromeFromDom();
+  const orientation = readLayoutOrientationFromDom();
+  return {
+    compactChrome: chrome === "compact",
+    orientation,
+    isPortrait: orientation === "portrait",
+    isLandscape: orientation === "landscape",
+  };
+}
+
+function serializeCompactHints(hints: CompactLayoutHints): string {
+  return `${hints.compactChrome}:${hints.orientation}`;
+}
+
+function subscribeCompactLayoutHints(onStoreChange: () => void): () => void {
+  let prev = serializeCompactHints(readCompactLayoutHints());
+  return subscribeLayoutViewportChanges(() => {
+    const next = serializeCompactHints(readCompactLayoutHints());
+    if (next !== prev) {
+      prev = next;
+      onStoreChange();
+    }
+  });
+}
+
+/**
+ * Chrome + orientation only — re-renders when compact/wide or portrait/landscape
+ * changes, not on every visualViewport pixel resize (iOS URL bar).
+ */
+export function useCompactLayoutHints(): CompactLayoutHints {
+  return useSyncExternalStore(
+    subscribeCompactLayoutHints,
+    readCompactLayoutHints,
+    () => SERVER_COMPACT_HINTS
+  );
+}
 
 function readState(): MobileLayoutState {
   const mode = readLayoutModeFromDom();
@@ -37,10 +90,6 @@ function readState(): MobileLayoutState {
   };
 }
 
-function syncDom(): void {
-  applyLayoutModeToDocument();
-}
-
 /**
  * Unified viewport layout API. Prefer CSS `data-layout-mode` for styling;
  * use this hook only when JS must branch (drawers, conditional trees).
@@ -61,21 +110,10 @@ export function useMobileLayout(): MobileLayoutState {
     isCompactChrome: false,
   }));
 
-  useEffect(() => {
-    const sync = () => setState(readState());
-    syncDom();
-    sync();
-    window.addEventListener("resize", sync);
-    window.addEventListener("orientationchange", sync);
-    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-    window.visualViewport?.addEventListener("resize", sync);
-    return () => {
-      window.removeEventListener("resize", sync);
-      window.removeEventListener("orientationchange", sync);
-      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-      window.visualViewport?.removeEventListener("resize", sync);
-    };
-  }, []);
+  useEffect(
+    () => subscribeLayoutViewportChanges(() => setState(readState())),
+    []
+  );
 
   return state;
 }
@@ -85,5 +123,5 @@ export function useIsMobileLayout(): boolean {
 }
 
 export function useIsCompactChrome(): boolean {
-  return useMobileLayout().isCompactChrome;
+  return useCompactLayoutHints().compactChrome;
 }

@@ -1,17 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import {
-  Fragment,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
+import { debounce } from "@/lib/debounce";
+import { LAYOUT_RESIZE_DEBOUNCE_MS } from "@/layout/mobile/viewport";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { jumpToDateInView } from "@/domain/gantt/view-range";
 import { GanttPeriodJumpControl } from "@/components/admin/gantt/GanttPeriodJumpControl";
@@ -24,7 +25,7 @@ import {
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
-import { useIsCompactChrome, useMobileLayout } from "@/hooks/useMobileLayout";
+import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import type { BookingRow } from "@/services/bookings";
 import {
   filterOccupancyForLayer,
@@ -46,36 +47,21 @@ import {
   clearGanttRoomPinnedSpan,
 } from "@/domain/gantt/room-at-point";
 import { ghostBarPosition } from "@/domain/gantt/drag-create";
-import {
-  GanttOccupancyDetailPanel,
-  type GanttOccDetail,
-} from "@/components/admin/gantt/GanttOccupancyDetailPanel";
-import {
-  MoveRoomDialog,
-  type MoveRoomDraft,
-} from "@/components/admin/gantt/MoveRoomDialog";
-import {
-  GanttCreateDialog,
-} from "@/components/admin/gantt/GanttCreateDialog";
+import type { GanttOccDetail } from "@/components/admin/gantt/GanttOccupancyDetailPanel";
+import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
+import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
 import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
 import { GanttContextMenuPanel } from "@/components/admin/gantt/GanttContextMenuPanel";
 import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMenuBridge";
-import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
-import {
-  GanttBuildingMarker,
-} from "@/components/admin/gantt/GanttBuildingMarker";
-import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
 import {
   GanttOperativeCheckProvider,
   useGanttOperativeCheck,
 } from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import {
-  GanttOpsPickerPanel,
   type GanttOpsPickerMode,
 } from "@/components/admin/gantt/GanttOpsPickerPanel";
 import { filterBookingsForOperativeCheckIn } from "@/domain/booking/operative-checkin";
-import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import {
   type RoomTodayFlags,
@@ -89,18 +75,61 @@ import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
 import { HudIconGrid } from "@/components/admin/AdminHudIcons";
 import { useLocale, useTranslations } from "next-intl";
 
+const GanttCreateDialog = dynamic(
+  () =>
+    import("@/components/admin/gantt/GanttCreateDialog").then((m) => ({
+      default: m.GanttCreateDialog,
+    })),
+  { ssr: false }
+);
+const MoveRoomDialog = dynamic(
+  () =>
+    import("@/components/admin/gantt/MoveRoomDialog").then((m) => ({
+      default: m.MoveRoomDialog,
+    })),
+  { ssr: false }
+);
+const GanttOccupancyDetailPanelLazy = dynamic(
+  () =>
+    import("@/components/admin/gantt/GanttOccupancyDetailPanel").then((m) => ({
+      default: m.GanttOccupancyDetailPanel,
+    })),
+  { ssr: false }
+);
+const GanttToolbarOccForm = dynamic(
+  () =>
+    import("@/components/admin/gantt/GanttToolbarOccForm").then((m) => ({
+      default: m.GanttToolbarOccForm,
+    })),
+  { ssr: false }
+);
+const GanttOpsPickerPanel = dynamic(
+  () =>
+    import("@/components/admin/gantt/GanttOpsPickerPanel").then((m) => ({
+      default: m.GanttOpsPickerPanel,
+    })),
+  { ssr: false }
+);
+const GanttStickyViewportHeader = dynamic(
+  () =>
+    import("@/components/admin/gantt/GanttStickyViewportHeader").then((m) => ({
+      default: m.GanttStickyViewportHeader,
+    })),
+  { ssr: false }
+);
+
 // Extracted sub-components
 import {
   resolveGanttColumnMetrics,
+  resolveGanttDayGridOptions,
   type InlineZoomChoice,
   ToolbarFilterIcon,
   normalizeZoomChoice,
   periodStepMeta,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
-import { GanttStickyViewportHeader } from "@/components/admin/gantt/GanttStickyViewportHeader";
-import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
 import { GanttFooterLegend } from "@/components/admin/gantt/GanttFooterLegend";
+import { GanttVirtualizedBody } from "@/components/admin/gantt/GanttVirtualizedBody";
 
 export type { GanttRoom };
 
@@ -149,9 +178,8 @@ export function GanttCalendar({
   const router = useRouter();
   const searchParams = useSearchParams();
   const touch = useIsTouchDevice();
-  const compactChrome = useIsCompactChrome();
+  const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
   const compactViewport = useIsCompactViewport();
-  const { orientation, isLandscape, isPortrait } = useMobileLayout();
   const compact =
     viewRange.zoom === "quarter" || compactChrome || compactViewport;
   const columnMetrics = useMemo(
@@ -161,6 +189,15 @@ export function GanttCalendar({
         orientation === "landscape" ? "landscape" : "portrait"
       ),
     [compactChrome, orientation]
+  );
+  const dayGridOptions = useMemo(
+    () =>
+      resolveGanttDayGridOptions(
+        compactChrome,
+        isPortrait,
+        columnMetrics.dayMin
+      ),
+    [compactChrome, isPortrait, columnMetrics.dayMin]
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
   const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
@@ -296,23 +333,40 @@ export function GanttCalendar({
   );
 
   // ─── Building groups ───────────────────────────────────────────────
-  const buildingGroups = groupByBuilding
-    ? Array.from(
-        filteredRooms.reduce((map, room) => {
-          const list = map.get(room.building_id) ?? [];
-          list.push(room);
-          map.set(room.building_id, list);
-          return map;
-        }, new Map<string, GanttRoom[]>())
-      ).map(([buildingId, buildingRooms]) => ({
-        buildingId,
-        buildingName: buildingRooms[0]?.building_name ?? tCommon("building"),
-        buildingColor: buildingRooms[0]?.building_color ?? null,
-        buildingAcMode: buildingRooms[0]?.building_ac_mode ?? "per_room",
-        hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
-        rooms: buildingRooms,
-      }))
-    : [];
+  const buildingGroups = useMemo(
+    () =>
+      groupByBuilding
+        ? Array.from(
+            filteredRooms.reduce((map, room) => {
+              const list = map.get(room.building_id) ?? [];
+              list.push(room);
+              map.set(room.building_id, list);
+              return map;
+            }, new Map<string, GanttRoom[]>())
+          ).map(([buildingId, buildingRooms]) => ({
+            buildingId,
+            buildingName: buildingRooms[0]?.building_name ?? tCommon("building"),
+            buildingColor: buildingRooms[0]?.building_color ?? null,
+            buildingAcMode: buildingRooms[0]?.building_ac_mode ?? "per_room",
+            hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
+            rooms: buildingRooms,
+          }))
+        : [],
+    [filteredRooms, groupByBuilding, tCommon]
+  );
+
+  const handleToggleFocusBuilding = useCallback((buildingId: string) => {
+    setFocusBuildingId((prev) => (prev === buildingId ? null : buildingId));
+  }, []);
+
+  const handleToggleCollapsedBuilding = useCallback((buildingId: string) => {
+    setCollapsedBuildings((prev) => {
+      const next = new Set(prev);
+      if (next.has(buildingId)) next.delete(buildingId);
+      else next.add(buildingId);
+      return next;
+    });
+  }, []);
 
   // ─── Scroll / pan callbacks ────────────────────────────────────────
   const scrollToTodayColumn = useCallback(() => {
@@ -450,22 +504,41 @@ export function GanttCalendar({
       );
     };
 
+    const syncDebounced = debounce(syncBodyTop, LAYOUT_RESIZE_DEBOUNCE_MS);
+
     syncBodyTop();
-    const ro = new ResizeObserver(syncBodyTop);
+
+    if (compactChrome) {
+      window.addEventListener("resize", syncDebounced, { passive: true });
+      window.addEventListener("orientationchange", syncBodyTop, { passive: true });
+      window.visualViewport?.addEventListener("resize", syncDebounced, {
+        passive: true,
+      });
+      return () => {
+        window.removeEventListener("resize", syncDebounced);
+        window.removeEventListener("orientationchange", syncBodyTop);
+        window.visualViewport?.removeEventListener("resize", syncDebounced);
+      };
+    }
+
+    const ro = new ResizeObserver(syncDebounced);
     ro.observe(shell);
     ro.observe(thead);
-    window.addEventListener("resize", syncBodyTop);
-    window.addEventListener("orientationchange", syncBodyTop);
-    window.visualViewport?.addEventListener("resize", syncBodyTop);
+    window.addEventListener("resize", syncDebounced, { passive: true });
+    window.addEventListener("orientationchange", syncBodyTop, { passive: true });
+    window.visualViewport?.addEventListener("resize", syncDebounced, {
+      passive: true,
+    });
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", syncBodyTop);
+      window.removeEventListener("resize", syncDebounced);
       window.removeEventListener("orientationchange", syncBodyTop);
-      window.visualViewport?.removeEventListener("resize", syncBodyTop);
+      window.visualViewport?.removeEventListener("resize", syncDebounced);
     };
   }, [
     viewRange.periodKey,
     compact,
+    compactChrome,
     orientation,
     todaySummary.arrivals.length,
     todaySummary.departures.length,
@@ -809,18 +882,12 @@ export function GanttCalendar({
         onDayClick={handleSummaryDayClick}
         onPanPointerDown={handleHeaderPanPointerDown}
         panActive={isHeaderPanActive}
+        dayGridOptions={dayGridOptions}
       />
     <div
       key={viewRange.periodKey}
       ref={scrollRef}
-      className={[
-        "gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible",
-        compactChrome && "gantt-scroll--compact",
-        compactChrome && isPortrait && "gantt-scroll--portrait",
-        compactChrome && isLandscape && "gantt-scroll--landscape",
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className="gantt-period-enter gantt-scroll w-full overflow-x-auto overflow-y-visible"
     >
       <div
         ref={shellRef}
@@ -1027,6 +1094,7 @@ export function GanttCalendar({
                   scrollTitle={tCommon("scrollDrag")}
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
+                  dayGridOptions={dayGridOptions}
                 />
               </th>
             </tr>
@@ -1039,156 +1107,39 @@ export function GanttCalendar({
               onDayClick={handleSummaryDayClick}
               onPanPointerDown={handleHeaderPanPointerDown}
               panActive={isHeaderPanActive}
+              dayGridOptions={dayGridOptions}
             />
           </thead>
-          <tbody>
-            {groupByBuilding
-              ? buildingGroups.map((group) => {
-                  const collapsed = collapsedBuildings.has(group.buildingId);
-                  const focused = focusBuildingId === group.buildingId;
-                  const dimHeader =
-                    focusBuildingId != null && !focused;
-                  return (
-                  <Fragment key={group.buildingId}>
-                    <tr className="border-t border-zinc-200">
-                      <td
-                        colSpan={2}
-                        className={[
-                          "gantt-building-header px-2 py-1 text-left",
-                          focused && "gantt-building-header--focused",
-                          dimHeader && "gantt-building-header--dimmed",
-                        ]
-                          .filter(Boolean)
-                          .join(" ")}
-                        style={
-                          {
-                            "--marker-color": resolveGanttAcMarkerColor(
-                              group.buildingAcMode,
-                              {
-                                buildingHasAnyRoomAc: group.hasAnyRoomAc,
-                              }
-                            ),
-                          } as CSSProperties
-                        }
-                        onClick={() =>
-                          setFocusBuildingId((prev) =>
-                            prev === group.buildingId ? null : group.buildingId
-                          )
-                        }
-                      >
-                        <div className="gantt-building-header__inner flex items-center gap-1.5">
-                          <button
-                            type="button"
-                            className={[
-                              "gantt-building-header__chevron",
-                              collapsed
-                                ? "gantt-building-header__chevron--closed"
-                                : "gantt-building-header__chevron--open",
-                            ].join(" ")}
-                            aria-expanded={!collapsed}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCollapsedBuildings((prev) => {
-                                const next = new Set(prev);
-                                if (next.has(group.buildingId)) {
-                                  next.delete(group.buildingId);
-                                } else {
-                                  next.add(group.buildingId);
-                                }
-                                return next;
-                              });
-                            }}
-                          >
-                            ▾
-                          </button>
-                          <GanttBuildingMarker
-                            acMode={group.buildingAcMode}
-                            size="sm"
-                            buildingHasAnyRoomAc={group.hasAnyRoomAc}
-                          />
-                          <span className="gantt-building-header__title">
-                            {group.buildingName}
-                          </span>
-                          <span className="gantt-building-header__count">
-                            {group.rooms.length}{" "}
-                            {group.rooms.length === 1 ? tCommon("room") : tCommon("rooms")}
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                    {!collapsed &&
-                      group.rooms.map((room) => (
-                      <GanttRoomRow
-                        key={room.id}
-                        room={room}
-                        viewRange={viewRange}
-                        occupancyByRoom={occupancyByRoom}
-                        staySegments={displaySegmentsByRoom.stay.get(room.id) ?? []}
-                        overlays={displaySegmentsByRoom.overlay.get(room.id) ?? []}
-                        checkInTime={checkInTime}
-                        checkOutTime={checkOutTime}
-                        compact={compact}
-                        touch={touch}
-                        dimmed={
-                          focusBuildingId != null &&
-                          room.building_id !== focusBuildingId
-                        }
-                        todayFlags={todayFlagsByRoom.get(room.id) ?? {
-                          arrival: false,
-                          departure: false,
-                          occupiedTonight: false,
-                        }}
-                        onOccOpen={handleOccOpen}
-                        bookingById={bookingById}
-                        onMoveRoom={setMoveRoomDraft}
-                        onCreateDraft={handleCreateDraftWithPinnedClear}
-                        pinnedSelection={pinnedSelection}
-                        onCtrlDragEnd={handleCtrlDragEnd}
-                        today={effectiveToday}
-                      />
-                    ))}
-                  </Fragment>
-                  );
-                })
-              : filteredRooms.map((room) => (
-                  <GanttRoomRow
-                    key={room.id}
-                    room={room}
-                    viewRange={viewRange}
-                    occupancyByRoom={occupancyByRoom}
-                    staySegments={displaySegmentsByRoom.stay.get(room.id) ?? []}
-                    overlays={displaySegmentsByRoom.overlay.get(room.id) ?? []}
-                    checkInTime={checkInTime}
-                    checkOutTime={checkOutTime}
-                    compact={compact}
-                    touch={touch}
-                    todayFlags={todayFlagsByRoom.get(room.id) ?? {
-                      arrival: false,
-                      departure: false,
-                      occupiedTonight: false,
-                    }}
-                    onOccOpen={handleOccOpen}
-                    bookingById={bookingById}
-                    onMoveRoom={setMoveRoomDraft}
-                    onCreateDraft={handleCreateDraftWithPinnedClear}
-                    pinnedSelection={pinnedSelection}
-                    onCtrlDragEnd={handleCtrlDragEnd}
-                    today={effectiveToday}
-                  />
-                ))}
-            {filteredRooms.length === 0 && (
-              <tr>
-                <td
-                  colSpan={2}
-                  className="px-4 py-12 text-center text-sm text-zinc-500"
-                >
-                  {filter !== "all"
-                    ? tCommon("noRoomForFilterTryAll")
-                    : tCommon("noRoomForFilter")}
-                </td>
-              </tr>
-            )}
-          </tbody>
+          <GanttVirtualizedBody
+            groupByBuilding={groupByBuilding}
+            buildingGroups={buildingGroups}
+            filteredRooms={filteredRooms}
+            collapsedBuildings={collapsedBuildings}
+            focusBuildingId={focusBuildingId}
+            onToggleFocusBuilding={handleToggleFocusBuilding}
+            onToggleCollapsedBuilding={handleToggleCollapsedBuilding}
+            viewRange={viewRange}
+            occupancyByRoom={occupancyByRoom}
+            displaySegmentsByRoom={displaySegmentsByRoom}
+            checkInTime={checkInTime}
+            checkOutTime={checkOutTime}
+            compact={compact}
+            touch={touch}
+            todayFlagsByRoom={todayFlagsByRoom}
+            onOccOpen={handleOccOpen}
+            bookingById={bookingById}
+            onMoveRoom={setMoveRoomDraft}
+            onCreateDraft={handleCreateDraftWithPinnedClear}
+            pinnedSelection={pinnedSelection}
+            onCtrlDragEnd={handleCtrlDragEnd}
+            today={effectiveToday}
+            dayGridOptions={dayGridOptions}
+            emptyMessage={
+              filter !== "all"
+                ? tCommon("noRoomForFilterTryAll")
+                : tCommon("noRoomForFilter")
+            }
+          />
         </table>
 
         {pinnedSelection && (
@@ -1221,7 +1172,7 @@ export function GanttCalendar({
         bookings={bookings}
         onClose={() => setCreateDraft(null)}
       />
-      <GanttOccupancyDetailPanel
+      <GanttOccupancyDetailPanelLazy
         detail={occDetail}
         onClose={() => setOccDetail(null)}
       />

@@ -6,12 +6,10 @@ import {
 } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { useTranslations } from "next-intl";
-
-function ganttDayGridStyle(dayCount: number): React.CSSProperties {
-  return {
-    gridTemplateColumns: `repeat(${dayCount}, minmax(0, 1fr))`,
-  };
-}
+import {
+  ganttDayGridStyle,
+  type GanttDayGridOptions,
+} from "./GanttGridHelpers";
 
 export function GanttDailySummaryRow({
   counts,
@@ -22,6 +20,7 @@ export function GanttDailySummaryRow({
   onDayClick,
   onPanPointerDown,
   panActive = false,
+  dayGridOptions,
 }: {
   counts: DailyFreeCount[];
   viewRange: GanttViewRange;
@@ -31,6 +30,7 @@ export function GanttDailySummaryRow({
   onDayClick: (iso: string) => void;
   onPanPointerDown?: React.PointerEventHandler<HTMLDivElement>;
   panActive?: boolean;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   const tCommon = useTranslations("admin.common");
   const dayCount = viewRange.days.length;
@@ -51,12 +51,13 @@ export function GanttDailySummaryRow({
         <div
           className={[
             "gantt-summary-row__grid grid w-full min-w-0",
+            dayGridOptions?.fixed && "gantt-day-grid--fixed",
             "gantt-summary-row__grid--pan",
             panActive && "gantt-summary-row__grid--panning",
           ]
             .filter(Boolean)
             .join(" ")}
-          style={ganttDayGridStyle(dayCount)}
+          style={ganttDayGridStyle(dayCount, dayGridOptions)}
           role="row"
           aria-label={tCommon("freeRoomsByDay")}
           onPointerDown={onPanPointerDown}

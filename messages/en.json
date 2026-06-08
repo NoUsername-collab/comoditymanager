@@ -163,6 +163,7 @@
     },
     "receptie": {
       "confirmedBanner": "Booking confirmed.",
+      "backToAdmin": "← Admin panel",
       "backToSite": "← Public site"
     },
     "staffPreview": {
@@ -275,10 +276,16 @@
       "more": "More",
       "moreMenuAria": "More admin sections",
       "moreClose": "Close menu",
+      "receptie": "Reception",
       "disponibilitate": "Availability",
       "buildings": "Buildings",
       "rooms": "Rooms",
       "devlog": "Journal"
+    },
+    "devlog": {
+      "paginationPrev": "← Previous",
+      "paginationNext": "Next →",
+      "paginationPage": "Page {page} / {total}"
     },
     "shell": {
       "eyebrow": "Hospira · Control",
@@ -749,7 +756,9 @@
         "title": "New room — Hospira",
         "migrationHint": "for types and",
         "catalogHint": "Run <code>015_room_catalog.sql</code> in Supabase SQL Editor for types and",
-        "bulkCountError": "You can create between 1 and 50 rooms at once."
+        "bulkCountError": "You can create between 1 and 50 rooms at once.",
+        "catalogRunMigration": "Run migration",
+        "addBuildingFirst": "Add first a"
       },
       "home": {
         "loadError": "Could not load dashboard data"
@@ -840,6 +849,7 @@
         },
         "unlock": {
           "hintHtml": "Enter the <strong>property owner</strong> password (the account created at signup). Session lasts 2 hours.",
+          "adminPassword": "Admin password",
           "ownerPassword": "Owner password",
           "checking": "Checking…",
           "openLocationAdmin": "Open location administration",
@@ -1274,6 +1284,9 @@
       "noDepartures": "No departures scheduled.",
       "noRoomsToClean": "No rooms to clean.",
       "roomsPending": "Rooms without checkout today",
+      "roomLedCheckedIn": "Checked in",
+      "roomLedBooked": "Booked",
+      "roomLedFree": "Free",
       "moveRoomIntroHtml": "From <strong>{room}</strong> — if the stay has not started, we move the whole stay; otherwise split segments.",
       "freeOnDay": "Free on {day}",
       "freeOnFocusedDay": "Free on focused day",
@@ -1647,7 +1660,10 @@
       "deleteFloor": "Delete floor",
       "deleteFloorConfirm": "Delete \"{name}\"? {count, plural, =0 {No rooms on it.} one {# room moves to «no floor».} other {# rooms move to «no floor».}}",
       "assignFloor": "Floor",
-      "noFloorOption": "No floor"
+      "noFloorOption": "No floor",
+      "deactivateRoom": "Deactivate",
+      "activateRoom": "Activate",
+      "deleteRoomConfirm": "Delete room \"{name}\"? This is permanent if it has no bookings."
     },
     "addFloorForm": {
       "newFloor": "New floor",

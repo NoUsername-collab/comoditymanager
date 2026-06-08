@@ -36,6 +36,14 @@
 
 .gantt-scroll {
   scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Off-screen paint skip for room rows (all viewports) */
+.gantt-room-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--gantt-row-h);
 }
 
 .gantt-day-header-grid--pan {

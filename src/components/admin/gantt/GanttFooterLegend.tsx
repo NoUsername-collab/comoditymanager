@@ -6,7 +6,7 @@ import {
   GanttRoomMarker,
 } from "@/components/admin/gantt/GanttBuildingMarker";
 
-export function GanttFooterLegend({
+function LegendBody({
   checkInTime,
   checkOutTime,
 }: {
@@ -18,7 +18,7 @@ export function GanttFooterLegend({
   const tLayers = useTranslations("admin.gantt.layers");
 
   return (
-    <div className="gantt-footer-legend border-t border-zinc-100 bg-zinc-50/60 px-4 py-3 text-[11px] text-zinc-600">
+    <>
       <p className="gantt-stay-hint mb-2 text-xs">
         {tGantt("footer.dragHint")} · {tGantt("footer.buildingFocusHint")} ·{" "}
         <kbd className="rounded border px-1">T</kbd> {tCommon("todayShort").toLowerCase()}
@@ -85,6 +85,27 @@ export function GanttFooterLegend({
           {tLayers("block")}
         </span>
       </div>
-    </div>
+    </>
+  );
+}
+
+export function GanttFooterLegend({
+  checkInTime,
+  checkOutTime,
+}: {
+  checkInTime: string;
+  checkOutTime: string;
+}) {
+  const tGantt = useTranslations("admin.gantt");
+
+  return (
+    <details className="gantt-footer-legend gantt-footer-legend--collapsible border-t border-zinc-100 bg-zinc-50/60 px-3 py-2 text-[11px] text-zinc-600">
+      <summary className="gantt-footer-legend__toggle list-none text-xs font-medium text-zinc-700">
+        {tGantt("legend")}
+      </summary>
+      <div className="gantt-footer-legend__body pt-2">
+        <LegendBody checkInTime={checkInTime} checkOutTime={checkOutTime} />
+      </div>
+    </details>
   );
 }

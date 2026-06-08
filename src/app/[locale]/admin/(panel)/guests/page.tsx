@@ -86,8 +86,10 @@ export default async function AdminGuestsPage({
 }: {
   searchParams: Promise<{ q?: string; filter?: string; page?: string; selected?: string }>;
 }) {
-  const t = await getTranslations("admin.pages.guests");
-  const raw = await searchParams;
+  const [t, raw] = await Promise.all([
+    getTranslations("admin.pages.guests"),
+    searchParams,
+  ]);
   const q = firstValue(raw.q);
   const filter = firstValue(raw.filter);
   const page = normalizePage(firstValue(raw.page));
@@ -117,21 +119,23 @@ export default async function AdminGuestsPage({
   let selectedGuest: Awaited<ReturnType<typeof getGuestById>> = null;
   let error: string | null = null;
 
+  const selectedGuestPromise = selected
+    ? getGuestById(selected).catch(() => null)
+    : Promise.resolve(null);
+
   try {
     result = await searchGuests({ query: q, filter, page, pageSize: 20 });
-    if (result.mode === "highlights") {
-      highlights = await listGuestHighlights();
-    }
+    const [highlightsResult, selectedResult] = await Promise.all([
+      result.mode === "highlights"
+        ? listGuestHighlights().catch(() => null)
+        : Promise.resolve(null),
+      selectedGuestPromise,
+    ]);
+    highlights = highlightsResult;
+    selectedGuest = selectedResult;
   } catch (e) {
     error = e instanceof Error ? e.message : t("genericError");
-  }
-
-  if (selected) {
-    try {
-      selectedGuest = await getGuestById(selected);
-    } catch {
-      selectedGuest = null;
-    }
+    selectedGuest = await selectedGuestPromise;
   }
 
   return (

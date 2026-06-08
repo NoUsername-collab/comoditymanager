@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Link } from "@/i18n/navigation";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import type { GuestFlagLevel } from "@/domain/guest/types";
@@ -13,7 +14,13 @@ type Props = {
   alertLevel?: GuestFlagLevel | null;
 };
 
-export function GanttCereriCard({ href, label, dates, party, alertLevel }: Props) {
+export const GanttCereriCard = memo(function GanttCereriCard({
+  href,
+  label,
+  dates,
+  party,
+  alertLevel,
+}: Props) {
   return (
     <Link
       href={href}
@@ -39,4 +46,4 @@ export function GanttCereriCard({ href, label, dates, party, alertLevel }: Props
       </span>
     </Link>
   );
-}
+});

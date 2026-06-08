@@ -11,8 +11,16 @@ import {
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
+import dynamic from "next/dynamic";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+
+const GanttCheckTimeDialog = dynamic(
+  () =>
+    import("@/components/admin/gantt/GanttCheckTimeDialog").then((m) => ({
+      default: m.GanttCheckTimeDialog,
+    })),
+  { ssr: false }
+);
 
 type OperativeCheckRequest = {
   bookingId: string;

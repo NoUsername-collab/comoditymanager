@@ -234,6 +234,8 @@
   border-radius: 0.5rem;
   border: 1.5px solid;
   padding: 0.4rem 0.625rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 4.5rem;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
@@ -441,4 +443,47 @@
 
 .admin-tip {
   line-height: 1.5;
+}
+
+/* Route loading skeletons (calendar, cazari, bookings) */
+@keyframes admin-route-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.admin-route-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.admin-route-skeleton__toolbar,
+.admin-route-skeleton__row,
+.admin-route-skeleton__card {
+  border-radius: 0.65rem;
+  background: linear-gradient(90deg, #f4f4f5 0%, #e4e4e7 50%, #f4f4f5 100%);
+  animation: admin-route-skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+.admin-route-skeleton__toolbar {
+  height: 2.75rem;
+}
+
+.admin-route-skeleton__row {
+  height: 2.25rem;
+}
+
+.admin-route-skeleton__card {
+  height: 4.25rem;
+}
+
+.admin-route-skeleton--gantt .admin-route-skeleton__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
 }

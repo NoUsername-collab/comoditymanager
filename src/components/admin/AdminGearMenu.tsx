@@ -1,24 +1,67 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { useTranslations } from "next-intl";
 import { HudIconGear } from "@/components/admin/AdminHudIcons";
+import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
+import { computeFixedDropdownPosition } from "@/lib/ui/viewport-position";
+
+type MenuPos = { top: number; left: number };
+
+/** Rough size before first layout measure (~11.5rem min-width gear panel). */
+const MENU_ESTIMATE = { width: 184, height: 220 };
 
 /**
  * Gear dropdown — right-edge of admin top bar.
- * Contains: auto-refresh status, simulation trigger, site public link,
- * language switcher, and logout.
- * Children are rendered inside the dropdown panel.
+ * Portaled to document.body so it stays above sticky page chrome (Gantt header, etc.).
  */
 export function AdminGearMenu({ children }: { children: React.ReactNode }) {
   const t = useTranslations("admin.shell");
   const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const [menuPos, setMenuPos] = useState<MenuPos | null>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const positionMenu = useCallback(() => {
+    const trigger = triggerRef.current?.getBoundingClientRect();
+    if (!trigger) return;
+
+    const measured = menuRef.current?.getBoundingClientRect();
+    const menuSize = measured
+      ? { width: measured.width, height: measured.height }
+      : MENU_ESTIMATE;
+
+    const pos = computeFixedDropdownPosition(trigger, menuSize, { gap: 6 });
+    setMenuPos(pos);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    positionMenu();
+  }, [open, positionMenu]);
+
+  useEffect(() => {
+    if (!open) return;
+    positionMenu();
+    const onLayout = () => positionMenu();
+    window.addEventListener("resize", onLayout);
+    window.addEventListener("scroll", onLayout, true);
+    window.visualViewport?.addEventListener("resize", onLayout);
+    window.visualViewport?.addEventListener("scroll", onLayout);
+    return () => {
+      window.removeEventListener("resize", onLayout);
+      window.removeEventListener("scroll", onLayout, true);
+      window.visualViewport?.removeEventListener("resize", onLayout);
+      window.visualViewport?.removeEventListener("scroll", onLayout);
+    };
+  }, [open, positionMenu]);
 
   useEffect(() => {
     if (!open) return;
     function onPointerDown(e: PointerEvent) {
-      if (wrapRef.current?.contains(e.target as Node)) return;
+      const target = e.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
       setOpen(false);
     }
     function onKeyDown(e: KeyboardEvent) {
@@ -32,9 +75,22 @@ export function AdminGearMenu({ children }: { children: React.ReactNode }) {
     };
   }, [open]);
 
+  const menu =
+    open && menuPos ? (
+      <div
+        ref={menuRef}
+        className="admin-gear__dropdown admin-gear__dropdown--portal"
+        role="menu"
+        style={{ top: menuPos.top, left: menuPos.left }}
+      >
+        {children}
+      </div>
+    ) : null;
+
   return (
-    <div className="admin-gear" ref={wrapRef}>
+    <div className="admin-gear">
       <button
+        ref={triggerRef}
         type="button"
         className="admin-gear__trigger"
         aria-expanded={open}
@@ -45,11 +101,7 @@ export function AdminGearMenu({ children }: { children: React.ReactNode }) {
         <HudIconGear className="admin-gear__icon" />
       </button>
 
-      {open && (
-        <div className="admin-gear__dropdown" role="menu">
-          {children}
-        </div>
-      )}
+      {menu ? <AdminPortal>{menu}</AdminPortal> : null}
     </div>
   );
 }

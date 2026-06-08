@@ -53,6 +53,7 @@ export function GuestPreviewPanel({
       title={tGuests("previewTitle", { name: guest.display_name })}
       variant="modal"
       width={720}
+      className="guest-preview-panel"
     >
       <div className="space-y-4 p-1">
         <section className="rounded-xl border px-4 py-4" style={panelStyle}>

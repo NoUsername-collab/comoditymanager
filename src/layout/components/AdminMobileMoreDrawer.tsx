@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId } from "react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { useEffect, useId, useMemo } from "react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
 import { useTranslations } from "next-intl";
 import {
@@ -23,6 +24,9 @@ export function AdminMobileMoreDrawer({
   const t = useTranslations("admin.nav");
   const panelId = useId();
   const links = filterAdminMoreLinks(ADMIN_MORE_LINKS, locationUnlocked);
+  const router = useRouter();
+  const prefetchHrefs = useMemo(() => links.map((link) => link.href), [links]);
+  useAdminRoutePrefetch(prefetchHrefs);
 
   useEffect(() => {
     if (!open) return;
@@ -37,22 +41,36 @@ export function AdminMobileMoreDrawer({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
-
   return (
     <>
       <button
         type="button"
-        className="ml-drawer__backdrop"
+        className={[
+          "ml-drawer__backdrop",
+          open && "ml-drawer__backdrop--visible",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         aria-label={t("moreClose")}
+        aria-hidden={!open}
+        tabIndex={open ? 0 : -1}
         onClick={onClose}
       />
       <div
         id={panelId}
-        className="ml-drawer ml-drawer--admin ml-drawer--open"
+        className={[
+          "ml-drawer",
+          "ml-drawer--admin",
+          open && "ml-drawer--open",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         role="dialog"
-        aria-modal
+        aria-modal={open}
+        aria-hidden={!open}
         aria-label={t("moreMenuAria")}
+        hidden={!open}
+        suppressHydrationWarning
       >
         <nav className="ml-drawer__nav">
           {links.map((link) => {
@@ -61,6 +79,10 @@ export function AdminMobileMoreDrawer({
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={!active}
+                onMouseEnter={() => {
+                  if (!active) router.prefetch(link.href);
+                }}
                 className={[
                   "ml-drawer__link",
                   active && "ml-drawer__link--active",

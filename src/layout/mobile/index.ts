@@ -14,6 +14,7 @@ export {
 export {
   applyDocumentLayout,
   applyLayoutModeToDocument,
+  scheduleApplyDocumentLayout,
 } from "./apply-document-layout";
 export {
   resolveAutoDisplayProfile,
@@ -28,7 +29,14 @@ export {
   readLayoutModeFromDom,
   readLayoutOrientationFromDom,
 } from "./dom";
-export { getLayoutViewportSize } from "./viewport";
+export {
+  getLayoutViewportSize,
+  LAYOUT_RESIZE_DEBOUNCE_MS,
+} from "./viewport";
+export {
+  subscribeLayoutViewportChanges,
+  type LayoutViewportSubscriptionOptions,
+} from "./resize-sync";
 export type {
   LayoutChrome,
   LayoutMode,

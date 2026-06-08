@@ -107,6 +107,15 @@ export function HudIconGear({ className }: IconProps) {
   );
 }
 
+export function HudIconPhone({ className }: IconProps) {
+  return (
+    <Svg className={className}>
+      <path d="M6.5 3.5h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z" />
+      <path d="M9.5 14.5h1" />
+    </Svg>
+  );
+}
+
 export function HudIconGlobe({ className }: IconProps) {
   return (
     <Svg className={className}>
@@ -134,7 +143,8 @@ export type HudIconName =
   | "chart"
   | "history"
   | "person"
-  | "gear";
+  | "gear"
+  | "phone";
 
 const MAP = {
   home: HudIconHome,
@@ -147,6 +157,7 @@ const MAP = {
   history: HudIconHistory,
   person: HudIconPerson,
   gear: HudIconGear,
+  phone: HudIconPhone,
 } as const;
 
 export function AdminHudIcon({

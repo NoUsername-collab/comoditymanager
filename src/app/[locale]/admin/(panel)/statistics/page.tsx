@@ -4,7 +4,7 @@ import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFram
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
-import { StatisticsBarChart } from "@/components/admin/statistics/StatisticsBarChart";
+import { StatisticsBarChartLazy } from "@/components/admin/statistics/StatisticsBarChartLazy";
 import { StatisticsYearNav } from "@/components/admin/statistics/StatisticsYearNav";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
@@ -29,30 +29,36 @@ export default async function AdminStatisticsPage({
 }: {
   searchParams: Promise<{ year?: string }>;
 }) {
-  const locale = await getLocale();
-  const tPages = await getTranslations("admin.pages.statistics");
-  const tCommon = await getTranslations("admin.common");
-  const { memberRole } = await requireStaff();
-  const pension = await getPensionSettings().catch(() => null);
+  const [locale, tPages, tCommon, { memberRole }, pension, params] =
+    await Promise.all([
+      getLocale(),
+      getTranslations("admin.pages.statistics"),
+      getTranslations("admin.common"),
+      requireStaff(),
+      getPensionSettings().catch(() => null),
+      searchParams,
+    ]);
   const visibility = pensionStatisticsVisibility(pension);
   if (!canAccessStatistics(memberRole, visibility)) {
     await redirect("/admin/settings?statistics=forbidden");
   }
 
-  const params = await searchParams;
   let report: Awaited<ReturnType<typeof loadStatisticsReport>> | null = null;
   let monthCompare: Awaited<ReturnType<typeof loadMonthComparison>> | null = null;
   let error: string | null = null;
 
-  try {
-    report = await loadStatisticsReport();
-  } catch (e) {
+  const [reportResult, monthCompareResult] = await Promise.allSettled([
+    loadStatisticsReport(),
+    loadMonthComparison(),
+  ]);
+  if (reportResult.status === "fulfilled") {
+    report = reportResult.value;
+  } else {
+    const e = reportResult.reason;
     error = e instanceof Error ? e.message : tCommon("loadDataError");
   }
-  try {
-    monthCompare = await loadMonthComparison();
-  } catch {
-    monthCompare = null;
+  if (monthCompareResult.status === "fulfilled") {
+    monthCompare = monthCompareResult.value;
   }
 
   const focusYear = report
@@ -99,7 +105,7 @@ export default async function AdminStatisticsPage({
           </div>
 
           <div className="mt-4 grid gap-6 lg:grid-cols-2">
-            <StatisticsBarChart
+            <StatisticsBarChartLazy
               title={tPages("occupancyCompareTitle")}
               caption={tPages("occupancyCompareCaption")}
               items={report.years.map((y) => ({
@@ -110,7 +116,7 @@ export default async function AdminStatisticsPage({
               valueSuffix="%"
               maxValue={100}
             />
-            <StatisticsBarChart
+            <StatisticsBarChartLazy
               title={tPages("confirmedCompareTitle")}
               caption={tPages("confirmedCompareCaption")}
               items={report.years.map((y) => ({
@@ -181,7 +187,7 @@ export default async function AdminStatisticsPage({
                 />
               </div>
 
-              <StatisticsBarChart
+              <StatisticsBarChartLazy
                 title={tPages("monthlyOccupancy", { year: yearData.year })}
                 caption={tPages("byCalendarMonths")}
                 items={yearData.months.map((m) => ({
@@ -193,7 +199,7 @@ export default async function AdminStatisticsPage({
                 maxValue={100}
               />
 
-              <StatisticsBarChart
+              <StatisticsBarChartLazy
                 title={tPages("confirmedMonthly", { year: yearData.year })}
                 items={yearData.months.map((m) => ({
                   label: m.label,

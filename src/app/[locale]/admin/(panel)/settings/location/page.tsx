@@ -18,11 +18,13 @@ export default async function LocationAdminPage({
 }: {
   searchParams: Promise<{ saved?: string; reset?: string; unlocked?: string; locked?: string }>;
 }) {
-  const tPage = await getTranslations("admin.pages.settingsLocation");
-  const tCommon = await getTranslations("admin.common");
-  await requireLocationAdmin();
-  const params = await searchParams;
-  const staffAccounts = await listStaffAccountsForCurrentTenant();
+  const [tPage, tCommon, , params, staffAccounts] = await Promise.all([
+    getTranslations("admin.pages.settingsLocation"),
+    getTranslations("admin.common"),
+    requireLocationAdmin(),
+    searchParams,
+    listStaffAccountsForCurrentTenant(),
+  ]);
 
   let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
   let error: string | null = null;

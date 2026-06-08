@@ -1,6 +1,8 @@
 "use client";
 
-import { Link, usePathname } from "@/i18n/navigation";
+import { useMemo } from "react";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
 import {
   ADMIN_PRIMARY_TABS,
@@ -17,9 +19,15 @@ export function AdminNav({
   locationUnlocked?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("admin.nav");
 
   const visibleTabs = filterAdminTabs(ADMIN_PRIMARY_TABS, locationUnlocked);
+  const prefetchHrefs = useMemo(
+    () => visibleTabs.map((tab) => tab.href),
+    [visibleTabs]
+  );
+  useAdminRoutePrefetch(prefetchHrefs);
 
   return (
     <nav className="admin-nav admin-hud__nav" aria-label={t("menuAria")}>
@@ -33,6 +41,13 @@ export function AdminNav({
           <Link
             key={tab.href}
             href={tab.href}
+            prefetch={!active}
+            onMouseEnter={() => {
+              if (!active) router.prefetch(tab.href);
+            }}
+            onFocus={() => {
+              if (!active) router.prefetch(tab.href);
+            }}
             className={[
               "admin-nav-tab",
               active && "admin-nav-tab--active",
