@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { PublicStaffPreview } from "@/components/public/PublicStaffPreview";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { loadAdminDashboard } from "@/services/admin-dashboard";
+import { loadStaffPublicPreview } from "@/services/admin-dashboard";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
@@ -11,7 +11,8 @@ export default async function HomePage() {
   let title = tShell("brandFallback");
   let checkIn = "14:00";
   let checkOut = "11:00";
-  let staffPreview: Awaited<ReturnType<typeof loadAdminDashboard>> | null = null;
+  let staffPreview: Awaited<ReturnType<typeof loadStaffPublicPreview>> | null =
+    null;
 
   try {
     const s = await getPensionSettings();
@@ -27,7 +28,7 @@ export default async function HomePage() {
   try {
     const staffUser = await getAdminUser();
     if (staffUser) {
-      staffPreview = await loadAdminDashboard();
+      staffPreview = await loadStaffPublicPreview();
     }
   } catch {
     staffPreview = null;

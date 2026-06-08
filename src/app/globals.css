@@ -1,16 +1,11 @@
 @import "tailwindcss";
 @import "../styles/themes/_base.css";
 @import "../styles/themes/globals.css";
-@import "./public-site.css";
-@import "./signup.css";
-@import "./landing.css";
-@import "./platform.css";
-@import "./platform-split.css";
 @import "./locale-loading.css";
-@import "./layout-debug.css";
 @import "./admin-login.css";
 @import "./device-mobile.css";
 @import "./display-profile.css";
+@import "./mobile-layout.css";
 
 :root {
   --background: var(--bg, #ffffff);
@@ -22,6 +17,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
 }
 
 body {
@@ -1487,52 +1487,7 @@ html[data-theme="default"][data-mode="night"] {
   padding: 0.4rem 0.8rem;
 }
 
-/* Laptop îngust / zoom — HUD pe rânduri (și data-display-profile compact) */
-@media (max-width: 1400px) {
-  .admin-hud__center {
-    order: 3;
-    flex: 1 1 100%;
-    min-width: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-  }
-
-  .admin-hud__nav {
-    flex-wrap: nowrap;
-    width: max-content;
-    min-width: min(100%, max-content);
-  }
-
-  .admin-hud__right {
-    margin-left: auto;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    max-width: 100%;
-  }
-
-  .admin-hud__tools {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-}
-
-@media (max-width: 900px) {
-  .admin-hud__brand {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
-  .admin-hud__brand-text {
-    min-width: 0;
-  }
-
-  .admin-hud__title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
+/* HUD responsive wrap: mobile-layout-premium.css (data-layout-chrome / data-layout-bp) */
 
 .admin-hud__brand {
   display: flex;

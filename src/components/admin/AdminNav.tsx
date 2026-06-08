@@ -1,25 +1,13 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
 import {
-  AdminHudIcon,
-  type HudIconName,
-} from "@/components/admin/AdminHudIcons";
+  ADMIN_PRIMARY_TABS,
+  filterAdminTabs,
+  isAdminTabActive,
+} from "@/layout/mobile";
 import { useTranslations } from "next-intl";
-
-type Tab = {
-  href: string;
-  labelKey:
-    | "home"
-    | "newRequests"
-    | "stays"
-    | "clients"
-    | "calendar";
-  icon: HudIconName;
-  alert?: boolean;
-  badge?: number;
-  locationConfig?: boolean;
-};
 
 export function AdminNav({
   cereriCount,
@@ -31,34 +19,15 @@ export function AdminNav({
   const pathname = usePathname();
   const t = useTranslations("admin.nav");
 
-  const tabs: Tab[] = [
-    {
-      href: "/admin/bookings",
-      labelKey: "newRequests",
-      icon: "inbox",
-      alert: cereriCount > 0,
-      badge: cereriCount,
-    },
-    { href: "/admin", labelKey: "home", icon: "home" },
-    { href: "/admin/calendar", labelKey: "calendar", icon: "calendar" },
-    { href: "/admin/cazari", labelKey: "stays", icon: "bed" },
-    { href: "/admin/guests", labelKey: "clients", icon: "person" },
-  ];
-
-  const visibleTabs = tabs.filter((tab) => {
-    if (!tab.locationConfig) return true;
-    return locationUnlocked;
-  });
+  const visibleTabs = filterAdminTabs(ADMIN_PRIMARY_TABS, locationUnlocked);
 
   return (
     <nav className="admin-nav admin-hud__nav" aria-label={t("menuAria")}>
       {visibleTabs.map((tab) => {
-        const active =
-          tab.href === "/admin"
-            ? pathname === "/admin"
-            : pathname.startsWith(tab.href);
-
-        const quest = tab.alert && !active;
+        const active = isAdminTabActive(pathname, tab.href);
+        const isBookings = tab.href === "/admin/bookings";
+        const badge = isBookings && cereriCount > 0 ? cereriCount : null;
+        const quest = badge != null && !active;
 
         return (
           <Link
@@ -77,7 +46,7 @@ export function AdminNav({
               className="admin-nav-tab__icon h-[15px] w-[15px] shrink-0"
             />
             <span className="admin-nav-tab__label">{t(tab.labelKey)}</span>
-            {tab.badge != null && tab.badge > 0 && (
+            {badge != null && badge > 0 && (
               <span
                 className={[
                   "admin-nav-tab__badge",
@@ -87,7 +56,7 @@ export function AdminNav({
                   .join(" ")}
                 aria-hidden
               >
-                {tab.badge > 99 ? "99+" : tab.badge}
+                {badge > 99 ? "99+" : badge}
               </span>
             )}
           </Link>

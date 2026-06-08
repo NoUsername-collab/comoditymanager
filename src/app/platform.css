@@ -115,15 +115,7 @@
   transition-duration: 0.06s;
 }
 
-/* Mobile: hide text links, show only CTA */
-@media (max-width: 639px) {
-  .platform-header__link {
-    display: none;
-  }
-  .platform-header__cta {
-    margin-left: 0;
-  }
-}
+/* Compact shell: see mobile-layout-pages.css */
 
 /* ── Footer ────────────────────────────────────────────────────────── */
 

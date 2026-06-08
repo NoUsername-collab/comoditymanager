@@ -2,7 +2,9 @@ import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context"
 import { AdminCorner } from "@/components/public/AdminCorner";
 import { PublicFooter } from "@/components/public/PublicFooter";
 import { PublicHeader } from "@/components/public/PublicHeader";
+import { MobileShell } from "@/layout/components/MobileShell";
 import type { CSSProperties } from "react";
+import "@/app/public-site.css";
 
 const publicNoirVars = {
   // Fundal/cifre/texte publice
@@ -30,14 +32,15 @@ export default async function PublicLayout({
   await bindTenantContextFromRequest();
 
   return (
-    <div
+    <MobileShell
+      surface="public"
       className="site-themed site-themed--noir flex min-h-screen flex-1 flex-col"
       style={publicNoirVars}
     >
       <AdminCorner />
       <PublicHeader />
-      {children}
+      <div className="ml-main ml-content flex-1">{children}</div>
       <PublicFooter />
-    </div>
+    </MobileShell>
   );
 }

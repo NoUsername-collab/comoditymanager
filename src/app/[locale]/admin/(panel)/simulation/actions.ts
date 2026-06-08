@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireStaffRole } from "@/lib/auth/require-admin";
 import {
   startSimulation,
@@ -11,13 +11,24 @@ import {
   findNextCheckOut,
 } from "@/services/simulation";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 
 type SimActionResult =
   | { ok: true; currentDate?: string; daysAdvanced?: number }
   | { ok: false; error: string };
 
-function revalidateAll() {
-  revalidatePath("/admin", "layout");
+async function revalidateSimSurfaces() {
+  const tenantId = await resolveTenantIdForData().catch(() => null);
+  if (tenantId) {
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.bookingCounts), "max");
+  } else {
+    revalidateTag(CACHE_TAGS.bookingCounts, "max");
+  }
+  revalidatePath("/admin");
+  revalidatePath("/admin/calendar");
+  revalidatePath("/admin/cazari");
+  revalidatePath("/admin/disponibilitate");
 }
 
 export async function startSimulationAction(): Promise<SimActionResult> {
@@ -25,7 +36,7 @@ export async function startSimulationAction(): Promise<SimActionResult> {
 
   try {
     const state = await startSimulation();
-    revalidateAll();
+    await revalidateSimSurfaces();
     return {
       ok: true,
       currentDate: state.currentDate,
@@ -44,7 +55,7 @@ export async function stopSimulationAction(): Promise<SimActionResult> {
 
   try {
     await stopSimulation();
-    revalidateAll();
+    await revalidateSimSurfaces();
     return { ok: true };
   } catch (e) {
     return {
@@ -59,7 +70,7 @@ export async function advanceDayAction(): Promise<SimActionResult> {
 
   try {
     const state = await advanceSimulation(1);
-    revalidateAll();
+    await revalidateSimSurfaces();
     return {
       ok: true,
       currentDate: state.currentDate,
@@ -78,7 +89,7 @@ export async function advanceWeekAction(): Promise<SimActionResult> {
 
   try {
     const state = await advanceSimulation(7);
-    revalidateAll();
+    await revalidateSimSurfaces();
     return {
       ok: true,
       currentDate: state.currentDate,
@@ -97,7 +108,7 @@ export async function advanceMonthAction(): Promise<SimActionResult> {
 
   try {
     const state = await advanceSimulation(30);
-    revalidateAll();
+    await revalidateSimSurfaces();
     return {
       ok: true,
       currentDate: state.currentDate,
@@ -111,9 +122,6 @@ export async function advanceMonthAction(): Promise<SimActionResult> {
   }
 }
 
-/**
- * Jump to the next check-in date.
- */
 export async function advanceToNextCheckInAction(): Promise<SimActionResult> {
   await requireStaffRole(["admin"]);
 
@@ -125,7 +133,7 @@ export async function advanceToNextCheckInAction(): Promise<SimActionResult> {
     if (!nextCI) return { ok: false, error: "simulation.no_upcoming_checkin" };
 
     const state = await advanceSimulationToDate(nextCI);
-    revalidateAll();
+    await revalidateSimSurfaces();
     return {
       ok: true,
       currentDate: state.currentDate,
@@ -139,9 +147,6 @@ export async function advanceToNextCheckInAction(): Promise<SimActionResult> {
   }
 }
 
-/**
- * Jump to the next check-out date.
- */
 export async function advanceToNextCheckOutAction(): Promise<SimActionResult> {
   await requireStaffRole(["admin"]);
 
@@ -153,7 +158,7 @@ export async function advanceToNextCheckOutAction(): Promise<SimActionResult> {
     if (!nextCO) return { ok: false, error: "simulation.no_upcoming_checkout" };
 
     const state = await advanceSimulationToDate(nextCO);
-    revalidateAll();
+    await revalidateSimSurfaces();
     return {
       ok: true,
       currentDate: state.currentDate,

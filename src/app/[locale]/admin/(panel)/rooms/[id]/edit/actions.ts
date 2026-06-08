@@ -70,7 +70,6 @@ export async function updateRoomAction(formData: FormData) {
 
   revalidateStructurePaths();
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-  revalidatePath("/");
   const back = roomReturnPath(formData);
   await redirect(back || "/admin/rooms");
 }

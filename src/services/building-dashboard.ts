@@ -10,7 +10,7 @@ import {
 import { type NightStay, type RoomNightStatus } from "@/domain/availability/room-night-status";
 import type { Building } from "@/types/database";
 import { listBuildings } from "@/services/buildings";
-import { listFloorsByBuilding } from "@/services/floors";
+import { listAllFloors } from "@/services/floors";
 import { listAllRooms } from "@/services/rooms-admin";
 
 export type BuildingRoomRow = {
@@ -206,10 +206,11 @@ export async function listBuildingDashboards(
   const nightsWeek = nightsBetween(viewDate, weekEnd);
   const nightsMonth = nightsBetween(monthStart, monthEnd);
 
-  const [buildings, allRooms, stays] = await Promise.all([
+  const [buildings, allRooms, stays, allFloors] = await Promise.all([
     listBuildings(),
     listAllRooms(),
     loadStaysForAvailability(monthStart, monthEnd),
+    listAllFloors(),
   ]);
   const { confirmedRoomIdsByNight, statusByRoomOnViewDate } = buildAvailabilityIndexes(
     stays,
@@ -218,9 +219,8 @@ export async function listBuildingDashboards(
     viewDate
   );
 
-  return Promise.all(
-    buildings.map(async (building) => {
-      const floors = await listFloorsByBuilding(building.id);
+  return buildings.map((building) => {
+      const floors = allFloors.filter((floor) => floor.building_id === building.id);
       const rooms = allRooms.filter((r) => r.building_id === building.id);
       const activeRooms = rooms.filter((r) => r.is_active);
       const activeRoomIds = activeRooms.map((r) => r.id);
@@ -287,6 +287,5 @@ export async function listBuildingDashboards(
         floors: floors.map((f) => ({ id: f.id, name: f.name })),
         rooms: roomRows,
       };
-    })
-  );
+    });
 }

@@ -11,6 +11,8 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantPublicScope, getTenantScope } from "@/lib/tenant/scope";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -35,11 +37,7 @@ function isHoldActive(
   return new Date(row.expires_at).getTime() > asOfMs;
 }
 
-/**
- * API unificat occupancy — Gantt, disponibilitate, conflicte.
- * Spec: docs/timeline-spec.md
- */
-export async function getRoomOccupancy(
+async function getRoomOccupancyImpl(
   rangeStart: string,
   rangeEnd: string,
   options: OccupancyQueryOptions = {}
@@ -50,9 +48,9 @@ export async function getRoomOccupancy(
   const { tenantId, supabase } = options.forPublicCalendar
     ? await getTenantPublicScope()
     : await getTenantScope();
-  const out: OccupancySegment[] = [];
+  const fetchSegments = async (): Promise<OccupancySegment[]> => {
+    if (!kinds.includes("request") && !kinds.includes("stay")) return [];
 
-  if (kinds.includes("request") || kinds.includes("stay")) {
     let q = supabase
       .from("booking_room_segments")
       .select(
@@ -68,17 +66,13 @@ export async function getRoomOccupancy(
       .gte("segment_end", rangeStart)
       .neq("bookings.status", "anulata");
 
-    if (roomIds.length > 0) {
-      q = q.in("room_id", roomIds);
-    }
-
-    if (options.excludeBookingId) {
-      q = q.neq("booking_id", options.excludeBookingId);
-    }
+    if (roomIds.length > 0) q = q.in("room_id", roomIds);
+    if (options.excludeBookingId) q = q.neq("booking_id", options.excludeBookingId);
 
     const { data, error } = await q;
     if (error) throw new Error(error.message);
 
+    const segments: OccupancySegment[] = [];
     for (const row of data ?? []) {
       const raw = row.bookings as
         | {
@@ -103,8 +97,7 @@ export async function getRoomOccupancy(
 
       const checkIn = row.segment_start as string;
       const checkOut = row.segment_end as string;
-
-      out.push({
+      segments.push({
         id: row.id as string,
         kind,
         roomId: row.room_id as string,
@@ -117,9 +110,12 @@ export async function getRoomOccupancy(
         guestEmail: b.guest_email,
       });
     }
-  }
+    return segments;
+  };
 
-  if (kinds.includes("hold") && !options.forPublicCalendar) {
+  const fetchHolds = async (): Promise<OccupancySegment[]> => {
+    if (!kinds.includes("hold") || options.forPublicCalendar) return [];
+
     await releaseExpiredRoomHolds(ref).catch(() => {
       /* non-fatal */
     });
@@ -134,18 +130,17 @@ export async function getRoomOccupancy(
       .gte("check_out", rangeStart)
       .is("released_at", null);
 
-    if (roomIds.length > 0) {
-      holdQ = holdQ.in("room_id", roomIds);
-    }
+    if (roomIds.length > 0) holdQ = holdQ.in("room_id", roomIds);
 
     const { data, error } = await holdQ;
     if (error) throw new Error(error.message);
 
+    const holds: OccupancySegment[] = [];
     for (const row of data ?? []) {
       if (!isHoldActive(row, ref)) continue;
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
-      out.push({
+      holds.push({
         id: row.id as string,
         kind: "hold",
         roomId: row.room_id as string,
@@ -157,9 +152,12 @@ export async function getRoomOccupancy(
         releasedAt: row.released_at as string | null,
       });
     }
-  }
+    return holds;
+  };
 
-  if (kinds.includes("block")) {
+  const fetchBlocks = async (): Promise<OccupancySegment[]> => {
+    if (!kinds.includes("block")) return [];
+
     let blockQ = supabase
       .from("room_blocks")
       .select("id, room_id, check_in, check_out, reason")
@@ -167,33 +165,94 @@ export async function getRoomOccupancy(
       .lte("check_in", rangeEnd)
       .gte("check_out", rangeStart);
 
-    if (roomIds.length > 0) {
-      blockQ = blockQ.in("room_id", roomIds);
-    }
+    if (roomIds.length > 0) blockQ = blockQ.in("room_id", roomIds);
 
     const { data, error } = await blockQ;
     if (error) throw new Error(error.message);
 
-    for (const row of data ?? []) {
+    return (data ?? []).map((row) => {
       const checkIn = row.check_in as string;
       const checkOut = row.check_out as string;
-      out.push({
+      return {
         id: row.id as string,
-        kind: "block",
+        kind: "block" as const,
         roomId: row.room_id as string,
         checkIn,
         checkOut,
         phase: occupancyPhase(checkIn, checkOut, ref),
         reason: row.reason as string,
-      });
-    }
-  }
+      };
+    });
+  };
+
+  const [segmentRows, holdRows, blockRows] = await Promise.all([
+    fetchSegments(),
+    fetchHolds(),
+    fetchBlocks(),
+  ]);
+
+  const out = [...segmentRows, ...holdRows, ...blockRows];
 
   return out.sort((a, b) =>
     a.checkIn === b.checkIn
       ? a.roomId.localeCompare(b.roomId)
       : a.checkIn.localeCompare(b.checkIn)
   );
+}
+
+function occupancyCacheKey(
+  tenantId: string,
+  rangeStart: string,
+  rangeEnd: string,
+  options: OccupancyQueryOptions,
+  referenceDate: string
+): string[] {
+  const kinds = (options.kinds ?? ALL_KINDS).slice().sort().join(",");
+  const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))].sort().join(",");
+  return [
+    "room-occupancy",
+    tenantId,
+    rangeStart,
+    rangeEnd,
+    kinds,
+    roomIds,
+    options.excludeBookingId ?? "",
+    options.forPublicCalendar ? "public" : "staff",
+    referenceDate,
+  ];
+}
+
+/**
+ * API unificat occupancy — Gantt, disponibilitate, conflicte.
+ * Spec: docs/timeline-spec.md
+ */
+export async function getRoomOccupancy(
+  rangeStart: string,
+  rangeEnd: string,
+  options: OccupancyQueryOptions = {}
+): Promise<OccupancySegment[]> {
+  if (options.excludeBookingId) {
+    return getRoomOccupancyImpl(rangeStart, rangeEnd, options);
+  }
+
+  const ref = options.referenceDate ?? (await getEffectiveToday());
+  const { tenantId } = options.forPublicCalendar
+    ? await getTenantPublicScope()
+    : await getTenantScope();
+
+  const cached = unstable_cache(
+    () => getRoomOccupancyImpl(rangeStart, rangeEnd, { ...options, referenceDate: ref }),
+    occupancyCacheKey(tenantId, rangeStart, rangeEnd, options, ref),
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 30,
+    }
+  );
+
+  return cached();
 }
 
 /** Interval larg pentru verificări conflict — exclude opțional un booking. */

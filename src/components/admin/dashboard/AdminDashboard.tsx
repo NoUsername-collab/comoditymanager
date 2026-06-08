@@ -35,7 +35,7 @@ export async function AdminDashboard({
     .sort((a, b) => a.name.localeCompare(b.name, "ro-RO"));
 
   return (
-    <div className="admin-home">
+    <div className="admin-home ml-content">
       {/* ── Hero: ultra-compact strip ─────────────────────────── */}
       <header className="admin-home-hero admin-home-hero--liquid">
         {/* Single row: name · date · KPIs · CTAs */}

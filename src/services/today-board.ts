@@ -1,3 +1,6 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import type { GuestFlagLevel } from "@/domain/guest/types";
@@ -98,12 +101,13 @@ function mapBookingRow(b: {
   };
 }
 
-export async function loadTodayBoard(
+async function loadTodayBoardImpl(
+  tenantId: string,
+  today: string,
   checkInTime: string,
   checkOutTime: string
 ): Promise<TodayBoard> {
-  const today = await getEffectiveToday();
-  const { tenantId, supabase } = await getTenantScope();
+  const { supabase } = await getTenantScope();
 
   const { data, error } = await supabase
     .from("bookings")
@@ -226,3 +230,30 @@ export async function loadTodayBoard(
     roomsToClean,
   };
 }
+
+const getCachedTodayBoard = (
+  tenantId: string,
+  today: string,
+  checkInTime: string,
+  checkOutTime: string
+) =>
+  unstable_cache(
+    () => loadTodayBoardImpl(tenantId, today, checkInTime, checkOutTime),
+    ["today-board", tenantId, today, checkInTime, checkOutTime],
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 30,
+    }
+  );
+
+/** Per-request dedupe + 30s cross-request cache (busted via bookingCounts tag). */
+export const loadTodayBoard = cache(
+  async (checkInTime: string, checkOutTime: string): Promise<TodayBoard> => {
+    const today = await getEffectiveToday();
+    const { tenantId } = await getTenantScope();
+    return getCachedTodayBoard(tenantId, today, checkInTime, checkOutTime)();
+  }
+);

@@ -7,8 +7,12 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+import { unstable_cache } from "next/cache";
 import { platformPensionNameFallback } from "@/lib/platform/branding";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
+
+const TENANT_ROW_SELECT =
+  "id, slug, display_name, plan_id, active_modules, locale, country, timezone, status, trial_ends_at, owner_id, owner_email, is_paying, stripe_customer_id, stripe_subscription_id, created_at, updated_at";
 
 export type TenantRow = {
   id: string;
@@ -69,13 +73,12 @@ export async function getTenantById(
   }
 }
 
-/** Lookup by URL slug ({slug}.hospira.ro). */
-export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
+async function fetchTenantBySlug(slug: string): Promise<TenantRow | null> {
   try {
     const supabase = createPublicAdminClient();
     const { data, error } = await supabase
       .from("tenants")
-      .select("*")
+      .select(TENANT_ROW_SELECT)
       .eq("slug", slug)
       .in("status", ["active", "trial"])
       .maybeSingle();
@@ -85,6 +88,18 @@ export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
   } catch {
     return null;
   }
+}
+
+const getCachedTenantBySlug = (slug: string) =>
+  unstable_cache(
+    () => fetchTenantBySlug(slug),
+    ["tenant-by-slug", slug],
+    { revalidate: 300, tags: [`tenant-slug-${slug}`] }
+  );
+
+/** Lookup by URL slug ({slug}.hospira.ro). */
+export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
+  return getCachedTenantBySlug(slug)();
 }
 
 /** Lookup by custom domain (rezervari.pensiunea.ro). */

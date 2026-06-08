@@ -168,15 +168,7 @@
   margin-left: 0.25rem;
 }
 
-@media (max-width: 639px) {
-  .public-header__nav .public-header__link:not(.public-header__cta) {
-    display: none;
-  }
-
-  .public-header__inner {
-    padding-inline: 1rem;
-  }
-}
+/* Compact shell: see mobile-layout.css */
 
 /* Footer */
 .public-footer {

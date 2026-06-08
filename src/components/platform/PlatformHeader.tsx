@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
+import { PlatformMobileMenu } from "@/layout/components/PlatformMobileMenu";
 import { getTranslations } from "next-intl/server";
 
 export async function PlatformHeader({
@@ -19,6 +20,7 @@ export async function PlatformHeader({
           <span className="platform-header__name">Hospira</span>
         </Link>
 
+        <PlatformMobileMenu />
         <nav className="platform-header__nav">
           <Link href="/preturi" className="platform-header__link">
             {t("pricing")}

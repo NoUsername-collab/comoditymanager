@@ -143,7 +143,7 @@ export default async function GuestDetailPage({
   ];
 
   return (
-    <main className="guest-profile-page">
+    <main className="guest-profile-page ml-content">
       <Link href={backHref} className="guest-profile-page__back">
         ← {tCommon("clients")}
       </Link>

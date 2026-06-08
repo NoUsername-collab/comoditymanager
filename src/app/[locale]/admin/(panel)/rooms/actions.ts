@@ -199,7 +199,6 @@ export async function createRoomAction(formData: FormData) {
 
       revalidateStructurePaths();
       revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-      revalidatePath("/");
       const back = roomSuccessRedirectPath(formData);
       await redirect(back === "/admin/rooms" ? `${back}?bulk=${ids.length}` : back);
     }
@@ -270,7 +269,6 @@ export async function createRoomAction(formData: FormData) {
 
     revalidateStructurePaths();
     revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
-    revalidatePath("/");
     await redirect(roomSuccessRedirectPath(formData));
   } catch (e) {
     if (isRedirectError(e)) throw e;

@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import {
   getTenantScope,
   withTenantId,
@@ -19,18 +21,37 @@ async function requireBuildingInTenant(
   return { tenantId, supabase };
 }
 
-export async function listFloorsByBuilding(buildingId: string): Promise<Floor[]> {
-  const { tenantId, supabase } = await requireBuildingInTenant(buildingId);
+async function listAllFloorsImpl(tenantId: string): Promise<Floor[]> {
+  const { supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("floors")
     .select("id, building_id, name, level_number, sort_order, is_active")
     .eq("tenant_id", tenantId)
-    .eq("building_id", buildingId)
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
 
   if (error) throw new Error(error.message);
   return (data ?? []) as Floor[];
+}
+
+const getCachedAllFloors = (tenantId: string) =>
+  unstable_cache(
+    () => listAllFloorsImpl(tenantId),
+    ["all-floors", tenantId],
+    {
+      tags: [CACHE_TAGS.buildings, tenantTag(tenantId, CACHE_TAGS.buildings)],
+      revalidate: 60,
+    }
+  );
+
+export async function listAllFloors(): Promise<Floor[]> {
+  const { tenantId } = await getTenantScope();
+  return getCachedAllFloors(tenantId)();
+}
+
+export async function listFloorsByBuilding(buildingId: string): Promise<Floor[]> {
+  const floors = await listAllFloors();
+  return floors.filter((floor) => floor.building_id === buildingId);
 }
 
 export async function findFloorByNameInBuilding(

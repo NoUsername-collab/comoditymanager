@@ -1079,43 +1079,7 @@
   flex-wrap: wrap;
 }
 
-/* ═══ Responsive ══════════════════════════════════════════════════ */
-
-/* Laptop / medium: 3→2 cols (merge activity below col2) */
-@media (max-width: 1100px) {
-  .bd-grid3 {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-  }
-
-  /* Activity card spans both cols or goes below col2 */
-  .bd-grid3 > .bd-col:nth-child(3) {
-    grid-column: 2;
-  }
-
-  .bd-card--history {
-    position: static;
-  }
-
-  /* Room tiles: single column on smaller screens */
-  .bd-room-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Small laptop / tablet: single column */
-@media (max-width: 768px) {
-  .bd-grid3 {
-    grid-template-columns: 1fr;
-  }
-
-  .bd-grid3 > .bd-col:nth-child(3) {
-    grid-column: auto;
-  }
-
-  .bd-room-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* Responsive: mobile-layout-premium.css + mobile-layout-pages.css */
 
 /* ── Reduced motion ──────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,39 @@
+---
+description: Mobile layout module — decoupled viewport shells and breakpoints
+globs:
+  - src/layout/**
+  - src/app/mobile-layout.css
+  - src/hooks/useMobileLayout.ts
+---
+
+# Mobile Layout
+
+When the user says **"Mobile layout"**, work in this module — not scattered media queries.
+
+## Source of truth
+
+- Breakpoints: `src/layout/mobile/breakpoints.ts`
+- Mode resolution: `src/layout/mobile/resolve.ts`
+- DOM attrs: `data-layout-mode`, `data-layout-orientation`, `data-layout-chrome` (`compact`|`wide`), `data-layout-bp`, `data-layout-surface`
+- Mobile detection: `min(width, height) < 640` (landscape phones stay mobile)
+- Compact chrome: mobile + tablet portrait → bottom nav, drawer, overflow guards
+- CSS: `src/app/mobile-layout.css` + `mobile-layout-pages.css` (classes prefixed `ml-`)
+- Hook: `useMobileLayout()` — only when JS must branch (drawers, mounts)
+
+## Do
+
+- Use `html[data-layout-mode="mobile"]` for responsive CSS
+- Scope surface-specific rules with `data-layout-surface="admin|public|platform"`
+- Reuse `ADMIN_PRIMARY_TABS` for admin navigation
+- Wrap app areas in `MobileShell`
+
+## Don't
+
+- Add new arbitrary breakpoints (639px, 900px) without aligning to `LAYOUT_BREAKPOINTS`
+- Use `useMobileLayout` for styling that CSS can handle
+- Mix layout mode with `data-display-profile` (density vs shell chrome)
+- Put mobile shell CSS in random feature CSS files — extend `mobile-layout.css` or page CSS with `data-layout-mode` selectors
+
+## Docs
+
+See `src/layout/mobile/README.md`

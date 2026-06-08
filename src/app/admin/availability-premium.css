@@ -128,11 +128,7 @@ button.avail-kpi-card {
   gap: 0.45rem;
 }
 
-@media (max-width: 900px) {
-  .avail-weekends-panel__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
+/* avail-weekends responsive: mobile-layout-premium.css */
 
 .avail-weekend-card {
   display: flex;
@@ -927,8 +923,4 @@ button.avail-kpi-card {
   pointer-events: none;
 }
 
-@media (max-width: 767px) {
-  .availability-home-preview__weekends .avail-weekends-panel__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
+/* availability-home-preview responsive: mobile-layout-premium.css */

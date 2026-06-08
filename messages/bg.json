@@ -46,6 +46,9 @@
     },
     "nav": {
       "mainAria": "Основна навигация",
+      "menuAria": "Мобилно меню",
+      "menuOpen": "Отвори менюто",
+      "menuClose": "Затвори менюто",
       "home": "Начало",
       "gdpr": "Поверителност",
       "book": "Резервация"
@@ -260,6 +263,7 @@
   "admin": {
     "nav": {
       "menuAria": "Админ меню",
+      "bottomNavAria": "Мобилна основна навигация",
       "home": "Начало",
       "newRequests": "Нови заявки",
       "stays": "Престои",
@@ -354,14 +358,16 @@
         "visualsTitle": "Visuals",
         "visualsSubtitle": "Admin theme and screen layout (this browser only)",
         "displayLayoutTitle": "Screen layout",
-        "displayLayoutHint": "Choose how the admin panel fits this laptop. Saved locally in your browser.",
+        "displayLayoutHint": "Choose admin density and UI shell. Auto detects phones and portrait tablets. Narrow forces mobile shell. Other options force desktop shell. Saved locally in your browser.",
         "displayLayoutAuto": "Automatic",
         "displayLayoutWide": "Large (15.6\"+)",
         "displayLayoutLaptop": "Laptop",
         "displayLayoutCompact": "Compact laptop (14\")",
         "displayLayoutNarrow": "Narrow",
-        "displayLayoutDetected": "Detected: {profile} · viewport {size}",
-        "displayLayoutManual": "Forced: {profile}",
+        "displayLayoutDetected": "Detected: {profile} · {chrome} · {size}",
+        "displayLayoutManual": "Forced: {profile} · {chrome}",
+        "displayLayoutChromeCompact": "mobile shell",
+        "displayLayoutChromeWide": "desktop shell",
         "displayLayoutProfile_wide": "large screen",
         "displayLayoutProfile_laptop": "laptop",
         "displayLayoutProfile_compact-laptop": "compact laptop",
@@ -2728,6 +2734,15 @@
     }
   },
   "platform": {
+    "nav": {
+      "menuAria": "Mobilno menu",
+      "menuOpen": "Otvori meniuto",
+      "menuClose": "Zatvori meniuto",
+      "pricing": "Ceni",
+      "gdpr": "GDPR",
+      "login": "Vhod",
+      "signup": "Bezplatno"
+    },
     "header": {
       "pricing": "Ceni",
       "gdpr": "GDPR",
@@ -2745,6 +2760,16 @@
       "privacy": "Poveritelnost",
       "contact": "Kontakt",
       "rights": "Vsichki prava zapazeni."
+    }
+  },
+  "hospiraAdmin": {
+    "nav": {
+      "menuAria": "Hospira admin menu",
+      "menuOpen": "Otvori meniuto",
+      "menuClose": "Zatvori meniuto",
+      "dashboard": "Tablo",
+      "tenants": "Tenanti",
+      "logs": "Logove"
     }
   },
   "alphaGate": {

@@ -39,7 +39,7 @@ export default async function GuestRebookStayPage({
     `/admin/guests/${guestId}?tab=history`;
 
   return (
-    <main className="guest-rebook-page mx-auto max-w-3xl px-4 py-8">
+    <main className="guest-rebook-page ml-content mx-auto max-w-3xl px-4 py-8">
       <header className="mb-6 space-y-2">
         <Link href={backHref} className="text-sm font-semibold text-emerald-800 hover:underline">
           ← {t("backToGuest")}

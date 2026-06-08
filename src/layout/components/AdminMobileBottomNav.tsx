@@ -1,0 +1,66 @@
+"use client";
+
+import { Link, usePathname } from "@/i18n/navigation";
+import {
+  AdminHudIcon,
+} from "@/components/admin/AdminHudIcons";
+import { useTranslations } from "next-intl";
+import {
+  ADMIN_PRIMARY_TABS,
+  filterAdminTabs,
+  isAdminTabActive,
+} from "@/layout/mobile";
+
+export function AdminMobileBottomNav({
+  cereriCount,
+  locationUnlocked = false,
+}: {
+  cereriCount: number;
+  locationUnlocked?: boolean;
+}) {
+  const pathname = usePathname();
+  const t = useTranslations("admin.nav");
+  const tabs = filterAdminTabs(ADMIN_PRIMARY_TABS, locationUnlocked);
+
+  return (
+    <nav
+      className="ml-bottom-nav ml-bottom-nav--admin"
+      aria-label={t("bottomNavAria")}
+      data-mobile-chrome="admin-bottom-nav"
+    >
+      <ul className="ml-bottom-nav__list">
+        {tabs.map((tab) => {
+          const active = isAdminTabActive(pathname, tab.href);
+          const isBookings = tab.href === "/admin/bookings";
+          const badge = isBookings && cereriCount > 0 ? cereriCount : null;
+
+          return (
+            <li key={tab.href} className="ml-bottom-nav__item">
+              <Link
+                href={tab.href}
+                className={[
+                  "ml-bottom-nav__link",
+                  active && "ml-bottom-nav__link--active",
+                  badge && !active && "ml-bottom-nav__link--alert",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                aria-current={active ? "page" : undefined}
+              >
+                <span className="ml-bottom-nav__icon-wrap">
+                  <AdminHudIcon name={tab.icon} className="ml-bottom-nav__icon" />
+                  {badge != null ? (
+                    <span className="ml-bottom-nav__badge" aria-hidden>
+                      {badge > 99 ? "99+" : badge}
+                    </span>
+                  ) : null}
+                </span>
+                <span className="ml-bottom-nav__label">{t(tab.labelKey)}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}

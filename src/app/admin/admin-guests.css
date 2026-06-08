@@ -952,15 +952,7 @@
   border-top: 1px dashed var(--border);
 }
 
-@media (max-width: 1023px) {
-  .guest-profile-page__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .guest-profile-page__profile {
-    order: -1;
-  }
-}
+/* guest-profile responsive: mobile-layout-premium.css + mobile-layout-pages.css */
 
 /* ─── Guest Hero (Identity Card) ─── */
 
@@ -1515,11 +1507,7 @@
   grid-template-columns: 1fr 1fr;
 }
 
-@media (max-width: 640px) {
-  .guest-notes-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* guest-notes-grid responsive: mobile-layout-premium.css */
 
 .guest-note-box {
   padding: 0.6rem 0.75rem;

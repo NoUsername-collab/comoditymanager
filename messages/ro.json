@@ -46,6 +46,9 @@
     },
     "nav": {
       "mainAria": "Navigare principală",
+      "menuAria": "Meniu mobil",
+      "menuOpen": "Deschide meniul",
+      "menuClose": "Închide meniul",
       "home": "Acasă",
       "gdpr": "GDPR",
       "book": "Rezervare"
@@ -260,6 +263,7 @@
   "admin": {
     "nav": {
       "menuAria": "Meniu administrare",
+      "bottomNavAria": "Navigare principală mobil",
       "home": "Acasă",
       "newRequests": "Cereri noi",
       "stays": "Cazări",
@@ -390,14 +394,16 @@
         "visualsTitle": "Visuals",
         "visualsSubtitle": "Temă admin și densitate layout (per acest browser)",
         "displayLayoutTitle": "Layout ecran",
-        "displayLayoutHint": "Alege cum se afișează panoul admin pe laptopul acesta. Salvat local în browser — nu afectează alți utilizatori.",
+        "displayLayoutHint": "Alege densitatea panoului și shell-ul UI. Automat detectează telefon/tabletă (navigare jos). Îngust forțează shell mobil. Celelalte opțiuni forțează shell desktop. Salvat local în browser.",
         "displayLayoutAuto": "Automat",
         "displayLayoutWide": "Mare (15.6\"+)",
         "displayLayoutLaptop": "Laptop",
         "displayLayoutCompact": "Laptop compact (14\")",
         "displayLayoutNarrow": "Îngust",
-        "displayLayoutDetected": "Detectat: {profile} · viewport {size}",
-        "displayLayoutManual": "Forțat: {profile}",
+        "displayLayoutDetected": "Detectat: {profile} · {chrome} · {size}",
+        "displayLayoutManual": "Forțat: {profile} · {chrome}",
+        "displayLayoutChromeCompact": "shell mobil",
+        "displayLayoutChromeWide": "shell desktop",
         "displayLayoutProfile_wide": "ecran mare",
         "displayLayoutProfile_laptop": "laptop",
         "displayLayoutProfile_compact-laptop": "laptop compact",
@@ -2857,6 +2863,15 @@
     }
   },
   "platform": {
+    "nav": {
+      "menuAria": "Meniu mobil",
+      "menuOpen": "Deschide meniul",
+      "menuClose": "Închide meniul",
+      "pricing": "Prețuri",
+      "gdpr": "GDPR",
+      "login": "Autentificare",
+      "signup": "Începe gratuit"
+    },
     "header": {
       "pricing": "Preturi",
       "gdpr": "GDPR",
@@ -2874,6 +2889,16 @@
       "privacy": "Confidentialitate",
       "contact": "Contact",
       "rights": "Toate drepturile rezervate."
+    }
+  },
+  "hospiraAdmin": {
+    "nav": {
+      "menuAria": "Meniu Hospira admin",
+      "menuOpen": "Deschide meniul",
+      "menuClose": "Închide meniul",
+      "dashboard": "Dashboard",
+      "tenants": "Tenanți",
+      "logs": "Logs"
     }
   },
   "alphaGate": {

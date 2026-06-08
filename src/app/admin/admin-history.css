@@ -12,11 +12,7 @@
   gap: 0.65rem;
 }
 
-@media (max-width: 520px) {
-  .activity-journal__tabs {
-    grid-template-columns: 1fr;
-  }
-}
+/* activity-journal responsive: mobile-layout-premium.css + mobile-layout-pages.css */
 
 .activity-journal__tab {
   display: flex;

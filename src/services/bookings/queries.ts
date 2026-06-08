@@ -2,7 +2,7 @@ import { unstable_cache } from "next/cache";
 import type { GuestFlagLevel } from "@/domain/guest/types";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { isSimActive } from "@/domain/simulation/sim-cookie";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
@@ -45,11 +45,12 @@ import {
 } from "./types";
 import { mapBookingRows, attachGuestProfiles } from "./map";
 
-export async function listBookingsForRange(
+async function listBookingsForRangeImpl(
+  tenantId: string,
   rangeStart: string,
   rangeEnd: string
 ): Promise<BookingRow[]> {
-  const { tenantId, supabase } = await getTenantScope();
+  const { supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -62,6 +63,31 @@ export async function listBookingsForRange(
   if (error) throw new Error(error.message);
 
   return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+}
+
+const getCachedBookingsForRange = (
+  tenantId: string,
+  rangeStart: string,
+  rangeEnd: string
+) =>
+  unstable_cache(
+    () => listBookingsForRangeImpl(tenantId, rangeStart, rangeEnd),
+    ["bookings-range", tenantId, rangeStart, rangeEnd],
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 45,
+    }
+  );
+
+export async function listBookingsForRange(
+  rangeStart: string,
+  rangeEnd: string
+): Promise<BookingRow[]> {
+  const { tenantId } = await getTenantScope();
+  return getCachedBookingsForRange(tenantId, rangeStart, rangeEnd)();
 }
 
 export async function getBookingById(id: string): Promise<BookingDetail | null> {
@@ -167,8 +193,8 @@ export async function listUnassignedCereri(): Promise<BookingRow[]> {
     .sort((a, b) => a.check_in.localeCompare(b.check_in));
 }
 
-export async function listCereriNoi(): Promise<BookingRow[]> {
-  const { tenantId, supabase } = await getTenantScope();
+async function listCereriNoiImpl(tenantId: string): Promise<BookingRow[]> {
+  const { supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(BOOKING_ROW_SELECT)
@@ -179,6 +205,24 @@ export async function listCereriNoi(): Promise<BookingRow[]> {
   if (error) throw new Error(error.message);
 
   return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+}
+
+const getCachedCereriList = (tenantId: string) =>
+  unstable_cache(
+    () => listCereriNoiImpl(tenantId),
+    ["cereri-list", tenantId],
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 30,
+    }
+  );
+
+export async function listCereriNoi(): Promise<BookingRow[]> {
+  const { tenantId } = await getTenantScope();
+  return getCachedCereriList(tenantId)();
 }
 
 /** Cazări active: cereri noi + confirmate (fără anulate). */
@@ -204,7 +248,7 @@ export async function listRecentlyConfirmedStayHistory(
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
-    .select(`${BOOKING_ROW_SELECT.trim()}, confirmed_at, created_at`)
+    .select(BOOKING_ROW_SELECT)
     .eq("tenant_id", tenantId)
     .eq("status", "confirmata")
     .gte("check_out", today)

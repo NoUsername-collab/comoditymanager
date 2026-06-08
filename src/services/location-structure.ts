@@ -1,5 +1,5 @@
 import { listBuildings } from "@/services/buildings";
-import { listFloorsByBuilding } from "@/services/floors";
+import { listAllFloors } from "@/services/floors";
 import { listAllRooms } from "@/services/rooms-admin";
 import type { Building, Floor } from "@/types/database";
 
@@ -27,11 +27,14 @@ export type StructureBuilding = {
 };
 
 export async function listLocationStructure(): Promise<StructureBuilding[]> {
-  const [buildings, allRooms] = await Promise.all([listBuildings(), listAllRooms()]);
+  const [buildings, allRooms, allFloors] = await Promise.all([
+    listBuildings(),
+    listAllRooms(),
+    listAllFloors(),
+  ]);
 
-  return Promise.all(
-    buildings.map(async (building) => {
-      const floors = await listFloorsByBuilding(building.id);
+  return buildings.map((building) => {
+      const floors = allFloors.filter((floor) => floor.building_id === building.id);
       const rooms = allRooms
         .filter((r) => r.building_id === building.id)
         .map(
@@ -76,6 +79,5 @@ export async function listLocationStructure(): Promise<StructureBuilding[]> {
         roomCount: rooms.length,
         activeRoomCount,
       };
-    })
-  );
+    });
 }

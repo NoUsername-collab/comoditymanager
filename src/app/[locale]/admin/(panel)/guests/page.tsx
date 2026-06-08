@@ -135,7 +135,7 @@ export default async function AdminGuestsPage({
   }
 
   return (
-    <main className="guest-page">
+    <main className="guest-page ml-content">
       <header className="guest-page__header guest-surface">
         <h1 className="guest-page__title">{t("title")}</h1>
         <p className="guest-page__desc">{t("description")}</p>

@@ -96,7 +96,6 @@ export async function updateAppearanceSettingsAction(formData: FormData) {
 
   revalidateTag(CACHE_TAGS.pensionSettings, "max");
   revalidatePath("/admin/settings");
-  revalidatePath("/");
   await redirect("/admin/settings?saved=1");
 }
 
@@ -185,7 +184,6 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   revalidateTag(CACHE_TAGS.pensionSettings, "max");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");
-  revalidatePath("/");
   await redirect("/admin/settings/location?saved=1");
 }
 

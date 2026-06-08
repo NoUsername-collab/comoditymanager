@@ -1,22 +1,14 @@
 @import "../../styles/themes/default.css";
 @import "../../styles/themes/admin-default-bridge.css";
 @import "../../styles/themes/BookingCard.css";
-@import "./gantt-premium.css";
 @import "./admin-palette.css";
 @import "./admin-retro.css";
 @import "./admin-overlays.css";
-@import "./availability-premium.css";
 @import "./admin-retro-universal.css";
 @import "./admin-history.css";
 @import "./admin-feedback.css";
-@import "./admin-home.css";
-@import "./admin-gantt-stay-island.css";
-@import "../../styles/themes/gantt-cards-theme.css";
-@import "./admin-gantt-stay-chip.css";
 @import "./admin-settings.css";
 @import "./admin-action-links.css";
-@import "./admin-guests.css";
-@import "./admin-devlog.css";
 @import "./admin-simulation.css";
 @import "./admin-checkin.css";
 

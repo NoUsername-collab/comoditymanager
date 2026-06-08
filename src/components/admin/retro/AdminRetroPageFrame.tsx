@@ -27,7 +27,11 @@ export function AdminRetroPageFrame({
     typeof description === "string" || typeof description === "number";
 
   return (
-    <main className={["p-8", className].filter(Boolean).join(" ")}>
+    <main
+      className={["ml-content admin-retro-page p-4 sm:p-6 lg:p-8", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
       {backHref && (
         <Link href={backHref} className="admin-retro-back mb-3 inline-block">
           ← {backLabel ?? ""}

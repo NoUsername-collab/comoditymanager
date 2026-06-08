@@ -21,6 +21,8 @@ import { isSimBackupPresent } from "@/services/simulation";
 import { loadTodayBoard } from "@/services/today-board";
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { OnboardingBar } from "@/components/admin/onboarding/OnboardingBar";
+import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
+import { MobileShell } from "@/layout/components/MobileShell";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
   theme: "default",
@@ -32,44 +34,58 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const t = await getTranslations("admin.layout");
-  await bindTenantContextFromRequest();
-  // Simulation state
-  const simStatus = await getSimStatus();
-  const simDbBackup =
-    simStatus.active ? await isSimBackupPresent().catch(() => false) : true;
-
-  const [cereriCount, pension] = await Promise.all([
-    countCereriNoi().catch(() => 0),
-    getPensionSettings().catch(() => null),
+  const [, t, simBundle, batch, todayBoard] = await Promise.all([
+    bindTenantContextFromRequest(),
+    getTranslations("admin.layout"),
+    (async () => {
+      const simStatus = await getSimStatus();
+      const simDbBackup = simStatus.active
+        ? await isSimBackupPresent().catch(() => false)
+        : true;
+      return { simStatus, simDbBackup };
+    })(),
+    Promise.all([
+      countCereriNoi().catch(() => 0),
+      getPensionSettings().catch(() => null),
+      (async () => {
+        try {
+          const user = await getStaffUser();
+          const role = user ? await resolveStaffRole(user) : null;
+          const locationUnlocked = user
+            ? await isLocationConfigurationAccessible(user.id)
+            : false;
+          return {
+            isAdmin: role === "admin",
+            locationUnlocked,
+          };
+        } catch {
+          return { isAdmin: false, locationUnlocked: false };
+        }
+      })(),
+    ]),
+    getPensionSettings()
+      .catch(() => null)
+      .then((pension) => {
+        const checkInTime = pension?.default_check_in_time ?? "14:00";
+        const checkOutTime = pension?.default_check_out_time ?? "11:00";
+        return loadTodayBoard(checkInTime, checkOutTime).catch(() => null);
+      }),
   ]);
 
+  const { simStatus, simDbBackup } = simBundle;
+  const [cereriCount, pension, staffAccess] = batch;
   const checkInTime = pension?.default_check_in_time ?? "14:00";
   const checkOutTime = pension?.default_check_out_time ?? "11:00";
-  const todayBoard = await loadTodayBoard(checkInTime, checkOutTime).catch(() => null);
+  const { isAdmin, locationUnlocked } = staffAccess;
 
   let appearanceSettings: ThemeSettings = DEFAULT_APPEARANCE;
   if (pension) {
     appearanceSettings = pensionAppearanceSettings(pension);
   }
 
-  let locationUnlocked = false;
-  let isAdmin = false;
-
-  try {
-    const user = await getStaffUser();
-    const role = user ? await resolveStaffRole(user) : null;
-    isAdmin = role === "admin";
-    locationUnlocked = user
-      ? await isLocationConfigurationAccessible(user.id)
-      : false;
-  } catch {
-    /* proxy redirects if unauthenticated */
-  }
-
   return (
     <AdminAppearanceProvider initialSettings={appearanceSettings}>
-      <div className="admin-shell flex min-h-full flex-1 flex-col">
+      <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
           <div className="admin-hud__surface">
             <AdminTopBar
@@ -96,8 +112,13 @@ export default async function AdminLayout({
         )}
 
         <AdminShellClient>
-          <div className="admin-page-main flex-1">{children}</div>
+          <div className="admin-page-main ml-main flex-1">{children}</div>
         </AdminShellClient>
+
+        <AdminMobileBottomNav
+          cereriCount={cereriCount}
+          locationUnlocked={locationUnlocked}
+        />
 
         <SimOverlay
           active={simStatus.active}
@@ -106,7 +127,7 @@ export default async function AdminLayout({
           realDate={todayReal()}
           dbBackupActive={simDbBackup}
         />
-      </div>
+      </MobileShell>
     </AdminAppearanceProvider>
   );
 }

@@ -11,9 +11,14 @@ import {
 import {
   applyDisplayProfileToDocument,
   isDisplayProfile,
-  resolveDisplayProfile,
   type DisplayProfile,
 } from "@/lib/ui/display-profile";
+import {
+  getLayoutViewportSize,
+  readLayoutChromeFromDom,
+  resolveAutoDisplayProfile,
+  type LayoutChrome,
+} from "@/layout/mobile";
 
 const OPTIONS: DisplayLayoutPreference[] = [
   "auto",
@@ -34,15 +39,27 @@ function optionLabel(
   return t("displayLayoutNarrow");
 }
 
+function chromeLabel(
+  chrome: LayoutChrome,
+  t: ReturnType<typeof useTranslations<"admin.pages.settings">>
+): string {
+  return chrome === "compact"
+    ? t("displayLayoutChromeCompact")
+    : t("displayLayoutChromeWide");
+}
+
 export function AdminDisplayLayoutPicker() {
   const t = useTranslations("admin.pages.settings");
   const [preference, setPreference] = useState<DisplayLayoutPreference>("auto");
   const [detected, setDetected] = useState<DisplayProfile>("laptop");
+  const [chrome, setChrome] = useState<LayoutChrome>("wide");
   const [viewportLabel, setViewportLabel] = useState("");
 
   const refreshDetected = useCallback(() => {
-    setDetected(resolveDisplayProfile(window.innerWidth, window.innerHeight));
-    setViewportLabel(`${window.innerWidth}×${window.innerHeight}`);
+    const { width, height } = getLayoutViewportSize();
+    setDetected(resolveAutoDisplayProfile(width, height));
+    setChrome(readLayoutChromeFromDom());
+    setViewportLabel(`${width}×${height}`);
   }, []);
 
   useEffect(() => {
@@ -69,6 +86,7 @@ export function AdminDisplayLayoutPicker() {
     setPreference(value);
     setDisplayLayoutPreference(value);
     applyDisplayProfileToDocument();
+    refreshDetected();
   }
 
   const activeProfile: DisplayProfile =
@@ -111,10 +129,12 @@ export function AdminDisplayLayoutPicker() {
         {preference === "auto"
           ? t("displayLayoutDetected", {
               profile: t(`displayLayoutProfile_${detected}`),
+              chrome: chromeLabel(chrome, t),
               size: viewportLabel,
             })
           : t("displayLayoutManual", {
               profile: t(`displayLayoutProfile_${activeProfile}`),
+              chrome: chromeLabel(chrome, t),
             })}
       </p>
     </div>

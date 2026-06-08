@@ -70,7 +70,6 @@ export async function createBuildingAction(formData: FormData) {
     metadata: { ac_mode, default_price_per_night },
   });
   revalidateStructurePaths();
-  revalidatePath("/");
   const back = structureReturnPath(formData);
   await redirect(back || "/admin/buildings");
 }
@@ -314,7 +313,6 @@ export async function deleteBuildingAction(
     });
 
     revalidateStructurePaths();
-    revalidatePath("/");
   } catch (e) {
     if (e instanceof Error) {
       if (e.message === "buildings.delete_all_rooms_or_disable_them_first") {
@@ -368,7 +366,6 @@ export async function setRoomActiveAction(formData: FormData) {
   revalidateStructurePaths();
   revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
   revalidatePath("/admin/calendar");
-  revalidatePath("/");
 }
 
 export async function deleteRoomFromBuildingAction(
@@ -393,7 +390,6 @@ export async function deleteRoomFromBuildingAction(
     revalidateStructurePaths();
     revalidateTag(CACHE_TAGS.roomOptionsByRoom, "max");
     revalidatePath("/admin/calendar");
-    revalidatePath("/");
   } catch (e) {
     if (
       e instanceof Error &&

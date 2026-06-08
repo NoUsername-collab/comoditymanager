@@ -1,3 +1,4 @@
+import "@/app/admin/admin-devlog.css";
 import { listDevLogs, type DevLogLevel } from "@/services/dev-logs";
 import { DevLogFilters } from "@/components/admin/devlog/DevLogFilters";
 
@@ -47,7 +48,7 @@ export default async function DevLogPage({
   const totalPages = Math.ceil(logs.total / pageSize);
 
   return (
-    <main className="devlog-page">
+    <main className="devlog-page ml-content">
       <header className="devlog-page__header">
         <h1 className="devlog-page__title">Dev Log</h1>
         <p className="devlog-page__desc">

@@ -605,83 +605,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   flex: 1 1 14rem;
 }
 
-@media (max-width: 1180px) {
-  .gantt-inline-controls__row--primary {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-
-  .gantt-inline-controls__primary-section--rooms {
-    grid-column: 1 / -1;
-    justify-content: flex-start;
-  }
-
-  .gantt-inline-controls__row--navigator {
-    align-items: stretch;
-  }
-
-  .gantt-inline-controls__navigator-band {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.55rem;
-  }
-
-  .gantt-inline-controls__side-dock--left,
-  .gantt-inline-controls__side-dock--right,
-  .gantt-inline-controls__navigator-main {
-    justify-content: center;
-    justify-self: stretch;
-    grid-row: auto;
-  }
-
-  .gantt-inline-controls__side-dock,
-  .gantt-inline-controls__navigator-main {
-    grid-column: 1;
-  }
-
-  .gantt-inline-controls__navigator-main {
-    pointer-events: auto;
-  }
-}
-
-@media (max-width: 860px) {
-  .gantt-inline-controls__row--primary {
-    justify-content: center;
-    min-height: auto;
-  }
-
-  .gantt-inline-controls__center,
-  .gantt-inline-controls__primary-section--rooms {
-    justify-content: flex-start;
-  }
-
-  .gantt-inline-controls__center {
-    flex: 0 0 auto;
-    position: static;
-    transform: none;
-  }
-
-  .gantt-inline-controls__room-picker-shell,
-  .gantt-inline-controls__period-main .gantt-toolbar__period-shell {
-    min-width: 0;
-  }
-
-  .gantt-inline-controls__navigator-main {
-    justify-content: center;
-  }
-
-  .gantt-inline-controls__side-dock > * {
-    width: 100%;
-  }
-
-  .gantt-toolbar__period--hero {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .gantt-toolbar__quick-jumps {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
+/* gantt-inline-controls responsive: mobile-layout-premium.css */
 
 /* ═══════════════════════════════════════════════════════════════════
    COMPACT TOOLBAR — single-row redesign
@@ -943,29 +867,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   color: var(--accent, #059669);
 }
 
-/* ── Responsive: collapse center on small screens ── */
-@media (max-width: 860px) {
-  .gantt-compact-toolbar {
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  .gantt-compact-toolbar__left {
-    order: 1;
-    flex: 0 0 auto;
-  }
-
-  .gantt-compact-toolbar__center {
-    order: 3;
-    flex: 1 0 100%;
-    justify-content: center;
-  }
-
-  .gantt-compact-toolbar__right {
-    order: 2;
-    margin-left: auto;
-  }
-}
+/* gantt-compact-toolbar responsive: mobile-layout-premium.css */
 
 /* ═══════════════════════════════════════════════════════════════════ */
 

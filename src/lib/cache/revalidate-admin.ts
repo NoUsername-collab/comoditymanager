@@ -98,6 +98,5 @@ export function revalidateBookingDetailSurfaces(bookingId: string, tenantId?: st
     includeStatistics: true,
   });
   revalidatePath(`/admin/bookings/${bookingId}/factura`);
-  revalidatePath("/admin");
   revalidatePath("/calendar");
 }

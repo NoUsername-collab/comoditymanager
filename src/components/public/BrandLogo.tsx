@@ -1,6 +1,5 @@
-import { readFile } from "fs/promises";
-import path from "path";
 import { getTranslations } from "next-intl/server";
+import { getBrandLogoAssets } from "@/lib/brand-logo-cache";
 import { BrandMarkSvg } from "./BrandMarkSvg";
 
 type Props = {
@@ -10,27 +9,8 @@ type Props = {
   animated?: boolean;
 };
 
-const LOGO_ONYX_PATHS = ["logo/logo.png", "public/logo/logo.png"];
-const LOGO_LIGHT_BG_PATHS = [
-  "logo/logo-dark.png",
-  "logo/logo-on-light.png",
-  "public/logo/logo-dark.png",
-];
-
 /** Header: ~64px mobil, ~72px desktop */
 const DEFAULT_SHELL = "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]";
-
-async function loadLogo(paths: string[]): Promise<string | null> {
-  for (const rel of paths) {
-    try {
-      const buf = await readFile(path.join(process.cwd(), rel));
-      return `data:image/png;base64,${buf.toString("base64")}`;
-    } catch {
-      continue;
-    }
-  }
-  return null;
-}
 
 function shellBox(className: string, size?: number) {
   const classes = ["relative shrink-0 overflow-hidden"];
@@ -98,8 +78,7 @@ export async function BrandLogo({
   animated = true,
 }: Props) {
   const tShell = await getTranslations("public.shell");
-  const onyxSrc = await loadLogo(LOGO_ONYX_PATHS);
-  const lightBgSrc = await loadLogo(LOGO_LIGHT_BG_PATHS);
+  const { onyx: onyxSrc, lightBg: lightBgSrc } = await getBrandLogoAssets();
   const { className: boxClass, style: boxStyle } = shellBox(className, size);
   const px = size ?? 64;
 

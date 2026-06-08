@@ -4,11 +4,10 @@ import { loadAllBookingsForStatistics } from "@/services/statistics";
 import { listAllRooms } from "@/services/rooms-admin";
 import { listBuildings } from "@/services/buildings";
 
-async function activeRoomSnapshot(): Promise<ActiveRoomSnapshot[]> {
-  const [rooms, buildings] = await Promise.all([
-    listAllRooms(),
-    listBuildings(),
-  ]);
+function activeRoomSnapshot(
+  rooms: Awaited<ReturnType<typeof listAllRooms>>,
+  buildings: Awaited<ReturnType<typeof listBuildings>>
+): ActiveRoomSnapshot[] {
   const buildingName = new Map(buildings.map((b) => [b.id, b.name]));
   return rooms
     .filter((r) => r.is_active)
@@ -20,7 +19,10 @@ async function activeRoomSnapshot(): Promise<ActiveRoomSnapshot[]> {
 }
 
 export async function loadMonthComparison(): Promise<MonthComparison> {
-  const bookings = await loadAllBookingsForStatistics();
-  const rooms = await activeRoomSnapshot();
-  return buildMonthComparison(bookings, rooms);
+  const [bookings, rooms, buildings] = await Promise.all([
+    loadAllBookingsForStatistics(),
+    listAllRooms(),
+    listBuildings(),
+  ]);
+  return buildMonthComparison(bookings, activeRoomSnapshot(rooms, buildings));
 }

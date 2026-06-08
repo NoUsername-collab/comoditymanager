@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
@@ -13,8 +15,10 @@ import { listBuildings } from "@/services/buildings";
 const STATS_NOTE =
   "Occupancy uses today's active rooms as reference for the full history. Bookings stay in the database and reports expand automatically as operational history grows.";
 
-export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
-  const { tenantId, supabase } = await getTenantScope();
+async function loadAllBookingsForStatisticsImpl(
+  tenantId: string
+): Promise<StatBooking[]> {
+  const { supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -77,6 +81,24 @@ export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
     });
   }
   return out;
+}
+
+const getCachedBookingsForStatistics = (tenantId: string) =>
+  unstable_cache(
+    () => loadAllBookingsForStatisticsImpl(tenantId),
+    ["bookings-statistics", tenantId],
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 120,
+    }
+  );
+
+export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
+  const { tenantId } = await getTenantScope();
+  return getCachedBookingsForStatistics(tenantId)();
 }
 
 function activeRoomSnapshot(

@@ -2,6 +2,7 @@ import { BrandLogo } from "./BrandLogo";
 import { PublicNav } from "./PublicNav";
 import { StaffLogoEntry } from "./StaffLogoEntry";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { PublicMobileMenu } from "@/layout/components/PublicMobileMenu";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
@@ -27,7 +28,8 @@ export async function PublicHeader() {
             <span className="public-header__tag">{t("subtitle")}</span>
           </div>
         </StaffLogoEntry>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <PublicMobileMenu />
           <PublicNav />
           <LanguageSwitcher />
         </div>

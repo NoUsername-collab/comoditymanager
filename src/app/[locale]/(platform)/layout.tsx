@@ -1,6 +1,11 @@
 import { PlatformHeader } from "@/components/platform/PlatformHeader";
 import { PlatformFooter } from "@/components/platform/PlatformFooter";
+import { MobileShell } from "@/layout/components/MobileShell";
 import type { CSSProperties } from "react";
+import "@/app/signup.css";
+import "@/app/landing.css";
+import "@/app/platform.css";
+import "@/app/platform-split.css";
 
 const platformVars = {
   "--site-bg": "#f8fafc",
@@ -21,13 +26,14 @@ export default function PlatformLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
+    <MobileShell
+      surface="platform"
       className="site-themed platform-shell platform-shell--split flex min-h-screen flex-1 flex-col"
       style={platformVars}
     >
       <PlatformHeader variant="split" />
-      <div className="flex-1">{children}</div>
+      <div className="ml-main ml-content flex-1">{children}</div>
       <PlatformFooter />
-    </div>
+    </MobileShell>
   );
 }

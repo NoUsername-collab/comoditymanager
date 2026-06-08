@@ -46,6 +46,9 @@
     },
     "nav": {
       "mainAria": "Main navigation",
+      "menuAria": "Mobile menu",
+      "menuOpen": "Open menu",
+      "menuClose": "Close menu",
       "home": "Home",
       "gdpr": "Privacy",
       "book": "Book a stay"
@@ -260,6 +263,7 @@
   "admin": {
     "nav": {
       "menuAria": "Admin menu",
+      "bottomNavAria": "Mobile primary navigation",
       "home": "Home",
       "newRequests": "New requests",
       "stays": "Stays",
@@ -390,14 +394,16 @@
         "visualsTitle": "Visuals",
         "visualsSubtitle": "Admin theme and screen layout density (this browser only)",
         "displayLayoutTitle": "Screen layout",
-        "displayLayoutHint": "Choose how the admin panel fits this laptop. Saved locally in your browser — does not affect other users.",
+        "displayLayoutHint": "Choose admin density and UI shell. Auto detects phones and portrait tablets (bottom nav). Narrow forces mobile shell. Other options force desktop shell. Saved locally in your browser.",
         "displayLayoutAuto": "Automatic",
         "displayLayoutWide": "Large (15.6\"+)",
         "displayLayoutLaptop": "Laptop",
         "displayLayoutCompact": "Compact laptop (14\")",
         "displayLayoutNarrow": "Narrow",
-        "displayLayoutDetected": "Detected: {profile} · viewport {size}",
-        "displayLayoutManual": "Forced: {profile}",
+        "displayLayoutDetected": "Detected: {profile} · {chrome} · {size}",
+        "displayLayoutManual": "Forced: {profile} · {chrome}",
+        "displayLayoutChromeCompact": "mobile shell",
+        "displayLayoutChromeWide": "desktop shell",
         "displayLayoutProfile_wide": "large screen",
         "displayLayoutProfile_laptop": "laptop",
         "displayLayoutProfile_compact-laptop": "compact laptop",
@@ -2855,6 +2861,15 @@
     }
   },
   "platform": {
+    "nav": {
+      "menuAria": "Mobile menu",
+      "menuOpen": "Open menu",
+      "menuClose": "Close menu",
+      "pricing": "Pricing",
+      "gdpr": "GDPR",
+      "login": "Log in",
+      "signup": "Start free"
+    },
     "header": {
       "pricing": "Pricing",
       "gdpr": "GDPR",
@@ -2872,6 +2887,16 @@
       "privacy": "Privacy",
       "contact": "Contact",
       "rights": "All rights reserved."
+    }
+  },
+  "hospiraAdmin": {
+    "nav": {
+      "menuAria": "Hospira admin menu",
+      "menuOpen": "Open menu",
+      "menuClose": "Close menu",
+      "dashboard": "Dashboard",
+      "tenants": "Tenants",
+      "logs": "Logs"
     }
   },
   "alphaGate": {

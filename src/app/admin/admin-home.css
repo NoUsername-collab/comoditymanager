@@ -1023,22 +1023,7 @@
   color: var(--quest-accent);
 }
 
-@media (max-width: 640px) {
-  .checkin-quest__card {
-    grid-template-columns: auto 1fr;
-  }
-
-  .checkin-quest__card-actions {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    flex-wrap: wrap;
-    min-width: 0;
-  }
-
-  .checkin-quest__cta {
-    flex: 1;
-  }
-}
+/* checkin-quest responsive: mobile-layout-premium.css */
 
 @media (prefers-reduced-motion: reduce) {
   .admin-nav-tab--cereri-light::before {
