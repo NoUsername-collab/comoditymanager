@@ -16,6 +16,7 @@ import {
   listCancelledStayHistory,
   listCompletedStayHistory,
   listOperationalStays,
+  listRecentlyConfirmedStayHistory,
 } from "@/services/bookings";
 import { cancelBookingAction } from "../bookings/actions";
 import { getTranslations } from "next-intl/server";
@@ -44,6 +45,9 @@ type CazariLabels = {
   historyCancelledBadge: string;
   historyCancelledAt: (date: string) => string;
   historyCompletedSection: string;
+  historyConfirmedRecentSection: (count: number) => string;
+  historyConfirmedRecentHint: string;
+  historyConfirmedRecentBadge: (date: string) => string;
   tabOperational: string;
   tabRefused: string;
   refusedBrowseBookings: string;
@@ -505,20 +509,25 @@ function StayActions({
 
 function StayHistoryPanel({
   completedItems,
+  confirmedRecentItems,
   cancelledItems,
   query,
   completedError,
+  confirmedRecentError,
   cancelledError,
   labels,
 }: {
   completedItems: HistoryStay[];
+  confirmedRecentItems: HistoryStay[];
   cancelledItems: CancelledStay[];
   query: string;
   completedError: string | null;
+  confirmedRecentError: string | null;
   cancelledError: string | null;
   labels: CazariLabels;
 }) {
-  const totalCount = completedItems.length + cancelledItems.length;
+  const totalCount =
+    completedItems.length + confirmedRecentItems.length + cancelledItems.length;
 
   return (
     <RetroXpWindow
@@ -533,10 +542,61 @@ function StayHistoryPanel({
           {query ? labels.historyFilteredHint : labels.historyRecentHint}
         </div>
 
-        {completedError || cancelledError ? (
+        {completedError || confirmedRecentError || cancelledError ? (
           <p className="border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-            {completedError ?? cancelledError}
+            {completedError ?? confirmedRecentError ?? cancelledError}
           </p>
+        ) : null}
+
+        {confirmedRecentItems.length > 0 ? (
+          <section className="space-y-1.5">
+            <div className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1.5">
+              <p className="text-[11px] font-bold text-sky-950">
+                {labels.historyConfirmedRecentSection(confirmedRecentItems.length)}
+              </p>
+              <p className="text-[10px] text-sky-900/90 leading-tight">
+                {labels.historyConfirmedRecentHint}
+              </p>
+            </div>
+            <ul className="space-y-1.5">
+              {confirmedRecentItems.map((stay) => (
+                <li key={stay.id} className="stay-card stay-card--yellow">
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="truncate text-[12px] font-bold leading-tight text-zinc-900">
+                      {stay.guest_name}
+                    </p>
+                    <span className="shrink-0 rounded-full border border-sky-200 bg-sky-100 px-1.5 py-0.5 text-[9px] font-bold leading-none text-sky-900">
+                      {labels.historyConfirmedRecentBadge(formatRoDate(stay.check_in))}
+                    </span>
+                  </div>
+                  <p className="truncate text-[10px] leading-tight text-zinc-500">
+                    {[stay.guest_phone, stay.guest_email]
+                      .filter(Boolean)
+                      .join(" · ") || labels.noContact}
+                  </p>
+                  <div className="mt-0.5 flex flex-wrap items-center gap-x-1 gap-y-0 text-[10px] text-zinc-600">
+                    <span className="font-medium">
+                      {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                    </span>
+                    <span aria-hidden>·</span>
+                    <span>{labels.guestsShort(stay.num_adults, stay.num_children)}</span>
+                    <span className="font-mono text-[9px] text-zinc-400">
+                      {formatBookingRef(stay.id)}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-zinc-500">
+                    {stay.room_names.join(", ") || labels.noRoom}
+                  </p>
+                  <Link
+                    href={`/admin/bookings/${stay.id}?return_to=${encodeURIComponent("/admin/cazari")}`}
+                    className="mt-0.5 inline-flex text-[10px] font-semibold text-zinc-600 underline underline-offset-2 hover:text-zinc-900"
+                  >
+                    {labels.openBooking}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         ) : null}
 
         {cancelledItems.length > 0 ? (
@@ -648,7 +708,10 @@ function StayHistoryPanel({
           </section>
         ) : null}
 
-        {totalCount === 0 && !completedError && !cancelledError ? (
+        {totalCount === 0 &&
+        !completedError &&
+        !confirmedRecentError &&
+        !cancelledError ? (
           <AdminEmptyState
             emoji="🕘"
             title={query ? labels.historyEmptyFilter : labels.historyEmpty}
@@ -797,6 +860,11 @@ export default async function AdminCazariPage({
     tabRefused: tPages("tabRefused"),
     refusedBrowseBookings: tPages("refusedBrowseBookings"),
     historyCompletedSection: tPages("historyCompletedSection"),
+    historyConfirmedRecentSection: (count) =>
+      tPages("historyConfirmedRecentSection", { count }),
+    historyConfirmedRecentHint: tPages("historyConfirmedRecentHint"),
+    historyConfirmedRecentBadge: (date) =>
+      tPages("historyConfirmedRecentBadge", { date }),
     cancelStay: tPages("cancelStay"),
     cancelRequest: tPages("cancelRequest"),
     guestsShort: (adults, children) =>
@@ -864,16 +932,20 @@ export default async function AdminCazariPage({
 
   let stays: OperationalStay[] = [];
   let history: HistoryStay[] = [];
+  let confirmedRecentHistory: HistoryStay[] = [];
   let cancelledHistory: CancelledStay[] = [];
   let staysError: string | null = null;
   let historyError: string | null = null;
+  let confirmedRecentHistoryError: string | null = null;
   let cancelledHistoryError: string | null = null;
 
-  const [staysResult, historyResult, cancelledResult] = await Promise.allSettled([
-    listOperationalStays(),
-    listCompletedStayHistory(28),
-    listCancelledStayHistory(28),
-  ]);
+  const [staysResult, historyResult, confirmedRecentResult, cancelledResult] =
+    await Promise.allSettled([
+      listOperationalStays(),
+      listCompletedStayHistory(28),
+      listRecentlyConfirmedStayHistory(16),
+      listCancelledStayHistory(28),
+    ]);
 
   if (staysResult.status === "fulfilled") {
     stays = staysResult.value;
@@ -893,6 +965,15 @@ export default async function AdminCazariPage({
         : tPages("historyEmpty");
   }
 
+  if (confirmedRecentResult.status === "fulfilled") {
+    confirmedRecentHistory = confirmedRecentResult.value;
+  } else {
+    confirmedRecentHistoryError =
+      confirmedRecentResult.reason instanceof Error
+        ? confirmedRecentResult.reason.message
+        : tCommon("error");
+  }
+
   if (cancelledResult.status === "fulfilled") {
     cancelledHistory = cancelledResult.value;
   } else {
@@ -906,6 +987,9 @@ export default async function AdminCazariPage({
   const filteredHistory = q
     ? history.filter((stay) => matchesStayQuery(stay, q))
     : history;
+  const filteredConfirmedRecent = q
+    ? confirmedRecentHistory.filter((stay) => matchesStayQuery(stay, q))
+    : confirmedRecentHistory;
   const filteredCancelledHistory = q
     ? cancelledHistory.filter((stay) => matchesCancelledQuery(stay, q))
     : cancelledHistory;
@@ -1119,9 +1203,11 @@ export default async function AdminCazariPage({
         <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
           <StayHistoryPanel
             completedItems={filteredHistory}
+            confirmedRecentItems={filteredConfirmedRecent}
             cancelledItems={filteredCancelledHistory}
             query={q}
             completedError={historyError}
+            confirmedRecentError={confirmedRecentHistoryError}
             cancelledError={cancelledHistoryError}
             labels={labels}
           />

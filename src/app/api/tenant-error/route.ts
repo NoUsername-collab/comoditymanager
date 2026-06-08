@@ -18,7 +18,11 @@ export async function POST(request: Request) {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
 
-  if (!isTenantRequestHost(host)) {
+  const devTenantSlug =
+    process.env.NODE_ENV === "development"
+      ? process.env.DEV_TENANT_SLUG?.trim()
+      : null;
+  if (!isTenantRequestHost(host) && !devTenantSlug) {
     return NextResponse.json({ ok: false }, { status: 404 });
   }
 

@@ -196,6 +196,26 @@ export async function listOperationalStays(): Promise<OperationalStayRow[]> {
   return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
 }
 
+/** Cazări confirmate încă active/viitoare — pentru istoric lateral (nu doar checkout trecut). */
+export async function listRecentlyConfirmedStayHistory(
+  limit = 16
+): Promise<CompletedStayHistoryRow[]> {
+  const today = await getEffectiveToday();
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("bookings")
+    .select(`${BOOKING_ROW_SELECT.trim()}, confirmed_at, created_at`)
+    .eq("tenant_id", tenantId)
+    .eq("status", "confirmata")
+    .gte("check_out", today)
+    .order("confirmed_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+}
+
 /** Istoric cazări deja încheiate, util pentru sidebar-uri și recap rapid. */
 export async function listCompletedStayHistory(
   limit = 24

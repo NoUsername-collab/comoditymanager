@@ -10,6 +10,7 @@ import {
   listRoomTypes,
 } from "@/services/room-catalog";
 import { listAllRooms } from "@/services/rooms-admin";
+import { roomScopeKey } from "@/domain/room/scope-key";
 import { createRoomAction } from "../actions";
 import { getTranslations } from "next-intl/server";
 
@@ -62,7 +63,7 @@ export default async function NewRoomPage({
     Awaited<ReturnType<typeof getBuildingOptionPolicies>>
   > = {};
 
-  const existingNamesByBuilding: Record<string, string[]> = {};
+  const existingNamesByScope: Record<string, string[]> = {};
   const nextSortByBuilding: Record<string, number> = {};
   let formError: string | null = null;
 
@@ -74,6 +75,12 @@ export default async function NewRoomPage({
     formError = tActions("bulkDuplicateNames", { names: errorNames });
   } else if (errorCode === "bulk_count") {
     formError = tPage("bulkCountError");
+  } else if (errorCode === "floor_mismatch") {
+    formError = tActions("floorBuildingMismatch");
+  } else if (errorCode === "room_type_constraint") {
+    formError = tActions("roomTypeConstraint");
+  } else if (errorCode === "server") {
+    formError = tCommon("error");
   }
 
   if (buildings.length > 0) {
@@ -81,13 +88,16 @@ export default async function NewRoomPage({
       const allRooms = await listAllRooms();
       for (const b of buildings) {
         const rooms = allRooms.filter((r) => r.building_id === b.id);
-        existingNamesByBuilding[b.id] = rooms.map((r) => r.name);
+        for (const room of rooms) {
+          const key = roomScopeKey(b.id, room.floor_id);
+          if (!existingNamesByScope[key]) existingNamesByScope[key] = [];
+          existingNamesByScope[key].push(room.name);
+        }
         nextSortByBuilding[b.id] =
           rooms.reduce((max, r) => Math.max(max, r.sort_order), 0) + 1;
       }
     } catch {
       for (const b of buildings) {
-        existingNamesByBuilding[b.id] = [];
         nextSortByBuilding[b.id] = 1;
       }
     }
@@ -150,7 +160,7 @@ export default async function NewRoomPage({
             options={options}
             policiesByBuilding={policiesByBuilding}
             createRoomAction={createRoomAction}
-            existingNamesByBuilding={existingNamesByBuilding}
+            existingNamesByScope={existingNamesByScope}
             nextSortByBuilding={nextSortByBuilding}
             defaultBuildingId={defaultBuildingId}
             defaultFloorId={defaultFloorId}

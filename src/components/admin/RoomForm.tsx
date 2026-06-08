@@ -9,6 +9,7 @@ import {
   suggestNextBulkStartNumber,
   type BulkNamingMode,
 } from "@/domain/room/bulk-names";
+import { roomScopeKey } from "@/domain/room/scope-key";
 import { computeRoomPrice, policyModeForOption, resolveOptionEnabled } from "@/lib/room-catalog-pricing";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -23,7 +24,7 @@ type Props = {
   options: RoomOptionDefinition[];
   policiesByBuilding: Record<string, { option_id: string; mode: OptionPolicyMode }[]>;
   createRoomAction: (formData: FormData) => Promise<void>;
-  existingNamesByBuilding?: Record<string, string[]>;
+  existingNamesByScope?: Record<string, string[]>;
   nextSortByBuilding?: Record<string, number>;
   defaultBuildingId?: string;
   defaultFloorId?: string;
@@ -61,7 +62,7 @@ export function RoomForm({
   options,
   policiesByBuilding,
   createRoomAction,
-  existingNamesByBuilding = {},
+  existingNamesByScope = {},
   nextSortByBuilding = {},
   defaultBuildingId,
   defaultFloorId,
@@ -84,8 +85,8 @@ export function RoomForm({
   const [floorId, setFloorId] = useState(initialFloor);
   const defaultTypeId = types.find((t) => t.slug === "double")?.id ?? types[0]?.id ?? "";
   const [typeId, setTypeId] = useState(defaultTypeId);
-  const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>("prefix");
-  const [namePrefix, setNamePrefix] = useState(tRooms("roomPrefixDefault"));
+  const [bulkNaming, setBulkNaming] = useState<BulkNamingMode>("number_only");
+  const [namePrefix, setNamePrefix] = useState("");
   const [startNumber, setStartNumber] = useState(1);
   const [endNumber, setEndNumber] = useState(10);
   const [sortOrder, setSortOrder] = useState(1);
@@ -101,8 +102,8 @@ export function RoomForm({
   );
 
   const existingNames = useMemo(
-    () => existingNamesByBuilding[buildingId] ?? [],
-    [existingNamesByBuilding, buildingId]
+    () => existingNamesByScope[roomScopeKey(buildingId, floorId || null)] ?? [],
+    [existingNamesByScope, buildingId, floorId]
   );
 
   useEffect(() => {
@@ -116,7 +117,7 @@ export function RoomForm({
     );
     setStartNumber(nextStart);
     setEndNumber(nextStart + 9);
-  }, [buildingId, mode, bulkNaming, namePrefix, existingNames, nextSortByBuilding]);
+  }, [buildingId, floorId, mode, bulkNaming, namePrefix, existingNames, nextSortByBuilding]);
 
   const bulkCount = Math.max(1, (endNumber || startNumber) - startNumber + 1);
 
@@ -227,7 +228,7 @@ export function RoomForm({
             <input
               name="name"
               required
-              placeholder={tRooms("roomNamePlaceholder")}
+              placeholder={tRooms("roomNamePlaceholderPlain")}
               className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
             />
           </label>
@@ -241,32 +242,35 @@ export function RoomForm({
                 <input
                   type="radio"
                   name="bulk_naming_mode"
-                  value="prefix"
-                  checked={bulkNaming === "prefix"}
-                  onChange={() => setBulkNaming("prefix")}
-                />
-                {tRooms("bulkNamingPrefix")}
-              </label>
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  name="bulk_naming_mode"
                   value="number_only"
                   checked={bulkNaming === "number_only"}
                   onChange={() => setBulkNaming("number_only")}
                 />
                 {tRooms("bulkNamingNumbersOnly")}
               </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="bulk_naming_mode"
+                  value="prefix"
+                  checked={bulkNaming === "prefix"}
+                  onChange={() => setBulkNaming("prefix")}
+                />
+                {tRooms("bulkNamingPrefix")}
+              </label>
             </fieldset>
             <div className="grid gap-4 sm:grid-cols-3">
               {bulkNaming === "prefix" ? (
                 <label className="block sm:col-span-1">
-                  <span className="text-sm font-medium">{tRooms("namePrefixRequired")}</span>
+                  <span className="text-sm font-medium">{tRooms("namePrefixOptional")}</span>
+                  <span className="mt-0.5 block text-xs text-zinc-500">
+                    {tRooms("namePrefixEmptyHint")}
+                  </span>
                   <input
                     name="name_prefix"
-                    required
                     value={namePrefix}
                     onChange={(e) => setNamePrefix(e.target.value)}
+                    placeholder={tRooms("namePrefixPlaceholder")}
                     className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
                   />
                 </label>

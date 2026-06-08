@@ -2,9 +2,11 @@ import { getStaffUser } from "@/lib/auth/require-staff";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
+  isTenantRequestHost,
   resolveTenantIdFromHost,
   shouldSkipTenantErrorLog,
 } from "@/lib/tenant/error-safeguard";
+import { getTenantBySlug } from "@/services/tenants";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
@@ -41,11 +43,30 @@ type LogInput = {
 async function resolveTenantIdForLog(
   requestHost?: string | null
 ): Promise<string | null> {
-  if (requestHost) {
-    return resolveTenantIdFromHost(requestHost);
+  if (requestHost && isTenantRequestHost(requestHost)) {
+    const fromHost = await resolveTenantIdFromHost(requestHost);
+    if (fromHost) return fromHost;
   }
+
   const tenant = await resolveRequestTenant();
-  return tenant?.id ?? null;
+  if (tenant?.id) return tenant.id;
+
+  try {
+    const { tenantId } = await getTenantScope();
+    return tenantId;
+  } catch {
+    // Fără context staff (ex. API fără sesiune)
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    const devSlug = process.env.DEV_TENANT_SLUG?.trim();
+    if (devSlug) {
+      const devTenant = await getTenantBySlug(devSlug);
+      if (devTenant?.id) return devTenant.id;
+    }
+  }
+
+  return null;
 }
 
 /**

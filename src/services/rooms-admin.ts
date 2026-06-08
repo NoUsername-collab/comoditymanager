@@ -22,6 +22,7 @@ import {
   type BulkNamingMode,
 } from "@/domain/room/bulk-names";
 import { ROOM_LOCKING_BOOKING_STATUSES } from "@/domain/booking/room-guards";
+import { legacyRoomTypeFromCatalogSlug } from "@/domain/room/legacy-room-type";
 import type { Room } from "@/types/database";
 
 async function countLockingBookingRooms(roomIds: string[]): Promise<number> {
@@ -175,19 +176,38 @@ async function resolveRoomInsertFields(input: CreateRoomInput) {
         });
 
   const capacity = type?.capacity_base ?? input.capacity_base;
-  const room_type = type?.slug ?? "double";
+  const room_type = legacyRoomTypeFromCatalogSlug(type?.slug);
   const has_ac = hasAcFromOptions(options, input.enabled_option_ids);
 
   return { type, price, capacity, room_type, has_ac, options };
 }
 
+async function assertFloorInBuilding(
+  buildingId: string,
+  floorId: string | null
+): Promise<void> {
+  if (!floorId) return;
+  const { tenantId, supabase } = await requireBuildingInTenant(buildingId);
+  const { data, error } = await supabase
+    .from("floors")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("id", floorId)
+    .eq("building_id", buildingId)
+    .eq("is_active", true)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("floors.building_mismatch");
+}
+
 async function assertRoomNameAvailable(
   buildingId: string,
+  floorId: string | null,
   name: string
 ): Promise<void> {
   const trimmed = name.trim();
   if (!trimmed) throw new Error("rooms.name_required");
-  const existing = await listRoomNamesInBuilding(buildingId);
+  const existing = await listRoomNamesInScope(buildingId, floorId);
   const conflicts = findDuplicateRoomNames(existing, [trimmed]);
   if (conflicts.length > 0) {
     throw new Error(`rooms.duplicate_name:${trimmed}`);
@@ -198,7 +218,8 @@ export async function createRoom(input: CreateRoomInput): Promise<{ id: string }
   const { type, price, capacity, room_type, has_ac } =
     await resolveRoomInsertFields(input);
 
-  await assertRoomNameAvailable(input.building_id, input.name);
+  await assertFloorInBuilding(input.building_id, input.floor_id);
+  await assertRoomNameAvailable(input.building_id, input.floor_id, input.name);
 
   const { tenantId, supabase } = await requireBuildingInTenant(input.building_id);
   const { data, error } = await supabase
@@ -229,6 +250,28 @@ export async function createRoom(input: CreateRoomInput): Promise<{ id: string }
   return { id: data.id };
 }
 
+/** Nume camere în același scope: clădire + etaj (null = fără etaj). */
+export async function listRoomNamesInScope(
+  buildingId: string,
+  floorId: string | null
+): Promise<string[]> {
+  const { tenantId, supabase } = await getTenantScope();
+  let query = supabase
+    .from("rooms")
+    .select("name")
+    .eq("tenant_id", tenantId)
+    .eq("building_id", buildingId);
+  if (floorId) {
+    query = query.eq("floor_id", floorId);
+  } else {
+    query = query.is("floor_id", null);
+  }
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => String(row.name));
+}
+
+/** @deprecated Folosește listRoomNamesInScope — păstrat pentru compatibilitate. */
 export async function listRoomNamesInBuilding(buildingId: string): Promise<string[]> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
@@ -269,7 +312,9 @@ export async function createRoomsBulk(input: {
     throw new Error("rooms.bulk_invalid_names");
   }
 
-  const existing = await listRoomNamesInBuilding(input.building_id);
+  await assertFloorInBuilding(input.building_id, input.floor_id);
+
+  const existing = await listRoomNamesInScope(input.building_id, input.floor_id);
   const conflicts = findDuplicateRoomNames(existing, proposedNames);
   if (conflicts.length > 0) {
     throw new Error(
@@ -360,7 +405,7 @@ export async function updateRoom(
 
   const has_ac = hasAcFromOptions(options, input.enabled_option_ids);
   const capacity = type?.capacity_base ?? input.capacity_base;
-  const room_type = type?.slug ?? "double";
+  const room_type = legacyRoomTypeFromCatalogSlug(type?.slug);
 
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase

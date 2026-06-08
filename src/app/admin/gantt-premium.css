@@ -2796,6 +2796,182 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   padding-bottom: 0.75rem;
 }
 
+/* Hover notiță — minim diegetic, fără butoane */
+.gantt-stay-note.admin-floating-panel {
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.gantt-stay-note.admin-floating-panel .admin-floating-panel__body {
+  padding: 0;
+  background: transparent;
+}
+
+.gantt-stay-note__paper {
+  position: relative;
+  margin: 0.15rem 0.2rem 0.35rem;
+  padding: 0.55rem 0.65rem 0.6rem;
+  border-radius: 0.15rem 0.15rem 0.2rem 0.2rem;
+  background-color: #fffef8;
+  background-image:
+    repeating-linear-gradient(
+      transparent,
+      transparent 1.12rem,
+      color-mix(in srgb, var(--stay-note-accent, #059669) 9%, #d4d4d8) 1.12rem,
+      color-mix(in srgb, var(--stay-note-accent, #059669) 9%, #d4d4d8) 1.13rem
+    ),
+    linear-gradient(165deg, #ffffff 0%, #fffef5 48%, #fef9e8 100%);
+  border: 1px solid color-mix(in srgb, var(--stay-note-accent, #059669) 18%, #e7e5e4);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #000 6%, transparent),
+    0 6px 16px color-mix(in srgb, #000 10%, transparent),
+    0 14px 28px color-mix(in srgb, var(--stay-note-accent, #059669) 8%, transparent);
+  transform: rotate(-0.6deg);
+  color: #292524;
+}
+
+.gantt-stay-note__paper::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  background: linear-gradient(
+    225deg,
+    color-mix(in srgb, #000 7%, transparent) 0%,
+    transparent 55%
+  );
+  clip-path: polygon(100% 0, 0 100%, 100% 100%);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.gantt-stay-note__paper--cerere {
+  background-image:
+    repeating-linear-gradient(
+      transparent,
+      transparent 1.12rem,
+      color-mix(in srgb, #d97706 10%, #d4d4d8) 1.12rem,
+      color-mix(in srgb, #d97706 10%, #d4d4d8) 1.13rem
+    ),
+    linear-gradient(165deg, #fffef8 0%, #fffbeb 55%, #fef3c7 100%);
+}
+
+.gantt-stay-note__pin {
+  position: absolute;
+  top: -0.35rem;
+  left: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-left: -0.275rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fca5a5 0%, #dc2626 58%, #991b1b 100%);
+  box-shadow:
+    0 1px 2px color-mix(in srgb, #000 28%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000 18%, transparent);
+}
+
+.gantt-stay-note__head {
+  padding-top: 0.15rem;
+  padding-bottom: 0.2rem;
+}
+
+.gantt-stay-note__name {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: #1c1917;
+}
+
+.gantt-stay-note__block {
+  margin-top: 0.35rem;
+  padding-top: 0.3rem;
+}
+
+.gantt-stay-note__block--rooms {
+  margin-top: 0.25rem;
+}
+
+.gantt-stay-note__label {
+  margin: 0;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--stay-note-accent, #059669) 72%, #57534e);
+}
+
+.gantt-stay-note__duration {
+  margin: 0.12rem 0 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #44403c;
+}
+
+.gantt-stay-note__nights {
+  margin: 0.08rem 0 0;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #78716c;
+}
+
+.gantt-stay-note__room-list {
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.gantt-stay-note__room {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.2rem;
+  padding: 0.12rem 0.38rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: #1c1917;
+  background: color-mix(in srgb, var(--stay-note-accent, #059669) 11%, white);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--stay-note-accent, #059669) 22%, transparent);
+}
+
+.gantt-stay-note__room--empty {
+  margin-top: 0.15rem;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: 600;
+  color: #a8a29e;
+}
+
+.gantt-stay-note__stamp {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.3rem;
+  font-size: 0.4375rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #d97706 28%, transparent);
+  transform: rotate(-14deg);
+  pointer-events: none;
+  user-select: none;
+}
+
 /* Pinned selection (Ctrl+drag multi-room) */
 .gantt-room-row--pinned td:last-child {
   background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
