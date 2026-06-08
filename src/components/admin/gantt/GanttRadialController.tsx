@@ -29,9 +29,8 @@ type RadialAction = {
 /**
  * Gantt center controller with reveal/collapse animation.
  *
- * COLLAPSED: Shows today badges (new / in / out / clean) + reveal arrow on right
- * EXPANDED: Badges pushed out right, action buttons slide in from left.
- *           Collapse button fixed at left edge.
+ * COLLAPSED: Reveal arrow on left + today badges (new / in / out / clean)
+ * EXPANDED: Collapse arrow on left, badges pushed out right, actions slide in.
  */
 export function GanttRadialController({
   onOpenRequest,
@@ -129,18 +128,30 @@ export function GanttRadialController({
       ref={rootRef}
       className="gantt-action-strip"
     >
-      {/* Collapse button — fixed left edge, visible when expanded */}
-      <button
-        type="button"
-        className={`gantt-action-strip__collapse ${open ? "gantt-action-strip__collapse--visible" : ""}`}
-        onClick={() => setOpen(false)}
-        title="Ascunde"
-        tabIndex={open ? 0 : -1}
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-      </button>
+      {/* Toggle — reveal (collapsed) / collapse (expanded), always left */}
+      <div className="gantt-action-strip__toggle-slot">
+        <button
+          type="button"
+          className={`gantt-action-strip__reveal ${open ? "gantt-action-strip__reveal--hidden" : ""}`}
+          onClick={() => setOpen(true)}
+          title="Acțiuni rapide"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          className={`gantt-action-strip__collapse ${open ? "gantt-action-strip__collapse--visible" : ""}`}
+          onClick={() => setOpen(false)}
+          title="Ascunde"
+          tabIndex={open ? 0 : -1}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      </div>
 
       {/* Track — badges and buttons slide on this horizontal rail */}
       <div className="gantt-action-strip__track">
@@ -180,18 +191,6 @@ export function GanttRadialController({
           ))}
         </div>
       </div>
-
-      {/* Reveal button — visible when collapsed */}
-      <button
-        type="button"
-        className={`gantt-action-strip__reveal ${open ? "gantt-action-strip__reveal--hidden" : ""}`}
-        onClick={() => setOpen(true)}
-        title="Acțiuni rapide"
-      >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 18 15 12 9 6" />
-        </svg>
-      </button>
     </div>
   );
 }
