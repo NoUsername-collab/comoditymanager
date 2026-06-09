@@ -8,10 +8,14 @@ import {
   isRomanianNationality,
 } from "@/domain/checkin/identity-rules";
 import { validateCheckin } from "@/domain/checkin/validate";
+import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
 import {
   cleanNationalId,
+  NATIONAL_ID_LENGTH,
   validateNationalId,
+  type NationalIdType,
 } from "@/domain/guest/national-id";
+import { NationalIdTypePicker } from "@/components/admin/guests/NationalIdTypePicker";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { createCheckinAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
 import { createInitialCheckinGuests } from "@/components/admin/checkin/checkin-guest-defaults";
@@ -473,11 +477,18 @@ function GuestIdentityCard({
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
+  const tIdentity = useTranslations("admin.guests.identity");
   const present = guest.present_at_checkin !== false;
   const roGuest = isRomanianNationality(guest.nationality);
-  const cnpState = guest.national_id?.trim()
-    ? validateNationalId("cnp", cleanNationalId(guest.national_id))
+  const idType = (guest.national_id_type ?? "cnp") as NationalIdType;
+  const uiDocType = checkinUiDocTypeValue(guest.document_type);
+  const showDocFields = uiDocType !== "";
+  const showCiFields = uiDocType === "ci";
+  const expectedIdLength = NATIONAL_ID_LENGTH[idType];
+  const idState = guest.national_id?.trim()
+    ? validateNationalId(idType, cleanNationalId(guest.national_id))
     : null;
+  const idTypeLabel = tIdentity(`nationalIdTypes.${idType}`);
   const roomLocked = identityScope === "rep" || identityScope === "per_room";
   const showPresentToggle = identityScope === "individual";
 
@@ -605,97 +616,105 @@ function GuestIdentityCard({
           </div>
 
           <div className="checkin-guest-form__section-title">
-            {roGuest ? t("fisa.sectionCnp") : t("fisa.sectionForeignId")}
+            {tIdentity("documentSection")}
           </div>
           <div className="checkin-guest-form__grid">
-            <label className={`checkin-field ${roGuest ? "checkin-field--span2" : ""}`}>
+            <label className="checkin-field checkin-field--span2">
+              <span className="checkin-field__label">{tIdentity("docType")}</span>
+              <select
+                className="checkin-field__input"
+                value={uiDocType}
+                onChange={(e) =>
+                  updateGuest(idx, "document_type", e.target.value || null)
+                }
+              >
+                <option value="">{tIdentity("selectDocType")}</option>
+                <option value="ci">{tIdentity("docTypes.ci")}</option>
+                <option value="passport">{tIdentity("docTypes.passport")}</option>
+                <option value="foreign_id">{tIdentity("docTypes.foreign_id")}</option>
+                <option value="other">{tIdentity("docTypes.other")}</option>
+              </select>
+            </label>
+
+            {showDocFields && showCiFields && (
+              <label className="checkin-field">
+                <span className="checkin-field__label">{tIdentity("docSeries")}</span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.document_series ?? ""}
+                  onChange={(e) =>
+                    updateGuest(idx, "document_series", e.target.value.toUpperCase())
+                  }
+                  placeholder="XZ"
+                  maxLength={4}
+                />
+              </label>
+            )}
+
+            {showDocFields && (
+              <label className={`checkin-field ${!showCiFields ? "checkin-field--span2" : ""}`}>
+                <span className="checkin-field__label">{tIdentity("docNumber")}</span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.document_number ?? ""}
+                  onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
+                  placeholder={
+                    showCiFields ? "123456" : tIdentity("docNumberPlaceholder")
+                  }
+                />
+              </label>
+            )}
+          </div>
+
+          <div className="checkin-guest-form__section-title">
+            {tIdentity("personalSection")}
+          </div>
+          <div className="checkin-guest-form__grid checkin-guest-form__grid--national-id">
+            <label className="checkin-field">
+              <span className="checkin-field__label">{tIdentity("nationalIdType")}</span>
+              <NationalIdTypePicker
+                value={idType}
+                onChange={(type) => updateGuest(idx, "national_id_type", type)}
+                labelForType={(type) => tIdentity(`nationalIdTypes.${type}`)}
+                triggerClassName="checkin-field__input"
+              />
+            </label>
+
+            <label className="checkin-field checkin-field--span2">
               <span className="checkin-field__label">
-                {t("field.cnp")}
+                {idTypeLabel}
                 {roGuest && <span className="checkin-field__required"> *</span>}
               </span>
               <input
                 type="text"
                 className="checkin-field__input"
                 inputMode="numeric"
-                maxLength={13}
+                maxLength={expectedIdLength + 2}
                 value={guest.national_id ?? ""}
                 onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
-                placeholder="1234567890123"
+                placeholder={tIdentity("nationalIdPlaceholder", {
+                  digits: expectedIdLength,
+                })}
               />
-              {cnpState && !cnpState.valid && (
-                <span className="checkin-field__error">{t("field.cnpInvalid")}</span>
-              )}
-              {cnpState?.valid && cnpState.data?.birthDate && (
-                <span className="checkin-field__hint">
-                  {t("field.cnpDerivedBirth", { date: cnpState.data.birthDate })}
+              {idState && !idState.valid && (
+                <span className="checkin-field__error">
+                  {tIdentity("nationalIdInvalid", { type: idType.toUpperCase() })}
                 </span>
               )}
+              {idState?.valid && idState.data?.birthDate && (
+                <span className="checkin-field__hint">
+                  {t("field.cnpDerivedBirth", { date: idState.data.birthDate })}
+                </span>
+              )}
+              <span className="checkin-field__hint">
+                {tIdentity("nationalIdHint", {
+                  type: idTypeLabel,
+                  digits: expectedIdLength,
+                })}
+              </span>
             </label>
-
-            {!roGuest && (
-              <>
-                <label className="checkin-field">
-                  <span className="checkin-field__label">{t("field.documentType")}</span>
-                  <select
-                    className="checkin-field__input"
-                    value={guest.document_type ?? ""}
-                    onChange={(e) =>
-                      updateGuest(idx, "document_type", e.target.value || null)
-                    }
-                  >
-                    <option value="">{t("field.selectDoc")}</option>
-                    <option value="ci">{t("field.docCi")}</option>
-                    <option value="pasaport">{t("field.docPassport")}</option>
-                    <option value="permis">{t("field.docPermit")}</option>
-                  </select>
-                </label>
-
-                <label className="checkin-field">
-                  <span className="checkin-field__label">{t("field.documentSeries")}</span>
-                  <input
-                    type="text"
-                    className="checkin-field__input"
-                    value={guest.document_series ?? ""}
-                    onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
-                  />
-                </label>
-
-                <label className="checkin-field">
-                  <span className="checkin-field__label">{t("field.documentNumber")}</span>
-                  <input
-                    type="text"
-                    className="checkin-field__input"
-                    value={guest.document_number ?? ""}
-                    onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
-                  />
-                </label>
-              </>
-            )}
-
-            {roGuest && (
-              <>
-                <label className="checkin-field">
-                  <span className="checkin-field__label">{t("field.documentSeries")}</span>
-                  <input
-                    type="text"
-                    className="checkin-field__input"
-                    value={guest.document_series ?? ""}
-                    onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
-                    placeholder="XZ"
-                  />
-                </label>
-
-                <label className="checkin-field">
-                  <span className="checkin-field__label">{t("field.documentNumber")}</span>
-                  <input
-                    type="text"
-                    className="checkin-field__input"
-                    value={guest.document_number ?? ""}
-                    onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
-                  />
-                </label>
-              </>
-            )}
           </div>
         </>
       )}

@@ -46,8 +46,10 @@ export function canOfferOperativeCheckIn(args: {
   hasCheckinRecord?: boolean;
 }): boolean {
   if (args.status !== "confirmata") return false;
-  if (isStayCheckedIn(args) || args.actualCheckOutAt) return false;
-  return isOperativeCheckInDay(args.plannedCheckIn, args.today);
+  if (args.actualCheckOutAt) return false;
+  if (!isOperativeCheckInDay(args.plannedCheckIn, args.today)) return false;
+  if (args.hasCheckinRecord) return false;
+  return true;
 }
 
 export function canOfferOperativeCheckInFromBooking(

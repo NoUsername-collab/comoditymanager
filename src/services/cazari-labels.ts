@@ -44,6 +44,8 @@ export function buildCazariLabels({
     quickAcceptSuccess: tPages("quickAcceptSuccess"),
     emitFisa: tPages("emitFisa"),
     completeCheckinForFisa: tPages("completeCheckinForFisa"),
+    checkInOnlyOnArrivalDay: (date) =>
+      tPages("checkInOnlyOnArrivalDay", { date }),
     guestsShort: (adults, children) =>
       tCommon("guestsShort", { adults, children }),
     cancelConfirmedMsg: (ref, name, period) =>

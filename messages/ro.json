@@ -574,6 +574,7 @@
         "quickAcceptSuccess": "Cazare confirmată",
         "emitFisa": "Emite fișă",
         "completeCheckinForFisa": "Completează check-in (fișă)",
+        "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua sosirii ({date}).",
         "emitFisaNoCheckin": "Nu există check-in înregistrat pentru această cazare.",
         "emitFisaLegacyCheckin": "Check-in doar cu oră (fără date fișă). Apasă „Completează check-in (fișă)” pentru a înregistra oaspeții.",
         "emitFisaNoGuests": "Check-in-ul nu conține date de oaspeți pentru fișă.",

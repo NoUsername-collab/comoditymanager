@@ -1,3 +1,4 @@
+import { mapCheckinDocTypeFromDb } from "./doc-type";
 import type { CheckinGuestInput, DocumentType } from "./types";
 
 export type PersistedCheckinGuest = {
@@ -25,7 +26,7 @@ export function mapPersistedCheckinGuestsToInput(
     first_name: g.first_name ?? null,
     phone: g.phone ?? null,
     national_id: g.national_id ?? null,
-    document_type: g.document_type ?? null,
+    document_type: mapCheckinDocTypeFromDb(g.document_type),
     document_series: g.document_series ?? null,
     document_number: g.document_number ?? null,
     nationality: g.nationality ?? null,

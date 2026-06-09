@@ -574,6 +574,7 @@
         "quickAcceptSuccess": "Stay confirmed",
         "emitFisa": "Issue sheet",
         "completeCheckinForFisa": "Complete check-in (sheet)",
+        "checkInOnlyOnArrivalDay": "Check-in is only available on the arrival date ({date}).",
         "emitFisaNoCheckin": "No check-in recorded for this stay.",
         "emitFisaLegacyCheckin": "Only check-in time is set (no sheet data). Use “Complete check-in (sheet)” to register guests.",
         "emitFisaNoGuests": "Check-in has no guest data for the sheet.",

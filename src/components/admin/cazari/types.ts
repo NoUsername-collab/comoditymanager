@@ -34,6 +34,7 @@ export type CazariLabels = {
   quickAcceptSuccess: string;
   emitFisa: string;
   completeCheckinForFisa: string;
+  checkInOnlyOnArrivalDay: (date: string) => string;
   guestsShort: (adults: number, children: number) => string;
   cancelConfirmedMsg: (ref: string, name: string, period: string) => string;
   cancelRequestMsg: (ref: string, name: string, period: string) => string;

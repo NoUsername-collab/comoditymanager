@@ -48,6 +48,30 @@ describe("operative-checkin", () => {
     ).toBe(false);
   });
 
+  test("allows completing wizard on arrival day when only operative time exists", () => {
+    expect(
+      canOfferOperativeCheckIn({
+        status: "confirmata",
+        plannedCheckIn: "2026-06-10",
+        today: "2026-06-10",
+        actualCheckInAt: "2026-06-10T14:00:00",
+        hasCheckinRecord: false,
+      }),
+    ).toBe(true);
+  });
+
+  test("rejects wizard on non-arrival day even with operative time only", () => {
+    expect(
+      canOfferOperativeCheckIn({
+        status: "confirmata",
+        plannedCheckIn: "2026-06-11",
+        today: "2026-06-10",
+        actualCheckInAt: "2026-06-10T14:00:00",
+        hasCheckinRecord: false,
+      }),
+    ).toBe(false);
+  });
+
   test("rejects cerere and already checked in", () => {
     expect(
       canOfferOperativeCheckIn({
@@ -63,6 +87,7 @@ describe("operative-checkin", () => {
         plannedCheckIn: "2026-06-10",
         today: "2026-06-10",
         actualCheckInAt: "2026-06-10T14:00:00",
+        hasCheckinRecord: true,
       })
     ).toBe(false);
   });

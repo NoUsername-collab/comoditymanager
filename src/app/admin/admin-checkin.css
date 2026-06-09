@@ -31,6 +31,22 @@
   transition-duration: 0.05s;
 }
 
+.checkin-start-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  border-color: rgba(161, 161, 170, 0.45);
+  background: #f4f4f5;
+  color: #71717a;
+  box-shadow: none;
+  transform: none;
+}
+
+.checkin-start-btn:disabled:hover {
+  background: #f4f4f5;
+  border-color: rgba(161, 161, 170, 0.45);
+  box-shadow: none;
+}
+
 .checkin-start-btn__icon {
   font-size: 1rem;
 }
@@ -628,6 +644,80 @@
 
 .checkin-field--span2 {
   grid-column: span 2;
+}
+
+.checkin-guest-form__grid--national-id {
+  align-items: end;
+}
+
+.checkin-guest-form__grid--national-id .guest-id-type-picker__trigger {
+  min-height: 2.05rem;
+}
+
+.guest-id-type-picker {
+  position: relative;
+  width: 100%;
+}
+
+.guest-id-type-picker__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.15rem;
+  padding-right: 0.35rem;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+
+.guest-id-type-picker__code {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.guest-id-type-picker__chevron {
+  font-size: 0.55rem;
+  opacity: 0.65;
+  line-height: 1;
+}
+
+.guest-id-type-picker__menu {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 0.2rem);
+  left: 0;
+  min-width: 13.5rem;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--text) 14%, transparent);
+}
+
+.guest-id-type-picker__option {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  border: none;
+  border-radius: 0.35rem;
+  background: transparent;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.guest-id-type-picker__option:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.guest-id-type-picker__option--active {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--accent);
 }
 
 .checkin-field__required {

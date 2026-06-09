@@ -7,6 +7,7 @@ import type {
   BookingForCheckin,
   CheckinStatus,
 } from "@/domain/checkin/types";
+import { mapCheckinDocTypeForDb } from "@/domain/checkin/doc-type";
 import { guestsToPersist } from "@/domain/checkin/guest-layout";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import {
@@ -84,7 +85,7 @@ export async function createCheckin(
         first_name: g.first_name ?? null,
         phone: g.phone ?? null,
         national_id: g.national_id ?? null,
-        document_type: g.document_type ?? null,
+        document_type: mapCheckinDocTypeForDb(g.document_type),
         document_series: g.document_series ?? null,
         document_number: g.document_number ?? null,
         nationality: g.nationality ?? null,

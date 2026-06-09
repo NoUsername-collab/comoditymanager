@@ -8,9 +8,11 @@ import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDia
 import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
-import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
+import {
+  canOfferOperativeCheckIn,
+  isOperativeCheckInDay,
+} from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
-import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -33,6 +35,7 @@ type Props = {
     moveOnlyConfirmed: string;
     phoneRequiredForCheckIn: string;
     completeCheckinForFisa: string;
+    checkInOnlyOnArrivalDay: (date: string) => string;
   };
   guestPhone?: string | null;
   hasCheckinRecord?: boolean;
@@ -55,13 +58,14 @@ export function StayQuickOps({
   const router = useRouter();
   const tCommon = useTranslations("common");
   const { showToast } = useAdminFx();
-  const { openCheckInWizard, openCheckOut } = useOperativeCheck();
+  const { today, openCheckInWizard, openCheckOut } = useOperativeCheck();
   const [pending, startTransition] = useTransition();
   const [editDialog, setEditDialog] = useState<{
     mode: "checkin" | "checkout";
   } | null>(null);
   const isConfirmed = bookingStatus === "confirmata";
   const hasPhone = isValidGuestPhone(guestPhone);
+  const isArrivalDay = isOperativeCheckInDay(plannedCheckIn, today);
   const operativeArgs = {
     bookingId,
     guestName,
@@ -70,23 +74,27 @@ export function StayQuickOps({
     status: bookingStatus,
     actualCheckInAt,
     actualCheckOutAt,
+    hasCheckinRecord,
+    today,
   };
   const canEmitFisa = hasCheckinRecord;
-  const needsWizardForFisa =
-    isConfirmed && !!actualCheckInAt && !hasCheckinRecord && !actualCheckOutAt;
-  const canCheckIn =
+  const canWizardCheckIn =
     canOfferOperativeCheckIn({
       status: bookingStatus,
       plannedCheckIn,
-      today: todayIso(),
+      today,
       actualCheckInAt,
       actualCheckOutAt,
       hasCheckinRecord,
     }) && hasPhone;
+  const needsWizardForFisa =
+    canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
+  const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
   const canCheckOut = isConfirmed && !!actualCheckInAt && !actualCheckOutAt;
   const canEditCheckInTime = isConfirmed && !!actualCheckInAt && hasCheckinRecord;
   const canEditCheckOut = isConfirmed && !!actualCheckOutAt;
   const canMove = isConfirmed;
+  const checkInEnabled = canNewCheckIn || needsWizardForFisa || canEditCheckInTime;
   const checkInLabel = needsWizardForFisa
     ? labels.completeCheckinForFisa
     : canEditCheckInTime
@@ -95,6 +103,16 @@ export function StayQuickOps({
   const checkOutLabel = canEditCheckOut
     ? `${labels.edit} ${labels.checkOut}`
     : labels.checkOut;
+
+  const checkInTitle = !isConfirmed
+    ? labels.checkActionsOnlyConfirmed
+    : canEditCheckInTime
+      ? ""
+      : !hasPhone
+        ? labels.phoneRequiredForCheckIn
+        : !isArrivalDay
+          ? labels.checkInOnlyOnArrivalDay(plannedCheckIn)
+          : "";
 
   const checkoutTitle = !isConfirmed
     ? labels.checkActionsOnlyConfirmed
@@ -144,16 +162,8 @@ export function StayQuickOps({
       <button
         type="button"
         className="checkin-start-btn stay-quick-ops__checkin !px-2 !py-1 !text-[11px]"
-        disabled={
-          (!canCheckIn && !canEditCheckInTime && !needsWizardForFisa) || pending
-        }
-        title={
-          !isConfirmed
-            ? labels.checkActionsOnlyConfirmed
-            : !hasPhone
-              ? labels.phoneRequiredForCheckIn
-              : ""
-        }
+        disabled={!checkInEnabled || pending}
+        title={checkInTitle}
         onClick={handleCheckIn}
       >
         {!canEditCheckInTime && (

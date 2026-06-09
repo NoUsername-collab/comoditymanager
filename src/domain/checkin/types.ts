@@ -1,5 +1,7 @@
 /** Check-in domain types — pure, no DB / framework dependencies */
 
+import type { GuestDocType } from "@/domain/guest/types";
+
 export type CheckinType = "reservation" | "walkin" | "group";
 export type CheckinStatus = "complete" | "incomplete" | "blocked";
 export type PaymentStatus = "paid" | "partial" | "unpaid" | "online";
@@ -56,6 +58,9 @@ export type CheckinPaymentRule = "full" | "partial" | "at_checkout";
 export type GroupCheckinMode = "rep" | "individual" | "per_room" | "both";
 export type DocumentType = "ci" | "pasaport" | "permis";
 
+/** În formular folosim aceleași valori ca la profilul clientului. */
+export type CheckinUiDocType = GuestDocType;
+
 // ── Guest input (one per person) ───────────────────────────
 export interface CheckinGuestInput {
   /** Compat — derivat din last_name + first_name dacă lipsesc */
@@ -66,7 +71,7 @@ export interface CheckinGuestInput {
   /** CNP (RO) sau alt cod personal */
   national_id?: string | null;
   national_id_type?: "cnp" | "idnp" | "egn" | "amka" | "szemelyi_szam" | null;
-  document_type?: DocumentType | null;
+  document_type?: CheckinUiDocType | DocumentType | null;
   document_series?: string | null;
   document_number?: string | null;
   nationality?: string | null;
