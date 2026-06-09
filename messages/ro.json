@@ -987,6 +987,7 @@
       "nights": "Nopți",
       "totalPrice": "Preț total",
       "scrollDrag": "Trage stânga-dreapta pentru scroll rapid",
+      "scrollDragTouch": "Ține apăsat 2,5 sec, apoi trage stânga-dreapta",
       "autoRefreshTitle": "Actualizare automată: realtime cu fallback rar și fără refresh-uri suprapuse",
       "searchStay": "Caută după nume, telefon, email, cameră sau cod…",
       "searchGuest": "Caută nume, email, telefon…",

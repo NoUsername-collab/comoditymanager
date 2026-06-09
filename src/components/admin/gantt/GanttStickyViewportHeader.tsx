@@ -30,6 +30,7 @@ export function GanttStickyViewportHeader({
   onDayClick,
   onPanPointerDown,
   panActive,
+  scrollTitle,
   dayGridOptions,
 }: {
   scrollRef: RefObject<HTMLDivElement | null>;
@@ -43,6 +44,7 @@ export function GanttStickyViewportHeader({
   onDayClick: (iso: string) => void;
   onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
   panActive?: boolean;
+  scrollTitle?: string;
   dayGridOptions?: GanttDayGridOptions;
 }) {
   const tCommon = useTranslations("admin.common");
@@ -178,7 +180,7 @@ export function GanttStickyViewportHeader({
                   compact={compact}
                   onPanPointerDown={onPanPointerDown}
                   panActive={panActive}
-                  scrollTitle={tCommon("scrollDrag")}
+                  scrollTitle={scrollTitle ?? tCommon("scrollDrag")}
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
                   dayGridOptions={dayGridOptions}
@@ -222,7 +224,7 @@ export function GanttStickyViewportHeader({
                   onPanPointerDown={onPanPointerDown}
                   panActive={panActive}
                   ariaLabel={tCommon("freeRoomsByDay")}
-                  scrollTitle={tCommon("scrollDrag")}
+                  scrollTitle={scrollTitle ?? tCommon("scrollDrag")}
                   dayTitle={(iso, free, total) =>
                     total === 0 ? iso : tCommon("freeRoomsFilterTitle", { count: free })
                   }

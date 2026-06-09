@@ -987,6 +987,7 @@
       "nights": "Nights",
       "totalPrice": "Total price",
       "scrollDrag": "Drag left-right for quick scroll",
+      "scrollDragTouch": "Hold 2.5 sec, then drag left-right",
       "autoRefreshTitle": "Auto refresh: realtime with rare fallback, no overlapping refreshes",
       "searchStay": "Search by name, phone, email, room or code…",
       "searchGuest": "Search name, email, phone…",

@@ -20,6 +20,7 @@ export function GanttDailySummaryRow({
   onDayClick,
   onPanPointerDown,
   panActive = false,
+  scrollTitle,
   dayGridOptions,
 }: {
   counts: DailyFreeCount[];
@@ -30,6 +31,7 @@ export function GanttDailySummaryRow({
   onDayClick: (iso: string) => void;
   onPanPointerDown?: React.PointerEventHandler<HTMLDivElement>;
   panActive?: boolean;
+  scrollTitle?: string;
   dayGridOptions?: GanttDayGridOptions;
 }) {
   const tCommon = useTranslations("admin.common");
@@ -61,7 +63,7 @@ export function GanttDailySummaryRow({
           role="row"
           aria-label={tCommon("freeRoomsByDay")}
           onPointerDown={onPanPointerDown}
-          title={tCommon("scrollDrag")}
+          title={scrollTitle ?? tCommon("scrollDrag")}
         >
           {viewRange.days.map((col, i) => {
             const { free, total } = counts[i]!;

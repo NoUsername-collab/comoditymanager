@@ -34,7 +34,10 @@ import {
 import { ghostBarPosition } from "@/domain/gantt/drag-create";
 import type { GanttOccDetail } from "@/components/admin/gantt/GanttOccupancyDetailPanel";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
-import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
+import {
+  LONG_PRESS_MOVE_PX,
+  type GanttCreateDraftRequest,
+} from "@/domain/gantt/context-menu";
 import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
 import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMenuBridge";
 import { GanttOperativeCheckProvider } from "@/components/admin/gantt/GanttOperativeCheckProvider";
@@ -95,6 +98,9 @@ import { GanttVirtualizedBody } from "@/components/admin/gantt/GanttVirtualizedB
 
 export type { GanttRoom };
 
+/** Touch: hold this long on the day header before horizontal pan is enabled. */
+const GANTT_TOUCH_PAN_ARM_MS = 2500;
+
 export function GanttCalendar({
   viewRange,
   rooms,
@@ -137,6 +143,9 @@ export function GanttCalendar({
   const buildingFallbackLabel = tCommon("building");
   const locale = useLocale();
   const touch = useIsTouchDevice();
+  const scrollDragTitle = touch
+    ? tCommon("scrollDragTouch")
+    : tCommon("scrollDrag");
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
   const compactViewport = useIsCompactViewport();
   const compact =
@@ -211,8 +220,12 @@ export function GanttCalendar({
     pointerId: number;
     startX: number;
     startY: number;
+    lastX: number;
+    lastY: number;
     startScrollLeft: number;
     moved: boolean;
+    armed: boolean;
+    armTimer: ReturnType<typeof setTimeout> | null;
     move: (event: PointerEvent) => void;
     end: (event: PointerEvent) => void;
   } | null>(null);
@@ -265,6 +278,9 @@ export function GanttCalendar({
   const endHeaderPan = useCallback(() => {
     const state = panStateRef.current;
     if (!state) return;
+    if (state.armTimer !== null) {
+      clearTimeout(state.armTimer);
+    }
     window.removeEventListener("pointermove", state.move);
     window.removeEventListener("pointerup", state.end);
     window.removeEventListener("pointercancel", state.end);
@@ -281,19 +297,50 @@ export function GanttCalendar({
 
       endHeaderPan();
 
-      const panThreshold = event.pointerType === "touch" ? 6 : 3;
+      const isTouch = event.pointerType === "touch";
+      const panThreshold = isTouch ? 6 : 3;
+      const captureTarget = event.currentTarget;
+
+      const armPan = () => {
+        const state = panStateRef.current;
+        if (!state) return;
+        state.armed = true;
+        state.armTimer = null;
+        state.startScrollLeft = el.scrollLeft;
+        state.startX = state.lastX;
+        state.startY = state.lastY;
+        setIsHeaderPanActive(true);
+        document.body.classList.add("gantt-pan-active");
+        if (isTouch && "setPointerCapture" in captureTarget) {
+          try {
+            captureTarget.setPointerCapture(state.pointerId);
+          } catch {
+            /* ignore */
+          }
+        }
+      };
 
       const move = (nextEvent: PointerEvent) => {
         const state = panStateRef.current;
         if (!state || nextEvent.pointerId !== state.pointerId) return;
+
+        state.lastX = nextEvent.clientX;
+        state.lastY = nextEvent.clientY;
+
+        if (isTouch && !state.armed) {
+          const dx = nextEvent.clientX - state.startX;
+          const dy = nextEvent.clientY - state.startY;
+          if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX) {
+            endHeaderPan();
+          }
+          return;
+        }
+
         const dx = nextEvent.clientX - state.startX;
         const dy = nextEvent.clientY - state.startY;
         if (!state.moved) {
           if (Math.abs(dx) < panThreshold && Math.abs(dy) < panThreshold) return;
-          if (
-            event.pointerType === "touch" &&
-            Math.abs(dy) > Math.abs(dx)
-          ) {
+          if (isTouch && Math.abs(dy) > Math.abs(dx)) {
             endHeaderPan();
             return;
           }
@@ -314,27 +361,34 @@ export function GanttCalendar({
         pointerId: event.pointerId,
         startX: event.clientX,
         startY: event.clientY,
+        lastX: event.clientX,
+        lastY: event.clientY,
         startScrollLeft: el.scrollLeft,
         moved: false,
+        armed: !isTouch,
+        armTimer: isTouch
+          ? setTimeout(armPan, GANTT_TOUCH_PAN_ARM_MS)
+          : null,
         move,
         end,
       };
-      setIsHeaderPanActive(true);
-      document.body.classList.add("gantt-pan-active");
-      if (
-        event.pointerType === "touch" &&
-        "setPointerCapture" in event.currentTarget
-      ) {
-        try {
-          event.currentTarget.setPointerCapture(event.pointerId);
-        } catch {
-          /* ignore */
+
+      if (!isTouch) {
+        setIsHeaderPanActive(true);
+        document.body.classList.add("gantt-pan-active");
+        if ("setPointerCapture" in captureTarget) {
+          try {
+            captureTarget.setPointerCapture(event.pointerId);
+          } catch {
+            /* ignore */
+          }
         }
+        event.preventDefault();
       }
+
       window.addEventListener("pointermove", move, { passive: false });
       window.addEventListener("pointerup", end);
       window.addEventListener("pointercancel", end);
-      event.preventDefault();
     },
     [endHeaderPan]
   );
@@ -519,6 +573,7 @@ export function GanttCalendar({
         onDayClick={handleSummaryDayClick}
         onPanPointerDown={handleHeaderPanPointerDown}
         panActive={isHeaderPanActive}
+        scrollTitle={scrollDragTitle}
         dayGridOptions={dayGridOptions}
       />
     <div
@@ -618,7 +673,7 @@ export function GanttCalendar({
                   compact={compact}
                   onPanPointerDown={handleHeaderPanPointerDown}
                   panActive={isHeaderPanActive}
-                  scrollTitle={tCommon("scrollDrag")}
+                  scrollTitle={scrollDragTitle}
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
                   dayGridOptions={dayGridOptions}
@@ -634,6 +689,7 @@ export function GanttCalendar({
               onDayClick={handleSummaryDayClick}
               onPanPointerDown={handleHeaderPanPointerDown}
               panActive={isHeaderPanActive}
+              scrollTitle={scrollDragTitle}
               dayGridOptions={dayGridOptions}
             />
           </thead>
