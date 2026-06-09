@@ -28,7 +28,14 @@ function readCompactFromDom(): boolean {
 }
 
 function subscribeDisplayLayout(onStoreChange: () => void): () => void {
-  return subscribeLayoutViewportChanges(onStoreChange);
+  let prev = `${readProfileFromDom()}:${readHeightTierFromDom()}:${readCompactFromDom()}`;
+  return subscribeLayoutViewportChanges(() => {
+    const next = `${readProfileFromDom()}:${readHeightTierFromDom()}:${readCompactFromDom()}`;
+    if (next !== prev) {
+      prev = next;
+      onStoreChange();
+    }
+  });
 }
 
 export function useDisplayProfile(): DisplayProfile {

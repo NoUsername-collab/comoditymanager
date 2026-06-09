@@ -39,26 +39,43 @@ function readCompactLayoutHints(): CompactLayoutHints {
   };
 }
 
+function compactHintsEqual(a: CompactLayoutHints, b: CompactLayoutHints): boolean {
+  return (
+    a.compactChrome === b.compactChrome &&
+    a.orientation === b.orientation &&
+    a.isPortrait === b.isPortrait &&
+    a.isLandscape === b.isLandscape
+  );
+}
+
+let cachedCompactHints: CompactLayoutHints = SERVER_COMPACT_HINTS;
+
+/** Must return a stable reference when values are unchanged — React #185 otherwise. */
+function getCompactLayoutHintsSnapshot(): CompactLayoutHints {
+  if (typeof document === "undefined" || !isDocumentLayoutBootstrapped()) {
+    return SERVER_COMPACT_HINTS;
+  }
+  const next = readCompactLayoutHints();
+  if (compactHintsEqual(cachedCompactHints, next)) {
+    return cachedCompactHints;
+  }
+  cachedCompactHints = next;
+  return next;
+}
+
 function serializeCompactHints(hints: CompactLayoutHints): string {
   return `${hints.compactChrome}:${hints.orientation}`;
 }
 
 function subscribeCompactLayoutHints(onStoreChange: () => void): () => void {
-  let prev = serializeCompactHints(readCompactLayoutHints());
+  let prev = serializeCompactHints(getCompactLayoutHintsSnapshot());
   return subscribeLayoutViewportChanges(() => {
-    const next = serializeCompactHints(readCompactLayoutHints());
+    const next = serializeCompactHints(getCompactLayoutHintsSnapshot());
     if (next !== prev) {
       prev = next;
       onStoreChange();
     }
   });
-}
-
-function getCompactLayoutHintsSnapshot(): CompactLayoutHints {
-  if (typeof document !== "undefined" && isDocumentLayoutBootstrapped()) {
-    return readCompactLayoutHints();
-  }
-  return SERVER_COMPACT_HINTS;
 }
 
 /**
@@ -68,8 +85,8 @@ function getCompactLayoutHintsSnapshot(): CompactLayoutHints {
 export function useCompactLayoutHints(): CompactLayoutHints {
   return useSyncExternalStore(
     subscribeCompactLayoutHints,
-    readCompactLayoutHints,
-    getCompactLayoutHintsSnapshot
+    getCompactLayoutHintsSnapshot,
+    () => SERVER_COMPACT_HINTS
   );
 }
 
@@ -112,27 +129,51 @@ function readMobileLayoutState(): MobileLayoutState {
   };
 }
 
+function mobileLayoutStateEqual(a: MobileLayoutState, b: MobileLayoutState): boolean {
+  return (
+    a.mode === b.mode &&
+    a.orientation === b.orientation &&
+    a.chrome === b.chrome &&
+    a.breakpoint === b.breakpoint &&
+    a.width === b.width &&
+    a.height === b.height &&
+    a.isMobile === b.isMobile &&
+    a.isTablet === b.isTablet &&
+    a.isDesktop === b.isDesktop &&
+    a.isLandscape === b.isLandscape &&
+    a.isPortrait === b.isPortrait &&
+    a.isCompactChrome === b.isCompactChrome
+  );
+}
+
+let cachedMobileLayoutState: MobileLayoutState = SERVER_LAYOUT_STATE;
+
+function getMobileLayoutStateSnapshot(): MobileLayoutState {
+  if (typeof document === "undefined" || !isDocumentLayoutBootstrapped()) {
+    return SERVER_LAYOUT_STATE;
+  }
+  const next = readMobileLayoutState();
+  if (mobileLayoutStateEqual(cachedMobileLayoutState, next)) {
+    return cachedMobileLayoutState;
+  }
+  cachedMobileLayoutState = next;
+  return next;
+}
+
 /** Re-render only on mode/orientation/chrome/breakpoint — not iOS URL-bar pixels. */
 function serializeMobileLayoutState(state: MobileLayoutState): string {
   return `${state.mode}:${state.orientation}:${state.chrome}:${state.breakpoint}`;
 }
 
 function subscribeMobileLayoutState(onStoreChange: () => void): () => void {
-  let prev = serializeMobileLayoutState(readMobileLayoutState());
+  let prev = serializeMobileLayoutState(getMobileLayoutStateSnapshot());
   return subscribeLayoutViewportChanges(() => {
-    const next = serializeMobileLayoutState(readMobileLayoutState());
+    const next = serializeMobileLayoutState(getMobileLayoutStateSnapshot());
     if (next !== prev) {
       prev = next;
       onStoreChange();
     }
   });
-}
-
-function getMobileLayoutStateSnapshot(): MobileLayoutState {
-  if (typeof document !== "undefined" && isDocumentLayoutBootstrapped()) {
-    return readMobileLayoutState();
-  }
-  return SERVER_LAYOUT_STATE;
 }
 
 /**
@@ -142,8 +183,8 @@ function getMobileLayoutStateSnapshot(): MobileLayoutState {
 export function useMobileLayout(): MobileLayoutState {
   return useSyncExternalStore(
     subscribeMobileLayoutState,
-    readMobileLayoutState,
-    getMobileLayoutStateSnapshot
+    getMobileLayoutStateSnapshot,
+    () => SERVER_LAYOUT_STATE
   );
 }
 
