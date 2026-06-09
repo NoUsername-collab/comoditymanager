@@ -23,8 +23,10 @@ export function PwaInstallAction({
 
   async function handleClick() {
     if (mode === "prompt") {
-      await install();
-      onAfterClick?.();
+      const outcome = await install();
+      if (outcome === "accepted") {
+        onAfterClick?.();
+      }
       return;
     }
     setInstructionsOpen(true);
@@ -56,11 +58,13 @@ export function PwaInstallAction({
         </button>
       )}
 
-      <PwaInstallInstructions
-        open={instructionsOpen}
-        mode={mode === "prompt" ? "android-manual" : mode}
-        onClose={() => setInstructionsOpen(false)}
-      />
+      {mode && mode !== "prompt" && (
+        <PwaInstallInstructions
+          open={instructionsOpen}
+          mode={mode}
+          onClose={() => setInstructionsOpen(false)}
+        />
+      )}
     </>
   );
 }

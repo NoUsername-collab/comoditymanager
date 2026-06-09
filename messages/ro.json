@@ -303,6 +303,10 @@
       "iosStep3": "Apasă Adaugă — Hospira se deschide fără bara browserului",
       "androidManualTitle": "Instalează din Chrome",
       "androidManualStep": "Meniu ⋮ → Instalează aplicația sau Adaugă pe ecranul de pornire",
+      "desktopManualTitle": "Instalează Hospira în Chrome",
+      "desktopStep1": "Deschide meniul Chrome (⋮) din dreapta barei de adrese",
+      "desktopStep2": "Alege „Instalează Hospira…” sau „Save and share” → „Install”",
+      "desktopStep3": "Confirmă — aplicația apare ca fereastră separată, fără tab-uri",
       "close": "Am înțeles"
     },
     "login": {

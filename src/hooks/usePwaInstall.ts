@@ -6,7 +6,12 @@ import {
   type BeforeInstallPromptEvent,
 } from "@/lib/pwa/install";
 
-export type PwaInstallMode = "prompt" | "ios" | "android-manual" | null;
+export type PwaInstallMode =
+  | "prompt"
+  | "ios"
+  | "android-manual"
+  | "desktop-manual"
+  | null;
 
 export function usePwaInstall() {
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(
@@ -51,9 +56,9 @@ export function usePwaInstall() {
         ? "ios"
         : isMobile
           ? "android-manual"
-          : null;
+          : "desktop-manual";
 
-  const visible = mode !== null;
+  const visible = !installed;
 
   const install = useCallback(async (): Promise<"accepted" | "dismissed" | "manual"> => {
     if (deferred) {

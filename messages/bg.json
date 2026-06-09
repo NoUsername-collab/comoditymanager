@@ -303,6 +303,10 @@
       "iosStep3": "Натисни Добави — Hospira се отваря без лентата на браузъра",
       "androidManualTitle": "Инсталирай от Chrome",
       "androidManualStep": "Меню ⋮ → Инсталирай приложение",
+      "desktopManualTitle": "Инсталирай Hospira в Chrome",
+      "desktopStep1": "Отвори менюто на Chrome (⋮) вдясно от адресната лента",
+      "desktopStep2": "Избери „Инсталирай Hospira…” или „Save and share” → „Install”",
+      "desktopStep3": "Потвърди — приложението се отваря в отделен прозорец",
       "close": "Разбрах"
     },
     "login": {

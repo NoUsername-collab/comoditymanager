@@ -31,9 +31,16 @@ export function PwaInstallInstructions({
   const steps =
     mode === "ios"
       ? [t("iosStep1"), t("iosStep2"), t("iosStep3")]
-      : [t("androidManualStep")];
+      : mode === "desktop-manual"
+        ? [t("desktopStep1"), t("desktopStep2"), t("desktopStep3")]
+        : [t("androidManualStep")];
 
-  const title = mode === "ios" ? t("iosTitle") : t("androidManualTitle");
+  const title =
+    mode === "ios"
+      ? t("iosTitle")
+      : mode === "desktop-manual"
+        ? t("desktopManualTitle")
+        : t("androidManualTitle");
 
   return (
     <AdminPortal>

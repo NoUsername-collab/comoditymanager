@@ -303,6 +303,10 @@
       "iosStep3": "Tap Add — Hospira opens without the browser bar",
       "androidManualTitle": "Install from Chrome",
       "androidManualStep": "Menu ⋮ → Install app or Add to Home Screen",
+      "desktopManualTitle": "Install Hospira in Chrome",
+      "desktopStep1": "Open the Chrome menu (⋮) on the right of the address bar",
+      "desktopStep2": "Choose \"Install Hospira…\" or \"Save and share\" → \"Install\"",
+      "desktopStep3": "Confirm — the app opens in its own window without browser tabs",
       "close": "Got it"
     },
     "login": {
