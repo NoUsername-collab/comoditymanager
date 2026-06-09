@@ -1,18 +1,37 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
+
+/** Document Y where the virtualized tbody list starts (below thead). */
+export function readGanttScrollMargin(
+  shell: HTMLElement | null,
+  thead: HTMLElement | null
+): number {
+  if (!shell || typeof window === "undefined") return 0;
+  const shellTop = shell.getBoundingClientRect().top + window.scrollY;
+  const theadHeight = thead?.getBoundingClientRect().height ?? 0;
+  return shellTop + theadHeight;
+}
 
 export function useWindowVirtualRange({
   count,
   estimateSize,
-  getScrollMargin,
+  shellRef,
+  theadRef,
   overscan = 4,
   enabled = true,
 }: {
   count: number;
   estimateSize: (index: number) => number;
-  /** Read current list offset without React state — avoids virtual-range feedback loops. */
-  getScrollMargin: () => number;
+  shellRef: RefObject<HTMLElement | null>;
+  theadRef: RefObject<HTMLElement | null>;
   overscan?: number;
   enabled?: boolean;
 }) {
@@ -46,7 +65,10 @@ export function useWindowVirtualRange({
       return;
     }
 
-    const scrollMargin = getScrollMargin();
+    const scrollMargin = readGanttScrollMargin(
+      shellRef.current,
+      theadRef.current
+    );
     const viewTop = window.scrollY;
     const viewBottom = viewTop + window.innerHeight;
     const listTop = scrollMargin;
@@ -96,7 +118,7 @@ export function useWindowVirtualRange({
     );
 
     measuringRef.current = false;
-  }, [count, enabled, getScrollMargin, offsets, overscan, totalSize]);
+  }, [count, enabled, offsets, overscan, shellRef, theadRef, totalSize]);
 
   useEffect(() => {
     let frame = 0;

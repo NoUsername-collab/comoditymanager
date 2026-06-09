@@ -9,8 +9,6 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { debounce } from "@/lib/debounce";
-import { LAYOUT_RESIZE_DEBOUNCE_MS } from "@/layout/mobile/viewport";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
@@ -375,61 +373,6 @@ export function GanttCalendar({
     return () => window.removeEventListener("keydown", onKey);
   }, [scrollToTodayColumn]);
 
-  useEffect(() => {
-    const shell = shellRef.current;
-    const thead = theadRef.current;
-    if (!shell || !thead) return;
-
-    const syncBodyTop = () => {
-      const shellTop = shell.getBoundingClientRect().top;
-      const theadBottom = thead.getBoundingClientRect().bottom;
-      shell.style.setProperty(
-        "--gantt-body-top",
-        `${Math.max(0, theadBottom - shellTop)}px`
-      );
-    };
-
-    const syncDebounced = debounce(syncBodyTop, LAYOUT_RESIZE_DEBOUNCE_MS);
-
-    syncBodyTop();
-
-    if (compactChrome) {
-      window.addEventListener("resize", syncDebounced, { passive: true });
-      window.addEventListener("orientationchange", syncBodyTop, { passive: true });
-      window.visualViewport?.addEventListener("resize", syncDebounced, {
-        passive: true,
-      });
-      return () => {
-        window.removeEventListener("resize", syncDebounced);
-        window.removeEventListener("orientationchange", syncBodyTop);
-        window.visualViewport?.removeEventListener("resize", syncDebounced);
-      };
-    }
-
-    const ro = new ResizeObserver(syncDebounced);
-    ro.observe(shell);
-    ro.observe(thead);
-    window.addEventListener("resize", syncDebounced, { passive: true });
-    window.addEventListener("orientationchange", syncBodyTop, { passive: true });
-    window.visualViewport?.addEventListener("resize", syncDebounced, {
-      passive: true,
-    });
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", syncDebounced);
-      window.removeEventListener("orientationchange", syncBodyTop);
-      window.visualViewport?.removeEventListener("resize", syncDebounced);
-    };
-  }, [
-    viewRange.periodKey,
-    compact,
-    compactChrome,
-    orientation,
-    todaySummary.arrivals.length,
-    todaySummary.departures.length,
-    groupByBuilding,
-  ]);
-
   const bookingById = useMemo(
     () => new Map(bookings.map((b) => [b.id, b])),
     [bookings]
@@ -695,6 +638,8 @@ export function GanttCalendar({
             />
           </thead>
           <GanttVirtualizedBody
+            shellRef={shellRef}
+            theadRef={theadRef}
             groupByBuilding={groupByBuilding}
             buildingGroups={buildingGroups}
             filteredRooms={filteredRooms}

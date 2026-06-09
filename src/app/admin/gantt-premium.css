@@ -46,6 +46,33 @@
   contain-intrinsic-size: auto var(--gantt-row-h);
 }
 
+/* Virtualized tbody — fixed row metrics prevent scroll-margin feedback loops */
+.gantt-tbody--virtual .gantt-room-row {
+  height: var(--gantt-row-h);
+  max-height: var(--gantt-row-h);
+  overflow: hidden;
+}
+
+.gantt-tbody--virtual .gantt-building-header-row {
+  height: 32px;
+  max-height: 32px;
+}
+
+.gantt-tbody--virtual .gantt-building-header-row .gantt-building-header {
+  height: 32px;
+  max-height: 32px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.gantt-virtual-spacer__cell {
+  padding: 0 !important;
+  border: none !important;
+  line-height: 0;
+  vertical-align: top;
+  overflow: hidden;
+}
+
 .gantt-day-header-grid--pan {
   cursor: grab;
   user-select: none;
