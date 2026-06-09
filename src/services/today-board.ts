@@ -22,6 +22,9 @@ export type CheckInQuestItem = {
   bookingId: string;
   guestName: string;
   guestLabel: string;
+  guestPhone: string | null;
+  guestEmail: string;
+  totalPrice: number;
   roomNames: string[];
   checkIn: string;
   checkOut: string;
@@ -211,6 +214,9 @@ async function loadTodayBoardImpl(
         row.guest_first_name,
         row.guest_name
       ),
+      guestPhone: row.guest_phone,
+      guestEmail: row.guest_email,
+      totalPrice: row.total_price ?? 0,
       roomNames: row.room_names,
       checkIn: row.check_in,
       checkOut: row.check_out,

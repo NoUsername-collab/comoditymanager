@@ -105,10 +105,10 @@ export async function AdminDashboard({
       {data.todayBoard && (
         <section className="admin-home-section admin-home-checkin-quest-wrap">
           <CheckInMilestoneBoard
-            todayIso={data.todayBoard.todayIso}
             checkInTime={data.todayBoard.checkInTime}
             pending={data.todayBoard.pendingCheckIns}
             completedCount={data.todayBoard.completedCheckInsToday}
+            checkinSettings={data.checkinSettings}
           />
         </section>
       )}

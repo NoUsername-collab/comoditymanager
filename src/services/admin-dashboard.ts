@@ -15,6 +15,11 @@ import {
 } from "@/lib/constants";
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadTodayBoard, type TodayBoard } from "@/services/today-board";
+import {
+  DEFAULT_CHECKIN_SETTINGS,
+  getCheckinSettings,
+} from "@/services/checkin";
+import type { CheckinSettings } from "@/domain/checkin/types";
 import { countConfirmedStays } from "@/services/milestones";
 import {
   buildHomeBriefing,
@@ -51,6 +56,7 @@ export type AdminDashboardData = {
   moodLine: string;
   briefingLine: string | null;
   milestones: HomeMilestone[];
+  checkinSettings: CheckinSettings;
   error: string | null;
 };
 
@@ -86,7 +92,7 @@ async function loadTodayBoardForSettings(
 async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName] =
+  const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings] =
     await Promise.all([
       getLocale(),
       getTranslations("admin.dashboard"),
@@ -99,6 +105,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
       loadMonthComparison().catch(() => null),
       countConfirmedStays().catch(() => 0),
       pensionPromise.then(resolveDashboardPensionName),
+      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
     ]);
 
   const pensionFallback = platformPensionNameFallback();
@@ -124,6 +131,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
     moodLine: tCommon("welcomeHome"),
     briefingLine: null,
     milestones: [],
+    checkinSettings: DEFAULT_CHECKIN_SETTINGS,
     error: null,
   };
 
@@ -183,6 +191,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
         monthCompare,
         cereriCount,
       }),
+      checkinSettings,
       error: null,
     };
   } catch (e) {
@@ -199,7 +208,7 @@ export const loadAdminDashboard = cache(loadAdminDashboardImpl);
 async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, pensionName] =
+  const [locale, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, pensionName, checkinSettings] =
     await Promise.all([
       getLocale(),
       getTranslations("admin.common"),
@@ -209,6 +218,7 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
       listBuildingDashboards(),
       pensionPromise.then(loadTodayBoardForSettings),
       pensionPromise.then(resolveDashboardPensionName),
+      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
     ]);
   const pensionFallback = platformPensionNameFallback();
 
@@ -233,6 +243,7 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
     moodLine: "",
     briefingLine: null,
     milestones: [],
+    checkinSettings: DEFAULT_CHECKIN_SETTINGS,
     error: null,
   };
 
@@ -285,6 +296,7 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
       moodLine: "",
       briefingLine: null,
       milestones: [],
+      checkinSettings,
       error: null,
     };
   } catch (e) {

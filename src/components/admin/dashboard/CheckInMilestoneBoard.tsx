@@ -1,22 +1,46 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 import { formatGuestPartyDetail } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { CheckInQuestItem } from "@/services/today-board";
 
+const CheckinModal = dynamic(
+  () =>
+    import("@/components/admin/checkin/CheckinModal").then((m) => ({
+      default: m.CheckinModal,
+    })),
+  { ssr: false }
+);
+
 const QUEST_PREVIEW_LIMIT = 3;
 
 type Props = {
-  todayIso: string;
   checkInTime: string;
   pending: CheckInQuestItem[];
   completedCount: number;
+  checkinSettings: CheckinSettings;
 };
+
+function toBookingForCheckin(item: CheckInQuestItem): BookingForCheckin {
+  return {
+    id: item.bookingId,
+    status: "confirmata",
+    total_price: item.totalPrice,
+    check_in: item.checkIn,
+    check_out: item.checkOut,
+    guest_name: item.guestName,
+    guest_phone: item.guestPhone,
+    guest_email: item.guestEmail,
+    num_adults: item.numAdults,
+    num_children: item.numChildren,
+  };
+}
 
 function matchesQuestSearch(item: CheckInQuestItem, query: string): boolean {
   const haystack = [
@@ -33,13 +57,15 @@ export function CheckInMilestoneBoard({
   checkInTime,
   pending,
   completedCount,
+  checkinSettings,
 }: Props) {
   const t = useTranslations("admin.dashboard.checkInQuest");
+  const tCheckIn = useTranslations("admin.checkIn");
   const locale = useLocale();
   const router = useRouter();
   const { showToast } = useAdminFx();
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
-  const [dialog, setDialog] = useState<CheckInQuestItem | null>(null);
+  const [checkinItem, setCheckinItem] = useState<CheckInQuestItem | null>(null);
   const [query, setQuery] = useState("");
 
   const visible = useMemo(
@@ -83,9 +109,9 @@ export function CheckInMilestoneBoard({
             ? "started"
             : "idle";
 
-  function handleSuccess(item: CheckInQuestItem) {
+  function handleCheckinSuccess(item: CheckInQuestItem) {
     setDismissed((prev) => new Set(prev).add(item.bookingId));
-    setDialog(null);
+    setCheckinItem(null);
     showToast({
       kind: "success",
       title: t("checkedInTitle"),
@@ -236,10 +262,13 @@ export function CheckInMilestoneBoard({
                 <div className="checkin-quest__card-actions">
                   <button
                     type="button"
-                    className="checkin-quest__cta"
-                    onClick={() => setDialog(item)}
+                    className="checkin-quest__cta checkin-start-btn"
+                    onClick={() => setCheckinItem(item)}
                   >
-                    {t("checkInCta")}
+                    <span className="checkin-start-btn__icon" aria-hidden>
+                      🔑
+                    </span>
+                    {tCheckIn("startCheckin")}
                   </button>
                   <Link
                     href={`/admin/bookings/${item.bookingId}`}
@@ -258,16 +287,12 @@ export function CheckInMilestoneBoard({
         <p className="checkin-quest__more-hint">{t("moreHidden", { count: hiddenCount })}</p>
       )}
 
-      {dialog && (
-        <GanttCheckTimeDialog
-          open
-          mode="checkin"
-          bookingId={dialog.bookingId}
-          guestName={dialog.guestName}
-          plannedCheckIn={dialog.checkIn}
-          plannedCheckOut={dialog.checkOut}
-          onClose={() => setDialog(null)}
-          onSuccess={() => handleSuccess(dialog)}
+      {checkinItem && (
+        <CheckinModal
+          booking={toBookingForCheckin(checkinItem)}
+          settings={checkinSettings}
+          onClose={() => setCheckinItem(null)}
+          onSuccess={() => handleCheckinSuccess(checkinItem)}
         />
       )}
     </section>
