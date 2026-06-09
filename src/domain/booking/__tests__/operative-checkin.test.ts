@@ -44,8 +44,24 @@ describe("operative-checkin", () => {
         plannedCheckIn: "2026-06-10",
         today: "2026-06-10",
         hasCheckinRecord: true,
+        roomNames: ["Camera 1"],
+        checkedInRooms: ["Camera 1"],
       }),
     ).toBe(false);
+  });
+
+  test("allows continuing room check-in when some rooms remain", () => {
+    expect(
+      canOfferOperativeCheckIn({
+        status: "confirmata",
+        plannedCheckIn: "2026-06-10",
+        today: "2026-06-10",
+        actualCheckInAt: "2026-06-10T14:00:00",
+        hasCheckinRecord: true,
+        roomNames: ["Camera 1", "Camera 2"],
+        checkedInRooms: ["Camera 1"],
+      }),
+    ).toBe(true);
   });
 
   test("allows completing wizard on arrival day when only operative time exists", () => {
@@ -88,6 +104,8 @@ describe("operative-checkin", () => {
         today: "2026-06-10",
         actualCheckInAt: "2026-06-10T14:00:00",
         hasCheckinRecord: true,
+        roomNames: ["Camera 1"],
+        checkedInRooms: ["Camera 1"],
       })
     ).toBe(false);
   });

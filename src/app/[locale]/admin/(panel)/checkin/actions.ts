@@ -13,7 +13,11 @@ import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { createCheckin } from "@/services/checkin/create";
 import { getCheckinSettings, updateCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
-import { getCheckinByBookingId } from "@/services/checkin/queries";
+import {
+  getCheckinByBookingId,
+  getCheckedInRoomsForBooking,
+} from "@/services/checkin/queries";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { buildTouristSheetFromPersisted } from "@/domain/checkin/fisa-turist";
 import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
@@ -27,6 +31,7 @@ import type {
   CheckinSettings,
 } from "@/domain/checkin/types";
 import { getCheckinGuests } from "@/services/checkin/queries";
+import { listRegisteredGuestsForCheckin } from "@/services/checkin/booking-guests";
 import { syncBookingOperativeCheckInFromRecord } from "@/services/checkin/sync";
 import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 
@@ -36,6 +41,8 @@ export type CheckinWizardContextResult = {
   booking?: BookingForCheckin;
   settings?: CheckinSettings;
   hasExistingCheckin?: boolean;
+  checkedInRooms?: string[];
+  roomCheckinComplete?: boolean;
 };
 
 export type CreateCheckinResult = {
@@ -76,11 +83,30 @@ export async function loadCheckinWizardContextAction(
       booking = (await getBookingById(bookingId)) ?? booking;
     }
 
+    const [checkedInRooms, registeredGuests] = await Promise.all([
+      getCheckedInRoomsForBooking(bookingId).catch(() => [] as string[]),
+      listRegisteredGuestsForCheckin(
+        bookingId,
+        booking.guest_id,
+        booking.room_names,
+      ).catch(() => []),
+    ]);
+    const progress = computeRoomCheckinProgress(
+      booking.room_names,
+      checkedInRooms,
+    );
+
     return {
       ok: true,
-      booking: mapBookingToForCheckin(booking),
+      booking: mapBookingToForCheckin({
+        ...booking,
+        checked_in_rooms: checkedInRooms,
+        registered_guests: registeredGuests,
+      }),
       settings,
-      hasExistingCheckin: !!existingCheckin,
+      hasExistingCheckin: progress.isComplete,
+      checkedInRooms,
+      roomCheckinComplete: progress.isComplete,
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";

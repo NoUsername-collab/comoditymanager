@@ -32,8 +32,12 @@ export function StayActions({
         plannedCheckOut={stay.check_out}
         actualCheckInAt={stay.actual_check_in_at}
         actualCheckOutAt={stay.actual_check_out_at}
+        roomNames={stay.room_names}
+        checkedInRooms={stay.checked_in_rooms ?? []}
         labels={{
           checkIn: labels.checkIn,
+          checkInContinue: labels.checkInContinue,
+          checkInNextRoom: labels.checkInNextRoom,
           checkOut: labels.checkout,
           edit: labels.edit,
           movePrevDay: labels.movePrevDay,

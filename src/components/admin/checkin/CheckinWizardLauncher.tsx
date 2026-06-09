@@ -127,7 +127,7 @@ export function CheckinWizardLauncher({
         return;
       }
 
-      if (res.hasExistingCheckin) {
+      if (res.roomCheckinComplete ?? res.hasExistingCheckin) {
         showToastRef.current({
           kind: "info",
           title: tRef.current("title"),

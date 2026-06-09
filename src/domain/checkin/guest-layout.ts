@@ -61,6 +61,41 @@ function createGuestSlot(
   };
 }
 
+/** Sloturi pentru camerele selectate la sosire incrementală. */
+export function buildCheckinGuestSlotsForRooms(
+  booking: BookingForCheckin,
+  roomLabels: string[],
+): CheckinGuestInput[] {
+  const registered = booking.registered_guests ?? [];
+  if (registered.length > 0) {
+    return assignRegisteredGuestsToRooms(registered, roomLabels);
+  }
+  if (!roomLabels.length) {
+    return buildCheckinGuestSlots(booking, "rep");
+  }
+  return roomLabels.map((room, index) =>
+    createGuestSlot(booking, room, index === 0),
+  );
+}
+
+/** Un client înregistrat per cameră (fără sloturi goale). */
+export function assignRegisteredGuestsToRooms(
+  registered: CheckinGuestInput[],
+  roomLabels: string[],
+): CheckinGuestInput[] {
+  return roomLabels
+    .map((room, index) => {
+      const guest = registered[index];
+      if (!guest) return null;
+      return {
+        ...guest,
+        room_label: room,
+        is_representative: guest.is_representative || index === 0,
+      };
+    })
+    .filter((g): g is CheckinGuestInput => g !== null);
+}
+
 /** Construiește sloturile de formular în funcție de modul ales. */
 export function buildCheckinGuestSlots(
   booking: BookingForCheckin,

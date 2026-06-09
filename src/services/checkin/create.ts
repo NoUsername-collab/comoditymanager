@@ -10,6 +10,7 @@ import type {
 import { mapCheckinDocTypeForDb } from "@/domain/checkin/doc-type";
 import { guestsToPersist } from "@/domain/checkin/guest-layout";
 import { guestFullName } from "@/domain/checkin/identity-rules";
+import { syncCheckinGuestsToClientProfiles } from "@/services/checkin/sync-guest-from-checkin";
 import {
   normalizePaymentStatusForDb,
   optionalDateForDb,
@@ -73,8 +74,10 @@ export async function createCheckin(
   if (checkinErr) throw new Error(checkinErr.message);
   const checkinId = checkinRow.id;
 
-  // ── Insert checkin guests ─────────────────────────────────
-  const guestsForDb = guestsToPersist(data.guests);
+  // ── Sync identity → profil client (`guests`) ───────────────
+  const guestsForDb = guestsToPersist(
+    await syncCheckinGuestsToClientProfiles(data.guests, booking),
+  );
   if (guestsForDb.length > 0) {
     const guestRows = guestsForDb.map((g) =>
       withTenantId(tenantId, {
@@ -103,16 +106,18 @@ export async function createCheckin(
     if (guestErr) throw new Error(guestErr.message);
   }
 
-  // ── Update booking.actual_check_in_at ─────────────────────
-  const { error: bookingErr } = await supabase
-    .from("bookings")
-    .update({
-      actual_check_in_at: checkedInAt,
-    })
-    .eq("tenant_id", tenantId)
-    .eq("id", data.booking_id);
+  // ── Update booking.actual_check_in_at (prima sosire) ────────
+  if (!booking.actual_check_in_at) {
+    const { error: bookingErr } = await supabase
+      .from("bookings")
+      .update({
+        actual_check_in_at: checkedInAt,
+      })
+      .eq("tenant_id", tenantId)
+      .eq("id", data.booking_id);
 
-  if (bookingErr) throw new Error(bookingErr.message);
+    if (bookingErr) throw new Error(bookingErr.message);
+  }
 
   // ── Log activity ──────────────────────────────────────────
   const flagSummary =

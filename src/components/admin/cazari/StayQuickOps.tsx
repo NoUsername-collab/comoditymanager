@@ -12,6 +12,7 @@ import {
   canOfferOperativeCheckIn,
   isOperativeCheckInDay,
 } from "@/domain/booking/operative-checkin";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { useTranslations } from "next-intl";
 
@@ -23,8 +24,12 @@ type Props = {
   plannedCheckOut: string;
   actualCheckInAt: string | null;
   actualCheckOutAt: string | null;
+  roomNames?: string[];
+  checkedInRooms?: string[];
   labels: {
     checkIn: string;
+    checkInContinue: string;
+    checkInNextRoom: string;
     checkOut: string;
     edit: string;
     movePrevDay: string;
@@ -50,6 +55,8 @@ export function StayQuickOps({
   plannedCheckOut,
   actualCheckInAt,
   actualCheckOutAt,
+  roomNames = [],
+  checkedInRooms = [],
   labels,
   guestPhone,
   hasCheckinRecord = false,
@@ -66,6 +73,7 @@ export function StayQuickOps({
   const isConfirmed = bookingStatus === "confirmata";
   const hasPhone = isValidGuestPhone(guestPhone);
   const isArrivalDay = isOperativeCheckInDay(plannedCheckIn, today);
+  const roomProgress = computeRoomCheckinProgress(roomNames, checkedInRooms);
   const operativeArgs = {
     bookingId,
     guestName,
@@ -75,9 +83,11 @@ export function StayQuickOps({
     actualCheckInAt,
     actualCheckOutAt,
     hasCheckinRecord,
+    roomNames,
+    checkedInRooms,
     today,
   };
-  const canEmitFisa = hasCheckinRecord;
+  const canEmitFisa = hasCheckinRecord && roomProgress.isComplete;
   const canWizardCheckIn =
     canOfferOperativeCheckIn({
       status: bookingStatus,
@@ -86,20 +96,34 @@ export function StayQuickOps({
       actualCheckInAt,
       actualCheckOutAt,
       hasCheckinRecord,
+      roomNames,
+      checkedInRooms,
     }) && hasPhone;
   const needsWizardForFisa =
     canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
   const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
-  const canCheckOut = isConfirmed && !!actualCheckInAt && !actualCheckOutAt;
-  const canEditCheckInTime = isConfirmed && !!actualCheckInAt && hasCheckinRecord;
-  const canEditCheckOut = isConfirmed && !!actualCheckOutAt;
+  const canContinueRooms =
+    canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
+  const canCheckOut =
+    isConfirmed && !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
+  const canEditCheckInTime =
+    isConfirmed && !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
   const canMove = isConfirmed;
-  const checkInEnabled = canNewCheckIn || needsWizardForFisa || canEditCheckInTime;
+  const checkInEnabled =
+    canNewCheckIn || canContinueRooms || needsWizardForFisa || canEditCheckInTime;
+
+  const canEditCheckOut = isConfirmed && !!actualCheckOutAt;
+
   const checkInLabel = needsWizardForFisa
     ? labels.completeCheckinForFisa
     : canEditCheckInTime
       ? `${labels.edit} ${labels.checkIn}`
-      : labels.checkIn;
+      : canContinueRooms
+        ? roomProgress.remaining === 1
+          ? labels.checkInNextRoom
+          : labels.checkInContinue
+        : labels.checkIn;
+
   const checkOutLabel = canEditCheckOut
     ? `${labels.edit} ${labels.checkOut}`
     : labels.checkOut;
@@ -110,7 +134,7 @@ export function StayQuickOps({
       ? ""
       : !hasPhone
         ? labels.phoneRequiredForCheckIn
-        : !isArrivalDay
+        : !isArrivalDay && !canContinueRooms
           ? labels.checkInOnlyOnArrivalDay(plannedCheckIn)
           : "";
 
@@ -122,7 +146,9 @@ export function StayQuickOps({
         ? labels.checkoutAlreadyDone
         : !actualCheckInAt
           ? labels.checkoutNeedsCheckin
-          : "";
+          : !roomProgress.isComplete
+            ? labels.checkInContinue
+            : "";
 
   function moveStay(dayDelta: number) {
     if (!canMove || pending) return;
@@ -161,14 +187,19 @@ export function StayQuickOps({
     <div className="stay-quick-ops flex flex-wrap items-center justify-end gap-1.5">
       <button
         type="button"
-        className="checkin-start-btn stay-quick-ops__checkin !px-2 !py-1 !text-[11px]"
+        className={[
+          "checkin-start-btn stay-quick-ops__checkin !px-2 !py-1 !text-[11px]",
+          canContinueRooms && "checkin-start-btn--continue",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         disabled={!checkInEnabled || pending}
         title={checkInTitle}
         onClick={handleCheckIn}
       >
         {!canEditCheckInTime && (
           <span className="checkin-start-btn__icon" aria-hidden>
-            🔑
+            {canContinueRooms ? "🛏" : "🔑"}
           </span>
         )}
         {checkInLabel}

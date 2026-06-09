@@ -65,6 +65,13 @@ export type CazariLabels = {
   undoCancelConfirm: string;
   openClientProfile: string;
   checkIn: string;
+  checkInContinue: string;
+  checkInNextRoom: string;
+  checkinRoomsProgress: (checked: number, total: number) => string;
+  checkinRoomChecked: string;
+  checkinRoomPending: string;
+  checkinAllRoomsDone: string;
+  checkinPartialHint: string;
   edit: string;
   movePrevDay: string;
   moveNextDay: string;

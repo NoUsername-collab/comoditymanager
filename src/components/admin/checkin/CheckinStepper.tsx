@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { buildTouristSheetData } from "@/domain/checkin/fisa-turist";
 import {
   guestFullName,
+  guestHasLegalIdentity,
   isRomanianNationality,
 } from "@/domain/checkin/identity-rules";
 import { validateCheckin } from "@/domain/checkin/validate";
@@ -23,11 +25,15 @@ import {
   allowsOperatorScopeChoice,
   bookingRooms,
   buildCheckinGuestSlots,
-  createEmptyGuestSlot,
+  buildCheckinGuestSlotsForRooms,
   effectiveIdentityScope,
   groupGuestsByRoom,
   type CheckinIdentityScope,
 } from "@/domain/checkin/guest-layout";
+import { isIdentityStatusCritical } from "@/domain/guest/profile-data";
+import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
+import { CheckinRoomPicker } from "@/components/admin/checkin/CheckinRoomPicker";
 import { TouristSheetView } from "@/components/admin/checkin/TouristSheetView";
 import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import type {
@@ -50,8 +56,9 @@ type Props = {
   onCancel: () => void;
 };
 
-const STEPS = ["identity", "validate", "payment", "finish"] as const;
-type StepKey = (typeof STEPS)[number];
+const FULL_STEPS = ["identity", "validate", "payment", "finish"] as const;
+const CONTINUE_STEPS = ["identity", "validate", "finish"] as const;
+type StepKey = (typeof FULL_STEPS)[number];
 
 export function CheckinStepper({
   booking,
@@ -63,34 +70,90 @@ export function CheckinStepper({
   const { showToast } = useAdminFx();
   const [pending, startTransition] = useTransition();
 
+  const roomProgress = useMemo(
+    () =>
+      computeRoomCheckinProgress(
+        booking.room_names,
+        booking.checked_in_rooms,
+      ),
+    [booking.room_names, booking.checked_in_rooms],
+  );
+  const isContinuation = roomProgress.checked > 0;
+  const needsRoomPicker =
+    roomProgress.isMultiRoom && roomProgress.pendingRooms.length > 0;
+  const steps = isContinuation ? CONTINUE_STEPS : FULL_STEPS;
+
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
 
   const [operatorScope, setOperatorScope] = useState<CheckinIdentityScope | null>(
-    null,
+    needsRoomPicker ? "per_room" : null,
   );
   const identityScope = effectiveIdentityScope(
     settings.group_checkin_mode,
     operatorScope,
   );
-  const [guests, setGuests] = useState<CheckinGuestInput[]>(() =>
-    createInitialCheckinGuests(booking, settings),
+
+  const [selectedRooms, setSelectedRooms] = useState<string[]>(() =>
+    needsRoomPicker && roomProgress.pendingRooms.length === 1
+      ? roomProgress.pendingRooms
+      : [],
+  );
+  const [roomPickerDone, setRoomPickerDone] = useState(
+    !needsRoomPicker || roomProgress.pendingRooms.length === 1,
   );
 
+  const [guests, setGuests] = useState<CheckinGuestInput[]>(() => {
+    if (needsRoomPicker && roomProgress.pendingRooms.length !== 1) {
+      return [];
+    }
+    if (needsRoomPicker) {
+      return buildCheckinGuestSlotsForRooms(
+        booking,
+        roomProgress.pendingRooms,
+      );
+    }
+    return createInitialCheckinGuests(booking, settings);
+  });
+
   function applyIdentityScope(scope: CheckinIdentityScope) {
+    if (registeredOnly || (needsRoomPicker && roomPickerDone)) return;
     setOperatorScope(scope);
     setGuests(buildCheckinGuestSlots(booking, scope));
   }
 
-  function addGuestSlot() {
-    const rooms = bookingRooms(booking);
-    setGuests((prev) => [
-      ...prev,
-      createEmptyGuestSlot(rooms[prev.length % rooms.length]),
-    ]);
+  function guestsForRooms(roomLabels: string[]): CheckinGuestInput[] {
+    return buildCheckinGuestSlotsForRooms(booking, roomLabels);
   }
 
+  function confirmRoomSelection() {
+    if (!selectedRooms.length) return;
+    setRoomPickerDone(true);
+    setOperatorScope("per_room");
+    setGuests(guestsForRooms(selectedRooms));
+  }
+
+  function toggleSelectedRoom(room: string) {
+    setSelectedRooms((prev) => {
+      const exists = prev.some((r) => r.toLowerCase() === room.toLowerCase());
+      if (exists) {
+        return prev.filter((r) => r.toLowerCase() !== room.toLowerCase());
+      }
+      if (registeredOnly && prev.length >= maxSelectableRooms) {
+        return prev;
+      }
+      return [...prev, room];
+    });
+  }
+
+  const registeredOnly = (booking.registered_guests?.length ?? 0) > 0;
+  const maxSelectableRooms = Math.max(
+    1,
+    booking.registered_guests?.length ?? roomProgress.pendingRooms.length,
+  );
+
   function removeGuestSlot(index: number) {
+    if (registeredOnly) return;
     setGuests((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)));
   }
   const [sheetData, setSheetData] = useState<TouristSheetData | null>(null);
@@ -149,7 +212,7 @@ export function CheckinStepper({
       const result = validateCheckin(data, settings, booking, currentHour);
       setValidation(result);
     }
-    setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
+    setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
   }
 
   function goBack() {
@@ -206,7 +269,7 @@ export function CheckinStepper({
 
   // ── Render ────────────────────────────────────────────────
 
-  const stepKey = STEPS[currentStep];
+  const stepKey = steps[currentStep];
 
   if (sheetData) {
     return (
@@ -245,18 +308,57 @@ export function CheckinStepper({
 
       {/* Step content */}
       <div className="checkin-stepper__content">
-        {stepKey === "identity" && (
+        {stepKey === "identity" && !roomPickerDone && needsRoomPicker ? (
+          <CheckinRoomPicker
+            progress={roomProgress}
+            selectedRooms={selectedRooms}
+            onToggleRoom={toggleSelectedRoom}
+            onSelectAll={() => setSelectedRooms([...roomProgress.pendingRooms])}
+            onSelectOne={(room) => {
+              setSelectedRooms([room]);
+              setRoomPickerDone(true);
+              setOperatorScope("per_room");
+              setGuests(guestsForRooms([room]));
+            }}
+            labels={{
+              title: t("roomPicker.title"),
+              hint: t("roomPicker.hint"),
+              selectAll: t("roomPicker.selectAll"),
+              selectOne: t("roomPicker.selectOne"),
+              continue: t("roomPicker.continue"),
+              checkedBadge: t("roomPicker.checkedBadge"),
+              pendingBadge: t("roomPicker.pendingBadge"),
+            }}
+            onConfirm={confirmRoomSelection}
+            canConfirm={selectedRooms.length > 0}
+          />
+        ) : null}
+
+        {stepKey === "identity" && (roomPickerDone || !needsRoomPicker) && (
           <StepIdentity
             guests={guests}
             settings={settings}
             booking={booking}
             identityScope={identityScope}
-            operatorCanChoose={allowsOperatorScopeChoice(settings.group_checkin_mode)}
+            operatorCanChoose={
+              !registeredOnly &&
+              !needsRoomPicker &&
+              allowsOperatorScopeChoice(settings.group_checkin_mode)
+            }
             onScopeChange={applyIdentityScope}
-            onAddGuest={identityScope === "individual" ? addGuestSlot : undefined}
-            onRemoveGuest={identityScope === "individual" ? removeGuestSlot : undefined}
+            onRemoveGuest={
+              !registeredOnly && identityScope === "individual"
+                ? removeGuestSlot
+                : undefined
+            }
             updateGuest={updateGuest}
+            settings={settings}
+            registeredOnly={registeredOnly}
+            emptyRegistered={registeredOnly && guests.length === 0}
             t={t}
+            continuationHint={
+              isContinuation ? t("roomPicker.continuationHint") : undefined
+            }
           />
         )}
 
@@ -319,14 +421,14 @@ export function CheckinStepper({
           </button>
         )}
 
-        {currentStep < STEPS.length - 1 ? (
+        {currentStep < steps.length - 1 ? (
           <button
             type="button"
             className="checkin-stepper__btn checkin-stepper__btn--primary"
             onClick={goNext}
             disabled={
-              stepKey === "validate" &&
-              validation?.status === "blocked"
+              (stepKey === "identity" && needsRoomPicker && !roomPickerDone) ||
+              (stepKey === "validate" && validation?.status === "blocked")
             }
           >
             {t("next")}
@@ -357,10 +459,12 @@ function StepIdentity({
   identityScope,
   operatorCanChoose,
   onScopeChange,
-  onAddGuest,
   onRemoveGuest,
   updateGuest,
+  registeredOnly,
+  emptyRegistered,
   t,
+  continuationHint,
 }: {
   guests: CheckinGuestInput[];
   settings: CheckinSettings;
@@ -368,10 +472,12 @@ function StepIdentity({
   identityScope: CheckinIdentityScope;
   operatorCanChoose: boolean;
   onScopeChange: (scope: CheckinIdentityScope) => void;
-  onAddGuest?: () => void;
   onRemoveGuest?: (index: number) => void;
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
+  registeredOnly: boolean;
+  emptyRegistered: boolean;
   t: ReturnType<typeof useTranslations>;
+  continuationHint?: string;
 }) {
   const rooms = bookingRooms(booking);
   const roomGroups = groupGuestsByRoom(guests);
@@ -380,8 +486,31 @@ function StepIdentity({
     children: booking.num_children,
   });
 
+  if (emptyRegistered) {
+    return (
+      <div className="checkin-step-identity checkin-step-identity--empty">
+        <p className="checkin-registered-empty__title">{t("registeredGuests.emptyTitle")}</p>
+        <p className="checkin-registered-empty__hint">{t("registeredGuests.emptyHint")}</p>
+        {booking.guest_id ? (
+          <Link
+            href={`/admin/guests/${booking.guest_id}`}
+            className="checkin-registered-empty__link"
+          >
+            {t("registeredGuests.openProfile")}
+          </Link>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="checkin-step-identity">
+      {registeredOnly ? (
+        <p className="checkin-registered-only-hint">{t("registeredGuests.onlyHint")}</p>
+      ) : null}
+      {continuationHint ? (
+        <p className="checkin-continuation-hint">{continuationHint}</p>
+      ) : null}
       <p className="checkin-legal-hint">{t("fisa.legalHint")}</p>
       <p className="checkin-party-hint">{partyHint}</p>
 
@@ -440,20 +569,19 @@ function StepIdentity({
               idx={idx}
               identityScope={identityScope}
               rooms={rooms}
-              canRemove={identityScope === "individual" && guests.length > 1}
+              canRemove={
+                !registeredOnly &&
+                identityScope === "individual" &&
+                guests.length > 1
+              }
               onRemove={onRemoveGuest}
               updateGuest={updateGuest}
+              cnpRule={settings.checkin_cnp_rule}
               t={t}
             />
           ))}
         </section>
       ))}
-
-      {onAddGuest && (
-        <button type="button" className="checkin-add-guest-btn" onClick={onAddGuest}>
-          + {t("identityScope.addGuest")}
-        </button>
-      )}
     </div>
   );
 }
@@ -466,6 +594,7 @@ function GuestIdentityCard({
   canRemove,
   onRemove,
   updateGuest,
+  cnpRule,
   t,
 }: {
   guest: CheckinGuestInput;
@@ -475,6 +604,7 @@ function GuestIdentityCard({
   canRemove: boolean;
   onRemove?: (index: number) => void;
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
+  cnpRule: import("@/domain/checkin/types").CheckinCnpRule;
   t: ReturnType<typeof useTranslations>;
 }) {
   const tIdentity = useTranslations("admin.guests.identity");
@@ -490,7 +620,10 @@ function GuestIdentityCard({
     : null;
   const idTypeLabel = tIdentity(`nationalIdTypes.${idType}`);
   const roomLocked = identityScope === "rep" || identityScope === "per_room";
-  const showPresentToggle = identityScope === "individual";
+  const showPresentToggle = identityScope === "individual" && !guest.guest_id;
+  const identityCritical =
+    isIdentityStatusCritical(guest.identity_status) ||
+    (cnpRule === "required" && !guestHasLegalIdentity(guest));
 
   return (
     <div
@@ -502,11 +635,18 @@ function GuestIdentityCard({
         .join(" ")}
     >
       <div className="checkin-guest-form__header">
-        <span>
-          {t("guestN", { n: idx + 1 })}
-          {guest.is_representative && (
-            <span className="checkin-guest-form__badge">{t("field.representative")}</span>
-          )}
+        <span className="checkin-guest-form__name-row">
+          <span>
+            {guest.last_name || guest.first_name
+              ? `${guest.last_name ?? ""} ${guest.first_name ?? ""}`.trim()
+              : t("guestN", { n: idx + 1 })}
+            {guest.is_representative && (
+              <span className="checkin-guest-form__badge">{t("field.representative")}</span>
+            )}
+          </span>
+          {guest.identity_status ? (
+            <GuestIdentityStatusPill status={guest.identity_status} compact />
+          ) : null}
         </span>
         <div className="checkin-guest-form__header-actions">
           {showPresentToggle && (
@@ -530,6 +670,12 @@ function GuestIdentityCard({
           )}
         </div>
       </div>
+
+      {identityCritical ? (
+        <p className="checkin-guest-form__alert checkin-guest-form__alert--grave">
+          {t("registeredGuests.identityCritical")}
+        </p>
+      ) : null}
 
       {!present ? (
         <p className="checkin-guest-form__absent-hint">{t("field.absentHint")}</p>

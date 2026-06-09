@@ -1,3 +1,5 @@
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
+
 /** Check-in operativ permis doar în ziua planificată de sosire (YYYY-MM-DD). */
 export function isOperativeCheckInDay(
   plannedCheckIn: string,
@@ -28,6 +30,8 @@ export type OperativeCheckInBooking = {
   actual_check_in_at?: string | null;
   actual_check_out_at?: string | null;
   has_checkin_record?: boolean;
+  room_names?: string[];
+  checked_in_rooms?: string[];
 };
 
 export function isStayCheckedIn(args: {
@@ -44,11 +48,28 @@ export function canOfferOperativeCheckIn(args: {
   actualCheckInAt?: string | null;
   actualCheckOutAt?: string | null;
   hasCheckinRecord?: boolean;
+  roomNames?: string[];
+  checkedInRooms?: string[];
 }): boolean {
   if (args.status !== "confirmata") return false;
   if (args.actualCheckOutAt) return false;
-  if (!isOperativeCheckInDay(args.plannedCheckIn, args.today)) return false;
-  if (args.hasCheckinRecord) return false;
+
+  const progress = computeRoomCheckinProgress(
+    args.roomNames,
+    args.checkedInRooms,
+  );
+
+  const onArrivalDay = isOperativeCheckInDay(args.plannedCheckIn, args.today);
+  if (!onArrivalDay && !(progress.isPartial && args.actualCheckInAt)) {
+    return false;
+  }
+
+  if (progress.isComplete) return false;
+
+  if (progress.isPartial || progress.checked > 0) return true;
+
+  if (args.hasCheckinRecord && !progress.isMultiRoom) return false;
+
   return true;
 }
 
@@ -63,6 +84,8 @@ export function canOfferOperativeCheckInFromBooking(
     actualCheckInAt: booking.actual_check_in_at,
     actualCheckOutAt: booking.actual_check_out_at,
     hasCheckinRecord: booking.has_checkin_record,
+    roomNames: booking.room_names,
+    checkedInRooms: booking.checked_in_rooms,
   });
 }
 

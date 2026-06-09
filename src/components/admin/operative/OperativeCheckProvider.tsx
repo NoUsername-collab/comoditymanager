@@ -32,6 +32,8 @@ export type OperativeCheckRequest = {
   actualCheckInAt?: string | null;
   actualCheckOutAt?: string | null;
   hasCheckinRecord?: boolean;
+  roomNames?: string[];
+  checkedInRooms?: string[];
   today?: string;
 };
 
@@ -78,6 +80,8 @@ export function OperativeCheckProvider({
           actualCheckInAt: args.actualCheckInAt,
           actualCheckOutAt: args.actualCheckOutAt,
           hasCheckinRecord: args.hasCheckinRecord,
+          roomNames: args.roomNames,
+          checkedInRooms: args.checkedInRooms,
         })
       ) {
         showToast({

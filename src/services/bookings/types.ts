@@ -49,6 +49,8 @@ export type BookingRow = {
   actual_check_out_by: string | null;
   /** Rând în checkins (wizard) — poate exista înainte de actual_check_in_at reparat. */
   has_checkin_record?: boolean;
+  /** Camere deja recepționate (distinct room_label din checkin_guests). */
+  checked_in_rooms?: string[];
 };
 
 export type BookingSelectRow = {

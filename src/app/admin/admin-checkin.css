@@ -1322,3 +1322,183 @@
 .checkin-add-guest-btn:hover {
   background: color-mix(in srgb, var(--admin-accent-muted) 40%, var(--admin-panel-bg));
 }
+
+.checkin-registered-only-hint {
+  margin: 0 0 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(239, 246, 255, 0.9);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.checkin-registered-empty__title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #b91c1c;
+}
+
+.checkin-registered-empty__hint {
+  margin: 0.35rem 0 0.65rem;
+  font-size: 0.68rem;
+  color: var(--admin-text-muted);
+}
+
+.checkin-registered-empty__link {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--admin-accent);
+}
+
+.checkin-guest-form__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.checkin-guest-form__alert {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.4rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.checkin-guest-form__alert--grave {
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  background: rgba(254, 242, 242, 0.95);
+  color: #b91c1c;
+}
+
+.checkin-continuation-hint {
+  margin: 0 0 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(255, 251, 235, 0.9);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.checkin-room-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.checkin-room-picker__title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--admin-text);
+}
+
+.checkin-room-picker__hint {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  color: var(--admin-text-muted);
+}
+
+.checkin-room-picker__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.checkin-room-picker__action {
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--admin-accent) 35%, var(--admin-panel-border));
+  background: var(--admin-panel-bg);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--admin-accent);
+  cursor: pointer;
+}
+
+.checkin-room-picker__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.checkin-room-picker__card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  border: 1.5px solid var(--admin-panel-border);
+  background: var(--admin-panel-bg);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.checkin-room-picker__card--active {
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-accent) 18%, transparent);
+}
+
+.checkin-room-picker__card-icon {
+  font-size: 1rem;
+}
+
+.checkin-room-picker__card-name {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.checkin-room-picker__card-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.checkin-room-picker__solo {
+  margin-top: 0.2rem;
+  margin-left: 0.25rem;
+  border: none;
+  background: transparent;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--admin-accent);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.checkin-room-picker__done {
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.45rem;
+  background: color-mix(in srgb, #22c55e 8%, var(--admin-panel-bg));
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.checkin-room-picker__done-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #166534;
+}
+
+.checkin-room-picker__done-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.65rem;
+  color: #15803d;
+}
+
+.checkin-room-picker__confirm {
+  width: 100%;
+}

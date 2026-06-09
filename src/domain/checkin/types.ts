@@ -1,6 +1,6 @@
 /** Check-in domain types — pure, no DB / framework dependencies */
 
-import type { GuestDocType } from "@/domain/guest/types";
+import type { GuestDocType, GuestIdentityStatus } from "@/domain/guest/types";
 
 export type CheckinType = "reservation" | "walkin" | "group";
 export type CheckinStatus = "complete" | "incomplete" | "blocked";
@@ -79,6 +79,8 @@ export interface CheckinGuestInput {
   room_label?: string | null;
   is_representative?: boolean;
   guest_id?: string | null;
+  /** Status profil client — pentru badge în wizard. */
+  identity_status?: GuestIdentityStatus | null;
   /** false = nu e prezent acum; datele se pot completa mai târziu */
   present_at_checkin?: boolean;
 }
@@ -133,6 +135,7 @@ export interface BookingForCheckin {
   total_price: number;
   check_in: string;  // YYYY-MM-DD
   check_out: string;
+  actual_check_in_at?: string | null;
   guest_name: string;
   guest_last_name?: string | null;
   guest_first_name?: string | null;
@@ -141,4 +144,9 @@ export interface BookingForCheckin {
   num_adults: number;
   num_children: number;
   room_names?: string[];
+  /** Camere deja recepționate — pentru continuare incrementală. */
+  checked_in_rooms?: string[];
+  guest_id?: string | null;
+  /** Clienți înregistrați cu date — sursa pentru wizard. */
+  registered_guests?: CheckinGuestInput[];
 }

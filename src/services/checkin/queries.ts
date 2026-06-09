@@ -100,6 +100,59 @@ export async function getCheckinGuests(
   return loadCheckinGuests(checkinId);
 }
 
+/** Camere distincte deja recepționate per rezervare (toate sesiunile de check-in). */
+export async function getCheckedInRoomsByBookingIds(
+  bookingIds: string[],
+): Promise<Map<string, string[]>> {
+  const result = new Map<string, string[]>();
+  if (!bookingIds.length) return result;
+
+  const { tenantId, supabase } = await getTenantScope();
+
+  const { data: checkins, error: checkinErr } = await supabase
+    .from("checkins")
+    .select("id, booking_id")
+    .eq("tenant_id", tenantId)
+    .in("booking_id", bookingIds);
+
+  if (checkinErr) throw new Error(checkinErr.message);
+  if (!checkins?.length) return result;
+
+  const checkinToBooking = new Map<string, string>();
+  for (const row of checkins) {
+    checkinToBooking.set(row.id as string, row.booking_id as string);
+  }
+
+  const checkinIds = [...checkinToBooking.keys()];
+  const { data: guests, error: guestErr } = await supabase
+    .from("checkin_guests")
+    .select("checkin_id, room_label")
+    .eq("tenant_id", tenantId)
+    .in("checkin_id", checkinIds);
+
+  if (guestErr) throw new Error(guestErr.message);
+
+  for (const guest of guests ?? []) {
+    const bookingId = checkinToBooking.get(guest.checkin_id as string);
+    const label = (guest.room_label as string | null)?.trim();
+    if (!bookingId || !label) continue;
+    const list = result.get(bookingId) ?? [];
+    if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
+      list.push(label);
+      result.set(bookingId, list);
+    }
+  }
+
+  return result;
+}
+
+export async function getCheckedInRoomsForBooking(
+  bookingId: string,
+): Promise<string[]> {
+  const map = await getCheckedInRoomsByBookingIds([bookingId]);
+  return map.get(bookingId) ?? [];
+}
+
 // ── Active checkins with flags (for dashboard/Gantt) ────────
 
 export async function getActiveCheckinsWithFlags(): Promise<

@@ -3,6 +3,7 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
+import { StayCheckinProgress } from "@/components/admin/cazari/StayCheckinProgress";
 import type { CazariLabels, StayCardRow } from "@/components/admin/cazari/types";
 
 export function StayInfo({
@@ -110,6 +111,21 @@ export function StayInfo({
           {labels.openClientProfile}
         </Link>
       )}
+
+      {isConfirmed && "checked_in_rooms" in stay ? (
+        <StayCheckinProgress
+          roomNames={stay.room_names}
+          checkedInRooms={stay.checked_in_rooms ?? []}
+          isConfirmed={isConfirmed}
+          labels={{
+            roomsProgress: labels.checkinRoomsProgress,
+            roomChecked: labels.checkinRoomChecked,
+            roomPending: labels.checkinRoomPending,
+            allRoomsDone: labels.checkinAllRoomsDone,
+            partialHint: labels.checkinPartialHint,
+          }}
+        />
+      ) : null}
     </div>
   );
 }
