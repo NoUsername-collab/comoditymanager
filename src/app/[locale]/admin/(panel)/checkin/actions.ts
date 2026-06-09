@@ -8,6 +8,8 @@ import {
   revalidateBookingDetailSurfaces,
 } from "@/lib/cache/revalidate-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
+import { getTranslations } from "next-intl/server";
+import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { createCheckin } from "@/services/checkin/create";
 import { getCheckinSettings, updateCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
@@ -101,6 +103,10 @@ export async function createCheckinAction(
     return { ok: true, checkinId };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    if (isCheckinMigrationMissing(msg)) {
+      const t = await getTranslations("admin.checkIn");
+      return { ok: false, error: t("migrationRequired") };
+    }
     return { ok: false, error: msg };
   }
 }
@@ -181,6 +187,10 @@ export async function updateCheckinSettingsAction(
     return { ok: true };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
+    if (isCheckinMigrationMissing(msg)) {
+      const t = await getTranslations("admin.checkIn");
+      return { ok: false, error: t("migrationRequired") };
+    }
     return { ok: false, error: msg };
   }
 }

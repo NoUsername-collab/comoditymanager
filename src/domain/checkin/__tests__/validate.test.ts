@@ -150,6 +150,16 @@ describe("validateCheckin", () => {
     expect(result.flags).toContain("unpaid");
   });
 
+  test("online mock counts as full payment for validation", () => {
+    const settings = { ...defaultSettings, checkin_payment_rule: "full" as const };
+    const data = makeData({
+      payment_status: "online",
+      payment_amount_paid: defaultBooking.total_price,
+    });
+    const result = validateCheckin(data, settings, defaultBooking, "15:00");
+    expect(result.status).not.toBe("blocked");
+  });
+
   test("blocks walk-in when not allowed", () => {
     const settings = { ...defaultSettings, walkin_allowed: false };
     const data = makeData({ type: "walkin" });

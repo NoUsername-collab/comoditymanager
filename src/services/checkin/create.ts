@@ -7,6 +7,7 @@ import type {
   BookingForCheckin,
   CheckinStatus,
 } from "@/domain/checkin/types";
+import { normalizePaymentStatusForDb } from "@/domain/checkin/types";
 
 /**
  * Create a check-in record for a booking.
@@ -52,7 +53,7 @@ export async function createCheckin(
         type: data.type,
         status: checkinStatus,
         checked_in_at: checkedInAt,
-        payment_status: data.payment_status,
+        payment_status: normalizePaymentStatusForDb(data.payment_status),
         payment_amount_paid: data.payment_amount_paid ?? 0,
         deposit_amount: data.deposit_amount ?? 0,
         key_handed: data.key_handed ?? false,
@@ -118,7 +119,9 @@ export async function createCheckin(
       type: data.type,
       status: checkinStatus,
       flags: validation.flags,
-      payment_status: data.payment_status,
+      payment_status: normalizePaymentStatusForDb(data.payment_status),
+      payment_channel:
+        data.payment_status === "online" ? "online_mock" : "manual",
       guest_count: data.guests.length,
     },
   });

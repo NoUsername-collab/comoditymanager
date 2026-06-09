@@ -1929,6 +1929,7 @@
       "confirm": "Confirm check-in",
       "saving": "Processing...",
       "success": "Check-in recorded successfully",
+      "migrationRequired": "The check-in system is not set up in the database. Run migration 048_checkin_system.sql in Supabase (SQL Editor), then try again.",
       "flags": "Warnings",
       "guestN": "Guest #{n}",
       "step": {
@@ -1962,6 +1963,9 @@
         "paid": "Paid in full",
         "partial": "Partially paid",
         "unpaid": "Unpaid",
+        "online": "Online payment",
+        "onlineMockTitle": "Online payment (simulation)",
+        "onlineMockHint": "Mock only — no real charge. Saved as paid in full.",
         "amountPaid": "Amount paid",
         "deposit": "Security deposit"
       },

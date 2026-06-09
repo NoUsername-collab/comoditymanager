@@ -2,7 +2,33 @@
 
 export type CheckinType = "reservation" | "walkin" | "group";
 export type CheckinStatus = "complete" | "incomplete" | "blocked";
-export type PaymentStatus = "paid" | "partial" | "unpaid";
+export type PaymentStatus = "paid" | "partial" | "unpaid" | "online";
+
+/** DB check constraint — `online` is UI-only mock, stored as `paid`. */
+export type StoredPaymentStatus = "paid" | "partial" | "unpaid";
+
+export const CHECKIN_PAYMENT_OPTIONS: PaymentStatus[] = [
+  "paid",
+  "partial",
+  "unpaid",
+  "online",
+];
+
+export function paymentAmountForStatus(
+  status: PaymentStatus,
+  totalPrice: number,
+  partialAmount: number
+): number {
+  if (status === "paid" || status === "online") return totalPrice;
+  if (status === "partial") return partialAmount;
+  return 0;
+}
+
+export function normalizePaymentStatusForDb(
+  status: PaymentStatus
+): StoredPaymentStatus {
+  return status === "online" ? "paid" : status;
+}
 
 export type CheckinFlag =
   | "no_document"

@@ -248,6 +248,22 @@
   border-color: color-mix(in srgb, #f87171 55%, var(--admin-panel-border));
   background: color-mix(in srgb, #fef2f2 70%, var(--admin-panel-bg));
   color: #991b1b;
+  animation: admin-home-kpi-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes admin-home-kpi-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #ef4444 22%, transparent),
+      0 0 10px color-mix(in srgb, #ef4444 16%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #ef4444 38%, transparent),
+      0 0 18px color-mix(in srgb, #ef4444 28%, transparent);
+  }
 }
 
 .admin-home-kpi strong {
@@ -1155,7 +1171,8 @@
   }
 
   .admin-home-cta--cereri,
-  .admin-home-action--cereri {
+  .admin-home-action--cereri,
+  .admin-home-kpi--alert {
     animation: none;
   }
 

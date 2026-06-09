@@ -1,6 +1,6 @@
 /* Default — shared selectors only. Variabilele sunt în default-day.css / default-night.css */
 
-html[data-theme="default"] .gantt-radial {
+html[data-theme="default"][data-mode="day"] .gantt-radial {
   --gantt-home-ring-outer: var(--admin-accent);
   --gantt-home-ring-mid: var(--pending-border);
   --gantt-home-ring-inner: var(--admin-accent);
@@ -12,6 +12,20 @@ html[data-theme="default"] .gantt-radial {
   );
   --gantt-home-door-top: color-mix(in srgb, var(--pending-border) 72%, white);
   --gantt-home-door-bottom: color-mix(in srgb, var(--admin-accent) 82%, black);
+}
+
+html[data-theme="default"][data-mode="night"] .gantt-radial {
+  --gantt-home-ring-outer: var(--admin-accent);
+  --gantt-home-ring-mid: var(--pending-border);
+  --gantt-home-ring-inner: var(--admin-accent);
+  --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, var(--surface-3));
+  --gantt-home-surface-bottom: color-mix(
+    in srgb,
+    var(--admin-panel-bg) 86%,
+    var(--pending-border) 14%
+  );
+  --gantt-home-door-top: color-mix(in srgb, var(--pending-border) 58%, var(--surface-2));
+  --gantt-home-door-bottom: color-mix(in srgb, var(--admin-accent) 72%, #0b0d12);
 }
 
 html[data-theme="default"] .admin-liquid-shell,

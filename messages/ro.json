@@ -1929,6 +1929,7 @@
       "confirm": "Confirmă check-in",
       "saving": "Se procesează...",
       "success": "Check-in înregistrat cu succes",
+      "migrationRequired": "Sistemul de check-in nu e activ în baza de date. Rulează migrarea 048_checkin_system.sql în Supabase (SQL Editor), apoi încearcă din nou.",
       "flags": "Avertismente",
       "guestN": "Oaspete #{n}",
       "step": {
@@ -1962,6 +1963,9 @@
         "paid": "Plătit integral",
         "partial": "Plătit parțial",
         "unpaid": "Neplătit",
+        "online": "Plată online",
+        "onlineMockTitle": "Plată online (simulare)",
+        "onlineMockHint": "Mock — fără încasare reală. La salvare se marchează ca plătit integral.",
         "amountPaid": "Suma achitată",
         "deposit": "Garanție / Depozit"
       },

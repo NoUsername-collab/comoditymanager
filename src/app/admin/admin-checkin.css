@@ -346,8 +346,15 @@
 }
 
 .checkin-payment__options {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
+}
+
+@media (min-width: 420px) {
+  .checkin-payment__options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .checkin-payment__option {
@@ -374,6 +381,46 @@
 
 .checkin-payment__option input {
   accent-color: #3b82f6;
+}
+
+.checkin-payment__option--online:has(input:checked) {
+  border-color: rgba(139, 92, 246, 0.55);
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  color: #6d28d9;
+}
+
+.checkin-payment__option--online input {
+  accent-color: #8b5cf6;
+}
+
+.checkin-payment__mock {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-top: 0.15rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.55rem;
+  border: 1px dashed rgba(139, 92, 246, 0.45);
+  background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+}
+
+.checkin-payment__mock-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.checkin-payment__mock-title {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #5b21b6;
+}
+
+.checkin-payment__mock-text {
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: #6d28d9;
 }
 
 /* ── Summary Step ─────────────────────────────────────────── */

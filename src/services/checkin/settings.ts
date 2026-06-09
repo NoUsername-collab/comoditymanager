@@ -5,6 +5,7 @@ import { getTenantScope } from "@/lib/tenant/scope";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { CheckinSettings } from "@/domain/checkin/types";
+import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 
 const CHECKIN_SETTINGS_SELECT = [
   "checkin_doc_rule",
@@ -98,7 +99,12 @@ async function getCheckinSettingsUncached(
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (isCheckinMigrationMissing(error.message)) {
+      return { ...DEFAULT_CHECKIN_SETTINGS };
+    }
+    throw new Error(error.message);
+  }
   if (!data) return { ...DEFAULT_CHECKIN_SETTINGS };
   return mapRow(data as unknown as Record<string, unknown>);
 }

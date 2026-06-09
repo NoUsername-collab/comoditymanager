@@ -1,60 +1,145 @@
 /*
   default-night.css — Tema Default, Night Mode
   Aplicat când: <html data-theme="default" data-mode="night">
+
+  Paletă: fundal închis cu tentă albastră, suprafețe ridicate progresiv mai deschise
+  (Material-style elevation), text cu contrast WCAG AA+.
 */
 
 html[data-theme="default"][data-mode="night"] {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface-2: #222638;
-  --surface-3: #2a2f47;
-  --border: #2e3348;
-  --border-strong: #3d4460;
+  color-scheme: dark;
 
-  --text: #e8eaf2;
-  --text-muted: #8b90a8;
-  --text-faint: #4a5070;
+  /* ── Primitive surfaces (elevation ladder) ── */
+  --bg: #0b0d12;
+  --surface: #131620;
+  --surface-2: #1a1f2e;
+  --surface-3: #222838;
+  --border: #2d3548;
+  --border-strong: #3d4660;
 
-  --accent: #4f7ef8;
-  --accent-hover: #6b94ff;
-  --accent-muted: #1e2d5a;
+  /* ── Text ── */
+  --text: #edf0f7;
+  --text-muted: #9aa3bc;
+  --text-faint: #6d7794;
 
-  --active-bg: #0a2b18;
-  --active-border: #22c55e;
+  /* ── Brand (desaturated / lighter for dark surfaces) ── */
+  --accent: #7aa2ff;
+  --accent-hover: #93b4ff;
+  --accent-muted: #1a2744;
+
+  /* ── Booking / status semantics ── */
+  --active-bg: #0f2a1a;
+  --active-border: #34d399;
   --active-text: #86efac;
-  --active-glow: 0 0 0 1px #22c55e40;
+  --active-glow: 0 0 0 1px color-mix(in srgb, #34d399 45%, transparent);
 
-  --pending-bg: #2a1f00;
-  --pending-border: #f59e0b;
-  --pending-text: #fcd34d;
+  --pending-bg: #2a2008;
+  --pending-border: #fbbf24;
+  --pending-text: #fde68a;
 
-  --past-bg: #1e2030;
-  --past-border: #3d4460;
-  --past-text: #606888;
+  --past-bg: #1a1d28;
+  --past-border: #3d4660;
+  --past-text: #8b92a8;
 
   --blocked-bg: #1e1428;
-  --blocked-border: #7c3aed;
-  --blocked-text: #c4b5fd;
+  --blocked-border: #a78bfa;
+  --blocked-text: #ddd6fe;
 
-  --hold-bg: #1a2030;
+  --hold-bg: #12202e;
   --hold-border: #38bdf8;
   --hold-text: #7dd3fc;
 
-  --cancelled-bg: #2d0f0f;
-  --cancelled-border: #ef4444;
-  --cancelled-text: #fca5a5;
+  --cancelled-bg: #2d1212;
+  --cancelled-border: #f87171;
+  --cancelled-text: #fecaca;
 
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #4f7ef8;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #7aa2ff;
 
-  --weekend-bg: rgba(79, 126, 248, 0.055);
-  --today-bg: rgba(79, 126, 248, 0.08);
-  --today-line: #4f7ef8;
+  --weekend-bg: rgba(122, 162, 255, 0.07);
+  --today-bg: rgba(122, 162, 255, 0.11);
+  --today-line: #7aa2ff;
 
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 10px 36px rgba(0, 0, 0, 0.55);
 
-  --admin-overlay: rgba(8, 12, 20, 0.62);
+  --admin-overlay: rgba(4, 6, 12, 0.72);
+
+  /* ── Admin shell (explicit — nu ne bazăm doar pe alias din _base) ── */
+  --admin-page-bg: var(--bg);
+  --admin-panel-bg: var(--surface);
+  --admin-panel-border: var(--border);
+  --admin-text: var(--text);
+  --admin-text-muted: var(--text-muted);
+  --admin-accent: var(--accent);
+  --admin-accent-muted: var(--accent-muted);
+  --admin-focus-ring: var(--accent);
+  --admin-link: #93c5fd;
+
+  --admin-hud-gradient: var(--surface);
+  --admin-hud-text: var(--text);
+  --admin-hud-eyebrow: var(--text-muted);
+  --admin-hud-shadow: 0 1px 0 var(--border);
+
+  --admin-gantt-shell-bg: var(--surface);
+  --admin-gantt-unassigned: color-mix(in srgb, var(--pending-bg) 55%, var(--surface));
+
+  --admin-btn-primary-bg: #5b8aff;
+  --admin-btn-primary-text: #f8fafc;
+
+  --admin-input-bg: var(--surface-2);
+  --admin-input-border: var(--border-strong);
+
+  --admin-chip-bg: var(--surface-2);
+  --admin-chip-text: var(--text-muted);
+  --admin-chip-border: var(--border);
+
+  --admin-nav-tab-text: var(--text-muted);
+  --admin-nav-tab-hover-bg: color-mix(in srgb, var(--surface-2) 88%, var(--accent-muted));
+  --admin-nav-active-text: var(--text);
+  --admin-nav-active-bg: var(--surface-2);
+  --admin-nav-active-shadow: inset 0 -2px 0 var(--accent);
+
+  --admin-switch-active-bg: var(--accent);
+  --admin-switch-active-text: #0b0d12;
+
+  --admin-cereri-grad: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 88%, #0b0d12),
+    color-mix(in srgb, var(--accent) 62%, #0b0d12)
+  );
+
+  --admin-cereri-fill-bg: var(--admin-btn-primary-bg);
+  --admin-cereri-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 82%, white);
+  --admin-cereri-fill-text: var(--admin-btn-primary-text);
+  --admin-cereri-fill-border: color-mix(in srgb, var(--admin-btn-primary-bg) 55%, #0b0d12);
+
+  --admin-alert-bg: color-mix(in srgb, var(--pending-bg) 72%, var(--surface));
+  --admin-alert-text: var(--pending-text);
+
+  --admin-danger-bg: color-mix(in srgb, var(--cancelled-bg) 78%, var(--surface));
+  --admin-danger-border: var(--cancelled-border);
+  --admin-danger-text: var(--cancelled-text);
+  --admin-full-bg: color-mix(in srgb, var(--cancelled-bg) 55%, var(--surface));
+  --admin-full-text: var(--cancelled-text);
+
+  --admin-hero-bg: var(--surface);
+  --admin-hero-content-bg: var(--bg);
+  --admin-hero-border: var(--border);
+
+  --admin-loading-track: color-mix(in srgb, var(--accent) 18%, transparent);
+  --admin-loading-accent: var(--accent);
+  --admin-loading-accent-muted: var(--accent-muted);
+  --admin-loading-accent-2: var(--active-border);
+
+  --gantt-zone-checkout: var(--weekend-bg);
+  --gantt-zone-clean: var(--surface-2);
+  --gantt-zone-checkin: var(--surface-3);
+  --gantt-line-checkout: var(--border-strong);
+  --gantt-line-checkin: var(--today-line);
+  --gantt-zone-checkout-text: var(--text-muted);
+  --gantt-zone-clean-text: var(--text);
+  --gantt-zone-checkin-text: var(--text-muted);
 }

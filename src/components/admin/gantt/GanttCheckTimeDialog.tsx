@@ -192,15 +192,15 @@ export function GanttCheckTimeDialog({
         onClick={onClose}
       />
       <div
-        className="gantt-check-time-dialog fixed left-1/2 top-1/2 w-[min(22rem,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border border-zinc-200 bg-white p-4 shadow-xl"
+        className="gantt-check-time-dialog fixed left-1/2 top-1/2 w-[min(22rem,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border p-4 shadow-xl"
         role="dialog"
         aria-labelledby="gantt-check-time-title"
       >
-        <h2 id="gantt-check-time-title" className="text-sm font-bold text-zinc-900">
+        <h2 id="gantt-check-time-title" className="text-sm font-bold">
           {title}
         </h2>
-        <p className="mt-1 text-xs text-zinc-600">{guestName}</p>
-        <p className="mt-0.5 text-[11px] text-zinc-500">
+        <p className="mt-1 text-xs opacity-80">{guestName}</p>
+        <p className="mt-0.5 text-[11px] opacity-65">
           {tGantt("checkTime.planned")}:{" "}
           {formatStayPeriod(plannedCheckIn, plannedCheckOut, locale, true)}
         </p>
@@ -211,7 +211,7 @@ export function GanttCheckTimeDialog({
           </p>
         )}
 
-        <label className="mt-4 block text-xs font-semibold text-zinc-800">
+        <label className="mt-4 block text-xs font-semibold">
           {tGantt("checkTime.dateTime")}
           <input
             type="datetime-local"
@@ -219,7 +219,7 @@ export function GanttCheckTimeDialog({
             onChange={(e) => setAtLocal(e.target.value)}
             min={datetimeBounds?.min}
             max={datetimeBounds?.max}
-            className="mt-1 w-full rounded-md border border-zinc-300 px-2 py-1.5 text-sm"
+            className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
             disabled={pending || (mode === "checkin" && intent === "set" && !checkInAllowed)}
           />
         </label>
@@ -227,7 +227,7 @@ export function GanttCheckTimeDialog({
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"
-            className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+            className="rounded-md px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
             disabled={submitDisabled}
             onClick={() => submit(atLocal)}
           >
@@ -235,7 +235,7 @@ export function GanttCheckTimeDialog({
           </button>
           <button
             type="button"
-            className="rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-semibold text-zinc-800 disabled:opacity-50"
+            className="rounded-md border px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
             disabled={submitDisabled}
             onClick={() => submit()}
           >
@@ -243,7 +243,7 @@ export function GanttCheckTimeDialog({
           </button>
           <button
             type="button"
-            className="rounded-md px-3 py-1.5 text-xs text-zinc-500"
+            className="rounded-md px-3 py-1.5 text-xs opacity-70"
             disabled={pending}
             onClick={onClose}
           >

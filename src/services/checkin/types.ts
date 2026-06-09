@@ -3,7 +3,7 @@
 import type {
   CheckinStatus,
   CheckinType,
-  PaymentStatus,
+  StoredPaymentStatus,
   DocumentType,
 } from "@/domain/checkin/types";
 
@@ -15,7 +15,7 @@ export interface CheckinRow {
   status: CheckinStatus;
   checked_in_at: string;
   checked_in_by: string | null;
-  payment_status: PaymentStatus;
+  payment_status: StoredPaymentStatus;
   payment_amount_paid: number;
   deposit_amount: number;
   key_handed: boolean;

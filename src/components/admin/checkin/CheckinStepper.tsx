@@ -13,6 +13,10 @@ import type {
   PaymentStatus,
   ValidationResult,
 } from "@/domain/checkin/types";
+import {
+  CHECKIN_PAYMENT_OPTIONS,
+  paymentAmountForStatus,
+} from "@/domain/checkin/types";
 
 type Props = {
   booking: BookingForCheckin;
@@ -74,12 +78,11 @@ export function CheckinStepper({
       booking_id: booking.id,
       guests,
       payment_status: paymentStatus,
-      payment_amount_paid:
-        paymentStatus === "paid"
-          ? booking.total_price
-          : paymentStatus === "partial"
-            ? paymentAmount
-            : 0,
+      payment_amount_paid: paymentAmountForStatus(
+        paymentStatus,
+        booking.total_price,
+        paymentAmount
+      ),
       deposit_amount: settings.checkin_deposit ? depositAmount : 0,
       key_handed: keyHanded,
       notes: notes || undefined,
@@ -462,8 +465,16 @@ function StepPayment({
       </div>
 
       <div className="checkin-payment__options">
-        {(["paid", "partial", "unpaid"] as PaymentStatus[]).map((s) => (
-          <label key={s} className="checkin-payment__option">
+        {CHECKIN_PAYMENT_OPTIONS.map((s) => (
+          <label
+            key={s}
+            className={[
+              "checkin-payment__option",
+              s === "online" && "checkin-payment__option--online",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
             <input
               type="radio"
               name="payment_status"
@@ -471,14 +482,27 @@ function StepPayment({
               checked={paymentStatus === s}
               onChange={() => {
                 onPaymentStatusChange(s);
-                if (s === "paid") onPaymentAmountChange(booking.total_price);
-                if (s === "unpaid") onPaymentAmountChange(0);
+                onPaymentAmountChange(
+                  paymentAmountForStatus(s, booking.total_price, paymentAmount)
+                );
               }}
             />
             <span>{t(`payment.${s}`)}</span>
           </label>
         ))}
       </div>
+
+      {paymentStatus === "online" && (
+        <div className="checkin-payment__mock" role="status">
+          <span className="checkin-payment__mock-icon" aria-hidden>
+            💳
+          </span>
+          <div>
+            <p className="checkin-payment__mock-title">{t("payment.onlineMockTitle")}</p>
+            <p className="checkin-payment__mock-text">{t("payment.onlineMockHint")}</p>
+          </div>
+        </div>
+      )}
 
       {paymentStatus === "partial" && (
         <label className="checkin-field">

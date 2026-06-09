@@ -82,12 +82,6 @@ export async function AdminDashboard({
 
           {/* Right: CTAs */}
           <div className="admin-home-hero__actions">
-            {hasCereri && (
-              <Link href="/admin/bookings" className="admin-home-cta admin-home-cta--cereri">
-                <span aria-hidden>📬</span>
-                {tDashboard("pendingPuls", { count: cereriCount })}
-              </Link>
-            )}
             <Link href={calHref} className="admin-home-cta admin-home-cta--secondary">
               {tCommon("currentMonthCalendar")}
             </Link>
