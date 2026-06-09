@@ -161,6 +161,8 @@ type GanttBodyProps = {
   today: string;
   dayGridOptions?: GanttDayGridOptions;
   emptyMessage?: string;
+  /** Inner .gantt-scroll scroll — window virtualizer mis-measures on compact mobile */
+  disableVirtualization?: boolean;
 };
 
 function useVirtualItems({
@@ -332,7 +334,10 @@ function GanttWindowVirtualBody(
 export function GanttVirtualizedBody(props: GanttBodyProps) {
   const virtualItems = useVirtualItems(props);
 
-  if (virtualItems.length < VIRTUALIZE_MIN_ITEMS) {
+  if (
+    props.disableVirtualization ||
+    virtualItems.length < VIRTUALIZE_MIN_ITEMS
+  ) {
     return <GanttPlainBody {...props} virtualItems={virtualItems} />;
   }
 

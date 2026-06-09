@@ -563,26 +563,16 @@ html[data-theme="default"][data-mode="night"] {
 .gantt-room-cell__row {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.35rem;
   min-height: 1.36rem;
 }
 
-.gantt-room-cell__text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  flex: 1;
-}
-
-.gantt-room-cell__icons {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
-  flex-shrink: 0;
-}
-
 .gantt-room-cell__name {
   display: block;
+  min-width: 0;
+  flex: 1;
+  text-align: left;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: -0.01em;
@@ -591,11 +581,7 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 .gantt-room-cell__building {
-  display: block;
-  font-size: 0.5rem;
-  font-weight: 500;
-  color: color-mix(in srgb, var(--marker-color) 55%, #a1a1aa);
-  line-height: 1.2;
+  display: none;
 }
 
 /* ── Status LED dot ───────────────────────────────────────────── */

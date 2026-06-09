@@ -19,7 +19,6 @@ import type { BookingRow } from "@/services/bookings";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
-import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
@@ -43,27 +42,6 @@ function RoomStatusLed({ status }: { status: RoomLedStatus }) {
         ? tCommon("roomLedBooked")
         : tCommon("roomLedFree");
   return <span className={cls} title={label} aria-label={label} />;
-}
-
-/* ── Broom / cleaning icon ────────────────────────────────────── */
-function BroomIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="gantt-room-broom"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M4 22 L10 16" />
-      <path d="M10 16 L10 12 L14 16 Z" />
-      <path d="M12 10 L20 2" />
-      <path d="M16 6 L18 8" />
-    </svg>
-  );
 }
 
 export const GanttRoomRow = memo(function GanttRoomRow({
@@ -135,8 +113,6 @@ export const GanttRoomRow = memo(function GanttRoomRow({
     return "booked";
   }, [todayFlags, staySegments, bookingById, room.id, today]);
 
-  const needsCleaning = todayFlags.departure;
-
   const rowTodayClass = [
     todayFlags.arrival && "gantt-room-row--arrival-today",
     todayFlags.departure && "gantt-room-row--departure-today",
@@ -166,21 +142,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
       >
         <div className="gantt-room-cell__row">
           <RoomStatusLed status={ledStatus} />
-          <div className="gantt-room-cell__text min-w-0">
-            <span className="gantt-room-cell__name">{room.name}</span>
-            <span className="gantt-room-cell__building">{room.building_name}</span>
-          </div>
-          <div className="gantt-room-cell__icons">
-            <RoomFeatureBadges
-              roomTypeName={room.room_type_name}
-              optionSlugs={room.option_slugs}
-              hasAc={room.has_ac}
-              compact
-              iconOnly
-              hideRoomType
-            />
-            {needsCleaning && <BroomIcon />}
-          </div>
+          <span className="gantt-room-cell__name">{room.name}</span>
         </div>
       </td>
       <td className="relative w-full overflow-visible p-0 align-top">

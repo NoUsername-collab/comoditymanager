@@ -720,6 +720,7 @@ export function GanttCalendar({
             onCtrlDragEnd={handleCtrlDragEnd}
             today={effectiveToday}
             dayGridOptions={dayGridOptions}
+            disableVirtualization={compactChrome}
             emptyMessage={
               filter !== "all"
                 ? tCommon("noRoomForFilterTryAll")

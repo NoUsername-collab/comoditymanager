@@ -380,10 +380,12 @@ export function GanttDragCreateLayer({
         setDrag(null);
         openEmptyMenu(e.clientX, e.clientY, idx);
       }, LONG_PRESS_MS);
-      row.setPointerCapture(e.pointerId);
-      e.preventDefault();
+      if (!touch) {
+        row.setPointerCapture(e.pointerId);
+        e.preventDefault();
+      }
     },
-    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending]
+    [dayCount, dayIdxAt, clearLongPress, openEmptyMenu, pendingCtx?.pending, touch]
   );
 
   const onPointerUpRow = useCallback(
@@ -424,7 +426,7 @@ export function GanttDragCreateLayer({
         const dy = e.clientY - origin.y;
         if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX) {
           clearLongPress();
-          if (!dragRef.current) {
+          if (!touch && !dragRef.current) {
             beginDrag(
               armedStartIdxRef.current ?? dayIdxAt(origin.x),
               e.clientX,
@@ -435,7 +437,7 @@ export function GanttDragCreateLayer({
         }
       }
     },
-    [beginDrag, clearLongPress, dayIdxAt]
+    [beginDrag, clearLongPress, dayIdxAt, touch]
   );
 
   const onPointerCancelRow = useCallback(

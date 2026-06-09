@@ -29,34 +29,74 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
   padding-inline: 0.35rem;
 }
 
-/* ── Scroll container: reliable horizontal pan on touch ── */
+/* ── Gantt page: fill viewport down to bottom tab bar ── */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window__titlebar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0.1rem 0.08rem 0 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  flex-shrink: 0;
+}
+
+/* ── Scroll container: vertical scroll only until header pan arms ── */
 html[data-layout-chrome="compact"] .gantt-scroll {
-  touch-action: pan-x pan-y;
+  touch-action: pan-y;
   overscroll-behavior-x: contain;
   overscroll-behavior-y: auto;
-  contain: layout style paint;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: none;
   max-width: 100%;
   margin-inline: 0;
   border-radius: 0.65rem;
-  contain: layout style;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll {
-  touch-action: pan-x pan-y;
-  max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 2.275rem) - var(--ml-safe-bottom, 0px) - 3.25rem
-  ) !important;
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll {
+  flex: 1;
+  min-height: 0;
+  max-height: none !important;
   overflow-y: auto;
+  overflow-x: auto;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page .gantt-compact-toolbar {
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
   position: sticky;
   top: 0;
   z-index: 25;
   padding-block: 0.18rem !important;
   margin-bottom: 0.12rem !important;
+  background: var(--admin-bg, #0f0e14);
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll {
@@ -106,10 +146,6 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-sc
   line-height: 1.1;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell__building {
-  font-size: 0.5rem;
-}
-
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-column-header,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell {
   padding-inline: 0.35rem !important;
@@ -117,10 +153,6 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-s
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell__name {
   font-size: 0.62rem;
-}
-
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell__building {
-  display: none;
 }
 
 /* ── Day cells: portrait vs landscape density ── */
@@ -197,8 +229,8 @@ html[data-layout-chrome="compact"] .gantt-day-header-cell--today .gantt-day-head
 
 /* ── Compact toolbar (−30% vertical) ── */
 html[data-layout-chrome="compact"] .gantt-compact-toolbar {
+  flex-shrink: 0;
   contain: layout style;
-  content-visibility: auto;
   contain-intrinsic-size: auto 3.15rem;
   gap: 0.25rem;
   padding: 0.18rem 0.1rem;
@@ -626,9 +658,9 @@ html[data-layout-chrome="compact"] .gantt-footer-legend__body .gantt-stay-hint {
   display: none;
 }
 
-/* ── Off-screen paint skip (compact lists + gantt rows) ── */
+/* No content-visibility on gantt rows — causes white gaps with inner scroll */
 html[data-layout-chrome="compact"] .gantt-room-row {
-  content-visibility: auto;
+  content-visibility: visible;
   contain-intrinsic-size: auto 1.8rem;
 }
 
