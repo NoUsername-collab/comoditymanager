@@ -61,8 +61,7 @@ export async function loadCheckinWizardContextAction(
       ok: true,
       booking: mapBookingToForCheckin(booking),
       settings,
-      hasExistingCheckin:
-        !!existingCheckin || !!booking.actual_check_in_at,
+      hasExistingCheckin: !!existingCheckin,
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";

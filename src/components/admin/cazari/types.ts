@@ -30,6 +30,8 @@ export type CazariLabels = {
   historyConfirmedRecentBadge: (date: string) => string;
   cancelStay: string;
   cancelRequest: string;
+  quickAccept: string;
+  quickAcceptSuccess: string;
   guestsShort: (adults: number, children: number) => string;
   cancelConfirmedMsg: (ref: string, name: string, period: string) => string;
   cancelRequestMsg: (ref: string, name: string, period: string) => string;

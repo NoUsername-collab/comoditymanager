@@ -23,6 +23,7 @@ import { CazariOpsToolbar } from "@/components/admin/cazari/CazariOpsToolbar";
 import { ConfirmedBuckets } from "@/components/admin/cazari/ConfirmedBuckets";
 import { StayHistoryPanel } from "@/components/admin/cazari/StayHistoryPanel";
 import { StayList } from "@/components/admin/cazari/StayList";
+import { CazariOperativeShell } from "@/components/admin/cazari/CazariOperativeShell";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminCazariPage({
@@ -96,6 +97,7 @@ export default async function AdminCazariPage({
 
   return (
     <AdminRetroPageFrame title={tPages("title")} className="cazari-page">
+      <CazariOperativeShell today={effectiveToday}>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,30%)]">
         <div className="min-w-0">
           <RetroXpWindow
@@ -212,6 +214,7 @@ export default async function AdminCazariPage({
           />
         </aside>
       </div>
+      </CazariOperativeShell>
     </AdminRetroPageFrame>
   );
 }

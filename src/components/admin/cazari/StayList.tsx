@@ -2,6 +2,7 @@ import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import { RefusedStayActions } from "@/components/admin/cazari/RefusedStayActions";
 import { StayActions } from "@/components/admin/cazari/StayActions";
+import { StayRequestActions } from "@/components/admin/cazari/StayRequestActions";
 import { StayInfo } from "@/components/admin/cazari/StayInfo";
 import type {
   CancelledStay,
@@ -87,6 +88,12 @@ export function StayList({
                   stay={stay as CancelledStay}
                   labels={labels}
                   returnTo={returnTo}
+                />
+              ) : variant === "cereri" ? (
+                <StayRequestActions
+                  stay={stay as OperationalStay}
+                  returnTo={returnTo}
+                  labels={labels}
                 />
               ) : (
                 <StayActions

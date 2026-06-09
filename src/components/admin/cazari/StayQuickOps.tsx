@@ -1,24 +1,16 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
-
-const CheckinWizardLauncher = dynamic(
-  () =>
-    import("@/components/admin/checkin/CheckinWizardLauncher").then((m) => ({
-      default: m.CheckinWizardLauncher,
-    })),
-  { ssr: false }
-);
 
 type Props = {
   bookingId: string;
@@ -57,14 +49,22 @@ export function StayQuickOps({
   const router = useRouter();
   const tCommon = useTranslations("common");
   const { showToast } = useAdminFx();
+  const { openCheckInWizard, openCheckOut } = useOperativeCheck();
   const [pending, startTransition] = useTransition();
-  const [checkinWizardOpen, setCheckinWizardOpen] = useState(false);
-  const [timeDialog, setTimeDialog] = useState<{
+  const [editDialog, setEditDialog] = useState<{
     mode: "checkin" | "checkout";
-    intent: "set" | "edit";
   } | null>(null);
   const isConfirmed = bookingStatus === "confirmata";
   const hasPhone = isValidGuestPhone(guestPhone);
+  const operativeArgs = {
+    bookingId,
+    guestName,
+    plannedCheckIn,
+    plannedCheckOut,
+    status: bookingStatus,
+    actualCheckInAt,
+    actualCheckOutAt,
+  };
   const canCheckIn =
     canOfferOperativeCheckIn({
       status: bookingStatus,
@@ -89,10 +89,10 @@ export function StayQuickOps({
     : canEditCheckOut
       ? ""
       : actualCheckOutAt
-      ? labels.checkoutAlreadyDone
-      : !actualCheckInAt
-        ? labels.checkoutNeedsCheckin
-        : "";
+        ? labels.checkoutAlreadyDone
+        : !actualCheckInAt
+          ? labels.checkoutNeedsCheckin
+          : "";
 
   function moveStay(dayDelta: number) {
     if (!canMove || pending) return;
@@ -111,19 +111,27 @@ export function StayQuickOps({
     });
   }
 
-  function openCheckIn() {
+  function handleCheckIn() {
     if (canEditCheckIn) {
-      setTimeDialog({ mode: "checkin", intent: "edit" });
+      setEditDialog({ mode: "checkin" });
       return;
     }
-    setCheckinWizardOpen(true);
+    openCheckInWizard(operativeArgs);
+  }
+
+  function handleCheckOut() {
+    if (canEditCheckOut) {
+      setEditDialog({ mode: "checkout" });
+      return;
+    }
+    openCheckOut(operativeArgs);
   }
 
   return (
     <div className="stay-quick-ops flex flex-wrap items-center justify-end gap-1.5">
       <button
         type="button"
-        className="rounded border border-emerald-300 bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-900 disabled:cursor-not-allowed disabled:opacity-45"
+        className="checkin-start-btn stay-quick-ops__checkin !px-2 !py-1 !text-[11px]"
         disabled={(!canCheckIn && !canEditCheckIn) || pending}
         title={
           !isConfirmed
@@ -132,8 +140,13 @@ export function StayQuickOps({
               ? labels.phoneRequiredForCheckIn
               : ""
         }
-        onClick={openCheckIn}
+        onClick={handleCheckIn}
       >
+        {!canEditCheckIn && (
+          <span className="checkin-start-btn__icon" aria-hidden>
+            🔑
+          </span>
+        )}
         {checkInLabel}
       </button>
       <button
@@ -141,12 +154,7 @@ export function StayQuickOps({
         className="rounded border border-sky-300 bg-sky-50 px-2 py-1 text-[11px] font-bold text-sky-900 disabled:cursor-not-allowed disabled:opacity-45"
         disabled={(!canCheckOut && !canEditCheckOut) || pending}
         title={checkoutTitle}
-        onClick={() =>
-          setTimeDialog({
-            mode: "checkout",
-            intent: canEditCheckOut ? "edit" : "set",
-          })
-        }
+        onClick={handleCheckOut}
       >
         {checkOutLabel}
       </button>
@@ -175,30 +183,24 @@ export function StayQuickOps({
         {labels.edit}
       </Link>
 
-      <CheckinWizardLauncher
-        bookingId={bookingId}
-        open={checkinWizardOpen}
-        onClose={() => setCheckinWizardOpen(false)}
-        onSuccess={() => {
-          setCheckinWizardOpen(false);
-          router.refresh();
-        }}
-      />
-
-      <GanttCheckTimeDialog
-        open={timeDialog !== null}
-        mode={timeDialog?.mode ?? "checkout"}
-        intent={timeDialog?.intent ?? "set"}
-        bookingId={bookingId}
-        guestName={guestName}
-        plannedCheckIn={plannedCheckIn}
-        plannedCheckOut={plannedCheckOut}
-        onClose={() => setTimeDialog(null)}
-        onSuccess={() => {
-          setTimeDialog(null);
-          router.refresh();
-        }}
-      />
+      {editDialog ? (
+        <GanttCheckTimeDialog
+          open
+          mode={editDialog.mode}
+          intent="edit"
+          bookingId={bookingId}
+          guestName={guestName}
+          plannedCheckIn={plannedCheckIn}
+          plannedCheckOut={plannedCheckOut}
+          actualCheckInAt={actualCheckInAt}
+          actualCheckOutAt={actualCheckOutAt}
+          onClose={() => setEditDialog(null)}
+          onSuccess={() => {
+            setEditDialog(null);
+            router.refresh();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

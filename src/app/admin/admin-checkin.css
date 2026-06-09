@@ -667,6 +667,8 @@
   color: var(--admin-text-muted);
 }
 
+/* ── Fișă turist — formular oficial diegetic (OPANAF) ─────── */
+
 .tourist-sheet-root {
   display: flex;
   flex-direction: column;
@@ -679,100 +681,338 @@
   gap: 0.5rem;
 }
 
-.tourist-sheet {
-  border: 1px solid var(--admin-panel-border);
-  border-radius: 0.5rem;
-  background: #fff;
-  color: #111;
-  padding: 1rem;
-  font-size: 0.75rem;
-  line-height: 1.45;
+.tourist-sheet--official {
+  --fisa-ink: #1a1a1a;
+  --fisa-paper: #f4f0e6;
+  --fisa-paper-edge: #d8d0c0;
+  --fisa-rule: #2c2c2c;
+  --fisa-muted: #4a4a4a;
+  --fisa-stamp: #8b1e1e;
+  --fisa-serif: "Times New Roman", Times, "Noto Serif", Georgia, serif;
+  --fisa-mono: "Courier New", Courier, "Lucida Console", monospace;
+  font-family: var(--fisa-serif);
+  color: var(--fisa-ink);
+}
+
+.tourist-sheet__paper {
+  position: relative;
+  overflow: hidden;
+  padding: 1.15rem 1.25rem 1.35rem;
+  border: 3px double var(--fisa-rule);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, #fff 40%, var(--fisa-paper)) 0%,
+      var(--fisa-paper) 12%,
+      var(--fisa-paper) 88%,
+      color-mix(in srgb, var(--fisa-paper-edge) 55%, var(--fisa-paper)) 100%
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--fisa-paper-edge) 80%, white),
+    0 2px 0 color-mix(in srgb, var(--fisa-paper-edge) 90%, transparent),
+    0 8px 24px color-mix(in srgb, #000 8%, transparent);
+}
+
+.tourist-sheet__paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    color-mix(in srgb, var(--fisa-rule) 4%, transparent) 2px,
+    color-mix(in srgb, var(--fisa-rule) 4%, transparent) 3px
+  );
+}
+
+.tourist-sheet__watermark {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  font-family: var(--fisa-serif);
+  font-size: clamp(2.5rem, 12vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fisa-rule) 7%, transparent);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
 }
 
 .tourist-sheet__header {
+  position: relative;
+  z-index: 1;
   text-align: center;
-  border-bottom: 2px solid #111;
-  padding-bottom: 0.75rem;
-  margin-bottom: 0.75rem;
+  padding-bottom: 0.85rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 2px solid var(--fisa-rule);
 }
 
-.tourist-sheet__form-code {
+.tourist-sheet__masthead {
+  margin-bottom: 0.55rem;
+}
+
+.tourist-sheet__ministry {
   margin: 0;
   font-size: 0.62rem;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #555;
+}
+
+.tourist-sheet__anaf {
+  margin: 0.12rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fisa-muted);
+}
+
+.tourist-sheet__form-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  text-align: left;
+}
+
+.tourist-sheet__form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 6.5rem;
+  padding: 0.3rem 0.45rem;
+  border: 2px solid var(--fisa-rule);
+  background: color-mix(in srgb, #fff 55%, var(--fisa-paper));
+}
+
+.tourist-sheet__form-box-label {
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fisa-muted);
+}
+
+.tourist-sheet__form-box-code {
+  font-family: var(--fisa-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.tourist-sheet__registry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fisa-muted);
+}
+
+.tourist-sheet__registry strong {
+  font-family: var(--fisa-mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  color: var(--fisa-ink);
 }
 
 .tourist-sheet__title {
-  margin: 0.25rem 0;
-  font-size: 1rem;
-  font-weight: 800;
+  margin: 0.35rem 0 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.tourist-sheet__year {
-  margin: 0;
+.tourist-sheet__subtitle {
+  margin: 0 0 0.45rem;
+  font-size: 0.58rem;
+  font-style: italic;
+  color: var(--fisa-muted);
+}
+
+.tourist-sheet__year-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tourist-sheet__year-row strong {
+  font-family: var(--fisa-mono);
+  font-weight: 700;
 }
 
 .tourist-sheet__section {
-  margin-bottom: 0.85rem;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.95rem;
 }
 
 .tourist-sheet__section-title {
-  margin: 0 0 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.tourist-sheet__line {
-  margin: 0.15rem 0;
-}
-
-.tourist-sheet__label {
+  margin: 0 0 0.45rem;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.62rem;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--fisa-rule);
+  background: color-mix(in srgb, #fff 35%, var(--fisa-paper));
+}
+
+.tourist-sheet__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem 0.75rem;
+}
+
+.tourist-sheet__field {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 38%) 1fr;
+  align-items: end;
+  gap: 0.25rem 0.4rem;
+  font-size: 0.68rem;
+}
+
+.tourist-sheet__field--wide {
+  grid-column: 1 / -1;
+}
+
+.tourist-sheet__field-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--fisa-muted);
+  line-height: 1.2;
+}
+
+.tourist-sheet__field-value {
+  display: block;
+  min-height: 1.15rem;
+  padding: 0.1rem 0 0.2rem;
+  border-bottom: 1px solid var(--fisa-rule);
+  font-weight: 600;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.tourist-sheet__table-wrap {
+  margin-top: 0.45rem;
+  border: 2px solid var(--fisa-rule);
+  background: color-mix(in srgb, #fff 42%, var(--fisa-paper));
 }
 
 .tourist-sheet__table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 0.35rem;
-  font-size: 0.68rem;
+  font-size: 0.64rem;
+  line-height: 1.35;
 }
 
 .tourist-sheet__table th,
 .tourist-sheet__table td {
-  border: 1px solid #333;
-  padding: 0.3rem 0.35rem;
+  border: 1px solid var(--fisa-rule);
+  padding: 0.32rem 0.38rem;
   text-align: left;
   vertical-align: top;
 }
 
 .tourist-sheet__table th {
-  background: #f3f4f6;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--fisa-rule) 8%, var(--fisa-paper));
+}
+
+.tourist-sheet__col-idx {
+  width: 2rem;
+  text-align: center !important;
+  font-family: var(--fisa-mono);
   font-weight: 700;
 }
 
+.tourist-sheet__mono {
+  font-family: var(--fisa-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.03em;
+}
+
 .tourist-sheet__footer {
-  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #ccc;
-  font-size: 0.62rem;
-  color: #555;
+  border-top: 1px dashed color-mix(in srgb, var(--fisa-rule) 55%, transparent);
+}
+
+.tourist-sheet__legal {
+  margin: 0 0 0.75rem;
+  max-width: 36rem;
+  font-size: 0.56rem;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--fisa-muted);
+}
+
+.tourist-sheet__stamp {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 2.5rem;
+  padding: 0.35rem 0.55rem;
+  border: 3px double var(--fisa-stamp);
+  border-radius: 2px;
+  font-family: var(--fisa-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fisa-stamp);
+  opacity: 0.82;
+  transform: rotate(-8deg);
+}
+
+.tourist-sheet__signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2.25rem;
 }
 
 .tourist-sheet__signature {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
 }
 
-.tourist-sheet__signature span {
-  flex: 1;
-  border-top: 1px solid #333;
-  padding-top: 0.35rem;
+.tourist-sheet__signature-line {
+  display: block;
+  width: 100%;
+  height: 1px;
+  border-top: 1px solid var(--fisa-rule);
+}
+
+.tourist-sheet__signature-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fisa-muted);
   text-align: center;
 }
 
@@ -781,11 +1021,22 @@
     display: none !important;
   }
 
-  .tourist-sheet {
+  .tourist-sheet--official,
+  .tourist-sheet__paper {
     border: none;
     border-radius: 0;
     box-shadow: none;
-    padding: 0;
+    background: #fff !important;
+  }
+
+  .tourist-sheet__watermark {
+    opacity: 0.12;
+  }
+
+  .tourist-sheet__stamp {
+    opacity: 0.65;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .checkin-modal,

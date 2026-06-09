@@ -40,6 +40,8 @@ export function buildCazariLabels({
       tPages("historyConfirmedRecentBadge", { date }),
     cancelStay: tPages("cancelStay"),
     cancelRequest: tPages("cancelRequest"),
+    quickAccept: tPages("quickAccept"),
+    quickAcceptSuccess: tPages("quickAcceptSuccess"),
     guestsShort: (adults, children) =>
       tCommon("guestsShort", { adults, children }),
     cancelConfirmedMsg: (ref, name, period) =>
