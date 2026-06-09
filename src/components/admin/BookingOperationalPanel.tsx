@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import {
@@ -14,9 +15,18 @@ import {
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
+import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
+
+const CheckinModal = dynamic(
+  () =>
+    import("@/components/admin/checkin/CheckinModal").then((m) => ({
+      default: m.CheckinModal,
+    })),
+  { ssr: false }
+);
 
 type Props = {
   bookingId: string;
@@ -26,6 +36,10 @@ type Props = {
   plannedCheckOut: string;
   actualCheckInAt: string | null;
   actualCheckOutAt: string | null;
+  /** Full reception check-in wizard (identity → validate → payment → finish). */
+  bookingForCheckin?: BookingForCheckin;
+  checkinSettings?: CheckinSettings;
+  hasExistingCheckin?: boolean;
 };
 
 export function BookingOperationalPanel({
@@ -36,9 +50,13 @@ export function BookingOperationalPanel({
   plannedCheckOut,
   actualCheckInAt,
   actualCheckOutAt,
+  bookingForCheckin,
+  checkinSettings,
+  hasExistingCheckin = false,
 }: Props) {
   const router = useRouter();
   const t = useTranslations("admin.operational");
+  const tCheckIn = useTranslations("admin.checkIn");
   const tCommon = useTranslations("common");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -46,6 +64,7 @@ export function BookingOperationalPanel({
   const [dialogMode, setDialogMode] = useState<"checkin" | "checkout" | null>(
     null
   );
+  const [checkinModalOpen, setCheckinModalOpen] = useState(false);
   const hasPhone = isValidGuestPhone(guestPhone);
   const today = todayIso();
   const canCheckIn = canOfferOperativeCheckIn({
@@ -60,6 +79,19 @@ export function BookingOperationalPanel({
     : !canCheckIn
       ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
       : "";
+
+  const useFullCheckinWizard =
+    Boolean(bookingForCheckin && checkinSettings) &&
+    !hasExistingCheckin &&
+    canCheckIn;
+
+  function openCheckIn() {
+    if (useFullCheckinWizard) {
+      setCheckinModalOpen(true);
+      return;
+    }
+    setDialogMode("checkin");
+  }
 
   function undoCheckIn() {
     if (!confirm(t("confirmUndoCheckIn"))) return;
@@ -122,12 +154,26 @@ export function BookingOperationalPanel({
         {canCheckIn && (
           <button
             type="button"
-            className="bd-ops__btn bd-ops__btn--primary"
+            className={[
+              "bd-ops__btn bd-ops__btn--primary",
+              useFullCheckinWizard && "checkin-start-btn",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             disabled={pending || !hasPhone}
             title={checkInBlockedTitle}
-            onClick={() => setDialogMode("checkin")}
+            onClick={openCheckIn}
           >
-            {t("checkInAction")}
+            {useFullCheckinWizard ? (
+              <>
+                <span className="checkin-start-btn__icon" aria-hidden>
+                  🔑
+                </span>
+                {tCheckIn("startCheckin")}
+              </>
+            ) : (
+              t("checkInAction")
+            )}
           </button>
         )}
         {actualCheckInAt && !actualCheckOutAt && (
@@ -162,8 +208,17 @@ export function BookingOperationalPanel({
         )}
       </div>
 
+      {checkinModalOpen && bookingForCheckin && checkinSettings ? (
+        <CheckinModal
+          booking={bookingForCheckin}
+          settings={checkinSettings}
+          onClose={() => setCheckinModalOpen(false)}
+          onSuccess={() => router.refresh()}
+        />
+      ) : null}
+
       <GanttCheckTimeDialog
-        open={dialogMode !== null}
+        open={dialogMode !== null && !checkinModalOpen}
         mode={dialogMode ?? "checkin"}
         bookingId={bookingId}
         guestName={guestName}

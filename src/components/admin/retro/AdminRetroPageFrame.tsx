@@ -1,10 +1,11 @@
 import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
+import { getTranslations } from "next-intl/server";
 import { btnPrimary } from "@/lib/admin-ui";
 import { RetroXpWindow } from "./RetroXpWindow";
 
 /** Admin page with XP frame and Win98-style interior. */
-export function AdminRetroPageFrame({
+export async function AdminRetroPageFrame({
   title,
   description,
   backHref,
@@ -23,6 +24,7 @@ export function AdminRetroPageFrame({
   className?: string;
   bodyClassName?: string;
 }) {
+  const tCommon = await getTranslations("admin.common");
   const plainDescription =
     typeof description === "string" || typeof description === "number";
 
@@ -37,7 +39,15 @@ export function AdminRetroPageFrame({
           ← {backLabel ?? ""}
         </Link>
       )}
-      <RetroXpWindow title={title} bodyClassName={bodyClassName}>
+      <RetroXpWindow
+        title={title}
+        bodyClassName={bodyClassName}
+        controlTitles={{
+          minimize: tCommon("minimize"),
+          maximize: tCommon("maximize"),
+          close: tCommon("close"),
+        }}
+      >
         {(description || action) && (
           <div className="admin-retro-page-toolbar mb-2 flex flex-wrap items-start justify-between gap-2">
             {description ? (

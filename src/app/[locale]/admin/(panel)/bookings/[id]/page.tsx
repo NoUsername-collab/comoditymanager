@@ -17,10 +17,13 @@ import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { BookingCheckinButton } from "@/components/admin/checkin/BookingCheckinButton";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
-import { getCheckinByBookingId, getCheckinSettings } from "@/services/checkin";
+import {
+  DEFAULT_CHECKIN_SETTINGS,
+  getCheckinByBookingId,
+  getCheckinSettings,
+} from "@/services/checkin";
 import type { BookingForCheckin } from "@/domain/checkin/types";
 import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
 import {
@@ -101,6 +104,7 @@ export default async function BookingDetailPage({
   } = ctx;
 
   const { dedupCandidates, existingCheckin } = bookingExtras;
+  const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
 
   const bookingForCheckin: BookingForCheckin = {
     id: booking.id,
@@ -355,16 +359,6 @@ export default async function BookingDetailPage({
             </div>
           )}
 
-          {booking.status === "confirmata" && checkinSettings && (
-            <div className="bd-card bd-card--action">
-              <BookingCheckinButton
-                booking={bookingForCheckin}
-                settings={checkinSettings}
-                hasExistingCheckin={!!existingCheckin}
-              />
-            </div>
-          )}
-
           {booking.status === "confirmata" && (
             <div className="bd-card bd-card--action">
               <BookingGuestPhoneForm
@@ -379,6 +373,9 @@ export default async function BookingDetailPage({
                 plannedCheckOut={booking.check_out}
                 actualCheckInAt={booking.actual_check_in_at}
                 actualCheckOutAt={booking.actual_check_out_at}
+                bookingForCheckin={bookingForCheckin}
+                checkinSettings={effectiveCheckinSettings}
+                hasExistingCheckin={!!existingCheckin}
               />
             </div>
           )}

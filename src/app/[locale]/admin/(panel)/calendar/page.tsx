@@ -268,7 +268,15 @@ export default async function AdminCalendarPage({
       }
       className="gantt-calendar-page w-full max-w-none"
     >
-      <RetroXpWindow title={t("windowGantt")} className="w-full">
+      <RetroXpWindow
+        title={t("windowGantt")}
+        className="w-full"
+        controlTitles={{
+          minimize: tCommon("minimize"),
+          maximize: tCommon("maximize"),
+          close: tCommon("close"),
+        }}
+      >
         <GanttCalendarLazy
           viewRange={viewRange}
           rooms={ganttRooms}

@@ -26,9 +26,10 @@ type Props = {
   booking: BookingForCheckin;
   settings: CheckinSettings;
   onClose: () => void;
+  onSuccess?: () => void;
 };
 
-export function CheckinModal({ booking, settings, onClose }: Props) {
+export function CheckinModal({ booking, settings, onClose, onSuccess }: Props) {
   const t = useTranslations("admin.checkIn");
 
   return (
@@ -43,7 +44,10 @@ export function CheckinModal({ booking, settings, onClose }: Props) {
       <CheckinStepper
         booking={booking}
         settings={settings}
-        onComplete={onClose}
+        onComplete={() => {
+          onSuccess?.();
+          onClose();
+        }}
         onCancel={onClose}
       />
     </AdminFloatingPanel>
