@@ -1,17 +1,7 @@
 "use client";
 
-import {
-  Fragment,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  type CSSProperties,
-  type RefObject,
-} from "react";
+import { Fragment, memo, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { GANTT_ROW_H } from "@/domain/gantt/layout";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { OccupancySegment } from "@/domain/occupancy/types";
@@ -24,11 +14,9 @@ import type { GanttDayGridOptions } from "@/components/admin/gantt/GanttGridHelp
 import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarker";
 import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
-import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
 import type { AcMode } from "@/types/database";
+import type { CSSProperties } from "react";
 
-const GANTT_BUILDING_HEADER_H = 32;
-const VIRTUALIZE_MIN_ITEMS = 16;
 const EMPTY_OCCUPANCY_SEGMENTS: OccupancySegment[] = [];
 const EMPTY_ROOM_TODAY_FLAGS: RoomTodayFlags = {
   arrival: false,
@@ -48,24 +36,6 @@ export type GanttBuildingGroup = {
 type VirtualItem =
   | { kind: "building"; group: GanttBuildingGroup }
   | { kind: "room"; room: GanttRoom; dimmed?: boolean };
-
-function GanttVirtualSpacer({ height }: { height: number }) {
-  if (height <= 0) return null;
-  return (
-    <tr className="gantt-virtual-spacer" aria-hidden>
-      <td
-        colSpan={2}
-        style={{
-          height,
-          padding: 0,
-          border: "none",
-          lineHeight: 0,
-          verticalAlign: "top",
-        }}
-      />
-    </tr>
-  );
-}
 
 const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   group,
@@ -138,8 +108,6 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
 });
 
 export function GanttVirtualizedBody({
-  shellRef,
-  theadRef,
   groupByBuilding,
   buildingGroups,
   filteredRooms,
@@ -165,8 +133,6 @@ export function GanttVirtualizedBody({
   dayGridOptions,
   emptyMessage,
 }: {
-  shellRef: RefObject<HTMLElement | null>;
-  theadRef: RefObject<HTMLElement | null>;
   groupByBuilding: boolean;
   buildingGroups: GanttBuildingGroup[];
   filteredRooms: GanttRoom[];
@@ -195,21 +161,6 @@ export function GanttVirtualizedBody({
   dayGridOptions?: GanttDayGridOptions;
   emptyMessage?: string;
 }) {
-  const tbodyRef = useRef<HTMLTableSectionElement>(null);
-  const remeasureRef = useRef<() => void>(() => {});
-  const remeasureQueuedRef = useRef(false);
-
-  const queueRemeasure = useCallback(() => {
-    if (remeasureQueuedRef.current) return;
-    remeasureQueuedRef.current = true;
-    requestAnimationFrame(() => {
-      remeasureQueuedRef.current = false;
-      remeasureRef.current();
-    });
-  }, []);
-
-  const getScrollMargin = useScrollMargin(shellRef, theadRef, queueRemeasure);
-
   const virtualItems = useMemo((): VirtualItem[] => {
     if (groupByBuilding) {
       const items: VirtualItem[] = [];
@@ -236,42 +187,6 @@ export function GanttVirtualizedBody({
     focusBuildingId,
     groupByBuilding,
   ]);
-
-  const virtualItemsRef = useRef(virtualItems);
-  virtualItemsRef.current = virtualItems;
-
-  const virtualStructureKey = useMemo(
-    () =>
-      virtualItems
-        .map((item) =>
-          item.kind === "building"
-            ? `b:${item.group.buildingId}`
-            : `r:${item.room.id}`
-        )
-        .join("|"),
-    [virtualItems]
-  );
-
-  const estimateSize = useCallback((index: number) => {
-    const item = virtualItemsRef.current[index];
-    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : GANTT_ROW_H;
-  }, [virtualStructureKey]);
-
-  const shouldVirtualize = virtualItems.length >= VIRTUALIZE_MIN_ITEMS;
-
-  const { range, paddingTop, paddingBottom, remeasure } = useWindowVirtualRange({
-    count: virtualItems.length,
-    estimateSize,
-    getScrollMargin,
-    overscan: 5,
-    enabled: shouldVirtualize,
-  });
-
-  remeasureRef.current = remeasure;
-
-  const visibleItems = shouldVirtualize
-    ? virtualItems.slice(range.start, range.end)
-    : virtualItems;
 
   const renderRoomRow = (room: GanttRoom, dimmed?: boolean) => (
     <GanttRoomRow
@@ -303,9 +218,8 @@ export function GanttVirtualizedBody({
   );
 
   return (
-    <tbody ref={tbodyRef}>
-      {shouldVirtualize && <GanttVirtualSpacer height={paddingTop} />}
-      {visibleItems.map((item) => {
+    <tbody>
+      {virtualItems.map((item) => {
         if (item.kind === "building") {
           const collapsed = collapsedBuildings.has(item.group.buildingId);
           const focused = focusBuildingId === item.group.buildingId;
@@ -328,7 +242,6 @@ export function GanttVirtualizedBody({
           </Fragment>
         );
       })}
-      {shouldVirtualize && <GanttVirtualSpacer height={paddingBottom} />}
       {filteredRooms.length === 0 && emptyMessage && (
         <tr>
           <td colSpan={2} className="px-4 py-12 text-center text-sm text-zinc-500">
@@ -338,58 +251,4 @@ export function GanttVirtualizedBody({
       )}
     </tbody>
   );
-}
-
-/**
- * List offset for window-scroll virtualization.
- * Anchored on gantt shell + thead — NOT tbody (virtual spacers would feedback-loop).
- */
-function useScrollMargin(
-  shellRef: RefObject<HTMLElement | null>,
-  theadRef: RefObject<HTMLElement | null>,
-  onMarginChange: () => void
-) {
-  const marginRef = useRef(0);
-  const onMarginChangeRef = useRef(onMarginChange);
-  onMarginChangeRef.current = onMarginChange;
-
-  const getScrollMargin = useCallback(() => marginRef.current, []);
-
-  useEffect(() => {
-    const shell = shellRef.current;
-    if (!shell) return;
-
-    let frame = 0;
-    const measure = () => {
-      const shellTop = shell.getBoundingClientRect().top + window.scrollY;
-      const theadHeight = theadRef.current?.getBoundingClientRect().height ?? 0;
-      const next = shellTop + theadHeight;
-      if (Math.abs(marginRef.current - next) < 1) return;
-      marginRef.current = next;
-      onMarginChangeRef.current();
-    };
-    const schedule = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(measure);
-    };
-
-    schedule();
-    const ro = new ResizeObserver(schedule);
-    ro.observe(shell);
-    const thead = theadRef.current;
-    if (thead) ro.observe(thead);
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
-    window.visualViewport?.addEventListener("resize", schedule);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      ro.disconnect();
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      window.visualViewport?.removeEventListener("resize", schedule);
-    };
-  }, [shellRef, theadRef]);
-
-  return getScrollMargin;
 }
