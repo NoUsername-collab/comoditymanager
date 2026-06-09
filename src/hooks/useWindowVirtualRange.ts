@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export function useWindowVirtualRange({
   count,
@@ -32,11 +32,17 @@ export function useWindowVirtualRange({
     end: enabled ? Math.min(count, overscan * 2 + 1) : count,
   }));
 
+  const measuringRef = useRef(false);
+
   const measure = useCallback(() => {
+    if (measuringRef.current) return;
+    measuringRef.current = true;
+
     if (!enabled || count === 0) {
       setRange((prev) =>
         prev.start === 0 && prev.end === count ? prev : { start: 0, end: count }
       );
+      measuringRef.current = false;
       return;
     }
 
@@ -54,10 +60,12 @@ export function useWindowVirtualRange({
 
     if (viewBottom < listTop) {
       applyRange(0, Math.min(count, overscan * 2));
+      measuringRef.current = false;
       return;
     }
     if (viewTop > listBottom) {
       applyRange(Math.max(0, count - overscan * 2), count);
+      measuringRef.current = false;
       return;
     }
 
@@ -86,6 +94,8 @@ export function useWindowVirtualRange({
       Math.max(0, start - overscan),
       Math.min(count, end + overscan)
     );
+
+    measuringRef.current = false;
   }, [count, enabled, getScrollMargin, offsets, overscan, totalSize]);
 
   useEffect(() => {

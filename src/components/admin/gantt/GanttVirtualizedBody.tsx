@@ -138,6 +138,8 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
 });
 
 export function GanttVirtualizedBody({
+  shellRef,
+  theadRef,
   groupByBuilding,
   buildingGroups,
   filteredRooms,
@@ -163,6 +165,8 @@ export function GanttVirtualizedBody({
   dayGridOptions,
   emptyMessage,
 }: {
+  shellRef: RefObject<HTMLElement | null>;
+  theadRef: RefObject<HTMLElement | null>;
   groupByBuilding: boolean;
   buildingGroups: GanttBuildingGroup[];
   filteredRooms: GanttRoom[];
@@ -193,10 +197,18 @@ export function GanttVirtualizedBody({
 }) {
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
   const remeasureRef = useRef<() => void>(() => {});
+  const remeasureQueuedRef = useRef(false);
 
-  const getScrollMargin = useScrollMargin(tbodyRef, () => {
-    remeasureRef.current();
-  });
+  const queueRemeasure = useCallback(() => {
+    if (remeasureQueuedRef.current) return;
+    remeasureQueuedRef.current = true;
+    requestAnimationFrame(() => {
+      remeasureQueuedRef.current = false;
+      remeasureRef.current();
+    });
+  }, []);
+
+  const getScrollMargin = useScrollMargin(shellRef, theadRef, queueRemeasure);
 
   const virtualItems = useMemo((): VirtualItem[] => {
     if (groupByBuilding) {
@@ -256,10 +268,6 @@ export function GanttVirtualizedBody({
   });
 
   remeasureRef.current = remeasure;
-
-  useEffect(() => {
-    remeasureRef.current();
-  }, [virtualStructureKey, viewRange.periodKey]);
 
   const visibleItems = shouldVirtualize
     ? virtualItems.slice(range.start, range.end)
@@ -332,8 +340,13 @@ export function GanttVirtualizedBody({
   );
 }
 
+/**
+ * List offset for window-scroll virtualization.
+ * Anchored on gantt shell + thead — NOT tbody (virtual spacers would feedback-loop).
+ */
 function useScrollMargin(
-  tbodyRef: RefObject<HTMLTableSectionElement | null>,
+  shellRef: RefObject<HTMLElement | null>,
+  theadRef: RefObject<HTMLElement | null>,
   onMarginChange: () => void
 ) {
   const marginRef = useRef(0);
@@ -343,12 +356,14 @@ function useScrollMargin(
   const getScrollMargin = useCallback(() => marginRef.current, []);
 
   useEffect(() => {
-    const el = tbodyRef.current;
-    if (!el) return;
+    const shell = shellRef.current;
+    if (!shell) return;
 
     let frame = 0;
     const measure = () => {
-      const next = el.getBoundingClientRect().top + window.scrollY;
+      const shellTop = shell.getBoundingClientRect().top + window.scrollY;
+      const theadHeight = theadRef.current?.getBoundingClientRect().height ?? 0;
+      const next = shellTop + theadHeight;
       if (Math.abs(marginRef.current - next) < 1) return;
       marginRef.current = next;
       onMarginChangeRef.current();
@@ -360,7 +375,9 @@ function useScrollMargin(
 
     schedule();
     const ro = new ResizeObserver(schedule);
-    ro.observe(el);
+    ro.observe(shell);
+    const thead = theadRef.current;
+    if (thead) ro.observe(thead);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
     window.visualViewport?.addEventListener("resize", schedule);
@@ -372,7 +389,7 @@ function useScrollMargin(
       window.removeEventListener("resize", schedule);
       window.visualViewport?.removeEventListener("resize", schedule);
     };
-  }, [tbodyRef]);
+  }, [shellRef, theadRef]);
 
   return getScrollMargin;
 }
