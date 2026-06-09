@@ -1,3 +1,5 @@
+"use client";
+
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 
 type Labels = {

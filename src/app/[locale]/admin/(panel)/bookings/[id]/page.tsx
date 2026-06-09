@@ -24,6 +24,7 @@ import {
   getCheckinByBookingId,
   getCheckinSettings,
 } from "@/services/checkin";
+import { attachCheckinRecordState } from "@/services/checkin/attach-booking-state";
 import type { BookingForCheckin } from "@/domain/checkin/types";
 import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
 import {
@@ -106,6 +107,12 @@ export default async function BookingDetailPage({
   const { dedupCandidates, existingCheckin } = bookingExtras;
   const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
 
+  const [bookingWithCheckin] = await attachCheckinRecordState([booking]);
+  const operativeBooking = bookingWithCheckin ?? booking;
+  const checkedInRooms = operativeBooking.checked_in_rooms ?? [];
+  const hasCheckinRecord =
+    !!operativeBooking.has_checkin_record || !!existingCheckin;
+
   const bookingForCheckin: BookingForCheckin = {
     id: booking.id,
     status: booking.status,
@@ -120,6 +127,7 @@ export default async function BookingDetailPage({
     num_adults: booking.num_adults,
     num_children: booking.num_children ?? 0,
     room_names: booking.room_names,
+    checked_in_rooms: checkedInRooms,
   };
 
   const nights = stayNightCount(booking.check_in, booking.check_out);
@@ -374,11 +382,15 @@ export default async function BookingDetailPage({
                 guestPhone={booking.guest_phone}
                 plannedCheckIn={booking.check_in}
                 plannedCheckOut={booking.check_out}
-                actualCheckInAt={booking.actual_check_in_at}
+                actualCheckInAt={
+                  operativeBooking.actual_check_in_at ?? booking.actual_check_in_at
+                }
                 actualCheckOutAt={booking.actual_check_out_at}
+                roomNames={booking.room_names}
+                checkedInRooms={checkedInRooms}
                 bookingForCheckin={bookingForCheckin}
                 checkinSettings={effectiveCheckinSettings}
-                hasExistingCheckin={!!existingCheckin}
+                hasCheckinRecord={hasCheckinRecord}
               />
             </div>
           )}

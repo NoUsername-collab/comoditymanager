@@ -13,11 +13,17 @@ import {
   undoBookingCheckOutAction,
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
-import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
+import {
+  canOfferOperativeCheckIn,
+  isOperativeCheckInDay,
+} from "@/domain/booking/operative-checkin";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { CheckinWizardLauncher } from "@/components/admin/checkin/CheckinWizardLauncher";
+import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
+import { StayCheckinProgress } from "@/components/admin/cazari/StayCheckinProgress";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -28,9 +34,11 @@ type Props = {
   plannedCheckOut: string;
   actualCheckInAt: string | null;
   actualCheckOutAt: string | null;
+  roomNames?: string[];
+  checkedInRooms?: string[];
   bookingForCheckin?: BookingForCheckin;
   checkinSettings?: CheckinSettings;
-  hasExistingCheckin?: boolean;
+  hasCheckinRecord?: boolean;
 };
 
 export function BookingOperationalPanel({
@@ -41,39 +49,111 @@ export function BookingOperationalPanel({
   plannedCheckOut,
   actualCheckInAt,
   actualCheckOutAt,
+  roomNames = [],
+  checkedInRooms = [],
   bookingForCheckin,
   checkinSettings,
-  hasExistingCheckin = false,
+  hasCheckinRecord = false,
 }: Props) {
   const router = useRouter();
   const t = useTranslations("admin.operational");
   const tCheckIn = useTranslations("admin.checkIn");
+  const tCazari = useTranslations("admin.pages.cazari");
   const tCommon = useTranslations("common");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
   const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false);
   const [checkinModalOpen, setCheckinModalOpen] = useState(false);
+  const [editDialog, setEditDialog] = useState<{
+    mode: "checkin" | "checkout";
+  } | null>(null);
+
   const hasPhone = isValidGuestPhone(guestPhone);
   const today = todayIso();
-  const canCheckIn = canOfferOperativeCheckIn({
-    status: "confirmata",
-    plannedCheckIn,
-    today,
-    actualCheckInAt,
-    actualCheckOutAt,
-  });
-  const checkInBlockedTitle = !hasPhone
-    ? t("phoneRequiredForCheckIn")
-    : !canCheckIn
-      ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
-      : "";
+  const roomProgress = computeRoomCheckinProgress(roomNames, checkedInRooms);
 
-  const useFullCheckinWizard = canCheckIn && !hasExistingCheckin;
+  const canWizardCheckIn =
+    canOfferOperativeCheckIn({
+      status: "confirmata",
+      plannedCheckIn,
+      today,
+      actualCheckInAt,
+      actualCheckOutAt,
+      hasCheckinRecord,
+      roomNames,
+      checkedInRooms,
+    }) && hasPhone;
 
-  function openCheckIn() {
-    if (!useFullCheckinWizard) return;
+  const isArrivalDay = isOperativeCheckInDay(plannedCheckIn, today);
+  const needsWizardForFisa =
+    canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
+  const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
+  const canContinueRooms =
+    canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
+  const canEditCheckInTime =
+    !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
+  const checkInEnabled =
+    canNewCheckIn ||
+    canContinueRooms ||
+    needsWizardForFisa ||
+    canEditCheckInTime;
+
+  const canCheckOut =
+    !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
+  const canEditCheckOut = !!actualCheckOutAt;
+
+  const checkInLabel = needsWizardForFisa
+    ? tCazari("completeCheckinForFisa")
+    : canEditCheckInTime
+      ? `${tCommon("edit")} ${t("checkInLabel")}`
+      : canContinueRooms
+        ? roomProgress.remaining === 1
+          ? tCazari("checkInNextRoom")
+          : tCazari("checkInContinue")
+        : tCheckIn("startCheckin");
+
+  const checkInBlockedTitle = canEditCheckInTime
+    ? ""
+    : !hasPhone
+      ? t("phoneRequiredForCheckIn")
+      : !isArrivalDay && !canContinueRooms
+        ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
+        : "";
+
+  const checkoutBlockedTitle = canEditCheckOut
+    ? ""
+    : actualCheckOutAt
+      ? tCazari("checkoutAlreadyDone")
+      : !actualCheckInAt
+        ? tCazari("checkoutNeedsCheckin")
+        : !roomProgress.isComplete
+          ? tCazari("checkInContinue")
+          : "";
+
+  const canEmitFisa = hasCheckinRecord && roomProgress.isComplete;
+
+  const checkInStepDone =
+    roomProgress.isComplete || !!actualCheckInAt || roomProgress.checked > 0;
+  const checkOutStepDone = !!actualCheckOutAt;
+  const connectorDone = checkInStepDone && !actualCheckOutAt;
+
+  function openCheckInWizard() {
+    if (canEditCheckInTime) {
+      setEditDialog({ mode: "checkin" });
+      return;
+    }
+    if (!checkInEnabled) return;
     setCheckinModalOpen(true);
+  }
+
+  function openCheckOut() {
+    if (canEditCheckOut) {
+      setEditDialog({ mode: "checkout" });
+      return;
+    }
+    if (!canCheckOut) return;
+    setCheckoutDialogOpen(true);
   }
 
   function undoCheckIn() {
@@ -106,76 +186,187 @@ export function BookingOperationalPanel({
     });
   }
 
-  const step = actualCheckOutAt ? 2 : actualCheckInAt ? 1 : 0;
+  const progressTitle = roomProgress.isComplete
+    ? tCazari("checkinAllRoomsDone")
+    : tCazari("checkinRoomsProgress", {
+        checked: roomProgress.checked,
+        total: roomProgress.total,
+      });
+
+  const showRoomProgress =
+    roomProgress.isMultiRoom || roomProgress.checked > 0;
 
   return (
-    <div className="bd-ops">
+    <div className="bd-ops bd-ops--vertical">
       <p className="bd-card__title">{t("title")}</p>
 
-      <div className="bd-ops__steps">
-        <div className={`bd-ops__step ${step >= 0 ? "bd-ops__step--active" : ""}`}>
-          <span className="bd-ops__step-dot" />
-          <span className="bd-ops__step-label">{t("checkInLabel")}</span>
-          <span className="bd-ops__step-value">
-            {actualCheckInAt ? formatOperationalTimestamp(actualCheckInAt) : "—"}
-          </span>
-        </div>
-        <div className={`bd-ops__step-line ${step >= 1 ? "bd-ops__step-line--done" : ""}`} />
-        <div className={`bd-ops__step ${step >= 2 ? "bd-ops__step--active" : ""}`}>
-          <span className="bd-ops__step-dot" />
-          <span className="bd-ops__step-label">{t("checkOutLabel")}</span>
-          <span className="bd-ops__step-value">
-            {actualCheckOutAt ? formatOperationalTimestamp(actualCheckOutAt) : "—"}
-          </span>
-        </div>
+      <div className="bd-ops__timeline">
+        {/* ── Check-in (sus) ── */}
+        <section
+          className={[
+            "bd-ops__lane",
+            checkInStepDone && "bd-ops__lane--done",
+            roomProgress.isPartial && "bd-ops__lane--partial",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          <div className="bd-ops__lane-head">
+            <span className="bd-ops__lane-dot" aria-hidden />
+            <div className="bd-ops__lane-meta">
+              <p className="bd-ops__lane-label">{t("checkInLabel")}</p>
+              <p className="bd-ops__lane-value">
+                {actualCheckInAt
+                  ? formatOperationalTimestamp(actualCheckInAt)
+                  : t("notRecorded")}
+              </p>
+            </div>
+            {canEditCheckInTime ? (
+              <button
+                type="button"
+                className="bd-ops__lane-edit"
+                disabled={pending}
+                onClick={() => setEditDialog({ mode: "checkin" })}
+              >
+                {tCommon("edit")}
+              </button>
+            ) : null}
+          </div>
+
+          {showRoomProgress ? (
+            <div className="bd-ops__progress">
+              <StayCheckinProgress
+                roomNames={roomNames}
+                checkedInRooms={checkedInRooms}
+                isConfirmed
+                progressTitle={progressTitle}
+                labels={{
+                  roomChecked: tCazari("checkinRoomChecked"),
+                  roomPending: tCazari("checkinRoomPending"),
+                  allRoomsDone: tCazari("checkinAllRoomsDone"),
+                  partialHint: tCazari("checkinPartialHint"),
+                }}
+              />
+            </div>
+          ) : null}
+
+          <div className="bd-ops__lane-actions">
+            {(canWizardCheckIn || canEditCheckInTime) && !actualCheckOutAt && (
+              <button
+                type="button"
+                className={[
+                  "bd-ops__btn bd-ops__btn--primary checkin-start-btn",
+                  canContinueRooms && "checkin-start-btn--continue",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                disabled={pending || !checkInEnabled}
+                title={checkInBlockedTitle}
+                onClick={openCheckInWizard}
+              >
+                {!canEditCheckInTime && (
+                  <span className="checkin-start-btn__icon" aria-hidden>
+                    {canContinueRooms ? "🛏" : "🔑"}
+                  </span>
+                )}
+                {checkInLabel}
+              </button>
+            )}
+            {actualCheckInAt && !actualCheckOutAt && (
+              <button
+                type="button"
+                className="bd-ops__btn bd-ops__btn--ghost"
+                disabled={pending}
+                onClick={undoCheckIn}
+              >
+                {t("undoCheckIn")}
+              </button>
+            )}
+          </div>
+        </section>
+
+        <div
+          className={[
+            "bd-ops__connector",
+            connectorDone && "bd-ops__connector--done",
+            checkOutStepDone && "bd-ops__connector--complete",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          aria-hidden
+        />
+
+        {/* ── Check-out (jos) ── */}
+        <section
+          className={[
+            "bd-ops__lane",
+            "bd-ops__lane--checkout",
+            checkOutStepDone && "bd-ops__lane--done",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          <div className="bd-ops__lane-head">
+            <span className="bd-ops__lane-dot" aria-hidden />
+            <div className="bd-ops__lane-meta">
+              <p className="bd-ops__lane-label">{t("checkOutLabel")}</p>
+              <p className="bd-ops__lane-value">
+                {actualCheckOutAt
+                  ? formatOperationalTimestamp(actualCheckOutAt)
+                  : t("notRecorded")}
+              </p>
+            </div>
+            {canEditCheckOut ? (
+              <button
+                type="button"
+                className="bd-ops__lane-edit"
+                disabled={pending}
+                onClick={() => setEditDialog({ mode: "checkout" })}
+              >
+                {tCommon("edit")}
+              </button>
+            ) : null}
+          </div>
+
+          <div className="bd-ops__lane-actions">
+            {(canCheckOut || canEditCheckOut) && (
+              <button
+                type="button"
+                className={[
+                  "bd-ops__btn",
+                  canCheckOut ? "bd-ops__btn--primary" : "bd-ops__btn--ghost",
+                ].join(" ")}
+                disabled={pending || (!canCheckOut && !canEditCheckOut)}
+                title={checkoutBlockedTitle}
+                onClick={openCheckOut}
+              >
+                {canEditCheckOut
+                  ? `${tCommon("edit")} ${t("checkOutLabel")}`
+                  : t("checkOutAction")}
+              </button>
+            )}
+            {actualCheckOutAt && (
+              <button
+                type="button"
+                className="bd-ops__btn bd-ops__btn--ghost"
+                disabled={pending}
+                onClick={undoCheckOut}
+              >
+                {t("undoCheckOut")}
+              </button>
+            )}
+          </div>
+        </section>
       </div>
 
-      <div className="bd-ops__actions">
-        {canCheckIn && (
-          <button
-            type="button"
-            className="bd-ops__btn bd-ops__btn--primary checkin-start-btn"
-            disabled={pending || !hasPhone || !useFullCheckinWizard}
-            title={checkInBlockedTitle}
-            onClick={openCheckIn}
-          >
-            <span className="checkin-start-btn__icon" aria-hidden>
-              🔑
-            </span>
-            {tCheckIn("startCheckin")}
-          </button>
-        )}
-        {actualCheckInAt && !actualCheckOutAt && (
-          <>
-            <button
-              type="button"
-              className="bd-ops__btn bd-ops__btn--primary"
-              disabled={pending}
-              onClick={() => setCheckoutDialogOpen(true)}
-            >
-              {t("checkOutAction")}
-            </button>
-            <button
-              type="button"
-              className="bd-ops__btn bd-ops__btn--ghost"
-              disabled={pending}
-              onClick={undoCheckIn}
-            >
-              {t("undoCheckIn")}
-            </button>
-          </>
-        )}
-        {actualCheckOutAt && (
-          <button
-            type="button"
-            className="bd-ops__btn bd-ops__btn--ghost"
-            disabled={pending}
-            onClick={undoCheckOut}
-          >
-            {t("undoCheckOut")}
-          </button>
-        )}
-      </div>
+      {canEmitFisa ? (
+        <div className="bd-ops__footer">
+          <TouristSheetLauncher
+            bookingId={bookingId}
+            label={tCazari("emitFisa")}
+          />
+        </div>
+      ) : null}
 
       <CheckinWizardLauncher
         bookingId={bookingId}
@@ -196,6 +387,25 @@ export function BookingOperationalPanel({
         onClose={() => setCheckoutDialogOpen(false)}
         onSuccess={() => router.refresh()}
       />
+
+      {editDialog ? (
+        <GanttCheckTimeDialog
+          open
+          mode={editDialog.mode}
+          intent="edit"
+          bookingId={bookingId}
+          guestName={guestName}
+          plannedCheckIn={plannedCheckIn}
+          plannedCheckOut={plannedCheckOut}
+          actualCheckInAt={actualCheckInAt}
+          actualCheckOutAt={actualCheckOutAt}
+          onClose={() => setEditDialog(null)}
+          onSuccess={() => {
+            setEditDialog(null);
+            router.refresh();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -557,6 +557,135 @@
 .bd-ops__btn--ghost:hover:not(:disabled) { background: var(--surface-2, #f4f4f5); color: var(--admin-text, #18181b); }
 .bd-ops__btn--ghost:active:not(:disabled) { transform: scale(0.97); filter: brightness(0.92); transition-duration: 0.06s; }
 
+/* ── Vertical reception timeline (check-in sus, check-out jos) ─ */
+.bd-ops--vertical .bd-ops__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0.45rem 0 0.35rem;
+}
+
+.bd-ops__lane {
+  position: relative;
+  padding: 0.55rem 0.6rem 0.6rem 0.75rem;
+  border-radius: 0.55rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
+}
+
+.bd-ops__lane--partial {
+  border-color: #fcd34d;
+  background: linear-gradient(135deg, #fffbeb 0%, #fff 72%);
+}
+
+.bd-ops__lane--done {
+  border-color: #6ee7b7;
+  background: linear-gradient(135deg, #ecfdf5 0%, #fff 72%);
+}
+
+.bd-ops__lane-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.bd-ops__lane-dot {
+  flex-shrink: 0;
+  width: 0.72rem;
+  height: 0.72rem;
+  margin-top: 0.15rem;
+  border-radius: 50%;
+  background: var(--admin-panel-border, #d4d4d8);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--admin-panel-border, #d4d4d8);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.bd-ops__lane--done .bd-ops__lane-dot,
+.bd-ops__lane--partial .bd-ops__lane-dot {
+  background: var(--admin-accent, #059669);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--admin-accent, #059669);
+}
+
+.bd-ops__lane-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.bd-ops__lane-label {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.bd-ops__lane-value {
+  margin: 0.1rem 0 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--admin-text, #18181b);
+  font-variant-numeric: tabular-nums;
+}
+
+.bd-ops__lane-edit {
+  flex-shrink: 0;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 0.35rem;
+  cursor: pointer;
+}
+
+.bd-ops__lane-edit:hover:not(:disabled) {
+  background: #fde68a;
+}
+
+.bd-ops__progress {
+  margin: 0.45rem 0 0.15rem;
+}
+
+.bd-ops__progress .stay-checkin-progress {
+  margin: 0;
+}
+
+.bd-ops__lane-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.bd-ops__connector {
+  width: 2px;
+  min-height: 1.1rem;
+  margin: 0.15rem 0 0.15rem 1.05rem;
+  background: var(--admin-panel-border, #d4d4d8);
+  border-radius: 1px;
+  transition: background 0.2s;
+}
+
+.bd-ops__connector--done {
+  background: var(--admin-accent, #059669);
+}
+
+.bd-ops__connector--complete {
+  opacity: 0.55;
+}
+
+.bd-ops__footer {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed var(--admin-panel-border, #e4e4e7);
+}
+
+.bd-ops--vertical .checkin-start-btn--continue {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
 /* ── Phone warning ────────────────────────────────────────────── */
 .bd-phone-warn {
   border-radius: 0.55rem;
