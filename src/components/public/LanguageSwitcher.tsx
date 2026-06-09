@@ -1,8 +1,15 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useLocale } from "next-intl";
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  startTransition,
+} from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
@@ -59,12 +66,103 @@ type MenuPos = { top: number; left: number };
 
 const MENU_ESTIMATE = { width: 52, height: 132 };
 
-export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
+type LanguageSwitcherProps = {
+  compact?: boolean;
+  /** Inline row of flags — reliable inside drawers and nested menus. */
+  variant?: "dropdown" | "inline";
+};
+
+export function LanguageSwitcher({
+  compact = false,
+  variant = "dropdown",
+}: LanguageSwitcherProps) {
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const gbClipId = useId();
+
+  const labels: Record<string, string> = {
+    ro: tCommon("romanian"),
+    en: tCommon("english"),
+    bg: tCommon("bulgarian"),
+  };
+
+  const switchLocale = useCallback(
+    (next: string) => {
+      if (next === locale) return;
+      startTransition(() => {
+        router.replace(pathname, { locale: next });
+      });
+    },
+    [locale, pathname, router]
+  );
+
+  if (variant === "inline") {
+    const flagSize = compact ? 18 : 20;
+    return (
+      <div
+        data-language-switcher-root
+        className={[
+          "language-switcher language-switcher--inline",
+          compact && "language-switcher--compact",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        role="group"
+        aria-label={tCommon("language")}
+      >
+        <div className="language-switcher__inline-options">
+          {routing.locales.map((l) => (
+            <button
+              key={l}
+              type="button"
+              aria-pressed={l === locale}
+              aria-label={labels[l]}
+              title={labels[l]}
+              onClick={() => switchLocale(l)}
+              className={[
+                "language-switcher__option language-switcher__option--inline",
+                l === locale && "language-switcher__option--active",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <Flag code={l} size={flagSize} gbClipId={`${gbClipId}-${l}`} />
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <LanguageSwitcherDropdown
+      compact={compact}
+      locale={locale}
+      gbClipId={gbClipId}
+      labels={labels}
+      languageLabel={tCommon("language")}
+      switchLocale={switchLocale}
+    />
+  );
+}
+
+function LanguageSwitcherDropdown({
+  compact,
+  locale,
+  gbClipId,
+  labels,
+  languageLabel,
+  switchLocale,
+}: {
+  compact: boolean;
+  locale: string;
+  gbClipId: string;
+  labels: Record<string, string>;
+  languageLabel: string;
+  switchLocale: (next: string) => void;
+}) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -85,7 +183,9 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
       : MENU_ESTIMATE;
 
     const pos = computeFixedDropdownPosition(trigger, menuSize);
-    setMenuPos(pos);
+    setMenuPos((prev) =>
+      prev && prev.top === pos.top && prev.left === pos.left ? prev : pos
+    );
   }, []);
 
   useLayoutEffect(() => {
@@ -124,11 +224,13 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
-  function switchLocale(next: string) {
-    setOpen(false);
-    if (next === locale) return;
-    router.replace(pathname, { locale: next });
-  }
+  const pickLocale = useCallback(
+    (next: string) => {
+      setOpen(false);
+      switchLocale(next);
+    },
+    [switchLocale]
+  );
 
   function toggleOpen() {
     if (!open) {
@@ -142,55 +244,63 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
     setOpen(false);
   }
 
-  const labels: Record<string, string> = {
-    ro: tCommon("romanian"),
-    en: tCommon("english"),
-    bg: tCommon("bulgarian"),
-  };
-
-  const menu =
-    open ? (
-      <div
-        ref={menuRef}
-        role="listbox"
-        aria-label={tCommon("language")}
-        className="language-switcher__menu language-switcher__menu--portal fixed min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-card,#fff)] p-1 shadow-lg"
-        style={
-          menuPos
-            ? { top: menuPos.top, left: menuPos.left }
-            : { visibility: "hidden", pointerEvents: "none" }
-        }
-      >
-        {routing.locales.map((l) => (
-          <button
-            key={l}
-            type="button"
-            role="option"
-            aria-selected={l === locale}
-            onClick={() => switchLocale(l)}
-            aria-label={labels[l]}
-            title={labels[l]}
-            className={[
-              "language-switcher__option flex w-full items-center justify-center rounded-lg px-2 py-1.5 transition",
-              l === locale
-                ? "bg-[var(--site-accent)]"
-                : "hover:bg-[color-mix(in_srgb,var(--site-card)_76%,var(--accent-muted))]",
-            ].join(" ")}
-          >
-            <Flag code={l} gbClipId={`${gbClipId}-${l}`} />
-          </button>
-        ))}
-      </div>
-    ) : null;
+  const menu = open ? (
+    <div
+      ref={menuRef}
+      data-language-switcher-menu
+      role="listbox"
+      aria-label={languageLabel}
+      onPointerDown={(event) => event.stopPropagation()}
+      className="language-switcher__menu language-switcher__menu--portal fixed min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-card,#fff)] p-1 shadow-lg"
+      style={
+        menuPos
+          ? { top: menuPos.top, left: menuPos.left }
+          : { visibility: "hidden", pointerEvents: "none" }
+      }
+    >
+      {routing.locales.map((l) => (
+        <button
+          key={l}
+          type="button"
+          role="option"
+          aria-selected={l === locale}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            pickLocale(l);
+          }}
+          aria-label={labels[l]}
+          title={labels[l]}
+          className={[
+            "language-switcher__option flex w-full items-center justify-center rounded-lg px-2 py-1.5 transition",
+            l === locale
+              ? "bg-[var(--site-accent)]"
+              : "hover:bg-[color-mix(in_srgb,var(--site-card)_76%,var(--accent-muted))]",
+          ].join(" ")}
+        >
+          <Flag code={l} gbClipId={`${gbClipId}-${l}`} />
+        </button>
+      ))}
+    </div>
+  ) : null;
 
   return (
-    <div className={["language-switcher relative", compact && "language-switcher--compact"].filter(Boolean).join(" ")}>
+    <div
+      data-language-switcher-root
+      className={[
+        "language-switcher relative",
+        compact && "language-switcher--compact",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      onPointerDown={(event) => event.stopPropagation()}
+    >
       <button
         ref={triggerRef}
         type="button"
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={tCommon("language")}
+        aria-label={languageLabel}
         onClick={toggleOpen}
         className={[
           "language-switcher__trigger cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] leading-none flex items-center",
@@ -200,7 +310,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         <Flag code={locale} gbClipId={gbClipId} />
       </button>
 
-      {portalReady && menu && menuPos ? createPortal(menu, document.body) : null}
+      {portalReady && menu ? createPortal(menu, document.body) : null}
     </div>
   );
 }

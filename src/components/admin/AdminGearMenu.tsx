@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { HudIconGear } from "@/components/admin/AdminHudIcons";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { computeFixedDropdownPosition } from "@/lib/ui/viewport-position";
+import { isLanguageSwitcherEventTarget } from "@/lib/i18n/language-switcher-dom";
 
 type MenuPos = { top: number; left: number };
 
@@ -32,7 +33,9 @@ export function AdminGearMenu({ children }: { children: React.ReactNode }) {
       : MENU_ESTIMATE;
 
     const pos = computeFixedDropdownPosition(trigger, menuSize, { gap: 6 });
-    setMenuPos(pos);
+    setMenuPos((prev) =>
+      prev && prev.top === pos.top && prev.left === pos.left ? prev : pos
+    );
   }, []);
 
   useLayoutEffect(() => {
@@ -62,6 +65,7 @@ export function AdminGearMenu({ children }: { children: React.ReactNode }) {
       const target = e.target as Node;
       if (triggerRef.current?.contains(target)) return;
       if (menuRef.current?.contains(target)) return;
+      if (isLanguageSwitcherEventTarget(e.target)) return;
       setOpen(false);
     }
     function onKeyDown(e: KeyboardEvent) {

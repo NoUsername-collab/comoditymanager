@@ -13,6 +13,7 @@ import { isAdminTabActive } from "@/layout/mobile/admin-tabs";
 import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
 import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
 import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
+import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 
 export function AdminMobileMoreDrawer({
   open,
@@ -27,6 +28,7 @@ export function AdminMobileMoreDrawer({
 }) {
   const pathname = usePathname();
   const t = useTranslations("admin.nav");
+  const tCommon = useTranslations("common");
   const panelId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const links = filterAdminMoreLinks(ADMIN_MORE_LINKS, locationUnlocked);
@@ -107,6 +109,10 @@ export function AdminMobileMoreDrawer({
               </Link>
             );
           })}
+          <div className="ml-drawer__locale">
+            <span className="ml-drawer__locale-label">{tCommon("language")}</span>
+            <LanguageSwitcher variant="inline" />
+          </div>
         </nav>
       </div>
     </MobileDrawerPortal>

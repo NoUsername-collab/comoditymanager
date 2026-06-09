@@ -136,6 +136,7 @@ export function GanttCalendar({
 }) {
   const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
+  const buildingFallbackLabel = tCommon("building");
   const locale = useLocale();
   const touch = useIsTouchDevice();
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
@@ -183,7 +184,7 @@ export function GanttCalendar({
         layerFilter,
         focusDay,
         groupByBuilding,
-        buildingFallbackLabel: tCommon("building"),
+        buildingFallbackLabel,
       }),
     [
       rooms,
@@ -195,7 +196,7 @@ export function GanttCalendar({
       layerFilter,
       focusDay,
       groupByBuilding,
-      tCommon,
+      buildingFallbackLabel,
     ]
   );
 

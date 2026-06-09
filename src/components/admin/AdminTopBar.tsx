@@ -83,7 +83,7 @@ export async function AdminTopBar({
             <div className="admin-gear__footer">
               <div className="admin-gear__footer-lang">
                 <span className="admin-gear__footer-label">{tCommon("language")}</span>
-                <LanguageSwitcher compact />
+                <LanguageSwitcher compact variant="inline" />
               </div>
               {isAdmin ? (
                 <SimTriggerChip

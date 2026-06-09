@@ -23,7 +23,7 @@ export function HeaderLocaleSwitch({
       ].join(" ")}
       suppressHydrationWarning={suppressHydrationWarning}
     >
-      <LanguageSwitcher />
+      <LanguageSwitcher variant={slot === "drawer" ? "inline" : "dropdown"} />
     </div>
   );
 }

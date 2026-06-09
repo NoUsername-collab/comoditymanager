@@ -33,7 +33,9 @@ export function useWindowVirtualRange({
 
   const measure = useCallback(() => {
     if (!enabled || count === 0) {
-      setRange({ start: 0, end: count });
+      setRange((prev) =>
+        prev.start === 0 && prev.end === count ? prev : { start: 0, end: count }
+      );
       return;
     }
 
@@ -42,15 +44,18 @@ export function useWindowVirtualRange({
     const listTop = scrollMargin;
     const listBottom = listTop + totalSize;
 
+    const applyRange = (start: number, end: number) => {
+      setRange((prev) =>
+        prev.start === start && prev.end === end ? prev : { start, end }
+      );
+    };
+
     if (viewBottom < listTop) {
-      setRange({ start: 0, end: Math.min(count, overscan * 2) });
+      applyRange(0, Math.min(count, overscan * 2));
       return;
     }
     if (viewTop > listBottom) {
-      setRange({
-        start: Math.max(0, count - overscan * 2),
-        end: count,
-      });
+      applyRange(Math.max(0, count - overscan * 2), count);
       return;
     }
 
@@ -75,10 +80,10 @@ export function useWindowVirtualRange({
     }
     const end = lo;
 
-    setRange({
-      start: Math.max(0, start - overscan),
-      end: Math.min(count, end + overscan),
-    });
+    applyRange(
+      Math.max(0, start - overscan),
+      Math.min(count, end + overscan)
+    );
   }, [count, enabled, offsets, overscan, scrollMargin, totalSize]);
 
   useEffect(() => {

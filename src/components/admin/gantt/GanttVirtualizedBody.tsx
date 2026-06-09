@@ -222,13 +222,25 @@ export function GanttVirtualizedBody({
     groupByBuilding,
   ]);
 
-  const estimateSize = useCallback(
-    (index: number) =>
-      virtualItems[index]?.kind === "building"
-        ? GANTT_BUILDING_HEADER_H
-        : GANTT_ROW_H,
+  const virtualItemsRef = useRef(virtualItems);
+  virtualItemsRef.current = virtualItems;
+
+  const virtualStructureKey = useMemo(
+    () =>
+      virtualItems
+        .map((item) =>
+          item.kind === "building"
+            ? `b:${item.group.buildingId}`
+            : `r:${item.room.id}`
+        )
+        .join("|"),
     [virtualItems]
   );
+
+  const estimateSize = useCallback((index: number) => {
+    const item = virtualItemsRef.current[index];
+    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : GANTT_ROW_H;
+  }, [virtualStructureKey]);
 
   const shouldVirtualize = virtualItems.length >= VIRTUALIZE_MIN_ITEMS;
 
@@ -242,13 +254,7 @@ export function GanttVirtualizedBody({
 
   useEffect(() => {
     remeasure();
-  }, [
-    virtualItems.length,
-    collapsedBuildings,
-    focusBuildingId,
-    viewRange.periodKey,
-    remeasure,
-  ]);
+  }, [virtualStructureKey, viewRange.periodKey, remeasure]);
 
   const visibleItems = shouldVirtualize
     ? virtualItems.slice(range.start, range.end)
@@ -330,7 +336,8 @@ function useScrollMargin(tbodyRef: RefObject<HTMLTableSectionElement | null>) {
 
     let frame = 0;
     const measure = () => {
-      setScrollMargin(el.getBoundingClientRect().top + window.scrollY);
+      const next = el.getBoundingClientRect().top + window.scrollY;
+      setScrollMargin((prev) => (prev === next ? prev : next));
     };
     const schedule = () => {
       cancelAnimationFrame(frame);
