@@ -5,7 +5,7 @@ export type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
-export function isPwaInstalledInBrowser(
+export function isPwaStandaloneInBrowser(
   matchStandalone: (query: string) => boolean,
   iosStandalone: boolean
 ): boolean {
@@ -13,6 +13,18 @@ export function isPwaInstalledInBrowser(
     matchStandalone("(display-mode: standalone)") ||
     matchStandalone("(display-mode: fullscreen)") ||
     iosStandalone
+  );
+}
+
+/** @deprecated Use isPwaStandaloneInBrowser */
+export const isPwaInstalledInBrowser = isPwaStandaloneInBrowser;
+
+export function isPwaStandaloneClient(): boolean {
+  if (typeof window === "undefined") return false;
+  const nav = window.navigator as Navigator & { standalone?: boolean };
+  return isPwaStandaloneInBrowser(
+    (q) => window.matchMedia(q).matches,
+    nav.standalone === true
   );
 }
 
@@ -37,7 +49,7 @@ export function readPwaInstallContext(): {
   }
 
   const nav = window.navigator as Navigator & { standalone?: boolean };
-  const installed = isPwaInstalledInBrowser(
+  const installed = isPwaStandaloneInBrowser(
     (q) => window.matchMedia(q).matches,
     nav.standalone === true
   );
