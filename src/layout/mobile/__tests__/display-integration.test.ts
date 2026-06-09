@@ -1,21 +1,9 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   resolveAutoDisplayProfile,
   resolveDocumentLayout,
   resolveEffectiveLayoutChrome,
 } from "../display-integration";
-
-vi.mock("@/lib/pwa/install", () => ({
-  isPwaStandaloneClient: vi.fn(() => false),
-}));
-
-import { isPwaStandaloneClient } from "@/lib/pwa/install";
-
-const mockPwaStandalone = vi.mocked(isPwaStandaloneClient);
-
-afterEach(() => {
-  mockPwaStandalone.mockReturnValue(false);
-});
 
 describe("resolveAutoDisplayProfile", () => {
   it("uses narrow for phones in portrait and landscape", () => {
@@ -66,20 +54,5 @@ describe("resolveDocumentLayout", () => {
     expect(layout.displayProfile).toBe("narrow");
     expect(layout.chrome).toBe("compact");
     expect(layout.isManualLayout).toBe(false);
-  });
-
-  it("auto mode in installed PWA forces wide profile and chrome on phone", () => {
-    mockPwaStandalone.mockReturnValue(true);
-    const layout = resolveDocumentLayout("auto", 390, 844);
-    expect(layout.displayProfile).toBe("wide");
-    expect(layout.chrome).toBe("wide");
-    expect(layout.isManualLayout).toBe(true);
-  });
-});
-
-describe("resolveEffectiveLayoutChrome in PWA", () => {
-  it("uses wide chrome on phones when installed as PWA", () => {
-    mockPwaStandalone.mockReturnValue(true);
-    expect(resolveEffectiveLayoutChrome("auto", 390, 844)).toBe("wide");
   });
 });
