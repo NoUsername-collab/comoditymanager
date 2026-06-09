@@ -27,6 +27,8 @@ import type {
   CheckinSettings,
 } from "@/domain/checkin/types";
 import { getCheckinGuests } from "@/services/checkin/queries";
+import { syncBookingOperativeCheckInFromRecord } from "@/services/checkin/sync";
+import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 
 export type CheckinWizardContextResult = {
   ok: boolean;
@@ -59,13 +61,20 @@ export async function loadCheckinWizardContextAction(
   try {
     if (!bookingId) return { ok: false, error: "booking_id required" };
 
-    const booking = await getBookingById(bookingId);
+    let booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: "Booking not found" };
 
     const settings = await getCheckinSettings();
     const existingCheckin = await getCheckinByBookingId(bookingId).catch(
       () => null,
     );
+
+    if (existingCheckin && !booking.actual_check_in_at) {
+      await syncBookingOperativeCheckInFromRecord(bookingId, existingCheckin);
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingSurfacesExtended({ bookingId, includeHistoric: true });
+      booking = (await getBookingById(bookingId)) ?? booking;
+    }
 
     return {
       ok: true,

@@ -437,7 +437,13 @@ const loadOperationalStays = cache(async (): Promise<OperationalStayRow[]> => {
 
   if (error) throw new Error(error.message);
 
-  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+  const rows = await attachGuestProfiles(
+    mapBookingRows((data ?? []) as BookingSelectRow[]),
+  );
+  const { attachCheckinRecordState } = await import(
+    "@/services/checkin/attach-booking-state"
+  );
+  return attachCheckinRecordState(rows);
 });
 
 /** Cazări active: cereri noi + confirmate (fără anulate). */

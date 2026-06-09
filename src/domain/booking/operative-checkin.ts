@@ -27,7 +27,15 @@ export type OperativeCheckInBooking = {
   check_in: string;
   actual_check_in_at?: string | null;
   actual_check_out_at?: string | null;
+  has_checkin_record?: boolean;
 };
+
+export function isStayCheckedIn(args: {
+  actualCheckInAt?: string | null;
+  hasCheckinRecord?: boolean;
+}): boolean {
+  return !!(args.actualCheckInAt || args.hasCheckinRecord);
+}
 
 export function canOfferOperativeCheckIn(args: {
   status: string;
@@ -35,9 +43,10 @@ export function canOfferOperativeCheckIn(args: {
   today: string;
   actualCheckInAt?: string | null;
   actualCheckOutAt?: string | null;
+  hasCheckinRecord?: boolean;
 }): boolean {
   if (args.status !== "confirmata") return false;
-  if (args.actualCheckInAt || args.actualCheckOutAt) return false;
+  if (isStayCheckedIn(args) || args.actualCheckOutAt) return false;
   return isOperativeCheckInDay(args.plannedCheckIn, args.today);
 }
 
@@ -51,6 +60,7 @@ export function canOfferOperativeCheckInFromBooking(
     today,
     actualCheckInAt: booking.actual_check_in_at,
     actualCheckOutAt: booking.actual_check_out_at,
+    hasCheckinRecord: booking.has_checkin_record,
   });
 }
 

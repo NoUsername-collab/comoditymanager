@@ -316,12 +316,23 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
     requireConfirmedBooking(bookingId),
     getTenantScope(),
   ]);
-  if (!booking.actual_check_in_at) {
+  const { getCheckinByBookingId } = await import("@/services/checkin/queries");
+  const { deleteCheckinsForBooking } = await import("@/services/checkin/sync");
+  const existingWizardCheckin = await getCheckinByBookingId(bookingId).catch(
+    () => null,
+  );
+
+  if (!booking.actual_check_in_at && !existingWizardCheckin) {
     throw new Error("booking.checkin_not_recorded");
   }
   if (booking.actual_check_out_at) {
     throw new Error("booking.undo_checkout_first");
   }
+
+  if (existingWizardCheckin) {
+    await deleteCheckinsForBooking(bookingId);
+  }
+
   const { error } = await supabase
     .from("bookings")
     .update({

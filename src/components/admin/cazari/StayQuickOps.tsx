@@ -8,7 +8,10 @@ import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDia
 import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
-import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
+import {
+  canOfferOperativeCheckIn,
+  isStayCheckedIn,
+} from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
@@ -34,7 +37,7 @@ type Props = {
     phoneRequiredForCheckIn: string;
   };
   guestPhone?: string | null;
-  hasCheckIn?: boolean;
+  hasCheckinRecord?: boolean;
   emitFisaLabel?: string;
 };
 
@@ -48,7 +51,7 @@ export function StayQuickOps({
   actualCheckOutAt,
   labels,
   guestPhone,
-  hasCheckIn = false,
+  hasCheckinRecord = false,
   emitFisaLabel,
 }: Props) {
   const router = useRouter();
@@ -70,6 +73,10 @@ export function StayQuickOps({
     actualCheckInAt,
     actualCheckOutAt,
   };
+  const checkedIn = isStayCheckedIn({
+    actualCheckInAt,
+    hasCheckinRecord,
+  });
   const canCheckIn =
     canOfferOperativeCheckIn({
       status: bookingStatus,
@@ -77,6 +84,7 @@ export function StayQuickOps({
       today: todayIso(),
       actualCheckInAt,
       actualCheckOutAt,
+      hasCheckinRecord,
     }) && hasPhone;
   const canCheckOut = isConfirmed && !!actualCheckInAt && !actualCheckOutAt;
   const canEditCheckIn = isConfirmed && !!actualCheckInAt;
@@ -181,7 +189,7 @@ export function StayQuickOps({
       >
         +1d
       </button>
-      {hasCheckIn && emitFisaLabel ? (
+      {checkedIn && emitFisaLabel ? (
         <TouristSheetLauncher bookingId={bookingId} label={emitFisaLabel} />
       ) : null}
       <Link

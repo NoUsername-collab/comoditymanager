@@ -47,6 +47,8 @@ export type BookingRow = {
   actual_check_out_at: string | null;
   actual_check_in_by: string | null;
   actual_check_out_by: string | null;
+  /** Rând în checkins (wizard) — poate exista înainte de actual_check_in_at reparat. */
+  has_checkin_record?: boolean;
 };
 
 export type BookingSelectRow = {

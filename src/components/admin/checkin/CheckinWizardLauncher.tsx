@@ -133,6 +133,7 @@ export function CheckinWizardLauncher({
           title: tRef.current("title"),
           message: tRef.current("alreadyCheckedIn"),
         });
+        onSuccessRef.current?.();
         onCloseRef.current();
         return;
       }

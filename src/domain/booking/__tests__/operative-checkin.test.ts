@@ -4,6 +4,7 @@ import {
   canOfferOperativeCheckInFromBooking,
   filterBookingsForOperativeCheckIn,
   isOperativeCheckInTimestampValid,
+  isStayCheckedIn,
   operativeCheckInDatetimeBounds,
 } from "../operative-checkin";
 
@@ -23,6 +24,27 @@ describe("operative-checkin", () => {
         plannedCheckIn: "2026-06-11",
         today: "2026-06-10",
       })
+    ).toBe(false);
+  });
+
+  test("isStayCheckedIn with wizard record or timestamp", () => {
+    expect(isStayCheckedIn({ actualCheckInAt: null, hasCheckinRecord: true })).toBe(
+      true,
+    );
+    expect(isStayCheckedIn({ actualCheckInAt: "2026-06-10T14:00:00" })).toBe(
+      true,
+    );
+    expect(isStayCheckedIn({})).toBe(false);
+  });
+
+  test("rejects when wizard checkin exists without booking timestamp", () => {
+    expect(
+      canOfferOperativeCheckIn({
+        status: "confirmata",
+        plannedCheckIn: "2026-06-10",
+        today: "2026-06-10",
+        hasCheckinRecord: true,
+      }),
     ).toBe(false);
   });
 

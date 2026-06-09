@@ -44,7 +44,7 @@ export function StayActions({
           moveOnlyConfirmed: labels.moveOnlyConfirmed,
           phoneRequiredForCheckIn: labels.phoneRequiredForCheckIn,
         }}
-        hasCheckIn={!!stay.actual_check_in_at}
+        hasCheckinRecord={!!stay.has_checkin_record}
         emitFisaLabel={labels.emitFisa}
       />
       <BookingCancelButton

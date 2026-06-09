@@ -24,6 +24,7 @@ create table if not exists public.checkins (
 
 alter table public.checkins enable row level security;
 
+drop policy if exists "tenant_isolation_checkins" on public.checkins;
 create policy "tenant_isolation_checkins"
   on public.checkins using (
     tenant_id = current_setting('app.current_tenant_id', true)::uuid
@@ -52,6 +53,7 @@ create table if not exists public.checkin_guests (
 
 alter table public.checkin_guests enable row level security;
 
+drop policy if exists "tenant_isolation_checkin_guests" on public.checkin_guests;
 create policy "tenant_isolation_checkin_guests"
   on public.checkin_guests using (
     tenant_id = current_setting('app.current_tenant_id', true)::uuid
