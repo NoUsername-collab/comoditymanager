@@ -4,6 +4,7 @@ export {
   getCheckinGuests,
   getActiveCheckinsWithFlags,
   getTodayCheckinCount,
+  countUnpaidInHouseCheckins,
 } from "./queries";
 export {
   getCheckinSettings,

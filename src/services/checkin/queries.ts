@@ -113,6 +113,54 @@ export async function getActiveCheckinsWithFlags(): Promise<
 
 // ── Today's checkins count (dashboard) ──────────────────────
 
+/** In-house stays with check-in recorded but payment still unpaid/partial. */
+async function countUnpaidInHouseCheckinsUncached(
+  tenantId: string,
+): Promise<number> {
+  const supabase = createPublicAdminClient();
+
+  const { data: inHouse, error: bookingsError } = await supabase
+    .from("bookings")
+    .select("id")
+    .eq("tenant_id", tenantId)
+    .eq("status", "confirmata")
+    .not("actual_check_in_at", "is", null)
+    .is("actual_check_out_at", null);
+
+  if (bookingsError) throw new Error(bookingsError.message);
+  if (!inHouse?.length) return 0;
+
+  const bookingIds = inHouse.map((row) => row.id as string);
+  const { count, error } = await supabase
+    .from("checkins")
+    .select("id", { count: "exact", head: true })
+    .eq("tenant_id", tenantId)
+    .in("booking_id", bookingIds)
+    .in("payment_status", ["unpaid", "partial"]);
+
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+}
+
+const getCachedUnpaidInHouseCount = (tenantId: string) =>
+  unstable_cache(
+    () => countUnpaidInHouseCheckinsUncached(tenantId),
+    ["checkin-unpaid-in-house", tenantId],
+    {
+      tags: [CACHE_TAGS.checkins, tenantTag(tenantId, CACHE_TAGS.checkins)],
+      revalidate: 60,
+    },
+  );
+
+export async function countUnpaidInHouseCheckins(): Promise<number> {
+  try {
+    const tenantId = await resolveTenantIdForData();
+    return getCachedUnpaidInHouseCount(tenantId)();
+  } catch {
+    return 0;
+  }
+}
+
 export async function getTodayCheckinCount(): Promise<number> {
   const { tenantId, supabase } = await getTenantScope();
   const today = new Date().toISOString().slice(0, 10);

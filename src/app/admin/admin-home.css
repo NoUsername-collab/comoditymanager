@@ -39,60 +39,145 @@
 }
 
 .admin-home-hero--liquid {
+  --hero-smoke-a: var(--admin-accent-muted, #d1fae5);
+  --hero-smoke-b: var(--admin-accent, #059669);
+  --hero-smoke-c: #34d399;
+  --hero-smoke-glow: var(--admin-accent, #059669);
+  --hero-smoke-border: color-mix(in srgb, var(--admin-accent) 22%, var(--admin-panel-border));
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  border-color: var(--hero-smoke-border);
+  transition:
+    border-color 0.8s ease,
+    box-shadow 0.8s ease;
+}
+
+/* Calm — totul OK (verde, aliniat cu check-in quest) */
+.admin-home-hero--mood-calm {
+  --hero-smoke-a: #d1fae5;
+  --hero-smoke-b: #059669;
+  --hero-smoke-c: #34d399;
+  --hero-smoke-glow: #34d399;
+  --hero-smoke-border: color-mix(in srgb, #059669 26%, var(--admin-panel-border));
+}
+
+/* Active — cereri / sosiri de procesat (amber cald) */
+.admin-home-hero--mood-active {
+  --hero-smoke-a: #fef3c7;
+  --hero-smoke-b: #f59e0b;
+  --hero-smoke-c: #fbbf24;
+  --hero-smoke-glow: #fbbf24;
+  --hero-smoke-border: color-mix(in srgb, #f59e0b 32%, var(--admin-panel-border));
+  animation: admin-home-hero-mood-glow 3.6s ease-in-out infinite;
+}
+
+/* Alert — oaspeți cazați fără plată (roșu, ca KPI cereri) */
+.admin-home-hero--mood-alert {
+  --hero-smoke-a: #fecaca;
+  --hero-smoke-b: #ef4444;
+  --hero-smoke-c: #f87171;
+  --hero-smoke-glow: #f87171;
+  --hero-smoke-border: color-mix(in srgb, #ef4444 38%, var(--admin-panel-border));
+  animation: admin-home-hero-mood-glow 2.8s ease-in-out infinite;
+}
+
+@keyframes admin-home-hero-mood-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--admin-page-bg) 6%, transparent),
+      0 12px 32px color-mix(in srgb, var(--hero-smoke-glow) 10%, transparent);
+  }
+
+  50% {
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--admin-page-bg) 6%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--hero-smoke-glow) 22%, transparent),
+      0 16px 42px color-mix(in srgb, var(--hero-smoke-glow) 26%, transparent);
+  }
 }
 
 .admin-home-hero--liquid::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -8%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(
+      118deg,
+      color-mix(in srgb, var(--hero-smoke-b) 14%, transparent) 0%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 22% 28%,
+      color-mix(in srgb, var(--hero-smoke-a) 88%, transparent) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 78% 22%,
+      color-mix(in srgb, var(--hero-smoke-b) 32%, transparent) 0%,
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 58% 68%,
+      color-mix(in srgb, var(--hero-smoke-c) 24%, transparent) 0%,
+      transparent 44%
+    );
+  opacity: 0.92;
+  filter: blur(12px) saturate(1.12);
+  animation: admin-home-hero-smoke-drift 14s ease-in-out infinite;
+}
+
+.admin-home-hero--liquid::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
   pointer-events: none;
   z-index: 0;
   background:
     radial-gradient(
-      circle at 22% 24%,
-      color-mix(in srgb, var(--admin-accent-muted, #d1fae5) 78%, transparent) 0%,
-      transparent 38%
+      ellipse 55% 42% at 68% 58%,
+      color-mix(in srgb, var(--hero-smoke-c) 20%, transparent) 0%,
+      transparent 72%
     ),
     radial-gradient(
-      circle at 74% 30%,
-      color-mix(in srgb, var(--admin-accent, #059669) 18%, transparent) 0%,
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 56% 62%,
-      color-mix(in srgb, var(--color-focus, #2563eb) 14%, transparent) 0%,
-      transparent 42%
+      ellipse 48% 38% at 18% 72%,
+      color-mix(in srgb, var(--hero-smoke-a) 55%, transparent) 0%,
+      transparent 70%
     );
-  opacity: 0.95;
-  filter: blur(8px) saturate(1.06);
+  opacity: 0.75;
+  filter: blur(18px) saturate(1.08);
+  animation: admin-home-hero-smoke-drift-alt 18s ease-in-out infinite;
 }
 
-.admin-home-hero--liquid::before {
-  background:
-    linear-gradient(
-      120deg,
-      color-mix(in srgb, var(--admin-accent) 11%, transparent) 0%,
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 24% 24%,
-      color-mix(in srgb, var(--admin-accent-muted) 82%, transparent) 0%,
-      transparent 36%
-    ),
-    radial-gradient(
-      circle at 72% 28%,
-      color-mix(in srgb, var(--admin-accent) 24%, transparent) 0%,
-      transparent 34%
-    ),
-    radial-gradient(
-      circle at 56% 60%,
-      color-mix(in srgb, var(--color-focus) 20%, transparent) 0%,
-      transparent 40%
-    );
-  filter: blur(10px) saturate(1.08);
+@keyframes admin-home-hero-smoke-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(2.5%, -1.5%) scale(1.03);
+  }
+
+  66% {
+    transform: translate(-2%, 2%) scale(0.98);
+  }
+}
+
+@keyframes admin-home-hero-smoke-drift-alt {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.72;
+  }
+
+  50% {
+    transform: translate(-3%, 1.5%) rotate(2deg);
+    opacity: 0.88;
+  }
 }
 
 .admin-home-hero--liquid .admin-home-hero__strip,

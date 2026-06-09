@@ -318,6 +318,30 @@ html[data-theme="default"][data-mode="night"] .admin-home-hero--liquid {
   ) !important;
 }
 
+html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-calm {
+  --hero-smoke-a: color-mix(in srgb, var(--active-bg) 70%, transparent);
+  --hero-smoke-b: var(--active-border);
+  --hero-smoke-c: var(--accent);
+  --hero-smoke-glow: var(--active-border);
+  --hero-smoke-border: color-mix(in srgb, var(--active-border) 35%, var(--admin-panel-border));
+}
+
+html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-active {
+  --hero-smoke-a: color-mix(in srgb, var(--pending-bg) 75%, transparent);
+  --hero-smoke-b: var(--pending-border);
+  --hero-smoke-c: #fbbf24;
+  --hero-smoke-glow: var(--pending-border);
+  --hero-smoke-border: color-mix(in srgb, var(--pending-border) 40%, var(--admin-panel-border));
+}
+
+html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-alert {
+  --hero-smoke-a: color-mix(in srgb, #7f1d1d 55%, transparent);
+  --hero-smoke-b: #ef4444;
+  --hero-smoke-c: #f87171;
+  --hero-smoke-glow: #f87171;
+  --hero-smoke-border: color-mix(in srgb, #f87171 42%, var(--admin-panel-border));
+}
+
 html[data-theme="default"][data-mode="night"] .admin-home-cta--secondary {
   background: var(--surface-2) !important;
   border-color: var(--admin-panel-border) !important;

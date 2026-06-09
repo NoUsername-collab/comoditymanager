@@ -37,7 +37,14 @@ export async function AdminDashboard({
   return (
     <div className="admin-home ml-content">
       {/* ── Hero: ultra-compact strip ─────────────────────────── */}
-      <header className="admin-home-hero admin-home-hero--liquid">
+      <header
+        className={[
+          "admin-home-hero",
+          "admin-home-hero--liquid",
+          `admin-home-hero--mood-${data.pensionMood}`,
+        ].join(" ")}
+        data-pension-mood={data.pensionMood}
+      >
         {/* Single row: name · date · KPIs · CTAs */}
         <div className="admin-home-hero__strip">
           {/* Left: identity */}

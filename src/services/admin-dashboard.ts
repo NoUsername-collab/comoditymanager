@@ -18,8 +18,13 @@ import { loadTodayBoard, type TodayBoard } from "@/services/today-board";
 import {
   DEFAULT_CHECKIN_SETTINGS,
   getCheckinSettings,
+  countUnpaidInHouseCheckins,
 } from "@/services/checkin";
 import type { CheckinSettings } from "@/domain/checkin/types";
+import {
+  computePensionMood,
+  type PensionMood,
+} from "@/domain/pension/mood";
 import { countConfirmedStays } from "@/services/milestones";
 import {
   buildHomeBriefing,
@@ -57,6 +62,8 @@ export type AdminDashboardData = {
   briefingLine: string | null;
   milestones: HomeMilestone[];
   checkinSettings: CheckinSettings;
+  pensionMood: PensionMood;
+  unpaidInHouseCount: number;
   error: string | null;
 };
 
@@ -92,7 +99,7 @@ async function loadTodayBoardForSettings(
 async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings] =
+  const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings, unpaidInHouseCount] =
     await Promise.all([
       getLocale(),
       getTranslations("admin.dashboard"),
@@ -106,6 +113,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
       countConfirmedStays().catch(() => 0),
       pensionPromise.then(resolveDashboardPensionName),
       getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+      countUnpaidInHouseCheckins(),
     ]);
 
   const pensionFallback = platformPensionNameFallback();
@@ -132,8 +140,16 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
     briefingLine: null,
     milestones: [],
     checkinSettings: DEFAULT_CHECKIN_SETTINGS,
+    pensionMood: "calm",
+    unpaidInHouseCount: 0,
     error: null,
   };
+
+  const pensionMood = computePensionMood({
+    cereriCount,
+    unpaidInHouseCount,
+    pendingCheckIns: todayBoard?.pendingCheckIns.length ?? 0,
+  });
 
   try {
     const checkInTime =
@@ -192,11 +208,15 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
         cereriCount,
       }),
       checkinSettings,
+      pensionMood,
+      unpaidInHouseCount,
       error: null,
     };
   } catch (e) {
     return {
       ...fallback,
+      pensionMood,
+      unpaidInHouseCount,
       error: e instanceof Error ? e.message : tCommon("loadDataError"),
     };
   }
@@ -208,7 +228,7 @@ export const loadAdminDashboard = cache(loadAdminDashboardImpl);
 async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, pensionName, checkinSettings] =
+  const [locale, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, pensionName, checkinSettings, unpaidInHouseCount] =
     await Promise.all([
       getLocale(),
       getTranslations("admin.common"),
@@ -219,6 +239,7 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
       pensionPromise.then(loadTodayBoardForSettings),
       pensionPromise.then(resolveDashboardPensionName),
       getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+      countUnpaidInHouseCheckins(),
     ]);
   const pensionFallback = platformPensionNameFallback();
 
@@ -244,8 +265,16 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
     briefingLine: null,
     milestones: [],
     checkinSettings: DEFAULT_CHECKIN_SETTINGS,
+    pensionMood: "calm",
+    unpaidInHouseCount: 0,
     error: null,
   };
+
+  const pensionMood = computePensionMood({
+    cereriCount,
+    unpaidInHouseCount,
+    pendingCheckIns: todayBoard?.pendingCheckIns.length ?? 0,
+  });
 
   try {
     const checkInTime =
@@ -297,11 +326,15 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
       briefingLine: null,
       milestones: [],
       checkinSettings,
+      pensionMood,
+      unpaidInHouseCount,
       error: null,
     };
   } catch (e) {
     return {
       ...fallback,
+      pensionMood,
+      unpaidInHouseCount,
       error: e instanceof Error ? e.message : tCommon("loadDataError"),
     };
   }
