@@ -1,7 +1,15 @@
 /* Cazări — panou filtre compact (−30% înălțime) */
 
+.cazari-page .admin-retro-page-toolbar {
+  display: none;
+}
+
+.cazari-page .admin-win98-body > .grid {
+  margin-top: 0;
+}
+
 .cazari-filter-panel.admin-xp-window {
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.5rem;
 }
 
 .cazari-filter-panel .admin-xp-window__titlebar {

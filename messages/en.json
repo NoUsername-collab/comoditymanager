@@ -463,9 +463,10 @@
           "walkinAllowedDesc": "Allow check-in without prior reservation",
           "groupMode": "Group check-in mode",
           "groupModeDesc": "How to process group check-ins",
-          "groupRep": "Representative",
-          "groupIndividual": "Individual",
-          "groupBoth": "Both (operator chooses)",
+          "groupRep": "Booking holder only",
+          "groupIndividual": "All guests (individual)",
+          "groupPerRoom": "Per room (one rep per room)",
+          "groupBoth": "Reception chooses at check-in",
           "checkinTime": "Check-in time from",
           "checkinTimeDesc": "Earliest check-in time",
           "checkoutTime": "Checkout time until",
@@ -1944,6 +1945,20 @@
       "migrationRequired": "The check-in system is not set up in the database. Run migration 048_checkin_system.sql in Supabase (SQL Editor), then try again.",
       "flags": "Warnings",
       "guestN": "Guest #{n}",
+      "identityScope": {
+        "title": "Who provides identity data?",
+        "partyHint": "Booking: {adults} adults, {children} children",
+        "fixedMode": "Owner setting: {mode}",
+        "guestsInRoom": "{count, plural, one {# guest} other {# guests}}",
+        "addGuest": "Add guest",
+        "removeGuest": "Remove",
+        "rep": "Booking holder",
+        "repDesc": "Only the person who made the booking",
+        "individual": "All guests",
+        "individualDesc": "One form per person; mark who is present now",
+        "per_room": "Per room",
+        "per_roomDesc": "One representative per allocated room"
+      },
       "step": {
         "identity": "Identity data",
         "validate": "Validation",
@@ -2033,7 +2048,9 @@
         "dates": "Dates",
         "guestCount": "Guest count",
         "notes": "Notes",
-        "notesPlaceholder": "Notes for operator..."
+        "notesPlaceholder": "Notes for operator...",
+        "presentAtCheckin": "Present now",
+        "absentHint": "Not present at check-in — details can be completed later."
       }
     },
     "gantt": {

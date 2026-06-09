@@ -52,7 +52,8 @@ export type CheckinDocRule = "required" | "recommended" | "optional";
 export type CheckinPhoneRule = "required" | "recommended" | "optional";
 export type CheckinCnpRule = "required" | "recommended" | "optional";
 export type CheckinPaymentRule = "full" | "partial" | "at_checkout";
-export type GroupCheckinMode = "rep" | "individual" | "both";
+/** `both` = recepția alege la check-in (rep / individual / per cameră). */
+export type GroupCheckinMode = "rep" | "individual" | "per_room" | "both";
 export type DocumentType = "ci" | "pasaport" | "permis";
 
 // ── Guest input (one per person) ───────────────────────────
@@ -73,6 +74,8 @@ export interface CheckinGuestInput {
   room_label?: string | null;
   is_representative?: boolean;
   guest_id?: string | null;
+  /** false = nu e prezent acum; datele se pot completa mai târziu */
+  present_at_checkin?: boolean;
 }
 
 // ── Form data submitted by operator ────────────────────────

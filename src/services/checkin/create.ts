@@ -7,6 +7,7 @@ import type {
   BookingForCheckin,
   CheckinStatus,
 } from "@/domain/checkin/types";
+import { guestsToPersist } from "@/domain/checkin/guest-layout";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import {
   normalizePaymentStatusForDb,
@@ -72,8 +73,9 @@ export async function createCheckin(
   const checkinId = checkinRow.id;
 
   // ── Insert checkin guests ─────────────────────────────────
-  if (data.guests.length > 0) {
-    const guestRows = data.guests.map((g) =>
+  const guestsForDb = guestsToPersist(data.guests);
+  if (guestsForDb.length > 0) {
+    const guestRows = guestsForDb.map((g) =>
       withTenantId(tenantId, {
         checkin_id: checkinId,
         guest_id: g.guest_id ?? null,
@@ -131,7 +133,7 @@ export async function createCheckin(
       payment_status: normalizePaymentStatusForDb(data.payment_status),
       payment_channel:
         data.payment_status === "online" ? "online_mock" : "manual",
-      guest_count: data.guests.length,
+      guest_count: guestsForDb.length,
     },
   });
 

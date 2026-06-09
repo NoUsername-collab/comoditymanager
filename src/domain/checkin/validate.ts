@@ -3,6 +3,7 @@
  * Implements the pseudocode from dev spec section 06.
  */
 
+import { guestsCollectingIdentity } from "./guest-layout";
 import {
   evaluateCnpRule,
   guestHasValidCnp,
@@ -35,6 +36,11 @@ export function validateCheckin(
 ): ValidationResult {
   const flags: CheckinFlag[] = [];
   const blockers: string[] = [];
+  const activeGuests = guestsCollectingIdentity(data.guests);
+
+  if (activeGuests.length === 0) {
+    blockers.push("Cel puțin un oaspete prezent la check-in");
+  }
 
   // ── DATE CHECK ─────────────────────────────────────────────
   // Check-in is ONLY allowed on the check-in date itself.
@@ -48,7 +54,7 @@ export function validateCheckin(
 
   // ── CNP / identitate (ANAF + reguli proprietar) ───────────
   const cnpEval = evaluateCnpRule(
-    data.guests,
+    activeGuests,
     settings.checkin_cnp_rule ?? "required",
   );
   blockers.push(...cnpEval.blockers);
@@ -57,7 +63,7 @@ export function validateCheckin(
   }
 
   // ── DOCUMENT ──────────────────────────────────────────────
-  const allHaveDoc = data.guests.every((g) => {
+  const allHaveDoc = activeGuests.every((g) => {
     if (isRomanianNationality(g.nationality) && guestHasValidCnp(g)) return true;
     return Boolean(g.document_number?.trim() || g.document_series?.trim());
   });
@@ -70,7 +76,7 @@ export function validateCheckin(
   }
 
   // ── PHONE ─────────────────────────────────────────────────
-  const allHavePhone = data.guests.every((g) => g.phone);
+  const allHavePhone = activeGuests.every((g) => g.phone);
   if (!allHavePhone) {
     if (settings.checkin_phone_rule === "required") {
       blockers.push("Telefon de contact obligatoriu");

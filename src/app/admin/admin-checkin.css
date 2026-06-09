@@ -795,3 +795,189 @@
     max-height: none !important;
   }
 }
+
+/* ── Identity scope & room groups ─────────────────────────── */
+
+.checkin-party-hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+}
+
+.checkin-identity-scope {
+  margin-bottom: 0.85rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-accent) 22%, var(--admin-panel-border));
+  background: color-mix(in srgb, var(--admin-accent-muted) 28%, var(--admin-panel-bg));
+}
+
+.checkin-identity-scope__title {
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text);
+}
+
+.checkin-identity-scope__fixed {
+  margin: 0 0 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+}
+
+.checkin-identity-scope__options {
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  .checkin-identity-scope__options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.checkin-identity-scope__option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--admin-panel-border);
+  background: var(--admin-panel-bg);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.checkin-identity-scope__option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkin-identity-scope__option--active {
+  border-color: color-mix(in srgb, var(--admin-accent) 45%, var(--admin-panel-border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--admin-accent) 25%, transparent);
+}
+
+.checkin-identity-scope__label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--admin-text);
+}
+
+.checkin-identity-scope__desc {
+  font-size: 0.62rem;
+  line-height: 1.35;
+  color: var(--admin-text-muted);
+}
+
+.checkin-room-group {
+  margin-bottom: 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--admin-panel-border) 90%, var(--admin-accent));
+  background: color-mix(in srgb, var(--admin-panel-bg) 96%, var(--admin-accent-muted));
+  overflow: hidden;
+}
+
+.checkin-room-group__head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--admin-panel-border);
+  background: color-mix(in srgb, var(--admin-accent-muted) 35%, var(--admin-panel-bg));
+}
+
+.checkin-room-group__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.checkin-room-group__title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--admin-text);
+}
+
+.checkin-room-group__meta {
+  margin: 0.1rem 0 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+}
+
+.checkin-room-group .checkin-guest-form {
+  margin: 0.65rem 0.65rem 0.75rem;
+  border-color: color-mix(in srgb, var(--admin-panel-border) 85%, transparent);
+}
+
+.checkin-room-group .checkin-guest-form:last-child {
+  margin-bottom: 0.65rem;
+}
+
+.checkin-guest-form--absent {
+  opacity: 0.72;
+  border-style: dashed;
+}
+
+.checkin-guest-form__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.checkin-guest-form__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkin-guest-form__present {
+  font-size: 0.68rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.checkin-guest-form__remove {
+  border: none;
+  background: transparent;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #b91c1c;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.checkin-guest-form__absent-hint {
+  margin: 0;
+  font-size: 0.68rem;
+  color: var(--admin-text-muted);
+  font-style: italic;
+}
+
+.checkin-add-guest-btn {
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px dashed color-mix(in srgb, var(--admin-accent) 35%, var(--admin-panel-border));
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--admin-accent);
+  cursor: pointer;
+}
+
+.checkin-add-guest-btn:hover {
+  background: color-mix(in srgb, var(--admin-accent-muted) 40%, var(--admin-panel-bg));
+}

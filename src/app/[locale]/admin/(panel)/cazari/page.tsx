@@ -94,15 +94,8 @@ export default async function AdminCazariPage({
     },
   };
 
-  const description = (
-    <div className="space-y-1">
-      <p className="max-w-3xl text-sm leading-relaxed">{tPages("hubDescription")}</p>
-      <p className="text-xs text-zinc-500">{tPages("searchExamples")}</p>
-    </div>
-  );
-
   return (
-    <AdminRetroPageFrame title={tPages("title")} description={description} className="cazari-page">
+    <AdminRetroPageFrame title={tPages("title")} className="cazari-page">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,30%)]">
         <div className="min-w-0">
           <RetroXpWindow
@@ -131,7 +124,7 @@ export default async function AdminCazariPage({
                 buildHorizonHref={buildHorizonHref}
                 filtersAria={tPages("viewFiltersAria")}
                 filterLabels={{
-                  cereri: tCommon("newRequests"),
+                  cereri: tCommon("newRequestsLabel"),
                   confirmate: tCommon("confirmed"),
                   anulate: tPages("filterAnulate"),
                 }}
@@ -164,7 +157,7 @@ export default async function AdminCazariPage({
 
           {view === "cereri" ? (
             <StayList
-              title={`${tCommon("newRequests")} (${cereri.length})`}
+              title={`${tCommon("newRequestsLabel")} (${cereri.length})`}
               items={cereri}
               variant="cereri"
               returnTo={buildCazariPageHref({ view: "cereri", h: horizon, q: q || undefined })}

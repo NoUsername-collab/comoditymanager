@@ -167,6 +167,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         >
           <option value="rep">{t("groupRep")}</option>
           <option value="individual">{t("groupIndividual")}</option>
+          <option value="per_room">{t("groupPerRoom")}</option>
           <option value="both">{t("groupBoth")}</option>
         </select>
       </SettingRow>

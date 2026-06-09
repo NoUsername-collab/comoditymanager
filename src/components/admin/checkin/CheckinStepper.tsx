@@ -15,6 +15,15 @@ import {
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { createCheckinAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
 import { createInitialCheckinGuests } from "@/components/admin/checkin/checkin-guest-defaults";
+import {
+  allowsOperatorScopeChoice,
+  bookingRooms,
+  buildCheckinGuestSlots,
+  createEmptyGuestSlot,
+  effectiveIdentityScope,
+  groupGuestsByRoom,
+  type CheckinIdentityScope,
+} from "@/domain/checkin/guest-layout";
 import { TouristSheetView } from "@/components/admin/checkin/TouristSheetView";
 import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import type {
@@ -53,9 +62,33 @@ export function CheckinStepper({
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
 
-  const [guests, setGuests] = useState<CheckinGuestInput[]>(() =>
-    createInitialCheckinGuests(booking),
+  const [operatorScope, setOperatorScope] = useState<CheckinIdentityScope | null>(
+    null,
   );
+  const identityScope = effectiveIdentityScope(
+    settings.group_checkin_mode,
+    operatorScope,
+  );
+  const [guests, setGuests] = useState<CheckinGuestInput[]>(() =>
+    createInitialCheckinGuests(booking, settings),
+  );
+
+  function applyIdentityScope(scope: CheckinIdentityScope) {
+    setOperatorScope(scope);
+    setGuests(buildCheckinGuestSlots(booking, scope));
+  }
+
+  function addGuestSlot() {
+    const rooms = bookingRooms(booking);
+    setGuests((prev) => [
+      ...prev,
+      createEmptyGuestSlot(rooms[prev.length % rooms.length]),
+    ]);
+  }
+
+  function removeGuestSlot(index: number) {
+    setGuests((prev) => (prev.length <= 1 ? prev : prev.filter((_, i) => i !== index)));
+  }
   const [sheetData, setSheetData] = useState<TouristSheetData | null>(null);
 
   // Payment data
@@ -213,6 +246,11 @@ export function CheckinStepper({
             guests={guests}
             settings={settings}
             booking={booking}
+            identityScope={identityScope}
+            operatorCanChoose={allowsOperatorScopeChoice(settings.group_checkin_mode)}
+            onScopeChange={applyIdentityScope}
+            onAddGuest={identityScope === "individual" ? addGuestSlot : undefined}
+            onRemoveGuest={identityScope === "individual" ? removeGuestSlot : undefined}
             updateGuest={updateGuest}
             t={t}
           />
@@ -306,203 +344,361 @@ export function CheckinStepper({
 
 // ── Step sub-components (co-located for simplicity) ─────────
 
+const IDENTITY_SCOPES: CheckinIdentityScope[] = ["rep", "individual", "per_room"];
+
 function StepIdentity({
   guests,
   settings,
   booking,
+  identityScope,
+  operatorCanChoose,
+  onScopeChange,
+  onAddGuest,
+  onRemoveGuest,
   updateGuest,
   t,
 }: {
   guests: CheckinGuestInput[];
   settings: CheckinSettings;
   booking: BookingForCheckin;
+  identityScope: CheckinIdentityScope;
+  operatorCanChoose: boolean;
+  onScopeChange: (scope: CheckinIdentityScope) => void;
+  onAddGuest?: () => void;
+  onRemoveGuest?: (index: number) => void;
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
-  const roomLabel =
-    booking.room_names?.join(", ") || settings.fisa_property_address || "";
+  const rooms = bookingRooms(booking);
+  const roomGroups = groupGuestsByRoom(guests);
+  const partyHint = t("identityScope.partyHint", {
+    adults: booking.num_adults,
+    children: booking.num_children,
+  });
 
   return (
     <div className="checkin-step-identity">
       <p className="checkin-legal-hint">{t("fisa.legalHint")}</p>
+      <p className="checkin-party-hint">{partyHint}</p>
 
-      {guests.map((guest, idx) => {
-        const roGuest = isRomanianNationality(guest.nationality);
-        const cnpState = guest.national_id?.trim()
-          ? validateNationalId("cnp", cleanNationalId(guest.national_id))
-          : null;
-
-        return (
-          <div key={idx} className="checkin-guest-form">
-            <div className="checkin-guest-form__header">
-              {t("guestN", { n: idx + 1 })}
-              {guest.is_representative && (
-                <span className="checkin-guest-form__badge">{t("field.representative")}</span>
-              )}
-            </div>
-
-            <div className="checkin-guest-form__section-title">{t("fisa.sectionPersonal")}</div>
-            <div className="checkin-guest-form__grid">
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.lastName")}</span>
+      {operatorCanChoose && (
+        <div className="checkin-identity-scope" role="radiogroup" aria-label={t("identityScope.title")}>
+          <p className="checkin-identity-scope__title">{t("identityScope.title")}</p>
+          <div className="checkin-identity-scope__options">
+            {IDENTITY_SCOPES.map((scope) => (
+              <label
+                key={scope}
+                className={[
+                  "checkin-identity-scope__option",
+                  identityScope === scope && "checkin-identity-scope__option--active",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
                 <input
-                  type="text"
-                  className="checkin-field__input"
-                  value={guest.last_name ?? ""}
-                  onChange={(e) => updateGuest(idx, "last_name", e.target.value)}
-                  required
+                  type="radio"
+                  name="checkin-identity-scope"
+                  checked={identityScope === scope}
+                  onChange={() => onScopeChange(scope)}
                 />
+                <span className="checkin-identity-scope__label">{t(`identityScope.${scope}`)}</span>
+                <span className="checkin-identity-scope__desc">{t(`identityScope.${scope}Desc`)}</span>
               </label>
-
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.firstName")}</span>
-                <input
-                  type="text"
-                  className="checkin-field__input"
-                  value={guest.first_name ?? ""}
-                  onChange={(e) => updateGuest(idx, "first_name", e.target.value)}
-                  required
-                />
-              </label>
-
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.nationality")}</span>
-                <input
-                  type="text"
-                  className="checkin-field__input"
-                  value={guest.nationality ?? ""}
-                  onChange={(e) => updateGuest(idx, "nationality", e.target.value)}
-                  placeholder="România"
-                />
-              </label>
-
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.birthDate")}</span>
-                <input
-                  type="date"
-                  className="checkin-field__input"
-                  value={guest.birth_date ?? ""}
-                  onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
-                />
-              </label>
-
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.phone")}</span>
-                <input
-                  type="tel"
-                  className="checkin-field__input"
-                  value={guest.phone ?? ""}
-                  onChange={(e) => updateGuest(idx, "phone", e.target.value)}
-                />
-              </label>
-            </div>
-
-            <div className="checkin-guest-form__section-title">
-              {roGuest ? t("fisa.sectionCnp") : t("fisa.sectionForeignId")}
-            </div>
-            <div className="checkin-guest-form__grid">
-              <label className={`checkin-field ${roGuest ? "checkin-field--span2" : ""}`}>
-                <span className="checkin-field__label">
-                  {t("field.cnp")}
-                  {roGuest && <span className="checkin-field__required"> *</span>}
-                </span>
-                <input
-                  type="text"
-                  className="checkin-field__input"
-                  inputMode="numeric"
-                  maxLength={13}
-                  value={guest.national_id ?? ""}
-                  onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
-                  placeholder="1234567890123"
-                />
-                {cnpState && !cnpState.valid && (
-                  <span className="checkin-field__error">{t("field.cnpInvalid")}</span>
-                )}
-                {cnpState?.valid && cnpState.data?.birthDate && (
-                  <span className="checkin-field__hint">
-                    {t("field.cnpDerivedBirth", { date: cnpState.data.birthDate })}
-                  </span>
-                )}
-              </label>
-
-              {!roGuest && (
-                <>
-                  <label className="checkin-field">
-                    <span className="checkin-field__label">{t("field.documentType")}</span>
-                    <select
-                      className="checkin-field__input"
-                      value={guest.document_type ?? ""}
-                      onChange={(e) =>
-                        updateGuest(idx, "document_type", e.target.value || null)
-                      }
-                    >
-                      <option value="">{t("field.selectDoc")}</option>
-                      <option value="ci">{t("field.docCi")}</option>
-                      <option value="pasaport">{t("field.docPassport")}</option>
-                      <option value="permis">{t("field.docPermit")}</option>
-                    </select>
-                  </label>
-
-                  <label className="checkin-field">
-                    <span className="checkin-field__label">{t("field.documentSeries")}</span>
-                    <input
-                      type="text"
-                      className="checkin-field__input"
-                      value={guest.document_series ?? ""}
-                      onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
-                    />
-                  </label>
-
-                  <label className="checkin-field">
-                    <span className="checkin-field__label">{t("field.documentNumber")}</span>
-                    <input
-                      type="text"
-                      className="checkin-field__input"
-                      value={guest.document_number ?? ""}
-                      onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
-                    />
-                  </label>
-                </>
-              )}
-
-              {roGuest && (
-                <>
-                  <label className="checkin-field">
-                    <span className="checkin-field__label">{t("field.documentSeries")}</span>
-                    <input
-                      type="text"
-                      className="checkin-field__input"
-                      value={guest.document_series ?? ""}
-                      onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
-                      placeholder="XZ"
-                    />
-                  </label>
-
-                  <label className="checkin-field">
-                    <span className="checkin-field__label">{t("field.documentNumber")}</span>
-                    <input
-                      type="text"
-                      className="checkin-field__input"
-                      value={guest.document_number ?? ""}
-                      onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
-                    />
-                  </label>
-                </>
-              )}
-
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.roomLabel")}</span>
-                <input
-                  type="text"
-                  className="checkin-field__input"
-                  value={guest.room_label ?? roomLabel}
-                  onChange={(e) => updateGuest(idx, "room_label", e.target.value)}
-                />
-              </label>
-            </div>
+            ))}
           </div>
-        );
-      })}
+        </div>
+      )}
+
+      {!operatorCanChoose && (
+        <p className="checkin-identity-scope__fixed">
+          {t("identityScope.fixedMode", { mode: t(`identityScope.${identityScope}`) })}
+        </p>
+      )}
+
+      {roomGroups.map((group) => (
+        <section key={group.room} className="checkin-room-group">
+          <header className="checkin-room-group__head">
+            <span className="checkin-room-group__icon" aria-hidden>
+              🛏
+            </span>
+            <div>
+              <p className="checkin-room-group__title">{group.room}</p>
+              <p className="checkin-room-group__meta">
+                {t("identityScope.guestsInRoom", { count: group.guests.length })}
+              </p>
+            </div>
+          </header>
+
+          {group.guests.map(({ guest, index: idx }) => (
+            <GuestIdentityCard
+              key={idx}
+              guest={guest}
+              idx={idx}
+              identityScope={identityScope}
+              rooms={rooms}
+              canRemove={identityScope === "individual" && guests.length > 1}
+              onRemove={onRemoveGuest}
+              updateGuest={updateGuest}
+              t={t}
+            />
+          ))}
+        </section>
+      ))}
+
+      {onAddGuest && (
+        <button type="button" className="checkin-add-guest-btn" onClick={onAddGuest}>
+          + {t("identityScope.addGuest")}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function GuestIdentityCard({
+  guest,
+  idx,
+  identityScope,
+  rooms,
+  canRemove,
+  onRemove,
+  updateGuest,
+  t,
+}: {
+  guest: CheckinGuestInput;
+  idx: number;
+  identityScope: CheckinIdentityScope;
+  rooms: string[];
+  canRemove: boolean;
+  onRemove?: (index: number) => void;
+  updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  const present = guest.present_at_checkin !== false;
+  const roGuest = isRomanianNationality(guest.nationality);
+  const cnpState = guest.national_id?.trim()
+    ? validateNationalId("cnp", cleanNationalId(guest.national_id))
+    : null;
+  const roomLocked = identityScope === "rep" || identityScope === "per_room";
+  const showPresentToggle = identityScope === "individual";
+
+  return (
+    <div
+      className={[
+        "checkin-guest-form",
+        !present && "checkin-guest-form--absent",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className="checkin-guest-form__header">
+        <span>
+          {t("guestN", { n: idx + 1 })}
+          {guest.is_representative && (
+            <span className="checkin-guest-form__badge">{t("field.representative")}</span>
+          )}
+        </span>
+        <div className="checkin-guest-form__header-actions">
+          {showPresentToggle && (
+            <label className="checkin-checkbox checkin-guest-form__present">
+              <input
+                type="checkbox"
+                checked={present}
+                onChange={(e) => updateGuest(idx, "present_at_checkin", e.target.checked)}
+              />
+              {t("field.presentAtCheckin")}
+            </label>
+          )}
+          {canRemove && onRemove && (
+            <button
+              type="button"
+              className="checkin-guest-form__remove"
+              onClick={() => onRemove(idx)}
+            >
+              {t("identityScope.removeGuest")}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {!present ? (
+        <p className="checkin-guest-form__absent-hint">{t("field.absentHint")}</p>
+      ) : (
+        <>
+          <div className="checkin-guest-form__section-title">{t("fisa.sectionPersonal")}</div>
+          <div className="checkin-guest-form__grid">
+            <label className="checkin-field">
+              <span className="checkin-field__label">{t("field.lastName")}</span>
+              <input
+                type="text"
+                className="checkin-field__input"
+                value={guest.last_name ?? ""}
+                onChange={(e) => updateGuest(idx, "last_name", e.target.value)}
+                required
+              />
+            </label>
+
+            <label className="checkin-field">
+              <span className="checkin-field__label">{t("field.firstName")}</span>
+              <input
+                type="text"
+                className="checkin-field__input"
+                value={guest.first_name ?? ""}
+                onChange={(e) => updateGuest(idx, "first_name", e.target.value)}
+                required
+              />
+            </label>
+
+            <label className="checkin-field">
+              <span className="checkin-field__label">{t("field.nationality")}</span>
+              <input
+                type="text"
+                className="checkin-field__input"
+                value={guest.nationality ?? ""}
+                onChange={(e) => updateGuest(idx, "nationality", e.target.value)}
+                placeholder="România"
+              />
+            </label>
+
+            <label className="checkin-field">
+              <span className="checkin-field__label">{t("field.birthDate")}</span>
+              <input
+                type="date"
+                className="checkin-field__input"
+                value={guest.birth_date ?? ""}
+                onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
+              />
+            </label>
+
+            <label className="checkin-field">
+              <span className="checkin-field__label">{t("field.phone")}</span>
+              <input
+                type="tel"
+                className="checkin-field__input"
+                value={guest.phone ?? ""}
+                onChange={(e) => updateGuest(idx, "phone", e.target.value)}
+              />
+            </label>
+
+            <label className="checkin-field">
+              <span className="checkin-field__label">{t("field.roomLabel")}</span>
+              {roomLocked || rooms.length <= 1 ? (
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.room_label ?? rooms[0]}
+                  readOnly
+                />
+              ) : (
+                <select
+                  className="checkin-field__input"
+                  value={guest.room_label ?? rooms[0]}
+                  onChange={(e) => updateGuest(idx, "room_label", e.target.value)}
+                >
+                  {rooms.map((room) => (
+                    <option key={room} value={room}>
+                      {room}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </label>
+          </div>
+
+          <div className="checkin-guest-form__section-title">
+            {roGuest ? t("fisa.sectionCnp") : t("fisa.sectionForeignId")}
+          </div>
+          <div className="checkin-guest-form__grid">
+            <label className={`checkin-field ${roGuest ? "checkin-field--span2" : ""}`}>
+              <span className="checkin-field__label">
+                {t("field.cnp")}
+                {roGuest && <span className="checkin-field__required"> *</span>}
+              </span>
+              <input
+                type="text"
+                className="checkin-field__input"
+                inputMode="numeric"
+                maxLength={13}
+                value={guest.national_id ?? ""}
+                onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
+                placeholder="1234567890123"
+              />
+              {cnpState && !cnpState.valid && (
+                <span className="checkin-field__error">{t("field.cnpInvalid")}</span>
+              )}
+              {cnpState?.valid && cnpState.data?.birthDate && (
+                <span className="checkin-field__hint">
+                  {t("field.cnpDerivedBirth", { date: cnpState.data.birthDate })}
+                </span>
+              )}
+            </label>
+
+            {!roGuest && (
+              <>
+                <label className="checkin-field">
+                  <span className="checkin-field__label">{t("field.documentType")}</span>
+                  <select
+                    className="checkin-field__input"
+                    value={guest.document_type ?? ""}
+                    onChange={(e) =>
+                      updateGuest(idx, "document_type", e.target.value || null)
+                    }
+                  >
+                    <option value="">{t("field.selectDoc")}</option>
+                    <option value="ci">{t("field.docCi")}</option>
+                    <option value="pasaport">{t("field.docPassport")}</option>
+                    <option value="permis">{t("field.docPermit")}</option>
+                  </select>
+                </label>
+
+                <label className="checkin-field">
+                  <span className="checkin-field__label">{t("field.documentSeries")}</span>
+                  <input
+                    type="text"
+                    className="checkin-field__input"
+                    value={guest.document_series ?? ""}
+                    onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
+                  />
+                </label>
+
+                <label className="checkin-field">
+                  <span className="checkin-field__label">{t("field.documentNumber")}</span>
+                  <input
+                    type="text"
+                    className="checkin-field__input"
+                    value={guest.document_number ?? ""}
+                    onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
+                  />
+                </label>
+              </>
+            )}
+
+            {roGuest && (
+              <>
+                <label className="checkin-field">
+                  <span className="checkin-field__label">{t("field.documentSeries")}</span>
+                  <input
+                    type="text"
+                    className="checkin-field__input"
+                    value={guest.document_series ?? ""}
+                    onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
+                    placeholder="XZ"
+                  />
+                </label>
+
+                <label className="checkin-field">
+                  <span className="checkin-field__label">{t("field.documentNumber")}</span>
+                  <input
+                    type="text"
+                    className="checkin-field__input"
+                    value={guest.document_number ?? ""}
+                    onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }

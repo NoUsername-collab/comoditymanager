@@ -462,10 +462,11 @@
           "walkinAllowed": "Walk-in permis",
           "walkinAllowedDesc": "Permite check-in fără rezervare prealabilă",
           "groupMode": "Mod check-in grup",
-          "groupModeDesc": "Cum se procesează check-in de grup",
-          "groupRep": "Pe reprezentant",
-          "groupIndividual": "Individual",
-          "groupBoth": "Ambele (operatorul alege)",
+          "groupModeDesc": "Cine completează datele: titular, toți, pe cameră sau alegere la recepție",
+          "groupRep": "Doar titularul rezervării",
+          "groupIndividual": "Toți oaspeții (individual)",
+          "groupPerRoom": "Pe cameră (reprezentant / cameră)",
+          "groupBoth": "Recepția alege la check-in",
           "checkinTime": "Ora check-in de la",
           "checkinTimeDesc": "Ora minimă de check-in",
           "checkoutTime": "Ora check-out până la",
@@ -1944,6 +1945,20 @@
       "migrationRequired": "Sistemul de check-in nu e activ în baza de date. Rulează migrarea 048_checkin_system.sql în Supabase (SQL Editor), apoi încearcă din nou.",
       "flags": "Avertismente",
       "guestN": "Oaspete #{n}",
+      "identityScope": {
+        "title": "Cine completează datele?",
+        "partyHint": "Rezervare: {adults} adulți, {children} copii",
+        "fixedMode": "Mod setat de proprietar: {mode}",
+        "guestsInRoom": "{count, plural, one {# oaspete} other {# oaspeți}}",
+        "addGuest": "Adaugă oaspete",
+        "removeGuest": "Elimină",
+        "rep": "Titular rezervare",
+        "repDesc": "Doar persoana care a făcut rezervarea",
+        "individual": "Toți oaspeții",
+        "individualDesc": "Câte un formular per persoană; poți marca cine e prezent acum",
+        "per_room": "Pe cameră",
+        "per_roomDesc": "Câte un reprezentant per cameră alocată"
+      },
       "step": {
         "identity": "Date identitate",
         "validate": "Validare",
@@ -2033,7 +2048,9 @@
         "dates": "Perioada",
         "guestCount": "Nr. persoane",
         "notes": "Observații",
-        "notesPlaceholder": "Notite pentru operator..."
+        "notesPlaceholder": "Notite pentru operator...",
+        "presentAtCheckin": "Prezent acum",
+        "absentHint": "Nu e prezent la check-in — datele se pot completa mai târziu."
       }
     },
     "gantt": {
