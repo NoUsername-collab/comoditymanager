@@ -72,23 +72,12 @@ type LanguageSwitcherProps = {
   variant?: "dropdown" | "inline";
 };
 
-export function LanguageSwitcher({
-  compact = false,
-  variant = "dropdown",
-}: LanguageSwitcherProps) {
-  const tCommon = useTranslations("common");
+function useSwitchLocale() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const gbClipId = useId();
 
-  const labels: Record<string, string> = {
-    ro: tCommon("romanian"),
-    en: tCommon("english"),
-    bg: tCommon("bulgarian"),
-  };
-
-  const switchLocale = useCallback(
+  return useCallback(
     (next: string) => {
       if (next === locale) return;
       startTransition(() => {
@@ -97,72 +86,79 @@ export function LanguageSwitcher({
     },
     [locale, pathname, router]
   );
+}
 
+function useLanguageLabels() {
+  const tCommon = useTranslations("common");
+  return {
+    language: tCommon("language"),
+    labels: {
+      ro: tCommon("romanian"),
+      en: tCommon("english"),
+      bg: tCommon("bulgarian"),
+    } as Record<string, string>,
+  };
+}
+
+/** Thin router — no hooks here (Rules of Hooks safe). */
+export function LanguageSwitcher({
+  compact = false,
+  variant = "dropdown",
+}: LanguageSwitcherProps) {
   if (variant === "inline") {
-    const flagSize = compact ? 18 : 20;
-    return (
-      <div
-        data-language-switcher-root
-        className={[
-          "language-switcher language-switcher--inline",
-          compact && "language-switcher--compact",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        role="group"
-        aria-label={tCommon("language")}
-      >
-        <div className="language-switcher__inline-options">
-          {routing.locales.map((l) => (
-            <button
-              key={l}
-              type="button"
-              aria-pressed={l === locale}
-              aria-label={labels[l]}
-              title={labels[l]}
-              onClick={() => switchLocale(l)}
-              className={[
-                "language-switcher__option language-switcher__option--inline",
-                l === locale && "language-switcher__option--active",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              <Flag code={l} size={flagSize} gbClipId={`${gbClipId}-${l}`} />
-            </button>
-          ))}
-        </div>
-      </div>
-    );
+    return <LanguageSwitcherInline compact={compact} />;
   }
+  return <LanguageSwitcherDropdown compact={compact} />;
+}
+
+function LanguageSwitcherInline({ compact }: { compact: boolean }) {
+  const locale = useLocale();
+  const gbClipId = useId();
+  const switchLocale = useSwitchLocale();
+  const { language, labels } = useLanguageLabels();
+  const flagSize = compact ? 18 : 20;
 
   return (
-    <LanguageSwitcherDropdown
-      compact={compact}
-      locale={locale}
-      gbClipId={gbClipId}
-      labels={labels}
-      languageLabel={tCommon("language")}
-      switchLocale={switchLocale}
-    />
+    <div
+      data-language-switcher-root
+      className={[
+        "language-switcher language-switcher--inline",
+        compact && "language-switcher--compact",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      role="group"
+      aria-label={language}
+    >
+      <div className="language-switcher__inline-options">
+        {routing.locales.map((l) => (
+          <button
+            key={l}
+            type="button"
+            aria-pressed={l === locale}
+            aria-label={labels[l]}
+            title={labels[l]}
+            onClick={() => switchLocale(l)}
+            className={[
+              "language-switcher__option language-switcher__option--inline",
+              l === locale && "language-switcher__option--active",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            <Flag code={l} size={flagSize} gbClipId={`${gbClipId}-${l}`} />
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
-function LanguageSwitcherDropdown({
-  compact,
-  locale,
-  gbClipId,
-  labels,
-  languageLabel,
-  switchLocale,
-}: {
-  compact: boolean;
-  locale: string;
-  gbClipId: string;
-  labels: Record<string, string>;
-  languageLabel: string;
-  switchLocale: (next: string) => void;
-}) {
+function LanguageSwitcherDropdown({ compact }: { compact: boolean }) {
+  const locale = useLocale();
+  const gbClipId = useId();
+  const switchLocale = useSwitchLocale();
+  const { language, labels } = useLanguageLabels();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -249,7 +245,7 @@ function LanguageSwitcherDropdown({
       ref={menuRef}
       data-language-switcher-menu
       role="listbox"
-      aria-label={languageLabel}
+      aria-label={language}
       onPointerDown={(event) => event.stopPropagation()}
       className="language-switcher__menu language-switcher__menu--portal fixed min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-card,#fff)] p-1 shadow-lg"
       style={
@@ -300,7 +296,7 @@ function LanguageSwitcherDropdown({
         type="button"
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={languageLabel}
+        aria-label={language}
         onClick={toggleOpen}
         className={[
           "language-switcher__trigger cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] leading-none flex items-center",
