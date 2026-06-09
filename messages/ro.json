@@ -1985,11 +1985,11 @@
         "addGuest": "Adaugă oaspete",
         "removeGuest": "Elimină",
         "rep": "Titular rezervare",
-        "repDesc": "Doar persoana care a făcut rezervarea",
+        "repDesc": "Titularul primește toate camerele selectate cu o singură identitate",
         "individual": "Toți oaspeții",
         "individualDesc": "Câte un formular per persoană; poți marca cine e prezent acum",
         "per_room": "Pe cameră",
-        "per_roomDesc": "Câte un reprezentant per cameră alocată"
+        "per_roomDesc": "Per cameră: titular, alt oaspete sau doar chei până sosesc"
       },
       "step": {
         "identity": "Date identitate",
@@ -2090,7 +2090,10 @@
         "notes": "Observații",
         "notesPlaceholder": "Notite pentru operator...",
         "presentAtCheckin": "Prezent acum",
-        "absentHint": "Nu e prezent la check-in — datele se pot completa mai târziu."
+        "absentHint": "Nu e prezent la check-in — datele se pot completa mai târziu.",
+        "keysOnly": "Doar chei",
+        "keysOnlyHint": "Camera e marcată primită. Identitatea se completează când vine ocupantul.",
+        "claimRoom": "Preia camera (identitate)"
       }
     },
     "gantt": {

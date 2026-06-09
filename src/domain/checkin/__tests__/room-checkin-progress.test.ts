@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   computeRoomCheckinProgress,
   isRoomCheckedIn,
+  shouldShowRoomCheckinProgress,
 } from "../room-checkin-progress";
 
 describe("room-checkin-progress", () => {
@@ -25,5 +26,26 @@ describe("room-checkin-progress", () => {
   test("single implicit room when no room names", () => {
     expect(computeRoomCheckinProgress([], []).remaining).toBe(1);
     expect(computeRoomCheckinProgress([], ["—"]).isComplete).toBe(true);
+  });
+
+  test("shouldShowRoomCheckinProgress hides future multi-room stays", () => {
+    const future = computeRoomCheckinProgress(["7", "1"], []);
+    expect(
+      shouldShowRoomCheckinProgress("2026-06-24", "2026-06-09", future),
+    ).toBe(false);
+  });
+
+  test("shouldShowRoomCheckinProgress shows on arrival day", () => {
+    const arrival = computeRoomCheckinProgress(["7", "1"], []);
+    expect(
+      shouldShowRoomCheckinProgress("2026-06-24", "2026-06-24", arrival),
+    ).toBe(true);
+  });
+
+  test("shouldShowRoomCheckinProgress shows after partial check-in", () => {
+    const partial = computeRoomCheckinProgress(["7", "1"], ["7"]);
+    expect(
+      shouldShowRoomCheckinProgress("2026-06-24", "2026-06-09", partial),
+    ).toBe(true);
   });
 });

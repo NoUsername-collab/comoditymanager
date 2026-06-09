@@ -8,7 +8,11 @@ import type {
   CheckinStatus,
 } from "@/domain/checkin/types";
 import { mapCheckinDocTypeForDb } from "@/domain/checkin/doc-type";
-import { guestsToPersist } from "@/domain/checkin/guest-layout";
+import {
+  expandGuestsForPersistence,
+  guestsToPersist,
+} from "@/domain/checkin/guest-layout";
+import type { CheckinIdentityScope } from "@/domain/checkin/types";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import { syncCheckinGuestsToClientProfiles } from "@/services/checkin/sync-guest-from-checkin";
 import {
@@ -75,9 +79,24 @@ export async function createCheckin(
   const checkinId = checkinRow.id;
 
   // ── Sync identity → profil client (`guests`) ───────────────
-  const guestsForDb = guestsToPersist(
-    await syncCheckinGuestsToClientProfiles(data.guests, booking),
+  const scope: CheckinIdentityScope = data.identity_scope ?? "per_room";
+  const receptionRooms = data.reception_rooms ?? [];
+  const expandedGuests = expandGuestsForPersistence(
+    data.guests,
+    scope,
+    receptionRooms,
   );
+  const identityGuests = expandedGuests.filter((g) => !g.keys_only);
+  const syncedIdentity = await syncCheckinGuestsToClientProfiles(
+    identityGuests,
+    booking,
+  );
+  let syncIdx = 0;
+  const mergedGuests = expandedGuests.map((g) => {
+    if (g.keys_only) return g;
+    return syncedIdentity[syncIdx++] ?? g;
+  });
+  const guestsForDb = guestsToPersist(mergedGuests);
   if (guestsForDb.length > 0) {
     const guestRows = guestsForDb.map((g) =>
       withTenantId(tenantId, {

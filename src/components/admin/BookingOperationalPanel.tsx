@@ -17,7 +17,10 @@ import {
   canOfferOperativeCheckIn,
   isOperativeCheckInDay,
 } from "@/domain/booking/operative-checkin";
-import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
+import {
+  computeRoomCheckinProgress,
+  shouldShowRoomCheckinProgress,
+} from "@/domain/checkin/room-checkin-progress";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
@@ -193,8 +196,11 @@ export function BookingOperationalPanel({
         total: roomProgress.total,
       });
 
-  const showRoomProgress =
-    roomProgress.isMultiRoom || roomProgress.checked > 0;
+  const showRoomProgress = shouldShowRoomCheckinProgress(
+    plannedCheckIn,
+    today,
+    roomProgress,
+  );
 
   return (
     <div className="bd-ops bd-ops--vertical">

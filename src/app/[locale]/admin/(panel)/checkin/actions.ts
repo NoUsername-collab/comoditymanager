@@ -148,7 +148,26 @@ export async function createCheckinAction(
     }
 
     if (!Array.isArray(guests) || guests.length === 0) {
-      return { ok: false, error: "At least one guest required" };
+      return { ok: false, error: "At least one room or guest required" };
+    }
+
+    const identityScopeRaw = String(formData.get("identity_scope") ?? "").trim();
+    const identity_scope =
+      identityScopeRaw === "rep" ||
+      identityScopeRaw === "individual" ||
+      identityScopeRaw === "per_room"
+        ? identityScopeRaw
+        : undefined;
+
+    let reception_rooms: string[] | undefined;
+    try {
+      const roomsJson = String(formData.get("reception_rooms") ?? "[]");
+      const parsed = JSON.parse(roomsJson);
+      reception_rooms = Array.isArray(parsed)
+        ? parsed.filter((r): r is string => typeof r === "string")
+        : undefined;
+    } catch {
+      reception_rooms = undefined;
     }
 
     // Load booking data
@@ -170,6 +189,8 @@ export async function createCheckinAction(
       deposit_amount: depositAmount,
       key_handed: keyHanded,
       notes,
+      identity_scope,
+      reception_rooms,
     };
 
     const checkinId = await createCheckin(checkinData, settings, bookingForCheckin);

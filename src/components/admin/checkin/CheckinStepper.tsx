@@ -87,7 +87,7 @@ export function CheckinStepper({
   const [currentStep, setCurrentStep] = useState(0);
 
   const [operatorScope, setOperatorScope] = useState<CheckinIdentityScope | null>(
-    needsRoomPicker ? "per_room" : null,
+    null,
   );
   const identityScope = effectiveIdentityScope(
     settings.group_checkin_mode,
@@ -111,26 +111,39 @@ export function CheckinStepper({
       return buildCheckinGuestSlotsForRooms(
         booking,
         roomProgress.pendingRooms,
+        effectiveIdentityScope(settings.group_checkin_mode, null),
       );
     }
     return createInitialCheckinGuests(booking, settings);
   });
 
   function applyIdentityScope(scope: CheckinIdentityScope) {
-    if (registeredOnly || (needsRoomPicker && roomPickerDone)) return;
+    if (needsRoomPicker && !roomPickerDone) return;
+    if (registeredOnly) {
+      const count = booking.registered_guests?.length ?? 0;
+      if (count > 1 && scope !== "per_room") return;
+      if (count <= 1 && scope === "individual") return;
+    }
     setOperatorScope(scope);
-    setGuests(buildCheckinGuestSlots(booking, scope));
+    if (needsRoomPicker && roomPickerDone && selectedRooms.length > 0) {
+      setGuests(buildCheckinGuestSlotsForRooms(booking, selectedRooms, scope));
+    } else {
+      setGuests(buildCheckinGuestSlots(booking, scope));
+    }
   }
 
-  function guestsForRooms(roomLabels: string[]): CheckinGuestInput[] {
-    return buildCheckinGuestSlotsForRooms(booking, roomLabels);
+  function guestsForRooms(
+    roomLabels: string[],
+    scope: CheckinIdentityScope = identityScope,
+  ): CheckinGuestInput[] {
+    return buildCheckinGuestSlotsForRooms(booking, roomLabels, scope);
   }
 
   function confirmRoomSelection() {
     if (!selectedRooms.length) return;
     setRoomPickerDone(true);
-    setOperatorScope("per_room");
-    setGuests(guestsForRooms(selectedRooms));
+    const scope = effectiveIdentityScope(settings.group_checkin_mode, operatorScope);
+    setGuests(guestsForRooms(selectedRooms, scope));
   }
 
   function toggleSelectedRoom(room: string) {
@@ -147,10 +160,10 @@ export function CheckinStepper({
   }
 
   const registeredOnly = (booking.registered_guests?.length ?? 0) > 0;
-  const maxSelectableRooms = Math.max(
-    1,
-    booking.registered_guests?.length ?? roomProgress.pendingRooms.length,
-  );
+  const maxSelectableRooms =
+    registeredOnly && identityScope === "per_room"
+      ? Math.max(1, booking.registered_guests?.length ?? 1)
+      : roomProgress.pendingRooms.length;
 
   function removeGuestSlot(index: number) {
     if (registeredOnly) return;
@@ -189,6 +202,11 @@ export function CheckinStepper({
       deposit_amount: settings.checkin_deposit ? depositAmount : 0,
       key_handed: keyHanded,
       notes: notes || undefined,
+      identity_scope: identityScope,
+      reception_rooms:
+        needsRoomPicker && roomPickerDone && selectedRooms.length > 0
+          ? selectedRooms
+          : undefined,
     };
   }, [
     booking,
@@ -199,6 +217,10 @@ export function CheckinStepper({
     keyHanded,
     notes,
     settings,
+    identityScope,
+    needsRoomPicker,
+    roomPickerDone,
+    selectedRooms,
   ]);
 
   // ── Navigation ────────────────────────────────────────────
@@ -234,6 +256,11 @@ export function CheckinStepper({
       fd.set("key_handed", String(data.key_handed ?? false));
       fd.set("notes", data.notes ?? "");
       fd.set("guests", JSON.stringify(data.guests));
+      fd.set("identity_scope", data.identity_scope ?? "");
+      fd.set(
+        "reception_rooms",
+        JSON.stringify(data.reception_rooms ?? []),
+      );
 
       const result = await createCheckinAction(fd);
       if (result.ok) {
@@ -317,8 +344,11 @@ export function CheckinStepper({
             onSelectOne={(room) => {
               setSelectedRooms([room]);
               setRoomPickerDone(true);
-              setOperatorScope("per_room");
-              setGuests(guestsForRooms([room]));
+              const scope = effectiveIdentityScope(
+                settings.group_checkin_mode,
+                operatorScope,
+              );
+              setGuests(guestsForRooms([room], scope));
             }}
             labels={{
               title: t("roomPicker.title"),
@@ -341,9 +371,12 @@ export function CheckinStepper({
             booking={booking}
             identityScope={identityScope}
             operatorCanChoose={
-              !registeredOnly &&
-              !needsRoomPicker &&
-              allowsOperatorScopeChoice(settings.group_checkin_mode)
+              (allowsOperatorScopeChoice(settings.group_checkin_mode) ||
+                (needsRoomPicker &&
+                  roomPickerDone &&
+                  selectedRooms.length > 0)) &&
+              (!registeredOnly ||
+                (booking.registered_guests?.length ?? 0) <= 1)
             }
             onScopeChange={applyIdentityScope}
             onRemoveGuest={
@@ -607,7 +640,8 @@ function GuestIdentityCard({
   t: ReturnType<typeof useTranslations>;
 }) {
   const tIdentity = useTranslations("admin.guests.identity");
-  const present = guest.present_at_checkin !== false;
+  const keysOnly = !!guest.keys_only;
+  const present = guest.present_at_checkin !== false && !keysOnly;
   const roGuest = isRomanianNationality(guest.nationality);
   const idType = (guest.national_id_type ?? "cnp") as NationalIdType;
   const uiDocType = checkinUiDocTypeValue(guest.document_type);
@@ -619,10 +653,14 @@ function GuestIdentityCard({
     : null;
   const idTypeLabel = tIdentity(`nationalIdTypes.${idType}`);
   const roomLocked = identityScope === "rep" || identityScope === "per_room";
-  const showPresentToggle = identityScope === "individual" && !guest.guest_id;
+  const showPresentToggle =
+    identityScope === "individual" && !guest.guest_id && !keysOnly;
+  const showKeysOnlyActions =
+    identityScope === "per_room" && !guest.is_representative;
   const identityCritical =
-    isIdentityStatusCritical(guest.identity_status) ||
-    (cnpRule === "required" && !guestHasLegalIdentity(guest));
+    !keysOnly &&
+    (isIdentityStatusCritical(guest.identity_status) ||
+      (cnpRule === "required" && !guestHasLegalIdentity(guest)));
 
   return (
     <div
@@ -658,6 +696,18 @@ function GuestIdentityCard({
               {t("field.presentAtCheckin")}
             </label>
           )}
+          {showKeysOnlyActions && !keysOnly && (
+            <button
+              type="button"
+              className="checkin-guest-form__keys-only"
+              onClick={() => {
+                updateGuest(idx, "keys_only", true);
+                updateGuest(idx, "present_at_checkin", false);
+              }}
+            >
+              {t("field.keysOnly")}
+            </button>
+          )}
           {canRemove && onRemove && (
             <button
               type="button"
@@ -676,7 +726,21 @@ function GuestIdentityCard({
         </p>
       ) : null}
 
-      {!present ? (
+      {keysOnly ? (
+        <div className="checkin-guest-form__keys-only-panel">
+          <p className="checkin-guest-form__keys-hint">{t("field.keysOnlyHint")}</p>
+          <button
+            type="button"
+            className="checkin-stepper__btn checkin-stepper__btn--secondary checkin-guest-form__claim"
+            onClick={() => {
+              updateGuest(idx, "keys_only", false);
+              updateGuest(idx, "present_at_checkin", true);
+            }}
+          >
+            {t("field.claimRoom")}
+          </button>
+        </div>
+      ) : !present ? (
         <p className="checkin-guest-form__absent-hint">{t("field.absentHint")}</p>
       ) : (
         <>

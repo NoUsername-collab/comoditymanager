@@ -2,11 +2,11 @@ import { guestFullName } from "./identity-rules";
 import type {
   BookingForCheckin,
   CheckinGuestInput,
+  CheckinIdentityScope,
   GroupCheckinMode,
 } from "./types";
 
-/** Cine completează datele de identitate la check-in. */
-export type CheckinIdentityScope = "rep" | "individual" | "per_room";
+export type { CheckinIdentityScope };
 
 export function allowsOperatorScopeChoice(mode: GroupCheckinMode): boolean {
   return mode === "both";
@@ -61,20 +61,90 @@ function createGuestSlot(
   };
 }
 
+/** Cameră primită fără identitate — ocupantul o preia la sosire. */
+export function createKeysOnlyRoomSlot(
+  booking: BookingForCheckin,
+  roomLabel: string,
+): CheckinGuestInput {
+  return {
+    full_name: "",
+    last_name: "",
+    first_name: "",
+    phone: "",
+    national_id: "",
+    national_id_type: "cnp",
+    document_type: "ci",
+    document_series: "",
+    document_number: "",
+    nationality: "România",
+    birth_date: null,
+    room_label: roomLabel,
+    is_representative: false,
+    guest_id: null,
+    present_at_checkin: false,
+    keys_only: true,
+  };
+}
+
 /** Sloturi pentru camerele selectate la sosire incrementală. */
 export function buildCheckinGuestSlotsForRooms(
   booking: BookingForCheckin,
   roomLabels: string[],
+  scope: CheckinIdentityScope = "per_room",
 ): CheckinGuestInput[] {
   const registered = booking.registered_guests ?? [];
+  if (!roomLabels.length) {
+    return buildCheckinGuestSlots(booking, scope);
+  }
+
+  if (scope === "rep") {
+    if (registered.length > 0) {
+      const rep =
+        registered.find((g) => g.is_representative) ?? registered[0];
+      return [{ ...rep, room_label: roomLabels[0], is_representative: true }];
+    }
+    return [createGuestSlot(booking, roomLabels[0], true)];
+  }
+
   if (registered.length > 0) {
     return assignRegisteredGuestsToRooms(registered, roomLabels);
   }
-  if (!roomLabels.length) {
-    return buildCheckinGuestSlots(booking, "rep");
-  }
+
   return roomLabels.map((room, index) =>
-    createGuestSlot(booking, room, index === 0),
+    index === 0
+      ? createGuestSlot(booking, room, true)
+      : createKeysOnlyRoomSlot(booking, room),
+  );
+}
+
+/**
+ * Reprezentantul pe mai multe camere → un rând checkin_guests per cameră.
+ * Sloturile keys_only rămân fără identitate.
+ */
+export function expandGuestsForPersistence(
+  guests: CheckinGuestInput[],
+  scope: CheckinIdentityScope,
+  receptionRooms: string[],
+): CheckinGuestInput[] {
+  if (scope === "rep" && receptionRooms.length > 1) {
+    const rep =
+      guests.find((g) => g.is_representative && !g.keys_only) ??
+      guests.find((g) => !g.keys_only) ??
+      guests[0];
+    if (!rep) return guests;
+    return receptionRooms.map((room, index) => ({
+      ...rep,
+      room_label: room,
+      is_representative: index === 0,
+      keys_only: false,
+      present_at_checkin: true,
+    }));
+  }
+
+  return guests.map((g) =>
+    g.keys_only
+      ? { ...g, full_name: g.full_name?.trim() || "—" }
+      : g,
   );
 }
 
@@ -120,18 +190,31 @@ export function buildCheckinGuestSlots(
   });
 }
 
+/** Camere / oaspeți primiți în sesiunea curentă (inclusiv doar chei). */
+export function guestsReceivingRooms(
+  guests: CheckinGuestInput[],
+): CheckinGuestInput[] {
+  return guests.filter(
+    (g) => g.keys_only || g.present_at_checkin !== false,
+  );
+}
+
 /** Oaspeți pentru care se colectează / validează identitatea acum. */
 export function guestsCollectingIdentity(
   guests: CheckinGuestInput[],
 ): CheckinGuestInput[] {
-  return guests.filter((g) => g.present_at_checkin !== false);
+  return guests.filter(
+    (g) => g.present_at_checkin !== false && !g.keys_only,
+  );
 }
 
 /** Oaspeți care se salvează în DB la finalizare. */
 export function guestsToPersist(guests: CheckinGuestInput[]): CheckinGuestInput[] {
-  return guestsCollectingIdentity(guests).filter(
-    (g) => Boolean(guestFullName(g).trim() || g.full_name?.trim()),
-  );
+  return guests.filter((g) => {
+    if (g.keys_only && g.room_label?.trim()) return true;
+    if (g.present_at_checkin === false) return false;
+    return Boolean(guestFullName(g).trim() || g.full_name?.trim());
+  });
 }
 
 export type RoomGuestGroup = {

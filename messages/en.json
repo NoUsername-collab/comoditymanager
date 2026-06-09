@@ -1985,11 +1985,11 @@
         "addGuest": "Add guest",
         "removeGuest": "Remove",
         "rep": "Booking holder",
-        "repDesc": "Only the person who made the booking",
+        "repDesc": "Holder receives all selected rooms with one identity",
         "individual": "All guests",
         "individualDesc": "One form per person; mark who is present now",
         "per_room": "Per room",
-        "per_roomDesc": "One representative per allocated room"
+        "per_roomDesc": "Per room: holder, another guest, or keys only until they arrive"
       },
       "step": {
         "identity": "Identity data",
@@ -2090,7 +2090,10 @@
         "notes": "Notes",
         "notesPlaceholder": "Notes for operator...",
         "presentAtCheckin": "Present now",
-        "absentHint": "Not present at check-in — details can be completed later."
+        "absentHint": "Not present at check-in — details can be completed later.",
+        "keysOnly": "Keys only",
+        "keysOnlyHint": "Room marked as received. Identity is completed when the occupant arrives.",
+        "claimRoom": "Claim room (identity)"
       }
     },
     "gantt": {

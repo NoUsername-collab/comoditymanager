@@ -83,7 +83,12 @@ export interface CheckinGuestInput {
   identity_status?: GuestIdentityStatus | null;
   /** false = nu e prezent acum; datele se pot completa mai târziu */
   present_at_checkin?: boolean;
+  /** Cameră primită doar cu chei — identitatea ocupantului la sosire */
+  keys_only?: boolean;
 }
+
+/** Cine completează identitatea la check-in (re-exportat din guest-layout pentru form data). */
+export type CheckinIdentityScope = "rep" | "individual" | "per_room";
 
 // ── Form data submitted by operator ────────────────────────
 export interface CheckinFormData {
@@ -95,6 +100,10 @@ export interface CheckinFormData {
   deposit_amount?: number;
   key_handed?: boolean;
   notes?: string;
+  /** Mod identitate ales de recepție (sau din setări). */
+  identity_scope?: CheckinIdentityScope;
+  /** Camere primite în această sesiune (sosire incrementală). */
+  reception_rooms?: string[];
 }
 
 // ── Owner-configurable check-in settings ───────────────────

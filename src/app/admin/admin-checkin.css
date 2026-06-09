@@ -1306,6 +1306,39 @@
   font-style: italic;
 }
 
+.checkin-guest-form__keys-only {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border-radius: 0.35rem;
+  border: 1px solid #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+  cursor: pointer;
+}
+
+.checkin-guest-form__keys-only-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.5rem 0.55rem;
+  border-radius: 0.45rem;
+  border: 1px dashed #fcd34d;
+  background: #fffbeb;
+}
+
+.checkin-guest-form__keys-hint {
+  margin: 0;
+  font-size: 0.68rem;
+  color: #92400e;
+}
+
+.checkin-guest-form__claim {
+  align-self: flex-start;
+  font-size: 0.68rem !important;
+  padding: 0.35rem 0.65rem !important;
+}
+
 .checkin-add-guest-btn {
   width: 100%;
   margin-top: 0.25rem;

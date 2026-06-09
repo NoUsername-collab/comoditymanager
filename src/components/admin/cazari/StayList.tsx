@@ -21,6 +21,7 @@ export function StayList({
   returnTo,
   hasQuery,
   labels,
+  operativeToday,
 }: {
   title: string;
   subtitle?: string;
@@ -29,6 +30,7 @@ export function StayList({
   returnTo: string;
   hasQuery: boolean;
   labels: CazariLabels;
+  operativeToday?: string;
 }) {
   const emptyState =
     variant === "confirmate"
@@ -84,6 +86,7 @@ export function StayList({
                 stay={stay}
                 labels={labels}
                 variant={variant === "refuzate" ? "refuzate" : "operational"}
+                operativeToday={operativeToday}
               />
               {variant === "refuzate" ? (
                 <RefusedStayActions

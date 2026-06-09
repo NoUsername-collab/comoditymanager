@@ -3,7 +3,10 @@
  * Implements the pseudocode from dev spec section 06.
  */
 
-import { guestsCollectingIdentity } from "./guest-layout";
+import {
+  guestsCollectingIdentity,
+  guestsReceivingRooms,
+} from "./guest-layout";
 import {
   evaluateCnpRule,
   guestHasValidCnp,
@@ -36,16 +39,22 @@ export function validateCheckin(
 ): ValidationResult {
   const flags: CheckinFlag[] = [];
   const blockers: string[] = [];
+  const receivingRooms = guestsReceivingRooms(data.guests);
   const activeGuests = guestsCollectingIdentity(data.guests);
 
-  if (activeGuests.length === 0) {
+  if (receivingRooms.length === 0) {
+    blockers.push("Selectează cel puțin o cameră de primit");
+  } else if (activeGuests.length === 0 && !receivingRooms.some((g) => g.keys_only)) {
     blockers.push("Cel puțin un oaspete prezent la check-in");
   }
 
   // ── DATE CHECK ─────────────────────────────────────────────
-  // Check-in is ONLY allowed on the check-in date itself.
-  if (today && booking.check_in) {
-    if (today !== booking.check_in) {
+  // Prima sosire: doar în ziua planificată; continuare incrementală: și ulterior.
+  if (today && booking.check_in && today !== booking.check_in) {
+    const continuing =
+      !!booking.actual_check_in_at ||
+      (booking.checked_in_rooms?.length ?? 0) > 0;
+    if (!continuing) {
       blockers.push(
         `Check-in posibil doar in data de ${booking.check_in}`,
       );

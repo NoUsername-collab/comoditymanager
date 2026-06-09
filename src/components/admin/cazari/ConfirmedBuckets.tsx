@@ -58,6 +58,7 @@ export function ConfirmedBuckets({
             returnTo={returnTo}
             hasQuery={hasQuery}
             labels={labels}
+            operativeToday={today}
           />
         );
       })}

@@ -1,3 +1,5 @@
+import { isOperativeCheckInDay } from "@/domain/booking/operative-checkin";
+
 /** Progres check-in per cameră — o rezervare poate fi recepționată în mai multe etape. */
 
 export type RoomCheckinProgress = {
@@ -78,4 +80,19 @@ export function computeRoomCheckinProgress(
     isPartial: checked > 0 && checked < total,
     isComplete: checked >= total,
   };
+}
+
+/**
+ * Afișează progresul pe camere doar când check-in-ul e relevant:
+ * sosire azi (multi-cameră) sau cel puțin o cameră deja primită.
+ */
+export function shouldShowRoomCheckinProgress(
+  plannedCheckIn: string,
+  today: string,
+  progress: RoomCheckinProgress,
+): boolean {
+  if (progress.checked > 0) return true;
+  return (
+    isOperativeCheckInDay(plannedCheckIn, today) && progress.isMultiRoom
+  );
 }

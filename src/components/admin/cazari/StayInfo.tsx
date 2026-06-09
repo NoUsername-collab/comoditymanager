@@ -4,17 +4,23 @@ import { formatBookingRef } from "@/lib/booking-admin-links";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 import { StayCheckinProgress } from "@/components/admin/cazari/StayCheckinProgress";
-import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
+import {
+  computeRoomCheckinProgress,
+  shouldShowRoomCheckinProgress,
+} from "@/domain/checkin/room-checkin-progress";
 import type { CazariLabels, StayCardRow } from "@/components/admin/cazari/types";
 
 export function StayInfo({
   stay,
   labels,
   variant = "operational",
+  operativeToday,
 }: {
   stay: StayCardRow;
   labels: CazariLabels;
   variant?: "operational" | "refuzate";
+  /** Ziua operațională (simulare) — pentru a ascunde progresul înainte de sosire. */
+  operativeToday?: string;
 }) {
   const isConfirmed = stay.status === "confirmata";
   const isCancelled = stay.status === "anulata" || variant === "refuzate";
@@ -120,7 +126,12 @@ export function StayInfo({
 
       {isConfirmed &&
       roomProgress &&
-      (roomProgress.isMultiRoom || roomProgress.checked > 0) ? (
+      operativeToday &&
+      shouldShowRoomCheckinProgress(
+        stay.check_in,
+        operativeToday,
+        roomProgress,
+      ) ? (
         <StayCheckinProgress
           roomNames={stay.room_names ?? []}
           checkedInRooms={checkedInRooms}
