@@ -287,7 +287,7 @@ export function CheckinStepper({
     <div className="checkin-stepper">
       {/* Step indicators */}
       <div className="checkin-stepper__indicators">
-        {STEPS.map((s, i) => (
+        {steps.map((s, i) => (
           <div
             key={s}
             className={`checkin-stepper__indicator ${
@@ -352,7 +352,6 @@ export function CheckinStepper({
                 : undefined
             }
             updateGuest={updateGuest}
-            settings={settings}
             registeredOnly={registeredOnly}
             emptyRegistered={registeredOnly && guests.length === 0}
             t={t}

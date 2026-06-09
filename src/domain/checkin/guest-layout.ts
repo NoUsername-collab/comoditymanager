@@ -83,17 +83,17 @@ export function assignRegisteredGuestsToRooms(
   registered: CheckinGuestInput[],
   roomLabels: string[],
 ): CheckinGuestInput[] {
-  return roomLabels
-    .map((room, index) => {
-      const guest = registered[index];
-      if (!guest) return null;
-      return {
-        ...guest,
-        room_label: room,
-        is_representative: guest.is_representative || index === 0,
-      };
-    })
-    .filter((g): g is CheckinGuestInput => g !== null);
+  const assigned: CheckinGuestInput[] = [];
+  roomLabels.forEach((room, index) => {
+    const guest = registered[index];
+    if (!guest) return;
+    assigned.push({
+      ...guest,
+      room_label: room,
+      is_representative: guest.is_representative || index === 0,
+    });
+  });
+  return assigned;
 }
 
 /** Construiește sloturile de formular în funcție de modul ales. */

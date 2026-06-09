@@ -1,12 +1,13 @@
 import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import type { CheckinGuestInput, BookingForCheckin } from "@/domain/checkin/types";
-import type { GuestDocType, GuestIdentityInput } from "@/domain/guest/types";
+import type { GuestDocType } from "@/domain/guest/types";
 import { cleanNationalId } from "@/domain/guest/national-id";
 import { findGuestByNationalId } from "@/services/guests/lookup";
 import {
   updateGuestIdentity,
   updateGuestPhone,
+  type GuestIdentityInput,
 } from "@/services/guests/profile";
 import { normalizePhone } from "@/domain/guest/normalize";
 import { getTenantScope } from "@/lib/tenant/scope";
