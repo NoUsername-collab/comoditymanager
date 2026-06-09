@@ -326,6 +326,11 @@ async function redirectPlatformUserToTenantAdmin(
 // ─── Main proxy ────────────────────────────────────────────────────
 
 export async function proxy(request: NextRequest) {
+  // API routes must not pass through next-intl (would rewrite /api → /en/api → 404)
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   const correctedHost = stagingTenantHostCorrection(
     request.headers.get("x-forwarded-host") ??
       request.headers.get("host") ??
@@ -508,7 +513,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next|_vercel|.*\\..*).*)",
+    "/((?!_next|_vercel|api|.*\\..*).*)",
     "/admin/:path*",
     "/receptie",
     "/calendar/confirm/:path*",

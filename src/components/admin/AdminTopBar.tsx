@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { SimTriggerChip } from "@/components/admin/SimTriggerChip";
 import { AdminGearMenu } from "@/components/admin/AdminGearMenu";
+import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
 import { getTranslations } from "next-intl/server";
 import { getTenantContext } from "@/core/tenant/context";
 
@@ -74,6 +75,7 @@ export async function AdminTopBar({
               <HudIconGlobe className="admin-gear__item-icon" />
               <span>{t("publicSite")}</span>
             </Link>
+            <PwaInstallAction variant="gear" />
             <div className="admin-gear__item admin-gear__item--logout" role="menuitem">
               <LogoutButton />
             </div>

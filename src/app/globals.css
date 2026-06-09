@@ -2015,12 +2015,22 @@ html[data-theme="default"][data-mode="night"] {
   text-decoration: none;
 }
 
-.admin-gear__item:hover {
+.admin-gear__item:hover,
+.admin-gear__item--button:hover {
   background: var(--surface-2, #f4f4f5);
 }
 
-.admin-gear__item--link {
+.admin-gear__item--link,
+.admin-gear__item--button {
   cursor: pointer;
+}
+
+.admin-gear__item--button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
 }
 
 .admin-gear__item--link:hover {

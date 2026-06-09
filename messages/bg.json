@@ -294,6 +294,17 @@
       "settings": "Настройки",
       "brandFallback": "Hospira"
     },
+    "pwa": {
+      "installApp": "Инсталирай приложението",
+      "installHint": "На началния екран — отваря се на цял екран",
+      "iosTitle": "Добави на началния екран",
+      "iosStep1": "Натисни Share долу в Safari",
+      "iosStep2": "Избери „Добави на началния екран“",
+      "iosStep3": "Натисни Добави — Hospira се отваря без лентата на браузъра",
+      "androidManualTitle": "Инсталирай от Chrome",
+      "androidManualStep": "Меню ⋮ → Инсталирай приложение",
+      "close": "Разбрах"
+    },
     "login": {
       "eyebrow": "Hospira",
       "title": "Админ",
@@ -1933,6 +1944,8 @@
       }
     },
     "gantt": {
+      "legend": "Легенда на времевата линия",
+      "rooms": "Стаи",
       "range": {
         "q1": "Яну–Мар",
         "q2": "Апр–Юни",

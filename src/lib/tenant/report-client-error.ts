@@ -24,7 +24,12 @@ export function reportTenantClientError(
     boundary: boundary ?? null,
   };
 
-  void fetch("/api/tenant-error", {
+  const endpoint =
+    typeof window !== "undefined"
+      ? new URL("/api/tenant-error", window.location.origin).href
+      : "/api/tenant-error";
+
+  void fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

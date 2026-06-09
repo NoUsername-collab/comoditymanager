@@ -12,6 +12,7 @@ import {
 import { isAdminTabActive } from "@/layout/mobile/admin-tabs";
 import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
 import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
+import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
 
 export function AdminMobileMoreDrawer({
   open,
@@ -79,6 +80,7 @@ export function AdminMobileMoreDrawer({
           </button>
         </div>
         <nav className="ml-drawer__nav">
+          <PwaInstallAction variant="drawer" onAfterClick={onClose} />
           {links.map((link) => {
             const active = isAdminTabActive(pathname, link.href);
             return (

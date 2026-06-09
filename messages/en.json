@@ -294,6 +294,17 @@
       "settings": "Settings",
       "brandFallback": "Hospira"
     },
+    "pwa": {
+      "installApp": "Install app",
+      "installHint": "On your home screen — opens full screen like a native app",
+      "iosTitle": "Add to Home Screen",
+      "iosStep1": "Tap Share at the bottom of Safari",
+      "iosStep2": "Choose \"Add to Home Screen\"",
+      "iosStep3": "Tap Add — Hospira opens without the browser bar",
+      "androidManualTitle": "Install from Chrome",
+      "androidManualStep": "Menu ⋮ → Install app or Add to Home Screen",
+      "close": "Got it"
+    },
     "login": {
       "eyebrow": "Hospira",
       "title": "Admin",
@@ -1965,6 +1976,8 @@
       }
     },
     "gantt": {
+      "legend": "Timeline legend",
+      "rooms": "Rooms",
       "range": {
         "q1": "Jan–Mar",
         "q2": "Apr–Jun",

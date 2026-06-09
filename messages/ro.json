@@ -294,6 +294,17 @@
       "settings": "Setări",
       "brandFallback": "Hospira"
     },
+    "pwa": {
+      "installApp": "Instalează aplicația",
+      "installHint": "Pe ecranul principal — se deschide full screen, ca o aplicație",
+      "iosTitle": "Adaugă pe ecranul de pornire",
+      "iosStep1": "Apasă Share în partea de jos în Safari",
+      "iosStep2": "Alege „Adaugă pe ecranul de pornire”",
+      "iosStep3": "Apasă Adaugă — Hospira se deschide fără bara browserului",
+      "androidManualTitle": "Instalează din Chrome",
+      "androidManualStep": "Meniu ⋮ → Instalează aplicația sau Adaugă pe ecranul de pornire",
+      "close": "Am înțeles"
+    },
     "login": {
       "eyebrow": "Hospira",
       "title": "Admin",
@@ -1965,6 +1976,8 @@
       }
     },
     "gantt": {
+      "legend": "Legendă timeline",
+      "rooms": "Camere",
       "range": {
         "q1": "Ian–Mar",
         "q2": "Apr–Iun",

@@ -262,6 +262,74 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
   padding-bottom: calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom));
 }
 
+/* PWA install sheet (manual / iOS instructions) */
+.pwa-install-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  border: none;
+  background: rgb(0 0 0 / 0.45);
+  cursor: pointer;
+}
+
+.pwa-install-sheet {
+  position: fixed;
+  z-index: 10051;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: 1rem;
+  background: var(--surface-1, #fff);
+  color: var(--admin-text, #18181b);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.22);
+}
+
+.pwa-install-sheet__title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pwa-install-sheet__hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--admin-muted, #71717a);
+  line-height: 1.4;
+}
+
+.pwa-install-sheet__steps {
+  margin: 0 0 1rem;
+  padding-left: 1.15rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.pwa-install-sheet__steps li + li {
+  margin-top: 0.35rem;
+}
+
+.pwa-install-sheet__close {
+  width: 100%;
+  min-height: 2.75rem;
+  border: none;
+  border-radius: 0.65rem;
+  background: var(--admin-accent, #059669);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ml-drawer__link--button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
 /* PWA standalone (Add to Home Screen) — full safe-area on notched phones */
 @media (display-mode: standalone) {
   html[data-layout-chrome="compact"] .ml-bottom-nav {
