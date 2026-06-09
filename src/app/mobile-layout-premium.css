@@ -211,6 +211,19 @@ html[data-layout-chrome="compact"] .admin-today-board--compact .admin-today-boar
   grid-template-columns: minmax(0, 1fr);
 }
 
+html[data-layout-chrome="compact"] .checkin-quest__head {
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__progress-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__meter {
+  min-width: 0;
+}
+
 html[data-layout-chrome="compact"] .checkin-quest__card {
   grid-template-columns: auto minmax(0, 1fr);
 }

@@ -9,6 +9,8 @@ import { formatGuestPartyDetail } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { CheckInQuestItem } from "@/services/today-board";
 
+const QUEST_PREVIEW_LIMIT = 3;
+
 type Props = {
   todayIso: string;
   checkInTime: string;
@@ -16,8 +18,18 @@ type Props = {
   completedCount: number;
 };
 
+function matchesQuestSearch(item: CheckInQuestItem, query: string): boolean {
+  const haystack = [
+    item.guestLabel,
+    item.guestName,
+    ...item.roomNames,
+  ]
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(query);
+}
+
 export function CheckInMilestoneBoard({
-  todayIso,
   checkInTime,
   pending,
   completedCount,
@@ -28,11 +40,29 @@ export function CheckInMilestoneBoard({
   const { showToast } = useAdminFx();
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [dialog, setDialog] = useState<CheckInQuestItem | null>(null);
+  const [query, setQuery] = useState("");
 
   const visible = useMemo(
     () => pending.filter((item) => !dismissed.has(item.bookingId)),
     [pending, dismissed]
   );
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filtered = useMemo(() => {
+    if (!normalizedQuery) return visible;
+    return visible.filter((item) => matchesQuestSearch(item, normalizedQuery));
+  }, [visible, normalizedQuery]);
+
+  const displayed = useMemo(() => {
+    if (normalizedQuery) return filtered;
+    return filtered.slice(0, QUEST_PREVIEW_LIMIT);
+  }, [filtered, normalizedQuery]);
+
+  const hiddenCount =
+    normalizedQuery.length === 0
+      ? Math.max(0, visible.length - QUEST_PREVIEW_LIMIT)
+      : 0;
 
   const totalToday = completedCount + pending.length;
   const doneCount = completedCount + (pending.length - visible.length);
@@ -40,6 +70,18 @@ export function CheckInMilestoneBoard({
     totalToday > 0 ? Math.round((doneCount / totalToday) * 100) : 0;
   const allDone = totalToday > 0 && visible.length === 0;
   const noArrivalsToday = totalToday === 0;
+  const remainingCount = visible.length;
+
+  const progressMood =
+    allDone || progressPct >= 100
+      ? "complete"
+      : progressPct >= 66
+        ? "hot"
+        : progressPct >= 33
+          ? "warm"
+          : doneCount > 0
+            ? "started"
+            : "idle";
 
   function handleSuccess(item: CheckInQuestItem) {
     setDismissed((prev) => new Set(prev).add(item.bookingId));
@@ -58,6 +100,7 @@ export function CheckInMilestoneBoard({
         "checkin-quest",
         allDone && "checkin-quest--victory",
         noArrivalsToday && "checkin-quest--idle",
+        `checkin-quest--mood-${progressMood}`,
       ]
         .filter(Boolean)
         .join(" ")}
@@ -75,16 +118,42 @@ export function CheckInMilestoneBoard({
         </div>
 
         {!noArrivalsToday && (
-          <div className="checkin-quest__progress-wrap" aria-hidden={allDone}>
-            <div
-              className="checkin-quest__ring"
-              style={{ "--quest-pct": `${progressPct}` } as React.CSSProperties}
-            >
-              <span className="checkin-quest__ring-value">{progressPct}%</span>
+          <div
+            className="checkin-quest__progress-wrap"
+            role="group"
+            aria-label={t("progressAria", { done: doneCount, total: totalToday })}
+          >
+            <div className="checkin-quest__meter">
+              <div className="checkin-quest__meter-track" aria-hidden>
+                {Array.from({ length: totalToday }, (_, index) => {
+                  const status =
+                    index < doneCount
+                      ? "done"
+                      : index === doneCount && remainingCount > 0
+                        ? "current"
+                        : "pending";
+                  return (
+                    <span
+                      key={index}
+                      className={`checkin-quest__meter-seg checkin-quest__meter-seg--${status}`}
+                    />
+                  );
+                })}
+              </div>
+              <div
+                className="checkin-quest__meter-fill"
+                style={{ "--quest-pct": `${progressPct}` } as React.CSSProperties}
+                aria-hidden
+              />
             </div>
             <p className="checkin-quest__progress-label">
               {t("progress", { done: doneCount, total: totalToday })}
             </p>
+            {!allDone && remainingCount > 0 && (
+              <p className="checkin-quest__progress-hint">
+                {t("remaining", { count: remainingCount })}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -105,9 +174,46 @@ export function CheckInMilestoneBoard({
         <p className="checkin-quest__idle">{t("noArrivalsToday")}</p>
       )}
 
-      {visible.length > 0 && (
+      {!noArrivalsToday && !allDone && (
+        <div className="checkin-quest__search-wrap">
+          <label className="checkin-quest__search" htmlFor="checkin-quest-search">
+            <svg
+              className="checkin-quest__search-icon"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              width="16"
+              height="16"
+              aria-hidden
+            >
+              <path
+                fillRule="evenodd"
+                d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <input
+              id="checkin-quest-search"
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              className="checkin-quest__search-input"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </label>
+        </div>
+      )}
+
+      {normalizedQuery && filtered.length === 0 && (
+        <p className="checkin-quest__search-empty" role="status">
+          {t("noSearchResults", { query: query.trim() })}
+        </p>
+      )}
+
+      {displayed.length > 0 && (
         <ul className="checkin-quest__track">
-          {visible.map((item, index) => (
+          {displayed.map((item, index) => (
             <li key={item.bookingId} className="checkin-quest__step">
               <div className="checkin-quest__connector" aria-hidden />
               <article className="checkin-quest__card">
@@ -146,6 +252,10 @@ export function CheckInMilestoneBoard({
             </li>
           ))}
         </ul>
+      )}
+
+      {hiddenCount > 0 && (
+        <p className="checkin-quest__more-hint">{t("moreHidden", { count: hiddenCount })}</p>
       )}
 
       {dialog && (
