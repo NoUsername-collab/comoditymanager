@@ -270,7 +270,12 @@ export async function loadTouristSheetAction(
     const checkin = await getCheckinByBookingId(bookingId);
     if (!checkin) {
       const t = await getTranslations("admin.pages.cazari");
-      return { ok: false, error: t("emitFisaNoCheckin") };
+      return {
+        ok: false,
+        error: booking.actual_check_in_at
+          ? t("emitFisaLegacyCheckin")
+          : t("emitFisaNoCheckin"),
+      };
     }
 
     const [guestRows, settings] = await Promise.all([

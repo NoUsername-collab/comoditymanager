@@ -8,10 +8,7 @@ import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDia
 import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
-import {
-  canOfferOperativeCheckIn,
-  isStayCheckedIn,
-} from "@/domain/booking/operative-checkin";
+import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
@@ -35,6 +32,7 @@ type Props = {
     checkActionsOnlyConfirmed: string;
     moveOnlyConfirmed: string;
     phoneRequiredForCheckIn: string;
+    completeCheckinForFisa: string;
   };
   guestPhone?: string | null;
   hasCheckinRecord?: boolean;
@@ -73,10 +71,9 @@ export function StayQuickOps({
     actualCheckInAt,
     actualCheckOutAt,
   };
-  const checkedIn = isStayCheckedIn({
-    actualCheckInAt,
-    hasCheckinRecord,
-  });
+  const canEmitFisa = hasCheckinRecord;
+  const needsWizardForFisa =
+    isConfirmed && !!actualCheckInAt && !hasCheckinRecord && !actualCheckOutAt;
   const canCheckIn =
     canOfferOperativeCheckIn({
       status: bookingStatus,
@@ -87,12 +84,14 @@ export function StayQuickOps({
       hasCheckinRecord,
     }) && hasPhone;
   const canCheckOut = isConfirmed && !!actualCheckInAt && !actualCheckOutAt;
-  const canEditCheckIn = isConfirmed && !!actualCheckInAt;
+  const canEditCheckInTime = isConfirmed && !!actualCheckInAt && hasCheckinRecord;
   const canEditCheckOut = isConfirmed && !!actualCheckOutAt;
   const canMove = isConfirmed;
-  const checkInLabel = canEditCheckIn
-    ? `${labels.edit} ${labels.checkIn}`
-    : labels.checkIn;
+  const checkInLabel = needsWizardForFisa
+    ? labels.completeCheckinForFisa
+    : canEditCheckInTime
+      ? `${labels.edit} ${labels.checkIn}`
+      : labels.checkIn;
   const checkOutLabel = canEditCheckOut
     ? `${labels.edit} ${labels.checkOut}`
     : labels.checkOut;
@@ -125,7 +124,7 @@ export function StayQuickOps({
   }
 
   function handleCheckIn() {
-    if (canEditCheckIn) {
+    if (canEditCheckInTime) {
       setEditDialog({ mode: "checkin" });
       return;
     }
@@ -145,7 +144,9 @@ export function StayQuickOps({
       <button
         type="button"
         className="checkin-start-btn stay-quick-ops__checkin !px-2 !py-1 !text-[11px]"
-        disabled={(!canCheckIn && !canEditCheckIn) || pending}
+        disabled={
+          (!canCheckIn && !canEditCheckInTime && !needsWizardForFisa) || pending
+        }
         title={
           !isConfirmed
             ? labels.checkActionsOnlyConfirmed
@@ -155,7 +156,7 @@ export function StayQuickOps({
         }
         onClick={handleCheckIn}
       >
-        {!canEditCheckIn && (
+        {!canEditCheckInTime && (
           <span className="checkin-start-btn__icon" aria-hidden>
             🔑
           </span>
@@ -189,7 +190,7 @@ export function StayQuickOps({
       >
         +1d
       </button>
-      {checkedIn && emitFisaLabel ? (
+      {canEmitFisa && emitFisaLabel ? (
         <TouristSheetLauncher bookingId={bookingId} label={emitFisaLabel} />
       ) : null}
       <Link

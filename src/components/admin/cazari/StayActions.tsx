@@ -43,6 +43,7 @@ export function StayActions({
           checkActionsOnlyConfirmed: labels.checkActionsOnlyConfirmed,
           moveOnlyConfirmed: labels.moveOnlyConfirmed,
           phoneRequiredForCheckIn: labels.phoneRequiredForCheckIn,
+          completeCheckinForFisa: labels.completeCheckinForFisa,
         }}
         hasCheckinRecord={!!stay.has_checkin_record}
         emitFisaLabel={labels.emitFisa}
