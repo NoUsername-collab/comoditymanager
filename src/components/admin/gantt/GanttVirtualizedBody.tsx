@@ -131,34 +131,7 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   );
 });
 
-export function GanttVirtualizedBody({
-  shellRef,
-  theadRef,
-  groupByBuilding,
-  buildingGroups,
-  filteredRooms,
-  collapsedBuildings,
-  focusBuildingId,
-  onToggleFocusBuilding,
-  onToggleCollapsedBuilding,
-  viewRange,
-  occupancyByRoom,
-  displaySegmentsByRoom,
-  checkInTime,
-  checkOutTime,
-  compact,
-  touch,
-  todayFlagsByRoom,
-  onOccOpen,
-  bookingById,
-  onMoveRoom,
-  onCreateDraft,
-  pinnedSelection,
-  onCtrlDragEnd,
-  today,
-  dayGridOptions,
-  emptyMessage,
-}: {
+type GanttBodyProps = {
   shellRef: RefObject<HTMLElement | null>;
   theadRef: RefObject<HTMLElement | null>;
   groupByBuilding: boolean;
@@ -188,8 +161,23 @@ export function GanttVirtualizedBody({
   today: string;
   dayGridOptions?: GanttDayGridOptions;
   emptyMessage?: string;
-}) {
-  const virtualItems = useMemo((): VirtualItem[] => {
+};
+
+function useVirtualItems({
+  groupByBuilding,
+  buildingGroups,
+  filteredRooms,
+  collapsedBuildings,
+  focusBuildingId,
+}: Pick<
+  GanttBodyProps,
+  | "groupByBuilding"
+  | "buildingGroups"
+  | "filteredRooms"
+  | "collapsedBuildings"
+  | "focusBuildingId"
+>) {
+  return useMemo((): VirtualItem[] => {
     if (groupByBuilding) {
       const items: VirtualItem[] = [];
       for (const group of buildingGroups) {
@@ -197,80 +185,47 @@ export function GanttVirtualizedBody({
         if (!collapsedBuildings.has(group.buildingId)) {
           const dimmed = focusBuildingId != null && focusBuildingId !== group.buildingId;
           for (const room of group.rooms) {
-            items.push({
-              kind: "room",
-              room,
-              dimmed,
-            });
+            items.push({ kind: "room", room, dimmed });
           }
         }
       }
       return items;
     }
     return filteredRooms.map((room) => ({ kind: "room" as const, room }));
-  }, [
-    buildingGroups,
-    collapsedBuildings,
-    filteredRooms,
-    focusBuildingId,
-    groupByBuilding,
-  ]);
+  }, [buildingGroups, collapsedBuildings, filteredRooms, focusBuildingId, groupByBuilding]);
+}
 
-  const virtualItemsRef = useRef(virtualItems);
-  virtualItemsRef.current = virtualItems;
+type GanttTbodyRowsProps = Omit<GanttBodyProps, "shellRef" | "theadRef"> & {
+  visibleItems: VirtualItem[];
+};
 
-  const estimateSize = useCallback((index: number) => {
-    const item = virtualItemsRef.current[index];
-    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : GANTT_ROW_H;
-  }, []);
-
-  const shouldVirtualize = virtualItems.length >= VIRTUALIZE_MIN_ITEMS;
-
-  const { range, paddingTop, paddingBottom } = useWindowVirtualRange({
-    count: virtualItems.length,
-    estimateSize,
-    shellRef,
-    theadRef,
-    overscan: 5,
-    enabled: shouldVirtualize,
-  });
-
-  const visibleItems = shouldVirtualize
-    ? virtualItems.slice(range.start, range.end)
-    : virtualItems;
-
-  const renderRoomRow = (room: GanttRoom, dimmed?: boolean) => (
-    <GanttRoomRow
-      key={room.id}
-      room={room}
-      viewRange={viewRange}
-      occupancyByRoom={occupancyByRoom}
-      staySegments={
-        displaySegmentsByRoom.stay.get(room.id) ?? EMPTY_OCCUPANCY_SEGMENTS
-      }
-      overlays={
-        displaySegmentsByRoom.overlay.get(room.id) ?? EMPTY_OCCUPANCY_SEGMENTS
-      }
-      checkInTime={checkInTime}
-      checkOutTime={checkOutTime}
-      compact={compact}
-      touch={touch}
-      dimmed={dimmed}
-      todayFlags={todayFlagsByRoom.get(room.id) ?? EMPTY_ROOM_TODAY_FLAGS}
-      onOccOpen={onOccOpen}
-      bookingById={bookingById}
-      onMoveRoom={onMoveRoom}
-      onCreateDraft={onCreateDraft}
-      pinnedSelection={pinnedSelection}
-      onCtrlDragEnd={onCtrlDragEnd}
-      today={today}
-      dayGridOptions={dayGridOptions}
-    />
-  );
-
+function GanttTbodyRows({
+  visibleItems,
+  filteredRooms,
+  collapsedBuildings,
+  focusBuildingId,
+  onToggleFocusBuilding,
+  onToggleCollapsedBuilding,
+  viewRange,
+  occupancyByRoom,
+  displaySegmentsByRoom,
+  checkInTime,
+  checkOutTime,
+  compact,
+  touch,
+  todayFlagsByRoom,
+  onOccOpen,
+  bookingById,
+  onMoveRoom,
+  onCreateDraft,
+  pinnedSelection,
+  onCtrlDragEnd,
+  today,
+  dayGridOptions,
+  emptyMessage,
+}: GanttTbodyRowsProps) {
   return (
-    <tbody className={shouldVirtualize ? "gantt-tbody--virtual" : undefined}>
-      {shouldVirtualize && <GanttVirtualSpacer height={paddingTop} />}
+    <>
       {visibleItems.map((item) => {
         if (item.kind === "building") {
           const collapsed = collapsedBuildings.has(item.group.buildingId);
@@ -290,11 +245,38 @@ export function GanttVirtualizedBody({
         }
         return (
           <Fragment key={item.room.id}>
-            {renderRoomRow(item.room, item.dimmed)}
+            <GanttRoomRow
+              room={item.room}
+              viewRange={viewRange}
+              occupancyByRoom={occupancyByRoom}
+              staySegments={
+                displaySegmentsByRoom.stay.get(item.room.id) ??
+                EMPTY_OCCUPANCY_SEGMENTS
+              }
+              overlays={
+                displaySegmentsByRoom.overlay.get(item.room.id) ??
+                EMPTY_OCCUPANCY_SEGMENTS
+              }
+              checkInTime={checkInTime}
+              checkOutTime={checkOutTime}
+              compact={compact}
+              touch={touch}
+              dimmed={item.dimmed}
+              todayFlags={
+                todayFlagsByRoom.get(item.room.id) ?? EMPTY_ROOM_TODAY_FLAGS
+              }
+              onOccOpen={onOccOpen}
+              bookingById={bookingById}
+              onMoveRoom={onMoveRoom}
+              onCreateDraft={onCreateDraft}
+              pinnedSelection={pinnedSelection}
+              onCtrlDragEnd={onCtrlDragEnd}
+              today={today}
+              dayGridOptions={dayGridOptions}
+            />
           </Fragment>
         );
       })}
-      {shouldVirtualize && <GanttVirtualSpacer height={paddingBottom} />}
       {filteredRooms.length === 0 && emptyMessage && (
         <tr>
           <td colSpan={2} className="px-4 py-12 text-center text-sm text-zinc-500">
@@ -302,6 +284,57 @@ export function GanttVirtualizedBody({
           </td>
         </tr>
       )}
+    </>
+  );
+}
+
+function GanttPlainBody(props: GanttBodyProps & { virtualItems: VirtualItem[] }) {
+  const { virtualItems, ...rest } = props;
+  return (
+    <tbody>
+      <GanttTbodyRows {...rest} visibleItems={virtualItems} />
     </tbody>
   );
+}
+
+function GanttWindowVirtualBody(
+  props: GanttBodyProps & { virtualItems: VirtualItem[] }
+) {
+  const { virtualItems, shellRef, theadRef, ...rest } = props;
+  const virtualItemsRef = useRef(virtualItems);
+  virtualItemsRef.current = virtualItems;
+
+  const estimateSize = useCallback((index: number) => {
+    const item = virtualItemsRef.current[index];
+    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : GANTT_ROW_H;
+  }, []);
+
+  const { range, paddingTop, paddingBottom } = useWindowVirtualRange({
+    count: virtualItems.length,
+    estimateSize,
+    shellRef,
+    theadRef,
+    overscan: 5,
+    enabled: true,
+  });
+
+  const visibleItems = virtualItems.slice(range.start, range.end);
+
+  return (
+    <tbody className="gantt-tbody--virtual">
+      <GanttVirtualSpacer height={paddingTop} />
+      <GanttTbodyRows {...rest} visibleItems={visibleItems} />
+      <GanttVirtualSpacer height={paddingBottom} />
+    </tbody>
+  );
+}
+
+export function GanttVirtualizedBody(props: GanttBodyProps) {
+  const virtualItems = useVirtualItems(props);
+
+  if (virtualItems.length < VIRTUALIZE_MIN_ITEMS) {
+    return <GanttPlainBody {...props} virtualItems={virtualItems} />;
+  }
+
+  return <GanttWindowVirtualBody {...props} virtualItems={virtualItems} />;
 }

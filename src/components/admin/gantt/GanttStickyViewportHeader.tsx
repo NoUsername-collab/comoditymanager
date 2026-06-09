@@ -57,6 +57,9 @@ export function GanttStickyViewportHeader({
     scrollLeft: 0,
   });
   const stickyActiveRef = useRef(false);
+  const mainDaysInnerRef = useRef<HTMLDivElement>(null);
+  const summaryDaysInnerRef = useRef<HTMLDivElement>(null);
+  const scrollLeftRef = useRef(0);
 
   useEffect(() => {
     const scrollEl = scrollRef.current;
@@ -81,13 +84,25 @@ export function GanttStickyViewportHeader({
         const active =
           stickyOn && shellRect.bottom > Math.max(theadRect.height, 1);
         stickyActiveRef.current = active;
+        const scrollLeft = scrollEl.scrollLeft;
+        if (scrollLeft !== scrollLeftRef.current) {
+          scrollLeftRef.current = scrollLeft;
+          const transform = `translateX(-${scrollLeft}px)`;
+          if (mainDaysInnerRef.current) {
+            mainDaysInnerRef.current.style.transform = transform;
+          }
+          if (summaryDaysInnerRef.current) {
+            summaryDaysInnerRef.current.style.transform = transform;
+          }
+        }
+
         const next: StickyViewportState = {
           active,
           left: scrollRect.left,
           width: scrollRect.width,
           roomColumnWidth,
           daysContentWidth,
-          scrollLeft: scrollEl.scrollLeft,
+          scrollLeft,
         };
 
         setState((prev) =>
@@ -95,10 +110,9 @@ export function GanttStickyViewportHeader({
           prev.left === next.left &&
           prev.width === next.width &&
           prev.roomColumnWidth === next.roomColumnWidth &&
-          prev.daysContentWidth === next.daysContentWidth &&
-          prev.scrollLeft === next.scrollLeft
+          prev.daysContentWidth === next.daysContentWidth
             ? prev
-            : next
+            : { ...next, scrollLeft: prev.scrollLeft }
         );
       });
     };
@@ -151,10 +165,11 @@ export function GanttStickyViewportHeader({
           </div>
           <div className="gantt-viewport-header__days-viewport">
             <div
+              ref={mainDaysInnerRef}
               className="gantt-viewport-header__days-inner"
               style={{
                 width: state.daysContentWidth,
-                transform: `translateX(-${state.scrollLeft}px)`,
+                transform: `translateX(-${scrollLeftRef.current}px)`,
               }}
             >
               <div className="gantt-head-main-row__days">
@@ -189,10 +204,11 @@ export function GanttStickyViewportHeader({
           </div>
           <div className="gantt-viewport-header__days-viewport">
             <div
+              ref={summaryDaysInnerRef}
               className="gantt-viewport-header__days-inner"
               style={{
                 width: state.daysContentWidth,
-                transform: `translateX(-${state.scrollLeft}px)`,
+                transform: `translateX(-${scrollLeftRef.current}px)`,
               }}
             >
               <div className="gantt-summary-row__days">

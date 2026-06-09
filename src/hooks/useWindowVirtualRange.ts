@@ -54,16 +54,10 @@ export function useWindowVirtualRange({
   const measuringRef = useRef(false);
 
   const measure = useCallback(() => {
+    if (!enabled || count === 0) return;
+
     if (measuringRef.current) return;
     measuringRef.current = true;
-
-    if (!enabled || count === 0) {
-      setRange((prev) =>
-        prev.start === 0 && prev.end === count ? prev : { start: 0, end: count }
-      );
-      measuringRef.current = false;
-      return;
-    }
 
     const scrollMargin = readGanttScrollMargin(
       shellRef.current,
@@ -121,6 +115,13 @@ export function useWindowVirtualRange({
   }, [count, enabled, offsets, overscan, shellRef, theadRef, totalSize]);
 
   useEffect(() => {
+    if (!enabled) {
+      setRange((prev) =>
+        prev.start === 0 && prev.end === count ? prev : { start: 0, end: count }
+      );
+      return;
+    }
+
     let frame = 0;
     const schedule = () => {
       cancelAnimationFrame(frame);
@@ -137,7 +138,7 @@ export function useWindowVirtualRange({
       window.removeEventListener("resize", schedule);
       window.visualViewport?.removeEventListener("resize", schedule);
     };
-  }, [measure]);
+  }, [enabled, count, measure]);
 
   const paddingTop = enabled ? (offsets[range.start] ?? 0) : 0;
   const paddingBottom = enabled

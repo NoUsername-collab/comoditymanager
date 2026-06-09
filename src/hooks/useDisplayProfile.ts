@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { DISPLAY_LAYOUT_CHANGED_EVENT } from "@/lib/ui/display-layout-preference";
+import { useSyncExternalStore } from "react";
+import { subscribeLayoutViewportChanges } from "@/layout/mobile/resize-sync";
 import {
-  applyDisplayProfileToDocument,
   isCompactDisplayProfile,
   isDisplayProfile,
+  resolveViewportHeightTier,
   type DisplayProfile,
   type ViewportHeightTier,
 } from "@/lib/ui/display-profile";
@@ -23,72 +23,37 @@ function readHeightTierFromDom(): ViewportHeightTier {
   return "standard";
 }
 
-function syncDom(): void {
-  applyDisplayProfileToDocument();
+function readCompactFromDom(): boolean {
+  return isCompactDisplayProfile(readProfileFromDom());
+}
+
+function subscribeDisplayLayout(onStoreChange: () => void): () => void {
+  return subscribeLayoutViewportChanges(onStoreChange);
 }
 
 export function useDisplayProfile(): DisplayProfile {
-  const [profile, setProfile] = useState<DisplayProfile>("laptop");
-
-  useEffect(() => {
-    const sync = () => {
-      syncDom();
-      setProfile(readProfileFromDom());
-    };
-    sync();
-    window.addEventListener("resize", sync);
-    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-    window.visualViewport?.addEventListener("resize", sync);
-    return () => {
-      window.removeEventListener("resize", sync);
-      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-      window.visualViewport?.removeEventListener("resize", sync);
-    };
-  }, []);
-
-  return profile;
+  return useSyncExternalStore(
+    subscribeDisplayLayout,
+    readProfileFromDom,
+    () => "laptop" as DisplayProfile
+  );
 }
 
 export function useViewportHeightTier(): ViewportHeightTier {
-  const [tier, setTier] = useState<ViewportHeightTier>("standard");
-
-  useEffect(() => {
-    const sync = () => {
-      syncDom();
-      setTier(readHeightTierFromDom());
-    };
-    sync();
-    window.addEventListener("resize", sync);
-    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-    window.visualViewport?.addEventListener("resize", sync);
-    return () => {
-      window.removeEventListener("resize", sync);
-      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-      window.visualViewport?.removeEventListener("resize", sync);
-    };
-  }, []);
-
-  return tier;
+  return useSyncExternalStore(
+    subscribeDisplayLayout,
+    readHeightTierFromDom,
+    () => "standard" as ViewportHeightTier
+  );
 }
 
 export function useIsCompactViewport(): boolean {
-  const [compact, setCompact] = useState(false);
-
-  useEffect(() => {
-    const sync = () => {
-      syncDom();
-      setCompact(isCompactDisplayProfile(readProfileFromDom()));
-    };
-    sync();
-    window.addEventListener("resize", sync);
-    window.addEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-    window.visualViewport?.addEventListener("resize", sync);
-    return () => {
-      window.removeEventListener("resize", sync);
-      window.removeEventListener(DISPLAY_LAYOUT_CHANGED_EVENT, sync);
-      window.visualViewport?.removeEventListener("resize", sync);
-    };
-  }, []);
-
-  return compact;
+  return useSyncExternalStore(
+    subscribeDisplayLayout,
+    readCompactFromDom,
+    () => false
+  );
 }
+
+// Kept for any direct tier resolution outside React.
+export { resolveViewportHeightTier };
