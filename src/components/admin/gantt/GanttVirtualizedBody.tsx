@@ -7,7 +7,6 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState,
   type CSSProperties,
   type RefObject,
 } from "react";
@@ -193,7 +192,11 @@ export function GanttVirtualizedBody({
   emptyMessage?: string;
 }) {
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
-  const scrollMargin = useScrollMargin(tbodyRef);
+  const remeasureRef = useRef<() => void>(() => {});
+
+  const getScrollMargin = useScrollMargin(tbodyRef, () => {
+    remeasureRef.current();
+  });
 
   const virtualItems = useMemo((): VirtualItem[] => {
     if (groupByBuilding) {
@@ -247,14 +250,16 @@ export function GanttVirtualizedBody({
   const { range, paddingTop, paddingBottom, remeasure } = useWindowVirtualRange({
     count: virtualItems.length,
     estimateSize,
-    scrollMargin,
+    getScrollMargin,
     overscan: 5,
     enabled: shouldVirtualize,
   });
 
+  remeasureRef.current = remeasure;
+
   useEffect(() => {
-    remeasure();
-  }, [virtualStructureKey, viewRange.periodKey, remeasure]);
+    remeasureRef.current();
+  }, [virtualStructureKey, viewRange.periodKey]);
 
   const visibleItems = shouldVirtualize
     ? virtualItems.slice(range.start, range.end)
@@ -327,8 +332,15 @@ export function GanttVirtualizedBody({
   );
 }
 
-function useScrollMargin(tbodyRef: RefObject<HTMLTableSectionElement | null>) {
-  const [scrollMargin, setScrollMargin] = useState(0);
+function useScrollMargin(
+  tbodyRef: RefObject<HTMLTableSectionElement | null>,
+  onMarginChange: () => void
+) {
+  const marginRef = useRef(0);
+  const onMarginChangeRef = useRef(onMarginChange);
+  onMarginChangeRef.current = onMarginChange;
+
+  const getScrollMargin = useCallback(() => marginRef.current, []);
 
   useEffect(() => {
     const el = tbodyRef.current;
@@ -337,7 +349,9 @@ function useScrollMargin(tbodyRef: RefObject<HTMLTableSectionElement | null>) {
     let frame = 0;
     const measure = () => {
       const next = el.getBoundingClientRect().top + window.scrollY;
-      setScrollMargin((prev) => (prev === next ? prev : next));
+      if (Math.abs(marginRef.current - next) < 1) return;
+      marginRef.current = next;
+      onMarginChangeRef.current();
     };
     const schedule = () => {
       cancelAnimationFrame(frame);
@@ -360,5 +374,5 @@ function useScrollMargin(tbodyRef: RefObject<HTMLTableSectionElement | null>) {
     };
   }, [tbodyRef]);
 
-  return scrollMargin;
+  return getScrollMargin;
 }

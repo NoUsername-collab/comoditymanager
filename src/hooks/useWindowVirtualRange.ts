@@ -5,13 +5,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 export function useWindowVirtualRange({
   count,
   estimateSize,
-  scrollMargin,
+  getScrollMargin,
   overscan = 4,
   enabled = true,
 }: {
   count: number;
   estimateSize: (index: number) => number;
-  scrollMargin: number;
+  /** Read current list offset without React state — avoids virtual-range feedback loops. */
+  getScrollMargin: () => number;
   overscan?: number;
   enabled?: boolean;
 }) {
@@ -39,6 +40,7 @@ export function useWindowVirtualRange({
       return;
     }
 
+    const scrollMargin = getScrollMargin();
     const viewTop = window.scrollY;
     const viewBottom = viewTop + window.innerHeight;
     const listTop = scrollMargin;
@@ -84,7 +86,7 @@ export function useWindowVirtualRange({
       Math.max(0, start - overscan),
       Math.min(count, end + overscan)
     );
-  }, [count, enabled, offsets, overscan, scrollMargin, totalSize]);
+  }, [count, enabled, getScrollMargin, offsets, overscan, totalSize]);
 
   useEffect(() => {
     let frame = 0;
