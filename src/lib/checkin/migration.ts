@@ -8,6 +8,8 @@ export function isCheckinMigrationMissing(message: string): boolean {
     lower.includes("checkin_cnp_rule") ||
     lower.includes("checkin_phone_rule") ||
     lower.includes("fisa_property_address") ||
+    lower.includes("room_label") ||
+    lower.includes("document_series") ||
     (lower.includes("national_id") && lower.includes("checkin_guests")) ||
     lower.includes("checkin_payment_rule") ||
     lower.includes("checkin_min_payment_pct") ||

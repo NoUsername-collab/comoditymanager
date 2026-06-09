@@ -115,7 +115,10 @@ export async function getCheckedInRoomsByBookingIds(
     .eq("tenant_id", tenantId)
     .in("booking_id", bookingIds);
 
-  if (checkinErr) throw new Error(checkinErr.message);
+  if (checkinErr) {
+    if (isCheckinMigrationMissing(checkinErr.message)) return result;
+    throw new Error(checkinErr.message);
+  }
   if (!checkins?.length) return result;
 
   const checkinToBooking = new Map<string, string>();
@@ -124,12 +127,18 @@ export async function getCheckedInRoomsByBookingIds(
   }
 
   const checkinIds = [...checkinToBooking.keys()];
-  const { data: guests, error: guestErr } = await supabase
+  let guests: { checkin_id: string; room_label: string | null }[] | null = null;
+  let guestErr: { message: string } | null = null;
+
+  ({ data: guests, error: guestErr } = await supabase
     .from("checkin_guests")
     .select("checkin_id, room_label")
     .eq("tenant_id", tenantId)
-    .in("checkin_id", checkinIds);
+    .in("checkin_id", checkinIds));
 
+  if (guestErr?.message && isCheckinMigrationMissing(guestErr.message)) {
+    return result;
+  }
   if (guestErr) throw new Error(guestErr.message);
 
   for (const guest of guests ?? []) {

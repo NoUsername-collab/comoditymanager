@@ -1,7 +1,6 @@
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 
 type Labels = {
-  roomsProgress: (checked: number, total: number) => string;
   roomChecked: string;
   roomPending: string;
   allRoomsDone: string;
@@ -12,6 +11,8 @@ type Props = {
   roomNames: string[];
   checkedInRooms: string[];
   isConfirmed: boolean;
+  /** Titlu progres (ex. „2 din 4 camere primite”) — rezolvat pe server. */
+  progressTitle?: string;
   labels: Labels;
 };
 
@@ -19,6 +20,7 @@ export function StayCheckinProgress({
   roomNames,
   checkedInRooms,
   isConfirmed,
+  progressTitle,
   labels,
 }: Props) {
   if (!isConfirmed) return null;
@@ -31,6 +33,10 @@ export function StayCheckinProgress({
       ? Math.round((progress.checked / progress.total) * 100)
       : 0;
 
+  const title = progress.isComplete
+    ? labels.allRoomsDone
+    : (progressTitle ?? `${progress.checked} / ${progress.total}`);
+
   return (
     <div
       className={[
@@ -40,7 +46,7 @@ export function StayCheckinProgress({
       ]
         .filter(Boolean)
         .join(" ")}
-      aria-label={labels.roomsProgress(progress.checked, progress.total)}
+      aria-label={title}
     >
       <div className="stay-checkin-progress__head">
         <span className="stay-checkin-progress__icon" aria-hidden>
@@ -48,9 +54,7 @@ export function StayCheckinProgress({
         </span>
         <div className="stay-checkin-progress__meta">
           <p className="stay-checkin-progress__title">
-            {progress.isComplete
-              ? labels.allRoomsDone
-              : labels.roomsProgress(progress.checked, progress.total)}
+            {title}
           </p>
           {progress.isPartial ? (
             <p className="stay-checkin-progress__hint">{labels.partialHint}</p>

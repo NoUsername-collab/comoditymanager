@@ -443,7 +443,15 @@ const loadOperationalStays = cache(async (): Promise<OperationalStayRow[]> => {
   const { attachCheckinRecordState } = await import(
     "@/services/checkin/attach-booking-state"
   );
-  return attachCheckinRecordState(rows);
+  try {
+    return await attachCheckinRecordState(rows);
+  } catch {
+    return rows.map((stay) => ({
+      ...stay,
+      has_checkin_record: false,
+      checked_in_rooms: [] as string[],
+    }));
+  }
 });
 
 /** Cazări active: cereri noi + confirmate (fără anulate). */

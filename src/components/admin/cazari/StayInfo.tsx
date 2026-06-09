@@ -4,6 +4,7 @@ import { formatBookingRef } from "@/lib/booking-admin-links";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 import { StayCheckinProgress } from "@/components/admin/cazari/StayCheckinProgress";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import type { CazariLabels, StayCardRow } from "@/components/admin/cazari/types";
 
 export function StayInfo({
@@ -17,6 +18,11 @@ export function StayInfo({
 }) {
   const isConfirmed = stay.status === "confirmata";
   const isCancelled = stay.status === "anulata" || variant === "refuzate";
+  const checkedInRooms =
+    "checked_in_rooms" in stay ? (stay.checked_in_rooms ?? []) : [];
+  const roomProgress = isConfirmed
+    ? computeRoomCheckinProgress(stay.room_names, checkedInRooms)
+    : null;
 
   return (
     <div className="min-w-0 flex-1">
@@ -112,13 +118,16 @@ export function StayInfo({
         </Link>
       )}
 
-      {isConfirmed && "checked_in_rooms" in stay ? (
+      {isConfirmed && roomProgress ? (
         <StayCheckinProgress
-          roomNames={stay.room_names}
-          checkedInRooms={stay.checked_in_rooms ?? []}
+          roomNames={stay.room_names ?? []}
+          checkedInRooms={checkedInRooms}
           isConfirmed={isConfirmed}
+          progressTitle={labels.checkinRoomsProgress(
+            roomProgress.checked,
+            roomProgress.total,
+          )}
           labels={{
-            roomsProgress: labels.checkinRoomsProgress,
             roomChecked: labels.checkinRoomChecked,
             roomPending: labels.checkinRoomPending,
             allRoomsDone: labels.checkinAllRoomsDone,
