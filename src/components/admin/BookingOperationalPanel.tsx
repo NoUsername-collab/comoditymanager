@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import {
@@ -18,15 +17,8 @@ import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
+import { CheckinWizardLauncher } from "@/components/admin/checkin/CheckinWizardLauncher";
 import { useTranslations } from "next-intl";
-
-const CheckinWizardLauncher = dynamic(
-  () =>
-    import("@/components/admin/checkin/CheckinWizardLauncher").then((m) => ({
-      default: m.CheckinWizardLauncher,
-    })),
-  { ssr: false }
-);
 
 type Props = {
   bookingId: string;

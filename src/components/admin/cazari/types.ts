@@ -32,6 +32,7 @@ export type CazariLabels = {
   cancelRequest: string;
   quickAccept: string;
   quickAcceptSuccess: string;
+  emitFisa: string;
   guestsShort: (adults: number, children: number) => string;
   cancelConfirmedMsg: (ref: string, name: string, period: string) => string;
   cancelRequestMsg: (ref: string, name: string, period: string) => string;

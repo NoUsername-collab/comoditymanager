@@ -1,5 +1,7 @@
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { formatStayPeriod } from "@/lib/ro-calendar";
+import { formatBookingRef } from "@/lib/booking-admin-links";
 import { RefusedStayActions } from "@/components/admin/cazari/RefusedStayActions";
 import { StayActions } from "@/components/admin/cazari/StayActions";
 import { StayRequestActions } from "@/components/admin/cazari/StayRequestActions";
@@ -93,7 +95,17 @@ export function StayList({
                 <StayRequestActions
                   stay={stay as OperationalStay}
                   returnTo={returnTo}
-                  labels={labels}
+                  labels={{
+                    quickAccept: labels.quickAccept,
+                    quickAcceptSuccess: labels.quickAcceptSuccess,
+                    openBooking: labels.openBooking,
+                    cancelRequest: labels.cancelRequest,
+                    cancelMessage: labels.cancelRequestMsg(
+                      formatBookingRef(stay.id),
+                      stay.guest_name,
+                      formatStayPeriod(stay.check_in, stay.check_out, true),
+                    ),
+                  }}
                 />
               ) : (
                 <StayActions

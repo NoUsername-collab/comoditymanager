@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
@@ -33,6 +34,8 @@ type Props = {
     phoneRequiredForCheckIn: string;
   };
   guestPhone?: string | null;
+  hasCheckIn?: boolean;
+  emitFisaLabel?: string;
 };
 
 export function StayQuickOps({
@@ -45,6 +48,8 @@ export function StayQuickOps({
   actualCheckOutAt,
   labels,
   guestPhone,
+  hasCheckIn = false,
+  emitFisaLabel,
 }: Props) {
   const router = useRouter();
   const tCommon = useTranslations("common");
@@ -176,6 +181,9 @@ export function StayQuickOps({
       >
         +1d
       </button>
+      {hasCheckIn && emitFisaLabel ? (
+        <TouristSheetLauncher bookingId={bookingId} label={emitFisaLabel} />
+      ) : null}
       <Link
         href={`/admin/bookings/${bookingId}`}
         className="rounded bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-200"

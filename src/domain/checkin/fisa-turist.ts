@@ -22,6 +22,41 @@ export type TouristSheetData = {
   guests: TouristSheetGuestRow[];
 };
 
+/** Fișă din oaspeții deja salvați la check-in (re-emisie). */
+export function buildTouristSheetFromPersisted(
+  booking: BookingForCheckin,
+  guests: CheckinGuestInput[],
+  settings: CheckinSettings,
+  issuedAt?: string,
+): TouristSheetData {
+  const roomLabel =
+    booking.room_names?.join(", ") ||
+    guests.find((g) => g.room_label)?.room_label ||
+    "—";
+
+  const now = new Date();
+  const defaultIssued = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+  return {
+    year: new Date(booking.check_in).getFullYear(),
+    issuedAt: issuedAt?.slice(0, 10) || defaultIssued,
+    registryRef: booking.id.replace(/-/g, "").slice(0, 8).toUpperCase(),
+    pensionName: settings.pension_display_name || "Pensiune",
+    propertyAddress: settings.fisa_property_address?.trim() || "—",
+    ownerCui: settings.fisa_owner_cui?.trim() || "",
+    tourismLicense: settings.fisa_tourism_license?.trim() || "",
+    roomLabel,
+    guests: guests.map((g) => ({
+      fullName: guestFullName(g),
+      cnp: g.national_id?.trim() || "",
+      documentId:
+        [g.document_series, g.document_number].filter(Boolean).join(" ") || "",
+      checkIn: booking.check_in,
+      checkOut: booking.check_out,
+    })),
+  };
+}
+
 export function buildTouristSheetData(
   booking: BookingForCheckin,
   guests: CheckinGuestInput[],

@@ -4,8 +4,13 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import type { CheckinRow, CheckinGuestRow } from "./types";
-import { CHECKIN_ROW_SELECT, CHECKIN_GUEST_ROW_SELECT } from "./types";
+import {
+  CHECKIN_ROW_SELECT,
+  CHECKIN_GUEST_ROW_SELECT,
+  CHECKIN_GUEST_ROW_SELECT_MINIMAL,
+} from "./types";
 
 // ── Single checkin for a booking ────────────────────────────
 
@@ -55,15 +60,23 @@ async function getCheckinGuestsUncached(
   checkinId: string,
 ): Promise<CheckinGuestRow[]> {
   const supabase = createPublicAdminClient();
-  const { data, error } = await supabase
-    .from("checkin_guests")
-    .select(CHECKIN_GUEST_ROW_SELECT)
-    .eq("tenant_id", tenantId)
-    .eq("checkin_id", checkinId)
-    .order("is_representative", { ascending: false });
+
+  const queryGuests = (select: string) =>
+    supabase
+      .from("checkin_guests")
+      .select(select)
+      .eq("tenant_id", tenantId)
+      .eq("checkin_id", checkinId)
+      .order("is_representative", { ascending: false });
+
+  let { data, error } = await queryGuests(CHECKIN_GUEST_ROW_SELECT);
+
+  if (error && isCheckinMigrationMissing(error.message)) {
+    ({ data, error } = await queryGuests(CHECKIN_GUEST_ROW_SELECT_MINIMAL));
+  }
 
   if (error) throw new Error(error.message);
-  return (data ?? []) as CheckinGuestRow[];
+  return (data ?? []) as unknown as CheckinGuestRow[];
 }
 
 const getCachedCheckinGuests = (tenantId: string, checkinId: string) =>

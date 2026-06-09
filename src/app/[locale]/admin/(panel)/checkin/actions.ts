@@ -14,7 +14,10 @@ import { createCheckin } from "@/services/checkin/create";
 import { getCheckinSettings, updateCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
 import { getCheckinByBookingId } from "@/services/checkin/queries";
+import { buildTouristSheetFromPersisted } from "@/domain/checkin/fisa-turist";
+import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
+import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
 import type {
   CheckinFormData,
   CheckinGuestInput,
@@ -23,6 +26,7 @@ import type {
   BookingForCheckin,
   CheckinSettings,
 } from "@/domain/checkin/types";
+import { getCheckinGuests } from "@/services/checkin/queries";
 
 export type CheckinWizardContextResult = {
   ok: boolean;
@@ -36,6 +40,12 @@ export type CreateCheckinResult = {
   ok: boolean;
   error?: string;
   checkinId?: string;
+};
+
+export type LoadTouristSheetResult = {
+  ok: boolean;
+  error?: string;
+  data?: TouristSheetData;
 };
 
 /**
@@ -224,6 +234,54 @@ export async function updateCheckinSettingsAction(
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
 
     return { ok: true };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    if (isCheckinMigrationMissing(msg)) {
+      const t = await getTranslations("admin.checkIn");
+      return { ok: false, error: t("migrationRequired") };
+    }
+    return { ok: false, error: msg };
+  }
+}
+
+/**
+ * Server action: rebuild fișa turist from a completed check-in.
+ */
+export async function loadTouristSheetAction(
+  bookingId: string,
+): Promise<LoadTouristSheetResult> {
+  await requireAdmin();
+
+  try {
+    if (!bookingId) return { ok: false, error: "booking_id required" };
+
+    const booking = await getBookingById(bookingId);
+    if (!booking) return { ok: false, error: "Booking not found" };
+
+    const checkin = await getCheckinByBookingId(bookingId);
+    if (!checkin) {
+      const t = await getTranslations("admin.pages.cazari");
+      return { ok: false, error: t("emitFisaNoCheckin") };
+    }
+
+    const [guestRows, settings] = await Promise.all([
+      getCheckinGuests(checkin.id),
+      getCheckinSettings(),
+    ]);
+
+    if (!guestRows.length) {
+      const t = await getTranslations("admin.pages.cazari");
+      return { ok: false, error: t("emitFisaNoGuests") };
+    }
+
+    const data = buildTouristSheetFromPersisted(
+      mapBookingToForCheckin(booking),
+      mapPersistedCheckinGuestsToInput(guestRows),
+      settings,
+      checkin.checked_in_at,
+    );
+
+    return { ok: true, data };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     if (isCheckinMigrationMissing(msg)) {

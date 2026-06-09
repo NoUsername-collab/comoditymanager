@@ -1,16 +1,30 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { loadCheckinWizardContextAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 
-const CheckinModal = dynamic(
-  () => import("./CheckinModal").then((m) => ({ default: m.CheckinModal })),
-  { ssr: false }
+const CheckinStepper = dynamic(
+  () =>
+    import("@/components/admin/checkin/CheckinStepper").then((m) => ({
+      default: m.CheckinStepper,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="checkin-stepper-skeleton flex min-h-[16rem] flex-col items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-100/90 px-4 py-8 text-sm text-zinc-600"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-amber-600" />
+      </div>
+    ),
+  }
 );
 
 type Props = {
@@ -23,6 +37,19 @@ type Props = {
   settings?: CheckinSettings;
 };
 
+function CheckinWizardLoading({ label }: { label: string }) {
+  return (
+    <div
+      className="checkin-stepper-skeleton flex min-h-[16rem] flex-col items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-100/90 px-4 py-8 text-sm text-zinc-600"
+      aria-busy="true"
+      aria-live="polite"
+    >
+      <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-amber-600" />
+      {label}
+    </div>
+  );
+}
+
 export function CheckinWizardLauncher({
   bookingId,
   open,
@@ -34,26 +61,51 @@ export function CheckinWizardLauncher({
   const t = useTranslations("admin.checkIn");
   const tCommon = useTranslations("common");
   const { showToast } = useAdminFx();
+  const onCloseRef = useRef(onClose);
+  const onSuccessRef = useRef(onSuccess);
+  const showToastRef = useRef(showToast);
+  const tRef = useRef(t);
+  const tCommonRef = useRef(tCommon);
+  const prefetchRef = useRef({
+    booking: prefetchedBooking,
+    settings: prefetchedSettings,
+  });
+
+  const hasPrefetch = !!(prefetchedBooking && prefetchedSettings);
+
   const [loading, setLoading] = useState(false);
   const [context, setContext] = useState<{
     booking: BookingForCheckin;
     settings: CheckinSettings;
-  } | null>(
-    prefetchedBooking && prefetchedSettings
-      ? { booking: prefetchedBooking, settings: prefetchedSettings }
-      : null
-  );
+  } | null>(hasPrefetch ? { booking: prefetchedBooking!, settings: prefetchedSettings! } : null);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    onSuccessRef.current = onSuccess;
+    showToastRef.current = showToast;
+    tRef.current = t;
+    tCommonRef.current = tCommon;
+    prefetchRef.current = {
+      booking: prefetchedBooking,
+      settings: prefetchedSettings,
+    };
+  });
 
   useEffect(() => {
     if (!open) {
-      if (!prefetchedBooking || !prefetchedSettings) {
+      if (!hasPrefetch) {
         setContext(null);
+        setLoading(false);
       }
       return;
     }
 
-    if (prefetchedBooking && prefetchedSettings) {
-      setContext({ booking: prefetchedBooking, settings: prefetchedSettings });
+    const { booking: prefetchBooking, settings: prefetchSettings } =
+      prefetchRef.current;
+
+    if (prefetchBooking && prefetchSettings) {
+      setContext({ booking: prefetchBooking, settings: prefetchSettings });
+      setLoading(false);
       return;
     }
 
@@ -66,71 +118,69 @@ export function CheckinWizardLauncher({
       setLoading(false);
 
       if (!res.ok) {
-        showToast({
+        showToastRef.current({
           kind: "error",
-          title: tCommon("error"),
-          message: res.error ?? tCommon("error"),
+          title: tCommonRef.current("error"),
+          message: res.error ?? tCommonRef.current("error"),
         });
-        onClose();
+        onCloseRef.current();
         return;
       }
 
       if (res.hasExistingCheckin) {
-        showToast({
+        showToastRef.current({
           kind: "info",
-          title: t("title"),
-          message: t("alreadyCheckedIn"),
+          title: tRef.current("title"),
+          message: tRef.current("alreadyCheckedIn"),
         });
-        onClose();
+        onCloseRef.current();
         return;
       }
 
       if (res.booking && res.settings) {
         setContext({ booking: res.booking, settings: res.settings });
+        return;
       }
+
+      showToastRef.current({
+        kind: "error",
+        title: tCommonRef.current("error"),
+        message: tCommonRef.current("error"),
+      });
+      onCloseRef.current();
     });
 
     return () => {
       cancelled = true;
     };
-  }, [
-    open,
-    bookingId,
-    prefetchedBooking,
-    prefetchedSettings,
-    onClose,
-    showToast,
-    t,
-    tCommon,
-  ]);
+  }, [open, bookingId, hasPrefetch]);
 
   if (!open) return null;
 
-  if (loading || !context) {
-    return (
-      <AdminFloatingPanel
-        open
-        onClose={onClose}
-        title={t("title")}
-        variant="modal"
-        width={680}
-        className="checkin-modal"
-      >
-        <div
-          className="checkin-stepper-skeleton min-h-[16rem] animate-pulse rounded-lg bg-zinc-50"
-          aria-busy="true"
-          aria-live="polite"
-        />
-      </AdminFloatingPanel>
-    );
-  }
+  const ready = !!context && !loading;
 
   return (
-    <CheckinModal
-      booking={context.booking}
-      settings={context.settings}
+    <AdminFloatingPanel
+      open
       onClose={onClose}
-      onSuccess={onSuccess}
-    />
+      title={t("title")}
+      variant="modal"
+      width={680}
+      className="checkin-modal"
+    >
+      {ready ? (
+        <CheckinStepper
+          booking={context.booking}
+          settings={context.settings}
+          onComplete={() => {
+            onSuccessRef.current?.();
+            onCloseRef.current();
+          }}
+          onCancel={() => onCloseRef.current()}
+        />
+      ) : (
+        <CheckinWizardLoading label={tCommon("loading")} />
+      )}
+    </AdminFloatingPanel>
   );
 }

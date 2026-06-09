@@ -12,20 +12,13 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import dynamic from "next/dynamic";
+import { CheckinWizardLauncher } from "@/components/admin/checkin/CheckinWizardLauncher";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
 const GanttCheckTimeDialog = dynamic(
   () =>
     import("@/components/admin/gantt/GanttCheckTimeDialog").then((m) => ({
       default: m.GanttCheckTimeDialog,
-    })),
-  { ssr: false }
-);
-
-const CheckinWizardLauncher = dynamic(
-  () =>
-    import("@/components/admin/checkin/CheckinWizardLauncher").then((m) => ({
-      default: m.CheckinWizardLauncher,
     })),
   { ssr: false }
 );
@@ -107,6 +100,9 @@ export function OperativeCheckProvider({
     });
   }, []);
 
+  const closeCheckinWizard = useCallback(() => setCheckinBookingId(null), []);
+  const refreshAfterCheckin = useCallback(() => router.refresh(), [router]);
+
   const value = useMemo(
     () => ({ today, openCheckInWizard, openCheckOut }),
     [today, openCheckInWizard, openCheckOut]
@@ -119,8 +115,8 @@ export function OperativeCheckProvider({
         <CheckinWizardLauncher
           bookingId={checkinBookingId}
           open
-          onClose={() => setCheckinBookingId(null)}
-          onSuccess={() => router.refresh()}
+          onClose={closeCheckinWizard}
+          onSuccess={refreshAfterCheckin}
         />
       ) : null}
       {checkoutDialog ? (

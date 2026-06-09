@@ -7,9 +7,15 @@ import { quickConfirmCerereFromGanttAction } from "@/app/[locale]/admin/(panel)/
 import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { formatBookingRef } from "@/lib/booking-admin-links";
-import { formatStayPeriod } from "@/lib/ro-calendar";
-import type { CazariLabels, OperationalStay } from "@/components/admin/cazari/types";
+import type { OperationalStay } from "@/components/admin/cazari/types";
+
+export type StayRequestActionLabels = {
+  quickAccept: string;
+  quickAcceptSuccess: string;
+  openBooking: string;
+  cancelRequest: string;
+  cancelMessage: string;
+};
 
 export function StayRequestActions({
   stay,
@@ -18,16 +24,13 @@ export function StayRequestActions({
 }: {
   stay: OperationalStay;
   returnTo: string;
-  labels: CazariLabels;
+  labels: StayRequestActionLabels;
 }) {
   const router = useRouter();
   const tCommon = useTranslations("common");
   const { showToast } = useAdminFx();
   const [pending, setPending] = useState(false);
 
-  const period = formatStayPeriod(stay.check_in, stay.check_out, true);
-  const ref = formatBookingRef(stay.id);
-  const cancelMessage = labels.cancelRequestMsg(ref, stay.guest_name, period);
   const bookingHref = `/admin/bookings/${stay.id}?return_to=${encodeURIComponent(returnTo)}`;
 
   function quickAccept() {
@@ -69,7 +72,7 @@ export function StayRequestActions({
       </Link>
       <BookingCancelButton
         label={labels.cancelRequest}
-        confirmMessage={cancelMessage}
+        confirmMessage={labels.cancelMessage}
         formAction={cancelBookingAction}
         bookingId={stay.id}
         returnTo={returnTo}

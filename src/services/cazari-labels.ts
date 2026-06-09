@@ -42,6 +42,7 @@ export function buildCazariLabels({
     cancelRequest: tPages("cancelRequest"),
     quickAccept: tPages("quickAccept"),
     quickAcceptSuccess: tPages("quickAcceptSuccess"),
+    emitFisa: tPages("emitFisa"),
     guestsShort: (adults, children) =>
       tCommon("guestsShort", { adults, children }),
     cancelConfirmedMsg: (ref, name, period) =>
