@@ -48,7 +48,7 @@ export function StayActions({
           moveOnlyConfirmed: labels.moveOnlyConfirmed,
           phoneRequiredForCheckIn: labels.phoneRequiredForCheckIn,
           completeCheckinForFisa: labels.completeCheckinForFisa,
-          checkInOnlyOnArrivalDay: labels.checkInOnlyOnArrivalDay,
+          checkInArrivalDayHint: labels.checkInOnlyOnArrivalDay(stay.check_in),
         }}
         hasCheckinRecord={!!stay.has_checkin_record}
         emitFisaLabel={labels.emitFisa}

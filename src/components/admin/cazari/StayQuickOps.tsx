@@ -40,7 +40,8 @@ type Props = {
     moveOnlyConfirmed: string;
     phoneRequiredForCheckIn: string;
     completeCheckinForFisa: string;
-    checkInOnlyOnArrivalDay: (date: string) => string;
+    /** Pre-rezolvat pe server — nu trimite funcții la client. */
+    checkInArrivalDayHint: string;
   };
   guestPhone?: string | null;
   hasCheckinRecord?: boolean;
@@ -135,7 +136,7 @@ export function StayQuickOps({
       : !hasPhone
         ? labels.phoneRequiredForCheckIn
         : !isArrivalDay && !canContinueRooms
-          ? labels.checkInOnlyOnArrivalDay(plannedCheckIn)
+          ? labels.checkInArrivalDayHint
           : "";
 
   const checkoutTitle = !isConfirmed

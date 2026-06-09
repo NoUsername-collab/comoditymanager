@@ -68,9 +68,9 @@ export function StayInfo({
         </span>
         <span aria-hidden>·</span>
         <span>{labels.guestsShort(stay.num_adults, stay.num_children)}</span>
-        {stay.room_names.length > 0 ? (
+        {(stay.room_names?.length ?? 0) > 0 ? (
           <span className="rounded bg-zinc-100 px-1 py-0.5 text-[9px]">
-            {stay.room_names.join(", ")}
+            {(stay.room_names ?? []).join(", ")}
           </span>
         ) : (
           <span className="rounded bg-zinc-100 px-1 py-0.5 text-[9px]">
@@ -118,7 +118,9 @@ export function StayInfo({
         </Link>
       )}
 
-      {isConfirmed && roomProgress ? (
+      {isConfirmed &&
+      roomProgress &&
+      (roomProgress.isMultiRoom || roomProgress.checked > 0) ? (
         <StayCheckinProgress
           roomNames={stay.room_names ?? []}
           checkedInRooms={checkedInRooms}
