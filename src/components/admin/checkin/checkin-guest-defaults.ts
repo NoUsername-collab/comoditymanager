@@ -28,7 +28,7 @@ export function createInitialCheckinGuests(
       document_series: "",
       document_number: "",
       nationality: "România",
-      birth_date: "",
+      birth_date: null,
       room_label: roomLabel,
       is_representative: isRep,
       guest_id: null,

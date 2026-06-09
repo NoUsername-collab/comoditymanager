@@ -8,7 +8,10 @@ import type {
   CheckinStatus,
 } from "@/domain/checkin/types";
 import { guestFullName } from "@/domain/checkin/identity-rules";
-import { normalizePaymentStatusForDb } from "@/domain/checkin/types";
+import {
+  normalizePaymentStatusForDb,
+  optionalDateForDb,
+} from "@/domain/checkin/types";
 
 /**
  * Create a check-in record for a booking.
@@ -83,7 +86,7 @@ export async function createCheckin(
         document_series: g.document_series ?? null,
         document_number: g.document_number ?? null,
         nationality: g.nationality ?? null,
-        birth_date: g.birth_date ?? null,
+        birth_date: optionalDateForDb(g.birth_date),
         room_label: g.room_label ?? null,
         is_representative: g.is_representative ?? false,
         checked_in_at: checkedInAt,

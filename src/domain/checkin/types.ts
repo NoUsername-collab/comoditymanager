@@ -30,6 +30,14 @@ export function normalizePaymentStatusForDb(
   return status === "online" ? "paid" : status;
 }
 
+/** Empty strings must become null before writing to Postgres `date` columns. */
+export function optionalDateForDb(
+  value: string | null | undefined
+): string | null {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
 export type CheckinFlag =
   | "no_document"
   | "no_cnp"
