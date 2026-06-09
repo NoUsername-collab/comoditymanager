@@ -3,10 +3,14 @@
 import {
   Fragment,
   memo,
+  useCallback,
   useMemo,
+  useRef,
   type CSSProperties,
+  type RefObject,
 } from "react";
 import { useTranslations } from "next-intl";
+import { GANTT_ROW_H } from "@/domain/gantt/layout";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { OccupancySegment } from "@/domain/occupancy/types";
@@ -19,8 +23,11 @@ import type { GanttDayGridOptions } from "@/components/admin/gantt/GanttGridHelp
 import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarker";
 import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
+import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
 import type { AcMode } from "@/types/database";
 
+const GANTT_BUILDING_HEADER_H = 32;
+const VIRTUALIZE_MIN_ITEMS = 16;
 const EMPTY_OCCUPANCY_SEGMENTS: OccupancySegment[] = [];
 const EMPTY_ROOM_TODAY_FLAGS: RoomTodayFlags = {
   arrival: false,
@@ -40,6 +47,19 @@ export type GanttBuildingGroup = {
 type VirtualItem =
   | { kind: "building"; group: GanttBuildingGroup }
   | { kind: "room"; room: GanttRoom; dimmed?: boolean };
+
+function GanttVirtualSpacer({ height }: { height: number }) {
+  if (height <= 0) return null;
+  return (
+    <tr className="gantt-virtual-spacer" aria-hidden>
+      <td
+        colSpan={2}
+        className="gantt-virtual-spacer__cell"
+        style={{ height }}
+      />
+    </tr>
+  );
+}
 
 const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   group,
@@ -111,11 +131,9 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   );
 });
 
-/**
- * Renders all Gantt room rows directly (no window virtualization).
- * Virtualization was removed — it caused React #185 infinite update loops in production.
- */
 export function GanttVirtualizedBody({
+  shellRef,
+  theadRef,
   groupByBuilding,
   buildingGroups,
   filteredRooms,
@@ -141,6 +159,8 @@ export function GanttVirtualizedBody({
   dayGridOptions,
   emptyMessage,
 }: {
+  shellRef: RefObject<HTMLElement | null>;
+  theadRef: RefObject<HTMLElement | null>;
   groupByBuilding: boolean;
   buildingGroups: GanttBuildingGroup[];
   filteredRooms: GanttRoom[];
@@ -196,6 +216,29 @@ export function GanttVirtualizedBody({
     groupByBuilding,
   ]);
 
+  const virtualItemsRef = useRef(virtualItems);
+  virtualItemsRef.current = virtualItems;
+
+  const estimateSize = useCallback((index: number) => {
+    const item = virtualItemsRef.current[index];
+    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : GANTT_ROW_H;
+  }, []);
+
+  const shouldVirtualize = virtualItems.length >= VIRTUALIZE_MIN_ITEMS;
+
+  const { range, paddingTop, paddingBottom } = useWindowVirtualRange({
+    count: virtualItems.length,
+    estimateSize,
+    shellRef,
+    theadRef,
+    overscan: 5,
+    enabled: shouldVirtualize,
+  });
+
+  const visibleItems = shouldVirtualize
+    ? virtualItems.slice(range.start, range.end)
+    : virtualItems;
+
   const renderRoomRow = (room: GanttRoom, dimmed?: boolean) => (
     <GanttRoomRow
       key={room.id}
@@ -226,8 +269,9 @@ export function GanttVirtualizedBody({
   );
 
   return (
-    <tbody>
-      {virtualItems.map((item) => {
+    <tbody className={shouldVirtualize ? "gantt-tbody--virtual" : undefined}>
+      {shouldVirtualize && <GanttVirtualSpacer height={paddingTop} />}
+      {visibleItems.map((item) => {
         if (item.kind === "building") {
           const collapsed = collapsedBuildings.has(item.group.buildingId);
           const focused = focusBuildingId === item.group.buildingId;
@@ -250,6 +294,7 @@ export function GanttVirtualizedBody({
           </Fragment>
         );
       })}
+      {shouldVirtualize && <GanttVirtualSpacer height={paddingBottom} />}
       {filteredRooms.length === 0 && emptyMessage && (
         <tr>
           <td colSpan={2} className="px-4 py-12 text-center text-sm text-zinc-500">

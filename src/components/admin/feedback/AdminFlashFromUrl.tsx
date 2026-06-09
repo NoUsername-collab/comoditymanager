@@ -57,17 +57,8 @@ function AdminFlashFromUrlInner() {
     if (pathname.startsWith("/admin/settings")) next.delete("saved");
     const q = next.toString();
     router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
-  }, [
-    searchParams,
-    pathname,
-    router,
-    celebrateConfirm,
-    notifyCancel,
-    notifyMoved,
-    showToast,
-    tGuests,
-    tSettings,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- toast fns + t* are stable enough; avoid re-firing on every intl render
+  }, [searchParams, pathname, router]);
 
   return null;
 }

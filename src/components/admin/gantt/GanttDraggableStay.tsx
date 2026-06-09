@@ -496,25 +496,27 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           occupancyPhase={occupancyPhase}
         />
       </div>
-      <GanttStayPopover
-        data={{
-          ...popover,
-          onMoveRoom: onMoveRoom
-            ? () => {
-                popover.onMoveRoom?.();
-                onMoveRoom();
-              }
-            : popover.onMoveRoom,
-        }}
-        anchorRect={anchorRect}
-        visible={showPopover}
-        onMouseEnter={() => {
-          clearLeaveTimer();
-          setPopoverHover(true);
-        }}
-        onMouseLeave={scheduleHidePopover}
-        today={today}
-      />
+      {showPopover && (
+        <GanttStayPopover
+          data={{
+            ...popover,
+            onMoveRoom: onMoveRoom
+              ? () => {
+                  popover.onMoveRoom?.();
+                  onMoveRoom();
+                }
+              : popover.onMoveRoom,
+          }}
+          anchorRect={anchorRect}
+          visible
+          onMouseEnter={() => {
+            clearLeaveTimer();
+            setPopoverHover(true);
+          }}
+          onMouseLeave={scheduleHidePopover}
+          today={today}
+        />
+      )}
       <AdminAlertDialog
         open={!!alertMsg}
         message={alertMsg ?? ""}

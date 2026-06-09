@@ -50,21 +50,45 @@ export function useFloatingPosition(
     return computePopoverStyle(anchorRect, width);
   });
 
+  const anchorKey =
+    anchorRect == null
+      ? ""
+      : `${anchorRect.top}|${anchorRect.left}|${anchorRect.width}|${anchorRect.height}`;
+
   useEffect(() => {
     if (!open) return;
 
     if (variant === "modal") {
-      setStyle({});
+      setStyle((prev) => (Object.keys(prev).length === 0 ? prev : {}));
       return;
     }
 
     if (!anchorRect) {
-      setStyle({ top: "50%", left: "50%", transform: "translate(-50%, -50%)" });
+      const centered = {
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+      } as const;
+      setStyle((prev) =>
+        prev.top === centered.top &&
+        prev.left === centered.left &&
+        prev.transform === centered.transform
+          ? prev
+          : centered
+      );
       return;
     }
 
-    setStyle(computePopoverStyle(anchorRect, width));
-  }, [open, anchorRect, width, variant]);
+    const next = computePopoverStyle(anchorRect, width);
+    setStyle((prev) =>
+      prev.top === next.top &&
+      prev.left === next.left &&
+      prev.transform === next.transform &&
+      prev.maxHeight === next.maxHeight
+        ? prev
+        : next
+    );
+  }, [open, anchorKey, anchorRect, width, variant]);
 
   return style;
 }
