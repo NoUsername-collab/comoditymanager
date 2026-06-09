@@ -638,8 +638,6 @@ export function GanttCalendar({
             />
           </thead>
           <GanttVirtualizedBody
-            shellRef={shellRef}
-            theadRef={theadRef}
             groupByBuilding={groupByBuilding}
             buildingGroups={buildingGroups}
             filteredRooms={filteredRooms}

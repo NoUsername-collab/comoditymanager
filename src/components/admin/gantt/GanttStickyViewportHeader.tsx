@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
@@ -55,6 +56,7 @@ export function GanttStickyViewportHeader({
     daysContentWidth: 0,
     scrollLeft: 0,
   });
+  const stickyActiveRef = useRef(false);
 
   useEffect(() => {
     const scrollEl = scrollRef.current;
@@ -73,9 +75,14 @@ export function GanttStickyViewportHeader({
           thead.querySelector<HTMLTableCellElement>(".gantt-head-main-row__room");
         const roomColumnWidth = roomHeader?.getBoundingClientRect().width ?? 0;
         const daysContentWidth = Math.max(0, scrollEl.scrollWidth - roomColumnWidth);
+        const stickyOn = stickyActiveRef.current
+          ? theadRect.top <= 4
+          : theadRect.top <= -4;
+        const active =
+          stickyOn && shellRect.bottom > Math.max(theadRect.height, 1);
+        stickyActiveRef.current = active;
         const next: StickyViewportState = {
-          active:
-            theadRect.top <= 0 && shellRect.bottom > Math.max(theadRect.height, 1),
+          active,
           left: scrollRect.left,
           width: scrollRect.width,
           roomColumnWidth,
