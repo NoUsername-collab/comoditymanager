@@ -1,6 +1,6 @@
 export function ClimateLegend() {
   return (
-    <div className="flex flex-wrap gap-3 rounded-xl border border-zinc-200/90 bg-white px-4 py-2.5 text-[11px] text-zinc-600 shadow-sm">
+    <div className="building-climate-legend flex flex-wrap gap-3 rounded-xl border border-zinc-200/90 bg-white px-4 py-2.5 text-[11px] text-zinc-600 shadow-sm">
       <span className="flex items-center gap-1.5">
         <span className="h-2.5 w-2.5 rounded-full bg-blue-600" />
         Clădire rece (AC)

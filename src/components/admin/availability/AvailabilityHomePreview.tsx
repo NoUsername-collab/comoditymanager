@@ -19,8 +19,24 @@ export async function AvailabilityHomePreview({
 }: {
   searchParams: AvailabilityShellSearchParams;
 }) {
-  const tCommon = await getTranslations("admin.common");
-  const effectiveToday = await getEffectiveToday();
+  const todayPromise = getEffectiveToday();
+  const [tCommon, effectiveToday, dashboardResult] = await Promise.all([
+    getTranslations("admin.common"),
+    todayPromise,
+    todayPromise
+      .then((today) => {
+        const refDate = new Date(today + "T00:00:00");
+        const year = Number(searchParams.y) || refDate.getFullYear();
+        const month =
+          searchParams.m !== undefined
+            ? Number(searchParams.m)
+            : refDate.getMonth();
+        return loadAvailabilityDashboard(year, month, null, "all");
+      })
+      .then((dashboard) => ({ ok: true as const, dashboard }))
+      .catch((e) => ({ ok: false as const, error: e })),
+  ]);
+
   const refDate = new Date(effectiveToday + "T00:00:00");
   const year = Number(searchParams.y) || refDate.getFullYear();
   const month =
@@ -34,10 +50,13 @@ export async function AvailabilityHomePreview({
   let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null = null;
   let error: string | null = null;
 
-  try {
-    dashboard = await loadAvailabilityDashboard(year, month, null, "all");
-  } catch (e) {
-    error = e instanceof Error ? e.message : tCommon("error");
+  if (dashboardResult.ok) {
+    dashboard = dashboardResult.dashboard;
+  } else {
+    error =
+      dashboardResult.error instanceof Error
+        ? dashboardResult.error.message
+        : tCommon("error");
   }
 
   if (error) {

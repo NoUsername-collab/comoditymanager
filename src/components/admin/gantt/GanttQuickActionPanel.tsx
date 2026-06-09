@@ -87,7 +87,7 @@ function SummaryCard({
         : "border-zinc-200 bg-zinc-50 text-zinc-700";
 
   return (
-    <div className={["rounded-2xl border px-4 py-3", toneClass].join(" ")}>
+    <div className={["rounded-xl border px-3 py-2.5", toneClass].join(" ")}>
       <div className="text-[11px] font-semibold uppercase tracking-[0.08em] opacity-70">
         {title}
       </div>
@@ -721,9 +721,12 @@ export function GanttQuickActionPanel({
       title={titleMap[mode]}
       variant="modal"
       width={640}
-      className="gantt-quick-panel"
+      className={["gantt-quick-panel", pending && "gantt-quick-panel--busy"].filter(Boolean).join(" ")}
     >
-      <div className="gantt-toolbar-occ-form space-y-4 p-1">
+      <div
+        className="gantt-quick-panel__body gantt-toolbar-occ-form space-y-4 p-1"
+        aria-busy={pending}
+      >
         {mode !== "move" ? (
           <>
             {!draft ? (
@@ -818,11 +821,11 @@ export function GanttQuickActionPanel({
                 />
               </label>
             </div>
-            <div className="flex gap-2">
+            <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
                 <button
                   type="button"
-                  className="admin-floating-panel__btn flex-1"
+                  className="admin-floating-panel__btn gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
                   Înapoi la radial
@@ -830,11 +833,11 @@ export function GanttQuickActionPanel({
               ) : null}
               <button
                 type="button"
-                className="admin-floating-panel__btn admin-floating-panel__btn--primary flex-1"
+                className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={pending || !activeRoomId || hasConflict || intervalInvalid}
                 onClick={submitHold}
               >
-                Creează hold
+                {pending ? tCommon("saving") : "Creează hold"}
               </button>
             </div>
           </>
@@ -869,11 +872,11 @@ export function GanttQuickActionPanel({
                 />
               </label>
             ) : null}
-            <div className="flex gap-2">
+            <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
                 <button
                   type="button"
-                  className="admin-floating-panel__btn flex-1"
+                  className="admin-floating-panel__btn gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
                   Înapoi la radial
@@ -881,7 +884,7 @@ export function GanttQuickActionPanel({
               ) : null}
               <button
                 type="button"
-                className="admin-floating-panel__btn admin-floating-panel__btn--primary flex-1"
+                className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
                   !activeRoomId ||
@@ -891,7 +894,7 @@ export function GanttQuickActionPanel({
                 }
                 onClick={submitBlock}
               >
-                Creează blocarea
+                {pending ? tCommon("saving") : "Creează blocarea"}
               </button>
             </div>
           </>
@@ -936,11 +939,11 @@ export function GanttQuickActionPanel({
                 onChange={(e) => setGuestPhone(e.target.value)}
               />
             </label>
-            <div className="flex gap-2">
+            <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
                 <button
                   type="button"
-                  className="admin-floating-panel__btn flex-1"
+                  className="admin-floating-panel__btn gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
                   Înapoi la radial
@@ -948,7 +951,7 @@ export function GanttQuickActionPanel({
               ) : null}
               <button
                 type="button"
-                className="admin-floating-panel__btn admin-floating-panel__btn--primary flex-1"
+                className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
                   !activeRoomId ||
@@ -958,7 +961,11 @@ export function GanttQuickActionPanel({
                 }
                 onClick={() => submitGuestCreate(mode)}
               >
-                {mode === "cerere" ? tGantt("quick.createRequest") : tGantt("quick.confirmStay")}
+                {pending
+                  ? tCommon("saving")
+                  : mode === "cerere"
+                    ? tGantt("quick.createRequest")
+                    : tGantt("quick.confirmStay")}
               </button>
             </div>
           </>
@@ -1059,11 +1066,11 @@ export function GanttQuickActionPanel({
                 ) : null}
                 <button
                   type="button"
-                  className="admin-floating-panel__btn admin-floating-panel__btn--primary w-full"
+                  className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary w-full"
                   disabled={pending || !moveTargetRoomId}
                   onClick={submitMove}
                 >
-                  Confirmă mutarea
+                  {pending ? tCommon("saving") : "Confirmă mutarea"}
                 </button>
               </>
             ) : null}
@@ -1078,10 +1085,12 @@ export function GanttQuickActionPanel({
             {error}
           </p>
         ) : null}
+      </div>
 
+      <div className="gantt-quick-panel__footer">
         <button
           type="button"
-          className="admin-floating-panel__btn w-full"
+          className="admin-floating-panel__btn gantt-quick-panel__cancel w-full"
           onClick={onClose}
         >
           Anulează

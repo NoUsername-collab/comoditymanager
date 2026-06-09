@@ -129,7 +129,7 @@
       "submitting": "Se trimite…",
       "submit": "Trimite cererea",
       "successTitle": "Cererea a fost trimisă.",
-      "successBody": "Camerele din varianta aleasă sunt reținute provizoriu. Pensiunea vă contactează pentru confirmare — prețul final poate fi ajustat; nu e plată online.",
+      "successBody": "Cerere trimisă. Vă contactăm pentru confirmare.",
       "successVariant": "Varianta aleasă: <strong>{title}</strong>",
       "lastName": "Nume (familie) *",
       "lastNamePlaceholder": "ex. Popescu",
@@ -359,25 +359,27 @@
     },
     "layout": {
       "pendingCount": "{count, plural, one {# new request} other {# new requests}}",
-      "pendingSuffix": "to process"
+      "pendingSuffix": "de procesat"
     },
     "pages": {
       "bookings": {
-        "title": "New requests — Hospira",
-        "description": "Confirm availability and assign rooms.",
-        "windowTitle": "New requests ({count})",
-        "genericError": "Error",
+        "title": "Cereri noi — Hospira",
+        "description": "Confirmă disponibilitatea și alocă camere.",
+        "windowTitle": "Cereri noi ({count})",
+        "showingPartial": "Afișate {shown} din {total} cereri",
+        "loadMore": "Încarcă mai multe cereri",
+        "genericError": "Eroare",
         "adultsShort": "ad.",
-        "childrenShort": "ch.",
-        "process": "Process",
+        "childrenShort": "cop.",
+        "process": "Procesează",
         "openClientProfile": "Deschide profil client",
-        "emptyTitle": "No new requests",
-        "emptyDescription": "Everything is up to date.",
-        "emptyAction": "Open public calendar"
+        "emptyTitle": "Nicio cerere nouă",
+        "emptyDescription": "Totul este la zi.",
+        "emptyAction": "Deschide calendarul public"
       },
       "rooms": {
         "title": "Rooms — Hospira",
-        "description": "Compact day grid for room status.",
+        "description": "Grilă zilnică compactă pentru status camere.",
         "addRoom": "+ Add room",
         "inactiveRooms": "Inactive rooms",
         "noRooms": "No rooms yet.",
@@ -385,8 +387,8 @@
       },
       "settings": {
         "title": "Settings — Hospira",
-        "descriptionOperator": "Sound and theme for operators.",
-        "descriptionAdmin": "Sound and theme for dashboard.",
+        "descriptionOperator": "Sunet și temă pentru operatori.",
+        "descriptionAdmin": "Sunet și temă pentru dashboard.",
         "saved": "Theme saved.",
         "locationLocked": "Location admin is locked.",
         "locationForbidden": "This section requires unlock.",
@@ -488,7 +490,7 @@
       },
       "guests": {
         "title": "Clienți — Hospira",
-        "description": "Profiluri clienți, deduplicare și istoric sejururi.",
+        "description": "Profiluri clienți și istoric sejururi.",
         "searchTitle": "Caută client",
         "searchHint": "Căutarea prioritizează profilele cu risc și cele actualizate recent.",
         "sectionLabel": "Secțiune clienți",
@@ -544,8 +546,8 @@
         "openClientProfile": "Profil client",
         "historyEmptyFilter": "Nimic în istoric pentru filtrul curent",
         "historyEmpty": "Istoricul este gol",
-        "hubDescription": "Hub operațional pentru cereri și cazări confirmate, plus istoric rapid în lateral ca să poți căuta și orienta instant.",
-        "searchExamples": "Exemple utile: nume client, `07...`, `gmail`, nume cameră sau codul rezervării.",
+        "hubDescription": "Cereri, cazări confirmate și istoric rapid.",
+        "searchExamples": "Caută: nume, telefon, email, cameră sau cod rezervare.",
         "emptyConfirmedFilter": "Nicio cazare confirmată nu corespunde filtrului",
         "emptyConfirmedActive": "Nicio cazare confirmată activă",
         "emptyConfirmedFilterDesc": "Încearcă alt nume, email, telefon, cameră sau cod.",
@@ -775,7 +777,7 @@
       },
       "disponibilitate": {
         "title": "Disponibilitate — Hospira",
-        "description": "Heat map, KPI, weekend-uri libere, filtru clădire, interval Shift+click, live."
+        "description": "Heat map, KPI, filtre clădire și interval."
       },
       "invoice": {
         "title": "Document informativ",
@@ -796,7 +798,7 @@
       },
       "settingsLocation": {
         "title": "Administrare locație — Hospira",
-        "description": "Hub admin pentru toată configurarea: structură locație, camere, catalog modular și conturi staff.",
+        "description": "Structură locație, camere, catalog și conturi staff.",
         "backToSettings": "← Înapoi la setări",
         "unlockedForTwoHours": "Administrare locație deblocată pentru 2 ore.",
         "operationalSaved": "Setări operaționale salvate.",
@@ -1491,6 +1493,8 @@
       "previousWeek": "Săpt. anterioară",
       "nextWeek": "Săpt. următoare",
       "loadingDayCard": "Se încarcă cartea de zi…",
+      "dayCardLoadError": "Nu s-au putut încărca detaliile zilei. Verifică conexiunea și încearcă din nou.",
+      "dayCardRetry": "Reîncearcă",
       "dayCard": "Carte de zi",
       "unassignedRequest": "cerere nealocată",
       "unassignedRequestSuffix": "i",
@@ -2269,7 +2273,7 @@
       "loadErrorFallback": "Nu s-a putut încărca jurnalul. Rulează migrarea 007 în Supabase.",
       "summaryTitle": "Rezumat",
       "journalTitle": "Jurnal",
-      "tipText": "Fiecare rezervare are un cod unic (ex. AB12 CD34) și un ID în link — nu se confundă două persoane cu același nume. Anularea folosește acel ID, nu numele. Pentru o rezervare: deschide detaliul și vezi istoricul doar pentru acea cerere.",
+      "tipText": "Rezervările au cod unic în link — deschide detaliul pentru istoricul acelei cereri.",
       "newRequests": "Cereri noi",
       "bookings": "Rezervări",
       "bookingsHint": "Cereri, confirmări, mutări, anulări",
@@ -2921,6 +2925,25 @@
       "dashboard": "Dashboard",
       "tenants": "Tenanți",
       "logs": "Logs"
+    },
+    "error": {
+      "title": "Eroare Admin Panel",
+      "fallback": "A apărut o eroare neașteptată.",
+      "code": "Cod: {digest}",
+      "context": "Context",
+      "dbCode": "Cod DB",
+      "dbDetails": "Detalii",
+      "dbHint": "Hint",
+      "retry": "Reîncearcă",
+      "home": "Dashboard",
+      "viewLogs": "Vezi dev_logs"
+    },
+    "logs": {
+      "error": {
+        "title": "Eroare la încărcarea logurilor",
+        "hint": "Verifică secțiunea dev_logs — eroarea poate fi deja înregistrată acolo.",
+        "viewDevLogs": "Vezi dev_logs"
+      }
     }
   },
   "alphaGate": {

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
@@ -142,9 +143,13 @@ const getCachedRoomTypes = (tenantId: string, includeInactive: boolean) =>
     }
   );
 
+const loadRoomTypes = cache((tenantId: string, includeInactive: boolean) =>
+  getCachedRoomTypes(tenantId, includeInactive)()
+);
+
 export async function listRoomTypes(includeInactive = false): Promise<RoomTypeDefinition[]> {
   const { tenantId } = await getTenantScope();
-  return getCachedRoomTypes(tenantId, includeInactive)();
+  return loadRoomTypes(tenantId, includeInactive);
 }
 
 async function listRoomOptionsUncached(
@@ -174,27 +179,29 @@ const getCachedRoomOptions = (tenantId: string, includeInactive: boolean) =>
     }
   );
 
+const loadRoomOptions = cache((tenantId: string, includeInactive: boolean) =>
+  getCachedRoomOptions(tenantId, includeInactive)()
+);
+
 export async function listRoomOptions(includeInactive = false): Promise<RoomOptionDefinition[]> {
   const { tenantId } = await getTenantScope();
-  return getCachedRoomOptions(tenantId, includeInactive)();
+  return loadRoomOptions(tenantId, includeInactive);
 }
 
 export async function getRoomCatalogContext(
   buildingId?: string
 ): Promise<RoomCatalogContext> {
-  const [types, options] = await Promise.all([
+  const [types, options, buildingPolicies] = await Promise.all([
     listRoomTypes(),
     listRoomOptions(),
+    buildingId ? getBuildingOptionPolicies(buildingId) : Promise.resolve([]),
   ]);
-  const buildingPolicies = buildingId
-    ? await getBuildingOptionPolicies(buildingId)
-    : [];
   return { types, options, buildingPolicies };
 }
 
-export async function getBuildingOptionPolicies(
+const loadBuildingOptionPolicies = cache(async (
   buildingId: string
-): Promise<BuildingOptionPolicy[]> {
+): Promise<BuildingOptionPolicy[]> => {
   const { tenantId, supabase } = await getTenantScope();
   await requireBuildingInTenant(supabase, tenantId, buildingId);
 
@@ -209,10 +216,16 @@ export async function getBuildingOptionPolicies(
     option_id: String(row.option_id),
     mode: row.mode as OptionPolicyMode,
   }));
+});
+
+export async function getBuildingOptionPolicies(
+  buildingId: string
+): Promise<BuildingOptionPolicy[]> {
+  return loadBuildingOptionPolicies(buildingId);
 }
 
 /** Sincronizează politica AC din ac_mode legacy dacă lipsește din catalog. */
-export async function ensureBuildingPoliciesFromLegacy(
+async function ensureBuildingPoliciesFromLegacyImpl(
   buildingId: string,
   acMode: AcMode
 ): Promise<BuildingOptionPolicy[]> {
@@ -239,6 +252,18 @@ export async function ensureBuildingPoliciesFromLegacy(
     await setBuildingOptionPolicies(buildingId, policies);
   }
   return getBuildingOptionPolicies(buildingId);
+}
+
+const loadBuildingPoliciesFromLegacy = cache(
+  (buildingId: string, acMode: AcMode) =>
+    ensureBuildingPoliciesFromLegacyImpl(buildingId, acMode)
+);
+
+export async function ensureBuildingPoliciesFromLegacy(
+  buildingId: string,
+  acMode: AcMode
+): Promise<BuildingOptionPolicy[]> {
+  return loadBuildingPoliciesFromLegacy(buildingId, acMode);
 }
 
 export async function setBuildingOptionPolicies(
@@ -533,11 +558,19 @@ const getCachedRoomOptionSlugsByRoomIds = (tenantId: string, roomIds: string[]) 
     }
   );
 
+const loadRoomOptionSlugsByRoomIds = cache(
+  (tenantId: string, roomIdsKey: string) => {
+    const roomIds = roomIdsKey.length > 0 ? roomIdsKey.split(",") : [];
+    return getCachedRoomOptionSlugsByRoomIds(tenantId, roomIds)();
+  }
+);
+
 export async function getRoomOptionSlugsByRoomIds(
   roomIds: string[]
 ): Promise<Record<string, string[]>> {
   const { tenantId } = await getTenantScope();
-  return getCachedRoomOptionSlugsByRoomIds(tenantId, roomIds)();
+  const roomIdsKey = [...roomIds].sort().join(",");
+  return loadRoomOptionSlugsByRoomIds(tenantId, roomIdsKey);
 }
 
 export function parseSelectedOptionIds(formData: FormData): string[] {

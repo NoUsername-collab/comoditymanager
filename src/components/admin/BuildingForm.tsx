@@ -30,7 +30,7 @@ export function BuildingForm({
   const nonAcOptions = catalogOptions.filter((o) => o.slug !== "ac");
 
   return (
-    <AdminPendingForm action={action} className="mt-8 space-y-5">
+    <AdminPendingForm action={action} className="admin-building-form mt-5 space-y-4">
       {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
       <label className="block">
         <span className="text-sm font-medium">{tBuildings("buildingNameRequired")}</span>

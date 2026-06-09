@@ -36,7 +36,7 @@ export function AdminRoomCatalogPanel({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <section>
         <h3 className="text-sm font-semibold text-zinc-900">{tCatalog("roomTypesTitle")}</h3>
         <p className="mt-1 text-xs text-zinc-500">

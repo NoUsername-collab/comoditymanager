@@ -26,17 +26,18 @@ function safeAdminReturnPath(raw: string, fallback: string): string {
 }
 
 export async function confirmBookingAction(formData: FormData) {
-  await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const roomIds = formData.getAll("room_ids").map(String).filter(Boolean);
-  const total_price = await resolveTotalPriceForConfirm(id, roomIds, formData);
   const returnTo = safeAdminReturnPath(
     String(formData.get("return_to") ?? ""),
     "/admin/calendar?confirmed=1"
   );
 
-  const { getBookingById } = await import("@/services/bookings");
-  const before = await getBookingById(id);
+  const [, total_price, before] = await Promise.all([
+    requireAdmin(),
+    resolveTotalPriceForConfirm(id, roomIds, formData),
+    import("@/services/bookings").then((m) => m.getBookingById(id)),
+  ]);
   const wasCancelled = before?.status === "anulata";
 
   await confirmBookingWithRooms(id, roomIds, total_price);

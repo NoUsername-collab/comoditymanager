@@ -3,9 +3,11 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 export default async function TermeniPage() {
-  const t = await getTranslations("public.terms");
-  const tShell = await getTranslations("public.shell");
-  const tFooter = await getTranslations("public.footer");
+  const [t, tShell, tFooter] = await Promise.all([
+    getTranslations("public.terms"),
+    getTranslations("public.shell"),
+    getTranslations("public.footer"),
+  ]);
 
   const rich = {
     strong: (chunks: ReactNode) => <strong>{chunks}</strong>,

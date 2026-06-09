@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
@@ -26,19 +27,25 @@ async function getCheckinByBookingIdUncached(
   return data as CheckinRow | null;
 }
 
-export async function getCheckinByBookingId(
-  bookingId: string,
-): Promise<CheckinRow | null> {
-  const tenantId = await resolveTenantIdForData();
-  const cached = unstable_cache(
+const getCachedCheckinByBooking = (tenantId: string, bookingId: string) =>
+  unstable_cache(
     () => getCheckinByBookingIdUncached(tenantId, bookingId),
     ["checkin-by-booking", tenantId, bookingId],
     {
       tags: [CACHE_TAGS.checkins, tenantTag(tenantId, CACHE_TAGS.checkins)],
       revalidate: 120,
-    },
+    }
   );
-  return cached();
+
+const loadCheckinByBooking = cache(async (bookingId: string) => {
+  const tenantId = await resolveTenantIdForData();
+  return getCachedCheckinByBooking(tenantId, bookingId)();
+});
+
+export async function getCheckinByBookingId(
+  bookingId: string,
+): Promise<CheckinRow | null> {
+  return loadCheckinByBooking(bookingId);
 }
 
 // ── Guests for a checkin ────────────────────────────────────
@@ -59,19 +66,25 @@ async function getCheckinGuestsUncached(
   return (data ?? []) as CheckinGuestRow[];
 }
 
-export async function getCheckinGuests(
-  checkinId: string,
-): Promise<CheckinGuestRow[]> {
-  const tenantId = await resolveTenantIdForData();
-  const cached = unstable_cache(
+const getCachedCheckinGuests = (tenantId: string, checkinId: string) =>
+  unstable_cache(
     () => getCheckinGuestsUncached(tenantId, checkinId),
     ["checkin-guests", tenantId, checkinId],
     {
       tags: [CACHE_TAGS.checkins, tenantTag(tenantId, CACHE_TAGS.checkins)],
       revalidate: 120,
-    },
+    }
   );
-  return cached();
+
+const loadCheckinGuests = cache(async (checkinId: string) => {
+  const tenantId = await resolveTenantIdForData();
+  return getCachedCheckinGuests(tenantId, checkinId)();
+});
+
+export async function getCheckinGuests(
+  checkinId: string,
+): Promise<CheckinGuestRow[]> {
+  return loadCheckinGuests(checkinId);
 }
 
 // ── Active checkins with flags (for dashboard/Gantt) ────────

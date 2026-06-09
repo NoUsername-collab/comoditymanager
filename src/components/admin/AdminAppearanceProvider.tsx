@@ -82,7 +82,9 @@ export function AdminAppearanceProvider({
   }, []);
 
   const settingsRef = useRef(settings);
-  settingsRef.current = settings;
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   const setMode = useCallback(
     (mode: ThemeMode) => apply(settingsRef.current.theme, mode),

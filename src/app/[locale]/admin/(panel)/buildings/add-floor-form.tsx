@@ -39,11 +39,11 @@ export function AddFloorForm({
         : state?.message;
 
   return (
-    <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50">
+    <div className="add-floor-form rounded-xl border border-dashed border-zinc-200 bg-zinc-50/50">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm font-medium text-zinc-800 hover:bg-zinc-100/60"
+        className="add-floor-form__trigger flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-left text-sm font-medium text-zinc-800 hover:bg-zinc-100/60"
         aria-expanded={open}
       >
         <span>{tCommon("addFloor")}</span>
@@ -53,7 +53,7 @@ export function AddFloorForm({
       </button>
 
       {open && (
-        <div className="border-t border-dashed border-zinc-200 px-4 pb-4 pt-3">
+        <div className="add-floor-form__body border-t border-dashed border-zinc-200 px-4 pb-4 pt-3">
           {feedback && (
             <p
               role="status"
@@ -70,7 +70,7 @@ export function AddFloorForm({
 
           <form
             ref={formRef}
-            className="flex flex-wrap items-end gap-2"
+            className="add-floor-form__fields flex flex-wrap items-end gap-2"
             action={(formData) => runAdminAction(() => dispatch(formData))}
           >
             <input type="hidden" name="building_id" value={buildingId} />

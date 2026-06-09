@@ -9,31 +9,18 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { useSearchParams } from "next/navigation"
-import { useRouter } from "@/i18n/navigation";
 import { debounce } from "@/lib/debounce";
 import { LAYOUT_RESIZE_DEBOUNCE_MS } from "@/layout/mobile/viewport";
-import { buildCalendarQuery } from "@/lib/gantt-query";
-import { jumpToDateInView } from "@/domain/gantt/view-range";
-import { GanttPeriodJumpControl } from "@/components/admin/gantt/GanttPeriodJumpControl";
-import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
-import {
-  computeDailyFreeCounts,
-} from "@/domain/gantt/daily-free-counts";
-import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
+import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import type { BookingRow } from "@/services/bookings";
-import {
-  filterOccupancyForLayer,
-  type GanttLayerFilter,
-} from "@/domain/gantt/occupancy-layer";
+import { type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttFilter } from "@/domain/gantt/filters";
-import { focusDayInRange } from "@/domain/gantt/filters";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import {
@@ -51,28 +38,17 @@ import type { GanttOccDetail } from "@/components/admin/gantt/GanttOccupancyDeta
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
 import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
-import { GanttContextMenuPanel } from "@/components/admin/gantt/GanttContextMenuPanel";
 import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMenuBridge";
-import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
-import {
-  GanttOperativeCheckProvider,
-  useGanttOperativeCheck,
-} from "@/components/admin/gantt/GanttOperativeCheckProvider";
+import { GanttOperativeCheckProvider } from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import {
   type GanttOpsPickerMode,
 } from "@/components/admin/gantt/GanttOpsPickerPanel";
-import { filterBookingsForOperativeCheckIn } from "@/domain/booking/operative-checkin";
-import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import {
-  type RoomTodayFlags,
-  summarizeGanttToday,
-} from "@/domain/gantt/today-activity";
-import type { GanttZoom } from "@/domain/gantt/view-range";
-import { navigateRange } from "@/domain/gantt/view-range";
-import { addDays, nightOccupied, parseIso, todayIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
-import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
-import { HudIconGrid } from "@/components/admin/AdminHudIcons";
+import { addDays, todayIso } from "@/lib/stay-dates";
+import { useGanttCalendarNavigation } from "@/hooks/useGanttCalendarNavigation";
+import { GanttCompactToolbar } from "@/components/admin/gantt/GanttCompactToolbar";
+import { GanttFiltersPanel } from "@/components/admin/gantt/GanttFiltersPanel";
+import { GanttOperativeSurfaces } from "@/components/admin/gantt/GanttOperativeSurfaces";
 import { useLocale, useTranslations } from "next-intl";
 
 const GanttCreateDialog = dynamic(
@@ -103,13 +79,6 @@ const GanttToolbarOccForm = dynamic(
     })),
   { ssr: false }
 );
-const GanttOpsPickerPanel = dynamic(
-  () =>
-    import("@/components/admin/gantt/GanttOpsPickerPanel").then((m) => ({
-      default: m.GanttOpsPickerPanel,
-    })),
-  { ssr: false }
-);
 const GanttStickyViewportHeader = dynamic(
   () =>
     import("@/components/admin/gantt/GanttStickyViewportHeader").then((m) => ({
@@ -118,14 +87,9 @@ const GanttStickyViewportHeader = dynamic(
   { ssr: false }
 );
 
-// Extracted sub-components
 import {
   resolveGanttColumnMetrics,
   resolveGanttDayGridOptions,
-  type InlineZoomChoice,
-  ToolbarFilterIcon,
-  normalizeZoomChoice,
-  periodStepMeta,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
 import { GanttFooterLegend } from "@/components/admin/gantt/GanttFooterLegend";
@@ -172,11 +136,7 @@ export function GanttCalendar({
 }) {
   const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
-  const tLayers = useTranslations("admin.gantt.layers");
-  const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const touch = useIsTouchDevice();
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
   const compactViewport = useIsCompactViewport();
@@ -200,100 +160,47 @@ export function GanttCalendar({
     [compactChrome, isPortrait, columnMetrics.dayMin]
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
-  const defaultFocusIso = focusDayInRange(dayIsos, effectiveToday);
-  const focusIso =
-    filter !== "all" && focusDay ? focusDay : defaultFocusIso;
 
-  // ─── Derived data ──────────────────────────────────────────────────
-  const activeBookings = useMemo(
-    () => bookings.filter((booking) => booking.status !== "anulata"),
-    [bookings]
-  );
-  const bookingsByRoom = useMemo(() => {
-    const map = new Map<string, BookingRow[]>();
-    for (const booking of activeBookings) {
-      for (const roomId of booking.room_ids) {
-        const list = map.get(roomId);
-        if (list) list.push(booking);
-        else map.set(roomId, [booking]);
-      }
-    }
-    return map;
-  }, [activeBookings]);
-  const occupancyByRoom = useMemo(() => {
-    const map = new Map<string, OccupancySegment[]>();
-    for (const segment of occupancy) {
-      const list = map.get(segment.roomId);
-      if (list) list.push(segment);
-      else map.set(segment.roomId, [segment]);
-    }
-    return map;
-  }, [occupancy]);
-  const displaySegmentsByRoom = useMemo(() => {
-    const stay = new Map<string, OccupancySegment[]>();
-    const overlay = new Map<string, OccupancySegment[]>();
-    for (const segment of filterOccupancyForLayer(occupancy, layerFilter, effectiveToday)) {
-      const target =
-        segment.kind === "request" || segment.kind === "stay" ? stay : overlay;
-      const list = target.get(segment.roomId);
-      if (list) list.push(segment);
-      else target.set(segment.roomId, [segment]);
-    }
-    return { stay, overlay };
-  }, [occupancy, layerFilter]);
-  const occupiedRoomIdsOnFocus = useMemo(() => {
-    const occupied = new Set<string>();
-    for (const [roomId, roomBookings] of bookingsByRoom) {
-      if (roomBookings.some((booking) => nightOccupied(focusIso, booking.check_in, booking.check_out))) {
-        occupied.add(roomId);
-      }
-    }
-    for (const [roomId, segments] of occupancyByRoom) {
-      if (segments.some((segment) => nightOccupied(focusIso, segment.checkIn, segment.checkOut))) {
-        occupied.add(roomId);
-      }
-    }
-    return occupied;
-  }, [bookingsByRoom, occupancyByRoom, focusIso]);
-  const filteredRooms = useMemo(() => {
-    if (filter === "all") return rooms;
-    return rooms.filter((room) =>
-      filter === "occupied"
-        ? occupiedRoomIdsOnFocus.has(room.id)
-        : !occupiedRoomIdsOnFocus.has(room.id)
-    );
-  }, [rooms, filter, occupiedRoomIdsOnFocus]);
-  const dailyFreeCounts = useMemo(
-    () => computeDailyFreeCounts(rooms, activeBookings, occupancy, dayIsos),
-    [rooms, activeBookings, occupancy, dayIsos]
+  const {
+    activeBookings,
+    occupancyByRoom,
+    displaySegmentsByRoom,
+    filteredRooms,
+    dailyFreeCounts,
+    todaySummary,
+    operativeCheckInEligible,
+    todayFlagsByRoom,
+    buildingGroups,
+  } = useMemo(
+    () =>
+      deriveGanttCalendarData({
+        rooms,
+        bookings,
+        occupancy,
+        dayIsos,
+        effectiveToday,
+        filter,
+        layerFilter,
+        focusDay,
+        groupByBuilding,
+        buildingFallbackLabel: tCommon("building"),
+      }),
+    [
+      rooms,
+      bookings,
+      occupancy,
+      dayIsos,
+      effectiveToday,
+      filter,
+      layerFilter,
+      focusDay,
+      groupByBuilding,
+      tCommon,
+    ]
   );
 
   const todayIndex = viewRange.days.findIndex((d) => d.isToday);
   const dayCount = viewRange.days.length;
-
-  const todaySummary = useMemo(
-    () => summarizeGanttToday(activeBookings, dayIsos, effectiveToday),
-    [activeBookings, dayIsos, effectiveToday]
-  );
-  const operativeCheckInEligible = useMemo(
-    () => filterBookingsForOperativeCheckIn(activeBookings, effectiveToday),
-    [activeBookings, effectiveToday]
-  );
-  const todayFlagsByRoom = useMemo(() => {
-    const map = new Map<string, RoomTodayFlags>();
-    const today = todaySummary.todayIso;
-    for (const room of rooms) {
-      const roomBookings = bookingsByRoom.get(room.id) ?? [];
-      map.set(room.id, {
-        arrival: roomBookings.some((booking) => booking.check_in === today),
-        departure: roomBookings.some((booking) => booking.check_out === today),
-        occupiedTonight: roomBookings.some((booking) =>
-          nightOccupied(today, booking.check_in, booking.check_out)
-        ),
-      });
-    }
-    return map;
-  }, [rooms, bookingsByRoom, todaySummary.todayIso]);
 
   // ─── Refs ──────────────────────────────────────────────────────────
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -330,29 +237,6 @@ export function GanttCalendar({
   );
   const [opsPickerMode, setOpsPickerMode] = useState<GanttOpsPickerMode | null>(
     null
-  );
-
-  // ─── Building groups ───────────────────────────────────────────────
-  const buildingGroups = useMemo(
-    () =>
-      groupByBuilding
-        ? Array.from(
-            filteredRooms.reduce((map, room) => {
-              const list = map.get(room.building_id) ?? [];
-              list.push(room);
-              map.set(room.building_id, list);
-              return map;
-            }, new Map<string, GanttRoom[]>())
-          ).map(([buildingId, buildingRooms]) => ({
-            buildingId,
-            buildingName: buildingRooms[0]?.building_name ?? tCommon("building"),
-            buildingColor: buildingRooms[0]?.building_color ?? null,
-            buildingAcMode: buildingRooms[0]?.building_ac_mode ?? "per_room",
-            hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
-            rooms: buildingRooms,
-          }))
-        : [],
-    [filteredRooms, groupByBuilding, tCommon]
   );
 
   const handleToggleFocusBuilding = useCallback((buildingId: string) => {
@@ -628,234 +512,43 @@ export function GanttCalendar({
     });
   }, [pinnedSelection, dayIsos]);
 
-  // ─── Navigation callbacks ──────────────────────────────────────────
-  const handleSummaryDayClick = useCallback(
-    (iso: string) => {
-      if (Date.now() < suppressHeaderClickUntilRef.current) return;
-      const isActive = filter === "free" && focusDay === iso;
-      const y = Number(searchParams.get("y")) || viewRange.days[0]?.iso.slice(0, 4);
-      const m =
-        searchParams.get("m") !== null
-          ? Number(searchParams.get("m"))
-          : Number(viewRange.days[0]?.iso.slice(5, 7)) - 1;
-      const q = buildCalendarQuery({
-        y: Number(y) || new Date().getFullYear(),
-        m: Number.isFinite(m) ? m : new Date().getMonth(),
-        view: searchParams.get("view") ?? undefined,
-        building: searchParams.get("building") ?? undefined,
-        room: searchParams.get("room") ?? undefined,
-        zoom: viewRange.zoom,
-        ws: viewRange.zoom === "week" ? viewRange.days[0]?.iso : undefined,
-        q:
-          viewRange.zoom === "quarter"
-            ? Number(viewRange.periodKey.split("-")[2])
-            : undefined,
-        filter: isActive ? "all" : "free",
-        layer: (searchParams.get("layer") as GanttLayerFilter) ?? undefined,
-        feat: (searchParams.get("feat") as "ac" | "fridge") ?? undefined,
-        fd: isActive ? undefined : iso,
-      });
-      router.push(`/admin/calendar?${q}`);
-    },
-    [filter, focusDay, router, searchParams, viewRange]
-  );
-
-  const zoomChoice = useMemo(
-    () => normalizeZoomChoice(viewRange.zoom),
-    [viewRange.zoom]
-  );
-  const todayStartAnchor = useMemo(
-    () => (zoomChoice === "today" ? effectiveToday : addDays(effectiveToday, -1)),
-    [zoomChoice, effectiveToday]
-  );
-  const firstIso = viewRange.days[0]?.iso ?? effectiveToday;
-  const firstDate = parseIso(firstIso);
-  const currentYear =
-    searchParams.get("y") !== null
-      ? Number(searchParams.get("y"))
-      : firstDate.getFullYear();
-  const currentMonth =
-    searchParams.get("m") !== null
-      ? Number(searchParams.get("m"))
-      : firstDate.getMonth();
-  const currentWs = searchParams.get("ws") ?? undefined;
-  const currentBuildingId = searchParams.get("building") ?? null;
-  const selectedFeature = featureFilter;
-  const isTodayStartMode = currentWs === todayStartAnchor;
-  const isAvailabilityPanelOpen = searchParams.get("avail") === "1";
-  const hasActiveFilters = filter !== "all" || selectedFeature !== "all";
-
-  const pushCalendarPatch = useCallback(
-    (patch: {
-      y?: number;
-      m?: number;
-      zoom?: GanttZoom;
-      ws?: string | null;
-      q?: number;
-      filter?: GanttFilter;
-      layer?: GanttLayerFilter;
-      feat?: GanttFeatureFilter;
-      fd?: string | null;
-      view?: "all" | "room";
-      room?: string | null;
-    }) => {
-      const q = buildCalendarQuery({
-        y: patch.y ?? (Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear()),
-        m: patch.m ?? (Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth()),
-        view: patch.view ?? "all",
-        room: patch.room !== undefined ? patch.room ?? undefined : undefined,
-        zoom: patch.zoom ?? viewRange.zoom,
-        ws: patch.ws !== undefined ? patch.ws ?? undefined : currentWs,
-        q:
-          patch.q ??
-          (viewRange.zoom === "quarter"
-            ? Number(viewRange.periodKey.split("-")[2])
-            : undefined),
-        filter: patch.filter ?? filter,
-        layer: patch.layer ?? layerFilter,
-        feat: patch.feat ?? selectedFeature,
-        fd: patch.fd !== undefined ? patch.fd ?? undefined : focusDay || undefined,
-      });
-      router.push(`/admin/calendar?${q}`);
-    },
-    [
-      currentMonth,
-      currentYear,
-      currentWs,
-      filter,
-      firstDate,
-      focusDay,
-      layerFilter,
-      router,
-      selectedFeature,
-      viewRange.periodKey,
-      viewRange.zoom,
-    ]
-  );
-
-  const handleInlineZoomChange = useCallback(
-    (nextZoom: InlineZoomChoice) => {
-      const currentQuarter =
-        viewRange.zoom === "quarter"
-          ? Number(viewRange.periodKey.split("-")[2])
-          : Math.floor(currentMonth / 3);
-      const nextTodayStartAnchor =
-        nextZoom === "today" ? effectiveToday : addDays(effectiveToday, -1);
-      pushCalendarPatch({
-        zoom: nextZoom,
-        ws:
-          nextZoom === "quarter" || nextZoom === "days30"
-            ? isTodayStartMode
-              ? nextTodayStartAnchor
-              : null
-            : isTodayStartMode
-              ? nextTodayStartAnchor
-              : effectiveToday,
-        q: nextZoom === "quarter" ? currentQuarter : undefined,
-      });
-    },
-    [currentMonth, effectiveToday, isTodayStartMode, pushCalendarPatch, viewRange.periodKey, viewRange.zoom]
-  );
-
-  const toggleTodayStartMode = useCallback(() => {
-    if (isTodayStartMode) {
-      const todayDate = parseIso(effectiveToday);
-      pushCalendarPatch({
-        y: todayDate.getFullYear(),
-        m: todayDate.getMonth(),
-        ws:
-          viewRange.zoom === "quarter" || viewRange.zoom === "days30"
-            ? null
-            : effectiveToday,
-        q: viewRange.zoom === "quarter" ? Math.floor(todayDate.getMonth() / 3) : undefined,
-      });
-      return;
-    }
-
-    const anchorDate = parseIso(todayStartAnchor);
-    pushCalendarPatch({
-      y: anchorDate.getFullYear(),
-      m: anchorDate.getMonth(),
-      ws: todayStartAnchor,
-      q: viewRange.zoom === "quarter" ? Math.floor(anchorDate.getMonth() / 3) : undefined,
-    });
-  }, [
+  const {
+    handleSummaryDayClick,
+    zoomChoice,
+    firstIso,
     isTodayStartMode,
-    pushCalendarPatch,
-    todayStartAnchor,
-    viewRange.zoom,
-  ]);
-
-  useEffect(() => {
-    if (todayIndex < 0 || scrolledPeriodRef.current === viewRange.periodKey) {
-      return;
-    }
-    scrolledPeriodRef.current = viewRange.periodKey;
-    if (isTodayStartMode) {
-      return;
-    }
-    const t = window.setTimeout(scrollToTodayColumn, 120);
-    return () => window.clearTimeout(t);
-  }, [viewRange.periodKey, todayIndex, isTodayStartMode, scrollToTodayColumn]);
-
-  const navigatePeriod = useCallback(
-    (direction: -1 | 1) => {
-      const next = navigateRange(
-        viewRange,
-        direction,
-        Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear(),
-        Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth()
-      );
-      pushCalendarPatch({
-        y: next.y,
-        m: next.m,
-        zoom: next.zoom,
-        ws: next.ws ?? null,
-        q: next.q,
-      });
-    },
-    [currentMonth, currentYear, firstDate, pushCalendarPatch, viewRange]
-  );
-
-  const jumpToDate = useCallback(
-    (iso: string) => {
-      const patch = jumpToDateInView(iso, viewRange.zoom);
-      pushCalendarPatch({
-        y: patch.y,
-        m: patch.m,
-        zoom: patch.zoom,
-        ws: patch.ws,
-        q: patch.q,
-      });
-    },
-    [pushCalendarPatch, viewRange.zoom]
-  );
-
-  const toggleAvailabilityPanel = useCallback(() => {
-    const next = mergeAvailabilityPanelSearch(new URLSearchParams(searchParams.toString()), {
-      open: !isAvailabilityPanelOpen ? true : false,
-      year: Number.isFinite(currentYear) ? currentYear : firstDate.getFullYear(),
-      month: Number.isFinite(currentMonth) ? currentMonth : firstDate.getMonth(),
-      day: focusDay || null,
-      buildingId: currentBuildingId,
-      view: "month",
-      weekStart: null,
-      featureFilter: selectedFeature,
-    });
-    router.push(`/admin/calendar?${next.toString()}`);
-  }, [
-    currentBuildingId,
-    currentMonth,
-    currentYear,
-    firstDate,
-    focusDay,
     isAvailabilityPanelOpen,
-    router,
-    searchParams,
+    hasActiveFilters,
+    pushCalendarPatch,
+    handleInlineZoomChange,
+    toggleTodayStartMode,
+    navigatePeriod,
+    jumpToDate,
+    toggleAvailabilityPanel,
+    activePeriodStep,
     selectedFeature,
-  ]);
+  } = useGanttCalendarNavigation({
+    viewRange,
+    filter,
+    featureFilter,
+    layerFilter,
+    focusDay,
+    effectiveToday,
+    suppressHeaderClickUntilRef,
+    todayIndex,
+    scrollToTodayColumn,
+    scrolledPeriodRef,
+  });
 
-  const activePeriodStep = periodStepMeta(zoomChoice, tCommon);
+  const handleCloseFiltersPanel = useCallback(() => {
+    setIsFiltersOpen(false);
+    setFiltersAnchorRect(null);
+  }, []);
+
+  const handleToggleFilters = useCallback((anchorRect: DOMRect) => {
+    setFiltersAnchorRect(anchorRect);
+    setIsFiltersOpen((prev) => !prev);
+  }, []);
 
   // ─── Render ────────────────────────────────────────────────────────
   return (
@@ -893,162 +586,52 @@ export function GanttCalendar({
         ref={shellRef}
         className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
       >
-        {/* ── Compact toolbar — single strip ─────────────────────── */}
-        <div className="gantt-compact-toolbar mx-3">
-          {/* LEFT — action strip (badges / action buttons) */}
-          <div className="gantt-compact-toolbar__left">
-            <GanttRadialController
-              onOpenRequest={() => setOccFormMode("cerere")}
-              onOpenHold={() => setOccFormMode("hold")}
-              onOpenMove={() => setOccFormMode("move")}
-              onOpenBlock={() => setOccFormMode("block")}
-              onOpenReception={() => setOccFormMode("direct")}
-              onOpenCheckIn={
-                operativeCheckInEligible.length > 0
-                  ? () => setOpsPickerMode("checkin")
-                  : undefined
-              }
-              onOpenCheckOut={() => setOpsPickerMode("checkout")}
-              cereriCount={cereriCount}
-              arrivalsCount={arrivalsCount}
-              departuresCount={departuresCount}
-              cleanCount={cleanCount}
-            />
-          </div>
+        <GanttCompactToolbar
+          onOpenRequest={() => setOccFormMode("cerere")}
+          onOpenHold={() => setOccFormMode("hold")}
+          onOpenMove={() => setOccFormMode("move")}
+          onOpenBlock={() => setOccFormMode("block")}
+          onOpenReception={() => setOccFormMode("direct")}
+          onOpenCheckIn={
+            operativeCheckInEligible.length > 0
+              ? () => setOpsPickerMode("checkin")
+              : undefined
+          }
+          onOpenCheckOut={() => setOpsPickerMode("checkout")}
+          cereriCount={cereriCount}
+          arrivalsCount={arrivalsCount}
+          departuresCount={departuresCount}
+          cleanCount={cleanCount}
+          zoomChoice={zoomChoice}
+          onZoomChange={handleInlineZoomChange}
+          periodTitle={viewRange.title}
+          firstIso={firstIso}
+          onPrevPeriod={() => navigatePeriod(-1)}
+          onNextPeriod={() => navigatePeriod(1)}
+          onJumpToDate={jumpToDate}
+          prevPeriodAria={tCommon("goBackBy", { period: activePeriodStep.aria })}
+          nextPeriodAria={tCommon("goForwardBy", { period: activePeriodStep.aria })}
+          jumpAria={tCommon("jumpToDate")}
+          isTodayStartMode={isTodayStartMode}
+          onToggleTodayStartMode={toggleTodayStartMode}
+          layerFilter={layerFilter}
+          onCalendarPatch={pushCalendarPatch}
+          isAvailabilityPanelOpen={isAvailabilityPanelOpen}
+          onToggleAvailabilityPanel={toggleAvailabilityPanel}
+          isFiltersOpen={isFiltersOpen}
+          hasActiveFilters={hasActiveFilters}
+          onToggleFilters={handleToggleFilters}
+        />
 
-          {/* CENTER — interval dropdown + date title/picker + today button */}
-          <div className="gantt-compact-toolbar__center">
-            {/* Interval dropdown */}
-            <div className="gantt-compact-toolbar__dropdown-wrap">
-              <select
-                className="gantt-compact-toolbar__select"
-                value={zoomChoice}
-                onChange={(e) => handleInlineZoomChange(e.target.value as InlineZoomChoice)}
-                aria-label={tCommon("interval")}
-              >
-                <option value="today">{tCommon("todayShort")}</option>
-                <option value="days7">{tCommon("sevenDaysShort")}</option>
-                <option value="days15">{tCommon("fifteenDaysShort")}</option>
-                <option value="days30">{tCommon("thirtyDaysShort")}</option>
-                <option value="quarter">{tCommon("quarterShort")}</option>
-              </select>
-            </div>
-
-            <GanttPeriodJumpControl
-              title={viewRange.title}
-              valueIso={firstIso}
-              onPrev={() => navigatePeriod(-1)}
-              onNext={() => navigatePeriod(1)}
-              onJump={jumpToDate}
-              prevAria={tCommon("goBackBy", { period: activePeriodStep.aria })}
-              nextAria={tCommon("goForwardBy", { period: activePeriodStep.aria })}
-              jumpAria={tCommon("jumpToDate")}
-            />
-
-            {/* Today button */}
-            <button
-              type="button"
-              className={`gantt-compact-toolbar__today-btn ${isTodayStartMode ? "gantt-compact-toolbar__today-btn--active" : ""}`}
-              onClick={toggleTodayStartMode}
-              title={tCommon("alignToday")}
-            >
-              {tCommon("todayShort")}
-            </button>
-          </div>
-
-          {/* RIGHT — display dropdown + heatmap + filter */}
-          <div className="gantt-compact-toolbar__right">
-            <div className="gantt-compact-toolbar__dropdown-wrap">
-              <select
-                className="gantt-compact-toolbar__select"
-                value={layerFilter}
-                onChange={(e) => pushCalendarPatch({ layer: e.target.value as GanttLayerFilter })}
-                aria-label={tCommon("display")}
-              >
-                <option value="all">{tLayers("all")}</option>
-                <option value="cereri">{tLayers("cereri")}</option>
-                <option value="confirmate">{tLayers("confirmate")}</option>
-                <option value="in_house">{tLayers("in_house")}</option>
-                <option value="trecute">{tLayers("trecute")}</option>
-                <option value="hold">{tLayers("hold")}</option>
-                <option value="block">{tLayers("block")}</option>
-              </select>
-            </div>
-
-            <button
-              type="button"
-              className={`gantt-compact-toolbar__icon-btn ${isAvailabilityPanelOpen ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
-              onClick={toggleAvailabilityPanel}
-              aria-label={tCommon("heatmap")}
-              title={tCommon("openHeatmapFloating")}
-            >
-              <HudIconGrid className="h-3.5 w-3.5" />
-            </button>
-
-            <button
-              type="button"
-              className={`gantt-compact-toolbar__icon-btn ${(isFiltersOpen || hasActiveFilters) ? "gantt-compact-toolbar__icon-btn--active" : ""}`}
-              onClick={(event) => {
-                setFiltersAnchorRect(event.currentTarget.getBoundingClientRect());
-                setIsFiltersOpen((prev) => !prev);
-              }}
-              aria-label={tCommon("filters")}
-              title={tCommon("roomsAndOptions")}
-            >
-              <ToolbarFilterIcon className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* ── Filters floating panel ─────────────────────────────── */}
-        <AdminFloatingPanel
+        <GanttFiltersPanel
           open={isFiltersOpen}
-          onClose={() => {
-            setIsFiltersOpen(false);
-            setFiltersAnchorRect(null);
-          }}
-          title={tCommon("filters")}
+          onClose={handleCloseFiltersPanel}
           anchorRect={filtersAnchorRect}
-          width={360}
-          className="gantt-filters-panel"
-        >
-          <div className="space-y-4 p-1">
-            <SegmentGroup
-              label={tCommon("roomsLabel")}
-              compact
-              value={filter}
-              onChange={(next) => {
-                setIsFiltersOpen(false);
-                setFiltersAnchorRect(null);
-                pushCalendarPatch({
-                  filter: next as GanttFilter,
-                  fd: next === "free" ? focusDay || null : null,
-                });
-              }}
-              options={[
-                { value: "all", label: tCommon("all") },
-                { value: "occupied", label: tCommon("occupied") },
-                { value: "free", label: tCommon("free") },
-              ]}
-            />
-
-            <SegmentGroup
-              label={tCommon("filters")}
-              compact
-              value={selectedFeature}
-              onChange={(next) => {
-                setIsFiltersOpen(false);
-                setFiltersAnchorRect(null);
-                pushCalendarPatch({ feat: next as GanttFeatureFilter });
-              }}
-              options={[
-                { value: "all", label: tCommon("all") },
-                { value: "ac", label: tCommon("withAc") },
-                { value: "fridge", label: tCommon("fridge") },
-              ]}
-            />
-          </div>
-        </AdminFloatingPanel>
+          filter={filter}
+          selectedFeature={selectedFeature}
+          focusDay={focusDay}
+          onCalendarPatch={pushCalendarPatch}
+        />
 
         {filter === "free" && focusDay && (
           <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
@@ -1204,57 +787,5 @@ export function GanttCalendar({
       />
     </GanttContextMenuProvider>
     </GanttOperativeCheckProvider>
-  );
-}
-
-function GanttOperativeSurfaces({
-  opsPickerMode,
-  setOpsPickerMode,
-  activeBookings,
-  today,
-}: {
-  opsPickerMode: GanttOpsPickerMode | null;
-  setOpsPickerMode: (mode: GanttOpsPickerMode | null) => void;
-  activeBookings: BookingRow[];
-  today: string;
-}) {
-  const { requestCheckIn, requestCheckOut } = useGanttOperativeCheck();
-
-  return (
-    <>
-      <GanttContextMenuPanel />
-      <GanttOpsPickerPanel
-        open={opsPickerMode !== null}
-        mode={opsPickerMode ?? "checkin"}
-        bookings={activeBookings}
-        onClose={() => setOpsPickerMode(null)}
-        today={today}
-        onSelect={(b) => {
-          if (!opsPickerMode) return;
-          if (opsPickerMode === "checkin") {
-            requestCheckIn({
-              bookingId: b.id,
-              guestName: b.guest_name,
-              plannedCheckIn: b.check_in,
-              plannedCheckOut: b.check_out,
-              status: b.status,
-              actualCheckInAt: b.actual_check_in_at,
-              actualCheckOutAt: b.actual_check_out_at,
-              today,
-            });
-            return;
-          }
-          requestCheckOut({
-            bookingId: b.id,
-            guestName: b.guest_name,
-            plannedCheckIn: b.check_in,
-            plannedCheckOut: b.check_out,
-            actualCheckInAt: b.actual_check_in_at,
-            actualCheckOutAt: b.actual_check_out_at,
-            today,
-          });
-        }}
-      />
-    </>
   );
 }

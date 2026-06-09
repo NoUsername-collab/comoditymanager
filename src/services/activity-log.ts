@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type {
   ActivityAction,
   ActivityEntityType,
@@ -99,9 +100,9 @@ export async function logAdminActivityFromSession(
   });
 }
 
-export async function getActivityLogEntryById(
+const loadActivityLogEntryById = cache(async (
   id: string
-): Promise<ActivityLogEntry | null> {
+): Promise<ActivityLogEntry | null> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
@@ -112,11 +113,17 @@ export async function getActivityLogEntryById(
 
   if (error) throw new Error(error.message);
   return data ? mapRow(data as ActivityRow) : null;
+});
+
+export async function getActivityLogEntryById(
+  id: string
+): Promise<ActivityLogEntry | null> {
+  return loadActivityLogEntryById(id);
 }
 
-export async function listRecentActivity(
-  limit = 100
-): Promise<ActivityLogEntry[]> {
+const loadRecentActivity = cache(async (
+  limit: number
+): Promise<ActivityLogEntry[]> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
@@ -127,12 +134,18 @@ export async function listRecentActivity(
 
   if (error) throw new Error(error.message);
   return (data ?? []).map((row) => mapRow(row as ActivityRow));
+});
+
+export async function listRecentActivity(
+  limit = 100
+): Promise<ActivityLogEntry[]> {
+  return loadRecentActivity(limit);
 }
 
-export async function listBookingActivity(
+const loadBookingActivity = cache(async (
   bookingId: string,
-  limit = 40
-): Promise<ActivityLogEntry[]> {
+  limit: number
+): Promise<ActivityLogEntry[]> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("admin_activity_log")
@@ -145,4 +158,11 @@ export async function listBookingActivity(
 
   if (error) throw new Error(error.message);
   return (data ?? []).map((row) => mapRow(row as ActivityRow));
+});
+
+export async function listBookingActivity(
+  bookingId: string,
+  limit = 40
+): Promise<ActivityLogEntry[]> {
+  return loadBookingActivity(bookingId, limit);
 }

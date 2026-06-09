@@ -18,7 +18,7 @@ export function RoomStructureRow({
   const runAdminAction = useRunAdminAction();
 
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-100 bg-white px-3 py-2 text-sm">
+    <li className="room-structure-row flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-100 bg-white px-3 py-2 text-sm">
       <span className="font-medium text-zinc-900">
         {room.name}
         {!room.is_active && (
@@ -27,7 +27,7 @@ export function RoomStructureRow({
           </span>
         )}
       </span>
-      <span className="flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+      <span className="room-structure-row__controls flex flex-wrap items-center gap-2 text-xs text-zinc-500">
         <span>{t("capacityShort", { count: room.capacity_base })}</span>
         <form
           className="flex items-center gap-1"
@@ -42,7 +42,7 @@ export function RoomStructureRow({
             name="floor_id"
             defaultValue={room.floor_id ?? ""}
             onChange={(e) => e.currentTarget.form?.requestSubmit()}
-            className="max-w-[9rem] rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs text-zinc-800"
+            className="room-structure-row__floor-select max-w-[9rem] rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs text-zinc-800"
           >
             <option value="">{t("noFloorOption")}</option>
             {floors.map((f) => (

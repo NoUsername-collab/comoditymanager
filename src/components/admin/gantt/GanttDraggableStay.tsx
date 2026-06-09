@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
@@ -89,7 +89,7 @@ type Props = {
   today?: string;
 };
 
-export function GanttDraggableStay({
+export const GanttDraggableStay = memo(function GanttDraggableStay({
   href,
   label,
   pos,
@@ -522,4 +522,4 @@ export function GanttDraggableStay({
       />
     </>
   );
-}
+});

@@ -55,7 +55,7 @@ export function occupancyCaptionFromWindow(
 }
 
 export const btnPrimary =
-  "rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-zinc-800";
+  "rounded-lg bg-zinc-900 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-zinc-800";
 
 export const btnSecondary =
-  "rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-medium text-zinc-800 shadow-sm hover:border-zinc-300";
+  "rounded-lg border border-zinc-200 bg-white px-3.5 py-2 text-sm font-medium text-zinc-800 shadow-sm hover:border-zinc-300";

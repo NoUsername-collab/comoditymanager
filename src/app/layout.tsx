@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { DEFAULT_THEME_ID, DEFAULT_THEME_MODE } from "@/lib/themes";
-import { LayoutDebugHost } from "@/components/debug/LayoutDebugHost";
+import { LayoutDebugHostGate } from "@/components/debug/LayoutDebugHostGate";
 import { DEVICE_BOOT_SCRIPT } from "@/lib/device";
 import { ADMIN_THEME_BOOT_SCRIPT } from "@/lib/admin-theme";
 import "./globals.css";
@@ -9,22 +9,41 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Hospira",
   description: "Software modern pentru pensiuni si hoteluri mici",
+  applicationName: "Hospira",
+  icons: {
+    icon: [{ url: "/brand/logo.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/brand/logo.svg", type: "image/svg+xml" }],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Hospira",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f0e14" },
+  ],
 };
 
 export default function RootLayout({
@@ -53,7 +72,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         {children}
-        <LayoutDebugHost />
+        <LayoutDebugHostGate />
       </body>
     </html>
   );

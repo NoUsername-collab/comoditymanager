@@ -84,8 +84,10 @@ async function assertSelectedOptionStillValid(
 }
 
 export async function submitGuestRequestAction(formData: FormData) {
-  const t = await getTranslations("errors");
-  const tServer = await getTranslations("public.serverActions");
+  const [t, tServer] = await Promise.all([
+    getTranslations("errors"),
+    getTranslations("public.serverActions"),
+  ]);
 
   return runInPublicBookingMode(async () => {
     try {
@@ -216,9 +218,13 @@ export async function submitGuestRequestAction(formData: FormData) {
 
 /** Rezervare introdusă de admin (telefon, recepție). */
 export async function submitPhoneBookingAction(formData: FormData) {
-  const t = await getTranslations("errors");
-  const tServer = await getTranslations("public.serverActions");
-  await requireAdmin();
+  const [[t, tServer]] = await Promise.all([
+    Promise.all([
+      getTranslations("errors"),
+      getTranslations("public.serverActions"),
+    ]),
+    requireAdmin(),
+  ]);
 
   const check_in = String(formData.get("check_in") ?? "");
   const check_out = String(formData.get("check_out") ?? "");
@@ -273,8 +279,10 @@ export async function suggestExistingGuestAction(input: {
   guest_email?: string;
   guest_phone?: string;
 }) {
-  await requireAdmin();
-  const t = await getTranslations("errors");
+  const [, t] = await Promise.all([
+    requireAdmin(),
+    getTranslations("errors"),
+  ]);
   try {
     const match = await findGuestAutofillMatch(input);
     return { ok: true as const, match };

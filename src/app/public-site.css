@@ -11,7 +11,7 @@
   margin-inline: auto;
   width: 100%;
   max-width: 42rem;
-  padding: 2rem 1.5rem 3rem;
+  padding: 1rem 0.85rem 1.5rem;
 }
 
 .public-page__inner--wide {
@@ -44,7 +44,7 @@
 }
 
 .public-page__head {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
 }
 
 .public-page__eyebrow {
@@ -317,12 +317,12 @@
 .public-hero {
   position: relative;
   overflow: hidden;
-  padding: 3.5rem 1.5rem 4rem;
+  padding: 2rem 1rem 2.5rem;
 }
 
 @media (min-width: 640px) {
   .public-hero {
-    padding: 5rem 1.5rem 5.5rem;
+    padding: 3rem 1.25rem 3.5rem;
   }
 }
 
@@ -430,7 +430,7 @@
 .public-section {
   margin-inline: auto;
   max-width: 72rem;
-  padding: 0 1.5rem 4rem;
+  padding: 0 1rem 2.5rem;
 }
 
 .public-section__title {
@@ -452,8 +452,8 @@
 
 .public-features {
   display: grid;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
 }
 
 @media (min-width: 640px) {
@@ -466,7 +466,7 @@
   border-radius: 1.125rem;
   border: 1px solid var(--site-border);
   background: var(--site-card);
-  padding: 1.375rem 1.25rem;
+  padding: 1rem 1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -524,7 +524,7 @@
   border-radius: 1rem;
   border: 1px dashed color-mix(in srgb, var(--site-accent) 35%, var(--site-border));
   background: color-mix(in srgb, var(--site-card) 88%, var(--site-bg));
-  padding: 1.25rem;
+  padding: 1rem;
 }
 
 .public-step__num {
@@ -602,14 +602,14 @@
 }
 
 .public-booking-aside {
-  border-radius: 1.125rem;
+  border-radius: 1rem;
   border: 1px solid var(--site-border);
   background: color-mix(in srgb, var(--site-card) 90%, var(--site-bg));
-  padding: 1.25rem;
+  padding: 1rem;
 }
 
 .public-booking-aside__list {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -843,5 +843,13 @@
 @media (prefers-reduced-motion: reduce) {
   .public-feature-card:hover {
     transform: none;
+  }
+}
+
+/* Pagini publice — py-6 Tailwind prea aerisit pe desktop */
+@media (min-width: 768px) {
+  .receptie-page,
+  .public-confirm-page {
+    padding-block: 1.25rem;
   }
 }

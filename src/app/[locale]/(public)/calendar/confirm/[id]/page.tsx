@@ -13,14 +13,18 @@ export default async function QuickConfirmPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const t = await getTranslations("public.confirm");
-  const admin = await getAdminUser();
+  const [t, admin, { id }, ctx] = await Promise.all([
+    getTranslations("public.confirm"),
+    getAdminUser(),
+    params,
+    params.then(({ id: bookingId }) =>
+      loadBookingConfirmContext(bookingId).catch(() => null)
+    ),
+  ]);
+
   if (!admin) {
     await redirect("/admin/login?next=/calendar");
   }
-
-  const { id } = await params;
-  const ctx = await loadBookingConfirmContext(id).catch(() => null);
   if (!ctx) notFound();
 
   const {
@@ -34,8 +38,8 @@ export default async function QuickConfirmPage({
   } = ctx;
 
   return (
-    <main className="public-confirm-page ml-content mx-auto max-w-lg flex-1 px-6 py-10">
-      <Link href="/receptie" className="text-sm text-zinc-500 hover:text-zinc-800">
+    <main className="public-confirm-page ml-content mx-auto max-w-lg flex-1 px-4 py-6">
+      <Link href="/receptie" className="public-confirm-page__back text-sm text-zinc-500 hover:text-zinc-800">
         ← {t("backReceptie")}
       </Link>
 
@@ -45,7 +49,7 @@ export default async function QuickConfirmPage({
       </p>
 
       <div
-        className="mt-6 rounded-xl border bg-[var(--site-card)] p-5 shadow-sm"
+        className="mt-4 rounded-xl border bg-[var(--site-card)] p-4 shadow-sm"
         style={{
           borderColor: "var(--site-border)",
           color: "var(--site-fg)",
@@ -67,7 +71,7 @@ export default async function QuickConfirmPage({
       </div>
 
       <p className="mt-4 text-center text-xs text-zinc-400">
-        <Link href="/admin" className="underline">
+        <Link href="/admin" className="public-confirm-page__admin-link underline">
           {t("adminLink")}
         </Link>
       </p>

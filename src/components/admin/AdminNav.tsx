@@ -42,6 +42,9 @@ export function AdminNav({
             key={tab.href}
             href={tab.href}
             prefetch={!active}
+            onPointerDown={() => {
+              if (!active) router.prefetch(tab.href);
+            }}
             onMouseEnter={() => {
               if (!active) router.prefetch(tab.href);
             }}

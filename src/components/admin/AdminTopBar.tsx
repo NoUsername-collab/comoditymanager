@@ -8,7 +8,6 @@ import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { SimTriggerChip } from "@/components/admin/SimTriggerChip";
 import { AdminGearMenu } from "@/components/admin/AdminGearMenu";
-import type { TodayBoard } from "@/services/today-board";
 import { getTranslations } from "next-intl/server";
 import { getTenantContext } from "@/core/tenant/context";
 
@@ -20,7 +19,6 @@ export async function AdminTopBar({
   simDate,
   simDays,
 }: {
-  board: TodayBoard | null;
   cereriCount: number;
   locationUnlocked?: boolean;
   isAdmin?: boolean;

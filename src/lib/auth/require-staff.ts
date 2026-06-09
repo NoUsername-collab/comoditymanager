@@ -5,11 +5,16 @@ import {
   pathBlockedForOperator,
   type StaffRole,
 } from "@/lib/auth/roles";
-import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import {
-  getTenantMemberRoleForRequest,
-  isLocationConfigurationAccessible,
-} from "@/lib/auth/location-unlock";
+  resolveStaffRole,
+  tenantMemberRoleToStaffRole,
+} from "@/lib/auth/tenant-staff";
+import { locationAccessibleForMemberRole } from "@/lib/auth/location-unlock";
+import { resolveRequestTenant } from "@/lib/tenant/active";
+import {
+  getTenantMemberRole,
+  type TenantMemberRole,
+} from "@/services/tenant-members";
 
 /**
  * Cached per-request: resolves the authenticated staff user, role,
@@ -26,10 +31,30 @@ const cachedStaffContext = cache(async () => {
     return { user: null, role: null, memberRole: null, supabase };
   }
 
-  const role = await resolveStaffRole(user);
-  const memberRole = role ? await getTenantMemberRoleForRequest(user.id) : null;
+  const tenant = await resolveRequestTenant();
+  let memberRole: TenantMemberRole | null = null;
+  let role: StaffRole | null = null;
+
+  if (tenant) {
+    memberRole = await getTenantMemberRole(tenant.id, user.id);
+    role = memberRole ? tenantMemberRoleToStaffRole(memberRole) : null;
+  } else {
+    role = await resolveStaffRole(user);
+  }
 
   return { user, role, memberRole, supabase };
+});
+
+/** Shell chrome: admin flag + location unlock without extra tenant_members queries. */
+export const getStaffShellAccess = cache(async () => {
+  const ctx = await cachedStaffContext();
+  if (!ctx.user || !ctx.role) {
+    return { isAdmin: false, locationUnlocked: false };
+  }
+  return {
+    isAdmin: ctx.role === "admin",
+    locationUnlocked: await locationAccessibleForMemberRole(ctx.memberRole),
+  };
 });
 
 export async function requireStaff() {
@@ -83,7 +108,7 @@ export async function getAdminUser() {
 /** Configurare locație: owner acces direct; staff admin după confirmare parolă owner. */
 export async function requireLocationAdmin() {
   const ctx = await requireStaff();
-  const accessible = await isLocationConfigurationAccessible(ctx.user.id);
+  const accessible = await locationAccessibleForMemberRole(ctx.memberRole);
   if (!accessible) {
     await redirect("/admin/settings?location=locked");
   }
@@ -91,10 +116,9 @@ export async function requireLocationAdmin() {
 }
 
 export async function guardOperatorRoute(pathname: string) {
-  const user = await getStaffUser();
-  if (!user) return;
-  const role = await resolveStaffRole(user);
-  if (role === "operator" && pathBlockedForOperator(pathname)) {
+  const ctx = await cachedStaffContext();
+  if (!ctx.user || !ctx.role) return;
+  if (ctx.role === "operator" && pathBlockedForOperator(pathname)) {
     await redirect("/admin/settings?location=forbidden");
   }
 }

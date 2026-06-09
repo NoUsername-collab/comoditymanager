@@ -3,6 +3,12 @@
  * Service-role only (bypasses RLS).
  */
 
+import { cache } from "react";
+import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
+import {
+  getTenantResourceCounts,
+  loadTenantResourceCounts,
+} from "@/lib/hospira-admin/tenant-resource-counts";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -41,6 +47,11 @@ export interface PlatformDevLogEntry {
   level: string;
   source: string;
   message: string;
+  stack: string | null;
+  context: Record<string, unknown>;
+  request_path: string | null;
+  request_method: string | null;
+  duration_ms: number | null;
   created_at: string;
   user_email: string | null;
 }
@@ -48,78 +59,63 @@ export interface PlatformDevLogEntry {
 export type PlatformLogsResult = {
   activity: PlatformLogEntry[];
   dev: PlatformDevLogEntry[];
-  activityError: string | null;
-  devError: string | null;
 };
 
 // ─── Health Checks ──────────────────────────────────────────────
 
-export async function runTenantHealthChecks(): Promise<TenantHealthCheck[]> {
+function buildTenantHealthCheck(
+  tenant: {
+    id: string;
+    slug: string;
+    display_name: string;
+    status: string;
+  },
+  resources: ReturnType<typeof getTenantResourceCounts>
+): TenantHealthCheck {
+  const issues: string[] = [];
+  if (!resources.has_settings) issues.push("Lipsesc pension_settings");
+  if (resources.building_count === 0) issues.push("Zero clădiri");
+  if (resources.room_count === 0) issues.push("Zero camere");
+  if (resources.member_count === 0) issues.push("Zero membri activi");
+  if (tenant.status === "suspended") issues.push("Cont suspendat");
+  if (tenant.status === "cancelled") issues.push("Cont anulat");
+
+  return {
+    tenantId: tenant.id,
+    slug: tenant.slug,
+    displayName: tenant.display_name,
+    status: tenant.status,
+    hasSettings: resources.has_settings,
+    buildingCount: resources.building_count,
+    roomCount: resources.room_count,
+    memberCount: resources.member_count,
+    healthy: issues.length === 0,
+    issues,
+  };
+}
+
+/** Health snapshot for all tenants — 2 DB round-trips at 100+ tenants. */
+export const runTenantHealthChecks = cache(async (): Promise<TenantHealthCheck[]> => {
   const supabase = createPublicAdminClient();
 
-  const { data: tenants } = await supabase
-    .from("tenants")
-    .select("id, slug, display_name, status")
-    .order("created_at", { ascending: false });
+  const [{ data: tenants, error: tenantsError }, resourceCounts] =
+    await Promise.all([
+      supabase
+        .from("tenants")
+        .select("id, slug, display_name, status")
+        .order("created_at", { ascending: false }),
+      loadTenantResourceCounts(supabase),
+    ]);
 
-  if (!tenants) return [];
+  throwIfDbError("tenants (health check)", tenantsError);
+  if (!tenants) {
+    throw new Error("[tenants (health check)] no data returned");
+  }
 
-  const checks = await Promise.all(
-    tenants.map(async (t) => {
-      try {
-        const safeCount = (p: PromiseLike<{ count: number | null }>) =>
-          Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
-
-        const [settings, buildings, rooms, members] = await Promise.all([
-          Promise.resolve(
-            supabase.from("pension_settings").select("id").eq("tenant_id", t.id).maybeSingle()
-              .then((r) => r.data)
-          ).catch(() => null),
-          safeCount(supabase.from("buildings").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
-          safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
-          safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", t.id).eq("is_active", true)),
-        ]);
-
-        const issues: string[] = [];
-        const hasSettings = !!settings;
-        if (!hasSettings) issues.push("Lipsesc pension_settings");
-        if (buildings === 0) issues.push("Zero clădiri");
-        if (rooms === 0) issues.push("Zero camere");
-        if (members === 0) issues.push("Zero membri activi");
-        if (t.status === "suspended") issues.push("Cont suspendat");
-        if (t.status === "cancelled") issues.push("Cont anulat");
-
-        return {
-          tenantId: t.id,
-          slug: t.slug,
-          displayName: t.display_name,
-          status: t.status,
-          hasSettings,
-          buildingCount: buildings,
-          roomCount: rooms,
-          memberCount: members,
-          healthy: issues.length === 0,
-          issues,
-        };
-      } catch {
-        return {
-          tenantId: t.id,
-          slug: t.slug,
-          displayName: t.display_name,
-          status: t.status,
-          hasSettings: false,
-          buildingCount: 0,
-          roomCount: 0,
-          memberCount: 0,
-          healthy: false,
-          issues: ["Eroare la verificare — DB timeout sau query eșuat"],
-        };
-      }
-    })
+  return tenants.map((tenant) =>
+    buildTenantHealthCheck(tenant, getTenantResourceCounts(resourceCounts, tenant.id))
   );
-
-  return checks;
-}
+});
 
 function isUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
@@ -131,10 +127,12 @@ async function loadTenantMap(tenantIds: string[]) {
   }
 
   const supabase = createPublicAdminClient();
-  const { data: tenants } = await supabase
+  const { data: tenants, error } = await supabase
     .from("tenants")
     .select("id, slug, display_name")
     .in("id", tenantIds);
+
+  throwIfDbError("tenants (log enrichment)", error);
 
   return new Map(
     (tenants ?? []).map((t) => [t.id, { slug: t.slug, name: t.display_name }])
@@ -159,12 +157,19 @@ export async function getPlatformDevLogs(
   return result.dev;
 }
 
-/** Activity + dev logs for Hospira admin (surfaces query errors). */
-export async function getPlatformLogsBundle(
+/** Activity + dev logs for Hospira admin — throws on query failure. */
+export const getPlatformLogsBundle = cache(async (
   limit = 100,
   tenantId?: string | null
-): Promise<PlatformLogsResult> {
+): Promise<PlatformLogsResult> => {
   const supabase = createPublicAdminClient();
+
+  if (tenantId && !isUuid(tenantId)) {
+    throw new Error(
+      `[platform logs] invalid tenant filter "${tenantId}" (expected UUID)`
+    );
+  }
+
   const filterId = tenantId && isUuid(tenantId) ? tenantId : null;
 
   let activityQuery = supabase
@@ -181,7 +186,9 @@ export async function getPlatformLogsBundle(
 
   let devQuery = supabase
     .from("dev_logs")
-    .select("id, tenant_id, level, source, message, created_at, user_email")
+    .select(
+      "id, tenant_id, level, source, message, stack, context, request_path, request_method, duration_ms, created_at, user_email"
+    )
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -191,8 +198,9 @@ export async function getPlatformLogsBundle(
 
   const [activityRes, devRes] = await Promise.all([activityQuery, devQuery]);
 
-  const activityError = activityRes.error?.message ?? null;
-  const devError = devRes.error?.message ?? null;
+  throwIfDbError("admin_activity_log", activityRes.error);
+  throwIfDbError("dev_logs", devRes.error);
+
   const activityRows = activityRes.data ?? [];
   const devRows = devRes.data ?? [];
 
@@ -231,10 +239,18 @@ export async function getPlatformLogsBundle(
       level: d.level,
       source: d.source,
       message: d.message,
+      stack: d.stack ?? null,
+      context:
+        d.context && typeof d.context === "object" && !Array.isArray(d.context)
+          ? (d.context as Record<string, unknown>)
+          : {},
+      request_path: d.request_path ?? null,
+      request_method: d.request_method ?? null,
+      duration_ms: d.duration_ms ?? null,
       created_at: d.created_at,
       user_email: d.user_email ?? null,
     };
   });
 
-  return { activity, dev, activityError, devError };
-}
+  return { activity, dev };
+});

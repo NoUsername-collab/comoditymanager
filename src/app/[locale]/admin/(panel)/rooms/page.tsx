@@ -5,6 +5,7 @@ import { listBuildings } from "@/services/buildings";
 import { RoomDashboardCard } from "@/components/admin/RoomDashboardCard";
 import { RoomsBuildingSection } from "@/components/admin/RoomsBuildingSection";
 import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
+import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
@@ -15,18 +16,29 @@ export default async function AdminRoomsPage({
 }: {
   searchParams: Promise<{ date?: string }>;
 }) {
-  const t = await getTranslations("admin.pages.rooms");
-  const params = await searchParams;
+  const [t, params, dataResult] = await Promise.all([
+    getTranslations("admin.pages.rooms"),
+    searchParams,
+    searchParams
+      .then((sp) => {
+        const viewDate = parseViewDate(sp.date);
+        return Promise.all([listRoomDashboards(viewDate), listBuildings()]);
+      })
+      .then(([rooms, buildings]) => ({ ok: true as const, rooms, buildings }))
+      .catch((e) => ({ ok: false as const, error: e })),
+  ]);
   const viewDate = parseViewDate(params.date);
   const dateLabel = viewDateLabel(viewDate);
   let rooms: Awaited<ReturnType<typeof listRoomDashboards>> = [];
   let buildings: Awaited<ReturnType<typeof listBuildings>> = [];
   let error: string | null = null;
 
-  try {
-    [rooms, buildings] = await Promise.all([listRoomDashboards(viewDate), listBuildings()]);
-  } catch (e) {
-    error = e instanceof Error ? e.message : t("genericError");
+  if (dataResult.ok) {
+    rooms = dataResult.rooms;
+    buildings = dataResult.buildings;
+  } else {
+    error =
+      dataResult.error instanceof Error ? dataResult.error.message : t("genericError");
   }
 
   const buildingOrder = new Map(buildings.map((b, i) => [b.id, i]));
@@ -57,7 +69,7 @@ export default async function AdminRoomsPage({
 
       {error && <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</p>}
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-4 space-y-3">
         {byBuilding.map(({ building, rooms: groupRooms }) => (
           <RetroXpWindow key={building.id} title={`${building.name} — ${dateLabel}`}>
             <RoomsBuildingSection
@@ -86,7 +98,15 @@ export default async function AdminRoomsPage({
         </RetroXpWindow>
       )}
 
-      {active.length === 0 && !error && <p className="mt-8 text-center text-zinc-500">{t("noRooms")}</p>}
+      {active.length === 0 && !error && (
+        <AdminEmptyState
+          emoji="🛏️"
+          title={t("noRooms")}
+          description={t("description")}
+          actionHref="/admin/rooms/new"
+          actionLabel={t("addRoom")}
+        />
+      )}
     </AdminRetroPageFrame>
   );
 }

@@ -14,7 +14,6 @@ import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton
 import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
-import { BUILDING_COLOR_PALETTE } from "@/lib/building-color-palette";
 
 export function EditBuildingPanel({ building }: { building: Building }) {
   const t = useTranslations("admin.locationStructure");
@@ -30,13 +29,7 @@ export function EditBuildingPanel({ building }: { building: Building }) {
     null as BuildingFormState
   );
 
-  const initialColor =
-    building.color_hex &&
-    BUILDING_COLOR_PALETTE.some(
-      (c) => c.hex.toLowerCase() === building.color_hex?.toLowerCase()
-    )
-      ? building.color_hex
-      : null;
+  const initialColor = building.color_hex ?? null;
 
   const feedback =
     state?.messageKey === "buildingUpdated"
@@ -97,7 +90,11 @@ export function EditBuildingPanel({ building }: { building: Building }) {
                 <option value="per_room">{tBuildings("acPolicyPerRoom")}</option>
               </select>
             </label>
-            <ColorPalettePicker acMode={acMode} defaultValue={initialColor} />
+            <ColorPalettePicker
+              key={building.id}
+              acMode={acMode}
+              defaultValue={initialColor}
+            />
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="font-medium">{tBuildings("defaultPricePerNightRon")}</span>

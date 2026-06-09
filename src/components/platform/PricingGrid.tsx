@@ -80,6 +80,14 @@ export async function PricingGrid({
   );
 }
 
+const COMPARISON_FEATURES = [
+  "rooms",
+  "team",
+  "gantt",
+  "branding",
+  "modules",
+] as const;
+
 export async function PricingComparisonTable() {
   const t = await getTranslations("pricing.comparison");
   const rows = CLOUD_PLAN_ORDER.map((id) => ({
@@ -93,8 +101,37 @@ export async function PricingComparisonTable() {
   }));
 
   return (
-    <div className="pricing-table-wrap">
-      <table className="pricing-table">
+    <>
+      <ul className="pricing-comparison-cards space-y-3">
+        {rows.map((plan) => (
+          <li
+            key={plan.id}
+            className="pricing-comparison-card rounded-xl border border-[var(--landing-border,#e7e5e4)] bg-white/80 p-4 shadow-sm"
+          >
+            <h3 className="text-base font-semibold text-[var(--landing-text,#1c1917)]">
+              {plan.name}
+            </h3>
+            <dl className="mt-3 space-y-2 text-sm">
+              {COMPARISON_FEATURES.map((feature) => (
+                <div
+                  key={feature}
+                  className="pricing-comparison-card__row flex items-start justify-between gap-3"
+                >
+                  <dt className="text-[var(--landing-text-muted,#78716c)]">
+                    {t(`rows.${feature}`)}
+                  </dt>
+                  <dd className="text-right font-medium text-[var(--landing-text,#1c1917)]">
+                    {plan[feature]}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </li>
+        ))}
+      </ul>
+
+      <div className="pricing-table-wrap pricing-table-desktop">
+        <table className="pricing-table">
         <thead>
           <tr>
             <th scope="col">{t("featureCol")}</th>
@@ -137,7 +174,8 @@ export async function PricingComparisonTable() {
             ))}
           </tr>
         </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
+    </>
   );
 }

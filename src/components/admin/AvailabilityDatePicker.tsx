@@ -32,7 +32,7 @@ export function AvailabilityDatePicker({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-zinc-200/90 bg-gradient-to-r from-white to-zinc-50/80 px-4 py-3 shadow-sm ring-1 ring-zinc-900/5">
+    <div className="availability-date-picker flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200/90 bg-gradient-to-r from-white to-zinc-50/80 px-3 py-2.5 shadow-sm ring-1 ring-zinc-900/5">
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">
           {tPicker("availabilityOnDate")}

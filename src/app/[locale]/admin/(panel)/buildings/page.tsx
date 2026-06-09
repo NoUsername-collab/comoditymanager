@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { listBuildingDashboards } from "@/services/building-dashboard";
 import { BuildingDashboardCard } from "@/components/admin/BuildingDashboardCard";
 import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
+import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
@@ -13,16 +14,26 @@ export default async function BuildingsPage({
 }: {
   searchParams: Promise<{ date?: string }>;
 }) {
-  const t = await getTranslations("admin.pages.buildings");
-  const params = await searchParams;
+  const paramsPromise = searchParams;
+  const [t, params, dashboardsResult] = await Promise.all([
+    getTranslations("admin.pages.buildings"),
+    paramsPromise,
+    paramsPromise
+      .then((p) => listBuildingDashboards(parseViewDate(p.date)))
+      .then((data) => ({ ok: true as const, data }))
+      .catch((e) => ({ ok: false as const, error: e })),
+  ]);
   const viewDate = parseViewDate(params.date);
   let dashboards: Awaited<ReturnType<typeof listBuildingDashboards>> = [];
   let error: string | null = null;
 
-  try {
-    dashboards = await listBuildingDashboards(viewDate);
-  } catch (e) {
-    error = e instanceof Error ? e.message : t("unknownError");
+  if (dashboardsResult.ok) {
+    dashboards = dashboardsResult.data;
+  } else {
+    error =
+      dashboardsResult.error instanceof Error
+        ? dashboardsResult.error.message
+        : t("unknownError");
   }
 
   return (
@@ -44,7 +55,7 @@ export default async function BuildingsPage({
         </p>
       )}
 
-      <div className="mt-6 space-y-4">
+      <div className="mt-4 space-y-3">
         {dashboards.map((d) => (
           <RetroXpWindow
             key={d.building.id}
@@ -56,7 +67,13 @@ export default async function BuildingsPage({
       </div>
 
       {dashboards.length === 0 && !error && (
-        <p className="mt-8 text-center text-zinc-500">{t("noBuildings")}</p>
+        <AdminEmptyState
+          emoji="🏠"
+          title={t("noBuildings")}
+          description={t("listDescription")}
+          actionHref="/admin/buildings/new"
+          actionLabel={t("addBuilding")}
+        />
       )}
     </AdminRetroPageFrame>
   );

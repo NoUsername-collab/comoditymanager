@@ -86,14 +86,56 @@ export default async function AdminGuestsPage({
 }: {
   searchParams: Promise<{ q?: string; filter?: string; page?: string; selected?: string }>;
 }) {
-  const [t, raw] = await Promise.all([
+  const [t, raw, dataBundle] = await Promise.all([
     getTranslations("admin.pages.guests"),
     searchParams,
+    searchParams.then(async (sp) => {
+      const q = firstValue(sp.q);
+      const filter = firstValue(sp.filter);
+      const page = normalizePage(firstValue(sp.page));
+      const selected = firstValue(sp.selected);
+      const hasSearchCriteria =
+        q.length > 0 || (filter && filter !== "all" && filter !== "");
+
+      try {
+        const [searchResult, highlightsResult, selectedResult] = await Promise.all([
+          searchGuests({ query: q, filter, page, pageSize: 20 }),
+          hasSearchCriteria
+            ? Promise.resolve(null)
+            : listGuestHighlights().catch(() => null),
+          selected ? getGuestById(selected).catch(() => null) : Promise.resolve(null),
+        ]);
+        return {
+          ok: true as const,
+          q,
+          filter,
+          page,
+          selected,
+          result: searchResult,
+          highlights:
+            searchResult.mode === "highlights" ? highlightsResult : null,
+          selectedGuest: selectedResult,
+        };
+      } catch (e) {
+        const selectedGuest = selected
+          ? await getGuestById(selected).catch(() => null)
+          : null;
+        return {
+          ok: false as const,
+          q,
+          filter,
+          page,
+          selected,
+          error: e instanceof Error ? e.message : "generic",
+          selectedGuest,
+        };
+      }
+    }),
   ]);
-  const q = firstValue(raw.q);
-  const filter = firstValue(raw.filter);
-  const page = normalizePage(firstValue(raw.page));
-  const selected = firstValue(raw.selected);
+  const q = dataBundle.q;
+  const filter = dataBundle.filter;
+  const page = dataBundle.page;
+  const selected = dataBundle.selected;
   const currentHref = buildGuestListHref({ q, filter, page });
 
   const FILTER_LINKS: { id: GuestSearchFilter; label: string }[] = [
@@ -119,23 +161,14 @@ export default async function AdminGuestsPage({
   let selectedGuest: Awaited<ReturnType<typeof getGuestById>> = null;
   let error: string | null = null;
 
-  const selectedGuestPromise = selected
-    ? getGuestById(selected).catch(() => null)
-    : Promise.resolve(null);
-
-  try {
-    result = await searchGuests({ query: q, filter, page, pageSize: 20 });
-    const [highlightsResult, selectedResult] = await Promise.all([
-      result.mode === "highlights"
-        ? listGuestHighlights().catch(() => null)
-        : Promise.resolve(null),
-      selectedGuestPromise,
-    ]);
-    highlights = highlightsResult;
-    selectedGuest = selectedResult;
-  } catch (e) {
-    error = e instanceof Error ? e.message : t("genericError");
-    selectedGuest = await selectedGuestPromise;
+  if (dataBundle.ok) {
+    result = dataBundle.result;
+    highlights = dataBundle.highlights;
+    selectedGuest = dataBundle.selectedGuest;
+  } else {
+    error =
+      dataBundle.error === "generic" ? t("genericError") : dataBundle.error;
+    selectedGuest = dataBundle.selectedGuest;
   }
 
   return (

@@ -23,20 +23,24 @@ export async function CalendarAvailabilityStream({
   initialDay?: string;
   today: string;
 }) {
-  const t = await getTranslations("admin.pages.calendar");
+  const [t, dashboardResult] = await Promise.all([
+    getTranslations("admin.pages.calendar"),
+    loadAvailabilityDashboard(year, month, buildingId, featureFilter)
+      .then((dashboard) => ({ ok: true as const, dashboard }))
+      .catch((e) => ({ ok: false as const, error: e })),
+  ]);
+
   let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null =
     null;
   let error: string | null = null;
 
-  try {
-    dashboard = await loadAvailabilityDashboard(
-      year,
-      month,
-      buildingId,
-      featureFilter
-    );
-  } catch (e: unknown) {
-    error = e instanceof Error ? e.message : t("heatmapError");
+  if (dashboardResult.ok) {
+    dashboard = dashboardResult.dashboard;
+  } else {
+    error =
+      dashboardResult.error instanceof Error
+        ? dashboardResult.error.message
+        : t("heatmapError");
   }
 
   if (error) {
@@ -51,6 +55,7 @@ export async function CalendarAvailabilityStream({
 
   return (
     <AvailabilityDashboardLazy
+      key={`${year}-${month}-${buildingId ?? "all"}-${featureFilter}`}
       dashboard={dashboard}
       initialDay={initialDay}
       buildingId={buildingId}

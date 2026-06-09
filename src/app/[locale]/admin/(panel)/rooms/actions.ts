@@ -6,7 +6,7 @@ import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { listBuildings } from "@/services/buildings";
+import { getBuildingDefaultPrice } from "@/services/buildings";
 import { parseSelectedOptionIds } from "@/services/room-catalog";
 import { createRoom, createRoomsBulk } from "@/services/rooms-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
@@ -113,9 +113,9 @@ export async function createRoomAction(formData: FormData) {
       return;
     }
 
-    const buildings = await listBuildings();
-    const b = buildings.find((x) => x.id === building_id);
-    const building_default_price = b?.default_price_per_night ?? 0;
+    const building_default_price = await getBuildingDefaultPrice(building_id).catch(
+      () => 0
+    );
 
     if (create_mode === "bulk") {
       const naming_mode =

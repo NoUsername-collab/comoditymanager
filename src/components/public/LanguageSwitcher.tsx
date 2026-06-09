@@ -130,6 +130,18 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
     router.replace(pathname, { locale: next });
   }
 
+  function toggleOpen() {
+    if (!open) {
+      const trigger = triggerRef.current?.getBoundingClientRect();
+      if (trigger) {
+        setMenuPos(computeFixedDropdownPosition(trigger, MENU_ESTIMATE));
+      }
+      setOpen(true);
+      return;
+    }
+    setOpen(false);
+  }
+
   const labels: Record<string, string> = {
     ro: tCommon("romanian"),
     en: tCommon("english"),
@@ -137,13 +149,17 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   };
 
   const menu =
-    open && menuPos ? (
+    open ? (
       <div
         ref={menuRef}
         role="listbox"
         aria-label={tCommon("language")}
         className="language-switcher__menu language-switcher__menu--portal fixed min-w-[44px] rounded-xl border border-[var(--site-border)] bg-[var(--site-card,#fff)] p-1 shadow-lg"
-        style={{ top: menuPos.top, left: menuPos.left }}
+        style={
+          menuPos
+            ? { top: menuPos.top, left: menuPos.left }
+            : { visibility: "hidden", pointerEvents: "none" }
+        }
       >
         {routing.locales.map((l) => (
           <button
@@ -155,7 +171,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
             aria-label={labels[l]}
             title={labels[l]}
             className={[
-              "flex w-full items-center justify-center rounded-lg px-2 py-1.5 transition",
+              "language-switcher__option flex w-full items-center justify-center rounded-lg px-2 py-1.5 transition",
               l === locale
                 ? "bg-[var(--site-accent)]"
                 : "hover:bg-[color-mix(in_srgb,var(--site-card)_76%,var(--accent-muted))]",
@@ -175,7 +191,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={tCommon("language")}
-        onClick={() => setOpen((wasOpen) => !wasOpen)}
+        onClick={toggleOpen}
         className={[
           "language-switcher__trigger cursor-pointer rounded-full border border-[var(--site-border)] bg-[var(--site-header-bg)] leading-none flex items-center",
           compact ? "language-switcher__trigger--compact px-1.5 py-0.5" : "px-2 py-1 text-base",
@@ -184,7 +200,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         <Flag code={locale} gbClipId={gbClipId} />
       </button>
 
-      {portalReady && menu ? createPortal(menu, document.body) : null}
+      {portalReady && menu && menuPos ? createPortal(menu, document.body) : null}
     </div>
   );
 }

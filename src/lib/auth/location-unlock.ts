@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getAdminEmail } from "@/lib/auth/constants";
@@ -64,10 +65,18 @@ export async function getTenantMemberRoleForRequest(
 }
 
 /** Owner: acces permanent. Staff admin: necesită unlock 2h. */
-export async function isLocationConfigurationAccessible(
-  userId: string
+export async function locationAccessibleForMemberRole(
+  memberRole: TenantMemberRole | null
 ): Promise<boolean> {
-  const memberRole = await getTenantMemberRoleForRequest(userId);
   if (memberRole === "owner") return true;
-  return isAdminLocationUnlocked();
+  if (memberRole === "admin") return isAdminLocationUnlocked();
+  return false;
 }
+
+/** Owner: acces permanent. Staff admin: necesită unlock 2h. */
+export const isLocationConfigurationAccessible = cache(
+  async (userId: string): Promise<boolean> => {
+    const memberRole = await getTenantMemberRoleForRequest(userId);
+    return locationAccessibleForMemberRole(memberRole);
+  }
+);

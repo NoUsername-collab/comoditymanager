@@ -331,17 +331,19 @@
     },
     "pages": {
       "bookings": {
-        "title": "New requests — Hospira",
-        "description": "Confirm availability and assign rooms.",
-        "windowTitle": "New requests ({count})",
-        "genericError": "Error",
-        "adultsShort": "ad.",
-        "childrenShort": "ch.",
-        "process": "Process",
+        "title": "Нови заявки — Hospira",
+        "description": "Потвърди наличност и разпредели стаи.",
+        "windowTitle": "Нови заявки ({count})",
+        "showingPartial": "Показани {shown} от {total} заявки",
+        "loadMore": "Зареди още заявки",
+        "genericError": "Грешка",
+        "adultsShort": "възр.",
+        "childrenShort": "деца",
+        "process": "Обработи",
         "openClientProfile": "Отвори профил на клиента",
-        "emptyTitle": "No new requests",
-        "emptyDescription": "Everything is up to date.",
-        "emptyAction": "Open public calendar"
+        "emptyTitle": "Няма нови заявки",
+        "emptyDescription": "Всичко е актуално.",
+        "emptyAction": "Отвори публичния календар"
       },
       "rooms": {
         "title": "Rooms — Hospira",
@@ -1459,6 +1461,8 @@
       "previousWeek": "Пред. седмица",
       "nextWeek": "След. седмица",
       "loadingDayCard": "Зареждане на дневна карта…",
+      "dayCardLoadError": "Детайлите за деня не можаха да се заредят. Провери връзката и опитай отново.",
+      "dayCardRetry": "Опитай отново",
       "dayCard": "Дневна карта",
       "unassignedRequest": "неразпределена заявка",
       "unassignedRequestSuffix": "и",
@@ -2921,6 +2925,25 @@
       "dashboard": "Tablo",
       "tenants": "Tenanti",
       "logs": "Logove"
+    },
+    "error": {
+      "title": "Greshka v admin panela",
+      "fallback": "Vaznikna neochakvana greshka.",
+      "code": "Kod: {digest}",
+      "context": "Kontekst",
+      "dbCode": "DB kod",
+      "dbDetails": "Detayli",
+      "dbHint": "Hint",
+      "retry": "Opitai otnovo",
+      "home": "Tablo",
+      "viewLogs": "Vizh dev_logs"
+    },
+    "logs": {
+      "error": {
+        "title": "Greshka pri zarezhdane na logove",
+        "hint": "Proverete sekciyata dev_logs — greshkata mozhe da e veche zapisana.",
+        "viewDevLogs": "Vizh dev_logs"
+      }
     }
   },
   "alphaGate": {

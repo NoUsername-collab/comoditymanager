@@ -17,7 +17,9 @@ export default async function LandingPage() {
             <div className="landing-hero__grid">
               <div className="landing-hero__inner">
                 <span className="landing-hero__badge">{t("heroBadge")}</span>
-                <h1 className="landing-hero__title">{t("heroTitle")}</h1>
+                <h1 className="landing-hero__title" suppressHydrationWarning>
+                  {t("heroTitle")}
+                </h1>
                 <p className="landing-hero__subtitle">{t("heroSubtitle")}</p>
                 <div className="landing-hero__actions">
                   <Link href="/signup" className="landing-cta landing-cta--primary">

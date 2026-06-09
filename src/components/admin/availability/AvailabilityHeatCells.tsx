@@ -61,6 +61,7 @@ export const HeatDayCell = memo(function HeatDayCell({
   inRange,
   displayMode,
   onSelect,
+  onDayHover,
   labels,
   locale,
   today,
@@ -70,6 +71,7 @@ export const HeatDayCell = memo(function HeatDayCell({
   inRange: boolean;
   displayMode: AvailabilityDisplayMode;
   onSelect: (iso: string, shift: boolean) => void;
+  onDayHover?: (iso: string) => void;
   locale: string;
   labels: {
     full: string;
@@ -118,11 +120,13 @@ export const HeatDayCell = memo(function HeatDayCell({
         ref={btnRef}
         type="button"
         onClick={(e) => onSelect(day.iso, e.shiftKey)}
+        onPointerDown={() => onDayHover?.(day.iso)}
         onMouseEnter={() => {
           clearHoverTimer();
           hoverTimer.current = setTimeout(() => {
             setAnchorRect(btnRef.current?.getBoundingClientRect() ?? null);
             setHoverPreview(true);
+            onDayHover?.(day.iso);
           }, 400);
         }}
         onMouseLeave={() => {

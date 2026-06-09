@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import {
@@ -26,6 +26,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   const t = useTranslations("admin.nav");
   const tabs = filterAdminTabs(ADMIN_PRIMARY_TABS, locationUnlocked);
   const [moreOpen, setMoreOpen] = useState(false);
+  const moreTriggerRef = useRef<HTMLButtonElement>(null);
   const prefetchHrefs = useMemo(() => tabs.map((tab) => tab.href), [tabs]);
   useAdminRoutePrefetch(prefetchHrefs);
 
@@ -47,6 +48,9 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
               <Link
                 href={tab.href}
                 prefetch={!active}
+                onPointerDown={() => {
+                  if (!active) router.prefetch(tab.href);
+                }}
                 onMouseEnter={() => {
                   if (!active) router.prefetch(tab.href);
                 }}
@@ -74,6 +78,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
         })}
         <li className="ml-bottom-nav__item">
           <button
+            ref={moreTriggerRef}
             type="button"
             className="ml-bottom-nav__link ml-bottom-nav__link--more"
             aria-expanded={moreOpen}
@@ -92,6 +97,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
       open={moreOpen}
       onClose={() => setMoreOpen(false)}
       locationUnlocked={locationUnlocked}
+      triggerRef={moreTriggerRef}
     />
     </>
   );

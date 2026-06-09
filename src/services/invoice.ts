@@ -1,9 +1,10 @@
+import { cache } from "react";
 import { buildInformalInvoice, type InformalInvoice } from "@/domain/invoice/informal-invoice";
 import { getBookingById } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantDisplayName } from "@/services/tenants";
-import { listAllRooms } from "@/services/rooms-admin";
+import { getRoomsByIds } from "@/services/rooms-admin";
 
 export type InvoiceContext = {
   invoice: InformalInvoice;
@@ -11,31 +12,26 @@ export type InvoiceContext = {
   pensionAddress: string | null;
 };
 
-export async function loadInformalInvoice(
+export const loadInformalInvoice = cache(async (
   bookingId: string
-): Promise<InvoiceContext | null> {
-  const booking = await getBookingById(bookingId);
+): Promise<InvoiceContext | null> => {
+  const bookingPromise = getBookingById(bookingId);
+  const [booking, settings, tenantDisplayName, bookingRooms] = await Promise.all([
+    bookingPromise,
+    getPensionSettings().catch(() => null),
+    resolveTenantIdForData().then((id) => getTenantDisplayName(id)),
+    bookingPromise.then((b) =>
+      b && b.room_ids.length > 0 ? getRoomsByIds(b.room_ids) : []
+    ),
+  ]);
   if (!booking) return null;
 
-  const [settings, allRooms] = await Promise.all([
-    getPensionSettings().catch(() => null),
-    listAllRooms(),
-  ]);
-
-  const roomMap = new Map(allRooms.map((r) => [r.id, r]));
-
-  const roomsForInvoice =
-    booking.room_ids.length > 0
-      ? booking.room_ids
-          .map((id) => roomMap.get(id))
-          .filter((r): r is NonNullable<typeof r> => !!r)
-          .map((r) => ({
-            room_id: r.id,
-            room_name: r.name,
-            building_name: r.building_name,
-            price_per_night: Number(r.price_per_night),
-          }))
-      : [];
+  const roomsForInvoice = bookingRooms.map((r) => ({
+    room_id: r.id,
+    room_name: r.name,
+    building_name: r.building_name,
+    price_per_night: Number(r.price_per_night),
+  }));
 
   const invoice = buildInformalInvoice({
     booking_id: booking.id,
@@ -48,26 +44,28 @@ export async function loadInformalInvoice(
     rooms: roomsForInvoice,
   });
 
-  const tenantId = await resolveTenantIdForData();
+  const pensionName = settings?.display_name?.trim() || tenantDisplayName;
 
   return {
     invoice,
-    pensionName:
-      settings?.display_name ?? (await getTenantDisplayName(tenantId)),
+    pensionName,
     pensionAddress: null,
   };
-}
+});
 
 /** Estimare din camere selectate (la confirmare). */
 export async function estimateInvoiceTotal(
   bookingId: string,
   roomIds: string[]
 ): Promise<number | null> {
-  const booking = await getBookingById(bookingId);
-  if (!booking || roomIds.length === 0) return null;
+  if (roomIds.length === 0) return null;
 
-  const allRooms = await listAllRooms();
-  const roomMap = new Map(allRooms.map((r) => [r.id, r]));
+  const [booking, selectedRooms] = await Promise.all([
+    getBookingById(bookingId),
+    getRoomsByIds(roomIds),
+  ]);
+  if (!booking) return null;
+  const roomMap = new Map(selectedRooms.map((r) => [r.id, r]));
   const rooms = roomIds
     .map((id) => roomMap.get(id))
     .filter((r): r is NonNullable<typeof r> => !!r)

@@ -36,7 +36,7 @@ export function AdminTenantDomainsPanel({
   const defaultUrl = buildTenantAdminUrl(tenantSlug, "/", platformDomain);
 
   return (
-    <div className="space-y-6">
+    <div className="tenant-domains-panel space-y-4">
       <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-4">
         <p className="text-sm font-medium text-zinc-900">{t("hospiraSubdomain")}</p>
         <p className="mt-1 font-mono text-sm text-amber-800">
@@ -110,7 +110,7 @@ export function AdminTenantDomainsPanel({
               {customDomains.map((d) => (
                 <li
                   key={d.id}
-                  className="rounded-xl border border-zinc-200 p-4 text-sm"
+                  className="tenant-domain-card rounded-xl border border-zinc-200 p-4 text-sm"
                 >
                   <p className="font-mono font-medium">{d.domain}</p>
                   <p className="mt-1 text-zinc-600">{t(`kinds.${d.routing_kind}`)}</p>

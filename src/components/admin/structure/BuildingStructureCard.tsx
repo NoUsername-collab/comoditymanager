@@ -34,12 +34,12 @@ export function BuildingStructureCard({
   return (
     <article
       className={[
-        "overflow-hidden rounded-2xl border bg-white shadow-sm",
+        "building-structure-card overflow-hidden rounded-xl border bg-white shadow-sm",
         theme.border,
       ].join(" ")}
     >
       <header
-        className="flex flex-wrap items-start justify-between gap-3 border-b border-zinc-100 px-5 py-4"
+        className="flex flex-wrap items-start justify-between gap-2 border-b border-zinc-100 px-4 py-3"
         style={{ borderBottomColor: theme.accent }}
       >
         <div className="min-w-0 flex-1">

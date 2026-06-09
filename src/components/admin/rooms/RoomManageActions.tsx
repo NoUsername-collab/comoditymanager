@@ -39,7 +39,7 @@ export function RoomManageActions({
 
   return (
     <span
-      className={`inline-flex flex-wrap items-center gap-2 ${className}`.trim()}
+      className={`room-manage-actions inline-flex flex-wrap items-center gap-2 ${className}`.trim()}
     >
       {editHref && (
         <AdminTextActionLink href={editHref} variant="neutral">

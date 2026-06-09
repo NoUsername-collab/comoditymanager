@@ -140,13 +140,13 @@ export function RoomForm({
   const bulkBlocked = mode === "bulk" && bulkConflicts.length > 0;
 
   return (
-    <div className="mt-6 space-y-4">
+    <div className="admin-room-form mt-4 space-y-3">
       {formError ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {formError}
         </p>
       ) : null}
-      <div className="flex gap-2">
+      <div className="admin-room-form__mode flex gap-2">
         <button
           type="button"
           onClick={() => setMode("single")}
@@ -163,7 +163,7 @@ export function RoomForm({
         </button>
       </div>
 
-      <AdminPendingForm action={createRoomAction} className="space-y-5">
+      <AdminPendingForm action={createRoomAction} className="admin-room-form__fields space-y-4">
         <input type="hidden" name="create_mode" value={mode} />
         {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 

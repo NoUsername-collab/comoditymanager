@@ -5,8 +5,96 @@ import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { pressureLabel } from "@/domain/availability/heat";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { guestInitials } from "@/domain/guest-name";
-import type { DayAvailabilityDetail } from "@/services/availability-month";
+import type {
+  DayAvailability,
+  DayAvailabilityDetail,
+} from "@/services/availability-month";
 import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
+
+const SKELETON_ROOM_ROWS = 5;
+
+export function DayDetailPanelSkeleton({
+  knownDay,
+  loadingLabel,
+  labels,
+}: {
+  knownDay?: DayAvailability | null;
+  loadingLabel: string;
+  labels?: {
+    free: string;
+    occupied: string;
+    rooms: string;
+    arrivals: string;
+    departures: string;
+  };
+}) {
+  return (
+    <div
+      className="availability-detail-panel availability-day-detail-skeleton avail-detail flex flex-col"
+      aria-busy="true"
+      aria-label={loadingLabel}
+    >
+      <div className="availability-detail-panel__header border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
+        {knownDay && labels ? (
+          <>
+            <p className="text-sm font-medium text-emerald-800">
+              {pressureLabel(knownDay.pressure)}
+            </p>
+            <p className="mt-0.5 text-sm text-zinc-600">
+              {knownDay.free_rooms} {labels.free.toLowerCase()} ·{" "}
+              {knownDay.occupied_rooms} {labels.occupied.toLowerCase()} ·{" "}
+              {knownDay.total_rooms} {labels.rooms.toLowerCase()}
+              {knownDay.checkins > 0 &&
+                ` · ${knownDay.checkins} ${labels.arrivals.toLowerCase()}`}
+              {knownDay.checkouts > 0 &&
+                ` · ${knownDay.checkouts} ${labels.departures.toLowerCase()}`}
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="admin-route-skeleton__row h-4 max-w-[8rem]" />
+            <div className="admin-route-skeleton__row mt-2 h-4 max-w-[12rem]" />
+          </>
+        )}
+      </div>
+
+      <div className="availability-day-detail-skeleton__rows flex-1 space-y-3 overflow-y-auto px-5 py-4">
+        {Array.from({ length: SKELETON_ROOM_ROWS }, (_, i) => (
+          <div key={i} className="admin-route-skeleton__card" />
+        ))}
+      </div>
+
+      <div className="availability-detail-panel__footer border-t border-zinc-100 px-5 py-3">
+        <div className="admin-route-skeleton__toolbar h-10 max-w-[10rem]" />
+      </div>
+    </div>
+  );
+}
+
+export function DayDetailPanelError({
+  message,
+  retryLabel,
+  onRetry,
+}: {
+  message: string;
+  retryLabel: string;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="availability-detail-panel availability-detail-panel--overlay avail-detail flex flex-col px-4 py-4">
+      <p className="text-sm font-medium text-red-700" role="alert">
+        {message}
+      </p>
+      <button
+        type="button"
+        className="availability-detail-panel__retry mt-4 min-h-[2.75rem] rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+        onClick={onRetry}
+      >
+        {retryLabel}
+      </button>
+    </div>
+  );
+}
 
 export function DayDetailPanel({
   detail,
@@ -55,7 +143,7 @@ export function DayDetailPanel({
 
   return (
     <div className="availability-detail-panel availability-detail-panel--overlay avail-detail flex flex-col">
-      <div className="border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
+      <div className="availability-detail-panel__header border-b border-zinc-100 bg-zinc-50/80 px-5 py-3">
         <p className="text-sm font-medium text-emerald-800">
           {pressureLabel(day.pressure)}
         </p>
@@ -68,7 +156,7 @@ export function DayDetailPanel({
         </p>
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
+      <div className="availability-detail-panel__body flex-1 space-y-4 overflow-y-auto px-5 py-4">
         {detail.unassigned_cereri > 0 && (
           <Link
             href="/admin/bookings"
@@ -175,11 +263,11 @@ export function DayDetailPanel({
         )}
       </div>
 
-      <div className="flex flex-wrap gap-3 border-t border-zinc-100 px-5 py-3">
+      <div className="availability-detail-panel__footer flex flex-wrap gap-3 border-t border-zinc-100 px-5 py-3">
         <AdminTextActionLink
           href={`/admin/calendar?y=${day.iso.slice(0, 4)}&m=${Number(day.iso.slice(5, 7)) - 1}&ws=${mondayOfWeekIso(day.iso)}`}
           variant="primary"
-          className="text-sm"
+          className="availability-detail-panel__cta text-sm"
         >
           {labels.focusGanttWeek} →
         </AdminTextActionLink>

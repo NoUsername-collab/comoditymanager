@@ -2,10 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { GuestRebookStayForm } from "@/components/admin/guests/GuestRebookStayForm";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import {
-  loadGuestRebookDraft,
-  previewGuestRebookRooms,
-} from "@/services/guest-rebook";
+import { loadGuestRebookPanelPayload } from "@/services/guest-rebook";
 import { getTranslations } from "next-intl/server";
 
 export default async function GuestRebookStayPage({
@@ -15,36 +12,40 @@ export default async function GuestRebookStayPage({
   params: Promise<{ id: string; bookingId: string }>;
   searchParams: Promise<{ from?: string }>;
 }) {
-  const { id: guestId, bookingId } = await params;
-  const { from } = await searchParams;
-  const t = await getTranslations("admin.pages.guestRebook");
+  const [t, { id: guestId, bookingId }, { from }, payload] = await Promise.all([
+    getTranslations("admin.pages.guestRebook"),
+    params,
+    searchParams,
+    params.then(({ id, bookingId: sourceBookingId }) =>
+      loadGuestRebookPanelPayload(id, sourceBookingId)
+    ),
+  ]);
 
-  let draft;
-  try {
-    draft = await loadGuestRebookDraft(guestId, bookingId);
-  } catch {
-    notFound();
-  }
+  if (!payload) notFound();
 
-  const guestCount = draft.numAdults + draft.numChildren;
-  const rooms = await previewGuestRebookRooms({
-    checkIn: draft.checkIn,
-    checkOut: draft.checkOut,
-    numAdults: draft.numAdults,
-    numChildren: draft.numChildren,
-  });
+  const {
+    draft,
+    initialRooms,
+    initialCanFulfill,
+    initialMinRooms,
+    checkInTime,
+    checkOutTime,
+  } = payload;
 
   const backHref =
     from?.trim() ||
     `/admin/guests/${guestId}?tab=history`;
 
   return (
-    <main className="guest-rebook-page ml-content mx-auto max-w-3xl px-4 py-8">
-      <header className="mb-6 space-y-2">
-        <Link href={backHref} className="text-sm font-semibold text-emerald-800 hover:underline">
+    <main className="guest-rebook-page ml-content mx-auto max-w-3xl px-4 py-5">
+      <header className="mb-4 space-y-1">
+        <Link
+          href={backHref}
+          className="guest-rebook-page__back inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center text-sm font-semibold text-emerald-800 hover:underline"
+        >
           ← {t("backToGuest")}
         </Link>
-        <h1 className="text-2xl font-bold text-zinc-900">{t("title")}</h1>
+        <h1 className="text-xl font-bold text-zinc-900">{t("title")}</h1>
         <p className="text-sm text-zinc-600">
           {t("subtitle", {
             name: draft.guestDisplayName,
@@ -59,11 +60,11 @@ export default async function GuestRebookStayPage({
 
       <GuestRebookStayForm
         draft={draft}
-        initialRooms={rooms.availableRooms}
-        initialCanFulfill={rooms.canFulfill}
-        initialMinRooms={rooms.minRoomsNeeded}
-        checkInTime={rooms.checkInTime}
-        checkOutTime={rooms.checkOutTime}
+        initialRooms={initialRooms}
+        initialCanFulfill={initialCanFulfill}
+        initialMinRooms={initialMinRooms}
+        checkInTime={checkInTime}
+        checkOutTime={checkOutTime}
         backHref={backHref}
       />
     </main>

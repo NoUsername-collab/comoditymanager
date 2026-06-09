@@ -9,21 +9,24 @@ import { listAllRooms } from "@/services/rooms-admin";
 /** Core Gantt calendar payload — deduped per request via React cache(). */
 export const loadCalendarCoreData = cache(
   async (rangeStart: string, rangeEnd: string, referenceDate: string) => {
-    const [allRooms, allBookings, settings, buildings, occupancy] =
+    const roomsPromise = listAllRooms();
+    const [allRooms, allBookings, settings, buildings, occupancy, optionSlugsByRoom] =
       await Promise.all([
-        listAllRooms(),
+        roomsPromise,
         listBookingsForRange(rangeStart, rangeEnd),
         getPensionSettings().catch(() => null),
         listBuildings(),
         getRoomOccupancy(rangeStart, rangeEnd, {
           referenceDate,
         }),
+        roomsPromise
+          .then((rooms) =>
+            getRoomOptionSlugsByRoomIds(
+              rooms.filter((r) => r.is_active).map((r) => r.id)
+            )
+          )
+          .catch(() => ({} as Record<string, string[]>)),
       ] as const);
-
-    const activeRoomIds = allRooms.filter((r) => r.is_active).map((r) => r.id);
-    const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(activeRoomIds).catch(
-      () => ({} as Record<string, string[]>)
-    );
 
     return [
       allRooms,

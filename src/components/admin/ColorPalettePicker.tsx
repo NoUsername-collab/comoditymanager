@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   BUILDING_COLOR_PALETTE,
+  canonicalHexColor,
   defaultColorForAcMode,
 } from "@/lib/building-color-palette";
 import { useTranslations } from "next-intl";
@@ -21,24 +22,28 @@ export function ColorPalettePicker({
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tBuildings = useTranslations("admin.buildings");
-  const [value, setValue] = useState(
-    () =>
-      defaultValue ??
-      (acMode ? defaultColorForAcMode(acMode) : BUILDING_COLOR_PALETTE[0].hex)
-  );
+  const [pickedHex, setPickedHex] = useState<string | null>(null);
+  const [pickedForAcMode, setPickedForAcMode] = useState(acMode);
 
-  useEffect(() => {
-    if (acMode) {
-      setValue(defaultColorForAcMode(acMode));
-    }
-  }, [acMode]);
+  const autoForAcMode = acMode
+    ? defaultColorForAcMode(acMode)
+    : BUILDING_COLOR_PALETTE[0].hex;
+
+  const savedHex = canonicalHexColor(defaultValue);
+
+  const value =
+    pickedHex && acMode === pickedForAcMode
+      ? pickedHex
+      : !pickedHex && savedHex != null
+        ? savedHex
+        : autoForAcMode;
 
   const selected = BUILDING_COLOR_PALETTE.find(
     (c) => c.hex.toLowerCase() === value.toLowerCase()
   );
 
   return (
-    <fieldset className="space-y-3">
+    <fieldset className="color-palette-picker space-y-3">
       <legend className="text-sm font-medium text-zinc-800">
         {tBuildings("calendarColor")}
       </legend>
@@ -54,9 +59,12 @@ export function ColorPalettePicker({
               role="option"
               aria-selected={active}
               title={c.label}
-              onClick={() => setValue(c.hex)}
+              onClick={() => {
+                setPickedHex(c.hex);
+                setPickedForAcMode(acMode);
+              }}
               className={[
-                "relative h-10 w-10 rounded-full border-2 shadow-sm transition hover:scale-110",
+                "color-palette-picker__swatch relative h-10 w-10 rounded-full border-2 shadow-sm transition hover:scale-110",
                 active
                   ? "border-zinc-900 ring-2 ring-zinc-400 ring-offset-2"
                   : "border-white ring-1 ring-zinc-200",

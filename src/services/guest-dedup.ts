@@ -3,6 +3,7 @@
  * duplicate guests and scores them against a reference input.
  */
 
+import { cache } from "react";
 import {
   normalizeEmail,
   normalizePhone,
@@ -115,13 +116,37 @@ async function searchByNameBirthDate(
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
-/**
- * Find and score potential duplicate guests for a given input.
- * This is the main entry point for the dedup system.
- */
-export async function findDedupCandidates(
-  input: DedupInput
-): Promise<DedupCandidate[]> {
+const findDedupCandidatesCached = cache(async (
+  excludeGuestId: string | undefined,
+  lastName: string,
+  firstName: string,
+  phone: string | null,
+  phoneNormalized: string | null,
+  email: string | null,
+  emailNormalized: string | null,
+  nationalId: string | null,
+  nationalIdType: string | null,
+  docNumber: string | null,
+  docType: string | null,
+  birthDate: string | null,
+  city: string | null
+): Promise<DedupCandidate[]> => {
+  const input: DedupInput = {
+    excludeGuestId,
+    lastName,
+    firstName,
+    phone,
+    phoneNormalized,
+    email,
+    emailNormalized,
+    nationalId,
+    nationalIdType,
+    docNumber,
+    docType,
+    birthDate,
+    city,
+  };
+
   // Phase 1: Search by exact field matches (national_id, phone, email, doc)
   const primaryRows = await searchCandidateRows(input);
   const seenIds = new Set(primaryRows.map((r) => r.id));
@@ -134,6 +159,30 @@ export async function findDedupCandidates(
 
   // Phase 3: Score all candidates
   return scoreDedupCandidates(input, allRows);
+});
+
+/**
+ * Find and score potential duplicate guests for a given input.
+ * This is the main entry point for the dedup system.
+ */
+export async function findDedupCandidates(
+  input: DedupInput
+): Promise<DedupCandidate[]> {
+  return findDedupCandidatesCached(
+    input.excludeGuestId,
+    input.lastName,
+    input.firstName,
+    input.phone,
+    input.phoneNormalized,
+    input.email,
+    input.emailNormalized,
+    input.nationalId,
+    input.nationalIdType,
+    input.docNumber,
+    input.docType,
+    input.birthDate,
+    input.city
+  );
 }
 
 /**

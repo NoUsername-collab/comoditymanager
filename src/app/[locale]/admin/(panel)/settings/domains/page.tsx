@@ -11,16 +11,16 @@ import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 
 export default async function SettingsDomainsPage() {
-  const t = await getTranslations("admin.domains");
-  await requireStaff();
-
-  const tenant = await resolveRequestTenant();
-  const tenantId = await getActiveTenantIdForData();
-  const domains = await listTenantDomains(tenantId);
+  const [t, , tenant, domains, requestHeaders] = await Promise.all([
+    getTranslations("admin.domains"),
+    requireStaff(),
+    resolveRequestTenant(),
+    getActiveTenantIdForData().then((id) => listTenantDomains(id)),
+    headers(),
+  ]);
 
   const requestHost =
-    (await headers()).get("x-forwarded-host") ??
-    (await headers()).get("host");
+    requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
   const platformDomain = platformDomainFromRequestHost(requestHost);
 
   const planId = tenant?.plan_id ?? "free";
@@ -33,7 +33,7 @@ export default async function SettingsDomainsPage() {
     <AdminRetroPageFrame
       title={t("pageTitle")}
       description={t("pageDescription")}
-      className="admin-settings-page w-full max-w-2xl px-4 py-6 sm:px-6"
+      className="admin-settings-page w-full max-w-2xl"
     >
       <Link
         href="/admin/settings"

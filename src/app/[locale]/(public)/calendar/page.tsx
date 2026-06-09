@@ -1,18 +1,14 @@
-import { GuestBookingForm } from "@/components/calendar/GuestBookingForm";
+import { GuestBookingFormLazy } from "@/components/calendar/GuestBookingFormLazy";
 import { PublicPageShell } from "@/components/public/PublicPageShell";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
 export default async function CalendarPublicPage() {
-  const t = await getTranslations("public.calendar");
-  const tShell = await getTranslations("public.shell");
-
-  let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
-  try {
-    settings = await getPensionSettings();
-  } catch {
-    settings = null;
-  }
+  const [t, tShell, settings] = await Promise.all([
+    getTranslations("public.calendar"),
+    getTranslations("public.shell"),
+    getPensionSettings().catch(() => null),
+  ]);
 
   const checkInTime = settings?.default_check_in_time ?? "14:00";
   const checkOutTime = settings?.default_check_out_time ?? "11:00";
@@ -26,7 +22,7 @@ export default async function CalendarPublicPage() {
       title={title}
       lead={t("lead")}
     >
-      <div className="public-booking-layout mt-8">
+      <div className="public-booking-layout mt-5">
         <aside className="public-booking-aside">
           <p className="text-sm font-semibold text-[var(--site-fg)]">
             {t("asideTitle")}
@@ -56,7 +52,7 @@ export default async function CalendarPublicPage() {
           </ul>
         </aside>
 
-        <GuestBookingForm
+        <GuestBookingFormLazy
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
         />

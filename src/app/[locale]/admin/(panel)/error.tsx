@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { Link } from "@/i18n/navigation";
 import { reportTenantClientError } from "@/lib/tenant/report-client-error";
 
 export default function AdminPanelError({
@@ -29,12 +30,12 @@ export default function AdminPanelError({
         >
           Reîncearcă
         </button>
-        <a
+        <Link
           href="/admin"
           className="min-h-[2.75rem] rounded-lg border border-zinc-300 bg-white px-4 py-2 text-base font-semibold text-zinc-800"
         >
           Acasă admin
-        </a>
+        </Link>
       </div>
       {error.digest && (
         <p className="mt-3 text-xs text-zinc-400">Cod: {error.digest}</p>

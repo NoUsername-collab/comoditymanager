@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import {
   getLayoutViewportSize,
   readLayoutChromeFromDom,
@@ -8,10 +8,10 @@ import {
   readLayoutOrientationFromDom,
   resolveLayoutBreakpoint,
   type LayoutChrome,
-  type LayoutMode,
   type LayoutOrientation,
   type MobileLayoutState,
 } from "@/layout/mobile";
+import { isDocumentLayoutBootstrapped } from "@/layout/mobile/apply-document-layout";
 import { subscribeLayoutViewportChanges } from "@/layout/mobile/resize-sync";
 
 export type CompactLayoutHints = {
@@ -54,6 +54,13 @@ function subscribeCompactLayoutHints(onStoreChange: () => void): () => void {
   });
 }
 
+function getCompactLayoutHintsSnapshot(): CompactLayoutHints {
+  if (typeof document !== "undefined" && isDocumentLayoutBootstrapped()) {
+    return readCompactLayoutHints();
+  }
+  return SERVER_COMPACT_HINTS;
+}
+
 /**
  * Chrome + orientation only — re-renders when compact/wide or portrait/landscape
  * changes, not on every visualViewport pixel resize (iOS URL bar).
@@ -62,11 +69,26 @@ export function useCompactLayoutHints(): CompactLayoutHints {
   return useSyncExternalStore(
     subscribeCompactLayoutHints,
     readCompactLayoutHints,
-    () => SERVER_COMPACT_HINTS
+    getCompactLayoutHintsSnapshot
   );
 }
 
-function readState(): MobileLayoutState {
+const SERVER_LAYOUT_STATE: MobileLayoutState = {
+  mode: "desktop",
+  orientation: "landscape",
+  chrome: "wide",
+  breakpoint: "xl",
+  width: 1280,
+  height: 800,
+  isMobile: false,
+  isTablet: false,
+  isDesktop: true,
+  isLandscape: true,
+  isPortrait: false,
+  isCompactChrome: false,
+};
+
+function readMobileLayoutState(): MobileLayoutState {
   const mode = readLayoutModeFromDom();
   const orientation = readLayoutOrientationFromDom();
   const chrome = readLayoutChromeFromDom();
@@ -90,32 +112,39 @@ function readState(): MobileLayoutState {
   };
 }
 
+/** Re-render only on mode/orientation/chrome/breakpoint — not iOS URL-bar pixels. */
+function serializeMobileLayoutState(state: MobileLayoutState): string {
+  return `${state.mode}:${state.orientation}:${state.chrome}:${state.breakpoint}`;
+}
+
+function subscribeMobileLayoutState(onStoreChange: () => void): () => void {
+  let prev = serializeMobileLayoutState(readMobileLayoutState());
+  return subscribeLayoutViewportChanges(() => {
+    const next = serializeMobileLayoutState(readMobileLayoutState());
+    if (next !== prev) {
+      prev = next;
+      onStoreChange();
+    }
+  });
+}
+
+function getMobileLayoutStateSnapshot(): MobileLayoutState {
+  if (typeof document !== "undefined" && isDocumentLayoutBootstrapped()) {
+    return readMobileLayoutState();
+  }
+  return SERVER_LAYOUT_STATE;
+}
+
 /**
  * Unified viewport layout API. Prefer CSS `data-layout-mode` for styling;
  * use this hook only when JS must branch (drawers, conditional trees).
  */
 export function useMobileLayout(): MobileLayoutState {
-  const [state, setState] = useState<MobileLayoutState>(() => ({
-    mode: "desktop" as LayoutMode,
-    orientation: "landscape",
-    chrome: "wide",
-    breakpoint: "xl",
-    width: 1280,
-    height: 800,
-    isMobile: false,
-    isTablet: false,
-    isDesktop: true,
-    isLandscape: true,
-    isPortrait: false,
-    isCompactChrome: false,
-  }));
-
-  useEffect(
-    () => subscribeLayoutViewportChanges(() => setState(readState())),
-    []
+  return useSyncExternalStore(
+    subscribeMobileLayoutState,
+    readMobileLayoutState,
+    getMobileLayoutStateSnapshot
   );
-
-  return state;
 }
 
 export function useIsMobileLayout(): boolean {

@@ -10,13 +10,10 @@ export async function BookingActivitySection({
   bookingId: string;
   checkIn: string;
 }) {
-  const t = await getTranslations("admin.bookingActivity");
-  let entries: ActivityLogEntry[] = [];
-  try {
-    entries = await listBookingActivity(bookingId);
-  } catch {
-    entries = [];
-  }
+  const [t, entries] = await Promise.all([
+    getTranslations("admin.bookingActivity"),
+    listBookingActivity(bookingId).catch(() => [] as ActivityLogEntry[]),
+  ]);
 
   return (
     <section className="bd-activity">

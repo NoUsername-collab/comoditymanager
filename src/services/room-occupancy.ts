@@ -11,6 +11,7 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -38,21 +39,30 @@ function isHoldActive(
   return new Date(row.expires_at).getTime() > asOfMs;
 }
 
+async function resolveOccupancyContext(
+  options: OccupancyQueryOptions
+): Promise<{ ref: string; tenantId: string }> {
+  const [ref, scope] = await Promise.all([
+    options.referenceDate
+      ? Promise.resolve(options.referenceDate)
+      : getEffectiveToday(),
+    options.tenantId
+      ? Promise.resolve({ tenantId: options.tenantId })
+      : options.forPublicCalendar
+        ? getTenantPublicScope()
+        : getTenantScope(),
+  ]);
+  return { ref, tenantId: options.tenantId ?? scope.tenantId };
+}
+
 async function getRoomOccupancyImpl(
   rangeStart: string,
   rangeEnd: string,
   options: OccupancyQueryOptions = {}
 ): Promise<OccupancySegment[]> {
   const kinds = options.kinds ?? ALL_KINDS;
-  const ref = options.referenceDate ?? (await getEffectiveToday());
+  const { ref, tenantId } = await resolveOccupancyContext(options);
   const roomIds = [...new Set((options.roomIds ?? []).filter(Boolean))];
-  let tenantId = options.tenantId;
-  if (!tenantId) {
-    const scope = options.forPublicCalendar
-      ? await getTenantPublicScope()
-      : await getTenantScope();
-    tenantId = scope.tenantId;
-  }
   const supabase = createPublicAdminClient();
   const fetchSegments = async (): Promise<OccupancySegment[]> => {
     if (!kinds.includes("request") && !kinds.includes("stay")) return [];
@@ -119,12 +129,15 @@ async function getRoomOccupancyImpl(
     return segments;
   };
 
-  const fetchHolds = async (): Promise<OccupancySegment[]> => {
-    if (!kinds.includes("hold") || options.forPublicCalendar) return [];
+  const shouldFetchHolds = kinds.includes("hold") && !options.forPublicCalendar;
+  const releaseHoldsPromise = shouldFetchHolds
+    ? releaseExpiredRoomHolds(ref).catch(() => {
+        /* non-fatal */
+      })
+    : Promise.resolve();
 
-    await releaseExpiredRoomHolds(ref).catch(() => {
-      /* non-fatal */
-    });
+  const fetchHoldRows = async (): Promise<OccupancySegment[]> => {
+    if (!shouldFetchHolds) return [];
 
     let holdQ = supabase
       .from("room_holds")
@@ -193,7 +206,7 @@ async function getRoomOccupancyImpl(
 
   const [segmentRows, holdRows, blockRows] = await Promise.all([
     fetchSegments(),
-    fetchHolds(),
+    releaseHoldsPromise.then(() => fetchHoldRows()),
     fetchBlocks(),
   ]);
 
@@ -228,28 +241,21 @@ function occupancyCacheKey(
   ];
 }
 
-/**
- * API unificat occupancy — Gantt, disponibilitate, conflicte.
- * Spec: docs/timeline-spec.md
- */
-export async function getRoomOccupancy(
+const getCachedRoomOccupancy = (
+  tenantId: string,
   rangeStart: string,
   rangeEnd: string,
-  options: OccupancyQueryOptions = {}
-): Promise<OccupancySegment[]> {
-  const ref = options.referenceDate ?? (await getEffectiveToday());
-  const { tenantId } = options.forPublicCalendar
-    ? await getTenantPublicScope()
-    : await getTenantScope();
-  const resolvedOptions = { ...options, referenceDate: ref, tenantId };
-
-  if (options.excludeBookingId) {
-    return getRoomOccupancyImpl(rangeStart, rangeEnd, resolvedOptions);
-  }
-
-  const cached = unstable_cache(
-    () => getRoomOccupancyImpl(rangeStart, rangeEnd, resolvedOptions),
-    occupancyCacheKey(tenantId, rangeStart, rangeEnd, options, ref),
+  options: OccupancyQueryOptions,
+  referenceDate: string
+) =>
+  unstable_cache(
+    () =>
+      getRoomOccupancyImpl(rangeStart, rangeEnd, {
+        ...options,
+        referenceDate,
+        tenantId,
+      }),
+    occupancyCacheKey(tenantId, rangeStart, rangeEnd, options, referenceDate),
     {
       tags: [
         CACHE_TAGS.bookingCounts,
@@ -259,7 +265,42 @@ export async function getRoomOccupancy(
     }
   );
 
-  return cached();
+const loadRoomOccupancy = cache(
+  async (
+    rangeStart: string,
+    rangeEnd: string,
+    options: OccupancyQueryOptions = {}
+  ): Promise<OccupancySegment[]> => {
+    const { ref, tenantId } = await resolveOccupancyContext(options);
+
+    if (options.excludeBookingId) {
+      return getRoomOccupancyImpl(rangeStart, rangeEnd, {
+        ...options,
+        referenceDate: ref,
+        tenantId,
+      });
+    }
+
+    return getCachedRoomOccupancy(
+      tenantId,
+      rangeStart,
+      rangeEnd,
+      options,
+      ref
+    )();
+  }
+);
+
+/**
+ * API unificat occupancy — Gantt, disponibilitate, conflicte.
+ * Spec: docs/timeline-spec.md
+ */
+export async function getRoomOccupancy(
+  rangeStart: string,
+  rangeEnd: string,
+  options: OccupancyQueryOptions = {}
+): Promise<OccupancySegment[]> {
+  return loadRoomOccupancy(rangeStart, rangeEnd, options);
 }
 
 /** Interval larg pentru verificări conflict — exclude opțional un booking. */
@@ -295,18 +336,19 @@ export async function assertRoomsAvailableForOccupancy(
     throw new Error("occupancy.select_at_least_one_room");
   }
 
-  const settings = await getPensionSettings().catch(() => null);
+  const [settings, segments] = await Promise.all([
+    getPensionSettings().catch(() => null),
+    listOccupancyForConflictCheck(excludeBookingId, {
+      rangeStart: checkIn,
+      rangeEnd: checkOut,
+      roomIds: unique,
+      forPublicCalendar: true,
+    }),
+  ]);
   const times = {
     checkIn: settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,
     checkOut: settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,
   };
-
-  const segments = await listOccupancyForConflictCheck(excludeBookingId, {
-    rangeStart: checkIn,
-    rangeEnd: checkOut,
-    roomIds: unique,
-    forPublicCalendar: true,
-  });
   if (
     hasOccupancyConflict(unique, checkIn, checkOut, segments, {
       bookingId: excludeBookingId,
@@ -345,8 +387,10 @@ export async function checkRoomIntervalFree(
   if (!isAtLeastOneNight(checkIn, checkOut)) {
     return { free: false, conflicts: [] };
   }
-  const segments = await getRoomOccupancy(checkIn, checkOut, { roomIds: [roomId] });
-  const settings = await getPensionSettings().catch(() => null);
+  const [segments, settings] = await Promise.all([
+    getRoomOccupancy(checkIn, checkOut, { roomIds: [roomId] }),
+    getPensionSettings().catch(() => null),
+  ]);
   const times = {
     checkIn: settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,
     checkOut: settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME,

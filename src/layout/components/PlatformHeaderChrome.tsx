@@ -33,7 +33,7 @@ export function PlatformHeaderChrome({ labels }: { labels: PlatformHeaderLabels 
         <Link href="/signup" className="platform-header__cta">
           {labels.signup}
         </Link>
-        <HeaderLocaleSwitch slot="nav" />
+        <HeaderLocaleSwitch slot="nav" suppressHydrationWarning />
       </nav>
     </div>
   );

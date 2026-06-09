@@ -7,6 +7,7 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+import { cache } from "react";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -33,9 +34,7 @@ export type InviteMemberInput = {
 };
 
 // ─── List all members of a tenant ──────────────────────────────────
-export async function listTenantMembers(
-  tenantId: string
-): Promise<TenantMember[]> {
+const loadTenantMembers = cache(async (tenantId: string): Promise<TenantMember[]> => {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_members")
@@ -46,6 +45,12 @@ export async function listTenantMembers(
 
   if (error) throw new Error(error.message);
   return (data ?? []) as TenantMember[];
+});
+
+export async function listTenantMembers(
+  tenantId: string
+): Promise<TenantMember[]> {
+  return loadTenantMembers(tenantId);
 }
 
 // ─── List only active members ──────────────────────────────────────
@@ -74,7 +79,7 @@ export async function getTenantMemberByEmail(
 }
 
 // ─── Get a member's role by user_id ────────────────────────────────
-export async function getTenantMemberRole(
+async function getTenantMemberRoleImpl(
   tenantId: string,
   userId: string
 ): Promise<TenantMemberRole | null> {
@@ -90,6 +95,8 @@ export async function getTenantMemberRole(
   if (!data.is_active) return null;
   return data.role as TenantMemberRole;
 }
+
+export const getTenantMemberRole = cache(getTenantMemberRoleImpl);
 
 // ─── Invite a new staff member ─────────────────────────────────────
 export async function inviteTenantMember(

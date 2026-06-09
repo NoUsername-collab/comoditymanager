@@ -26,7 +26,7 @@ export function TenantLogFilter({
     <select
       value={current}
       onChange={handleChange}
-      className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-200 focus:border-sky-600 focus:outline-none"
+      className="hospira-log-filter min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 focus:border-sky-600 focus:outline-none"
     >
       <option value="">Toți tenanții</option>
       {tenants.map((t) => (

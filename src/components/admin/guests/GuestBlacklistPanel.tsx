@@ -73,7 +73,7 @@ export function GuestBlacklistPanel({
         onClick={() => setOpen(true)}
         disabled={pending}
         className={[
-          "rounded px-4 py-2 text-sm font-bold transition disabled:opacity-60",
+          "guest-blacklist-panel__trigger rounded px-4 py-2 text-sm font-bold transition disabled:opacity-60",
           compact && "text-[13px]",
         ]
           .filter(Boolean)
@@ -117,13 +117,13 @@ export function GuestBlacklistPanel({
             />
           </label>
 
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="guest-blacklist-modal__actions flex flex-wrap justify-end gap-2">
             {isBlacklisted && (
               <button
                 type="button"
                 onClick={() => void submitBlacklist("normal")}
                 disabled={pending}
-                className="rounded px-4 py-2 text-sm font-medium transition disabled:opacity-60"
+                className="guest-blacklist-modal__btn guest-blacklist-modal__btn--neutral rounded px-4 py-2 text-sm font-medium transition disabled:opacity-60"
                 style={neutralButtonStyle}
               >
                 {pending ? tGuests("blacklist.processing") : tGuests("blacklist.remove")}
@@ -132,7 +132,7 @@ export function GuestBlacklistPanel({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded px-4 py-2 text-sm font-medium transition"
+              className="guest-blacklist-modal__btn guest-blacklist-modal__btn--neutral rounded px-4 py-2 text-sm font-medium transition"
               style={neutralButtonStyle}
             >
               {tCommon("cancel")}
@@ -141,7 +141,7 @@ export function GuestBlacklistPanel({
               type="button"
               onClick={() => void submitBlacklist("blacklist")}
               disabled={pending || !reason.trim()}
-              className="rounded px-4 py-2 text-sm font-bold transition disabled:opacity-60"
+              className="guest-blacklist-modal__btn guest-blacklist-modal__btn--danger rounded px-4 py-2 text-sm font-bold transition disabled:opacity-60"
               style={dangerButtonStyle}
             >
               {pending

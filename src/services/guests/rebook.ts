@@ -40,6 +40,8 @@ import {
 
 import { getGuestBaseById } from "./lookup";
 import { assertRoomsAvailableForStay } from "@/services/bookings/availability";
+import { getLatestBookingForGuest } from "@/services/bookings";
+import { getRoomsByIds } from "@/services/rooms-admin";
 
 async function estimateTotalForRooms(
   checkIn: string,
@@ -47,43 +49,35 @@ async function estimateTotalForRooms(
   roomIds: string[]
 ): Promise<number | null> {
   if (roomIds.length === 0) return null;
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("rooms")
-    .select("price_per_night")
-    .eq("tenant_id", tenantId)
-    .in("id", roomIds);
-  if (error) throw new Error(error.message);
+  const rooms = await getRoomsByIds(roomIds);
   const nights = stayNightCount(checkIn, checkOut);
-  const raw = (data ?? []).reduce(
+  const raw = rooms.reduce(
     (sum, r) => sum + Number(r.price_per_night) * nights,
     0
   );
   return Math.round(raw * 100) / 100;
 }
 
-async function getLastGuestBooking(guestId: string) {
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("bookings")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .eq("guest_id", guestId)
-    .neq("status", "anulata")
-    .order("check_out", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) return null;
-  const { getBookingById } = await import("@/services/bookings");
-  return getBookingById(data.id);
+async function validateRebookRoomsAndEstimateTotal(
+  checkIn: string,
+  checkOut: string,
+  roomIds: string[]
+): Promise<number | null> {
+  const [, total] = await Promise.all([
+    roomIds.length > 0
+      ? assertRoomsAvailableForStay(checkIn, checkOut, roomIds)
+      : Promise.resolve(),
+    estimateTotalForRooms(checkIn, checkOut, roomIds),
+  ]);
+  return total;
 }
 
 export async function rebookGuestLastStay(guestId: string): Promise<string> {
-  const guest = await getGuestBaseById(guestId);
+  const [guest, last] = await Promise.all([
+    getGuestBaseById(guestId),
+    getLatestBookingForGuest(guestId),
+  ]);
   if (!guest) throw new Error("guest.not_found");
-
-  const last = await getLastGuestBooking(guestId);
   if (!last) {
     throw new Error("guest.no_previous_stay_for_rebook");
   }
@@ -91,15 +85,7 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
   const shifted = shiftStayToNextFutureYear(last.check_in, last.check_out);
   const roomIds = last.room_ids;
 
-  if (roomIds.length > 0) {
-    await assertRoomsAvailableForStay(
-      shifted.check_in,
-      shifted.check_out,
-      roomIds
-    );
-  }
-
-  const total = await estimateTotalForRooms(
+  const total = await validateRebookRoomsAndEstimateTotal(
     shifted.check_in,
     shifted.check_out,
     roomIds
@@ -142,10 +128,11 @@ export async function rebookGuestLastStay(guestId: string): Promise<string> {
 export async function rebookGuestSamePeriodNextYear(
   guestId: string
 ): Promise<string> {
-  const guest = await getGuestBaseById(guestId);
+  const [guest, last] = await Promise.all([
+    getGuestBaseById(guestId),
+    getLatestBookingForGuest(guestId),
+  ]);
   if (!guest) throw new Error("guest.not_found");
-
-  const last = await getLastGuestBooking(guestId);
   if (!last) {
     throw new Error("guest.no_previous_stay_for_rebook");
   }
@@ -153,15 +140,7 @@ export async function rebookGuestSamePeriodNextYear(
   const shifted = shiftStayDatesByYears(last.check_in, last.check_out, 1);
   const roomIds = last.room_ids;
 
-  if (roomIds.length > 0) {
-    await assertRoomsAvailableForStay(
-      shifted.check_in,
-      shifted.check_out,
-      roomIds
-    );
-  }
-
-  const total = await estimateTotalForRooms(
+  const total = await validateRebookRoomsAndEstimateTotal(
     shifted.check_in,
     shifted.check_out,
     roomIds

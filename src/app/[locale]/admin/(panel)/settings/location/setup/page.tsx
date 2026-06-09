@@ -6,28 +6,45 @@ import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 export default async function LocationSetupPage() {
-  const tPage = await getTranslations("admin.pages.settingsLocation");
-  const tCommon = await getTranslations("admin.common");
-  await requireLocationAdmin();
+  const [tPage, tCommon, catalogResult] = await Promise.all([
+    getTranslations("admin.pages.settingsLocation"),
+    getTranslations("admin.common"),
+    Promise.all([
+      requireLocationAdmin(),
+      listRoomTypes(true),
+      listRoomOptions(true),
+    ])
+      .then(([, types, options]) => ({
+        ok: true as const,
+        catalogTypes: types,
+        catalogOptions: options,
+      }))
+      .catch((e) => ({
+        ok: false as const,
+        error: e instanceof Error ? e.message : "catalogUnavailable",
+      })),
+  ]);
 
   let catalogError: string | null = null;
   let catalogTypes: Awaited<ReturnType<typeof listRoomTypes>> = [];
   let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
-
-  try {
-    catalogTypes = await listRoomTypes(true);
-    catalogOptions = await listRoomOptions(true);
-  } catch (e) {
-    catalogError = e instanceof Error ? e.message : tPage("catalogUnavailable");
+  if (catalogResult.ok) {
+    catalogTypes = catalogResult.catalogTypes;
+    catalogOptions = catalogResult.catalogOptions;
+  } else {
+    catalogError =
+      catalogResult.error === "catalogUnavailable"
+        ? tPage("catalogUnavailable")
+        : catalogResult.error;
   }
 
   return (
     <AdminRetroPageFrame
       title={tPage("setup.title")}
-      className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="admin-settings-page w-full max-w-none"
       description={tPage("setup.description")}
     >
-      <div className="mb-6">
+      <div className="mb-4">
         <Link
           href="/admin/settings/location"
           className="text-sm text-zinc-600 underline hover:text-zinc-900"
@@ -36,10 +53,10 @@ export default async function LocationSetupPage() {
         </Link>
       </div>
 
-      <div className="mb-8 grid gap-3 md:grid-cols-2">
+      <div className="mb-4 grid gap-2 md:grid-cols-2">
         <Link
           href="/admin/settings/location/structure"
-          className="rounded-xl border-2 border-zinc-900 bg-zinc-900 px-4 py-4 text-white shadow-sm hover:bg-zinc-800"
+          className="rounded-xl border-2 border-zinc-900 bg-zinc-900 px-3 py-3 text-white shadow-sm hover:bg-zinc-800"
         >
           <span className="block text-sm font-semibold">
             {tPage("structure.cardStructureTitle")}
@@ -50,7 +67,7 @@ export default async function LocationSetupPage() {
         </Link>
         <Link
           href="/admin/rooms/new?return_to=structure"
-          className="rounded-xl border border-zinc-300 bg-white px-4 py-4 hover:bg-zinc-50"
+          className="rounded-xl border border-zinc-300 bg-white px-3 py-3 hover:bg-zinc-50"
         >
           <span className="block text-sm font-semibold text-zinc-900">
             {tPage("setup.addRoomsTitle")}
@@ -61,7 +78,7 @@ export default async function LocationSetupPage() {
         </Link>
       </div>
 
-      <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+      <section className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
         <h2 className="text-lg font-bold text-zinc-900">{tCommon("modularCatalog")}</h2>
         <p className="mt-1 text-sm text-zinc-600">{tPage("catalog.subtitle")}</p>
         <div className="mt-4">

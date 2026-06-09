@@ -50,13 +50,13 @@ export function FloorStructureSection({
   return (
     <section
       className={[
-        "rounded-xl border p-3",
+        "floor-structure-section rounded-xl border p-3",
         floor.duplicateName
           ? "border-amber-300 bg-amber-50/60"
           : "border-zinc-200/90 bg-zinc-50/40",
       ].join(" ")}
     >
-      <div className="mb-2 flex flex-wrap items-start justify-between gap-2">
+      <div className="floor-structure-section__head mb-2 flex flex-wrap items-start justify-between gap-2">
         <div>
           <h3 className="text-sm font-bold text-zinc-800">{floor.name}</h3>
           {floor.duplicateName && (
@@ -65,11 +65,11 @@ export function FloorStructureSection({
             </p>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="floor-structure-section__actions flex flex-wrap items-center gap-2">
           <AdminTextActionButton
             type="button"
             variant="neutral"
-            className="text-xs"
+            className="floor-structure-section__action text-xs"
             onClick={() => setEditing((v) => !v)}
           >
             {editing ? tCommon("cancel") : tCommon("edit")}
@@ -77,7 +77,7 @@ export function FloorStructureSection({
           <AdminTextActionLink
             href={`/admin/rooms/new?building=${buildingId}&floor=${floor.id}&return_to=structure`}
             variant="neutral"
-            className="text-xs"
+            className="floor-structure-section__action text-xs"
           >
             + {t("addRoomOnFloor")}
           </AdminTextActionLink>
@@ -100,7 +100,7 @@ export function FloorStructureSection({
             </p>
           )}
           <form
-            className="flex flex-wrap items-end gap-2"
+            className="floor-structure-section__edit-form flex flex-wrap items-end gap-2"
             action={(formData) => runAdminAction(() => dispatch(formData))}
           >
             <input type="hidden" name="floor_id" value={floor.id} />

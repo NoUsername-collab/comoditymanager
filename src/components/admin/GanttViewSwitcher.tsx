@@ -69,12 +69,12 @@ export function GanttViewSwitcher({
     : rooms;
 
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50/80 px-3 py-2.5">
+    <div className="gantt-view-switcher flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50/80 px-3 py-2.5">
       <span className="text-xs font-medium uppercase tracking-wide text-zinc-500">
         Vizualizare
       </span>
 
-      <div className="flex flex-wrap gap-1">
+      <div className="gantt-view-switcher__tabs flex flex-wrap gap-1">
         <button
           type="button"
           className={tabClass(view === "all")}
@@ -114,7 +114,7 @@ export function GanttViewSwitcher({
         <select
           value={buildingId || buildings[0]?.id || ""}
           onChange={(e) => go({ view: "building", building: e.target.value })}
-          className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800"
+          className="gantt-view-switcher__select rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800"
         >
           {buildings.map((b) => (
             <option key={b.id} value={b.id}>
@@ -128,7 +128,7 @@ export function GanttViewSwitcher({
         <select
           value={roomId || rooms[0]?.id || ""}
           onChange={(e) => go({ view: "room", room: e.target.value })}
-          className="max-w-xs rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800"
+          className="gantt-view-switcher__select max-w-xs rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800"
         >
           {buildings.map((b) => {
             const group = rooms.filter((r) => r.building_id === b.id);

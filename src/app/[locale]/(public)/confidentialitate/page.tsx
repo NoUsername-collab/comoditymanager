@@ -3,9 +3,11 @@ import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 export default async function ConfidentialitatePage() {
-  const t = await getTranslations("public.privacy");
-  const tShell = await getTranslations("public.shell");
-  const tFooter = await getTranslations("public.footer");
+  const [t, tShell, tFooter] = await Promise.all([
+    getTranslations("public.privacy"),
+    getTranslations("public.shell"),
+    getTranslations("public.footer"),
+  ]);
 
   const rich = {
     email: (chunks: ReactNode) => (

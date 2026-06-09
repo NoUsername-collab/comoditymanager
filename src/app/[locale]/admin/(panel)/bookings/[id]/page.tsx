@@ -45,14 +45,49 @@ export default async function BookingDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ return_to?: string }>;
 }) {
-  const tPage = await getTranslations("admin.pages.bookingDetail");
-  const tCommon = await getTranslations("admin.common");
-  const tFlow = await getTranslations("booking.flowStatus");
-  const tStay = await getTranslations("admin.stayEditor");
-  const { id } = await params;
-  const sp = await searchParams;
+  const ctxPromise = params.then(({ id }) =>
+    loadBookingConfirmContext(id).catch(() => null)
+  );
+  const checkinSettingsPromise = getCheckinSettings().catch(() => null);
+  const bookingExtrasPromise = ctxPromise.then((ctx) => {
+    if (!ctx) {
+      return {
+        dedupCandidates: [] as Awaited<ReturnType<typeof findDedupCandidates>>,
+        existingCheckin: null as Awaited<
+          ReturnType<typeof getCheckinByBookingId>
+        >,
+      };
+    }
+    const { booking } = ctx;
+    return Promise.all([
+      findDedupCandidates(
+        dedupInputFromBooking({
+          guestLastName: booking.guest_last_name ?? "",
+          guestFirstName: booking.guest_first_name ?? "",
+          guestEmail: booking.guest_email,
+          guestPhone: booking.guest_phone ?? "",
+          excludeGuestId: booking.guest_id ?? undefined,
+        })
+      ).catch(() => []),
+      getCheckinByBookingId(booking.id).catch(() => null),
+    ]).then(([dedupCandidates, existingCheckin]) => ({
+      dedupCandidates,
+      existingCheckin,
+    }));
+  });
+
+  const [tPage, tCommon, tFlow, tStay, sp, ctx, bookingExtras, checkinSettings] =
+    await Promise.all([
+      getTranslations("admin.pages.bookingDetail"),
+      getTranslations("admin.common"),
+      getTranslations("booking.flowStatus"),
+      getTranslations("admin.stayEditor"),
+      searchParams,
+      ctxPromise,
+      bookingExtrasPromise,
+      checkinSettingsPromise,
+    ]);
   const returnTo = safeReturnTo(sp.return_to);
-  const ctx = await loadBookingConfirmContext(id).catch(() => null);
   if (!ctx) notFound();
 
   const {
@@ -65,21 +100,7 @@ export default async function BookingDetailPage({
     canFulfill,
   } = ctx;
 
-  const dedupCandidates = await findDedupCandidates(
-    dedupInputFromBooking({
-      guestLastName: booking.guest_last_name ?? "",
-      guestFirstName: booking.guest_first_name ?? "",
-      guestEmail: booking.guest_email,
-      guestPhone: booking.guest_phone ?? "",
-      excludeGuestId: booking.guest_id ?? undefined,
-    })
-  ).catch(() => []);
-
-  // Check-in state
-  const [existingCheckin, checkinSettings] = await Promise.all([
-    getCheckinByBookingId(booking.id).catch(() => null),
-    getCheckinSettings().catch(() => null),
-  ]);
+  const { dedupCandidates, existingCheckin } = bookingExtras;
 
   const bookingForCheckin: BookingForCheckin = {
     id: booking.id,

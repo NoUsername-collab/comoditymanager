@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { listBuildings } from "@/services/buildings";
+import { getBuildingDefaultPrice } from "@/services/buildings";
 import { parseSelectedOptionIds } from "@/services/room-catalog";
 import { updateRoom } from "@/services/rooms-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
@@ -42,8 +42,9 @@ export async function updateRoomAction(formData: FormData) {
     throw new Error(t("roomUpdateIncomplete"));
   }
 
-  const buildings = await listBuildings();
-  const b = buildings.find((x) => x.id === building_id);
+  const building_default_price = await getBuildingDefaultPrice(building_id).catch(
+    () => 0
+  );
 
   await updateRoom(id, {
     building_id,
@@ -57,7 +58,7 @@ export async function updateRoomAction(formData: FormData) {
     price_per_night,
     sort_order,
     is_active,
-    building_default_price: b?.default_price_per_night ?? 0,
+    building_default_price,
   });
 
   await logAdminActivityFromSession({

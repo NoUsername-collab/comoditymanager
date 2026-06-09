@@ -87,20 +87,24 @@ export async function bookingHasSplitSegments(bookingId: string): Promise<boolea
   if (segments.length <= 1) return false;
 
   const { tenantId, supabase } = await getTenantScope();
-  const { data: booking, error: bErr } = await supabase
-    .from("bookings")
-    .select("check_in, check_out")
-    .eq("tenant_id", tenantId)
-    .eq("id", bookingId)
-    .maybeSingle();
+  const [
+    { data: booking, error: bErr },
+    { count, error },
+  ] = await Promise.all([
+    supabase
+      .from("bookings")
+      .select("check_in, check_out")
+      .eq("tenant_id", tenantId)
+      .eq("id", bookingId)
+      .maybeSingle(),
+    supabase
+      .from("booking_rooms")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .eq("booking_id", bookingId),
+  ]);
   if (bErr) throw new Error(bErr.message);
   if (!booking) return false;
-
-  const { count, error } = await supabase
-    .from("booking_rooms")
-    .select("id", { count: "exact", head: true })
-    .eq("tenant_id", tenantId)
-    .eq("booking_id", bookingId);
   if (error) throw new Error(error.message);
 
   if (segments.length > (count ?? 0)) return true;

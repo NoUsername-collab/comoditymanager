@@ -63,6 +63,7 @@ export function AdminLocationLockButton() {
 
   return (
     <form
+      className="admin-location-lock-form"
       action={async () => {
         setPending(true);
         try {
@@ -75,7 +76,7 @@ export function AdminLocationLockButton() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px active:bg-zinc-100 disabled:opacity-60"
+        className="admin-location-lock-btn rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px active:bg-zinc-100 disabled:opacity-60"
       >
         {pending ? tPage("closing") : tPage("closeLocationAdmin")}
       </button>

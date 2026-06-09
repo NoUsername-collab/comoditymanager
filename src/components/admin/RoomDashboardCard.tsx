@@ -22,7 +22,7 @@ export function RoomDashboardCard({ room }: { room: RoomDashboard }) {
   return (
     <article
       className={[
-        "overflow-hidden rounded-2xl border shadow-sm",
+        "room-dashboard-card overflow-hidden rounded-xl border shadow-sm",
         theme.border,
       ].join(" ")}
     >

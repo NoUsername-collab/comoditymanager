@@ -1,6 +1,7 @@
 import "@/app/admin/admin-devlog.css";
 import { listDevLogs, type DevLogLevel } from "@/services/dev-logs";
 import { DevLogFilters } from "@/components/admin/devlog/DevLogFilters";
+import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { getTranslations } from "next-intl/server";
 
 const LEVEL_STYLES: Record<DevLogLevel, { bg: string; text: string; border: string }> = {
@@ -26,25 +27,39 @@ export default async function DevLogPage({
 }: {
   searchParams: Promise<{ level?: string; source?: string; page?: string }>;
 }) {
-  const t = await getTranslations("admin.devlog");
-  const raw = await searchParams;
+  const pageSize = 50;
+
+  const [t, raw, logsResult] = await Promise.all([
+    getTranslations("admin.devlog"),
+    searchParams,
+    searchParams.then((sp) => {
+      const level = (sp.level as DevLogLevel) || undefined;
+      const source = sp.source || undefined;
+      const page = Math.max(1, Number(sp.page) || 1);
+      return listDevLogs({
+        level,
+        source,
+        limit: pageSize,
+        offset: (page - 1) * pageSize,
+      })
+        .then((logs) => ({ ok: true as const, logs }))
+        .catch((e) => ({ ok: false as const, error: e }));
+    }),
+  ]);
+
   const level = (raw.level as DevLogLevel) || undefined;
   const source = raw.source || undefined;
   const page = Math.max(1, Number(raw.page) || 1);
-  const pageSize = 50;
 
   let logs: Awaited<ReturnType<typeof listDevLogs>> = { logs: [], total: 0 };
   let error: string | null = null;
-
-  try {
-    logs = await listDevLogs({
-      level,
-      source,
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
-    });
-  } catch (e) {
-    error = e instanceof Error ? e.message : "Failed to load logs";
+  if (logsResult.ok) {
+    logs = logsResult.logs;
+  } else {
+    error =
+      logsResult.error instanceof Error
+        ? logsResult.error.message
+        : "Failed to load logs";
   }
 
   const totalPages = Math.ceil(logs.total / pageSize);
@@ -64,7 +79,11 @@ export default async function DevLogPage({
 
       <div className="devlog-list">
         {logs.logs.length === 0 ? (
-          <p className="devlog-empty">Niciun log găsit.</p>
+          <AdminEmptyState
+            emoji="📋"
+            title="Niciun log găsit"
+            description="Nu există intrări pentru filtrele curente."
+          />
         ) : (
           logs.logs.map((log) => {
             const style = LEVEL_STYLES[log.level];

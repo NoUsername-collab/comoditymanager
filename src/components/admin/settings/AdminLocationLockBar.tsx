@@ -24,8 +24,8 @@ export async function AdminLocationLockBar() {
   });
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <span className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900">
+    <div className="admin-location-lock-bar flex flex-wrap items-center gap-3">
+      <span className="admin-location-lock-bar__badge rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900">
         {t("sessionActive", { time: expiresAt })}
       </span>
       <AdminLocationLockButton />

@@ -20,7 +20,7 @@ export function TenantImpersonateLink({ slug }: { slug: string }) {
         href={tenantUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 transition-colors hover:border-neutral-600 hover:bg-neutral-700"
+        className="hospira-impersonate-link inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center gap-2 rounded-md border border-neutral-700 bg-neutral-800 px-4 py-2 text-sm text-neutral-200 transition-colors hover:border-neutral-600 hover:bg-neutral-700"
       >
         Deschide {slug} →
       </a>

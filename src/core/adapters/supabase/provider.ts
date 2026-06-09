@@ -49,10 +49,9 @@ export function createSupabaseProvider(): IDataProvider & { mode: DeploymentMode
         }
       },
       async getById(id) {
-        const { listBuildings } = await import("@/services/buildings");
+        const { getBuildingById } = await import("@/services/buildings");
         try {
-          const all = await listBuildings();
-          const raw = all.find((b) => b.id === id);
+          const raw = await getBuildingById(id);
           if (!raw) return { data: null, error: null };
           return {
             data: { ...raw, default_price_per_night: raw.default_price_per_night ?? 0 },

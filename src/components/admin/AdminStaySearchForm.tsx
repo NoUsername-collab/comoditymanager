@@ -33,7 +33,7 @@ export function AdminStaySearchForm({
 
   return (
     <form
-      className="flex flex-wrap gap-2"
+      className="cazari-search-form flex flex-wrap gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
@@ -48,7 +48,7 @@ export function AdminStaySearchForm({
         type="search"
         defaultValue={defaultQuery ?? ""}
         placeholder={t("searchStay")}
-        className="min-w-[260px] flex-1 border border-zinc-300 px-3 py-2 text-sm"
+        className="min-w-0 w-full flex-1 border border-zinc-300 px-3 py-2 text-base sm:text-sm"
         disabled={pending}
       />
       <button

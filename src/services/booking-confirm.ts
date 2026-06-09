@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
@@ -9,7 +10,11 @@ import {
   roomMaxCapacity,
 } from "@/domain/availability/stay-capacity";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
-import { getBookingById, listOccupiedRoomRanges } from "@/services/bookings";
+import {
+  getBookingById,
+  getBookingStayParams,
+  listOccupiedRoomRanges,
+} from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { listAllRooms } from "@/services/rooms-admin";
 
@@ -81,34 +86,41 @@ export type StayRoomsAvailability = {
   canFulfill: boolean;
 };
 
-/** Camere libere pentru un interval (fără rezervare existentă). */
-export async function loadAvailableRoomsForStay(input: {
-  checkIn: string;
-  checkOut: string;
-  guestCount: number;
-  excludeBookingId?: string;
-}): Promise<StayRoomsAvailability> {
-  const settings = await getPensionSettings().catch(() => null);
+const loadAvailableRoomsForStayCached = cache(async (
+  checkIn: string,
+  checkOut: string,
+  guestCount: number,
+  excludeBookingId: string | undefined
+): Promise<StayRoomsAvailability> => {
+  const roomsPromise = listAllRooms();
+  const [settings, occupied, allRooms, optionSlugsByRoom] = await Promise.all([
+    getPensionSettings().catch(() => null),
+    listOccupiedRoomRanges(excludeBookingId, {
+      rangeStart: checkIn,
+      rangeEnd: checkOut,
+    }),
+    roomsPromise,
+    roomsPromise
+      .then((rooms) =>
+        getRoomOptionSlugsByRoomIds(
+          rooms.filter((r) => r.is_active).map((r) => r.id)
+        )
+      )
+      .catch(() => ({} as Record<string, string[]>)),
+  ]);
   const checkInTime =
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
   const checkOutTime =
     settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
-  const occupied = await listOccupiedRoomRanges(input.excludeBookingId, {
-    rangeStart: input.checkIn,
-    rangeEnd: input.checkOut,
-  });
-  const activeRooms = (await listAllRooms()).filter((r) => r.is_active);
-  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
-    activeRooms.map((r) => r.id)
-  ).catch(() => ({} as Record<string, string[]>));
+  const activeRooms = allRooms.filter((r) => r.is_active);
 
   const availableRooms: ConfirmRoomOption[] = activeRooms
     .filter((r) =>
       isRoomFreeForStay(
         r.id,
-        input.checkIn,
-        input.checkOut,
+        checkIn,
+        checkOut,
         occupied,
         checkInTime,
         checkOutTime
@@ -129,33 +141,56 @@ export async function loadAvailableRoomsForStay(input: {
     }));
 
   const { possible, minRooms } = minRoomsToHostGuests(
-    input.guestCount,
+    guestCount,
     availableRooms
   );
 
   return {
     checkInTime,
     checkOutTime,
-    guestCount: input.guestCount,
+    guestCount,
     availableRooms,
     minRoomsNeeded: minRooms,
     canFulfill: possible,
   };
+});
+
+/** Camere libere pentru un interval (fără rezervare existentă). */
+export async function loadAvailableRoomsForStay(input: {
+  checkIn: string;
+  checkOut: string;
+  guestCount: number;
+  excludeBookingId?: string;
+}): Promise<StayRoomsAvailability> {
+  return loadAvailableRoomsForStayCached(
+    input.checkIn,
+    input.checkOut,
+    input.guestCount,
+    input.excludeBookingId
+  );
 }
 
-export async function loadBookingConfirmContext(
+const loadBookingConfirmContextCached = cache(async (
   bookingId: string
-): Promise<BookingConfirmContext | null> {
-  const booking = await getBookingById(bookingId);
-  if (!booking) return null;
+): Promise<BookingConfirmContext | null> => {
+  const paramsPromise = getBookingStayParams(bookingId);
+  const roomsPromise = paramsPromise.then((params) =>
+    params
+      ? loadAvailableRoomsForStayCached(
+          params.check_in,
+          params.check_out,
+          params.num_adults + params.num_children,
+          bookingId
+        )
+      : null
+  );
+  const [booking, rooms] = await Promise.all([
+    getBookingById(bookingId),
+    roomsPromise,
+  ]);
+  if (!booking || !rooms) return null;
 
   const guestCount = booking.num_adults + booking.num_children;
-  const rooms = await loadAvailableRoomsForStay({
-    checkIn: booking.check_in,
-    checkOut: booking.check_out,
-    guestCount,
-    excludeBookingId: bookingId,
-  });
 
   return {
     booking,
@@ -166,6 +201,12 @@ export async function loadBookingConfirmContext(
     minRoomsNeeded: rooms.minRoomsNeeded,
     canFulfill: rooms.canFulfill,
   };
+});
+
+export async function loadBookingConfirmContext(
+  bookingId: string
+): Promise<BookingConfirmContext | null> {
+  return loadBookingConfirmContextCached(bookingId);
 }
 
 /** Verifică înainte de confirmare: camere libere + capacitate pentru oaspeți. */

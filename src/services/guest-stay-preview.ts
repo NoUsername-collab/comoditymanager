@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { computeGuestStayOptions } from "@/domain/availability/guest-stay-options";
 import type { GuestStayPreview } from "@/domain/availability/guest-stay-options";
 import { listOccupiedRoomRanges } from "@/services/bookings";
@@ -8,12 +9,12 @@ import {
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 
-export async function loadGuestStayPreview(
+export const loadGuestStayPreview = cache(async (
   checkIn: string,
   checkOut: string,
   numAdults: number,
   numChildren: number
-): Promise<GuestStayPreview> {
+): Promise<GuestStayPreview> => {
   const guestCount = Math.max(1, numAdults + numChildren);
 
   const [roomsRaw, occupied, settings] = await Promise.all([
@@ -52,4 +53,4 @@ export async function loadGuestStayPreview(
     guestCount,
     { checkIn: checkInTime, checkOut: checkOutTime }
   );
-}
+});

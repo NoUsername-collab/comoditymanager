@@ -1,6 +1,7 @@
+import { cache } from "react";
 import {
   countCereriNoi,
-  listCereriNoi,
+  listCereriNoiPreview,
   type BookingRow,
 } from "@/services/bookings";
 import {
@@ -63,10 +64,42 @@ function todayLabelForLocale(locale: string): string {
   });
 }
 
-export async function loadAdminDashboard(): Promise<AdminDashboardData> {
-  const locale = await getLocale();
-  const tDash = await getTranslations("admin.dashboard");
-  const tCommon = await getTranslations("admin.common");
+async function resolveDashboardPensionName(
+  settings: Awaited<ReturnType<typeof getPensionSettings>>
+): Promise<string> {
+  if (settings?.display_name?.trim()) {
+    return settings.display_name.trim();
+  }
+  const tenantId = await resolveTenantIdForData();
+  return getTenantDisplayName(tenantId);
+}
+
+async function loadTodayBoardForSettings(
+  settings: Awaited<ReturnType<typeof getPensionSettings>>
+): Promise<TodayBoard | null> {
+  return loadTodayBoard(
+    settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME,
+    settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME
+  ).catch(() => null);
+}
+
+async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
+  const pensionPromise = getPensionSettings().catch(() => null);
+
+  const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName] =
+    await Promise.all([
+      getLocale(),
+      getTranslations("admin.dashboard"),
+      getTranslations("admin.common"),
+      pensionPromise,
+      countCereriNoi(),
+      listCereriNoiPreview(5),
+      listBuildingDashboards(),
+      pensionPromise.then(loadTodayBoardForSettings),
+      loadMonthComparison().catch(() => null),
+      countConfirmedStays().catch(() => 0),
+      pensionPromise.then(resolveDashboardPensionName),
+    ]);
 
   const pensionFallback = platformPensionNameFallback();
 
@@ -95,21 +128,10 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   };
 
   try {
-    const settings = await getPensionSettings().catch(() => null);
     const checkInTime =
       settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
     const checkOutTime =
       settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
-
-    const [cereriCount, cereriAll, buildings, todayBoard, monthCompare, totalConfirmed] =
-      await Promise.all([
-        countCereriNoi(),
-        listCereriNoi(),
-        listBuildingDashboards(),
-        loadTodayBoard(checkInTime, checkOutTime).catch(() => null),
-        loadMonthComparison().catch(() => null),
-        countConfirmedStays().catch(() => 0),
-      ]);
 
     let activeRooms = 0;
     let freeTonight = 0;
@@ -142,16 +164,13 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
       weekOccupancyPct,
     };
 
-    const tenantId = await resolveTenantIdForData();
-
     return {
-      pensionName:
-        settings?.display_name ?? (await getTenantDisplayName(tenantId)),
+      pensionName,
       todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,
       cereriCount,
-      cereriPreview: cereriAll.slice(0, 5),
+      cereriPreview,
       stats,
       buildings,
       todayBoard,
@@ -174,10 +193,23 @@ export async function loadAdminDashboard(): Promise<AdminDashboardData> {
   }
 }
 
+export const loadAdminDashboard = cache(loadAdminDashboardImpl);
+
 /** Public home staff strip — skips month compare, milestones, mood copy. */
-export async function loadStaffPublicPreview(): Promise<AdminDashboardData> {
-  const locale = await getLocale();
-  const tCommon = await getTranslations("admin.common");
+async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
+  const pensionPromise = getPensionSettings().catch(() => null);
+
+  const [locale, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, pensionName] =
+    await Promise.all([
+      getLocale(),
+      getTranslations("admin.common"),
+      pensionPromise,
+      countCereriNoi(),
+      listCereriNoiPreview(5),
+      listBuildingDashboards(),
+      pensionPromise.then(loadTodayBoardForSettings),
+      pensionPromise.then(resolveDashboardPensionName),
+    ]);
   const pensionFallback = platformPensionNameFallback();
 
   const fallback: AdminDashboardData = {
@@ -205,18 +237,10 @@ export async function loadStaffPublicPreview(): Promise<AdminDashboardData> {
   };
 
   try {
-    const settings = await getPensionSettings().catch(() => null);
     const checkInTime =
       settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
     const checkOutTime =
       settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
-
-    const [cereriCount, cereriAll, buildings, todayBoard] = await Promise.all([
-      countCereriNoi(),
-      listCereriNoi(),
-      listBuildingDashboards(),
-      loadTodayBoard(checkInTime, checkOutTime).catch(() => null),
-    ]);
 
     let activeRooms = 0;
     let freeTonight = 0;
@@ -240,16 +264,13 @@ export async function loadStaffPublicPreview(): Promise<AdminDashboardData> {
     const weekOccupancyPct =
       weekTotal > 0 ? Math.round((weekOccupied / weekTotal) * 100) : 0;
 
-    const tenantId = await resolveTenantIdForData();
-
     return {
-      pensionName:
-        settings?.display_name ?? (await getTenantDisplayName(tenantId)),
+      pensionName,
       todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,
       cereriCount,
-      cereriPreview: cereriAll.slice(0, 5),
+      cereriPreview,
       stats: {
         buildingsCount: buildings.length,
         activeRooms,
@@ -273,3 +294,5 @@ export async function loadStaffPublicPreview(): Promise<AdminDashboardData> {
     };
   }
 }
+
+export const loadStaffPublicPreview = cache(loadStaffPublicPreviewImpl);

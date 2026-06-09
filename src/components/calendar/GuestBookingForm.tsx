@@ -128,7 +128,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
 
   if (state?.ok) {
     return (
-      <div className="public-notice public-notice--success p-6 text-center">
+      <div className="public-notice public-notice--success p-4 text-center">
         <p className="text-lg font-semibold">{t("successTitle")}</p>
         <p className="mt-2 text-sm opacity-90">{t("successBody")}</p>
         {selected && (
@@ -156,7 +156,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   ];
 
   return (
-    <div className="guest-booking-form site-card space-y-5 p-6 shadow-sm">
+    <div className="guest-booking-form site-card space-y-4 p-4 shadow-sm">
       <div>
         <h2 className="text-lg font-semibold text-[var(--site-fg)]">
           {t("title")}

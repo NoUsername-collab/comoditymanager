@@ -3,26 +3,22 @@ import { PublicNav } from "./PublicNav";
 import { StaffLogoEntry } from "./StaffLogoEntry";
 import { PublicMobileMenu } from "@/layout/components/PublicMobileMenu";
 import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
-import { getPensionSettings } from "@/services/pension-settings";
+import { getPublicPensionDisplayName } from "@/services/public-brand";
 import { getTranslations } from "next-intl/server";
 
 export async function PublicHeader() {
-  const t = await getTranslations("public.header");
-  const tShell = await getTranslations("public.shell");
-  let title = tShell("brandFallback");
-
-  try {
-    const s = await getPensionSettings();
-    if (s?.display_name) title = s.display_name;
-  } catch {
-    /* fără DB */
-  }
+  const shellPromise = getTranslations("public.shell");
+  const [t, tShell, title] = await Promise.all([
+    getTranslations("public.header"),
+    shellPromise,
+    shellPromise.then((ts) => getPublicPensionDisplayName(ts("brandFallback"))),
+  ]);
 
   return (
     <header className="public-header">
       <div className="public-header__inner">
         <StaffLogoEntry className="public-header__brand group cursor-pointer">
-          <BrandLogo animated />
+          <BrandLogo animated priority />
           <div className="min-w-0 leading-tight">
             <span className="public-header__name">{title}</span>
             <span className="public-header__tag">{t("subtitle")}</span>

@@ -34,7 +34,7 @@ export function RoomsBuildingSection({
   return (
     <section
       className={[
-        "rooms-building-section overflow-hidden rounded-2xl border shadow-sm",
+        "rooms-building-section overflow-hidden rounded-xl border shadow-sm",
         theme.border,
       ].join(" ")}
     >

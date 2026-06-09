@@ -24,12 +24,35 @@ export function defaultColorForAcMode(
   return "#059669";
 }
 
-export function normalizeBuildingColor(input: string | null | undefined): string | null {
+export function canonicalHexColor(input: string | null | undefined): string | null {
   const raw = input?.trim().toLowerCase() ?? "";
   if (!raw) return null;
   const hex = raw.startsWith("#") ? raw : `#${raw}`;
-  if (!/^#[0-9a-f]{6}$/.test(hex)) return null;
+  return /^#[0-9a-f]{6}$/.test(hex) ? hex : null;
+}
+
+export function normalizeBuildingColor(input: string | null | undefined): string | null {
+  const hex = canonicalHexColor(input);
+  if (!hex) return null;
   return ALLOWED.has(hex) ? hex : null;
+}
+
+/** Palette color for new picks; preserve legacy hex on edit when unchanged. */
+export function resolveSubmittedBuildingColor(
+  rawInput: string,
+  acMode: "all_rooms" | "none" | "per_room",
+  existingColor?: string | null
+): string {
+  const hex = canonicalHexColor(rawInput);
+  if (!hex) return defaultColorForAcMode(acMode);
+
+  const normalized = normalizeBuildingColor(hex);
+  if (normalized) return normalized;
+
+  const existing = canonicalHexColor(existingColor);
+  if (existing && hex === existing) return existing;
+
+  return defaultColorForAcMode(acMode);
 }
 
 export function isAllowedBuildingColor(hex: string): boolean {

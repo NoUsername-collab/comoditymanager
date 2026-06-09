@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
@@ -102,9 +103,8 @@ async function getCheckinSettingsUncached(
   return mapRow(data as unknown as Record<string, unknown>);
 }
 
-export async function getCheckinSettings(): Promise<CheckinSettings> {
-  const tenantId = await resolveTenantIdForData();
-  const cached = unstable_cache(
+const getCachedCheckinSettings = (tenantId: string) =>
+  unstable_cache(
     () => getCheckinSettingsUncached(tenantId),
     ["checkin-settings", tenantId],
     {
@@ -113,9 +113,17 @@ export async function getCheckinSettings(): Promise<CheckinSettings> {
         tenantTag(tenantId, CACHE_TAGS.pensionSettings),
       ],
       revalidate: 300,
-    },
+    }
   );
-  return cached();
+
+const loadCheckinSettings = cache((tenantId: string) =>
+  getCachedCheckinSettings(tenantId)()
+);
+
+/** Per-request dedupe + 5min cross-request cache (busted via pensionSettings tag). */
+export async function getCheckinSettings(): Promise<CheckinSettings> {
+  const tenantId = await resolveTenantIdForData();
+  return loadCheckinSettings(tenantId);
 }
 
 // ── Update ──────────────────────────────────────────────────

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
 import {
@@ -162,7 +163,7 @@ function pickNextStay(
   return null;
 }
 
-export async function listRoomDashboards(
+async function listRoomDashboardsImpl(
   viewDateParam?: string
 ): Promise<RoomDashboard[]> {
   const viewDate = parseViewDate(viewDateParam);
@@ -198,7 +199,7 @@ export async function listRoomDashboards(
       ? pickNextStay(roomStays, viewDate, current)
       : null;
 
-    let status_tonight: RoomDashboard["status_tonight"] = statusOnDate;
+    const status_tonight: RoomDashboard["status_tonight"] = statusOnDate;
 
     const weekOcc = countNightsOccupied(room.id, nightsWeek, stays, true);
     const monthOcc = countNightsOccupied(room.id, nightsMonth, stays, true);
@@ -234,3 +235,5 @@ export async function listRoomDashboards(
     };
   });
 }
+
+export const listRoomDashboards = cache(listRoomDashboardsImpl);

@@ -75,7 +75,7 @@ export function BookingCancelButton({
           setOpen(false);
         })
       }
-      className={panelClass}
+      className={`booking-cancel-form ${panelClass}`}
     >
       <input type="hidden" name="id" value={bookingId} />
       <input type="hidden" name="return_to" value={returnTo} />
@@ -106,11 +106,11 @@ function ConfirmButtons({
   labels: { cancelling: string; confirmCancel: string; dismiss: string };
 }) {
   return (
-    <div className="mt-2 flex gap-2">
+    <div className="booking-cancel-form__actions mt-2 flex gap-2">
       <button
         type="submit"
         disabled={pending}
-        className={`${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50`}
+        className={`booking-cancel-form__confirm ${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50`}
       >
         {pending ? labels.cancelling : labels.confirmCancel}
       </button>
@@ -118,7 +118,7 @@ function ConfirmButtons({
         type="button"
         disabled={pending}
         onClick={onCancel}
-        className={`${btnClass} border border-zinc-300 bg-white text-zinc-700`}
+        className={`booking-cancel-form__dismiss ${btnClass} border border-zinc-300 bg-white text-zinc-700`}
       >
         {labels.dismiss}
       </button>

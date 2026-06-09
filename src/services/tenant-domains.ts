@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { TenantDomainRoutingKind } from "@/lib/tenant/domain-routing";
 
@@ -12,9 +13,9 @@ export type TenantDomainRow = {
   created_at: string;
 };
 
-export async function listTenantDomains(
+const loadTenantDomains = cache(async (
   tenantId: string
-): Promise<TenantDomainRow[]> {
+): Promise<TenantDomainRow[]> => {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_domains")
@@ -25,6 +26,12 @@ export async function listTenantDomains(
 
   if (error) throw new Error(error.message);
   return (data ?? []) as TenantDomainRow[];
+});
+
+export async function listTenantDomains(
+  tenantId: string
+): Promise<TenantDomainRow[]> {
+  return loadTenantDomains(tenantId);
 }
 
 export async function addCustomTenantDomain(

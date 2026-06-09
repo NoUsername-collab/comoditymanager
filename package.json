@@ -6,8 +6,10 @@
     "dev": "next dev",
     "prebuild": "node scripts/check-env.mjs",
     "build": "next build",
+    "analyze": "node scripts/analyze-build.mjs",
     "start": "next start",
     "test": "vitest run",
+    "test:mobile": "vitest run src/layout/mobile/__tests__/",
     "test:watch": "vitest",
     "lint": "eslint",
     "env:check": "node scripts/check-env.mjs",
@@ -25,6 +27,7 @@
     "setup-admin:staging": "node scripts/create-admin-user.mjs .env.staging.local",
     "reset-staging-bookings": "node scripts/reset-staging-bookings.mjs .env.staging.local",
     "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=mobile-iphone",
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
@@ -41,6 +44,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.7",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

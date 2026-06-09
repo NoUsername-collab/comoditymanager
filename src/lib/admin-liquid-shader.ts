@@ -177,7 +177,7 @@ export function createLiquidShader(canvas: HTMLCanvasElement): LiquidShaderHandl
   let intensity = 0.78;
 
   let raf = 0;
-  let start = performance.now();
+  const start = performance.now();
   let width = 0;
   let height = 0;
 

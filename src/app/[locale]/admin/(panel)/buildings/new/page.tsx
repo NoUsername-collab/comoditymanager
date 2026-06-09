@@ -9,17 +9,15 @@ export default async function NewBuildingPage({
 }: {
   searchParams: Promise<{ return_to?: string }>;
 }) {
-  const tPage = await getTranslations("admin.pages.buildingsNew");
-  const tCommon = await getTranslations("admin.common");
-  const tStruct = await getTranslations("admin.locationStructure");
-  const { return_to } = await searchParams;
+  const [tPage, tCommon, tStruct, { return_to }, catalogOptions] =
+    await Promise.all([
+      getTranslations("admin.pages.buildingsNew"),
+      getTranslations("admin.common"),
+      getTranslations("admin.locationStructure"),
+      searchParams,
+      listRoomOptions().catch(() => [] as Awaited<ReturnType<typeof listRoomOptions>>),
+    ]);
   const backToStructure = return_to === "structure";
-  let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
-  try {
-    catalogOptions = await listRoomOptions();
-  } catch {
-    catalogOptions = [];
-  }
 
   return (
     <AdminRetroPageFrame

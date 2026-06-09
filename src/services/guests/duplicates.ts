@@ -1,48 +1,12 @@
-import { formatGuestFullName } from "@/domain/guest-name";
-import {
-  shiftStayDatesByYears,
-  shiftStayToNextFutureYear,
-} from "@/domain/guest/rebook-dates";
-import {
-  assertValidGuestPhone,
-  normalizeEmail,
-  normalizePhone,
-} from "@/domain/guest/normalize";
+import { cache } from "react";
 import { parseGuestTags } from "@/domain/guest/tags";
-import type {
-  GuestDocType,
-  GuestHighlights,
-  GuestBookingInput,
-  GuestIdentityStatus,
-  GuestListItem,
-  GuestNationalIdType,
-  GuestRow,
-  GuestSearchFilter,
-  GuestSearchResult,
-  GuestSex,
-  GuestStayReviewRow,
-  GuestTag,
-} from "@/domain/guest/types";
-import { GUEST_MATCH_PRIORITY } from "@/domain/guest/matching-contract";
-import type { BookingStatus } from "@/domain/booking/types";
-import type { BookingRoomSegmentRow } from "@/domain/booking/segment-types";
-import { stayNightCount } from "@/lib/stay-dates";
-import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
-import { logAdminActivityFromSession } from "@/services/activity-log";
-import { mapGuestRow } from "@/domain/guest/map-row";
-import {
-  ensureGuestProfiles,
-  getGuestProfile,
-  listGuestProfileSummaries,
-  listGuestStayReviewsByBookingIds,
-  mergeGuestProfiles,
-} from "@/services/guest-profiles";
-
+import type { GuestListItem } from "@/domain/guest/types";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { getGuestBaseById } from "./lookup";
 
-export async function findDuplicateGuestsForGuest(
+const loadDuplicateGuestsForGuest = cache(async (
   guestId: string
-): Promise<GuestListItem[]> {
+): Promise<GuestListItem[]> => {
   const guest = await getGuestBaseById(guestId);
   if (!guest) return [];
 
@@ -77,5 +41,10 @@ export async function findDuplicateGuestsForGuest(
     booking_count: 0,
     last_stay_check_out: null,
   }));
-}
+});
 
+export async function findDuplicateGuestsForGuest(
+  guestId: string
+): Promise<GuestListItem[]> {
+  return loadDuplicateGuestsForGuest(guestId);
+}

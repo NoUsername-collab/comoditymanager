@@ -2,7 +2,10 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { CACHE_TAGS } from "@/lib/cache-tags";
-import { listBuildings, updateBuildingDefaultPrice } from "@/services/buildings";
+import {
+  getBuildingDefaultPrice,
+  updateBuildingDefaultPrice,
+} from "@/services/buildings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
 
@@ -12,10 +15,7 @@ export async function updateBuildingDefaultPriceAction(formData: FormData) {
   const price = Number(formData.get("default_price_per_night") ?? 0);
   if (!building_id) throw new Error(t("idMissing"));
 
-  const buildings = await listBuildings();
-  const building = buildings.find((b) => b.id === building_id);
-  const previousPrice = building?.default_price_per_night ?? 0;
-
+  const previousPrice = await getBuildingDefaultPrice(building_id).catch(() => 0);
   await updateBuildingDefaultPrice(building_id, price);
   await logAdminActivityFromSession({
     action: "building.price_updated",

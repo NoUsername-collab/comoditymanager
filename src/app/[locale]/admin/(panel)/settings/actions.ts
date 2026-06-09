@@ -26,8 +26,10 @@ import { resolveRequestTenant } from "@/lib/tenant/active";
 import { getTranslations } from "next-intl/server";
 
 export async function unlockLocationAdminAction(formData: FormData) {
-  const t = await getTranslations("admin.serverActions");
-  const { user } = await requireStaff();
+  const [t, { user }] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireStaff(),
+  ]);
   const owner_password = String(formData.get("owner_password") ?? "");
 
   const ok = await verifyLocationUnlockPassword(owner_password, user);
@@ -46,8 +48,10 @@ export async function unlockLocationAdminAction(formData: FormData) {
 }
 
 export async function lockLocationAdminAction() {
-  const t = await getTranslations("admin.serverActions");
-  const { memberRole } = await requireStaff();
+  const [t, { memberRole }] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireStaff(),
+  ]);
   await clearAdminLocationUnlock();
   await logAdminActivityFromSession({
     action: "location_admin.locked",
@@ -61,19 +65,19 @@ export async function lockLocationAdminAction() {
 }
 
 export async function updateAppearanceSettingsAction(formData: FormData) {
-  const t = await getTranslations("admin.serverActions");
   const id = String(formData.get("id") ?? "");
   const admin_palette_key = String(formData.get("admin_palette_key") ?? "default");
   const admin_day_night = String(formData.get("admin_day_night") ?? "night") as
     | "day"
     | "night";
 
-  if (!id) throw new Error(t("settingsNotConfigured"));
+  const [t, settings, pension] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireStaff(),
+    import("@/services/pension-settings").then((m) => m.getPensionSettings()),
+  ]);
 
-  const settings = await requireStaff();
-  const pension = await import("@/services/pension-settings").then((m) =>
-    m.getPensionSettings()
-  );
+  if (!id) throw new Error(t("settingsNotConfigured"));
   if (!pension) throw new Error(t("settingsMissing"));
 
   await updatePensionSettings(id, {
@@ -139,9 +143,6 @@ export async function updateStatisticsVisibilityAction(
 }
 
 export async function updateOperationalSettingsAction(formData: FormData) {
-  const t = await getTranslations("admin.serverActions");
-  await requireLocationAdmin();
-
   const id = String(formData.get("id") ?? "");
   const display_name = String(formData.get("display_name") ?? "");
   const default_check_in_time = String(
@@ -152,11 +153,13 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   );
   const total_extra_beds_max = Number(formData.get("total_extra_beds_max") ?? 0);
 
-  if (!id) throw new Error(t("settingsNotConfigured"));
+  const [t, , pension] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireLocationAdmin(),
+    import("@/services/pension-settings").then((m) => m.getPensionSettings()),
+  ]);
 
-  const pension = await import("@/services/pension-settings").then((m) =>
-    m.getPensionSettings()
-  );
+  if (!id) throw new Error(t("settingsNotConfigured"));
   if (!pension) throw new Error(t("settingsMissing"));
 
   await updatePensionSettings(id, {
@@ -204,18 +207,19 @@ function mapStaffPasswordError(
 }
 
 export async function changeStaffPasswordAction(formData: FormData) {
-  const t = await getTranslations("admin.serverActions");
-  await requireLocationAdmin();
-
   const staff_email = String(formData.get("staff_email") ?? "");
   const new_password = String(formData.get("new_password") ?? "");
   const confirm_password = String(formData.get("confirm_password") ?? "");
 
+  const [t, , tenant] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireLocationAdmin(),
+    resolveRequestTenant(),
+  ]);
+
   if (new_password !== confirm_password) {
     return { error: t("passwordsDoNotMatch") };
   }
-
-  const tenant = await resolveRequestTenant();
   if (!tenant) {
     return { error: t("tenantNotResolved") };
   }

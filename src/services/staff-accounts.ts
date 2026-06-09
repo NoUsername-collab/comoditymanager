@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
@@ -27,12 +28,18 @@ export function listStaffAccounts(): StaffAccount[] {
   return [];
 }
 
-export async function listStaffAccountsForCurrentTenant(): Promise<
+const loadStaffAccountsForCurrentTenant = cache(async (): Promise<
   StaffAccount[]
-> {
+> => {
   const tenant = await resolveRequestTenant();
   if (!tenant) return [];
   return listStaffAccountsForTenant(tenant.id);
+});
+
+export async function listStaffAccountsForCurrentTenant(): Promise<
+  StaffAccount[]
+> {
+  return loadStaffAccountsForCurrentTenant();
 }
 
 export async function listStaffAccountsForTenant(

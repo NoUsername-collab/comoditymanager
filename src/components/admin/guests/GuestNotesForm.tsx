@@ -36,12 +36,12 @@ export function GuestNotesForm({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="guest-notes-form flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => setOpen(true)}
           disabled={pending}
-          className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+          className="guest-notes-form__trigger admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
           {initialNotes.trim() ? tGuests("notes.editGeneralNotes") : tGuests("notes.addGeneralNotes")}
         </button>
@@ -57,19 +57,19 @@ export function GuestNotesForm({
         variant="modal"
         width={640}
       >
-        <div className="space-y-4 p-4">
+        <div className="guest-notes-form__body space-y-4 p-4">
           <textarea
             rows={8}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder={tGuests("notes.placeholder")}
-            className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
+            className="guest-notes-form__textarea w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
           />
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="guest-notes-form__actions flex flex-wrap justify-end gap-2">
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700"
+              className="guest-notes-form__cancel rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700"
             >
               {tCommon("close")}
             </button>
@@ -77,7 +77,7 @@ export function GuestNotesForm({
               type="button"
               onClick={() => void saveNotes()}
               disabled={pending}
-              className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+              className="guest-notes-form__save admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
             >
               {pending ? tCommon("saving") : tGuests("notes.saveNotes")}
             </button>

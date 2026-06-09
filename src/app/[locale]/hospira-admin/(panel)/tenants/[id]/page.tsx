@@ -13,14 +13,16 @@ export default async function TenantDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  const tenant = await getPlatformTenantById(id);
+  const [{ id }, tenant] = await Promise.all([
+    params,
+    params.then(({ id: tenantId }) => getPlatformTenantById(tenantId)),
+  ]);
   if (!tenant) notFound();
 
   const currentPlan = PLAN_CONFIGS[(tenant.plan_id || "free") as PlanId];
 
   return (
-    <div className="space-y-8">
+    <div className="hospira-tenant-detail space-y-4">
       {/* Header */}
       <div className="hospira-tenant-detail__head flex items-center gap-4">
         <Link
@@ -29,16 +31,16 @@ export default async function TenantDetailPage({
         >
           ← Tenanți
         </Link>
-        <h1 className="text-2xl font-bold">{tenant.display_name}</h1>
+        <h1 className="text-xl font-bold">{tenant.display_name}</h1>
         <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-xs font-medium capitalize text-neutral-300">
           {tenant.slug}
         </span>
       </div>
 
       {/* Info grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Tenant Info */}
-        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5 space-y-3">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
           <h2 className="text-sm font-semibold uppercase text-neutral-500">
             Informații
           </h2>
@@ -55,7 +57,7 @@ export default async function TenantDetailPage({
         </div>
 
         {/* Stats */}
-        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5 space-y-3">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
           <h2 className="text-sm font-semibold uppercase text-neutral-500">
             Statistici
           </h2>
@@ -83,7 +85,7 @@ export default async function TenantDetailPage({
         </div>
 
         {/* Impersonate */}
-        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5 space-y-3">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5 space-y-2">
           <h2 className="text-sm font-semibold uppercase text-neutral-500">
             Acțiuni rapide
           </h2>
@@ -92,10 +94,10 @@ export default async function TenantDetailPage({
       </div>
 
       {/* Management */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Plan */}
-        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase text-neutral-500">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
+          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">
             Plan
           </h2>
           <TenantPlanForm
@@ -105,8 +107,8 @@ export default async function TenantDetailPage({
         </div>
 
         {/* Status */}
-        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase text-neutral-500">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
+          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">
             Status
           </h2>
           <TenantStatusForm
@@ -116,8 +118,8 @@ export default async function TenantDetailPage({
         </div>
 
         {/* Modules */}
-        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
-          <h2 className="mb-4 text-sm font-semibold uppercase text-neutral-500">
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
+          <h2 className="mb-2 text-sm font-semibold uppercase text-neutral-500">
             Module add-on
           </h2>
           <TenantModulesForm
@@ -140,7 +142,7 @@ function InfoRow({
   mono?: boolean;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-2">
+    <div className="hospira-tenant-detail__info-row flex items-baseline justify-between gap-2">
       <span className="text-xs text-neutral-500">{label}</span>
       <span
         className={`text-sm text-neutral-200 ${mono ? "font-mono text-xs" : ""}`}

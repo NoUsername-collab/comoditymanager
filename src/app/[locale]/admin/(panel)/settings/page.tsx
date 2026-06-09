@@ -1,4 +1,5 @@
-﻿import { Link } from "@/i18n/navigation";
+﻿import { Suspense } from "react";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import {
   getPensionSettings,
@@ -19,7 +20,7 @@ import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { pensionStatisticsVisibility } from "@/services/pension-settings";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
-import { isLocationConfigurationAccessible } from "@/lib/auth/location-unlock";
+import { locationAccessibleForMemberRole } from "@/lib/auth/location-unlock";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { updateAppearanceSettingsAction } from "./actions";
 
@@ -33,34 +34,46 @@ export default async function SettingsPage({
     statistics?: string;
   }>;
 }) {
-  const t = await getTranslations("admin.pages.settings");
-  const params = await searchParams;
-  const { user, role, memberRole } = await requireStaff();
-  const locationUnlocked = await isLocationConfigurationAccessible(user.id);
+  const staffPromise = requireStaff();
+  const [t, params, staff, checkinSettings, pensionResult, locationUnlocked] =
+    await Promise.all([
+      getTranslations("admin.pages.settings"),
+      searchParams,
+      staffPromise,
+      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+      (async () => {
+        try {
+          return {
+            settings: await getPensionSettings(),
+            error: null as string | null,
+          };
+        } catch (e) {
+          return {
+            settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
+            error: e instanceof Error ? e.message : "generic",
+          };
+        }
+      })(),
+      staffPromise.then((ctx) =>
+        locationAccessibleForMemberRole(ctx.memberRole)
+      ),
+    ]);
+
+  const { role, memberRole } = staff;
   const isOwner = memberRole === "owner";
-
-  let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
-  let error: string | null = null;
-
-  try {
-    settings = await getPensionSettings();
-  } catch (e) {
-    error = e instanceof Error ? e.message : t("genericError");
-  }
+  const { settings } = pensionResult;
+  const error =
+    pensionResult.error === "generic" ? t("genericError") : pensionResult.error;
 
   const statisticsVisibility = pensionStatisticsVisibility(settings);
   const statisticsAccess = canAccessStatistics(memberRole, statisticsVisibility);
-
-  const checkinSettings = await getCheckinSettings().catch(
-    () => DEFAULT_CHECKIN_SETTINGS,
-  );
 
   const appearance = settings ? pensionAppearanceSettings(settings) : null;
 
   return (
     <AdminRetroPageFrame
       title={t("title")}
-      className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="admin-settings-page w-full max-w-none"
       description={role === "operator" ? t("descriptionOperator") : t("descriptionAdmin")}
     >
       {params.saved === "1" && (
@@ -153,7 +166,16 @@ export default async function SettingsPage({
             icon="*"
             defaultOpen={params.section === "history"}
           >
-            <AdminActivityHistoryPanel />
+            <Suspense
+              fallback={
+                <div
+                  className="min-h-[8rem] animate-pulse rounded-xl bg-zinc-100"
+                  aria-busy="true"
+                />
+              }
+            >
+              <AdminActivityHistoryPanel />
+            </Suspense>
           </SettingsSlidePanel>
 
           {role === "admin" && (
@@ -167,7 +189,7 @@ export default async function SettingsPage({
             </SettingsSlidePanel>
           )}
 
-          <AdminPendingForm action={updateAppearanceSettingsAction} className="admin-settings-form mt-6">
+          <AdminPendingForm action={updateAppearanceSettingsAction} className="admin-settings-form mt-4">
             <input type="hidden" name="id" value={settings.id} />
 
             <SettingsSlidePanel title={t("visualsTitle")} subtitle={t("visualsSubtitle")} icon="*" defaultOpen>
@@ -192,7 +214,7 @@ export default async function SettingsPage({
                 <p className="text-sm text-zinc-600">{t("staffPanelInfo")}</p>
                 <Link
                   href="/admin/settings/staff"
-                  className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                  className="admin-settings-cta inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
                 >
                   {t("openStaffManagement")}
                 </Link>
@@ -210,7 +232,7 @@ export default async function SettingsPage({
                 <p className="text-sm text-zinc-600">{t("domainsPanelInfo")}</p>
                 <Link
                   href="/admin/settings/domains"
-                  className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                  className="admin-settings-cta inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
                 >
                   {t("openDomainsManagement")}
                 </Link>
@@ -238,7 +260,7 @@ export default async function SettingsPage({
                   </p>
                   <Link
                     href="/admin/settings/location"
-                    className="inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                    className="admin-settings-cta inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
                   >
                     {t("openConfigCenter")}
                   </Link>

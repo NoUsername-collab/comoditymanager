@@ -21,6 +21,9 @@ import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuCo
 import { useGanttOperativeCheck } from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { computeFixedPointerMenuPosition } from "@/lib/ui/viewport-position";
+
+const GANTT_CTX_MENU_BOUNDS = { width: 260, height: 320 };
 
 function MenuItem({
   label,
@@ -79,10 +82,11 @@ export function GanttContextMenuPanel() {
 
   if (!menu) return null;
 
-  const style = {
-    left: Math.min(menu.clientX, window.innerWidth - 240),
-    top: Math.min(menu.clientY, window.innerHeight - 320),
-  };
+  const style = computeFixedPointerMenuPosition(
+    menu.clientX,
+    menu.clientY,
+    GANTT_CTX_MENU_BOUNDS
+  );
 
   function openBooking(bookingId: string) {
     closeMenu();

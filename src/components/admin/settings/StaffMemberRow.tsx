@@ -93,7 +93,7 @@ export function StaffMemberRow({ member }: { member: TenantMember }) {
               </button>
 
               {showRoleMenu && (
-                <div className="absolute right-0 top-full z-10 mt-1 min-w-[140px] rounded-lg border border-zinc-200 bg-white py-1 shadow-lg">
+                <div className="admin-staff-row__role-menu absolute right-0 top-full z-10 mt-1 min-w-[140px] rounded-lg border border-zinc-200 bg-white py-1 shadow-lg">
                   {["admin", "operator"]
                     .filter((r) => r !== member.role)
                     .map((role) => (
@@ -101,7 +101,7 @@ export function StaffMemberRow({ member }: { member: TenantMember }) {
                         key={role}
                         type="button"
                         onClick={() => handleChangeRole(role)}
-                        className="block w-full px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50"
+                        className="admin-staff-row__role-option block w-full px-3 py-2 text-left text-sm text-zinc-700 hover:bg-zinc-50"
                       >
                         {ROLE_LABELS[role]}
                       </button>

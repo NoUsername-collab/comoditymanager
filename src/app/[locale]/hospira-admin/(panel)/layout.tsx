@@ -18,7 +18,7 @@ export default async function HospiraAdminLayout({
       className="ml-shell--hospira-admin min-h-dvh bg-neutral-950 text-neutral-100"
     >
       <header className="hospira-admin-header border-b border-neutral-800 bg-neutral-900">
-        <div className="hospira-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-3 px-6 py-3">
+        <div className="hospira-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-3">
             <HospiraAdminMobileNav />
             <Link
@@ -62,7 +62,7 @@ export default async function HospiraAdminLayout({
 
       <MobileContent
         as="main"
-        className="hospira-admin-main mx-auto max-w-7xl px-6 py-8"
+        className="hospira-admin-main mx-auto max-w-7xl px-4 py-5"
       >
         {children}
       </MobileContent>

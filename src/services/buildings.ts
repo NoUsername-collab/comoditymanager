@@ -1,4 +1,5 @@
 import { ROOM_LOCKING_BOOKING_STATUSES } from "@/domain/booking/room-guards";
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -32,9 +33,77 @@ const getCachedBuildings = (tenantId: string) =>
     }
   );
 
+const loadBuildings = cache((tenantId: string) => getCachedBuildings(tenantId)());
+
 export async function listBuildings(): Promise<Building[]> {
   const { tenantId } = await getTenantScope();
-  return getCachedBuildings(tenantId)();
+  return loadBuildings(tenantId);
+}
+
+const loadBuildingColorHex = cache(async (buildingId: string): Promise<string | null> => {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("buildings")
+    .select("color_hex")
+    .eq("tenant_id", tenantId)
+    .eq("id", buildingId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return (data?.color_hex as string | null) ?? null;
+});
+
+/** Single-column fetch — avoids loading all buildings on edit save. */
+export async function getBuildingColorHex(buildingId: string): Promise<string | null> {
+  if (!buildingId) return null;
+  return loadBuildingColorHex(buildingId);
+}
+
+const loadBuildingDefaultPrice = cache(async (buildingId: string): Promise<number> => {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("buildings")
+    .select("default_price_per_night")
+    .eq("tenant_id", tenantId)
+    .eq("id", buildingId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return Number(
+    (data as { default_price_per_night?: number } | null)?.default_price_per_night ?? 0
+  );
+});
+
+/** Single-column fetch for room pricing — avoids listBuildings() in actions. */
+export async function getBuildingDefaultPrice(buildingId: string): Promise<number> {
+  if (!buildingId) return 0;
+  return loadBuildingDefaultPrice(buildingId);
+}
+
+const loadBuildingById = cache(async (buildingId: string): Promise<Building | null> => {
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("buildings")
+    .select("id, name, sort_order, color_hex, ac_mode, is_active, default_price_per_night")
+    .eq("tenant_id", tenantId)
+    .eq("id", buildingId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+
+  return {
+    ...(data as Building),
+    default_price_per_night: Number(
+      (data as { default_price_per_night?: number }).default_price_per_night ?? 0
+    ),
+  };
+});
+
+/** Single-row fetch — avoids listBuildings() when only one building is needed. */
+export async function getBuildingById(buildingId: string): Promise<Building | null> {
+  if (!buildingId) return null;
+  return loadBuildingById(buildingId);
 }
 
 export async function updateBuilding(input: {

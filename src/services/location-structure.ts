@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { listBuildings } from "@/services/buildings";
 import { listAllFloors } from "@/services/floors";
 import { listAllRooms } from "@/services/rooms-admin";
@@ -26,7 +27,7 @@ export type StructureBuilding = {
   activeRoomCount: number;
 };
 
-export async function listLocationStructure(): Promise<StructureBuilding[]> {
+export const listLocationStructure = cache(async (): Promise<StructureBuilding[]> => {
   const [buildings, allRooms, allFloors] = await Promise.all([
     listBuildings(),
     listAllRooms(),
@@ -80,4 +81,4 @@ export async function listLocationStructure(): Promise<StructureBuilding[]> {
         activeRoomCount,
       };
     });
-}
+});

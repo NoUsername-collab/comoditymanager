@@ -22,8 +22,8 @@ export function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
       guest_name: b.guest_name,
       guest_last_name: b.guest_last_name ?? null,
       guest_first_name: b.guest_first_name ?? null,
-      guest_email: b.guest_email,
-      guest_phone: b.guest_phone,
+      guest_email: b.guest_email ?? "",
+      guest_phone: b.guest_phone ?? null,
       guest_id: b.guest_id ?? null,
       guest_alert_level:
         b.guest_alert_level === "watchlist" || b.guest_alert_level === "blacklist"
@@ -45,7 +45,9 @@ export function mapBookingRows(rows: BookingSelectRow[]): BookingRow[] {
 }
 
 export async function attachGuestProfiles(rows: BookingRow[]): Promise<BookingRow[]> {
-  const guestIds = rows.map((row) => row.guest_id).filter(Boolean) as string[];
+  const guestIds = [
+    ...new Set(rows.map((row) => row.guest_id).filter(Boolean) as string[]),
+  ];
   if (guestIds.length === 0) return rows;
 
   const profiles = await listGuestProfileSummaries(guestIds);

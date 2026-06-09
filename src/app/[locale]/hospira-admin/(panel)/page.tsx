@@ -5,8 +5,8 @@ export default async function HospiraAdminDashboard() {
   const stats = await getPlatformStats();
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+    <div className="space-y-4">
+      <h1 className="text-xl font-bold">Dashboard</h1>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -45,8 +45,8 @@ export default async function HospiraAdminDashboard() {
       </div>
 
       {/* Plan Distribution */}
-      <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6">
-        <h2 className="mb-4 text-lg font-semibold">Distribuție planuri</h2>
+      <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+        <h2 className="mb-2 text-base font-semibold">Distribuție planuri</h2>
         <div className="flex flex-wrap gap-3">
           {Object.entries(stats.planDistribution).map(([plan, count]) => (
             <div
@@ -66,7 +66,7 @@ export default async function HospiraAdminDashboard() {
       <div>
         <Link
           href="/hospira-admin/tenants"
-          className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200"
+          className="hospira-dashboard__cta inline-flex min-h-[var(--ml-touch-min,2.75rem)] w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition-colors hover:bg-neutral-200 sm:w-auto"
         >
           Vezi toți tenanții →
         </Link>
@@ -85,9 +85,9 @@ function StatCard({
   accent?: string;
 }) {
   return (
-    <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-4">
+    <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3">
       <p className="text-xs text-neutral-500">{label}</p>
-      <p className={`mt-1 text-2xl font-bold ${accent ?? "text-white"}`}>
+      <p className={`mt-0.5 text-xl font-bold ${accent ?? "text-white"}`}>
         {value}
       </p>
     </div>

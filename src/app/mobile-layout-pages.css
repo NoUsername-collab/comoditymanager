@@ -347,7 +347,12 @@ html[data-layout-chrome="compact"] .ml-mobile-menu--platform {
   display: block;
 }
 
-html[data-layout-chrome="wide"] .ml-drawer__locale {
+html[data-layout-chrome="wide"] .ml-drawer__locale,
+html[data-layout-chrome="wide"] .header-locale-switch--drawer {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .header-locale-switch--nav {
   display: none;
 }
 
@@ -355,6 +360,7 @@ html[data-layout-chrome="compact"] .pricing-table-wrap {
   margin-top: 2rem;
   margin-inline: 0;
   border-radius: 0.75rem;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
@@ -379,7 +385,7 @@ html[data-layout-chrome="compact"] .signup-page {
 }
 
 html[data-layout-chrome="compact"] .signup-benefits {
-  padding: 1.25rem 0.85rem;
+  padding: 1rem 0.85rem;
 }
 
 html[data-layout-chrome="compact"] .signup-benefits__title {
@@ -387,7 +393,7 @@ html[data-layout-chrome="compact"] .signup-benefits__title {
 }
 
 html[data-layout-chrome="compact"] .signup-form-wrapper {
-  padding: 1.25rem 0.85rem;
+  padding: 1rem 0.85rem;
 }
 
 html[data-layout-chrome="compact"] .landing-hero {

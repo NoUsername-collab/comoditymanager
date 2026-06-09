@@ -10,30 +10,27 @@ export default async function ReceptiePage({
 }: {
   searchParams: Promise<{ confirmed?: string }>;
 }) {
-  const t = await getTranslations("public.receptie");
-  const admin = await getAdminUser();
+  const [t, admin, params, settings] = await Promise.all([
+    getTranslations("public.receptie"),
+    getAdminUser(),
+    searchParams,
+    getPensionSettings().catch(() => null),
+  ]);
+
   if (!admin) {
     await redirect("/admin/login?next=/receptie");
-  }
-
-  const params = await searchParams;
-  let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
-  try {
-    settings = await getPensionSettings();
-  } catch {
-    settings = null;
   }
 
   const checkInTime = settings?.default_check_in_time ?? "14:00";
   const checkOutTime = settings?.default_check_out_time ?? "11:00";
 
   return (
-    <main className="receptie-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 px-6 py-10 public-page">
+    <main className="receptie-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 public-page">
       <nav className="receptie-page__nav flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
         <Link href="/admin" className="receptie-page__back-admin font-semibold text-emerald-700 hover:text-emerald-900">
           {t("backToAdmin")}
         </Link>
-        <Link href="/" className="text-zinc-500 hover:text-zinc-800">
+        <Link href="/" className="receptie-page__back-site text-zinc-500 hover:text-zinc-800">
           {t("backToSite")}
         </Link>
       </nav>
@@ -44,7 +41,11 @@ export default async function ReceptiePage({
         </p>
       )}
 
-      <AdminQuickPanel checkInTime={checkInTime} checkOutTime={checkOutTime} />
+      <AdminQuickPanel
+        checkInTime={checkInTime}
+        checkOutTime={checkOutTime}
+        adminVerified
+      />
     </main>
   );
 }

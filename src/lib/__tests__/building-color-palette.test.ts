@@ -5,6 +5,7 @@ import {
   normalizeBuildingColor,
   isAllowedBuildingColor,
   resolveGanttBuildingColor,
+  resolveSubmittedBuildingColor,
 } from "@/lib/building-color-palette";
 
 // ---------------------------------------------------------------------------
@@ -70,6 +71,31 @@ describe("normalizeBuildingColor", () => {
   it("returns null for an invalid hex", () => {
     expect(normalizeBuildingColor("#gggggg")).toBeNull();
     expect(normalizeBuildingColor("hello")).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// resolveSubmittedBuildingColor
+// ---------------------------------------------------------------------------
+describe("resolveSubmittedBuildingColor", () => {
+  it("uses palette colors when submitted", () => {
+    expect(resolveSubmittedBuildingColor("#2563eb", "none")).toBe("#2563eb");
+  });
+
+  it("preserves legacy non-palette color when unchanged on edit", () => {
+    expect(resolveSubmittedBuildingColor("#ffffff", "per_room", "#ffffff")).toBe(
+      "#ffffff"
+    );
+  });
+
+  it("matches legacy colors when existing hex omits the # prefix", () => {
+    expect(resolveSubmittedBuildingColor("#ffffff", "per_room", "ffffff")).toBe(
+      "#ffffff"
+    );
+  });
+
+  it("falls back to AC default for new non-palette picks", () => {
+    expect(resolveSubmittedBuildingColor("#ffffff", "none")).toBe("#ea580c");
   });
 });
 

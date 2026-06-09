@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { listCereriNoi } from "@/services/bookings";
+import { countCereriNoi, listCereriNoiPreview } from "@/services/bookings";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { PhoneBookingForm } from "./PhoneBookingForm";
 import { getTranslations } from "next-intl/server";
@@ -9,22 +9,28 @@ import { getTranslations } from "next-intl/server";
 export async function AdminQuickPanel({
   checkInTime,
   checkOutTime,
+  adminVerified = false,
 }: {
   checkInTime: string;
   checkOutTime: string;
+  /** Parent already verified admin session (e.g. receptie page). */
+  adminVerified?: boolean;
 }) {
-  const t = await getTranslations("public.staffPanel");
-  const admin = await getAdminUser();
-  if (!admin) {
-    await redirect("/admin/login?next=/receptie");
+  if (!adminVerified) {
+    const admin = await getAdminUser();
+    if (!admin) {
+      await redirect("/admin/login?next=/receptie");
+    }
   }
 
-  let cereri: Awaited<ReturnType<typeof listCereriNoi>> = [];
-  try {
-    cereri = await listCereriNoi();
-  } catch {
-    cereri = [];
-  }
+  const [t, cereriBundle] = await Promise.all([
+    getTranslations("public.staffPanel"),
+    Promise.all([countCereriNoi(), listCereriNoiPreview(10)])
+      .then(([total, preview]) => ({ total, preview }))
+      .catch(() => ({ total: 0, preview: [] as Awaited<ReturnType<typeof listCereriNoiPreview>> })),
+  ]);
+  const cereriTotal = cereriBundle.total;
+  const cereri = cereriBundle.preview;
 
   return (
     <section
@@ -49,20 +55,20 @@ export async function AdminQuickPanel({
         <div className="rounded-lg bg-zinc-800/50 p-4">
           <p className="mb-3 flex items-center justify-between text-xs font-medium text-zinc-300">
             <span>{t("pendingTitle")}</span>
-            {cereri.length > 0 && (
+            {cereriTotal > 0 && (
               <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                {cereri.length}
+                {cereriTotal}
               </span>
             )}
           </p>
-          {cereri.length === 0 ? (
+          {cereriTotal === 0 ? (
             <p className="text-xs text-zinc-500">{t("noRequests")}</p>
           ) : (
             <ul className="max-h-48 space-y-2 overflow-y-auto">
               {cereri.map((c) => (
                 <li
                   key={c.id}
-                  className="flex items-center justify-between gap-2 rounded-md bg-zinc-900/80 px-3 py-2 text-xs"
+                  className="admin-quick-panel__row flex items-center justify-between gap-2 rounded-md bg-zinc-900/80 px-3 py-2 text-xs"
                 >
                   <div>
                     <p className="font-medium text-white">{c.guest_name}</p>

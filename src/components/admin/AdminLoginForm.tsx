@@ -41,7 +41,7 @@ export function AdminLoginForm({
         </div>
       ) : null}
       <form
-        className="admin-login-form mt-8 space-y-4"
+        className="admin-login-form mt-5 space-y-3"
         action={formAction}
         aria-busy={busy}
       >

@@ -46,13 +46,13 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
   return (
     <section className="public-staff-preview public-section pt-0">
       <div className="site-card overflow-hidden border-[1.5px] shadow-[0_18px_48px_-28px_color-mix(in_srgb,var(--site-accent)_38%,transparent)]">
-        <div className="border-b border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_82%,var(--accent-muted))] px-5 py-5 sm:px-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="border-b border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_82%,var(--accent-muted))] px-4 py-4 sm:px-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--site-accent)]">
                 {t("staffPreviewEyebrow")}
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight text-[var(--site-fg)] sm:text-3xl">
+              <h2 className="mt-1 text-xl font-black tracking-tight text-[var(--site-fg)] sm:text-2xl">
                 {t("liveOperatorPanelOnPublicPage")}
               </h2>
               <p className="mt-2 text-sm leading-6 text-[var(--site-muted)] sm:text-[15px]">
@@ -83,7 +83,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
             {attentionItems.map((item) => (
               <article
                 key={item.id}
-                className={`rounded-2xl border px-4 py-3 shadow-sm ${item.tone}`}
+                className={`rounded-xl border px-3 py-2.5 shadow-sm ${item.tone}`}
               >
                 <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] opacity-80">
                   {item.label}
@@ -100,12 +100,12 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
           </div>
         ) : null}
 
-        <div className="grid gap-5 px-5 py-5 sm:px-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-          <div className="grid gap-5">
-            <section className="rounded-2xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-4 shadow-sm">
+        <div className="grid gap-3 px-4 py-4 sm:px-5 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+          <div className="grid gap-3">
+            <section className="rounded-xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-3 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-bold text-[var(--site-fg)]">{t("newRequests")}</h3>
+                  <h3 className="text-base font-bold text-[var(--site-fg)]">{t("newRequests")}</h3>
                   <p className="mt-1 text-sm text-[var(--site-muted)]">
                     {t("firstRequestsToProcess")}
                   </p>
@@ -123,12 +123,12 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                   {t("noNewRequestNow")}
                 </p>
               ) : (
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-3 space-y-2">
                   {data.cereriPreview.map((booking) => (
                     <li key={booking.id}>
                       <Link
                         href={`/admin/bookings/${booking.id}`}
-                        className="block rounded-2xl border border-[var(--site-border)] bg-[var(--site-card)] px-4 py-3 transition hover:border-[var(--site-accent)] hover:shadow-md"
+                        className="block rounded-xl border border-[var(--site-border)] bg-[var(--site-card)] px-3 py-2.5 transition hover:border-[var(--site-accent)] hover:shadow-md"
                       >
                         <p className="font-bold text-[var(--site-fg)]">
                           {formatGuestGanttLabel(
@@ -150,10 +150,10 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
               )}
             </section>
 
-            <section className="rounded-2xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
+            <section className="rounded-xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-3 shadow-sm">
+              <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-lg font-bold text-[var(--site-fg)]">{t("attentionToday")}</h3>
+                  <h3 className="text-base font-bold text-[var(--site-fg)]">{t("attentionToday")}</h3>
                   <p className="mt-1 text-sm text-[var(--site-muted)]">
                     {t("whatToCheckNow")}
                   </p>
@@ -167,27 +167,27 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
               </div>
 
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <article className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900">
+                <article className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-900">
                   <p className="text-[11px] font-extrabold uppercase tracking-[0.14em]">
                     {t("freeTonight")}
                   </p>
-                  <p className="mt-2 text-2xl font-black">{data.stats.freeTonight}</p>
+                  <p className="mt-1 text-xl font-black">{data.stats.freeTonight}</p>
                   <p className="mt-1 text-sm opacity-80">
                     {t("fromActiveRooms", { count: data.stats.activeRooms })}
                   </p>
                 </article>
-                <article className="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900">
+                <article className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900">
                   <p className="text-[11px] font-extrabold uppercase tracking-[0.14em]">
                     {t("weekOccupancy")}
                   </p>
-                  <p className="mt-2 text-2xl font-black">{data.stats.weekOccupancyPct}%</p>
+                  <p className="mt-1 text-xl font-black">{data.stats.weekOccupancyPct}%</p>
                   <p className="mt-1 text-sm opacity-80">{t("currentOccupancyPace")}</p>
                 </article>
               </div>
 
               {board ? (
                 <div className="mt-4 space-y-3">
-                  <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-card)] px-4 py-3">
+                  <div className="rounded-xl border border-[var(--site-border)] bg-[var(--site-card)] px-4 py-3">
                     <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-[var(--site-muted)]">
                       {t("cleaning")}
                     </p>
@@ -201,7 +201,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                       {board.roomsToClean.slice(0, 4).map((room) => (
                         <li
                           key={room.room_id}
-                          className="rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-950"
+                          className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-950"
                         >
                           <p className="font-bold">
                             {room.room_name}
@@ -215,7 +215,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                       ))}
                     </ul>
                   ) : (
-                    <p className="rounded-2xl border border-dashed border-[var(--site-border)] px-4 py-4 text-sm text-[var(--site-muted)]">
+                    <p className="rounded-xl border border-dashed border-[var(--site-border)] px-4 py-4 text-sm text-[var(--site-muted)]">
                       {t("noRoomToCleanToday")}
                     </p>
                   )}
@@ -224,7 +224,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
             </section>
           </div>
 
-          <section className="rounded-2xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-4 shadow-sm">
+          <section className="rounded-xl border border-[var(--site-border)] bg-[color-mix(in_srgb,var(--site-card)_88%,transparent)] p-4 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-lg font-bold text-[var(--site-fg)]">{t("roomsHeatmap")}</h3>
@@ -244,7 +244,7 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
               {data.buildings.map((section) => (
                 <article
                   key={section.building.id}
-                  className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-card)] p-4"
+                  className="rounded-xl border border-[var(--site-border)] bg-[var(--site-card)] p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>

@@ -8,22 +8,22 @@ import { resolveRequestTenant } from "@/lib/tenant/active";
 import { listActiveTenantMembers } from "@/services/tenant-members";
 
 export default async function StaffManagementPage() {
-  const t = await getTranslations("admin.pages.staffManagement");
-
-  // Only admin (owner) can manage staff
-  await requireStaffRole(["admin"]);
-
-  const tenant = await resolveRequestTenant();
-  const members = tenant
-    ? await listActiveTenantMembers(tenant.id)
-    : [];
+  const tenantPromise = resolveRequestTenant();
+  const [t, , tenant, members] = await Promise.all([
+    getTranslations("admin.pages.staffManagement"),
+    requireStaffRole(["admin"]),
+    tenantPromise,
+    tenantPromise.then((resolvedTenant) =>
+      resolvedTenant ? listActiveTenantMembers(resolvedTenant.id) : []
+    ),
+  ]);
 
   return (
     <AdminRetroPageFrame
       title={t("title")}
       backHref="/admin/settings"
       backLabel={t("backToSettings")}
-      className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="admin-settings-page w-full max-w-none"
       description={t("description")}
     >
       {/* Current staff */}

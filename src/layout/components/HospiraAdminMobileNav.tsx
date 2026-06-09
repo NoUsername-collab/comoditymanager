@@ -2,6 +2,8 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
+import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
 import { useTranslations } from "next-intl";
 
 const LINKS = [
@@ -14,33 +16,20 @@ export function HospiraAdminMobileNav() {
   const pathname = usePathname();
   const t = useTranslations("hospiraAdmin.nav");
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        triggerRef.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    document.documentElement.classList.add("ml-drawer-open");
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.documentElement.classList.remove("ml-drawer-open");
-    };
-  }, [open]);
+  useMobileDrawer({
+    open,
+    onClose: () => setOpen(false),
+    panelRef,
+    triggerRef,
+  });
 
   return (
     <div className="ml-mobile-menu ml-mobile-menu--hospira" data-mobile-chrome="hospira-menu">
@@ -49,7 +38,7 @@ export function HospiraAdminMobileNav() {
         type="button"
         className="ml-mobile-menu__trigger ml-mobile-menu__trigger--dark"
         aria-expanded={open}
-        aria-controls={mounted ? panelId : undefined}
+        aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="sr-only">{open ? t("menuClose") : t("menuOpen")}</span>
@@ -60,37 +49,47 @@ export function HospiraAdminMobileNav() {
         </span>
       </button>
 
-      {mounted ? (
-        <>
-          <button
-            type="button"
-            className={[
-              "ml-drawer__backdrop",
-              open && "ml-drawer__backdrop--visible",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            aria-label={t("menuClose")}
-            aria-hidden={!open}
-            tabIndex={open ? 0 : -1}
-            onClick={() => setOpen(false)}
-          />
+      <MobileDrawerPortal>
+        <button
+          type="button"
+          className={[
+            "ml-drawer__backdrop",
+            open && "ml-drawer__backdrop--visible",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          aria-label={t("menuClose")}
+          aria-hidden={!open}
+          tabIndex={-1}
+          onClick={() => setOpen(false)}
+        />
 
-          <div
-            id={panelId}
-            suppressHydrationWarning
-            className={[
-              "ml-drawer",
-              "ml-drawer--hospira",
-              open && "ml-drawer--open",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            role="dialog"
-            aria-modal={open}
-            aria-hidden={!open}
-            hidden={!open}
-          >
+        <div
+          ref={panelRef}
+          id={panelId}
+          suppressHydrationWarning
+          className={[
+            "ml-drawer",
+            "ml-drawer--hospira",
+            open && "ml-drawer--open",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          role="dialog"
+          aria-modal={open}
+          aria-hidden={!open}
+          hidden={!open}
+        >
+            <div className="ml-drawer__head">
+              <button
+                type="button"
+                className="ml-drawer__close"
+                aria-label={t("menuClose")}
+                onClick={() => setOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
             <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
               {LINKS.map((link) => {
                 const active = link.exact
@@ -113,9 +112,8 @@ export function HospiraAdminMobileNav() {
                 );
               })}
             </nav>
-          </div>
-        </>
-      ) : null}
+        </div>
+      </MobileDrawerPortal>
     </div>
   );
 }

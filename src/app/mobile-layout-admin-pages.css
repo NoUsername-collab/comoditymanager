@@ -131,7 +131,15 @@ html[data-layout-chrome="compact"] .language-switcher__trigger {
   padding-inline: 0.65rem;
 }
 
-/* ── Admin more drawer ── */
+/* ── Admin more drawer (above HUD z-index 80) ── */
+html[data-layout-chrome="compact"] .ml-drawer__backdrop--admin.ml-drawer__backdrop--visible {
+  z-index: 85;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin {
+  z-index: 90;
+}
+
 .ml-drawer--admin {
   background: var(--admin-panel-bg, #fff);
   color: var(--admin-text, #18181b);

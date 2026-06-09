@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import {
@@ -44,9 +45,11 @@ const getCachedAllFloors = (tenantId: string) =>
     }
   );
 
+const loadAllFloors = cache((tenantId: string) => getCachedAllFloors(tenantId)());
+
 export async function listAllFloors(): Promise<Floor[]> {
   const { tenantId } = await getTenantScope();
-  return getCachedAllFloors(tenantId)();
+  return loadAllFloors(tenantId);
 }
 
 export async function listFloorsByBuilding(buildingId: string): Promise<Floor[]> {

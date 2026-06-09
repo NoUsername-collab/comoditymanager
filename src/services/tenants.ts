@@ -7,6 +7,7 @@
  * ╚══════════════════════════════════════════════════════════════════╝
  */
 
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { platformPensionNameFallback } from "@/lib/platform/branding";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -52,12 +53,7 @@ export async function getDefaultTenant(): Promise<TenantRow | null> {
   }
 }
 
-/**
- * Get tenant by ID.
- */
-export async function getTenantById(
-  tenantId: string
-): Promise<TenantRow | null> {
+async function getTenantByIdUncached(tenantId: string): Promise<TenantRow | null> {
   try {
     const supabase = createPublicAdminClient();
     const { data, error } = await supabase
@@ -71,6 +67,27 @@ export async function getTenantById(
   } catch {
     return null;
   }
+}
+
+const getCachedTenantById = (tenantId: string) =>
+  unstable_cache(
+    () => getTenantByIdUncached(tenantId),
+    ["tenant-by-id", tenantId],
+    { revalidate: 300, tags: [`tenant-id-${tenantId}`] }
+  );
+
+const loadTenantById = cache((tenantId: string) =>
+  getCachedTenantById(tenantId)()
+);
+
+/**
+ * Get tenant by ID.
+ */
+export async function getTenantById(
+  tenantId: string
+): Promise<TenantRow | null> {
+  if (!tenantId) return null;
+  return loadTenantById(tenantId);
 }
 
 async function fetchTenantBySlug(slug: string): Promise<TenantRow | null> {
@@ -132,11 +149,7 @@ export async function getTenantOwnerEmail(tenantId: string): Promise<string | nu
   }
 }
 
-/**
- * Get the pension display name for a tenant.
- * Falls back to NEXT_PUBLIC_PENSION_NAME env var.
- */
-export async function getTenantDisplayName(tenantId: string): Promise<string> {
+const loadTenantDisplayName = cache(async (tenantId: string): Promise<string> => {
   if (!tenantId) return platformPensionNameFallback();
   try {
     const tenant = await getTenantById(tenantId);
@@ -145,6 +158,14 @@ export async function getTenantDisplayName(tenantId: string): Promise<string> {
     /* fall through */
   }
   return platformPensionNameFallback();
+});
+
+/**
+ * Get the pension display name for a tenant.
+ * Falls back to NEXT_PUBLIC_PENSION_NAME env var.
+ */
+export async function getTenantDisplayName(tenantId: string): Promise<string> {
+  return loadTenantDisplayName(tenantId);
 }
 
 /**

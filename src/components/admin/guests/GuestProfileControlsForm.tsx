@@ -36,7 +36,7 @@ function TraitChecklist({
           <label
             key={trait}
             className={[
-              "inline-flex items-center gap-2 rounded border px-2 py-1 text-xs font-medium",
+              "guest-profile-controls-form__trait-chip inline-flex items-center gap-2 rounded border px-2 py-1 text-xs font-medium",
               tone === "good"
                 ? "border-emerald-200 bg-emerald-50 text-emerald-900"
                 : "border-red-200 bg-red-50 text-red-900",

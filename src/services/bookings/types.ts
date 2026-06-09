@@ -12,6 +12,13 @@ export const BOOKING_ROW_SELECT = `
   booking_rooms ( room_id, rooms ( name ) )
 `;
 
+/** Lighter select for full cereri queue list — no room join or operational columns. */
+export const CERERE_LIST_PAGE_SELECT = `
+  id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
+  guest_email, guest_id, guest_alert_level, guest_alert_note,
+  num_adults, num_children
+`;
+
 export const BOOKING_ROW_WITH_UPDATED_SELECT = `
   ${BOOKING_ROW_SELECT.trim()},
   updated_at

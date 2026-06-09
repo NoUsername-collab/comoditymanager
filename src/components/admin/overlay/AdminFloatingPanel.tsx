@@ -1,9 +1,19 @@
 "use client";
 
-import { useEffect, useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useTranslations } from "next-intl";
+import { getVisualViewportBox } from "@/lib/ui/viewport-position";
 import { AdminPortal } from "./AdminPortal";
 import { useFloatingPosition } from "./useFloatingPosition";
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), select, textarea, input:not([type="hidden"]), [tabindex]:not([tabindex="-1"])';
+
+function getFocusableElements(root: HTMLElement): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    (el) => !el.hasAttribute("hidden") && el.tabIndex !== -1
+  );
+}
 
 export type AdminFloatingVariant = "popover" | "modal";
 
@@ -40,25 +50,65 @@ export function AdminFloatingPanel({
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
   const panelStyle = useFloatingPosition(open, anchorRect ?? null, width, variant);
 
   useEffect(() => {
-    if (!open || !closeOnEscape) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, closeOnEscape, onClose]);
+    if (!open || variant !== "modal") return;
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    if (variant === "modal") document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("admin-modal-open");
+
     return () => {
-      document.body.style.overflow = prev;
+      document.documentElement.classList.remove("admin-modal-open");
     };
   }, [open, variant]);
+
+  useEffect(() => {
+    if (!open || variant !== "modal") return;
+
+    const panel = panelRef.current;
+    if (!panel) return;
+
+    const focusFirst = () => {
+      const closeBtn = panel.querySelector<HTMLElement>(".admin-floating-panel__close");
+      const items = getFocusableElements(panel);
+      (closeBtn ?? items[0])?.focus();
+    };
+
+    const raf = requestAnimationFrame(focusFirst);
+
+    const onKey = (e: KeyboardEvent) => {
+      if (closeOnEscape && e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key !== "Tab") return;
+
+      const items = getFocusableElements(panel);
+      if (items.length === 0) return;
+
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, variant, closeOnEscape, onClose]);
 
   if (!open) return null;
 
@@ -80,6 +130,7 @@ export function AdminFloatingPanel({
           />
         )}
         <div
+          ref={panelRef}
           role="dialog"
           aria-modal={isModal}
           aria-labelledby={title ? titleId : undefined}
@@ -92,7 +143,9 @@ export function AdminFloatingPanel({
             .join(" ")}
           style={
             isModal
-              ? { width: Math.min(width, window.innerWidth - 32) }
+              ? {
+                  width: Math.min(width, getVisualViewportBox().width - 32 || width),
+                }
               : { ...panelStyle, width }
           }
           onPointerDown={(e) => e.stopPropagation()}

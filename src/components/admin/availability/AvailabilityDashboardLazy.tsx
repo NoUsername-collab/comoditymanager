@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
 import type { AvailabilityDashboard } from "@/components/admin/availability/AvailabilityDashboard";
+import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 
 const AvailabilityDashboardDynamic = dynamic(
   () =>
@@ -11,14 +12,7 @@ const AvailabilityDashboardDynamic = dynamic(
     })),
   {
     ssr: false,
-    loading: () => (
-      <div
-        className="flex min-h-[12rem] items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-sm text-zinc-500"
-        aria-busy="true"
-      >
-        …
-      </div>
-    ),
+    loading: () => <AdminAvailabilitySkeleton />,
   }
 );
 

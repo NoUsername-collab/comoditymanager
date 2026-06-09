@@ -102,7 +102,7 @@ export function StayQuickOps({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-1.5">
+    <div className="stay-quick-ops flex flex-wrap items-center justify-end gap-1.5">
       <button
         type="button"
         className="rounded border border-emerald-300 bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-900 disabled:cursor-not-allowed disabled:opacity-45"

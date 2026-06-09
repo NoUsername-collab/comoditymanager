@@ -1,3 +1,7 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 
 /** Rând din tabela `rooms` + nume clădire (join simplu) */
@@ -13,14 +17,11 @@ export type RoomRow = {
   building_name: string | null;
 };
 
-/**
- * Citește camerele active pentru tenant-ul curent (subdomeniu).
- */
-export async function listActiveRooms(): Promise<{
+async function listActiveRoomsUncached(tenantId: string): Promise<{
   rooms: RoomRow[];
   error: string | null;
 }> {
-  const { tenantId, supabase } = await getTenantScope();
+  const supabase = createPublicAdminClient();
 
   const { data, error } = await supabase
     .from("rooms")
@@ -65,4 +66,30 @@ export async function listActiveRooms(): Promise<{
   });
 
   return { rooms, error: null };
+}
+
+const getCachedActiveRooms = (tenantId: string) =>
+  unstable_cache(
+    () => listActiveRoomsUncached(tenantId),
+    ["active-rooms", tenantId],
+    {
+      tags: [CACHE_TAGS.rooms, tenantTag(tenantId, CACHE_TAGS.rooms)],
+      revalidate: 300,
+    }
+  );
+
+const loadActiveRooms = cache((tenantId: string) =>
+  getCachedActiveRooms(tenantId)()
+);
+
+/**
+ * Citește camerele active pentru tenant-ul curent (subdomeniu).
+ * Per-request dedupe + 5min cross-request cache (busted via rooms tag).
+ */
+export async function listActiveRooms(): Promise<{
+  rooms: RoomRow[];
+  error: string | null;
+}> {
+  const { tenantId } = await getTenantScope();
+  return loadActiveRooms(tenantId);
 }

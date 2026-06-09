@@ -7,7 +7,7 @@ export default async function Loading() {
   return (
     <AdminRetroPageFrame
       title={t("ganttTitle")}
-      className="gantt-calendar-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="gantt-calendar-page w-full max-w-none"
     >
       <AdminGanttSkeleton />
     </AdminRetroPageFrame>

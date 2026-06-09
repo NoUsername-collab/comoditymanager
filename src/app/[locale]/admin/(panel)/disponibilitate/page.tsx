@@ -15,8 +15,10 @@ export default async function AdminDisponibilitatePage({
     feat?: string;
   }>;
 }) {
-  const t = await getTranslations("admin.pages.disponibilitate");
-  const params = await searchParams;
+  const [t, params] = await Promise.all([
+    getTranslations("admin.pages.disponibilitate"),
+    searchParams,
+  ]);
 
   return (
     <AdminRetroPageFrame

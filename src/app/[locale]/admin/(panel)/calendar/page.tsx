@@ -1,8 +1,9 @@
 ﻿import { Suspense } from "react";
 import { CalendarAvailabilityStream } from "@/components/admin/calendar/CalendarAvailabilityStream";
+import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 import { GanttCalendarLazy } from "@/components/admin/GanttCalendarLazy";
 import { GanttAvailabilityHeatmapPanelLazy } from "@/components/admin/gantt/GanttAvailabilityHeatmapPanelLazy";
-import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
+import { GanttCereriQueueLazy } from "@/components/admin/gantt/GanttCereriQueueLazy";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 import type { GanttViewMode } from "@/components/admin/gantt/GanttToolbar";
@@ -15,7 +16,6 @@ import {
 } from "@/lib/constants";
 import { parseGanttFilter, parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
-import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -60,14 +60,41 @@ export default async function AdminCalendarPage({
     avail_feat?: string;
   }>;
 }) {
-  const [t, tCommon, tGanttRange, locale, params, effectiveToday] =
+  const paramsPromise = searchParams;
+  const todayPromise = getEffectiveToday();
+  const localePromise = getLocale();
+
+  const [t, tCommon, tGanttRange, locale, params, effectiveToday, dataResult] =
     await Promise.all([
       getTranslations("admin.pages.calendar"),
       getTranslations("admin.common"),
       getTranslations("admin.gantt.range"),
-      getLocale(),
-      searchParams,
-      getEffectiveToday(),
+      localePromise,
+      paramsPromise,
+      todayPromise,
+      Promise.all([paramsPromise, todayPromise, localePromise])
+        .then(([p, today, loc]) => {
+          const ref = parseIso(today);
+          const y = Number(p.y) || ref.getFullYear();
+          const m = p.m !== undefined ? Number(p.m) : ref.getMonth();
+          const q = p.q !== undefined ? Number(p.q) : Math.floor(m / 3);
+          const previewRange = resolveGanttRange({
+            y,
+            m,
+            zoom: p.zoom,
+            ws: p.ws,
+            q,
+            locale: loc,
+            today,
+          });
+          return loadCalendarCoreData(
+            previewRange.rangeStart,
+            previewRange.rangeEnd,
+            today
+          );
+        })
+        .then((data) => ({ ok: true as const, data }))
+        .catch((error) => ({ ok: false as const, error })),
     ]);
   const refDate = parseIso(effectiveToday);
   const year = Number(params.y) || refDate.getFullYear();
@@ -107,35 +134,26 @@ export default async function AdminCalendarPage({
     { year, month, featureFilter: feat }
   );
 
-  let data: Awaited<ReturnType<typeof loadCalendarCoreData>> | undefined;
-
-  try {
-    data = await loadCalendarCoreData(
-      viewRange.rangeStart,
-      viewRange.rangeEnd,
-      effectiveToday
-    );
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : t("genericError");
+  if (!dataResult.ok) {
+    const msg =
+      dataResult.error instanceof Error
+        ? dataResult.error.message
+        : t("genericError");
     return (
       <AdminRetroPageFrame title={t("title")}>
         <p className="text-red-600">{msg}</p>
-        <p className="mt-2 text-sm">
-          {t("loadError")}
-        </p>
+        <p className="mt-2 text-sm">{t("loadError")}</p>
       </AdminRetroPageFrame>
     );
   }
 
+  const data = dataResult.data;
   if (!data) return null;
 
-  const [allRoomsRaw, allBookings, settings, buildingsRaw, occupancy] = data;
+  const [allRoomsRaw, allBookings, settings, buildingsRaw, occupancy, optionSlugsByRoom] =
+    data;
   const activeBuildings = buildingsRaw.filter((b) => b.is_active);
   const allRooms = allRoomsRaw.filter((r) => r.is_active);
-  const roomIds = allRooms.map((r) => r.id);
-  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(roomIds).catch(
-    () => ({} as Record<string, string[]>)
-  );
   const checkInTime =
     settings?.default_check_in_time ?? DEFAULT_CHECK_IN_TIME;
   const checkOutTime =
@@ -238,7 +256,7 @@ export default async function AdminCalendarPage({
       description={
         unassignedCereri.length > 0 ? (
           <div className="gantt-page-top-cards">
-            <GanttCereriQueue
+            <GanttCereriQueueLazy
               cereri={unassignedCereri}
               top
               title={t("unassignedTitle")}
@@ -248,7 +266,7 @@ export default async function AdminCalendarPage({
           </div>
         ) : undefined
       }
-      className="gantt-calendar-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="gantt-calendar-page w-full max-w-none"
     >
       <RetroXpWindow title={t("windowGantt")} className="w-full">
         <GanttCalendarLazy
@@ -279,15 +297,7 @@ export default async function AdminCalendarPage({
         roomCountLabel={t("windowGantt")}
       >
         {availabilityState.open ? (
-          <Suspense
-            fallback={
-              <div
-                className="availability-stream-skeleton min-h-[14rem] animate-pulse rounded-xl border border-zinc-200 bg-zinc-50"
-                aria-busy="true"
-                aria-live="polite"
-              />
-            }
-          >
+          <Suspense fallback={<AdminAvailabilitySkeleton />}>
             <CalendarAvailabilityStream
               year={availabilityState.year}
               month={availabilityState.month}

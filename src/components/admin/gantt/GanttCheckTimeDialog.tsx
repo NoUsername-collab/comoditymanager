@@ -116,6 +116,14 @@ export function GanttCheckTimeDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (!open) return;
+    document.documentElement.classList.add("admin-modal-open");
+    return () => {
+      document.documentElement.classList.remove("admin-modal-open");
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const title =

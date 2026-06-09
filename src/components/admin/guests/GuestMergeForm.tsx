@@ -28,7 +28,7 @@ export function GuestMergeForm({
   return (
     <AdminPendingForm
       action={mergeGuestsAction}
-      className="mt-4 space-y-2 rounded border border-amber-200 bg-amber-50 p-3"
+      className="guest-merge-form mt-4 space-y-2 rounded border border-amber-200 bg-amber-50 p-3"
     >
       <input type="hidden" name="target_id" value={guestId} />
       <p className="text-sm font-semibold text-amber-950">

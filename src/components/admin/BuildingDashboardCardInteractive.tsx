@@ -35,14 +35,14 @@ export function BuildingDashboardCardInteractive({
   return (
     <article
       className={[
-        "building-dashboard-card overflow-hidden rounded-2xl border shadow-md ring-1 ring-zinc-900/5",
+        "building-dashboard-card overflow-hidden rounded-xl border shadow-md ring-1 ring-zinc-900/5",
         theme.border,
       ].join(" ")}
     >
       {/* Header — mereu vizibil */}
       <div
         className={[
-          "sticky top-0 z-10 px-5 py-4 shadow-sm",
+          "sticky top-0 z-10 px-4 py-3 shadow-sm",
           theme.headerBg,
         ].join(" ")}
         style={{ borderBottom: `3px solid ${theme.accent}` }}
@@ -75,7 +75,7 @@ export function BuildingDashboardCardInteractive({
           </Link>
         </header>
 
-        <div className="mt-4 flex flex-wrap items-end gap-4 sm:gap-6">
+        <div className="mt-3 flex flex-wrap items-end gap-3 sm:gap-4">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
               {tBuildings("floors")}

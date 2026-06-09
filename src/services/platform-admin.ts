@@ -3,6 +3,13 @@
  * All queries use service_role client (bypasses RLS).
  */
 
+import { cache } from "react";
+import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
+import { safeCount } from "@/lib/hospira-admin/safe-count";
+import {
+  getTenantResourceCounts,
+  loadTenantResourceCounts,
+} from "@/lib/hospira-admin/tenant-resource-counts";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { TenantRow } from "./tenants";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
@@ -28,42 +35,67 @@ export interface PlatformStats {
 
 // ─── Queries ────────────────────────────────────────────────────
 
-/** List all tenants with summary counts. */
-export async function listAllTenants(): Promise<PlatformTenantSummary[]> {
+export type TenantFilterOption = {
+  id: string;
+  slug: string;
+  displayName: string;
+};
+
+function attachResourceCounts<T extends { id: string }>(
+  tenants: T[],
+  resourceCounts: Awaited<ReturnType<typeof loadTenantResourceCounts>>
+): Array<T & { member_count: number; room_count: number; booking_count: number }> {
+  return tenants.map((tenant) => {
+    const counts = getTenantResourceCounts(resourceCounts, tenant.id);
+    return {
+      ...tenant,
+      member_count: counts.member_count,
+      room_count: counts.room_count,
+      booking_count: counts.booking_count,
+    };
+  });
+}
+
+/** Lightweight tenant list for filters/dropdowns (no resource counts). */
+export const listTenantFilterOptions = cache(async (): Promise<TenantFilterOption[]> => {
   const supabase = createPublicAdminClient();
 
   const { data: tenants, error } = await supabase
     .from("tenants")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select("id, slug, display_name")
+    .order("display_name", { ascending: true });
 
-  if (error || !tenants) return [];
+  throwIfDbError("tenants (listTenantFilterOptions)", error);
+  if (!tenants) {
+    throw new Error("[tenants (listTenantFilterOptions)] no data returned");
+  }
 
-  const safeCount = (p: PromiseLike<{ count: number | null }>) =>
-    Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
+  return tenants.map((tenant) => ({
+    id: tenant.id,
+    slug: tenant.slug,
+    displayName: tenant.display_name,
+  }));
+});
 
-  const enriched = await Promise.all(
-    tenants.map(async (t) => {
-      const [members, rooms, bookings] = await Promise.all([
-        safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", t.id).eq("is_active", true)),
-        safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
-        safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", t.id)),
-      ]);
+/** List all tenants with summary counts — 2 DB round-trips at 100+ tenants. */
+export const listAllTenants = cache(async (): Promise<PlatformTenantSummary[]> => {
+  const supabase = createPublicAdminClient();
 
-      return {
-        ...t,
-        member_count: members,
-        room_count: rooms,
-        booking_count: bookings,
-      } as PlatformTenantSummary;
-    })
-  );
+  const [{ data: tenants, error }, resourceCounts] = await Promise.all([
+    supabase.from("tenants").select("*").order("created_at", { ascending: false }),
+    loadTenantResourceCounts(supabase),
+  ]);
 
-  return enriched;
-}
+  throwIfDbError("tenants (listAllTenants)", error);
+  if (!tenants) {
+    throw new Error("[tenants (listAllTenants)] no data returned");
+  }
+
+  return attachResourceCounts(tenants, resourceCounts) as PlatformTenantSummary[];
+});
 
 /** Aggregate platform statistics. */
-export async function getPlatformStats(): Promise<PlatformStats> {
+export const getPlatformStats = cache(async (): Promise<PlatformStats> => {
   const tenants = await listAllTenants();
 
   const planDistribution: Record<string, number> = {};
@@ -92,12 +124,12 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     mrr,
     planDistribution,
   };
-}
+});
 
 /** Get a single tenant by ID with full details. */
-export async function getPlatformTenantById(
+export const getPlatformTenantById = cache(async (
   tenantId: string
-): Promise<PlatformTenantSummary | null> {
+): Promise<PlatformTenantSummary | null> => {
   const supabase = createPublicAdminClient();
 
   const { data: tenant, error } = await supabase
@@ -108,13 +140,26 @@ export async function getPlatformTenantById(
 
   if (error || !tenant) return null;
 
-  const safeCount = (p: PromiseLike<{ count: number | null }>) =>
-    Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
-
   const [members, rooms, bookings] = await Promise.all([
-    safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("is_active", true)),
-    safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
-    safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
+    safeCount(
+      supabase
+        .from("tenant_members")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .eq("is_active", true)
+    ),
+    safeCount(
+      supabase
+        .from("rooms")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+    ),
+    safeCount(
+      supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+    ),
   ]);
 
   return {
@@ -123,7 +168,7 @@ export async function getPlatformTenantById(
     room_count: rooms,
     booking_count: bookings,
   } as PlatformTenantSummary;
-}
+});
 
 // ─── Mutations ──────────────────────────────────────────────────
 
@@ -197,16 +242,3 @@ export async function updateTenantBilling(
   return { success: true };
 }
 
-/** Get recent activity logs across all tenants. */
-export async function getPlatformActivityLogs(limit = 50) {
-  const supabase = createPublicAdminClient();
-
-  const { data, error } = await supabase
-    .from("admin_activity_log")
-    .select("*, tenants!inner(slug, display_name)")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-
-  if (error) return [];
-  return data ?? [];
-}

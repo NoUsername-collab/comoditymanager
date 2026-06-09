@@ -14,12 +14,12 @@ export function StatisticsBarChart({
   const max = maxValue ?? Math.max(...items.map((i) => i.value), 1);
 
   return (
-    <div className="statistics-bar-chart rounded-2xl border border-zinc-200/90 bg-white p-5 shadow-sm ring-1 ring-zinc-900/5">
+    <div className="statistics-bar-chart rounded-xl border border-zinc-200/90 bg-white p-4 shadow-sm ring-1 ring-zinc-900/5">
       <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
       {caption && (
         <p className="mt-0.5 text-xs text-zinc-500">{caption}</p>
       )}
-      <div className="mt-4 flex items-end justify-between gap-2 sm:gap-3">
+      <div className="mt-3 flex items-end justify-between gap-2 sm:gap-2.5">
         {items.map((item) => {
           const h = max > 0 ? Math.max(8, Math.round((item.value / max) * 100)) : 8;
           const bar =

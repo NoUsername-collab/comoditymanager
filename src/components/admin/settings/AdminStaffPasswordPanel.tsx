@@ -44,7 +44,7 @@ export function AdminStaffPasswordPanel({
 
   return (
     <form
-      className="admin-settings-fields space-y-4"
+      className="admin-staff-password-panel admin-settings-fields space-y-4"
       action={async (formData) => {
         setPending(true);
         setError(null);
@@ -100,7 +100,7 @@ export function AdminStaffPasswordPanel({
           {success}
         </p>
       )}
-      <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60">
+      <AdminSubmitButton className="admin-staff-password-panel__submit rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60">
         {pending ? tCommon("saving") : tPage("changePassword")}
       </AdminSubmitButton>
     </form>

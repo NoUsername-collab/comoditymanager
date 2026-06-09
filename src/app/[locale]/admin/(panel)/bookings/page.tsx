@@ -2,26 +2,63 @@
 import { getTranslations } from "next-intl/server";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
-import { listCereriNoi } from "@/services/bookings";
+import {
+  CERERE_LIST_MAX_SHOWN,
+  CERERE_LIST_PAGE_SIZE,
+  countCereriNoi,
+  listCereriNoiPage,
+} from "@/services/bookings";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
 
-export default async function AdminBookingsPage() {
-  const t = await getTranslations("admin.pages.bookings");
-  let cereri: Awaited<ReturnType<typeof listCereriNoi>> = [];
+export default async function AdminBookingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ shown?: string }>;
+}) {
+  const params = await searchParams;
+  const shown = Math.min(
+    CERERE_LIST_MAX_SHOWN,
+    Math.max(
+      CERERE_LIST_PAGE_SIZE,
+      Number(params.shown) || CERERE_LIST_PAGE_SIZE
+    )
+  );
+
+  const [t, total, cereriResult] = await Promise.all([
+    getTranslations("admin.pages.bookings"),
+    countCereriNoi(),
+    listCereriNoiPage(shown)
+      .then((data) => ({ ok: true as const, data }))
+      .catch((e) => ({ ok: false as const, error: e })),
+  ]);
+
+  let cereri: Awaited<ReturnType<typeof listCereriNoiPage>> = [];
   let error: string | null = null;
 
-  try {
-    cereri = await listCereriNoi();
-  } catch (e) {
-    error = e instanceof Error ? e.message : t("genericError");
+  if (cereriResult.ok) {
+    cereri = cereriResult.data;
+  } else {
+    error =
+      cereriResult.error instanceof Error
+        ? cereriResult.error.message
+        : t("genericError");
   }
+
+  const hasMore = total > shown && shown < CERERE_LIST_MAX_SHOWN;
+  const nextShown = shown + CERERE_LIST_PAGE_SIZE;
 
   return (
     <AdminRetroPageFrame title={t("title")} description={t("description")}>
-      <RetroXpWindow title={t("windowTitle", { count: cereri.length })}>
+      <RetroXpWindow title={t("windowTitle", { count: total })}>
         {error && <p className="text-sm text-red-800">{error}</p>}
+
+        {total > 0 && cereri.length < total && !error ? (
+          <p className="mb-3 text-xs text-zinc-600">
+            {t("showingPartial", { shown: cereri.length, total })}
+          </p>
+        ) : null}
 
         <ul className="cerere-list">
           {cereri.map((c) => (
@@ -72,6 +109,17 @@ export default async function AdminBookingsPage() {
           ))}
         </ul>
 
+        {hasMore && !error ? (
+          <div className="mt-4">
+            <Link
+              href={`/admin/bookings?shown=${nextShown}`}
+              className="cereri-load-more cazari-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
+            >
+              {t("loadMore")}
+            </Link>
+          </div>
+        ) : null}
+
         {cereri.length === 0 && !error && (
           <AdminEmptyState
             emoji="?"
@@ -85,4 +133,3 @@ export default async function AdminBookingsPage() {
     </AdminRetroPageFrame>
   );
 }
-

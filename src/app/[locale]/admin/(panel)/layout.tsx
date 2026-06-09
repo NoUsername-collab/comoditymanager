@@ -12,13 +12,10 @@ import {
   getPensionSettings,
   pensionAppearanceSettings,
 } from "@/services/pension-settings";
-import { resolveStaffRole } from "@/lib/auth/tenant-staff";
-import { getStaffUser } from "@/lib/auth/require-staff";
-import { isLocationConfigurationAccessible } from "@/lib/auth/location-unlock";
+import { getStaffShellAccess } from "@/lib/auth/require-staff";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
-import { loadTodayBoard } from "@/services/today-board";
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { OnboardingBar } from "@/components/admin/onboarding/OnboardingBar";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
@@ -34,7 +31,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [, t, simBundle, batch, todayBoard] = await Promise.all([
+  const [, t, simBundle, shellData] = await Promise.all([
     bindTenantContextFromRequest(),
     getTranslations("admin.layout"),
     (async () => {
@@ -44,36 +41,22 @@ export default async function AdminLayout({
         : true;
       return { simStatus, simDbBackup };
     })(),
-    Promise.all([
-      countCereriNoi().catch(() => 0),
-      getPensionSettings().catch(() => null),
-      (async () => {
-        try {
-          const user = await getStaffUser();
-          const role = user ? await resolveStaffRole(user) : null;
-          const locationUnlocked = user
-            ? await isLocationConfigurationAccessible(user.id)
-            : false;
-          return {
-            isAdmin: role === "admin",
-            locationUnlocked,
-          };
-        } catch {
-          return { isAdmin: false, locationUnlocked: false };
-        }
-      })(),
-    ]),
-    getPensionSettings()
-      .catch(() => null)
-      .then((pension) => {
-        const checkInTime = pension?.default_check_in_time ?? "14:00";
-        const checkOutTime = pension?.default_check_out_time ?? "11:00";
-        return loadTodayBoard(checkInTime, checkOutTime).catch(() => null);
-      }),
+    (async () => {
+      const pensionPromise = getPensionSettings().catch(() => null);
+      const [pension, cereriCount, staffAccess] = await Promise.all([
+        pensionPromise,
+        countCereriNoi().catch(() => 0),
+        getStaffShellAccess().catch(() => ({
+          isAdmin: false,
+          locationUnlocked: false,
+        })),
+      ]);
+      return { cereriCount, pension, staffAccess };
+    })(),
   ]);
 
   const { simStatus, simDbBackup } = simBundle;
-  const [cereriCount, pension, staffAccess] = batch;
+  const { cereriCount, pension, staffAccess } = shellData;
   const checkInTime = pension?.default_check_in_time ?? "14:00";
   const checkOutTime = pension?.default_check_out_time ?? "11:00";
   const { isAdmin, locationUnlocked } = staffAccess;
@@ -89,7 +72,6 @@ export default async function AdminLayout({
         <div className="admin-hud">
           <div className="admin-hud__surface">
             <AdminTopBar
-              board={todayBoard}
               cereriCount={cereriCount}
               locationUnlocked={locationUnlocked}
               isAdmin={isAdmin}
@@ -103,7 +85,7 @@ export default async function AdminLayout({
         <OnboardingBar />
 
         {cereriCount > 0 && (
-          <div className="admin-hud-alert px-6 py-1.5 text-center text-xs">
+          <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">
             <Link href="/admin/bookings" className="admin-hud-alert__link">
               {t("pendingCount", { count: cereriCount })}
             </Link>{" "}

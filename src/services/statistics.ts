@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -97,10 +98,34 @@ const getCachedBookingsForStatistics = (tenantId: string) =>
     }
   );
 
+const loadAllBookingsForStatisticsCached = cache((tenantId: string) =>
+  getCachedBookingsForStatistics(tenantId)()
+);
+
 export async function loadAllBookingsForStatistics(): Promise<StatBooking[]> {
   const { tenantId } = await getTenantScope();
-  return getCachedBookingsForStatistics(tenantId)();
+  return loadAllBookingsForStatisticsCached(tenantId);
 }
+
+export type StatisticsBaseData = {
+  bookings: StatBooking[];
+  snapshot: ActiveRoomSnapshot[];
+};
+
+/** Shared bookings + room snapshot — deduped when report and month compare load together. */
+export const loadStatisticsBaseData = cache(
+  async (): Promise<StatisticsBaseData> => {
+    const [bookings, rooms, buildings] = await Promise.all([
+      loadAllBookingsForStatistics(),
+      listAllRooms(),
+      listBuildings(),
+    ]);
+    return {
+      bookings,
+      snapshot: activeRoomSnapshot(rooms, buildings),
+    };
+  }
+);
 
 function activeRoomSnapshot(
   rooms: Awaited<ReturnType<typeof listAllRooms>>,
@@ -116,15 +141,12 @@ function activeRoomSnapshot(
     }));
 }
 
-export async function loadStatisticsReport(): Promise<StatisticsReport> {
-  const [bookings, rooms, buildings] = await Promise.all([
-    loadAllBookingsForStatistics(),
-    listAllRooms(),
-    listBuildings(),
+const loadStatisticsReportCached = cache(async (): Promise<StatisticsReport> => {
+  const [{ bookings, snapshot }, today] = await Promise.all([
+    loadStatisticsBaseData(),
+    getEffectiveToday(),
   ]);
-
-  const snapshot = activeRoomSnapshot(rooms, buildings);
-  const currentYear = Number((await getEffectiveToday()).slice(0, 4));
+  const currentYear = Number(today.slice(0, 4));
   const yearsWithData = discoverYears(bookings, currentYear);
   const firstYear = yearsWithData[0] ?? currentYear;
   const lastYear = yearsWithData[yearsWithData.length - 1] ?? currentYear;
@@ -143,4 +165,8 @@ export async function loadStatisticsReport(): Promise<StatisticsReport> {
     yearsWithData,
     note: STATS_NOTE,
   };
+});
+
+export async function loadStatisticsReport(): Promise<StatisticsReport> {
+  return loadStatisticsReportCached();
 }

@@ -56,7 +56,7 @@ export function RoomEditForm({
   const selectedType = types.find((t) => t.id === typeId) ?? null;
 
   return (
-    <AdminPendingForm action={updateRoomAction} className="mt-8 space-y-5">
+    <AdminPendingForm action={updateRoomAction} className="mt-5 space-y-4">
       <input type="hidden" name="id" value={room.id} />
       {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
 

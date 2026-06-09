@@ -3,6 +3,10 @@
  * Uses existing tenant scope (service_role, tenant-scoped).
  */
 
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { OnboardingSnapshot } from "@/domain/onboarding/steps";
 import {
@@ -10,9 +14,10 @@ import {
   type OnboardingProgress,
 } from "@/domain/onboarding/progress";
 
-/** Build the onboarding snapshot from current tenant data. */
-export async function getOnboardingSnapshot(): Promise<OnboardingSnapshot> {
-  const { tenantId, supabase } = await getTenantScope();
+async function getOnboardingSnapshotUncached(
+  tenantId: string
+): Promise<OnboardingSnapshot> {
+  const supabase = createPublicAdminClient();
 
   const safeCount = (p: PromiseLike<{ count: number | null }>) =>
     Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
@@ -50,8 +55,41 @@ export async function getOnboardingSnapshot(): Promise<OnboardingSnapshot> {
   };
 }
 
-/** Full onboarding progress for the current tenant. */
-export async function getOnboardingProgress(): Promise<OnboardingProgress> {
+const getCachedOnboardingSnapshot = (tenantId: string) =>
+  unstable_cache(
+    () => getOnboardingSnapshotUncached(tenantId),
+    ["onboarding-snapshot", tenantId],
+    {
+      tags: [
+        CACHE_TAGS.buildings,
+        CACHE_TAGS.rooms,
+        CACHE_TAGS.bookingCounts,
+        CACHE_TAGS.pensionSettings,
+        tenantTag(tenantId, CACHE_TAGS.buildings),
+        tenantTag(tenantId, CACHE_TAGS.rooms),
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+      ],
+      revalidate: 60,
+    }
+  );
+
+const loadOnboardingSnapshot = cache((tenantId: string) =>
+  getCachedOnboardingSnapshot(tenantId)()
+);
+
+/** Build the onboarding snapshot from current tenant data. */
+export async function getOnboardingSnapshot(): Promise<OnboardingSnapshot> {
+  const { tenantId } = await getTenantScope();
+  return loadOnboardingSnapshot(tenantId);
+}
+
+const loadOnboardingProgress = cache(async (): Promise<OnboardingProgress> => {
   const snapshot = await getOnboardingSnapshot();
   return computeOnboardingProgress(snapshot);
+});
+
+/** Full onboarding progress for the current tenant. */
+export async function getOnboardingProgress(): Promise<OnboardingProgress> {
+  return loadOnboardingProgress();
 }

@@ -33,7 +33,11 @@ html[data-layout-chrome="compact"] .gantt-scroll {
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll {
-  touch-action: pan-x;
+  touch-action: pan-x pan-y;
+  max-height: calc(
+    var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 3.75rem) - var(--ml-safe-bottom, 0px) - 9rem
+  );
+  overflow-y: auto;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll {
@@ -495,7 +499,7 @@ html[data-layout-chrome="compact"] .gantt-quick-panel.admin-floating-panel--moda
 
 html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.rounded-\[1\.65rem\] {
   border-radius: 1rem;
-  padding: 0.85rem;
+  padding: 0.65rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.rounded-\[1\.65rem\] .text-base {

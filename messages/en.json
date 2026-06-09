@@ -366,6 +366,8 @@
         "title": "New requests — Hospira",
         "description": "Confirm availability and assign rooms.",
         "windowTitle": "New requests ({count})",
+        "showingPartial": "Showing {shown} of {total} requests",
+        "loadMore": "Load more requests",
         "genericError": "Error",
         "adultsShort": "ad.",
         "childrenShort": "ch.",
@@ -1491,6 +1493,8 @@
       "previousWeek": "Prev week",
       "nextWeek": "Next week",
       "loadingDayCard": "Loading day card…",
+      "dayCardLoadError": "Could not load day details. Check your connection and try again.",
+      "dayCardRetry": "Try again",
       "dayCard": "Day card",
       "unassignedRequest": "unassigned request",
       "unassignedRequestSuffix": "s",
@@ -2921,6 +2925,25 @@
       "dashboard": "Dashboard",
       "tenants": "Tenants",
       "logs": "Logs"
+    },
+    "error": {
+      "title": "Admin Panel Error",
+      "fallback": "An unexpected error occurred.",
+      "code": "Code: {digest}",
+      "context": "Context",
+      "dbCode": "DB code",
+      "dbDetails": "Details",
+      "dbHint": "Hint",
+      "retry": "Try again",
+      "home": "Dashboard",
+      "viewLogs": "View dev_logs"
+    },
+    "logs": {
+      "error": {
+        "title": "Failed to load logs",
+        "hint": "Check the dev_logs section — the error may already be recorded there.",
+        "viewDevLogs": "View dev_logs"
+      }
     }
   },
   "alphaGate": {

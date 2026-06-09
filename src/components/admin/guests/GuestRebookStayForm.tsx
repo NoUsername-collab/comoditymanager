@@ -183,7 +183,7 @@ export function GuestRebookStayForm({
   }
 
   const formClass = [
-    "guest-rebook-form space-y-6",
+    "guest-rebook-form space-y-4",
     embedded && "guest-rebook-form--embedded",
     compact && "guest-rebook-form--compact",
   ]

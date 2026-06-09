@@ -157,7 +157,7 @@ async function runTenantAppProxy(
     return intlResponse;
   }
 
-  let supabaseResponse = intlResponse;
+  const supabaseResponse = intlResponse;
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -362,7 +362,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(noAuth);
       }
 
-      let haResponse = intlMiddleware(request);
+      const haResponse = intlMiddleware(request);
       const haSupa = createServerClient(url, key, {
         cookies: {
           getAll() { return request.cookies.getAll(); },
@@ -415,7 +415,7 @@ export async function proxy(request: NextRequest) {
     if (path === "/admin/login") {
       const { configured, url, key } = getEdgeSupabaseConfig();
       if (configured && url && key) {
-        let loginResponse = intlMiddleware(request);
+        const loginResponse = intlMiddleware(request);
         const supabase = createServerClient(url, key, {
           cookies: {
             getAll() {

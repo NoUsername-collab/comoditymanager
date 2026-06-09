@@ -73,7 +73,7 @@ export function GanttOpsPickerPanel({
         </div>
         <ul className="max-h-[min(52vh,22rem)] overflow-y-auto p-2">
           {rows.length === 0 ? (
-            <li className="px-3 py-6 text-center text-xs text-zinc-500">
+            <li className="px-3 py-4 text-center text-xs text-zinc-500">
               {mode === "checkin"
                 ? tGantt("opsPicker.noCheckIn")
                 : tGantt("opsPicker.noCheckOut")}

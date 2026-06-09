@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { RoomEditForm } from "@/components/admin/RoomEditForm";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { listBuildings } from "@/services/buildings";
-import { listFloorsByBuilding } from "@/services/floors";
+import { listAllFloors } from "@/services/floors";
 import {
   ensureBuildingPoliciesFromLegacy,
   listRoomOptions,
@@ -28,31 +28,39 @@ export default async function EditRoomPage({
   ]);
   const backToStructure = return_to === "structure";
 
-  const [room, buildings, types, options] = await Promise.all([
-    getRoomById(id).catch(() => null),
-    listBuildings().catch(() => []),
-    listRoomTypes().catch(() => []),
-    listRoomOptions().catch(() => []),
-  ]);
+  const buildingsPromise = listBuildings().catch(
+    () => [] as Awaited<ReturnType<typeof listBuildings>>
+  );
+  const [room, buildings, types, options, allFloors, policyResults] =
+    await Promise.all([
+      getRoomById(id).catch(() => null),
+      buildingsPromise,
+      listRoomTypes().catch(() => []),
+      listRoomOptions().catch(() => []),
+      listAllFloors().catch(() => []),
+      buildingsPromise.then((loadedBuildings) =>
+        Promise.all(
+          loadedBuildings.map((b) =>
+            ensureBuildingPoliciesFromLegacy(b.id, b.ac_mode).catch(
+              () => [] as Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>
+            )
+          )
+        )
+      ),
+    ]);
   if (!room) notFound();
-  const floorsByBuilding: Record<string, Awaited<ReturnType<typeof listFloorsByBuilding>>> = {};
+  const floorsByBuilding: Record<string, Awaited<ReturnType<typeof listAllFloors>>> =
+    {};
   const policiesByBuilding: Record<
     string,
     Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>
   > = {};
-
-  const buildingMeta = await Promise.all(
-    buildings.map(async (b) => {
-      const [floors, policies] = await Promise.all([
-        listFloorsByBuilding(b.id).catch(() => []),
-        ensureBuildingPoliciesFromLegacy(b.id, b.ac_mode).catch(() => []),
-      ]);
-      return { id: b.id, floors, policies };
-    })
-  );
-  for (const { id: buildingId, floors, policies } of buildingMeta) {
-    floorsByBuilding[buildingId] = floors;
-    policiesByBuilding[buildingId] = policies;
+  for (let i = 0; i < buildings.length; i += 1) {
+    const building = buildings[i];
+    floorsByBuilding[building.id] = allFloors.filter(
+      (floor) => floor.building_id === building.id
+    );
+    policiesByBuilding[building.id] = policyResults[i];
   }
 
   return (

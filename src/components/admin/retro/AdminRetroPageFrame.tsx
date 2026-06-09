@@ -28,21 +28,21 @@ export function AdminRetroPageFrame({
 
   return (
     <main
-      className={["ml-content admin-retro-page p-4 sm:p-6 lg:p-8", className]
+      className={["ml-content admin-retro-page p-3 sm:p-4 lg:p-4", className]
         .filter(Boolean)
         .join(" ")}
     >
       {backHref && (
-        <Link href={backHref} className="admin-retro-back mb-3 inline-block">
+        <Link href={backHref} className="admin-retro-back mb-2 inline-block">
           ← {backLabel ?? ""}
         </Link>
       )}
       <RetroXpWindow title={title} bodyClassName={bodyClassName}>
         {(description || action) && (
-          <div className="admin-retro-page-toolbar mb-4 flex flex-wrap items-start justify-between gap-3">
+          <div className="admin-retro-page-toolbar mb-2 flex flex-wrap items-start justify-between gap-2">
             {description ? (
               plainDescription ? (
-                <p className="admin-retro-page-desc max-w-2xl text-sm leading-relaxed">
+                <p className="admin-retro-page-desc max-w-2xl text-sm leading-snug">
                   {description}
                 </p>
               ) : (

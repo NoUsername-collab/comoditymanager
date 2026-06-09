@@ -10,12 +10,14 @@ export default async function BookingInvoicePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const tPage = await getTranslations("admin.pages.invoice");
-  const tCommon = await getTranslations("admin.common");
   if (!isInvoicingAlphaEnabled()) notFound();
 
-  const { id } = await params;
-  const ctx = await loadInformalInvoice(id).catch(() => null);
+  const [tPage, tCommon, { id }, ctx] = await Promise.all([
+    getTranslations("admin.pages.invoice"),
+    getTranslations("admin.common"),
+    params,
+    params.then(({ id }) => loadInformalInvoice(id).catch(() => null)),
+  ]);
   if (!ctx) notFound();
 
   return (

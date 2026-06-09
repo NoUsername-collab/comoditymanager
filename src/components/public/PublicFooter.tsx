@@ -1,17 +1,14 @@
 import { Link } from "@/i18n/navigation";
-import { getPensionSettings } from "@/services/pension-settings";
+import { getPublicPensionDisplayName } from "@/services/public-brand";
 import { getTranslations } from "next-intl/server";
 
 export async function PublicFooter() {
-  const t = await getTranslations("public.footer");
-  const tShell = await getTranslations("public.shell");
-  let title = tShell("brandFallback");
-  try {
-    const s = await getPensionSettings();
-    if (s?.display_name) title = s.display_name;
-  } catch {
-    /* fără DB */
-  }
+  const shellPromise = getTranslations("public.shell");
+  const [t, tShell, title] = await Promise.all([
+    getTranslations("public.footer"),
+    shellPromise,
+    shellPromise.then((ts) => getPublicPensionDisplayName(ts("brandFallback"))),
+  ]);
 
   return (
     <footer className="public-footer">

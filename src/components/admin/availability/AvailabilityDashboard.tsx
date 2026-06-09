@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
@@ -25,6 +25,10 @@ import {
   type AvailabilityDisplayMode,
 } from "./AvailabilityHeatCells";
 import { AvailabilityKpiStrip } from "./AvailabilityKpiStrip";
+import {
+  DayDetailPanelError,
+  DayDetailPanelSkeleton,
+} from "./AvailabilityDayDetailPanel";
 
 const DayDetailPanel = dynamic(
   () =>
@@ -35,7 +39,7 @@ const DayDetailPanel = dynamic(
 );
 
 export function AvailabilityDashboard({
-  dashboard: initial,
+  dashboard,
   initialDay,
   buildingId: initialBuildingId,
   featureFilter: initialFeatureFilter = "all",
@@ -65,10 +69,10 @@ export function AvailabilityDashboard({
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [dashboard] = useState(initial);
   const [selectedIso, setSelectedIso] = useState<string | null>(initialDay ?? null);
   const [detail, setDetail] = useState<DayAvailabilityDetail | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const [displayMode, setDisplayMode] = useState<AvailabilityDisplayMode>("heat");
   const [rangeStart, setRangeStart] = useState<string | null>(null);
   const [rangeEnd, setRangeEnd] = useState<string | null>(null);
@@ -189,32 +193,60 @@ export function AvailabilityDashboard({
 
   const requestIdRef = useRef(0);
 
+  const prefetchDayDetail = useCallback(
+    (iso: string) => {
+      const knownDay =
+        dashboard.days.find((d) => d.iso === iso) ??
+        dashboard.scan_days.find((d) => d.iso === iso) ??
+        null;
+      void fetchDayAvailabilityDetailAction(
+        iso,
+        buildingId,
+        featureFilter,
+        knownDay
+      );
+    },
+    [buildingId, dashboard.days, dashboard.scan_days, featureFilter]
+  );
+
   const selectDay = useCallback(
     async (iso: string) => {
       setSelectedIso(iso);
       setDetail(null);
+      setLoadError(false);
       setLoading(true);
 
       const thisRequest = ++requestIdRef.current;
 
       try {
+        const knownDay =
+          dashboard.days.find((d) => d.iso === iso) ??
+          dashboard.scan_days.find((d) => d.iso === iso) ??
+          null;
         const data = await fetchDayAvailabilityDetailAction(
           iso,
           buildingId,
-          featureFilter
+          featureFilter,
+          knownDay
         );
         if (thisRequest !== requestIdRef.current) return;
+        if (!data) {
+          setDetail(null);
+          setLoadError(true);
+          return;
+        }
         setDetail(data);
       } catch {
         if (thisRequest !== requestIdRef.current) return;
         setDetail(null);
+        setLoadError(true);
       } finally {
         if (thisRequest === requestIdRef.current) {
           setLoading(false);
         }
       }
     },
-    [buildingId, featureFilter]
+    [buildingId, dashboard.days, dashboard.scan_days, featureFilter]
   );
 
   const handleDayClick = (iso: string, shift: boolean) => {
@@ -272,6 +304,35 @@ export function AvailabilityDashboard({
     });
   }, [weekMonday, dashboard.scan_days, dashboard.days]);
 
+  const selectedKnownDay = useMemo(() => {
+    if (!selectedIso) return null;
+    return (
+      dashboard.days.find((d) => d.iso === selectedIso) ??
+      dashboard.scan_days.find((d) => d.iso === selectedIso) ??
+      null
+    );
+  }, [selectedIso, dashboard.days, dashboard.scan_days]);
+
+  const dayDetailLabels = useMemo(
+    () => ({
+      free: tCommon("free"),
+      occupied: tCommon("occupied"),
+      rooms: tCommon("rooms"),
+      arrivals: tCommon("arrivals"),
+      departures: tCommon("departuresLabel"),
+      unassignedRequest: tAvail("unassignedRequest"),
+      unassignedRequestSuffix: tAvail("unassignedRequestSuffix"),
+      processArrow: tAvail("processArrow"),
+      pendingRequestWithRooms: tAvail("pendingRequestWithRooms"),
+      freeTitle: tAvail("freeTitle"),
+      addBooking: tAvail("addBooking"),
+      requestsPerRoom: tAvail("requestsPerRoom"),
+      occupiedTitle: tAvail("occupiedTitle"),
+      focusGanttWeek: tAvail("focusGanttWeek"),
+    }),
+    [tCommon, tAvail]
+  );
+
   const inRange = (iso: string) => {
     if (!rangeStart) return false;
     const end = rangeEnd ?? rangeStart;
@@ -291,8 +352,8 @@ export function AvailabilityDashboard({
   };
 
   return (
-    <div className="avail-dashboard space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="avail-dashboard space-y-4">
+      <div className="avail-dashboard-toolbar flex flex-wrap items-center justify-between gap-3">
         <AvailabilityLiveSync />
         <div className="avail-display-mode">
           {(
@@ -446,17 +507,17 @@ export function AvailabilityDashboard({
             {formatDateWithDay(rangeDays[rangeDays.length - 1]!.iso, locale)} · minim{" "}
             <strong>{rangeStats.min}</strong> {tAvail("freeRooms").toLowerCase()} / {tCommon("night")}
           </p>
-          <div className="flex gap-2">
+          <div className="avail-interval-bar__actions flex gap-2">
             <button
               type="button"
-              className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
+              className="avail-interval-bar__copy rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
               onClick={copyIntervalText}
             >
               {tAvail("copyForClient")}
             </button>
             <button
               type="button"
-              className="rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
+              className="avail-interval-bar__clear rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
               onClick={() => {
                 setRangeStart(null);
                 setRangeEnd(null);
@@ -499,6 +560,7 @@ export function AvailabilityDashboard({
                           inRange={inRange(cell.day.iso)}
                           displayMode={displayMode}
                           onSelect={handleDayClick}
+                          onDayHover={prefetchDayDetail}
                           labels={heatCellLabels}
                           locale={locale}
                           today={effectiveToday}
@@ -546,8 +608,10 @@ export function AvailabilityDashboard({
                         inRange={inRange(d.iso)}
                         displayMode={displayMode}
                         onSelect={handleDayClick}
+                        onDayHover={prefetchDayDetail}
                         labels={heatCellLabels}
                         locale={locale}
+                        today={effectiveToday}
                       />
                     </div>
                   );
@@ -558,7 +622,7 @@ export function AvailabilityDashboard({
               <div className="availability-week-nav">
                 <button
                   type="button"
-                  className="text-xs font-semibold text-emerald-700"
+                  className="availability-week-nav__prev text-xs font-semibold text-emerald-700"
                   onClick={() =>
                     pushParams({
                       view: "week",
@@ -570,7 +634,7 @@ export function AvailabilityDashboard({
                 </button>
                 <button
                   type="button"
-                  className="text-xs font-semibold text-emerald-700"
+                  className="availability-week-nav__next text-xs font-semibold text-emerald-700"
                   onClick={() =>
                     pushParams({
                       view: "week",
@@ -585,15 +649,15 @@ export function AvailabilityDashboard({
           )}
         </div>
 
-        {loading && selectedIso && (
-          <p className="mt-3 text-center text-sm text-zinc-500">{tAvail("loadingDayCard")}</p>
-        )}
       </div>
       </RetroXpWindow>
 
       <AdminFloatingPanel
-        open={!!detail && !loading}
+        open={!!selectedIso}
         onClose={() => {
+          requestIdRef.current++;
+          setLoading(false);
+          setLoadError(false);
           setDetail(null);
           setSelectedIso(null);
           const q = buildQuery(dashboard.year, dashboard.month, {
@@ -604,36 +668,33 @@ export function AvailabilityDashboard({
           router.push(buildTargetHref(q));
         }}
         title={
-          detail
-            ? `${tAvail("dayCard")} — ${formatDateWithDay(detail.day.iso, locale, true)}`
+          selectedIso
+            ? `${tAvail("dayCard")} — ${formatDateWithDay(selectedIso, locale, true)}`
             : undefined
         }
         variant="modal"
         width={520}
       >
-        {detail && (
+        {loadError && !loading ? (
+          <DayDetailPanelError
+            message={tAvail("dayCardLoadError")}
+            retryLabel={tAvail("dayCardRetry")}
+            onRetry={() => selectedIso && void selectDay(selectedIso)}
+          />
+        ) : loading && !detail ? (
+          <DayDetailPanelSkeleton
+            knownDay={selectedKnownDay}
+            loadingLabel={tAvail("loadingDayCard")}
+            labels={dayDetailLabels}
+          />
+        ) : detail ? (
           <DayDetailPanel
             detail={detail}
             year={dashboard.year}
             month={dashboard.month}
-            labels={{
-              free: tCommon("free"),
-              occupied: tCommon("occupied"),
-              rooms: tCommon("rooms"),
-              arrivals: tCommon("arrivals"),
-              departures: tCommon("departuresLabel"),
-              unassignedRequest: tAvail("unassignedRequest"),
-              unassignedRequestSuffix: tAvail("unassignedRequestSuffix"),
-              processArrow: tAvail("processArrow"),
-              pendingRequestWithRooms: tAvail("pendingRequestWithRooms"),
-              freeTitle: tAvail("freeTitle"),
-              addBooking: tAvail("addBooking"),
-              requestsPerRoom: tAvail("requestsPerRoom"),
-              occupiedTitle: tAvail("occupiedTitle"),
-              focusGanttWeek: tAvail("focusGanttWeek"),
-            }}
+            labels={dayDetailLabels}
           />
-        )}
+        ) : null}
       </AdminFloatingPanel>
     </div>
   );

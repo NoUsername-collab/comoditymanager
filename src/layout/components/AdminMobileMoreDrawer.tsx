@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo } from "react";
+import { useId, useMemo, useRef, type RefObject } from "react";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { useAdminRoutePrefetch } from "@/hooks/useAdminRoutePrefetch";
 import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
@@ -10,53 +10,49 @@ import {
   filterAdminMoreLinks,
 } from "@/layout/mobile/admin-more-links";
 import { isAdminTabActive } from "@/layout/mobile/admin-tabs";
+import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
+import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
 
 export function AdminMobileMoreDrawer({
   open,
   onClose,
   locationUnlocked = false,
+  triggerRef,
 }: {
   open: boolean;
   onClose: () => void;
   locationUnlocked?: boolean;
+  triggerRef?: RefObject<HTMLElement | null>;
 }) {
   const pathname = usePathname();
   const t = useTranslations("admin.nav");
   const panelId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
   const links = filterAdminMoreLinks(ADMIN_MORE_LINKS, locationUnlocked);
   const router = useRouter();
   const prefetchHrefs = useMemo(() => links.map((link) => link.href), [links]);
   useAdminRoutePrefetch(prefetchHrefs);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    document.documentElement.classList.add("ml-drawer-open");
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.documentElement.classList.remove("ml-drawer-open");
-    };
-  }, [open, onClose]);
+  useMobileDrawer({ open, onClose, panelRef, triggerRef });
 
   return (
-    <>
+    <MobileDrawerPortal>
       <button
         type="button"
         className={[
           "ml-drawer__backdrop",
+          "ml-drawer__backdrop--admin",
           open && "ml-drawer__backdrop--visible",
         ]
           .filter(Boolean)
           .join(" ")}
         aria-label={t("moreClose")}
         aria-hidden={!open}
-        tabIndex={open ? 0 : -1}
+        tabIndex={-1}
         onClick={onClose}
       />
       <div
+        ref={panelRef}
         id={panelId}
         className={[
           "ml-drawer",
@@ -72,6 +68,16 @@ export function AdminMobileMoreDrawer({
         hidden={!open}
         suppressHydrationWarning
       >
+        <div className="ml-drawer__head">
+          <button
+            type="button"
+            className="ml-drawer__close"
+            aria-label={t("moreClose")}
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </div>
         <nav className="ml-drawer__nav">
           {links.map((link) => {
             const active = isAdminTabActive(pathname, link.href);
@@ -80,6 +86,9 @@ export function AdminMobileMoreDrawer({
                 key={link.href}
                 href={link.href}
                 prefetch={!active}
+                onPointerDown={() => {
+                  if (!active) router.prefetch(link.href);
+                }}
                 onMouseEnter={() => {
                   if (!active) router.prefetch(link.href);
                 }}
@@ -98,6 +107,6 @@ export function AdminMobileMoreDrawer({
           })}
         </nav>
       </div>
-    </>
+    </MobileDrawerPortal>
   );
 }

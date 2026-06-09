@@ -3,6 +3,21 @@
  * Public home/legal, receptie, admin retro padding, bookings, cazări, hospira.
  */
 
+/* Below-fold public sections — skip paint until near viewport */
+html[data-layout-chrome="compact"] .public-section,
+html[data-layout-chrome="compact"] .public-cta-band,
+html[data-layout-chrome="compact"] .public-staff-preview-skeleton {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 14rem;
+}
+
+html[data-layout-chrome="compact"] .availability-month-matrix tbody {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 10rem;
+}
+
 /* ── Admin retro frame (all AdminRetroPageFrame pages) ── */
 html[data-layout-chrome="compact"] .admin-retro-page {
   padding: 0.35rem 0.25rem 0.5rem !important;

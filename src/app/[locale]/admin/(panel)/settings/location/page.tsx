@@ -18,33 +18,43 @@ export default async function LocationAdminPage({
 }: {
   searchParams: Promise<{ saved?: string; reset?: string; unlocked?: string; locked?: string }>;
 }) {
-  const [tPage, tCommon, , params, staffAccounts] = await Promise.all([
+  const [tPage, tCommon, , params, staffAccounts, pensionResult] = await Promise.all([
     getTranslations("admin.pages.settingsLocation"),
     getTranslations("admin.common"),
     requireLocationAdmin(),
     searchParams,
     listStaffAccountsForCurrentTenant(),
+    (async () => {
+      try {
+        return {
+          settings: await getPensionSettings(),
+          error: null as string | null,
+        };
+      } catch (e) {
+        return {
+          settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
+          error: e instanceof Error ? e.message : "generic",
+        };
+      }
+    })(),
   ]);
 
-  let settings: Awaited<ReturnType<typeof getPensionSettings>> = null;
-  let error: string | null = null;
-
-  try {
-    settings = await getPensionSettings();
-  } catch (e) {
-    error = e instanceof Error ? e.message : tCommon("error");
+  const settings = pensionResult.settings;
+  let error = pensionResult.error;
+  if (error === "generic") {
+    error = tCommon("error");
   }
 
   return (
     <AdminRetroPageFrame
       title={tPage("title")}
-      className="admin-settings-page w-full max-w-none px-4 py-6 sm:px-6 lg:px-8"
+      className="admin-settings-page w-full max-w-none"
       description={tPage("description")}
     >
-      <div className="mb-6 flex flex-wrap items-center gap-3">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link
           href="/admin/settings"
-          className="text-sm text-zinc-600 underline hover:text-zinc-900"
+          className="admin-settings-back inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center text-sm text-zinc-600 underline hover:text-zinc-900"
         >
           {tPage("backToSettings")}
         </Link>
@@ -83,8 +93,8 @@ export default async function LocationAdminPage({
 
       {settings && (
         <>
-          <div className="mb-6 grid gap-3 md:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+          <div className="mb-4 grid gap-2 md:grid-cols-3">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
                 {tPage("steps.structureTitle")}
               </p>
@@ -95,7 +105,7 @@ export default async function LocationAdminPage({
                 {tPage("steps.structureBody")}
               </p>
             </div>
-            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
                 {tPage("steps.modularTitle")}
               </p>
@@ -106,7 +116,7 @@ export default async function LocationAdminPage({
                 {tPage("steps.modularBody")}
               </p>
             </div>
-            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-4">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3">
               <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
                 {tPage("steps.staffTitle")}
               </p>
@@ -184,10 +194,10 @@ export default async function LocationAdminPage({
               <p className="text-sm text-zinc-600">
                 {tPage("structure.hint")}
               </p>
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="admin-settings-location-nav grid gap-3 md:grid-cols-2">
                 <Link
                   href="/admin/settings/location/structure"
-                  className="rounded-xl border-2 border-zinc-900 bg-zinc-900 px-4 py-4 text-white shadow-sm hover:bg-zinc-800"
+                  className="admin-settings-location-nav__card rounded-xl border-2 border-zinc-900 bg-zinc-900 px-4 py-4 text-white shadow-sm hover:bg-zinc-800"
                 >
                   <span className="block text-sm font-semibold">
                     {tPage("structure.cardStructureTitle")}
@@ -201,7 +211,7 @@ export default async function LocationAdminPage({
                 </Link>
                 <Link
                   href="/admin/settings/location/setup"
-                  className="rounded-xl border border-emerald-600 bg-emerald-50 px-4 py-4 hover:bg-emerald-100"
+                  className="admin-settings-location-nav__card rounded-xl border border-emerald-600 bg-emerald-50 px-4 py-4 hover:bg-emerald-100"
                 >
                   <span className="block text-sm font-semibold text-emerald-950">
                     {tPage("structure.cardModularTitle")}
@@ -213,7 +223,7 @@ export default async function LocationAdminPage({
               </div>
               <Link
                 href="/admin/rooms"
-                className="mt-3 block rounded-xl border border-zinc-300 bg-white px-4 py-3 hover:bg-zinc-50"
+                className="admin-settings-location-nav__rooms-link mt-3 block rounded-xl border border-zinc-300 bg-white px-4 py-3 hover:bg-zinc-50"
               >
                 <span className="text-sm font-semibold text-zinc-900">
                   {tCommon("rooms")}

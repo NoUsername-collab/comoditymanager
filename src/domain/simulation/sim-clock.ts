@@ -5,6 +5,7 @@
  * `getEffectiveToday()` — sim date when active, otherwise real date (async, server-only)
  */
 
+import { cache } from "react";
 import { getSimDate } from "./sim-cookie";
 
 /**
@@ -20,11 +21,11 @@ export function todayReal(): string {
  * otherwise the real system date.
  * Async — reads from cookies. Server-only.
  */
-export async function getEffectiveToday(): Promise<string> {
+export const getEffectiveToday = cache(async (): Promise<string> => {
   try {
     const simDate = await getSimDate();
     return simDate ?? todayReal();
   } catch {
     return todayReal();
   }
-}
+});

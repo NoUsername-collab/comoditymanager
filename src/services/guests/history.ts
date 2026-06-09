@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { formatGuestFullName } from "@/domain/guest-name";
 import {
   shiftStayDatesByYears,
@@ -77,9 +78,9 @@ export type GuestBookingHistoryItem = {
   review: GuestStayReviewRow | null;
 };
 
-export async function getGuestBookingHistory(
+const loadGuestBookingHistory = cache(async (
   guestId: string
-): Promise<GuestBookingHistoryItem[]> {
+): Promise<GuestBookingHistoryItem[]> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("bookings")
@@ -95,12 +96,11 @@ export async function getGuestBookingHistory(
 
   if (error) throw new Error(error.message);
 
-  const segmentsByBooking = await listSegmentsForBookings(
-    (data ?? []).map((booking) => String(booking.id))
-  );
-  const reviews = await listGuestStayReviewsByBookingIds(
-    (data ?? []).map((booking) => String(booking.id))
-  );
+  const bookingIds = (data ?? []).map((booking) => String(booking.id));
+  const [segmentsByBooking, reviews] = await Promise.all([
+    listSegmentsForBookings(bookingIds),
+    listGuestStayReviewsByBookingIds(bookingIds),
+  ]);
   const items: GuestBookingHistoryItem[] = [];
   for (const b of data ?? []) {
     const br = (b.booking_rooms ?? []) as {
@@ -127,5 +127,11 @@ export async function getGuestBookingHistory(
     });
   }
   return items;
+});
+
+export async function getGuestBookingHistory(
+  guestId: string
+): Promise<GuestBookingHistoryItem[]> {
+  return loadGuestBookingHistory(guestId);
 }
 

@@ -39,7 +39,18 @@ export default defineConfig({
         storageState: "e2e/.auth/admin.json",
       },
       dependencies: ["setup"],
-      testIgnore: /auth\.setup\.ts/,
+      testIgnore: /auth\.setup\.ts|mobile-compat\.spec\.ts/,
+    },
+
+    /* iPhone 13 — mobile compatibility smoke (390×844) */
+    {
+      name: "mobile-iphone",
+      use: {
+        ...devices["iPhone 13"],
+        storageState: "e2e/.auth/admin.json",
+      },
+      dependencies: ["setup"],
+      testMatch: /mobile-compat\.spec\.ts/,
     },
   ],
 

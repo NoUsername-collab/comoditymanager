@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type {
   GuestBookingFlagSummary,
   GuestFlagLevel,
@@ -78,7 +79,7 @@ export async function getGuestProfile(
   return fetchGuestProfileRow(guestId);
 }
 
-export async function listGuestProfileSummaries(
+async function listGuestProfileSummariesImpl(
   guestIds: string[]
 ): Promise<Map<string, GuestBookingFlagSummary>> {
   const uniqueIds = [...new Set(guestIds.filter(Boolean))];
@@ -100,6 +101,21 @@ export async function listGuestProfileSummaries(
       return [profile.guest_id, toGuestBookingFlagSummary(profile)];
     })
   );
+}
+
+const loadGuestProfileSummaries = cache((guestIdsKey: string) =>
+  listGuestProfileSummariesImpl(
+    guestIdsKey.length > 0 ? guestIdsKey.split(",") : []
+  )
+);
+
+/** Dedupes overlapping guest id batches within one request (e.g. cazări lists). */
+export async function listGuestProfileSummaries(
+  guestIds: string[]
+): Promise<Map<string, GuestBookingFlagSummary>> {
+  const key = [...new Set(guestIds.filter(Boolean))].sort().join(",");
+  if (!key) return new Map();
+  return loadGuestProfileSummaries(key);
 }
 
 export async function listFreshGuestProfileSummaries(
@@ -160,14 +176,17 @@ async function listCompletedStayStats(guestId: string): Promise<{
   totalNights: number;
   lastStayCheckOut: string | null;
 }> {
-  const { tenantId, supabase } = await getTenantScope();
+  const [today, { tenantId, supabase }] = await Promise.all([
+    getEffectiveToday(),
+    getTenantScope(),
+  ]);
   const { data, error } = await supabase
     .from("bookings")
     .select("check_in, check_out")
     .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .eq("status", "confirmata")
-    .lt("check_out", await getEffectiveToday())
+    .lt("check_out", today)
     .order("check_out", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -249,17 +268,22 @@ export async function saveGuestStayReview(input: {
   trustDelta: number;
   loyaltyDelta: number;
 }): Promise<void> {
-  const booking = await getBookingReviewCheck(input.bookingId);
+  const [booking, today] = await Promise.all([
+    getBookingReviewCheck(input.bookingId),
+    getEffectiveToday(),
+  ]);
   if (!booking) throw new Error("guest.stay_not_found");
   if (booking.guest_id !== input.guestId) {
     throw new Error("guest.review_not_belong_to_guest");
   }
-  if (booking.status !== "confirmata" || booking.check_out > await getEffectiveToday()) {
+  if (booking.status !== "confirmata" || booking.check_out > today) {
     throw new Error("guest.only_past_confirmed_stays_can_be_reviewed");
   }
 
-  const actor = await getAdminUser();
-  const { tenantId, supabase } = await getTenantScope();
+  const [actor, { tenantId, supabase }] = await Promise.all([
+    getAdminUser(),
+    getTenantScope(),
+  ]);
   const now = new Date().toISOString();
   const { error } = await supabase.from("guest_stay_reviews").upsert(
     withTenantId(tenantId, {

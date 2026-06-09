@@ -31,11 +31,11 @@ export function BuildingRoomsCollapsible({
   const active = rooms.filter((r) => r.is_active);
 
   return (
-    <div className="mt-4">
+    <div className="building-rooms-collapsible mt-4">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between rounded-xl border border-zinc-200/90 bg-white px-3 py-2.5 text-left text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50/80"
+        className="building-rooms-collapsible__trigger flex w-full items-center justify-between rounded-xl border border-zinc-200/90 bg-white px-3 py-2.5 text-left text-sm font-medium text-zinc-800 shadow-sm hover:bg-zinc-50/80"
       >
         <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span>

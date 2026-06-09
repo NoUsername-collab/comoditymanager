@@ -83,12 +83,14 @@ export async function updateBookingGuestPhone(
   rawPhone: string
 ): Promise<void> {
   assertValidGuestPhone(rawPhone);
-  const booking = await getBookingById(bookingId);
+  const [booking, { tenantId, supabase }] = await Promise.all([
+    getBookingById(bookingId),
+    getTenantScope(),
+  ]);
   if (!booking) throw new Error("booking.not_found");
 
   const phone = rawPhone.trim();
   const phoneNorm = normalizePhone(phone);
-  const { tenantId, supabase } = await getTenantScope();
 
   const { error: bookingError } = await supabase
     .from("bookings")
@@ -137,8 +139,10 @@ export async function setBookingCheckIn(
   }
 
   const ts = parseOperationalTimestamp(at);
-  const user = await getAdminUser();
-  const { tenantId, supabase } = await getTenantScope();
+  const [user, { tenantId, supabase }] = await Promise.all([
+    getAdminUser(),
+    getTenantScope(),
+  ]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -183,8 +187,10 @@ export async function setBookingCheckOut(
     throw new Error("booking.checkout_before_checkin_not_allowed");
   }
 
-  const user = await getAdminUser();
-  const { tenantId, supabase } = await getTenantScope();
+  const [user, { tenantId, supabase }] = await Promise.all([
+    getAdminUser(),
+    getTenantScope(),
+  ]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -228,8 +234,10 @@ export async function editBookingCheckIn(
     }
   }
 
-  const user = await getAdminUser();
-  const { tenantId, supabase } = await getTenantScope();
+  const [user, { tenantId, supabase }] = await Promise.all([
+    getAdminUser(),
+    getTenantScope(),
+  ]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -274,8 +282,10 @@ export async function editBookingCheckOut(
     throw new Error("booking.checkout_before_checkin_not_allowed");
   }
 
-  const user = await getAdminUser();
-  const { tenantId, supabase } = await getTenantScope();
+  const [user, { tenantId, supabase }] = await Promise.all([
+    getAdminUser(),
+    getTenantScope(),
+  ]);
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -302,15 +312,16 @@ export async function editBookingCheckOut(
 }
 
 export async function undoBookingCheckIn(bookingId: string): Promise<void> {
-  const booking = await requireConfirmedBooking(bookingId);
+  const [booking, { tenantId, supabase }] = await Promise.all([
+    requireConfirmedBooking(bookingId),
+    getTenantScope(),
+  ]);
   if (!booking.actual_check_in_at) {
     throw new Error("booking.checkin_not_recorded");
   }
   if (booking.actual_check_out_at) {
     throw new Error("booking.undo_checkout_first");
   }
-
-  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -332,12 +343,13 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
 }
 
 export async function undoBookingCheckOut(bookingId: string): Promise<void> {
-  const booking = await requireConfirmedBooking(bookingId);
+  const [booking, { tenantId, supabase }] = await Promise.all([
+    requireConfirmedBooking(bookingId),
+    getTenantScope(),
+  ]);
   if (!booking.actual_check_out_at) {
     throw new Error("booking.checkout_not_recorded");
   }
-
-  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({

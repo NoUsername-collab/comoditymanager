@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
-import { AvailabilityDashboard } from "@/components/admin/availability/AvailabilityDashboard";
+import { AvailabilityDashboardLazy } from "@/components/admin/availability/AvailabilityDashboardLazy";
+import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 import { loadAvailabilityDashboard } from "@/services/availability-month";
 import { parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
-import { todayIso } from "@/lib/stay-dates";
 import { getTranslations } from "next-intl/server";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
@@ -45,31 +45,51 @@ export async function AvailabilityDashboardShell({
   anchorHash?: string;
   className?: string;
 }) {
-  const tCommon = await getTranslations("admin.common");
-  const tPage = await getTranslations("admin.availability");
-  const effectiveToday = await getEffectiveToday();
-  const refDate = new Date(effectiveToday + "T00:00:00");
-  const year = Number(searchParams.y) || refDate.getFullYear();
-  const month = searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
   const buildingId = searchParams.building?.length ? searchParams.building : null;
   const featureFilter = parseGanttFeatureFilter(searchParams.feat);
   const view = searchParams.view === "week" ? "week" : "month";
+  const effectiveTodayPromise = getEffectiveToday();
+
+  const [tCommon, tPage, tNav, effectiveToday, dashboardResult] = await Promise.all([
+    getTranslations("admin.common"),
+    getTranslations("admin.availability"),
+    getTranslations("admin.gantt"),
+    effectiveTodayPromise,
+    effectiveTodayPromise
+      .then((today) => {
+        const refDate = new Date(today + "T00:00:00");
+        const year = Number(searchParams.y) || refDate.getFullYear();
+        const month =
+          searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
+        return loadAvailabilityDashboard(year, month, buildingId, featureFilter);
+      })
+      .then((data) => ({ ok: true as const, data }))
+      .catch((e) => ({ ok: false as const, error: e })),
+  ]);
+
+  let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null = null;
+  let error: string | null = null;
+  if (dashboardResult.ok) {
+    dashboard = dashboardResult.data;
+  } else {
+    error =
+      dashboardResult.error instanceof Error
+        ? dashboardResult.error.message
+        : tCommon("error");
+  }
+
+  const refDate = new Date(effectiveToday + "T00:00:00");
+  const year = Number(searchParams.y) || refDate.getFullYear();
+  const month =
+    searchParams.m !== undefined ? Number(searchParams.m) : refDate.getMonth();
   const weekStart =
-    searchParams.ws ?? (view === "week" ? mondayOfWeekIso(searchParams.day ?? effectiveToday) : null);
+    searchParams.ws ??
+    (view === "week" ? mondayOfWeekIso(searchParams.day ?? effectiveToday) : null);
 
   const prevM = month === 0 ? 11 : month - 1;
   const prevY = month === 0 ? year - 1 : year;
   const nextM = month === 11 ? 0 : month + 1;
   const nextY = month === 11 ? year + 1 : year;
-
-  let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null = null;
-  let error: string | null = null;
-
-  try {
-    dashboard = await loadAvailabilityDashboard(year, month, buildingId, featureFilter);
-  } catch (e) {
-    error = e instanceof Error ? e.message : tCommon("error");
-  }
 
   if (error) {
     return (
@@ -90,26 +110,30 @@ export async function AvailabilityDashboardShell({
 
   return (
     <div className={className}>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      <div className="availability-dashboard-nav mb-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="availability-dashboard-nav__controls flex items-center gap-2">
           <Link
             href={buildHref(
               basePath,
               buildBaseQuery(prevY, prevM, sharedExtra),
               anchorHash
             )}
-            className="border border-zinc-300 px-3 py-2 text-sm font-medium"
+            className="availability-dashboard-nav__btn border border-zinc-300 text-sm font-medium"
+            aria-label={tNav("previous")}
           >
             ←
           </Link>
-          <span className="px-2 py-1.5 text-sm font-medium capitalize">{dashboard.title}</span>
+          <span className="availability-dashboard-nav__title px-2 py-1.5 text-sm font-medium capitalize">
+            {dashboard.title}
+          </span>
           <Link
             href={buildHref(
               basePath,
               buildBaseQuery(nextY, nextM, sharedExtra),
               anchorHash
             )}
-            className="border border-zinc-300 px-3 py-2 text-sm font-medium"
+            className="availability-dashboard-nav__btn border border-zinc-300 text-sm font-medium"
+            aria-label={tNav("next")}
           >
             →
           </Link>
@@ -120,14 +144,9 @@ export async function AvailabilityDashboardShell({
         </p>
       </div>
 
-      <Suspense
-        fallback={
-          <div className="border border-dashed border-zinc-200 p-12 text-center text-sm text-zinc-500">
-            {tPage("loadingPanel")}
-          </div>
-        }
-      >
-        <AvailabilityDashboard
+      <Suspense fallback={<AdminAvailabilitySkeleton />}>
+        <AvailabilityDashboardLazy
+          key={`${year}-${month}-${buildingId ?? "all"}-${featureFilter}`}
           dashboard={dashboard}
           initialDay={searchParams.day}
           buildingId={buildingId}

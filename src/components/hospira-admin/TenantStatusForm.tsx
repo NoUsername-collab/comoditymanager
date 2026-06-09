@@ -44,7 +44,7 @@ export function TenantStatusForm({
         {STATUSES.map((s) => (
           <label
             key={s.id}
-            className={`flex cursor-pointer items-center gap-3 rounded-md border px-3 py-2 text-sm transition-colors ${
+            className={`hospira-tenant-option flex min-h-[var(--ml-touch-min,2.75rem)] cursor-pointer items-center gap-3 rounded-md border px-3 py-2 text-sm transition-colors ${
               selected === s.id
                 ? "border-sky-600 bg-sky-950/50 text-white"
                 : "border-neutral-700 text-neutral-400 hover:border-neutral-600"

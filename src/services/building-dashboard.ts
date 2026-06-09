@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
 import {
@@ -50,11 +52,12 @@ export type BuildingDashboard = {
   rooms: BuildingRoomRow[];
 };
 
-async function loadStaysForAvailability(
+async function loadStaysForAvailabilityImpl(
+  tenantId: string,
   rangeStart: string,
   rangeEnd: string
 ): Promise<NightStay[]> {
-  const { tenantId, supabase } = await getTenantScope();
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("booking_rooms")
     .select(
@@ -102,6 +105,13 @@ async function loadStaysForAvailability(
   }
   return stays;
 }
+
+const loadStaysForAvailability = cache(
+  async (rangeStart: string, rangeEnd: string): Promise<NightStay[]> => {
+    const { tenantId } = await getTenantScope();
+    return loadStaysForAvailabilityImpl(tenantId, rangeStart, rangeEnd);
+  }
+);
 
 type AvailabilityIndexes = {
   confirmedRoomIdsByNight: Map<string, Set<string>>;
@@ -193,7 +203,7 @@ function buildWindow(
   };
 }
 
-export async function listBuildingDashboards(
+async function listBuildingDashboardsImpl(
   viewDateParam?: string
 ): Promise<BuildingDashboard[]> {
   const viewDate = parseViewDate(viewDateParam);
@@ -289,3 +299,5 @@ export async function listBuildingDashboards(
       };
     });
 }
+
+export const listBuildingDashboards = cache(listBuildingDashboardsImpl);

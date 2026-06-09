@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
@@ -86,9 +87,14 @@ const getCachedPensionSettings = (tenantId: string) =>
     }
   );
 
+const loadPensionSettings = cache((tenantId: string) =>
+  getCachedPensionSettings(tenantId)()
+);
+
+/** Per-request dedupe + 5min cross-request cache (busted via pensionSettings tag). */
 export async function getPensionSettings(): Promise<PensionSettings | null> {
   const tenantId = await resolveTenantIdForData();
-  return getCachedPensionSettings(tenantId)();
+  return loadPensionSettings(tenantId);
 }
 
 export function pensionAppearanceSettings(

@@ -205,15 +205,15 @@ export function PhoneBookingForm({
         {t("notesLabel")}
         <input name="notes" placeholder={t("notesPlaceholder")} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
       </label>
-      <label className="flex items-center gap-2 text-xs">
-        <input type="checkbox" name="confirm_now" className="rounded" />
+      <label className="phone-booking-form__checkbox flex min-h-[var(--ml-touch-min,2.75rem)] items-center gap-2 text-sm">
+        <input type="checkbox" name="confirm_now" className="h-5 w-5 shrink-0 rounded" />
         {t("confirmAllocate")}
       </label>
       {state?.error && <p className="text-red-600">{state.error}</p>}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-800 px-4 py-2 text-xs font-medium text-white disabled:opacity-50"
+        className="phone-booking-form__submit min-h-[var(--ml-touch-min,2.75rem)] w-full rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >
         {pending ? t("saving") : t("submit")}
       </button>

@@ -16,6 +16,26 @@ html.layout-chrome-compact body.ml-overflow-guard {
 
 html[data-layout-chrome="compact"] .ml-content {
   overflow-x: clip;
+  scroll-padding-bottom: calc(
+    var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 0.5rem
+  );
+}
+
+/* iOS: prevent focus zoom on inputs (16px minimum) */
+html[data-layout-chrome="compact"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html[data-layout-chrome="compact"] select,
+html[data-layout-chrome="compact"] textarea {
+  font-size: max(16px, 1rem);
+}
+
+/* Crisp taps — no 300ms delay, no grey flash */
+html[data-layout-chrome="compact"] button,
+html[data-layout-chrome="compact"] a,
+html[data-layout-chrome="compact"] [role="button"],
+html[data-layout-chrome="compact"] .ml-drawer__link,
+html[data-layout-chrome="compact"] .ml-bottom-nav__link {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* ── Admin retro frames ── */
@@ -99,7 +119,7 @@ html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
 /* ── Booking detail & modals ── */
 html[data-layout-chrome="compact"] .admin-modal,
 html[data-layout-chrome="compact"] .checkin-modal {
-  width: min(100vw - 1rem, 28rem);
+  width: min(calc(var(--ml-vvw, 100vw) - 1rem), 28rem);
   max-height: min(92dvh, var(--ml-vvh, 100dvh));
   margin-inline: auto;
 }
@@ -160,7 +180,7 @@ html[data-layout-chrome="compact"] .admin-login-page {
 }
 
 html[data-layout-chrome="compact"] .admin-login-card {
-  padding: 1.25rem !important;
+  padding: 1rem !important;
   border-radius: 0.75rem;
 }
 
@@ -223,7 +243,7 @@ html[data-layout-chrome="compact"] .alpha-gate-page {
 }
 
 html[data-layout-chrome="compact"] .alpha-gate-card {
-  padding: 1.25rem !important;
+  padding: 1rem !important;
   border-radius: 0.75rem;
 }
 
@@ -240,4 +260,17 @@ html[data-layout-chrome="compact"] .admin-corner {
 /* ── Tablet portrait uses compact chrome too ── */
 html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
   padding-bottom: calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom));
+}
+
+/* PWA standalone (Add to Home Screen) — full safe-area on notched phones */
+@media (display-mode: standalone) {
+  html[data-layout-chrome="compact"] .ml-bottom-nav {
+    padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .public-header,
+  html[data-layout-chrome="compact"] .hospira-admin-header,
+  html[data-layout-chrome="compact"] .admin-hud__header {
+    padding-top: max(0.5rem, var(--ml-safe-top, 0px));
+  }
 }

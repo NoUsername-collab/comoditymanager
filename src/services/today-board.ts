@@ -253,8 +253,10 @@ const getCachedTodayBoard = (
 /** Per-request dedupe + 30s cross-request cache (busted via bookingCounts tag). */
 export const loadTodayBoard = cache(
   async (checkInTime: string, checkOutTime: string): Promise<TodayBoard> => {
-    const today = await getEffectiveToday();
-    const { tenantId } = await getTenantScope();
+    const [today, { tenantId }] = await Promise.all([
+      getEffectiveToday(),
+      getTenantScope(),
+    ]);
     return getCachedTodayBoard(tenantId, today, checkInTime, checkOutTime)();
   }
 );

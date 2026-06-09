@@ -68,3 +68,17 @@ html[data-layout-surface="admin"][data-layout-mode="mobile"] .my-widget {
 1. Wrap layout in `<MobileShell surface="platform" />`.
 2. Add `ml-shell--platform` rules in `mobile-layout.css` if needed.
 3. Add mobile chrome component under `src/layout/components/`.
+
+## Mobile UX verification (390×844)
+
+| Check | Command / route |
+|-------|-----------------|
+| CSS contract (touch, cards, safe-area) | `npx vitest run src/layout/mobile/__tests__/` |
+| Layout math (compact on phone) | `display-integration.test.ts` |
+| E2E smoke (iPhone 13) | `npm run test:e2e:mobile` (needs `E2E_ADMIN_*`) |
+
+**Card-over-table pattern** (compact): use paired classes `*-cards` + `*-table-desktop`, hide one via `html[data-layout-chrome="compact"]` in `mobile-layout-flawless.css`. Examples: `hospira-log-*`, `statistics-*`, `invoice-line-*`.
+
+**Drawers:** `useMobileDrawer` — focus trap + Escape + `ml-drawer-open` on `<html>`.
+
+**PWA (Add to Home Screen):** `src/app/manifest.ts` — `display: standalone`, theme colors, start at `/admin`. iOS: `appleWebApp` in root `layout.tsx`.

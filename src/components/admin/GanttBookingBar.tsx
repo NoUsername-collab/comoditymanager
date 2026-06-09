@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
-import type { CSSProperties } from "react";
+import { memo, type CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import { stayNightProgress } from "@/domain/gantt/stay-progress";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
@@ -91,7 +91,7 @@ function semanticStayVars(
   };
 }
 
-export function GanttBookingBar({
+export const GanttBookingBar = memo(function GanttBookingBar({
   href,
   label,
   title,
@@ -248,4 +248,4 @@ export function GanttBookingBar({
       {inner}
     </Link>
   );
-}
+});

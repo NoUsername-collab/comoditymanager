@@ -28,14 +28,14 @@ export async function OnboardingBar() {
 
   return (
     <div className="onboarding-bar border-b border-amber-800/30 bg-amber-950/40">
-      <div className="mx-auto max-w-5xl px-4 py-3">
+      <div className="mx-auto max-w-5xl px-4 py-2">
         {/* Progress header */}
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-amber-200">
             Primii pași
           </span>
           <div className="flex-1">
-            <div className="h-2 overflow-hidden rounded-full bg-amber-900/50">
+            <div className="h-1.5 overflow-hidden rounded-full bg-amber-900/50">
               <div
                 className="h-full rounded-full bg-amber-400 transition-all duration-500"
                 style={{ width: `${progress.percentage}%` }}

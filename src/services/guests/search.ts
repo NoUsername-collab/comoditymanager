@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { formatGuestFullName } from "@/domain/guest-name";
 import {
   shiftStayDatesByYears,
@@ -368,7 +369,7 @@ async function listGuestIdsByFilter(
   return { ids: ids.slice(0, pageSize), hasMore: ids.length > pageSize };
 }
 
-export async function listGuestHighlights(): Promise<GuestHighlights> {
+const loadGuestHighlights = cache(async (): Promise<GuestHighlights> => {
   const { blacklist, loyal, recent, rated } = await listGuestIdsForHighlights(10);
   const [blacklistGuests, loyalGuests, recentGuests, ratedGuests] = await Promise.all([
     fetchGuestListItemsByIds(blacklist),
@@ -383,18 +384,18 @@ export async function listGuestHighlights(): Promise<GuestHighlights> {
     rated: ratedGuests,
     recent: recentGuests,
   };
+});
+
+export async function listGuestHighlights(): Promise<GuestHighlights> {
+  return loadGuestHighlights();
 }
 
-export async function searchGuests(input: {
-  query?: string;
-  filter?: string;
-  page?: number;
-  pageSize?: number;
-}): Promise<GuestSearchResult> {
-  const query = input.query?.trim() ?? "";
-  const filter = normalizeGuestFilter(input.filter);
-  const page = normalizeGuestPage(input.page);
-  const pageSize = Math.min(Math.max(input.pageSize ?? 20, 1), 50);
+const loadSearchGuests = cache(async (
+  query: string,
+  filter: GuestSearchFilter,
+  page: number,
+  pageSize: number
+): Promise<GuestSearchResult> => {
   const hasSearchCriteria = query.length > 0 || filter !== "all";
 
   if (!hasSearchCriteria) {
@@ -474,6 +475,19 @@ export async function searchGuests(input: {
     hasPrevious: page > 1,
     mode: "results",
   };
+});
+
+export async function searchGuests(input: {
+  query?: string;
+  filter?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<GuestSearchResult> {
+  const query = input.query?.trim() ?? "";
+  const filter = normalizeGuestFilter(input.filter);
+  const page = normalizeGuestPage(input.page);
+  const pageSize = Math.min(Math.max(input.pageSize ?? 20, 1), 50);
+  return loadSearchGuests(query, filter, page, pageSize);
 }
 
 export async function listGuests(query?: string): Promise<GuestListItem[]> {

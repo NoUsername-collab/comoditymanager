@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import {
   assertRoomsAvailableForStay,
@@ -37,14 +38,24 @@ export type GuestRebookDraft = {
   defaultRoomIds: string[];
 };
 
-export async function loadGuestRebookDraft(
+export type GuestRebookPanelPayload = {
+  draft: GuestRebookDraft;
+  initialRooms: ConfirmRoomOption[];
+  initialCanFulfill: boolean;
+  initialMinRooms: number;
+  checkInTime: string;
+  checkOutTime: string;
+};
+
+const loadGuestRebookDraftCached = cache(async (
   guestId: string,
   sourceBookingId: string
-): Promise<GuestRebookDraft> {
-  const guest = await getGuestBaseById(guestId);
+): Promise<GuestRebookDraft> => {
+  const [guest, booking] = await Promise.all([
+    getGuestBaseById(guestId),
+    getBookingById(sourceBookingId),
+  ]);
   if (!guest) throw new Error("guest.not_found");
-
-  const booking = await getBookingById(sourceBookingId);
   if (!booking) throw new Error("booking.not_found");
   if (booking.guest_id && booking.guest_id !== guestId) {
     throw new Error("guest.rebook_booking_mismatch");
@@ -71,7 +82,28 @@ export async function loadGuestRebookDraft(
     notes: defaultNotes,
     defaultRoomIds: booking.room_ids,
   };
+});
+
+export async function loadGuestRebookDraft(
+  guestId: string,
+  sourceBookingId: string
+): Promise<GuestRebookDraft> {
+  return loadGuestRebookDraftCached(guestId, sourceBookingId);
 }
+
+const loadPreviewGuestRebookRoomsCached = cache(async (
+  checkIn: string,
+  checkOut: string,
+  numAdults: number,
+  numChildren: number
+): Promise<StayRoomsAvailability> => {
+  const guestCount = Math.max(1, numAdults + numChildren);
+  return loadAvailableRoomsForStay({
+    checkIn,
+    checkOut,
+    guestCount,
+  });
+});
 
 export async function previewGuestRebookRooms(input: {
   checkIn: string;
@@ -79,12 +111,43 @@ export async function previewGuestRebookRooms(input: {
   numAdults: number;
   numChildren: number;
 }): Promise<StayRoomsAvailability> {
-  const guestCount = Math.max(1, input.numAdults + input.numChildren);
-  return loadAvailableRoomsForStay({
-    checkIn: input.checkIn,
-    checkOut: input.checkOut,
-    guestCount,
-  });
+  return loadPreviewGuestRebookRoomsCached(
+    input.checkIn,
+    input.checkOut,
+    input.numAdults,
+    input.numChildren
+  );
+}
+
+const loadGuestRebookPanelPayloadCached = cache(async (
+  guestId: string,
+  sourceBookingId: string
+): Promise<GuestRebookPanelPayload> => {
+  const draftPromise = loadGuestRebookDraftCached(guestId, sourceBookingId);
+  const roomsPromise = draftPromise.then((draft) =>
+    loadPreviewGuestRebookRoomsCached(
+      draft.checkIn,
+      draft.checkOut,
+      draft.numAdults,
+      draft.numChildren
+    )
+  );
+  const [draft, rooms] = await Promise.all([draftPromise, roomsPromise]);
+  return {
+    draft,
+    initialRooms: rooms.availableRooms,
+    initialCanFulfill: rooms.canFulfill,
+    initialMinRooms: rooms.minRoomsNeeded,
+    checkInTime: rooms.checkInTime,
+    checkOutTime: rooms.checkOutTime,
+  };
+});
+
+export async function loadGuestRebookPanelPayload(
+  guestId: string,
+  sourceBookingId: string
+): Promise<GuestRebookPanelPayload> {
+  return loadGuestRebookPanelPayloadCached(guestId, sourceBookingId);
 }
 
 function resolveSelectedRooms(
@@ -111,10 +174,24 @@ export async function createGuestRebookStay(input: {
   notes: string;
   roomIds: string[];
 }): Promise<string> {
-  const guest = await getGuestBaseById(input.guestId);
-  if (!guest) throw new Error("guest.not_found");
+  const guestName = `${input.guestLastName.trim()} ${input.guestFirstName.trim()}`.trim();
+  const uniqueRooms = [...new Set(input.roomIds.filter(Boolean))];
+  const previewPromise =
+    uniqueRooms.length > 0
+      ? previewGuestRebookRooms({
+          checkIn: input.checkIn,
+          checkOut: input.checkOut,
+          numAdults: input.numAdults,
+          numChildren: input.numChildren,
+        })
+      : Promise.resolve(null);
 
-  const source = await getBookingById(input.sourceBookingId);
+  const [guest, source, availabilityPreview] = await Promise.all([
+    getGuestBaseById(input.guestId),
+    getBookingById(input.sourceBookingId),
+    previewPromise,
+  ]);
+  if (!guest) throw new Error("guest.not_found");
   if (!source) throw new Error("booking.not_found");
   if (source.guest_id && source.guest_id !== input.guestId) {
     throw new Error("guest.rebook_booking_mismatch");
@@ -122,18 +199,10 @@ export async function createGuestRebookStay(input: {
 
   assertValidGuestPhone(input.guestPhone);
 
-  const guestName = `${input.guestLastName.trim()} ${input.guestFirstName.trim()}`.trim();
-  const uniqueRooms = [...new Set(input.roomIds.filter(Boolean))];
-
   let total: number | null = null;
 
-  if (uniqueRooms.length > 0) {
-    const availability = await previewGuestRebookRooms({
-      checkIn: input.checkIn,
-      checkOut: input.checkOut,
-      numAdults: input.numAdults,
-      numChildren: input.numChildren,
-    });
+  if (uniqueRooms.length > 0 && availabilityPreview) {
+    const availability = availabilityPreview;
     const selected = resolveSelectedRooms(uniqueRooms, availability.availableRooms);
     if (selected.length !== uniqueRooms.length) {
       throw new Error("booking.one_or_more_rooms_unavailable_reload");

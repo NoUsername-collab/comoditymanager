@@ -11,14 +11,8 @@ import { GuestNotesForm } from "@/components/admin/guests/GuestNotesForm";
 import { GuestProfileCards } from "@/components/admin/guests/GuestProfileCards";
 import { GuestProfileControlsForm } from "@/components/admin/guests/GuestProfileControlsForm";
 import { GuestRebookButtons } from "@/components/admin/guests/GuestRebookButtons";
-import {
-  GuestRebookStayCollapse,
-  type GuestRebookPanelPayload,
-} from "@/components/admin/guests/GuestRebookStayCollapse";
-import {
-  loadGuestRebookDraft,
-  previewGuestRebookRooms,
-} from "@/services/guest-rebook";
+import { GuestRebookStayCollapse } from "@/components/admin/guests/GuestRebookStayCollapse";
+import { loadGuestRebookPanelPayload } from "@/services/guest-rebook";
 import { GuestProfileSection } from "@/components/admin/guests/GuestProfileSection";
 import { GuestStayReviewForm } from "@/components/admin/guests/GuestStayReviewForm";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
@@ -68,17 +62,76 @@ export default async function GuestDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ from?: string; tab?: string }>;
 }) {
-  const tPage = await getTranslations("admin.pages.guestDetail");
-  const tCommon = await getTranslations("admin.common");
-  const tGuests = await getTranslations("admin.guests");
-  const tFlow = await getTranslations("booking.flowStatus");
-  const { id } = await params;
-  const { from, tab } = await searchParams;
+  const paramsPromise = params;
+  const guestIdPromise = paramsPromise.then(({ id: guestId }) => guestId);
+  const historyPromise = guestIdPromise.then((guestId) =>
+    getGuestBookingHistory(guestId)
+      .then((data) => ({ ok: true as const, data }))
+      .catch((e) => ({ ok: false as const, error: e }))
+  );
+  const guestResultPromise = guestIdPromise.then((guestId) =>
+    getGuestById(guestId).catch(() => null)
+  );
+  const duplicatesPromise = guestIdPromise.then((guestId) =>
+    findDuplicateGuestsForGuest(guestId)
+      .then((data) => ({ ok: true as const, data }))
+      .catch((e) => ({ ok: false as const, error: e }))
+  );
+
+  const baseGuestPromise = guestIdPromise.then((guestId) =>
+    getGuestBaseById(guestId)
+  );
+  const dedupCandidatesPromise = guestResultPromise.then((guest) =>
+    guest
+      ? findDedupCandidates(dedupInputFromGuest(guest)).catch(() => [])
+      : baseGuestPromise.then((base) =>
+          base
+            ? findDedupCandidates(dedupInputFromGuest(base)).catch(() => [])
+            : []
+        )
+  );
+
+  const [
+    tPage,
+    tCommon,
+    tGuests,
+    tFlow,
+    { id },
+    { from, tab },
+    baseGuest,
+    guestResult,
+    historyResult,
+    duplicatesResult,
+    dedupCandidates,
+    today,
+    latestRebookPayload,
+  ] = await Promise.all([
+    getTranslations("admin.pages.guestDetail"),
+    getTranslations("admin.common"),
+    getTranslations("admin.guests"),
+    getTranslations("booking.flowStatus"),
+    paramsPromise,
+    searchParams,
+    baseGuestPromise,
+    guestResultPromise,
+    historyPromise,
+    duplicatesPromise,
+    dedupCandidatesPromise,
+    getEffectiveToday(),
+    historyPromise.then((result) =>
+      result.ok && result.data[0]
+        ? guestIdPromise.then((guestId) =>
+            loadGuestRebookPanelPayload(guestId, result.data[0].id).catch(
+              () => null
+            )
+          )
+        : null
+    ),
+  ]);
   const activeTab = resolveTab(tab);
-  const baseGuest = await getGuestBaseById(id);
   if (!baseGuest) notFound();
 
-  let guest = await getGuestById(id).catch(() => null);
+  let guest = guestResult;
   let profileError: string | null = null;
   if (!guest) {
     guest = baseGuest;
@@ -87,52 +140,29 @@ export default async function GuestDetailPage({
 
   let history = [] as Awaited<ReturnType<typeof getGuestBookingHistory>>;
   let historyError: string | null = null;
-  try {
-    history = await getGuestBookingHistory(id);
-  } catch (e) {
-    historyError = e instanceof Error ? e.message : tPage("historyLoadError");
+  if (historyResult.ok) {
+    history = historyResult.data;
+  } else {
+    historyError =
+      historyResult.error instanceof Error
+        ? historyResult.error.message
+        : tPage("historyLoadError");
   }
 
   let duplicates = [] as Awaited<ReturnType<typeof findDuplicateGuestsForGuest>>;
   let duplicatesError: string | null = null;
-  try {
-    duplicates = await findDuplicateGuestsForGuest(id);
-  } catch (e) {
-    duplicatesError = e instanceof Error ? e.message : tPage("duplicatesLoadError");
+  if (duplicatesResult.ok) {
+    duplicates = duplicatesResult.data;
+  } else {
+    duplicatesError =
+      duplicatesResult.error instanceof Error
+        ? duplicatesResult.error.message
+        : tPage("duplicatesLoadError");
   }
 
-  // Smart dedup scoring — multi-layer matching
-  const dedupCandidates = await findDedupCandidates(
-    dedupInputFromGuest(guest)
-  ).catch(() => []);
-
-  const today = await getEffectiveToday();
   const backHref = from?.startsWith("/admin/guests") ? from : "/admin/guests";
   const reviewedHistoryCount = history.filter((stay) => stay.review != null).length;
   const latestStay = history[0] ?? null;
-
-  let latestRebookPayload: GuestRebookPanelPayload | null = null;
-  if (latestStay) {
-    try {
-      const draft = await loadGuestRebookDraft(id, latestStay.id);
-      const rooms = await previewGuestRebookRooms({
-        checkIn: draft.checkIn,
-        checkOut: draft.checkOut,
-        numAdults: draft.numAdults,
-        numChildren: draft.numChildren,
-      });
-      latestRebookPayload = {
-        draft,
-        initialRooms: rooms.availableRooms,
-        initialCanFulfill: rooms.canFulfill,
-        initialMinRooms: rooms.minRoomsNeeded,
-        checkInTime: rooms.checkInTime,
-        checkOutTime: rooms.checkOutTime,
-      };
-    } catch {
-      latestRebookPayload = null;
-    }
-  }
 
   const tabs: { id: GuestDetailTab; label: string }[] = [
     { id: "overview", label: tPage("tabOverview") },

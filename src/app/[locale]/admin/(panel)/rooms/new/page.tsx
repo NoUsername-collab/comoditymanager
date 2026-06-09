@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { RoomForm } from "@/components/admin/RoomForm";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { listBuildings } from "@/services/buildings";
-import { listFloorsByBuilding } from "@/services/floors";
+import { listAllFloors } from "@/services/floors";
 import {
   ensureBuildingPoliciesFromLegacy,
   getBuildingOptionPolicies,
@@ -25,28 +25,54 @@ export default async function NewRoomPage({
     names?: string;
   }>;
 }) {
-  const tPage = await getTranslations("admin.pages.roomsNew");
-  const tActions = await getTranslations("admin.serverActions");
-  const tCommon = await getTranslations("admin.common");
-  const tStruct = await getTranslations("admin.locationStructure");
-  const {
-    building: defaultBuildingId,
-    floor: defaultFloorId,
-    return_to,
-    error: errorCode,
-    names: errorNames,
-  } = await searchParams;
+  const [
+    tPage,
+    tActions,
+    tCommon,
+    tStruct,
+    {
+      building: defaultBuildingId,
+      floor: defaultFloorId,
+      return_to,
+      error: errorCode,
+      names: errorNames,
+    },
+  ] = await Promise.all([
+    getTranslations("admin.pages.roomsNew"),
+    getTranslations("admin.serverActions"),
+    getTranslations("admin.common"),
+    getTranslations("admin.locationStructure"),
+    searchParams,
+  ]);
   const backToStructure = return_to === "structure";
   let buildings: Awaited<ReturnType<typeof listBuildings>> = [];
   let types: Awaited<ReturnType<typeof listRoomTypes>> = [];
   let options: Awaited<ReturnType<typeof listRoomOptions>> = [];
+  let allRooms: Awaited<ReturnType<typeof listAllRooms>> = [];
+  let allFloors: Awaited<ReturnType<typeof listAllFloors>> = [];
   let loadError: string | null = null;
   let catalogMissing = false;
 
+  const buildingsPromise = listBuildings();
+  let policyResults: Awaited<ReturnType<typeof getBuildingOptionPolicies>>[] = [];
   try {
-    buildings = await listBuildings();
-    types = await listRoomTypes();
-    options = await listRoomOptions();
+    [buildings, types, options, allRooms, allFloors, policyResults] =
+      await Promise.all([
+        buildingsPromise,
+        listRoomTypes(),
+        listRoomOptions(),
+        listAllRooms(),
+        listAllFloors(),
+        buildingsPromise.then((loadedBuildings) =>
+          Promise.all(
+            loadedBuildings.map((b) =>
+              ensureBuildingPoliciesFromLegacy(b.id, b.ac_mode).catch(
+                () => [] as Awaited<ReturnType<typeof getBuildingOptionPolicies>>
+              )
+            )
+          )
+        ),
+      ]);
   } catch (e) {
     loadError = e instanceof Error ? e.message : tCommon("error");
     if (String(loadError).includes("room_type_definitions")) {
@@ -56,7 +82,7 @@ export default async function NewRoomPage({
 
   const floorsByBuilding: Record<
     string,
-    Awaited<ReturnType<typeof listFloorsByBuilding>>
+    Awaited<ReturnType<typeof listAllFloors>>
   > = {};
   const policiesByBuilding: Record<
     string,
@@ -84,9 +110,15 @@ export default async function NewRoomPage({
   }
 
   if (buildings.length > 0) {
+    for (let i = 0; i < buildings.length; i += 1) {
+      policiesByBuilding[buildings[i].id] = policyResults[i] ?? [];
+    }
+
     try {
-      const allRooms = await listAllRooms();
       for (const b of buildings) {
+        floorsByBuilding[b.id] = allFloors.filter(
+          (floor) => floor.building_id === b.id
+        );
         const rooms = allRooms.filter((r) => r.building_id === b.id);
         for (const room of rooms) {
           const key = roomScopeKey(b.id, room.floor_id);
@@ -99,22 +131,7 @@ export default async function NewRoomPage({
     } catch {
       for (const b of buildings) {
         nextSortByBuilding[b.id] = 1;
-      }
-    }
-
-    for (const b of buildings) {
-      try {
-        floorsByBuilding[b.id] = await listFloorsByBuilding(b.id);
-      } catch {
         floorsByBuilding[b.id] = [];
-      }
-      try {
-        policiesByBuilding[b.id] = await ensureBuildingPoliciesFromLegacy(
-          b.id,
-          b.ac_mode
-        );
-      } catch {
-        policiesByBuilding[b.id] = [];
       }
     }
   }

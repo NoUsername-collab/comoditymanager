@@ -12,8 +12,10 @@ export default async function AdminLoginPage({
     email?: string;
   }>;
 }) {
-  const t = await getTranslations("admin.login");
-  const params = await searchParams;
+  const [t, params] = await Promise.all([
+    getTranslations("admin.login"),
+    searchParams,
+  ]);
   const next =
     params.next?.startsWith("/admin") || params.next?.startsWith("/hospira-admin")
       ? params.next
@@ -28,12 +30,12 @@ export default async function AdminLoginPage({
   const initialUsername = params.email?.trim() ?? "";
 
   return (
-    <main className="admin-login-page ml-content flex min-h-dvh items-center justify-center p-6">
-      <div className="admin-login-card w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
+    <main className="admin-login-page ml-content flex min-h-dvh items-center justify-center p-4">
+      <div className="admin-login-card w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
         <p className="text-xs font-medium uppercase tracking-wide text-blue-700">
           {t("eyebrow")}
         </p>
-        <h1 className="mt-1 text-2xl font-semibold text-zinc-900">{t("title")}</h1>
+        <h1 className="mt-1 text-xl font-semibold text-zinc-900">{t("title")}</h1>
         <p className="admin-login-lead mt-2 text-sm">{t("lead")}</p>
         {signupSuccess && (
           <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">

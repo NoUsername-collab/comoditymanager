@@ -7,6 +7,8 @@ type Props = {
   size?: number;
   className?: string;
   animated?: boolean;
+  /** LCP hero logo in public header */
+  priority?: boolean;
 };
 
 /** Header: ~64px mobil, ~72px desktop */
@@ -36,11 +38,13 @@ function LogoImages({
   lightBgSrc,
   px,
   alt,
+  priority = false,
 }: {
   onyxSrc: string;
   lightBgSrc: string | null;
   px: number;
   alt: string;
+  priority?: boolean;
 }) {
   const imgClass = "brand-logo-img h-full w-full object-contain";
 
@@ -54,6 +58,8 @@ function LogoImages({
         height={px}
         className={`brand-logo-img--onyx-bg absolute inset-0 ${imgClass}`}
         decoding="async"
+        fetchPriority={priority ? "high" : undefined}
+        loading={priority ? "eager" : "lazy"}
       />
       {lightBgSrc && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -76,6 +82,7 @@ export async function BrandLogo({
   size,
   className = "",
   animated = true,
+  priority = false,
 }: Props) {
   const tShell = await getTranslations("public.shell");
   const { onyx: onyxSrc, lightBg: lightBgSrc } = await getBrandLogoAssets();
@@ -89,6 +96,7 @@ export async function BrandLogo({
         lightBgSrc={lightBgSrc}
         px={px}
         alt={tShell("brandFallback")}
+        priority={priority}
       />
     );
 

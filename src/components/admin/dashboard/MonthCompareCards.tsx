@@ -148,7 +148,7 @@ function MetricCard({
           />
         ) : null}
       </p>
-      <p className="mt-1 text-2xl font-bold tabular-nums text-zinc-900">{value}</p>
+      <p className="mt-0.5 text-xl font-bold tabular-nums text-zinc-900">{value}</p>
       {sub ? (
         <p className="mt-1 text-xs text-zinc-500">
           {sub}

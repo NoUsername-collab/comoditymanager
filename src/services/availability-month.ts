@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { nightOccupied } from "@/lib/stay-dates";
 import { daysInMonth, monthYearLabel } from "@/lib/ro-calendar";
 import { getLocale } from "next-intl/server";
@@ -210,45 +211,46 @@ function computeKpis(
   };
 }
 
-export async function loadMonthAvailabilityGrid(
-  year: number,
-  month: number,
-  buildingId: string | null = null
-): Promise<MonthAvailabilityGrid> {
-  const dash = await loadAvailabilityDashboard(year, month, buildingId);
-  return dash;
-}
-
-export async function loadAvailabilityDashboard(
+async function loadAvailabilityDashboardImpl(
   year: number,
   month: number,
   buildingId: string | null = null,
   featureFilter: GanttFeatureFilter = "all"
 ): Promise<AvailabilityDashboard> {
-  const locale = await getLocale();
   const { start, end } = monthRange(year, month);
 
   const prevMonth = month === 0 ? 11 : month - 1;
   const prevYear = month === 0 ? year - 1 : year;
 
   const scanEnd = addDays(end, 75);
-  const scanStart = await getEffectiveToday();
+
+  const todayPromise = getEffectiveToday();
+  const roomsPromise = listAllRooms();
+
+  const [locale, scanStart, roomsRaw, buildings, occupied, bookings, optionSlugsByRoom] =
+    await Promise.all([
+      getLocale(),
+      todayPromise,
+      roomsPromise,
+      listBuildings(),
+      todayPromise.then((today) => {
+        const rangeStart = today < start ? today : start;
+        return listOccupiedRoomRanges(undefined, {
+          forPublicCalendar: true,
+          rangeStart,
+          rangeEnd: scanEnd,
+        });
+      }),
+      todayPromise.then((today) => {
+        const rangeStart = today < start ? today : start;
+        return listBookingsForRange(rangeStart, scanEnd);
+      }),
+      roomsPromise
+        .then((rooms) => getRoomOptionSlugsByRoomIds(rooms.map((r) => r.id)))
+        .catch(() => ({} as Record<string, string[]>)),
+    ]);
+
   const rangeStart = scanStart < start ? scanStart : start;
-
-  const [roomsRaw, buildings, occupied, bookings] = await Promise.all([
-    listAllRooms(),
-    listBuildings(),
-    listOccupiedRoomRanges(undefined, {
-      forPublicCalendar: true,
-      rangeStart,
-      rangeEnd: scanEnd,
-    }),
-    listBookingsForRange(rangeStart, scanEnd),
-  ]);
-
-  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
-    roomsRaw.map((r) => r.id)
-  ).catch(() => ({} as Record<string, string[]>));
 
   const rooms = roomsRaw
     .filter(
@@ -333,8 +335,7 @@ export async function loadAvailabilityDashboard(
 
   const kpis = computeKpis(days, prevFull);
   const weekend_picks = scanWeekendsInDays(mergedScan, 2).slice(0, 4);
-  const effectiveToday = await getEffectiveToday();
-  const next_weekend = findNextWeekendWithRooms(mergedScan, effectiveToday, 2);
+  const next_weekend = findNextWeekendWithRooms(mergedScan, scanStart, 2);
 
   const cereri_band: CereriBandDay[] = days.map((d) => ({
     iso: d.iso,
@@ -360,23 +361,61 @@ export async function loadAvailabilityDashboard(
   };
 }
 
-export async function loadDayAvailabilityDetail(
+export const loadAvailabilityDashboard = cache(loadAvailabilityDashboardImpl);
+
+export async function loadMonthAvailabilityGrid(
+  year: number,
+  month: number,
+  buildingId: string | null = null
+): Promise<MonthAvailabilityGrid> {
+  return loadAvailabilityDashboard(year, month, buildingId);
+}
+
+type DayRoomRowsPayload = Pick<
+  DayAvailabilityDetail,
+  "rooms" | "unassigned_cereri" | "pending_cereri"
+>;
+
+const loadDayRoomRows = cache(async (
   iso: string,
   buildingId: string | null = null,
   featureFilter: GanttFeatureFilter = "all"
-): Promise<DayAvailabilityDetail | null> {
-  const [y, m, d] = iso.split("-").map(Number);
-  if (!y || m < 1 || m > 12 || !d) return null;
+): Promise<DayRoomRowsPayload> => {
+  const scopePromise = getTenantScope();
+  const roomsPromise = listAllRooms();
 
-  const grid = await loadAvailabilityDashboard(y, m - 1, buildingId, featureFilter);
-  const day = grid.days.find((x) => x.iso === iso);
-  if (!day) return null;
+  const [roomsRaw, buildings, optionSlugsByRoom, roomBookingResult, cereriResult] =
+    await Promise.all([
+      roomsPromise,
+      listBuildings(),
+      roomsPromise
+        .then((rooms) =>
+          getRoomOptionSlugsByRoomIds(rooms.map((r) => r.id))
+        )
+        .catch(() => ({} as Record<string, string[]>)),
+      scopePromise.then(({ tenantId, supabase }) =>
+        supabase
+          .from("booking_rooms")
+          .select(
+            `room_id, booking_id,
+      bookings!inner ( id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name )`
+          )
+          .eq("tenant_id", tenantId)
+          .neq("bookings.status", "anulata")
+          .lte("bookings.check_in", iso)
+          .gt("bookings.check_out", iso)
+      ),
+      scopePromise.then(({ tenantId, supabase }) =>
+        supabase
+          .from("bookings")
+          .select("id, check_in, check_out, booking_rooms ( room_id )")
+          .eq("tenant_id", tenantId)
+          .eq("status", "cerere_noua")
+          .lte("check_in", iso)
+          .gt("check_out", iso)
+      ),
+    ]);
 
-  const roomsRaw = await listAllRooms();
-  const optionSlugsByRoom = await getRoomOptionSlugsByRoomIds(
-    roomsRaw.map((r) => r.id)
-  ).catch(() => ({} as Record<string, string[]>));
-  const buildings = await listBuildings();
   const buildingMap = new Map(buildings.map((b) => [b.id, b]));
   const activeRooms = roomsRaw.filter(
     (r) =>
@@ -388,22 +427,12 @@ export async function loadDayAvailabilityDetail(
       )
   );
 
-  const { tenantId, supabase } = await getTenantScope();
-  const { data } = await supabase
-    .from("booking_rooms")
-    .select(
-      `room_id, booking_id,
-      bookings!inner ( id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name )`
-    )
-    .eq("tenant_id", tenantId)
-    .neq("bookings.status", "anulata");
-
   const roomState = new Map<
     string,
     { guest_name: string; booking_id: string; status: "occupied" | "cerere" }
   >();
 
-  for (const row of data ?? []) {
+  for (const row of roomBookingResult.data ?? []) {
     const raw = row.bookings as
       | {
           id: string;
@@ -462,28 +491,48 @@ export async function loadDayAvailabilityDetail(
     return a.name.localeCompare(b.name);
   });
 
-  const { data: cereri } = await supabase
-    .from("bookings")
-    .select("id, check_in, check_out, booking_rooms ( room_id )")
-    .eq("tenant_id", tenantId)
-    .eq("status", "cerere_noua")
-    .lte("check_in", iso)
-    .gt("check_out", iso);
-
   let unassigned = 0;
   let pending = 0;
-  for (const c of cereri ?? []) {
+  for (const c of cereriResult.data ?? []) {
     const br = (c.booking_rooms ?? []) as { room_id: string }[];
     if (br.length === 0) unassigned += 1;
     else pending += 1;
   }
 
   return {
-    day,
     rooms,
     unassigned_cereri: unassigned,
     pending_cereri: pending,
   };
+});
+
+export const loadDayAvailabilityDetail = cache(async (
+  iso: string,
+  buildingId: string | null = null,
+  featureFilter: GanttFeatureFilter = "all"
+): Promise<DayAvailabilityDetail | null> => {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || m < 1 || m > 12 || !d) return null;
+
+  const [grid, roomRows] = await Promise.all([
+    loadAvailabilityDashboard(y, m - 1, buildingId, featureFilter),
+    loadDayRoomRows(iso, buildingId, featureFilter),
+  ]);
+
+  const day = grid.days.find((x) => x.iso === iso);
+  if (!day) return null;
+
+  return { day, ...roomRows };
+});
+
+/** When the month grid day is already on the client, skip reloading the dashboard. */
+export async function loadDayAvailabilityDetailWithKnownDay(
+  day: DayAvailability,
+  buildingId: string | null = null,
+  featureFilter: GanttFeatureFilter = "all"
+): Promise<DayAvailabilityDetail> {
+  const roomRows = await loadDayRoomRows(day.iso, buildingId, featureFilter);
+  return { day, ...roomRows };
 }
 
 export type { AvailabilityPressure, WeekendPick };

@@ -1,16 +1,20 @@
 import { Link } from "@/i18n/navigation";
-import { PublicStaffPreview } from "@/components/public/PublicStaffPreview";
+import { PublicStaffPreviewLazy } from "@/components/public/PublicStaffPreviewLazy";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { loadStaffPublicPreview } from "@/services/admin-dashboard";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
 export default async function HomePage() {
-  const [t, tShell, settings, staffUser] = await Promise.all([
+  const staffUserPromise = getAdminUser().catch(() => null);
+  const [t, tShell, settings, staffUser, staffPreview] = await Promise.all([
     getTranslations("public.home"),
     getTranslations("public.shell"),
     getPensionSettings().catch(() => null),
-    getAdminUser().catch(() => null),
+    staffUserPromise,
+    staffUserPromise.then((user) =>
+      user ? loadStaffPublicPreview().catch(() => null) : null
+    ),
   ]);
 
   let title = tShell("brandFallback");
@@ -20,16 +24,6 @@ export default async function HomePage() {
     title = settings.display_name;
     checkIn = settings.default_check_in_time;
     checkOut = settings.default_check_out_time;
-  }
-
-  let staffPreview: Awaited<ReturnType<typeof loadStaffPublicPreview>> | null =
-    null;
-  if (staffUser) {
-    try {
-      staffPreview = await loadStaffPublicPreview();
-    } catch {
-      staffPreview = null;
-    }
   }
 
   const features = [
@@ -67,7 +61,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {staffPreview && <PublicStaffPreview data={staffPreview} />}
+      {staffPreview && <PublicStaffPreviewLazy data={staffPreview} />}
 
       <section className="public-section">
         <h2 className="public-section__title">{t("whyTitle")}</h2>

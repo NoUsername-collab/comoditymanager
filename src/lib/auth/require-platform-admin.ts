@@ -36,19 +36,33 @@ export interface PlatformAdminSession {
   email: string;
 }
 
+async function readAuthUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+}
+
+/**
+ * Non-throwing guard for server actions — returns null when unauthorized.
+ */
+export async function getPlatformAdminOrNull(): Promise<PlatformAdminSession | null> {
+  const user = await readAuthUser();
+  if (!user?.email || !isPlatformAdminEmail(user.email)) {
+    return null;
+  }
+  return { userId: user.id, email: user.email };
+}
+
 /**
  * Require platform admin — redirects to / if not authorized.
  * Use in server components and server actions.
  */
 export async function requirePlatformAdmin(): Promise<PlatformAdminSession> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user?.email || !isPlatformAdminEmail(user.email)) {
+  const session = await getPlatformAdminOrNull();
+  if (!session) {
     redirect("/");
   }
-
-  return { userId: user.id, email: user.email };
+  return session;
 }

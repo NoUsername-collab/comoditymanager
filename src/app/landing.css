@@ -362,7 +362,7 @@
 
 .landing-step {
   text-align: center;
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 .landing-step__num {
@@ -376,7 +376,7 @@
   color: var(--site-accent, #d6b55a);
   font-size: 1.25rem;
   font-weight: 800;
-  margin-bottom: 1rem;
+  margin-bottom: 0.65rem;
 }
 
 .landing-step__title {
@@ -560,7 +560,7 @@
 /* ── Trust strip ───────────────────────────────────────────────────── */
 
 .landing-trust {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.15rem;
   border-block: 1px solid color-mix(in srgb, var(--site-accent, #d6b55a) 12%, transparent);
   background: color-mix(in srgb, var(--site-card, #0e0c14) 70%, transparent);
   text-align: center;
@@ -643,7 +643,7 @@
 }
 
 .landing-showcase__main {
-  padding: 1.25rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;

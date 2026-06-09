@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { formatGuestFullName } from "@/domain/guest-name";
 import {
   shiftStayDatesByYears,
@@ -40,7 +41,7 @@ import {
 
 import { isPlaceholderEmail } from "@/domain/guest/normalize";
 
-export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
+const loadGuestBaseById = cache(async (id: string): Promise<GuestRow | null> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guests")
@@ -50,6 +51,10 @@ export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
     .maybeSingle();
   if (error) throw new Error(error.message);
   return data ? mapGuestRow(data) : null;
+});
+
+export async function getGuestBaseById(id: string): Promise<GuestRow | null> {
+  return loadGuestBaseById(id);
 }
 
 async function findGuestByIdsOrdered(ids: string[]): Promise<GuestRow | null> {
@@ -78,7 +83,7 @@ export type GuestAutofillMatch = {
   flagLevel: "normal" | "watchlist" | "blacklist" | null;
 };
 
-export async function findGuestAutofillMatch(input: {
+async function findGuestAutofillMatchImpl(input: {
   guest_last_name?: string;
   guest_first_name?: string;
   guest_email?: string;
@@ -172,28 +177,63 @@ export async function findGuestAutofillMatch(input: {
   };
 }
 
+const loadGuestAutofillMatch = cache(
+  async (
+    lastName: string,
+    firstName: string,
+    email: string,
+    phone: string
+  ): Promise<GuestAutofillMatch | null> =>
+    findGuestAutofillMatchImpl({
+      guest_last_name: lastName,
+      guest_first_name: firstName,
+      guest_email: email,
+      guest_phone: phone,
+    })
+);
+
+export async function findGuestAutofillMatch(input: {
+  guest_last_name?: string;
+  guest_first_name?: string;
+  guest_email?: string;
+  guest_phone?: string;
+}): Promise<GuestAutofillMatch | null> {
+  return loadGuestAutofillMatch(
+    String(input.guest_last_name ?? "").trim(),
+    String(input.guest_first_name ?? "").trim(),
+    String(input.guest_email ?? "").trim(),
+    String(input.guest_phone ?? "").trim()
+  );
+}
+
+const loadGuestById = cache(async (id: string): Promise<GuestRow | null> => {
+  const [guest, profile] = await Promise.all([
+    loadGuestBaseById(id),
+    getGuestProfile(id, { recompute: false }),
+  ]);
+  if (!guest) return null;
+  return { ...guest, profile };
+});
+
 export async function getGuestById(
   id: string,
   options?: { recomputeProfile?: boolean }
 ): Promise<GuestRow | null> {
-  const guest = await getGuestBaseById(id);
-  if (!guest) return null;
-  const profile = await getGuestProfile(id, {
-    recompute: options?.recomputeProfile === true,
-  });
-  return { ...guest, profile };
+  if (options?.recomputeProfile === true) {
+    const guest = await getGuestBaseById(id);
+    if (!guest) return null;
+    const profile = await getGuestProfile(id, { recompute: true });
+    return { ...guest, profile };
+  }
+  return loadGuestById(id);
 }
 
-export async function findGuestByNationalId(
-  nationalId: string,
-  excludeGuestId?: string
-): Promise<GuestRow | null> {
-  const cleaned = nationalId.replace(/[\s\-]/g, "");
-  if (!cleaned) return null;
-
+const loadGuestByNationalId = cache(async (
+  cleaned: string,
+  excludeGuestId: string | null
+): Promise<GuestRow | null> => {
   const { tenantId, supabase } = await getTenantScope();
 
-  // Search in both national_id and legacy cnp column
   let query = supabase
     .from("guests")
     .select("*")
@@ -216,6 +256,15 @@ export async function findGuestByNationalId(
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return data ? mapGuestRow(data) : null;
+});
+
+export async function findGuestByNationalId(
+  nationalId: string,
+  excludeGuestId?: string
+): Promise<GuestRow | null> {
+  const cleaned = nationalId.replace(/[\s\-]/g, "");
+  if (!cleaned) return null;
+  return loadGuestByNationalId(cleaned, excludeGuestId ?? null);
 }
 
 /** @deprecated Use findGuestByNationalId */

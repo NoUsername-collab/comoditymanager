@@ -49,20 +49,20 @@ export async function confirmBookingWithRooms(
   );
   await assertRoomsAssignableForBooking(bookingId, roomIds);
 
-  const { tenantId } = await getTenantScope();
-  const booking = await getBookingById(bookingId);
+  const [{ tenantId, supabase }, booking, simActive] = await Promise.all([
+    getTenantScope(),
+    getBookingById(bookingId),
+    isSimActive(),
+  ]);
   if (!booking) throw new Error("booking.request_not_found");
   if (booking.status === "confirmata") throw new Error("booking.already_confirmed");
   if (booking.status !== "cerere_noua" && booking.status !== "anulata") {
     throw new Error("booking.request_not_found");
   }
 
-  const simActive = await isSimActive();
-
   if (simActive) {
     // Simulation mode: use individual operations on sim_sandbox schema.
     // Atomicity is not critical for throwaway simulation data.
-    const { tenantId, supabase } = await getTenantScope();
 
     await supabase
       .from("booking_rooms")
@@ -136,7 +136,10 @@ export async function rescheduleBookingDates(
     throw new Error("booking.minimum_one_night_required");
   }
 
-  const booking = await getBookingById(bookingId);
+  const [booking, { tenantId, supabase }] = await Promise.all([
+    getBookingById(bookingId),
+    getTenantScope(),
+  ]);
   if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
     throw new Error("booking.cannot_shift_cancelled");
@@ -151,8 +154,6 @@ export async function rescheduleBookingDates(
     booking.room_ids,
     bookingId
   );
-
-  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({
@@ -199,7 +200,10 @@ export async function adjustBookingStayNights(
     throw new Error("booking.invalid_adjustment");
   }
 
-  const booking = await getBookingById(bookingId);
+  const [booking, scope] = await Promise.all([
+    getBookingById(bookingId),
+    getTenantScope(),
+  ]);
   if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
     throw new Error("booking.cannot_update_cancelled");
@@ -213,7 +217,7 @@ export async function adjustBookingStayNights(
   if (booking.room_ids.length > 0) {
     await rescheduleBookingDates(bookingId, booking.check_in, newCheckOut);
   } else {
-    const { tenantId, supabase } = await getTenantScope();
+    const { tenantId, supabase } = scope;
     const { error } = await supabase
       .from("bookings")
       .update({ check_out: newCheckOut })
@@ -295,13 +299,14 @@ export async function shiftBookingByDays(
 }
 
 export async function cancelBooking(bookingId: string): Promise<void> {
-  const booking = await getBookingById(bookingId);
+  const [booking, { tenantId, supabase }] = await Promise.all([
+    getBookingById(bookingId),
+    getTenantScope(),
+  ]);
   if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
     throw new Error("booking.already_cancelled");
   }
-
-  const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("bookings")
     .update({ status: "anulata" })
