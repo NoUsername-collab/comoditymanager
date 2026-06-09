@@ -163,9 +163,10 @@ export function GanttCalendar({
       resolveGanttDayGridOptions(
         compactChrome,
         isPortrait,
-        columnMetrics.dayMin
+        columnMetrics.dayMin,
+        viewRange.days.length
       ),
-    [compactChrome, isPortrait, columnMetrics.dayMin]
+    [compactChrome, isPortrait, columnMetrics.dayMin, viewRange.days.length]
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
 

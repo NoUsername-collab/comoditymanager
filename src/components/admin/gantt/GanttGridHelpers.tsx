@@ -29,18 +29,19 @@ export function resolveGanttColumnMetrics(
   if (orientation === "landscape") {
     return { roomCol: "4.25rem", dayMin: "1.125rem" };
   }
-  /* Portrait: same min as desktop — month view scrolls horizontally */
-  return { roomCol: "4.75rem", dayMin: DAY_COL_MIN_W };
+  /* Portrait: narrower room col — more day columns visible */
+  return { roomCol: "3.5rem", dayMin: DAY_COL_MIN_W };
 }
 
-/** Portrait mobile: fixed day columns so 30d month is readable (pan horizontally). */
+/** Portrait mobile: ≤7d stretches to viewport; 15/30d uses fixed cols + horizontal scroll. */
 export function resolveGanttDayGridOptions(
   compactChrome: boolean,
   isPortrait: boolean,
-  dayMin: string
+  dayMin: string,
+  dayCount: number
 ): GanttDayGridOptions | undefined {
   if (compactChrome && isPortrait) {
-    return { dayMin, fixed: true };
+    return { dayMin, fixed: dayCount > 7 };
   }
   return undefined;
 }

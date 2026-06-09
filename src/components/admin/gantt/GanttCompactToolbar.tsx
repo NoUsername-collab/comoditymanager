@@ -9,6 +9,7 @@ import {
 } from "@/components/admin/gantt/GanttGridHelpers";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
+import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import { useTranslations } from "next-intl";
 
 export function GanttCompactToolbar({
@@ -76,6 +77,7 @@ export function GanttCompactToolbar({
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
+  const { compactChrome } = useCompactLayoutHints();
 
   return (
     <div className="gantt-compact-toolbar mx-3">
@@ -124,11 +126,22 @@ export function GanttCompactToolbar({
 
         <button
           type="button"
-          className={`gantt-compact-toolbar__today-btn ${isTodayStartMode ? "gantt-compact-toolbar__today-btn--active" : ""}`}
+          className={[
+            "gantt-compact-toolbar__today-btn",
+            compactChrome && "gantt-compact-toolbar__today-btn--compact",
+            isTodayStartMode && "gantt-compact-toolbar__today-btn--active",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           onClick={onToggleTodayStartMode}
           title={tCommon("alignToday")}
+          aria-label={tCommon("alignToday")}
         >
-          {tCommon("todayShort")}
+          {compactChrome ? (
+            <span className="gantt-compact-toolbar__today-dot" aria-hidden />
+          ) : (
+            tCommon("todayShort")
+          )}
         </button>
       </div>
 

@@ -3,14 +3,25 @@
  * Portrait + landscape; loaded only on /admin/calendar.
  */
 
-/* ── Page shell: reclaim horizontal space ── */
+/* ── Gantt-only: hide top HUD (Hospira/FREE) — stays on Home tab ── */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-hud,
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-hud-alert {
+  display: none !important;
+}
+
+/* ── Page shell: reclaim horizontal + vertical space ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page.admin-retro-page {
-  padding: 0.35rem 0.25rem 0.5rem !important;
+  padding: 0.1rem 0.2rem 0.3rem !important;
   max-width: 100%;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
-  padding: 0.35rem 0.15rem 0.5rem !important;
+  padding: 0.1rem 0.1rem 0.25rem !important;
+}
+
+/* Scoped touch targets — 30% smaller than global ml-touch-min */
+html[data-layout-chrome="compact"] .gantt-calendar-page {
+  --gantt-touch-min: 1.925rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
@@ -32,12 +43,20 @@ html[data-layout-chrome="compact"] .gantt-scroll {
   contain: layout style;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll {
   touch-action: pan-x pan-y;
   max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 3.75rem) - var(--ml-safe-bottom, 0px) - 9rem
-  );
+    var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 2.275rem) - var(--ml-safe-bottom, 0px) - 3.25rem
+  ) !important;
   overflow-y: auto;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page .gantt-compact-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  padding-block: 0.18rem !important;
+  margin-bottom: 0.12rem !important;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll {
@@ -55,10 +74,19 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-s
   min-width: 0 !important;
 }
 
-/* Portrait month: fixed day columns — scroll instead of squeeze */
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-grid--fixed {
+/* Portrait 15/30d: fixed day columns — scroll instead of squeeze */
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-grid--fixed,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-header-grid.gantt-day-grid--fixed,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-summary-row__grid.gantt-day-grid--fixed {
   width: max-content;
   min-width: max-content;
+}
+
+/* Portrait ≤7d: stretch columns to fill viewport */
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-grid:not(.gantt-day-grid--fixed),
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-day-header-grid:not(.gantt-day-grid--fixed),
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-summary-row__grid:not(.gantt-day-grid--fixed) {
+  width: 100%;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-head-main-row__days,
@@ -69,16 +97,17 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-sc
 /* ── Room column: narrower on phone ── */
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-column-header,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell {
-  padding-inline: 0.45rem !important;
+  padding-inline: 0.3rem !important;
+  padding-block: 0.1rem !important;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell__name {
-  font-size: 0.68rem;
-  line-height: 1.2;
+  font-size: 0.58rem;
+  line-height: 1.1;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell__building {
-  font-size: 0.58rem;
+  font-size: 0.5rem;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-column-header,
@@ -124,7 +153,8 @@ html[data-layout-chrome="compact"] .gantt-summary-row__grid--pan {
 }
 
 html[data-layout-chrome="compact"] .gantt-day-header-cell__date {
-  font-size: 0.62rem;
+  font-size: 0.54rem;
+  line-height: 1;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-day-header-cell__date {
@@ -132,7 +162,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-s
 }
 
 html[data-layout-chrome="compact"] .gantt-day-header-cell__weekday {
-  font-size: 0.52rem;
+  font-size: 0.46rem;
+  line-height: 1;
 }
 
 /* Redundant with today column highlight + toolbar AZI */
@@ -141,20 +172,36 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-da
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-day-header-cell__body {
-  min-height: 2.35rem;
-  padding-block: 0.2rem;
+  min-height: 1.4rem;
+  padding-block: 0.08rem;
 }
 
-/* ── Compact toolbar ── */
+/* Slim today column marker — keep visibility, less chrome */
+html[data-layout-chrome="compact"] .gantt-day-header-grid .gantt-day-header-cell--today {
+  box-shadow:
+    inset 1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
+    inset -1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
+    inset 0 0 0 1px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 14%, var(--border)) !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--today {
+  box-shadow:
+    inset 1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
+    inset -1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
+    inset 0 0 0 1px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 28%, white) !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-day-header-cell--today .gantt-day-header-cell__date {
+  font-size: 0.56rem;
+}
+
+/* ── Compact toolbar (−30% vertical) ── */
 html[data-layout-chrome="compact"] .gantt-compact-toolbar {
   contain: layout style;
   content-visibility: auto;
-  contain-intrinsic-size: auto 4.5rem;
-}
-
-html[data-layout-chrome="compact"] .gantt-compact-toolbar {
-  gap: 0.35rem;
-  padding: 0.25rem 0.15rem;
+  contain-intrinsic-size: auto 3.15rem;
+  gap: 0.25rem;
+  padding: 0.18rem 0.1rem;
   margin-inline: 0 !important;
 }
 
@@ -165,9 +212,9 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
   grid-template-areas:
     "actions filters"
     "nav nav";
-  gap: 0.45rem 0.35rem;
-  padding: 0.35rem 0.2rem 0.5rem;
-  margin-bottom: 0.25rem;
+  gap: 0.3rem 0.25rem;
+  padding: 0.22rem 0.15rem 0.3rem;
+  margin-bottom: 0.12rem;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__left {
@@ -266,14 +313,15 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__select {
-  font-size: 16px;
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding-block: 0.35rem;
+  font-size: 0.72rem;
+  min-height: var(--gantt-touch-min, 1.925rem);
+  padding-block: 0.15rem;
+  padding-inline: 0.35rem 1.1rem;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__select {
-  font-size: 16px;
-  padding: 0.28rem 1.35rem 0.28rem 0.45rem;
+  font-size: 0.72rem;
+  padding: 0.15rem 1.1rem 0.15rem 0.35rem;
 }
 
 /* ── Gantt context menu: touch-friendly ── */
@@ -287,37 +335,112 @@ html[data-layout-chrome="compact"] .gantt-ctx-menu__item {
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__title {
   max-width: none;
-  font-size: 0.72rem;
+  font-size: 0.62rem;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select {
-  min-height: var(--ml-touch-min, 2.75rem);
-  font-size: 16px;
-  padding-block: 0.35rem;
+  min-height: var(--gantt-touch-min, 1.925rem);
+  font-size: 0.72rem;
+  padding-block: 0.15rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
-  min-width: var(--ml-touch-min, 2.75rem);
-  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--gantt-touch-min, 1.925rem);
+  min-height: var(--gantt-touch-min, 1.925rem);
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__nav-btn {
-  min-width: var(--ml-touch-min, 2.75rem);
-  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--gantt-touch-min, 1.925rem);
+  min-height: var(--gantt-touch-min, 1.925rem);
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--ml-touch-min, 2.75rem);
-  max-width: min(11rem, 42vw);
+  min-height: var(--gantt-touch-min, 1.925rem);
+  height: var(--gantt-touch-min, 1.925rem);
+  max-width: min(9.5rem, 38vw);
+  padding-inline: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-arrows {
+  height: var(--gantt-touch-min, 1.925rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
+  width: 1.35rem;
+  height: 100%;
+  font-size: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn {
+  width: var(--gantt-touch-min, 1.925rem);
+  height: var(--gantt-touch-min, 1.925rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--compact {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: var(--gantt-touch-min, 1.925rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-dot {
+  display: block;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--active .gantt-compact-toolbar__today-dot {
+  background: #fff;
+  box-shadow: 0 0 0 1px #fff;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--ml-touch-min, 2.75rem);
-  max-width: 9rem;
+  min-height: var(--gantt-touch-min, 1.925rem);
+  max-width: 8rem;
+}
+
+/* Action strip — in/out badges + quick ops (−30%) */
+html[data-layout-chrome="compact"] .gantt-action-strip {
+  min-height: 1.4rem;
+  gap: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-action-strip__toggle-slot {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-action-strip__track {
+  min-width: 9rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-action-strip__badge {
+  padding: 0.12rem 0.35rem;
+  font-size: 0.52rem;
+  gap: 0.12rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-action-strip__badge strong {
+  font-size: 0.54rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-action-strip__btn {
+  padding: 0.16rem 0.38rem;
+  font-size: 0.52rem;
+  border-radius: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-action-strip__reveal,
+html[data-layout-chrome="compact"] .gantt-action-strip__collapse {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__title {
@@ -377,20 +500,45 @@ html[data-layout-chrome="compact"] .gantt-cereri-card__main {
   padding: 0.5rem 0.45rem 0.5rem 0.55rem;
 }
 
-/* ── Row heights: landscape compress ── */
+/* ── Row heights: −40% grid density ── */
+html[data-layout-chrome="compact"] .gantt-shell--premium {
+  --gantt-row-h: 29px;
+  --gantt-day-header-row-h: 2.1rem;
+  --gantt-unassigned-row-h: 22px;
+}
+
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-shell--premium {
-  --gantt-stay-h: 28px;
-  --gantt-stay-top: 6px;
-  --gantt-occ-bar-h: 22px;
-  --gantt-occ-bar-top: 9px;
-  --gantt-unassigned-row-h: 32px;
+  --gantt-stay-h: 17px;
+  --gantt-stay-top: 4px;
+  --gantt-occ-bar-h: 13px;
+  --gantt-occ-bar-top: 5px;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-shell--premium {
-  --gantt-stay-h: 30px;
-  --gantt-stay-top: 7px;
-  --gantt-occ-bar-h: 24px;
-  --gantt-occ-bar-top: 10px;
+  --gantt-stay-h: 18px;
+  --gantt-stay-top: 4px;
+  --gantt-occ-bar-h: 14px;
+  --gantt-occ-bar-top: 6px;
+}
+
+html[data-layout-chrome="compact"] .gantt-head-main-row__room {
+  padding-block: 0.35rem !important;
+  font-size: 0.58rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-summary-row__label {
+  padding-block: 0.2rem !important;
+  font-size: 0.56rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-summary-cell {
+  padding-block: 0.1rem !important;
+  font-size: 0.56rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-building-header {
+  min-height: 1.35rem;
+  padding-block: 0.15rem !important;
 }
 
 /* ── Building headers + summary banner ── */
@@ -481,7 +629,7 @@ html[data-layout-chrome="compact"] .gantt-footer-legend__body .gantt-stay-hint {
 /* ── Off-screen paint skip (compact lists + gantt rows) ── */
 html[data-layout-chrome="compact"] .gantt-room-row {
   content-visibility: auto;
-  contain-intrinsic-size: auto 2.75rem;
+  contain-intrinsic-size: auto 1.8rem;
 }
 
 html[data-layout-chrome="compact"] .cerere-item,
