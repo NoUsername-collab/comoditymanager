@@ -8,8 +8,10 @@ import type { CheckinSettings } from "@/domain/checkin/types";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 
 const CHECKIN_SETTINGS_SELECT = [
+  "display_name",
   "checkin_doc_rule",
   "checkin_phone_rule",
+  "checkin_cnp_rule",
   "checkin_payment_rule",
   "checkin_min_payment_pct",
   "checkin_deposit",
@@ -22,12 +24,17 @@ const CHECKIN_SETTINGS_SELECT = [
   "late_checkout_fee",
   "early_checkin_allowed",
   "early_checkin_fee",
+  "fisa_property_address",
+  "fisa_owner_cui",
+  "fisa_tourism_license",
 ].join(", ");
 
 /** Default settings used when DB row is missing or columns not yet migrated */
 export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
+  pension_display_name: "Pensiune",
   checkin_doc_rule: "recommended",
   checkin_phone_rule: "recommended",
+  checkin_cnp_rule: "required",
   checkin_payment_rule: "at_checkout",
   checkin_min_payment_pct: 30,
   checkin_deposit: false,
@@ -40,6 +47,9 @@ export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
   late_checkout_fee: 0,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
+  fisa_property_address: null,
+  fisa_owner_cui: null,
+  fisa_tourism_license: null,
 };
 
 function parseTimeField(raw: unknown): string | null {
@@ -51,12 +61,18 @@ function parseTimeField(raw: unknown): string | null {
 
 function mapRow(row: Record<string, unknown>): CheckinSettings {
   return {
+    pension_display_name:
+      String(row.display_name ?? "").trim() ||
+      DEFAULT_CHECKIN_SETTINGS.pension_display_name,
     checkin_doc_rule:
       (row.checkin_doc_rule as CheckinSettings["checkin_doc_rule"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_doc_rule,
     checkin_phone_rule:
       (row.checkin_phone_rule as CheckinSettings["checkin_phone_rule"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_phone_rule,
+    checkin_cnp_rule:
+      (row.checkin_cnp_rule as CheckinSettings["checkin_cnp_rule"]) ??
+      DEFAULT_CHECKIN_SETTINGS.checkin_cnp_rule,
     checkin_payment_rule:
       (row.checkin_payment_rule as CheckinSettings["checkin_payment_rule"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_payment_rule,
@@ -84,6 +100,16 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
         ? Boolean(row.early_checkin_allowed)
         : DEFAULT_CHECKIN_SETTINGS.early_checkin_allowed,
     early_checkin_fee: Number(row.early_checkin_fee) || 0,
+    fisa_property_address:
+      row.fisa_property_address != null
+        ? String(row.fisa_property_address)
+        : null,
+    fisa_owner_cui:
+      row.fisa_owner_cui != null ? String(row.fisa_owner_cui) : null,
+    fisa_tourism_license:
+      row.fisa_tourism_license != null
+        ? String(row.fisa_tourism_license)
+        : null,
   };
 }
 
@@ -145,6 +171,8 @@ export async function updateCheckinSettings(
     update.checkin_doc_rule = input.checkin_doc_rule;
   if (input.checkin_phone_rule != null)
     update.checkin_phone_rule = input.checkin_phone_rule;
+  if (input.checkin_cnp_rule != null)
+    update.checkin_cnp_rule = input.checkin_cnp_rule;
   if (input.checkin_payment_rule != null)
     update.checkin_payment_rule = input.checkin_payment_rule;
   if (input.checkin_min_payment_pct != null)
@@ -169,6 +197,12 @@ export async function updateCheckinSettings(
     update.early_checkin_allowed = input.early_checkin_allowed;
   if (input.early_checkin_fee != null)
     update.early_checkin_fee = input.early_checkin_fee;
+  if (input.fisa_property_address !== undefined)
+    update.fisa_property_address = input.fisa_property_address;
+  if (input.fisa_owner_cui !== undefined)
+    update.fisa_owner_cui = input.fisa_owner_cui;
+  if (input.fisa_tourism_license !== undefined)
+    update.fisa_tourism_license = input.fisa_tourism_license;
 
   if (Object.keys(update).length === 0) return;
 

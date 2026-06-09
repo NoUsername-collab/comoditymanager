@@ -6,9 +6,9 @@ import {
   CAZARI_HORIZON_DAYS,
   firstCazariQueryValue,
   readCazariHorizon,
-  readCazariTab,
+  readCazariView,
   type CazariHorizonKey,
-  type CazariTab,
+  type CazariView,
 } from "@/domain/cazari/horizon";
 import {
   filterCazariListsByQuery,
@@ -31,6 +31,7 @@ export default async function AdminCazariPage({
   searchParams: Promise<{
     q?: string | string[];
     h?: string | string[];
+    view?: string | string[];
     tab?: string | string[];
     reaccepted?: string;
   }>;
@@ -47,7 +48,7 @@ export default async function AdminCazariPage({
 
   const q = firstCazariQueryValue(params.q).trim();
   const horizon = readCazariHorizon(params.h);
-  const tab = readCazariTab(params.tab);
+  const view = readCazariView(params.view, params.tab);
   const horizonEnd = addDays(effectiveToday, CAZARI_HORIZON_DAYS[horizon]);
 
   const labels = buildCazariLabels({ tPages, tCommon, tFlow });
@@ -65,10 +66,10 @@ export default async function AdminCazariPage({
   } = splitOperationalStays(filtered.filteredStays, effectiveToday, horizonEnd);
 
   const buildHorizonHref = (next: CazariHorizonKey): string =>
-    buildCazariPageHref({ q: q || undefined, h: next, tab });
+    buildCazariPageHref({ q: q || undefined, h: next, view });
 
-  const buildTabHref = (next: CazariTab): string =>
-    buildCazariPageHref({ q: q || undefined, h: horizon, tab: next });
+  const buildViewHref = (next: CazariView): string =>
+    buildCazariPageHref({ q: q || undefined, h: horizon, view: next });
 
   const nextHorizon: CazariHorizonKey =
     horizon === "1d"
@@ -104,35 +105,35 @@ export default async function AdminCazariPage({
     <AdminRetroPageFrame title={tPages("title")} description={description} className="cazari-page">
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,30%)]">
         <div className="min-w-0">
-          <RetroXpWindow title={tPages("searchFilter")} className="mb-3">
-            <div className="space-y-2">
+          <RetroXpWindow
+            title={tPages("searchFilter")}
+            className="cazari-filter-panel mb-3"
+            bodyClassName="cazari-filter-panel__body"
+          >
+            <div className="cazari-filter-panel__stack">
               <AdminStaySearchForm
                 defaultQuery={q}
                 preserveParams={{
-                  tab: tab === "refuzate" ? "refuzate" : undefined,
+                  view: view !== "confirmate" ? view : undefined,
                   h: horizon,
                 }}
               />
               <CazariOpsToolbar
                 labels={labels}
-                tab={tab}
+                view={view}
                 horizon={horizon}
-                q={q}
                 metrics={{
-                  filteredStays: filtered.filteredStays.length,
                   cereri: cereri.length,
                   confirmate: confirmate.length,
-                  filteredHistory: filtered.filteredHistory.length,
-                  filteredRefused: filtered.filteredCancelledHistory.length,
+                  anulate: filtered.filteredCancelledHistory.length,
                 }}
-                buildTabHref={buildTabHref}
+                buildViewHref={buildViewHref}
                 buildHorizonHref={buildHorizonHref}
-                metricLabels={{
-                  results: tPages("results"),
-                  operational: tPages("operational"),
-                  requests: tCommon("requests"),
-                  confirmed: tCommon("confirmed"),
-                  past: tCommon("past"),
+                filtersAria={tPages("viewFiltersAria")}
+                filterLabels={{
+                  cereri: tCommon("newRequests"),
+                  confirmate: tCommon("confirmed"),
+                  anulate: tPages("filterAnulate"),
                 }}
               />
             </div>
@@ -150,55 +151,57 @@ export default async function AdminCazariPage({
             </p>
           )}
 
-          {tab === "refuzate" ? (
+          {view === "anulate" ? (
             <StayList
-              title={`${labels.tabRefused} (${filtered.filteredCancelledHistory.length})`}
+              title={`${tPages("filterAnulate")} (${filtered.filteredCancelledHistory.length})`}
               items={filtered.filteredCancelledHistory}
               variant="refuzate"
-              returnTo="/admin/cazari?tab=refuzate"
+              returnTo={buildCazariPageHref({ view: "anulate", h: horizon, q: q || undefined })}
               hasQuery={!!q}
               labels={labels}
             />
-          ) : (
-            <>
-              <StayList
-                title={`${tCommon("requests")} (${cereri.length})`}
-                items={cereri}
-                variant="cereri"
-                returnTo="/admin/cazari"
-                hasQuery={!!q}
-                labels={labels}
-              />
+          ) : null}
 
-              <RetroXpWindow
-                title={tPages("confirmedTitle", { count: confirmateVisible.length })}
-                className="mb-3"
-              >
-                {hiddenConfirmateCount > 0 && (
-                  <p className="mb-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
-                    {labels.groupedOutsideWindow(hiddenConfirmateCount)}
-                  </p>
-                )}
-                <ConfirmedBuckets
-                  items={confirmateVisible}
-                  today={effectiveToday}
-                  returnTo="/admin/cazari"
-                  hasQuery={!!q}
-                  labels={confirmedLabels}
-                />
-                {horizon !== "365d" && (
-                  <div className="mt-3">
-                    <Link
-                      href={buildHorizonHref(nextHorizon)}
-                      className="cazari-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
-                    >
-                      {labels.loadMore}
-                    </Link>
-                  </div>
-                )}
-              </RetroXpWindow>
-            </>
-          )}
+          {view === "cereri" ? (
+            <StayList
+              title={`${tCommon("newRequests")} (${cereri.length})`}
+              items={cereri}
+              variant="cereri"
+              returnTo={buildCazariPageHref({ view: "cereri", h: horizon, q: q || undefined })}
+              hasQuery={!!q}
+              labels={labels}
+            />
+          ) : null}
+
+          {view === "confirmate" ? (
+            <RetroXpWindow
+              title={tPages("confirmedTitle", { count: confirmateVisible.length })}
+              className="mb-3"
+            >
+              {hiddenConfirmateCount > 0 && (
+                <p className="mb-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
+                  {labels.groupedOutsideWindow(hiddenConfirmateCount)}
+                </p>
+              )}
+              <ConfirmedBuckets
+                items={confirmateVisible}
+                today={effectiveToday}
+                returnTo={buildCazariPageHref({ h: horizon, q: q || undefined })}
+                hasQuery={!!q}
+                labels={confirmedLabels}
+              />
+              {horizon !== "365d" && (
+                <div className="mt-3">
+                  <Link
+                    href={buildHorizonHref(nextHorizon)}
+                    className="cazari-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
+                  >
+                    {labels.loadMore}
+                  </Link>
+                </div>
+              )}
+            </RetroXpWindow>
+          ) : null}
         </div>
 
         <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">

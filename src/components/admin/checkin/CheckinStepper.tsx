@@ -2,9 +2,21 @@
 
 import { useCallback, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { buildTouristSheetData } from "@/domain/checkin/fisa-turist";
+import {
+  guestFullName,
+  isRomanianNationality,
+} from "@/domain/checkin/identity-rules";
 import { validateCheckin } from "@/domain/checkin/validate";
+import {
+  cleanNationalId,
+  validateNationalId,
+} from "@/domain/guest/national-id";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { createCheckinAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import { createInitialCheckinGuests } from "@/components/admin/checkin/checkin-guest-defaults";
+import { TouristSheetView } from "@/components/admin/checkin/TouristSheetView";
+import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import type {
   BookingForCheckin,
   CheckinFormData,
@@ -41,19 +53,10 @@ export function CheckinStepper({
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Guest data — pre-populated from booking
-  const [guests, setGuests] = useState<CheckinGuestInput[]>([
-    {
-      full_name: booking.guest_name,
-      phone: booking.guest_phone ?? "",
-      document_type: null,
-      document_number: "",
-      nationality: "",
-      birth_date: "",
-      is_representative: true,
-      guest_id: null,
-    },
-  ]);
+  const [guests, setGuests] = useState<CheckinGuestInput[]>(() =>
+    createInitialCheckinGuests(booking),
+  );
+  const [sheetData, setSheetData] = useState<TouristSheetData | null>(null);
 
   // Payment data
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("unpaid");
@@ -138,7 +141,7 @@ export function CheckinStepper({
           kind: "success",
           title: t("success"),
         });
-        onComplete();
+        setSheetData(buildTouristSheetData(booking, guests, settings));
       } else {
         setError(result.error ?? "Unknown error");
       }
@@ -153,13 +156,32 @@ export function CheckinStepper({
     value: string | boolean | null,
   ) {
     setGuests((prev) =>
-      prev.map((g, i) => (i === index ? { ...g, [field]: value } : g)),
+      prev.map((g, i) => {
+        if (i !== index) return g;
+        const next = { ...g, [field]: value };
+        if (field === "last_name" || field === "first_name") {
+          next.full_name = guestFullName(next);
+        }
+        return next;
+      }),
     );
   }
 
   // ── Render ────────────────────────────────────────────────
 
   const stepKey = STEPS[currentStep];
+
+  if (sheetData) {
+    return (
+      <TouristSheetView
+        data={sheetData}
+        onClose={() => {
+          setSheetData(null);
+          onComplete();
+        }}
+      />
+    );
+  }
 
   return (
     <div className="checkin-stepper">
@@ -189,6 +211,8 @@ export function CheckinStepper({
         {stepKey === "identity" && (
           <StepIdentity
             guests={guests}
+            settings={settings}
+            booking={booking}
             updateGuest={updateGuest}
             t={t}
           />
@@ -284,102 +308,201 @@ export function CheckinStepper({
 
 function StepIdentity({
   guests,
+  settings,
+  booking,
   updateGuest,
   t,
 }: {
   guests: CheckinGuestInput[];
+  settings: CheckinSettings;
+  booking: BookingForCheckin;
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
   t: ReturnType<typeof useTranslations>;
 }) {
+  const roomLabel =
+    booking.room_names?.join(", ") || settings.fisa_property_address || "";
+
   return (
     <div className="checkin-step-identity">
-      {guests.map((guest, idx) => (
-        <div key={idx} className="checkin-guest-form">
-          <div className="checkin-guest-form__header">
-            {t("guestN", { n: idx + 1 })}
+      <p className="checkin-legal-hint">{t("fisa.legalHint")}</p>
+
+      {guests.map((guest, idx) => {
+        const roGuest = isRomanianNationality(guest.nationality);
+        const cnpState = guest.national_id?.trim()
+          ? validateNationalId("cnp", cleanNationalId(guest.national_id))
+          : null;
+
+        return (
+          <div key={idx} className="checkin-guest-form">
+            <div className="checkin-guest-form__header">
+              {t("guestN", { n: idx + 1 })}
+              {guest.is_representative && (
+                <span className="checkin-guest-form__badge">{t("field.representative")}</span>
+              )}
+            </div>
+
+            <div className="checkin-guest-form__section-title">{t("fisa.sectionPersonal")}</div>
+            <div className="checkin-guest-form__grid">
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.lastName")}</span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.last_name ?? ""}
+                  onChange={(e) => updateGuest(idx, "last_name", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.firstName")}</span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.first_name ?? ""}
+                  onChange={(e) => updateGuest(idx, "first_name", e.target.value)}
+                  required
+                />
+              </label>
+
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.nationality")}</span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.nationality ?? ""}
+                  onChange={(e) => updateGuest(idx, "nationality", e.target.value)}
+                  placeholder="România"
+                />
+              </label>
+
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.birthDate")}</span>
+                <input
+                  type="date"
+                  className="checkin-field__input"
+                  value={guest.birth_date ?? ""}
+                  onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
+                />
+              </label>
+
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.phone")}</span>
+                <input
+                  type="tel"
+                  className="checkin-field__input"
+                  value={guest.phone ?? ""}
+                  onChange={(e) => updateGuest(idx, "phone", e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div className="checkin-guest-form__section-title">
+              {roGuest ? t("fisa.sectionCnp") : t("fisa.sectionForeignId")}
+            </div>
+            <div className="checkin-guest-form__grid">
+              <label className={`checkin-field ${roGuest ? "checkin-field--span2" : ""}`}>
+                <span className="checkin-field__label">
+                  {t("field.cnp")}
+                  {roGuest && <span className="checkin-field__required"> *</span>}
+                </span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  inputMode="numeric"
+                  maxLength={13}
+                  value={guest.national_id ?? ""}
+                  onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
+                  placeholder="1234567890123"
+                />
+                {cnpState && !cnpState.valid && (
+                  <span className="checkin-field__error">{t("field.cnpInvalid")}</span>
+                )}
+                {cnpState?.valid && cnpState.data?.birthDate && (
+                  <span className="checkin-field__hint">
+                    {t("field.cnpDerivedBirth", { date: cnpState.data.birthDate })}
+                  </span>
+                )}
+              </label>
+
+              {!roGuest && (
+                <>
+                  <label className="checkin-field">
+                    <span className="checkin-field__label">{t("field.documentType")}</span>
+                    <select
+                      className="checkin-field__input"
+                      value={guest.document_type ?? ""}
+                      onChange={(e) =>
+                        updateGuest(idx, "document_type", e.target.value || null)
+                      }
+                    >
+                      <option value="">{t("field.selectDoc")}</option>
+                      <option value="ci">{t("field.docCi")}</option>
+                      <option value="pasaport">{t("field.docPassport")}</option>
+                      <option value="permis">{t("field.docPermit")}</option>
+                    </select>
+                  </label>
+
+                  <label className="checkin-field">
+                    <span className="checkin-field__label">{t("field.documentSeries")}</span>
+                    <input
+                      type="text"
+                      className="checkin-field__input"
+                      value={guest.document_series ?? ""}
+                      onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
+                    />
+                  </label>
+
+                  <label className="checkin-field">
+                    <span className="checkin-field__label">{t("field.documentNumber")}</span>
+                    <input
+                      type="text"
+                      className="checkin-field__input"
+                      value={guest.document_number ?? ""}
+                      onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
+                    />
+                  </label>
+                </>
+              )}
+
+              {roGuest && (
+                <>
+                  <label className="checkin-field">
+                    <span className="checkin-field__label">{t("field.documentSeries")}</span>
+                    <input
+                      type="text"
+                      className="checkin-field__input"
+                      value={guest.document_series ?? ""}
+                      onChange={(e) => updateGuest(idx, "document_series", e.target.value)}
+                      placeholder="XZ"
+                    />
+                  </label>
+
+                  <label className="checkin-field">
+                    <span className="checkin-field__label">{t("field.documentNumber")}</span>
+                    <input
+                      type="text"
+                      className="checkin-field__input"
+                      value={guest.document_number ?? ""}
+                      onChange={(e) => updateGuest(idx, "document_number", e.target.value)}
+                    />
+                  </label>
+                </>
+              )}
+
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.roomLabel")}</span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  value={guest.room_label ?? roomLabel}
+                  onChange={(e) => updateGuest(idx, "room_label", e.target.value)}
+                />
+              </label>
+            </div>
           </div>
-
-          <div className="checkin-guest-form__grid">
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.fullName")}</span>
-              <input
-                type="text"
-                className="checkin-field__input"
-                value={guest.full_name}
-                onChange={(e) => updateGuest(idx, "full_name", e.target.value)}
-                required
-              />
-            </label>
-
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.phone")}</span>
-              <input
-                type="tel"
-                className="checkin-field__input"
-                value={guest.phone ?? ""}
-                onChange={(e) => updateGuest(idx, "phone", e.target.value)}
-              />
-            </label>
-
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.documentType")}</span>
-              <select
-                className="checkin-field__input"
-                value={guest.document_type ?? ""}
-                onChange={(e) =>
-                  updateGuest(
-                    idx,
-                    "document_type",
-                    e.target.value || null,
-                  )
-                }
-              >
-                <option value="">{t("field.selectDoc")}</option>
-                <option value="ci">{t("field.docCi")}</option>
-                <option value="pasaport">{t("field.docPassport")}</option>
-                <option value="permis">{t("field.docPermit")}</option>
-              </select>
-            </label>
-
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.documentNumber")}</span>
-              <input
-                type="text"
-                className="checkin-field__input"
-                value={guest.document_number ?? ""}
-                onChange={(e) =>
-                  updateGuest(idx, "document_number", e.target.value)
-                }
-              />
-            </label>
-
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.nationality")}</span>
-              <input
-                type="text"
-                className="checkin-field__input"
-                value={guest.nationality ?? ""}
-                onChange={(e) =>
-                  updateGuest(idx, "nationality", e.target.value)
-                }
-                placeholder="RO"
-              />
-            </label>
-
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.birthDate")}</span>
-              <input
-                type="date"
-                className="checkin-field__input"
-                value={guest.birth_date ?? ""}
-                onChange={(e) =>
-                  updateGuest(idx, "birth_date", e.target.value)
-                }
-              />
-            </label>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

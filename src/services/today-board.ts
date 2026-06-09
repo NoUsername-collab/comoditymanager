@@ -21,6 +21,8 @@ export type RoomToClean = {
 export type CheckInQuestItem = {
   bookingId: string;
   guestName: string;
+  guestLastName: string | null;
+  guestFirstName: string | null;
   guestLabel: string;
   guestPhone: string | null;
   guestEmail: string;
@@ -209,6 +211,8 @@ async function loadTodayBoardImpl(
     pendingCheckIns.push({
       bookingId: row.id,
       guestName: row.guest_name,
+      guestLastName: row.guest_last_name,
+      guestFirstName: row.guest_first_name,
       guestLabel: formatGuestGanttLabel(
         row.guest_last_name,
         row.guest_first_name,

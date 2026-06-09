@@ -75,6 +75,23 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         </select>
       </SettingRow>
 
+      {/* CNP rule */}
+      <SettingRow label={t("cnpRule")} description={t("cnpRuleDesc")}>
+        <select
+          className="checkin-field__input"
+          value={settings.checkin_cnp_rule}
+          onChange={(e) =>
+            save({
+              checkin_cnp_rule: e.target.value as CheckinSettings["checkin_cnp_rule"],
+            })
+          }
+        >
+          <option value="required">{t("ruleRequired")}</option>
+          <option value="recommended">{t("ruleRecommended")}</option>
+          <option value="optional">{t("ruleOptional")}</option>
+        </select>
+      </SettingRow>
+
       {/* Phone rule */}
       <SettingRow label={t("phoneRule")} description={t("phoneRuleDesc")}>
         <select
@@ -203,6 +220,41 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           />
         </SettingRow>
       )}
+
+      <h4 className="checkin-settings__subtitle">{t("fisaTitle")}</h4>
+      <p className="checkin-settings__fisa-note">{t("fisaNote")}</p>
+
+      <SettingRow label={t("fisaAddress")} description={t("fisaAddressDesc")}>
+        <input
+          type="text"
+          className="checkin-field__input checkin-field__input--wide"
+          value={settings.fisa_property_address ?? ""}
+          onChange={(e) =>
+            save({ fisa_property_address: e.target.value || null })
+          }
+          placeholder="Str., nr., localitate, județ"
+        />
+      </SettingRow>
+
+      <SettingRow label={t("fisaCui")}>
+        <input
+          type="text"
+          className="checkin-field__input"
+          value={settings.fisa_owner_cui ?? ""}
+          onChange={(e) => save({ fisa_owner_cui: e.target.value || null })}
+        />
+      </SettingRow>
+
+      <SettingRow label={t("fisaLicense")} description={t("fisaLicenseDesc")}>
+        <input
+          type="text"
+          className="checkin-field__input"
+          value={settings.fisa_tourism_license ?? ""}
+          onChange={(e) =>
+            save({ fisa_tourism_license: e.target.value || null })
+          }
+        />
+      </SettingRow>
     </div>
   );
 }

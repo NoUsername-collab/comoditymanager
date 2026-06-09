@@ -55,7 +55,7 @@ export function buildCazariLabels({
     emptyRequest: {
       title: tPages("emptyRequestWaiting"),
       description: tPages("emptyRequestWaitingDesc"),
-      href: "/admin/bookings",
+      href: "/admin/cazari",
       label: tPages("seeNewRequests"),
     },
     historyFiltered: (count) => tPages("historyFiltered", { count }),

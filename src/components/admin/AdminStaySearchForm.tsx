@@ -9,11 +9,13 @@ import {
 
 function buildCazariHref(
   q: string,
-  preserve?: { tab?: string; h?: string }
+  preserve?: { view?: string; h?: string }
 ): string {
   const params = new URLSearchParams();
   if (q) params.set("q", q);
-  if (preserve?.tab && preserve.tab !== "ops") params.set("tab", preserve.tab);
+  if (preserve?.view && preserve.view !== "confirmate") {
+    params.set("view", preserve.view);
+  }
   if (preserve?.h && preserve.h !== "30d") params.set("h", preserve.h);
   const qs = params.toString();
   return qs ? `/admin/cazari?${qs}` : "/admin/cazari";
@@ -24,7 +26,7 @@ export function AdminStaySearchForm({
   preserveParams,
 }: {
   defaultQuery?: string;
-  preserveParams?: { tab?: string; h?: string };
+  preserveParams?: { view?: string; h?: string };
 }) {
   const t = useTranslations("admin.common");
   const router = useRouter();

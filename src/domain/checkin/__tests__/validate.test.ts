@@ -2,13 +2,18 @@ import { describe, test, expect } from "vitest";
 import { validateCheckin } from "../validate";
 import type {
   CheckinFormData,
+  CheckinGuestInput,
   CheckinSettings,
   BookingForCheckin,
 } from "../types";
 
+const VALID_CNP = "1850101410014";
+
 const defaultSettings: CheckinSettings = {
+  pension_display_name: "Casa Emil",
   checkin_doc_rule: "recommended",
   checkin_phone_rule: "recommended",
+  checkin_cnp_rule: "required",
   checkin_payment_rule: "at_checkout",
   checkin_min_payment_pct: 30,
   checkin_deposit: false,
@@ -21,6 +26,9 @@ const defaultSettings: CheckinSettings = {
   late_checkout_fee: 0,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
+  fisa_property_address: null,
+  fisa_owner_cui: null,
+  fisa_tourism_license: null,
 };
 
 const defaultBooking: BookingForCheckin = {
@@ -36,20 +44,27 @@ const defaultBooking: BookingForCheckin = {
   num_children: 0,
 };
 
+function roGuest(overrides?: Partial<CheckinGuestInput>): CheckinGuestInput {
+  return {
+    full_name: "Popescu Ion",
+    last_name: "Popescu",
+    first_name: "Ion",
+    phone: "+40700000000",
+    national_id: VALID_CNP,
+    document_type: "ci",
+    document_series: "XZ",
+    document_number: "123456",
+    nationality: "România",
+    birth_date: "1985-01-01",
+    ...overrides,
+  };
+}
+
 function makeData(overrides?: Partial<CheckinFormData>): CheckinFormData {
   return {
     type: "reservation",
     booking_id: "b1",
-    guests: [
-      {
-        full_name: "Ion Popescu",
-        phone: "+40700000000",
-        document_type: "ci",
-        document_number: "AB123456",
-        nationality: "RO",
-        birth_date: "1985-03-15",
-      },
-    ],
+    guests: [roGuest()],
     payment_status: "paid",
     payment_amount_paid: 500,
     ...overrides,
@@ -69,11 +84,28 @@ describe("validateCheckin", () => {
     expect(result.blockers).toEqual([]);
   });
 
-  test("returns warning when document is missing and rule is recommended", () => {
+  test("blocks when CNP missing for Romanian guest", () => {
     const data = makeData({
-      guests: [{ full_name: "Ion", document_number: "" }],
+      guests: [roGuest({ national_id: "" })],
     });
-    const result = validateCheckin(data, defaultSettings, defaultBooking);
+    const result = validateCheckin(data, defaultSettings, defaultBooking, "15:00");
+    expect(result.status).toBe("blocked");
+    expect(result.blockers.some((b) => b.includes("CNP"))).toBe(true);
+  });
+
+  test("returns warning when document is missing and rule is recommended", () => {
+    const settings = { ...defaultSettings, checkin_cnp_rule: "optional" as const };
+    const data = makeData({
+      guests: [
+        roGuest({
+          nationality: "Germania",
+          national_id: "",
+          document_number: "",
+          document_series: "",
+        }),
+      ],
+    });
+    const result = validateCheckin(data, settings, defaultBooking);
     expect(result.status).toBe("warning");
     expect(result.flags).toContain("no_document");
   });
@@ -81,7 +113,14 @@ describe("validateCheckin", () => {
   test("returns blocked when document is missing and rule is required", () => {
     const settings = { ...defaultSettings, checkin_doc_rule: "required" as const };
     const data = makeData({
-      guests: [{ full_name: "Ion", document_number: "" }],
+      guests: [
+        roGuest({
+          nationality: "Germania",
+          national_id: "",
+          document_number: "",
+          document_series: "",
+        }),
+      ],
     });
     const result = validateCheckin(data, settings, defaultBooking);
     expect(result.status).toBe("blocked");
@@ -91,7 +130,7 @@ describe("validateCheckin", () => {
   test("no flag when document is missing and rule is optional", () => {
     const settings = { ...defaultSettings, checkin_doc_rule: "optional" as const };
     const data = makeData({
-      guests: [{ full_name: "Ion" }],
+      guests: [roGuest()],
     });
     const result = validateCheckin(data, settings, defaultBooking);
     expect(result.flags).not.toContain("no_document");
@@ -99,7 +138,7 @@ describe("validateCheckin", () => {
 
   test("returns warning for missing phone when recommended", () => {
     const data = makeData({
-      guests: [{ full_name: "Ion", document_number: "AB123", phone: "" }],
+      guests: [roGuest({ phone: "" })],
     });
     const result = validateCheckin(data, defaultSettings, defaultBooking);
     expect(result.flags).toContain("no_phone");
@@ -108,7 +147,7 @@ describe("validateCheckin", () => {
   test("blocks when phone required and missing", () => {
     const settings = { ...defaultSettings, checkin_phone_rule: "required" as const };
     const data = makeData({
-      guests: [{ full_name: "Ion", document_number: "AB123" }],
+      guests: [roGuest({ phone: "" })],
     });
     const result = validateCheckin(data, settings, defaultBooking);
     expect(result.status).toBe("blocked");

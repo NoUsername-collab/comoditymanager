@@ -593,3 +593,205 @@
   border: 1px solid rgba(59, 130, 246, 0.25);
   color: #2563eb;
 }
+
+/* ── Fișă turist + formular extins ───────────────────────── */
+
+.checkin-legal-hint {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--admin-accent) 25%, var(--admin-panel-border));
+  background: color-mix(in srgb, var(--admin-accent-muted) 40%, var(--admin-panel-bg));
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--admin-text-muted);
+}
+
+.checkin-guest-form__section-title {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted);
+}
+
+.checkin-guest-form__badge {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--admin-accent) 18%, transparent);
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: var(--admin-accent);
+}
+
+.checkin-field--span2 {
+  grid-column: span 2;
+}
+
+.checkin-field__required {
+  color: #dc2626;
+}
+
+.checkin-field__error {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  color: #dc2626;
+}
+
+.checkin-field__hint {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  color: var(--admin-text-muted);
+}
+
+.checkin-field__input--wide {
+  min-width: 14rem;
+}
+
+.checkin-settings__subtitle {
+  margin: 1rem 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text);
+}
+
+.checkin-settings__fisa-note {
+  margin: 0 0 0.5rem;
+  font-size: 0.68rem;
+  color: var(--admin-text-muted);
+}
+
+.tourist-sheet-root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tourist-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tourist-sheet {
+  border: 1px solid var(--admin-panel-border);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #111;
+  padding: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.tourist-sheet__header {
+  text-align: center;
+  border-bottom: 2px solid #111;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.tourist-sheet__form-code {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #555;
+}
+
+.tourist-sheet__title {
+  margin: 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tourist-sheet__year {
+  margin: 0;
+}
+
+.tourist-sheet__section {
+  margin-bottom: 0.85rem;
+}
+
+.tourist-sheet__section-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tourist-sheet__line {
+  margin: 0.15rem 0;
+}
+
+.tourist-sheet__label {
+  font-weight: 700;
+}
+
+.tourist-sheet__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+}
+
+.tourist-sheet__table th,
+.tourist-sheet__table td {
+  border: 1px solid #333;
+  padding: 0.3rem 0.35rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.tourist-sheet__table th {
+  background: #f3f4f6;
+  font-weight: 700;
+}
+
+.tourist-sheet__footer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #ccc;
+  font-size: 0.62rem;
+  color: #555;
+}
+
+.tourist-sheet__signature {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.tourist-sheet__signature span {
+  flex: 1;
+  border-top: 1px solid #333;
+  padding-top: 0.35rem;
+  text-align: center;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .tourist-sheet {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .checkin-modal,
+  .admin-floating-panel {
+    position: static !important;
+    overflow: visible !important;
+    max-height: none !important;
+  }
+}

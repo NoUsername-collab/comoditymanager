@@ -38,7 +38,7 @@ export function CheckinModal({ booking, settings, onClose, onSuccess }: Props) {
       onClose={onClose}
       title={t("title")}
       variant="modal"
-      width={540}
+      width={680}
       className="checkin-modal"
     >
       <CheckinStepper

@@ -142,6 +142,15 @@ html[data-layout-chrome="compact"] .stay-card button {
   padding-block: 0.5rem !important;
 }
 
+html[data-layout-chrome="compact"] .cazari-view-filters {
+  gap: 0.3rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.72rem;
+}
+
 html[data-layout-chrome="compact"] .cazari-tabs {
   flex-wrap: nowrap;
   overflow-x: auto;

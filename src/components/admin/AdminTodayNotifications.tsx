@@ -67,7 +67,7 @@ export function AdminTodayNotifications({
           .join(" ")}
       >
         <Link
-          href="/admin/bookings"
+          href="/admin/cazari"
           className="admin-today-action admin-today-action--new"
           style={{ transitionDelay: "0ms" }}
         >

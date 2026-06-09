@@ -13,19 +13,66 @@ import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { createCheckin } from "@/services/checkin/create";
 import { getCheckinSettings, updateCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
+import { getCheckinByBookingId } from "@/services/checkin/queries";
+import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
 import type {
   CheckinFormData,
   CheckinGuestInput,
   PaymentStatus,
   CheckinType,
   BookingForCheckin,
+  CheckinSettings,
 } from "@/domain/checkin/types";
+
+export type CheckinWizardContextResult = {
+  ok: boolean;
+  error?: string;
+  booking?: BookingForCheckin;
+  settings?: CheckinSettings;
+  hasExistingCheckin?: boolean;
+};
 
 export type CreateCheckinResult = {
   ok: boolean;
   error?: string;
   checkinId?: string;
 };
+
+/**
+ * Server action: load booking + settings for the full check-in wizard.
+ */
+export async function loadCheckinWizardContextAction(
+  bookingId: string,
+): Promise<CheckinWizardContextResult> {
+  await requireAdmin();
+
+  try {
+    if (!bookingId) return { ok: false, error: "booking_id required" };
+
+    const booking = await getBookingById(bookingId);
+    if (!booking) return { ok: false, error: "Booking not found" };
+
+    const settings = await getCheckinSettings();
+    const existingCheckin = await getCheckinByBookingId(bookingId).catch(
+      () => null,
+    );
+
+    return {
+      ok: true,
+      booking: mapBookingToForCheckin(booking),
+      settings,
+      hasExistingCheckin:
+        !!existingCheckin || !!booking.actual_check_in_at,
+    };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    if (isCheckinMigrationMissing(msg)) {
+      const t = await getTranslations("admin.checkIn");
+      return { ok: false, error: t("migrationRequired") };
+    }
+    return { ok: false, error: msg };
+  }
+}
 
 /**
  * Server action: create a check-in from the stepper form.
@@ -64,18 +111,7 @@ export async function createCheckinAction(
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: "Booking not found" };
 
-    const bookingForCheckin: BookingForCheckin = {
-      id: booking.id,
-      status: booking.status,
-      total_price: booking.total_price ?? 0,
-      check_in: booking.check_in,
-      check_out: booking.check_out,
-      guest_name: booking.guest_name,
-      guest_phone: booking.guest_phone ?? null,
-      guest_email: booking.guest_email ?? null,
-      num_adults: booking.num_adults,
-      num_children: booking.num_children ?? 0,
-    };
+    const bookingForCheckin = mapBookingToForCheckin(booking);
 
     // Load settings
     const settings = await getCheckinSettings();
@@ -125,8 +161,12 @@ export async function updateCheckinSettingsAction(
     const fields = [
       "checkin_doc_rule",
       "checkin_phone_rule",
+      "checkin_cnp_rule",
       "checkin_payment_rule",
       "group_checkin_mode",
+      "fisa_property_address",
+      "fisa_owner_cui",
+      "fisa_tourism_license",
     ];
     for (const f of fields) {
       const v = formData.get(f);

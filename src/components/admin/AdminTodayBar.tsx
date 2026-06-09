@@ -81,7 +81,7 @@ export function AdminTodayBar({
       {expanded && (
         <div className="flex items-center gap-1">
           <Link
-            href="/admin/bookings"
+            href="/admin/cazari"
             className="inline-flex items-center gap-1 rounded-full bg-red-500/40 px-2.5 py-0.5 text-[10px] font-bold text-red-900 border border-red-500/60 hover:brightness-110 no-underline"
           >
             Cereri ({cereriCount})

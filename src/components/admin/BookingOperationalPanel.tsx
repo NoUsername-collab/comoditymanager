@@ -20,10 +20,10 @@ import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
 
-const CheckinModal = dynamic(
+const CheckinWizardLauncher = dynamic(
   () =>
-    import("@/components/admin/checkin/CheckinModal").then((m) => ({
-      default: m.CheckinModal,
+    import("@/components/admin/checkin/CheckinWizardLauncher").then((m) => ({
+      default: m.CheckinWizardLauncher,
     })),
   { ssr: false }
 );
@@ -36,7 +36,6 @@ type Props = {
   plannedCheckOut: string;
   actualCheckInAt: string | null;
   actualCheckOutAt: string | null;
-  /** Full reception check-in wizard (identity → validate → payment → finish). */
   bookingForCheckin?: BookingForCheckin;
   checkinSettings?: CheckinSettings;
   hasExistingCheckin?: boolean;
@@ -61,9 +60,7 @@ export function BookingOperationalPanel({
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
-  const [dialogMode, setDialogMode] = useState<"checkin" | "checkout" | null>(
-    null
-  );
+  const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false);
   const [checkinModalOpen, setCheckinModalOpen] = useState(false);
   const hasPhone = isValidGuestPhone(guestPhone);
   const today = todayIso();
@@ -80,17 +77,11 @@ export function BookingOperationalPanel({
       ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
       : "";
 
-  const useFullCheckinWizard =
-    Boolean(bookingForCheckin && checkinSettings) &&
-    !hasExistingCheckin &&
-    canCheckIn;
+  const useFullCheckinWizard = canCheckIn && !hasExistingCheckin;
 
   function openCheckIn() {
-    if (useFullCheckinWizard) {
-      setCheckinModalOpen(true);
-      return;
-    }
-    setDialogMode("checkin");
+    if (!useFullCheckinWizard) return;
+    setCheckinModalOpen(true);
   }
 
   function undoCheckIn() {
@@ -123,14 +114,12 @@ export function BookingOperationalPanel({
     });
   }
 
-  // Determine visual step: 0 = waiting, 1 = checked-in, 2 = checked-out
   const step = actualCheckOutAt ? 2 : actualCheckInAt ? 1 : 0;
 
   return (
     <div className="bd-ops">
       <p className="bd-card__title">{t("title")}</p>
 
-      {/* ── Step progress indicators ──────────────────────── */}
       <div className="bd-ops__steps">
         <div className={`bd-ops__step ${step >= 0 ? "bd-ops__step--active" : ""}`}>
           <span className="bd-ops__step-dot" />
@@ -149,31 +138,19 @@ export function BookingOperationalPanel({
         </div>
       </div>
 
-      {/* ── Action buttons ─────────────────────────────────── */}
       <div className="bd-ops__actions">
         {canCheckIn && (
           <button
             type="button"
-            className={[
-              "bd-ops__btn bd-ops__btn--primary",
-              useFullCheckinWizard && "checkin-start-btn",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-            disabled={pending || !hasPhone}
+            className="bd-ops__btn bd-ops__btn--primary checkin-start-btn"
+            disabled={pending || !hasPhone || !useFullCheckinWizard}
             title={checkInBlockedTitle}
             onClick={openCheckIn}
           >
-            {useFullCheckinWizard ? (
-              <>
-                <span className="checkin-start-btn__icon" aria-hidden>
-                  🔑
-                </span>
-                {tCheckIn("startCheckin")}
-              </>
-            ) : (
-              t("checkInAction")
-            )}
+            <span className="checkin-start-btn__icon" aria-hidden>
+              🔑
+            </span>
+            {tCheckIn("startCheckin")}
           </button>
         )}
         {actualCheckInAt && !actualCheckOutAt && (
@@ -182,7 +159,7 @@ export function BookingOperationalPanel({
               type="button"
               className="bd-ops__btn bd-ops__btn--primary"
               disabled={pending}
-              onClick={() => setDialogMode("checkout")}
+              onClick={() => setCheckoutDialogOpen(true)}
             >
               {t("checkOutAction")}
             </button>
@@ -208,23 +185,23 @@ export function BookingOperationalPanel({
         )}
       </div>
 
-      {checkinModalOpen && bookingForCheckin && checkinSettings ? (
-        <CheckinModal
-          booking={bookingForCheckin}
-          settings={checkinSettings}
-          onClose={() => setCheckinModalOpen(false)}
-          onSuccess={() => router.refresh()}
-        />
-      ) : null}
+      <CheckinWizardLauncher
+        bookingId={bookingId}
+        open={checkinModalOpen}
+        booking={bookingForCheckin}
+        settings={checkinSettings}
+        onClose={() => setCheckinModalOpen(false)}
+        onSuccess={() => router.refresh()}
+      />
 
       <GanttCheckTimeDialog
-        open={dialogMode !== null && !checkinModalOpen}
-        mode={dialogMode ?? "checkin"}
+        open={checkoutDialogOpen}
+        mode="checkout"
         bookingId={bookingId}
         guestName={guestName}
         plannedCheckIn={plannedCheckIn}
         plannedCheckOut={plannedCheckOut}
-        onClose={() => setDialogMode(null)}
+        onClose={() => setCheckoutDialogOpen(false)}
         onSuccess={() => router.refresh()}
       />
     </div>

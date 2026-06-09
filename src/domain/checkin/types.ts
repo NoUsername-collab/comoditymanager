@@ -32,6 +32,8 @@ export function normalizePaymentStatusForDb(
 
 export type CheckinFlag =
   | "no_document"
+  | "no_cnp"
+  | "invalid_cnp"
   | "unpaid"
   | "no_phone"
   | "group_partial"
@@ -40,18 +42,27 @@ export type CheckinFlag =
 
 export type CheckinDocRule = "required" | "recommended" | "optional";
 export type CheckinPhoneRule = "required" | "recommended" | "optional";
+export type CheckinCnpRule = "required" | "recommended" | "optional";
 export type CheckinPaymentRule = "full" | "partial" | "at_checkout";
 export type GroupCheckinMode = "rep" | "individual" | "both";
 export type DocumentType = "ci" | "pasaport" | "permis";
 
 // ── Guest input (one per person) ───────────────────────────
 export interface CheckinGuestInput {
+  /** Compat — derivat din last_name + first_name dacă lipsesc */
   full_name: string;
+  last_name?: string | null;
+  first_name?: string | null;
   phone?: string | null;
+  /** CNP (RO) sau alt cod personal */
+  national_id?: string | null;
+  national_id_type?: "cnp" | "idnp" | "egn" | "amka" | "szemelyi_szam" | null;
   document_type?: DocumentType | null;
+  document_series?: string | null;
   document_number?: string | null;
   nationality?: string | null;
   birth_date?: string | null; // YYYY-MM-DD
+  room_label?: string | null;
   is_representative?: boolean;
   guest_id?: string | null;
 }
@@ -70,8 +81,10 @@ export interface CheckinFormData {
 
 // ── Owner-configurable check-in settings ───────────────────
 export interface CheckinSettings {
+  pension_display_name: string;
   checkin_doc_rule: CheckinDocRule;
   checkin_phone_rule: CheckinPhoneRule;
+  checkin_cnp_rule: CheckinCnpRule;
   checkin_payment_rule: CheckinPaymentRule;
   checkin_min_payment_pct: number;
   checkin_deposit: boolean;
@@ -84,6 +97,10 @@ export interface CheckinSettings {
   late_checkout_fee: number;
   early_checkin_allowed: boolean;
   early_checkin_fee: number;
+  /** Secțiunea I — Fișă ocupare capacitate cazare (OPANAF 381/2026) */
+  fisa_property_address: string | null;
+  fisa_owner_cui: string | null;
+  fisa_tourism_license: string | null;
 }
 
 // ── Validation result ──────────────────────────────────────
@@ -101,8 +118,11 @@ export interface BookingForCheckin {
   check_in: string;  // YYYY-MM-DD
   check_out: string;
   guest_name: string;
+  guest_last_name?: string | null;
+  guest_first_name?: string | null;
   guest_phone: string | null;
   guest_email: string | null;
   num_adults: number;
   num_children: number;
+  room_names?: string[];
 }

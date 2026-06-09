@@ -3,6 +3,11 @@
  * Implements the pseudocode from dev spec section 06.
  */
 
+import {
+  evaluateCnpRule,
+  guestHasValidCnp,
+  isRomanianNationality,
+} from "./identity-rules";
 import type {
   CheckinFlag,
   CheckinFormData,
@@ -41,8 +46,21 @@ export function validateCheckin(
     }
   }
 
+  // ── CNP / identitate (ANAF + reguli proprietar) ───────────
+  const cnpEval = evaluateCnpRule(
+    data.guests,
+    settings.checkin_cnp_rule ?? "required",
+  );
+  blockers.push(...cnpEval.blockers);
+  for (const f of cnpEval.flags) {
+    if (!flags.includes(f)) flags.push(f);
+  }
+
   // ── DOCUMENT ──────────────────────────────────────────────
-  const allHaveDoc = data.guests.every((g) => g.document_number);
+  const allHaveDoc = data.guests.every((g) => {
+    if (isRomanianNationality(g.nationality) && guestHasValidCnp(g)) return true;
+    return Boolean(g.document_number?.trim() || g.document_series?.trim());
+  });
   if (!allHaveDoc) {
     if (settings.checkin_doc_rule === "required") {
       blockers.push("Document identitate obligatoriu");

@@ -86,7 +86,7 @@ export default async function AdminLayout({
 
         {cereriCount > 0 && (
           <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">
-            <Link href="/admin/bookings" className="admin-hud-alert__link">
+            <Link href="/admin/cazari?view=cereri" className="admin-hud-alert__link">
               {t("pendingCount", { count: cereriCount })}
             </Link>{" "}
             {t("pendingSuffix")}

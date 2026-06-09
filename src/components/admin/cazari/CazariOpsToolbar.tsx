@@ -1,94 +1,76 @@
 import { Link } from "@/i18n/navigation";
-import { StayMetricChip } from "@/components/admin/cazari/StayMetricChip";
-import type { CazariHorizonKey, CazariTab } from "@/domain/cazari/horizon";
+import type { CazariHorizonKey, CazariView } from "@/domain/cazari/horizon";
 import type { CazariLabels } from "@/components/admin/cazari/types";
+
+const VIEWS: CazariView[] = ["cereri", "confirmate", "anulate"];
 
 export function CazariOpsToolbar({
   labels,
-  tab,
+  view,
   horizon,
-  q,
   metrics,
-  buildTabHref,
+  buildViewHref,
   buildHorizonHref,
-  metricLabels,
+  filterLabels,
+  filtersAria,
 }: {
   labels: CazariLabels;
-  tab: CazariTab;
+  view: CazariView;
   horizon: CazariHorizonKey;
-  q: string;
   metrics: {
-    filteredStays: number;
     cereri: number;
     confirmate: number;
-    filteredHistory: number;
-    filteredRefused: number;
+    anulate: number;
   };
-  buildTabHref: (next: CazariTab) => string;
+  buildViewHref: (next: CazariView) => string;
   buildHorizonHref: (next: CazariHorizonKey) => string;
-  metricLabels: {
-    results: string;
-    operational: string;
-    requests: string;
-    confirmed: string;
-    past: string;
+  filterLabels: {
+    cereri: string;
+    confirmate: string;
+    anulate: string;
   };
+  filtersAria: string;
 }) {
+  const counts: Record<CazariView, number> = {
+    cereri: metrics.cereri,
+    confirmate: metrics.confirmate,
+    anulate: metrics.anulate,
+  };
+
   return (
     <>
-      <div className="cazari-tabs flex flex-wrap gap-2 border-b border-zinc-200 pb-2">
-        <Link
-          href={buildTabHref("ops")}
-          className={[
-            "rounded-md border px-3 py-1.5 text-xs font-semibold",
-            tab === "ops"
-              ? "border-emerald-300 bg-emerald-50 text-emerald-900"
-              : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50",
-          ].join(" ")}
-        >
-          {labels.tabOperational}
-        </Link>
-        <Link
-          href={buildTabHref("refuzate")}
-          className={[
-            "rounded-md border px-3 py-1.5 text-xs font-semibold",
-            tab === "refuzate"
-              ? "border-red-300 bg-red-50 text-red-900"
-              : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50",
-          ].join(" ")}
-        >
-          {labels.tabRefused} ({metrics.filteredRefused})
-        </Link>
+      <div className="cazari-view-filters" role="tablist" aria-label={filtersAria}>
+        {VIEWS.map((key) => {
+          const active = view === key;
+          const count = counts[key];
+          const cereriAlert = key === "cereri" && count > 0 && !active;
+
+          return (
+            <Link
+              key={key}
+              href={buildViewHref(key)}
+              role="tab"
+              aria-selected={active}
+              className={[
+                "cazari-view-filter",
+                active && "cazari-view-filter--active",
+                key === "cereri" && active && "cazari-view-filter--cereri-active",
+                key === "cereri" && cereriAlert && "cazari-view-filter--cereri-alert",
+                key === "confirmate" && active && "cazari-view-filter--confirm-active",
+                key === "anulate" && active && "cazari-view-filter--anulate-active",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <span className="cazari-view-filter__label">{filterLabels[key]}</span>
+              <span className="cazari-view-filter__count">{count}</span>
+            </Link>
+          );
+        })}
       </div>
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
-        <StayMetricChip
-          label={q ? metricLabels.results : metricLabels.operational}
-          value={metrics.filteredStays}
-          tone="sky"
-        />
-        <StayMetricChip
-          label={metricLabels.requests}
-          value={metrics.cereri}
-          tone="amber"
-        />
-        <StayMetricChip
-          label={metricLabels.confirmed}
-          value={metrics.confirmate}
-          tone="emerald"
-        />
-        <StayMetricChip
-          label={metricLabels.past}
-          value={metrics.filteredHistory}
-          tone="zinc"
-        />
-        <StayMetricChip
-          label={labels.tabRefused}
-          value={metrics.filteredRefused}
-          tone="red"
-        />
-      </div>
-      <div className="cazari-horizon flex flex-wrap items-center gap-2 pt-1">
-        <span className="text-[11px] font-semibold text-zinc-600">
+
+      <div className="cazari-horizon flex flex-wrap items-center gap-2">
+        <span className="cazari-horizon__label text-[11px] font-semibold text-zinc-600">
           {labels.visibleWindow}
         </span>
         {(
@@ -105,7 +87,7 @@ export function CazariOpsToolbar({
             key={key}
             href={buildHorizonHref(key)}
             className={[
-              "rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+              "cazari-horizon__pill rounded-full border px-2 py-0.5 text-[11px] font-semibold",
               horizon === key
                 ? "border-emerald-300 bg-emerald-50 text-emerald-800"
                 : "border-zinc-200 bg-white text-zinc-700",

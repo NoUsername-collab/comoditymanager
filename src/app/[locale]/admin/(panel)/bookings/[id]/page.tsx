@@ -113,10 +113,13 @@ export default async function BookingDetailPage({
     check_in: booking.check_in,
     check_out: booking.check_out,
     guest_name: booking.guest_name,
+    guest_last_name: booking.guest_last_name ?? null,
+    guest_first_name: booking.guest_first_name ?? null,
     guest_phone: booking.guest_phone ?? null,
     guest_email: booking.guest_email ?? null,
     num_adults: booking.num_adults,
     num_children: booking.num_children ?? 0,
+    room_names: booking.room_names,
   };
 
   const nights = stayNightCount(booking.check_in, booking.check_out);

@@ -144,7 +144,7 @@ export async function AdminDashboard({
                 {tDashboard("quickCereriDesc")}
               </p>
             </div>
-            <Link href="/admin/bookings" className="admin-home-panel__link">
+            <Link href="/admin/cazari" className="admin-home-panel__link">
               {tCommon("seeAll")} →
             </Link>
           </div>

@@ -7,6 +7,7 @@ import type {
   BookingForCheckin,
   CheckinStatus,
 } from "@/domain/checkin/types";
+import { guestFullName } from "@/domain/checkin/identity-rules";
 import { normalizePaymentStatusForDb } from "@/domain/checkin/types";
 
 /**
@@ -73,12 +74,17 @@ export async function createCheckin(
       withTenantId(tenantId, {
         checkin_id: checkinId,
         guest_id: g.guest_id ?? null,
-        full_name: g.full_name,
+        full_name: guestFullName(g) || g.full_name,
+        last_name: g.last_name ?? null,
+        first_name: g.first_name ?? null,
         phone: g.phone ?? null,
+        national_id: g.national_id ?? null,
         document_type: g.document_type ?? null,
+        document_series: g.document_series ?? null,
         document_number: g.document_number ?? null,
         nationality: g.nationality ?? null,
         birth_date: g.birth_date ?? null,
+        room_label: g.room_label ?? null,
         is_representative: g.is_representative ?? false,
         checked_in_at: checkedInAt,
       }),

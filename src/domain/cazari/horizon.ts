@@ -1,6 +1,9 @@
 export type CazariHorizonKey = "1d" | "7d" | "30d" | "60d" | "180d" | "365d";
 
+/** @deprecated Legacy — use CazariView */
 export type CazariTab = "ops" | "refuzate";
+
+export type CazariView = "cereri" | "confirmate" | "anulate";
 
 export const CAZARI_HORIZON_DAYS: Record<CazariHorizonKey, number> = {
   "1d": 1,
@@ -41,15 +44,34 @@ export function readCazariTab(
   return value === "refuzate" ? "refuzate" : "ops";
 }
 
+export function readCazariView(
+  viewInput: string | string[] | undefined,
+  tabInput?: string | string[] | undefined
+): CazariView {
+  const view = firstCazariQueryValue(viewInput).trim();
+  if (view === "cereri" || view === "confirmate" || view === "anulate") {
+    return view;
+  }
+  if (firstCazariQueryValue(tabInput).trim() === "refuzate") {
+    return "anulate";
+  }
+  return "confirmate";
+}
+
 export function buildCazariPageHref(opts: {
   q?: string;
   h?: CazariHorizonKey;
+  view?: CazariView;
+  /** @deprecated — maps refuzate → anulate */
   tab?: CazariTab;
 }): string {
   const params = new URLSearchParams();
   if (opts.q) params.set("q", opts.q);
   if (opts.h && opts.h !== "30d") params.set("h", opts.h);
-  if (opts.tab && opts.tab !== "ops") params.set("tab", opts.tab);
+  const view =
+    opts.view ??
+    (opts.tab === "refuzate" ? "anulate" : opts.tab ? "confirmate" : undefined);
+  if (view && view !== "confirmate") params.set("view", view);
   const qs = params.toString();
   return qs ? `/admin/cazari?${qs}` : "/admin/cazari";
 }

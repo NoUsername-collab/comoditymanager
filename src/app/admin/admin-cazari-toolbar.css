@@ -1,0 +1,182 @@
+/* Cazări — panou filtre compact (−30% înălțime) */
+
+.cazari-filter-panel.admin-xp-window {
+  margin-bottom: 0.65rem;
+}
+
+.cazari-filter-panel .admin-xp-window__titlebar {
+  min-height: 1.35rem;
+  padding: 0.12rem 0.35rem;
+}
+
+.cazari-filter-panel .admin-xp-window__titlebar-text {
+  font-size: 0.62rem;
+}
+
+.cazari-filter-panel .admin-win98-body {
+  padding: 0.45rem 0.5rem 0.5rem;
+}
+
+.cazari-filter-panel .cazari-search-form {
+  gap: 0.35rem;
+}
+
+.cazari-filter-panel .cazari-search-form input[type="search"] {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+}
+
+.cazari-filter-panel .cazari-search-form button {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.72rem;
+}
+
+.cazari-filter-panel__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Filtre: Cereri / Confirmate / Anulate */
+.cazari-view-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.cazari-view-filter {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 0.45rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  padding: 0.32rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--admin-text-muted, #71717a);
+  text-decoration: none;
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.cazari-view-filter:hover {
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.cazari-view-filter__label {
+  white-space: nowrap;
+}
+
+.cazari-view-filter__count {
+  display: inline-flex;
+  min-width: 1.15rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.05rem 0.35rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--admin-text-muted) 12%, transparent);
+  color: var(--admin-text, #18181b);
+}
+
+.cazari-view-filter--active .cazari-view-filter__count {
+  background: color-mix(in srgb, currentColor 18%, white);
+}
+
+.cazari-view-filter--confirm-active {
+  border-color: color-mix(in srgb, #34d399 55%, var(--admin-panel-border));
+  background: color-mix(in srgb, #ecfdf5 75%, var(--admin-panel-bg));
+  color: #047857;
+  box-shadow: 0 1px 0 color-mix(in srgb, #059669 35%, transparent);
+}
+
+.cazari-view-filter--anulate-active {
+  border-color: color-mix(in srgb, #f87171 50%, var(--admin-panel-border));
+  background: color-mix(in srgb, #fef2f2 80%, var(--admin-panel-bg));
+  color: #b91c1c;
+}
+
+.cazari-view-filter--cereri-active {
+  border-color: color-mix(in srgb, #f59e0b 55%, var(--admin-panel-border));
+  background: color-mix(in srgb, #fffbeb 85%, var(--admin-panel-bg));
+  color: #b45309;
+}
+
+.cazari-view-filter--cereri-alert {
+  border-color: color-mix(in srgb, #ef4444 55%, var(--admin-panel-border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #fef2f2 90%, white),
+    color-mix(in srgb, #fee2e2 70%, white)
+  );
+  color: #991b1b;
+  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.cazari-view-filter--cereri-alert::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 28%,
+    rgba(255, 255, 255, 0.85) 48%,
+    rgba(254, 249, 195, 0.5) 52%,
+    rgba(255, 255, 255, 0.25) 72%,
+    transparent 100%
+  );
+  animation: admin-cereri-light-sweep 2.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cazari-view-filter--cereri-alert .cazari-view-filter__label,
+.cazari-view-filter--cereri-alert .cazari-view-filter__count {
+  position: relative;
+  z-index: 1;
+}
+
+.cazari-view-filter--cereri-alert .cazari-view-filter__count {
+  background: #1c1917;
+  color: #fbbf24;
+}
+
+/* Fereastră vizibilă — neschimbată ca spacing */
+.cazari-filter-panel .cazari-horizon {
+  padding-top: 0;
+}
+
+@media (max-width: 520px) {
+  .cazari-view-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .cazari-view-filter {
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cazari-view-filter--cereri-alert {
+    animation: none;
+  }
+
+  .cazari-view-filter--cereri-alert::before {
+    animation: none;
+    opacity: 0;
+  }
+}

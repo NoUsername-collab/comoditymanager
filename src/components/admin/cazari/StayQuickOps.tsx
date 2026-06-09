@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -10,6 +11,14 @@ import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { useTranslations } from "next-intl";
+
+const CheckinWizardLauncher = dynamic(
+  () =>
+    import("@/components/admin/checkin/CheckinWizardLauncher").then((m) => ({
+      default: m.CheckinWizardLauncher,
+    })),
+  { ssr: false }
+);
 
 type Props = {
   bookingId: string;
@@ -49,7 +58,8 @@ export function StayQuickOps({
   const tCommon = useTranslations("common");
   const { showToast } = useAdminFx();
   const [pending, startTransition] = useTransition();
-  const [dialogState, setDialogState] = useState<{
+  const [checkinWizardOpen, setCheckinWizardOpen] = useState(false);
+  const [timeDialog, setTimeDialog] = useState<{
     mode: "checkin" | "checkout";
     intent: "set" | "edit";
   } | null>(null);
@@ -101,6 +111,14 @@ export function StayQuickOps({
     });
   }
 
+  function openCheckIn() {
+    if (canEditCheckIn) {
+      setTimeDialog({ mode: "checkin", intent: "edit" });
+      return;
+    }
+    setCheckinWizardOpen(true);
+  }
+
   return (
     <div className="stay-quick-ops flex flex-wrap items-center justify-end gap-1.5">
       <button
@@ -114,12 +132,7 @@ export function StayQuickOps({
               ? labels.phoneRequiredForCheckIn
               : ""
         }
-        onClick={() =>
-          setDialogState({
-            mode: "checkin",
-            intent: canEditCheckIn ? "edit" : "set",
-          })
-        }
+        onClick={openCheckIn}
       >
         {checkInLabel}
       </button>
@@ -129,7 +142,7 @@ export function StayQuickOps({
         disabled={(!canCheckOut && !canEditCheckOut) || pending}
         title={checkoutTitle}
         onClick={() =>
-          setDialogState({
+          setTimeDialog({
             mode: "checkout",
             intent: canEditCheckOut ? "edit" : "set",
           })
@@ -162,17 +175,27 @@ export function StayQuickOps({
         {labels.edit}
       </Link>
 
+      <CheckinWizardLauncher
+        bookingId={bookingId}
+        open={checkinWizardOpen}
+        onClose={() => setCheckinWizardOpen(false)}
+        onSuccess={() => {
+          setCheckinWizardOpen(false);
+          router.refresh();
+        }}
+      />
+
       <GanttCheckTimeDialog
-        open={dialogState !== null}
-        mode={dialogState?.mode ?? "checkin"}
-        intent={dialogState?.intent ?? "set"}
+        open={timeDialog !== null}
+        mode={timeDialog?.mode ?? "checkout"}
+        intent={timeDialog?.intent ?? "set"}
         bookingId={bookingId}
         guestName={guestName}
         plannedCheckIn={plannedCheckIn}
         plannedCheckOut={plannedCheckOut}
-        onClose={() => setDialogState(null)}
+        onClose={() => setTimeDialog(null)}
         onSuccess={() => {
-          setDialogState(null);
+          setTimeDialog(null);
           router.refresh();
         }}
       />

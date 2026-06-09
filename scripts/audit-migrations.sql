@@ -56,7 +56,8 @@ with checks as (
     ('048', 'checkin_system',          'table',              'checkins',                                 ''),
     ('049', 'statistics_visibility',   'column',             'pension_settings',                         'statistics_visibility'),
     ('050', 'rooms_room_type_slug',    'constraint_dropped', 'rooms',                                    'rooms_room_type_check'),
-    ('051', 'platform_resource_counts',  'function',           'platform_tenant_resource_counts',          '')
+    ('051', 'platform_resource_counts',  'function',           'platform_tenant_resource_counts',          ''),
+    ('052', 'checkin_fisa_turist',     'column',             'pension_settings',                         'checkin_cnp_rule')
   ) as t(migration_id, slug, kind, obj1, obj2)
 ),
 table_exists as (

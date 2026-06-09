@@ -37,11 +37,11 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
       aria-label={t("bottomNavAria")}
       data-mobile-chrome="admin-bottom-nav"
     >
-      <ul className="ml-bottom-nav__list ml-bottom-nav__list--six">
+      <ul className="ml-bottom-nav__list">
         {tabs.map((tab) => {
           const active = isAdminTabActive(pathname, tab.href);
-          const isBookings = tab.href === "/admin/bookings";
-          const badge = isBookings && cereriCount > 0 ? cereriCount : null;
+          const isCazari = tab.href === "/admin/cazari";
+          const badge = isCazari && cereriCount > 0 ? cereriCount : null;
 
           return (
             <li key={tab.href} className="ml-bottom-nav__item">

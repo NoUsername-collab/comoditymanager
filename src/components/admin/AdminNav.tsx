@@ -33,8 +33,8 @@ export function AdminNav({
     <nav className="admin-nav admin-hud__nav" aria-label={t("menuAria")}>
       {visibleTabs.map((tab) => {
         const active = isAdminTabActive(pathname, tab.href);
-        const isBookings = tab.href === "/admin/bookings";
-        const badge = isBookings && cereriCount > 0 ? cereriCount : null;
+        const isCazari = tab.href === "/admin/cazari";
+        const badge = isCazari && cereriCount > 0 ? cereriCount : null;
         const quest = badge != null && !active;
 
         return (

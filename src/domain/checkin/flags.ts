@@ -79,6 +79,8 @@ export function flagSeverity(
     case "checkout_blocked":
       return "error";
     case "no_document":
+    case "no_cnp":
+    case "invalid_cnp":
     case "no_phone":
     case "early_checkin":
       return "warning";
@@ -93,6 +95,8 @@ export function flagSeverity(
 export function flagIcon(flag: CheckinFlag): string {
   switch (flag) {
     case "no_document":
+    case "no_cnp":
+    case "invalid_cnp":
       return "⚠️"; // ⚠️
     case "unpaid":
       return "💳"; // 💳

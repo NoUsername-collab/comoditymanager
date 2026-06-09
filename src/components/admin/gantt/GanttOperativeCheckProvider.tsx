@@ -22,6 +22,14 @@ const GanttCheckTimeDialog = dynamic(
   { ssr: false }
 );
 
+const CheckinWizardLauncher = dynamic(
+  () =>
+    import("@/components/admin/checkin/CheckinWizardLauncher").then((m) => ({
+      default: m.CheckinWizardLauncher,
+    })),
+  { ssr: false }
+);
+
 type OperativeCheckRequest = {
   bookingId: string;
   guestName: string;
@@ -33,9 +41,9 @@ type OperativeCheckRequest = {
   today?: string;
 };
 
-type CheckDialogState = OperativeCheckRequest & {
-  mode: "checkin" | "checkout";
-  intent: "set" | "edit";
+type CheckoutDialogState = OperativeCheckRequest & {
+  mode: "checkout";
+  intent: "set";
 };
 
 type GanttOperativeCheckOps = {
@@ -57,7 +65,9 @@ export function GanttOperativeCheckProvider({
   const { showToast } = useAdminFx();
   const tGantt = useTranslations("admin.gantt");
   const tServer = useTranslations("admin.serverActions");
-  const [dialog, setDialog] = useState<CheckDialogState | null>(null);
+  const [checkinBookingId, setCheckinBookingId] = useState<string | null>(null);
+  const [checkoutDialog, setCheckoutDialog] =
+    useState<CheckoutDialogState | null>(null);
 
   const requestCheckIn = useCallback(
     (args: OperativeCheckRequest): boolean => {
@@ -81,18 +91,14 @@ export function GanttOperativeCheckProvider({
         return false;
       }
 
-      setDialog({
-        ...args,
-        mode: "checkin",
-        intent: "set",
-      });
+      setCheckinBookingId(args.bookingId);
       return true;
     },
     [today, showToast, tGantt, tServer]
   );
 
   const requestCheckOut = useCallback((args: OperativeCheckRequest) => {
-    setDialog({
+    setCheckoutDialog({
       ...args,
       mode: "checkout",
       intent: "set",
@@ -107,23 +113,31 @@ export function GanttOperativeCheckProvider({
   return (
     <Ctx.Provider value={value}>
       {children}
-      {dialog && (
-        <GanttCheckTimeDialog
+      {checkinBookingId ? (
+        <CheckinWizardLauncher
+          bookingId={checkinBookingId}
           open
-          mode={dialog.mode}
-          intent={dialog.intent}
-          bookingId={dialog.bookingId}
-          guestName={dialog.guestName}
-          plannedCheckIn={dialog.plannedCheckIn}
-          plannedCheckOut={dialog.plannedCheckOut}
-          today={dialog.today ?? today}
-          status={dialog.status}
-          actualCheckInAt={dialog.actualCheckInAt}
-          actualCheckOutAt={dialog.actualCheckOutAt}
-          onClose={() => setDialog(null)}
+          onClose={() => setCheckinBookingId(null)}
           onSuccess={() => router.refresh()}
         />
-      )}
+      ) : null}
+      {checkoutDialog ? (
+        <GanttCheckTimeDialog
+          open
+          mode={checkoutDialog.mode}
+          intent={checkoutDialog.intent}
+          bookingId={checkoutDialog.bookingId}
+          guestName={checkoutDialog.guestName}
+          plannedCheckIn={checkoutDialog.plannedCheckIn}
+          plannedCheckOut={checkoutDialog.plannedCheckOut}
+          today={checkoutDialog.today ?? today}
+          status={checkoutDialog.status}
+          actualCheckInAt={checkoutDialog.actualCheckInAt}
+          actualCheckOutAt={checkoutDialog.actualCheckOutAt}
+          onClose={() => setCheckoutDialog(null)}
+          onSuccess={() => router.refresh()}
+        />
+      ) : null}
     </Ctx.Provider>
   );
 }

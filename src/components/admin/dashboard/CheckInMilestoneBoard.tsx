@@ -35,10 +35,13 @@ function toBookingForCheckin(item: CheckInQuestItem): BookingForCheckin {
     check_in: item.checkIn,
     check_out: item.checkOut,
     guest_name: item.guestName,
+    guest_last_name: item.guestLastName ?? null,
+    guest_first_name: item.guestFirstName ?? null,
     guest_phone: item.guestPhone,
     guest_email: item.guestEmail,
     num_adults: item.numAdults,
     num_children: item.numChildren,
+    room_names: item.roomNames,
   };
 }
 

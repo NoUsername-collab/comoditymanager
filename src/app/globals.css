@@ -2127,7 +2127,9 @@ html[data-theme="default"][data-mode="night"] {
 .admin-hud__nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.22rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
 }
 
 .admin-nav-tab {

@@ -67,7 +67,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     emoji: "✅",
     labelKey: "onboarding.steps.confirmBooking",
     descriptionKey: "onboarding.steps.confirmBookingDesc",
-    href: "/admin/bookings",
+    href: "/admin/cazari",
     isComplete: (s) => s.hasConfirmedBooking,
   },
   {
