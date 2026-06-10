@@ -6,6 +6,7 @@ export const CACHE_TAGS = {
   roomOptionsByRoom: "room-options-by-room",
   bookingCounts: "booking-counts",
   checkins: "checkins",
+  publicSite: "public-site",
 } as const;
 
 export type CacheTag = (typeof CACHE_TAGS)[keyof typeof CACHE_TAGS];

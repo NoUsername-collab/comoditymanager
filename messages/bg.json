@@ -94,6 +94,9 @@
     "calendar": {
       "eyebrow": "Онлайн резервация",
       "lead": "Изберете период, сравнете опции и изпратете заявка. Ще се свържем за потвърждение.",
+      "disabledTitle": "Онлайн резервацията не е налична",
+      "disabledLead": "За настаняване се свържете директно с обекта по телефон или имейл.",
+      "surplusNote": "Онлайн резервацията е вторичен модул — окончателното потвърждение остава при обекта.",
       "asideTitle": "Добре да знаете",
       "asideNoPayTitle": "Без онлайн плащане",
       "asideNoPayText": "Показаните цени са ориентировъчни — потвърждаваме крайната сума.",
@@ -470,7 +473,77 @@
         "locationPanelInfoOwner": "Като собственик имаш постоянен достъп до структура, стаи и каталог.",
         "locationSubtitleOwner": "Пълен достъп — без допълнителна парола",
         "openDomainsManagement": "Управление на домейни",
+        "publicSiteTitle": "Публичен сайт",
+        "publicSiteSubtitle": "Шаблон, тема, hero, галерия и контакт",
+        "publicSitePanelInfo": "Конфигурирайте как посетителите виждат обекта — отделно от темата на админ панела.",
+        "openPublicSiteSettings": "Отвори редактора на публичния сайт",
         "roleOwner": "Собственик"
+      },
+      "publicSite": {
+        "title": "Публичен сайт — Hospira",
+        "description": "Шаблон, тема, hero съдържание, секции и контакт за посетители.",
+        "backSettings": "Обратно към настройки",
+        "previewSite": "Преглед на сайта",
+        "saved": "Настройките на публичния сайт са запазени.",
+        "loadError": "Настройките на публичния сайт не можаха да се заредят.",
+        "readOnly": "Само собственикът или администраторите могат да редактират публичния сайт.",
+        "loading": "Зареждане…",
+        "save": "Запази публичния сайт",
+        "saving": "Запазване…",
+        "templateTitle": "Шаблон за представяне",
+        "themeTitle": "Визуална тема",
+        "heroTitle": "Hero заглавие",
+        "heroBadge": "Hero badge",
+        "heroSubtitle": "Hero подзаглавие",
+        "heroTagline": "Hero tagline",
+        "heroCtaPrimary": "Основен бутон",
+        "heroCtaSecondary": "Вторичен бутон",
+        "heroImageUrl": "Hero изображение (URL)",
+        "contactTitle": "Публичен контакт",
+        "phone": "Телефон",
+        "sectionsTitle": "Секции на страницата",
+        "sectionIntro": "Въведение",
+        "sectionBenefits": "Предимства",
+        "sectionSteps": "Стъпки",
+        "sectionCta": "CTA лента",
+        "sectionGallery": "Фото галерия",
+        "galleryHelp": "По един URL на ред. По избор: URL | надпис",
+        "bookingTitle": "Модул резервация",
+        "bookingEnabled": "Онлайн резервация активна",
+        "bookingPosition": "Позиция на линка за резервация",
+        "bookingPosNav": "Само в менюто",
+        "bookingPosFooter": "Само в footer",
+        "bookingPosBoth": "Меню + footer",
+        "bookingPosHidden": "Скрит (страницата остава достъпна директно)",
+        "published": "Сайтът е публикуван",
+        "templates": {
+          "classic": {
+            "title": "Classic",
+            "desc": "Балансиран layout, ясни секции — идеален за традиционни къщи за гости."
+          },
+          "editorial": {
+            "title": "Editorial",
+            "desc": "Голяма типография, редуващ се ритъм — стил списание."
+          },
+          "immersive": {
+            "title": "Immersive",
+            "desc": "Hero на цял екран, максимален визуален ефект."
+          }
+        },
+        "themes": {
+          "noir": {
+            "title": "Noir",
+            "desc": "Тъмна с златни акценти — елегантна и дискретна."
+          },
+          "alpine": {
+            "title": "Alpine",
+            "desc": "Аlpine зелено, светъл фон — планинско усещане."
+          },
+          "mediterranean": {
+            "title": "Mediterranean",
+            "desc": "Дълбоко синьо, топли акценти — крайбрежно настроение."
+          }
+        }
       },
       "guests": {
         "title": "Клиенти — Hospira",
@@ -1175,11 +1248,13 @@
         "confirmSoundHint": "Кратък „system ding“ звук — изключен по подразбиране. Може да го тестваш, като маркираш полето."
       },
       "palette": {
-        "descriptionPrefix": "Всички алтернативни теми са премахнати. Активен остава само",
-        "descriptionSuffix": "шаблонът с варианти Ден и Нощ по един и същ модел за бъдещи разширения.",
+        "familyDescription": "Същите 3 семейства като публичния сайт — Noir, Alpine, Mediterranean — всяко с Ден и Нощ.",
+        "previewTheme": "Преглед {theme}",
+        "descriptionPrefix": "Активна тема:",
+        "descriptionSuffix": "Ден / Нощ на един скелет.",
         "day": "Ден",
         "night": "Нощ",
-        "previewDefault": "Преглед default"
+        "previewDefault": "Преглед на темата"
       },
       "locationUnlocked": "Location admin unlocked",
       "locationLocked": "Location admin locked",
@@ -2231,6 +2306,7 @@
       "footer": {
         "dragHint": "Плъзни ±1 ден · клик/двоен клик върху лентата",
         "buildingFocusHint": "фокус сграда от chips",
+        "mobileStayHint": "Докосване = детайли · задържане = меню · ↓↑ $ ! = пристигане/заминаване/плащане/ID",
         "dayDepartureUntil": "Ден — заминаване (до {time})",
         "cleaning": "Почистване",
         "nightArrivalFrom": "Нощ — пристигане (от {time})",

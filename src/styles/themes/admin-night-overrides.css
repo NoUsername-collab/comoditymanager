@@ -3,14 +3,14 @@
  * Rulează după admin-default-bridge.css.
  */
 
-html[data-theme="default"][data-mode="night"] .admin-shell,
-html[data-theme="default"][data-mode="night"] .admin-home,
-html[data-theme="default"][data-mode="night"] .ml-content {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .ml-content {
   color: var(--admin-text);
 }
 
 /* ── Gantt radial home (default.css amestecă white în night) ── */
-html[data-theme="default"][data-mode="night"] .gantt-radial {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-radial {
   --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, var(--surface-3));
   --gantt-home-surface-bottom: color-mix(
     in srgb,
@@ -22,55 +22,55 @@ html[data-theme="default"][data-mode="night"] .gantt-radial {
 }
 
 /* ── Dialoguri / modale cu Tailwind hardcodat ── */
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog {
   background: var(--admin-panel-bg) !important;
   border-color: var(--admin-panel-border) !important;
   color: var(--admin-text) !important;
   box-shadow: var(--shadow-lg) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog h2,
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog label {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog h2,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog label {
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog p {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog p {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog input[type="datetime-local"] {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog input[type="datetime-local"] {
   background: var(--admin-input-bg) !important;
   border-color: var(--admin-input-border) !important;
   color: var(--admin-text) !important;
   color-scheme: dark;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog button.rounded-md.bg-zinc-900,
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog .bg-zinc-900 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog button.rounded-md.bg-zinc-900,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog .bg-zinc-900 {
   background: var(--admin-btn-primary-bg) !important;
   color: var(--admin-btn-primary-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog button.border-zinc-300 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog button.border-zinc-300 {
   background: var(--surface-2) !important;
   border-color: var(--admin-panel-border) !important;
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-check-time-dialog button.text-zinc-500 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-check-time-dialog button.text-zinc-500 {
   color: var(--admin-text-muted) !important;
 }
 
 /* ── Chips / summary (admin-features.css) ── */
-html[data-theme="default"][data-mode="night"] .admin-summary-chip,
-html[data-theme="default"][data-mode="night"] .admin-metric-card {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-summary-chip,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-metric-card {
   border-color: var(--admin-panel-border) !important;
   background: var(--admin-panel-bg) !important;
   color: var(--admin-text) !important;
 }
 
 /* ── Check-in quest (admin-home) ── */
-html[data-theme="default"][data-mode="night"] .checkin-quest {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest {
   border-color: color-mix(in srgb, var(--active-border) 35%, var(--admin-panel-border));
   background: linear-gradient(
     145deg,
@@ -81,53 +81,53 @@ html[data-theme="default"][data-mode="night"] .checkin-quest {
   box-shadow: var(--shadow);
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__title,
-html[data-theme="default"][data-mode="night"] .checkin-quest__guest {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__title,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__guest {
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__subtitle,
-html[data-theme="default"][data-mode="night"] .checkin-quest__meta,
-html[data-theme="default"][data-mode="night"] .checkin-quest__dates,
-html[data-theme="default"][data-mode="night"] .checkin-quest__search-empty,
-html[data-theme="default"][data-mode="night"] .checkin-quest__more-hint,
-html[data-theme="default"][data-mode="night"] .checkin-quest__idle {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__subtitle,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__meta,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__dates,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__search-empty,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__more-hint,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__idle {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__card {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__card {
   background: var(--surface-2) !important;
   border-color: var(--admin-panel-border) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__meter-seg--pending {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__meter-seg--pending {
   background: var(--surface-3) !important;
   border-color: var(--border-strong) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__meter-fill {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__meter-fill {
   background: var(--surface-3) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__search {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__search {
   background: color-mix(in srgb, var(--admin-panel-bg) 90%, var(--accent-muted)) !important;
   border-color: var(--admin-panel-border) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__search-input {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__search-input {
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__search-input::placeholder {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__search-input::placeholder {
   color: var(--text-faint) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__search-icon {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__search-icon {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__victory {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__victory {
   background: linear-gradient(
     90deg,
     color-mix(in srgb, var(--active-bg) 85%, var(--surface)),
@@ -136,73 +136,73 @@ html[data-theme="default"][data-mode="night"] .checkin-quest__victory {
   border-color: var(--active-border) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__victory-title {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__victory-title {
   color: var(--active-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-quest__victory-msg {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__victory-msg {
   color: var(--text-muted) !important;
 }
 
 /* ── Admin home panels ── */
-html[data-theme="default"][data-mode="night"] .admin-home-panel,
-html[data-theme="default"][data-mode="night"] .admin-home-cereri-item,
-html[data-theme="default"][data-mode="night"] .admin-today-board__card,
-html[data-theme="default"][data-mode="night"] .admin-home-window-body {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-panel,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-cereri-item,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-today-board__card,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-window-body {
   background: var(--admin-panel-bg) !important;
   border-color: var(--admin-panel-border) !important;
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-panel__title,
-html[data-theme="default"][data-mode="night"] .admin-home-hero__title,
-html[data-theme="default"][data-mode="night"] .admin-today-board__col-title {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-panel__title,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero__title,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-today-board__col-title {
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-panel__desc,
-html[data-theme="default"][data-mode="night"] .admin-home-hero__meta,
-html[data-theme="default"][data-mode="night"] .admin-home-kpi,
-html[data-theme="default"][data-mode="night"] .admin-today-board__cleaning-hint {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-panel__desc,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero__meta,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-kpi,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-today-board__cleaning-hint {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-kpi strong {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-kpi strong {
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-kpi--alert {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-kpi--alert {
   border-color: color-mix(in srgb, #f87171 45%, var(--admin-panel-border)) !important;
   background: color-mix(in srgb, #7f1d1d 28%, var(--surface-2)) !important;
   color: #fecaca !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-kpi--alert strong {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-kpi--alert strong {
   color: #fca5a5 !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-today-board--compact .admin-today-board__card .text-zinc-600,
-html[data-theme="default"][data-mode="night"] .admin-today-board--compact .admin-today-board__card .text-zinc-500 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-today-board--compact .admin-today-board__card .text-zinc-600,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-today-board--compact .admin-today-board__card .text-zinc-500 {
   color: var(--admin-text-muted) !important;
 }
 
 /* ── Check-in stepper & buttons ── */
 /* Fișă turist — rămâne hârtie oficială chiar în night theme */
-html[data-theme="default"][data-mode="night"] .tourist-sheet--official,
-html[data-theme="default"][data-mode="night"] .tourist-sheet__paper,
-html[data-theme="default"][data-mode="night"] .tourist-sheet__field-value,
-html[data-theme="default"][data-mode="night"] .tourist-sheet__table th,
-html[data-theme="default"][data-mode="night"] .tourist-sheet__table td {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet--official,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__paper,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__field-value,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__table th,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__table td {
   color: #1a1a1a !important;
   background: #f4f0e6 !important;
 }
 
-html[data-theme="default"][data-mode="night"] .tourist-sheet__stamp {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__stamp {
   color: #8b1e1e !important;
   border-color: #8b1e1e !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-start-btn {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-start-btn {
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--active-bg) 90%, var(--surface)) 0%,
@@ -212,118 +212,118 @@ html[data-theme="default"][data-mode="night"] .checkin-start-btn {
   color: var(--active-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-stepper__indicator {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper__indicator {
   background: var(--surface-2) !important;
   color: var(--text-faint) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-stepper__indicator--active {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper__indicator--active {
   background: color-mix(in srgb, var(--accent-muted) 75%, var(--surface-2)) !important;
   border-color: color-mix(in srgb, var(--accent) 40%, transparent) !important;
   color: var(--accent) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-stepper__indicator--done {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper__indicator--done {
   background: color-mix(in srgb, var(--active-bg) 80%, var(--surface-2)) !important;
   color: var(--active-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-stepper input,
-html[data-theme="default"][data-mode="night"] .checkin-stepper select,
-html[data-theme="default"][data-mode="night"] .checkin-stepper textarea {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper input,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper select,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper textarea {
   background: var(--admin-input-bg) !important;
   border-color: var(--admin-input-border) !important;
   color: var(--admin-text) !important;
   color-scheme: dark;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-stepper label,
-html[data-theme="default"][data-mode="night"] .checkin-stepper__field-label {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper label,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-stepper__field-label {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-payment__option--online:has(input:checked) {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-payment__option--online:has(input:checked) {
   border-color: color-mix(in srgb, #a78bfa 55%, var(--admin-panel-border)) !important;
   background: color-mix(in srgb, #6d28d9 18%, var(--surface-2)) !important;
   color: #ddd6fe !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-payment__mock {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-payment__mock {
   border-color: color-mix(in srgb, #a78bfa 45%, var(--admin-panel-border)) !important;
   background: color-mix(in srgb, #5b21b6 22%, var(--surface-2)) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-payment__mock-title {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-payment__mock-title {
   color: #ddd6fe !important;
 }
 
-html[data-theme="default"][data-mode="night"] .checkin-payment__mock-text {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-payment__mock-text {
   color: #c4b5fd !important;
 }
 
 /* ── Inputs globale în admin ── */
-html[data-theme="default"][data-mode="night"] .admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-html[data-theme="default"][data-mode="night"] .admin-shell select,
-html[data-theme="default"][data-mode="night"] .admin-shell textarea {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell select,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell textarea {
   background: var(--admin-input-bg);
   border-color: var(--admin-input-border);
   color: var(--admin-text);
   color-scheme: dark;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-shell input::placeholder,
-html[data-theme="default"][data-mode="night"] .admin-shell textarea::placeholder {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell input::placeholder,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell textarea::placeholder {
   color: var(--text-faint);
 }
 
 /* ── Gantt panels cu fundal deschis hardcodat ── */
-html[data-theme="default"][data-mode="night"] .gantt-today-panel {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-today-panel {
   border-color: color-mix(in srgb, var(--active-border) 35%, var(--admin-panel-border)) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .gantt-stay-note,
-html[data-theme="default"][data-mode="night"] .gantt-inline-controls,
-html[data-theme="default"][data-mode="night"] .gantt-compact-toolbar {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-stay-note,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-inline-controls,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-compact-toolbar {
   background: var(--admin-panel-bg);
   border-color: var(--admin-panel-border);
   color: var(--admin-text);
 }
 
 /* ── Booking detail alerts hardcodate ── */
-html[data-theme="default"][data-mode="night"] .bd-alert--warning {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .bd-alert--warning {
   background: color-mix(in srgb, var(--pending-bg) 85%, var(--surface)) !important;
   border-color: var(--pending-border) !important;
   color: var(--pending-text) !important;
 }
 
 /* ── Retro XP / floating panels ── */
-html[data-theme="default"][data-mode="night"] .admin-floating-panel,
-html[data-theme="default"][data-mode="night"] .admin-floating-panel__body,
-html[data-theme="default"][data-mode="night"] .pwa-install-sheet {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-floating-panel,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-floating-panel__body,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .pwa-install-sheet {
   background: var(--admin-panel-bg) !important;
   border-color: var(--admin-panel-border) !important;
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-floating-panel__header {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-floating-panel__header {
   background: var(--admin-accent-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .pwa-install-backdrop {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .pwa-install-backdrop {
   background: var(--admin-overlay) !important;
 }
 
 /* ── Scrollbar (webkit) ── */
-html[data-theme="default"][data-mode="night"] .admin-shell ::-webkit-scrollbar-thumb {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell ::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--border-strong) 80%, var(--surface-3));
 }
 
-html[data-theme="default"][data-mode="night"] .admin-shell ::-webkit-scrollbar-track {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell ::-webkit-scrollbar-track {
   background: var(--bg);
 }
 
 /* ── Hero / liquid strip ── */
-html[data-theme="default"][data-mode="night"] .admin-home-hero--liquid {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero--liquid {
   border-color: var(--admin-panel-border) !important;
   background: linear-gradient(
     135deg,
@@ -333,7 +333,7 @@ html[data-theme="default"][data-mode="night"] .admin-home-hero--liquid {
   ) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-calm {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero--mood-calm {
   --hero-smoke-a: color-mix(in srgb, var(--active-bg) 70%, transparent);
   --hero-smoke-b: var(--active-border);
   --hero-smoke-c: var(--accent);
@@ -341,7 +341,7 @@ html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-calm {
   --hero-smoke-border: color-mix(in srgb, var(--active-border) 35%, var(--admin-panel-border));
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-active {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero--mood-active {
   --hero-smoke-a: color-mix(in srgb, var(--pending-bg) 75%, transparent);
   --hero-smoke-b: var(--pending-border);
   --hero-smoke-c: #fbbf24;
@@ -349,7 +349,7 @@ html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-active {
   --hero-smoke-border: color-mix(in srgb, var(--pending-border) 40%, var(--admin-panel-border));
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-alert {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero--mood-alert {
   --hero-smoke-a: color-mix(in srgb, #7f1d1d 55%, transparent);
   --hero-smoke-b: #ef4444;
   --hero-smoke-c: #f87171;
@@ -357,42 +357,42 @@ html[data-theme="default"][data-mode="night"] .admin-home-hero--mood-alert {
   --hero-smoke-border: color-mix(in srgb, #f87171 42%, var(--admin-panel-border));
 }
 
-html[data-theme="default"][data-mode="night"] .admin-home-cta--secondary {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-cta--secondary {
   background: var(--surface-2) !important;
   border-color: var(--admin-panel-border) !important;
   color: var(--admin-text) !important;
 }
 
 /* ── Settings / display layout hardcodat ── */
-html[data-theme="default"][data-mode="night"] .admin-display-layout__option,
-html[data-theme="default"][data-mode="night"] .admin-palette-block,
-html[data-theme="default"][data-mode="night"] .guest-search__input,
-html[data-theme="default"][data-mode="night"] .guest-search__filter {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-display-layout__option,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-palette-block,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .guest-search__input,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .guest-search__filter {
   background: var(--admin-panel-bg) !important;
   border-color: var(--admin-panel-border) !important;
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-display-layout__option--active {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-display-layout__option--active {
   background: var(--admin-text) !important;
   color: var(--admin-panel-bg) !important;
 }
 
 /* ── Tailwind utilitare extra în shell ── */
-html[data-theme="default"][data-mode="night"] .admin-shell .text-zinc-300,
-html[data-theme="default"][data-mode="night"] .admin-shell .text-zinc-200 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .text-zinc-300,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .text-zinc-200 {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-shell .bg-zinc-800,
-html[data-theme="default"][data-mode="night"] .admin-shell .bg-zinc-950 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .bg-zinc-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .bg-zinc-950 {
   background: var(--surface-2) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-shell .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
   border-color: var(--admin-panel-border) !important;
 }
 
-html[data-theme="default"][data-mode="night"] .admin-shell .ring-zinc-200 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .ring-zinc-200 {
   --tw-ring-color: color-mix(in srgb, var(--admin-panel-border) 80%, transparent) !important;
 }

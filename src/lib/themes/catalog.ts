@@ -1,15 +1,14 @@
+import { DESIGN_THEMES } from "@/design/themes/catalog";
 import type { ThemeDefinition, ThemeId } from "./types";
 import { ALL_THEME_IDS } from "./types";
 
-export const THEMES: ThemeDefinition[] = [
-  {
-    id: "default",
-    name: "Default",
-    description: "Default Hospira tenant theme",
-  },
-];
+export const THEMES: ThemeDefinition[] = ALL_THEME_IDS.map((id) => ({
+  id,
+  name: DESIGN_THEMES[id].name,
+  description: DESIGN_THEMES[id].description,
+}));
 
-export const DEFAULT_THEME_ID: ThemeId = "default";
+export const DEFAULT_THEME_ID: ThemeId = "noir";
 export const DEFAULT_THEME_MODE = "night" as const;
 
 export function isThemeId(value: string): value is ThemeId {
@@ -22,6 +21,7 @@ export function getThemeDefinition(id: ThemeId): ThemeDefinition {
 
 /** Migrate legacy keys from localStorage / DB. */
 export function migrateLegacyPaletteKey(key: string): ThemeId {
-  void key;
+  if (key === "default") return "noir";
+  if (isThemeId(key)) return key;
   return DEFAULT_THEME_ID;
 }

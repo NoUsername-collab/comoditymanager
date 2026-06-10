@@ -1,0 +1,163 @@
+/*
+  Design families — admin + shared primitives (noir / alpine / mediterranean).
+  Public site uses the same catalog via inline styles; admin uses these selectors.
+*/
+
+/* ── Noir ── */
+html[data-theme="noir"][data-mode="night"] {
+  color-scheme: dark;
+  --bg: #07060a;
+  --surface: #0e0c14;
+  --surface-2: #14111c;
+  --surface-3: #1a1722;
+  --border: color-mix(in srgb, #d6b55a 18%, #1b1824);
+  --border-strong: color-mix(in srgb, #d6b55a 28%, #2a2434);
+  --text: #f3efe3;
+  --text-muted: #b7af9a;
+  --text-faint: #8a8270;
+  --accent: #d6b55a;
+  --accent-hover: #e8cc72;
+  --accent-muted: color-mix(in srgb, #d6b55a 14%, #14111c);
+  --admin-btn-primary-bg: #d6b55a;
+  --admin-btn-primary-text: #0b0a0f;
+  --admin-link: #e8cc72;
+}
+
+html[data-theme="noir"][data-mode="day"] {
+  color-scheme: light;
+  --bg: #f5f1e8;
+  --surface: #fffcf6;
+  --surface-2: #f0ebe0;
+  --surface-3: #e8e2d4;
+  --border: color-mix(in srgb, #d6b55a 20%, #d4cfc4);
+  --border-strong: color-mix(in srgb, #d6b55a 32%, #b8b0a0);
+  --text: #1a1510;
+  --text-muted: #5c5348;
+  --text-faint: #8a8070;
+  --accent: #9a7a1a;
+  --accent-hover: #7a6114;
+  --accent-muted: color-mix(in srgb, #d6b55a 16%, #f5f1e8);
+  --admin-btn-primary-bg: #9a7a1a;
+  --admin-btn-primary-text: #ffffff;
+  --admin-link: #7a6114;
+}
+
+/* ── Alpine ── */
+html[data-theme="alpine"][data-mode="day"] {
+  color-scheme: light;
+  --bg: #f2f6f3;
+  --surface: #ffffff;
+  --surface-2: #e8f0eb;
+  --surface-3: #dce8e0;
+  --border: color-mix(in srgb, #1a6b4a 14%, #c5d4cb);
+  --border-strong: color-mix(in srgb, #1a6b4a 24%, #9eb5a8);
+  --text: #0f1a14;
+  --text-muted: #3f5548;
+  --text-faint: #6b8072;
+  --accent: #1a6b4a;
+  --accent-hover: #145a3a;
+  --accent-muted: color-mix(in srgb, #1a6b4a 12%, #f2f6f3);
+  --admin-btn-primary-bg: #1a6b4a;
+  --admin-btn-primary-text: #ffffff;
+  --admin-link: #145a3a;
+}
+
+html[data-theme="alpine"][data-mode="night"] {
+  color-scheme: dark;
+  --bg: #0a1210;
+  --surface: #111a16;
+  --surface-2: #172420;
+  --surface-3: #1e2e28;
+  --border: color-mix(in srgb, #3ecf98 14%, #1e2e28);
+  --border-strong: color-mix(in srgb, #3ecf98 22%, #2a4038);
+  --text: #e8f2ec;
+  --text-muted: #9bb5a8;
+  --text-faint: #6a8578;
+  --accent: #3ecf98;
+  --accent-hover: #5ee0ad;
+  --accent-muted: color-mix(in srgb, #3ecf98 12%, #111a16);
+  --admin-btn-primary-bg: #3ecf98;
+  --admin-btn-primary-text: #0a1210;
+  --admin-link: #5ee0ad;
+}
+
+/* ── Mediterranean ── */
+html[data-theme="mediterranean"][data-mode="night"] {
+  color-scheme: dark;
+  --bg: #081828;
+  --surface: #0f2840;
+  --surface-2: #153552;
+  --surface-3: #1a4060;
+  --border: color-mix(in srgb, #e07a4a 18%, #1a3a57);
+  --border-strong: color-mix(in srgb, #e07a4a 28%, #245070);
+  --text: #f7f1e8;
+  --text-muted: #c4b59c;
+  --text-faint: #958870;
+  --accent: #e07a4a;
+  --accent-hover: #f09060;
+  --accent-muted: color-mix(in srgb, #e07a4a 14%, #0f2840);
+  --admin-btn-primary-bg: #e07a4a;
+  --admin-btn-primary-text: #1a0f08;
+  --admin-link: #f09060;
+}
+
+html[data-theme="mediterranean"][data-mode="day"] {
+  color-scheme: light;
+  --bg: #f6f0e6;
+  --surface: #fffbf5;
+  --surface-2: #ede4d4;
+  --surface-3: #e2d6c2;
+  --border: color-mix(in srgb, #e07a4a 18%, #d4c8b4);
+  --border-strong: color-mix(in srgb, #e07a4a 28%, #b8a890);
+  --text: #1a140e;
+  --text-muted: #5c5040;
+  --text-faint: #8a7860;
+  --accent: #c45a28;
+  --accent-hover: #a44820;
+  --accent-muted: color-mix(in srgb, #e07a4a 14%, #f6f0e6);
+  --admin-btn-primary-bg: #c45a28;
+  --admin-btn-primary-text: #ffffff;
+  --admin-link: #a44820;
+}
+
+/* Legacy alias — default → noir night */
+html[data-theme="default"][data-mode="night"],
+html[data-theme="default"][data-mode="day"] {
+  /* Values inherited from noir via boot script migration; keep fallback */
+}
+
+html[data-theme="default"][data-mode="night"] {
+  color-scheme: dark;
+  --bg: #07060a;
+  --surface: #0e0c14;
+  --surface-2: #14111c;
+  --surface-3: #1a1722;
+  --border: color-mix(in srgb, #d6b55a 18%, #1b1824);
+  --border-strong: color-mix(in srgb, #d6b55a 28%, #2a2434);
+  --text: #f3efe3;
+  --text-muted: #b7af9a;
+  --text-faint: #8a8270;
+  --accent: #d6b55a;
+  --accent-hover: #e8cc72;
+  --accent-muted: color-mix(in srgb, #d6b55a 14%, #14111c);
+  --admin-btn-primary-bg: #d6b55a;
+  --admin-btn-primary-text: #0b0a0f;
+}
+
+html[data-theme="default"][data-mode="day"] {
+  color-scheme: light;
+  --bg: #f5f1e8;
+  --surface: #fffcf6;
+  --surface-2: #f0ebe0;
+  --surface-3: #e8e2d4;
+  --border: color-mix(in srgb, #d6b55a 20%, #d4cfc4);
+  --border-strong: color-mix(in srgb, #d6b55a 32%, #b8b0a0);
+  --text: #1a1510;
+  --text-muted: #5c5348;
+  --text-faint: #8a8070;
+  --accent: #9a7a1a;
+  --accent-hover: #7a6114;
+  --accent-muted: color-mix(in srgb, #d6b55a 16%, #f5f1e8);
+  --admin-btn-primary-bg: #9a7a1a;
+  --admin-btn-primary-text: #ffffff;
+}

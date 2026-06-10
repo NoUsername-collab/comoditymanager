@@ -210,7 +210,7 @@ export function createSupabaseProvider(): IDataProvider & { mode: DeploymentMode
             default_check_out_time: input.default_check_out_time ?? "11:00",
             total_extra_beds_max: input.total_extra_beds_max ?? 0,
             admin_palette_source: "catalog",
-            admin_palette_key: input.admin_palette_key ?? "default",
+            admin_palette_key: input.admin_palette_key ?? "noir",
             admin_day_night: input.admin_day_night ?? "night",
           });
           return { success: true, error: null };

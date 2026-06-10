@@ -23,6 +23,7 @@ import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
 import { resolveRequestTenant } from "@/lib/tenant/active";
+import { migrateLegacyPaletteKey } from "@/lib/themes";
 import { getTranslations } from "next-intl/server";
 
 export async function unlockLocationAdminAction(formData: FormData) {
@@ -66,7 +67,9 @@ export async function lockLocationAdminAction() {
 
 export async function updateAppearanceSettingsAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const admin_palette_key = String(formData.get("admin_palette_key") ?? "default");
+  const admin_palette_key = migrateLegacyPaletteKey(
+    String(formData.get("admin_palette_key") ?? "noir")
+  );
   const admin_day_night = String(formData.get("admin_day_night") ?? "night") as
     | "day"
     | "night";
@@ -168,7 +171,7 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     default_check_out_time,
     total_extra_beds_max,
     admin_palette_source: pension.admin_palette_source ?? "catalog",
-    admin_palette_key: pension.admin_palette_key ?? "default",
+    admin_palette_key: migrateLegacyPaletteKey(pension.admin_palette_key ?? "noir"),
     admin_day_night: pension.admin_day_night ?? "night",
   });
 

@@ -16,9 +16,7 @@ html.layout-chrome-compact body.ml-overflow-guard {
 
 html[data-layout-chrome="compact"] .ml-content {
   overflow-x: clip;
-  scroll-padding-bottom: calc(
-    var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 0.5rem
-  );
+  scroll-padding-top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem);
 }
 
 /* iOS: prevent focus zoom on inputs (16px minimum) */
@@ -259,7 +257,7 @@ html[data-layout-chrome="compact"] .admin-corner {
 
 /* ── Tablet portrait uses compact chrome too ── */
 html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
-  padding-bottom: calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom));
+  padding-bottom: 0;
 }
 
 /* PWA install sheet (manual / iOS instructions) */
@@ -332,8 +330,8 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
 
 /* PWA standalone (Add to Home Screen) — full safe-area on notched phones */
 @media (display-mode: standalone) {
-  html[data-layout-chrome="compact"] .ml-bottom-nav {
-    padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
+  html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+    padding-top: max(0.35rem, var(--ml-safe-top, 0px));
   }
 
   html[data-layout-chrome="compact"] .public-header,

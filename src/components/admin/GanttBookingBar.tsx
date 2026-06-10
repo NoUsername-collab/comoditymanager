@@ -10,7 +10,6 @@ import { GanttStayTimeline } from "@/components/admin/gantt/GanttStayTimeline";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
-import { GANTT_STAY_H, GANTT_STAY_TOP } from "@/domain/gantt/layout";
 
 type Props = {
   href: string;
@@ -140,8 +139,8 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   const style = {
     ...semanticStayVars(isCerere, occupancyPhase, buildingColor),
     borderRadius: ganttStaySlantRadius(continuesBefore, continuesAfter),
-    height: GANTT_STAY_H,
-    ...(!interactive ? { top: GANTT_STAY_TOP } : {}),
+    height: "var(--gantt-stay-h, 33px)",
+    ...(!interactive ? { top: "var(--gantt-stay-top, 8px)" } : {}),
     ...(interactive
       ? { left: 0, width: "100%" }
       : {
@@ -171,6 +170,29 @@ export const GanttBookingBar = memo(function GanttBookingBar({
 
         <span className="gantt-stay__primary min-w-0 flex-1">
           <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
+          {(showUnpaid ||
+            showMissingIdentity ||
+            guestTotal > 0 ||
+            todayHighlight === "arrival" ||
+            todayHighlight === "departure") && (
+            <span className="gantt-stay__micro" aria-hidden>
+              {todayHighlight === "arrival" ? (
+                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--in">↓</span>
+              ) : null}
+              {todayHighlight === "departure" ? (
+                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--out">↑</span>
+              ) : null}
+              {showUnpaid ? (
+                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--pay">$</span>
+              ) : null}
+              {showMissingIdentity ? (
+                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--id">!</span>
+              ) : null}
+              {guestTotal > 0 ? (
+                <span className="gantt-stay__micro-count">{guestTotal}</span>
+              ) : null}
+            </span>
+          )}
         </span>
 
         {(showAlerts ||

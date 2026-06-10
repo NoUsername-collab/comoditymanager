@@ -2,6 +2,10 @@
  * Gantt stay cards — „Operațiune Chip” (CSS/SVG gratuit, fără artă externă).
  */
 
+.gantt-stay--chip .gantt-stay__micro {
+  display: none;
+}
+
 .gantt-stay--chip {
   container-type: inline-size;
   container-name: gantt-stay;

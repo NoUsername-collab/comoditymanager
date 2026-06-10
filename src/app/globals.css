@@ -61,25 +61,6 @@ html[data-theme="default"][data-mode="night"] {
   );
 }
 
-.site-themed.site-themed--noir {
-  /* Public Noir — forced premium palette (black/gold) */
-  --site-bg: #07060a;
-  --site-fg: #f3efe3;
-  --site-muted: #b7af9a;
-  --site-accent: #d6b55a;
-  --site-accent-fg: #0b0a0f;
-  --site-header-bg: color-mix(in srgb, #07060a 86%, transparent);
-  --site-card: #0e0c14;
-  --site-border: color-mix(in srgb, #d6b55a 22%, #1b1824);
-  --logo-img-filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.45));
-  --logo-img-filter-hover: drop-shadow(0 10px 26px rgba(214, 181, 90, 0.25));
-
-  /* Extra hardening: dacă vreun CSS public hardcodează bg/color,
-     nu vrem să se “fure” din Noir. */
-  background: #07060a !important;
-  color: #f3efe3 !important;
-}
-
 .site-themed {
   background: var(--site-bg);
   color: var(--site-fg);

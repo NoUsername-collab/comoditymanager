@@ -94,6 +94,9 @@
     "calendar": {
       "eyebrow": "Rezervare online",
       "lead": "Alege perioada, compară variantele și trimite cererea. Pensiunea vă contactează pentru confirmare.",
+      "disabledTitle": "Rezervarea online nu este disponibilă",
+      "disabledLead": "Pentru cazare, contactați pensiunea direct prin telefon sau email.",
+      "surplusNote": "Rezervarea online este un modul secundar — confirmarea finală rămâne la pensiune.",
       "asideTitle": "Ce trebuie să știi",
       "asideNoPayTitle": "Nu e plată online",
       "asideNoPayText": "Prețul afișat e estimativ — confirmăm noi suma finală.",
@@ -498,6 +501,10 @@
         "domainsSubtitle": "Subdomeniu Hospira si domeniu propriu",
         "domainsPanelInfo": "Alege cum vede clientii pensiunea: site complet, doar public, sau doar homepage.",
         "openDomainsManagement": "Gestioneaza domeniile",
+        "publicSiteTitle": "Site public",
+        "publicSiteSubtitle": "Template, temă, hero, galerie și contact",
+        "publicSitePanelInfo": "Configurează prezentarea pensiunii pentru vizitatori — separat de tema admin.",
+        "openPublicSiteSettings": "Deschide editor site public",
         "statisticsTitle": "Statistici",
         "statisticsSubtitle": "Rapoarte anuale și comparativ lunar",
         "statisticsForbidden": "Nu ai acces la statistici. Doar proprietarul le poate deschide sau le poate delega din această secțiune.",
@@ -511,6 +518,72 @@
           "visibilityOwner": "Doar proprietar",
           "visibilityAdmin": "Proprietar + admini",
           "visibilityAll": "Tot stafful (inclusiv operatori)"
+        }
+      },
+      "publicSite": {
+        "title": "Site public — Hospira",
+        "description": "Template, temă, conținut hero, secțiuni și contact pentru vizitatori.",
+        "backSettings": "Înapoi la setări",
+        "previewSite": "Previzualizare site",
+        "saved": "Setările site-ului public au fost salvate.",
+        "loadError": "Nu s-au putut încărca setările site-ului public.",
+        "readOnly": "Doar proprietarul sau adminii pot edita site-ul public.",
+        "loading": "Se încarcă…",
+        "save": "Salvează site public",
+        "saving": "Se salvează…",
+        "templateTitle": "Template prezentare",
+        "themeTitle": "Temă vizuală",
+        "heroTitle": "Titlu hero",
+        "heroBadge": "Badge hero",
+        "heroSubtitle": "Subtitlu hero",
+        "heroTagline": "Tagline hero",
+        "heroCtaPrimary": "Buton principal",
+        "heroCtaSecondary": "Buton secundar",
+        "heroImageUrl": "Imagine hero (URL)",
+        "contactTitle": "Contact public",
+        "phone": "Telefon",
+        "sectionsTitle": "Secțiuni pagină",
+        "sectionIntro": "Introducere",
+        "sectionBenefits": "Beneficii",
+        "sectionSteps": "Pași",
+        "sectionCta": "Bandă CTA",
+        "sectionGallery": "Galerie foto",
+        "galleryHelp": "Câte un URL pe linie. Opțional: URL | legendă",
+        "bookingTitle": "Modul rezervare",
+        "bookingEnabled": "Rezervare online activă",
+        "bookingPosition": "Poziție link rezervare",
+        "bookingPosNav": "Doar în meniu",
+        "bookingPosFooter": "Doar în footer",
+        "bookingPosBoth": "Meniu + footer",
+        "bookingPosHidden": "Ascuns (pagina rămâne accesibilă direct)",
+        "published": "Site publicat",
+        "templates": {
+          "classic": {
+            "title": "Classic",
+            "desc": "Layout echilibrat, secțiuni clare, ideal pentru pensiuni tradiționale."
+          },
+          "editorial": {
+            "title": "Editorial",
+            "desc": "Tipografie mare, ritm alternant, stil revistă."
+          },
+          "immersive": {
+            "title": "Immersive",
+            "desc": "Hero full-screen, impact vizual maxim."
+          }
+        },
+        "themes": {
+          "noir": {
+            "title": "Noir",
+            "desc": "Întunecat, accente aurii — elegant și discret."
+          },
+          "alpine": {
+            "title": "Alpine",
+            "desc": "Verde alpine, fundal luminos — montan și fresh."
+          },
+          "mediterranean": {
+            "title": "Mediterranean",
+            "desc": "Albastru adânc, accente calde — costier."
+          }
         }
       },
       "guests": {
@@ -1218,11 +1291,13 @@
         "confirmSoundHint": "Stil scurt „system ding” — dezactivat implicit. Poți testa bifând caseta."
       },
       "palette": {
-        "descriptionPrefix": "Toate temele alternative au fost scoase. Rămâne activ doar scheletul",
-        "descriptionSuffix": "cu variante Zi și Noapte pe același pattern pentru extensiile viitoare.",
+        "familyDescription": "Aceleași 3 familii ca site-ul public — Noir, Alpine, Mediterranean — fiecare cu variantă Zi și Noapte.",
+        "previewTheme": "Preview {theme}",
         "day": "Zi",
         "night": "Noapte",
-        "previewDefault": "Preview default"
+        "descriptionPrefix": "Temă activă:",
+        "descriptionSuffix": "Zi / Noapte pe același schelet.",
+        "previewDefault": "Preview temă"
       },
       "locationUnlocked": "Location admin unlocked",
       "locationLocked": "Location admin locked",
@@ -2326,6 +2401,7 @@
       "footer": {
         "dragHint": "Trage ±1 zi · click/dublu-click pe bară",
         "buildingFocusHint": "focus clădire din chips",
+        "mobileStayHint": "Tap pe card = detalii · ține apăsat = meniu · ↓↑ $ ! = sosire/plecare/plată/ID",
         "dayDepartureUntil": "Zi — plecare (până {time})",
         "cleaning": "Curățenie",
         "nightArrivalFrom": "Noapte — sosire (de la {time})",

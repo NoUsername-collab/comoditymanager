@@ -33,9 +33,9 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   return (
     <>
     <nav
-      className="ml-bottom-nav ml-bottom-nav--admin"
+      className="ml-bottom-nav ml-bottom-nav--admin ml-top-nav"
       aria-label={t("bottomNavAria")}
-      data-mobile-chrome="admin-bottom-nav"
+      data-mobile-chrome="admin-top-nav"
     >
       <ul className="ml-bottom-nav__list">
         {tabs.map((tab) => {

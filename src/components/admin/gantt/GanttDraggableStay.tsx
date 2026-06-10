@@ -116,6 +116,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   const [pressing, setPressing] = useState(false);
   const [hover, setHover] = useState(false);
   const [popoverHover, setPopoverHover] = useState(false);
+  const [tapPopover, setTapPopover] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const startX = useRef(0);
   const startY = useRef(0);
@@ -269,7 +270,22 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   useEffect(() => {
     if (!pressing) return;
 
-    const finish = () => {
+    const finish = (e: PointerEvent) => {
+      if (
+        touch &&
+        !longPressOpened.current &&
+        e.pointerId === capturePointerId.current
+      ) {
+        const dx = e.clientX - startX.current;
+        const dy = e.clientY - startY.current;
+        if (Math.hypot(dx, dy) <= LONG_PRESS_MOVE_PX) {
+          const el = captureEl.current;
+          if (el) {
+            setAnchorRect(el.getBoundingClientRect());
+            setTapPopover((open) => !open);
+          }
+        }
+      }
       clearLongPress();
       releaseCapture();
       setPressing(false);
@@ -282,7 +298,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX &&
         !longPressOpened.current
       ) {
-        finish();
+        finish(e);
       }
     };
 
@@ -294,10 +310,10 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
     };
-  }, [pressing, clearLongPress, releaseCapture]);
+  }, [pressing, clearLongPress, releaseCapture, touch]);
 
   const showPopover =
-    !touch && (hover || popoverHover) && !pressing && !pending;
+    !pressing && !pending && (touch ? tapPopover : hover || popoverHover);
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {
@@ -326,6 +342,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         className={[
           "gantt-draggable-stay pointer-events-auto absolute z-[1] flex min-w-0 items-stretch",
           pending && "opacity-60",
+          tapPopover && "gantt-draggable-stay--tap-open",
         ]
           .filter(Boolean)
           .join(" ")}
@@ -409,7 +426,14 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
             clearLeaveTimer();
             setPopoverHover(true);
           }}
-          onMouseLeave={scheduleHidePopover}
+          onMouseLeave={() => {
+            clearLeaveTimer();
+            if (touch) {
+              setTapPopover(false);
+            } else {
+              scheduleHidePopover();
+            }
+          }}
           today={today}
         />
       )}

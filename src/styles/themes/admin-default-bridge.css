@@ -1,150 +1,150 @@
 /**
  * Default — mapare Tailwind hardcodat → variabile temă (tot admin-shell).
- * Doar html[data-theme="default"]; Win95/XP rămân neatinse.
+ * Doar html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]); Win95/XP rămân neatinse.
  */
 
-html[data-theme="default"] .admin-shell .text-zinc-900,
-html[data-theme="default"] .admin-shell .text-zinc-800,
-html[data-theme="default"] .admin-shell .text-zinc-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-900,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-700 {
   color: var(--admin-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-zinc-600,
-html[data-theme="default"] .admin-shell .text-zinc-500,
-html[data-theme="default"] .admin-shell .text-zinc-400 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-600,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-500,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-400 {
   color: var(--admin-text-muted) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-emerald-900,
-html[data-theme="default"] .admin-shell .text-emerald-800,
-html[data-theme="default"] .admin-shell .text-emerald-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-emerald-900,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-emerald-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-emerald-700 {
   color: var(--status-confirmed-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-emerald-600 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-emerald-600 {
   color: var(--admin-link) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-emerald-100 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-emerald-100 {
   background: var(--status-confirmed-bg) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-emerald-500,
-html[data-theme="default"] .admin-shell .bg-emerald-600 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-emerald-500,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-emerald-600 {
   background: var(--color-accent) !important;
 }
 
-html[data-theme="default"] .admin-shell .border-emerald-200,
-html[data-theme="default"] .admin-shell .border-emerald-300 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-emerald-200,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-emerald-300 {
   border-color: var(--status-confirmed-border) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-amber-800,
-html[data-theme="default"] .admin-shell .text-amber-700,
-html[data-theme="default"] .admin-shell .text-orange-800,
-html[data-theme="default"] .admin-shell .text-orange-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-amber-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-amber-700,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-orange-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-orange-700 {
   color: var(--status-pending-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-amber-50,
-html[data-theme="default"] .admin-shell .bg-amber-100,
-html[data-theme="default"] .admin-shell .bg-orange-50 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-amber-50,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-amber-100,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-orange-50 {
   background: var(--status-pending-bg) !important;
 }
 
-html[data-theme="default"] .admin-shell .border-amber-200,
-html[data-theme="default"] .admin-shell .border-orange-300 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-amber-200,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-orange-300 {
   border-color: var(--status-pending-border) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-yellow-800,
-html[data-theme="default"] .admin-shell .text-yellow-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-yellow-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-yellow-700 {
   color: var(--status-hold-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-yellow-50,
-html[data-theme="default"] .admin-shell .bg-yellow-100 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-yellow-50,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-yellow-100 {
   background: var(--status-hold-bg) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-stone-800,
-html[data-theme="default"] .admin-shell .text-stone-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-stone-800,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-stone-700 {
   color: var(--status-block-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-stone-100,
-html[data-theme="default"] .admin-shell .bg-stone-200 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-stone-100,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-stone-200 {
   background: var(--status-block-bg) !important;
 }
 
-html[data-theme="default"] .admin-shell .text-rose-700,
-html[data-theme="default"] .admin-shell .text-red-700 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-rose-700,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-red-700 {
   color: var(--admin-danger-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-rose-50,
-html[data-theme="default"] .admin-shell .bg-red-50 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-rose-50,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-red-50 {
   background: var(--admin-danger-bg) !important;
 }
 
-html[data-theme="default"] .admin-shell .border-zinc-100,
-html[data-theme="default"] .admin-shell .border-zinc-200,
-html[data-theme="default"] .admin-shell .border-zinc-200\/90,
-html[data-theme="default"] .admin-shell .border-zinc-300,
-html[data-theme="default"] .admin-shell .border-white\/80 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-zinc-100,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-zinc-200,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-zinc-200\/90,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-zinc-300,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .border-white\/80 {
   border-color: var(--admin-panel-border) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-white {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-white {
   background: var(--admin-panel-bg) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-zinc-50,
-html[data-theme="default"] .admin-shell .bg-zinc-50\/80,
-html[data-theme="default"] .admin-shell .bg-zinc-100 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-zinc-50,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-zinc-50\/80,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-zinc-100 {
   background: color-mix(in srgb, var(--admin-page-bg) 88%, var(--admin-panel-bg)) !important;
 }
 
-html[data-theme="default"] .admin-shell .bg-zinc-900,
-html[data-theme="default"] .admin-shell button.bg-zinc-900 {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .bg-zinc-900,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell button.bg-zinc-900 {
   background: var(--admin-btn-primary-bg) !important;
   color: var(--admin-btn-primary-text) !important;
 }
 
-html[data-theme="default"] .admin-shell .hover\:bg-zinc-50:hover,
-html[data-theme="default"] .admin-shell .hover\:bg-zinc-50\/80:hover {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .hover\:bg-zinc-50:hover,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .hover\:bg-zinc-50\/80:hover {
   background: color-mix(in srgb, var(--admin-page-bg) 75%, var(--admin-panel-bg)) !important;
 }
 
-html[data-theme="default"] .admin-shell .line-through.text-zinc-400,
-html[data-theme="default"] .admin-shell .text-zinc-400.line-through {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .line-through.text-zinc-400,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .text-zinc-400.line-through {
   color: var(--status-disabled-text) !important;
 }
 
-html[data-theme="default"] .admin-shell input:focus,
-html[data-theme="default"] .admin-shell select:focus,
-html[data-theme="default"] .admin-shell textarea:focus,
-html[data-theme="default"] .admin-shell .focus\:border-emerald-500:focus {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell input:focus,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell select:focus,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell textarea:focus,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .focus\:border-emerald-500:focus {
   border-color: var(--admin-focus-ring) !important;
   outline-color: color-mix(in srgb, var(--admin-focus-ring) 35%, transparent) !important;
 }
 
-html[data-theme="default"] .admin-shell .focus\:ring-emerald-500\/20:focus {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .focus\:ring-emerald-500\/20:focus {
   --tw-ring-color: color-mix(in srgb, var(--admin-focus-ring) 22%, transparent) !important;
 }
 
-html[data-theme="default"] .admin-shell .shadow-sm,
-html[data-theme="default"] .admin-shell .shadow {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .shadow-sm,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .shadow {
   box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-text) 8%, transparent) !important;
 }
 
-html[data-theme="default"] .admin-hud-alert {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-hud-alert {
   background: var(--admin-alert-bg) !important;
   color: var(--admin-alert-text) !important;
   border-bottom: 1px solid var(--status-pending-border) !important;
 }
 
-html[data-theme="default"] .admin-hud-alert__link {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-hud-alert__link {
   color: var(--booking-pending-border) !important;
   font-weight: 600;
 }

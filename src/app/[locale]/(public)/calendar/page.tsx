@@ -1,48 +1,63 @@
+import { Link } from "@/i18n/navigation";
 import { GuestBookingFormLazy } from "@/components/calendar/GuestBookingFormLazy";
-import { PublicPageShell } from "@/components/public/PublicPageShell";
-import { getPensionSettings } from "@/services/pension-settings";
+import { getPublicSiteConfig } from "@/services/public-site/queries";
 import { getTranslations } from "next-intl/server";
 
 export default async function CalendarPublicPage() {
-  const [t, tShell, settings] = await Promise.all([
+  const [t, tShell, config] = await Promise.all([
     getTranslations("public.calendar"),
     getTranslations("public.shell"),
-    getPensionSettings().catch(() => null),
+    getPublicSiteConfig(),
   ]);
 
-  const checkInTime = settings?.default_check_in_time ?? "14:00";
-  const checkOutTime = settings?.default_check_out_time ?? "11:00";
-  const title = settings?.display_name ?? tShell("brandFallback");
+  if (!config.bookingEnabled) {
+    return (
+      <main className="pub-booking-page ml-content">
+        <div className="pub-booking-page__head">
+          <p className="pub-booking-page__eyebrow">{t("eyebrow")}</p>
+          <h1 className="pub-booking-page__title">{t("disabledTitle")}</h1>
+          <p className="pub-booking-page__lead">{t("disabledLead")}</p>
+          <Link href="/" className="pub-btn pub-btn--primary mt-4 inline-flex">
+            {tShell("backHome")}
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  const checkInTime = config.checkInTime;
+  const checkOutTime = config.checkOutTime;
 
   return (
-    <PublicPageShell
-      wide
-      backLabel={tShell("backHome")}
-      eyebrow={t("eyebrow")}
-      title={title}
-      lead={t("lead")}
-    >
-      <div className="public-booking-layout mt-5">
-        <aside className="public-booking-aside">
-          <p className="text-sm font-semibold text-[var(--site-fg)]">
-            {t("asideTitle")}
-          </p>
-          <ul className="public-booking-aside__list">
-            <li className="public-booking-aside__item">
+    <main className="pub-booking-page ml-content">
+      <Link href="/" className="public-back-link">
+        ← {tShell("backHome")}
+      </Link>
+      <header className="pub-booking-page__head">
+        <p className="pub-booking-page__eyebrow">{t("eyebrow")}</p>
+        <h1 className="pub-booking-page__title">{config.displayName}</h1>
+        <p className="pub-booking-page__lead">{t("lead")}</p>
+      </header>
+
+      <div className="pub-booking-layout">
+        <aside className="pub-booking-aside">
+          <p className="text-sm font-semibold text-[var(--site-fg)]">{t("asideTitle")}</p>
+          <ul className="pub-booking-aside__list">
+            <li className="pub-booking-aside__item">
               <span aria-hidden>✓</span>
               <span>
                 <strong>{t("asideNoPayTitle")}</strong>
                 {t("asideNoPayText")}
               </span>
             </li>
-            <li className="public-booking-aside__item">
+            <li className="pub-booking-aside__item">
               <span aria-hidden>⏱</span>
               <span>
                 <strong>{t("asideHoldTitle")}</strong>
                 {t("asideHoldText")}
               </span>
             </li>
-            <li className="public-booking-aside__item">
+            <li className="pub-booking-aside__item">
               <span aria-hidden>🕐</span>
               <span>
                 <strong>{t("asideHoursTitle")}</strong>
@@ -50,13 +65,11 @@ export default async function CalendarPublicPage() {
               </span>
             </li>
           </ul>
+          <p className="pub-booking-surplus-note">{t("surplusNote")}</p>
         </aside>
 
-        <GuestBookingFormLazy
-          checkInTime={checkInTime}
-          checkOutTime={checkOutTime}
-        />
+        <GuestBookingFormLazy checkInTime={checkInTime} checkOutTime={checkOutTime} />
       </div>
-    </PublicPageShell>
+    </main>
   );
 }

@@ -107,6 +107,7 @@ html[data-layout-chrome="compact"] .admin-hud-alert {
 
 html[data-layout-chrome="compact"] .admin-page-main {
   padding-inline: 0.85rem;
+  padding-top: 0;
   padding-bottom: 0.5rem;
 }
 

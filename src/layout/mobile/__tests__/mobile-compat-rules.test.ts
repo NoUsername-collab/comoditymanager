@@ -24,8 +24,8 @@ describe("mobile compatibility CSS rules", () => {
 
   it("guards compact chrome overflow and safe-area scroll padding", () => {
     expect(guards).toContain('html[data-layout-chrome="compact"] .ml-content');
-    expect(guards).toContain("scroll-padding-bottom");
-    expect(guards).toContain("var(--ml-safe-bottom");
+    expect(guards).toContain("scroll-padding-top");
+    expect(guards).toContain("var(--ml-admin-nav-offset");
   });
 
   it("prevents iOS input zoom (16px minimum)", () => {

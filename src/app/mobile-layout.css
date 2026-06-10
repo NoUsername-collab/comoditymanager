@@ -18,15 +18,16 @@
   --ml-bp-2xl: 1536px;
   --ml-bottom-nav-height: 2.275rem;
   --ml-bottom-nav-height-landscape: 1.75rem;
+  --ml-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --ml-safe-top: env(safe-area-inset-top, 0px);
+  --ml-safe-left: env(safe-area-inset-left, 0px);
+  --ml-safe-right: env(safe-area-inset-right, 0px);
+  --ml-admin-nav-offset: calc(var(--ml-bottom-nav-height) + var(--ml-safe-top));
   --ml-touch-min: 2.5rem;
   --ml-space-xs: 0.375rem;
   --ml-space-sm: 0.5rem;
   --ml-space-md: 0.75rem;
   --ml-space-lg: 1rem;
-  --ml-safe-bottom: env(safe-area-inset-bottom, 0px);
-  --ml-safe-top: env(safe-area-inset-top, 0px);
-  --ml-safe-left: env(safe-area-inset-left, 0px);
-  --ml-safe-right: env(safe-area-inset-right, 0px);
   --ml-ease-out: cubic-bezier(0.32, 0.72, 0, 1);
   --ml-duration-drawer: 220ms;
   --ml-duration-overlay: 240ms;
@@ -52,24 +53,26 @@ html[data-layout-mode="mobile"] .ml-shell {
   min-height: var(--ml-vvh, 100dvh);
 }
 
-/* ── Admin: bottom nav (mobile only) ── */
+/* ── Admin: primary nav — top bar on mobile (static, content scrolls below) ── */
 .ml-bottom-nav {
   display: none;
 }
 
 html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
   display: block;
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: 60;
-  padding-bottom: var(--ml-safe-bottom);
+  position: relative;
+  z-index: 50;
+  flex-shrink: 0;
+  order: -10;
+  margin: 0;
+  padding-top: var(--ml-safe-top);
+  padding-bottom: 0;
   padding-left: var(--ml-safe-left);
   padding-right: var(--ml-safe-right);
   background: var(--admin-hud-bg, #0f0e14);
-  border-top: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 80%, transparent);
+  border-top: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 80%, transparent);
   contain: layout style;
-  transform: translateZ(0);
 }
 
 html[data-layout-chrome="compact"] .ml-bottom-nav__list {
@@ -176,13 +179,40 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__label {
 }
 
 html[data-layout-chrome="compact"] .admin-shell {
-  padding-bottom: calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom));
-  transition: padding-bottom var(--ml-duration-nav) var(--ml-ease-out);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Mobile: single black top nav — hide duplicate HUD chrome */
+html[data-layout-chrome="compact"] .admin-shell > .admin-hud,
+html[data-layout-chrome="compact"] .admin-shell > .admin-hud-alert {
+  display: none !important;
+}
+
+html[data-layout-chrome="compact"] .admin-shell > .admin-page-main,
+html[data-layout-chrome="compact"] .admin-shell > .admin-shell-client-wrap,
+html[data-layout-chrome="compact"] .admin-shell .admin-page-main {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+  height: var(--ml-vvh, 100dvh);
+  max-height: var(--ml-vvh, 100dvh);
+  overflow: hidden;
+}
+
+html[data-layout-chrome="compact"] .admin-shell .admin-page-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* admin-hud__center: visible scroll row — mobile-layout-pages.css */
 
-/* Landscape: compact bottom bar, icons-first */
+/* Landscape: compact top bar, icons-first */
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] {
   --ml-bottom-nav-height: var(--ml-bottom-nav-height-landscape);
 }

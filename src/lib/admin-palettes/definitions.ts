@@ -1,49 +1,42 @@
+import { getDesignTheme } from "@/design/themes/catalog";
 import type { AdminPaletteDefinition, AdminPaletteTokens } from "./types";
+import type { ThemeId } from "@/lib/themes";
 
-function t(partial: AdminPaletteTokens): AdminPaletteTokens {
-  return partial;
+function fromAdminPrimitives(
+  themeId: ThemeId,
+  mode: "day" | "night"
+): AdminPaletteTokens {
+  const p = getDesignTheme(themeId).admin[mode];
+  return {
+    pageBg: p.bg,
+    panelBg: p.surface,
+    panelBorder: p.border,
+    text: p.text,
+    textMuted: p.textMuted,
+    accent: p.accent,
+    accentMuted: p.accentMuted,
+    ganttZoneCheckout: `color-mix(in srgb, ${p.accent} 8%, ${p.surface})`,
+    ganttZoneClean: p.surface,
+    ganttZoneCheckin: p.surface2,
+    ganttLineCheckout: p.borderStrong,
+    ganttLineCheckin: p.accent,
+    hudGradient: p.surface,
+    hudText: p.text,
+    hudEyebrow: p.textMuted,
+  };
 }
 
-/** Only active theme for now: default. New themes follow same day/night pattern. */
-export const CATALOG_PALETTES: AdminPaletteDefinition[] = [
-  {
-    id: "default",
-    name: "Default",
-    description: "Default tenant theme on a unified day/night structure.",
+/** Admin palettes derived from the same 3 design families as the public site. */
+export const CATALOG_PALETTES: AdminPaletteDefinition[] = (
+  ["noir", "alpine", "mediterranean"] as const
+).map((id) => {
+  const def = getDesignTheme(id);
+  return {
+    id,
+    name: def.name,
+    description: def.description,
     group: "catalog",
-    day: t({
-      pageBg: "#eef0f8",
-      panelBg: "#ffffff",
-      panelBorder: "#dde2f0",
-      text: "#1a1d2e",
-      textMuted: "#5a6080",
-      accent: "#4f7ef8",
-      accentMuted: "#e4eaff",
-      ganttZoneCheckout: "rgba(79, 126, 248, 0.06)",
-      ganttZoneClean: "#ffffff",
-      ganttZoneCheckin: "#f4f6ff",
-      ganttLineCheckout: "#c8d0e8",
-      ganttLineCheckin: "#4f7ef8",
-      hudGradient: "#ffffff",
-      hudText: "#1a1d2e",
-      hudEyebrow: "#5a6080",
-    }),
-    night: t({
-      pageBg: "#0f1117",
-      panelBg: "#1a1d27",
-      panelBorder: "#2e3348",
-      text: "#e8eaf2",
-      textMuted: "#8b90a8",
-      accent: "#4f7ef8",
-      accentMuted: "#1e2d5a",
-      ganttZoneCheckout: "rgba(79, 126, 248, 0.055)",
-      ganttZoneClean: "#1a1d27",
-      ganttZoneCheckin: "#222638",
-      ganttLineCheckout: "#3d4460",
-      ganttLineCheckin: "#4f7ef8",
-      hudGradient: "#1a1d27",
-      hudText: "#e8eaf2",
-      hudEyebrow: "#8b90a8",
-    }),
-  },
-];
+    day: fromAdminPrimitives(id, "day"),
+    night: fromAdminPrimitives(id, "night"),
+  };
+});

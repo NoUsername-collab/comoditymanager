@@ -1,6 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { useOptionalPublicSiteConfig } from "@/features/public-site/PublicSiteConfigProvider";
 import { useTranslations } from "next-intl";
 
 function isActive(pathname: string, href: string): boolean {
@@ -11,6 +12,12 @@ function isActive(pathname: string, href: string): boolean {
 export function PublicNav() {
   const pathname = usePathname();
   const t = useTranslations("public.nav");
+  const config = useOptionalPublicSiteConfig();
+
+  const showBookingLink = config
+    ? config.bookingEnabled &&
+      (config.bookingNavPosition === "nav" || config.bookingNavPosition === "both")
+    : true;
 
   return (
     <nav className="public-header__nav" aria-label={t("mainAria")}>
@@ -37,9 +44,11 @@ export function PublicNav() {
       >
         {t("gdpr")}
       </Link>
-      <Link href="/calendar" className="public-header__link public-header__cta site-cta">
-        {t("book")}
-      </Link>
+      {showBookingLink ? (
+        <Link href="/calendar" className="public-header__link public-header__cta site-cta">
+          {t("book")}
+        </Link>
+      ) : null}
     </nav>
   );
 }

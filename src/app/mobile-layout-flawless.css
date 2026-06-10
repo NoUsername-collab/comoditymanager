@@ -2,18 +2,16 @@
  * Mobile flawless pass — fixes dead selectors, grids, touch, overlays.
  */
 
-/* ── Sim strip above bottom nav ── */
+/* ── Sim strip above safe area (top nav no longer at bottom) ── */
 html[data-layout-chrome="compact"] .sim-bottom-strip {
-  bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px));
+  bottom: var(--ml-safe-bottom, 0px);
   z-index: 55;
   padding-block: 0.45rem;
   font-size: 0.62rem;
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.sim-bottom-strip) {
-  padding-bottom: calc(
-    var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 1.75rem
-  );
+  padding-bottom: calc(var(--ml-safe-bottom, 0px) + 1.75rem);
 }
 
 /* ── Universal grid stack (Tailwind sm/md/lg breakpoints still fire on tablet) ── */
@@ -49,7 +47,7 @@ html[data-layout-chrome="compact"] .admin-xp-window__body {
   max-height: min(
     62dvh,
     calc(
-      var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 3.75rem) - var(--ml-safe-bottom, 0px) - 7rem
+      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - 7rem
     )
   );
   overflow-y: auto;
@@ -1091,19 +1089,19 @@ html[data-layout-chrome="compact"] .ml-drawer__locale .language-switcher__trigge
   justify-content: center;
 }
 
-/* Toast clears single-row HUD + optional alert strip */
+/* Toast clears top nav chrome */
 html[data-layout-chrome="compact"] .admin-toast-stack {
-  top: calc(3.35rem + var(--ml-safe-top, 0px));
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem);
   right: max(0.65rem, var(--ml-safe-right, 0px));
   width: min(22rem, calc(100vw - 1.25rem));
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.admin-hud-alert) .admin-toast-stack {
-  top: calc(5.5rem + var(--ml-safe-top, 0px));
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 2rem);
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-toast-stack {
-  top: calc(3rem + var(--ml-safe-top, 0px));
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.35rem);
 }
 
 /* Booking banner: dates stack cleanly on narrow */
@@ -1196,7 +1194,7 @@ html[data-layout-chrome="compact"] .admin-hud__tools {
   overflow: visible;
 }
 
-/* Gantt footer legend: clear bottom nav + home indicator */
+/* Gantt footer legend: clear home indicator (no bottom nav) */
 html[data-layout-chrome="compact"] .gantt-footer-legend--compact {
   margin-bottom: 0.15rem;
   padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
@@ -1333,7 +1331,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll {
   max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 2.85rem) - var(--ml-safe-bottom, 0px) - 7.5rem
+    var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 7.5rem
   );
 }
 
@@ -1423,12 +1421,12 @@ html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-pan
   -webkit-overflow-scrolling: touch;
 }
 
-/* Gantt filters: dock above bottom nav instead of floating off-toolbar */
+/* Gantt filters: dock below top nav instead of floating off-toolbar */
 html[data-layout-chrome="compact"] .gantt-filters-panel.admin-floating-panel:not(.admin-floating-panel--modal) {
   left: 50% !important;
   right: auto !important;
-  top: auto !important;
-  bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 0.5rem) !important;
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem) !important;
+  bottom: auto !important;
   transform: translateX(-50%) !important;
   max-width: min(360px, calc(100vw - 1rem));
 }
@@ -1572,7 +1570,7 @@ html[data-layout-chrome="compact"] .admin-gear__footer .sim-trigger-chip--compac
 
 /* Layout debug: above bottom nav on compact */
 html[data-layout-chrome="compact"] .layout-debug-overlay {
-  bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 0.5rem);
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.5rem);
   max-height: min(40dvh, 16rem);
 }
 
@@ -1585,7 +1583,7 @@ html[data-layout-chrome="compact"] .layout-debug-overlay__btn {
 
 /* Admin panel error boundary */
 html[data-layout-chrome="compact"] .ml-content.flex.min-h-\[40dvh\] {
-  padding-bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px));
+  padding-bottom: var(--ml-safe-bottom, 0px);
 }
 
 /* Blacklist modal touch */
@@ -1622,13 +1620,11 @@ html[data-layout-chrome="compact"] .hospira-admin-error__card a {
   width: 100%;
 }
 
-/* Anchor scroll: section headings clear bottom nav */
+/* Anchor scroll: section headings clear top nav */
 html[data-layout-chrome="compact"] .admin-page-main :target,
 html[data-layout-chrome="compact"] .ml-main :target {
-  scroll-margin-top: calc(var(--ml-safe-top, 0px) + 3.5rem);
-  scroll-margin-bottom: calc(
-    var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 1rem
-  );
+  scroll-margin-top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.75rem);
+  scroll-margin-bottom: calc(var(--ml-safe-bottom, 0px) + 1rem);
 }
 
 /* Long-press context menus: avoid accidental selection on Gantt bars */
@@ -1817,7 +1813,7 @@ html[data-layout-chrome="compact"] .cerere-item {
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll {
   max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 3.75rem) - var(--ml-safe-bottom, 0px) - 9rem
+    var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 9rem
   );
   overflow-y: auto;
 }
@@ -2154,7 +2150,7 @@ html[data-layout-chrome="compact"] .statistics-years-section .statistics-year-ca
 html[data-layout-chrome="compact"] .hospira-health-list {
   max-height: min(
     55dvh,
-    calc(var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 3.75rem) - var(--ml-safe-bottom, 0px) - 12rem)
+    calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 12rem)
   );
 }
 
@@ -2365,7 +2361,7 @@ html[data-layout-chrome="compact"] .room-manage-actions button {
 }
 
 html[data-layout-chrome="compact"] .admin-invoice-page {
-  padding-bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px));
+  padding-bottom: var(--ml-safe-bottom, 0px);
 }
 
 /* ── Pass 22: room/building forms + gantt view switcher ── */
@@ -2692,7 +2688,7 @@ html[data-layout-chrome="compact"] .availability-day-detail-skeleton {
   max-height: min(
     72dvh,
     calc(
-      var(--ml-vvh, 100dvh) - var(--ml-bottom-nav-height, 3.75rem) - var(--ml-safe-bottom, 0px) - 1.5rem
+      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 1.5rem
     )
   );
   overflow: hidden;
@@ -2935,7 +2931,7 @@ html[data-layout-chrome="compact"] .avail-kpi-card__label {
 
 html[data-layout-chrome="compact"] .phone-booking-form__submit {
   position: sticky;
-  bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 0.35rem);
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.35rem);
   z-index: 2;
   margin-top: 0.5rem;
   font-size: max(16px, 0.875rem);
@@ -3049,7 +3045,7 @@ html[data-layout-chrome="compact"] .bd-confirm__times {
 html[data-layout-chrome="compact"] .bd-confirm__submit {
   width: 100%;
   position: sticky;
-  bottom: calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-bottom, 0px) + 0.35rem);
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.35rem);
   z-index: 2;
   margin-top: 0.85rem;
   padding-bottom: max(0.5rem, var(--ml-safe-bottom, 0px));

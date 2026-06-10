@@ -242,6 +242,24 @@ export default async function SettingsPage({
 
           {(role === "admin" || isOwner) && (
             <SettingsSlidePanel
+              title={t("publicSiteTitle")}
+              subtitle={t("publicSiteSubtitle")}
+              icon="*"
+            >
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-600">{t("publicSitePanelInfo")}</p>
+                <Link
+                  href="/admin/settings/public-site"
+                  className="admin-settings-cta inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                >
+                  {t("openPublicSiteSettings")}
+                </Link>
+              </div>
+            </SettingsSlidePanel>
+          )}
+
+          {(role === "admin" || isOwner) && (
+            <SettingsSlidePanel
               title={t("locationTitle")}
               subtitle={
                 locationUnlocked

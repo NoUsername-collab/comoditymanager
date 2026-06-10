@@ -94,6 +94,9 @@
     "calendar": {
       "eyebrow": "Online booking",
       "lead": "Pick dates, compare options, and submit your request. We'll contact you to confirm.",
+      "disabledTitle": "Online booking is not available",
+      "disabledLead": "For accommodation, please contact the property directly by phone or email.",
+      "surplusNote": "Online booking is a secondary module — final confirmation stays with the property.",
       "asideTitle": "Good to know",
       "asideNoPayTitle": "No online payment",
       "asideNoPayText": "Prices shown are estimates — we confirm the final amount.",
@@ -498,6 +501,10 @@
         "domainsSubtitle": "Hospira subdomain and custom domain",
         "domainsPanelInfo": "Choose how guests see your property online.",
         "openDomainsManagement": "Manage domains",
+        "publicSiteTitle": "Public site",
+        "publicSiteSubtitle": "Template, theme, hero, gallery and contact",
+        "publicSitePanelInfo": "Configure how visitors see your property — separate from the admin theme.",
+        "openPublicSiteSettings": "Open public site editor",
         "statisticsTitle": "Statistics",
         "statisticsSubtitle": "Annual reports and monthly comparison",
         "statisticsForbidden": "You do not have access to statistics. Only the owner can open them or grant access in this section.",
@@ -511,6 +518,72 @@
           "visibilityOwner": "Owner only",
           "visibilityAdmin": "Owner + admins",
           "visibilityAll": "All staff (including operators)"
+        }
+      },
+      "publicSite": {
+        "title": "Public site — Hospira",
+        "description": "Template, theme, hero content, sections and contact for visitors.",
+        "backSettings": "Back to settings",
+        "previewSite": "Preview site",
+        "saved": "Public site settings saved.",
+        "loadError": "Could not load public site settings.",
+        "readOnly": "Only the owner or admins can edit the public site.",
+        "loading": "Loading…",
+        "save": "Save public site",
+        "saving": "Saving…",
+        "templateTitle": "Presentation template",
+        "themeTitle": "Visual theme",
+        "heroTitle": "Hero title",
+        "heroBadge": "Hero badge",
+        "heroSubtitle": "Hero subtitle",
+        "heroTagline": "Hero tagline",
+        "heroCtaPrimary": "Primary button",
+        "heroCtaSecondary": "Secondary button",
+        "heroImageUrl": "Hero image (URL)",
+        "contactTitle": "Public contact",
+        "phone": "Phone",
+        "sectionsTitle": "Page sections",
+        "sectionIntro": "Introduction",
+        "sectionBenefits": "Benefits",
+        "sectionSteps": "Steps",
+        "sectionCta": "CTA band",
+        "sectionGallery": "Photo gallery",
+        "galleryHelp": "One URL per line. Optional: URL | caption",
+        "bookingTitle": "Booking module",
+        "bookingEnabled": "Online booking enabled",
+        "bookingPosition": "Booking link position",
+        "bookingPosNav": "Navigation only",
+        "bookingPosFooter": "Footer only",
+        "bookingPosBoth": "Navigation + footer",
+        "bookingPosHidden": "Hidden (page still accessible directly)",
+        "published": "Site published",
+        "templates": {
+          "classic": {
+            "title": "Classic",
+            "desc": "Balanced layout, clear sections — ideal for traditional guesthouses."
+          },
+          "editorial": {
+            "title": "Editorial",
+            "desc": "Large typography, alternating rhythm — magazine style."
+          },
+          "immersive": {
+            "title": "Immersive",
+            "desc": "Full-screen hero, maximum visual impact."
+          }
+        },
+        "themes": {
+          "noir": {
+            "title": "Noir",
+            "desc": "Dark with gold accents — elegant and discreet."
+          },
+          "alpine": {
+            "title": "Alpine",
+            "desc": "Alpine green, light background — fresh mountain feel."
+          },
+          "mediterranean": {
+            "title": "Mediterranean",
+            "desc": "Deep blue, warm accents — coastal mood."
+          }
         }
       },
       "guests": {
@@ -1218,11 +1291,13 @@
         "confirmSoundHint": "Short system ding style — disabled by default. You can test it by checking the box."
       },
       "palette": {
-        "descriptionPrefix": "All alternative themes were removed. Only the",
-        "descriptionSuffix": "skeleton remains active, with Day and Night variants on the same pattern for future extensions.",
+        "familyDescription": "Same 3 families as the public site — Noir, Alpine, Mediterranean — each with Day and Night.",
+        "previewTheme": "Preview {theme}",
+        "descriptionPrefix": "Active theme:",
+        "descriptionSuffix": "Day / Night on the same skeleton.",
         "day": "Day",
         "night": "Night",
-        "previewDefault": "Default preview"
+        "previewDefault": "Theme preview"
       },
       "locationUnlocked": "Location admin unlocked",
       "locationLocked": "Location admin locked",
@@ -2326,6 +2401,7 @@
       "footer": {
         "dragHint": "Drag ±1 day · click/double-click bar",
         "buildingFocusHint": "building focus from chips",
+        "mobileStayHint": "Tap card = details · hold = menu · ↓↑ $ ! = arrival/departure/payment/ID",
         "dayDepartureUntil": "Day — departure (until {time})",
         "cleaning": "Cleaning",
         "nightArrivalFrom": "Night — arrival (from {time})",

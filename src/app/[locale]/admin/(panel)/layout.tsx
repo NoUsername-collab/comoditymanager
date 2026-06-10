@@ -22,7 +22,7 @@ import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
-  theme: "default",
+  theme: "noir",
   mode: "night",
 };
 
@@ -69,6 +69,11 @@ export default async function AdminLayout({
   return (
     <AdminAppearanceProvider initialSettings={appearanceSettings}>
       <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
+        <AdminMobileBottomNav
+          cereriCount={cereriCount}
+          locationUnlocked={locationUnlocked}
+        />
+
         <div className="admin-hud">
           <div className="admin-hud__surface">
             <AdminTopBar
@@ -96,11 +101,6 @@ export default async function AdminLayout({
         <AdminShellClient>
           <div className="admin-page-main ml-main flex-1">{children}</div>
         </AdminShellClient>
-
-        <AdminMobileBottomNav
-          cereriCount={cereriCount}
-          locationUnlocked={locationUnlocked}
-        />
 
         <SimOverlay
           active={simStatus.active}

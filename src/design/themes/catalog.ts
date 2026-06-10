@@ -1,0 +1,175 @@
+import type { DesignThemeDefinition, DesignThemeId } from "./types";
+
+const DISPLAY = "Georgia, 'Times New Roman', ui-serif, serif";
+
+export const DESIGN_THEMES: Record<DesignThemeId, DesignThemeDefinition> = {
+  noir: {
+    id: "noir",
+    name: "Noir",
+    description: "Dark luxury — charcoal base, gold accent.",
+    public: {
+      bg: "#07060a",
+      fg: "#f3efe3",
+      muted: "#b7af9a",
+      accent: "#d6b55a",
+      accentFg: "#0b0a0f",
+      headerBg: "color-mix(in srgb, #07060a 86%, transparent)",
+      card: "#0e0c14",
+      cardElevated: "#14111c",
+      border: "color-mix(in srgb, #d6b55a 22%, #1b1824)",
+      heroGlow: "rgba(214, 181, 90, 0.18)",
+      fontDisplay: DISPLAY,
+      logoFilter: "drop-shadow(0 10px 30px rgba(0, 0, 0, 0.45))",
+      logoFilterHover: "drop-shadow(0 10px 26px rgba(214, 181, 90, 0.28))",
+      link: "#e8cc72",
+      focusRing: "#d6b55a",
+    },
+    admin: {
+      night: {
+        bg: "#07060a",
+        surface: "#0e0c14",
+        surface2: "#14111c",
+        surface3: "#1a1722",
+        border: "color-mix(in srgb, #d6b55a 18%, #1b1824)",
+        borderStrong: "color-mix(in srgb, #d6b55a 28%, #2a2434)",
+        text: "#f3efe3",
+        textMuted: "#b7af9a",
+        textFaint: "#8a8270",
+        accent: "#d6b55a",
+        accentHover: "#e8cc72",
+        accentMuted: "color-mix(in srgb, #d6b55a 14%, #14111c)",
+      },
+      day: {
+        bg: "#f5f1e8",
+        surface: "#fffcf6",
+        surface2: "#f0ebe0",
+        surface3: "#e8e2d4",
+        border: "color-mix(in srgb, #d6b55a 20%, #d4cfc4)",
+        borderStrong: "color-mix(in srgb, #d6b55a 32%, #b8b0a0)",
+        text: "#1a1510",
+        textMuted: "#5c5348",
+        textFaint: "#8a8070",
+        accent: "#9a7a1a",
+        accentHover: "#7a6114",
+        accentMuted: "color-mix(in srgb, #d6b55a 16%, #f5f1e8)",
+      },
+    },
+  },
+  alpine: {
+    id: "alpine",
+    name: "Alpine",
+    description: "Light mountain — fresh greens on paper white.",
+    public: {
+      bg: "#f2f6f3",
+      fg: "#0f1a14",
+      muted: "#3f5548",
+      accent: "#1a6b4a",
+      accentFg: "#f8fffb",
+      headerBg: "color-mix(in srgb, #f2f6f3 94%, transparent)",
+      card: "#ffffff",
+      cardElevated: "#e8f0eb",
+      border: "color-mix(in srgb, #1a6b4a 16%, #c5d4cb)",
+      heroGlow: "rgba(26, 107, 74, 0.14)",
+      fontDisplay: DISPLAY,
+      logoFilter: "none",
+      logoFilterHover: "drop-shadow(0 8px 18px rgba(26, 107, 74, 0.18))",
+      link: "#145a3a",
+      focusRing: "#1a6b4a",
+    },
+    admin: {
+      day: {
+        bg: "#f2f6f3",
+        surface: "#ffffff",
+        surface2: "#e8f0eb",
+        surface3: "#dce8e0",
+        border: "color-mix(in srgb, #1a6b4a 14%, #c5d4cb)",
+        borderStrong: "color-mix(in srgb, #1a6b4a 24%, #9eb5a8)",
+        text: "#0f1a14",
+        textMuted: "#3f5548",
+        textFaint: "#6b8072",
+        accent: "#1a6b4a",
+        accentHover: "#145a3a",
+        accentMuted: "color-mix(in srgb, #1a6b4a 12%, #f2f6f3)",
+      },
+      night: {
+        bg: "#0a1210",
+        surface: "#111a16",
+        surface2: "#172420",
+        surface3: "#1e2e28",
+        border: "color-mix(in srgb, #3ecf98 14%, #1e2e28)",
+        borderStrong: "color-mix(in srgb, #3ecf98 22%, #2a4038)",
+        text: "#e8f2ec",
+        textMuted: "#9bb5a8",
+        textFaint: "#6a8578",
+        accent: "#3ecf98",
+        accentHover: "#5ee0ad",
+        accentMuted: "color-mix(in srgb, #3ecf98 12%, #111a16)",
+      },
+    },
+  },
+  mediterranean: {
+    id: "mediterranean",
+    name: "Mediterranean",
+    description: "Coastal dusk — deep sea blue, terracotta accent.",
+    public: {
+      bg: "#081828",
+      fg: "#f7f1e8",
+      muted: "#c4b59c",
+      accent: "#e07a4a",
+      accentFg: "#1a0f08",
+      headerBg: "color-mix(in srgb, #081828 88%, transparent)",
+      card: "#0f2840",
+      cardElevated: "#153552",
+      border: "color-mix(in srgb, #e07a4a 22%, #1a3a57)",
+      heroGlow: "rgba(224, 122, 74, 0.2)",
+      fontDisplay: DISPLAY,
+      logoFilter: "drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35))",
+      logoFilterHover: "drop-shadow(0 10px 28px rgba(224, 122, 74, 0.22))",
+      link: "#f0a070",
+      focusRing: "#e07a4a",
+    },
+    admin: {
+      night: {
+        bg: "#081828",
+        surface: "#0f2840",
+        surface2: "#153552",
+        surface3: "#1a4060",
+        border: "color-mix(in srgb, #e07a4a 18%, #1a3a57)",
+        borderStrong: "color-mix(in srgb, #e07a4a 28%, #245070)",
+        text: "#f7f1e8",
+        textMuted: "#c4b59c",
+        textFaint: "#958870",
+        accent: "#e07a4a",
+        accentHover: "#f09060",
+        accentMuted: "color-mix(in srgb, #e07a4a 14%, #0f2840)",
+      },
+      day: {
+        bg: "#f6f0e6",
+        surface: "#fffbf5",
+        surface2: "#ede4d4",
+        surface3: "#e2d6c2",
+        border: "color-mix(in srgb, #e07a4a 18%, #d4c8b4)",
+        borderStrong: "color-mix(in srgb, #e07a4a 28%, #b8a890)",
+        text: "#1a140e",
+        textMuted: "#5c5040",
+        textFaint: "#8a7860",
+        accent: "#c45a28",
+        accentHover: "#a44820",
+        accentMuted: "color-mix(in srgb, #e07a4a 14%, #f6f0e6)",
+      },
+    },
+  },
+};
+
+export const DESIGN_THEME_IDS = Object.keys(DESIGN_THEMES) as DesignThemeId[];
+
+export function getDesignTheme(id: DesignThemeId): DesignThemeDefinition {
+  return DESIGN_THEMES[id] ?? DESIGN_THEMES.noir;
+}
+
+/** Legacy admin key → design family */
+export function migrateDesignThemeId(key: string): DesignThemeId {
+  if (key === "default") return "noir";
+  if (key in DESIGN_THEMES) return key as DesignThemeId;
+  return "noir";
+}

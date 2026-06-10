@@ -50,6 +50,7 @@ export type ActivityAction =
   | "settings.updated"
   | "settings.appearance_updated"
   | "settings.operational_updated"
+  | "settings.public_site_updated"
   | "location_admin.unlocked"
   | "location_admin.locked"
   | "staff.password_changed"

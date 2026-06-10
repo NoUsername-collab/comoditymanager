@@ -1,4 +1,6 @@
-export type ThemeId = "default";
+import type { DesignThemeId } from "@/design/themes/types";
+
+export type ThemeId = DesignThemeId;
 
 export type ThemeMode = "day" | "night";
 
@@ -16,5 +18,7 @@ export type ThemeSettings = {
 export const COUNTRY_THEME_IDS = [] as const satisfies readonly ThemeId[];
 
 export const ALL_THEME_IDS = [
-  "default",
+  "noir",
+  "alpine",
+  "mediterranean",
 ] as const satisfies readonly ThemeId[];

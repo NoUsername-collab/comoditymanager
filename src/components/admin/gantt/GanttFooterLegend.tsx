@@ -19,9 +19,12 @@ function LegendBody({
 
   return (
     <>
-      <p className="gantt-stay-hint mb-2 text-xs">
+      <p className="gantt-stay-hint gantt-stay-hint--desktop mb-2 text-xs">
         {tGantt("footer.dragHint")} · {tGantt("footer.buildingFocusHint")} ·{" "}
         <kbd className="rounded border px-1">T</kbd> {tCommon("todayShort").toLowerCase()}
+      </p>
+      <p className="gantt-stay-hint gantt-stay-hint--mobile mb-2 text-xs">
+        {tGantt("footer.mobileStayHint")}
       </p>
       <div className="flex flex-wrap gap-x-4 gap-y-2">
         <span className="inline-flex items-center gap-1.5">

@@ -70,7 +70,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
     admin_palette_key: migrateLegacyPaletteKey(
       typeof data.admin_palette_key === "string" && data.admin_palette_key.length > 0
         ? data.admin_palette_key
-        : "default"
+        : "noir"
     ),
     admin_day_night: parseDayNight(data.admin_day_night),
     statistics_visibility: statisticsVisibility,
