@@ -2,7 +2,8 @@
 
 import type { CSSProperties } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import type { GanttStayBarProgress } from "@/domain/gantt/stay-card-display";
+import type { GanttStayTimeline } from "@/domain/gantt/stay-card-display";
+import { GanttStayTimeline as GanttStayTimelineBar } from "@/components/admin/gantt/GanttStayTimeline";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -32,7 +33,7 @@ export type GanttStayPopoverData = {
   totalPrice?: number | null;
   canMoveRoom?: boolean;
   onMoveRoom?: () => void;
-  progress?: GanttStayBarProgress | null;
+  timeline?: GanttStayTimeline | null;
   showUnpaid?: boolean;
   showMissingIdentity?: boolean;
 };
@@ -47,19 +48,31 @@ function resolveRoomList(data: GanttStayPopoverData): string[] {
   return [];
 }
 
-function progressLabel(
-  progress: GanttStayBarProgress,
+function timelineSummary(
+  timeline: GanttStayTimeline,
   tGantt: ReturnType<typeof useTranslations<"admin.gantt">>
 ): string {
-  if (progress.mode === "rooms") {
+  if (timeline.variant === "hybrid") {
+    if (!timeline.milestoneReached) {
+      return tGantt("stayCard.hybridCheckin", {
+        checked: timeline.roomsChecked,
+        total: timeline.roomsTotal,
+      });
+    }
+    return tGantt("stayCard.hybridStay", {
+      current: timeline.nightsCurrent,
+      total: timeline.nightsTotal,
+    });
+  }
+  if (timeline.variant === "checkin") {
     return tGantt("stayCard.roomsProgress", {
-      checked: progress.current,
-      total: progress.total,
+      checked: timeline.roomsChecked,
+      total: timeline.roomsTotal,
     });
   }
   return tGantt("stayCard.nightsProgress", {
-    current: progress.current,
-    total: progress.total,
+    current: timeline.nightsCurrent,
+    total: timeline.nightsTotal,
   });
 }
 
@@ -85,7 +98,7 @@ export function GanttStayPopover({
   const nights = stayNightCount(data.checkIn, data.checkOut);
   const rooms = resolveRoomList(data);
   const periodLabel = formatStayPeriod(data.checkIn, data.checkOut, locale, true);
-  const progress = data.progress ?? null;
+  const timeline = data.timeline ?? null;
 
   return (
     <AdminFloatingPanel
@@ -139,29 +152,16 @@ export function GanttStayPopover({
           </p>
         </section>
 
-        {progress ? (
+        {timeline ? (
           <section className="gantt-stay-note__block gantt-stay-note__block--progress">
             <p className="gantt-stay-note__label">{tGantt("stayCard.progress")}</p>
             <p className="gantt-stay-note__progress-title">
-              {progressLabel(progress, tGantt)}
+              {timelineSummary(timeline, tGantt)}
             </p>
-            <div
-              className={[
-                "gantt-stay-note__progress",
-                progress.mode === "rooms" && "gantt-stay-note__progress--rooms",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              role="progressbar"
-              aria-valuenow={progress.current}
-              aria-valuemin={0}
-              aria-valuemax={progress.total}
-            >
-              <span
-                className="gantt-stay-note__progress-fill"
-                style={{ width: `${progress.pct}%` }}
-              />
-            </div>
+            <GanttStayTimelineBar
+              timeline={timeline}
+              className="gantt-stay__timeline--popover"
+            />
           </section>
         ) : null}
 

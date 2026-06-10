@@ -16,7 +16,7 @@ import {
   isGanttBarCompact,
   isGanttStayMissingIdentity,
   isGanttStayUnpaid,
-  resolveGanttStayBarProgress,
+  resolveGanttStayTimeline,
   shouldShowGanttStayAlerts,
 } from "@/domain/gantt/stay-card-display";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
@@ -129,7 +129,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   const effectiveToday = today ?? todayIso();
   const compact = isGanttBarCompact(pos.widthPct, dayCount);
   const displayLabel = compact && compactLabel ? compactLabel : label;
-  const barProgress = resolveGanttStayBarProgress({
+  const stayTimeline = resolveGanttStayTimeline({
     segmentCheckIn: popover.checkIn,
     segmentCheckOut: popover.checkOut,
     bookingCheckIn,
@@ -139,9 +139,13 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     occupancyPhase,
     isCerere,
     compact,
+    paymentStatus,
+    totalPrice,
+    guestId,
+    identityStatus,
   });
   const showAlerts = shouldShowGanttStayAlerts({
-    progress: barProgress,
+    timeline: stayTimeline,
     bookingCheckIn,
     today: effectiveToday,
     occupancyPhase,
@@ -362,7 +366,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           interactive
           occupancyPhase={occupancyPhase}
           compact={compact}
-          progress={barProgress}
+          timeline={stayTimeline}
           showUnpaid={showUnpaid}
           showMissingIdentity={showMissingIdentity}
         />
@@ -371,17 +375,23 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         <GanttStayPopover
           data={{
             ...popover,
-            progress: barProgress ?? resolveGanttStayBarProgress({
-              segmentCheckIn: popover.checkIn,
-              segmentCheckOut: popover.checkOut,
-              bookingCheckIn,
-              today: effectiveToday,
-              roomNames,
-              checkedInRooms,
-              occupancyPhase,
-              isCerere,
-              compact: false,
-            }),
+            timeline:
+              stayTimeline ??
+              resolveGanttStayTimeline({
+                segmentCheckIn: popover.checkIn,
+                segmentCheckOut: popover.checkOut,
+                bookingCheckIn,
+                today: effectiveToday,
+                roomNames,
+                checkedInRooms,
+                occupancyPhase,
+                isCerere,
+                compact: false,
+                paymentStatus,
+                totalPrice,
+                guestId,
+                identityStatus,
+              }),
             showUnpaid,
             showMissingIdentity,
             onMoveRoom: onMoveRoom

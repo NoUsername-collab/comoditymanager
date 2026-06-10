@@ -2221,6 +2221,11 @@
         "progress": "Progress",
         "roomsProgress": "{checked} of {total} rooms with keys",
         "nightsProgress": "Night {current} of {total}",
+        "hybridCheckin": "Check-in: {checked}/{total} rooms",
+        "hybridStay": "Stay: night {current}/{total}",
+        "checkinStarted": "Check-in started",
+        "milestoneDone": "Done: payment, ID, all rooms",
+        "milestonePending": "Missing: payment, ID or rooms",
         "unpaid": "Unpaid",
         "missingIdentity": "Identity not registered"
       },

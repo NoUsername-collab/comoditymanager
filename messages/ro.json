@@ -2221,6 +2221,11 @@
         "progress": "Progres",
         "roomsProgress": "{checked} din {total} camere cu chei",
         "nightsProgress": "Noaptea {current} din {total}",
+        "hybridCheckin": "Check-in: {checked}/{total} camere",
+        "hybridStay": "Sejur: noaptea {current}/{total}",
+        "checkinStarted": "Check-in început",
+        "milestoneDone": "Gata: plată, ID, toate camerele",
+        "milestonePending": "Lipsă: plată, ID sau camere",
         "unpaid": "Neplătit",
         "missingIdentity": "Identitate neînregistrată"
       },

@@ -2839,23 +2839,8 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   color: #44403c;
 }
 
-.gantt-stay-note__progress {
-  height: 4px;
-  border-radius: 999px;
-  background: #e7e5e4;
-  overflow: hidden;
-}
-
-.gantt-stay-note__progress-fill {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: color-mix(in srgb, var(--stay-note-accent, #059669) 88%, white);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--stay-note-accent, #059669) 35%, transparent);
-}
-
-.gantt-stay-note__progress--rooms .gantt-stay-note__progress-fill {
-  background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+.gantt-stay-note__block--progress .gantt-stay__timeline {
+  margin-top: 0.15rem;
 }
 
 .gantt-stay-note__block {
