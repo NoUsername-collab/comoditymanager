@@ -131,13 +131,139 @@ html[data-layout-chrome="compact"] .language-switcher__trigger {
   padding-inline: 0.65rem;
 }
 
-/* ── Admin more drawer (above HUD z-index 80) ── */
+/* ── Admin more menu — top sheet below black nav (not left drawer) ── */
 html[data-layout-chrome="compact"] .ml-drawer__backdrop--admin.ml-drawer__backdrop--visible {
   z-index: 85;
 }
 
 html[data-layout-chrome="compact"] .ml-drawer--admin {
   z-index: 90;
+  inset: var(--ml-admin-nav-offset) 0 auto 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.35rem max(0.65rem, var(--ml-safe-left, 0px))
+    calc(0.55rem + var(--ml-safe-bottom, 0px)) max(0.65rem, var(--ml-safe-right, 0px));
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 82%, transparent);
+  border-radius: 0 0 0.85rem 0.85rem;
+  background: var(--admin-hud-bg, #0f0e14);
+  color: var(--admin-fg, #e8e4dc);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.42),
+    inset 0 -1px 0 color-mix(in srgb, var(--admin-fg, #e8e4dc) 6%, transparent);
+  transform: translate3d(0, calc(-100% - 0.35rem), 0);
+  transition: transform var(--ml-duration-drawer) var(--ml-ease-out);
+  display: flex;
+  flex-direction: column;
+  max-height: min(
+    72dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset) - var(--ml-safe-bottom, 0px) - 0.35rem)
+  );
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin.ml-drawer--open {
+  transform: translate3d(0, 0, 0);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 78%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__close {
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  color: var(--admin-fg, #e8e4dc);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.32rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  min-height: 2.1rem;
+  padding: 0.42rem 0.55rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 65%, transparent);
+  background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 5%, transparent);
+  color: var(--admin-fg, #e8e4dc);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link--active {
+  border-color: color-mix(in srgb, var(--admin-accent, #d6b55a) 55%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #d6b55a) 14%, transparent);
+  color: var(--admin-accent, #d6b55a);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+  opacity: 0.92;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale {
+  grid-column: 1 / -1;
+  margin-top: 0.15rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-label {
+  margin-bottom: 0.35rem;
+  font-size: 0.62rem;
+  color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 58%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher--inline .language-switcher__inline-options {
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline {
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: 0.18rem 0.32rem;
+  border-radius: 0.5rem;
+  border-color: color-mix(in srgb, var(--admin-border, #2a2838) 75%, transparent);
+  background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 6%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline.language-switcher__option--active {
+  border-color: color-mix(in srgb, var(--admin-accent, #d6b55a) 60%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #d6b55a) 16%, transparent);
 }
 
 .ml-drawer--admin {

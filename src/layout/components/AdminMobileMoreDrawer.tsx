@@ -72,6 +72,7 @@ export function AdminMobileMoreDrawer({
         suppressHydrationWarning
       >
         <div className="ml-drawer__head">
+          <span className="ml-drawer__title">{t("more")}</span>
           <button
             type="button"
             className="ml-drawer__close"

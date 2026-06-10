@@ -80,10 +80,16 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
           <button
             ref={moreTriggerRef}
             type="button"
-            className="ml-bottom-nav__link ml-bottom-nav__link--more"
+            className={[
+              "ml-bottom-nav__link",
+              "ml-bottom-nav__link--more",
+              moreOpen && "ml-bottom-nav__link--active",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             aria-expanded={moreOpen}
             aria-haspopup="dialog"
-            onClick={() => setMoreOpen(true)}
+            onClick={() => setMoreOpen((open) => !open)}
           >
             <span className="ml-bottom-nav__icon-wrap">
               <AdminHudIcon name="grid" className="ml-bottom-nav__icon" />
