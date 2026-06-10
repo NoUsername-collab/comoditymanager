@@ -259,9 +259,11 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         setPressing(false);
         openStayMenu(e.clientX, e.clientY);
       }, LONG_PRESS_MS);
-      el.setPointerCapture(e.pointerId);
+      if (!touch) {
+        el.setPointerCapture(e.pointerId);
+      }
     },
-    [clearLongPress, openStayMenu, pending, releaseCapture]
+    [clearLongPress, openStayMenu, pending, releaseCapture, touch]
   );
 
   useEffect(() => {

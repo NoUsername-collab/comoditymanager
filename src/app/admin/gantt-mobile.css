@@ -181,7 +181,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-s
 
 html[data-layout-chrome="compact"] .gantt-day-header-grid--pan,
 html[data-layout-chrome="compact"] .gantt-summary-row__grid--pan {
-  touch-action: pan-x;
+  touch-action: pan-y;
 }
 
 html[data-layout-chrome="compact"] .gantt-day-header-cell__date {
@@ -558,14 +558,52 @@ html[data-layout-chrome="compact"] .gantt-head-main-row__room {
   font-size: 0.58rem;
 }
 
+/* Rând camere libere — detașat de dată, −35% înălțime, text ca data */
+html[data-layout-chrome="compact"] .gantt-head-main-row__days {
+  box-shadow: none !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-thead-sticky .gantt-summary-row > td {
+  padding-top: 0.14rem !important;
+  border-top: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+}
+
 html[data-layout-chrome="compact"] .gantt-summary-row__label {
-  padding-block: 0.2rem !important;
-  font-size: 0.56rem;
+  padding-block: 0.13rem !important;
+  font-size: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-summary-row__grid {
+  margin-top: 0.06rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-cell {
-  padding-block: 0.1rem !important;
-  font-size: 0.56rem;
+  padding-block: 0.065rem !important;
+  font-size: 0.54rem;
+  line-height: 1;
+}
+
+html[data-layout-chrome="compact"] .gantt-summary-cell__value {
+  font-size: 0.54rem !important;
+  font-weight: 800;
+  line-height: 1;
+}
+
+html[data-layout-chrome="compact"] .gantt-summary-cell--compact {
+  padding-block: 0.065rem !important;
+}
+
+/* Scroll vertical prin tot Gantt-ul — nu bloca touch pe grid */
+html[data-layout-chrome="compact"] .gantt-drag-row {
+  touch-action: pan-y;
+}
+
+html[data-layout-chrome="compact"] .gantt-drag-row.gantt-drag-row--active {
+  touch-action: none;
+}
+
+html[data-layout-chrome="compact"] .gantt-draggable-stay {
+  touch-action: pan-y;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header {
