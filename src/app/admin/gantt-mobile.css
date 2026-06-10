@@ -136,7 +136,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-sc
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-column-header,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell {
   padding-inline: 0.3rem !important;
-  padding-block: 0.06rem !important;
+  padding-block: 0 !important;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll .gantt-room-cell__name {
@@ -147,7 +147,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-sc
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-column-header,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell {
   padding-inline: 0.3rem !important;
-  padding-block: 0.06rem !important;
+  padding-block: 0 !important;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll .gantt-room-cell__name {
@@ -543,25 +543,23 @@ html[data-layout-chrome="compact"] .gantt-cereri-card__main {
   padding: 0.5rem 0.45rem 0.5rem 0.55rem;
 }
 
-/* ── Row heights: +30% cards vs prior mobile pass; grid tracks stay ── */
+/* ── Row heights: stay cards fill grid row vertically ── */
 html[data-layout-chrome="compact"] .gantt-shell--premium {
-  --gantt-row-h: 16px;
+  --gantt-row-h: 14px;
+  --gantt-stay-h: calc(var(--gantt-row-h) - 2px);
+  --gantt-stay-top: 1px;
   --gantt-day-header-row-h: 1.57rem;
-  --gantt-unassigned-row-h: 12px;
+  --gantt-unassigned-row-h: 11px;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-shell--premium {
-  --gantt-stay-h: 9px;
-  --gantt-stay-top: 3px;
-  --gantt-occ-bar-h: 7px;
-  --gantt-occ-bar-top: 4px;
+  --gantt-occ-bar-h: calc(var(--gantt-row-h) - 4px);
+  --gantt-occ-bar-top: 2px;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-shell--premium {
-  --gantt-stay-h: 10px;
-  --gantt-stay-top: 3px;
-  --gantt-occ-bar-h: 8px;
-  --gantt-occ-bar-top: 4px;
+  --gantt-occ-bar-h: calc(var(--gantt-row-h) - 4px);
+  --gantt-occ-bar-top: 2px;
 }
 
 html[data-layout-chrome="compact"] .gantt-head-main-row__room {
@@ -574,50 +572,51 @@ html[data-layout-chrome="compact"] .gantt-head-main-row__days {
   box-shadow: none !important;
 }
 
+/* Rând camere libere (FREE) — −40% vertical, font −~1.5px față de compact anterior */
 html[data-layout-chrome="compact"] .gantt-thead-sticky .gantt-summary-row > td {
-  padding-top: 0.07rem !important;
-  padding-bottom: 0.07rem !important;
+  padding-top: 0.042rem !important;
+  padding-bottom: 0.042rem !important;
   border-top-width: 0.5px;
   border-top-color: color-mix(in srgb, var(--border) 55%, transparent);
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-row__label {
-  padding-block: 0.07rem !important;
+  padding-block: 0.042rem !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-row__label-title {
-  font-size: 0.4rem;
+  font-size: 0.31rem;
   line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-row__label-state {
-  margin-top: 0.04rem;
-  font-size: 0.38rem;
+  margin-top: 0.02rem;
+  font-size: 0.29rem;
   line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-row__grid {
-  margin-top: 0.04rem;
+  margin-top: 0.02rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-cell {
-  padding-block: 0.033rem !important;
-  font-size: 0.42rem;
+  padding-block: 0.02rem !important;
+  font-size: 0.32rem;
   line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-cell__value {
-  font-size: 0.42rem !important;
+  font-size: 0.32rem !important;
   font-weight: 800;
   line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-cell--compact {
-  padding-block: 0.033rem !important;
+  padding-block: 0.02rem !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-cell__total {
-  font-size: 0.38rem;
+  font-size: 0.29rem;
   line-height: 1;
 }
 
@@ -634,11 +633,11 @@ html[data-layout-chrome="compact"] .gantt-draggable-stay {
   touch-action: pan-y;
 }
 
-/* Building stripe −70% (virtual row was 32px on mobile) */
+/* Building stripe −60% vs desktop 32px row; marker Tailwind py-1 neutralized */
 html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row,
 html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header {
-  height: 10px;
-  max-height: 10px;
+  height: 13px !important;
+  max-height: 13px !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header-row {
@@ -647,42 +646,48 @@ html[data-layout-chrome="compact"] .gantt-building-header-row {
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header {
-  min-height: 10px;
-  max-height: 10px;
-  height: 10px;
-  padding-block: 0.03rem !important;
-  padding-inline: 0.35rem !important;
+  min-height: 0 !important;
+  max-height: 13px !important;
+  height: 13px !important;
+  padding: 0 0.2rem !important;
   box-sizing: border-box;
   overflow: hidden;
+  line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header__inner {
-  gap: 0.18rem;
+  gap: 0.1rem;
   min-height: 0;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .gantt-building-marker--sm {
+  width: 0.54rem !important;
+  height: 0.54rem !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header__title {
-  font-size: 0.42rem;
+  font-size: 0.34rem;
   line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header__count {
-  margin-left: 0.1rem;
-  padding: 0.02rem 0.2rem;
-  font-size: 0.36rem;
+  margin-left: 0.06rem;
+  padding: 0 0.12rem;
+  font-size: 0.28rem;
   line-height: 1;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header__chevron {
-  height: 0.55rem;
-  width: 0.55rem;
-  font-size: 0.3rem;
-  border-radius: 0.15rem;
+  height: 0.44rem;
+  width: 0.44rem;
+  font-size: 0.24rem;
+  border-radius: 0.12rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header::before {
-  width: 2px;
-  border-radius: 0 2px 2px 0;
+  width: 1.5px;
+  border-radius: 0 1.5px 1.5px 0;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-filter-banner {
@@ -764,10 +769,35 @@ html[data-layout-chrome="compact"] .gantt-footer-legend--collapsible[open] .gant
 /* No content-visibility on gantt rows — causes white gaps with inner scroll */
 html[data-layout-chrome="compact"] .gantt-room-row {
   content-visibility: visible;
-  contain-intrinsic-size: auto 0.98rem;
+  contain-intrinsic-size: auto var(--gantt-row-h, 14px);
+  border-top-width: 0.5px !important;
+  border-top-style: solid !important;
+  border-top-color: color-mix(in srgb, var(--border, #d4d4d8) 58%, transparent) !important;
 }
 
-/* ── Stay cards: +30% height + desktop badges ($ ID IN ↓↑) inline ── */
+html[data-layout-chrome="compact"] .gantt-room-cell {
+  vertical-align: middle !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-room-cell__row {
+  gap: 0.1rem;
+  min-height: 0 !important;
+  max-height: var(--gantt-row-h, 14px);
+  height: var(--gantt-row-h, 14px);
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .gantt-room-led {
+  width: 0.38rem;
+  height: 0.38rem;
+}
+
+/* ── Stay cards: full grid row height (12px in 14px track) ── */
+html[data-layout-chrome="compact"] .gantt-draggable-stay {
+  top: var(--gantt-stay-top) !important;
+  height: var(--gantt-stay-h);
+}
+
 html[data-layout-chrome="compact"] .gantt-stay--chip {
   height: var(--gantt-stay-h) !important;
   max-height: var(--gantt-stay-h);
@@ -776,6 +806,11 @@ html[data-layout-chrome="compact"] .gantt-stay--chip {
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, white 16%, transparent),
     0 0 0 1px color-mix(in srgb, var(--stay-glow, var(--admin-accent)) 12%, transparent) !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-draggable-stay .gantt-stay--chip {
+  height: 100% !important;
+  max-height: 100%;
 }
 
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__spine {
@@ -802,7 +837,7 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__primary {
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay-chrome__label {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 900;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -848,10 +883,10 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__alerts {
 }
 
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__alert {
-  min-width: 0.58rem;
-  height: 0.58rem;
+  min-width: 0.62rem;
+  height: 0.62rem;
   padding: 0 0.1rem;
-  font-size: 0.36rem;
+  font-size: 0.38rem;
   border-radius: 0.12rem;
 }
 
@@ -863,22 +898,22 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__alert--identit
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__phase-badge {
   display: inline-flex !important;
   padding: 0.06rem 0.14rem;
-  font-size: 0.36rem;
+  font-size: 0.38rem;
   border-radius: 0.12rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__badge {
-  min-width: 0.58rem !important;
-  height: 0.58rem !important;
+  min-width: 0.62rem !important;
+  height: 0.62rem !important;
   padding: 0 0.1rem !important;
-  font-size: 0.36rem !important;
+  font-size: 0.38rem !important;
   border-radius: 0.12rem !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__today-icon {
-  width: 0.58rem;
-  height: 0.58rem;
-  font-size: 0.38rem;
+  width: 0.62rem;
+  height: 0.62rem;
+  font-size: 0.4rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__end-tab {
@@ -1271,8 +1306,44 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__days
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row > td {
-  padding-top: 0.07rem !important;
-  padding-bottom: 0.07rem !important;
+  padding-top: 0.042rem !important;
+  padding-bottom: 0.042rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label {
+  padding-block: 0.042rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label-title {
+  font-size: 0.31rem !important;
+  line-height: 1 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label-state {
+  margin-top: 0.02rem !important;
+  font-size: 0.29rem !important;
+  line-height: 1 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__grid {
+  margin-top: 0.02rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell--compact {
+  padding-block: 0.02rem !important;
+  font-size: 0.32rem !important;
+  line-height: 1 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__value {
+  font-size: 0.32rem !important;
+  line-height: 1 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__total {
+  font-size: 0.29rem !important;
+  line-height: 1 !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__days {
@@ -1282,6 +1353,51 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__da
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header {
   background: color-mix(in srgb, #ffffff 82%, var(--admin-accent-muted, #ecfdf5));
   border-color: color-mix(in srgb, var(--admin-accent, #059669) 20%, #e4e4e7);
+  min-height: 0 !important;
+  max-height: 13px !important;
+  height: 13px !important;
+  padding: 0 0.2rem !important;
+  overflow: hidden;
+  line-height: 1;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-tbody--virtual .gantt-building-header-row,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header {
+  height: 13px !important;
+  max-height: 13px !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__inner {
+  gap: 0.1rem !important;
+  min-height: 0 !important;
+  align-items: center !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-marker--sm {
+  width: 0.54rem !important;
+  height: 0.54rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__title {
+  font-size: 0.34rem !important;
+  line-height: 1 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__count {
+  margin-left: 0.06rem !important;
+  padding: 0 0.12rem !important;
+  font-size: 0.28rem !important;
+  line-height: 1 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__chevron {
+  height: 0.44rem !important;
+  width: 0.44rem !important;
+  font-size: 0.24rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header::before {
+  width: 1.5px !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row {
