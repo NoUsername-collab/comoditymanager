@@ -80,7 +80,7 @@ export function GanttCompactToolbar({
   const { compactChrome } = useCompactLayoutHints();
 
   return (
-    <div className="gantt-compact-toolbar mx-3">
+    <div className="gantt-compact-toolbar">
       <div className="gantt-compact-toolbar__left">
         <GanttRadialController
           onOpenRequest={onOpenRequest}

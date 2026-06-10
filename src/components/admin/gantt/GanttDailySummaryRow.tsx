@@ -39,7 +39,7 @@ export function GanttDailySummaryRow({
 
   return (
     <tr className="gantt-summary-row border-b border-zinc-200">
-      <td className="gantt-summary-row__label sticky left-0 z-30 border-r border-zinc-200 px-3 py-1.5 align-middle">
+      <td className="gantt-summary-row__label sticky left-0 z-30 border-r border-zinc-200 align-middle">
         <span className="gantt-summary-row__label-title">
           {tCommon("free")}
         </span>

@@ -669,7 +669,7 @@ export function GanttCalendar({
           </colgroup>
           <thead ref={theadRef} className="gantt-thead-sticky">
             <tr className="gantt-head-main-row">
-              <th className="gantt-head-main-row__room gantt-room-column-header sticky left-0 z-30 px-3 py-[0.72rem] text-left text-xs font-semibold tracking-wide">
+              <th className="gantt-head-main-row__room gantt-room-column-header sticky left-0 z-30 text-left text-xs font-semibold tracking-wide">
                 {tCommon("room")}
               </th>
               <th className="gantt-head-main-row__days p-0">

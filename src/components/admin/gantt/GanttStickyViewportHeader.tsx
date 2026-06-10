@@ -154,13 +154,13 @@ export function GanttStickyViewportHeader({
   return (
     <AdminPortal>
       <div
-        className="gantt-viewport-header"
+        className="gantt-viewport-header gantt-viewport-header--calendar"
         style={{ left: state.left, width: state.width }}
         aria-hidden={false}
       >
         <div className="gantt-viewport-header__row gantt-viewport-header__row--main">
           <div
-            className="gantt-head-main-row__room gantt-room-column-header gantt-viewport-header__room px-3 py-[0.72rem]"
+            className="gantt-head-main-row__room gantt-room-column-header gantt-viewport-header__room"
             style={{ width: state.roomColumnWidth }}
           >
             {tCommon("room")}
