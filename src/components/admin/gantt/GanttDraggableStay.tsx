@@ -1,21 +1,10 @@
 "use client";
 
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
-import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "@/i18n/navigation";
-import {
-  moveBookingRoomFromPivotAction,
-  shiftBookingOnGanttAction,
-} from "@/app/[locale]/admin/(panel)/calendar/actions";
-import {
-  clearGanttRoomDropTargets,
-  findGanttRoomAtPoint,
-  getGanttRoomDragLayer,
-  setGanttRoomDropTarget,
-} from "@/domain/gantt/room-at-point";
-import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
 import {
   LONG_PRESS_MS,
@@ -27,13 +16,11 @@ import { GanttBookingBar } from "@/components/admin/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
 import {
   GanttStayPopover,
   type GanttStayPopoverData,
 } from "./GanttStayPopover";
-import { addDays, todayIso } from "@/lib/stay-dates";
-import { dayIndexFromPointerX } from "@/domain/gantt/drag-create";
+import { todayIso } from "@/lib/stay-dates";
 
 const DRAG_BLOCK_SELECTOR = [
   "a",
@@ -55,15 +42,6 @@ function blocksStayDragStart(target: EventTarget | null): boolean {
   return target instanceof Element && !!target.closest(DRAG_BLOCK_SELECTOR);
 }
 
-function shouldUseVerticalDrag(canVerticalMove: boolean, dx: number, dy: number): boolean {
-  if (!canVerticalMove) return false;
-  const absX = Math.abs(dx);
-  const absY = Math.abs(dy);
-  // Relaxed: 16px vertical threshold (half a row), and vertical must
-  // simply exceed horizontal (not 1.35x). Makes room-to-room drag natural.
-  return absY >= 16 && absY > absX;
-}
-
 type Props = {
   href: string;
   label: string;
@@ -71,7 +49,6 @@ type Props = {
   isCerere: boolean;
   guestTotal: number;
   bookingId: string;
-  dayIsos: string[];
   bookingCheckIn: string;
   buildingColor?: string | null;
   todayHighlight?: StayTodayHighlight;
@@ -83,8 +60,6 @@ type Props = {
   roomIds?: string[];
   guestId?: string | null;
   moveRoomDraft?: MoveRoomDraft | null;
-  sourceRoomId?: string;
-  canVerticalMove?: boolean;
   onMoveRoom?: () => void;
   today?: string;
 };
@@ -96,7 +71,6 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   isCerere,
   guestTotal,
   bookingId,
-  dayIsos,
   bookingCheckIn,
   buildingColor,
   todayHighlight,
@@ -108,35 +82,20 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   roomIds = [],
   guestId,
   moveRoomDraft,
-  sourceRoomId = "",
-  canVerticalMove = false,
   onMoveRoom,
   today,
 }: Props) {
-  const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
   const router = useRouter();
   const touch = useIsTouchDevice();
   const { openMenu } = useGanttContextMenu();
-  const { notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
-  const runAdminAction = useRunAdminAction();
-  const [interaction, setInteraction] = useState<"idle" | "armed" | "dragging">("idle");
-  const [snapped, setSnapped] = useState(false);
+  const [pressing, setPressing] = useState(false);
   const [hover, setHover] = useState(false);
   const [popoverHover, setPopoverHover] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
-  const [alertMsg, setAlertMsg] = useState<string | null>(null);
-  const [dragDelta, setDragDelta] = useState(0);
-  const [dragDeltaY, setDragDeltaY] = useState(0);
-  const [verticalMode, setVerticalMode] = useState(false);
   const startX = useRef(0);
   const startY = useRef(0);
-  const targetRoomRef = useRef<string | null>(null);
-  const dragDeltaRef = useRef(0);
-  const dragDeltaYRef = useRef(0);
-  const lastPointerX = useRef(0);
-  const lastPointerY = useRef(0);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -144,17 +103,9 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   const captureEl = useRef<HTMLDivElement | null>(null);
   const capturePointerId = useRef<number | null>(null);
 
-  const dragging = interaction === "dragging";
-  const visibleDayCount = dayIsos.length;
-
   const title = [
     popover.guestName,
     formatStayPeriod(popover.checkIn, popover.checkOut, locale),
-    dragging
-      ? verticalMode
-        ? tGantt("drag.dragOtherRow")
-        : tGantt("drag.leftRightDatesUpDownRoom")
-      : tGantt("drag.defaultHint"),
   ].join(" · ");
 
   const openStayMenu = useCallback(
@@ -205,6 +156,20 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     }
   }, []);
 
+  const releaseCapture = useCallback(() => {
+    const el = captureEl.current;
+    const pid = capturePointerId.current;
+    if (el && pid != null) {
+      try {
+        el.releasePointerCapture(pid);
+      } catch {
+        /* ignore */
+      }
+    }
+    captureEl.current = null;
+    capturePointerId.current = null;
+  }, []);
+
   const onPointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       if (pending) return;
@@ -217,174 +182,41 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       const el = e.currentTarget;
       startX.current = e.clientX;
       startY.current = e.clientY;
-      lastPointerX.current = e.clientX;
-      lastPointerY.current = e.clientY;
-      targetRoomRef.current = null;
       longPressOpened.current = false;
-      setVerticalMode(false);
-      setDragDelta(0);
-      setDragDeltaY(0);
-      setInteraction("armed");
+      setPressing(true);
       captureEl.current = el;
       capturePointerId.current = e.pointerId;
       clearLongPress();
       longPressTimer.current = setTimeout(() => {
         longPressOpened.current = true;
-        setInteraction("idle");
+        clearLongPress();
+        releaseCapture();
+        setPressing(false);
         openStayMenu(e.clientX, e.clientY);
       }, LONG_PRESS_MS);
       el.setPointerCapture(e.pointerId);
     },
-    [clearLongPress, openStayMenu, pending]
+    [clearLongPress, openStayMenu, pending, releaseCapture]
   );
 
   useEffect(() => {
-    if (interaction !== "armed" && interaction !== "dragging") return;
+    if (!pressing) return;
 
-    const onMove = (e: PointerEvent) => {
-      if (interaction === "armed") {
-        const dx = e.clientX - startX.current;
-        const dy = e.clientY - startY.current;
-        if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX && !longPressOpened.current) {
-          clearLongPress();
-          lastPointerX.current = e.clientX;
-          lastPointerY.current = e.clientY;
-          setDragDelta(dx);
-          setDragDeltaY(dy);
-          dragDeltaRef.current = dx;
-          dragDeltaYRef.current = dy;
-          const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
-          setVerticalMode(isVertical);
-          if (isVertical) {
-            const target = findGanttRoomAtPoint(e.clientX, e.clientY, sourceRoomId);
-            targetRoomRef.current = target;
-            setGanttRoomDropTarget(
-              target && target !== sourceRoomId ? target : null
-            );
-          } else {
-            targetRoomRef.current = null;
-            setGanttRoomDropTarget(null);
-          }
-          setInteraction("dragging");
-        }
-        return;
-      }
-
-      const dx = e.clientX - startX.current;
-      const dy = e.clientY - startY.current;
-      lastPointerX.current = e.clientX;
-      lastPointerY.current = e.clientY;
-      setDragDelta(dx);
-      setDragDeltaY(dy);
-      dragDeltaRef.current = dx;
-      dragDeltaYRef.current = dy;
-      const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
-      setVerticalMode(isVertical);
-      if (isVertical) {
-        const target = findGanttRoomAtPoint(e.clientX, e.clientY, sourceRoomId);
-        targetRoomRef.current = target;
-        setGanttRoomDropTarget(
-          target && target !== sourceRoomId ? target : null
-        );
-      } else {
-        targetRoomRef.current = null;
-        setGanttRoomDropTarget(null);
-      }
+    const finish = () => {
+      clearLongPress();
+      releaseCapture();
+      setPressing(false);
     };
 
-    const finish = (e?: PointerEvent) => {
-      clearLongPress();
-      const el = captureEl.current;
-      const pid = capturePointerId.current;
-      if (el && pid != null) {
-        try {
-          el.releasePointerCapture(pid);
-        } catch {
-          /* ignore */
-        }
+    const onMove = (e: PointerEvent) => {
+      const dx = e.clientX - startX.current;
+      const dy = e.clientY - startY.current;
+      if (
+        Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX &&
+        !longPressOpened.current
+      ) {
+        finish();
       }
-      captureEl.current = null;
-      capturePointerId.current = null;
-
-      if (interaction === "armed" || longPressOpened.current) {
-        setInteraction("idle");
-        return;
-      }
-
-      setInteraction("idle");
-      clearGanttRoomDropTargets();
-      const dx = dragDeltaRef.current;
-      const dy = dragDeltaYRef.current;
-      const clientX = e?.clientX ?? lastPointerX.current;
-      const clientY = e?.clientY ?? lastPointerY.current;
-      const isVertical = shouldUseVerticalDrag(canVerticalMove, dx, dy);
-      const targetRoom =
-        targetRoomRef.current ?? findGanttRoomAtPoint(clientX, clientY, sourceRoomId);
-      setDragDelta(0);
-      setDragDeltaY(0);
-      setVerticalMode(false);
-      targetRoomRef.current = null;
-
-      if (isVertical && targetRoom && targetRoom !== sourceRoomId) {
-        void runAdminAction(async () => {
-          const res = await moveBookingRoomFromPivotAction({
-            bookingId,
-            sourceRoomId,
-            targetRoomId: targetRoom,
-          });
-          if (!res.ok) {
-            setAlertMsg(res.error);
-            return;
-          }
-          setSnapped(true);
-          window.setTimeout(() => setSnapped(false), 360);
-          notifyMoved(tGantt("moveRoom.moved"), popover.guestName);
-        });
-        // Refresh OUTSIDE the lock — doesn't block UI or further actions
-        // Server already revalidated cache; this just fetches fresh data
-        window.setTimeout(() => router.refresh(), 300);
-        return;
-      }
-
-      if (visibleDayCount === 0) return;
-
-      const targetLayer =
-        getGanttRoomDragLayer(targetRoom ?? sourceRoomId) ??
-        getGanttRoomDragLayer(sourceRoomId);
-      if (!targetLayer) return;
-
-      const gridRect = targetLayer.getBoundingClientRect();
-      if (gridRect.width <= 0) return;
-
-      const dayWidth = gridRect.width / visibleDayCount;
-      if (dayWidth <= 0) return;
-
-      const pointerDayIndex = dayIndexFromPointerX(
-        clientX,
-        gridRect.left,
-        gridRect.width,
-        visibleDayCount
-      );
-      const visualStartIndex = Math.max(
-        0,
-        Math.min(visibleDayCount - 1, Math.floor((pos.leftPct / 100) * visibleDayCount))
-      );
-      const dayDelta = pointerDayIndex - visualStartIndex;
-      const targetCheckIn = addDays(bookingCheckIn, dayDelta);
-      if (targetCheckIn === bookingCheckIn) return;
-
-      void runAdminAction(async () => {
-        const res = await shiftBookingOnGanttAction(bookingId, dayDelta);
-        if (!res.ok) {
-          setAlertMsg(res.error);
-          return;
-        }
-        setSnapped(true);
-        window.setTimeout(() => setSnapped(false), 360);
-        notifyMoved();
-      });
-      // Refresh OUTSIDE the lock
-      window.setTimeout(() => router.refresh(), 300);
     };
 
     window.addEventListener("pointermove", onMove);
@@ -394,26 +226,11 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
-      clearGanttRoomDropTargets();
     };
-  }, [
-    interaction,
-    clearLongPress,
-    canVerticalMove,
-    sourceRoomId,
-    bookingId,
-    bookingCheckIn,
-    dayIsos,
-    router,
-    notifyMoved,
-    popover.guestName,
-    pos.leftPct,
-    runAdminAction,
-    visibleDayCount,
-  ]);
+  }, [pressing, clearLongPress, releaseCapture]);
 
   const showPopover =
-    !touch && (hover || popoverHover) && interaction === "idle" && !pending;
+    !touch && (hover || popoverHover) && !pressing && !pending;
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {
@@ -441,10 +258,6 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         data-gantt-stay=""
         className={[
           "gantt-draggable-stay pointer-events-auto absolute z-[1] flex min-w-0 items-stretch",
-          dragging && "cursor-grabbing",
-          dragging && "gantt-draggable-stay--dragging",
-          dragging && !verticalMode && "z-[20]",
-          verticalMode && "gantt-draggable-stay--vertical",
           pending && "opacity-60",
         ]
           .filter(Boolean)
@@ -457,9 +270,6 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           left: `${pos.leftPct}%`,
           width: `${pos.widthPct}%`,
           maxWidth: `${100 - pos.leftPct}%`,
-          transform: dragging
-            ? `translate(${dragDelta}px, ${dragDeltaY}px)`
-            : undefined,
         }}
         onPointerDown={onPointerDown}
         onContextMenu={(e) => {
@@ -492,7 +302,6 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           todayHighlight={todayHighlight}
           initials={initials}
           interactive
-          extraClass={snapped ? "gantt-stay-chrome--snapped" : undefined}
           occupancyPhase={occupancyPhase}
         />
       </div>
@@ -517,11 +326,6 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           today={today}
         />
       )}
-      <AdminAlertDialog
-        open={!!alertMsg}
-        message={alertMsg ?? ""}
-        onClose={() => setAlertMsg(null)}
-      />
     </>
   );
 });

@@ -256,7 +256,6 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 isCerere={isCerere}
                 guestTotal={guests}
                 bookingId={b.id}
-                dayIsos={viewRange.days.map((day) => day.iso)}
                 bookingCheckIn={b.check_in}
                 buildingColor={roomColor}
                 todayHighlight={todayHl}
@@ -264,8 +263,6 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 occupancyPhase={phase}
                 roomIds={b.room_ids ?? []}
                 guestId={b.guest_id}
-                sourceRoomId={room.id}
-                canVerticalMove={canMoveRoom}
                 moveRoomDraft={moveDraft}
                 onMoveRoom={
                   moveDraft

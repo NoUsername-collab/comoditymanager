@@ -134,7 +134,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
     todayHighlight === "turnover" && "gantt-stay--today-turnover",
     continuesBefore && "gantt-stay--from-prev",
     continuesAfter && "gantt-stay--to-next",
-    interactive && "cursor-grab active:cursor-grabbing",
+    interactive && "cursor-pointer",
     extraClass,
   ]
     .filter(Boolean)
