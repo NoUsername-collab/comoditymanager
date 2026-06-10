@@ -5,12 +5,11 @@ import { useTranslations } from "next-intl";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { memo, type CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
-import { stayNightProgress } from "@/domain/gantt/stay-progress";
+import type { GanttStayBarProgress } from "@/domain/gantt/stay-card-display";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { GANTT_STAY_H, GANTT_STAY_TOP } from "@/domain/gantt/layout";
-import { todayIso } from "@/lib/stay-dates";
 
 type Props = {
   href: string;
@@ -20,14 +19,15 @@ type Props = {
   isCerere: boolean;
   guestTotal: number;
   buildingColor?: string | null;
-  checkIn?: string;
-  checkOut?: string;
-  today?: string;
   todayHighlight?: StayTodayHighlight;
   initials?: string;
   interactive?: boolean;
   extraClass?: string;
   occupancyPhase?: OccupancyPhase;
+  compact?: boolean;
+  progress?: GanttStayBarProgress | null;
+  showUnpaid?: boolean;
+  showMissingIdentity?: boolean;
 };
 
 function semanticStayVars(
@@ -91,6 +91,22 @@ function semanticStayVars(
   };
 }
 
+function progressTitle(
+  progress: GanttStayBarProgress,
+  tGantt: ReturnType<typeof useTranslations<"admin.gantt">>
+): string {
+  if (progress.mode === "rooms") {
+    return tGantt("stayCard.roomsProgress", {
+      checked: progress.current,
+      total: progress.total,
+    });
+  }
+  return tGantt("stayCard.nightsProgress", {
+    current: progress.current,
+    total: progress.total,
+  });
+}
+
 export const GanttBookingBar = memo(function GanttBookingBar({
   href,
   label,
@@ -99,32 +115,28 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   isCerere,
   guestTotal,
   buildingColor,
-  checkIn,
-  checkOut,
-  today,
   todayHighlight,
   initials,
   interactive,
   extraClass,
   occupancyPhase,
+  compact = false,
+  progress = null,
+  showUnpaid = false,
+  showMissingIdentity = false,
 }: Props) {
   const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
-  const progress =
-    checkIn && checkOut
-      ? stayNightProgress(checkIn, checkOut, today ?? todayIso())
-      : null;
-  const showProgress =
-    !!progress &&
-    progress.total > 1 &&
-    occupancyPhase !== "past" &&
-    (occupancyPhase === "active" || progress.current > 0);
+  const showProgress = !!progress;
+  const showAlerts = showUnpaid || showMissingIdentity;
 
   const className = [
     ganttStayChromeClass(),
     "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-stay--chip gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] w-full" : "absolute z-[1] max-w-full",
+    compact && "gantt-stay--compact",
     isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
     occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
     occupancyPhase === "active" && "gantt-stay--phase-active",
@@ -186,7 +198,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
           </span>
         )}
 
-        {initials && (
+        {!compact && initials && (
           <span className="gantt-stay__avatar gantt-stay__avatar--hex shrink-0" aria-hidden>
             {initials}
           </span>
@@ -194,12 +206,41 @@ export const GanttBookingBar = memo(function GanttBookingBar({
 
         <span className="gantt-stay__content min-w-0 flex-1">
           <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
-          {showProgress && (
-            <span
-              className="gantt-stay__progress"
-              aria-hidden
-              title={`Noaptea ${progress!.current} din ${progress!.total}`}
-            />
+          {(showAlerts || showProgress) && (
+            <span className="gantt-stay__meta min-w-0">
+              {showAlerts && (
+                <span className="gantt-stay__alerts" aria-hidden>
+                  {showUnpaid && (
+                    <span
+                      className="gantt-stay__alert gantt-stay__alert--unpaid"
+                      title={tGantt("stayCard.unpaid")}
+                    >
+                      $
+                    </span>
+                  )}
+                  {showMissingIdentity && (
+                    <span
+                      className="gantt-stay__alert gantt-stay__alert--identity"
+                      title={tGantt("stayCard.missingIdentity")}
+                    >
+                      ID
+                    </span>
+                  )}
+                </span>
+              )}
+              {showProgress && progress && (
+                <span
+                  className={[
+                    "gantt-stay__progress",
+                    progress.mode === "rooms" && "gantt-stay__progress--rooms",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  aria-hidden
+                  title={progressTitle(progress, tGantt)}
+                />
+              )}
+            </span>
           )}
         </span>
 

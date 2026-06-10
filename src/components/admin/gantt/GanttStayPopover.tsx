@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import type { GanttStayBarProgress } from "@/domain/gantt/stay-card-display";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -31,6 +32,9 @@ export type GanttStayPopoverData = {
   totalPrice?: number | null;
   canMoveRoom?: boolean;
   onMoveRoom?: () => void;
+  progress?: GanttStayBarProgress | null;
+  showUnpaid?: boolean;
+  showMissingIdentity?: boolean;
 };
 
 function resolveRoomList(data: GanttStayPopoverData): string[] {
@@ -41,6 +45,22 @@ function resolveRoomList(data: GanttStayPopoverData): string[] {
     return [data.roomName.trim()];
   }
   return [];
+}
+
+function progressLabel(
+  progress: GanttStayBarProgress,
+  tGantt: ReturnType<typeof useTranslations<"admin.gantt">>
+): string {
+  if (progress.mode === "rooms") {
+    return tGantt("stayCard.roomsProgress", {
+      checked: progress.current,
+      total: progress.total,
+    });
+  }
+  return tGantt("stayCard.nightsProgress", {
+    current: progress.current,
+    total: progress.total,
+  });
 }
 
 export function GanttStayPopover({
@@ -65,6 +85,7 @@ export function GanttStayPopover({
   const nights = stayNightCount(data.checkIn, data.checkOut);
   const rooms = resolveRoomList(data);
   const periodLabel = formatStayPeriod(data.checkIn, data.checkOut, locale, true);
+  const progress = data.progress ?? null;
 
   return (
     <AdminFloatingPanel
@@ -94,6 +115,20 @@ export function GanttStayPopover({
 
         <header className="gantt-stay-note__head">
           <h3 className="gantt-stay-note__name">{data.guestName}</h3>
+          {(data.showUnpaid || data.showMissingIdentity) && (
+            <div className="gantt-stay-note__alerts">
+              {data.showUnpaid ? (
+                <span className="gantt-stay-note__alert gantt-stay-note__alert--unpaid">
+                  {tGantt("stayCard.unpaid")}
+                </span>
+              ) : null}
+              {data.showMissingIdentity ? (
+                <span className="gantt-stay-note__alert gantt-stay-note__alert--identity">
+                  {tGantt("stayCard.missingIdentity")}
+                </span>
+              ) : null}
+            </div>
+          )}
         </header>
 
         <section className="gantt-stay-note__block">
@@ -103,6 +138,32 @@ export function GanttStayPopover({
             {nights} {tCommon("nights").toLowerCase()}
           </p>
         </section>
+
+        {progress ? (
+          <section className="gantt-stay-note__block gantt-stay-note__block--progress">
+            <p className="gantt-stay-note__label">{tGantt("stayCard.progress")}</p>
+            <p className="gantt-stay-note__progress-title">
+              {progressLabel(progress, tGantt)}
+            </p>
+            <div
+              className={[
+                "gantt-stay-note__progress",
+                progress.mode === "rooms" && "gantt-stay-note__progress--rooms",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              role="progressbar"
+              aria-valuenow={progress.current}
+              aria-valuemin={0}
+              aria-valuemax={progress.total}
+            >
+              <span
+                className="gantt-stay-note__progress-fill"
+                style={{ width: `${progress.pct}%` }}
+              />
+            </div>
+          </section>
+        ) : null}
 
         <section className="gantt-stay-note__block gantt-stay-note__block--rooms">
           <p className="gantt-stay-note__label">{tGantt("rooms")}</p>

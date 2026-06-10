@@ -1,6 +1,8 @@
+import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import type {
   GuestBookingFlagSummary,
   GuestFlagLevel,
+  GuestIdentityStatus,
 } from "@/domain/guest/types";
 import type { BookingStatus } from "@/domain/booking/types";
 
@@ -51,6 +53,10 @@ export type BookingRow = {
   has_checkin_record?: boolean;
   /** Camere deja recepționate (distinct room_label din checkin_guests). */
   checked_in_rooms?: string[];
+  /** Ultima înregistrare check-in — plată. */
+  checkin_payment_status?: StoredPaymentStatus | null;
+  /** Status identitate din profilul oaspete. */
+  guest_identity_status?: GuestIdentityStatus | null;
 };
 
 export type BookingSelectRow = {

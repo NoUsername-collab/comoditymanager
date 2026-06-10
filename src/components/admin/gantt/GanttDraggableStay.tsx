@@ -11,6 +11,15 @@ import {
   LONG_PRESS_MOVE_PX,
 } from "@/domain/gantt/context-menu";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
+import type { StoredPaymentStatus } from "@/domain/checkin/types";
+import {
+  isGanttBarCompact,
+  isGanttStayMissingIdentity,
+  isGanttStayUnpaid,
+  resolveGanttStayBarProgress,
+  shouldShowGanttStayAlerts,
+} from "@/domain/gantt/stay-card-display";
+import type { GuestIdentityStatus } from "@/domain/guest/types";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { GanttBookingBar } from "@/components/admin/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
@@ -50,6 +59,13 @@ type Props = {
   guestTotal: number;
   bookingId: string;
   bookingCheckIn: string;
+  dayCount: number;
+  compactLabel?: string;
+  roomNames?: string[];
+  checkedInRooms?: string[];
+  paymentStatus?: StoredPaymentStatus | null;
+  identityStatus?: GuestIdentityStatus | null;
+  totalPrice?: number | null;
   buildingColor?: string | null;
   todayHighlight?: StayTodayHighlight;
   initials?: string;
@@ -72,6 +88,13 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   guestTotal,
   bookingId,
   bookingCheckIn,
+  dayCount,
+  compactLabel,
+  roomNames = [],
+  checkedInRooms = [],
+  paymentStatus = null,
+  identityStatus = null,
+  totalPrice = null,
   buildingColor,
   todayHighlight,
   initials,
@@ -102,6 +125,44 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   const longPressOpened = useRef(false);
   const captureEl = useRef<HTMLDivElement | null>(null);
   const capturePointerId = useRef<number | null>(null);
+
+  const effectiveToday = today ?? todayIso();
+  const compact = isGanttBarCompact(pos.widthPct, dayCount);
+  const displayLabel = compact && compactLabel ? compactLabel : label;
+  const barProgress = resolveGanttStayBarProgress({
+    segmentCheckIn: popover.checkIn,
+    segmentCheckOut: popover.checkOut,
+    bookingCheckIn,
+    today: effectiveToday,
+    roomNames,
+    checkedInRooms,
+    occupancyPhase,
+    isCerere,
+    compact,
+  });
+  const showAlerts = shouldShowGanttStayAlerts({
+    progress: barProgress,
+    bookingCheckIn,
+    today: effectiveToday,
+    occupancyPhase,
+    isCerere,
+  });
+  const showUnpaid =
+    showAlerts &&
+    isGanttStayUnpaid({
+      isCerere,
+      paymentStatus,
+      totalPrice,
+      bookingCheckIn,
+      today: effectiveToday,
+      occupancyPhase,
+    });
+  const showMissingIdentity =
+    showAlerts &&
+    isGanttStayMissingIdentity({
+      guestId,
+      identityStatus,
+    });
 
   const title = [
     popover.guestName,
@@ -290,25 +351,39 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       >
         <GanttBookingBar
           href={href}
-          label={label}
+          label={displayLabel}
           title={title}
           pos={pos}
           isCerere={isCerere}
           guestTotal={guestTotal}
           buildingColor={buildingColor}
-          checkIn={popover.checkIn}
-          checkOut={popover.checkOut}
-          today={today}
           todayHighlight={todayHighlight}
           initials={initials}
           interactive
           occupancyPhase={occupancyPhase}
+          compact={compact}
+          progress={barProgress}
+          showUnpaid={showUnpaid}
+          showMissingIdentity={showMissingIdentity}
         />
       </div>
       {showPopover && (
         <GanttStayPopover
           data={{
             ...popover,
+            progress: barProgress ?? resolveGanttStayBarProgress({
+              segmentCheckIn: popover.checkIn,
+              segmentCheckOut: popover.checkOut,
+              bookingCheckIn,
+              today: effectiveToday,
+              roomNames,
+              checkedInRooms,
+              occupancyPhase,
+              isCerere,
+              compact: false,
+            }),
+            showUnpaid,
+            showMissingIdentity,
             onMoveRoom: onMoveRoom
               ? () => {
                   popover.onMoveRoom?.();

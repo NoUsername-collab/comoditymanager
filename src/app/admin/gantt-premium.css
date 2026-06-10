@@ -2802,6 +2802,62 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   color: #1c1917;
 }
 
+.gantt-stay-note__alerts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.28rem;
+}
+
+.gantt-stay-note__alert {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.2rem;
+  padding: 0.1rem 0.32rem;
+  font-size: 0.5625rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.gantt-stay-note__alert--unpaid {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+}
+
+.gantt-stay-note__alert--identity {
+  background: linear-gradient(180deg, #f87171 0%, #b91c1c 100%);
+}
+
+.gantt-stay-note__block--progress {
+  margin-top: 0.3rem;
+}
+
+.gantt-stay-note__progress-title {
+  margin: 0.12rem 0 0.18rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #44403c;
+}
+
+.gantt-stay-note__progress {
+  height: 4px;
+  border-radius: 999px;
+  background: #e7e5e4;
+  overflow: hidden;
+}
+
+.gantt-stay-note__progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--stay-note-accent, #059669) 88%, white);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--stay-note-accent, #059669) 35%, transparent);
+}
+
+.gantt-stay-note__progress--rooms .gantt-stay-note__progress-fill {
+  background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+}
+
 .gantt-stay-note__block {
   margin-top: 0.35rem;
   padding-top: 0.3rem;

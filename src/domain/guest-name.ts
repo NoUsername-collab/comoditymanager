@@ -33,6 +33,42 @@ export function formatGuestGanttLabel(
   return fb;
 }
 
+/** Etichetă ultra-compactă pentru bare Gantt de 1–2 zile (ex. „P.F.”). */
+export function formatGuestGanttCompactLabel(
+  lastName: string | null | undefined,
+  firstName: string | null | undefined,
+  fallbackFullName?: string | null
+): string {
+  const last = lastName?.trim() ?? "";
+  const first = firstName?.trim() ?? "";
+
+  if (last && first) {
+    const li = last.charAt(0).toLocaleUpperCase("ro-RO");
+    const fi = first.charAt(0).toLocaleUpperCase("ro-RO");
+    return `${li}.${fi}.`;
+  }
+  if (last) {
+    const li = last.charAt(0).toLocaleUpperCase("ro-RO");
+    return last.length >= 2
+      ? `${li}.${last.charAt(1).toLocaleUpperCase("ro-RO")}.`
+      : `${li}.`;
+  }
+
+  const fb = fallbackFullName?.trim();
+  if (!fb) return "—";
+
+  const parts = fb.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    const li = parts[0].charAt(0).toLocaleUpperCase("ro-RO");
+    const fi = parts[1].charAt(0).toLocaleUpperCase("ro-RO");
+    return `${li}.${fi}.`;
+  }
+  if (fb.length >= 2) {
+    return `${fb.charAt(0).toLocaleUpperCase("ro-RO")}.${fb.charAt(1).toLocaleUpperCase("ro-RO")}.`;
+  }
+  return `${fb.charAt(0).toLocaleUpperCase("ro-RO")}.`;
+}
+
 /** Inițiale pentru avatar pe bara Gantt (ex. „PM”). */
 export function guestInitials(
   lastName: string | null | undefined,

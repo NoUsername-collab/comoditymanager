@@ -2217,6 +2217,13 @@
         "leftRightDatesUpDownRoom": "Trage stânga/dreapta pentru date · sus/jos pentru cameră",
         "defaultHint": "Trage stânga/dreapta · sus/jos mută camera · click dreapta / ține apăsat meniu"
       },
+      "stayCard": {
+        "progress": "Progres",
+        "roomsProgress": "{checked} din {total} camere cu chei",
+        "nightsProgress": "Noaptea {current} din {total}",
+        "unpaid": "Neplătit",
+        "missingIdentity": "Identitate neînregistrată"
+      },
       "checkTime": {
         "confirmCheckIn": "Confirmă check-in",
         "confirmCheckOut": "Confirmă check-out",

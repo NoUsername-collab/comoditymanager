@@ -64,7 +64,17 @@ async function listBookingsForRangeImpl(
 
   if (error) throw new Error(error.message);
 
-  return attachGuestProfiles(mapBookingRows((data ?? []) as BookingSelectRow[]));
+  const rows = await attachGuestProfiles(
+    mapBookingRows((data ?? []) as BookingSelectRow[]),
+  );
+  const { attachCheckinRecordState } = await import(
+    "@/services/checkin/attach-booking-state"
+  );
+  try {
+    return await attachCheckinRecordState(rows);
+  } catch {
+    return rows;
+  }
 }
 
 const getCachedBookingsForRange = (

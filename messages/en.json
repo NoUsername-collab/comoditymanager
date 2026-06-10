@@ -2217,6 +2217,13 @@
         "leftRightDatesUpDownRoom": "Drag left/right for dates · up/down for room",
         "defaultHint": "Drag left/right · up/down moves room · right-click / long-press menu"
       },
+      "stayCard": {
+        "progress": "Progress",
+        "roomsProgress": "{checked} of {total} rooms with keys",
+        "nightsProgress": "Night {current} of {total}",
+        "unpaid": "Unpaid",
+        "missingIdentity": "Identity not registered"
+      },
       "checkTime": {
         "confirmCheckIn": "Confirm check-in",
         "confirmCheckOut": "Confirm check-out",

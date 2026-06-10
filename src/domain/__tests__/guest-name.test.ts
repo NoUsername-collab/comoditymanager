@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   formatGuestFullName,
+  formatGuestGanttCompactLabel,
   formatGuestGanttLabel,
   guestInitials,
   guestNamesFromForm,
@@ -55,6 +56,15 @@ describe("formatGuestGanttLabel", () => {
 });
 
 // ---------------------------------------------------------------------------
+// formatGuestGanttCompactLabel
+// ---------------------------------------------------------------------------
+describe("formatGuestGanttCompactLabel", () => {
+  it("formats dotted initials", () => {
+    expect(formatGuestGanttCompactLabel("Petri", "Florin")).toBe("P.F.");
+    expect(formatGuestGanttCompactLabel("Popescu", "Maria")).toBe("P.M.");
+  });
+});
+
 // guestInitials
 // ---------------------------------------------------------------------------
 describe("guestInitials", () => {

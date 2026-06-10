@@ -1,4 +1,6 @@
 import { bookingRoomNames } from "@/domain/checkin/room-checkin-progress";
+import type { StoredPaymentStatus } from "@/domain/checkin/types";
+import type { GuestIdentityStatus } from "@/domain/guest/types";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { BookingRow } from "@/services/bookings/types";
@@ -9,12 +11,14 @@ type CheckinLite = {
   booking_id: string;
   checked_in_at: string;
   checked_in_by: string | null;
+  payment_status: StoredPaymentStatus | null;
 };
 
 function attachCheckinFields(
   stays: BookingRow[],
   latestByBooking: Map<string, CheckinLite>,
   checkedRoomsByBooking: Map<string, string[]>,
+  identityByGuest: Map<string, GuestIdentityStatus>,
 ): BookingRow[] {
   return stays.map((stay) => {
     const checkin = latestByBooking.get(stay.id);
@@ -37,8 +41,38 @@ function attachCheckinFields(
       has_checkin_record,
       actual_check_in_at,
       checked_in_rooms,
+      checkin_payment_status: checkin?.payment_status ?? null,
+      guest_identity_status: stay.guest_id
+        ? identityByGuest.get(stay.guest_id) ?? "draft"
+        : null,
     };
   });
+}
+
+async function loadGuestIdentityStatuses(
+  guestIds: string[],
+): Promise<Map<string, GuestIdentityStatus>> {
+  const map = new Map<string, GuestIdentityStatus>();
+  if (!guestIds.length) return map;
+
+  const { tenantId, supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("guests")
+    .select("id, identity_status")
+    .eq("tenant_id", tenantId)
+    .in("id", guestIds);
+
+  if (error) throw new Error(error.message);
+
+  for (const row of data ?? []) {
+    const id = row.id as string;
+    map.set(
+      id,
+      (row.identity_status as GuestIdentityStatus | null) ?? "draft",
+    );
+  }
+
+  return map;
 }
 
 /**
@@ -54,17 +88,27 @@ export async function attachCheckinRecordState(
     const { tenantId, supabase } = await getTenantScope();
     const bookingIds = stays.map((s) => s.id);
 
-    const [{ data, error }, checkedRoomsByBooking] = await Promise.all([
-      supabase
-        .from("checkins")
-        .select("booking_id, checked_in_at, checked_in_by")
-        .eq("tenant_id", tenantId)
-        .in("booking_id", bookingIds)
-        .order("created_at", { ascending: false }),
-      getCheckedInRoomsByBookingIds(bookingIds).catch(
-        () => new Map<string, string[]>(),
+    const guestIds = [
+      ...new Set(
+        stays.map((stay) => stay.guest_id).filter(Boolean) as string[],
       ),
-    ]);
+    ];
+
+    const [{ data, error }, checkedRoomsByBooking, identityByGuest] =
+      await Promise.all([
+        supabase
+          .from("checkins")
+          .select("booking_id, checked_in_at, checked_in_by, payment_status")
+          .eq("tenant_id", tenantId)
+          .in("booking_id", bookingIds)
+          .order("created_at", { ascending: false }),
+        getCheckedInRoomsByBookingIds(bookingIds).catch(
+          () => new Map<string, string[]>(),
+        ),
+        loadGuestIdentityStatuses(guestIds).catch(
+          () => new Map<string, GuestIdentityStatus>(),
+        ),
+      ]);
 
     if (error) {
       if (isCheckinMigrationMissing(error.message)) {
@@ -85,6 +129,8 @@ export async function attachCheckinRecordState(
           booking_id: bookingId,
           checked_in_at: row.checked_in_at as string,
           checked_in_by: (row.checked_in_by as string | null) ?? null,
+          payment_status:
+            (row.payment_status as StoredPaymentStatus | null) ?? null,
         });
       }
     }
@@ -104,7 +150,12 @@ export async function attachCheckinRecordState(
       );
     }
 
-    return attachCheckinFields(stays, latestByBooking, checkedRoomsByBooking);
+    return attachCheckinFields(
+      stays,
+      latestByBooking,
+      checkedRoomsByBooking,
+      identityByGuest,
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (isCheckinMigrationMissing(message)) {

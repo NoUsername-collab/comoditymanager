@@ -4,8 +4,11 @@ import { memo, useMemo, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
-import { guestInitials } from "@/domain/guest-name";
-import { formatGuestGanttLabel } from "@/domain/guest-name";
+import {
+  formatGuestGanttCompactLabel,
+  formatGuestGanttLabel,
+  guestInitials,
+} from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancySegment } from "@/domain/occupancy/types";
@@ -228,6 +231,11 @@ export const GanttRoomRow = memo(function GanttRoomRow({
               b.guest_first_name,
               b.guest_name
             );
+            const compactLabel = formatGuestGanttCompactLabel(
+              b.guest_last_name,
+              b.guest_first_name,
+              b.guest_name
+            );
             const guests = guestPartyTotal(b.num_adults, b.num_children);
             const todayHl = stayTodayHighlight(b, today);
             const initials = guestInitials(
@@ -257,6 +265,13 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 guestTotal={guests}
                 bookingId={b.id}
                 bookingCheckIn={b.check_in}
+                dayCount={dayCount}
+                compactLabel={compactLabel}
+                roomNames={b.room_names}
+                checkedInRooms={b.checked_in_rooms ?? []}
+                paymentStatus={b.checkin_payment_status ?? null}
+                identityStatus={b.guest_identity_status ?? null}
+                totalPrice={b.total_price}
                 buildingColor={roomColor}
                 todayHighlight={todayHl}
                 initials={initials}
