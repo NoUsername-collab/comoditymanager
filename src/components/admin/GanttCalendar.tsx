@@ -107,6 +107,7 @@ export function GanttCalendar({
   bookings,
   occupancy = [],
   groupByBuilding = false,
+  buildings = [],
   checkInTime = DEFAULT_CHECK_IN_TIME,
   checkOutTime = DEFAULT_CHECK_OUT_TIME,
   filter = "all",
@@ -124,6 +125,7 @@ export function GanttCalendar({
   bookings: BookingRow[];
   occupancy?: OccupancySegment[];
   groupByBuilding?: boolean;
+  buildings?: { id: string; sort_order: number }[];
   checkInTime?: string;
   checkOutTime?: string;
   filter?: GanttFilter;
@@ -193,6 +195,7 @@ export function GanttCalendar({
         focusDay,
         groupByBuilding,
         buildingFallbackLabel,
+        buildings,
       }),
     [
       rooms,
@@ -205,6 +208,7 @@ export function GanttCalendar({
       focusDay,
       groupByBuilding,
       buildingFallbackLabel,
+      buildings,
     ]
   );
 

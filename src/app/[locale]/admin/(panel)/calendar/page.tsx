@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants";
 import { parseGanttFilter, parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
+import { sortRoomsLikeLocationStructure } from "@/domain/room/display-order";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -150,8 +151,15 @@ export default async function AdminCalendarPage({
   const data = dataResult.data;
   if (!data) return null;
 
-  const [allRoomsRaw, allBookings, settings, buildingsRaw, occupancy, optionSlugsByRoom] =
-    data;
+  const [
+    allRoomsRaw,
+    allBookings,
+    settings,
+    buildingsRaw,
+    allFloors,
+    occupancy,
+    optionSlugsByRoom,
+  ] = data;
   const activeBuildings = buildingsRaw.filter((b) => b.is_active);
   const allRooms = allRoomsRaw.filter((r) => r.is_active);
   const checkInTime =
@@ -161,20 +169,26 @@ export default async function AdminCalendarPage({
 
   const buildingById = new Map(activeBuildings.map((b) => [b.id, b]));
 
-  const ganttRoomsAll = allRooms.map((r) => {
-    const building = buildingById.get(r.building_id);
-    return {
-      id: r.id,
-      name: r.name,
-      building_id: r.building_id,
-      building_name: r.building_name,
-      building_color: building?.color_hex ?? null,
-      building_ac_mode: building?.ac_mode ?? "per_room",
-      has_ac: r.has_ac,
-      room_type_name: r.room_type_name,
-      option_slugs: optionSlugsByRoom[r.id] ?? [],
-    };
-  });
+  const ganttRoomsAll = sortRoomsLikeLocationStructure(
+    allRooms.map((r) => {
+      const building = buildingById.get(r.building_id);
+      return {
+        id: r.id,
+        name: r.name,
+        building_id: r.building_id,
+        floor_id: r.floor_id,
+        sort_order: r.sort_order,
+        building_name: r.building_name,
+        building_color: building?.color_hex ?? null,
+        building_ac_mode: building?.ac_mode ?? "per_room",
+        has_ac: r.has_ac,
+        room_type_name: r.room_type_name,
+        option_slugs: optionSlugsByRoom[r.id] ?? [],
+      };
+    }),
+    activeBuildings,
+    allFloors
+  ).map(({ floor_id: _floorId, sort_order: _sortOrder, ...room }) => room);
 
   let ganttRooms = filterGanttRoomsByFeature(ganttRoomsAll, feat);
 
@@ -283,6 +297,10 @@ export default async function AdminCalendarPage({
           bookings={allBookings}
           occupancy={occupancy}
           groupByBuilding={view === "all"}
+          buildings={activeBuildings.map((building) => ({
+            id: building.id,
+            sort_order: building.sort_order,
+          }))}
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
           filter={filter}

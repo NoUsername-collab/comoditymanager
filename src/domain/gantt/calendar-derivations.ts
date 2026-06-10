@@ -139,10 +139,12 @@ export function deriveTodayFlagsByRoom(
 export function deriveBuildingGroups(
   filteredRooms: GanttRoom[],
   groupByBuilding: boolean,
-  buildingFallbackLabel: string
+  buildingFallbackLabel: string,
+  buildings: { id: string; sort_order: number }[] = []
 ): GanttBuildingGroup[] {
   if (!groupByBuilding) return [];
-  return Array.from(
+
+  const groups = Array.from(
     filteredRooms.reduce((map, room) => {
       const list = map.get(room.building_id) ?? [];
       list.push(room);
@@ -157,6 +159,20 @@ export function deriveBuildingGroups(
     hasAnyRoomAc: buildingRooms.some((r) => r.has_ac),
     rooms: buildingRooms,
   }));
+
+  if (!buildings.length) return groups;
+
+  const buildingRank = new Map(
+    buildings.map((building) => [building.id, building.sort_order] as const)
+  );
+
+  return groups.sort((a, b) => {
+    const rankDelta =
+      (buildingRank.get(a.buildingId) ?? Number.MAX_SAFE_INTEGER) -
+      (buildingRank.get(b.buildingId) ?? Number.MAX_SAFE_INTEGER);
+    if (rankDelta !== 0) return rankDelta;
+    return a.buildingName.localeCompare(b.buildingName, "ro");
+  });
 }
 
 export function deriveGanttFocusIso(
@@ -180,6 +196,7 @@ export function deriveGanttCalendarData(input: {
   focusDay: string | null;
   groupByBuilding: boolean;
   buildingFallbackLabel: string;
+  buildings?: { id: string; sort_order: number }[];
 }) {
   const activeBookings = deriveActiveBookings(input.bookings);
   const bookingsByRoom = deriveBookingsByRoom(activeBookings);
@@ -228,7 +245,8 @@ export function deriveGanttCalendarData(input: {
   const buildingGroups = deriveBuildingGroups(
     filteredRooms,
     input.groupByBuilding,
-    input.buildingFallbackLabel
+    input.buildingFallbackLabel,
+    input.buildings ?? []
   );
 
   return {
