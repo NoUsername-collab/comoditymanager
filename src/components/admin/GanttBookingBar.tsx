@@ -119,7 +119,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
 
   const className = [
     ganttStayChromeClass(),
-    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-stay--chip gantt-timeline-bar group relative box-border flex min-w-0 items-stretch overflow-hidden text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
+    "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-stay--chip gantt-timeline-bar group relative box-border flex min-w-0 items-stretch text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] w-full" : "absolute z-[1] max-w-full",
     compact && "gantt-stay--compact",
     isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
@@ -159,74 +159,85 @@ export const GanttBookingBar = memo(function GanttBookingBar({
         <span className="gantt-stay-edge gantt-stay-edge--left shrink-0" aria-hidden />
       )}
 
-      <span className="gantt-stay__body flex min-w-0 flex-1 items-center gap-0.5 px-1.5 py-1">
+      <span className="gantt-stay__body">
         {continuesBefore && (
           <span
-            className="shrink-0 opacity-80"
+            className="gantt-stay__edge-mark shrink-0"
             aria-label={tCommon("continuesFromPreviousMonth")}
           >
             ‹
           </span>
         )}
 
-        {todayHighlight === "arrival" && (
-          <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
-            ↓
-          </span>
-        )}
-        {todayHighlight === "departure" && (
-          <span className="gantt-stay__today-icon" aria-hidden title="Plecare azi">
-            ↑
-          </span>
-        )}
-
-        {!compact && initials && (
-          <span className="gantt-stay__avatar gantt-stay__avatar--hex shrink-0" aria-hidden>
-            {initials}
-          </span>
-        )}
-
-        <span className="gantt-stay__content min-w-0 flex-1">
+        <span className="gantt-stay__primary min-w-0 flex-1">
           <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
-          {(showAlerts || showProgress) && (
-            <span className="gantt-stay__meta min-w-0">
-              {showAlerts && (
-                <span className="gantt-stay__alerts" aria-hidden>
-                  {showUnpaid && (
-                    <span
-                      className="gantt-stay__alert gantt-stay__alert--unpaid"
-                      title={tGantt("stayCard.unpaid")}
-                    >
-                      $
-                    </span>
+        </span>
+
+        {(showAlerts ||
+          showProgress ||
+          todayHighlight ||
+          (occupancyPhase === "active" && !isCerere) ||
+          guestTotal > 0) && (
+          <span className="gantt-stay__details">
+            {(todayHighlight === "arrival" ||
+              todayHighlight === "departure" ||
+              showAlerts ||
+              (occupancyPhase === "active" && !isCerere) ||
+              guestTotal > 0) && (
+              <span className="gantt-stay__details-head">
+                {todayHighlight === "arrival" && (
+                  <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
+                    ↓
+                  </span>
+                )}
+                {todayHighlight === "departure" && (
+                  <span className="gantt-stay__today-icon" aria-hidden title="Plecare azi">
+                    ↑
+                  </span>
+                )}
+                {showAlerts && (
+                  <span className="gantt-stay__alerts" aria-hidden>
+                    {showUnpaid && (
+                      <span
+                        className="gantt-stay__alert gantt-stay__alert--unpaid"
+                        title={tGantt("stayCard.unpaid")}
+                      >
+                        $
+                      </span>
+                    )}
+                    {showMissingIdentity && (
+                      <span
+                        className="gantt-stay__alert gantt-stay__alert--identity"
+                        title={tGantt("stayCard.missingIdentity")}
+                      >
+                        ID
+                      </span>
+                    )}
+                  </span>
+                )}
+                <span className="gantt-stay__detail-badges">
+                  {occupancyPhase === "active" && !isCerere && (
+                    <span className="gantt-stay__phase-badge">IN</span>
                   )}
-                  {showMissingIdentity && (
+                  {guestTotal > 0 && (
                     <span
-                      className="gantt-stay__alert gantt-stay__alert--identity"
-                      title={tGantt("stayCard.missingIdentity")}
+                      className="gantt-stay__badge"
+                      title={`${guestTotal} persoane`}
                     >
-                      ID
+                      {guestTotal}
                     </span>
                   )}
                 </span>
-              )}
-              {showProgress && timeline ? (
-                <GanttStayTimeline timeline={timeline} />
-              ) : null}
-            </span>
-          )}
-        </span>
-
-        {occupancyPhase === "active" && !isCerere && (
-          <span className="gantt-stay__phase-badge shrink-0">IN</span>
+              </span>
+            )}
+            {showProgress && timeline ? (
+              <GanttStayTimeline
+                timeline={timeline}
+                className="gantt-stay__timeline--chip"
+              />
+            ) : null}
+          </span>
         )}
-
-        <span
-          className="gantt-stay__badge shrink-0 rounded-full px-1.5 py-0.5 text-[11px] font-bold tabular-nums leading-none"
-          title={`${guestTotal} persoane`}
-        >
-          {guestTotal}
-        </span>
       </span>
 
       {!continuesAfter && (

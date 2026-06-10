@@ -8,13 +8,42 @@
   position: relative;
   padding: 0 !important;
   border-width: 1px !important;
+  overflow: hidden;
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 38%, transparent),
-    0 1px 4px color-mix(in srgb, var(--stay-glow, #000) 22%, transparent) !important;
+    inset 0 1px 0 color-mix(in srgb, white 22%, transparent),
+    0 1px 4px color-mix(in srgb, var(--stay-glow, #000) 28%, transparent) !important;
   transition:
     transform 0.16s ease,
     box-shadow 0.16s ease,
     filter 0.16s ease;
+}
+
+.gantt-stay--chip.gantt-booking-card--active {
+  background: color-mix(
+    in srgb,
+    var(--booking-active-bg) 42%,
+    var(--booking-active-border) 58%
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--booking-active-border) 88%,
+    #047857
+  ) !important;
+  color: var(--booking-active-text) !important;
+}
+
+.gantt-stay--chip.gantt-booking-card--pending {
+  background: color-mix(
+    in srgb,
+    var(--booking-pending-bg) 40%,
+    var(--booking-pending-border) 60%
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--booking-pending-border) 90%,
+    #b45309
+  ) !important;
+  color: var(--booking-pending-text) !important;
 }
 
 .gantt-stay--chip::before {
@@ -25,8 +54,8 @@
   border-radius: inherit;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, white 22%, transparent) 0%,
-    transparent 42%
+    color-mix(in srgb, white 10%, transparent) 0%,
+    transparent 38%
   );
   z-index: 0;
 }
@@ -47,39 +76,66 @@
   min-width: 0;
   flex: 1;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0 0.35rem 0 0.3rem !important;
+  gap: 0.2rem;
+  padding: 0 0.32rem 0 0.28rem !important;
 }
 
-.gantt-stay--chip .gantt-stay__content {
+.gantt-stay--chip .gantt-stay__edge-mark {
+  opacity: 0.75;
+  font-size: 0.625rem;
+  line-height: 1;
+}
+
+.gantt-stay--chip .gantt-stay__primary {
   display: flex;
   min-width: 0;
   flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.12rem;
-  padding: 0.1rem 0;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 0.1rem;
+  transition: transform 0.16s ease;
 }
 
 .gantt-stay--chip .gantt-stay-chrome__label {
   min-width: 0;
+  width: 100%;
   font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: -0.01em;
-  line-height: 1.05;
+  line-height: 1.1;
+  text-align: left;
 }
 
-.gantt-stay--chip .gantt-stay__content {
+.gantt-stay--chip .gantt-stay__details {
+  position: absolute;
+  left: 0.3rem;
+  right: 0.28rem;
+  bottom: 0.18rem;
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(3px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
 }
 
-.gantt-stay--chip .gantt-stay__meta {
+.gantt-stay--chip .gantt-stay__details-head {
   display: flex;
-  flex-direction: column;
-  gap: 0.08rem;
+  align-items: center;
+  gap: 0.18rem;
   min-width: 0;
+}
+
+.gantt-stay--chip .gantt-stay__detail-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.14rem;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .gantt-stay--chip .gantt-stay__alerts {
@@ -118,7 +174,22 @@
   display: block;
   width: 100%;
   min-width: 0;
-  padding-top: 0.08rem;
+  padding-top: 0;
+}
+
+.gantt-stay--chip .gantt-stay__timeline--chip .gantt-stay__timeline-track {
+  position: relative;
+  display: block;
+  height: 2px;
+  width: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--stay-text, currentColor) 22%, transparent);
+  overflow: hidden;
+}
+
+.gantt-stay--chip .gantt-stay__timeline--chip .gantt-stay__timeline-knob,
+.gantt-stay--chip .gantt-stay__timeline--chip .gantt-stay__timeline-divider {
+  display: none !important;
 }
 
 .gantt-stay--chip .gantt-stay__timeline-track {
@@ -128,7 +199,7 @@
   width: 100%;
   border-radius: 999px;
   background: color-mix(in srgb, var(--stay-text, currentColor) 14%, transparent);
-  overflow: visible;
+  overflow: hidden;
 }
 
 .gantt-stay--chip .gantt-stay__timeline-fill {
@@ -376,14 +447,37 @@
   );
 }
 
-.gantt-room-row:hover .gantt-stay--chip,
-.gantt-stay--chip:hover {
-  transform: translateY(-1px);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 42%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--stay-glow) 40%, transparent),
-    0 5px 16px color-mix(in srgb, var(--stay-glow) 32%, transparent) !important;
-  z-index: 3 !important;
+@media (hover: hover) {
+  .gantt-room-row:hover .gantt-stay--chip,
+  .gantt-stay--chip:hover,
+  .gantt-stay--chip:focus-within {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, white 30%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--stay-glow) 45%, transparent),
+      0 5px 16px color-mix(in srgb, var(--stay-glow) 36%, transparent) !important;
+    z-index: 3 !important;
+  }
+
+  .gantt-room-row:hover .gantt-stay--chip .gantt-stay__details,
+  .gantt-stay--chip:hover .gantt-stay__details,
+  .gantt-stay--chip:focus-within .gantt-stay__details {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .gantt-room-row:hover .gantt-stay--chip .gantt-stay__primary,
+  .gantt-stay--chip:hover .gantt-stay__primary,
+  .gantt-stay--chip:focus-within .gantt-stay__primary {
+    transform: translateY(-0.2rem);
+  }
+
+  .gantt-room-row:hover .gantt-stay--chip .gantt-stay-chrome__label,
+  .gantt-stay--chip:hover .gantt-stay-chrome__label,
+  .gantt-stay--chip:focus-within .gantt-stay-chrome__label {
+    font-size: 0.625rem;
+  }
 }
 
 .gantt-stay-chrome--snapped.gantt-stay--chip {
@@ -409,12 +503,7 @@
 
 @container gantt-stay (max-width: 96px) {
   .gantt-stay--chip .gantt-stay-chrome__label {
-    max-width: 4.5ch;
-  }
-
-  .gantt-stay--chip .gantt-stay__timeline,
-  .gantt-stay--chip .gantt-stay__phase-badge {
-    display: none;
+    max-width: 5ch;
   }
 }
 
@@ -499,6 +588,12 @@
 
 html[data-theme="default"] .gantt-stay--chip .gantt-stay__phase-badge {
   display: inline-flex !important;
+}
+
+@media (hover: none) {
+  .gantt-stay--chip .gantt-stay__details {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
