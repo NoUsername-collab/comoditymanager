@@ -264,6 +264,24 @@ export function resolveGanttStayBarProgress(args: {
   };
 }
 
+export function shouldShowGanttPopoverRoomKeys(
+  timeline: GanttStayTimeline,
+  hasRecordedCheckIn: boolean
+): boolean {
+  if (timeline.roomsTotal <= 1) return false;
+  return (
+    hasRecordedCheckIn ||
+    timeline.checkinStarted ||
+    timeline.roomsChecked > 0
+  );
+}
+
+export function shouldShowGanttPopoverNights(
+  timeline: GanttStayTimeline
+): boolean {
+  return timeline.nightsTotal > 1 && timeline.variant !== "checkin";
+}
+
 export function shouldShowGanttStayAlerts(args: {
   timeline: GanttStayTimeline | null;
   bookingCheckIn: string;

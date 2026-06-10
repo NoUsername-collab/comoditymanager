@@ -2219,6 +2219,8 @@
       },
       "stayCard": {
         "progress": "Progress",
+        "keys": "Room keys",
+        "stay": "Stay",
         "roomsProgress": "{checked} of {total} rooms with keys",
         "nightsProgress": "Night {current} of {total}",
         "hybridCheckin": "Check-in: {checked}/{total} rooms",

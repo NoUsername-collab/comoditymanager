@@ -2219,6 +2219,8 @@
       },
       "stayCard": {
         "progress": "Progres",
+        "keys": "Chei camere",
+        "stay": "Sejur",
         "roomsProgress": "{checked} din {total} camere cu chei",
         "nightsProgress": "Noaptea {current} din {total}",
         "hybridCheckin": "Check-in: {checked}/{total} camere",

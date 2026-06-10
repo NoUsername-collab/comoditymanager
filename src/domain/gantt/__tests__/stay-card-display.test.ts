@@ -5,6 +5,8 @@ import {
   isGanttStayMilestoneReached,
   isGanttStayUnpaid,
   resolveGanttStayTimeline,
+  shouldShowGanttPopoverNights,
+  shouldShowGanttPopoverRoomKeys,
 } from "@/domain/gantt/stay-card-display";
 
 describe("stay-card-display", () => {
@@ -136,5 +138,26 @@ describe("stay-card-display", () => {
         identityStatus: "complete",
       }),
     ).toBe(false);
+  });
+
+  it("shows popover room keys for multi-room stays after check-in", () => {
+    const timeline = resolveGanttStayTimeline({
+      segmentCheckIn: "2026-06-09",
+      segmentCheckOut: "2026-06-15",
+      bookingCheckIn: "2026-06-09",
+      today: "2026-06-10",
+      roomNames: ["1", "2", "3", "4", "5", "6", "7", "8"],
+      checkedInRooms: ["1", "2"],
+      occupancyPhase: "active",
+      isCerere: false,
+      compact: false,
+      paymentStatus: "paid",
+      totalPrice: 500,
+      guestId: "g1",
+      identityStatus: "complete",
+    });
+    expect(timeline).not.toBeNull();
+    expect(shouldShowGanttPopoverRoomKeys(timeline!, true)).toBe(true);
+    expect(shouldShowGanttPopoverNights(timeline!)).toBe(true);
   });
 });

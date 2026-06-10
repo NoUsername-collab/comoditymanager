@@ -32,6 +32,69 @@ function timelineTitle(
   });
 }
 
+function SimpleStaySlider({
+  fillPct,
+  variant,
+  className = "",
+}: {
+  fillPct: number;
+  variant: "rooms" | "nights";
+  className?: string;
+}) {
+  return (
+    <span
+      className={[
+        "gantt-stay__timeline",
+        variant === "rooms" && "gantt-stay__timeline--checkin",
+        variant === "nights" && "gantt-stay__timeline--nights",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      aria-hidden
+    >
+      <span
+        className="gantt-stay__timeline-track"
+        style={{ "--stay-timeline-fill": `${fillPct}%` } as CSSProperties}
+      >
+        <span className="gantt-stay__timeline-fill" />
+      </span>
+    </span>
+  );
+}
+
+export function GanttStayRoomsSlider({
+  checked,
+  total,
+  className = "",
+}: {
+  checked: number;
+  total: number;
+  className?: string;
+}) {
+  const safeTotal = Math.max(total, 1);
+  const pct = (Math.min(checked, safeTotal) / safeTotal) * 100;
+  return (
+    <SimpleStaySlider fillPct={pct} variant="rooms" className={className} />
+  );
+}
+
+export function GanttStayNightsSlider({
+  current,
+  total,
+  className = "",
+}: {
+  current: number;
+  total: number;
+  className?: string;
+}) {
+  const safeTotal = Math.max(total, 1);
+  const pct = (Math.min(current, safeTotal) / safeTotal) * 100;
+  return (
+    <SimpleStaySlider fillPct={pct} variant="nights" className={className} />
+  );
+}
+
 export function GanttStayTimeline({
   timeline,
   className = "",

@@ -3,7 +3,15 @@
 import type { CSSProperties } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { GanttStayTimeline } from "@/domain/gantt/stay-card-display";
-import { GanttStayTimeline as GanttStayTimelineBar } from "@/components/admin/gantt/GanttStayTimeline";
+import {
+  shouldShowGanttPopoverNights,
+  shouldShowGanttPopoverRoomKeys,
+} from "@/domain/gantt/stay-card-display";
+import {
+  GanttStayNightsSlider,
+  GanttStayRoomsSlider,
+  GanttStayTimeline as GanttStayTimelineBar,
+} from "@/components/admin/gantt/GanttStayTimeline";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -99,6 +107,12 @@ export function GanttStayPopover({
   const rooms = resolveRoomList(data);
   const periodLabel = formatStayPeriod(data.checkIn, data.checkOut, locale, true);
   const timeline = data.timeline ?? null;
+  const showRoomKeys =
+    timeline != null &&
+    shouldShowGanttPopoverRoomKeys(timeline, !!data.actualCheckInAt);
+  const showNights = timeline != null && shouldShowGanttPopoverNights(timeline);
+  const showCombinedTimeline =
+    timeline != null && !showRoomKeys && !showNights;
 
   return (
     <AdminFloatingPanel
@@ -108,7 +122,7 @@ export function GanttStayPopover({
       variant="popover"
       showBackdrop={false}
       closeOnEscape={false}
-      width={228}
+      width={272}
       className="gantt-stay-note admin-floating-panel--gantt"
       onPanelMouseEnter={onMouseEnter}
       onPanelMouseLeave={onMouseLeave}
@@ -154,14 +168,57 @@ export function GanttStayPopover({
 
         {timeline ? (
           <section className="gantt-stay-note__block gantt-stay-note__block--progress">
-            <p className="gantt-stay-note__label">{tGantt("stayCard.progress")}</p>
-            <p className="gantt-stay-note__progress-title">
-              {timelineSummary(timeline, tGantt)}
-            </p>
-            <GanttStayTimelineBar
-              timeline={timeline}
-              className="gantt-stay__timeline--popover"
-            />
+            {showRoomKeys ? (
+              <div className="gantt-stay-note__progress-row">
+                <p className="gantt-stay-note__label">{tGantt("stayCard.keys")}</p>
+                <p className="gantt-stay-note__progress-title">
+                  {tGantt("stayCard.roomsProgress", {
+                    checked: timeline.roomsChecked,
+                    total: timeline.roomsTotal,
+                  })}
+                </p>
+                <GanttStayRoomsSlider
+                  checked={timeline.roomsChecked}
+                  total={timeline.roomsTotal}
+                  className="gantt-stay__timeline--popover"
+                />
+              </div>
+            ) : null}
+            {showNights ? (
+              <div
+                className={[
+                  "gantt-stay-note__progress-row",
+                  showRoomKeys && "gantt-stay-note__progress-row--spaced",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <p className="gantt-stay-note__label">{tGantt("stayCard.stay")}</p>
+                <p className="gantt-stay-note__progress-title">
+                  {tGantt("stayCard.nightsProgress", {
+                    current: timeline.nightsCurrent,
+                    total: timeline.nightsTotal,
+                  })}
+                </p>
+                <GanttStayNightsSlider
+                  current={timeline.nightsCurrent}
+                  total={timeline.nightsTotal}
+                  className="gantt-stay__timeline--popover"
+                />
+              </div>
+            ) : null}
+            {showCombinedTimeline ? (
+              <div className="gantt-stay-note__progress-row">
+                <p className="gantt-stay-note__label">{tGantt("stayCard.progress")}</p>
+                <p className="gantt-stay-note__progress-title">
+                  {timelineSummary(timeline, tGantt)}
+                </p>
+                <GanttStayTimelineBar
+                  timeline={timeline}
+                  className="gantt-stay__timeline--popover"
+                />
+              </div>
+            ) : null}
           </section>
         ) : null}
 
