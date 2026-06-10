@@ -295,20 +295,25 @@ html[data-layout-chrome="compact"] .hospira-logs-table-wrap table {
   min-width: 36rem;
 }
 
-/* ── Gantt landscape: keep touch targets ── */
+/* ── Gantt landscape: compact toolbar touch targets ── */
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--ml-touch-min, 2.75rem) !important;
+  min-height: var(--gantt-touch-min, 1.35rem) !important;
 }
 
-/* ── Gantt portrait toolbar: full touch min (scroll row if needed) ── */
+/* ── Gantt portrait toolbar: gantt-scoped touch min ── */
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__select,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-jump {
-  min-width: var(--ml-touch-min, 2.75rem);
-  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--gantt-touch-min, 1.35rem);
+  min-height: var(--gantt-touch-min, 1.35rem);
 }
 
 /* ── HUD tools: no wrap in 2-row grid header ── */
@@ -1813,7 +1818,7 @@ html[data-layout-chrome="compact"] .cerere-item {
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll {
   max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 9rem
+    var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 6.5rem
   );
   overflow-y: auto;
 }
@@ -1824,8 +1829,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
   z-index: 25;
   background: var(--admin-bg, #0f0e14);
   backdrop-filter: none;
-  padding-block: 0.35rem;
-  margin-bottom: 0.25rem;
+  padding-block: 0.15rem;
+  margin-bottom: 0.12rem;
 }
 
 /* ── Pass 12: drawer a11y sweep + public touch/safe-area ── */
