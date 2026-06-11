@@ -38,7 +38,8 @@ import { assertRoomsAvailableForStay } from "./availability";
 
 export async function assignBookingRoomHold(
   bookingId: string,
-  roomIds: string[]
+  roomIds: string[],
+  options?: { skipAvailabilityCheck?: boolean }
 ): Promise<void> {
   const booking = await getBookingById(bookingId);
   if (!booking) throw new Error("booking.request_not_found");
@@ -48,12 +49,14 @@ export async function assignBookingRoomHold(
   }
 
   const unique = [...new Set(roomIds.filter(Boolean))];
-  await assertRoomsAvailableForStay(
-    booking.check_in,
-    booking.check_out,
-    unique,
-    bookingId
-  );
+  if (!options?.skipAvailabilityCheck) {
+    await assertRoomsAvailableForStay(
+      booking.check_in,
+      booking.check_out,
+      unique,
+      bookingId
+    );
+  }
 
   const { tenantId, supabase } = await getTenantScope();
   const { error: delError } = await supabase
@@ -166,7 +169,9 @@ export async function createBookingRequest(input: {
 
   if (holdRooms.length > 0) {
     try {
-      await assignBookingRoomHold(data.id, holdRooms);
+      await assignBookingRoomHold(data.id, holdRooms, {
+        skipAvailabilityCheck: true,
+      });
     } catch (e) {
       await rollbackFailedBookingRequest(data.id);
       throw e;

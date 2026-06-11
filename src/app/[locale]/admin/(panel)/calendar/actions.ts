@@ -313,11 +313,6 @@ export async function createCerereFromGanttAction(input: {
   const t = await getT();
   await requireAdmin();
   try {
-    await assertRoomsAvailableForOccupancy(
-      input.checkIn,
-      input.checkOut,
-      [input.roomId]
-    );
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
     const email = input.guestEmail.trim();

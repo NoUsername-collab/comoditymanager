@@ -1,13 +1,17 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePublicBookingSurfaces } from "@/lib/cache/revalidate-admin";
 import { getTranslations } from "next-intl/server";
 import { createBookingRequest } from "@/services/bookings";
+import { assertRoomsAvailableForStay } from "@/services/bookings/availability";
 import { findGuestAutofillMatch } from "@/services/guests";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
+import { getRoomsByIds } from "@/services/rooms-admin";
+import { stayNightCount } from "@/lib/stay-dates";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import {
   checkRateLimit,
@@ -62,25 +66,8 @@ export async function previewGuestStayAction(input: {
   }
 }
 
-async function assertSelectedOptionStillValid(
-  check_in: string,
-  check_out: string,
-  option_id: string,
-  num_adults: number,
-  num_children: number
-) {
-  const t = await getTranslations("errors");
-  const preview = await loadGuestStayPreview(
-    check_in,
-    check_out,
-    num_adults,
-    num_children
-  );
-  const match = preview.options.find((o) => o.option_id === option_id);
-  if (!match) {
-    throw new Error(t("variantUnavailable"));
-  }
-  return match;
+function parseSelectedRoomIds(optionId: string): string[] {
+  return [...new Set(optionId.split(",").map((id) => id.trim()).filter(Boolean))];
 }
 
 export async function submitGuestRequestAction(formData: FormData) {
@@ -126,23 +113,35 @@ export async function submitGuestRequestAction(formData: FormData) {
         return { ok: false as const, error: t("selectVariant") };
       }
 
-      const selected = await assertSelectedOptionStillValid(
-        check_in,
-        check_out,
-        option_id,
-        num_adults,
-        num_children
-      );
+      const roomIds = parseSelectedRoomIds(option_id);
+      if (roomIds.length === 0) {
+        return { ok: false as const, error: t("selectVariant") };
+      }
 
-      const roomList = selected.rooms
+      await assertRoomsAvailableForStay(check_in, check_out, roomIds);
+      const rooms = await getRoomsByIds(roomIds);
+      if (rooms.length !== roomIds.length) {
+        return { ok: false as const, error: t("variantUnavailable") };
+      }
+
+      const selectedTitle = String(formData.get("selected_title") ?? "").trim();
+      const totalFromForm = Number(formData.get("selected_total_estimate"));
+      const nights = stayNightCount(check_in, check_out);
+      const total_estimate_ron =
+        Number.isFinite(totalFromForm) && totalFromForm > 0
+          ? totalFromForm
+          : rooms.reduce((sum, room) => sum + Number(room.price_per_night), 0) *
+            nights;
+
+      const roomList = rooms
         .map((r) => `${r.name} (${r.building_name})`)
         .join(", ");
       const variantBlock = [
         tServer("selectedVariantHeader"),
-        selected.title,
+        selectedTitle || roomList,
         tServer("selectedVariantRooms", { roomList }),
-        tServer("selectedVariantNights", { nights: selected.nights }),
-        tServer("selectedVariantEstimate", { total: selected.total_estimate_ron }),
+        tServer("selectedVariantNights", { nights }),
+        tServer("selectedVariantEstimate", { total: total_estimate_ron }),
         tServer("selectedVariantNote"),
       ].join("\n");
 
@@ -161,13 +160,11 @@ export async function submitGuestRequestAction(formData: FormData) {
         has_minor,
         minor_age,
         notes,
-        total_price: selected.total_estimate_ron,
-        room_ids: selected.rooms.map((r) => r.id),
+        total_price: total_estimate_ron,
+        room_ids: roomIds,
       });
 
-      // Notify pension owner(s) — reads email from DB, not env var
-      // Non-blocking — never delays user response
-      (async () => {
+      after(async () => {
         try {
           const { requireTenantIdForData } = await import("@/lib/tenant/guards");
           const { getTenantNotificationEmails, getTenantDisplayName } = await import(
@@ -185,25 +182,31 @@ export async function submitGuestRequestAction(formData: FormData) {
           const host = h.get("x-forwarded-host") ?? h.get("host");
           const baseUrl = platformSiteUrl(host);
           const { notifyOwnerNewRequest } = await import("@/lib/email/notify");
-          // Send to ALL tenant owners/admins
-          for (const ownerEmail of emails) {
-            notifyOwnerNewRequest({
-              ownerEmail,
-              pensionName,
-              guestName: `${guest.guest_last_name ?? ""} ${guest.guest_first_name ?? ""}`.trim() || guest.guest_name,
-              guestEmail: guest_email,
-              guestPhone: guest_phone || null,
-              checkIn: check_in,
-              checkOut: check_out,
-              adults: num_adults,
-              children: num_children,
-              rooms: selected.rooms.map((r) => r.name),
-              bookingId: bookingId ?? "unknown",
-              baseUrl,
-            }).catch(() => {});
-          }
-        } catch { /* email/import failure — non-fatal */ }
-      })();
+          const guestDisplayName =
+            `${guest.guest_last_name ?? ""} ${guest.guest_first_name ?? ""}`.trim() ||
+            guest.guest_name;
+          await Promise.all(
+            emails.map((ownerEmail) =>
+              notifyOwnerNewRequest({
+                ownerEmail,
+                pensionName,
+                guestName: guestDisplayName,
+                guestEmail: guest_email,
+                guestPhone: guest_phone || null,
+                checkIn: check_in,
+                checkOut: check_out,
+                adults: num_adults,
+                children: num_children,
+                rooms: rooms.map((r) => r.name),
+                bookingId: bookingId ?? "unknown",
+                baseUrl,
+              })
+            )
+          );
+        } catch {
+          /* email failure — non-fatal */
+        }
+      });
 
       revalidatePublicBookingSurfaces({ disponibilitate: true });
       return { ok: true as const };

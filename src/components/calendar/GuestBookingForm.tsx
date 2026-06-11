@@ -311,6 +311,12 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             name="selected_option_id"
             value={selected.option_id}
           />
+          <input type="hidden" name="selected_title" value={selected.title} />
+          <input
+            type="hidden"
+            name="selected_total_estimate"
+            value={selected.total_estimate_ron}
+          />
 
           <div className="public-summary-box">
             <p className="public-summary-box__title">{t("summaryTitle")}</p>

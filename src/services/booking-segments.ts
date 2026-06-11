@@ -10,16 +10,28 @@ import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 async function roomNightlyRate(roomId: string): Promise<number> {
+  const rates = await roomNightlyRates([roomId]);
+  const rate = rates.get(roomId);
+  if (rate == null) throw new Error("room.not_found");
+  return rate;
+}
+
+async function roomNightlyRates(roomIds: string[]): Promise<Map<string, number>> {
+  const unique = [...new Set(roomIds.filter(Boolean))];
+  if (unique.length === 0) return new Map();
+
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("rooms")
-    .select("price_per_night")
+    .select("id, price_per_night")
     .eq("tenant_id", tenantId)
-    .eq("id", roomId)
-    .maybeSingle();
+    .in("id", unique);
+
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("room.not_found");
-  return Number(data.price_per_night);
+
+  return new Map(
+    (data ?? []).map((row) => [String(row.id), Number(row.price_per_night)])
+  );
 }
 
 type RoomMovePlan =
@@ -182,19 +194,18 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
   const roomIds = (rooms ?? []).map((r) => r.room_id).filter(Boolean);
   if (roomIds.length === 0) return;
 
-  const inserts = [];
-  for (const room_id of roomIds) {
-    const rate = await roomNightlyRate(room_id);
-    inserts.push(
-      withTenantId(tenantId, {
-        booking_id: bookingId,
-        room_id,
-        segment_start: booking.check_in,
-        segment_end: booking.check_out,
-        nightly_rate: rate,
-      })
-    );
-  }
+  const rates = await roomNightlyRates(roomIds);
+  const inserts = roomIds.map((room_id) => {
+    const rate = rates.get(room_id);
+    if (rate == null) throw new Error("room.not_found");
+    return withTenantId(tenantId, {
+      booking_id: bookingId,
+      room_id,
+      segment_start: booking.check_in,
+      segment_end: booking.check_out,
+      nightly_rate: rate,
+    });
+  });
 
   const { error: insErr } = await supabase
     .from("booking_room_segments")
