@@ -60,12 +60,15 @@ async function resolveGuestId(
   booking: BookingForCheckin,
 ): Promise<string | null> {
   if (guest.guest_id) return guest.guest_id;
-  if (guest.is_representative && booking.guest_id) return booking.guest_id;
 
   const nationalId = guest.national_id?.trim();
   if (nationalId) {
     const match = await findGuestByNationalId(nationalId);
     if (match) return match.id;
+  }
+
+  if (guest.is_representative && booking.guest_id) {
+    return booking.guest_id;
   }
 
   const phone = guest.phone?.trim();

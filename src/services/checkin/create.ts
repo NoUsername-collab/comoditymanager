@@ -14,6 +14,7 @@ import {
 } from "@/domain/checkin/guest-layout";
 import type { CheckinIdentityScope } from "@/domain/checkin/types";
 import { guestFullName } from "@/domain/checkin/identity-rules";
+import { assertCheckinIdentityIntegrity } from "@/services/checkin/assert-checkin-identity";
 import { syncCheckinGuestsToClientProfiles } from "@/services/checkin/sync-guest-from-checkin";
 import {
   normalizePaymentStatusForDb,
@@ -46,6 +47,14 @@ export async function createCheckin(
     throw new Error(
       `checkin.blocked: ${validation.blockers.join("; ")}`,
     );
+  }
+
+  const identityBlockers = await assertCheckinIdentityIntegrity(
+    data.guests,
+    booking,
+  );
+  if (identityBlockers.length > 0) {
+    throw new Error(`checkin.blocked: ${identityBlockers.join("; ")}`);
   }
 
   // Determine checkin status from validation result

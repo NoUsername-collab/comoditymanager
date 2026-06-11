@@ -38,7 +38,7 @@ import {
   mergeGuestProfiles,
 } from "@/services/guest-profiles";
 
-import { getGuestBaseById } from "./lookup";
+import { findGuestByNationalId, getGuestBaseById } from "./lookup";
 
 export type GuestIdentityInput = {
   doc_type: GuestDocType | null;
@@ -89,6 +89,14 @@ export async function updateGuestIdentity(
   const cnpValue = input.national_id_type === "cnp"
     ? (input.national_id?.trim() || null)
     : (input.cnp?.trim() || null);
+
+  const nationalIdForLookup = input.national_id?.trim() || cnpValue;
+  if (nationalIdForLookup) {
+    const taken = await findGuestByNationalId(nationalIdForLookup, guestId);
+    if (taken) {
+      throw new Error("guest.national_id_taken");
+    }
+  }
 
   const patch: Record<string, unknown> = {
     identity_status: identityStatus,
