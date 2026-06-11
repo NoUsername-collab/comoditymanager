@@ -39,6 +39,7 @@ import {
   type GanttCreateDraftRequest,
 } from "@/domain/gantt/context-menu";
 import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
+import { GanttStayTapPopoverProvider } from "@/components/admin/gantt/GanttStayTapPopoverContext";
 import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMenuBridge";
 import { GanttOperativeCheckProvider } from "@/components/admin/gantt/GanttOperativeCheckProvider";
 import {
@@ -556,6 +557,7 @@ export function GanttCalendar({
   // ─── Render ────────────────────────────────────────────────────────
   return (
     <GanttOperativeCheckProvider today={effectiveToday}>
+    <GanttStayTapPopoverProvider>
     <GanttContextMenuProvider
       onRequestCreate={setCreateDraft}
       onOpenMoveRoom={setMoveRoomDraft}
@@ -794,6 +796,7 @@ export function GanttCalendar({
         today={effectiveToday}
       />
     </GanttContextMenuProvider>
+    </GanttStayTapPopoverProvider>
     </GanttOperativeCheckProvider>
   );
 }

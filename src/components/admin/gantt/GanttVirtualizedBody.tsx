@@ -9,7 +9,6 @@ import {
   type CSSProperties,
   type RefObject,
 } from "react";
-import { useTranslations } from "next-intl";
 import { GANTT_ROW_H } from "@/domain/gantt/layout";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
@@ -76,8 +75,6 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   onToggleFocus: (buildingId: string) => void;
   onToggleCollapsed: (buildingId: string) => void;
 }) {
-  const tCommon = useTranslations("admin.common");
-
   return (
     <tr className="gantt-building-header-row border-t border-zinc-200">
       <td
@@ -121,10 +118,6 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
             buildingHasAnyRoomAc={group.hasAnyRoomAc}
           />
           <span className="gantt-building-header__title">{group.buildingName}</span>
-          <span className="gantt-building-header__count">
-            {group.rooms.length}{" "}
-            {group.rooms.length === 1 ? tCommon("room") : tCommon("rooms")}
-          </span>
         </div>
       </td>
     </tr>

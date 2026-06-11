@@ -40,24 +40,14 @@ export function GanttPeriodJumpControl({
 
   return (
     <div className="gantt-compact-toolbar__period-group">
-      <div className="gantt-compact-toolbar__period-arrows">
-        <button
-          type="button"
-          className="gantt-compact-toolbar__nav-btn"
-          onClick={onPrev}
-          aria-label={prevAria}
-        >
-          ‹
-        </button>
-        <button
-          type="button"
-          className="gantt-compact-toolbar__nav-btn"
-          onClick={onNext}
-          aria-label={nextAria}
-        >
-          ›
-        </button>
-      </div>
+      <button
+        type="button"
+        className="gantt-compact-toolbar__nav-btn gantt-compact-toolbar__nav-btn--edge"
+        onClick={onPrev}
+        aria-label={prevAria}
+      >
+        ‹
+      </button>
 
       <button
         type="button"
@@ -68,6 +58,15 @@ export function GanttPeriodJumpControl({
       >
         <span className="gantt-compact-toolbar__title capitalize">{title}</span>
         <HudIconCalendar className="gantt-compact-toolbar__jump-icon" />
+      </button>
+
+      <button
+        type="button"
+        className="gantt-compact-toolbar__nav-btn gantt-compact-toolbar__nav-btn--edge"
+        onClick={onNext}
+        aria-label={nextAria}
+      >
+        ›
       </button>
 
       <input

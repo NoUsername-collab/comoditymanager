@@ -320,7 +320,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__dropdown-wrap,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__today-btn,
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-arrows {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn--edge {
   flex-shrink: 0;
 }
 
@@ -421,7 +421,7 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
   font-size: 0.62rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-arrows {
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn--edge {
   height: var(--gantt-touch-min, 1.35rem);
 }
 
@@ -811,8 +811,13 @@ html[data-layout-chrome="compact"] .gantt-building-header__chevron {
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header::before {
-  width: 1px !important;
-  border-radius: 0 1px 1px 0;
+  content: none !important;
+  display: none !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-building-header,
+html[data-layout-chrome="compact"] td.gantt-building-header {
+  background: transparent !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-filter-banner {
@@ -1301,7 +1306,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell--premium {
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__select,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-arrows,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn--edge,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn {
@@ -1578,7 +1583,13 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header::before {
-  width: 1px !important;
+  content: none !important;
+  display: none !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header,
+html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header {
+  background: transparent !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row {

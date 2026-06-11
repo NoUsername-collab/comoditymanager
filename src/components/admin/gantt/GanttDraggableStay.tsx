@@ -1,11 +1,12 @@
 "use client";
 
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "@/i18n/navigation";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
+import { useGanttStayTapPopover } from "@/components/admin/gantt/GanttStayTapPopoverContext";
 import {
   LONG_PRESS_MS,
   LONG_PRESS_MOVE_PX,
@@ -112,11 +113,11 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   const router = useRouter();
   const touch = useIsTouchDevice();
   const { openMenu } = useGanttContextMenu();
+  const { openTapPopover, closeTapPopover, isTapOpen } = useGanttStayTapPopover();
   const { pending } = useAdminPending();
   const [pressing, setPressing] = useState(false);
   const [hover, setHover] = useState(false);
   const [popoverHover, setPopoverHover] = useState(false);
-  const [tapPopover, setTapPopover] = useState(false);
   const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
   const startX = useRef(0);
   const startY = useRef(0);
@@ -174,8 +175,60 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     formatStayPeriod(popover.checkIn, popover.checkOut, locale),
   ].join(" · ");
 
+  const stayTapKey = `${bookingId}:${popover.roomId ?? ""}:${popover.checkIn}`;
+  const tapPopoverOpen = touch && isTapOpen(stayTapKey);
+
+  const popoverData = useMemo(
+    (): GanttStayPopoverData => ({
+      ...popover,
+      timeline:
+        stayTimeline ??
+        resolveGanttStayTimeline({
+          segmentCheckIn: popover.checkIn,
+          segmentCheckOut: popover.checkOut,
+          bookingCheckIn,
+          today: effectiveToday,
+          roomNames,
+          checkedInRooms,
+          occupancyPhase,
+          isCerere,
+          compact: false,
+          paymentStatus,
+          totalPrice,
+          guestId,
+          identityStatus,
+        }),
+      showUnpaid,
+      showMissingIdentity,
+      onMoveRoom: onMoveRoom
+        ? () => {
+            popover.onMoveRoom?.();
+            onMoveRoom();
+          }
+        : popover.onMoveRoom,
+    }),
+    [
+      popover,
+      stayTimeline,
+      bookingCheckIn,
+      effectiveToday,
+      roomNames,
+      checkedInRooms,
+      occupancyPhase,
+      isCerere,
+      paymentStatus,
+      totalPrice,
+      guestId,
+      identityStatus,
+      showUnpaid,
+      showMissingIdentity,
+      onMoveRoom,
+    ]
+  );
+
   const openStayMenu = useCallback(
     (clientX: number, clientY: number) => {
+      closeTapPopover();
       openMenu({
         kind: "stay",
         clientX,
@@ -212,6 +265,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       actualCheckOutAt,
       moveRoomDraft,
       onMoveRoom,
+      closeTapPopover,
     ]
   );
 
@@ -281,8 +335,13 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         if (Math.hypot(dx, dy) <= LONG_PRESS_MOVE_PX) {
           const el = captureEl.current;
           if (el) {
-            setAnchorRect(el.getBoundingClientRect());
-            setTapPopover((open) => !open);
+            const rect = el.getBoundingClientRect();
+            setAnchorRect(rect);
+            openTapPopover({
+              key: stayTapKey,
+              anchorRect: rect,
+              data: popoverData,
+            });
           }
         }
       }
@@ -310,10 +369,18 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
     };
-  }, [pressing, clearLongPress, releaseCapture, touch]);
+  }, [
+    pressing,
+    clearLongPress,
+    releaseCapture,
+    touch,
+    stayTapKey,
+    openTapPopover,
+    popoverData,
+  ]);
 
   const showPopover =
-    !pressing && !pending && (touch ? tapPopover : hover || popoverHover);
+    !pressing && !pending && !touch && (hover || popoverHover);
 
   const clearLeaveTimer = () => {
     if (leaveTimer.current) {
@@ -342,7 +409,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
         className={[
           "gantt-draggable-stay pointer-events-auto absolute z-[1] flex min-w-0 items-stretch",
           pending && "opacity-60",
-          tapPopover && "gantt-draggable-stay--tap-open",
+          tapPopoverOpen && "gantt-draggable-stay--tap-open",
         ]
           .filter(Boolean)
           .join(" ")}
@@ -392,34 +459,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       </div>
       {showPopover && (
         <GanttStayPopover
-          data={{
-            ...popover,
-            timeline:
-              stayTimeline ??
-              resolveGanttStayTimeline({
-                segmentCheckIn: popover.checkIn,
-                segmentCheckOut: popover.checkOut,
-                bookingCheckIn,
-                today: effectiveToday,
-                roomNames,
-                checkedInRooms,
-                occupancyPhase,
-                isCerere,
-                compact: false,
-                paymentStatus,
-                totalPrice,
-                guestId,
-                identityStatus,
-              }),
-            showUnpaid,
-            showMissingIdentity,
-            onMoveRoom: onMoveRoom
-              ? () => {
-                  popover.onMoveRoom?.();
-                  onMoveRoom();
-                }
-              : popover.onMoveRoom,
-          }}
+          data={popoverData}
           anchorRect={anchorRect}
           visible
           onMouseEnter={() => {
@@ -428,11 +468,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           }}
           onMouseLeave={() => {
             clearLeaveTimer();
-            if (touch) {
-              setTapPopover(false);
-            } else {
-              scheduleHidePopover();
-            }
+            scheduleHidePopover();
           }}
           today={today}
         />
