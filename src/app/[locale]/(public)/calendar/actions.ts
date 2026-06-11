@@ -118,8 +118,10 @@ export async function submitGuestRequestAction(formData: FormData) {
         return { ok: false as const, error: t("selectVariant") };
       }
 
-      await assertRoomsAvailableForStay(check_in, check_out, roomIds);
-      const rooms = await getRoomsByIds(roomIds);
+      const [, rooms] = await Promise.all([
+        assertRoomsAvailableForStay(check_in, check_out, roomIds),
+        getRoomsByIds(roomIds),
+      ]);
       if (rooms.length !== roomIds.length) {
         return { ok: false as const, error: t("variantUnavailable") };
       }
@@ -162,6 +164,7 @@ export async function submitGuestRequestAction(formData: FormData) {
         notes,
         total_price: total_estimate_ron,
         room_ids: roomIds,
+        skipAvailabilityCheck: true,
       });
 
       after(async () => {
@@ -208,7 +211,9 @@ export async function submitGuestRequestAction(formData: FormData) {
         }
       });
 
-      revalidatePublicBookingSurfaces({ disponibilitate: true });
+      after(() => {
+        revalidatePublicBookingSurfaces({ disponibilitate: true });
+      });
       return { ok: true as const };
     } catch (e) {
       return {
@@ -268,7 +273,9 @@ export async function submitPhoneBookingAction(formData: FormData) {
     notes,
   });
 
-  revalidatePublicBookingSurfaces({ receptie: true });
+  after(() => {
+    revalidatePublicBookingSurfaces({ receptie: true });
+  });
 
   if (confirm_now) {
     return { ok: true as const, bookingId: id, redirectConfirm: true };

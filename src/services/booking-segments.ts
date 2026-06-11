@@ -153,6 +153,39 @@ async function recalcBookingEnvelopeAndTotal(bookingId: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Primă alocare camere pe cerere nouă — fără delete, fără verificare split.
+ * Folosit la createBookingRequest pentru a evita round-trip-uri inutile.
+ */
+export async function seedBookingRoomSegments(input: {
+  bookingId: string;
+  checkIn: string;
+  checkOut: string;
+  roomIds: string[];
+}): Promise<void> {
+  const unique = [...new Set(input.roomIds.filter(Boolean))];
+  if (unique.length === 0) return;
+
+  const { tenantId, supabase } = await getTenantScope();
+  const rates = await roomNightlyRates(unique);
+  const inserts = unique.map((room_id) => {
+    const rate = rates.get(room_id);
+    if (rate == null) throw new Error("room.not_found");
+    return withTenantId(tenantId, {
+      booking_id: input.bookingId,
+      room_id,
+      segment_start: input.checkIn,
+      segment_end: input.checkOut,
+      nightly_rate: rate,
+    });
+  });
+
+  const { error: insErr } = await supabase
+    .from("booking_room_segments")
+    .insert(inserts);
+  if (insErr) throw new Error(insErr.message);
+}
+
 /** Rescrie segmentele din booking_rooms — doar dacă nu există split-uri. */
 export async function syncBookingRoomSegments(bookingId: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();

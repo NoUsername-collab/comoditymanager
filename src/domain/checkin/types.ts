@@ -104,6 +104,8 @@ export interface CheckinFormData {
   identity_scope?: CheckinIdentityScope;
   /** Camere primite în această sesiune (sosire incrementală). */
   reception_rooms?: string[];
+  /** Mută titularul rezervării pe clientul existent (confirmat de recepție). */
+  transfer_booking_to_guest_id?: string;
 }
 
 // ── Owner-configurable check-in settings ───────────────────

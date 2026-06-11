@@ -19,7 +19,11 @@ import {
 } from "@/domain/guest/national-id";
 import { NationalIdTypePicker } from "@/components/admin/guests/NationalIdTypePicker";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { createCheckinAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import {
+  createCheckinAction,
+  type CreateCheckinResult,
+} from "@/app/[locale]/admin/(panel)/checkin/actions";
+import type { CheckinTransferOffer } from "@/domain/checkin/identity-result";
 import { createInitialCheckinGuests } from "@/components/admin/checkin/checkin-guest-defaults";
 import {
   allowsOperatorScopeChoice,
@@ -185,8 +189,10 @@ export function CheckinStepper({
   // Validation result (computed on step 1)
   const [validation, setValidation] = useState<ValidationResult | null>(null);
 
-  // Error
+  // Error / transfer offer
   const [error, setError] = useState<string | null>(null);
+  const [transferOffer, setTransferOffer] =
+    useState<CheckinTransferOffer | null>(null);
 
   const buildFormData = useCallback((): CheckinFormData => {
     return {
@@ -243,8 +249,28 @@ export function CheckinStepper({
 
   // ── Submit ────────────────────────────────────────────────
 
-  function handleSubmit() {
+  function handleCheckinResult(result: CreateCheckinResult) {
+    if (result.ok) {
+      setTransferOffer(null);
+      showToast({
+        kind: "success",
+        title: t("success"),
+      });
+      setSheetData(buildTouristSheetData(booking, guests, settings));
+      return;
+    }
+    if (result.needsTransfer && result.transferOffer) {
+      setTransferOffer(result.transferOffer);
+      setError(null);
+      return;
+    }
+    setTransferOffer(null);
+    setError(result.error ?? "Unknown error");
+  }
+
+  function handleSubmit(transferToGuestId?: string) {
     setError(null);
+    if (!transferToGuestId) setTransferOffer(null);
     startTransition(async () => {
       const data = buildFormData();
       const fd = new FormData();
@@ -261,17 +287,11 @@ export function CheckinStepper({
         "reception_rooms",
         JSON.stringify(data.reception_rooms ?? []),
       );
-
-      const result = await createCheckinAction(fd);
-      if (result.ok) {
-        showToast({
-          kind: "success",
-          title: t("success"),
-        });
-        setSheetData(buildTouristSheetData(booking, guests, settings));
-      } else {
-        setError(result.error ?? "Unknown error");
+      if (transferToGuestId) {
+        fd.set("transfer_booking_to_guest_id", transferToGuestId);
       }
+
+      handleCheckinResult(await createCheckinAction(fd));
     });
   }
 
@@ -427,10 +447,43 @@ export function CheckinStepper({
         )}
       </div>
 
-      {/* Error */}
-      {error && (
+      {transferOffer ? (
+        <div className="checkin-stepper__transfer rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
+          <p className="font-medium">{t("transfer.title")}</p>
+          <p className="mt-1 text-sky-900/90">
+            {t("transfer.prompt", {
+              existing: transferOffer.existingGuestName,
+              booking: transferOffer.bookingGuestName,
+            })}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              className="checkin-stepper__btn checkin-stepper__btn--primary"
+              disabled={pending}
+              onClick={() =>
+                handleSubmit(transferOffer.existingGuestId)
+              }
+            >
+              {t("transfer.confirm", {
+                name: transferOffer.existingGuestName,
+              })}
+            </button>
+            <button
+              type="button"
+              className="checkin-stepper__btn checkin-stepper__btn--secondary"
+              disabled={pending}
+              onClick={() => setTransferOffer(null)}
+            >
+              {t("transfer.cancel")}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {error ? (
         <div className="checkin-stepper__error">{error}</div>
-      )}
+      ) : null}
 
       {/* Navigation buttons */}
       <div className="checkin-stepper__nav">
@@ -469,7 +522,7 @@ export function CheckinStepper({
           <button
             type="button"
             className="checkin-stepper__btn checkin-stepper__btn--primary"
-            onClick={handleSubmit}
+            onClick={() => handleSubmit()}
             disabled={pending}
           >
             {pending ? t("saving") : t("confirm")}

@@ -1,0 +1,58 @@
+import type {
+  GuestAppContent,
+  GuestAppFeatureDef,
+  GuestAppSettings,
+} from "@/domain/guest-app/types";
+import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
+import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { mapGuestAppSettingsRow } from "./map";
+
+export type GuestAppSettingsInput = {
+  enabled: boolean;
+  appearance: GuestAppSettings["appearance"];
+  features: GuestAppFeatureDef[];
+  content: GuestAppContent;
+};
+
+export async function upsertGuestAppSettingsImpl(
+  tenantId: string,
+  input: GuestAppSettingsInput,
+): Promise<void> {
+  const { supabase } = await getTenantScope();
+  const { error } = await supabase.from("guest_app_settings").upsert(
+    withTenantId(tenantId, {
+      enabled: input.enabled,
+      appearance: input.appearance,
+      features: input.features,
+      content: input.content,
+    }),
+    { onConflict: "tenant_id" },
+  );
+  if (error) throw new Error(error.message);
+}
+
+export async function ensureGuestAppSettingsRow(
+  tenantId: string,
+): Promise<GuestAppSettings> {
+  const { supabase } = await getTenantScope();
+  const { data, error } = await supabase
+    .from("guest_app_settings")
+    .select("enabled, appearance, features, content")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (data) return mapGuestAppSettingsRow(data);
+
+  const defaults = DEFAULT_GUEST_APP_SETTINGS;
+  const { error: insError } = await supabase.from("guest_app_settings").insert(
+    withTenantId(tenantId, {
+      enabled: defaults.enabled,
+      appearance: defaults.appearance,
+      features: defaults.features,
+      content: defaults.content,
+    }),
+  );
+  if (insError) throw new Error(insError.message);
+  return defaults;
+}

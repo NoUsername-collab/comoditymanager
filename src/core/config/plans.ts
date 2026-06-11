@@ -24,6 +24,7 @@ export type ModuleId =
   | "ical_sync"        // iCal sync (Booking, Airbnb)
   | "invoicing"        // Facturare + e-Factura ANAF
   | "whatsapp"         // WhatsApp notifications
+  | "guest_app"        // Alfred-style guest web app per stay
   | "public_page"      // Public booking page
   | "advanced_reports" // Advanced statistics
   | "multi_property"   // Multiple buildings/locations
@@ -282,6 +283,13 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     icon: "globe",
     pricePerMonth: 0,
     description: "Pagina de prezentare + rezervari online",
+  },
+  guest_app: {
+    id: "guest_app",
+    label: "Guest App",
+    icon: "smartphone",
+    pricePerMonth: 0,
+    description: "Aplicatie web pentru oaspeti pe durata seederii",
   },
   advanced_reports: {
     id: "advanced_reports",

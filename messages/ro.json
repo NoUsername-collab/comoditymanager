@@ -526,6 +526,10 @@
         "publicSiteSubtitle": "Template, temă, hero, galerie și contact",
         "publicSitePanelInfo": "Configurează prezentarea pensiunii pentru vizitatori — separat de tema admin.",
         "openPublicSiteSettings": "Deschide editor site public",
+        "guestAppTitle": "Guest app (oaspeți)",
+        "guestAppSubtitle": "Conținut, culori și funcții pentru aplicația web oaspeți",
+        "guestAppPanelInfo": "Configurează ce vede oaspetele în /stay/{cod} — Wi-Fi, tips, opțiune verde etc.",
+        "openGuestAppSettings": "Deschide setări Guest app",
         "statisticsTitle": "Statistici",
         "statisticsSubtitle": "Rapoarte anuale și comparativ lunar",
         "statisticsForbidden": "Nu ai acces la statistici. Doar proprietarul le poate deschide sau le poate delega din această secțiune.",
@@ -605,6 +609,58 @@
             "title": "Mediterranean",
             "desc": "Albastru adânc, accente calde — costier."
           }
+        }
+      },
+      "guestApp": {
+        "title": "Guest app — oaspeți",
+        "description": "Aplicația web personală per rezervare: conținut, culori și funcții (mock/live).",
+        "backSettings": "Înapoi la setări",
+        "saved": "Setările guest app au fost salvate.",
+        "loadError": "Nu s-au putut încărca setările. Rulează migrarea 056_guest_app.sql.",
+        "readOnly": "Doar proprietarul sau adminii pot edita guest app.",
+        "loading": "Se încarcă…",
+        "save": "Salvează guest app",
+        "general": "General",
+        "enabled": "Guest app activă",
+        "appearance": "Aspect",
+        "primaryColor": "Culoare principală",
+        "accentColor": "Culoare accent",
+        "logoUrl": "Logo (URL)",
+        "features": "Funcții",
+        "featuresHint": "Mock = demo pentru oaspeți; Live = pregătit pentru integrare; Ascuns = nu apare în app.",
+        "stateMock": "Demo (mock)",
+        "stateLive": "Activ (live)",
+        "stateHidden": "Ascuns",
+        "hotelContent": "Informații unitate",
+        "shortDescription": "Descriere scurtă",
+        "longDescription": "Descriere detaliată",
+        "address": "Adresă",
+        "phone": "Telefon",
+        "wifiNetwork": "Rețea Wi-Fi",
+        "wifiPassword": "Parolă Wi-Fi",
+        "wifiInstructions": "Instrucțiuni conectare",
+        "travelTips": "Sfaturi & recomandări",
+        "travelTipsHint": "Câte un sfat pe linie",
+        "greenStay": "Opțiune verde",
+        "greenStayEnabled": "Oferă opțiunea de a omite curățenia",
+        "greenStayDescription": "Text explicativ pentru oaspete",
+        "errors": {
+          "bookingNotFound": "Rezervarea nu a fost găsită.",
+          "notConfirmed": "Disponibil doar pentru rezervări confirmate.",
+          "appDisabled": "Guest app este dezactivată în setări.",
+          "linkUnavailable": "Link indisponibil — verifică migrarea și confirmarea.",
+          "noEmail": "Rezervarea nu are email pentru trimitere."
+        },
+        "share": {
+          "title": "Link guest app",
+          "hint": "Trimite clientului linkul personal — valabil pe durata șederii.",
+          "loading": "Se generează link…",
+          "copy": "Copiază link",
+          "copied": "Link copiat.",
+          "regenerate": "Regenerare cod",
+          "regenerated": "Cod nou generat.",
+          "sendEmail": "Trimite pe email",
+          "emailSent": "Email trimis clientului."
         }
       },
       "guests": {
@@ -2056,6 +2112,12 @@
       "confirm": "Confirmă check-in",
       "saving": "Se procesează...",
       "success": "Check-in înregistrat cu succes",
+      "transfer": {
+        "title": "Titular diferit de clientul din CNP",
+        "prompt": "CNP-ul introdus aparține clientului „{existing}”, dar rezervarea este pe „{booking}”. Poți muta cazarea pe clientul existent și continua check-in-ul.",
+        "confirm": "Mută cazarea pe {name}",
+        "cancel": "Anulează"
+      },
       "alreadyCheckedIn": "Toate camerele acestei rezervări sunt deja primite.",
       "migrationRequired": "Sistemul de check-in nu e activ în baza de date. Rulează migrarea 048_checkin_system.sql în Supabase (SQL Editor), apoi încearcă din nou.",
       "registeredGuests": {
@@ -2351,6 +2413,9 @@
         "directCreated": "Cazare directă creată",
         "requestAppears": "Cererea apare imediat în Gantt și în listă.",
         "bookingAppears": "Rezervarea apare imediat în Gantt.",
+        "existingGuestFound": "Client existent: {name}. Date completate automat.",
+        "existingGuestWatchlist": "Client pe listă de urmărire: {name}.",
+        "existingGuestBlacklist": "Client pe listă neagră: {name}.",
         "title": {
           "pick": "Alege acțiunea",
           "hold": "Hold rapid",

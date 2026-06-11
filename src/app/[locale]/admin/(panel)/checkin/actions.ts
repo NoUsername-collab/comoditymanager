@@ -34,6 +34,8 @@ import { getCheckinGuests } from "@/services/checkin/queries";
 import { listRegisteredGuestsForCheckin } from "@/services/checkin/booking-guests";
 import { syncBookingOperativeCheckInFromRecord } from "@/services/checkin/sync";
 import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
+import type { CheckinTransferOffer } from "@/domain/checkin/identity-result";
+import { decodeCheckinTransferRequired } from "@/domain/checkin/identity-result";
 
 export type CheckinWizardContextResult = {
   ok: boolean;
@@ -49,6 +51,8 @@ export type CreateCheckinResult = {
   ok: boolean;
   error?: string;
   checkinId?: string;
+  needsTransfer?: boolean;
+  transferOffer?: CheckinTransferOffer;
 };
 
 export type LoadTouristSheetResult = {
@@ -170,6 +174,10 @@ export async function createCheckinAction(
       reception_rooms = undefined;
     }
 
+    const transferBookingToGuestId =
+      String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
+      undefined;
+
     // Load booking data
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: "Booking not found" };
@@ -191,6 +199,7 @@ export async function createCheckinAction(
       notes,
       identity_scope,
       reception_rooms,
+      transfer_booking_to_guest_id: transferBookingToGuestId,
     };
 
     const checkinId = await createCheckin(checkinData, settings, bookingForCheckin);
@@ -207,6 +216,10 @@ export async function createCheckinAction(
     if (isCheckinMigrationMissing(msg)) {
       const t = await getTranslations("admin.checkIn");
       return { ok: false, error: t("migrationRequired") };
+    }
+    const transferOffer = decodeCheckinTransferRequired(msg);
+    if (transferOffer) {
+      return { ok: false, needsTransfer: true, transferOffer };
     }
     return { ok: false, error: msg };
   }

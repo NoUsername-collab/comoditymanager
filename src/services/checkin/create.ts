@@ -14,7 +14,11 @@ import {
 } from "@/domain/checkin/guest-layout";
 import type { CheckinIdentityScope } from "@/domain/checkin/types";
 import { guestFullName } from "@/domain/checkin/identity-rules";
+import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
+import { encodeCheckinTransferRequired } from "@/domain/checkin/identity-result";
 import { assertCheckinIdentityIntegrity } from "@/services/checkin/assert-checkin-identity";
+import { reassignBookingHolder } from "@/services/bookings/reassign-holder";
+import { getBookingById } from "@/services/bookings";
 import { syncCheckinGuestsToClientProfiles } from "@/services/checkin/sync-guest-from-checkin";
 import {
   normalizePaymentStatusForDb,
@@ -49,12 +53,31 @@ export async function createCheckin(
     );
   }
 
-  const identityBlockers = await assertCheckinIdentityIntegrity(
+  let activeBooking = booking;
+
+  if (data.transfer_booking_to_guest_id) {
+    await reassignBookingHolder(
+      data.booking_id,
+      data.transfer_booking_to_guest_id,
+    );
+    const refreshed = await getBookingById(data.booking_id);
+    if (!refreshed) throw new Error("booking.not_found");
+    activeBooking = mapBookingToForCheckin(refreshed);
+  }
+
+  const identityResult = await assertCheckinIdentityIntegrity(
     data.guests,
-    booking,
+    activeBooking,
   );
-  if (identityBlockers.length > 0) {
-    throw new Error(`checkin.blocked: ${identityBlockers.join("; ")}`);
+  if (identityResult.blockers.length > 0) {
+    throw new Error(
+      `checkin.blocked: ${identityResult.blockers.join("; ")}`,
+    );
+  }
+  if (identityResult.transferOffer && !data.transfer_booking_to_guest_id) {
+    throw new Error(
+      encodeCheckinTransferRequired(identityResult.transferOffer),
+    );
   }
 
   // Determine checkin status from validation result
@@ -98,7 +121,7 @@ export async function createCheckin(
   const identityGuests = expandedGuests.filter((g) => !g.keys_only);
   const syncedIdentity = await syncCheckinGuestsToClientProfiles(
     identityGuests,
-    booking,
+    activeBooking,
   );
   let syncIdx = 0;
   const mergedGuests = expandedGuests.map((g) => {
@@ -135,7 +158,7 @@ export async function createCheckin(
   }
 
   // ── Update booking.actual_check_in_at (prima sosire) ────────
-  if (!booking.actual_check_in_at) {
+  if (!activeBooking.actual_check_in_at) {
     const { error: bookingErr } = await supabase
       .from("bookings")
       .update({

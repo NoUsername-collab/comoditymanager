@@ -427,7 +427,7 @@ export async function resolveGuestAlertSnapshot(input: {
   const firstName = input.guestFirstName.trim();
 
   if (input.guestId) {
-    const profile = await getGuestProfile(input.guestId);
+    const profile = await fetchGuestProfileRow(input.guestId);
     if (profile && isGuestFlagged(profile.flag_level)) {
       return {
         level: profile.flag_level,
@@ -437,6 +437,7 @@ export async function resolveGuestAlertSnapshot(input: {
             : "Guest marked as watchlist",
       };
     }
+    return { level: "normal", note: null };
   }
 
   if (!lastName || !firstName) {

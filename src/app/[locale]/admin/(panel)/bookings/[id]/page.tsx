@@ -15,6 +15,7 @@ import { BookingActivitySection } from "@/components/admin/activity/BookingActiv
 import { BookingStayEditor } from "@/components/admin/BookingStayEditor";
 import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
+import { GuestAccessSharePanel } from "@/components/admin/bookings/GuestAccessSharePanel";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
@@ -282,6 +283,12 @@ export default async function BookingDetailPage({
               </Link>
             )}
           </div>
+
+          <GuestAccessSharePanel
+            bookingId={booking.id}
+            guestEmail={booking.guest_email}
+            isConfirmed={booking.status === "confirmata"}
+          />
 
           {/* Dedup */}
           {dedupCandidates.length > 0 && (

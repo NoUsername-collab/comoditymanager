@@ -526,6 +526,10 @@
         "publicSiteSubtitle": "Template, theme, hero, gallery and contact",
         "publicSitePanelInfo": "Configure how visitors see your property — separate from the admin theme.",
         "openPublicSiteSettings": "Open public site editor",
+        "guestAppTitle": "Guest app",
+        "guestAppSubtitle": "Content, colors and features for the guest web app",
+        "guestAppPanelInfo": "Configure what guests see at /stay/{code} — Wi-Fi, tips, green stay, etc.",
+        "openGuestAppSettings": "Open Guest app settings",
         "statisticsTitle": "Statistics",
         "statisticsSubtitle": "Annual reports and monthly comparison",
         "statisticsForbidden": "You do not have access to statistics. Only the owner can open them or grant access in this section.",
@@ -605,6 +609,58 @@
             "title": "Mediterranean",
             "desc": "Deep blue, warm accents — coastal mood."
           }
+        }
+      },
+      "guestApp": {
+        "title": "Guest app",
+        "description": "Personal web app per stay: content, colors and features (mock/live).",
+        "backSettings": "Back to settings",
+        "saved": "Guest app settings saved.",
+        "loadError": "Could not load settings. Run migration 056_guest_app.sql.",
+        "readOnly": "Only owner or admins can edit guest app.",
+        "loading": "Loading…",
+        "save": "Save guest app",
+        "general": "General",
+        "enabled": "Guest app enabled",
+        "appearance": "Appearance",
+        "primaryColor": "Primary color",
+        "accentColor": "Accent color",
+        "logoUrl": "Logo (URL)",
+        "features": "Features",
+        "featuresHint": "Mock = demo for guests; Live = ready for integration; Hidden = not shown in app.",
+        "stateMock": "Demo (mock)",
+        "stateLive": "Active (live)",
+        "stateHidden": "Hidden",
+        "hotelContent": "Property info",
+        "shortDescription": "Short description",
+        "longDescription": "Long description",
+        "address": "Address",
+        "phone": "Phone",
+        "wifiNetwork": "Wi-Fi network",
+        "wifiPassword": "Wi-Fi password",
+        "wifiInstructions": "Connection instructions",
+        "travelTips": "Tips & recommendations",
+        "travelTipsHint": "One tip per line",
+        "greenStay": "Green stay",
+        "greenStayEnabled": "Offer skip-housekeeping option",
+        "greenStayDescription": "Explanation text for guests",
+        "errors": {
+          "bookingNotFound": "Booking not found.",
+          "notConfirmed": "Only available for confirmed bookings.",
+          "appDisabled": "Guest app is disabled in settings.",
+          "linkUnavailable": "Link unavailable — check migration and confirmation.",
+          "noEmail": "Booking has no email address."
+        },
+        "share": {
+          "title": "Guest app link",
+          "hint": "Send the guest their personal link — valid for the stay period.",
+          "loading": "Generating link…",
+          "copy": "Copy link",
+          "copied": "Link copied.",
+          "regenerate": "Regenerate code",
+          "regenerated": "New code generated.",
+          "sendEmail": "Send by email",
+          "emailSent": "Email sent to guest."
         }
       },
       "guests": {
@@ -2056,6 +2112,12 @@
       "confirm": "Confirm check-in",
       "saving": "Processing...",
       "success": "Check-in recorded successfully",
+      "transfer": {
+        "title": "Holder differs from ID owner",
+        "prompt": "The ID entered belongs to “{existing}”, but the booking is under “{booking}”. You can move the stay to the existing guest and continue check-in.",
+        "confirm": "Move stay to {name}",
+        "cancel": "Cancel"
+      },
       "alreadyCheckedIn": "All rooms for this booking have already been received.",
       "migrationRequired": "The check-in system is not set up in the database. Run migration 048_checkin_system.sql in Supabase (SQL Editor), then try again.",
       "registeredGuests": {
@@ -2351,6 +2413,9 @@
         "directCreated": "Direct stay created",
         "requestAppears": "Request appears immediately in Gantt and list.",
         "bookingAppears": "Booking appears immediately in Gantt.",
+        "existingGuestFound": "Existing guest: {name}. Details auto-filled.",
+        "existingGuestWatchlist": "Guest on watchlist: {name}.",
+        "existingGuestBlacklist": "Guest on blacklist: {name}.",
         "title": {
           "pick": "Choose action",
           "hold": "Quick hold",

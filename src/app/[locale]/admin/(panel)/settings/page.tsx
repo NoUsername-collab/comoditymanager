@@ -242,6 +242,24 @@ export default async function SettingsPage({
 
           {(role === "admin" || isOwner) && (
             <SettingsSlidePanel
+              title={t("guestAppTitle")}
+              subtitle={t("guestAppSubtitle")}
+              icon="*"
+            >
+              <div className="space-y-3">
+                <p className="text-sm text-zinc-600">{t("guestAppPanelInfo")}</p>
+                <Link
+                  href="/admin/settings/guest-app"
+                  className="admin-settings-cta inline-flex rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+                >
+                  {t("openGuestAppSettings")}
+                </Link>
+              </div>
+            </SettingsSlidePanel>
+          )}
+
+          {(role === "admin" || isOwner) && (
+            <SettingsSlidePanel
               title={t("publicSiteTitle")}
               subtitle={t("publicSiteSubtitle")}
               icon="*"

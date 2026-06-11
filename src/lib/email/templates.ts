@@ -61,6 +61,14 @@ function infoTable(rows: string): string {
   </table>`;
 }
 
+function ctaButton(href: string, label: string): string {
+  return `<div style="text-align:center;margin:24px 0">
+    <a href="${href}" style="display:inline-block;padding:12px 28px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600">
+      ${label}
+    </a>
+  </div>`;
+}
+
 // ─── Template: New booking request (to pension owner) ────────────
 export function newBookingRequestToOwner(data: {
   pensionName: string;
@@ -117,6 +125,7 @@ export function bookingConfirmedToGuest(data: {
   checkOutTime: string;
   pensionPhone?: string;
   pensionEmail?: string;
+  guestAppUrl?: string;
 }): EmailContent {
   const roomList = data.rooms.join(", ");
   const nights = Math.max(1, Math.round(
@@ -135,11 +144,36 @@ export function bookingConfirmedToGuest(data: {
         ${infoRow("Camere", roomList)}
         ${infoRow("Total", `${data.totalPrice} ${data.currency}`)}
       `)}
+      ${data.guestAppUrl ? p("Accesează aplicația pentru oaspeți — Wi-Fi, informații utile și multe altele:") : ""}
+      ${data.guestAppUrl ? ctaButton(data.guestAppUrl, "Deschide aplicația oaspete") : ""}
       ${p("Te așteptăm cu drag!")}
       ${data.pensionPhone ? p(`Telefon: ${data.pensionPhone}`) : ""}
       ${data.pensionEmail ? p(`Email: ${data.pensionEmail}`) : ""}
     `),
-    text: `Rezervare confirmată — ${data.pensionName}\n\nBună, ${data.guestName}!\nCheck-in: ${data.checkIn} după ${data.checkInTime}\nCheck-out: ${data.checkOut} până la ${data.checkOutTime}\nCamere: ${roomList}\nTotal: ${data.totalPrice} ${data.currency}\n\nTe așteptăm!`,
+    text: `Rezervare confirmată — ${data.pensionName}\n\nBună, ${data.guestName}!\nCheck-in: ${data.checkIn} după ${data.checkInTime}\nCheck-out: ${data.checkOut} până la ${data.checkOutTime}\nCamere: ${roomList}\nTotal: ${data.totalPrice} ${data.currency}${data.guestAppUrl ? `\n\nAplicație oaspete: ${data.guestAppUrl}` : ""}\n\nTe așteptăm!`,
+  };
+}
+
+// ─── Template: Guest app link (standalone resend) ───────────────
+export function guestAppLinkToGuest(data: {
+  pensionName: string;
+  guestName: string;
+  checkIn: string;
+  checkOut: string;
+  guestAppUrl: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+}): EmailContent {
+  return {
+    subject: `Aplicația ta de oaspete — ${data.pensionName}`,
+    html: wrap(data.pensionName, `
+      ${h2("Aplicația pentru oaspeți")}
+      ${p(`Bună, <strong>${data.guestName}</strong>! Iată linkul personal pentru șederea ta (${data.checkIn} → ${data.checkOut}).`)}
+      ${data.checkInTime ? p(`Check-in de la ${data.checkInTime}, check-out până la ${data.checkOutTime ?? "11:00"}.`) : ""}
+      ${ctaButton(data.guestAppUrl, "Deschide aplicația")}
+      ${p("Linkul este valabil pe durata șederii. Nu îl distribui altor persoane.")}
+    `),
+    text: `Aplicație oaspete — ${data.pensionName}\n\nBună, ${data.guestName}!\n${data.checkIn} → ${data.checkOut}\n\n${data.guestAppUrl}`,
   };
 }
 

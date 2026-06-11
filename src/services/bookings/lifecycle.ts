@@ -125,6 +125,11 @@ export async function confirmBookingWithRooms(
       check_out: booking.check_out,
     },
   });
+
+  const { issueGuestAccessForBooking } = await import(
+    "@/services/guest-app/access"
+  );
+  await issueGuestAccessForBooking(bookingId).catch(() => null);
 }
 
 export async function rescheduleBookingDates(
@@ -315,6 +320,11 @@ export async function cancelBooking(bookingId: string): Promise<void> {
   if (error) throw new Error(error.message);
 
   await syncBookingRoomSegments(bookingId);
+
+  const { revokeGuestAccessForBooking } = await import(
+    "@/services/guest-app/access"
+  );
+  await revokeGuestAccessForBooking(bookingId).catch(() => null);
 
   await logAdminActivityFromSession({
     action: "booking.cancelled",

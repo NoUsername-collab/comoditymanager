@@ -153,6 +153,16 @@ registerModule({
 });
 
 registerModule({
+  id: "guest_app",
+  name: "Guest App",
+  publicRoutes: ["/stay"],
+  serverActions: [
+    "resolveGuestAccessByCode",
+    "issueGuestAccessForBooking",
+  ],
+});
+
+registerModule({
   id: "public_page",
   name: "Pagină Publică",
   publicRoutes: ["/", "/calendar", "/receptie"],

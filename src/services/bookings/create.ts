@@ -1,4 +1,6 @@
+import { after } from "next/server";
 import { unstable_cache } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { GuestFlagLevel } from "@/domain/guest/types";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import { isSimActive } from "@/domain/simulation/sim-cookie";
@@ -13,6 +15,7 @@ import {
 } from "@/services/activity-log";
 import {
   bookingHasSplitSegments,
+  seedBookingRoomSegments,
   shiftAllSegmentsByDays,
   syncBookingRoomSegments,
 } from "@/services/booking-segments";
@@ -79,6 +82,36 @@ export async function assignBookingRoomHold(
   await syncBookingRoomSegments(bookingId);
 }
 
+async function attachRoomsToNewBooking(
+  bookingId: string,
+  checkIn: string,
+  checkOut: string,
+  roomIds: string[],
+  tenantId: string,
+  supabase: SupabaseClient,
+): Promise<void> {
+  const unique = [...new Set(roomIds.filter(Boolean))];
+  if (unique.length === 0) return;
+
+  const { error: insError } = await supabase.from("booking_rooms").insert(
+    unique.map((room_id) =>
+      withTenantId(tenantId, {
+        booking_id: bookingId,
+        room_id,
+        extra_beds: 0,
+      }),
+    ),
+  );
+  if (insError) throw new Error(insError.message);
+
+  await seedBookingRoomSegments({
+    bookingId,
+    checkIn,
+    checkOut,
+    roomIds: unique,
+  });
+}
+
 async function rollbackFailedBookingRequest(bookingId: string): Promise<void> {
   const { tenantId, supabase } = await getTenantScope();
   await supabase
@@ -109,6 +142,8 @@ export async function createBookingRequest(input: {
   total_price?: number | null;
   /** Soft hold: camere blocate provizoriu (status rămâne cerere_noua). */
   room_ids?: string[];
+  /** Caller a verificat deja disponibilitatea (evită query duplicat). */
+  skipAvailabilityCheck?: boolean;
 }): Promise<string> {
   assertValidGuestPhone(input.guest_phone);
 
@@ -116,23 +151,28 @@ export async function createBookingRequest(input: {
     ? [...new Set(input.room_ids.filter(Boolean))]
     : [];
 
-  if (holdRooms.length > 0) {
-    await assertRoomsAvailableForStay(
-      input.check_in,
-      input.check_out,
-      holdRooms
-    );
-  }
+  const availabilityPromise =
+    holdRooms.length > 0 && !input.skipAvailabilityCheck
+      ? assertRoomsAvailableForStay(
+          input.check_in,
+          input.check_out,
+          holdRooms,
+        )
+      : Promise.resolve();
 
-  const { tenantId, supabase } = await getTenantScope();
+  const [{ tenantId, supabase }, { guestId, mergeConflict }] = await Promise.all([
+    getTenantScope(),
+    resolveGuestForBooking({
+      guest_name: input.guest_name,
+      guest_last_name: input.guest_last_name,
+      guest_first_name: input.guest_first_name,
+      guest_email: input.guest_email,
+      guest_phone: input.guest_phone,
+    }),
+  ]);
 
-  const { guestId, mergeConflict } = await resolveGuestForBooking({
-    guest_name: input.guest_name,
-    guest_last_name: input.guest_last_name,
-    guest_first_name: input.guest_first_name,
-    guest_email: input.guest_email,
-    guest_phone: input.guest_phone,
-  });
+  await availabilityPromise;
+
   const guestAlert = await resolveGuestAlertSnapshot({
     guestId,
     guestLastName: input.guest_last_name,
@@ -169,49 +209,58 @@ export async function createBookingRequest(input: {
 
   if (holdRooms.length > 0) {
     try {
-      await assignBookingRoomHold(data.id, holdRooms, {
-        skipAvailabilityCheck: true,
-      });
+      await attachRoomsToNewBooking(
+        data.id,
+        input.check_in,
+        input.check_out,
+        holdRooms,
+        tenantId,
+        supabase,
+      );
     } catch (e) {
       await rollbackFailedBookingRequest(data.id);
       throw e;
     }
   }
 
-  await logAdminActivity({
-    action: "booking.request_created",
-    entityType: "booking",
-    entityId: data.id,
-    summary: `Cerere nouă: ${input.guest_name.trim()}`,
-    metadata: {
-      check_in: input.check_in,
-      check_out: input.check_out,
-      guest_email: input.guest_email.trim(),
-      guest_id: guestId,
-      guest_alert_level: guestAlert.level,
-      guest_alert_note: guestAlert.note,
-      ...(mergeConflict ? { guest_merge_conflict: true } : {}),
-      ...(holdRooms.length > 0
-        ? { room_ids: holdRooms, soft_hold: true }
-        : {}),
-    },
-    actor: null,
-  });
-
-  if (guestAlert.level !== "normal") {
+  const bookingId = data.id;
+  const guestName = input.guest_name.trim();
+  after(async () => {
     await logAdminActivity({
-      action: "booking.flagged",
+      action: "booking.request_created",
       entityType: "booking",
-      entityId: data.id,
-      summary: `Cerere cu alertă client: ${input.guest_name.trim()}`,
+      entityId: bookingId,
+      summary: `Cerere nouă: ${guestName}`,
       metadata: {
+        check_in: input.check_in,
+        check_out: input.check_out,
+        guest_email: input.guest_email.trim(),
+        guest_id: guestId,
         guest_alert_level: guestAlert.level,
         guest_alert_note: guestAlert.note,
+        ...(mergeConflict ? { guest_merge_conflict: true } : {}),
+        ...(holdRooms.length > 0
+          ? { room_ids: holdRooms, soft_hold: true }
+          : {}),
       },
       actor: null,
     });
-  }
 
-  return data.id;
+    if (guestAlert.level !== "normal") {
+      await logAdminActivity({
+        action: "booking.flagged",
+        entityType: "booking",
+        entityId: bookingId,
+        summary: `Cerere cu alertă client: ${guestName}`,
+        metadata: {
+          guest_alert_level: guestAlert.level,
+          guest_alert_note: guestAlert.note,
+        },
+        actor: null,
+      });
+    }
+  });
+
+  return bookingId;
 }
 

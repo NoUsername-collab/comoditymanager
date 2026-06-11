@@ -13,6 +13,7 @@ import {
   newBookingRequestToOwner,
   bookingConfirmedToGuest,
   bookingCancelledToGuest,
+  guestAppLinkToGuest,
 } from "@/lib/email/templates";
 
 /** Log email failures without crashing the main flow */
@@ -77,6 +78,7 @@ export async function notifyGuestConfirmed(data: {
   currency?: string;
   checkInTime?: string;
   checkOutTime?: string;
+  guestAppUrl?: string;
 }): Promise<void> {
   try {
     const template = bookingConfirmedToGuest({
@@ -89,6 +91,7 @@ export async function notifyGuestConfirmed(data: {
       currency: data.currency ?? "RON",
       checkInTime: data.checkInTime ?? "14:00",
       checkOutTime: data.checkOutTime ?? "11:00",
+      guestAppUrl: data.guestAppUrl,
     });
 
     const result = await sendEmail({
@@ -101,6 +104,41 @@ export async function notifyGuestConfirmed(data: {
     logEmailResult("notifyGuestConfirmed", result);
   } catch (error) {
     console.error("[EMAIL-CRASH] notifyGuestConfirmed:", error);
+  }
+}
+
+// ─── Notify guest: guest app link ───────────────────────────────
+export async function notifyGuestAppLink(data: {
+  guestEmail: string;
+  pensionName: string;
+  guestName: string;
+  checkIn: string;
+  checkOut: string;
+  guestAppUrl: string;
+  checkInTime?: string;
+  checkOutTime?: string;
+}): Promise<void> {
+  try {
+    const template = guestAppLinkToGuest({
+      pensionName: data.pensionName,
+      guestName: data.guestName,
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+      guestAppUrl: data.guestAppUrl,
+      checkInTime: data.checkInTime,
+      checkOutTime: data.checkOutTime,
+    });
+
+    const result = await sendEmail({
+      to: data.guestEmail,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+    });
+
+    logEmailResult("notifyGuestAppLink", result);
+  } catch (error) {
+    console.error("[EMAIL-CRASH] notifyGuestAppLink:", error);
   }
 }
 

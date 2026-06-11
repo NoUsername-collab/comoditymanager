@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { requireAdmin, getAdminUser } from "@/lib/auth/require-admin";
 import {
@@ -340,7 +341,9 @@ export async function createCerereFromGanttAction(input: {
       notes: t("createdFromGanttNote"),
       room_ids: [input.roomId],
     });
-    revalidateBookingSurfaces();
+    after(() => {
+      revalidateBookingSurfaces();
+    });
     return { ok: true, id };
   } catch (e) {
     return {
@@ -400,7 +403,9 @@ export async function createDirectStayFromGanttAction(input: {
 
     await confirmBookingWithRooms(bookingId, [input.roomId], total);
 
-    revalidateBookingSurfaces();
+    after(() => {
+      revalidateBookingSurfaces();
+    });
     return { ok: true, id: bookingId };
   } catch (e) {
     return {

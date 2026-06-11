@@ -4,20 +4,22 @@ import {
   guestNationalIdKey,
   holderNationalIdMatches,
 } from "@/domain/checkin/identity-guards";
+import type { CheckinIdentityResult } from "@/domain/checkin/identity-result";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import type { BookingForCheckin, CheckinGuestInput } from "@/domain/checkin/types";
 import { getGuestBaseById, findGuestByNationalId } from "@/services/guests/lookup";
 
 /**
- * Blochează check-in când identitatea introdusă nu poate fi legată în siguranță
- * de profilul clientului (ex.: CNP al altui client pe titularul rezervării).
+ * Verifică identitatea la check-in. Când CNP-ul titularului aparține altui client,
+ * oferă mutarea rezervării în loc de blocare secă.
  */
 export async function assertCheckinIdentityIntegrity(
   guests: CheckinGuestInput[],
   booking: BookingForCheckin,
-): Promise<string[]> {
+): Promise<CheckinIdentityResult> {
   const activeGuests = guestsCollectingIdentity(guests);
   const blockers = findDuplicateNationalIdsInForm(activeGuests);
+  let transferOffer: CheckinIdentityResult["transferOffer"];
 
   for (const guest of activeGuests) {
     const nationalKey = guestNationalIdKey(guest);
@@ -34,9 +36,11 @@ export async function assertCheckinIdentityIntegrity(
         booking.guest_id &&
         existing.id !== booking.guest_id
       ) {
-        blockers.push(
-          `CNP/codul introdus pentru titular aparține clientului „${existing.display_name}”, dar rezervarea este pe „${booking.guest_name}”. Nu introduceți datele altcuiva la titular — adăugați persoana ca oaspet sau deschideți rezervarea corectă.`,
-        );
+        transferOffer = {
+          existingGuestId: existing.id,
+          existingGuestName: existing.display_name,
+          bookingGuestName: booking.guest_name,
+        };
         continue;
       }
 
@@ -68,5 +72,5 @@ export async function assertCheckinIdentityIntegrity(
     }
   }
 
-  return blockers;
+  return { blockers, transferOffer };
 }

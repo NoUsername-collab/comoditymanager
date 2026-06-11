@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+  type ReactNode,
+} from "react";
+import { suggestExistingGuestAction } from "@/app/[locale]/(public)/calendar/actions";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { BookingRow } from "@/services/bookings";
@@ -390,6 +397,11 @@ export function GanttQuickActionPanel({
   const [guestFirstName, setGuestFirstName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
+  const [identityHint, setIdentityHint] = useState<string | null>(null);
+  const [identityHintTone, setIdentityHintTone] = useState<
+    "neutral" | "warn"
+  >("neutral");
+  const [identityPending, startIdentityTransition] = useTransition();
   const [moveBookingId, setMoveBookingId] = useState(defaultBooking?.id ?? "");
   const [moveSourceRoomId, setMoveSourceRoomId] = useState(
     defaultBooking?.room_ids[0] ?? ""
@@ -640,6 +652,49 @@ export function GanttQuickActionPanel({
       }
       onClose();
       router.refresh();
+    });
+  }
+
+  function maybeAutofillGuest() {
+    const hasIdentity =
+      guestEmail.trim().length > 0 ||
+      guestPhone.trim().length > 0 ||
+      (guestLastName.trim().length > 1 && guestFirstName.trim().length > 1);
+    if (!hasIdentity) return;
+    startIdentityTransition(async () => {
+      const res = await suggestExistingGuestAction({
+        guest_last_name: guestLastName,
+        guest_first_name: guestFirstName,
+        guest_email: guestEmail,
+        guest_phone: guestPhone,
+      });
+      if (!res.ok || !res.match) return;
+      setGuestLastName(res.match.lastName);
+      setGuestFirstName(res.match.firstName);
+      setGuestEmail(res.match.email ?? guestEmail);
+      setGuestPhone(res.match.phone ?? guestPhone);
+      if (res.match.flagLevel === "blacklist") {
+        setIdentityHintTone("warn");
+        setIdentityHint(
+          tGantt("quick.existingGuestBlacklist", {
+            name: res.match.displayName,
+          }),
+        );
+      } else if (res.match.flagLevel === "watchlist") {
+        setIdentityHintTone("warn");
+        setIdentityHint(
+          tGantt("quick.existingGuestWatchlist", {
+            name: res.match.displayName,
+          }),
+        );
+      } else {
+        setIdentityHintTone("neutral");
+        setIdentityHint(
+          tGantt("quick.existingGuestFound", {
+            name: res.match.displayName,
+          }),
+        );
+      }
     });
   }
 
@@ -935,7 +990,11 @@ export function GanttQuickActionPanel({
                 <input
                   className={inputClass}
                   value={guestLastName}
-                  onChange={(e) => setGuestLastName(e.target.value)}
+                  onChange={(e) => {
+                    setGuestLastName(e.target.value);
+                    if (identityHint) setIdentityHint(null);
+                  }}
+                  onBlur={maybeAutofillGuest}
                 />
               </label>
               <label className={labelClass}>
@@ -943,17 +1002,37 @@ export function GanttQuickActionPanel({
                 <input
                   className={inputClass}
                   value={guestFirstName}
-                  onChange={(e) => setGuestFirstName(e.target.value)}
+                  onChange={(e) => {
+                    setGuestFirstName(e.target.value);
+                    if (identityHint) setIdentityHint(null);
+                  }}
+                  onBlur={maybeAutofillGuest}
                 />
               </label>
             </div>
+            {(identityPending || identityHint) && (
+              <p
+                className={[
+                  "text-xs",
+                  identityHintTone === "warn"
+                    ? "text-amber-800"
+                    : "text-emerald-800",
+                ].join(" ")}
+              >
+                {identityPending ? tCommon("loading") : identityHint}
+              </p>
+            )}
             <label className={labelClass}>
               Email
               <input
                 type="email"
                 className={inputClass}
                 value={guestEmail}
-                onChange={(e) => setGuestEmail(e.target.value)}
+                onChange={(e) => {
+                  setGuestEmail(e.target.value);
+                  if (identityHint) setIdentityHint(null);
+                }}
+                onBlur={maybeAutofillGuest}
               />
             </label>
             <label className={labelClass}>
@@ -963,7 +1042,11 @@ export function GanttQuickActionPanel({
                 type="tel"
                 required
                 value={guestPhone}
-                onChange={(e) => setGuestPhone(e.target.value)}
+                onChange={(e) => {
+                  setGuestPhone(e.target.value);
+                  if (identityHint) setIdentityHint(null);
+                }}
+                onBlur={maybeAutofillGuest}
               />
             </label>
             <div className="gantt-quick-panel__actions flex gap-2">

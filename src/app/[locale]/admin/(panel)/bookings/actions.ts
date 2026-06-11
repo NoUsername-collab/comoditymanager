@@ -42,15 +42,28 @@ export async function confirmBookingAction(formData: FormData) {
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
-  // Notify guest (non-blocking) — pension name from DB
+  // Notify guest (non-blocking) — include guest app link when available
   (async () => {
     try {
+      const { headers } = await import("next/headers");
+      const { platformSiteUrl } = await import("@/lib/platform/branding");
       const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
       const { getTenantDisplayName } = await import("@/services/tenants");
+      const { getPensionSettings } = await import("@/services/pension-settings");
       const pensionName = await getTenantDisplayName(await resolveTenantIdForData());
       const { getBookingById } = await import("@/services/bookings");
       const booking = await getBookingById(id);
       if (!booking || !booking.guest_email) return;
+
+      const h = await headers();
+      const host = h.get("x-forwarded-host") ?? h.get("host");
+      const baseUrl = platformSiteUrl(host);
+      const { resolveGuestAccessLinkForBooking } = await import(
+        "@/services/guest-app/access"
+      );
+      const link = await resolveGuestAccessLinkForBooking(id, baseUrl);
+      const pensionSettings = await getPensionSettings().catch(() => null);
+
       const { notifyGuestConfirmed } = await import("@/lib/email/notify");
       await notifyGuestConfirmed({
         guestEmail: booking.guest_email,
@@ -60,6 +73,9 @@ export async function confirmBookingAction(formData: FormData) {
         checkOut: booking.check_out,
         rooms: booking.room_names,
         totalPrice: total_price,
+        checkInTime: pensionSettings?.default_check_in_time,
+        checkOutTime: pensionSettings?.default_check_out_time,
+        guestAppUrl: link?.url,
       });
     } catch { /* email failure must never crash */ }
   })();

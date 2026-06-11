@@ -1,0 +1,8 @@
+.guest-app {
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+.guest-app__header {
+  backdrop-filter: blur(12px);
+  background: rgba(9, 9, 11, 0.85);
+}
