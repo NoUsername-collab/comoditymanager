@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { stayNightCount } from "@/lib/stay-dates";
+import {
+  addDays,
+  clampCheckInDate,
+  stayNightCount,
+  todayIso,
+} from "@/lib/stay-dates";
 
 type Props = {
   bookingId: string;
@@ -27,6 +32,7 @@ export function BookingStayEditor({
   editAction,
 }: Props) {
   const t = useTranslations("admin.stayEditor");
+  const today = todayIso();
   const [editing, setEditing] = useState(false);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
@@ -112,12 +118,12 @@ export function BookingStayEditor({
             type="date"
             value={checkIn}
             disabled={checkedIn}
+            min={checkedIn ? undefined : today}
             onChange={(e) => {
-              setCheckIn(e.target.value);
-              if (e.target.value >= checkOut) {
-                const d = new Date(e.target.value);
-                d.setDate(d.getDate() + 1);
-                setCheckOut(d.toISOString().slice(0, 10));
+              const nextCheckIn = clampCheckInDate(e.target.value, today);
+              setCheckIn(nextCheckIn);
+              if (nextCheckIn >= checkOut) {
+                setCheckOut(addDays(nextCheckIn, 1));
               }
             }}
             className="admin-stay-editor__input"

@@ -13,7 +13,42 @@ import {
   lastDayOfMonth,
   firstDayOfMonth,
   nightsBetween,
+  clampCheckInDate,
+  defaultNewStayDates,
+  minCheckOutDate,
 } from "@/lib/stay-dates";
+
+// ---------------------------------------------------------------------------
+// check-in date constraints
+// ---------------------------------------------------------------------------
+describe("clampCheckInDate", () => {
+  it("keeps future dates unchanged", () => {
+    expect(clampCheckInDate("2025-06-15", "2025-06-10")).toBe("2025-06-15");
+  });
+
+  it("clamps past dates to today", () => {
+    expect(clampCheckInDate("2025-06-08", "2025-06-10")).toBe("2025-06-10");
+  });
+
+  it("keeps today unchanged", () => {
+    expect(clampCheckInDate("2025-06-10", "2025-06-10")).toBe("2025-06-10");
+  });
+});
+
+describe("defaultNewStayDates", () => {
+  it("defaults to today with checkout next day", () => {
+    expect(defaultNewStayDates("2025-06-10")).toEqual({
+      checkIn: "2025-06-10",
+      checkOut: "2025-06-11",
+    });
+  });
+});
+
+describe("minCheckOutDate", () => {
+  it("returns day after clamped check-in", () => {
+    expect(minCheckOutDate("2025-06-08", "2025-06-10")).toBe("2025-06-11");
+  });
+});
 
 // ---------------------------------------------------------------------------
 // parseIso + formatIso roundtrip

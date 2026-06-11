@@ -18,6 +18,36 @@ export function addDays(iso: string, days: number): string {
   return formatIso(d);
 }
 
+/** Earliest selectable check-in date (today, local). */
+export function earliestCheckInDate(today: string = todayIso()): string {
+  return today;
+}
+
+/** Clamp check-in so it is not before today. */
+export function clampCheckInDate(
+  checkIn: string,
+  today: string = todayIso()
+): string {
+  return checkIn < today ? today : checkIn;
+}
+
+/** Default check-in / check-out pair for a new stay (1 night from today). */
+export function defaultNewStayDates(today: string = todayIso()): {
+  checkIn: string;
+  checkOut: string;
+} {
+  const checkIn = earliestCheckInDate(today);
+  return { checkIn, checkOut: addDays(checkIn, 1) };
+}
+
+/** Earliest valid check-out for a given check-in (next calendar day). */
+export function minCheckOutDate(
+  checkIn: string,
+  today: string = todayIso()
+): string {
+  return addDays(clampCheckInDate(checkIn, today), 1);
+}
+
 export function lastDayOfMonth(iso: string): string {
   const d = parseIso(iso);
   d.setMonth(d.getMonth() + 1, 0);

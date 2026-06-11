@@ -14,7 +14,12 @@ import type {
   GuestStayOption,
   GuestStayPreview,
 } from "@/domain/availability/guest-stay-options";
-import { addDays, todayIso } from "@/lib/stay-dates";
+import {
+  addDays,
+  clampCheckInDate,
+  defaultNewStayDates,
+  todayIso,
+} from "@/lib/stay-dates";
 
 type Props = {
   checkInTime: string;
@@ -28,10 +33,13 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const tErrors = useTranslations("errors");
   const tCommon = useTranslations("common");
 
+  const today = todayIso();
+  const defaultDates = defaultNewStayDates(today);
+
   const [step, setStep] = useState<Step>("dates");
   const [hasMinor, setHasMinor] = useState(false);
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
+  const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
   const [numAdults, setNumAdults] = useState(2);
   const [numChildren, setNumChildren] = useState(0);
   const [preview, setPreview] = useState<GuestStayPreview | null>(null);
@@ -45,19 +53,19 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
 
-  const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
   function onCheckInChange(value: string) {
-    setCheckIn(value);
+    const nextCheckIn = clampCheckInDate(value, today);
+    setCheckIn(nextCheckIn);
     setPreview(null);
     setSelected(null);
-    if (!value) {
+    if (!nextCheckIn) {
       setCheckOut("");
       return;
     }
-    const earliestOut = addDays(value, 1);
-    if (!checkOut || checkOut <= value) {
+    const earliestOut = addDays(nextCheckIn, 1);
+    if (!checkOut || checkOut <= nextCheckIn) {
       setCheckOut(earliestOut);
     }
   }

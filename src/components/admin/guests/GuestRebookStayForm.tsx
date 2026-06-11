@@ -12,7 +12,7 @@ import {
 import type { GuestRebookDraft } from "@/services/guest-rebook";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { addDays, todayIso } from "@/lib/stay-dates";
+import { addDays, clampCheckInDate, todayIso } from "@/lib/stay-dates";
 import { stayNightCount } from "@/lib/stay-dates";
 import {
   canRoomsHostGuests,
@@ -62,8 +62,17 @@ export function GuestRebookStayForm({
   const locale = useLocale();
   const router = useRouter();
 
-  const [checkIn, setCheckIn] = useState(draft.checkIn);
-  const [checkOut, setCheckOut] = useState(draft.checkOut);
+  const today = todayProp ?? todayIso();
+  const initialDates = (() => {
+    const checkIn = clampCheckInDate(draft.checkIn || today, today);
+    const checkOut =
+      draft.checkOut && draft.checkOut > checkIn
+        ? draft.checkOut
+        : addDays(checkIn, 1);
+    return { checkIn, checkOut };
+  })();
+  const [checkIn, setCheckIn] = useState(initialDates.checkIn);
+  const [checkOut, setCheckOut] = useState(initialDates.checkOut);
   const [guestLastName, setGuestLastName] = useState(draft.guestLastName);
   const [guestFirstName, setGuestFirstName] = useState(draft.guestFirstName);
   const [guestEmail, setGuestEmail] = useState(draft.guestEmail);
@@ -85,7 +94,6 @@ export function GuestRebookStayForm({
   const [selected, setSelected] = useState<Set<string>>(() => new Set(validDefaults));
 
   const [previewPending, startPreview] = useTransition();
-  const today = todayProp ?? todayIso();
   const invalidInterval = !checkIn || !checkOut || checkOut <= checkIn;
   const guestCount = numAdults + numChildren;
   const nights = !invalidInterval ? stayNightCount(checkIn, checkOut) : 0;
@@ -162,13 +170,14 @@ export function GuestRebookStayForm({
         !noRoomsAvailable));
 
   function onCheckInChange(value: string) {
-    setCheckIn(value);
-    if (!value) {
+    const nextCheckIn = clampCheckInDate(value, today);
+    setCheckIn(nextCheckIn);
+    if (!nextCheckIn) {
       setCheckOut("");
       return;
     }
-    const earliestOut = addDays(value, 1);
-    if (!checkOut || checkOut <= value) {
+    const earliestOut = addDays(nextCheckIn, 1);
+    if (!checkOut || checkOut <= nextCheckIn) {
       setCheckOut(earliestOut);
     }
   }

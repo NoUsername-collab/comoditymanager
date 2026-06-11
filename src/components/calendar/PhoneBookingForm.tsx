@@ -9,7 +9,12 @@ import {
 } from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
-import { addDays, todayIso } from "@/lib/stay-dates";
+import {
+  addDays,
+  clampCheckInDate,
+  defaultNewStayDates,
+  todayIso,
+} from "@/lib/stay-dates";
 
 export function PhoneBookingForm({
   checkInTime,
@@ -22,8 +27,10 @@ export function PhoneBookingForm({
   const t = useTranslations("public.phoneForm");
   const tForm = useTranslations("public.form");
   const tCommon = useTranslations("common");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+  const today = todayIso();
+  const defaultDates = defaultNewStayDates(today);
+  const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
+  const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
   const [guestLastName, setGuestLastName] = useState("");
   const [guestFirstName, setGuestFirstName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
@@ -31,17 +38,17 @@ export function PhoneBookingForm({
   const [identityHint, setIdentityHint] = useState<string | null>(null);
   const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">("neutral");
   const [identityPending, startIdentityTransition] = useTransition();
-  const today = todayIso();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
   function onCheckInChange(value: string) {
-    setCheckIn(value);
-    if (!value) {
+    const nextCheckIn = clampCheckInDate(value, today);
+    setCheckIn(nextCheckIn);
+    if (!nextCheckIn) {
       setCheckOut("");
       return;
     }
-    const earliestOut = addDays(value, 1);
-    if (!checkOut || checkOut <= value) setCheckOut(earliestOut);
+    const earliestOut = addDays(nextCheckIn, 1);
+    if (!checkOut || checkOut <= nextCheckIn) setCheckOut(earliestOut);
   }
 
   function maybeAutofillGuest() {

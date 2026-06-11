@@ -26,7 +26,13 @@ import {
 import { showGanttCreateUndoToast } from "@/components/admin/gantt/gantt-create-undo";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
+import {
+  addDays,
+  clampCheckInDate,
+  minCheckOutDate,
+  parseIso,
+  todayIso,
+} from "@/lib/stay-dates";
 
 export type GanttQuickRoomOption = {
   id: string;
@@ -116,6 +122,7 @@ function IntervalPlanner({
   onShift,
   onSetDuration,
   onToday,
+  minCheckIn,
   invalidInterval,
   hasConflict,
   invalidMessage,
@@ -131,6 +138,7 @@ function IntervalPlanner({
   onShift: (days: number) => void;
   onSetDuration: (nights: number) => void;
   onToday: () => void;
+  minCheckIn: string;
   invalidInterval: boolean;
   hasConflict: boolean;
   invalidMessage: string;
@@ -186,6 +194,7 @@ function IntervalPlanner({
             type="date"
             className={inputClass}
             value={checkIn}
+            min={minCheckIn}
             onChange={(e) => onCheckInChange(e.target.value)}
           />
         </label>
@@ -195,6 +204,7 @@ function IntervalPlanner({
             type="date"
             className={inputClass}
             value={checkOut}
+            min={checkIn ? minCheckOutDate(checkIn, minCheckIn) : minCheckIn}
             onChange={(e) => onCheckOutChange(e.target.value)}
           />
         </label>
@@ -360,10 +370,17 @@ export function GanttQuickActionPanel({
   const defaultRoomId = rooms[0]?.id ?? "";
   const defaultBooking = confirmedBookings[0] ?? null;
   const [roomId, setRoomId] = useState(draft?.roomId ?? defaultRoomId);
-  const [checkIn, setCheckIn] = useState(draft?.checkIn ?? effectiveToday);
-  const [checkOut, setCheckOut] = useState(
-    draft?.checkOut ?? addDays(draft?.checkIn ?? effectiveToday, 1)
+  const [checkIn, setCheckIn] = useState(() =>
+    clampCheckInDate(draft?.checkIn ?? effectiveToday, effectiveToday)
   );
+  const [checkOut, setCheckOut] = useState(() => {
+    const nextCheckIn = clampCheckInDate(
+      draft?.checkIn ?? effectiveToday,
+      effectiveToday
+    );
+    const nextCheckOut = draft?.checkOut ?? addDays(nextCheckIn, 1);
+    return nextCheckOut <= nextCheckIn ? addDays(nextCheckIn, 1) : nextCheckOut;
+  });
   const [reason, setReason] = useState("");
   const [expiresHours, setExpiresHours] = useState("");
   const [blockPreset, setBlockPreset] =
@@ -479,9 +496,10 @@ export function GanttQuickActionPanel({
 
   function updateCheckIn(nextCheckIn: string) {
     setError(null);
-    setCheckIn(nextCheckIn);
-    if (!activeCheckOut || nextCheckIn >= activeCheckOut) {
-      setCheckOut(addDays(nextCheckIn, 1));
+    const clamped = clampCheckInDate(nextCheckIn, effectiveToday);
+    setCheckIn(clamped);
+    if (!activeCheckOut || clamped >= activeCheckOut) {
+      setCheckOut(addDays(clamped, 1));
     }
   }
 
@@ -492,8 +510,16 @@ export function GanttQuickActionPanel({
 
   function shiftInterval(days: number) {
     setError(null);
-    setCheckIn((current) => addDays(current, days));
-    setCheckOut((current) => addDays(current, days));
+    const duration =
+      activeCheckIn && activeCheckOut && activeCheckIn < activeCheckOut
+        ? nightsBetween(activeCheckIn, activeCheckOut)
+        : 1;
+    const nextCheckIn = clampCheckInDate(
+      addDays(activeCheckIn, days),
+      effectiveToday
+    );
+    setCheckIn(nextCheckIn);
+    setCheckOut(addDays(nextCheckIn, Math.max(1, duration)));
   }
 
   function setIntervalDuration(nights: number) {
@@ -759,6 +785,7 @@ export function GanttQuickActionPanel({
               onShift={shiftInterval}
               onSetDuration={setIntervalDuration}
               onToday={moveIntervalToToday}
+              minCheckIn={effectiveToday}
               invalidInterval={intervalInvalid}
               hasConflict={hasConflict}
               invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
