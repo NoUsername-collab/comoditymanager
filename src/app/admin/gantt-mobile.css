@@ -562,16 +562,16 @@ html[data-layout-chrome="compact"] .gantt-calendar-page {
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-calendar-page {
-  --gantt-mobile-chrome-h: 3.65rem;
+  --gantt-mobile-chrome-h: 3.1rem;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page {
-  --gantt-mobile-chrome-h: 4.85rem;
+  --gantt-mobile-chrome-h: 4.1rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-shell--premium {
-  --gantt-day-header-row-h: 1.02rem;
-  --gantt-summary-row-h: 0.38rem;
+  --gantt-day-header-row-h: 0.87rem;
+  --gantt-summary-row-h: 0.32rem;
   --gantt-building-row-h: 10px;
   --gantt-header-separator: 0.5px;
   --gantt-unassigned-row-h: 11px;

@@ -3633,3 +3633,274 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
   width: 12.5px;
   height: 12.5px;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Calendar — HUD minimal + extra vertical savings
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Brand: pill + FREE → mic „dev Hospira” stânga sus */
+.admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text {
+  gap: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-hud__title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text::before {
+  content: "dev Hospira";
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  color: var(--admin-hud-eyebrow, var(--text-muted, #71717a));
+  white-space: nowrap;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text > .admin-hud__badge {
+  display: none !important;
+}
+
+/* Top global HUD −20% */
+.admin-shell:has(.gantt-calendar-page) .admin-hud__header {
+  padding: 0.32rem 0.64rem;
+  gap: 0.48rem;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-hud__nav {
+  gap: 0.22rem;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-nav-tab {
+  padding: 0.24rem 0.44rem;
+  font-size: 0.54rem;
+  gap: 0.2rem;
+  border-radius: 0.4rem;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-nav-tab__icon {
+  width: 0.72rem !important;
+  height: 0.72rem !important;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-hud__tools {
+  gap: 0.2rem;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-hud__tools .admin-hud__badge {
+  padding: 0.14rem 0.36rem;
+  font-size: 0.52rem;
+}
+
+.admin-shell:has(.gantt-calendar-page) .admin-dn-switch {
+  transform: scale(0.8);
+  transform-origin: center right;
+}
+
+/* Gantt toolbar + action strip −30% (desktop) */
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar {
+  gap: 0.44rem;
+  padding-block: 0.2rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__center {
+  gap: 0.31rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__right {
+  gap: 0.26rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__select {
+  padding: 0.26rem 1.22rem 0.26rem 0.44rem;
+  border-radius: 0.44rem;
+  font-size: 0.6rem;
+  background-size: 0.44rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__nav-btn {
+  width: 1.4rem;
+  height: 1.49rem;
+  font-size: 0.88rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__period-jump {
+  min-width: 5.69rem;
+  height: 1.49rem;
+  padding: 0 0.48rem;
+  gap: 0.31rem;
+  border-radius: 0.44rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__title {
+  font-size: 0.65rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__jump-icon {
+  width: 0.74rem;
+  height: 0.74rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__today-btn {
+  padding: 0.26rem 0.48rem;
+  border-radius: 0.44rem;
+  font-size: 0.56rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__icon-btn {
+  width: 1.49rem;
+  height: 1.49rem;
+  border-radius: 0.44rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__icon-btn svg {
+  width: 0.74rem !important;
+  height: 0.74rem !important;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip {
+  min-height: 1.75rem;
+  gap: 0.14rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__toggle-slot {
+  width: 1.23rem;
+  height: 1.23rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__track {
+  min-width: 10.5rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badges {
+  gap: 0.26rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badge {
+  gap: 0.18rem;
+  padding: 0.19rem 0.44rem;
+  font-size: 0.53rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__badge strong {
+  font-size: 0.56rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__btn {
+  padding: 0.25rem 0.49rem;
+  border-radius: 0.53rem;
+  font-size: 0.53rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__reveal svg,
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-strip__collapse svg {
+  width: 8.75px;
+  height: 8.75px;
+}
+
+/* Date + FREE row −15% (desktop) */
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-shell--premium,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar {
+  --gantt-day-header-row-h: 3.02rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell__body,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell__body {
+  gap: 0.05rem;
+  padding: 0.24rem 0.19rem 0.34rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell--compact.gantt-day-header-cell__body,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell--compact.gantt-day-header-cell__body {
+  min-height: calc(var(--gantt-day-header-row-h) - 0.38rem);
+  padding: 0.2rem 0.15rem 0.27rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell__date,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell__date {
+  font-size: 0.58rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-header-cell__weekday,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-header-cell__weekday {
+  font-size: 0.71rem;
+  line-height: 1;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-azi-above,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-azi-above {
+  padding: 0.14rem 0 0.07rem 0.17rem;
+  font-size: 0.43rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row > td,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-row > td {
+  padding-top: 0.34rem !important;
+  padding-bottom: 0.34rem !important;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row__label-title,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-row__label-title {
+  font-size: 0.49rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row__label-state,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-row__label-state {
+  margin-top: 0.15rem;
+  font-size: 0.43rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-cell__value,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-cell__value {
+  font-size: 0.68rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-cell__total,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-summary-cell__total {
+  font-size: 0.58rem;
+}
+
+/* Gantt toolbar + action strip −30% (compact calendar) */
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
+  gap: 0.2rem;
+  padding-block: 0.056rem !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip {
+  min-height: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge {
+  padding: 0.07rem 0.24rem;
+  font-size: 0.36rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge strong {
+  font-size: 0.39rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn {
+  padding: 0.1rem 0.27rem;
+  font-size: 0.36rem;
+}
+
+/* Date + FREE −15% (compact calendar) */
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell--premium,
+html[data-layout-chrome="compact"] .gantt-viewport-header--calendar {
+  --gantt-day-header-row-h: 0.87rem;
+  --gantt-summary-row-h: 0.32rem;
+}
