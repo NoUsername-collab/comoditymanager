@@ -6,7 +6,6 @@ import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { memo, type CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { GanttStayTimeline as GanttStayTimelineModel } from "@/domain/gantt/stay-card-display";
-import { GanttStayTimeline } from "@/components/admin/gantt/GanttStayTimeline";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
@@ -38,12 +37,12 @@ function semanticStayVars(
   const tone =
     occupancyPhase === "past"
       ? {
-          fill: "var(--booking-past-bg)",
-          border: "var(--booking-past-border)",
-          text: "var(--booking-past-text)",
-          tab: "color-mix(in srgb, var(--booking-past-border) 82%, black)",
-          badge: "color-mix(in srgb, var(--booking-past-text) 14%, transparent)",
-          glow: "color-mix(in srgb, var(--booking-past-border) 35%, transparent)",
+          fill: "#52525b",
+          border: "#3f3f46",
+          text: "#0a0a0a",
+          tab: "#27272a",
+          badge: "color-mix(in srgb, #0a0a0a 12%, #71717a)",
+          glow: "color-mix(in srgb, #3f3f46 40%, transparent)",
         }
       : isCerere
         ? {
@@ -113,7 +112,6 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   const tGantt = useTranslations("admin.gantt");
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
-  const showProgress = !!timeline;
   const showAlerts = showUnpaid || showMissingIdentity;
 
   const className = [
@@ -196,17 +194,11 @@ export const GanttBookingBar = memo(function GanttBookingBar({
         </span>
 
         {(showAlerts ||
-          showProgress ||
           todayHighlight ||
           (occupancyPhase === "active" && !isCerere) ||
           guestTotal > 0) && (
           <span className="gantt-stay__details">
-            {(todayHighlight === "arrival" ||
-              todayHighlight === "departure" ||
-              showAlerts ||
-              (occupancyPhase === "active" && !isCerere) ||
-              guestTotal > 0) && (
-              <span className="gantt-stay__details-head">
+            <span className="gantt-stay__details-head">
                 {todayHighlight === "arrival" && (
                   <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
                     ↓
@@ -251,13 +243,6 @@ export const GanttBookingBar = memo(function GanttBookingBar({
                   )}
                 </span>
               </span>
-            )}
-            {showProgress && timeline ? (
-              <GanttStayTimeline
-                timeline={timeline}
-                className="gantt-stay__timeline--chip"
-              />
-            ) : null}
           </span>
         )}
       </span>

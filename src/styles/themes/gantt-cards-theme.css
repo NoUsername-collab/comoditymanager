@@ -150,6 +150,17 @@ html[data-theme="default"]
   color: var(--booking-past-text) !important;
 }
 
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-stay--chip.gantt-booking-card--past,
+html[data-theme="default"]
+  .gantt-shell
+  .gantt-booking-card.gantt-stay--chip.gantt-stay--phase-past {
+  background: #52525b !important;
+  border-color: #3f3f46 !important;
+  color: #0a0a0a !important;
+}
+
 html[data-theme="default"] .gantt-shell .gantt-booking-card .gantt-stay__body,
 html[data-theme="default"] .gantt-shell .gantt-cereri-card .gantt-cereri-card__main {
   background: transparent !important;

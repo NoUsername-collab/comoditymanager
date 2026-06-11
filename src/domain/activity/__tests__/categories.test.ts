@@ -26,6 +26,16 @@ describe("activityJournalCategory", () => {
     }
   });
 
+  it('classifies checkin.* actions as "rezervari"', () => {
+    const checkinActions: ActivityAction[] = [
+      "checkin.created",
+      "checkin.updated",
+    ];
+    for (const action of checkinActions) {
+      expect(activityJournalCategory(action)).toBe("rezervari");
+    }
+  });
+
   it('classifies non-booking actions as "admin"', () => {
     const adminActions: ActivityAction[] = [
       "auth.login",

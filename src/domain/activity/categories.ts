@@ -2,11 +2,14 @@ import type { ActivityAction, ActivityLogEntry } from "./types";
 
 export type ActivityJournalCategory = "rezervari" | "admin";
 
-/** Rezervări = flux booking; Admin = autentificări, setări, clădiri/camere. */
+/** Rezervări = flux booking + check-in; Admin = autentificări, setări, clădiri/camere. */
 export function activityJournalCategory(
   action: ActivityAction
 ): ActivityJournalCategory {
-  return action.startsWith("booking.") ? "rezervari" : "admin";
+  if (action.startsWith("booking.") || action.startsWith("checkin.")) {
+    return "rezervari";
+  }
+  return "admin";
 }
 
 export function splitActivityByCategory(entries: ActivityLogEntry[]): {

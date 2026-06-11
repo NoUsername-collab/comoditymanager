@@ -142,22 +142,64 @@ export async function listRecentActivity(
   return loadRecentActivity(limit);
 }
 
+const BOOKING_LINKED_CHECKIN_ACTIONS = [
+  "checkin.created",
+  "checkin.updated",
+] as const satisfies readonly ActivityAction[];
+
+function mergeActivityByRecency(
+  batches: ActivityLogEntry[][],
+  limit: number
+): ActivityLogEntry[] {
+  const byId = new Map<string, ActivityLogEntry>();
+  for (const batch of batches) {
+    for (const entry of batch) {
+      byId.set(entry.id, entry);
+    }
+  }
+  return [...byId.values()]
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
+    .slice(0, limit);
+}
+
 const loadBookingActivity = cache(async (
   bookingId: string,
   limit: number
 ): Promise<ActivityLogEntry[]> => {
   const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("admin_activity_log")
-    .select(ACTIVITY_SELECT)
-    .eq("tenant_id", tenantId)
-    .eq("entity_type", "booking")
-    .eq("entity_id", bookingId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
 
-  if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => mapRow(row as ActivityRow));
+  const [bookingResult, checkinResult] = await Promise.all([
+    supabase
+      .from("admin_activity_log")
+      .select(ACTIVITY_SELECT)
+      .eq("tenant_id", tenantId)
+      .eq("entity_type", "booking")
+      .eq("entity_id", bookingId)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("admin_activity_log")
+      .select(ACTIVITY_SELECT)
+      .eq("tenant_id", tenantId)
+      .in("action", [...BOOKING_LINKED_CHECKIN_ACTIONS])
+      .filter("metadata->>booking_id", "eq", bookingId)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+  ]);
+
+  if (bookingResult.error) throw new Error(bookingResult.error.message);
+  if (checkinResult.error) throw new Error(checkinResult.error.message);
+
+  return mergeActivityByRecency(
+    [
+      (bookingResult.data ?? []).map((row) => mapRow(row as ActivityRow)),
+      (checkinResult.data ?? []).map((row) => mapRow(row as ActivityRow)),
+    ],
+    limit
+  );
 });
 
 export async function listBookingActivity(
