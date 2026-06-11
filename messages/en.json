@@ -2173,6 +2173,8 @@
       }
     },
     "gantt": {
+      "hudHide": "Hide menu",
+      "hudShow": "Show menu",
       "legend": "Timeline legend",
       "rooms": "Rooms",
       "range": {

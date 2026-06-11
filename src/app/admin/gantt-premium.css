@@ -3641,14 +3641,21 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
 
 html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide {
   --gantt-hud-height: 2.5rem;
+  --gantt-hud-tab-h: 1.125rem;
+  --gantt-hud-spacer: var(--gantt-hud-height);
 }
 
 html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide::before {
   content: "";
   display: block;
-  height: var(--gantt-hud-height);
+  height: var(--gantt-hud-spacer);
   flex-shrink: 0;
   pointer-events: none;
+  transition: height 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide.admin-shell--gantt-hud-retracted {
+  --gantt-hud-spacer: var(--gantt-hud-tab-h);
 }
 
 html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .admin-hud {
@@ -3657,7 +3664,7 @@ html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .adm
   left: 0;
   right: 0;
   z-index: 80;
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.34s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
 
@@ -3666,19 +3673,70 @@ html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .adm
   pointer-events: none;
 }
 
-.gantt-hud-reveal-trigger {
+.gantt-hud-toggle {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: var(--gantt-hud-height, 2.5rem);
-  z-index: 81;
-  pointer-events: auto;
-  background: transparent;
+  left: 50%;
+  z-index: 82;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 1.125rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--border, #d4d4d8) 88%, transparent);
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface, #fff) 98%, transparent) 0%,
+    color-mix(in srgb, var(--surface-2, #f4f4f5) 96%, transparent) 100%
+  );
+  color: var(--admin-text-muted, #71717a);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--text, #18181b) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 70%, transparent);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition:
+    top 0.34s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.12s ease,
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.gantt-hud-toggle:hover {
+  color: var(--admin-text, #18181b);
+  border-color: color-mix(in srgb, var(--accent, #059669) 42%, var(--border, #d4d4d8));
+}
+
+.gantt-hud-toggle:active {
+  transform: translate(-50%, -50%) scale(0.96);
+}
+
+.gantt-hud-toggle:focus-visible {
+  outline: 2px solid var(--accent, #059669);
+  outline-offset: 2px;
+}
+
+.gantt-hud-toggle--retracted {
+  transform: translate(-50%, 0);
+  border-radius: 0 0 0.65rem 0.65rem;
+  border-top: none;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--text, #18181b) 12%, transparent);
+}
+
+.gantt-hud-toggle--retracted:active {
+  transform: translate(-50%, 0) scale(0.96);
+}
+
+.gantt-hud-toggle__icon {
+  width: 0.82rem;
+  height: 0.82rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .admin-hud {
+  html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide::before,
+  html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .admin-hud,
+  .gantt-hud-toggle {
     transition: none;
   }
 }

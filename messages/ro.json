@@ -2173,6 +2173,8 @@
       }
     },
     "gantt": {
+      "hudHide": "Ascunde meniul",
+      "hudShow": "Arată meniul",
       "legend": "Legendă timeline",
       "rooms": "Camere",
       "range": {
