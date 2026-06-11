@@ -137,6 +137,15 @@ function mapBookingOpsError(
     if (e.message === "booking.checkin_only_on_arrival_day") {
       return t("checkInOnlyOnArrivalDay");
     }
+    if (e.message === "booking.checkout_blocked_unpaid") {
+      return t("checkoutBlockedUnpaid");
+    }
+    if (e.message === "booking.checkin_required_before_checkout") {
+      return t("checkoutNeedsCheckin");
+    }
+    if (e.message === "booking.checkout_already_recorded") {
+      return t("checkoutAlreadyDone");
+    }
   }
   return e instanceof Error ? e.message : t("checkInError");
 }
@@ -194,7 +203,109 @@ export async function setBookingCheckOutAction(
   } catch (e) {
     return {
       ok: false,
+      error: mapBookingOpsError(e, t),
+    };
+  }
+}
+
+export async function loadBookingCheckoutPanelAction(
+  bookingId: string
+): Promise<
+  | { ok: true; data: import("@/domain/booking/checkout-panel").BookingCheckoutPanelData }
+  | { ok: false; error: string }
+> {
+  const t = await getTranslations("admin.serverActions");
+  await requireAdmin();
+  const id = bookingId.trim();
+  if (!id) return { ok: false, error: t("bookingIdMissing") };
+
+  try {
+    const { getBookingById } = await import("@/services/bookings");
+    const { getCheckinByBookingId } = await import("@/services/checkin/queries");
+    const { getCheckinSettings } = await import("@/services/checkin/settings");
+    const { listGuestStayReviewsByBookingIds } = await import(
+      "@/services/guest-profiles"
+    );
+
+    const [booking, checkin, settings, reviews] = await Promise.all([
+      getBookingById(id),
+      getCheckinByBookingId(id),
+      getCheckinSettings(),
+      listGuestStayReviewsByBookingIds([id]),
+    ]);
+
+    if (!booking || booking.status !== "confirmata") {
+      return { ok: false, error: t("bookingNotFound") };
+    }
+
+    const review = reviews.get(id);
+
+    return {
+      ok: true,
+      data: {
+        bookingId: booking.id,
+        guestId: booking.guest_id,
+        guestName: booking.guest_name,
+        plannedCheckIn: booking.check_in,
+        plannedCheckOut: booking.check_out,
+        actualCheckInAt: booking.actual_check_in_at,
+        actualCheckOutAt: booking.actual_check_out_at,
+        roomNames: booking.room_names,
+        totalPrice: booking.total_price,
+        paymentStatus: checkin?.payment_status ?? null,
+        paymentAmountPaid: checkin?.payment_amount_paid ?? 0,
+        checkoutBlockUnpaid: settings.checkout_block_unpaid,
+        checkoutTimeUntil: settings.checkout_time_until,
+        existingReviewStars: review?.stars ?? null,
+        existingReviewNotes: review?.problem_details ?? null,
+      },
+    };
+  } catch (e) {
+    return {
+      ok: false,
       error: e instanceof Error ? e.message : t("checkOutError"),
+    };
+  }
+}
+
+export async function completeBookingCheckoutAction(
+  formData: FormData
+): Promise<OpsActionResult> {
+  const t = await getTranslations("admin.serverActions");
+  await requireAdmin();
+  const id = readBookingId(formData);
+  if (!id) return { ok: false, error: t("bookingIdMissing") };
+
+  try {
+    await setBookingCheckOut(id, readAt(formData));
+
+    const addReview = formData.get("add_review") === "1";
+    const guestId = String(formData.get("guest_id") ?? "").trim();
+    if (addReview && guestId) {
+      const { saveGuestStayReview } = await import("@/services/guest-profiles");
+      const stars = Math.min(
+        5,
+        Math.max(1, Number(formData.get("review_stars") ?? 5) || 5)
+      );
+      const problemDetails = String(formData.get("problem_details") ?? "").trim();
+      await saveGuestStayReview({
+        guestId,
+        bookingId: id,
+        stars,
+        positiveTraits: [],
+        negativeTraits: [],
+        problemDetails,
+        trustDelta: 0,
+        loyaltyDelta: 0,
+      });
+    }
+
+    revalidateBookingDetailSurfaces(id);
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: mapBookingOpsError(e, t),
     };
   }
 }

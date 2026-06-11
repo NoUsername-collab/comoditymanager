@@ -22,6 +22,7 @@ const CHECKIN_SETTINGS_SELECT = [
   "checkout_time_until",
   "late_checkout_allowed",
   "late_checkout_fee",
+  "checkout_block_unpaid",
   "early_checkin_allowed",
   "early_checkin_fee",
   "fisa_property_address",
@@ -45,6 +46,7 @@ export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
   checkout_time_until: "12:00",
   late_checkout_allowed: true,
   late_checkout_fee: 0,
+  checkout_block_unpaid: true,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
   fisa_property_address: null,
@@ -95,6 +97,10 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
         ? Boolean(row.late_checkout_allowed)
         : DEFAULT_CHECKIN_SETTINGS.late_checkout_allowed,
     late_checkout_fee: Number(row.late_checkout_fee) || 0,
+    checkout_block_unpaid:
+      row.checkout_block_unpaid != null
+        ? Boolean(row.checkout_block_unpaid)
+        : DEFAULT_CHECKIN_SETTINGS.checkout_block_unpaid,
     early_checkin_allowed:
       row.early_checkin_allowed != null
         ? Boolean(row.early_checkin_allowed)
@@ -193,6 +199,8 @@ export async function updateCheckinSettings(
     update.late_checkout_allowed = input.late_checkout_allowed;
   if (input.late_checkout_fee != null)
     update.late_checkout_fee = input.late_checkout_fee;
+  if (input.checkout_block_unpaid != null)
+    update.checkout_block_unpaid = input.checkout_block_unpaid;
   if (input.early_checkin_allowed != null)
     update.early_checkin_allowed = input.early_checkin_allowed;
   if (input.early_checkin_fee != null)

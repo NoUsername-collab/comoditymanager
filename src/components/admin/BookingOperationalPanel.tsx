@@ -8,6 +8,7 @@ import {
 } from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import { BookingCheckoutPanel } from "@/components/admin/checkout/BookingCheckoutPanel";
 import {
   undoBookingCheckInAction,
   undoBookingCheckOutAction,
@@ -66,11 +67,11 @@ export function BookingOperationalPanel({
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
-  const [checkoutDialogOpen, setCheckoutDialogOpen] = useState(false);
   const [checkinModalOpen, setCheckinModalOpen] = useState(false);
-  const [editDialog, setEditDialog] = useState<{
-    mode: "checkin" | "checkout";
+  const [checkoutPanel, setCheckoutPanel] = useState<{
+    intent: "set" | "edit";
   } | null>(null);
+  const [editCheckInOpen, setEditCheckInOpen] = useState(false);
 
   const hasPhone = isValidGuestPhone(guestPhone);
   const today = todayIso();
@@ -143,7 +144,7 @@ export function BookingOperationalPanel({
 
   function openCheckInWizard() {
     if (canEditCheckInTime) {
-      setEditDialog({ mode: "checkin" });
+      setEditCheckInOpen(true);
       return;
     }
     if (!checkInEnabled) return;
@@ -152,11 +153,11 @@ export function BookingOperationalPanel({
 
   function openCheckOut() {
     if (canEditCheckOut) {
-      setEditDialog({ mode: "checkout" });
+      setCheckoutPanel({ intent: "edit" });
       return;
     }
     if (!canCheckOut) return;
-    setCheckoutDialogOpen(true);
+    setCheckoutPanel({ intent: "set" });
   }
 
   function undoCheckIn() {
@@ -232,7 +233,7 @@ export function BookingOperationalPanel({
                 type="button"
                 className="bd-ops__lane-edit"
                 disabled={pending}
-                onClick={() => setEditDialog({ mode: "checkin" })}
+                onClick={() => setEditCheckInOpen(true)}
               >
                 {tCommon("edit")}
               </button>
@@ -327,7 +328,7 @@ export function BookingOperationalPanel({
                 type="button"
                 className="bd-ops__lane-edit"
                 disabled={pending}
-                onClick={() => setEditDialog({ mode: "checkout" })}
+                onClick={() => setCheckoutPanel({ intent: "edit" })}
               >
                 {tCommon("edit")}
               </button>
@@ -383,21 +384,27 @@ export function BookingOperationalPanel({
         onSuccess={() => router.refresh()}
       />
 
-      <GanttCheckTimeDialog
-        open={checkoutDialogOpen}
-        mode="checkout"
-        bookingId={bookingId}
-        guestName={guestName}
-        plannedCheckIn={plannedCheckIn}
-        plannedCheckOut={plannedCheckOut}
-        onClose={() => setCheckoutDialogOpen(false)}
-        onSuccess={() => router.refresh()}
-      />
+      {checkoutPanel ? (
+        <BookingCheckoutPanel
+          open
+          intent={checkoutPanel.intent}
+          bookingId={bookingId}
+          guestName={guestName}
+          plannedCheckIn={plannedCheckIn}
+          plannedCheckOut={plannedCheckOut}
+          actualCheckOutAt={actualCheckOutAt}
+          onClose={() => setCheckoutPanel(null)}
+          onSuccess={() => {
+            setCheckoutPanel(null);
+            router.refresh();
+          }}
+        />
+      ) : null}
 
-      {editDialog ? (
+      {editCheckInOpen ? (
         <GanttCheckTimeDialog
           open
-          mode={editDialog.mode}
+          mode="checkin"
           intent="edit"
           bookingId={bookingId}
           guestName={guestName}
@@ -405,9 +412,9 @@ export function BookingOperationalPanel({
           plannedCheckOut={plannedCheckOut}
           actualCheckInAt={actualCheckInAt}
           actualCheckOutAt={actualCheckOutAt}
-          onClose={() => setEditDialog(null)}
+          onClose={() => setEditCheckInOpen(false)}
           onSuccess={() => {
-            setEditDialog(null);
+            setEditCheckInOpen(false);
             router.refresh();
           }}
         />

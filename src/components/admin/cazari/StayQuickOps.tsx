@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import { BookingCheckoutPanel } from "@/components/admin/checkout/BookingCheckoutPanel";
 import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
@@ -68,9 +69,8 @@ export function StayQuickOps({
   const { showToast } = useAdminFx();
   const { today, openCheckInWizard, openCheckOut } = useOperativeCheck();
   const [pending, startTransition] = useTransition();
-  const [editDialog, setEditDialog] = useState<{
-    mode: "checkin" | "checkout";
-  } | null>(null);
+  const [editCheckInOpen, setEditCheckInOpen] = useState(false);
+  const [editCheckOutOpen, setEditCheckOutOpen] = useState(false);
   const isConfirmed = bookingStatus === "confirmata";
   const hasPhone = isValidGuestPhone(guestPhone);
   const isArrivalDay = isOperativeCheckInDay(plannedCheckIn, today);
@@ -170,7 +170,7 @@ export function StayQuickOps({
 
   function handleCheckIn() {
     if (canEditCheckInTime) {
-      setEditDialog({ mode: "checkin" });
+      setEditCheckInOpen(true);
       return;
     }
     openCheckInWizard(operativeArgs);
@@ -178,7 +178,7 @@ export function StayQuickOps({
 
   function handleCheckOut() {
     if (canEditCheckOut) {
-      setEditDialog({ mode: "checkout" });
+      setEditCheckOutOpen(true);
       return;
     }
     openCheckOut(operativeArgs);
@@ -242,10 +242,10 @@ export function StayQuickOps({
         {labels.edit}
       </Link>
 
-      {editDialog ? (
+      {editCheckInOpen ? (
         <GanttCheckTimeDialog
           open
-          mode={editDialog.mode}
+          mode="checkin"
           intent="edit"
           bookingId={bookingId}
           guestName={guestName}
@@ -253,9 +253,26 @@ export function StayQuickOps({
           plannedCheckOut={plannedCheckOut}
           actualCheckInAt={actualCheckInAt}
           actualCheckOutAt={actualCheckOutAt}
-          onClose={() => setEditDialog(null)}
+          onClose={() => setEditCheckInOpen(false)}
           onSuccess={() => {
-            setEditDialog(null);
+            setEditCheckInOpen(false);
+            router.refresh();
+          }}
+        />
+      ) : null}
+
+      {editCheckOutOpen ? (
+        <BookingCheckoutPanel
+          open
+          intent="edit"
+          bookingId={bookingId}
+          guestName={guestName}
+          plannedCheckIn={plannedCheckIn}
+          plannedCheckOut={plannedCheckOut}
+          actualCheckOutAt={actualCheckOutAt}
+          onClose={() => setEditCheckOutOpen(false)}
+          onSuccess={() => {
+            setEditCheckOutOpen(false);
             router.refresh();
           }}
         />

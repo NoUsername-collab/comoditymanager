@@ -12,6 +12,7 @@ export function isCheckinMigrationMissing(message: string): boolean {
     lower.includes("document_series") ||
     (lower.includes("national_id") && lower.includes("checkin_guests")) ||
     lower.includes("checkin_payment_rule") ||
+    lower.includes("checkout_block_unpaid") ||
     lower.includes("checkin_min_payment_pct") ||
     lower.includes("checkin_deposit") ||
     lower.includes("walkin_allowed") ||

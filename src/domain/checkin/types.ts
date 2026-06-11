@@ -122,6 +122,8 @@ export interface CheckinSettings {
   checkout_time_until: string | null;
   late_checkout_allowed: boolean;
   late_checkout_fee: number;
+  /** Blochează check-out operațional când plata nu e înregistrată (owner). */
+  checkout_block_unpaid: boolean;
   early_checkin_allowed: boolean;
   early_checkin_fee: number;
   /** Secțiunea I — Fișă ocupare capacitate cazare (OPANAF 381/2026) */

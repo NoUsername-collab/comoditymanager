@@ -24,7 +24,6 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
-import { GanttHudAutoHide } from "@/components/admin/gantt/GanttHudAutoHide";
 import { GanttPinnedSelectionChip } from "@/components/admin/gantt/GanttPinnedSelectionChip";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
@@ -556,7 +555,6 @@ export function GanttCalendar({
   // ─── Render ────────────────────────────────────────────────────────
   return (
     <GanttOperativeCheckProvider today={effectiveToday}>
-    <GanttHudAutoHide />
     <GanttStayTapPopoverProvider>
     <GanttContextMenuProvider
       onRequestCreate={setCreateDraft}

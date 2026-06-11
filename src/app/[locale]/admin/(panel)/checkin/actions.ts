@@ -258,6 +258,7 @@ export async function updateCheckinSettingsAction(
       "checkin_deposit",
       "walkin_allowed",
       "late_checkout_allowed",
+      "checkout_block_unpaid",
       "early_checkin_allowed",
     ];
     for (const f of boolFields) {

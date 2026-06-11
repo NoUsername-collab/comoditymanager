@@ -31,7 +31,7 @@ function SettingRow({ label, description, children }: SettingRowProps) {
 }
 
 export function CheckinSettingsPanel({ settings: initial }: Props) {
-  const t = useTranslations("admin.settings.checkin");
+  const t = useTranslations("admin.pages.settings.checkin");
   const { showToast } = useAdminFx();
   const [pending, startTransition] = useTransition();
   const [settings, setSettings] = useState<CheckinSettings>(initial);
@@ -124,6 +124,20 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           <option value="partial">{t("paymentPartial")}</option>
           <option value="at_checkout">{t("paymentAtCheckout")}</option>
         </select>
+      </SettingRow>
+
+      <SettingRow
+        label={t("checkoutBlockUnpaid")}
+        description={t("checkoutBlockUnpaidDesc")}
+      >
+        <label className="checkin-toggle">
+          <input
+            type="checkbox"
+            checked={settings.checkout_block_unpaid}
+            onChange={(e) => save({ checkout_block_unpaid: e.target.checked })}
+          />
+          <span className="checkin-toggle__slider" />
+        </label>
       </SettingRow>
 
       {/* Min payment percentage (visible only when partial) */}

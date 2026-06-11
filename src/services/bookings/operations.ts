@@ -4,7 +4,10 @@ import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin
 import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
+import { shouldBlockCheckoutForUnpaid } from "@/domain/booking/checkout-readiness";
 import { operativeCheckInDateFromAt } from "@/domain/booking/operative-checkin";
+import { getCheckinByBookingId } from "@/services/checkin/queries";
+import { getCheckinSettings } from "@/services/checkin/settings";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -172,12 +175,25 @@ export async function setBookingCheckOut(
   bookingId: string,
   at?: string | null
 ): Promise<void> {
-  const booking = await requireConfirmedBooking(bookingId);
+  const [booking, settings, checkin] = await Promise.all([
+    requireConfirmedBooking(bookingId),
+    getCheckinSettings(),
+    getCheckinByBookingId(bookingId),
+  ]);
   if (!booking.actual_check_in_at) {
     throw new Error("booking.checkin_required_before_checkout");
   }
   if (booking.actual_check_out_at) {
     throw new Error("booking.checkout_already_recorded");
+  }
+
+  if (
+    shouldBlockCheckoutForUnpaid(
+      settings,
+      checkin?.payment_status ?? null
+    )
+  ) {
+    throw new Error("booking.checkout_blocked_unpaid");
   }
 
   const ts = parseOperationalTimestamp(at);

@@ -15,10 +15,10 @@ import dynamic from "next/dynamic";
 import { CheckinWizardLauncher } from "@/components/admin/checkin/CheckinWizardLauncher";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
-const GanttCheckTimeDialog = dynamic(
+const BookingCheckoutPanel = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttCheckTimeDialog").then((m) => ({
-      default: m.GanttCheckTimeDialog,
+    import("@/components/admin/checkout/BookingCheckoutPanel").then((m) => ({
+      default: m.BookingCheckoutPanel,
     })),
   { ssr: false }
 );
@@ -37,10 +37,7 @@ export type OperativeCheckRequest = {
   today?: string;
 };
 
-type CheckoutDialogState = OperativeCheckRequest & {
-  mode: "checkout";
-  intent: "set";
-};
+type CheckoutDialogState = OperativeCheckRequest;
 
 export type OperativeCheckOps = {
   today: string;
@@ -99,11 +96,7 @@ export function OperativeCheckProvider({
   );
 
   const openCheckOut = useCallback((args: OperativeCheckRequest) => {
-    setCheckoutDialog({
-      ...args,
-      mode: "checkout",
-      intent: "set",
-    });
+    setCheckoutDialog(args);
   }, []);
 
   const closeCheckinWizard = useCallback(() => setCheckinBookingId(null), []);
@@ -126,18 +119,12 @@ export function OperativeCheckProvider({
         />
       ) : null}
       {checkoutDialog ? (
-        <GanttCheckTimeDialog
+        <BookingCheckoutPanel
           open
-          mode={checkoutDialog.mode}
-          intent={checkoutDialog.intent}
           bookingId={checkoutDialog.bookingId}
           guestName={checkoutDialog.guestName}
           plannedCheckIn={checkoutDialog.plannedCheckIn}
           plannedCheckOut={checkoutDialog.plannedCheckOut}
-          today={checkoutDialog.today ?? today}
-          status={checkoutDialog.status}
-          actualCheckInAt={checkoutDialog.actualCheckInAt}
-          actualCheckOutAt={checkoutDialog.actualCheckOutAt}
           onClose={() => setCheckoutDialog(null)}
           onSuccess={() => router.refresh()}
         />
