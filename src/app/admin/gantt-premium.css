@@ -107,9 +107,8 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   z-index: auto;
 }
 
-.gantt-thead-sticky .gantt-summary-row {
-  position: static;
-  z-index: auto;
+.gantt-calendar-page .gantt-summary-row {
+  display: none !important;
 }
 
 .gantt-head-main-row > th,
@@ -169,7 +168,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-viewport-header__row--summary {
-  border-top: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  display: none;
 }
 
 .gantt-viewport-header__room,
@@ -2262,8 +2261,8 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-toolbar__legend-swatch--past {
-  background: #a1a1aa;
-  opacity: 0.55;
+  background: var(--booking-past-bg, #8c8281);
+  opacity: 1;
 }
 
 .gantt-toolbar__legend-swatch--active {
@@ -3637,6 +3636,54 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   Calendar — auto-hide global HUD (desktop web only)
+   ═══════════════════════════════════════════════════════════════ */
+
+html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide {
+  --gantt-hud-height: 2.5rem;
+}
+
+html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide::before {
+  content: "";
+  display: block;
+  height: var(--gantt-hud-height);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .admin-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .admin-hud.admin-hud--retracted {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.gantt-hud-reveal-trigger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--gantt-hud-height, 2.5rem);
+  z-index: 81;
+  pointer-events: auto;
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-layout-chrome="compact"]) .admin-shell--gantt-hud-autohide > .admin-hud {
+    transition: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    Calendar — HUD minimal + extra vertical savings
    ═══════════════════════════════════════════════════════════════ */
 
@@ -3949,7 +3996,6 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell--premium,
 html[data-layout-chrome="compact"] .gantt-viewport-header--calendar {
   --gantt-day-header-row-h: 0.87rem;
-  --gantt-summary-row-h: 0.32rem;
 }
 
 /* ═══════════════════════════════════════════════════════════════

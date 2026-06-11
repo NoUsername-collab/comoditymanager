@@ -9,11 +9,9 @@ import {
 } from "react";
 import { debounce } from "@/lib/debounce";
 import { LAYOUT_RESIZE_DEBOUNCE_MS } from "@/layout/mobile/viewport";
-import type { DailyFreeCount } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { GanttDayHeader } from "./GanttDayHeader";
-import { GanttSummaryGrid } from "./GanttSummaryGrid";
 import type { GanttDayGridOptions, StickyViewportState } from "./GanttGridHelpers";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import { useLocale, useTranslations } from "next-intl";
@@ -22,12 +20,8 @@ export function GanttStickyViewportHeader({
   scrollRef,
   shellRef,
   theadRef,
-  counts,
   viewRange,
   compact,
-  activeFocusIso,
-  filterActive,
-  onDayClick,
   onPanPointerDown,
   panActive,
   scrollTitle,
@@ -36,12 +30,8 @@ export function GanttStickyViewportHeader({
   scrollRef: RefObject<HTMLDivElement | null>;
   shellRef: RefObject<HTMLDivElement | null>;
   theadRef: RefObject<HTMLTableSectionElement | null>;
-  counts: DailyFreeCount[];
   viewRange: GanttViewRange;
   compact: boolean;
-  activeFocusIso: string | null;
-  filterActive: boolean;
-  onDayClick: (iso: string) => void;
   onPanPointerDown?: (event: ReactPointerEvent<HTMLDivElement>) => void;
   panActive?: boolean;
   scrollTitle?: string;
@@ -60,7 +50,6 @@ export function GanttStickyViewportHeader({
   });
   const stickyActiveRef = useRef(false);
   const mainDaysInnerRef = useRef<HTMLDivElement>(null);
-  const summaryDaysInnerRef = useRef<HTMLDivElement>(null);
   const scrollLeftRef = useRef(0);
 
   useEffect(() => {
@@ -89,12 +78,8 @@ export function GanttStickyViewportHeader({
         const scrollLeft = scrollEl.scrollLeft;
         if (scrollLeft !== scrollLeftRef.current) {
           scrollLeftRef.current = scrollLeft;
-          const transform = `translateX(-${scrollLeft}px)`;
           if (mainDaysInnerRef.current) {
-            mainDaysInnerRef.current.style.transform = transform;
-          }
-          if (summaryDaysInnerRef.current) {
-            summaryDaysInnerRef.current.style.transform = transform;
+            mainDaysInnerRef.current.style.transform = `translateX(-${scrollLeft}px)`;
           }
         }
 
@@ -139,7 +124,7 @@ export function GanttStickyViewportHeader({
       window.visualViewport?.removeEventListener("resize", scheduleLayout);
       window.visualViewport?.removeEventListener("scroll", update);
     };
-  }, [scrollRef, shellRef, theadRef, viewRange.periodKey, compact, counts.length]);
+  }, [scrollRef, shellRef, theadRef, viewRange.periodKey, compact]);
 
   if (
     compactChrome ||
@@ -183,54 +168,6 @@ export function GanttStickyViewportHeader({
                   scrollTitle={scrollTitle ?? tCommon("scrollDrag")}
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
-                  dayGridOptions={dayGridOptions}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="gantt-viewport-header__row gantt-viewport-header__row--summary">
-          <div
-            className="gantt-summary-row__label gantt-viewport-header__summary-label"
-            style={{ width: state.roomColumnWidth }}
-          >
-            <span className="gantt-summary-row__label-title">
-              {tCommon("free")}
-            </span>
-            {filterActive && activeFocusIso && (
-              <span className="gantt-summary-row__label-state">
-                {tCommon("activeFilter")}
-              </span>
-            )}
-          </div>
-          <div className="gantt-viewport-header__days-viewport">
-            <div
-              ref={summaryDaysInnerRef}
-              className="gantt-viewport-header__days-inner"
-              style={{
-                width: state.daysContentWidth,
-                transform: `translateX(-${scrollLeftRef.current}px)`,
-              }}
-            >
-              <div className="gantt-summary-row__days">
-                <GanttSummaryGrid
-                  counts={counts}
-                  viewRange={viewRange}
-                  compact={compact}
-                  activeFocusIso={activeFocusIso}
-                  filterActive={filterActive}
-                  onDayClick={onDayClick}
-                  onPanPointerDown={onPanPointerDown}
-                  panActive={panActive}
-                  ariaLabel={tCommon("freeRoomsByDay")}
-                  scrollTitle={scrollTitle ?? tCommon("scrollDrag")}
-                  dayTitle={(iso, free, total) =>
-                    total === 0 ? iso : tCommon("freeRoomsFilterTitle", { count: free })
-                  }
-                  dayAriaLabel={(iso, free) =>
-                    tCommon("freeRoomsForDate", { iso, count: free })
-                  }
                   dayGridOptions={dayGridOptions}
                 />
               </div>

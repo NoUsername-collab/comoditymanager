@@ -37,9 +37,9 @@ html[data-theme="default"][data-mode="night"] {
   --pending-border: #fbbf24;
   --pending-text: #fde68a;
 
-  --past-bg: #1a1d28;
-  --past-border: #3d4660;
-  --past-text: #8b92a8;
+  --past-bg: #8c8281;
+  --past-border: #6e6665;
+  --past-text: #1c1917;
 
   --blocked-bg: #1e1428;
   --blocked-border: #a78bfa;

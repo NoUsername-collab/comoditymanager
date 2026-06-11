@@ -559,9 +559,7 @@ html[data-layout-chrome="compact"] .gantt-cereri-card__main {
 /* ── Row heights: 20 camere vizibile fără scroll (calc din viewport) ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page {
   --gantt-visible-room-rows: 20;
-  --gantt-thead-stack-h: calc(
-    var(--gantt-day-header-row-h, 1.02rem) + var(--gantt-summary-row-h, 0.38rem)
-  );
+  --gantt-thead-stack-h: var(--gantt-day-header-row-h, 1.02rem);
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-calendar-page {
@@ -574,7 +572,6 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-ca
 
 html[data-layout-chrome="compact"] .gantt-shell--premium {
   --gantt-day-header-row-h: 0.87rem;
-  --gantt-summary-row-h: 0.32rem;
   --gantt-building-row-h: 10px;
   --gantt-header-separator: 0.5px;
   --gantt-unassigned-row-h: 11px;

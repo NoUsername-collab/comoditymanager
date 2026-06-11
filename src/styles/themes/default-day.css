@@ -30,9 +30,9 @@ html[data-theme="default"][data-mode="day"] {
   --pending-border: #f59e0b;
   --pending-text: #92400e;
 
-  --past-bg: #e8eaf0;
-  --past-border: #c5c9d8;
-  --past-text: #7a809a;
+  --past-bg: #8c8281;
+  --past-border: #6e6665;
+  --past-text: #1c1917;
 
   --blocked-bg: #faf5ff;
   --blocked-border: #7c3aed;

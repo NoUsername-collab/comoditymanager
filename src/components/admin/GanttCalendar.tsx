@@ -10,7 +10,6 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { formatDateWithDay } from "@/lib/ro-calendar";
-import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
@@ -25,6 +24,7 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
+import { GanttHudAutoHide } from "@/components/admin/gantt/GanttHudAutoHide";
 import { GanttPinnedSelectionChip } from "@/components/admin/gantt/GanttPinnedSelectionChip";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
@@ -178,7 +178,6 @@ export function GanttCalendar({
     occupancyByRoom,
     displaySegmentsByRoom,
     filteredRooms,
-    dailyFreeCounts,
     todaySummary,
     operativeCheckInEligible,
     todayFlagsByRoom,
@@ -557,6 +556,7 @@ export function GanttCalendar({
   // ─── Render ────────────────────────────────────────────────────────
   return (
     <GanttOperativeCheckProvider today={effectiveToday}>
+    <GanttHudAutoHide />
     <GanttStayTapPopoverProvider>
     <GanttContextMenuProvider
       onRequestCreate={setCreateDraft}
@@ -572,12 +572,8 @@ export function GanttCalendar({
         scrollRef={scrollRef}
         shellRef={shellRef}
         theadRef={theadRef}
-        counts={dailyFreeCounts}
         viewRange={viewRange}
         compact={compact}
-        activeFocusIso={focusDay}
-        filterActive={filter === "free" && !!focusDay}
-        onDayClick={handleSummaryDayClick}
         onPanPointerDown={handleHeaderPanPointerDown}
         panActive={isHeaderPanActive}
         scrollTitle={scrollDragTitle}
@@ -687,18 +683,6 @@ export function GanttCalendar({
                 />
               </th>
             </tr>
-            <GanttDailySummaryRow
-              counts={dailyFreeCounts}
-              viewRange={viewRange}
-              compact={compact}
-              activeFocusIso={focusDay}
-              filterActive={filter === "free" && !!focusDay}
-              onDayClick={handleSummaryDayClick}
-              onPanPointerDown={handleHeaderPanPointerDown}
-              panActive={isHeaderPanActive}
-              scrollTitle={scrollDragTitle}
-              dayGridOptions={dayGridOptions}
-            />
           </thead>
           <GanttVirtualizedBody
             shellRef={shellRef}
