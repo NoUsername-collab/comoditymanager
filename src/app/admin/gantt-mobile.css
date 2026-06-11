@@ -11,12 +11,14 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin
 
 /* ── Page shell: reclaim horizontal + vertical space ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page.admin-retro-page {
-  padding: 0.06rem 0.12rem 0.15rem !important;
+  padding: 0 0.12rem 0.08rem !important;
   max-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
-  padding: 0.06rem 0.06rem 0.12rem !important;
+html[data-layout-chrome="compact"] .gantt-calendar-page > .admin-xp-window > .admin-win98-body,
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window .admin-xp-window > .admin-win98-body {
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Scoped touch targets — compact toolbar (−30% vs prior mobile pass) */
@@ -63,7 +65,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 0.04rem 0.04rem 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
@@ -94,7 +97,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
   position: sticky;
   top: 0;
   z-index: 25;
-  padding-block: 0.08rem !important;
+  padding-block: 0 !important;
   margin-bottom: 0 !important;
 }
 

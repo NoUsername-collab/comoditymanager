@@ -65,7 +65,7 @@ export function GanttContextMenuPanel() {
   const t = useTranslations("admin.common");
   const locale = useLocale();
   const router = useRouter();
-  const { menu, closeMenu, requestCreate } = useGanttContextMenu();
+  const { menu, closeMenu, requestCreate, openMoveRoom } = useGanttContextMenu();
   const { showToast, notifyCancel } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -281,6 +281,13 @@ export function GanttContextMenuPanel() {
                     label={t("openDetails")}
                     onClick={() => openBooking(menu.bookingId)}
                   />
+                  {menu.canMoveRoom && menu.moveRoomDraft ? (
+                    <MenuItem
+                      label={t("moveRoom")}
+                      disabled={pending}
+                      onClick={() => openMoveRoom(menu.moveRoomDraft!)}
+                    />
+                  ) : null}
                   <MenuItem
                     label={t("quickAccept")}
                     primary
@@ -309,6 +316,13 @@ export function GanttContextMenuPanel() {
                     label={t("openDetails")}
                     onClick={() => openBooking(menu.bookingId)}
                   />
+                  {menu.canMoveRoom && menu.moveRoomDraft ? (
+                    <MenuItem
+                      label={t("moveRoom")}
+                      disabled={pending}
+                      onClick={() => openMoveRoom(menu.moveRoomDraft!)}
+                    />
+                  ) : null}
                   {canOfferOperativeCheckIn({
                     status: "confirmata",
                     plannedCheckIn: menu.plannedCheckIn,
