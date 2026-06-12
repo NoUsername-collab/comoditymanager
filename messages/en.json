@@ -730,6 +730,7 @@
         "checkinRoomsProgress": "{checked} of {total} rooms received",
         "checkinRoomChecked": "Received",
         "checkinRoomPending": "Waiting",
+        "checkinRoomKeyHanded": "Keys handed",
         "checkinAllRoomsDone": "All rooms received",
         "checkinPartialHint": "Guests may arrive separately — receive one room at a time.",
         "checkInOnlyOnArrivalDay": "Check-in is only available on the arrival date ({date}).",
@@ -2130,12 +2131,14 @@
       },
       "roomPicker": {
         "title": "Which rooms are you receiving now?",
-        "hint": "Select one or more — receive the rest when guests arrive.",
+        "hint": "The holder can take all rooms at once, or you receive them one by one as guests arrive.",
+        "sectionalHint": "If not everyone has arrived, select only today's rooms — check-in stays partial until the rest.",
         "selectAll": "All remaining",
         "selectOne": "This room only",
         "continue": "Continue with selected rooms",
         "checkedBadge": "Already received",
         "pendingBadge": "Pending",
+        "selectedCount": "{count, plural, one {# room selected} other {# rooms selected}}",
         "continuationHint": "Incremental arrival — complete only guests in selected rooms."
       },
       "flags": "Warnings",
@@ -2149,16 +2152,18 @@
         "removeGuest": "Remove",
         "rep": "Booking holder",
         "repDesc": "Holder receives all selected rooms with one identity",
+        "repAllRoomsHint": "The holder takes {count} rooms now: {rooms}. At the end you will confirm which keys were handed over.",
         "individual": "All guests",
-        "individualDesc": "One form per person; mark who is present now",
+        "individualDesc": "One form per person — mark who is present now; others arrive later",
         "per_room": "Per room",
-        "per_roomDesc": "Per room: holder, another guest, or keys only until they arrive"
+        "per_roomDesc": "Per room: identity now, or keys only until occupants arrive"
       },
       "step": {
-        "identity": "Identity data",
+        "rooms": "Rooms to receive",
+        "identity": "Guests & identity",
         "validate": "Validation",
         "payment": "Payment",
-        "finish": "Finalize"
+        "finish": "Keys & finalize"
       },
       "type": {
         "reservation": "Reservation",
@@ -2176,6 +2181,7 @@
         "early_checkin": "Early check-in"
       },
       "validation": {
+        "pending": "Checking data, payment, and documents…",
         "ok": "All rules satisfied",
         "warning": "Warnings — check-in possible",
         "blocked": "Blocked — cannot proceed",
@@ -2194,6 +2200,17 @@
         "deposit": "Security deposit"
       },
       "keyHanded": "Key / code handed over",
+      "keysHandoff": {
+        "title": "Which keys / codes did you hand over?",
+        "hint": "Check rooms where you handed a key or code now. Select all or one by one.",
+        "selectAll": "All keys",
+        "noneYet": "No keys marked — confirm if you handed keys or access codes.",
+        "partialHint": "Not all rooms have keys yet — normal for partial arrival."
+      },
+      "finish": {
+        "partialSessionHint": "Partial check-in — remaining rooms are received when guests arrive.",
+        "roomsThisSession": "Rooms in this session"
+      },
       "fisa": {
         "legalHint": "Per OPANAF 381/2026: CNP required for Romanian citizens. Foreign guests: passport or ID (series + number).",
         "sectionPersonal": "Personal details",
@@ -2387,6 +2404,7 @@
         "keys": "Room keys",
         "stay": "Stay",
         "roomsProgress": "{checked} of {total} rooms with keys",
+        "keyHanded": "Keys handed",
         "nightsProgress": "Night {current} of {total}",
         "hybridCheckin": "Check-in: {checked}/{total} rooms",
         "hybridStay": "Stay: night {current}/{total}",
@@ -2676,6 +2694,12 @@
       "lastUpdate": "Last update",
       "previewTitle": "Guest preview — {name}",
       "completedStaysCount": "{count, plural, one {# completed stay} other {# completed stays}}",
+      "staysPanel": {
+        "title": "Stays",
+        "empty": "No completed stays yet.",
+        "more": "+ {count, plural, one {# more stay} other {# more stays}}",
+        "openHistory": "View full history"
+      },
       "lastCheckout": "Last checkout",
       "blacklistReason": "Blacklist reason",
       "internalNote": "Internal note",

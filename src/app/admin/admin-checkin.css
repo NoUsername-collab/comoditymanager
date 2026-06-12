@@ -1535,3 +1535,99 @@
 .checkin-room-picker__confirm {
   width: 100%;
 }
+
+.checkin-room-picker__sectional {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  color: var(--admin-text-muted, #64748b);
+}
+
+.checkin-room-picker__selection-count {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #475569);
+}
+
+.checkin-room-picker__action--active {
+  border-color: #0ea5e9;
+  background: #e0f2fe;
+  color: #0c4a6e;
+}
+
+.checkin-rep-all-rooms-hint,
+.checkin-step-finish__partial {
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.checkin-rep-all-rooms-hint {
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+  color: #0c4a6e;
+}
+
+.checkin-step-finish__partial {
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.checkin-keys-handoff {
+  margin: 1rem 0;
+  padding: 0.85rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.65rem;
+  background: var(--color-bg, #f8fafc);
+}
+
+.checkin-keys-handoff__title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.checkin-keys-handoff__hint {
+  margin: 0.25rem 0 0.65rem;
+  font-size: 0.72rem;
+  color: var(--admin-text-muted, #64748b);
+}
+
+.checkin-keys-handoff__all {
+  margin-bottom: 0.5rem;
+}
+
+.checkin-keys-handoff__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.checkin-keys-handoff__item {
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.4rem;
+  background: #fff;
+}
+
+.checkin-keys-handoff__room {
+  font-weight: 600;
+}
+
+.checkin-keys-handoff__note {
+  margin: 0.65rem 0 0;
+  font-size: 0.72rem;
+  color: var(--admin-text-muted, #64748b);
+}
+
+.checkin-keys-handoff__note--warn {
+  color: #b45309;
+}
+
+.checkin-validation__pending {
+  font-size: 0.85rem;
+  color: var(--admin-text-muted, #64748b);
+}

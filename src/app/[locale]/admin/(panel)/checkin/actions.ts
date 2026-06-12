@@ -174,6 +174,17 @@ export async function createCheckinAction(
       reception_rooms = undefined;
     }
 
+    let keys_handed_rooms: string[] = [];
+    try {
+      const keysJson = String(formData.get("keys_handed_rooms") ?? "[]");
+      const parsed = JSON.parse(keysJson);
+      keys_handed_rooms = Array.isArray(parsed)
+        ? parsed.filter((r): r is string => typeof r === "string")
+        : [];
+    } catch {
+      keys_handed_rooms = [];
+    }
+
     const transferBookingToGuestId =
       String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
       undefined;
@@ -196,6 +207,7 @@ export async function createCheckinAction(
       payment_amount_paid: paymentAmountPaid,
       deposit_amount: depositAmount,
       key_handed: keyHanded,
+      keys_handed_rooms,
       notes,
       identity_scope,
       reception_rooms,

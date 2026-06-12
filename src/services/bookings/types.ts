@@ -53,6 +53,8 @@ export type BookingRow = {
   has_checkin_record?: boolean;
   /** Camere deja recepționate (distinct room_label din checkin_guests). */
   checked_in_rooms?: string[];
+  /** Camere pentru care s-a confirmat înmânarea cheii (toate sesiunile). */
+  keys_handed_rooms?: string[];
   /** Ultima înregistrare check-in — plată. */
   checkin_payment_status?: StoredPaymentStatus | null;
   /** Status identitate din profilul oaspete. */

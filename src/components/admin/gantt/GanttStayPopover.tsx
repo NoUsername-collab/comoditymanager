@@ -12,6 +12,7 @@ import {
   GanttStayRoomsSlider,
   GanttStayTimeline as GanttStayTimelineBar,
 } from "@/components/admin/gantt/GanttStayTimeline";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
@@ -44,6 +45,7 @@ export type GanttStayPopoverData = {
   timeline?: GanttStayTimeline | null;
   showUnpaid?: boolean;
   showMissingIdentity?: boolean;
+  keysHandedRooms?: string[];
 };
 
 function resolveRoomList(data: GanttStayPopoverData): string[] {
@@ -105,11 +107,19 @@ export function GanttStayPopover({
   const accent = data.buildingColor ?? (isCerere ? "#d97706" : "#059669");
   const nights = stayNightCount(data.checkIn, data.checkOut);
   const rooms = resolveRoomList(data);
+  const keysHandedRooms = data.keysHandedRooms ?? [];
+  const keysProgress =
+    rooms.length > 0
+      ? computeRoomCheckinProgress(rooms, keysHandedRooms)
+      : null;
   const periodLabel = formatStayPeriod(data.checkIn, data.checkOut, locale, true);
   const timeline = data.timeline ?? null;
   const showRoomKeys =
-    timeline != null &&
-    shouldShowGanttPopoverRoomKeys(timeline, !!data.actualCheckInAt);
+    keysProgress != null &&
+    keysProgress.isMultiRoom &&
+    (keysProgress.checked > 0 ||
+      (timeline != null &&
+        shouldShowGanttPopoverRoomKeys(timeline, !!data.actualCheckInAt)));
   const showNights = timeline != null && shouldShowGanttPopoverNights(timeline);
   const showCombinedTimeline =
     timeline != null && !showRoomKeys && !showNights;
@@ -168,18 +178,18 @@ export function GanttStayPopover({
 
         {timeline ? (
           <section className="gantt-stay-note__block gantt-stay-note__block--progress">
-            {showRoomKeys ? (
+            {showRoomKeys && keysProgress ? (
               <div className="gantt-stay-note__progress-row">
                 <p className="gantt-stay-note__label">{tGantt("stayCard.keys")}</p>
                 <p className="gantt-stay-note__progress-title">
                   {tGantt("stayCard.roomsProgress", {
-                    checked: timeline.roomsChecked,
-                    total: timeline.roomsTotal,
+                    checked: keysProgress.checked,
+                    total: keysProgress.total,
                   })}
                 </p>
                 <GanttStayRoomsSlider
-                  checked={timeline.roomsChecked}
-                  total={timeline.roomsTotal}
+                  checked={keysProgress.checked}
+                  total={keysProgress.total}
                   className="gantt-stay__timeline--popover"
                 />
               </div>
@@ -226,11 +236,25 @@ export function GanttStayPopover({
           <p className="gantt-stay-note__label">{tGantt("rooms")}</p>
           {rooms.length > 0 ? (
             <ul className="gantt-stay-note__room-list">
-              {rooms.map((room) => (
-                <li key={room} className="gantt-stay-note__room">
-                  {room}
-                </li>
-              ))}
+              {rooms.map((room) => {
+                const keyHanded = keysHandedRooms.some(
+                  (r) => r.toLowerCase() === room.toLowerCase(),
+                );
+                return (
+                  <li key={room} className="gantt-stay-note__room">
+                    {keyHanded ? (
+                      <span
+                        className="gantt-stay-note__room-key"
+                        title={tGantt("stayCard.keyHanded")}
+                        aria-label={tGantt("stayCard.keyHanded")}
+                      >
+                        🔑
+                      </span>
+                    ) : null}
+                    {room}
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="gantt-stay-note__room gantt-stay-note__room--empty">—</p>

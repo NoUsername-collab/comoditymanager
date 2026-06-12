@@ -5,6 +5,7 @@ import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progre
 type Labels = {
   roomChecked: string;
   roomPending: string;
+  roomKeyHanded: string;
   allRoomsDone: string;
   partialHint: string;
 };
@@ -12,6 +13,7 @@ type Labels = {
 type Props = {
   roomNames: string[];
   checkedInRooms: string[];
+  keysHandedRooms?: string[];
   isConfirmed: boolean;
   /** Titlu progres (ex. „2 din 4 camere primite”) — rezolvat pe server. */
   progressTitle?: string;
@@ -21,6 +23,7 @@ type Props = {
 export function StayCheckinProgress({
   roomNames,
   checkedInRooms,
+  keysHandedRooms = [],
   isConfirmed,
   progressTitle,
   labels,
@@ -84,18 +87,31 @@ export function StayCheckinProgress({
             const done = progress.checkedRooms.some(
               (r) => r.toLowerCase() === room.toLowerCase(),
             );
+            const keyHanded = keysHandedRooms.some(
+              (r) => r.toLowerCase() === room.toLowerCase(),
+            );
             return (
               <li
                 key={room}
                 className={[
                   "stay-checkin-progress__room",
                   done && "stay-checkin-progress__room--done",
+                  keyHanded && "stay-checkin-progress__room--keys",
                 ]
                   .filter(Boolean)
                   .join(" ")}
               >
                 <span className="stay-checkin-progress__room-dot" aria-hidden />
                 <span className="stay-checkin-progress__room-name">{room}</span>
+                {keyHanded ? (
+                  <span
+                    className="stay-checkin-progress__room-key"
+                    title={labels.roomKeyHanded}
+                    aria-label={labels.roomKeyHanded}
+                  >
+                    🔑
+                  </span>
+                ) : null}
                 <span className="stay-checkin-progress__room-status">
                   {done ? labels.roomChecked : labels.roomPending}
                 </span>

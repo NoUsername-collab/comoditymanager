@@ -33,8 +33,10 @@ import {
   buildCheckinGuestSlotsForRooms,
   effectiveIdentityScope,
   groupGuestsByRoom,
+  resolveReceptionRoomLabels,
   type CheckinIdentityScope,
 } from "@/domain/checkin/guest-layout";
+import { CheckinKeysHandoff } from "@/components/admin/checkin/CheckinKeysHandoff";
 import { isIdentityStatusCritical } from "@/domain/guest/profile-data";
 import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
@@ -61,9 +63,9 @@ type Props = {
   onCancel: () => void;
 };
 
-const FULL_STEPS = ["identity", "validate", "payment", "finish"] as const;
-const CONTINUE_STEPS = ["identity", "validate", "finish"] as const;
-type StepKey = (typeof FULL_STEPS)[number];
+const FULL_CORE = ["identity", "payment", "validate", "finish"] as const;
+const CONTINUE_CORE = ["identity", "validate", "finish"] as const;
+type StepKey = "rooms" | (typeof FULL_CORE)[number];
 
 export function CheckinStepper({
   booking,
@@ -86,7 +88,12 @@ export function CheckinStepper({
   const isContinuation = roomProgress.checked > 0;
   const needsRoomPicker =
     roomProgress.isMultiRoom && roomProgress.pendingRooms.length > 0;
-  const steps = isContinuation ? CONTINUE_STEPS : FULL_STEPS;
+  const needsRoomPickerStep =
+    needsRoomPicker && roomProgress.pendingRooms.length > 1;
+  const steps = useMemo((): StepKey[] => {
+    const core = isContinuation ? CONTINUE_CORE : FULL_CORE;
+    return needsRoomPickerStep ? ["rooms", ...core] : [...core];
+  }, [isContinuation, needsRoomPickerStep]);
 
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
@@ -184,11 +191,23 @@ export function CheckinStepper({
   );
 
   // Finalize data
-  const [keyHanded, setKeyHanded] = useState(false);
+  const [keysHandedRooms, setKeysHandedRooms] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
 
-  // Validation result (computed on step 1)
+  // Validation result (computed before validate step)
   const [validation, setValidation] = useState<ValidationResult | null>(null);
+
+  const receivingRoomLabels = useMemo(
+    () =>
+      resolveReceptionRoomLabels(
+        booking,
+        guests,
+        needsRoomPicker && roomPickerDone && selectedRooms.length > 0
+          ? selectedRooms
+          : undefined,
+      ),
+    [booking, guests, needsRoomPicker, roomPickerDone, selectedRooms],
+  );
 
   // Error / transfer offer
   const [error, setError] = useState<string | null>(null);
@@ -207,7 +226,8 @@ export function CheckinStepper({
         paymentAmount
       ),
       deposit_amount: settings.checkin_deposit ? depositAmount : 0,
-      key_handed: keyHanded,
+      key_handed: keysHandedRooms.length > 0,
+      keys_handed_rooms: keysHandedRooms,
       notes: notes || undefined,
       identity_scope: identityScope,
       reception_rooms:
@@ -221,7 +241,7 @@ export function CheckinStepper({
     paymentStatus,
     paymentAmount,
     depositAmount,
-    keyHanded,
+    keysHandedRooms,
     notes,
     settings,
     identityScope,
@@ -232,14 +252,35 @@ export function CheckinStepper({
 
   // ── Navigation ────────────────────────────────────────────
 
+  function runValidation() {
+    const data = buildFormData();
+    const now = new Date();
+    const currentHour = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    setValidation(validateCheckin(data, settings, booking, currentHour));
+  }
+
+  function toggleKeysHandedRoom(room: string) {
+    setKeysHandedRooms((prev) => {
+      const exists = prev.some((r) => r.toLowerCase() === room.toLowerCase());
+      if (exists) {
+        return prev.filter((r) => r.toLowerCase() !== room.toLowerCase());
+      }
+      return [...prev, room];
+    });
+  }
+
+  function toggleAllKeysHanded(checked: boolean) {
+    setKeysHandedRooms(checked ? [...receivingRoomLabels] : []);
+  }
+
   function goNext() {
-    if (currentStep === 0) {
-      // Moving from identity → validate: run validation
-      const data = buildFormData();
-      const now = new Date();
-      const currentHour = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-      const result = validateCheckin(data, settings, booking, currentHour);
-      setValidation(result);
+    const leavingStep = steps[currentStep];
+    if (leavingStep === "rooms") {
+      if (selectedRooms.length === 0) return;
+      confirmRoomSelection();
+    }
+    if (leavingStep === "payment" || (leavingStep === "identity" && isContinuation)) {
+      runValidation();
     }
     setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
   }
@@ -281,6 +322,7 @@ export function CheckinStepper({
       fd.set("payment_amount_paid", String(data.payment_amount_paid ?? 0));
       fd.set("deposit_amount", String(data.deposit_amount ?? 0));
       fd.set("key_handed", String(data.key_handed ?? false));
+      fd.set("keys_handed_rooms", JSON.stringify(data.keys_handed_rooms ?? []));
       fd.set("notes", data.notes ?? "");
       fd.set("guests", JSON.stringify(data.guests));
       fd.set("identity_scope", data.identity_scope ?? "");
@@ -369,32 +411,29 @@ export function CheckinStepper({
 
       {/* Step content */}
       <div className="checkin-stepper__content">
-        {stepKey === "identity" && !roomPickerDone && needsRoomPicker ? (
+        {stepKey === "rooms" ? (
           <CheckinRoomPicker
             progress={roomProgress}
             selectedRooms={selectedRooms}
             onToggleRoom={toggleSelectedRoom}
             onSelectAll={() => setSelectedRooms([...roomProgress.pendingRooms])}
-            onSelectOne={(room) => {
-              setSelectedRooms([room]);
-              setRoomPickerDone(true);
-              const scope = effectiveIdentityScope(
-                settings.group_checkin_mode,
-                operatorScope,
-              );
-              setGuests(guestsForRooms([room], scope));
-            }}
+            onSelectOne={(room) => setSelectedRooms([room])}
             labels={{
               title: t("roomPicker.title"),
               hint: t("roomPicker.hint"),
+              sectionalHint: t("roomPicker.sectionalHint"),
               selectAll: t("roomPicker.selectAll"),
               selectOne: t("roomPicker.selectOne"),
               continue: t("roomPicker.continue"),
               checkedBadge: t("roomPicker.checkedBadge"),
               pendingBadge: t("roomPicker.pendingBadge"),
+              selectedCount: t("roomPicker.selectedCount", {
+                count: selectedRooms.length,
+              }),
             }}
             onConfirm={confirmRoomSelection}
             canConfirm={selectedRooms.length > 0}
+            hideConfirm
           />
         ) : null}
 
@@ -425,11 +464,15 @@ export function CheckinStepper({
             continuationHint={
               isContinuation ? t("roomPicker.continuationHint") : undefined
             }
+            repAllRoomsHint={
+              identityScope === "rep" && receivingRoomLabels.length > 1
+                ? t("identityScope.repAllRoomsHint", {
+                    count: receivingRoomLabels.length,
+                    rooms: receivingRoomLabels.join(", "),
+                  })
+                : undefined
+            }
           />
-        )}
-
-        {stepKey === "validate" && (
-          <StepValidation validation={validation} t={t} />
         )}
 
         {stepKey === "payment" && (
@@ -446,16 +489,27 @@ export function CheckinStepper({
           />
         )}
 
+        {stepKey === "validate" && (
+          <StepValidation validation={validation} t={t} />
+        )}
+
         {stepKey === "finish" && (
           <StepFinish
             booking={booking}
             guests={guests}
             paymentStatus={paymentStatus}
             validation={validation}
-            keyHanded={keyHanded}
+            receivingRooms={receivingRoomLabels}
+            keysHandedRooms={keysHandedRooms}
+            onToggleKeysRoom={toggleKeysHandedRoom}
+            onToggleAllKeys={toggleAllKeysHanded}
             notes={notes}
-            onKeyHandedChange={setKeyHanded}
             onNotesChange={setNotes}
+            isPartialSession={
+              roomProgress.isMultiRoom &&
+              receivingRoomLabels.length > 0 &&
+              receivingRoomLabels.length + roomProgress.checked < roomProgress.total
+            }
             t={t}
           />
         )}
@@ -526,7 +580,7 @@ export function CheckinStepper({
             className="checkin-stepper__btn checkin-stepper__btn--primary"
             onClick={goNext}
             disabled={
-              (stepKey === "identity" && needsRoomPicker && !roomPickerDone) ||
+              (stepKey === "rooms" && selectedRooms.length === 0) ||
               (stepKey === "validate" && validation?.status === "blocked")
             }
           >
@@ -564,6 +618,7 @@ function StepIdentity({
   emptyRegistered,
   t,
   continuationHint,
+  repAllRoomsHint,
 }: {
   guests: CheckinGuestInput[];
   settings: CheckinSettings;
@@ -577,6 +632,7 @@ function StepIdentity({
   emptyRegistered: boolean;
   t: ReturnType<typeof useTranslations>;
   continuationHint?: string;
+  repAllRoomsHint?: string;
 }) {
   const rooms = bookingRooms(booking);
   const roomGroups = groupGuestsByRoom(guests);
@@ -609,6 +665,9 @@ function StepIdentity({
       ) : null}
       {continuationHint ? (
         <p className="checkin-continuation-hint">{continuationHint}</p>
+      ) : null}
+      {repAllRoomsHint ? (
+        <p className="checkin-rep-all-rooms-hint">{repAllRoomsHint}</p>
       ) : null}
       <p className="checkin-legal-hint">{t("fisa.legalHint")}</p>
       <p className="checkin-party-hint">{partyHint}</p>
@@ -1027,7 +1086,13 @@ function StepValidation({
   validation: ValidationResult | null;
   t: ReturnType<typeof useTranslations>;
 }) {
-  if (!validation) return null;
+  if (!validation) {
+    return (
+      <p className="checkin-validation checkin-validation__pending">
+        {t("validation.pending")}
+      </p>
+    );
+  }
 
   const statusClass =
     validation.status === "ok"
@@ -1175,24 +1240,34 @@ function StepFinish({
   guests,
   paymentStatus,
   validation,
-  keyHanded,
+  receivingRooms,
+  keysHandedRooms,
+  onToggleKeysRoom,
+  onToggleAllKeys,
   notes,
-  onKeyHandedChange,
   onNotesChange,
+  isPartialSession,
   t,
 }: {
   booking: BookingForCheckin;
   guests: CheckinGuestInput[];
   paymentStatus: PaymentStatus;
   validation: ValidationResult | null;
-  keyHanded: boolean;
+  receivingRooms: string[];
+  keysHandedRooms: string[];
+  onToggleKeysRoom: (room: string) => void;
+  onToggleAllKeys: (checked: boolean) => void;
   notes: string;
-  onKeyHandedChange: (v: boolean) => void;
   onNotesChange: (v: string) => void;
+  isPartialSession: boolean;
   t: ReturnType<typeof useTranslations>;
 }) {
   return (
     <div className="checkin-step-finish">
+      {isPartialSession ? (
+        <p className="checkin-step-finish__partial">{t("finish.partialSessionHint")}</p>
+      ) : null}
+
       {/* Summary */}
       <div className="checkin-summary">
         <div className="checkin-summary__row">
@@ -1213,6 +1288,12 @@ function StepFinish({
           <span className="checkin-summary__label">{t("field.guestCount")}</span>
           <span>{guests.length}</span>
         </div>
+        {receivingRooms.length > 0 ? (
+          <div className="checkin-summary__row">
+            <span className="checkin-summary__label">{t("finish.roomsThisSession")}</span>
+            <span>{receivingRooms.join(", ")}</span>
+          </div>
+        ) : null}
         {validation && validation.flags.length > 0 && (
           <div className="checkin-summary__row checkin-summary__row--flags">
             <span className="checkin-summary__label">{t("flags")}</span>
@@ -1223,15 +1304,19 @@ function StepFinish({
         )}
       </div>
 
-      {/* Key handed */}
-      <label className="checkin-checkbox">
-        <input
-          type="checkbox"
-          checked={keyHanded}
-          onChange={(e) => onKeyHandedChange(e.target.checked)}
-        />
-        <span>{t("keyHanded")}</span>
-      </label>
+      <CheckinKeysHandoff
+        rooms={receivingRooms}
+        keysHandedRooms={keysHandedRooms}
+        onToggleRoom={onToggleKeysRoom}
+        onToggleAll={onToggleAllKeys}
+        labels={{
+          title: t("keysHandoff.title"),
+          hint: t("keysHandoff.hint"),
+          selectAll: t("keysHandoff.selectAll"),
+          noneYet: t("keysHandoff.noneYet"),
+          partialHint: t("keysHandoff.partialHint"),
+        }}
+      />
 
       {/* Notes */}
       <label className="checkin-field">

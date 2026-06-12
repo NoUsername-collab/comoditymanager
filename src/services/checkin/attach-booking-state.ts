@@ -4,7 +4,7 @@ import type { GuestIdentityStatus } from "@/domain/guest/types";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { BookingRow } from "@/services/bookings/types";
-import { getCheckedInRoomsByBookingIds } from "./queries";
+import { getCheckedInRoomsByBookingIds, getKeysHandedRoomsByBookingIds } from "./queries";
 import { syncBookingOperativeCheckInFromRecord } from "./sync";
 
 type CheckinLite = {
@@ -18,6 +18,7 @@ function attachCheckinFields(
   stays: BookingRow[],
   latestByBooking: Map<string, CheckinLite>,
   checkedRoomsByBooking: Map<string, string[]>,
+  keysHandedByBooking: Map<string, string[]>,
   identityByGuest: Map<string, GuestIdentityStatus>,
 ): BookingRow[] {
   return stays.map((stay) => {
@@ -41,6 +42,7 @@ function attachCheckinFields(
       has_checkin_record,
       actual_check_in_at,
       checked_in_rooms,
+      keys_handed_rooms: keysHandedByBooking.get(stay.id) ?? [],
       checkin_payment_status: checkin?.payment_status ?? null,
       guest_identity_status: stay.guest_id
         ? identityByGuest.get(stay.guest_id) ?? "draft"
@@ -94,7 +96,7 @@ export async function attachCheckinRecordState(
       ),
     ];
 
-    const [{ data, error }, checkedRoomsByBooking, identityByGuest] =
+    const [{ data, error }, checkedRoomsByBooking, keysHandedByBooking, identityByGuest] =
       await Promise.all([
         supabase
           .from("checkins")
@@ -103,6 +105,9 @@ export async function attachCheckinRecordState(
           .in("booking_id", bookingIds)
           .order("created_at", { ascending: false }),
         getCheckedInRoomsByBookingIds(bookingIds).catch(
+          () => new Map<string, string[]>(),
+        ),
+        getKeysHandedRoomsByBookingIds(bookingIds).catch(
           () => new Map<string, string[]>(),
         ),
         loadGuestIdentityStatuses(guestIds).catch(
@@ -154,6 +159,7 @@ export async function attachCheckinRecordState(
       stays,
       latestByBooking,
       checkedRoomsByBooking,
+      keysHandedByBooking,
       identityByGuest,
     );
   } catch (err) {

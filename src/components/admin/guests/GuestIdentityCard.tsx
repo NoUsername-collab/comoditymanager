@@ -9,14 +9,19 @@ import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
 import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
+import { GuestCompletedStaysPanel, type GuestCompletedStaySummary } from "@/components/admin/guests/GuestCompletedStaysPanel";
 import { buildGuestIdentitySummaryLines } from "@/lib/guest-identity-summary";
 import { formatRoDate } from "@/lib/stay-dates";
 
 export function GuestIdentityCard({
   guest,
+  completedStays = [],
+  historyHref,
   footer,
 }: {
   guest: GuestRow;
+  completedStays?: GuestCompletedStaySummary[];
+  historyHref?: string;
   footer?: ReactNode;
 }) {
   const tGuests = useTranslations("admin.guests");
@@ -24,7 +29,8 @@ export function GuestIdentityCard({
 
   const stars = guest.profile?.stars_avg ?? DEFAULT_STARS_AVG;
   const reviewCount = guest.profile?.review_count ?? 0;
-  const stays = guest.profile?.completed_stays ?? 0;
+  const resolvedHistoryHref =
+    historyHref ?? `/admin/guests/${guest.id}?tab=history`;
 
   const identityLines = buildGuestIdentitySummaryLines(guest, {
     nationalIdTypes: {
@@ -87,11 +93,20 @@ export function GuestIdentityCard({
             <GuestScoreHint />
           </span>
         </div>
-        <div className="guest-hero__stat">
-          <span className="guest-hero__stat-value">{stays}</span>
-          <span className="guest-hero__stat-label">{tGuests("profileCards.completedStays")}</span>
+        <div className="guest-hero__stat guest-hero__stat--stays">
+          <span className="guest-hero__stat-value">
+            {completedStays.length || guest.profile?.completed_stays || 0}
+          </span>
+          <span className="guest-hero__stat-label">
+            {tGuests("profileCards.completedStays")}
+          </span>
         </div>
       </div>
+
+      <GuestCompletedStaysPanel
+        stays={completedStays}
+        historyHref={resolvedHistoryHref}
+      />
 
       <div className="guest-hero__identity">
         <div className="guest-hero__identity-head">

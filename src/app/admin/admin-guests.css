@@ -1018,7 +1018,7 @@
 
 .guest-hero__stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
   margin-top: 1rem;
   padding-top: 1rem;
@@ -1032,16 +1032,12 @@
   background: var(--surface-2);
 }
 
-.guest-hero__stat--trust {
-  background: color-mix(in srgb, #3b82f6 10%, var(--surface-2));
-}
-
-.guest-hero__stat--loyalty {
-  background: color-mix(in srgb, #10b981 10%, var(--surface-2));
-}
-
 .guest-hero__stat--stars {
   background: color-mix(in srgb, #f59e0b 10%, var(--surface-2));
+}
+
+.guest-hero__stat--stays {
+  background: color-mix(in srgb, #6366f1 10%, var(--surface-2));
 }
 
 .guest-hero__stat-value {
@@ -1064,6 +1060,100 @@
   letter-spacing: 0.08em;
   color: var(--text-muted);
   margin-top: 0.15rem;
+}
+
+.guest-hero__stays {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.guest-hero__stays-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.guest-hero__stays-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.guest-hero__stays-count {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-faint);
+}
+
+.guest-hero__stays-empty {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin: 0.25rem 0 0.5rem;
+}
+
+.guest-hero__stays-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.guest-hero__stays-item {
+  min-width: 0;
+}
+
+.guest-hero__stays-link {
+  display: block;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.45rem;
+  background: var(--surface-2);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.guest-hero__stays-link:hover {
+  background: color-mix(in srgb, var(--surface-2) 70%, var(--border));
+}
+
+.guest-hero__stays-period {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.guest-hero__stays-rooms {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.65rem;
+  color: var(--text-faint);
+}
+
+.guest-hero__stays-more {
+  margin: 0.35rem 0 0;
+  font-size: 0.65rem;
+  color: var(--text-faint);
+}
+
+.guest-hero__stays-history-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--admin-accent, #b45309);
+  text-decoration: none;
+}
+
+.guest-hero__stays-history-link:hover {
+  text-decoration: underline;
 }
 
 .guest-score-hint {

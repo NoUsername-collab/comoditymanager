@@ -100,6 +100,7 @@ export async function createCheckin(
         payment_amount_paid: data.payment_amount_paid ?? 0,
         deposit_amount: data.deposit_amount ?? 0,
         key_handed: data.key_handed ?? false,
+        keys_handed_rooms: data.keys_handed_rooms ?? [],
         flags: validation.flags,
         notes: data.notes ?? null,
       }),

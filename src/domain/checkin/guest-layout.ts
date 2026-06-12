@@ -217,6 +217,25 @@ export function guestsToPersist(guests: CheckinGuestInput[]): CheckinGuestInput[
   });
 }
 
+export function resolveReceptionRoomLabels(
+  booking: BookingForCheckin,
+  guests: CheckinGuestInput[],
+  receptionRooms?: string[],
+): string[] {
+  if (receptionRooms?.length) {
+    return [...new Set(receptionRooms.map((r) => r.trim()).filter(Boolean))];
+  }
+  const fromGuests = [
+    ...new Set(
+      guestsReceivingRooms(guests)
+        .map((g) => g.room_label?.trim())
+        .filter((r): r is string => Boolean(r)),
+    ),
+  ];
+  if (fromGuests.length) return fromGuests;
+  return bookingRooms(booking);
+}
+
 export type RoomGuestGroup = {
   room: string;
   guests: { guest: CheckinGuestInput; index: number }[];

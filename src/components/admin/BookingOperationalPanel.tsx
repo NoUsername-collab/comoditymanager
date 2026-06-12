@@ -40,6 +40,7 @@ type Props = {
   actualCheckOutAt: string | null;
   roomNames?: string[];
   checkedInRooms?: string[];
+  keysHandedRooms?: string[];
   bookingForCheckin?: BookingForCheckin;
   checkinSettings?: CheckinSettings;
   hasCheckinRecord?: boolean;
@@ -55,6 +56,7 @@ export function BookingOperationalPanel({
   actualCheckOutAt,
   roomNames = [],
   checkedInRooms = [],
+  keysHandedRooms = [],
   bookingForCheckin,
   checkinSettings,
   hasCheckinRecord = false,
@@ -245,11 +247,13 @@ export function BookingOperationalPanel({
               <StayCheckinProgress
                 roomNames={roomNames}
                 checkedInRooms={checkedInRooms}
+                keysHandedRooms={keysHandedRooms}
                 isConfirmed
                 progressTitle={progressTitle}
                 labels={{
                   roomChecked: tCazari("checkinRoomChecked"),
                   roomPending: tCazari("checkinRoomPending"),
+                  roomKeyHanded: tCazari("checkinRoomKeyHanded"),
                   allRoomsDone: tCazari("checkinAllRoomsDone"),
                   partialHint: tCazari("checkinPartialHint"),
                 }}

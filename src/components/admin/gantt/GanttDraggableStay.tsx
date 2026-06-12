@@ -12,6 +12,7 @@ import {
   LONG_PRESS_MOVE_PX,
 } from "@/domain/gantt/context-menu";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
+import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import {
   isGanttBarCompact,
@@ -64,6 +65,7 @@ type Props = {
   compactLabel?: string;
   roomNames?: string[];
   checkedInRooms?: string[];
+  keysHandedRooms?: string[];
   paymentStatus?: StoredPaymentStatus | null;
   identityStatus?: GuestIdentityStatus | null;
   totalPrice?: number | null;
@@ -93,6 +95,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   compactLabel,
   roomNames = [],
   checkedInRooms = [],
+  keysHandedRooms = [],
   paymentStatus = null,
   identityStatus = null,
   totalPrice = null,
@@ -170,6 +173,19 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       identityStatus,
     });
 
+  const keysProgress = useMemo(
+    () =>
+      roomNames.length > 1
+        ? computeRoomCheckinProgress(roomNames, keysHandedRooms)
+        : null,
+    [roomNames, keysHandedRooms],
+  );
+  const showKeysMicro =
+    keysProgress != null &&
+    keysProgress.isMultiRoom &&
+    keysProgress.checked > 0 &&
+    keysProgress.isPartial;
+
   const title = [
     popover.guestName,
     formatStayPeriod(popover.checkIn, popover.checkOut, locale),
@@ -181,6 +197,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   const popoverData = useMemo(
     (): GanttStayPopoverData => ({
       ...popover,
+      keysHandedRooms,
       timeline:
         stayTimeline ??
         resolveGanttStayTimeline({
@@ -209,6 +226,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     }),
     [
       popover,
+      keysHandedRooms,
       stayTimeline,
       bookingCheckIn,
       effectiveToday,
@@ -455,6 +473,11 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           timeline={stayTimeline}
           showUnpaid={showUnpaid}
           showMissingIdentity={showMissingIdentity}
+          keysMicroLabel={
+            showKeysMicro && keysProgress
+              ? `${keysProgress.checked}/${keysProgress.total}`
+              : null
+          }
         />
       </div>
       {showPopover && (

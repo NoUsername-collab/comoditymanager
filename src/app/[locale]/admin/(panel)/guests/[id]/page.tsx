@@ -164,6 +164,10 @@ export default async function GuestDetailPage({
   const reviewedHistoryCount = history.filter((stay) => stay.review != null).length;
   const latestStay = history[0] ?? null;
 
+  const completedStaysHistory = history.filter(
+    (stay) => stay.status === "confirmata" && stay.check_out < today,
+  );
+
   const tabs: { id: GuestDetailTab; label: string }[] = [
     { id: "overview", label: tPage("tabOverview") },
     { id: "identity", label: tPage("tabIdentity") },
@@ -182,7 +186,16 @@ export default async function GuestDetailPage({
 
       <div className="guest-profile-page__grid">
         <aside className="guest-profile-page__profile">
-          <GuestIdentityCard guest={guest} />
+          <GuestIdentityCard
+            guest={guest}
+            completedStays={completedStaysHistory.map((stay) => ({
+              id: stay.id,
+              check_in: stay.check_in,
+              check_out: stay.check_out,
+              room_names: stay.room_names,
+            }))}
+            historyHref={buildGuestDetailHref({ id: guest.id, from: backHref, tab: "history" })}
+          />
           <GuestProfileSection title={tPage("quickActions")} aside>
             <div className="space-y-3">
               <GuestBlacklistPanel

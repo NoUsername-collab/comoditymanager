@@ -100,6 +100,8 @@ export interface CheckinFormData {
   payment_amount_paid?: number;
   deposit_amount?: number;
   key_handed?: boolean;
+  /** Camere pentru care s-a confirmat înmânarea cheii în sesiunea curentă. */
+  keys_handed_rooms?: string[];
   notes?: string;
   /** Mod identitate ales de recepție (sau din setări). */
   identity_scope?: CheckinIdentityScope;

@@ -85,6 +85,7 @@ export function buildCazariLabels({
       tPages("checkinRoomsProgress", { checked, total }),
     checkinRoomChecked: tPages("checkinRoomChecked"),
     checkinRoomPending: tPages("checkinRoomPending"),
+    checkinRoomKeyHanded: tPages("checkinRoomKeyHanded"),
     checkinAllRoomsDone: tPages("checkinAllRoomsDone"),
     checkinPartialHint: tPages("checkinPartialHint"),
     edit: tCommon("edit"),

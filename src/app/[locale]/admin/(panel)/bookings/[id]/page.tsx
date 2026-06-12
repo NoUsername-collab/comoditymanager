@@ -111,6 +111,7 @@ export default async function BookingDetailPage({
   const [bookingWithCheckin] = await attachCheckinRecordState([booking]);
   const operativeBooking = bookingWithCheckin ?? booking;
   const checkedInRooms = operativeBooking.checked_in_rooms ?? [];
+  const keysHandedRooms = operativeBooking.keys_handed_rooms ?? [];
   const hasCheckinRecord =
     !!operativeBooking.has_checkin_record || !!existingCheckin;
 
@@ -395,6 +396,7 @@ export default async function BookingDetailPage({
                 actualCheckOutAt={booking.actual_check_out_at}
                 roomNames={booking.room_names}
                 checkedInRooms={checkedInRooms}
+                keysHandedRooms={keysHandedRooms}
                 bookingForCheckin={bookingForCheckin}
                 checkinSettings={effectiveCheckinSettings}
                 hasCheckinRecord={hasCheckinRecord}

@@ -70,6 +70,7 @@ export type CazariLabels = {
   checkinRoomsProgress: (checked: number, total: number) => string;
   checkinRoomChecked: string;
   checkinRoomPending: string;
+  checkinRoomKeyHanded: string;
   checkinAllRoomsDone: string;
   checkinPartialHint: string;
   edit: string;

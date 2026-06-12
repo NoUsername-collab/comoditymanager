@@ -269,6 +269,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 compactLabel={compactLabel}
                 roomNames={b.room_names}
                 checkedInRooms={b.checked_in_rooms ?? []}
+                keysHandedRooms={b.keys_handed_rooms ?? []}
                 paymentStatus={b.checkin_payment_status ?? null}
                 identityStatus={b.guest_identity_status ?? null}
                 totalPrice={b.total_price}
@@ -307,6 +308,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                   roomId: room.id,
                   roomName: room.name,
                   roomNames: b.room_names,
+                  keysHandedRooms: b.keys_handed_rooms ?? [],
                   guestPhone: b.guest_phone,
                   totalPrice: b.total_price,
                   canMoveRoom,

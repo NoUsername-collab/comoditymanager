@@ -27,6 +27,7 @@ type Props = {
   timeline?: GanttStayTimelineModel | null;
   showUnpaid?: boolean;
   showMissingIdentity?: boolean;
+  keysMicroLabel?: string | null;
 };
 
 function semanticStayVars(
@@ -107,6 +108,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   timeline = null,
   showUnpaid = false,
   showMissingIdentity = false,
+  keysMicroLabel = null,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
@@ -170,10 +172,16 @@ export const GanttBookingBar = memo(function GanttBookingBar({
           <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
           {(showUnpaid ||
             showMissingIdentity ||
+            keysMicroLabel ||
             guestTotal > 0 ||
             todayHighlight === "arrival" ||
             todayHighlight === "departure") && (
             <span className="gantt-stay__micro" aria-hidden>
+              {keysMicroLabel ? (
+                <span className="gantt-stay__micro-keys" title={keysMicroLabel}>
+                  🔑{keysMicroLabel}
+                </span>
+              ) : null}
               {todayHighlight === "arrival" ? (
                 <span className="gantt-stay__micro-dot gantt-stay__micro-dot--in">↓</span>
               ) : null}

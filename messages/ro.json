@@ -730,6 +730,7 @@
         "checkinRoomsProgress": "{checked} din {total} camere primite",
         "checkinRoomChecked": "Primită",
         "checkinRoomPending": "Așteaptă",
+        "checkinRoomKeyHanded": "Chei predate",
         "checkinAllRoomsDone": "Toate camerele sunt primite",
         "checkinPartialHint": "Oaspeții pot sosi pe rând — primești câte o cameră pe parcurs.",
         "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua sosirii ({date}).",
@@ -2130,12 +2131,14 @@
       },
       "roomPicker": {
         "title": "Ce camere primești acum?",
-        "hint": "Poți bifa una sau mai multe — restul le primești când sosesc oaspeții.",
+        "hint": "Titularul poate lua toate camerele dintr-o dată, sau le primești pe rând când sosesc oaspeții.",
+        "sectionalHint": "Dacă nu sosesc toți oaspeții, bifează doar camerele de acum — check-in-ul rămâne parțial până la restul.",
         "selectAll": "Toate rămase",
         "selectOne": "Doar aceasta",
         "continue": "Continuă cu camerele selectate",
         "checkedBadge": "Deja primite",
         "pendingBadge": "De primit",
+        "selectedCount": "{count, plural, one {# cameră selectată} few {# camere selectate} other {# camere selectate}}",
         "continuationHint": "Sosire incrementală — completează doar oaspeții din camerele selectate."
       },
       "flags": "Avertismente",
@@ -2149,16 +2152,18 @@
         "removeGuest": "Elimină",
         "rep": "Titular rezervare",
         "repDesc": "Titularul primește toate camerele selectate cu o singură identitate",
+        "repAllRoomsHint": "Titularul preia {count} camere acum: {rooms}. La final vei confirma câte chei primește.",
         "individual": "Toți oaspeții",
-        "individualDesc": "Câte un formular per persoană; poți marca cine e prezent acum",
+        "individualDesc": "Câte un formular per persoană — marchează cine e prezent acum, restul sosesc mai târziu",
         "per_room": "Pe cameră",
-        "per_roomDesc": "Per cameră: titular, alt oaspete sau doar chei până sosesc"
+        "per_roomDesc": "Per cameră: identitate acum, sau doar chei până sosesc ocupanții"
       },
       "step": {
-        "identity": "Date identitate",
+        "rooms": "Camere de primit",
+        "identity": "Oaspeți & identitate",
         "validate": "Validare",
         "payment": "Plată",
-        "finish": "Finalizare"
+        "finish": "Chei & finalizare"
       },
       "type": {
         "reservation": "Rezervare",
@@ -2176,6 +2181,7 @@
         "early_checkin": "Check-in devreme"
       },
       "validation": {
+        "pending": "Se verifică datele, plata și documentele…",
         "ok": "Toate regulile respectate",
         "warning": "Avertismente — check-in posibil",
         "blocked": "Blocat — nu se poate continua",
@@ -2194,6 +2200,17 @@
         "deposit": "Garanție / Depozit"
       },
       "keyHanded": "Cheie / cod înmânat",
+      "keysHandoff": {
+        "title": "Ce chei / coduri înmânați?",
+        "hint": "Bifează camerele pentru care ai dat cheia acum. Poți selecta toate sau pe rând.",
+        "selectAll": "Toate cheile",
+        "noneYet": "Nicio cheie marcată — confirmă dacă ai înmânat chei sau coduri.",
+        "partialHint": "Nu toate camerele au cheie încă — normal la sosire parțială."
+      },
+      "finish": {
+        "partialSessionHint": "Check-in parțial — restul camerelor se primesc când sosesc oaspeții.",
+        "roomsThisSession": "Camere în sesiunea asta"
+      },
       "fisa": {
         "legalHint": "Conform OPANAF 381/2026: CNP obligatoriu pentru cetățeni români. Străinii: pașaport sau CI (serie + număr).",
         "sectionPersonal": "Date personale",
@@ -2387,6 +2404,7 @@
         "keys": "Chei camere",
         "stay": "Sejur",
         "roomsProgress": "{checked} din {total} camere cu chei",
+        "keyHanded": "Chei predate",
         "nightsProgress": "Noaptea {current} din {total}",
         "hybridCheckin": "Check-in: {checked}/{total} camere",
         "hybridStay": "Sejur: noaptea {current}/{total}",
@@ -2676,6 +2694,12 @@
       "lastUpdate": "Ultima actualizare",
       "previewTitle": "Preview client — {name}",
       "completedStaysCount": "{count, plural, one {# sejur încheiat} few {# sejururi încheiate} other {# sejururi încheiate}}",
+      "staysPanel": {
+        "title": "Stays",
+        "empty": "Niciun sejur încheiat încă.",
+        "more": "+ încă {count, plural, one {# sejur} few {# sejururi} other {# sejururi}}",
+        "openHistory": "Vezi istoric complet"
+      },
       "lastCheckout": "Ultimul checkout",
       "blacklistReason": "Motiv blacklist",
       "internalNote": "Notă internă",

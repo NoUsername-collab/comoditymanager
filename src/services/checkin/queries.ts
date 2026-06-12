@@ -155,6 +155,44 @@ export async function getCheckedInRoomsByBookingIds(
   return result;
 }
 
+/** Camere cu cheie înmânată per rezervare (uniune din toate sesiunile). */
+export async function getKeysHandedRoomsByBookingIds(
+  bookingIds: string[],
+): Promise<Map<string, string[]>> {
+  const result = new Map<string, string[]>();
+  if (!bookingIds.length) return result;
+
+  const { tenantId, supabase } = await getTenantScope();
+
+  const { data, error } = await supabase
+    .from("checkins")
+    .select("booking_id, keys_handed_rooms")
+    .eq("tenant_id", tenantId)
+    .in("booking_id", bookingIds);
+
+  if (error) {
+    if (isCheckinMigrationMissing(error.message)) return result;
+    throw new Error(error.message);
+  }
+
+  for (const row of data ?? []) {
+    const bookingId = row.booking_id as string;
+    const rooms = (row.keys_handed_rooms as string[] | null) ?? [];
+    if (!rooms.length) continue;
+    const list = result.get(bookingId) ?? [];
+    for (const room of rooms) {
+      const label = room?.trim();
+      if (!label) continue;
+      if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
+        list.push(label);
+      }
+    }
+    if (list.length) result.set(bookingId, list);
+  }
+
+  return result;
+}
+
 export async function getCheckedInRoomsForBooking(
   bookingId: string,
 ): Promise<string[]> {

@@ -11,14 +11,17 @@ type Props = {
   labels: {
     title: string;
     hint: string;
+    sectionalHint: string;
     selectAll: string;
     selectOne: string;
     continue: string;
     checkedBadge: string;
     pendingBadge: string;
+    selectedCount: string;
   };
   onConfirm: () => void;
   canConfirm: boolean;
+  hideConfirm?: boolean;
 };
 
 export function CheckinRoomPicker({
@@ -30,22 +33,40 @@ export function CheckinRoomPicker({
   labels,
   onConfirm,
   canConfirm,
+  hideConfirm = false,
 }: Props) {
+  const allPendingSelected =
+    progress.pendingRooms.length > 0 &&
+    progress.pendingRooms.every((room) =>
+      selectedRooms.some((r) => r.toLowerCase() === room.toLowerCase()),
+    );
+
   return (
     <div className="checkin-room-picker">
       <header className="checkin-room-picker__head">
         <p className="checkin-room-picker__title">{labels.title}</p>
         <p className="checkin-room-picker__hint">{labels.hint}</p>
+        <p className="checkin-room-picker__sectional">{labels.sectionalHint}</p>
       </header>
 
       <div className="checkin-room-picker__actions">
         <button
           type="button"
-          className="checkin-room-picker__action"
+          className={[
+            "checkin-room-picker__action",
+            allPendingSelected && "checkin-room-picker__action--active",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           onClick={onSelectAll}
         >
           {labels.selectAll}
         </button>
+        {selectedRooms.length > 0 ? (
+          <span className="checkin-room-picker__selection-count">
+            {labels.selectedCount}
+          </span>
+        ) : null}
       </div>
 
       <ul className="checkin-room-picker__list">
@@ -98,14 +119,16 @@ export function CheckinRoomPicker({
         </div>
       ) : null}
 
-      <button
-        type="button"
-        className="checkin-stepper__btn checkin-stepper__btn--primary checkin-room-picker__confirm"
-        disabled={!canConfirm}
-        onClick={onConfirm}
-      >
-        {labels.continue}
-      </button>
+      {!hideConfirm ? (
+        <button
+          type="button"
+          className="checkin-stepper__btn checkin-stepper__btn--primary checkin-room-picker__confirm"
+          disabled={!canConfirm}
+          onClick={onConfirm}
+        >
+          {labels.continue}
+        </button>
+      ) : null}
     </div>
   );
 }
