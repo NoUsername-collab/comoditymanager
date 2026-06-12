@@ -273,7 +273,8 @@ export async function loadBookingCheckoutPanelAction(
         checkoutBlockUnpaid: settings.checkout_block_unpaid,
         checkoutTimeUntil: settings.checkout_time_until,
         existingReviewStars: review?.stars ?? null,
-        existingReviewNotes: review?.problem_details ?? null,
+        existingReviewPositiveNote: review?.positive_note ?? null,
+        existingReviewNegativeNote: review?.negative_note ?? null,
       },
     };
   } catch (e) {
@@ -303,14 +304,14 @@ export async function completeBookingCheckoutAction(
         5,
         Math.max(1, Number(formData.get("review_stars") ?? 5) || 5)
       );
-      const problemDetails = String(formData.get("problem_details") ?? "").trim();
+      const positiveNote = String(formData.get("positive_note") ?? "").trim();
+      const negativeNote = String(formData.get("negative_note") ?? "").trim();
       await saveGuestStayReview({
         guestId,
         bookingId: id,
         stars,
-        positiveTraits: [],
-        negativeTraits: [],
-        problemDetails,
+        positiveNote,
+        negativeNote,
         trustDelta: 0,
         loyaltyDelta: 0,
       });

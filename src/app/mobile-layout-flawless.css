@@ -2633,13 +2633,6 @@ html[data-layout-chrome="compact"] .guest-profile-controls-form__field select {
   min-height: var(--ml-touch-min, 2.75rem);
 }
 
-html[data-layout-chrome="compact"] .guest-profile-controls-form__trait-chip {
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding-inline: 0.65rem;
-  font-size: max(16px, 0.75rem);
-  touch-action: manipulation;
-}
-
 html[data-layout-chrome="compact"] .guest-profile-controls-form button,
 html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-cereri-fill {
   width: 100%;
@@ -3131,17 +3124,11 @@ html[data-layout-chrome="compact"] .guest-stay-review-form__metrics input {
   width: 100%;
 }
 
-html[data-layout-chrome="compact"] .guest-stay-review-form__trait-chip {
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding-inline: 0.65rem;
-  font-size: max(16px, 0.75rem);
+html[data-layout-chrome="compact"] .guest-stay-review-form__note textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 5.5rem;
+  width: 100%;
   touch-action: manipulation;
-}
-
-html[data-layout-chrome="compact"] .guest-stay-review-form__trait-chip input[type="checkbox"] {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex-shrink: 0;
 }
 
 html[data-layout-chrome="compact"] .guest-stay-review-form__submit {

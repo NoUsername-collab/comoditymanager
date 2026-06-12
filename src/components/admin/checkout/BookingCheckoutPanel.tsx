@@ -62,7 +62,8 @@ export function BookingCheckoutPanel({
   const [atLocal, setAtLocal] = useState(datetimeLocalNow);
   const [addReview, setAddReview] = useState(false);
   const [reviewStars, setReviewStars] = useState(5);
-  const [reviewNotes, setReviewNotes] = useState("");
+  const [positiveNote, setPositiveNote] = useState("");
+  const [negativeNote, setNegativeNote] = useState("");
 
   const isEdit = intent === "edit";
 
@@ -75,7 +76,8 @@ export function BookingCheckoutPanel({
       setData(null);
       setLoadError(null);
       setAddReview(false);
-      setReviewNotes("");
+      setPositiveNote("");
+      setNegativeNote("");
       setReviewStars(5);
       return;
     }
@@ -97,8 +99,11 @@ export function BookingCheckoutPanel({
         setReviewStars(res.data.existingReviewStars);
         setAddReview(true);
       }
-      if (res.data.existingReviewNotes) {
-        setReviewNotes(res.data.existingReviewNotes);
+      if (res.data.existingReviewPositiveNote) {
+        setPositiveNote(res.data.existingReviewPositiveNote);
+      }
+      if (res.data.existingReviewNegativeNote) {
+        setNegativeNote(res.data.existingReviewNegativeNote);
       }
     });
 
@@ -151,7 +156,8 @@ export function BookingCheckoutPanel({
         fd.set("add_review", "1");
         fd.set("guest_id", data.guestId);
         fd.set("review_stars", String(reviewStars));
-        fd.set("problem_details", reviewNotes);
+        fd.set("positive_note", positiveNote);
+        fd.set("negative_note", negativeNote);
       }
 
       const res = isEdit
@@ -278,15 +284,26 @@ export function BookingCheckoutPanel({
                     ))}
                   </select>
                 </label>
-                <label className="booking-checkout-panel__field">
-                  <span>{t("reviewNotes")}</span>
+                <label className="booking-checkout-panel__field booking-checkout-panel__field--positive">
+                  <span>{t("positiveNote")}</span>
                   <textarea
-                    rows={3}
-                    value={reviewNotes}
-                    onChange={(e) => setReviewNotes(e.target.value)}
+                    rows={2}
+                    value={positiveNote}
+                    onChange={(e) => setPositiveNote(e.target.value)}
                     disabled={submitDisabled}
                     className="booking-checkout-panel__textarea"
-                    placeholder={t("reviewNotesPlaceholder")}
+                    placeholder={t("positiveNotePlaceholder")}
+                  />
+                </label>
+                <label className="booking-checkout-panel__field booking-checkout-panel__field--negative">
+                  <span>{t("negativeNote")}</span>
+                  <textarea
+                    rows={2}
+                    value={negativeNote}
+                    onChange={(e) => setNegativeNote(e.target.value)}
+                    disabled={submitDisabled}
+                    className="booking-checkout-panel__textarea"
+                    placeholder={t("negativeNotePlaceholder")}
                   />
                 </label>
                 <Link

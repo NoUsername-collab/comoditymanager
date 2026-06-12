@@ -51,12 +51,6 @@ export function GuestBlacklistPanel({
       String(profile?.manual_loyalty_adjustment ?? 0)
     );
     formData.set("manual_note", profile?.manual_note ?? "");
-    for (const trait of profile?.manual_positive_traits ?? []) {
-      formData.append("manual_positive_traits", trait);
-    }
-    for (const trait of profile?.manual_negative_traits ?? []) {
-      formData.append("manual_negative_traits", trait);
-    }
 
     try {
       await runAdminAction(() => updateGuestProfileControlsAction(formData));

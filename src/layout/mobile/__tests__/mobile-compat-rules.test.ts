@@ -218,7 +218,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".admin-location-lock-btn");
     expect(flawless).toContain(".delete-confirm-form__confirm");
     expect(flawless).toContain(".guest-notes-form__actions");
-    expect(flawless).toContain(".guest-profile-controls-form__trait-chip");
+    expect(flawless).toContain(".guest-profile-controls-form__grid");
     expect(flawless).toContain(".admin-settings-location-nav");
     expect(flawless).toContain(".admin-staff-password-panel__submit");
     expect(flawless).toContain(".public-confirm-page__back");
@@ -290,7 +290,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".gantt-quick-panel__actions");
     expect(flawless).toContain(".gantt-quick-panel__action");
     expect(flawless).toContain(".gantt-quick-panel--busy");
-    expect(flawless).toContain(".guest-stay-review-form__trait-chip");
+    expect(flawless).toContain(".guest-stay-review-form__note");
     expect(flawless).toContain(".guest-stay-review-form__submit");
     expect(flawless).toContain(".bd-confirm__adjust-toggle");
     expect(flawless).toContain(".admin-quick-panel__row");

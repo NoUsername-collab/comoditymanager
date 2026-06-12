@@ -1,27 +1,9 @@
 import type {
   GuestBookingFlagSummary,
   GuestFlagLevel,
-  GuestNegativeTrait,
-  GuestPositiveTrait,
   GuestProfileRow,
   GuestStayReviewRow,
 } from "./types";
-
-export const GUEST_POSITIVE_TRAITS: readonly GuestPositiveTrait[] = [
-  "voios",
-  "glumet",
-  "linistit",
-  "miezul_serii",
-] as const;
-
-export const GUEST_NEGATIVE_TRAITS: readonly GuestNegativeTrait[] = [
-  "betiv",
-  "galagios",
-  "recalcitrant",
-  "scandalagiu",
-  "cleptoman",
-  "nesimtit",
-] as const;
 
 const STAR_TRUST_WEIGHTS: Record<number, number> = {
   1: -28,
@@ -31,62 +13,10 @@ const STAR_TRUST_WEIGHTS: Record<number, number> = {
   5: 16,
 };
 
-const POSITIVE_TRAIT_TRUST_WEIGHTS: Record<GuestPositiveTrait, number> = {
-  voios: 2,
-  glumet: 2,
-  respectuos: 5,
-  linistit: 4,
-  miezul_serii: 1,
-  ingrijit: 5,
-  plateste_la_timp: 8,
-  recomandat: 4,
-};
-
-const NEGATIVE_TRAIT_TRUST_WEIGHTS: Record<GuestNegativeTrait, number> = {
-  betiv: -8,
-  galagios: -10,
-  recalcitrant: -16,
-  scandalagiu: -20,
-  cleptoman: -30,
-  nesimtit: -14,
-  zgomotos: -8,
-  mizerie: -10,
-  conflictual: -14,
-  neplata: -26,
-  pagube: -30,
-  incalca_reguli: -16,
-};
-
 export const DEFAULT_TRUST_SCORE = 60;
 export const DEFAULT_LOYALTY_SCORE = 0;
 /** 0 = unrated (no reviews yet). Never penalize new guests with a low star score. */
 export const DEFAULT_STARS_AVG = 0;
-
-export function parseGuestPositiveTraits(raw: unknown): GuestPositiveTrait[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((value): value is GuestPositiveTrait =>
-    GUEST_POSITIVE_TRAITS.includes(value as GuestPositiveTrait)
-  );
-}
-
-export function parseGuestNegativeTraits(raw: unknown): GuestNegativeTrait[] {
-  if (!Array.isArray(raw)) return [];
-  return raw.filter((value): value is GuestNegativeTrait =>
-    GUEST_NEGATIVE_TRAITS.includes(value as GuestNegativeTrait)
-  );
-}
-
-export function uniquePositiveTraits(
-  traits: GuestPositiveTrait[]
-): GuestPositiveTrait[] {
-  return [...new Set(parseGuestPositiveTraits(traits))];
-}
-
-export function uniqueNegativeTraits(
-  traits: GuestNegativeTrait[]
-): GuestNegativeTrait[] {
-  return [...new Set(parseGuestNegativeTraits(traits))];
-}
 
 export function clampGuestScore(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
@@ -150,40 +80,10 @@ export function deriveLoyaltyBaseScore(
 
 export function calculateReviewTrustImpact(review: {
   stars: number;
-  positive_traits: GuestPositiveTrait[];
-  negative_traits: GuestNegativeTrait[];
   trust_delta: number;
 }): number {
   const starsWeight = STAR_TRUST_WEIGHTS[review.stars] ?? 0;
-  const positive = uniquePositiveTraits(review.positive_traits).reduce(
-    (sum, trait) => sum + POSITIVE_TRAIT_TRUST_WEIGHTS[trait],
-    0
-  );
-  const negative = uniqueNegativeTraits(review.negative_traits).reduce(
-    (sum, trait) => sum + NEGATIVE_TRAIT_TRUST_WEIGHTS[trait],
-    0
-  );
-
-  return starsWeight + positive + negative + review.trust_delta;
-}
-
-export function aggregateActiveTraits(
-  reviews: GuestStayReviewRow[],
-  take = 3
-): {
-  positive_traits: GuestPositiveTrait[];
-  negative_traits: GuestNegativeTrait[];
-} {
-  const sorted = [...reviews].sort((a, b) => {
-    if (a.reviewed_at === b.reviewed_at) return a.booking_id.localeCompare(b.booking_id);
-    return a.reviewed_at < b.reviewed_at ? 1 : -1;
-  });
-  const recent = sorted.slice(0, take);
-
-  return {
-    positive_traits: [...new Set(recent.flatMap((review) => review.positive_traits))],
-    negative_traits: [...new Set(recent.flatMap((review) => review.negative_traits))],
-  };
+  return starsWeight + review.trust_delta;
 }
 
 export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
@@ -193,10 +93,6 @@ export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
     trust_score: DEFAULT_TRUST_SCORE,
     loyalty_score: DEFAULT_LOYALTY_SCORE,
     stars_avg: DEFAULT_STARS_AVG,
-    manual_positive_traits: [],
-    manual_negative_traits: [],
-    positive_traits: [],
-    negative_traits: [],
     flag_level: "normal",
     blacklist_reason: null,
     blacklisted_at: null,
@@ -227,10 +123,6 @@ export function mapGuestProfileRow(row: Record<string, unknown>): GuestProfileRo
     trust_score: Number(row.trust_score ?? fallback.trust_score),
     loyalty_score: Number(row.loyalty_score ?? fallback.loyalty_score),
     stars_avg: resolveGuestStarsAverage(row.stars_avg as number | undefined, reviewCount),
-    manual_positive_traits: parseGuestPositiveTraits(row.manual_positive_traits),
-    manual_negative_traits: parseGuestNegativeTraits(row.manual_negative_traits),
-    positive_traits: parseGuestPositiveTraits(row.positive_traits),
-    negative_traits: parseGuestNegativeTraits(row.negative_traits),
     flag_level:
       row.flag_level === "watchlist" || row.flag_level === "blacklist"
         ? row.flag_level
@@ -271,10 +163,10 @@ export function mapGuestStayReviewRow(
     booking_id: String(row.booking_id),
     guest_id: String(row.guest_id),
     stars: Number(row.stars ?? 0),
-    positive_traits: parseGuestPositiveTraits(row.positive_traits),
-    negative_traits: parseGuestNegativeTraits(row.negative_traits),
-    problem_details:
-      row.problem_details != null ? String(row.problem_details) : null,
+    positive_note:
+      row.positive_note != null ? String(row.positive_note) : null,
+    negative_note:
+      row.negative_note != null ? String(row.negative_note) : null,
     trust_delta: Number(row.trust_delta ?? 0),
     loyalty_delta: Number(row.loyalty_delta ?? 0),
     reviewed_at: String(row.reviewed_at),
@@ -293,10 +185,6 @@ export function toGuestBookingFlagSummary(
     trust_score: profile.trust_score,
     loyalty_score: profile.loyalty_score,
     stars_avg: profile.stars_avg,
-    manual_positive_traits: profile.manual_positive_traits,
-    manual_negative_traits: profile.manual_negative_traits,
-    positive_traits: profile.positive_traits,
-    negative_traits: profile.negative_traits,
     flag_level: profile.flag_level,
     blacklist_reason: profile.blacklist_reason,
     review_count: profile.review_count,
@@ -315,15 +203,6 @@ export function computeGuestProfileSnapshot(args: {
   reviews: GuestStayReviewRow[];
 }): GuestProfileRow {
   const { current, completedStays, totalNights, lastStayCheckOut, reviews } = args;
-  const activeTraits = aggregateActiveTraits(reviews);
-  const mergedPositiveTraits = uniquePositiveTraits([
-    ...activeTraits.positive_traits,
-    ...current.manual_positive_traits,
-  ]);
-  const mergedNegativeTraits = uniqueNegativeTraits([
-    ...activeTraits.negative_traits,
-    ...current.manual_negative_traits,
-  ]);
   const trustBase =
     DEFAULT_TRUST_SCORE +
     reviews.reduce((sum, review) => sum + calculateReviewTrustImpact(review), 0);
@@ -333,8 +212,9 @@ export function computeGuestProfileSnapshot(args: {
   const starsAvg =
     reviews.length > 0
       ? resolveGuestStarsAverage(
-          reviews.reduce((sum, review) => sum + review.stars, 0) / reviews.length
-        , reviews.length)
+          reviews.reduce((sum, review) => sum + review.stars, 0) / reviews.length,
+          reviews.length
+        )
       : DEFAULT_STARS_AVG;
 
   return {
@@ -342,8 +222,6 @@ export function computeGuestProfileSnapshot(args: {
     trust_score: clampGuestScore(trustBase + current.manual_trust_adjustment),
     loyalty_score: clampGuestScore(loyaltyBase + current.manual_loyalty_adjustment),
     stars_avg: starsAvg,
-    positive_traits: mergedPositiveTraits,
-    negative_traits: mergedNegativeTraits,
     completed_stays: completedStays,
     total_nights: totalNights,
     last_stay_check_out: lastStayCheckOut,

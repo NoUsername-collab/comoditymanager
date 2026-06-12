@@ -1,55 +1,8 @@
 import { saveGuestStayReviewAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import { useTranslations } from "next-intl";
-import {
-  GUEST_NEGATIVE_TRAITS,
-  GUEST_POSITIVE_TRAITS,
-} from "@/domain/guest/reputation";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-
-function TraitChecklist({
-  title,
-  name,
-  options,
-  labels,
-  selected,
-  tone,
-}: {
-  title: string;
-  name: string;
-  options: readonly string[];
-  labels: Record<string, string>;
-  selected: string[];
-  tone: "good" | "bad";
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">{title}</p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((trait) => (
-          <label
-            key={trait}
-            className={[
-              "guest-stay-review-form__trait-chip inline-flex items-center gap-2 rounded border px-2 py-1 text-xs font-medium",
-              tone === "good"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                : "border-red-200 bg-red-50 text-red-900",
-            ].join(" ")}
-          >
-            <input
-              type="checkbox"
-              name={name}
-              value={trait}
-              defaultChecked={selected.includes(trait)}
-            />
-            <span>{labels[trait]}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export function GuestStayReviewForm({
   guestId,
@@ -61,18 +14,6 @@ export function GuestStayReviewForm({
   review: GuestStayReviewRow | null;
 }) {
   const tGuests = useTranslations("admin.guests");
-  const positiveLabels: Record<string, string> = Object.fromEntries(
-    GUEST_POSITIVE_TRAITS.map((trait) => [
-      trait,
-      tGuests(`traits.positive.${trait}` as never),
-    ])
-  );
-  const negativeLabels: Record<string, string> = Object.fromEntries(
-    GUEST_NEGATIVE_TRAITS.map((trait) => [
-      trait,
-      tGuests(`traits.negative.${trait}` as never),
-    ])
-  );
 
   return (
     <details className="guest-stay-review-form mt-3 rounded border border-zinc-200 bg-zinc-50 p-3">
@@ -128,32 +69,25 @@ export function GuestStayReviewForm({
           </label>
         </div>
 
-        <TraitChecklist
-          title={tGuests("review.goodTraits")}
-          name="positive_traits"
-          options={GUEST_POSITIVE_TRAITS}
-          labels={positiveLabels}
-          selected={review?.positive_traits ?? []}
-          tone="good"
-        />
-
-        <TraitChecklist
-          title={tGuests("review.problemTraits")}
-          name="negative_traits"
-          options={GUEST_NEGATIVE_TRAITS}
-          labels={negativeLabels}
-          selected={review?.negative_traits ?? []}
-          tone="bad"
-        />
-
-        <label className="block space-y-1 text-sm">
-          <span className="font-bold">{tGuests("review.problemDetails")}</span>
+        <label className="guest-stay-review-form__note block space-y-1 text-sm">
+          <span className="font-bold text-emerald-800">{tGuests("review.positiveNote")}</span>
           <textarea
-            name="problem_details"
+            name="positive_note"
             rows={3}
-            defaultValue={review?.problem_details ?? ""}
-            placeholder={tGuests("review.problemPlaceholder")}
-            className="w-full border border-zinc-300 px-3 py-2"
+            defaultValue={review?.positive_note ?? ""}
+            placeholder={tGuests("review.positiveNotePlaceholder")}
+            className="w-full border border-emerald-200 bg-emerald-50/40 px-3 py-2"
+          />
+        </label>
+
+        <label className="guest-stay-review-form__note block space-y-1 text-sm">
+          <span className="font-bold text-red-800">{tGuests("review.negativeNote")}</span>
+          <textarea
+            name="negative_note"
+            rows={3}
+            defaultValue={review?.negative_note ?? ""}
+            placeholder={tGuests("review.negativeNotePlaceholder")}
+            className="w-full border border-red-200 bg-red-50/40 px-3 py-2"
           />
         </label>
 

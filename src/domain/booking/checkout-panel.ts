@@ -15,5 +15,6 @@ export type BookingCheckoutPanelData = {
   checkoutBlockUnpaid: boolean;
   checkoutTimeUntil: string | null;
   existingReviewStars: number | null;
-  existingReviewNotes: string | null;
+  existingReviewPositiveNote: string | null;
+  existingReviewNegativeNote: string | null;
 };

@@ -4,57 +4,10 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateGuestProfileControlsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import type { GuestProfileRow } from "@/domain/guest/types";
-import {
-  GUEST_NEGATIVE_TRAITS,
-  GUEST_POSITIVE_TRAITS,
-} from "@/domain/guest/reputation";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
-
-function TraitChecklist({
-  title,
-  name,
-  options,
-  labels,
-  selected,
-  tone,
-}: {
-  title: string;
-  name: string;
-  options: readonly string[];
-  labels: Record<string, string>;
-  selected: string[];
-  tone: "good" | "bad";
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-xs font-bold uppercase tracking-wide text-zinc-500">{title}</p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((trait) => (
-          <label
-            key={trait}
-            className={[
-              "guest-profile-controls-form__trait-chip inline-flex items-center gap-2 rounded border px-2 py-1 text-xs font-medium",
-              tone === "good"
-                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
-                : "border-red-200 bg-red-50 text-red-900",
-            ].join(" ")}
-          >
-            <input
-              type="checkbox"
-              name={name}
-              value={trait}
-              defaultChecked={selected.includes(trait)}
-            />
-            <span>{labels[trait]}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export function GuestProfileControlsForm({
   guestId,
@@ -65,18 +18,6 @@ export function GuestProfileControlsForm({
 }) {
   const tGuests = useTranslations("admin.guests");
   const tCommon = useTranslations("admin.common");
-  const positiveLabels: Record<string, string> = Object.fromEntries(
-    GUEST_POSITIVE_TRAITS.map((trait) => [
-      trait,
-      tGuests(`traits.positive.${trait}` as never),
-    ])
-  );
-  const negativeLabels: Record<string, string> = Object.fromEntries(
-    GUEST_NEGATIVE_TRAITS.map((trait) => [
-      trait,
-      tGuests(`traits.negative.${trait}` as never),
-    ])
-  );
   const [noteOpen, setNoteOpen] = useState(false);
   const [manualNote, setManualNote] = useState(profile?.manual_note ?? "");
 
@@ -137,33 +78,6 @@ export function GuestProfileControlsForm({
             className="w-full border border-zinc-300 bg-white"
           />
         </label>
-      </div>
-
-      <div className="guest-profile-controls-form__traits space-y-3 rounded-md border border-zinc-200 bg-zinc-50">
-        <div>
-          <p className="text-sm font-bold">{tGuests("profileControls.manualTraits")}</p>
-          <p className="text-xs text-zinc-500">
-            {tGuests("profileControls.manualTraitsHint")}
-          </p>
-        </div>
-
-        <TraitChecklist
-          title={tGuests("review.goodTraits")}
-          name="manual_positive_traits"
-          options={GUEST_POSITIVE_TRAITS}
-          labels={positiveLabels}
-          selected={profile?.manual_positive_traits ?? []}
-          tone="good"
-        />
-
-        <TraitChecklist
-          title={tGuests("profileControls.attentionTraits")}
-          name="manual_negative_traits"
-          options={GUEST_NEGATIVE_TRAITS}
-          labels={negativeLabels}
-          selected={profile?.manual_negative_traits ?? []}
-          tone="bad"
-        />
       </div>
 
       <input type="hidden" name="manual_note" value={manualNote} readOnly />

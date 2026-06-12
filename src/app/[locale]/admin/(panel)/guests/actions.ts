@@ -7,8 +7,6 @@ import type {
   GuestDocType,
   GuestFlagLevel,
   GuestNationalIdType,
-  GuestNegativeTrait,
-  GuestPositiveTrait,
   GuestSex,
   GuestTag,
 } from "@/domain/guest/types";
@@ -18,10 +16,6 @@ import {
   NATIONAL_ID_TYPES,
 } from "@/domain/guest/national-id";
 import type { NationalIdType } from "@/domain/guest/national-id";
-import {
-  parseGuestNegativeTraits,
-  parseGuestPositiveTraits,
-} from "@/domain/guest/reputation";
 import { parseGuestTags } from "@/domain/guest/tags";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { requireAdmin } from "@/lib/auth/require-admin";
@@ -136,12 +130,6 @@ export async function updateGuestProfileControlsAction(formData: FormData) {
       -40,
       40
     ),
-    manualPositiveTraits: parseGuestPositiveTraits(
-      formData.getAll("manual_positive_traits").map(String) as GuestPositiveTrait[]
-    ),
-    manualNegativeTraits: parseGuestNegativeTraits(
-      formData.getAll("manual_negative_traits").map(String) as GuestNegativeTrait[]
-    ),
     manualNote: String(formData.get("manual_note") ?? ""),
   });
 
@@ -249,20 +237,13 @@ export async function saveGuestStayReviewAction(formData: FormData) {
   if (!guestId || !bookingId) throw new Error(t("invalidReview"));
 
   const stars = parseIntField(formData.get("stars"), 5, 1, 5);
-  const positiveTraits = parseGuestPositiveTraits(
-    formData.getAll("positive_traits").map(String) as GuestPositiveTrait[]
-  );
-  const negativeTraits = parseGuestNegativeTraits(
-    formData.getAll("negative_traits").map(String) as GuestNegativeTrait[]
-  );
 
   await saveGuestStayReview({
     guestId,
     bookingId,
     stars,
-    positiveTraits,
-    negativeTraits,
-    problemDetails: String(formData.get("problem_details") ?? ""),
+    positiveNote: String(formData.get("positive_note") ?? ""),
+    negativeNote: String(formData.get("negative_note") ?? ""),
     trustDelta: parseIntField(formData.get("trust_delta"), 0, -40, 40),
     loyaltyDelta: parseIntField(formData.get("loyalty_delta"), 0, -20, 20),
   });

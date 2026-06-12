@@ -283,7 +283,7 @@ export default async function GuestDetailPage({
 
           {activeTab === "profile" && (
             <>
-              <GuestProfileSection title={tPage("operatorTraits")}>
+              <GuestProfileSection title={tPage("operatorAdjustments")}>
                 <GuestProfileControlsForm
                   key={`profile-controls-${guest.id}-${guest.profile?.updated_at ?? "none"}`}
                   guestId={guest.id}
@@ -372,23 +372,17 @@ export default async function GuestDetailPage({
                               <div className="guest-history__review">
                                 <p className="guest-history__review-stars">
                                   {tPage("reviewSummary", { stars: stay.review.stars })}
-                                  {stay.review.problem_details ? ` · ${tPage("reviewHasDetails")}` : ""}
                                 </p>
-                                {(stay.review.positive_traits.length > 0 ||
-                                  stay.review.negative_traits.length > 0) && (
-                                  <p className="guest-history__review-traits">
-                                    {stay.review.positive_traits
-                                      .map((trait) => tGuests(`traits.positive.${trait}` as never))
-                                      .join(" · ")}
-                                    {stay.review.positive_traits.length > 0 &&
-                                    stay.review.negative_traits.length > 0
-                                      ? " | "
-                                      : ""}
-                                    {stay.review.negative_traits
-                                      .map((trait) => tGuests(`traits.negative.${trait}` as never))
-                                      .join(" · ")}
+                                {stay.review.positive_note ? (
+                                  <p className="guest-history__review-note guest-history__review-note--positive">
+                                    {tGuests("review.positiveNote")}: {stay.review.positive_note}
                                   </p>
-                                )}
+                                ) : null}
+                                {stay.review.negative_note ? (
+                                  <p className="guest-history__review-note guest-history__review-note--negative">
+                                    {tGuests("review.negativeNote")}: {stay.review.negative_note}
+                                  </p>
+                                ) : null}
                               </div>
                             )}
                           </div>

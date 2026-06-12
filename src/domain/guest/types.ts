@@ -2,30 +2,6 @@ export type GuestTag = "vip" | "recurrent";
 
 export const GUEST_TAGS: readonly GuestTag[] = ["vip", "recurrent"] as const;
 
-export type GuestPositiveTrait =
-  | "voios"
-  | "glumet"
-  | "linistit"
-  | "miezul_serii"
-  | "respectuos"
-  | "ingrijit"
-  | "plateste_la_timp"
-  | "recomandat";
-
-export type GuestNegativeTrait =
-  | "betiv"
-  | "galagios"
-  | "recalcitrant"
-  | "scandalagiu"
-  | "cleptoman"
-  | "nesimtit"
-  | "zgomotos"
-  | "mizerie"
-  | "conflictual"
-  | "neplata"
-  | "pagube"
-  | "incalca_reguli";
-
 export type GuestFlagLevel = "normal" | "watchlist" | "blacklist";
 
 export type GuestProfileRow = {
@@ -33,10 +9,6 @@ export type GuestProfileRow = {
   trust_score: number;
   loyalty_score: number;
   stars_avg: number;
-  manual_positive_traits: GuestPositiveTrait[];
-  manual_negative_traits: GuestNegativeTrait[];
-  positive_traits: GuestPositiveTrait[];
-  negative_traits: GuestNegativeTrait[];
   flag_level: GuestFlagLevel;
   blacklist_reason: string | null;
   blacklisted_at: string | null;
@@ -62,10 +34,6 @@ export type GuestBookingFlagSummary = Pick<
   | "trust_score"
   | "loyalty_score"
   | "stars_avg"
-  | "manual_positive_traits"
-  | "manual_negative_traits"
-  | "positive_traits"
-  | "negative_traits"
   | "flag_level"
   | "blacklist_reason"
   | "review_count"
@@ -79,9 +47,8 @@ export type GuestStayReviewRow = {
   booking_id: string;
   guest_id: string;
   stars: number;
-  positive_traits: GuestPositiveTrait[];
-  negative_traits: GuestNegativeTrait[];
-  problem_details: string | null;
+  positive_note: string | null;
+  negative_note: string | null;
   trust_delta: number;
   loyalty_delta: number;
   reviewed_at: string;

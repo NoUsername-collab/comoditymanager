@@ -6,11 +6,10 @@ import {
   resolveGuestStarsAverage,
   clampGuestScore,
   roundGuestStars,
-  parseGuestPositiveTraits,
-  parseGuestNegativeTraits,
   isGuestFlagged,
   flagSeverity,
   maxGuestFlagLevel,
+  calculateReviewTrustImpact,
 } from "@/domain/guest/reputation";
 
 describe("DEFAULT constants", () => {
@@ -100,31 +99,10 @@ describe("roundGuestStars", () => {
   });
 });
 
-describe("parseGuestPositiveTraits", () => {
-  it("returns empty array for non-array input", () => {
-    expect(parseGuestPositiveTraits(null)).toEqual([]);
-    expect(parseGuestPositiveTraits("voios")).toEqual([]);
-    expect(parseGuestPositiveTraits(42)).toEqual([]);
-  });
-
-  it("filters out invalid trait values", () => {
-    expect(parseGuestPositiveTraits(["voios", "invalid", "glumet"])).toEqual([
-      "voios",
-      "glumet",
-    ]);
-  });
-});
-
-describe("parseGuestNegativeTraits", () => {
-  it("returns empty array for non-array input", () => {
-    expect(parseGuestNegativeTraits(undefined)).toEqual([]);
-  });
-
-  it("filters out invalid trait values", () => {
-    expect(parseGuestNegativeTraits(["betiv", "fake", "galagios"])).toEqual([
-      "betiv",
-      "galagios",
-    ]);
+describe("calculateReviewTrustImpact", () => {
+  it("uses star weights and trust delta only", () => {
+    expect(calculateReviewTrustImpact({ stars: 5, trust_delta: 0 })).toBe(16);
+    expect(calculateReviewTrustImpact({ stars: 1, trust_delta: -5 })).toBe(-33);
   });
 });
 
