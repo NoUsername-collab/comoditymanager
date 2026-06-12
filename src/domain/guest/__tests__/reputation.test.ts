@@ -1,15 +1,14 @@
 import { describe, it, expect } from "vitest";
 import {
   DEFAULT_STARS_AVG,
-  DEFAULT_TRUST_SCORE,
-  DEFAULT_LOYALTY_SCORE,
   resolveGuestStarsAverage,
   roundGuestStars,
   isGuestFlagged,
-  isGuestLoyal,
+  isReturningGuest,
   flagSeverity,
   maxGuestFlagLevel,
   computeGuestProfileSnapshot,
+  computeCompletedStayStats,
   createDefaultGuestProfile,
   ratingFromNegativeSeverity,
   computeStayReviewEffectiveStars,
@@ -19,13 +18,32 @@ describe("DEFAULT constants", () => {
   it("DEFAULT_STARS_AVG is 0 (not 1)", () => {
     expect(DEFAULT_STARS_AVG).toBe(0);
   });
+});
 
-  it("DEFAULT_TRUST_SCORE is 60", () => {
-    expect(DEFAULT_TRUST_SCORE).toBe(60);
+describe("computeCompletedStayStats", () => {
+  it("counts only stays with checkout before today", () => {
+    const stats = computeCompletedStayStats(
+      [
+        { check_in: "2026-01-01", check_out: "2026-01-04" },
+        { check_in: "2026-06-01", check_out: "2026-06-10" },
+      ],
+      "2026-06-05"
+    );
+
+    expect(stats.completed_stays).toBe(1);
+    expect(stats.total_nights).toBe(3);
+    expect(stats.last_stay_check_out).toBe("2026-01-04");
   });
 
-  it("DEFAULT_LOYALTY_SCORE is 0", () => {
-    expect(DEFAULT_LOYALTY_SCORE).toBe(0);
+  it("returns zeros when no completed stays", () => {
+    const stats = computeCompletedStayStats(
+      [{ check_in: "2026-06-01", check_out: "2026-06-10" }],
+      "2026-06-01"
+    );
+
+    expect(stats.completed_stays).toBe(0);
+    expect(stats.total_nights).toBe(0);
+    expect(stats.last_stay_check_out).toBeNull();
   });
 });
 
@@ -75,22 +93,30 @@ describe("roundGuestStars", () => {
   });
 });
 
-describe("isGuestLoyal", () => {
+describe("isReturningGuest", () => {
   it("returns true for 3+ completed stays", () => {
     expect(
-      isGuestLoyal({ completed_stays: 3, total_nights: 2, last_stay_check_out: null })
+      isReturningGuest({
+        completed_stays: 3,
+        total_nights: 2,
+        last_stay_check_out: null,
+      })
     ).toBe(true);
   });
 
   it("returns true for 10+ total nights", () => {
     expect(
-      isGuestLoyal({ completed_stays: 1, total_nights: 10, last_stay_check_out: null })
+      isReturningGuest({
+        completed_stays: 1,
+        total_nights: 10,
+        last_stay_check_out: null,
+      })
     ).toBe(true);
   });
 
   it("returns true for 2 stays with recent checkout", () => {
     expect(
-      isGuestLoyal(
+      isReturningGuest(
         {
           completed_stays: 2,
           total_nights: 4,
@@ -103,7 +129,11 @@ describe("isGuestLoyal", () => {
 
   it("returns false for new guests", () => {
     expect(
-      isGuestLoyal({ completed_stays: 0, total_nights: 0, last_stay_check_out: null })
+      isReturningGuest({
+        completed_stays: 0,
+        total_nights: 0,
+        last_stay_check_out: null,
+      })
     ).toBe(false);
   });
 });
@@ -165,13 +195,14 @@ describe("computeStayReviewEffectiveStars", () => {
 });
 
 describe("computeGuestProfileSnapshot", () => {
-  it("derives stars_avg from note star modifiers", () => {
+  it("derives stars and stay stats from reviews and bookings", () => {
     const current = createDefaultGuestProfile("guest-1");
     const snapshot = computeGuestProfileSnapshot({
       current,
-      completedStays: 1,
-      totalNights: 3,
-      lastStayCheckOut: "2026-01-10",
+      today: "2026-06-10",
+      completedStayBookings: [
+        { check_in: "2026-01-01", check_out: "2026-01-04" },
+      ],
       reviews: [
         {
           booking_id: "b1",
@@ -181,8 +212,6 @@ describe("computeGuestProfileSnapshot", () => {
           negative_note: null,
           positive_stars: 4,
           negative_stars: null,
-          trust_delta: 0,
-          loyalty_delta: 0,
           reviewed_at: "2026-01-10T12:00:00Z",
           reviewed_by: null,
           reviewed_by_email: null,
@@ -193,6 +222,9 @@ describe("computeGuestProfileSnapshot", () => {
 
     expect(snapshot.stars_avg).toBe(4);
     expect(snapshot.review_count).toBe(1);
+    expect(snapshot.completed_stays).toBe(1);
+    expect(snapshot.total_nights).toBe(3);
+    expect(snapshot.last_stay_check_out).toBe("2026-01-04");
   });
 });
 

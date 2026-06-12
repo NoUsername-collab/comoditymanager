@@ -96,8 +96,6 @@ export function buildCazariLabels({
     checkActionsOnlyConfirmed: tPages("checkActionsOnlyConfirmed"),
     moveOnlyConfirmed: tPages("moveOnlyConfirmed"),
     phoneRequiredForCheckIn: tPages("phoneRequiredForCheckIn"),
-    behaviorShort: tPages("behaviorShort"),
-    loyaltyShort: tPages("loyaltyShort"),
     starsShort: tPages("starsShort"),
     groupedToday: (count) => tPages("groupedToday", { count }),
     groupedThisWeek: (count) => tPages("groupedThisWeek", { count }),

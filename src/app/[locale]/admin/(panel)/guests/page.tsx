@@ -144,7 +144,7 @@ export default async function AdminGuestsPage({
     { id: "watchlist", label: t("filterWatchlist") },
     { id: "recent", label: t("filterRecent") },
     { id: "rated", label: t("filterRated") },
-    { id: "loyal", label: t("filterLoyal") },
+    { id: "returning", label: t("filterReturning") },
   ];
 
   let result: GuestSearchResult = {
@@ -224,9 +224,9 @@ export default async function AdminGuestsPage({
               emptyLabel={t("sectionEmpty")}
             />
             <GuestCollapsibleSection
-              title={t("loyalTitle")}
-              description={t("loyalDescription")}
-              guests={highlights.loyal}
+              title={t("returningTitle")}
+              description={t("returningDescription")}
+              guests={highlights.returning}
               currentHref={currentHref}
               emptyLabel={t("sectionEmpty")}
             />

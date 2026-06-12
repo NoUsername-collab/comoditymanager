@@ -25,7 +25,7 @@ export function GuestSearchForm({
     { value: "recent", label: tGuests("filters.recent") },
     { value: "rated", label: tGuests("filters.rated") },
     { value: "unreviewed", label: tGuests("filters.unreviewed") },
-    { value: "loyal", label: tGuests("filters.loyal") },
+    { value: "returning", label: tGuests("filters.returning") },
   ];
 
   return (

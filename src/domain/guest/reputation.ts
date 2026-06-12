@@ -4,13 +4,21 @@ import type {
   GuestProfileRow,
   GuestStayReviewRow,
 } from "./types";
+import { stayNightCount } from "@/lib/stay-dates";
 
-/** @deprecated Legacy DB default — no longer computed for UI. */
-export const DEFAULT_TRUST_SCORE = 60;
-/** @deprecated Legacy DB default — no longer computed for UI. */
-export const DEFAULT_LOYALTY_SCORE = 0;
 /** 0 = unrated (no reviews yet). Never penalize new guests with a low star score. */
 export const DEFAULT_STARS_AVG = 0;
+
+export type CompletedStayBooking = {
+  check_in: string;
+  check_out: string;
+};
+
+export type CompletedStayStats = {
+  completed_stays: number;
+  total_nights: number;
+  last_stay_check_out: string | null;
+};
 
 export function roundGuestStars(value: number): number {
   return Math.round(value * 10) / 10;
@@ -64,6 +72,25 @@ export function resolveGuestStarsAverage(
   return roundGuestStars(Math.max(1, Math.min(5, numericValue)));
 }
 
+/** Statistici sejururi terminate — sursă unică pentru profil și filtre. */
+export function computeCompletedStayStats(
+  bookings: CompletedStayBooking[],
+  today: string
+): CompletedStayStats {
+  const completed = bookings
+    .filter((booking) => booking.check_out < today)
+    .sort((a, b) => b.check_out.localeCompare(a.check_out));
+
+  return {
+    completed_stays: completed.length,
+    total_nights: completed.reduce(
+      (sum, booking) => sum + stayNightCount(booking.check_in, booking.check_out),
+      0
+    ),
+    last_stay_check_out: completed[0]?.check_out ?? null,
+  };
+}
+
 export function isGuestFlagged(level: GuestFlagLevel): boolean {
   return level === "watchlist" || level === "blacklist";
 }
@@ -79,19 +106,15 @@ export function maxGuestFlagLevel(
   return flagSeverity(left) >= flagSeverity(right) ? left : right;
 }
 
-/** Segment intern „client fidel” — fără scor 0–100 afișat. */
-export function isGuestLoyal(
-  profile: {
-    completed_stays: number;
-    total_nights: number;
-    last_stay_check_out: string | null;
-  },
+/** Segment „client recurent” — bazat pe statistici de sejururi, nu pe scor legacy. */
+export function isReturningGuest(
+  stats: CompletedStayStats,
   today = new Date()
 ): boolean {
-  if (profile.completed_stays >= 3) return true;
-  if (profile.total_nights >= 10) return true;
-  if (profile.completed_stays >= 2 && profile.last_stay_check_out) {
-    const last = new Date(`${profile.last_stay_check_out}T00:00:00`);
+  if (stats.completed_stays >= 3) return true;
+  if (stats.total_nights >= 10) return true;
+  if (stats.completed_stays >= 2 && stats.last_stay_check_out) {
+    const last = new Date(`${stats.last_stay_check_out}T00:00:00`);
     const diffDays = Math.floor(
       (today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24)
     );
@@ -104,8 +127,6 @@ export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
   const now = new Date().toISOString();
   return {
     guest_id: guestId,
-    trust_score: DEFAULT_TRUST_SCORE,
-    loyalty_score: DEFAULT_LOYALTY_SCORE,
     stars_avg: DEFAULT_STARS_AVG,
     flag_level: "normal",
     blacklist_reason: null,
@@ -115,8 +136,6 @@ export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
     unblacklisted_at: null,
     unblacklisted_by: null,
     unblacklisted_by_email: null,
-    manual_trust_adjustment: 0,
-    manual_loyalty_adjustment: 0,
     manual_note: null,
     completed_stays: 0,
     total_nights: 0,
@@ -134,8 +153,6 @@ export function mapGuestProfileRow(row: Record<string, unknown>): GuestProfileRo
 
   return {
     guest_id: guestId,
-    trust_score: Number(row.trust_score ?? fallback.trust_score),
-    loyalty_score: Number(row.loyalty_score ?? fallback.loyalty_score),
     stars_avg: resolveGuestStarsAverage(row.stars_avg as number | undefined, reviewCount),
     flag_level:
       row.flag_level === "watchlist" || row.flag_level === "blacklist"
@@ -153,12 +170,6 @@ export function mapGuestProfileRow(row: Record<string, unknown>): GuestProfileRo
       row.unblacklisted_by != null ? String(row.unblacklisted_by) : null,
     unblacklisted_by_email:
       row.unblacklisted_by_email != null ? String(row.unblacklisted_by_email) : null,
-    manual_trust_adjustment: Number(
-      row.manual_trust_adjustment ?? fallback.manual_trust_adjustment
-    ),
-    manual_loyalty_adjustment: Number(
-      row.manual_loyalty_adjustment ?? fallback.manual_loyalty_adjustment
-    ),
     manual_note: row.manual_note != null ? String(row.manual_note) : null,
     completed_stays: Number(row.completed_stays ?? fallback.completed_stays),
     total_nights: Number(row.total_nights ?? fallback.total_nights),
@@ -185,8 +196,6 @@ export function mapGuestStayReviewRow(
       row.positive_stars != null ? Number(row.positive_stars) : null,
     negative_stars:
       row.negative_stars != null ? Number(row.negative_stars) : null,
-    trust_delta: Number(row.trust_delta ?? 0),
-    loyalty_delta: Number(row.loyalty_delta ?? 0),
     reviewed_at: String(row.reviewed_at),
     reviewed_by: row.reviewed_by != null ? String(row.reviewed_by) : null,
     reviewed_by_email:
@@ -211,14 +220,16 @@ export function toGuestBookingFlagSummary(
   };
 }
 
+/** Snapshot profil: rating din review-uri + statistici sejururi terminate. */
 export function computeGuestProfileSnapshot(args: {
   current: GuestProfileRow;
-  completedStays: number;
-  totalNights: number;
-  lastStayCheckOut: string | null;
+  completedStayBookings: CompletedStayBooking[];
+  today: string;
   reviews: GuestStayReviewRow[];
 }): GuestProfileRow {
-  const { current, completedStays, totalNights, lastStayCheckOut, reviews } = args;
+  const { current, completedStayBookings, today, reviews } = args;
+  const stayStats = computeCompletedStayStats(completedStayBookings, today);
+
   const effectiveRatings = reviews
     .map((review) =>
       computeStayReviewEffectiveStars({
@@ -242,9 +253,9 @@ export function computeGuestProfileSnapshot(args: {
   return {
     ...current,
     stars_avg: starsAvg,
-    completed_stays: completedStays,
-    total_nights: totalNights,
-    last_stay_check_out: lastStayCheckOut,
+    completed_stays: stayStats.completed_stays,
+    total_nights: stayStats.total_nights,
+    last_stay_check_out: stayStats.last_stay_check_out,
     review_count: reviews.length,
   };
 }

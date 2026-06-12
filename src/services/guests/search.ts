@@ -4,7 +4,7 @@ import {
   shiftStayDatesByYears,
   shiftStayToNextFutureYear,
 } from "@/domain/guest/rebook-dates";
-import { isGuestLoyal } from "@/domain/guest/reputation";
+import { isReturningGuest } from "@/domain/guest/reputation";
 import {
   assertValidGuestPhone,
   normalizeEmail,
@@ -66,8 +66,9 @@ function normalizeGuestFilter(filter?: string): GuestSearchFilter {
     case "watchlist":
     case "rated":
     case "unreviewed":
+    case "returning":
     case "loyal":
-      return filter;
+      return filter === "loyal" ? "returning" : filter;
     default:
       return "all";
   }
@@ -83,7 +84,7 @@ function isoDaysAgo(days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
-function loyalProfileOrFilter(): string {
+function returningGuestProfileFilter(): string {
   const recentCutoff = isoDaysAgo(365);
   return `completed_stays.gte.3,total_nights.gte.10,and(completed_stays.gte.2,last_stay_check_out.gte.${recentCutoff})`;
 }
@@ -99,9 +100,13 @@ function matchesGuestFilter(
   if (filter === "watchlist") return profile?.flag_level === "watchlist";
   if (filter === "rated") return (profile?.review_count ?? 0) > 0;
   if (filter === "unreviewed") return (profile?.review_count ?? 0) === 0;
-  if (filter === "loyal") {
+  if (filter === "returning") {
     if (!profile) return false;
-    return isGuestLoyal(profile);
+    return isReturningGuest({
+      completed_stays: profile.completed_stays,
+      total_nights: profile.total_nights,
+      last_stay_check_out: profile.last_stay_check_out,
+    });
   }
   if (filter === "recent") {
     return (
@@ -163,13 +168,13 @@ async function fetchGuestListItemsByIds(
 
 async function listGuestIdsForHighlights(limit = 8): Promise<{
   blacklist: string[];
-  loyal: string[];
+  returning: string[];
   recent: string[];
   rated: string[];
 }> {
   const { tenantId, supabase } = await getTenantScope();
 
-  const [blacklistRes, loyalRes, recentRes, ratedRes] = await Promise.all([
+  const [blacklistRes, returningRes, recentRes, ratedRes] = await Promise.all([
     supabase
       .from("guest_profiles")
       .select("guest_id")
@@ -181,7 +186,7 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
       .from("guest_profiles")
       .select("guest_id")
       .eq("tenant_id", tenantId)
-      .or(loyalProfileOrFilter())
+      .or(returningGuestProfileFilter())
       .order("completed_stays", { ascending: false })
       .order("total_nights", { ascending: false })
       .limit(limit),
@@ -202,7 +207,7 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
   ]);
 
   if (blacklistRes.error) throw new Error(blacklistRes.error.message);
-  if (loyalRes.error) throw new Error(loyalRes.error.message);
+  if (returningRes.error) throw new Error(returningRes.error.message);
   if (recentRes.error) throw new Error(recentRes.error.message);
   if (ratedRes.error) throw new Error(ratedRes.error.message);
 
@@ -210,7 +215,7 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
     blacklist: ((blacklistRes.data ?? []) as { guest_id: string }[]).map(
       (row) => row.guest_id
     ),
-    loyal: ((loyalRes.data ?? []) as { guest_id: string }[]).map(
+    returning: ((returningRes.data ?? []) as { guest_id: string }[]).map(
       (row) => row.guest_id
     ),
     recent: ((recentRes.data ?? []) as { id: string }[]).map((row) => row.id),
@@ -362,9 +367,9 @@ async function listGuestIdsByFilter(
       .order("review_count", { ascending: false });
   } else if (filter === "unreviewed") {
     query = query.eq("review_count", 0).order("updated_at", { ascending: false });
-  } else if (filter === "loyal") {
+  } else if (filter === "returning") {
     query = query
-      .or(loyalProfileOrFilter())
+      .or(returningGuestProfileFilter())
       .order("completed_stays", { ascending: false })
       .order("total_nights", { ascending: false });
   }
@@ -377,17 +382,17 @@ async function listGuestIdsByFilter(
 }
 
 const loadGuestHighlights = cache(async (): Promise<GuestHighlights> => {
-  const { blacklist, loyal, recent, rated } = await listGuestIdsForHighlights(10);
-  const [blacklistGuests, loyalGuests, recentGuests, ratedGuests] = await Promise.all([
+  const { blacklist, returning, recent, rated } = await listGuestIdsForHighlights(10);
+  const [blacklistGuests, returningGuests, recentGuests, ratedGuests] = await Promise.all([
     fetchGuestListItemsByIds(blacklist),
-    fetchGuestListItemsByIds(loyal),
+    fetchGuestListItemsByIds(returning),
     fetchGuestListItemsByIds(recent),
     fetchGuestListItemsByIds(rated),
   ]);
 
   return {
     blacklist: blacklistGuests,
-    loyal: loyalGuests,
+    returning: returningGuests,
     rated: ratedGuests,
     recent: recentGuests,
   };

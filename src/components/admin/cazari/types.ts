@@ -81,8 +81,6 @@ export type CazariLabels = {
   checkActionsOnlyConfirmed: string;
   moveOnlyConfirmed: string;
   phoneRequiredForCheckIn: string;
-  behaviorShort: string;
-  loyaltyShort: string;
   starsShort: string;
   groupedToday: (count: number) => string;
   groupedThisWeek: (count: number) => string;

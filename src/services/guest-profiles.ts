@@ -15,7 +15,6 @@ import {
   computeGuestProfileSnapshot,
   computeStayReviewEffectiveStars,
 } from "@/domain/guest/reputation";
-import { stayNightCount, todayIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
@@ -170,11 +169,9 @@ export async function listGuestStayReviewsForGuest(
   );
 }
 
-async function listCompletedStayStats(guestId: string): Promise<{
-  completedStays: number;
-  totalNights: number;
-  lastStayCheckOut: string | null;
-}> {
+async function listCompletedStayBookings(
+  guestId: string
+): Promise<{ check_in: string; check_out: string }[]> {
   const [today, { tenantId, supabase }] = await Promise.all([
     getEffectiveToday(),
     getTenantScope(),
@@ -185,20 +182,11 @@ async function listCompletedStayStats(guestId: string): Promise<{
     .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .eq("status", "confirmata")
-    .lt("check_out", today)
     .order("check_out", { ascending: false });
 
   if (error) throw new Error(error.message);
 
-  const rows = (data ?? []) as { check_in: string; check_out: string }[];
-  return {
-    completedStays: rows.length,
-    totalNights: rows.reduce(
-      (sum, booking) => sum + stayNightCount(booking.check_in, booking.check_out),
-      0
-    ),
-    lastStayCheckOut: rows[0]?.check_out ?? null,
-  };
+  return (data ?? []) as { check_in: string; check_out: string }[];
 }
 
 export async function recomputeGuestProfile(
@@ -206,16 +194,16 @@ export async function recomputeGuestProfile(
 ): Promise<GuestProfileRow> {
   await ensureGuestProfiles([guestId]);
   const current = (await fetchGuestProfileRow(guestId)) ?? createDefaultGuestProfile(guestId);
-  const [stats, reviews] = await Promise.all([
-    listCompletedStayStats(guestId),
+  const [today, completedStayBookings, reviews] = await Promise.all([
+    getEffectiveToday(),
+    listCompletedStayBookings(guestId),
     listGuestStayReviewsForGuest(guestId),
   ]);
 
   const snapshot = computeGuestProfileSnapshot({
     current,
-    completedStays: stats.completedStays,
-    totalNights: stats.totalNights,
-    lastStayCheckOut: stats.lastStayCheckOut,
+    completedStayBookings,
+    today,
     reviews,
   });
 
@@ -311,8 +299,6 @@ export async function saveGuestStayReview(input: {
       negative_note: negativeNote || null,
       positive_stars: positiveStars,
       negative_stars: negativeStars,
-      trust_delta: 0,
-      loyalty_delta: 0,
       reviewed_at: now,
       reviewed_by: actor?.id ?? null,
       reviewed_by_email: actor?.email ?? null,

@@ -6,8 +6,6 @@ export type GuestFlagLevel = "normal" | "watchlist" | "blacklist";
 
 export type GuestProfileRow = {
   guest_id: string;
-  trust_score: number;
-  loyalty_score: number;
   stars_avg: number;
   flag_level: GuestFlagLevel;
   blacklist_reason: string | null;
@@ -17,8 +15,6 @@ export type GuestProfileRow = {
   unblacklisted_at: string | null;
   unblacklisted_by: string | null;
   unblacklisted_by_email: string | null;
-  manual_trust_adjustment: number;
-  manual_loyalty_adjustment: number;
   manual_note: string | null;
   completed_stays: number;
   total_nights: number;
@@ -49,8 +45,6 @@ export type GuestStayReviewRow = {
   negative_note: string | null;
   positive_stars: number | null;
   negative_stars: number | null;
-  trust_delta: number;
-  loyalty_delta: number;
   reviewed_at: string;
   reviewed_by: string | null;
   reviewed_by_email: string | null;
@@ -123,7 +117,7 @@ export type GuestSearchFilter =
   | "watchlist"
   | "rated"
   | "unreviewed"
-  | "loyal";
+  | "returning";
 
 export type GuestSearchResult = {
   items: GuestListItem[];
@@ -138,7 +132,7 @@ export type GuestSearchResult = {
 
 export type GuestHighlights = {
   blacklist: GuestListItem[];
-  loyal: GuestListItem[];
+  returning: GuestListItem[];
   rated: GuestListItem[];
   recent: GuestListItem[];
 };
