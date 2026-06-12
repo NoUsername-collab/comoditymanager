@@ -6,6 +6,8 @@ import type { GuestAccessResult } from "@/domain/guest-app/types";
 const DENY_MESSAGES: Record<string, string> = {
   disabled: "Aplicația pentru oaspeți nu este activă.",
   not_found: "Cod invalid sau inexistent.",
+  wrong_host:
+    "Linkul trebuie deschis de pe adresa pensiunii (ex. nume.test.hospira.ro/stay/...). Cere recepției linkul actualizat.",
   revoked: "Accesul a fost revocat.",
   booking_not_confirmed: "Rezervarea nu este confirmată.",
   before_check_in: "Linkul devine activ cu o zi înainte de sosire.",
@@ -33,7 +35,7 @@ async function resolveGuestSession(code: string): Promise<GuestAccessResult> {
     const message =
       error instanceof Error ? error.message : "Nu puteți accesa această pagină.";
     if (message.includes("auth.tenant_host_required")) {
-      return { ok: false, reason: "not_found" };
+      return { ok: false, reason: "wrong_host" };
     }
     throw error;
   }

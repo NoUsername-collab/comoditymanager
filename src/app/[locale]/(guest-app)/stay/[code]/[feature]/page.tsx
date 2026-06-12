@@ -13,7 +13,10 @@ export default async function GuestStayFeaturePage({
   const featureId = parseGuestAppFeatureSlug(featureSlug);
   if (!featureId) notFound();
 
-  const session = await resolveGuestAccessByCode(code);
+  const session = await resolveGuestAccessByCode(code).catch(() => ({
+    ok: false as const,
+    reason: "not_found" as const,
+  }));
   if (!session.ok) notFound();
 
   const visible = visibleGuestAppFeatures(session.settings.features);

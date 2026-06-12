@@ -72,6 +72,7 @@ export type GuestAccessBookingSnapshot = {
 export type GuestAccessDenyReason =
   | "disabled"
   | "not_found"
+  | "wrong_host"
   | "revoked"
   | "booking_not_confirmed"
   | "before_check_in"

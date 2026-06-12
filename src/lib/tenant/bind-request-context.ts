@@ -33,3 +33,18 @@ export async function bindTenantContextFromRequest(): Promise<TenantContext> {
 
   throw new Error("auth.tenant_host_required");
 }
+
+/** Guest/public routes on wrong host — bind when possible, otherwise null. */
+export async function tryBindTenantContextFromRequest(): Promise<TenantContext | null> {
+  try {
+    return await bindTenantContextFromRequest();
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("auth.tenant_host_required")
+    ) {
+      return null;
+    }
+    throw error;
+  }
+}

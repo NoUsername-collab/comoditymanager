@@ -1,4 +1,4 @@
-import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
+import { tryBindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import "@/app/guest-app.css";
 
 export default async function GuestAppLayout({
@@ -6,6 +6,7 @@ export default async function GuestAppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await bindTenantContextFromRequest();
+  // /stay on platform apex (test.hospira.ro) has no tenant — child routes show access unavailable.
+  await tryBindTenantContextFromRequest();
   return children;
 }
