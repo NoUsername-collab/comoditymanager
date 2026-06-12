@@ -3,12 +3,14 @@ import type {
   GuestAccessBookingSnapshot,
   GuestAppSettings,
 } from "@/domain/guest-app/types";
+import { buildGuestStayMilestones } from "@/domain/guest-app/stay-milestone";
 import { guestAppFeatureHref } from "@/domain/guest-app/routes";
 import {
   guestAppFeatureBadge,
   guestAppFeatureLabel,
   visibleGuestAppFeatures,
 } from "@/features/guest-app/feature-labels";
+import { GuestStayMilestoneStrip } from "@/features/guest-app/GuestStayMilestoneStrip";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
 type Props = {
@@ -16,6 +18,7 @@ type Props = {
   booking: GuestAccessBookingSnapshot;
   settings: GuestAppSettings;
   locale: string;
+  today: string;
 };
 
 export function GuestAppHomeScreen({
@@ -23,6 +26,7 @@ export function GuestAppHomeScreen({
   booking,
   settings,
   locale,
+  today,
 }: Props) {
   const features = visibleGuestAppFeatures(settings.features);
   const period = formatStayPeriod(
@@ -31,9 +35,17 @@ export function GuestAppHomeScreen({
     locale,
     true,
   );
+  const milestones = buildGuestStayMilestones({
+    today,
+    checkIn: booking.checkIn,
+    checkOut: booking.checkOut,
+    checkedInAt: booking.checkedInAt,
+  });
 
   return (
     <div className="space-y-6">
+      <GuestStayMilestoneStrip steps={milestones} />
+
       <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
         <p className="text-sm text-zinc-400">Bun venit</p>
         <h1 className="mt-1 text-xl font-semibold">{booking.guestName}</h1>

@@ -6,3 +6,78 @@
   backdrop-filter: blur(12px);
   background: rgba(9, 9, 11, 0.85);
 }
+
+.guest-stay-milestones__list {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guest-stay-milestones__step {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.guest-stay-milestones__marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.guest-stay-milestones__step--done .guest-stay-milestones__marker {
+  border-color: rgba(52, 211, 153, 0.55);
+  background: rgba(16, 185, 129, 0.18);
+  color: rgb(167, 243, 208);
+}
+
+.guest-stay-milestones__step--current .guest-stay-milestones__marker {
+  border-color: var(--guest-app-accent, #14b8a6);
+  background: rgba(20, 184, 166, 0.2);
+  color: rgb(204, 251, 241);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.guest-stay-milestones__label {
+  margin-top: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.guest-stay-milestones__step--done .guest-stay-milestones__label,
+.guest-stay-milestones__step--current .guest-stay-milestones__label {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.guest-stay-milestones__connector {
+  position: absolute;
+  top: 1rem;
+  left: calc(50% + 1rem);
+  width: calc(100% - 2rem);
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.guest-stay-milestones__step--done .guest-stay-milestones__connector {
+  background: rgba(52, 211, 153, 0.45);
+}

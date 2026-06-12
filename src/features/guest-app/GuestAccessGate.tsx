@@ -44,7 +44,7 @@ export function GuestAccessGate({
 
     const body =
       reason === "before_check_in"
-        ? `Aplicația devine disponibilă din ${formatRoDate(schedule.opensOn)} — cu o zi înainte de sosire.`
+        ? `Aplicația devine disponibilă din ${formatRoDate(schedule.opensOn)}.`
         : `Accesul a fost activ până pe ${formatRoDate(schedule.closesOn)}.`;
 
     return (

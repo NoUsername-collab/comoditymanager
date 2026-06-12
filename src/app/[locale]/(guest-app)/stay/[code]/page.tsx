@@ -1,5 +1,6 @@
 import { GuestAppHomeScreen } from "@/features/guest-app/GuestAppHomeScreen";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -8,7 +9,11 @@ export default async function GuestStayHomePage({
 }: {
   params: Promise<{ code: string }>;
 }) {
-  const [{ code }, locale] = await Promise.all([params, getLocale()]);
+  const [{ code }, locale, today] = await Promise.all([
+    params,
+    getLocale(),
+    getEffectiveToday(),
+  ]);
   const session = await resolveGuestAccessByCode(code).catch(() => ({
     ok: false as const,
     reason: "not_found" as const,
@@ -21,6 +26,7 @@ export default async function GuestStayHomePage({
       booking={session.booking}
       settings={session.settings}
       locale={locale}
+      today={today}
     />
   );
 }

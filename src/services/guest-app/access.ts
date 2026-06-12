@@ -15,6 +15,7 @@ import { withTenantId } from "@/lib/tenant/scope";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getGuestAppSettings, getGuestAppSettingsPublic } from "./settings";
 import { getGuestAppPublicDb } from "./public-db";
+import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { isGuestAppMigrationMissing } from "./map";
 
 function normalizeAccessCode(raw: string): string {
@@ -60,6 +61,25 @@ async function loadBookingSnapshot(
     if (name) roomLabels.push(name);
   }
 
+  let checkedInAt: string | null = null;
+  const checkinResult = await supabase
+    .from("checkins")
+    .select("checked_in_at")
+    .eq("tenant_id", tenantId)
+    .eq("booking_id", bookingId)
+    .not("checked_in_at", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (checkinResult.error) {
+    if (!isCheckinMigrationMissing(checkinResult.error.message)) {
+      throw new Error(checkinResult.error.message);
+    }
+  } else if (checkinResult.data?.checked_in_at) {
+    checkedInAt = String(checkinResult.data.checked_in_at);
+  }
+
   return {
     id: String(data.id),
     status: String(data.status),
@@ -67,6 +87,7 @@ async function loadBookingSnapshot(
     checkOut: String(data.check_out),
     guestName: String(data.guest_name),
     roomLabels,
+    checkedInAt,
   };
 }
 
@@ -119,7 +140,7 @@ export async function resolveGuestAccessByCode(
     const { tenantId, supabase } = await getGuestAppPublicDb();
     const { data: accessRow, error } = await supabase
       .from("booking_guest_access")
-      .select("booking_id, access_code, revoked_at")
+      .select("booking_id, access_code, revoked_at, issued_at")
       .eq("tenant_id", tenantId)
       .ilike("access_code", accessCode)
       .maybeSingle();
@@ -140,11 +161,15 @@ export async function resolveGuestAccessByCode(
     if (statusReason) return { ok: false, reason: statusReason };
 
     const today = await getEffectiveToday();
-    const earlyAccessDays = 1;
+    const earlyAccessDays = 0;
+    const opensOn =
+      guestAccessOpensOn(booking.checkIn, earlyAccessDays) ??
+      accessRow.issued_at?.slice(0, 10) ??
+      today;
     const schedule = {
       checkIn: booking.checkIn,
       checkOut: booking.checkOut,
-      opensOn: guestAccessOpensOn(booking.checkIn, earlyAccessDays),
+      opensOn,
       closesOn: guestAccessClosesOn(booking.checkOut),
     };
     const dateReason = isGuestAccessDateValid(today, {

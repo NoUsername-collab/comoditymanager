@@ -67,6 +67,8 @@ export type GuestAccessBookingSnapshot = {
   checkOut: string;
   guestName: string;
   roomLabels: string[];
+  /** Check-in operațional înregistrat de recepție (null = încă doar confirmată). */
+  checkedInAt: string | null;
 };
 
 export type GuestAccessDenyReason =
@@ -102,6 +104,6 @@ export type GuestAccessResult =
 export type GuestAccessWindow = {
   checkIn: string;
   checkOut: string;
-  /** Zile înainte de check-in când linkul devine activ (0 = doar din ziua sosirii). */
+  /** Zile înainte de check-in când linkul devine activ (0 = de la confirmare). */
   earlyAccessDays: number;
 };
