@@ -5,25 +5,52 @@ import type {
   GuestStayReviewRow,
 } from "./types";
 
-const STAR_TRUST_WEIGHTS: Record<number, number> = {
-  1: -28,
-  2: -14,
-  3: 0,
-  4: 8,
-  5: 16,
-};
-
+/** @deprecated Legacy DB default — no longer computed for UI. */
 export const DEFAULT_TRUST_SCORE = 60;
+/** @deprecated Legacy DB default — no longer computed for UI. */
 export const DEFAULT_LOYALTY_SCORE = 0;
 /** 0 = unrated (no reviews yet). Never penalize new guests with a low star score. */
 export const DEFAULT_STARS_AVG = 0;
 
-export function clampGuestScore(value: number): number {
-  return Math.max(0, Math.min(100, Math.round(value)));
-}
-
 export function roundGuestStars(value: number): number {
   return Math.round(value * 10) / 10;
+}
+
+export function clampGuestNoteStars(value: number): number {
+  return Math.max(1, Math.min(5, Math.round(value)));
+}
+
+/** Gravitate notă negativă (1=foarte grav) → contribuție la rating 1–5. */
+export function ratingFromNegativeSeverity(severity: number): number {
+  const s = clampGuestNoteStars(severity);
+  return roundGuestStars(1 + ((s - 1) * 2) / 4);
+}
+
+/** Rating efectiv per sejur din stelele notelor pozitive/negative. */
+export function computeStayReviewEffectiveStars(input: {
+  positiveNote: string | null | undefined;
+  negativeNote: string | null | undefined;
+  positiveStars: number | null | undefined;
+  negativeStars: number | null | undefined;
+}): number | null {
+  const posNote = input.positiveNote?.trim() ?? "";
+  const negNote = input.negativeNote?.trim() ?? "";
+  const hasPositive = posNote.length > 0;
+  const hasNegative = negNote.length > 0;
+
+  if (!hasPositive && !hasNegative) return null;
+
+  const positiveRating = hasPositive
+    ? clampGuestNoteStars(input.positiveStars ?? 3)
+    : null;
+  const negativeRating = hasNegative
+    ? ratingFromNegativeSeverity(input.negativeStars ?? 3)
+    : null;
+
+  if (positiveRating != null && negativeRating != null) {
+    return roundGuestStars((positiveRating + negativeRating) / 2);
+  }
+  return positiveRating ?? negativeRating;
 }
 
 export function resolveGuestStarsAverage(
@@ -52,38 +79,25 @@ export function maxGuestFlagLevel(
   return flagSeverity(left) >= flagSeverity(right) ? left : right;
 }
 
-export function deriveLoyaltyBaseScore(
-  completedStays: number,
-  totalNights: number,
-  lastStayCheckOut: string | null,
+/** Segment intern „client fidel” — fără scor 0–100 afișat. */
+export function isGuestLoyal(
+  profile: {
+    completed_stays: number;
+    total_nights: number;
+    last_stay_check_out: string | null;
+  },
   today = new Date()
-): number {
-  if (completedStays <= 0) return DEFAULT_LOYALTY_SCORE;
-
-  let score = 0;
-  score += Math.min(55, completedStays * 12);
-  score += Math.min(25, totalNights);
-
-  if (lastStayCheckOut) {
-    const last = new Date(`${lastStayCheckOut}T00:00:00`);
+): boolean {
+  if (profile.completed_stays >= 3) return true;
+  if (profile.total_nights >= 10) return true;
+  if (profile.completed_stays >= 2 && profile.last_stay_check_out) {
+    const last = new Date(`${profile.last_stay_check_out}T00:00:00`);
     const diffDays = Math.floor(
       (today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if (diffDays <= 180) score += 20;
-    else if (diffDays <= 365) score += 14;
-    else if (diffDays <= 730) score += 8;
-    else score += 3;
+    if (diffDays <= 365) return true;
   }
-
-  return clampGuestScore(score);
-}
-
-export function calculateReviewTrustImpact(review: {
-  stars: number;
-  trust_delta: number;
-}): number {
-  const starsWeight = STAR_TRUST_WEIGHTS[review.stars] ?? 0;
-  return starsWeight + review.trust_delta;
+  return false;
 }
 
 export function createDefaultGuestProfile(guestId: string): GuestProfileRow {
@@ -167,6 +181,10 @@ export function mapGuestStayReviewRow(
       row.positive_note != null ? String(row.positive_note) : null,
     negative_note:
       row.negative_note != null ? String(row.negative_note) : null,
+    positive_stars:
+      row.positive_stars != null ? Number(row.positive_stars) : null,
+    negative_stars:
+      row.negative_stars != null ? Number(row.negative_stars) : null,
     trust_delta: Number(row.trust_delta ?? 0),
     loyalty_delta: Number(row.loyalty_delta ?? 0),
     reviewed_at: String(row.reviewed_at),
@@ -182,8 +200,6 @@ export function toGuestBookingFlagSummary(
 ): GuestBookingFlagSummary {
   return {
     guest_id: profile.guest_id,
-    trust_score: profile.trust_score,
-    loyalty_score: profile.loyalty_score,
     stars_avg: profile.stars_avg,
     flag_level: profile.flag_level,
     blacklist_reason: profile.blacklist_reason,
@@ -203,24 +219,28 @@ export function computeGuestProfileSnapshot(args: {
   reviews: GuestStayReviewRow[];
 }): GuestProfileRow {
   const { current, completedStays, totalNights, lastStayCheckOut, reviews } = args;
-  const trustBase =
-    DEFAULT_TRUST_SCORE +
-    reviews.reduce((sum, review) => sum + calculateReviewTrustImpact(review), 0);
-  const loyaltyBase =
-    deriveLoyaltyBaseScore(completedStays, totalNights, lastStayCheckOut) +
-    reviews.reduce((sum, review) => sum + review.loyalty_delta, 0);
+  const effectiveRatings = reviews
+    .map((review) =>
+      computeStayReviewEffectiveStars({
+        positiveNote: review.positive_note,
+        negativeNote: review.negative_note,
+        positiveStars: review.positive_stars,
+        negativeStars: review.negative_stars,
+      }) ?? (review.stars > 0 ? review.stars : null)
+    )
+    .filter((value): value is number => value != null);
+
   const starsAvg =
-    reviews.length > 0
+    effectiveRatings.length > 0
       ? resolveGuestStarsAverage(
-          reviews.reduce((sum, review) => sum + review.stars, 0) / reviews.length,
-          reviews.length
+          effectiveRatings.reduce((sum, value) => sum + value, 0) /
+            effectiveRatings.length,
+          effectiveRatings.length
         )
       : DEFAULT_STARS_AVG;
 
   return {
     ...current,
-    trust_score: clampGuestScore(trustBase + current.manual_trust_adjustment),
-    loyalty_score: clampGuestScore(loyaltyBase + current.manual_loyalty_adjustment),
     stars_avg: starsAvg,
     completed_stays: completedStays,
     total_nights: totalNights,

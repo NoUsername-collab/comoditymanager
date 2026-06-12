@@ -376,6 +376,17 @@ export function cleanNationalId(value: string): string {
   return value.replace(/[\s\-]/g, "");
 }
 
+/** Sex + birth date extracted from a valid national ID (CNP, IDNP, EGN, etc.). */
+export function extractIdentityFromNationalId(
+  type: NationalIdType,
+  raw: string | null | undefined
+): NationalIdData | null {
+  const cleaned = raw?.trim() ? cleanNationalId(raw) : "";
+  if (!cleaned || cleaned.length !== NATIONAL_ID_LENGTH[type]) return null;
+  const result = validateNationalId(type, cleaned);
+  return result.valid ? result.data : null;
+}
+
 /**
  * Detect which national ID type a value might be based on length and patterns.
  * Returns null if no match. Useful for auto-detection.

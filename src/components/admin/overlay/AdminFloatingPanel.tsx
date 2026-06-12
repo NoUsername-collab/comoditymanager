@@ -51,6 +51,8 @@ export function AdminFloatingPanel({
   const tCommon = useTranslations("admin.common");
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const panelStyle = useFloatingPosition(open, anchorRect ?? null, width, variant);
 
   useEffect(() => {
@@ -70,6 +72,7 @@ export function AdminFloatingPanel({
     if (!panel) return;
 
     const focusFirst = () => {
+      if (panel.contains(document.activeElement)) return;
       const closeBtn = panel.querySelector<HTMLElement>(".admin-floating-panel__close");
       const items = getFocusableElements(panel);
       (closeBtn ?? items[0])?.focus();
@@ -80,7 +83,7 @@ export function AdminFloatingPanel({
     const onKey = (e: KeyboardEvent) => {
       if (closeOnEscape && e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -108,7 +111,7 @@ export function AdminFloatingPanel({
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKey);
     };
-  }, [open, variant, closeOnEscape, onClose]);
+  }, [open, variant, closeOnEscape]);
 
   if (!open) return null;
 

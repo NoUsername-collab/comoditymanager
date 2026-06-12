@@ -1,5 +1,6 @@
 export type { ResolveGuestResult } from "@/services/guest-booking-resolve";
 export { resolveGuestForBooking } from "@/services/guest-booking-resolve";
+export * from "./match-guest";
 export * from "./lookup";
 export * from "./search";
 export * from "./history";

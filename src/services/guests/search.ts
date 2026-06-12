@@ -4,6 +4,7 @@ import {
   shiftStayDatesByYears,
   shiftStayToNextFutureYear,
 } from "@/domain/guest/rebook-dates";
+import { isGuestLoyal } from "@/domain/guest/reputation";
 import {
   assertValidGuestPhone,
   normalizeEmail,
@@ -82,6 +83,11 @@ function isoDaysAgo(days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
+function loyalProfileOrFilter(): string {
+  const recentCutoff = isoDaysAgo(365);
+  return `completed_stays.gte.3,total_nights.gte.10,and(completed_stays.gte.2,last_stay_check_out.gte.${recentCutoff})`;
+}
+
 function matchesGuestFilter(
   guest: GuestListItem,
   filter: GuestSearchFilter
@@ -94,7 +100,8 @@ function matchesGuestFilter(
   if (filter === "rated") return (profile?.review_count ?? 0) > 0;
   if (filter === "unreviewed") return (profile?.review_count ?? 0) === 0;
   if (filter === "loyal") {
-    return (profile?.loyalty_score ?? 0) >= 65 || (profile?.completed_stays ?? 0) >= 3;
+    if (!profile) return false;
+    return isGuestLoyal(profile);
   }
   if (filter === "recent") {
     return (
@@ -174,9 +181,9 @@ async function listGuestIdsForHighlights(limit = 8): Promise<{
       .from("guest_profiles")
       .select("guest_id")
       .eq("tenant_id", tenantId)
-      .or("loyalty_score.gte.65,completed_stays.gte.3")
-      .order("loyalty_score", { ascending: false })
+      .or(loyalProfileOrFilter())
       .order("completed_stays", { ascending: false })
+      .order("total_nights", { ascending: false })
       .limit(limit),
     supabase
       .from("guests")
@@ -357,9 +364,9 @@ async function listGuestIdsByFilter(
     query = query.eq("review_count", 0).order("updated_at", { ascending: false });
   } else if (filter === "loyal") {
     query = query
-      .or("loyalty_score.gte.65,completed_stays.gte.3")
-      .order("loyalty_score", { ascending: false })
-      .order("completed_stays", { ascending: false });
+      .or(loyalProfileOrFilter())
+      .order("completed_stays", { ascending: false })
+      .order("total_nights", { ascending: false });
   }
 
   const { data, error } = await query.range(offset, to);

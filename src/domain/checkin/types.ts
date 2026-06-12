@@ -76,6 +76,7 @@ export interface CheckinGuestInput {
   document_number?: string | null;
   nationality?: string | null;
   birth_date?: string | null; // YYYY-MM-DD
+  doc_expiry_date?: string | null; // YYYY-MM-DD
   room_label?: string | null;
   is_representative?: boolean;
   guest_id?: string | null;

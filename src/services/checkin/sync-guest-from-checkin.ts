@@ -1,24 +1,41 @@
 import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
 import { guestFullName } from "@/domain/checkin/identity-rules";
 import type { CheckinGuestInput, BookingForCheckin } from "@/domain/checkin/types";
-import type { GuestDocType } from "@/domain/guest/types";
-import { cleanNationalId } from "@/domain/guest/national-id";
-import { findGuestByNationalId } from "@/services/guests/lookup";
+import { mergeGuestIdentityPatch } from "@/domain/guest/identity-merge";
+import type { GuestDocType, GuestSex } from "@/domain/guest/types";
+import {
+  cleanNationalId,
+  extractIdentityFromNationalId,
+  type NationalIdType,
+} from "@/domain/guest/national-id";
+import { getGuestBaseById } from "@/services/guests/lookup";
+import {
+  createGuestFromContact,
+  resolveGuestIdForIdentity,
+  touchGuestContactFields,
+} from "@/services/guests/match-guest";
 import {
   updateGuestIdentity,
   updateGuestPhone,
   type GuestIdentityInput,
 } from "@/services/guests/profile";
-import { normalizePhone } from "@/domain/guest/normalize";
-import { getTenantScope } from "@/lib/tenant/scope";
 
-function mapCheckinGuestToIdentityInput(
+function mapCheckinGuestToIdentityPatch(
   guest: CheckinGuestInput,
 ): GuestIdentityInput {
   const docType = checkinUiDocTypeValue(guest.document_type) as GuestDocType | "";
+  const nationalIdType = (guest.national_id_type ?? "cnp") as NationalIdType;
   const nationalId = guest.national_id?.trim()
     ? cleanNationalId(guest.national_id)
     : null;
+
+  let birthDate = guest.birth_date ?? null;
+  let sex: GuestSex | null = null;
+  const extracted = nationalId
+    ? extractIdentityFromNationalId(nationalIdType, nationalId)
+    : null;
+  if (extracted?.birthDate) birthDate = extracted.birthDate;
+  if (extracted?.sex) sex = extracted.sex;
 
   return {
     doc_type: docType || null,
@@ -26,57 +43,64 @@ function mapCheckinGuestToIdentityInput(
     doc_number: guest.document_number ?? null,
     doc_issued_by: null,
     doc_issue_date: null,
-    doc_expiry_date: null,
+    doc_expiry_date: guest.doc_expiry_date?.trim() || null,
     national_id_type: guest.national_id_type ?? null,
     national_id: nationalId,
     cnp: guest.national_id_type === "cnp" ? nationalId : null,
-    birth_date: guest.birth_date ?? null,
+    birth_date: birthDate,
     birth_place: null,
     nationality: guest.nationality ?? null,
     address: null,
     city: null,
     county: null,
     country: guest.nationality ?? null,
-    sex: null,
+    sex,
   };
 }
 
-async function findGuestIdByPhone(phone: string): Promise<string | null> {
-  const phoneNorm = normalizePhone(phone);
-  if (!phoneNorm) return null;
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("guests")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .eq("phone_normalized", phoneNorm)
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  return (data?.id as string) ?? null;
+function contactEmailForGuest(
+  guest: CheckinGuestInput,
+  booking: BookingForCheckin,
+): string | null {
+  if (guest.is_representative) return booking.guest_email;
+  return null;
 }
 
-async function resolveGuestId(
+async function resolveOrCreateGuestId(
   guest: CheckinGuestInput,
   booking: BookingForCheckin,
 ): Promise<string | null> {
-  if (guest.guest_id) return guest.guest_id;
+  const resolved = await resolveGuestIdForIdentity({
+    guestId: guest.guest_id,
+    nationalId: guest.national_id,
+    lastName: guest.last_name,
+    firstName: guest.first_name,
+    phone: guest.phone,
+    email: contactEmailForGuest(guest, booking),
+    bookingGuestId: booking.guest_id,
+    isRepresentative: guest.is_representative,
+  });
 
-  const nationalId = guest.national_id?.trim();
-  if (nationalId) {
-    const match = await findGuestByNationalId(nationalId);
-    if (match) return match.id;
+  if (resolved.status === "ambiguous") {
+    throw new Error(`checkin.blocked: ${resolved.message}`);
   }
 
-  if (guest.is_representative && booking.guest_id) {
-    return booking.guest_id;
+  if (resolved.status === "matched") {
+    return resolved.guestId;
   }
 
-  const phone = guest.phone?.trim();
-  if (phone) {
-    return findGuestIdByPhone(phone);
+  const last = guest.last_name?.trim() ?? "";
+  const first = guest.first_name?.trim() ?? "";
+  if (last.length < 1 || first.length < 1) {
+    return null;
   }
 
-  return null;
+  return createGuestFromContact({
+    lastName: last,
+    firstName: first,
+    phone: guest.phone,
+    email: contactEmailForGuest(guest, booking),
+  });
 }
 
 /**
@@ -90,20 +114,32 @@ export async function syncCheckinGuestsToClientProfiles(
   const synced: CheckinGuestInput[] = [];
 
   for (const guest of guests) {
-    const guestId = await resolveGuestId(guest, booking);
+    const guestId = await resolveOrCreateGuestId(guest, booking);
     if (!guestId) {
       synced.push(guest);
       continue;
     }
 
-    const identity = mapCheckinGuestToIdentityInput(guest);
+    const current = await getGuestBaseById(guestId);
+    const patch = mapCheckinGuestToIdentityPatch(guest);
+    const identity = current
+      ? mergeGuestIdentityPatch(current, patch)
+      : patch;
+
     const { identityStatus } = await updateGuestIdentity(guestId, identity);
+
+    await touchGuestContactFields(guestId, {
+      lastName: guest.last_name,
+      firstName: guest.first_name,
+      phone: guest.phone,
+      email: contactEmailForGuest(guest, booking),
+    });
 
     if (guest.phone?.trim()) {
       try {
         await updateGuestPhone(guestId, guest.phone.trim());
       } catch {
-        // Telefon invalid — identitatea principală e deja salvată
+        // Telefon invalid — restul identității e salvat
       }
     }
 

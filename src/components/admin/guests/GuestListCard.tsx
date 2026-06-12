@@ -47,17 +47,10 @@ export function GuestListCard({
           <GuestStarsCompact
             value={guest.profile?.stars_avg ?? DEFAULT_STARS_AVG}
             count={guest.profile?.review_count ?? 0}
-            showCount={false}
-            showValue={false}
+            showCount
+            showValue
           />
-          <span className="guest-card__pill guest-card__pill--hint">
-            {tGuests("trust")} {guest.profile?.trust_score ?? 0}
-            <GuestScoreHint kind="trust" />
-          </span>
-          <span className="guest-card__pill guest-card__pill--hint">
-            {tGuests("loyalShort")} {guest.profile?.loyalty_score ?? 0}
-            <GuestScoreHint kind="loyalty" />
-          </span>
+          <GuestScoreHint wide={false} />
         </div>
 
         <div className="guest-card__meta">

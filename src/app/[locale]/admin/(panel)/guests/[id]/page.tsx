@@ -375,12 +375,20 @@ export default async function GuestDetailPage({
                                 </p>
                                 {stay.review.positive_note ? (
                                   <p className="guest-history__review-note guest-history__review-note--positive">
-                                    {tGuests("review.positiveNote")}: {stay.review.positive_note}
+                                    {tGuests("review.positiveNote")}
+                                    {stay.review.positive_stars != null
+                                      ? ` · ${tGuests("review.starsOption", { count: stay.review.positive_stars })}`
+                                      : ""}
+                                    : {stay.review.positive_note}
                                   </p>
                                 ) : null}
                                 {stay.review.negative_note ? (
                                   <p className="guest-history__review-note guest-history__review-note--negative">
-                                    {tGuests("review.negativeNote")}: {stay.review.negative_note}
+                                    {tGuests("review.negativeNote")}
+                                    {stay.review.negative_stars != null
+                                      ? ` · ${tGuests("review.starsOption", { count: stay.review.negative_stars })}`
+                                      : ""}
+                                    : {stay.review.negative_note}
                                   </p>
                                 ) : null}
                               </div>

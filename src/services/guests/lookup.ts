@@ -24,13 +24,8 @@ import type {
   GuestStayReviewRow,
   GuestTag,
 } from "@/domain/guest/types";
-import { GUEST_MATCH_PRIORITY } from "@/domain/guest/matching-contract";
-import type { BookingStatus } from "@/domain/booking/types";
-import type { BookingRoomSegmentRow } from "@/domain/booking/segment-types";
-import { stayNightCount } from "@/lib/stay-dates";
-import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
-import { logAdminActivityFromSession } from "@/services/activity-log";
 import { mapGuestRow } from "@/domain/guest/map-row";
+import { getTenantScope } from "@/lib/tenant/scope";
 import {
   ensureGuestProfiles,
   getGuestProfile,
@@ -38,6 +33,7 @@ import {
   listGuestStayReviewsByBookingIds,
   mergeGuestProfiles,
 } from "@/services/guest-profiles";
+import { matchGuestByContact } from "./match-guest";
 
 import { isPlaceholderEmail } from "@/domain/guest/normalize";
 
@@ -132,72 +128,20 @@ async function findGuestAutofillMatchImpl(input: {
   guest_email?: string;
   guest_phone?: string;
 }): Promise<GuestAutofillMatch | null> {
-  const emailNorm = normalizeEmail(input.guest_email ?? "");
-  const phoneNorm = normalizePhone(input.guest_phone ?? "");
   const last = String(input.guest_last_name ?? "").trim();
   const first = String(input.guest_first_name ?? "").trim();
-  const { tenantId, supabase } = await getTenantScope();
-  let candidate: GuestRow | null = null;
+  const match = await matchGuestByContact({
+    lastName: last,
+    firstName: first,
+    phone: input.guest_phone,
+    email: input.guest_email,
+  });
 
-  if (
-    GUEST_MATCH_PRIORITY.includes("phone_email") &&
-    phoneNorm &&
-    emailNorm &&
-    !isPlaceholderEmail(emailNorm)
-  ) {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("id")
-      .eq("tenant_id", tenantId)
-      .eq("phone_normalized", phoneNorm)
-      .eq("email_normalized", emailNorm)
-      .order("updated_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (error) throw new Error(error.message);
-    if (data?.id) {
-      candidate = await getGuestBaseById(String(data.id));
-    }
-  }
+  if (match.status !== "matched") return null;
 
-  if (!candidate && GUEST_MATCH_PRIORITY.includes("phone") && phoneNorm) {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("id")
-      .eq("tenant_id", tenantId)
-      .eq("phone_normalized", phoneNorm)
-      .order("updated_at", { ascending: false })
-      .limit(2);
-    if (error) throw new Error(error.message);
-    candidate = await findGuestByIdsOrdered(
-      ((data ?? []) as { id: string }[]).map((row) => row.id)
-    );
-  }
-
-  if (
-    !candidate &&
-    GUEST_MATCH_PRIORITY.includes("email") &&
-    emailNorm &&
-    !isPlaceholderEmail(emailNorm)
-  ) {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("id")
-      .eq("tenant_id", tenantId)
-      .eq("email_normalized", emailNorm)
-      .order("updated_at", { ascending: false })
-      .limit(2);
-    if (error) throw new Error(error.message);
-    candidate = await findGuestByIdsOrdered(
-      ((data ?? []) as { id: string }[]).map((row) => row.id)
-    );
-  }
-
-  if (!candidate && GUEST_MATCH_PRIORITY.includes("name") && last && first) {
-    candidate = await findGuestByNameParts(last, first);
-  }
-
+  const candidate = await getGuestBaseById(match.guestId);
   if (!candidate) return null;
+
   const profile = await getGuestProfile(candidate.id);
   return {
     guestId: candidate.id,

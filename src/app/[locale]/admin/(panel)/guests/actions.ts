@@ -53,6 +53,14 @@ function parseIntField(
   return Math.max(min, Math.min(max, Math.round(parsed)));
 }
 
+function parseOptionalStarsField(value: FormDataEntryValue | null): number | null {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return null;
+  return Math.max(1, Math.min(5, Math.round(parsed)));
+}
+
 export async function updateGuestNotesAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
   await requireAdmin();
@@ -118,18 +126,6 @@ export async function updateGuestProfileControlsAction(formData: FormData) {
     guestId,
     flagLevel,
     blacklistReason: String(formData.get("blacklist_reason") ?? ""),
-    manualTrustAdjustment: parseIntField(
-      formData.get("manual_trust_adjustment"),
-      0,
-      -40,
-      40
-    ),
-    manualLoyaltyAdjustment: parseIntField(
-      formData.get("manual_loyalty_adjustment"),
-      0,
-      -40,
-      40
-    ),
     manualNote: String(formData.get("manual_note") ?? ""),
   });
 
@@ -236,16 +232,13 @@ export async function saveGuestStayReviewAction(formData: FormData) {
   const bookingId = String(formData.get("booking_id") ?? "");
   if (!guestId || !bookingId) throw new Error(t("invalidReview"));
 
-  const stars = parseIntField(formData.get("stars"), 5, 1, 5);
-
   await saveGuestStayReview({
     guestId,
     bookingId,
-    stars,
     positiveNote: String(formData.get("positive_note") ?? ""),
     negativeNote: String(formData.get("negative_note") ?? ""),
-    trustDelta: parseIntField(formData.get("trust_delta"), 0, -40, 40),
-    loyaltyDelta: parseIntField(formData.get("loyalty_delta"), 0, -20, 20),
+    positiveStars: parseOptionalStarsField(formData.get("positive_stars")),
+    negativeStars: parseOptionalStarsField(formData.get("negative_stars")),
   });
 
   revalidateGuestPaths(guestId, bookingId);

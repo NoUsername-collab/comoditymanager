@@ -388,8 +388,7 @@
       "paymentUnknown": "Status plată necunoscut.",
       "lateNote": "Peste ora standard de check-out ({until}). Notă pentru recepție — fără taxă automată.",
       "addReview": "Adaugă evaluare rapidă",
-      "reviewStars": "Stele",
-      "starsOption": "{count, plural, one {# stea} few {# stele} other {# stele}}",
+      "reviewIntro": "Stelele de pe fiecare notă influențează ratingul general al clientului. Completează cel puțin o notă.",
       "positiveNote": "Notă pozitivă",
       "positiveNotePlaceholder": "Opțional — ce a mers bine la acest sejur",
       "negativeNote": "Notă negativă",
@@ -2236,6 +2235,7 @@
         "cnp": "CNP",
         "cnpInvalid": "CNP invalid — verifică cele 13 cifre",
         "cnpDerivedBirth": "Data nașterii din CNP: {date}",
+        "birthDateFromId": "Data nașterii (din cod personal): {date}",
         "representative": "Reprezentant",
         "documentSeries": "Serie document",
         "roomLabel": "Camera / spațiu",
@@ -2691,11 +2691,26 @@
       "review": {
         "editStayReview": "Editează review-ul sejurului",
         "rateStay": "Evaluează acest sejur",
+        "noteStarsIntro": "Alege intensitatea pe fiecare notă (stele). Cel puțin o notă este necesară. Ratingul general al clientului se calculează din aceste stele.",
         "stars": "Stele",
         "starsOption": "{count} stele",
         "starOption": "{count} stea",
-        "trustAdjustment": "Ajustare trust",
-        "loyaltyAdjustment": "Ajustare fidelitate",
+        "positiveStarsHint": "Cât de pozitiv",
+        "negativeStarsHint": "Cât de grav",
+        "positiveStarsLevel": {
+          "1": "OK",
+          "2": "Bine",
+          "3": "Foarte bine",
+          "4": "Excelent",
+          "5": "Excepțional"
+        },
+        "negativeStarsLevel": {
+          "1": "Foarte grav",
+          "2": "Grav",
+          "3": "Moderat",
+          "4": "Minor",
+          "5": "Ușor"
+        },
         "positiveNote": "Notă pozitivă",
         "positiveNotePlaceholder": "Ce a mers bine, comportament apreciat, mențiuni utile pentru viitor.",
         "negativeNote": "Notă negativă",
@@ -2805,12 +2820,8 @@
         "noActiveAlert": "Fără alertă activă"
       },
       "scoreHints": {
-        "trustLabel": "Cum se calculează Trust",
-        "loyaltyLabel": "Cum se calculează Fidelitatea",
         "starsLabel": "Cum se calculează ratingul",
-        "trust": "Scor 0–100 despre comportamentul la cazare. Pornește de la 60. După fiecare sejur încheiat, review-ul operatorului îl modifică: stele (1 = −28 … 5 = +16) și ajustarea din acel review. Notele pozitive/negative sunt doar pentru context — nu schimbă automat scorul. Poți adăuga ±40 manual în tab Profil. Nu înseamnă același lucru cu blacklist/watchlist.",
-        "loyalty": "Scor 0–100 despre cât de des revine clientul. Fără sejururi încheiate rămâne 0. Crește cu: +12 per sejur încheiat (max 55), +1 per noapte totală (max 25), bonus de recență dacă ultima plecare a fost în ultimele 6–24 luni (până la +20). Review-urile pot adăuga loyalty_delta. Ajustare manuală ±40 în tab Profil.",
-        "stars": "Media stelelor din review-urile după sejururi încheiate (1–5). Dacă nu există review, afișăm 1,0 ca punct de plecare — nu înseamnă că clientul a primit o stea."
+        "stars": "Media stelelor din evaluările după sejururi încheiate (1–5). Fiecare notă pozitivă/negativă are propriile stele: pozitiv 1=OK … 5=excepțional; negativ 1=foarte grav … 5=ușor. Ratingul general combină aceste valori. Fără review afișăm 0."
       },
       "stayBlock": {
         "guestsSummary": "{adults} ad. + {children} cop.",
@@ -2863,6 +2874,7 @@
         "nationalIdPlaceholder": "{digits} cifre",
         "nationalIdHint": "{type} — {digits} cifre. Completează automat data nașterii și sexul.",
         "nationalIdInvalid": "Cod personal invalid ({type}) — verifică cifrele",
+        "birthDateFromId": "Data nașterii (din cod personal): {date}",
         "autoFilled": "Auto",
         "fromId": "din cod",
         "sex": "Sex",

@@ -4,12 +4,15 @@ import {
   DEFAULT_TRUST_SCORE,
   DEFAULT_LOYALTY_SCORE,
   resolveGuestStarsAverage,
-  clampGuestScore,
   roundGuestStars,
   isGuestFlagged,
+  isGuestLoyal,
   flagSeverity,
   maxGuestFlagLevel,
-  calculateReviewTrustImpact,
+  computeGuestProfileSnapshot,
+  createDefaultGuestProfile,
+  ratingFromNegativeSeverity,
+  computeStayReviewEffectiveStars,
 } from "@/domain/guest/reputation";
 
 describe("DEFAULT constants", () => {
@@ -64,33 +67,6 @@ describe("resolveGuestStarsAverage", () => {
   });
 });
 
-describe("clampGuestScore", () => {
-  it("clamps negative values to 0", () => {
-    expect(clampGuestScore(-10)).toBe(0);
-  });
-
-  it("clamps values above 100 to 100", () => {
-    expect(clampGuestScore(150)).toBe(100);
-  });
-
-  it("returns value unchanged when in range", () => {
-    expect(clampGuestScore(73)).toBe(73);
-  });
-
-  it("returns 0 for value 0", () => {
-    expect(clampGuestScore(0)).toBe(0);
-  });
-
-  it("returns 100 for value 100", () => {
-    expect(clampGuestScore(100)).toBe(100);
-  });
-
-  it("rounds fractional values", () => {
-    expect(clampGuestScore(42.7)).toBe(43);
-    expect(clampGuestScore(42.3)).toBe(42);
-  });
-});
-
 describe("roundGuestStars", () => {
   it("rounds to one decimal place", () => {
     expect(roundGuestStars(3.456)).toBe(3.5);
@@ -99,10 +75,124 @@ describe("roundGuestStars", () => {
   });
 });
 
-describe("calculateReviewTrustImpact", () => {
-  it("uses star weights and trust delta only", () => {
-    expect(calculateReviewTrustImpact({ stars: 5, trust_delta: 0 })).toBe(16);
-    expect(calculateReviewTrustImpact({ stars: 1, trust_delta: -5 })).toBe(-33);
+describe("isGuestLoyal", () => {
+  it("returns true for 3+ completed stays", () => {
+    expect(
+      isGuestLoyal({ completed_stays: 3, total_nights: 2, last_stay_check_out: null })
+    ).toBe(true);
+  });
+
+  it("returns true for 10+ total nights", () => {
+    expect(
+      isGuestLoyal({ completed_stays: 1, total_nights: 10, last_stay_check_out: null })
+    ).toBe(true);
+  });
+
+  it("returns true for 2 stays with recent checkout", () => {
+    expect(
+      isGuestLoyal(
+        {
+          completed_stays: 2,
+          total_nights: 4,
+          last_stay_check_out: "2026-01-01",
+        },
+        new Date("2026-06-01")
+      )
+    ).toBe(true);
+  });
+
+  it("returns false for new guests", () => {
+    expect(
+      isGuestLoyal({ completed_stays: 0, total_nights: 0, last_stay_check_out: null })
+    ).toBe(false);
+  });
+});
+
+describe("ratingFromNegativeSeverity", () => {
+  it("maps severity 1 to rating 1", () => {
+    expect(ratingFromNegativeSeverity(1)).toBe(1);
+  });
+
+  it("maps severity 5 to rating 3", () => {
+    expect(ratingFromNegativeSeverity(5)).toBe(3);
+  });
+});
+
+describe("computeStayReviewEffectiveStars", () => {
+  it("uses positive stars directly when only positive note", () => {
+    expect(
+      computeStayReviewEffectiveStars({
+        positiveNote: "Great guest",
+        negativeNote: "",
+        positiveStars: 5,
+        negativeStars: null,
+      })
+    ).toBe(5);
+  });
+
+  it("maps negative severity when only negative note", () => {
+    expect(
+      computeStayReviewEffectiveStars({
+        positiveNote: "",
+        negativeNote: "Noise complaint",
+        positiveStars: null,
+        negativeStars: 1,
+      })
+    ).toBe(1);
+  });
+
+  it("averages positive and mapped negative when both notes exist", () => {
+    expect(
+      computeStayReviewEffectiveStars({
+        positiveNote: "Polite",
+        negativeNote: "Minor mess",
+        positiveStars: 4,
+        negativeStars: 5,
+      })
+    ).toBe(3.5);
+  });
+
+  it("returns null when no notes", () => {
+    expect(
+      computeStayReviewEffectiveStars({
+        positiveNote: "",
+        negativeNote: "",
+        positiveStars: 5,
+        negativeStars: 1,
+      })
+    ).toBeNull();
+  });
+});
+
+describe("computeGuestProfileSnapshot", () => {
+  it("derives stars_avg from note star modifiers", () => {
+    const current = createDefaultGuestProfile("guest-1");
+    const snapshot = computeGuestProfileSnapshot({
+      current,
+      completedStays: 1,
+      totalNights: 3,
+      lastStayCheckOut: "2026-01-10",
+      reviews: [
+        {
+          booking_id: "b1",
+          guest_id: "guest-1",
+          stars: 4,
+          positive_note: "Nice",
+          negative_note: null,
+          positive_stars: 4,
+          negative_stars: null,
+          trust_delta: 0,
+          loyalty_delta: 0,
+          reviewed_at: "2026-01-10T12:00:00Z",
+          reviewed_by: null,
+          reviewed_by_email: null,
+          updated_at: "2026-01-10T12:00:00Z",
+        },
+      ],
+    });
+
+    expect(snapshot.stars_avg).toBe(4);
+    expect(snapshot.review_count).toBe(1);
   });
 });
 

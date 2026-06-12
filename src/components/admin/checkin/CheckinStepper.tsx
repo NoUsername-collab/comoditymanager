@@ -13,6 +13,7 @@ import { validateCheckin } from "@/domain/checkin/validate";
 import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
 import {
   cleanNationalId,
+  extractIdentityFromNationalId,
   NATIONAL_ID_LENGTH,
   validateNationalId,
   type NationalIdType,
@@ -308,6 +309,19 @@ export function CheckinStepper({
         const next = { ...g, [field]: value };
         if (field === "last_name" || field === "first_name") {
           next.full_name = guestFullName(next);
+        }
+        if (field === "national_id" || field === "national_id_type") {
+          const idType = (
+            field === "national_id_type" ? value : next.national_id_type ?? "cnp"
+          ) as NationalIdType;
+          const idRaw =
+            field === "national_id" ? String(value ?? "") : next.national_id ?? "";
+          const extracted = extractIdentityFromNationalId(idType, idRaw);
+          if (extracted?.birthDate) {
+            next.birth_date = extracted.birthDate;
+          } else if (field === "national_id" && !idRaw.trim()) {
+            next.birth_date = null;
+          }
         }
         return next;
       }),
@@ -704,6 +718,8 @@ function GuestIdentityCard({
   const idState = guest.national_id?.trim()
     ? validateNationalId(idType, cleanNationalId(guest.national_id))
     : null;
+  const birthFromNationalId = extractIdentityFromNationalId(idType, guest.national_id);
+  const showManualBirthDate = !birthFromNationalId?.birthDate;
   const idTypeLabel = tIdentity(`nationalIdTypes.${idType}`);
   const roomLocked = identityScope === "rep" || identityScope === "per_room";
   const showPresentToggle =
@@ -832,15 +848,17 @@ function GuestIdentityCard({
               />
             </label>
 
-            <label className="checkin-field">
-              <span className="checkin-field__label">{t("field.birthDate")}</span>
-              <input
-                type="date"
-                className="checkin-field__input"
-                value={guest.birth_date ?? ""}
-                onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
-              />
-            </label>
+            {showManualBirthDate ? (
+              <label className="checkin-field">
+                <span className="checkin-field__label">{t("field.birthDate")}</span>
+                <input
+                  type="date"
+                  className="checkin-field__input"
+                  value={guest.birth_date ?? ""}
+                  onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
+                />
+              </label>
+            ) : null}
 
             <label className="checkin-field">
               <span className="checkin-field__label">{t("field.phone")}</span>
@@ -928,6 +946,24 @@ function GuestIdentityCard({
                 />
               </label>
             )}
+
+            {showDocFields && (
+              <label className="checkin-field checkin-field--span2">
+                <span className="checkin-field__label">
+                  {tIdentity("docExpiryDate")}
+                  <span className="checkin-field__required"> *</span>
+                </span>
+                <input
+                  type="date"
+                  className="checkin-field__input"
+                  value={guest.doc_expiry_date ?? ""}
+                  onChange={(e) =>
+                    updateGuest(idx, "doc_expiry_date", e.target.value)
+                  }
+                  required
+                />
+              </label>
+            )}
           </div>
 
           <div className="checkin-guest-form__section-title">
@@ -967,7 +1003,7 @@ function GuestIdentityCard({
               )}
               {idState?.valid && idState.data?.birthDate && (
                 <span className="checkin-field__hint">
-                  {t("field.cnpDerivedBirth", { date: idState.data.birthDate })}
+                  {t("field.birthDateFromId", { date: idState.data.birthDate })}
                 </span>
               )}
               <span className="checkin-field__hint">

@@ -42,14 +42,6 @@ export function GuestBlacklistPanel({
     formData.set("guest_id", guestId);
     formData.set("flag_level", flagLevel);
     formData.set("blacklist_reason", reason);
-    formData.set(
-      "manual_trust_adjustment",
-      String(profile?.manual_trust_adjustment ?? 0)
-    );
-    formData.set(
-      "manual_loyalty_adjustment",
-      String(profile?.manual_loyalty_adjustment ?? 0)
-    );
     formData.set("manual_note", profile?.manual_note ?? "");
 
     try {

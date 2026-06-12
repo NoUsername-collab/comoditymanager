@@ -9,9 +9,14 @@ import {
 } from "./guest-layout";
 import {
   evaluateCnpRule,
+  guestFullName,
   guestHasValidCnp,
   isRomanianNationality,
 } from "./identity-rules";
+import {
+  guestHasDocumentExpiry,
+  guestRequiresDocumentExpiry,
+} from "./document-rules";
 import type {
   CheckinFlag,
   CheckinFormData,
@@ -82,6 +87,13 @@ export function validateCheckin(
     } else if (settings.checkin_doc_rule === "recommended") {
       flags.push("no_document");
     }
+  }
+
+  for (const guest of activeGuests) {
+    if (!guestRequiresDocumentExpiry(guest)) continue;
+    if (guestHasDocumentExpiry(guest)) continue;
+    const name = guestFullName(guest) || "Oaspete";
+    blockers.push(`${name}: data expirării documentului este obligatorie`);
   }
 
   // ── PHONE ─────────────────────────────────────────────────

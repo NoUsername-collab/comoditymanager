@@ -13,6 +13,7 @@ import {
   maxGuestFlagLevel,
   toGuestBookingFlagSummary,
   computeGuestProfileSnapshot,
+  computeStayReviewEffectiveStars,
 } from "@/domain/guest/reputation";
 import { stayNightCount, todayIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -222,8 +223,6 @@ export async function recomputeGuestProfile(
   const { data, error } = await supabase
     .from("guest_profiles")
     .update({
-      trust_score: snapshot.trust_score,
-      loyalty_score: snapshot.loyalty_score,
       stars_avg: snapshot.stars_avg,
       completed_stays: snapshot.completed_stays,
       total_nights: snapshot.total_nights,
@@ -257,12 +256,35 @@ async function getBookingReviewCheck(
 export async function saveGuestStayReview(input: {
   bookingId: string;
   guestId: string;
-  stars: number;
   positiveNote: string;
   negativeNote: string;
-  trustDelta: number;
-  loyaltyDelta: number;
+  positiveStars: number | null;
+  negativeStars: number | null;
 }): Promise<void> {
+  const positiveNote = input.positiveNote.trim();
+  const negativeNote = input.negativeNote.trim();
+  const positiveStars =
+    positiveNote.length > 0 && input.positiveStars != null
+      ? Math.max(1, Math.min(5, Math.round(input.positiveStars)))
+      : null;
+  const negativeStars =
+    negativeNote.length > 0 && input.negativeStars != null
+      ? Math.max(1, Math.min(5, Math.round(input.negativeStars)))
+      : null;
+
+  if (!positiveNote && !negativeNote) {
+    throw new Error("guest.review_note_required");
+  }
+
+  const effectiveStars = computeStayReviewEffectiveStars({
+    positiveNote,
+    negativeNote,
+    positiveStars,
+    negativeStars,
+  });
+  if (effectiveStars == null) {
+    throw new Error("guest.review_note_required");
+  }
   const [booking, today] = await Promise.all([
     getBookingReviewCheck(input.bookingId),
     getEffectiveToday(),
@@ -284,11 +306,13 @@ export async function saveGuestStayReview(input: {
     withTenantId(tenantId, {
       booking_id: input.bookingId,
       guest_id: input.guestId,
-      stars: input.stars,
-      positive_note: input.positiveNote.trim() || null,
-      negative_note: input.negativeNote.trim() || null,
-      trust_delta: input.trustDelta,
-      loyalty_delta: input.loyaltyDelta,
+      stars: effectiveStars,
+      positive_note: positiveNote || null,
+      negative_note: negativeNote || null,
+      positive_stars: positiveStars,
+      negative_stars: negativeStars,
+      trust_delta: 0,
+      loyalty_delta: 0,
       reviewed_at: now,
       reviewed_by: actor?.id ?? null,
       reviewed_by_email: actor?.email ?? null,
@@ -305,11 +329,11 @@ export async function saveGuestStayReview(input: {
     summary: `Review sejur actualizat pentru ${booking.guest_name}`,
     metadata: {
       booking_id: input.bookingId,
-      stars: input.stars,
-      positive_note: input.positiveNote.trim() || null,
-      negative_note: input.negativeNote.trim() || null,
-      trust_delta: input.trustDelta,
-      loyalty_delta: input.loyaltyDelta,
+      stars: effectiveStars,
+      positive_note: positiveNote || null,
+      negative_note: negativeNote || null,
+      positive_stars: positiveStars,
+      negative_stars: negativeStars,
     },
   });
 }
@@ -318,8 +342,6 @@ export async function updateGuestProfileControls(input: {
   guestId: string;
   flagLevel: GuestFlagLevel;
   blacklistReason: string;
-  manualTrustAdjustment: number;
-  manualLoyaltyAdjustment: number;
   manualNote: string;
 }): Promise<void> {
   await ensureGuestProfiles([input.guestId]);
@@ -337,8 +359,6 @@ export async function updateGuestProfileControls(input: {
     flag_level: input.flagLevel,
     blacklist_reason:
       input.flagLevel === "blacklist" ? nextReason ?? current.blacklist_reason : null,
-    manual_trust_adjustment: input.manualTrustAdjustment,
-    manual_loyalty_adjustment: input.manualLoyaltyAdjustment,
     manual_note: input.manualNote.trim() || null,
   };
 
@@ -366,10 +386,7 @@ export async function updateGuestProfileControls(input: {
   await recomputeGuestProfile(input.guestId);
 
   const flagChanged = current.flag_level !== input.flagLevel;
-  const adjustmentChanged =
-    current.manual_trust_adjustment !== input.manualTrustAdjustment ||
-    current.manual_loyalty_adjustment !== input.manualLoyaltyAdjustment ||
-    (current.manual_note ?? "") !== (input.manualNote.trim() || "");
+  const noteChanged = (current.manual_note ?? "") !== (input.manualNote.trim() || "");
 
   if (flagChanged) {
     const action =
@@ -389,15 +406,13 @@ export async function updateGuestProfileControls(input: {
         blacklist_reason: patch.blacklist_reason ?? null,
       },
     });
-  } else if (adjustmentChanged) {
+  } else if (noteChanged) {
     await logAdminActivityFromSession({
       action: "guest.adjusted",
       entityType: "guest",
       entityId: input.guestId,
-      summary: "Guest profile manually adjusted",
+      summary: "Guest profile note updated",
       metadata: {
-        manual_trust_adjustment: input.manualTrustAdjustment,
-        manual_loyalty_adjustment: input.manualLoyaltyAdjustment,
         manual_note: input.manualNote.trim() || null,
       },
     });
@@ -522,10 +537,6 @@ export async function mergeGuestProfiles(
         target.unblacklisted_by ?? source.unblacklisted_by ?? null,
       unblacklisted_by_email:
         target.unblacklisted_by_email ?? source.unblacklisted_by_email ?? null,
-      manual_trust_adjustment:
-        target.manual_trust_adjustment + source.manual_trust_adjustment,
-      manual_loyalty_adjustment:
-        target.manual_loyalty_adjustment + source.manual_loyalty_adjustment,
       manual_note: [target.manual_note, source.manual_note]
         .filter(Boolean)
         .join("\n---\n") || null,

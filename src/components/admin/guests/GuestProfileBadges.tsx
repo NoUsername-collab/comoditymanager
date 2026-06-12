@@ -24,22 +24,6 @@ export function GuestProfileBadges({
 }) {
   const tGuests = useTranslations("admin.guests");
 
-  const trustLabel = (score: number): string => {
-    if (score >= 85) return tGuests("profileBadges.trustExcellent");
-    if (score >= 70) return tGuests("profileBadges.trustVeryGood");
-    if (score >= 55) return tGuests("profileBadges.trustOk");
-    if (score >= 35) return tGuests("profileBadges.trustNeedsAttention");
-    return tGuests("profileBadges.trustHighRisk");
-  };
-
-  const loyaltyLabel = (score: number): string => {
-    if (score >= 85) return tGuests("profileBadges.loyaltyVeryLoyal");
-    if (score >= 65) return tGuests("profileBadges.loyaltyLoyal");
-    if (score >= 35) return tGuests("profileBadges.loyaltyReturnsOccasionally");
-    if (score >= 15) return tGuests("profileBadges.loyaltyDeveloping");
-    return tGuests("profileBadges.loyaltyNewOrRare");
-  };
-
   if (!profile && (!alertLevel || alertLevel === "normal")) return null;
 
   const effectiveLevel =
@@ -55,18 +39,6 @@ export function GuestProfileBadges({
   if (variant === "cerere" && profile) {
     return (
       <div className="guest-badges guest-badges--cerere">
-        <span className="guest-badges--cerere__stat guest-badges--cerere__stat--sky">
-          <span className="guest-badges--cerere__label">
-            {tGuests("profileBadges.behavior")}
-          </span>
-          <strong>{profile.trust_score}</strong>
-        </span>
-        <span className="guest-badges--cerere__stat guest-badges--cerere__stat--emerald">
-          <span className="guest-badges--cerere__label">
-            {tGuests("profileBadges.loyalty")}
-          </span>
-          <strong>{profile.loyalty_score}</strong>
-        </span>
         <span className="guest-badges--cerere__stat guest-badges--cerere__stat--neutral">
           <span className="guest-badges--cerere__label">
             {tGuests("profileBadges.rating")}
@@ -106,16 +78,6 @@ export function GuestProfileBadges({
   if (variant === "compact" && profile) {
     return (
       <div className="guest-badges guest-badges--compact">
-        <span className="guest-badge-chip guest-badge-chip--sky">
-          {tGuests("profileBadges.behavior")}{" "}
-          <strong>{profile.trust_score}</strong>
-          <GuestScoreHint kind="trust" />
-        </span>
-        <span className="guest-badge-chip guest-badge-chip--emerald">
-          {tGuests("profileBadges.loyalty")}{" "}
-          <strong>{profile.loyalty_score}</strong>
-          <GuestScoreHint kind="loyalty" />
-        </span>
         <span className="guest-badge-chip guest-badge-chip--neutral">
           {tGuests("profileBadges.rating")}{" "}
           <GuestStarsCompact
@@ -125,7 +87,7 @@ export function GuestProfileBadges({
             showCount={false}
             showValue
           />
-          <GuestScoreHint kind="stars" />
+          <GuestScoreHint />
         </span>
         <span
           className={[
@@ -148,26 +110,10 @@ export function GuestProfileBadges({
     <div className="guest-badges">
       {profile && (
         <>
-          <div className="guest-badge guest-badge--sky">
-            <span className="guest-badge__label guest-badge__label-row">
-              {tGuests("profileBadges.behavior")}
-              <GuestScoreHint kind="trust" />
-            </span>
-            <span className="guest-badge__value">{profile.trust_score}</span>
-            <span className="guest-badge__sub">{trustLabel(profile.trust_score)}</span>
-          </div>
-          <div className="guest-badge guest-badge--emerald">
-            <span className="guest-badge__label guest-badge__label-row">
-              {tGuests("profileBadges.loyalty")}
-              <GuestScoreHint kind="loyalty" />
-            </span>
-            <span className="guest-badge__value">{profile.loyalty_score}</span>
-            <span className="guest-badge__sub">{loyaltyLabel(profile.loyalty_score)}</span>
-          </div>
           <div className="guest-badge guest-badge--neutral">
             <span className="guest-badge__label guest-badge__label-row">
               {tGuests("profileBadges.rating")}
-              <GuestScoreHint kind="stars" />
+              <GuestScoreHint />
             </span>
             <span className="guest-badge__value">
               <GuestStarsCompact

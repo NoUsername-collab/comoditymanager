@@ -96,16 +96,8 @@ export function StayInfo({
       {stay.guest_profile ? (
         <div className="mt-0.5 flex flex-wrap items-center gap-1 text-[9px] text-zinc-500">
           <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1 py-0.5">
-            {labels.behaviorShort}: {stay.guest_profile.trust_score}
-            <GuestScoreHint kind="trust" />
-          </span>
-          <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1 py-0.5">
-            {labels.loyaltyShort}: {stay.guest_profile.loyalty_score}
-            <GuestScoreHint kind="loyalty" />
-          </span>
-          <span className="inline-flex items-center gap-0.5 rounded bg-zinc-100 px-1 py-0.5">
             {labels.starsShort}: {stay.guest_profile.stars_avg.toFixed(1)}
-            <GuestScoreHint kind="stars" />
+            <GuestScoreHint />
           </span>
           {stay.guest_alert_note ? (
             <span className="truncate rounded bg-amber-50 px-1 py-0.5 text-amber-900">

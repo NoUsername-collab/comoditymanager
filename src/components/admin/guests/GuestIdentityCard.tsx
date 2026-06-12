@@ -22,8 +22,6 @@ export function GuestIdentityCard({
   const tGuests = useTranslations("admin.guests");
   const tIdentity = useTranslations("admin.guests.identity");
 
-  const trust = guest.profile?.trust_score ?? 0;
-  const loyalty = guest.profile?.loyalty_score ?? 0;
   const stars = guest.profile?.stars_avg ?? DEFAULT_STARS_AVG;
   const reviewCount = guest.profile?.review_count ?? 0;
   const stays = guest.profile?.completed_stays ?? 0;
@@ -78,27 +76,15 @@ export function GuestIdentityCard({
       </div>
 
       <div className="guest-hero__stats">
-        <div className="guest-hero__stat guest-hero__stat--trust">
-          <span className="guest-hero__stat-value">{trust}</span>
-          <span className="guest-hero__stat-label">
-            {tGuests("trust")}
-            <GuestScoreHint kind="trust" />
-          </span>
-        </div>
-        <div className="guest-hero__stat guest-hero__stat--loyalty">
-          <span className="guest-hero__stat-value">{loyalty}</span>
-          <span className="guest-hero__stat-label">
-            {tGuests("loyalShort")}
-            <GuestScoreHint kind="loyalty" />
-          </span>
-        </div>
         <div className="guest-hero__stat guest-hero__stat--stars">
           <span className="guest-hero__stat-value">
             <GuestStarsCompact value={stars} count={reviewCount} showCount={false} showValue={false} />
           </span>
           <span className="guest-hero__stat-label">
-            {tGuests("stars.outOfFive", { value: stars.toFixed(1) })}
-            <GuestScoreHint kind="stars" />
+            {reviewCount > 0
+              ? tGuests("stars.outOfFive", { value: stars.toFixed(1) })
+              : tGuests("profileBadges.noReviewYet")}
+            <GuestScoreHint />
           </span>
         </div>
         <div className="guest-hero__stat">

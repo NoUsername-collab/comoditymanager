@@ -1,5 +1,9 @@
 import type { CheckinGuestInput } from "./types";
 import type { GuestRow } from "@/domain/guest/types";
+import {
+  extractIdentityFromNationalId,
+  type NationalIdType,
+} from "@/domain/guest/national-id";
 
 export function mapGuestRowToCheckinInput(
   guest: GuestRow,
@@ -9,6 +13,11 @@ export function mapGuestRowToCheckinInput(
   },
 ): CheckinGuestInput {
   const docUi = guest.doc_type ?? "ci";
+  const nationalIdType = (guest.national_id_type ?? "cnp") as NationalIdType;
+  const nationalId = guest.national_id ?? guest.cnp ?? "";
+  const extracted = nationalId
+    ? extractIdentityFromNationalId(nationalIdType, nationalId)
+    : null;
 
   return {
     full_name:
@@ -23,7 +32,8 @@ export function mapGuestRowToCheckinInput(
     document_series: guest.doc_series ?? "",
     document_number: guest.doc_number ?? "",
     nationality: guest.nationality ?? "România",
-    birth_date: guest.birth_date,
+    birth_date: extracted?.birthDate ?? guest.birth_date,
+    doc_expiry_date: guest.doc_expiry_date,
     room_label: options.roomLabel,
     is_representative: options.isRepresentative,
     guest_id: guest.id,

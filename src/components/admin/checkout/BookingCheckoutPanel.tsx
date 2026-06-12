@@ -22,6 +22,7 @@ import type { BookingCheckoutPanelData } from "@/domain/booking/checkout-panel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { datetimeLocalNow, isoToDatetimeLocal } from "@/lib/operational-check";
 import { stayNightCount } from "@/lib/stay-dates";
+import { GuestNoteStarsInput } from "@/components/admin/guests/GuestNoteStarsInput";
 import "@/app/admin/booking-checkout-panel.css";
 
 export type BookingCheckoutPanelProps = {
@@ -61,9 +62,10 @@ export function BookingCheckoutPanel({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [atLocal, setAtLocal] = useState(datetimeLocalNow);
   const [addReview, setAddReview] = useState(false);
-  const [reviewStars, setReviewStars] = useState(5);
   const [positiveNote, setPositiveNote] = useState("");
   const [negativeNote, setNegativeNote] = useState("");
+  const [positiveStars, setPositiveStars] = useState(3);
+  const [negativeStars, setNegativeStars] = useState(3);
 
   const isEdit = intent === "edit";
 
@@ -78,7 +80,8 @@ export function BookingCheckoutPanel({
       setAddReview(false);
       setPositiveNote("");
       setNegativeNote("");
-      setReviewStars(5);
+      setPositiveStars(3);
+      setNegativeStars(3);
       return;
     }
     setAtLocal(datetimeLocalNow());
@@ -96,7 +99,6 @@ export function BookingCheckoutPanel({
       }
       setData(res.data);
       if (res.data.existingReviewStars != null) {
-        setReviewStars(res.data.existingReviewStars);
         setAddReview(true);
       }
       if (res.data.existingReviewPositiveNote) {
@@ -104,6 +106,12 @@ export function BookingCheckoutPanel({
       }
       if (res.data.existingReviewNegativeNote) {
         setNegativeNote(res.data.existingReviewNegativeNote);
+      }
+      if (res.data.existingReviewPositiveStars != null) {
+        setPositiveStars(res.data.existingReviewPositiveStars);
+      }
+      if (res.data.existingReviewNegativeStars != null) {
+        setNegativeStars(res.data.existingReviewNegativeStars);
       }
     });
 
@@ -155,7 +163,8 @@ export function BookingCheckoutPanel({
       if (!isEdit && addReview && data?.guestId) {
         fd.set("add_review", "1");
         fd.set("guest_id", data.guestId);
-        fd.set("review_stars", String(reviewStars));
+        fd.set("positive_stars", String(positiveStars));
+        fd.set("negative_stars", String(negativeStars));
         fd.set("positive_note", positiveNote);
         fd.set("negative_note", negativeNote);
       }
@@ -269,23 +278,15 @@ export function BookingCheckoutPanel({
 
             {addReview ? (
               <div className="booking-checkout-panel__review-fields">
-                <label className="booking-checkout-panel__field">
-                  <span>{t("reviewStars")}</span>
-                  <select
-                    value={reviewStars}
-                    onChange={(e) => setReviewStars(Number(e.target.value))}
-                    disabled={submitDisabled}
-                    className="booking-checkout-panel__input"
-                  >
-                    {[5, 4, 3, 2, 1].map((n) => (
-                      <option key={n} value={n}>
-                        {t("starsOption", { count: n })}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="booking-checkout-panel__field booking-checkout-panel__field--positive">
+                <p className="booking-checkout-panel__review-intro">{t("reviewIntro")}</p>
+                <div className="booking-checkout-panel__field booking-checkout-panel__field--positive">
                   <span>{t("positiveNote")}</span>
+                  <GuestNoteStarsInput
+                    variant="positive"
+                    value={positiveStars}
+                    onChange={setPositiveStars}
+                    disabled={submitDisabled}
+                  />
                   <textarea
                     rows={2}
                     value={positiveNote}
@@ -294,9 +295,15 @@ export function BookingCheckoutPanel({
                     className="booking-checkout-panel__textarea"
                     placeholder={t("positiveNotePlaceholder")}
                   />
-                </label>
-                <label className="booking-checkout-panel__field booking-checkout-panel__field--negative">
+                </div>
+                <div className="booking-checkout-panel__field booking-checkout-panel__field--negative">
                   <span>{t("negativeNote")}</span>
+                  <GuestNoteStarsInput
+                    variant="negative"
+                    value={negativeStars}
+                    onChange={setNegativeStars}
+                    disabled={submitDisabled}
+                  />
                   <textarea
                     rows={2}
                     value={negativeNote}
@@ -305,7 +312,7 @@ export function BookingCheckoutPanel({
                     className="booking-checkout-panel__textarea"
                     placeholder={t("negativeNotePlaceholder")}
                   />
-                </label>
+                </div>
                 <Link
                   href={`/admin/guests/${data.guestId}`}
                   className="booking-checkout-panel__profile-link"

@@ -275,6 +275,8 @@ export async function loadBookingCheckoutPanelAction(
         existingReviewStars: review?.stars ?? null,
         existingReviewPositiveNote: review?.positive_note ?? null,
         existingReviewNegativeNote: review?.negative_note ?? null,
+        existingReviewPositiveStars: review?.positive_stars ?? null,
+        existingReviewNegativeStars: review?.negative_stars ?? null,
       },
     };
   } catch (e) {
@@ -300,21 +302,20 @@ export async function completeBookingCheckoutAction(
     const guestId = String(formData.get("guest_id") ?? "").trim();
     if (addReview && guestId) {
       const { saveGuestStayReview } = await import("@/services/guest-profiles");
-      const stars = Math.min(
-        5,
-        Math.max(1, Number(formData.get("review_stars") ?? 5) || 5)
-      );
       const positiveNote = String(formData.get("positive_note") ?? "").trim();
       const negativeNote = String(formData.get("negative_note") ?? "").trim();
-      await saveGuestStayReview({
-        guestId,
-        bookingId: id,
-        stars,
-        positiveNote,
-        negativeNote,
-        trustDelta: 0,
-        loyaltyDelta: 0,
-      });
+      if (positiveNote || negativeNote) {
+        const positiveStarsRaw = String(formData.get("positive_stars") ?? "").trim();
+        const negativeStarsRaw = String(formData.get("negative_stars") ?? "").trim();
+        await saveGuestStayReview({
+          guestId,
+          bookingId: id,
+          positiveNote,
+          negativeNote,
+          positiveStars: positiveStarsRaw ? Number(positiveStarsRaw) : null,
+          negativeStars: negativeStarsRaw ? Number(negativeStarsRaw) : null,
+        });
+      }
     }
 
     revalidateBookingDetailSurfaces(id);

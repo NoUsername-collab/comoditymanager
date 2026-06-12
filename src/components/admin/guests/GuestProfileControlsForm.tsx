@@ -7,7 +7,6 @@ import type { GuestProfileRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 
 export function GuestProfileControlsForm({
   guestId,
@@ -33,52 +32,20 @@ export function GuestProfileControlsForm({
         value={profile?.blacklist_reason ?? ""}
       />
 
-      <div className="guest-profile-controls-form__grid">
-        <label className="guest-profile-controls-form__field space-y-1 text-sm">
-          <span className="font-bold">{tGuests("profileControls.profileState")}</span>
-          <select
-            name="flag_level"
-            defaultValue={profile?.flag_level === "watchlist" ? "watchlist" : "normal"}
-            className="w-full border border-zinc-300 bg-white"
-          >
-            <option value="normal">{tGuests("profileControls.normal")}</option>
-            <option value="watchlist">{tGuests("profileControls.watchlist")}</option>
-          </select>
-          <span className="block text-xs text-zinc-500">
-            {tGuests("profileControls.blacklistManagedSeparately")}
-          </span>
-        </label>
-
-        <label className="guest-profile-controls-form__field space-y-1 text-sm">
-          <span className="inline-flex items-center gap-1 font-bold">
-            {tGuests("review.trustAdjustment")}
-            <GuestScoreHint kind="trust" />
-          </span>
-          <input
-            name="manual_trust_adjustment"
-            type="number"
-            min={-40}
-            max={40}
-            defaultValue={profile?.manual_trust_adjustment ?? 0}
-            className="w-full border border-zinc-300 bg-white"
-          />
-        </label>
-
-        <label className="guest-profile-controls-form__field space-y-1 text-sm">
-          <span className="inline-flex items-center gap-1 font-bold">
-            {tGuests("review.loyaltyAdjustment")}
-            <GuestScoreHint kind="loyalty" />
-          </span>
-          <input
-            name="manual_loyalty_adjustment"
-            type="number"
-            min={-40}
-            max={40}
-            defaultValue={profile?.manual_loyalty_adjustment ?? 0}
-            className="w-full border border-zinc-300 bg-white"
-          />
-        </label>
-      </div>
+      <label className="guest-profile-controls-form__field block max-w-md space-y-1 text-sm">
+        <span className="font-bold">{tGuests("profileControls.profileState")}</span>
+        <select
+          name="flag_level"
+          defaultValue={profile?.flag_level === "watchlist" ? "watchlist" : "normal"}
+          className="w-full border border-zinc-300 bg-white"
+        >
+          <option value="normal">{tGuests("profileControls.normal")}</option>
+          <option value="watchlist">{tGuests("profileControls.watchlist")}</option>
+        </select>
+        <span className="block text-xs text-zinc-500">
+          {tGuests("profileControls.blacklistManagedSeparately")}
+        </span>
+      </label>
 
       <input type="hidden" name="manual_note" value={manualNote} readOnly />
 

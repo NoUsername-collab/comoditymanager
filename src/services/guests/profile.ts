@@ -69,11 +69,17 @@ function computeIdentityStatus(input: GuestIdentityInput): GuestIdentityStatus {
   const hasNationality = input.nationality != null;
   const hasAddress = input.address != null;
   const hasSex = input.sex != null;
+  const needsDocExpiry =
+    hasDoc && !hasNationalId && !hasCnp
+      ? input.doc_expiry_date != null
+      : hasDoc
+        ? input.doc_expiry_date != null
+        : true;
 
   const coreFields = [hasDoc, hasNationalId || hasCnp || hasBirthDate, hasNationality, hasSex];
   const filledCore = coreFields.filter(Boolean).length;
 
-  if (filledCore === coreFields.length && hasAddress) return "complete";
+  if (filledCore === coreFields.length && hasAddress && needsDocExpiry) return "complete";
   if (filledCore >= 1) return "partial";
   return "draft";
 }
@@ -96,6 +102,12 @@ export async function updateGuestIdentity(
     if (taken) {
       throw new Error("guest.national_id_taken");
     }
+  }
+
+  const hasDocumentNumber = Boolean(input.doc_number?.trim());
+  const hasDocumentType = input.doc_type != null;
+  if ((hasDocumentNumber || hasDocumentType) && !input.doc_expiry_date) {
+    throw new Error("guest.doc_expiry_required");
   }
 
   const patch: Record<string, unknown> = {

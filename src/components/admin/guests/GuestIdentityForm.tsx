@@ -6,6 +6,7 @@ import type { GuestRow, GuestNationalIdType } from "@/domain/guest/types";
 import {
   validateNationalId,
   cleanNationalId,
+  extractIdentityFromNationalId,
   NATIONAL_ID_LENGTH,
   NATIONAL_ID_COUNTRY,
 } from "@/domain/guest/national-id";
@@ -68,48 +69,71 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const [docIssueDate, setDocIssueDate] = useState(guest.doc_issue_date ?? "");
   const [docExpiryDate, setDocExpiryDate] = useState(guest.doc_expiry_date ?? "");
 
+  const initialNationalId = guest.national_id ?? guest.cnp ?? "";
+  const initialNationalIdType = (guest.national_id_type as NationalIdType) ?? "cnp";
+  const initialExtracted = extractIdentityFromNationalId(
+    initialNationalIdType,
+    initialNationalId
+  );
+
   // National ID
   const [nationalIdType, setNationalIdType] = useState<NationalIdType>(
-    (guest.national_id_type as NationalIdType) ?? "cnp"
+    initialNationalIdType
   );
-  const [nationalId, setNationalId] = useState(guest.national_id ?? guest.cnp ?? "");
+  const [nationalId, setNationalId] = useState(initialNationalId);
 
-  const [birthDate, setBirthDate] = useState(guest.birth_date ?? "");
+  const [birthDate, setBirthDate] = useState(
+    initialExtracted?.birthDate ?? guest.birth_date ?? ""
+  );
   const [birthPlace, setBirthPlace] = useState(guest.birth_place ?? "");
   const [nationality, setNationality] = useState(guest.nationality ?? "România");
   const [address, setAddress] = useState(guest.address ?? "");
   const [city, setCity] = useState(guest.city ?? "");
   const [county, setCounty] = useState(guest.county ?? "");
   const [country, setCountry] = useState(guest.country ?? "România");
-  const [sex, setSex] = useState<"M" | "F" | "">(guest.sex ?? "");
+  const [sex, setSex] = useState<"M" | "F" | "">(
+    initialExtracted?.sex ?? guest.sex ?? ""
+  );
   const [phone, setPhone] = useState(guest.phone ?? "");
 
   const [idError, setIdError] = useState<string | null>(null);
-  const [idAutoFilled, setIdAutoFilled] = useState(false);
+  const [idAutoFilled, setIdAutoFilled] = useState(Boolean(initialExtracted?.birthDate));
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const expectedLength = NATIONAL_ID_LENGTH[nationalIdType];
 
+  const applyExtractedIdentity = useCallback(
+    (type: NationalIdType, raw: string) => {
+      const extracted = extractIdentityFromNationalId(type, raw);
+      if (!extracted) {
+        setIdAutoFilled(false);
+        return false;
+      }
+      if (extracted.birthDate) setBirthDate(extracted.birthDate);
+      if (extracted.sex) setSex(extracted.sex);
+      setIdAutoFilled(true);
+      setIdError(null);
+      return true;
+    },
+    []
+  );
+
   const handleNationalIdChange = useCallback(
     (raw: string) => {
       setNationalId(raw);
       setIdError(null);
-      setIdAutoFilled(false);
 
       const cleaned = cleanNationalId(raw);
       if (cleaned.length === expectedLength) {
-        const result = validateNationalId(nationalIdType, cleaned);
-        if (result.valid && result.data) {
-          if (result.data.birthDate) setBirthDate(result.data.birthDate);
-          if (result.data.sex) setSex(result.data.sex);
-          setIdAutoFilled(true);
-        } else {
+        if (!applyExtractedIdentity(nationalIdType, cleaned)) {
           setIdError(t("nationalIdInvalid", { type: nationalIdType.toUpperCase() }));
         }
+      } else {
+        setIdAutoFilled(false);
       }
     },
-    [nationalIdType, expectedLength, t]
+    [nationalIdType, expectedLength, t, applyExtractedIdentity]
   );
 
   const handleNationalIdTypeChange = useCallback(
@@ -117,8 +141,9 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
       setNationalIdType(newType);
       setIdError(null);
       setIdAutoFilled(false);
-      // Reset auto-filled values when switching type
-      if (idAutoFilled) {
+      if (nationalId.trim()) {
+        applyExtractedIdentity(newType, nationalId);
+      } else {
         setBirthDate("");
         setSex("");
       }
@@ -132,7 +157,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
         setNationality(countryNames[idCountry]);
       }
     },
-    [idAutoFilled]
+    [applyExtractedIdentity, nationalId]
   );
 
   async function handleSubmit() {
@@ -325,6 +350,11 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
               {idError && (
                 <span className="guest-identity-form__error">{idError}</span>
               )}
+              {idAutoFilled && birthDate ? (
+                <span className="guest-identity-form__hint">
+                  {t("birthDateFromId", { date: birthDate })}
+                </span>
+              ) : null}
               <span className="guest-identity-form__hint">
                 {t("nationalIdHint", { type: idTypeLabel, digits: expectedLength })}
               </span>
@@ -350,21 +380,17 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
                 <option value="F">{t("sexF")}</option>
               </select>
             </label>
-            <label className="guest-identity-form__field">
-              <span className="guest-identity-form__label">
-                {t("birthDate")}
-                {idAutoFilled && birthDate && (
-                  <span className="guest-identity-form__auto-tag">{t("fromId")}</span>
-                )}
-              </span>
-              <input
-                type="date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                disabled={idAutoFilled}
-                className="guest-identity-form__input"
-              />
-            </label>
+            {!idAutoFilled ? (
+              <label className="guest-identity-form__field">
+                <span className="guest-identity-form__label">{t("birthDate")}</span>
+                <input
+                  type="date"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="guest-identity-form__input"
+                />
+              </label>
+            ) : null}
             <label className="guest-identity-form__field">
               <span className="guest-identity-form__label">{t("birthPlace")}</span>
               <input

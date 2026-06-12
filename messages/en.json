@@ -388,8 +388,7 @@
       "paymentUnknown": "Payment status unknown.",
       "lateNote": "Past standard checkout time ({until}). Note for reception — no automatic fee.",
       "addReview": "Add quick review",
-      "reviewStars": "Stars",
-      "starsOption": "{count, plural, one {# star} other {# stars}}",
+      "reviewIntro": "Stars on each note affect the guest’s overall rating. Fill in at least one note.",
       "positiveNote": "Positive note",
       "positiveNotePlaceholder": "Optional — what went well on this stay",
       "negativeNote": "Negative note",
@@ -2236,6 +2235,7 @@
         "cnp": "CNP",
         "cnpInvalid": "Invalid CNP — check 13 digits",
         "cnpDerivedBirth": "Birth date from CNP: {date}",
+        "birthDateFromId": "Birth date (from personal ID): {date}",
         "representative": "Representative",
         "documentSeries": "Document series",
         "roomLabel": "Room / space",
@@ -2691,11 +2691,26 @@
       "review": {
         "editStayReview": "Edit stay review",
         "rateStay": "Rate this stay",
+        "noteStarsIntro": "Set intensity for each note (stars). At least one note is required. The guest’s overall rating is computed from these stars.",
         "stars": "Stars",
         "starsOption": "{count} stars",
         "starOption": "{count} star",
-        "trustAdjustment": "Trust adjustment",
-        "loyaltyAdjustment": "Loyalty adjustment",
+        "positiveStarsHint": "How positive",
+        "negativeStarsHint": "How severe",
+        "positiveStarsLevel": {
+          "1": "OK",
+          "2": "Good",
+          "3": "Very good",
+          "4": "Excellent",
+          "5": "Outstanding"
+        },
+        "negativeStarsLevel": {
+          "1": "Very severe",
+          "2": "Severe",
+          "3": "Moderate",
+          "4": "Minor",
+          "5": "Mild"
+        },
         "positiveNote": "Positive note",
         "positiveNotePlaceholder": "What went well, appreciated behavior, useful notes for the future.",
         "negativeNote": "Negative note",
@@ -2805,12 +2820,8 @@
         "noActiveAlert": "No active alert"
       },
       "scoreHints": {
-        "trustLabel": "How Trust is calculated",
-        "loyaltyLabel": "How Loyalty is calculated",
         "starsLabel": "How the star rating is calculated",
-        "trust": "Score 0–100 for in-stay behaviour. Starts at 60. After each completed stay, the operator review updates it: stars (1 = −28 … 5 = +16) and that review’s adjustment. Positive/negative notes are for context only — they do not change the score automatically. You can add ±40 manually under the Profile tab. Not the same as blacklist/watchlist.",
-        "loyalty": "Score 0–100 for how often the guest returns. Stays 0 with no completed stays. Increases with: +12 per completed stay (max 55), +1 per total night (max 25), recency bonus if last checkout was within 6–24 months (up to +20). Reviews may add loyalty_delta. Manual ±40 under Profile tab.",
-        "stars": "Average of stars from post-stay reviews (1–5). With no reviews yet we show 1.0 as a baseline — not an actual one-star rating."
+        "stars": "Average of stars from post-stay reviews (1–5). Each positive/negative note has its own stars: positive 1=OK … 5=outstanding; negative 1=very severe … 5=mild. Overall rating combines these values. With no reviews yet we show 0."
       },
       "stayBlock": {
         "guestsSummary": "{adults} adults + {children} children",
@@ -2863,6 +2874,7 @@
         "nationalIdPlaceholder": "{digits} digits",
         "nationalIdHint": "{type} — {digits} digits. Auto-fills birth date and sex.",
         "nationalIdInvalid": "Invalid personal ID ({type}) — check the digits",
+        "birthDateFromId": "Birth date (from personal ID): {date}",
         "autoFilled": "Auto",
         "fromId": "from ID",
         "sex": "Sex",

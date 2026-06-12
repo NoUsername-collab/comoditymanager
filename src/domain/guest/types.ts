@@ -31,8 +31,6 @@ export type GuestProfileRow = {
 export type GuestBookingFlagSummary = Pick<
   GuestProfileRow,
   | "guest_id"
-  | "trust_score"
-  | "loyalty_score"
   | "stars_avg"
   | "flag_level"
   | "blacklist_reason"
@@ -49,6 +47,8 @@ export type GuestStayReviewRow = {
   stars: number;
   positive_note: string | null;
   negative_note: string | null;
+  positive_stars: number | null;
+  negative_stars: number | null;
   trust_delta: number;
   loyalty_delta: number;
   reviewed_at: string;

@@ -17,4 +17,6 @@ export type BookingCheckoutPanelData = {
   existingReviewStars: number | null;
   existingReviewPositiveNote: string | null;
   existingReviewNegativeNote: string | null;
+  existingReviewPositiveStars: number | null;
+  existingReviewNegativeStars: number | null;
 };
