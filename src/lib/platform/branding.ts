@@ -8,7 +8,7 @@ export const PLATFORM_CONTACT_EMAIL = "contact@hospira.ro";
 /** Default outbound email when EMAIL_FROM is unset. */
 export const PLATFORM_EMAIL_FROM = `${PLATFORM_NAME} <noreply@${platformDomainFromRequestHost(null)}>`;
 
-/** Public site base URL for links in notifications. */
+/** Platform apex URL (landing, signup). For tenant pages use resolveTenantPublicSiteUrl(). */
 export function platformSiteUrl(requestHost?: string | null): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   if (fromEnv) return fromEnv.replace(/\/$/, "");

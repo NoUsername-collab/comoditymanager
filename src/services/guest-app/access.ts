@@ -15,6 +15,7 @@ import {
   withTenantId,
 } from "@/lib/tenant/scope";
 import { getGuestAppSettings } from "./settings";
+import { isGuestAppMigrationMissing } from "./map";
 
 function normalizeAccessCode(raw: string): string {
   return raw.trim().toLowerCase();
@@ -42,7 +43,10 @@ async function loadBookingSnapshot(
     .eq("id", bookingId)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (isGuestAppMigrationMissing(error.message)) return null;
+    throw new Error(error.message);
+  }
   if (!data) return null;
 
   const roomLabels: string[] = [];
@@ -108,8 +112,8 @@ export async function resolveGuestAccessByCode(
     const accessCode = normalizeAccessCode(rawCode);
     if (!accessCode) return { ok: false, reason: "not_found" };
 
-    const settings = await getGuestAppSettings();
-    if (!settings.enabled) return { ok: false, reason: "disabled" };
+    const settings = await getGuestAppSettings().catch(() => null);
+    if (!settings?.enabled) return { ok: false, reason: "disabled" };
 
     const { tenantId, supabase } = await getTenantPublicScope();
     const { data: accessRow, error } = await supabase
@@ -119,7 +123,12 @@ export async function resolveGuestAccessByCode(
       .eq("access_code", accessCode)
       .maybeSingle();
 
-    if (error) throw new Error(error.message);
+    if (error) {
+      if (isGuestAppMigrationMissing(error.message)) {
+        return { ok: false, reason: "disabled" };
+      }
+      throw new Error(error.message);
+    }
     if (!accessRow) return { ok: false, reason: "not_found" };
     if (accessRow.revoked_at) return { ok: false, reason: "revoked" };
 

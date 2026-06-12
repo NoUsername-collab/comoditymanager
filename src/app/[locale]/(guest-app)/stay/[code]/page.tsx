@@ -9,7 +9,10 @@ export default async function GuestStayHomePage({
   params: Promise<{ code: string }>;
 }) {
   const [{ code }, locale] = await Promise.all([params, getLocale()]);
-  const session = await resolveGuestAccessByCode(code);
+  const session = await resolveGuestAccessByCode(code).catch(() => ({
+    ok: false as const,
+    reason: "not_found" as const,
+  }));
   if (!session.ok) notFound();
 
   return (

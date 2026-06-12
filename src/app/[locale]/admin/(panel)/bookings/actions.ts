@@ -46,7 +46,7 @@ export async function confirmBookingAction(formData: FormData) {
   (async () => {
     try {
       const { headers } = await import("next/headers");
-      const { platformSiteUrl } = await import("@/lib/platform/branding");
+      const { resolveTenantPublicSiteUrl } = await import("@/lib/tenant/site-url");
       const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
       const { getTenantDisplayName } = await import("@/services/tenants");
       const { getPensionSettings } = await import("@/services/pension-settings");
@@ -57,7 +57,7 @@ export async function confirmBookingAction(formData: FormData) {
 
       const h = await headers();
       const host = h.get("x-forwarded-host") ?? h.get("host");
-      const baseUrl = platformSiteUrl(host);
+      const baseUrl = await resolveTenantPublicSiteUrl(host);
       const { resolveGuestAccessLinkForBooking } = await import(
         "@/services/guest-app/access"
       );

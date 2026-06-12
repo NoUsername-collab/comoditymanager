@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { platformSiteUrl } from "@/lib/platform/branding";
+import { resolveTenantPublicSiteUrl } from "@/lib/tenant/site-url";
 import { getBookingById } from "@/services/bookings";
 import {
   issueGuestAccessForBooking,
@@ -19,7 +19,7 @@ import { getTranslations } from "next-intl/server";
 async function resolveBaseUrl(): Promise<string> {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host");
-  return platformSiteUrl(host);
+  return resolveTenantPublicSiteUrl(host);
 }
 
 export async function loadGuestAccessLinkAction(bookingId: string): Promise<

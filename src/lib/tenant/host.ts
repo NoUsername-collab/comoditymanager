@@ -190,6 +190,20 @@ export function buildTenantAdminUrl(
   return `${protocol}://${host}${safePath}`;
 }
 
+/** Public tenant site origin, e.g. https://slug.test.hospira.ro */
+export function buildTenantSiteUrl(
+  slug: string,
+  requestHost?: string | null,
+): string {
+  const protocol =
+    process.env.NODE_ENV === "production" ? "https" : "http";
+  const platformDomain = applyStagingTenantSuffix(
+    platformDomainFromRequestHost(requestHost),
+  );
+  const host = tenantHost(slug, platformDomain);
+  return `${protocol}://${host}`;
+}
+
 /** Staging: redirect slug.hospira.ro → slug.test.hospira.ro */
 export function stagingTenantHostCorrection(
   hostInput: string
