@@ -649,6 +649,8 @@
           "bookingNotFound": "Rezervarea nu a fost găsită.",
           "notConfirmed": "Disponibil doar pentru rezervări confirmate.",
           "appDisabled": "Guest app este dezactivată în setări.",
+          "simBookingOnly": "Rezervarea există doar în simulare — oprește simularea, apoi regenerează linkul.",
+          "tenantNotResolved": "Tenant nerezolvat pe acest host.",
           "linkUnavailable": "Link indisponibil — verifică migrarea și confirmarea.",
           "noEmail": "Rezervarea nu are email pentru trimitere."
         },
@@ -660,6 +662,8 @@
           "copied": "Link copiat.",
           "regenerate": "Regenerare cod",
           "regenerated": "Cod nou generat.",
+          "enableAndRegenerate": "Activează guest app & generează link",
+          "enabledAndRegenerated": "Guest app activată — link nou generat.",
           "sendEmail": "Trimite pe email",
           "emailSent": "Email trimis clientului."
         }

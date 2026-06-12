@@ -20,7 +20,7 @@ function normalizeAccessCode(raw: string): string {
 }
 
 function generateAccessCode(): string {
-  return randomBytes(9).toString("base64url").slice(0, 12);
+  return randomBytes(9).toString("base64url").slice(0, 12).toLowerCase();
 }
 
 async function loadBookingSnapshot(
@@ -119,7 +119,7 @@ export async function resolveGuestAccessByCode(
       .from("booking_guest_access")
       .select("booking_id, access_code, revoked_at")
       .eq("tenant_id", tenantId)
-      .eq("access_code", accessCode)
+      .ilike("access_code", accessCode)
       .maybeSingle();
 
     if (error) {

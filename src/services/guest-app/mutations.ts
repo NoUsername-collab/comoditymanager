@@ -57,3 +57,18 @@ export async function ensureGuestAppSettingsRow(
   if (insError) throw new Error(insError.message);
   return defaults;
 }
+
+/** Owner/admin: turn guest app on in public schema (what /stay reads). */
+export async function enableGuestAppForOwner(tenantId: string): Promise<GuestAppSettings> {
+  const current = await ensureGuestAppSettingsRow(tenantId);
+  if (current.enabled) return current;
+
+  await upsertGuestAppSettingsImpl(tenantId, {
+    enabled: true,
+    appearance: current.appearance,
+    features: current.features,
+    content: current.content,
+  });
+
+  return { ...current, enabled: true };
+}

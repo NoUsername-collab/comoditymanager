@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
+  enableGuestAppFromOwnerAction,
   loadGuestAccessLinkAction,
   regenerateGuestAccessAction,
   sendGuestAppLinkEmailAction,
@@ -45,6 +46,25 @@ export function GuestAccessSharePanel({
     void navigator.clipboard.writeText(url).then(() => {
       setMessage(t("copied"));
       window.setTimeout(() => setMessage(null), 2000);
+    });
+  }
+
+  function enableAndRegenerate() {
+    setError(null);
+    setMessage(null);
+    startTransition(async () => {
+      const enabled = await enableGuestAppFromOwnerAction();
+      if (!enabled.ok) {
+        setError(enabled.error);
+        return;
+      }
+      const res = await regenerateGuestAccessAction(bookingId);
+      if (res.ok) {
+        setUrl(res.url);
+        setMessage(t("enabledAndRegenerated"));
+      } else {
+        setError(res.error);
+      }
     });
   }
 
@@ -125,7 +145,17 @@ export function GuestAccessSharePanel({
         <p className="mt-2 text-xs text-emerald-700">{message}</p>
       ) : null}
       {error ? (
-        <p className="mt-2 text-xs text-red-600">{error}</p>
+        <div className="mt-2 space-y-2">
+          <p className="text-xs text-red-600">{error}</p>
+          <button
+            type="button"
+            className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
+            onClick={enableAndRegenerate}
+            disabled={pending}
+          >
+            {t("enableAndRegenerate")}
+          </button>
+        </div>
       ) : null}
     </div>
   );

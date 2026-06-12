@@ -649,6 +649,8 @@
           "bookingNotFound": "Booking not found.",
           "notConfirmed": "Only available for confirmed bookings.",
           "appDisabled": "Guest app is disabled in settings.",
+          "simBookingOnly": "Booking exists only in simulation — stop simulation, then regenerate the link.",
+          "tenantNotResolved": "Tenant could not be resolved on this host.",
           "linkUnavailable": "Link unavailable — check migration and confirmation.",
           "noEmail": "Booking has no email address."
         },
@@ -660,6 +662,8 @@
           "copied": "Link copied.",
           "regenerate": "Regenerate code",
           "regenerated": "New code generated.",
+          "enableAndRegenerate": "Enable guest app & generate link",
+          "enabledAndRegenerated": "Guest app enabled — new link generated.",
           "sendEmail": "Send by email",
           "emailSent": "Email sent to guest."
         }
