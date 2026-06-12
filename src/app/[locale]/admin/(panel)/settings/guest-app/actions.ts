@@ -1,5 +1,6 @@
 "use server";
 
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import type { GuestAppSettingsInput } from "@/services/guest-app/mutations";
@@ -42,6 +43,7 @@ export async function saveGuestAppSettingsAction(
     await redirect("/admin/settings/guest-app?saved=1");
     return { ok: true };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     const message = error instanceof Error ? error.message : "Unknown error";
     return { ok: false, error: message };
   }

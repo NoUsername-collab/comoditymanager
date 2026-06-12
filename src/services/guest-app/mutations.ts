@@ -4,8 +4,9 @@ import type {
   GuestAppSettings,
 } from "@/domain/guest-app/types";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
-import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { withTenantId } from "@/lib/tenant/scope";
 import { mapGuestAppSettingsRow } from "./map";
+import { getGuestAppPublicDb } from "./public-db";
 
 export type GuestAppSettingsInput = {
   enabled: boolean;
@@ -18,7 +19,7 @@ export async function upsertGuestAppSettingsImpl(
   tenantId: string,
   input: GuestAppSettingsInput,
 ): Promise<void> {
-  const { supabase } = await getTenantScope();
+  const { supabase } = await getGuestAppPublicDb();
   const { error } = await supabase.from("guest_app_settings").upsert(
     withTenantId(tenantId, {
       enabled: input.enabled,
@@ -34,7 +35,7 @@ export async function upsertGuestAppSettingsImpl(
 export async function ensureGuestAppSettingsRow(
   tenantId: string,
 ): Promise<GuestAppSettings> {
-  const { supabase } = await getTenantScope();
+  const { supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("guest_app_settings")
     .select("enabled, appearance, features, content")

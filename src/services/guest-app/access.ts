@@ -9,12 +9,10 @@ import type {
 } from "@/domain/guest-app/types";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
-import {
-  getTenantScope,
-  getTenantPublicScope,
-  withTenantId,
-} from "@/lib/tenant/scope";
-import { getGuestAppSettings } from "./settings";
+import { withTenantId } from "@/lib/tenant/scope";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { getGuestAppSettings, getGuestAppSettingsPublic } from "./settings";
+import { getGuestAppPublicDb } from "./public-db";
 import { isGuestAppMigrationMissing } from "./map";
 
 function normalizeAccessCode(raw: string): string {
@@ -27,8 +25,9 @@ function generateAccessCode(): string {
 
 async function loadBookingSnapshot(
   bookingId: string,
+  tenantId: string,
 ): Promise<GuestAccessBookingSnapshot | null> {
-  const { tenantId, supabase } = await getTenantPublicScope();
+  const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("bookings")
     .select(
@@ -76,11 +75,11 @@ async function loadBookingSnapshot(
 export async function issueGuestAccessForBooking(
   bookingId: string,
 ): Promise<string | null> {
-  const { tenantId, supabase } = await getTenantScope();
-  const settings = await getGuestAppSettings().catch(() => null);
-  if (settings && !settings.enabled) return null;
+  const { tenantId, supabase } = await getGuestAppPublicDb();
+  const settings = await getGuestAppSettings();
+  if (!settings.enabled) return null;
 
-  const booking = await loadBookingSnapshot(bookingId);
+  const booking = await loadBookingSnapshot(bookingId, tenantId);
   if (!booking || booking.status !== "confirmata") return null;
 
   const accessCode = generateAccessCode();
@@ -112,10 +111,10 @@ export async function resolveGuestAccessByCode(
     const accessCode = normalizeAccessCode(rawCode);
     if (!accessCode) return { ok: false, reason: "not_found" };
 
-    const settings = await getGuestAppSettings().catch(() => null);
-    if (!settings?.enabled) return { ok: false, reason: "disabled" };
+    const settings = await getGuestAppSettingsPublic();
+    if (!settings.enabled) return { ok: false, reason: "disabled" };
 
-    const { tenantId, supabase } = await getTenantPublicScope();
+    const { tenantId, supabase } = await getGuestAppPublicDb();
     const { data: accessRow, error } = await supabase
       .from("booking_guest_access")
       .select("booking_id, access_code, revoked_at")
@@ -125,14 +124,14 @@ export async function resolveGuestAccessByCode(
 
     if (error) {
       if (isGuestAppMigrationMissing(error.message)) {
-        return { ok: false, reason: "disabled" };
+        return { ok: false, reason: "setup_incomplete" };
       }
       throw new Error(error.message);
     }
     if (!accessRow) return { ok: false, reason: "not_found" };
     if (accessRow.revoked_at) return { ok: false, reason: "revoked" };
 
-    const booking = await loadBookingSnapshot(String(accessRow.booking_id));
+    const booking = await loadBookingSnapshot(String(accessRow.booking_id), tenantId);
     if (!booking) return { ok: false, reason: "not_found" };
 
     const statusReason = isGuestAccessBookingStatusValid(booking.status);
@@ -159,7 +158,7 @@ export async function resolveGuestAccessByCode(
 export async function revokeGuestAccessForBooking(
   bookingId: string,
 ): Promise<void> {
-  const { tenantId, supabase } = await getTenantPublicScope();
+  const { tenantId, supabase } = await getGuestAppPublicDb();
   await supabase
     .from("booking_guest_access")
     .update({ revoked_at: new Date().toISOString() })
@@ -172,7 +171,7 @@ export async function revokeGuestAccessForBooking(
 export async function getGuestAccessCodeForBooking(
   bookingId: string,
 ): Promise<string | null> {
-  const { tenantId, supabase } = await getTenantScope();
+  const { tenantId, supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("booking_guest_access")
     .select("access_code, revoked_at")

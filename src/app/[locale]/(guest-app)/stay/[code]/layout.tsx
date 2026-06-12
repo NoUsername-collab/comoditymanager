@@ -4,7 +4,10 @@ import { getPensionSettings } from "@/services/pension-settings";
 import type { GuestAccessResult } from "@/domain/guest-app/types";
 
 const DENY_MESSAGES: Record<string, string> = {
-  disabled: "Aplicația pentru oaspeți nu este activă.",
+  disabled:
+    "Aplicația pentru oaspeți este dezactivată. Activați-o din Admin → Setări → Guest app.",
+  setup_incomplete:
+    "Guest app nu este încă configurată pe acest mediu (migrare DB lipsă). Rulați migrarea 056_guest_app.sql.",
   not_found: "Cod invalid sau inexistent.",
   wrong_host:
     "Linkul trebuie deschis de pe adresa pensiunii (ex. nume.test.hospira.ro/stay/...). Cere recepției linkul actualizat.",

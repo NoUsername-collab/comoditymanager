@@ -45,7 +45,7 @@ export function mapGuestAppSettingsRow(row: {
   };
 
   return {
-    enabled: row.enabled,
+    enabled: row.enabled !== false,
     appearance,
     features: mergeFeatures(row.features),
     content,
