@@ -56,6 +56,27 @@ export type GuestIdentityStatus = "draft" | "partial" | "complete";
 export type GuestSex = "M" | "F";
 export type GuestNationalIdType = "cnp" | "idnp" | "egn" | "amka" | "szemelyi_szam";
 
+export type GuestIdentityInput = {
+  doc_type: GuestDocType | null;
+  doc_series: string | null;
+  doc_number: string | null;
+  doc_issued_by: string | null;
+  doc_issue_date: string | null;
+  doc_expiry_date: string | null;
+  national_id_type: GuestNationalIdType | null;
+  national_id: string | null;
+  /** @deprecated Use national_id with national_id_type='cnp' */
+  cnp: string | null;
+  birth_date: string | null;
+  birth_place: string | null;
+  nationality: string | null;
+  address: string | null;
+  city: string | null;
+  county: string | null;
+  country: string | null;
+  sex: GuestSex | null;
+};
+
 export type GuestRow = {
   id: string;
   last_name: string;

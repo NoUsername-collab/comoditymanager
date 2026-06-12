@@ -13,6 +13,7 @@ import type {
   GuestDocType,
   GuestHighlights,
   GuestBookingInput,
+  GuestIdentityInput,
   GuestIdentityStatus,
   GuestListItem,
   GuestNationalIdType,
@@ -40,26 +41,7 @@ import {
 
 import { findGuestByNationalId, getGuestBaseById } from "./lookup";
 
-export type GuestIdentityInput = {
-  doc_type: GuestDocType | null;
-  doc_series: string | null;
-  doc_number: string | null;
-  doc_issued_by: string | null;
-  doc_issue_date: string | null;
-  doc_expiry_date: string | null;
-  national_id_type: GuestNationalIdType | null;
-  national_id: string | null;
-  /** @deprecated kept for backward compat ??? synced from national_id when type=cnp */
-  cnp: string | null;
-  birth_date: string | null;
-  birth_place: string | null;
-  nationality: string | null;
-  address: string | null;
-  city: string | null;
-  county: string | null;
-  country: string | null;
-  sex: GuestSex | null;
-};
+export type { GuestIdentityInput };
 
 function computeIdentityStatus(input: GuestIdentityInput): GuestIdentityStatus {
   const hasDoc = input.doc_type != null && input.doc_number != null;
