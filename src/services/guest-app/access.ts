@@ -1,5 +1,7 @@
 import { randomBytes } from "node:crypto";
 import {
+  guestAccessClosesOn,
+  guestAccessOpensOn,
   isGuestAccessBookingStatusValid,
   isGuestAccessDateValid,
 } from "@/domain/guest-app/access-rules";
@@ -138,12 +140,21 @@ export async function resolveGuestAccessByCode(
     if (statusReason) return { ok: false, reason: statusReason };
 
     const today = await getEffectiveToday();
+    const earlyAccessDays = 1;
+    const schedule = {
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      opensOn: guestAccessOpensOn(booking.checkIn, earlyAccessDays),
+      closesOn: guestAccessClosesOn(booking.checkOut),
+    };
     const dateReason = isGuestAccessDateValid(today, {
       checkIn: booking.checkIn,
       checkOut: booking.checkOut,
-      earlyAccessDays: 1,
+      earlyAccessDays,
     });
-    if (dateReason) return { ok: false, reason: dateReason };
+    if (dateReason) {
+      return { ok: false, reason: dateReason, schedule };
+    }
 
     return {
       ok: true,

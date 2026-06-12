@@ -1,35 +1,8 @@
+import { GuestAccessGate } from "@/features/guest-app/GuestAccessGate";
 import { GuestAppShell } from "@/features/guest-app/GuestAppShell";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
 import { getPensionSettings } from "@/services/pension-settings";
 import type { GuestAccessResult } from "@/domain/guest-app/types";
-
-const DENY_MESSAGES: Record<string, string> = {
-  disabled:
-    "Aplicația pentru oaspeți este dezactivată. Activați-o din Admin → Setări → Guest app.",
-  setup_incomplete:
-    "Guest app nu este încă configurată pe acest mediu (migrare DB lipsă). Rulați migrarea 056_guest_app.sql.",
-  not_found: "Cod invalid sau inexistent.",
-  wrong_host:
-    "Linkul trebuie deschis de pe adresa pensiunii (ex. nume.test.hospira.ro/stay/...). Cere recepției linkul actualizat.",
-  revoked: "Accesul a fost revocat.",
-  booking_not_confirmed: "Rezervarea nu este confirmată.",
-  before_check_in: "Linkul devine activ cu o zi înainte de sosire.",
-  after_check_out: "Șederea s-a încheiat — accesul nu mai este disponibil.",
-};
-
-function guestAccessUnavailable(
-  pensionName: string,
-  message: string,
-) {
-  return (
-    <GuestAppShell appearance={{}} pensionName={pensionName}>
-      <div className="rounded-2xl border border-red-500/30 bg-red-950/40 p-6 text-center">
-        <h1 className="text-lg font-semibold text-red-100">Acces indisponibil</h1>
-        <p className="mt-2 text-sm text-red-200/90">{message}</p>
-      </div>
-    </GuestAppShell>
-  );
-}
 
 async function resolveGuestSession(code: string): Promise<GuestAccessResult> {
   try {
@@ -62,16 +35,22 @@ export default async function GuestStayLayout({
   try {
     session = await resolveGuestSession(code);
   } catch {
-    return guestAccessUnavailable(
-      pensionName,
-      "Serviciul nu este disponibil momentan. Reîncercați mai târziu.",
+    return (
+      <GuestAccessGate
+        pensionName={pensionName}
+        reason="not_found"
+        message="Serviciul nu este disponibil momentan. Reîncercați mai târziu."
+      />
     );
   }
 
   if (!session.ok) {
-    return guestAccessUnavailable(
-      pensionName,
-      DENY_MESSAGES[session.reason] ?? "Nu puteți accesa această pagină.",
+    return (
+      <GuestAccessGate
+        pensionName={pensionName}
+        reason={session.reason}
+        schedule={session.schedule}
+      />
     );
   }
 

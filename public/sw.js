@@ -7,6 +7,5 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener("fetch", (event) => {
-  event.respondWith(fetch(event.request));
-});
+/* No fetch handler — pass-through caused noisy "Failed to fetch" in DevTools
+   when offline or on transient network errors; we don't cache anything yet. */

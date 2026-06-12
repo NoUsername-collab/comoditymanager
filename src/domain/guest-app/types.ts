@@ -79,6 +79,13 @@ export type GuestAccessDenyReason =
   | "before_check_in"
   | "after_check_out";
 
+export type GuestAccessSchedule = {
+  checkIn: string;
+  checkOut: string;
+  opensOn: string;
+  closesOn: string;
+};
+
 export type GuestAccessResult =
   | {
       ok: true;
@@ -89,6 +96,7 @@ export type GuestAccessResult =
   | {
       ok: false;
       reason: GuestAccessDenyReason;
+      schedule?: GuestAccessSchedule;
     };
 
 export type GuestAccessWindow = {
