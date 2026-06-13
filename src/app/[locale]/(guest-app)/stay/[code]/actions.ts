@@ -22,16 +22,24 @@ async function withGuestSession(accessCode: string) {
 
 export async function submitGuestPrecheckinAction(input: {
   accessCode: string;
+  lastName: string;
+  firstName: string;
   phone: string;
   email?: string;
   documentType?: string;
   documentNumber?: string;
+  nationalId?: string;
+  birthDate?: string;
+  nationality?: string;
   notes?: string;
 }): Promise<GuestStayActionResult> {
   const gate = await withGuestSession(input.accessCode);
   if (!gate.ok) return { ok: false, error: gate.error };
 
+  const lastName = input.lastName.trim();
+  const firstName = input.firstName.trim();
   const phone = input.phone.trim();
+  if (!lastName || !firstName) return { ok: false, error: "nameRequired" };
   if (!phone) return { ok: false, error: "phoneRequired" };
 
   const docType =
@@ -41,15 +49,22 @@ export async function submitGuestPrecheckinAction(input: {
       ? input.documentType
       : null;
 
+  const birthDate = input.birthDate?.trim() || null;
+
   try {
     const { tenantId, supabase } = await getGuestAppPublicDb();
     const { error } = await supabase.from("guest_precheckin_submissions").upsert(
       withTenantId(tenantId, {
         booking_id: gate.session.booking.id,
+        guest_last_name: lastName,
+        guest_first_name: firstName,
         guest_phone: phone,
         guest_email: input.email?.trim() || null,
         document_type: docType,
         document_number: input.documentNumber?.trim() || null,
+        national_id: input.nationalId?.trim() || null,
+        birth_date: birthDate,
+        nationality: input.nationality?.trim() || null,
         notes: input.notes?.trim() || null,
         submitted_at: new Date().toISOString(),
       }),

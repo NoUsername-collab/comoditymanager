@@ -4,6 +4,7 @@ import type {
   PublicGalleryItem,
   PublicSiteConfig,
 } from "@/features/public-site/domain/types";
+import type { GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
 import type {
   GuestAccessBookingSnapshot,
   GuestAppContent,
@@ -12,6 +13,7 @@ import type {
   GuestAppSettings,
 } from "@/domain/guest-app/types";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
+import { loadGuestPrecheckinPrefill } from "@/services/guest-app/precheckin-prefill";
 
 export type GuestGalleryDisplayItem = {
   id: string;
@@ -31,6 +33,7 @@ export type GuestAppResolvedContext = {
   galleryItems: GuestGalleryDisplayItem[];
   greenStay: GuestAppContent["greenStay"];
   precheckinSubmitted: boolean;
+  precheckinPrefill: GuestPrecheckinPrefill;
   greenStayPendingDates: string[];
 };
 
@@ -159,6 +162,7 @@ export async function resolveGuestAppContext(
   const galleryItems = [...galleryFromSite, ...roomGallery];
 
   const liveState = await loadGuestLiveState(booking.id);
+  const precheckinPrefill = await loadGuestPrecheckinPrefill(booking);
 
   return {
     settings,
@@ -171,6 +175,7 @@ export async function resolveGuestAppContext(
     services: listItemsOrBenefits(settings.content.services, benefits),
     galleryItems,
     greenStay: settings.content.greenStay,
+    precheckinPrefill,
     ...liveState,
   };
 }

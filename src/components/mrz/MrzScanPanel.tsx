@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { extractMrzLinesFromOcrText } from "@/domain/guest/mrz-ocr";
+import { extractMrzLinesFromOcrTexts } from "@/domain/guest/mrz-ocr";
 import { parseMrzIdentity, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import { runMrzOcrOnImage } from "@/lib/mrz/run-mrz-ocr";
 
@@ -34,6 +34,7 @@ export function MrzScanPanel({
   const [tab, setTab] = useState<TabId>("paste");
   const [pasteValue, setPasteValue] = useState("");
   const [preview, setPreview] = useState<MrzMappedIdentity | null>(null);
+  const [parsedLines, setParsedLines] = useState<string[]>([]);
   const [checksumValid, setChecksumValid] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -46,6 +47,7 @@ export function MrzScanPanel({
   const resetState = useCallback(() => {
     setPasteValue("");
     setPreview(null);
+    setParsedLines([]);
     setChecksumValid(true);
     setError(null);
     setCameraReady(false);
@@ -98,24 +100,34 @@ export function MrzScanPanel({
     };
   }, [open, tab, stopCamera, t]);
 
-  function showParseResult(result: ReturnType<typeof parseMrzIdentity>) {
+  function showParseResult(
+    lines: string[],
+    result: ReturnType<typeof parseMrzIdentity>,
+  ) {
     if (!result.ok) {
       setPreview(null);
+      setParsedLines([]);
       setError(t(`errors.${result.error}`));
       return;
     }
+    setParsedLines(lines);
     setPreview(result.data);
     setChecksumValid(result.data.checksumValid);
+    setError(result.data.checksumValid ? null : t("errors.checksumInvalid"));
   }
 
   function handleParsePaste() {
     setError(null);
-    showParseResult(parseMrzIdentity(pasteValue));
+    const lines = pasteValue
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    showParseResult(lines, parseMrzIdentity(pasteValue));
   }
 
   function handleParseLines(lines: string[]) {
     setError(null);
-    showParseResult(parseMrzIdentity(lines));
+    showParseResult(lines, parseMrzIdentity(lines));
   }
 
   function handleCapture() {
@@ -132,10 +144,11 @@ export function MrzScanPanel({
     startTransition(async () => {
       try {
         setError(null);
-        const text = await runMrzOcrOnImage(canvas);
-        const lines = extractMrzLinesFromOcrText(text);
+        const texts = await runMrzOcrOnImage(canvas);
+        const lines = extractMrzLinesFromOcrTexts(texts);
         if (!lines) {
           setPreview(null);
+          setParsedLines([]);
           setError(t("errors.ocrNoMrz"));
           return;
         }
@@ -149,7 +162,7 @@ export function MrzScanPanel({
   }
 
   function handleApply() {
-    if (!preview) return;
+    if (!preview || !checksumValid) return;
     onApply(preview);
     onClose();
   }
@@ -232,6 +245,9 @@ export function MrzScanPanel({
       {preview ? (
         <div className={`${p}__preview`}>
           <p className={`${p}__preview-title`}>{t("previewTitle")}</p>
+          {parsedLines.length > 0 ? (
+            <pre className={`${p}__raw-lines`}>{parsedLines.join("\n")}</pre>
+          ) : null}
           <dl className={`${p}__preview-dl`}>
             <div>
               <dt>{t("fieldName")}</dt>
@@ -257,6 +273,9 @@ export function MrzScanPanel({
             </div>
           </dl>
           {!checksumValid ? <p className={`${p}__warn`}>{t("checksumWarning")}</p> : null}
+          {preview.usedAutocorrect && checksumValid ? (
+            <p className={`${p}__warn`}>{t("autocorrectWarning")}</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -269,7 +288,7 @@ export function MrzScanPanel({
         <button
           type="button"
           className={primaryBtn}
-          disabled={!preview}
+          disabled={!preview || !checksumValid}
           onClick={handleApply}
         >
           {t("apply")}

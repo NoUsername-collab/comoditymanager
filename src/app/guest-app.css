@@ -1297,6 +1297,21 @@
   font-weight: 700;
 }
 
+.guest-app__mrz__raw-lines {
+  margin: 0 0 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  background: var(--guest-card);
+  border: 1px dashed var(--guest-border);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 .guest-app__mrz__preview-dl {
   display: grid;
   gap: 0.35rem;

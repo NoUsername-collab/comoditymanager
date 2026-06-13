@@ -225,9 +225,15 @@
       }
     },
     "precheckin": {
-      "intro": "Complete your contact details before arrival, {name}. Reception will use them at check-in.",
+      "intro": "Complete your personal details before arrival, {name}. Reception will use them at check-in.",
+      "prefillFromProfile": "Some fields are filled from your booking and guest profile. Please review and correct if needed.",
+      "lastName": "Last name",
+      "firstName": "First name",
       "phone": "Phone",
       "email": "Email",
+      "nationalId": "Personal ID (CNP, etc.)",
+      "birthDate": "Date of birth",
+      "nationality": "Nationality",
       "documentType": "ID type",
       "documentOptional": "Optional",
       "documentCi": "National ID",
@@ -240,6 +246,7 @@
       "successTitle": "Details submitted",
       "successBody": "Reception has your information. You will complete check-in on arrival.",
       "errors": {
+        "nameRequired": "First and last name are required.",
         "phoneRequired": "Phone number is required.",
         "migration": "This feature is not available on this environment — contact the property.",
         "generic": "Could not submit. Please try again."
@@ -262,7 +269,8 @@
         "fieldNationalId": "Personal ID no.",
         "fieldBirthDate": "Birth date",
         "fieldNationality": "Nationality",
-        "checksumWarning": "Invalid checksum — verify before applying.",
+        "checksumWarning": "Uncertain read — invalid checksum. Fix MRZ lines manually or retake the photo. Auto-apply is blocked.",
+        "autocorrectWarning": "Some characters were guessed — verify name and personal ID before applying.",
         "apply": "Apply to form",
         "errors": {
           "empty": "Enter MRZ lines.",
@@ -270,7 +278,8 @@
           "unsupported": "Could not parse MRZ.",
           "camera": "Camera unavailable. Use paste or grant browser permission.",
           "ocrNoMrz": "No MRZ detected in the image. Retry or paste manually.",
-          "ocrFailed": "OCR failed. Please try again."
+          "ocrFailed": "OCR failed. Please try again.",
+          "checksumInvalid": "Invalid checksum — the read data is likely wrong. Edit MRZ lines or retake the photo."
         }
       }
     },
@@ -2510,7 +2519,8 @@
         "fieldNationalId": "Personal ID no.",
         "fieldBirthDate": "Birth date",
         "fieldNationality": "Nationality",
-        "checksumWarning": "Invalid checksum — verify before applying.",
+        "checksumWarning": "Uncertain read — invalid checksum. Fix MRZ lines manually or retake the photo. Auto-apply is blocked.",
+        "autocorrectWarning": "Some characters were guessed — verify name and personal ID before applying.",
         "apply": "Apply to form",
         "appliedTitle": "MRZ applied",
         "appliedBody": "Document fields were filled in. Review and correct if needed.",
@@ -2520,7 +2530,8 @@
           "unsupported": "Could not parse MRZ.",
           "camera": "Camera unavailable. Use paste or grant browser permission.",
           "ocrNoMrz": "No MRZ detected in the image. Retry or paste manually.",
-          "ocrFailed": "OCR failed. Please try again."
+          "ocrFailed": "OCR failed. Please try again.",
+          "checksumInvalid": "Invalid checksum — the read data is likely wrong. Edit MRZ lines or retake the photo."
         }
       },
       "fisa": {

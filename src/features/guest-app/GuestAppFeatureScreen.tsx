@@ -186,6 +186,7 @@ export async function GuestAppFeatureScreen({
         <GuestOnlineCheckinForm
           accessCode={accessCode}
           booking={ctx.booking}
+          prefill={ctx.precheckinPrefill}
           alreadySubmitted={ctx.precheckinSubmitted}
         />
       ) : null}

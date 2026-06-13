@@ -1,4 +1,3 @@
-import { parse } from "mrz";
 import type { CheckinUiDocType } from "@/domain/checkin/doc-type";
 import type { CheckinGuestInput } from "@/domain/checkin/types";
 import {
@@ -8,6 +7,7 @@ import {
   type NationalIdType,
 } from "@/domain/guest/national-id";
 import { detectMrzFormat, normalizeMrzBlock, splitMrzInput } from "@/domain/guest/mrz-ocr";
+import { parseMrzLinesBestEffort } from "@/domain/guest/mrz-parse";
 
 export type MrzMappedIdentity = {
   lastName: string;
@@ -22,6 +22,10 @@ export type MrzMappedIdentity = {
   expiryDate: string | null;
   format: string;
   checksumValid: boolean;
+  /** true dacă parserul a ghicit caractere (autocorrect) — verifică manual. */
+  usedAutocorrect: boolean;
+  /** Liniile MRZ folosite la parse. */
+  mrzLines: string[];
 };
 
 export type MrzParseResult =
@@ -136,13 +140,10 @@ export function parseMrzIdentity(input: string | string[]): MrzParseResult {
   const lines = normalizeMrzBlock(rawLines) ?? rawLines;
   if (!detectMrzFormat(lines)) return { ok: false, error: "invalid_format" };
 
-  let parsed;
-  try {
-    parsed = parse(lines, { autocorrect: true });
-  } catch {
-    return { ok: false, error: "unsupported" };
-  }
+  const attempt = parseMrzLinesBestEffort(lines);
+  if (!attempt) return { ok: false, error: "unsupported" };
 
+  const parsed = attempt.parsed;
   const fields = parsed.fields as Record<string, unknown>;
   const nationalityCode = String(fields.nationality ?? fields.issuingState ?? "").trim() || null;
   const lastName = String(fields.lastName ?? "").trim();
@@ -172,6 +173,8 @@ export function parseMrzIdentity(input: string | string[]): MrzParseResult {
     expiryDate: mrzExpiryDateToIso(String(fields.expirationDate ?? "")),
     format: parsed.format,
     checksumValid: parsed.valid,
+    usedAutocorrect: attempt.usedAutocorrect,
+    mrzLines: lines,
   };
 
   if (!lastName && !firstName && !documentNumber && !national.value) {

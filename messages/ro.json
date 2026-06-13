@@ -225,9 +225,15 @@
       }
     },
     "precheckin": {
-      "intro": "Completează datele de contact înainte de sosire, {name}. Recepția le va folosi la check-in.",
+      "intro": "Completează datele personale înainte de sosire, {name}. Recepția le va folosi la check-in.",
+      "prefillFromProfile": "Unele câmpuri sunt completate din rezervarea și profilul tău de client. Verifică și corectează dacă e nevoie.",
+      "lastName": "Nume",
+      "firstName": "Prenume",
       "phone": "Telefon",
       "email": "Email",
+      "nationalId": "CNP / cod personal",
+      "birthDate": "Data nașterii",
+      "nationality": "Cetățenie",
       "documentType": "Tip act",
       "documentOptional": "Opțional",
       "documentCi": "Carte de identitate",
@@ -240,6 +246,7 @@
       "successTitle": "Date trimise",
       "successBody": "Recepția a primit informațiile. La sosire veți finaliza check-in-ul.",
       "errors": {
+        "nameRequired": "Numele și prenumele sunt obligatorii.",
         "phoneRequired": "Telefonul este obligatoriu.",
         "migration": "Funcția nu este disponibilă pe acest mediu — contactați pensiunea.",
         "generic": "Nu s-a putut trimite. Încercați din nou."
@@ -262,7 +269,8 @@
         "fieldNationalId": "CNP / cod personal",
         "fieldBirthDate": "Data nașterii",
         "fieldNationality": "Cetățenie",
-        "checksumWarning": "Checksum invalid — verifică datele înainte de aplicare.",
+        "checksumWarning": "Citire incertă — checksum invalid. Corectează liniile MRZ manual sau refă poza. Nu poți aplica automat.",
+        "autocorrectWarning": "Unele caractere au fost deduse automat — verifică numele și CNP-ul înainte de aplicare.",
         "apply": "Aplică în formular",
         "errors": {
           "empty": "Introdu liniile MRZ.",
@@ -270,7 +278,8 @@
           "unsupported": "Nu s-a putut interpreta MRZ-ul.",
           "camera": "Camera nu e disponibilă. Folosește lipire text sau permisiuni browser.",
           "ocrNoMrz": "Nu s-a detectat MRZ. Folosește spatele CI-ului electronic (cele 3 rânduri de jos), cu lumină bună. CI vechi fără MRZ → lipește manual sau completează câmpurile.",
-          "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou."
+          "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou.",
+          "checksumInvalid": "Checksum invalid — datele citite sunt probabil greșite. Editează liniile MRZ sau refă poza."
         }
       }
     },
@@ -2510,7 +2519,8 @@
         "fieldNationalId": "CNP / cod personal",
         "fieldBirthDate": "Data nașterii",
         "fieldNationality": "Cetățenie",
-        "checksumWarning": "Checksum invalid — verifică datele înainte de aplicare.",
+        "checksumWarning": "Citire incertă — checksum invalid. Corectează liniile MRZ manual sau refă poza. Nu poți aplica automat.",
+        "autocorrectWarning": "Unele caractere au fost deduse automat — verifică numele și CNP-ul înainte de aplicare.",
         "apply": "Aplică în formular",
         "appliedTitle": "MRZ aplicat",
         "appliedBody": "Datele documentului au fost completate. Verifică și corectează dacă e nevoie.",
@@ -2520,7 +2530,8 @@
           "unsupported": "Nu s-a putut interpreta MRZ-ul.",
           "camera": "Camera nu e disponibilă. Folosește lipire text sau permisiuni browser.",
           "ocrNoMrz": "Nu s-a detectat MRZ. Folosește spatele CI-ului electronic (cele 3 rânduri de jos), cu lumină bună. CI vechi fără MRZ → lipește manual sau completează câmpurile.",
-          "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou."
+          "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou.",
+          "checksumInvalid": "Checksum invalid — datele citite sunt probabil greșite. Editează liniile MRZ sau refă poza."
         }
       },
       "fisa": {

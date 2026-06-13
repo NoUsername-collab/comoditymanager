@@ -4,18 +4,21 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { submitGuestPrecheckinAction } from "@/app/[locale]/(guest-app)/stay/[code]/actions";
 import type { GuestAccessBookingSnapshot } from "@/domain/guest-app/types";
+import type { GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
 import { mrzToPrecheckinFields, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import { GuestMrzScanDialog } from "@/features/guest-app/GuestMrzScanDialog";
 
 type Props = {
   accessCode: string;
   booking: GuestAccessBookingSnapshot;
+  prefill: GuestPrecheckinPrefill;
   alreadySubmitted: boolean;
 };
 
 export function GuestOnlineCheckinForm({
   accessCode,
   booking,
+  prefill,
   alreadySubmitted,
 }: Props) {
   const t = useTranslations("guestApp.precheckin");
@@ -23,11 +26,17 @@ export function GuestOnlineCheckinForm({
   const [submitted, setSubmitted] = useState(alreadySubmitted);
   const [error, setError] = useState<string | null>(null);
   const [mrzOpen, setMrzOpen] = useState(false);
-  const [phone, setPhone] = useState(booking.guestPhone ?? "");
-  const [email, setEmail] = useState(booking.guestEmail ?? "");
-  const [documentType, setDocumentType] = useState<string>("");
-  const [documentNumber, setDocumentNumber] = useState("");
-  const [notes, setNotes] = useState("");
+
+  const [lastName, setLastName] = useState(prefill.lastName);
+  const [firstName, setFirstName] = useState(prefill.firstName);
+  const [phone, setPhone] = useState(prefill.phone);
+  const [email, setEmail] = useState(prefill.email);
+  const [documentType, setDocumentType] = useState(prefill.documentType);
+  const [documentNumber, setDocumentNumber] = useState(prefill.documentNumber);
+  const [nationalId, setNationalId] = useState(prefill.nationalId);
+  const [birthDate, setBirthDate] = useState(prefill.birthDate ?? "");
+  const [nationality, setNationality] = useState(prefill.nationality);
+  const [notes, setNotes] = useState(prefill.notes);
 
   if (submitted) {
     return (
@@ -42,6 +51,11 @@ export function GuestOnlineCheckinForm({
     const fields = mrzToPrecheckinFields(data);
     if (fields.documentType) setDocumentType(fields.documentType);
     if (fields.documentNumber) setDocumentNumber(fields.documentNumber);
+    if (data.lastName) setLastName(data.lastName);
+    if (data.firstName) setFirstName(data.firstName);
+    if (data.nationalId) setNationalId(data.nationalId);
+    if (data.birthDate) setBirthDate(data.birthDate);
+    if (data.nationality) setNationality(data.nationality);
     if (fields.notesAppend) {
       setNotes((prev) => {
         const trimmed = prev.trim();
@@ -56,10 +70,15 @@ export function GuestOnlineCheckinForm({
     startTransition(async () => {
       const result = await submitGuestPrecheckinAction({
         accessCode,
+        lastName,
+        firstName,
         phone,
         email,
         documentType: documentType || undefined,
         documentNumber,
+        nationalId,
+        birthDate: birthDate || undefined,
+        nationality,
         notes,
       });
       if (!result.ok) {
@@ -71,10 +90,16 @@ export function GuestOnlineCheckinForm({
     });
   }
 
+  const displayName =
+    [lastName, firstName].filter(Boolean).join(" ").trim() || booking.guestName;
+
   return (
     <>
       <form className="guest-app__form space-y-4" onSubmit={handleSubmit}>
-        <p className="guest-app__subtle text-sm">{t("intro", { name: booking.guestName })}</p>
+        <p className="guest-app__subtle text-sm">{t("intro", { name: displayName })}</p>
+        {prefill.hasGuestProfile ? (
+          <p className="guest-app__subtle text-sm">{t("prefillFromProfile")}</p>
+        ) : null}
 
         <button
           type="button"
@@ -83,6 +108,27 @@ export function GuestOnlineCheckinForm({
         >
           {t("mrz.scanButton")}
         </button>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="guest-app__field">
+            <span className="guest-app__field__label">{t("lastName")}</span>
+            <input
+              className="guest-app__field__input"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </label>
+          <label className="guest-app__field">
+            <span className="guest-app__field__label">{t("firstName")}</span>
+            <input
+              className="guest-app__field__input"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </label>
+        </div>
 
         <label className="guest-app__field">
           <span className="guest-app__field__label">{t("phone")}</span>
@@ -104,6 +150,37 @@ export function GuestOnlineCheckinForm({
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
+
+        <label className="guest-app__field">
+          <span className="guest-app__field__label">{t("nationalId")}</span>
+          <input
+            className="guest-app__field__input"
+            inputMode="numeric"
+            autoComplete="off"
+            value={nationalId}
+            onChange={(e) => setNationalId(e.target.value.replace(/\s/g, ""))}
+          />
+        </label>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="guest-app__field">
+            <span className="guest-app__field__label">{t("birthDate")}</span>
+            <input
+              className="guest-app__field__input"
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+            />
+          </label>
+          <label className="guest-app__field">
+            <span className="guest-app__field__label">{t("nationality")}</span>
+            <input
+              className="guest-app__field__input"
+              value={nationality}
+              onChange={(e) => setNationality(e.target.value)}
+            />
+          </label>
+        </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="guest-app__field">
