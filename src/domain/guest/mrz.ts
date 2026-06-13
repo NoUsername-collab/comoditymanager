@@ -7,7 +7,7 @@ import {
   validateNationalId,
   type NationalIdType,
 } from "@/domain/guest/national-id";
-import { detectMrzFormat, splitMrzInput } from "@/domain/guest/mrz-ocr";
+import { detectMrzFormat, normalizeMrzBlock, splitMrzInput } from "@/domain/guest/mrz-ocr";
 
 export type MrzMappedIdentity = {
   lastName: string;
@@ -128,8 +128,12 @@ function inferNationalId(
 }
 
 export function parseMrzIdentity(input: string | string[]): MrzParseResult {
-  const lines = Array.isArray(input) ? input.map((l) => l.trim()) : splitMrzInput(input);
-  if (lines.length === 0) return { ok: false, error: "empty" };
+  const rawLines = Array.isArray(input)
+    ? input.map((line) => line.trim())
+    : splitMrzInput(input);
+  if (rawLines.length === 0) return { ok: false, error: "empty" };
+
+  const lines = normalizeMrzBlock(rawLines) ?? rawLines;
   if (!detectMrzFormat(lines)) return { ok: false, error: "invalid_format" };
 
   let parsed;

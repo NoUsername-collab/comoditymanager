@@ -8,6 +8,12 @@ const TD1_SAMPLE = [
   "ERIKSSON<<ANNA<MARIA<<<<<<<<<<",
 ];
 
+const RO_CI_TD1 = [
+  "IDROU0321789<<0<<<<<<<<<<<<<<<",
+  "9001017M2501017ROU<<<<<<<<<<<6",
+  "POPESCU<<ION<<<<<<<<<<<<<<<<<<",
+];
+
 describe("parseMrzIdentity", () => {
   it("parses TD1 sample", () => {
     const result = parseMrzIdentity(TD1_SAMPLE);
@@ -46,6 +52,32 @@ describe("extractMrzLinesFromOcrText", () => {
       "END",
     ].join("\n");
     expect(extractMrzLinesFromOcrText(text)).toEqual(TD1_SAMPLE);
+  });
+
+  it("finds truncated TD1 lines from OCR", () => {
+    const text = [
+      "NOISE",
+      "IDROU0321789<<0<<<<<<<<<<<<<<", // 29 chars
+      "9001017M2501017ROU<<<<<<<<<<<", // 29 chars
+      "POPESCU<<ION<<<<<<<<<<<<<<<<<", // 29 chars
+    ].join("\n");
+    const lines = extractMrzLinesFromOcrText(text);
+    expect(lines).not.toBeNull();
+    expect(lines?.every((line) => line.length === 30)).toBe(true);
+  });
+
+  it("finds Romanian CI TD1 sample", () => {
+    const result = parseMrzIdentity(RO_CI_TD1);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.lastName).toBe("POPESCU");
+    expect(result.data.firstName).toBe("ION");
+    expect(result.data.documentType).toBe("ci");
+  });
+
+  it("finds MRZ in continuous blob without newlines", () => {
+    const blob = RO_CI_TD1.join("");
+    expect(extractMrzLinesFromOcrText(blob)).toEqual(RO_CI_TD1);
   });
 });
 

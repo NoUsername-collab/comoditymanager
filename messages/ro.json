@@ -254,7 +254,7 @@
         "pasteLabel": "Linii MRZ",
         "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
         "parse": "Citește MRZ",
-        "cameraHint": "Ține MRZ-ul drept, cu lumină bună. Apasă Captură când textul e clar.",
+        "cameraHint": "Poziționează spatele CI-ului electronic: cele 3 rânduri MRZ de jos, drept, fără reflexii. Apasă Captură când textul e clar.",
         "capture": "Captură & citește",
         "previewTitle": "Date extrase",
         "fieldName": "Nume",
@@ -269,7 +269,7 @@
           "invalid_format": "Format invalid — TD1 are 3×30 caractere, pașaport 2×44.",
           "unsupported": "Nu s-a putut interpreta MRZ-ul.",
           "camera": "Camera nu e disponibilă. Folosește lipire text sau permisiuni browser.",
-          "ocrNoMrz": "Nu s-a detectat MRZ în imagine. Încearcă din nou sau lipește manual.",
+          "ocrNoMrz": "Nu s-a detectat MRZ. Folosește spatele CI-ului electronic (cele 3 rânduri de jos), cu lumină bună. CI vechi fără MRZ → lipește manual sau completează câmpurile.",
           "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou."
         }
       }
@@ -2502,7 +2502,7 @@
         "pasteLabel": "Linii MRZ",
         "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
         "parse": "Citește MRZ",
-        "cameraHint": "Ține MRZ-ul drept, cu lumină bună. Apasă Captură când textul e clar.",
+        "cameraHint": "Poziționează spatele CI-ului electronic: cele 3 rânduri MRZ de jos, drept, fără reflexii. Apasă Captură când textul e clar.",
         "capture": "Captură & citește",
         "previewTitle": "Date extrase",
         "fieldName": "Nume",
@@ -2519,7 +2519,7 @@
           "invalid_format": "Format invalid — TD1 are 3×30 caractere, pașaport 2×44.",
           "unsupported": "Nu s-a putut interpreta MRZ-ul.",
           "camera": "Camera nu e disponibilă. Folosește lipire text sau permisiuni browser.",
-          "ocrNoMrz": "Nu s-a detectat MRZ în imagine. Încearcă din nou sau lipește manual.",
+          "ocrNoMrz": "Nu s-a detectat MRZ. Folosește spatele CI-ului electronic (cele 3 rânduri de jos), cu lumină bună. CI vechi fără MRZ → lipește manual sau completează câmpurile.",
           "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou."
         }
       },
