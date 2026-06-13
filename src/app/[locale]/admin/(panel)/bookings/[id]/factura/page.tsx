@@ -1,8 +1,12 @@
 import { notFound } from "next/navigation";
-import { InformalInvoiceView } from "@/components/admin/invoice/InformalInvoiceView";
+import { BookingInvoicePanel } from "@/components/admin/invoice/BookingInvoicePanel";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { isInvoicingAlphaEnabled } from "@/lib/features";
-import { loadInformalInvoice } from "@/services/invoice";
+import { getTenantContext } from "@/core/tenant/context";
+import {
+  loadActiveBookingInvoice,
+  previewBookingInvoice,
+} from "@/services/issued-invoice";
+import { getBookingById } from "@/services/bookings";
 import { getTranslations } from "next-intl/server";
 
 export default async function BookingInvoicePage({
@@ -10,19 +14,28 @@ export default async function BookingInvoicePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  if (!isInvoicingAlphaEnabled()) notFound();
-
-  const [tPage, tCommon, { id }, ctx] = await Promise.all([
+  const [{ id }, tPage, tCommon, booking] = await Promise.all([
+    params,
     getTranslations("admin.pages.invoice"),
     getTranslations("admin.common"),
-    params,
-    params.then(({ id }) => loadInformalInvoice(id).catch(() => null)),
+    params.then(({ id }) => getBookingById(id)),
   ]);
-  if (!ctx) notFound();
+
+  if (!booking || booking.status !== "confirmata") notFound();
+
+  const [active, preview] = await Promise.all([
+    loadActiveBookingInvoice(id),
+    previewBookingInvoice(id),
+  ]);
+
+  if (!preview) notFound();
+
+  const document = active?.document ?? preview;
+  const showHospiraBranding = getTenantContext().showBranding;
 
   return (
     <AdminPageFrame
-      title={tCommon("informalDocument")}
+      title={tCommon("invoiceDocument")}
       description={tPage("description")}
       backHref={`/admin/bookings/${id}`}
       backLabel={tPage("backToBooking")}
@@ -30,7 +43,12 @@ export default async function BookingInvoicePage({
       bodyClassName="print:border-0 print:shadow-none"
     >
       <div className="print:border-0 print:bg-white">
-        <InformalInvoiceView ctx={ctx} />
+        <BookingInvoicePanel
+          bookingId={id}
+          document={document}
+          issued={Boolean(active)}
+          showHospiraBranding={showHospiraBranding}
+        />
       </div>
     </AdminPageFrame>
   );

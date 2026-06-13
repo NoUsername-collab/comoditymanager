@@ -50,7 +50,7 @@ export async function MonthCompareCards({
           </AdminTextActionLink>
         </div>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <MetricCard
             label={t("currentMonthOccupancy")}
             hint={t("occupancyPctHint", {
@@ -113,6 +113,42 @@ export async function MonthCompareCards({
               total: current.capacityRoomNights,
             })}
             aboutLabel={t("roomNightsOccupied")}
+          />
+          <MetricCard
+            label={t("currentMonthAdr")}
+            hint={t("adrHint")}
+            value={
+              current.revenueComplete && current.adrRon != null
+                ? formatRon(current.adrRon)
+                : "—"
+            }
+            sub={
+              py?.revenueComplete && current.revenueComplete && py.adrRon != null
+                ? tCommon("lastYearValue", { value: formatRon(py.adrRon) })
+                : !current.revenueComplete
+                  ? tCommon("fillPriceOnConfirm")
+                  : undefined
+            }
+            aboutLabel={t("currentMonthAdr")}
+          />
+          <MetricCard
+            label={t("currentMonthRevpar")}
+            hint={t("revparHint")}
+            value={
+              current.revenueComplete && current.revparRon != null
+                ? formatRon(current.revparRon)
+                : "—"
+            }
+            sub={
+              py?.revenueComplete &&
+              current.revenueComplete &&
+              py.revparRon != null
+                ? tCommon("lastYearValue", { value: formatRon(py.revparRon) })
+                : !current.revenueComplete
+                  ? tCommon("fillPriceOnConfirm")
+                  : undefined
+            }
+            aboutLabel={t("currentMonthRevpar")}
           />
         </div>
       </section>

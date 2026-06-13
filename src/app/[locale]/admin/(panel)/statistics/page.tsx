@@ -5,8 +5,11 @@ import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
 import { StatisticsAllYearsSection } from "@/components/admin/statistics/StatisticsAllYearsSection";
 import { StatisticsBarChartLazy } from "@/components/admin/statistics/StatisticsBarChartLazy";
+import { StatisticsExportPanel } from "@/components/admin/statistics/StatisticsExportPanel";
+import { StatisticsMonthlyKpiTable } from "@/components/admin/statistics/StatisticsMonthlyKpiTable";
 import { StatisticsPerBuildingSection } from "@/components/admin/statistics/StatisticsPerBuildingSection";
 import { StatisticsYearNav } from "@/components/admin/statistics/StatisticsYearNav";
+import { getPathname } from "@/i18n/navigation";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { requireStaff } from "@/lib/auth/require-staff";
@@ -77,6 +80,14 @@ export default async function AdminStatisticsPage({
     : new Date().getFullYear();
   const yearData = report?.years.find((y) => y.year === focusYear);
   const dateTag = locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB";
+  const exportPath = getPathname({
+    locale,
+    href: "/admin/statistics/export",
+  });
+  const formatKpi = (value: number | null, revenueComplete: boolean) =>
+    revenueComplete && value != null
+      ? formatRon(value, locale)
+      : tCommon("emDash");
 
   return (
     <AdminPageFrame
@@ -153,7 +164,7 @@ export default async function AdminStatisticsPage({
 
           {yearData ? (
             <div className="mt-4 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                 <StatCard
                   label={tPages("confirmedStays")}
                   value={String(yearData.confirmedStays)}
@@ -178,6 +189,16 @@ export default async function AdminStatisticsPage({
                       ? tCommon("fillPriceOnConfirm")
                       : undefined
                   }
+                />
+                <StatCard
+                  label={tPages("adr")}
+                  value={formatKpi(yearData.adrRon, yearData.revenueComplete)}
+                  hint={tPages("adrHint")}
+                />
+                <StatCard
+                  label={tPages("revpar")}
+                  value={formatKpi(yearData.revparRon, yearData.revenueComplete)}
+                  hint={tPages("revparHint")}
                 />
               </div>
 
@@ -220,6 +241,53 @@ export default async function AdminStatisticsPage({
                 }))}
               />
 
+              <StatisticsMonthlyKpiTable
+                title={tPages("monthlyKpis", { year: yearData.year })}
+                rows={yearData.months.map((m) => ({
+                  label: m.label,
+                  occupancyPct: m.occupancyPct,
+                  revenueRon: m.revenueRon,
+                  revenueComplete: yearData.revenueComplete,
+                  adrRon: m.adrRon,
+                  revparRon: m.revparRon,
+                }))}
+                labels={{
+                  month: tPages("monthCol"),
+                  occupancy: tCommon("occupancy"),
+                  revenue: tCommon("revenue"),
+                  adr: tPages("adr"),
+                  revpar: tPages("revpar"),
+                  emDash: tCommon("emDash"),
+                }}
+                formatRevenue={(n) => formatRon(n, locale)}
+                formatKpi={(value, revenueComplete) =>
+                  formatKpi(value, revenueComplete)
+                }
+              />
+
+              <StatisticsExportPanel
+                exportPath={exportPath}
+                focusYear={focusYear}
+                years={report.yearsWithData}
+                months={yearData.months.map((m) => ({
+                  value: String(m.month + 1),
+                  label: m.label,
+                }))}
+                labels={{
+                  title: tPages("exportTitle"),
+                  description: tPages("exportDescription"),
+                  year: tCommon("yearCol"),
+                  month: tPages("exportMonth"),
+                  monthAll: tPages("exportMonthAll"),
+                  format: tPages("exportFormat"),
+                  formatSaga: tPages("exportFormatSaga"),
+                  formatContaplus: tPages("exportFormatContaplus"),
+                  includeUninvoiced: tPages("exportIncludeUninvoiced"),
+                  includeUninvoicedHint: tPages("exportIncludeUninvoicedHint"),
+                  download: tPages("exportDownload"),
+                }}
+              />
+
               <StatisticsPerBuildingSection
                 title={tPages("perBuildingYear", { year: yearData.year })}
                 buildings={yearData.buildings}
@@ -244,9 +312,14 @@ export default async function AdminStatisticsPage({
                   occupancy: tCommon("occupancy"),
                   nights: tPages("nights"),
                   revenue: tCommon("revenue"),
+                  adr: tPages("adr"),
+                  revpar: tPages("revpar"),
                   emDash: tCommon("emDash"),
                 }}
                 formatRevenue={(n) => formatRon(n, locale)}
+                formatKpi={(value, revenueComplete) =>
+                  formatKpi(value, revenueComplete)
+                }
               />
             </div>
           ) : (

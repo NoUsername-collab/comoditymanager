@@ -58,6 +58,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         memberRoles: ["owner", "admin", "operator"],
       },
       {
+        id: "booking",
+        labelKey: "navBooking",
+        descriptionKey: "navBookingDesc",
+        href: "/admin/settings?section=booking",
+        section: "booking",
+        memberRoles: ["owner", "admin"],
+      },
+      {
         id: "checkin",
         labelKey: "navCheckin",
         descriptionKey: "navCheckinDesc",

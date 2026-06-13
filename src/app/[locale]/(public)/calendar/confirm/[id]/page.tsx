@@ -5,6 +5,7 @@ import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
+import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { quickConfirmAction } from "./actions";
 import { getTranslations } from "next-intl/server";
 
@@ -13,13 +14,14 @@ export default async function QuickConfirmPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [t, admin, { id }, ctx] = await Promise.all([
+  const [t, admin, { id }, ctx, pricingRules] = await Promise.all([
     getTranslations("public.confirm"),
     getAdminUser(),
     params,
     params.then(({ id: bookingId }) =>
       loadBookingConfirmContext(bookingId).catch(() => null)
     ),
+    getStayPricingRules().catch(() => null),
   ]);
 
   if (!admin) {
@@ -65,6 +67,7 @@ export default async function QuickConfirmPage({
           availableRooms={availableRooms}
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
+          pricingRules={pricingRules}
           defaultSelectedIds={booking.room_ids}
           action={quickConfirmAction}
         />

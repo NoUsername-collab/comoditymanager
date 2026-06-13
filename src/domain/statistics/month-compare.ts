@@ -4,6 +4,7 @@ import {
   type ActiveRoomSnapshot,
   type StatBooking,
 } from "@/domain/statistics/aggregates";
+import { computeRevenueKpis } from "@/domain/statistics/kpi-metrics";
 import { monthBounds, nightsBetween, todayIso } from "@/lib/stay-dates";
 
 export type MonthCompareSnapshot = {
@@ -18,6 +19,8 @@ export type MonthCompareSnapshot = {
   confirmedStays: number;
   revenueRon: number;
   revenueComplete: boolean;
+  adrRon: number | null;
+  revparRon: number | null;
 };
 
 export type MonthComparison = {
@@ -84,6 +87,8 @@ function snapshotForMonth(
     else revenueRon += resolved;
   }
 
+  const roundedRevenue = Math.round(revenueRon * 100) / 100;
+
   return {
     year,
     month,
@@ -94,8 +99,13 @@ function snapshotForMonth(
     daysInMonth: nights.length,
     occupancyPct,
     confirmedStays,
-    revenueRon: Math.round(revenueRon * 100) / 100,
+    revenueRon: roundedRevenue,
     revenueComplete,
+    ...computeRevenueKpis({
+      revenueRon: roundedRevenue,
+      roomNightsOccupied: occupiedRoomNights,
+      roomNightsCapacity: capacityRoomNights,
+    }),
   };
 }
 

@@ -1,13 +1,22 @@
 import { PublicPageShell } from "@/components/public/PublicPageShell";
-import { getTranslations } from "next-intl/server";
+import { buildCancellationPolicyText } from "@/domain/settings/booking-rules";
+import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
 export default async function TermeniPage() {
-  const [t, tShell, tFooter] = await Promise.all([
+  const [t, tShell, tFooter, locale, bookingRules] = await Promise.all([
     getTranslations("public.terms"),
     getTranslations("public.shell"),
     getTranslations("public.footer"),
+    getLocale(),
+    getBookingRulesSettings().catch(() => null),
   ]);
+
+  const policyLocale = locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
+  const cancellationText = bookingRules
+    ? buildCancellationPolicyText(bookingRules, policyLocale)
+    : t("s3Body");
 
   const rich = {
     strong: (chunks: ReactNode) => <strong>{chunks}</strong>,
@@ -31,7 +40,7 @@ export default async function TermeniPage() {
         <h2>{t("s2Title")}</h2>
         <p>{t("s2Body")}</p>
         <h2>{t("s3Title")}</h2>
-        <p>{t("s3Body")}</p>
+        <p>{cancellationText}</p>
         <h2>{t("s4Title")}</h2>
         <p>{t.rich("s4Body", rich)}</p>
       </div>

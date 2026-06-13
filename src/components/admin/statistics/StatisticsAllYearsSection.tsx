@@ -7,6 +7,8 @@ export type StatisticsYearSummaryRow = {
   guestNights: number;
   revenueRon: number;
   revenueComplete: boolean;
+  adrRon: number | null;
+  revparRon: number | null;
 };
 
 type Labels = {
@@ -15,6 +17,8 @@ type Labels = {
   occupancy: string;
   nights: string;
   revenue: string;
+  adr: string;
+  revpar: string;
   emDash: string;
 };
 
@@ -24,12 +28,14 @@ export function StatisticsAllYearsSection({
   focusYear,
   labels,
   formatRevenue,
+  formatKpi,
 }: {
   title: string;
   years: StatisticsYearSummaryRow[];
   focusYear: number;
   labels: Labels;
   formatRevenue: (n: number) => string;
+  formatKpi: (value: number | null, revenueComplete: boolean) => string;
 }) {
   return (
     <div className="statistics-years-section overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
@@ -89,6 +95,22 @@ export function StatisticsAllYearsSection({
                     : labels.emDash}
                 </dd>
               </div>
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
+                  {labels.adr}
+                </dt>
+                <dd className="mt-0.5 font-semibold tabular-nums text-zinc-800">
+                  {formatKpi(yearRow.adrRon, yearRow.revenueComplete)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
+                  {labels.revpar}
+                </dt>
+                <dd className="mt-0.5 font-semibold tabular-nums text-zinc-800">
+                  {formatKpi(yearRow.revparRon, yearRow.revenueComplete)}
+                </dd>
+              </div>
             </dl>
           </li>
         ))}
@@ -103,6 +125,8 @@ export function StatisticsAllYearsSection({
               <th className="px-4 py-2">{labels.occupancy}</th>
               <th className="px-4 py-2">{labels.nights}</th>
               <th className="px-4 py-2">{labels.revenue}</th>
+              <th className="px-4 py-2">{labels.adr}</th>
+              <th className="px-4 py-2">{labels.revpar}</th>
             </tr>
           </thead>
           <tbody>
@@ -131,6 +155,12 @@ export function StatisticsAllYearsSection({
                   {yearRow.revenueComplete
                     ? formatRevenue(yearRow.revenueRon)
                     : labels.emDash}
+                </td>
+                <td className="px-4 py-2.5 tabular-nums">
+                  {formatKpi(yearRow.adrRon, yearRow.revenueComplete)}
+                </td>
+                <td className="px-4 py-2.5 tabular-nums">
+                  {formatKpi(yearRow.revparRon, yearRow.revenueComplete)}
                 </td>
               </tr>
             ))}

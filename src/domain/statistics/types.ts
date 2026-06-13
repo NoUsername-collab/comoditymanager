@@ -9,6 +9,8 @@ export type MonthStatistics = {
   roomNightsCapacity: number;
   occupancyPct: number;
   revenueRon: number;
+  adrRon: number | null;
+  revparRon: number | null;
 };
 
 export type BuildingYearStatistics = {
@@ -21,6 +23,8 @@ export type BuildingYearStatistics = {
   roomNightsCapacity: number;
   occupancyPct: number;
   revenueRon: number;
+  adrRon: number | null;
+  revparRon: number | null;
 };
 
 export type YearStatistics = {
@@ -34,6 +38,8 @@ export type YearStatistics = {
   occupancyPct: number;
   revenueRon: number;
   revenueComplete: boolean;
+  adrRon: number | null;
+  revparRon: number | null;
   adults: number;
   children: number;
   months: MonthStatistics[];

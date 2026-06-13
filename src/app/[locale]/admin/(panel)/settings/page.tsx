@@ -21,6 +21,9 @@ import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHead
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsOverview } from "@/components/admin/settings/SettingsOverview";
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
+import { BookingRulesSettingsPanel } from "@/components/admin/settings/BookingRulesSettingsPanel";
+import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import { getLocale } from "next-intl/server";
 import { updateAppearanceSettingsAction } from "./actions";
 
 export default async function SettingsPage({
@@ -34,12 +37,14 @@ export default async function SettingsPage({
   }>;
 }) {
   const staffPromise = requireStaff();
-  const [t, params, staff, checkinSettings, pensionResult] =
+  const [t, params, staff, checkinSettings, bookingRules, locale, pensionResult] =
     await Promise.all([
       getTranslations("admin.pages.settings"),
       searchParams,
       staffPromise,
       getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+      getBookingRulesSettings().catch(() => null),
+      getLocale(),
       (async () => {
         try {
           return {
@@ -70,6 +75,7 @@ export default async function SettingsPage({
     "appearance",
     "preferences",
     "statistics",
+    "booking",
     "checkin",
     "history",
   ]);
@@ -185,6 +191,21 @@ export default async function SettingsPage({
               visibility={statisticsVisibility}
               canConfigure={isOwner}
               canAccess={statisticsAccess}
+            />
+          </SettingsSection>
+        </>
+      ) : null}
+
+      {section === "booking" && (isOwner || memberRole === "admin") && bookingRules ? (
+        <>
+          <SettingsPageHeader
+            title={t("navBooking")}
+            description={t("bookingSubtitle")}
+          />
+          <SettingsSection title={t("bookingTitle")} description={t("bookingSubtitle")}>
+            <BookingRulesSettingsPanel
+              settings={bookingRules}
+              locale={locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"}
             />
           </SettingsSection>
         </>

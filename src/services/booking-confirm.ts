@@ -16,6 +16,7 @@ import {
   listOccupiedRoomRanges,
 } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { listAllRooms } from "@/services/rooms-admin";
 
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
@@ -43,12 +44,15 @@ export async function resolveTotalPriceForConfirm(
   const ctx = await loadBookingConfirmContext(bookingId);
   if (!ctx) throw new Error("booking.request_not_found");
 
+  const pricingRules = await getStayPricingRules();
+
   const idSet = new Set(roomIds);
   const selected = ctx.availableRooms.filter((r) => idSet.has(r.id));
   const standard = computeStandardStayTotal(
     selected,
     ctx.booking.check_in,
-    ctx.booking.check_out
+    ctx.booking.check_out,
+    pricingRules
   );
 
   if (!Number.isFinite(standard) || standard <= 0) {

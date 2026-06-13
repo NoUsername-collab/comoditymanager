@@ -17,7 +17,7 @@ export const loadGuestStayPreview = cache(async (
 ): Promise<GuestStayPreview> => {
   const guestCount = Math.max(1, numAdults + numChildren);
 
-  const [roomsRaw, occupied, settings] = await Promise.all([
+  const [roomsRaw, occupied, settings, pricingRules] = await Promise.all([
     listAllRoomsForPublic(),
     listOccupiedRoomRanges(undefined, {
       forPublicCalendar: true,
@@ -25,6 +25,9 @@ export const loadGuestStayPreview = cache(async (
       rangeEnd: checkOut,
     }),
     getPensionSettings().catch(() => null),
+    import("@/services/booking-rules-settings").then((m) =>
+      m.getStayPricingRules().catch(() => null)
+    ),
   ]);
 
   const checkInTime =
@@ -51,6 +54,7 @@ export const loadGuestStayPreview = cache(async (
     checkIn,
     checkOut,
     guestCount,
-    { checkIn: checkInTime, checkOut: checkOutTime }
+    { checkIn: checkInTime, checkOut: checkOutTime },
+    pricingRules
   );
 });

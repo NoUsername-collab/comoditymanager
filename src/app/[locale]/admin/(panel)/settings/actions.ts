@@ -19,6 +19,12 @@ import {
   STATISTICS_VISIBILITY_MIGRATION_ERROR,
 } from "@/services/pension-settings";
 import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibility";
+import {
+  parsePricingSeasons,
+  type CancellationPolicyType,
+  type WeekendPricingMode,
+} from "@/domain/settings/booking-rules";
+import { updateBookingRulesSettings } from "@/services/booking-rules-settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
@@ -277,6 +283,90 @@ export async function factoryResetAction(confirmText: string): Promise<void> {
 
   revalidateAfterFactoryReset();
   await redirect("/admin/settings/location?reset=1");
+}
+
+export async function updateBookingRulesSettingsAction(
+  formData: FormData
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("admin.serverActions");
+  const { memberRole } = await requireStaff();
+  if (memberRole !== "owner" && memberRole !== "admin") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  const type = String(formData.get("cancellation_policy_type") ?? "");
+  const partial: Parameters<typeof updateBookingRulesSettings>[0] = {};
+
+  if (type) {
+    partial.cancellationPolicyType = type as CancellationPolicyType;
+  }
+  if (formData.has("cancellation_policy_days")) {
+    partial.cancellationPolicyDays = Math.min(
+      90,
+      Math.max(0, Number(formData.get("cancellation_policy_days") ?? 0))
+    );
+  }
+  if (formData.has("cancellation_policy_custom_text")) {
+    const raw = String(formData.get("cancellation_policy_custom_text") ?? "").trim();
+    partial.cancellationPolicyCustomText = raw || null;
+  }
+  if (formData.has("pricing_weekend_enabled")) {
+    partial.pricingWeekendEnabled =
+      String(formData.get("pricing_weekend_enabled")) === "1";
+  }
+  if (formData.has("pricing_weekend_mode")) {
+    partial.pricingWeekendMode = String(
+      formData.get("pricing_weekend_mode")
+    ) as WeekendPricingMode;
+  }
+  if (formData.has("pricing_weekend_multiplier")) {
+    partial.pricingWeekendMultiplier = Math.min(
+      5,
+      Math.max(1, Number(formData.get("pricing_weekend_multiplier")) || 1)
+    );
+  }
+  if (formData.has("pricing_seasons")) {
+    try {
+      partial.pricingSeasons = parsePricingSeasons(
+        JSON.parse(String(formData.get("pricing_seasons") ?? "[]"))
+      );
+    } catch {
+      return { ok: false, error: t("genericError") };
+    }
+  }
+  if (formData.has("invoice_series")) {
+    partial.invoiceSeries = String(formData.get("invoice_series") ?? "HSP")
+      .trim()
+      .slice(0, 12);
+  }
+  if (formData.has("invoice_seller_reg_com")) {
+    const raw = String(formData.get("invoice_seller_reg_com") ?? "").trim();
+    partial.invoiceSellerRegCom = raw || null;
+  }
+
+  try {
+    await updateBookingRulesSettings(partial);
+    await logAdminActivityFromSession({
+      action: "settings.booking_rules_updated",
+      entityType: "settings",
+      summary: "Reguli rezervare / prețuri actualizate",
+    });
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidatePath("/admin/settings");
+    revalidatePath("/termeni");
+    return { ok: true };
+  } catch (e) {
+    if (
+      e instanceof Error &&
+      e.message === "settings.booking_rules_migration_required"
+    ) {
+      return { ok: false, error: t("bookingRulesMigrationRequired") };
+    }
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
 }
 
 /** @deprecated — folosește updateAppearanceSettingsAction sau updateOperationalSettingsAction */

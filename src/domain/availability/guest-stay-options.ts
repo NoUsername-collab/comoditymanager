@@ -1,6 +1,8 @@
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { isRoomFreeForStay } from "@/domain/availability/rooms-free";
 import { minRoomsToHostGuests } from "@/domain/availability/stay-capacity";
+import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
+import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import { stayNightCount } from "@/lib/stay-dates";
 
 export type GuestOptionRoom = {
@@ -49,7 +51,10 @@ function buildOption(
   nights: number,
   kind: "single" | "combo",
   title: string,
-  subtitle: string
+  subtitle: string,
+  checkIn: string,
+  checkOut: string,
+  pricingRules?: StayPricingRules | null
 ): GuestStayOption {
   const ppn = totalPerNight(rooms);
   return {
@@ -58,7 +63,12 @@ function buildOption(
     rooms,
     nights,
     price_per_night: ppn,
-    total_estimate_ron: Math.round(ppn * nights),
+    total_estimate_ron: computeStandardStayTotal(
+      rooms,
+      checkIn,
+      checkOut,
+      pricingRules
+    ),
     title,
     subtitle,
   };
@@ -93,7 +103,8 @@ export function computeGuestStayOptions(
   checkIn: string,
   checkOut: string,
   guestCount: number,
-  times: { checkIn: string; checkOut: string }
+  times: { checkIn: string; checkOut: string },
+  pricingRules?: StayPricingRules | null
 ): GuestStayPreview {
   if (!isAtLeastOneNight(checkIn, checkOut) || guestCount < 1) {
     return {
@@ -165,7 +176,10 @@ export function computeGuestStayOptions(
         nights,
         "single",
         `${r.name}`,
-        `${r.building_name ?? "Guesthouse"} · up to ${r.capacity_max} guests · ${r.has_ac ? "AC" : "No AC"}`
+        `${r.building_name ?? "Guesthouse"} · up to ${r.capacity_max} guests · ${r.has_ac ? "AC" : "No AC"}`,
+        checkIn,
+        checkOut,
+        pricingRules
       )
     );
   }
@@ -182,7 +196,10 @@ export function computeGuestStayOptions(
           nights,
           "combo",
           `${comboBest.length} camere`,
-          `${names} · at least ${minRooms} rooms for your group`
+          `${names} · at least ${minRooms} rooms for your group`,
+          checkIn,
+          checkOut,
+          pricingRules
         )
       );
     }
@@ -200,7 +217,10 @@ export function computeGuestStayOptions(
           nights,
           "combo",
           comboCheap.length === 1 ? comboCheap[0].name : `${comboCheap.length} rooms (economy)`,
-          `${names} · lower price option`
+          `${names} · lower price option`,
+          checkIn,
+          checkOut,
+          pricingRules
         )
       );
     }
@@ -215,7 +235,10 @@ export function computeGuestStayOptions(
         nights,
         comboBest.length > 1 ? "combo" : "single",
         comboBest.length > 1 ? `${comboBest.length} rooms` : comboBest[0].name,
-        "Available option for selected period"
+        "Available option for selected period",
+        checkIn,
+        checkOut,
+        pricingRules
       )
     );
   }

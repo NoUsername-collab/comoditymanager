@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { stayNightCount } from "@/lib/stay-dates";
+import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
@@ -22,6 +23,7 @@ type Props = {
   availableRooms: ConfirmRoomOption[];
   checkInTime: string;
   checkOutTime: string;
+  pricingRules?: StayPricingRules | null;
   defaultSelectedIds?: string[];
   submitLabel?: string;
   returnTo?: string;
@@ -45,6 +47,7 @@ export function ConfirmRoomsForm({
   availableRooms,
   checkInTime,
   checkOutTime,
+  pricingRules = null,
   defaultSelectedIds = [],
   submitLabel,
   returnTo,
@@ -73,9 +76,9 @@ export function ConfirmRoomsForm({
   const standardTotal = useMemo(
     () =>
       selectedRooms.length > 0
-        ? computeStandardStayTotal(selectedRooms, checkIn, checkOut)
+        ? computeStandardStayTotal(selectedRooms, checkIn, checkOut, pricingRules)
         : 0,
-    [selectedRooms, checkIn, checkOut]
+    [selectedRooms, checkIn, checkOut, pricingRules]
   );
 
   const adjustmentNum = adjustment === "" ? 0 : Number(adjustment);

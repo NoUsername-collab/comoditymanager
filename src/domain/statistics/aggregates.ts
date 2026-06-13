@@ -8,6 +8,7 @@ import {
   yearBounds,
 } from "@/lib/stay-dates";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
+import { computeRevenueKpis } from "@/domain/statistics/kpi-metrics";
 import type {
   BuildingYearStatistics,
   MonthIndex,
@@ -164,6 +165,8 @@ export function buildYearStatistics(
         roomNightsCapacity: daysInGregorianYear(year),
         occupancyPct: 0,
         revenueRon: 0,
+        adrRon: null,
+        revparRon: null,
       });
     }
     buildingMap.get(r.building_id)!.activeRooms += 1;
@@ -204,6 +207,9 @@ export function buildYearStatistics(
       row.roomNightsCapacity > 0
         ? Math.round((row.roomNightsOccupied / row.roomNightsCapacity) * 100)
         : 0;
+    const buildingKpis = computeRevenueKpis(row);
+    row.adrRon = buildingKpis.adrRon;
+    row.revparRon = buildingKpis.revparRon;
   }
 
   const months: MonthStatistics[] = [];
@@ -238,8 +244,19 @@ export function buildYearStatistics(
           ? Math.round((monthOccupied / monthCapacity) * 100)
           : 0,
       revenueRon: sumRevenueUnique(monthConfirmed).total,
+      ...computeRevenueKpis({
+        revenueRon: sumRevenueUnique(monthConfirmed).total,
+        roomNightsOccupied: monthOccupied,
+        roomNightsCapacity: monthCapacity,
+      }),
     });
   }
+
+  const yearKpis = computeRevenueKpis({
+    revenueRon,
+    roomNightsOccupied,
+    roomNightsCapacity: capacity,
+  });
 
   return {
     year,
@@ -255,6 +272,8 @@ export function buildYearStatistics(
       capacity > 0 ? Math.round((roomNightsOccupied / capacity) * 100) : 0,
     revenueRon,
     revenueComplete,
+    adrRon: yearKpis.adrRon,
+    revparRon: yearKpis.revparRon,
     adults,
     children,
     months,

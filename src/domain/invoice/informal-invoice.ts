@@ -1,4 +1,6 @@
 import { stayNightCount } from "@/lib/stay-dates";
+import type { StayPricingRules } from "@/domain/settings/booking-rules";
+import { computeRoomStayPricing } from "@/domain/pricing/nightly-rates";
 
 export type InvoiceLine = {
   room_id: string;
@@ -42,16 +44,25 @@ export function buildInformalInvoice(input: {
     building_name: string;
     price_per_night: number;
   }[];
+  pricing_rules?: StayPricingRules | null;
 }): InformalInvoice {
   const nights = stayNightCount(input.check_in, input.check_out);
-  const lines: InvoiceLine[] = input.rooms.map((r) => ({
-    room_id: r.room_id,
-    room_name: r.room_name,
-    building_name: r.building_name,
-    price_per_night: r.price_per_night,
-    nights,
-    line_total: Math.round(r.price_per_night * nights * 100) / 100,
-  }));
+  const lines: InvoiceLine[] = input.rooms.map((r) => {
+    const pricing = computeRoomStayPricing(
+      r,
+      input.check_in,
+      input.check_out,
+      input.pricing_rules
+    );
+    return {
+      room_id: r.room_id,
+      room_name: r.room_name,
+      building_name: r.building_name,
+      price_per_night: r.price_per_night,
+      nights,
+      line_total: pricing.line_total,
+    };
+  });
 
   const subtotal = Math.round(lines.reduce((s, l) => s + l.line_total, 0) * 100) / 100;
   const uses_recorded_total =

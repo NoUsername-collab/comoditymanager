@@ -18,7 +18,7 @@ import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestAccessSharePanel } from "@/components/admin/bookings/GuestAccessSharePanel";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { isInvoicingAlphaEnabled } from "@/lib/features";
+import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
 import {
   DEFAULT_CHECKIN_SETTINGS,
@@ -81,7 +81,7 @@ export default async function BookingDetailPage({
     }));
   });
 
-  const [tPage, tCommon, tFlow, tStay, sp, ctx, bookingExtras, checkinSettings] =
+  const [tPage, tCommon, tFlow, tStay, sp, ctx, bookingExtras, checkinSettings, pricingRules] =
     await Promise.all([
       getTranslations("admin.pages.bookingDetail"),
       getTranslations("admin.common"),
@@ -91,6 +91,7 @@ export default async function BookingDetailPage({
       ctxPromise,
       bookingExtrasPromise,
       checkinSettingsPromise,
+      getStayPricingRules().catch(() => null),
     ]);
   const returnTo = safeReturnTo(sp.return_to);
   if (!ctx) notFound();
@@ -313,12 +314,12 @@ export default async function BookingDetailPage({
                   </span>
                 )}
               </div>
-              {isInvoicingAlphaEnabled() && (
+              {booking.status === "confirmata" && (
                 <Link
                   href={`/admin/bookings/${booking.id}/factura`}
                   className="bd-link"
                 >
-                  {tPage("informalDocumentAlpha")} →
+                  {tPage("invoiceDocument")} →
                 </Link>
               )}
             </div>
@@ -370,6 +371,7 @@ export default async function BookingDetailPage({
                 availableRooms={availableRooms}
                 checkInTime={checkInTime}
                 checkOutTime={checkOutTime}
+                pricingRules={pricingRules}
                 defaultSelectedIds={booking.room_ids}
                 returnTo={returnTo}
                 submitLabel={isCancelled ? tPage("reacceptSubmit") : undefined}

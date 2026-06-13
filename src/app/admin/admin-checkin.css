@@ -1800,3 +1800,248 @@
 .mrz-scan__actions .checkin-stepper__btn {
   flex: 1;
 }
+
+/* ── Settings: booking rules ─────────────────────────────── */
+.settings-policy-preview {
+  margin: 0.75rem 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--admin-accent, #f5a623) 35%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #f5a623) 8%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.settings-percent-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.settings-season-block {
+  margin-top: 1rem;
+}
+
+.settings-season-block__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.settings-season-block__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.settings-season-block__desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--admin-muted, #64748b);
+}
+
+.settings-season-empty {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--admin-muted, #64748b);
+}
+
+.settings-season-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-season-card {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--admin-border, #e2e8f0);
+  border-radius: 0.5rem;
+  background: var(--admin-surface, #fff);
+}
+
+.settings-season-card__dates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.settings-season-card__dates label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.settings-season-card__remove {
+  justify-self: start;
+  font-size: 0.75rem;
+  color: #b91c1c;
+}
+
+/* ── Issued invoice (print/PDF) ──────────────────────────── */
+.issued-invoice-root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.issued-invoice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.issued-invoice-sheet {
+  overflow: hidden;
+  border: 1px solid #d4d4d8;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 8%);
+}
+
+.issued-invoice-sheet__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #18181b, #27272a);
+  color: #fff;
+}
+
+.issued-invoice-sheet__eyebrow {
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fbbf24;
+}
+
+.issued-invoice-sheet__seller {
+  margin: 0.35rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.issued-invoice-sheet__meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #d4d4d8;
+}
+
+.issued-invoice-sheet__number-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  font-size: 0.8125rem;
+  color: #e4e4e7;
+}
+
+.issued-invoice-sheet__number-box strong {
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.issued-invoice-sheet__parties {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e4e4e7;
+}
+
+.issued-invoice-sheet__label {
+  margin: 0;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+.issued-invoice-sheet__value {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.issued-invoice-sheet__table-wrap {
+  padding: 0 1.5rem;
+  overflow-x: auto;
+}
+
+.issued-invoice-sheet__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.issued-invoice-sheet__table th,
+.issued-invoice-sheet__table td {
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid #e4e4e7;
+  text-align: left;
+}
+
+.issued-invoice-sheet__table th:last-child,
+.issued-invoice-sheet__table td:last-child {
+  text-align: right;
+}
+
+.issued-invoice-sheet__footer {
+  padding: 1rem 1.5rem 1.25rem;
+}
+
+.issued-invoice-sheet__totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.issued-invoice-sheet__totals div {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.issued-invoice-sheet__total-row strong {
+  font-size: 1.125rem;
+  color: #18181b;
+}
+
+.issued-invoice-sheet__legal {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #71717a;
+  line-height: 1.45;
+}
+
+.issued-invoice-sheet__brand {
+  margin: 0.75rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+@media print {
+  .issued-invoice-sheet {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .issued-invoice-sheet__header {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

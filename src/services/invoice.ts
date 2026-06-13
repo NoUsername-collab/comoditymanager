@@ -2,6 +2,7 @@ import { cache } from "react";
 import { buildInformalInvoice, type InformalInvoice } from "@/domain/invoice/informal-invoice";
 import { getBookingById } from "@/services/bookings";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantDisplayName } from "@/services/tenants";
 import { getRoomsByIds } from "@/services/rooms-admin";
@@ -16,13 +17,14 @@ export const loadInformalInvoice = cache(async (
   bookingId: string
 ): Promise<InvoiceContext | null> => {
   const bookingPromise = getBookingById(bookingId);
-  const [booking, settings, tenantDisplayName, bookingRooms] = await Promise.all([
+  const [booking, settings, tenantDisplayName, bookingRooms, pricingRules] = await Promise.all([
     bookingPromise,
     getPensionSettings().catch(() => null),
     resolveTenantIdForData().then((id) => getTenantDisplayName(id)),
     bookingPromise.then((b) =>
       b && b.room_ids.length > 0 ? getRoomsByIds(b.room_ids) : []
     ),
+    getStayPricingRules().catch(() => null),
   ]);
   if (!booking) return null;
 
@@ -42,6 +44,7 @@ export const loadInformalInvoice = cache(async (
     check_out: booking.check_out,
     total_price: booking.total_price,
     rooms: roomsForInvoice,
+    pricing_rules: pricingRules,
   });
 
   const pensionName = settings?.display_name?.trim() || tenantDisplayName;
