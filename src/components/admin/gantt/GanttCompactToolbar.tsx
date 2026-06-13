@@ -45,8 +45,7 @@ export function GanttCompactToolbar({
   hasActiveFilters,
   onToggleFilters,
   density,
-  onDensityChange,
-  canToggleDensity,
+  onDensityToggle,
 }: {
   onOpenRequest: () => void;
   onOpenHold: () => void;
@@ -79,8 +78,7 @@ export function GanttCompactToolbar({
   hasActiveFilters: boolean;
   onToggleFilters: (anchorRect: DOMRect) => void;
   density: GanttDensity;
-  onDensityChange: (density: GanttDensity) => void;
-  canToggleDensity: boolean;
+  onDensityToggle: () => void;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
@@ -134,6 +132,28 @@ export function GanttCompactToolbar({
         <button
           type="button"
           className={[
+            "gantt-compact-toolbar__density-btn",
+            density === "compact" && "gantt-compact-toolbar__density-btn--compact",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          onClick={onDensityToggle}
+          aria-pressed={density === "compact"}
+          aria-label={tCommon("ganttDensityToggleAria")}
+          title={
+            density === "comfortable"
+              ? tCommon("ganttDensityCompactHint")
+              : tCommon("ganttDensityComfortableHint")
+          }
+        >
+          {density === "comfortable"
+            ? tCommon("ganttDensityComfortable")
+            : tCommon("ganttDensityCompact")}
+        </button>
+
+        <button
+          type="button"
+          className={[
             "gantt-compact-toolbar__today-btn",
             compactChrome && "gantt-compact-toolbar__today-btn--compact",
             isTodayStartMode && "gantt-compact-toolbar__today-btn--active",
@@ -153,43 +173,6 @@ export function GanttCompactToolbar({
       </div>
 
       <div className="gantt-compact-toolbar__right">
-        {canToggleDensity ? (
-          <div
-            className="gantt-density-toggle"
-            role="group"
-            aria-label={tCommon("ganttDensityLabel")}
-          >
-            <button
-              type="button"
-              className={[
-                "gantt-density-toggle__btn",
-                density === "comfortable" && "gantt-density-toggle__btn--active",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-pressed={density === "comfortable"}
-              onClick={() => onDensityChange("comfortable")}
-              title={tCommon("ganttDensityComfortableHint")}
-            >
-              {tCommon("ganttDensityComfortable")}
-            </button>
-            <button
-              type="button"
-              className={[
-                "gantt-density-toggle__btn",
-                density === "compact" && "gantt-density-toggle__btn--active",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-pressed={density === "compact"}
-              onClick={() => onDensityChange("compact")}
-              title={tCommon("ganttDensityCompactHint")}
-            >
-              {tCommon("ganttDensityCompact")}
-            </button>
-          </div>
-        ) : null}
-
         <div className="gantt-compact-toolbar__dropdown-wrap">
           <select
             className="gantt-compact-toolbar__select"

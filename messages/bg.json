@@ -1687,6 +1687,7 @@
       "thirtyDays": "30 дни",
       "thirtyDaysShort": "30д",
       "ganttDensityLabel": "Плътност на календара",
+      "ganttDensityToggleAria": "Превключи плътността на решетката",
       "ganttDensityComfortable": "Разширен",
       "ganttDensityCompact": "Компактен",
       "ganttDensityComfortableHint": "Широки колони с хоризонтален скрол",

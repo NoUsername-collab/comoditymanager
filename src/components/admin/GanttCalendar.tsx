@@ -149,7 +149,7 @@ export function GanttCalendar({
     ? tCommon("scrollDragTouch")
     : tCommon("scrollDrag");
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
-  const { density, setDensity, canToggle: canToggleDensity } = useGanttDensity();
+  const { density, toggleDensity } = useGanttDensity();
   const compact =
     viewRange.zoom === "quarter" || density === "compact";
   const columnMetrics = useMemo(
@@ -626,8 +626,7 @@ export function GanttCalendar({
           hasActiveFilters={hasActiveFilters}
           onToggleFilters={handleToggleFilters}
           density={density}
-          onDensityChange={setDensity}
-          canToggleDensity={canToggleDensity}
+          onDensityToggle={toggleDensity}
         />
 
         <GanttFiltersPanel

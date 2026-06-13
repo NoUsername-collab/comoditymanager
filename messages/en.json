@@ -1851,6 +1851,7 @@
       "thirtyDays": "30 days",
       "thirtyDaysShort": "30d",
       "ganttDensityLabel": "Calendar density",
+      "ganttDensityToggleAria": "Toggle calendar grid density",
       "ganttDensityComfortable": "Extended",
       "ganttDensityCompact": "Compact",
       "ganttDensityComfortableHint": "Wide columns with horizontal scroll — easier to read",

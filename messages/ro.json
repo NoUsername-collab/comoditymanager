@@ -1850,6 +1850,7 @@
       "thirtyDays": "30 zile",
       "thirtyDaysShort": "30z",
       "ganttDensityLabel": "Densitate calendar",
+      "ganttDensityToggleAria": "Comută densitatea grilei calendar",
       "ganttDensityComfortable": "Extins",
       "ganttDensityCompact": "Compact",
       "ganttDensityComfortableHint": "Coloane late, scroll orizontal — citire clară",

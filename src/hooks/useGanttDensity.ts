@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 
 export type GanttDensity = "comfortable" | "compact";
 
@@ -19,7 +18,6 @@ function readStoredDensity(): GanttDensity {
 
 /** Desktop calendar density — comfortable = wide cols + scroll; compact = overview în viewport. */
 export function useGanttDensity() {
-  const { compactChrome } = useCompactLayoutHints();
   const [density, setDensityState] = useState<GanttDensity>("comfortable");
 
   useEffect(() => {
@@ -35,11 +33,15 @@ export function useGanttDensity() {
     }
   }, []);
 
-  const effectiveDensity: GanttDensity = compactChrome ? "compact" : density;
+  const effectiveDensity: GanttDensity = density;
+
+  const toggleDensity = useCallback(() => {
+    setDensity(density === "comfortable" ? "compact" : "comfortable");
+  }, [density, setDensity]);
 
   return {
     density: effectiveDensity,
     setDensity,
-    canToggle: !compactChrome,
+    toggleDensity,
   };
 }
