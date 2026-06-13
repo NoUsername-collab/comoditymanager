@@ -30,30 +30,39 @@ describe("resolveGanttColumnMetrics", () => {
 
 describe("resolveGanttDayGridOptions", () => {
   it("stretches 7d or fewer on portrait compact", () => {
-    expect(resolveGanttDayGridOptions(true, true, DAY_COL_MIN_W, 7)).toEqual({
+    expect(resolveGanttDayGridOptions(true, "compact", true, DAY_COL_MIN_W, 7)).toEqual({
       dayMin: DAY_COL_MIN_W,
       fixed: false,
     });
-    expect(resolveGanttDayGridOptions(true, true, DAY_COL_MIN_W, 1)).toEqual({
+    expect(resolveGanttDayGridOptions(true, "compact", true, DAY_COL_MIN_W, 1)).toEqual({
       dayMin: DAY_COL_MIN_W,
       fixed: false,
     });
   });
 
   it("uses fixed columns for 15d+ on portrait compact", () => {
-    expect(resolveGanttDayGridOptions(true, true, DAY_COL_MIN_W, 15)).toEqual({
+    expect(resolveGanttDayGridOptions(true, "compact", true, DAY_COL_MIN_W, 15)).toEqual({
       dayMin: DAY_COL_MIN_W,
       fixed: true,
     });
-    expect(resolveGanttDayGridOptions(true, true, DAY_COL_MIN_W, 30)).toEqual({
+    expect(resolveGanttDayGridOptions(true, "compact", true, DAY_COL_MIN_W, 30)).toEqual({
       dayMin: DAY_COL_MIN_W,
       fixed: true,
     });
   });
 
-  it("returns undefined on landscape or desktop", () => {
-    expect(resolveGanttDayGridOptions(true, false, "1rem", 30)).toBeUndefined();
-    expect(resolveGanttDayGridOptions(false, true, DAY_COL_MIN_W, 30)).toBeUndefined();
+  it("uses fixed columns for comfortable desktop when range > 7 days", () => {
+    expect(
+      resolveGanttDayGridOptions(false, "comfortable", false, DAY_COL_MIN_W, 30),
+    ).toEqual({
+      dayMin: DAY_COL_MIN_W,
+      fixed: true,
+    });
+  });
+
+  it("returns undefined on landscape compact or compact desktop overview", () => {
+    expect(resolveGanttDayGridOptions(true, "compact", false, "1rem", 30)).toBeUndefined();
+    expect(resolveGanttDayGridOptions(false, "compact", true, DAY_COL_MIN_W, 30)).toBeUndefined();
   });
 });
 

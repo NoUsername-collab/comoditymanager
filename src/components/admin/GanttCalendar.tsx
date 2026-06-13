@@ -12,7 +12,7 @@ import {
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
-import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
+import { useGanttDensity } from "@/hooks/useGanttDensity";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import type { BookingRow } from "@/services/bookings";
 import { type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
@@ -149,26 +149,27 @@ export function GanttCalendar({
     ? tCommon("scrollDragTouch")
     : tCommon("scrollDrag");
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
-  const compactViewport = useIsCompactViewport();
+  const { density, setDensity, canToggle: canToggleDensity } = useGanttDensity();
   const compact =
-    viewRange.zoom === "quarter" || compactChrome || compactViewport;
+    viewRange.zoom === "quarter" || density === "compact";
   const columnMetrics = useMemo(
     () =>
       resolveGanttColumnMetrics(
-        compactChrome,
+        compactChrome || density === "compact",
         orientation === "landscape" ? "landscape" : "portrait"
       ),
-    [compactChrome, orientation]
+    [compactChrome, density, orientation]
   );
   const dayGridOptions = useMemo(
     () =>
       resolveGanttDayGridOptions(
         compactChrome,
+        density,
         isPortrait,
         columnMetrics.dayMin,
         viewRange.days.length
       ),
-    [compactChrome, isPortrait, columnMetrics.dayMin, viewRange.days.length]
+    [compactChrome, density, isPortrait, columnMetrics.dayMin, viewRange.days.length]
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
 
@@ -584,7 +585,10 @@ export function GanttCalendar({
     >
       <div
         ref={shellRef}
-        className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
+        className={[
+          "gantt-shell gantt-shell--premium relative min-w-full overflow-visible",
+          `gantt-shell--density-${density}`,
+        ].join(" ")}
       >
         <GanttCompactToolbar
           onOpenRequest={() => setOccFormMode("cerere")}
@@ -621,6 +625,9 @@ export function GanttCalendar({
           isFiltersOpen={isFiltersOpen}
           hasActiveFilters={hasActiveFilters}
           onToggleFilters={handleToggleFilters}
+          density={density}
+          onDensityChange={setDensity}
+          canToggleDensity={canToggleDensity}
         />
 
         <GanttFiltersPanel

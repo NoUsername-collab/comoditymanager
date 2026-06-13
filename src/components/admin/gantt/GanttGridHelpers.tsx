@@ -4,6 +4,8 @@ import type { CSSProperties } from "react";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { ganttDayTimeStyle } from "@/lib/gantt-time";
 
+import type { GanttDensity } from "@/hooks/useGanttDensity";
+
 export const ROOM_COL_W = "7.7rem";
 export const DAY_COL_MIN_W = "2.25rem";
 
@@ -36,12 +38,16 @@ export function resolveGanttColumnMetrics(
 /** Portrait mobile: ≤7d stretches to viewport; 15/30d uses fixed cols + horizontal scroll. */
 export function resolveGanttDayGridOptions(
   compactChrome: boolean,
+  density: GanttDensity,
   isPortrait: boolean,
   dayMin: string,
   dayCount: number
 ): GanttDayGridOptions | undefined {
   if (compactChrome && isPortrait) {
     return { dayMin, fixed: dayCount > 7 };
+  }
+  if (!compactChrome && density === "comfortable" && dayCount > 7) {
+    return { dayMin, fixed: true };
   }
   return undefined;
 }
