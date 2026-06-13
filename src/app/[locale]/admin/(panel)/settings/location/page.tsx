@@ -1,12 +1,13 @@
 import { Link } from "@/i18n/navigation";
 import { getPensionSettings } from "@/services/pension-settings";
-import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { AdminFactoryResetPanel } from "@/components/admin/settings/AdminFactoryResetPanel";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminLocationLockBar } from "@/components/admin/settings/AdminLocationLockBar";
 import { AdminStaffPasswordPanel } from "@/components/admin/settings/AdminStaffPasswordPanel";
+import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
+import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { isFactoryResetEnabled } from "@/services/database-reset";
 import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
@@ -45,108 +46,61 @@ export default async function LocationAdminPage({
     error = tCommon("error");
   }
 
+  const alerts: SettingsAlert[] = [
+    params.unlocked === "1"
+      ? { tone: "success", message: tPage("unlockedForTwoHours") }
+      : null,
+    params.locked === "1"
+      ? { tone: "info", message: tPage("unlock.ownerLockClosed") }
+      : null,
+    params.saved === "1"
+      ? { tone: "success", message: tPage("operationalSaved") }
+      : null,
+    params.reset === "1"
+      ? { tone: "success", message: tPage("resetCompleted") }
+      : null,
+    error ? { tone: "error", message: error } : null,
+  ].filter((alert): alert is SettingsAlert => alert !== null);
+
   return (
-    <AdminRetroPageFrame
-      title={tPage("title")}
-      className="admin-settings-page w-full max-w-none"
-      description={tPage("description")}
-    >
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Link
-          href="/admin/settings"
-          className="admin-settings-back inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center text-sm text-zinc-600 underline hover:text-zinc-900"
-        >
-          {tPage("backToSettings")}
-        </Link>
-        <AdminLocationLockBar />
-      </div>
+    <>
+      <SettingsPageHeader
+        title={tPage("title")}
+        description={tPage("description")}
+        actions={<AdminLocationLockBar />}
+      />
+      <SettingsAlerts alerts={alerts} />
 
-      {params.unlocked === "1" && (
-        <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {tPage("unlockedForTwoHours")}
-        </p>
-      )}
-
-      {params.locked === "1" && (
-        <p className="mb-4 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-700">
-          {tPage("unlock.ownerLockClosed")}
-        </p>
-      )}
-
-      {params.saved === "1" && (
-        <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {tPage("operationalSaved")}
-        </p>
-      )}
-
-      {params.reset === "1" && (
-        <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {tPage("resetCompleted")}
-        </p>
-      )}
-
-      {error && (
-        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </p>
-      )}
-
-      {settings && (
+      {settings ? (
         <>
-          <div className="mb-4 grid gap-2 md:grid-cols-3">
-            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
-                {tPage("steps.structureTitle")}
-              </p>
-              <p className="mt-2 text-sm font-semibold text-zinc-900">
-                {tPage("steps.structureHeadline")}
-              </p>
-              <p className="mt-1 text-sm text-zinc-600">
-                {tPage("steps.structureBody")}
-              </p>
+          <div className="settings-location-steps">
+            <div className="settings-location-steps__card">
+              <p className="settings-location-steps__label">{tPage("steps.structureTitle")}</p>
+              <p className="settings-location-steps__headline">{tPage("steps.structureHeadline")}</p>
+              <p className="settings-location-steps__body">{tPage("steps.structureBody")}</p>
             </div>
-            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
-                {tPage("steps.modularTitle")}
-              </p>
-              <p className="mt-2 text-sm font-semibold text-zinc-900">
-                {tPage("steps.modularHeadline")}
-              </p>
-              <p className="mt-1 text-sm text-zinc-600">
-                {tPage("steps.modularBody")}
-              </p>
+            <div className="settings-location-steps__card">
+              <p className="settings-location-steps__label">{tPage("steps.modularTitle")}</p>
+              <p className="settings-location-steps__headline">{tPage("steps.modularHeadline")}</p>
+              <p className="settings-location-steps__body">{tPage("steps.modularBody")}</p>
             </div>
-            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-3">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-zinc-500">
-                {tPage("steps.staffTitle")}
-              </p>
-              <p className="mt-2 text-sm font-semibold text-zinc-900">
-                {tPage("steps.staffHeadline")}
-              </p>
-              <p className="mt-1 text-sm text-zinc-600">
-                {tPage("steps.staffBody")}
-              </p>
+            <div className="settings-location-steps__card">
+              <p className="settings-location-steps__label">{tPage("steps.staffTitle")}</p>
+              <p className="settings-location-steps__headline">{tPage("steps.staffHeadline")}</p>
+              <p className="settings-location-steps__body">{tPage("steps.staffBody")}</p>
             </div>
           </div>
 
-          <SettingsSlidePanel
+          <SettingsSection
             title={tPage("operational.title")}
-            subtitle={tPage("operational.subtitle", { name: settings.display_name })}
-            icon="⚙️"
-            defaultOpen
+            description={tPage("operational.subtitle", { name: settings.display_name })}
           >
-            <AdminPendingForm
-              action={updateOperationalSettingsAction}
-              className="admin-settings-form"
-            >
+            <AdminPendingForm action={updateOperationalSettingsAction} className="admin-settings-form">
               <input type="hidden" name="id" value={settings.id} />
               <div className="admin-settings-fields">
                 <label>
                   <span>{tPage("operational.displayName")}</span>
-                  <input
-                    name="display_name"
-                    defaultValue={settings.display_name}
-                  />
+                  <input name="display_name" defaultValue={settings.display_name} />
                 </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label>
@@ -176,24 +130,20 @@ export default async function LocationAdminPage({
                   />
                 </label>
               </div>
-              <div className="admin-settings-submit mt-4">
-                <AdminSubmitButton type="submit" className="admin-settings-submit__btn">
+              <div className="settings-form-stack__submit">
+                <AdminSubmitButton type="submit" className="settings-form-stack__btn">
                   {tPage("operational.save")}
                 </AdminSubmitButton>
               </div>
             </AdminPendingForm>
-          </SettingsSlidePanel>
+          </SettingsSection>
 
-          <SettingsSlidePanel
+          <SettingsSection
             title={tPage("structure.title")}
-            subtitle={tPage("structure.subtitle")}
-            icon="🏢"
-            defaultOpen
+            description={tPage("structure.subtitle")}
           >
             <div className="space-y-4">
-              <p className="text-sm text-zinc-600">
-                {tPage("structure.hint")}
-              </p>
+              <p className="text-sm text-zinc-600">{tPage("structure.hint")}</p>
               <div className="admin-settings-location-nav grid gap-3 md:grid-cols-2">
                 <Link
                   href="/admin/settings/location/structure"
@@ -225,20 +175,17 @@ export default async function LocationAdminPage({
                 href="/admin/rooms"
                 className="admin-settings-location-nav__rooms-link mt-3 block rounded-xl border border-zinc-300 bg-white px-4 py-3 hover:bg-zinc-50"
               >
-                <span className="text-sm font-semibold text-zinc-900">
-                  {tCommon("rooms")}
-                </span>
+                <span className="text-sm font-semibold text-zinc-900">{tCommon("rooms")}</span>
                 <span className="mt-0.5 block text-sm text-zinc-600">
                   {tPage("structure.cardRoomsBody")}
                 </span>
               </Link>
             </div>
-          </SettingsSlidePanel>
+          </SettingsSection>
 
-          <SettingsSlidePanel
+          <SettingsSection
             title={tCommon("staffAccounts")}
-            subtitle={tPage("staff.subtitle")}
-            icon="🔐"
+            description={tPage("staff.subtitle")}
           >
             <AdminStaffPasswordPanel accounts={staffAccounts} />
             <p className="mt-3 text-sm">
@@ -249,19 +196,19 @@ export default async function LocationAdminPage({
                 {tPage("staff.manageTeamLink")}
               </Link>
             </p>
-          </SettingsSlidePanel>
+          </SettingsSection>
 
-          {isFactoryResetEnabled() && (
-            <SettingsSlidePanel
+          {isFactoryResetEnabled() ? (
+            <SettingsSection
               title={tPage("danger.title")}
-              subtitle={tCommon("factoryResetSubtitle")}
-              icon="⚠️"
+              description={tCommon("factoryResetSubtitle")}
+              className="settings-section--danger"
             >
               <AdminFactoryResetPanel />
-            </SettingsSlidePanel>
-          )}
+            </SettingsSection>
+          ) : null}
         </>
-      )}
-    </AdminRetroPageFrame>
+      ) : null}
+    </>
   );
 }

@@ -202,12 +202,6 @@ html[data-admin-palette][data-admin-theme="night"] .admin-dn-liquid__blob--night
   opacity: 0.88 !important;
 }
 
-/* Retro Win95/XP — vezi admin-retro.css */
-html[data-admin-retro="win95"] .admin-dn-liquid,
-html[data-admin-retro="winxp"] .admin-dn-liquid {
-  display: none !important;
-}
-
 /* Panouri, formulare, linkuri */
 html[data-admin-palette] .admin-panel-section,
 html[data-admin-palette] .gantt-shell,

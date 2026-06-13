@@ -1,6 +1,6 @@
 /**
  * Mobile layout — pages not yet covered elsewhere.
- * Public home/legal, receptie, admin retro padding, bookings, cazări, hospira.
+ * Public home/legal, receptie, admin page padding, bookings, cazări, hospira.
  */
 
 /* Below-fold public sections — skip paint until near viewport */
@@ -18,23 +18,23 @@ html[data-layout-chrome="compact"] .availability-month-matrix tbody {
   contain-intrinsic-size: auto 10rem;
 }
 
-/* ── Admin retro frame (all AdminRetroPageFrame pages) ── */
-html[data-layout-chrome="compact"] .admin-retro-page {
+/* ── Admin page frame (all AdminPageFrame pages) ── */
+html[data-layout-chrome="compact"] .admin-page {
   padding: 0.35rem 0.25rem 0.5rem !important;
   max-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page.admin-settings-page,
-html[data-layout-chrome="compact"] .admin-retro-page.gantt-calendar-page {
+html[data-layout-chrome="compact"] .admin-page.admin-settings-page,
+html[data-layout-chrome="compact"] .admin-page.gantt-calendar-page {
   padding-inline: 0.25rem !important;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page-desc {
+html[data-layout-chrome="compact"] .admin-page-desc {
   max-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page-toolbar .admin-retro-page-desc + a,
-html[data-layout-chrome="compact"] .admin-retro-page-toolbar a {
+html[data-layout-chrome="compact"] .admin-page-toolbar .admin-page-desc + a,
+html[data-layout-chrome="compact"] .admin-page-toolbar a {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;

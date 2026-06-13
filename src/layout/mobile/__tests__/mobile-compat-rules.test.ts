@@ -157,7 +157,7 @@ describe("mobile compatibility CSS rules", () => {
       ".admin-floating-panel:not(.admin-floating-panel--modal)"
     );
     expect(flawless).toContain(".gantt-filters-panel.admin-floating-panel");
-    expect(flawless).toContain(".admin-xp-window__body");
+    expect(flawless).toContain(".admin-panel__body");
     expect(flawless).toContain(".hospira-health-row");
 
     const checkTime = readFileSync(
@@ -258,7 +258,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".admin-empty-state__action");
     expect(flawless).toContain(".admin-home-avail-skeleton");
     expect(flawless).toMatch(/\.admin-empty-state__action[\s\S]*var\(--ml-touch-min/);
-    expect(flawless).toContain(".admin-retro-back");
+    expect(flawless).toContain(".admin-page-back");
     expect(flawless).toContain(".ml-drawer__close");
     expect(flawless).toContain(".avail-kpi-card__label");
     expect(flawless).toContain(".phone-booking-form__submit");

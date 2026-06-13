@@ -1,4 +1,4 @@
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AvailabilityDashboardShell } from "@/components/admin/availability/AvailabilityDashboardShell";
 import { getTranslations } from "next-intl/server";
 
@@ -21,7 +21,7 @@ export default async function AdminDisponibilitatePage({
   ]);
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={t("title")}
       description={t("description")}
       className="mx-auto max-w-[1600px]"
@@ -30,6 +30,6 @@ export default async function AdminDisponibilitatePage({
         searchParams={params}
         basePath="/admin/disponibilitate"
       />
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

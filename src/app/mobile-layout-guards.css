@@ -36,13 +36,13 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__link {
   touch-action: manipulation;
 }
 
-/* ── Admin retro frames ── */
+/* ── Admin page frames ── */
 html[data-layout-chrome="compact"] .admin-page-main > main,
 html[data-layout-mode="mobile"] .admin-page-main > main {
   padding: 0.65rem 0 !important;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page-toolbar {
+html[data-layout-chrome="compact"] .admin-page-toolbar {
   flex-direction: column;
   align-items: stretch;
 }
@@ -63,7 +63,7 @@ html[data-layout-chrome="compact"] .admin-home-section {
   contain-intrinsic-size: auto 6rem;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page .rounded-2xl.border {
+html[data-layout-chrome="compact"] .admin-page .rounded-2xl.border {
   content-visibility: auto;
   contain: layout style;
   contain-intrinsic-size: auto 5rem;
@@ -77,14 +77,14 @@ html[data-layout-chrome="compact"] .ml-drawer__link {
 
 html[data-layout-chrome="compact"] .admin-page-main,
 html[data-layout-chrome="compact"] .ml-main,
-html[data-layout-chrome="compact"] .admin-xp-window__body {
+html[data-layout-chrome="compact"] .admin-panel__body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
 }
 
-/* retro windows: see mobile-layout-flawless.css (.admin-xp-window) */
+/* admin panels: see mobile-layout-flawless.css (.admin-panel) */
 
-html[data-layout-chrome="compact"] .admin-retro-back {
+html[data-layout-chrome="compact"] .admin-page-back {
   font-size: 0.8125rem;
 }
 

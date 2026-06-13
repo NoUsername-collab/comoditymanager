@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { getLocale, getTranslations } from "next-intl/server";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import type { TodayBoard } from "@/services/today-board";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { formatStayPeriod } from "@/lib/ro-calendar";
@@ -57,7 +57,7 @@ export async function TodayBoardSection({ board }: { board: TodayBoard }) {
   );
 
   return (
-    <RetroXpWindow
+    <AdminPanel
       title={t("todayTitle", { dayLabel })}
       bodyClassName="admin-home-window-body admin-home-window-body--compact"
     >
@@ -127,6 +127,6 @@ export async function TodayBoardSection({ board }: { board: TodayBoard }) {
           </div>
         </div>
       </section>
-    </RetroXpWindow>
+    </AdminPanel>
   );
 }

@@ -1,5 +1,5 @@
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { RefusedStayActions } from "@/components/admin/cazari/RefusedStayActions";
@@ -61,7 +61,7 @@ export function StayList({
         : "stay-card stay-card--green grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]";
 
   return (
-    <RetroXpWindow title={title} className="mb-3">
+    <AdminPanel title={title} className="mb-3">
       {subtitle ? (
         <p className="mb-2 text-[11px] text-zinc-500">{subtitle}</p>
       ) : null}
@@ -121,6 +121,6 @@ export function StayList({
           ))}
         </ul>
       )}
-    </RetroXpWindow>
+    </AdminPanel>
   );
 }

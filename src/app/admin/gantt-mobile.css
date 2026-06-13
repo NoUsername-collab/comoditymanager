@@ -10,13 +10,13 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin
 }
 
 /* ── Page shell: reclaim horizontal + vertical space ── */
-html[data-layout-chrome="compact"] .gantt-calendar-page.admin-retro-page {
+html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
   padding: 0 0.12rem 0.08rem !important;
   max-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page > .admin-xp-window > .admin-win98-body,
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window .admin-xp-window > .admin-win98-body {
+html[data-layout-chrome="compact"] .gantt-calendar-page > .admin-panel > .admin-panel-body,
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel .admin-panel > .admin-panel-body {
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -48,18 +48,18 @@ html[data-layout-chrome="compact"] .gantt-calendar-page {
   overflow: hidden;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window {
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window__titlebar {
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel__titlebar {
   display: none;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel-body {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -1273,8 +1273,8 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-dr
   background: var(--gantt-day-control-active-bg);
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-xp-window,
-html[data-layout-chrome="compact"] .gantt-calendar-page .admin-win98-body {
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel,
+html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel-body {
   background: transparent;
   border: none;
   box-shadow: none;

@@ -4,8 +4,8 @@ import { BuildingDashboardCard } from "@/components/admin/BuildingDashboardCard"
 import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { parseViewDate } from "@/lib/availability-date";
 import { getTranslations } from "next-intl/server";
 
@@ -37,7 +37,7 @@ export default async function BuildingsPage({
   }
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={t("listTitle")}
       description={t("listDescription")}
       action={{ href: "/admin/buildings/new", label: t("addBuilding") }}
@@ -57,12 +57,12 @@ export default async function BuildingsPage({
 
       <div className="mt-4 space-y-3">
         {dashboards.map((d) => (
-          <RetroXpWindow
+          <AdminPanel
             key={d.building.id}
             title={t("buildingFloorsTitle", { name: d.building.name })}
           >
             <BuildingDashboardCard data={d} />
-          </RetroXpWindow>
+          </AdminPanel>
         ))}
       </div>
 
@@ -75,6 +75,6 @@ export default async function BuildingsPage({
           actionLabel={t("addBuilding")}
         />
       )}
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

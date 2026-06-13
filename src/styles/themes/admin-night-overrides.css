@@ -296,7 +296,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   color: var(--pending-text) !important;
 }
 
-/* ── Retro XP / floating panels ── */
+/* ── Floating panels (night) ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-floating-panel,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-floating-panel__body,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .pwa-install-sheet {

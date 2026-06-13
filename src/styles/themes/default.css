@@ -62,31 +62,31 @@ html[data-theme="default"] .admin-dn-switch__btn--active {
   color: var(--admin-switch-active-text) !important;
 }
 
-html[data-theme="default"] .admin-xp-window {
+html[data-theme="default"] .admin-panel {
   border-radius: var(--admin-radius) !important;
   border: 1px solid var(--admin-panel-border) !important;
   box-shadow: none !important;
   background: var(--admin-panel-bg) !important;
 }
 
-html[data-theme="default"] .admin-xp-window__titlebar {
+html[data-theme="default"] .admin-panel__titlebar {
   background: var(--admin-accent-muted) !important;
   background-image: none !important;
   border-bottom: 1px solid var(--admin-panel-border) !important;
   padding: 0.35rem 0.5rem !important;
 }
 
-html[data-theme="default"] .admin-xp-window__titlebar-text {
+html[data-theme="default"] .admin-panel__titlebar-text {
   color: var(--admin-text) !important;
   font: 600 0.8125rem var(--admin-font) !important;
   text-shadow: none !important;
 }
 
-html[data-theme="default"] .admin-xp-window__ctrl {
+html[data-theme="default"] .admin-panel__ctrl {
   display: none !important;
 }
 
-html[data-theme="default"] .admin-win98-body {
+html[data-theme="default"] .admin-panel-body {
   background: var(--admin-panel-bg) !important;
   border: none !important;
   padding: 0.75rem !important;

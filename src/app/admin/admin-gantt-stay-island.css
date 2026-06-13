@@ -79,12 +79,3 @@ html[data-admin-palette] .gantt-room-cell__building,
 html[data-admin-palette] .gantt-building-header__count {
   color: var(--admin-text-muted) !important;
 }
-
-html[data-admin-retro][data-admin-palette] .gantt-building-header__title,
-html[data-admin-retro][data-admin-palette] .gantt-room-cell__name {
-  color: var(--admin-text) !important;
-}
-
-html[data-admin-retro][data-admin-palette] .gantt-room-cell__building {
-  color: var(--admin-text-muted) !important;
-}

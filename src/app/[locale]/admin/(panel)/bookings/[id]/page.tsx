@@ -17,7 +17,7 @@ import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestAccessSharePanel } from "@/components/admin/bookings/GuestAccessSharePanel";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
 import {
@@ -159,7 +159,7 @@ export default async function BookingDetailPage({
     : "";
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={`${tPage("title")} — ${booking.guest_name}`}
       backHref="/admin/bookings"
       backLabel={tCommon("requests")}
@@ -425,6 +425,6 @@ export default async function BookingDetailPage({
           </div>
         </div>
       </div>
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

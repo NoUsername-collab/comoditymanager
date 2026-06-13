@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { BuildingStructureCard } from "@/components/admin/structure/BuildingStructureCard";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { formatAdminError } from "@/lib/admin/format-error";
@@ -11,10 +12,9 @@ import {
 } from "@/services/room-catalog";
 
 export default async function LocationStructurePage() {
-  const [, t, tPage, tCommon] = await Promise.all([
+  const [, t, tCommon] = await Promise.all([
     requireLocationAdmin(),
     getTranslations("admin.locationStructure"),
-    getTranslations("admin.pages.settingsLocation"),
     getTranslations("admin.common"),
   ]);
 
@@ -69,30 +69,21 @@ export default async function LocationStructurePage() {
   const totalFloors = structures.reduce((n, s) => n + s.floors.length, 0);
 
   return (
-    <AdminRetroPageFrame
-      title={t("pageTitle")}
-      description={t("pageDescription")}
-      className="location-structure-page admin-settings-page w-full max-w-none"
-      action={{
-        href: "/admin/buildings/new?return_to=structure",
-        label: tCommon("newBuilding"),
-      }}
-    >
-      <div className="mb-4 flex flex-wrap items-center gap-2 text-sm">
-        <Link
-          href="/admin/settings/location"
-          className="text-zinc-600 underline hover:text-zinc-900"
-        >
-          {tPage("backToSettings").replace("← ", "")}
-        </Link>
-        <span className="text-zinc-300">·</span>
-        <Link
-          href="/admin/settings/location"
-          className="text-zinc-600 underline hover:text-zinc-900"
-        >
-          {t("backToLocationHub")}
-        </Link>
-      </div>
+    <>
+      <SettingsPageHeader
+        title={t("pageTitle")}
+        description={t("pageDescription")}
+        actions={
+          <Link
+            href="/admin/buildings/new?return_to=structure"
+            className="settings-primary-link"
+          >
+            {tCommon("newBuilding")}
+          </Link>
+        }
+      />
+
+      <SettingsAlerts alerts={error ? [{ tone: "error", message: error }] : []} />
 
       <div className="mb-4 grid gap-2 sm:grid-cols-3">
         <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
@@ -122,12 +113,6 @@ export default async function LocationStructurePage() {
       </div>
 
       <p className="mb-4 max-w-3xl text-sm leading-snug text-zinc-600">{t("workflowHint")}</p>
-
-      {error && (
-        <p className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </p>
-      )}
 
       <div className="space-y-4">
         {structures.map((s) => (
@@ -166,6 +151,6 @@ export default async function LocationStructurePage() {
           {t("linkRoomsList")}
         </Link>
       </div>
-    </AdminRetroPageFrame>
+    </>
   );
 }

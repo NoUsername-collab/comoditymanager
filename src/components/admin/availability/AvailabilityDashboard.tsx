@@ -16,7 +16,7 @@ import type {
 } from "@/services/availability-month";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { AvailabilityLiveSync } from "./AvailabilityLiveSync";
 import { AvailabilityWeekendsPanel } from "./AvailabilityWeekendsPanel";
 import {
@@ -533,7 +533,7 @@ export function AvailabilityDashboard({
         {tAvail("shiftClickHint")}
       </p>
 
-      <RetroXpWindow title={`${tCommon("availability")} — ${dashboard.title}`}>
+      <AdminPanel title={`${tCommon("availability")} — ${dashboard.title}`}>
       <div className="availability-layout">
         <div className="availability-grid-panel min-w-0">
           {view === "month" ? (
@@ -650,7 +650,7 @@ export function AvailabilityDashboard({
         </div>
 
       </div>
-      </RetroXpWindow>
+      </AdminPanel>
 
       <AdminFloatingPanel
         open={!!selectedIso}

@@ -29,8 +29,6 @@ export function AdminLiquidShader({ className = "", intensity = 0.78 }: Props) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) return;
 
-    if (document.documentElement.getAttribute("data-admin-retro")) return;
-
     const handle = createLiquidShader(canvas);
     if (!handle) return;
 

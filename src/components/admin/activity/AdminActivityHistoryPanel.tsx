@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { ActivityLogSummary } from "@/components/admin/activity/ActivityLogSummary";
 import { ActivityJournal } from "@/components/admin/activity/ActivityJournal";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 import { listRecentActivity } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
@@ -35,14 +35,14 @@ export async function AdminActivityHistoryPanel() {
       )}
 
       {!loadError && entries.length > 0 && (
-        <RetroXpWindow title={tActivity("summaryTitle")} className="mb-4">
+        <AdminPanel title={tActivity("summaryTitle")} className="mb-4">
           <ActivityLogSummary entries={entries} />
-        </RetroXpWindow>
+        </AdminPanel>
       )}
 
-      <RetroXpWindow title={tActivity("journalTitle")}>
+      <AdminPanel title={tActivity("journalTitle")}>
         <ActivityJournal entries={entries} />
-      </RetroXpWindow>
+      </AdminPanel>
 
       <p className="admin-tip mt-4 border border-zinc-200 bg-zinc-50 px-3 py-2 text-center text-xs">
         {tActivity("tipText")}{" "}

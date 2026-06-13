@@ -3,7 +3,7 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { formatRoDate } from "@/lib/stay-dates";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { CancelledStayUndoButton } from "@/components/admin/cazari/CancelledStayUndoButton";
 import type {
   CancelledStay,
@@ -34,7 +34,7 @@ export function StayHistoryPanel({
     completedItems.length + confirmedRecentItems.length + cancelledItems.length;
 
   return (
-    <RetroXpWindow
+    <AdminPanel
       title={
         query
           ? labels.historyFiltered(totalCount)
@@ -237,6 +237,6 @@ export function StayHistoryPanel({
           />
         ) : null}
       </div>
-    </RetroXpWindow>
+    </AdminPanel>
   );
 }

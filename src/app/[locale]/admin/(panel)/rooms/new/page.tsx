@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { RoomForm } from "@/components/admin/RoomForm";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { listBuildings } from "@/services/buildings";
 import { listAllFloors } from "@/services/floors";
 import {
@@ -137,7 +137,7 @@ export default async function NewRoomPage({
   }
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={tCommon("newRoomTitle")}
       backHref={
         backToStructure
@@ -186,6 +186,6 @@ export default async function NewRoomPage({
           />
         )
       )}
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

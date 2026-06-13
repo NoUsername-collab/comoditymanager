@@ -1,27 +1,27 @@
 /* Cazări — panou filtre compact (−30% înălțime) */
 
-.cazari-page .admin-retro-page-toolbar {
+.cazari-page .admin-page-toolbar {
   display: none;
 }
 
-.cazari-page .admin-win98-body > .grid {
+.cazari-page .admin-panel-body > .grid {
   margin-top: 0;
 }
 
-.cazari-filter-panel.admin-xp-window {
+.cazari-filter-panel.admin-panel {
   margin-bottom: 0.5rem;
 }
 
-.cazari-filter-panel .admin-xp-window__titlebar {
+.cazari-filter-panel .admin-panel__titlebar {
   min-height: 1.35rem;
   padding: 0.12rem 0.35rem;
 }
 
-.cazari-filter-panel .admin-xp-window__titlebar-text {
+.cazari-filter-panel .admin-panel__titlebar-text {
   font-size: 0.62rem;
 }
 
-.cazari-filter-panel .admin-win98-body {
+.cazari-filter-panel .admin-panel-body {
   padding: 0.45rem 0.5rem 0.5rem;
 }
 

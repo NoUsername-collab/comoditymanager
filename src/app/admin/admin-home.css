@@ -523,7 +523,7 @@
   font-size: 0.55rem !important;
 }
 
-.admin-home-section .admin-xp-window {
+.admin-home-section .admin-panel {
   border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
 }
 

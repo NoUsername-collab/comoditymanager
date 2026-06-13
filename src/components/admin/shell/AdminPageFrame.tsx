@@ -2,10 +2,10 @@ import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { btnPrimary } from "@/lib/admin-ui";
-import { RetroXpWindow } from "./RetroXpWindow";
+import { AdminPanel } from "./AdminPanel";
 
-/** Admin page with XP frame and Win98-style interior. */
-export async function AdminRetroPageFrame({
+/** Cadru pagină admin — layout standard cu panou secțiune. */
+export async function AdminPageFrame({
   title,
   description,
   backHref,
@@ -30,16 +30,16 @@ export async function AdminRetroPageFrame({
 
   return (
     <main
-      className={["ml-content admin-retro-page p-3 sm:p-4 lg:p-4", className]
+      className={["ml-content admin-page p-3 sm:p-4 lg:p-4", className]
         .filter(Boolean)
         .join(" ")}
     >
       {backHref && (
-        <Link href={backHref} className="admin-retro-back mb-2 inline-block">
+        <Link href={backHref} className="admin-page-back mb-2 inline-block">
           ← {backLabel ?? ""}
         </Link>
       )}
-      <RetroXpWindow
+      <AdminPanel
         title={title}
         bodyClassName={bodyClassName}
         controlTitles={{
@@ -49,14 +49,14 @@ export async function AdminRetroPageFrame({
         }}
       >
         {(description || action) && (
-          <div className="admin-retro-page-toolbar mb-2 flex flex-wrap items-start justify-between gap-2">
+          <div className="admin-page-toolbar mb-2 flex flex-wrap items-start justify-between gap-2">
             {description ? (
               plainDescription ? (
-                <p className="admin-retro-page-desc max-w-2xl text-sm leading-snug">
+                <p className="admin-page-desc max-w-2xl text-sm leading-snug">
                   {description}
                 </p>
               ) : (
-                <div className="admin-retro-page-desc min-w-0 flex-1">
+                <div className="admin-page-desc min-w-0 flex-1">
                   {description}
                 </div>
               )
@@ -71,7 +71,7 @@ export async function AdminRetroPageFrame({
           </div>
         )}
         {children}
-      </RetroXpWindow>
+      </AdminPanel>
     </main>
   );
 }

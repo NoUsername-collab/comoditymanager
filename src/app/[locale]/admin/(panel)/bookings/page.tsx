@@ -1,4 +1,4 @@
-﻿import { Link } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
@@ -9,8 +9,8 @@ import {
   listCereriNoiPage,
 } from "@/services/bookings";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 
 export default async function AdminBookingsPage({
   searchParams,
@@ -50,8 +50,8 @@ export default async function AdminBookingsPage({
   const nextShown = shown + CERERE_LIST_PAGE_SIZE;
 
   return (
-    <AdminRetroPageFrame title={t("title")} description={t("description")}>
-      <RetroXpWindow title={t("windowTitle", { count: total })}>
+    <AdminPageFrame title={t("title")} description={t("description")}>
+      <AdminPanel title={t("windowTitle", { count: total })}>
         {error && <p className="text-sm text-red-800">{error}</p>}
 
         {total > 0 && cereri.length < total && !error ? (
@@ -129,7 +129,7 @@ export default async function AdminBookingsPage({
             actionLabel={t("emptyAction")}
           />
         )}
-      </RetroXpWindow>
-    </AdminRetroPageFrame>
+      </AdminPanel>
+    </AdminPageFrame>
   );
 }

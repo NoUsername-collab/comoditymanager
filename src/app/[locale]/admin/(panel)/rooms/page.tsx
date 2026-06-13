@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { listRoomDashboards } from "@/services/room-dashboard";
 import { listBuildings } from "@/services/buildings";
@@ -7,8 +7,8 @@ import { RoomsBuildingSection } from "@/components/admin/RoomsBuildingSection";
 import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
 
 export default async function AdminRoomsPage({
@@ -55,7 +55,7 @@ export default async function AdminRoomsPage({
   const inactive = rooms.filter((r) => !r.is_active);
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={t("title")}
       description={t("description")}
       action={{ href: "/admin/rooms/new", label: t("addRoom") }}
@@ -71,7 +71,7 @@ export default async function AdminRoomsPage({
 
       <div className="mt-4 space-y-3">
         {byBuilding.map(({ building, rooms: groupRooms }) => (
-          <RetroXpWindow key={building.id} title={`${building.name} — ${dateLabel}`}>
+          <AdminPanel key={building.id} title={`${building.name} — ${dateLabel}`}>
             <RoomsBuildingSection
               buildingId={building.id}
               buildingName={building.name}
@@ -84,18 +84,18 @@ export default async function AdminRoomsPage({
                 <RoomDashboardCard key={r.id} room={r} />
               ))}
             </div>
-          </RetroXpWindow>
+          </AdminPanel>
         ))}
       </div>
 
       {inactive.length > 0 && (
-        <RetroXpWindow title={t("inactiveRooms")} className="mt-4">
+        <AdminPanel title={t("inactiveRooms")} className="mt-4">
           <div className="grid gap-4 lg:grid-cols-2">
             {inactive.map((r) => (
               <RoomDashboardCard key={r.id} room={r} />
             ))}
           </div>
-        </RetroXpWindow>
+        </AdminPanel>
       )}
 
       {active.length === 0 && !error && (
@@ -107,7 +107,7 @@ export default async function AdminRoomsPage({
           actionLabel={t("addRoom")}
         />
       )}
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }
 

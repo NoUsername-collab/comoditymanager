@@ -60,7 +60,7 @@ export function ganttBarTextClass(text: "#0f172a" | "#ffffff"): string {
   return text === "#ffffff" ? "gantt-bar-text--light" : "gantt-bar-text--dark";
 }
 
-/** Atribut pentru reguli CSS cu prioritate peste teme (retro / paletă). */
+/** Atribut pentru reguli CSS cu prioritate peste teme (paletă). */
 export function ganttStayToneAttr(
   text: "#0f172a" | "#ffffff"
 ): "light" | "dark" {

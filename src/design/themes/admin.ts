@@ -41,6 +41,7 @@ export function applyAdminThemeToDocument(
   root.setAttribute("data-admin-palette", id);
   root.setAttribute("data-admin-theme", mode);
   root.setAttribute("data-admin-palette-source", "catalog");
+  root.removeAttribute("data-admin-legacy-chrome");
   root.removeAttribute("data-admin-retro");
 
   const vars = adminThemeCssVars(id, mode);
@@ -63,12 +64,14 @@ export function adminThemeBootSnippet(): string {
       h.setAttribute("data-admin-palette",themeRaw);
       h.setAttribute("data-admin-theme",modeRaw);
       h.setAttribute("data-admin-palette-source","catalog");
+      h.removeAttribute("data-admin-legacy-chrome");
       h.removeAttribute("data-admin-retro");
     } catch(e) {
       document.documentElement.setAttribute("data-theme","noir");
       document.documentElement.setAttribute("data-mode","night");
       document.documentElement.setAttribute("data-admin-palette","noir");
       document.documentElement.setAttribute("data-admin-theme","night");
+      document.documentElement.removeAttribute("data-admin-legacy-chrome");
       document.documentElement.removeAttribute("data-admin-retro");
     }
   })();`;

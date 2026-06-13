@@ -1,6 +1,5 @@
-import { Link } from "@/i18n/navigation";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { AdminTenantDomainsPanel } from "@/components/admin/settings/AdminTenantDomainsPanel";
+import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { allowedCustomRoutingKindsForPlan } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { getActiveTenantIdForData, resolveRequestTenant } from "@/lib/tenant/active";
@@ -30,18 +29,8 @@ export default async function SettingsDomainsPage() {
   const allowedKinds = allowedCustomRoutingKindsForPlan(planId);
 
   return (
-    <AdminRetroPageFrame
-      title={t("pageTitle")}
-      description={t("pageDescription")}
-      className="admin-settings-page w-full max-w-2xl"
-    >
-      <Link
-        href="/admin/settings"
-        className="mb-4 inline-block text-sm text-zinc-500 hover:text-zinc-800"
-      >
-        {t("backToSettings")}
-      </Link>
-
+    <>
+      <SettingsPageHeader title={t("pageTitle")} description={t("pageDescription")} />
       <AdminTenantDomainsPanel
         domains={domains}
         tenantSlug={tenant?.slug ?? "tenant"}
@@ -49,6 +38,6 @@ export default async function SettingsDomainsPage() {
         allowedKinds={allowedKinds}
         canManageCustom={canManageCustom}
       />
-    </AdminRetroPageFrame>
+    </>
   );
 }

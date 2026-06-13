@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { InformalInvoiceView } from "@/components/admin/invoice/InformalInvoiceView";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { isInvoicingAlphaEnabled } from "@/lib/features";
 import { loadInformalInvoice } from "@/services/invoice";
 import { getTranslations } from "next-intl/server";
@@ -21,7 +21,7 @@ export default async function BookingInvoicePage({
   if (!ctx) notFound();
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={tCommon("informalDocument")}
       description={tPage("description")}
       backHref={`/admin/bookings/${id}`}
@@ -32,6 +32,6 @@ export default async function BookingInvoicePage({
       <div className="print:border-0 print:bg-white">
         <InformalInvoiceView ctx={ctx} />
       </div>
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

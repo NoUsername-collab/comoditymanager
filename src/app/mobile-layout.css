@@ -427,11 +427,11 @@ html[data-layout-chrome="compact"] .ml-shell--hospira-admin button {
   }
 }
 
-html[data-layout-chrome="compact"]:not([data-admin-retro]) .admin-overlay-backdrop {
+html[data-layout-chrome="compact"] .admin-overlay-backdrop {
   animation: ml-overlay-backdrop-in var(--ml-duration-overlay) var(--ml-ease-out) both;
 }
 
-html[data-layout-chrome="compact"]:not([data-admin-retro]) .admin-floating-panel--modal {
+html[data-layout-chrome="compact"] .admin-floating-panel--modal {
   top: auto;
   bottom: 0;
   left: 0;
@@ -445,7 +445,7 @@ html[data-layout-chrome="compact"]:not([data-admin-retro]) .admin-floating-panel
   animation: ml-sheet-slide-up var(--ml-duration-overlay) var(--ml-ease-out) both;
 }
 
-html[data-layout-chrome="compact"]:not([data-admin-retro])
+html[data-layout-chrome="compact"]
   .admin-floating-panel:not(.admin-floating-panel--modal) {
   animation: ml-popover-fade-in var(--ml-duration-overlay) var(--ml-ease-out) both;
 }

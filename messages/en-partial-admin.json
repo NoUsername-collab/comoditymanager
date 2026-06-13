@@ -291,9 +291,6 @@
       "publicStaffNoRequests": "No new requests.",
       "publicStaffConfirm": "Confirm",
       "publicStaffCalendar": "Full calendar →",
-      "retroMinimize": "Minimize",
-      "retroMaximize": "Maximize",
-      "retroClose": "Close window"
     },
     "dashboard": {
       "quickCereri": "New requests",

@@ -1,6 +1,6 @@
 import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { getTranslations } from "next-intl/server";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { AdminMetricHint } from "@/components/admin/ui/AdminMetricHint";
 import type { MonthComparison } from "@/domain/statistics/month-compare";
 import { formatRon } from "@/domain/invoice/informal-invoice";
@@ -27,7 +27,7 @@ export async function MonthCompareCards({
   });
 
   return (
-    <RetroXpWindow
+    <AdminPanel
       title={t("monthStatsTitle", {
         month: current.monthLabel,
         year: current.year,
@@ -116,7 +116,7 @@ export async function MonthCompareCards({
           />
         </div>
       </section>
-    </RetroXpWindow>
+    </AdminPanel>
   );
 }
 

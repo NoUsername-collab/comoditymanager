@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { Link } from "@/i18n/navigation";
 import { GuestAppSettingsForm } from "@/components/admin/settings/GuestAppSettingsForm";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
+import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { ensureGuestAppSettingsRow } from "@/services/guest-app/mutations";
@@ -21,9 +21,10 @@ export default async function GuestAppSettingsPage({
 
   if (!tenant) {
     return (
-      <AdminRetroPageFrame title={t("title")}>
-        <p className="text-red-600">{t("loadError")}</p>
-      </AdminRetroPageFrame>
+      <>
+        <SettingsPageHeader title={t("title")} />
+        <p className="settings-empty settings-empty--error">{t("loadError")}</p>
+      </>
     );
   }
 
@@ -31,37 +32,24 @@ export default async function GuestAppSettingsPage({
   const canEdit = staff.memberRole === "owner" || staff.role === "admin";
 
   return (
-    <AdminRetroPageFrame
-      title={t("title")}
-      description={t("description")}
-      className="admin-settings-page w-full max-w-none"
-    >
-      <div className="mb-4">
-        <Link
-          href="/admin/settings"
-          className="text-sm font-semibold text-zinc-600 hover:text-zinc-900"
-        >
-          ← {t("backSettings")}
-        </Link>
-      </div>
-
-      {params.saved === "1" ? (
-        <p className="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          {t("saved")}
-        </p>
-      ) : null}
-
+    <>
+      <SettingsPageHeader title={t("title")} description={t("description")} />
+      <SettingsAlerts
+        alerts={
+          params.saved === "1"
+            ? [{ tone: "success", message: t("saved") }]
+            : []
+        }
+      />
       {!settings ? (
-        <p className="text-red-600">{t("loadError")}</p>
+        <p className="settings-empty settings-empty--error">{t("loadError")}</p>
       ) : !canEdit ? (
-        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          {t("readOnly")}
-        </p>
+        <SettingsAlerts alerts={[{ tone: "warning", message: t("readOnly") }]} />
       ) : (
-        <Suspense fallback={<p>{t("loading")}</p>}>
+        <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
           <GuestAppSettingsForm settings={settings} />
         </Suspense>
       )}
-    </AdminRetroPageFrame>
+    </>
   );
 }

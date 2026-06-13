@@ -4023,26 +4023,26 @@ html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) 
   padding-bottom: 0 !important;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page.admin-retro-page {
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page.admin-page {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   padding-inline: 0 !important;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-xp-window,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-xp-window .admin-xp-window {
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-panel,
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-panel .admin-panel {
   border: none;
   box-shadow: none;
   background: transparent;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-xp-window > .admin-xp-window__titlebar,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-xp-window .admin-xp-window > .admin-xp-window__titlebar {
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-panel > .admin-panel__titlebar,
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-panel .admin-panel > .admin-panel__titlebar {
   display: none;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-xp-window > .admin-win98-body,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-xp-window .admin-xp-window > .admin-win98-body {
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page > .admin-panel > .admin-panel-body,
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .admin-panel .admin-panel > .admin-panel-body {
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
@@ -4170,7 +4170,7 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-shell--prem
 }
 
 /* Compact — lipit + badges puțin mai mari */
-html[data-layout-chrome="compact"] .gantt-calendar-page.admin-retro-page {
+html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }

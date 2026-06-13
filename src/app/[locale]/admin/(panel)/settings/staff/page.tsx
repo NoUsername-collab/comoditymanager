@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { requireStaffRole } from "@/lib/auth/require-staff";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { SettingsSlidePanel } from "@/components/admin/settings/SettingsSlidePanel";
+import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { StaffList } from "@/components/admin/settings/StaffList";
 import { StaffInviteForm } from "@/components/admin/settings/StaffInviteForm";
 import { resolveRequestTenant } from "@/lib/tenant/active";
@@ -9,75 +9,51 @@ import { listActiveTenantMembers } from "@/services/tenant-members";
 
 export default async function StaffManagementPage() {
   const tenantPromise = resolveRequestTenant();
-  const [t, , tenant, members] = await Promise.all([
+  const [t, , members] = await Promise.all([
     getTranslations("admin.pages.staffManagement"),
     requireStaffRole(["admin"]),
-    tenantPromise,
     tenantPromise.then((resolvedTenant) =>
-      resolvedTenant ? listActiveTenantMembers(resolvedTenant.id) : []
+      resolvedTenant ? listActiveTenantMembers(resolvedTenant.id) : [],
     ),
   ]);
 
   return (
-    <AdminRetroPageFrame
-      title={t("title")}
-      backHref="/admin/settings"
-      backLabel={t("backToSettings")}
-      className="admin-settings-page w-full max-w-none"
-      description={t("description")}
-    >
-      {/* Current staff */}
-      <SettingsSlidePanel
+    <>
+      <SettingsPageHeader title={t("title")} description={t("description")} />
+
+      <SettingsSection
         title={t("currentStaffTitle")}
-        subtitle={t("currentStaffSubtitle", { count: members.length })}
-        icon="*"
-        defaultOpen
+        description={t("currentStaffSubtitle", { count: members.length })}
         badge={
-          <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-semibold text-zinc-700">
-            {members.length}
-          </span>
+          <span className="settings-section__count">{members.length}</span>
         }
       >
         <StaffList members={members} />
-      </SettingsSlidePanel>
+      </SettingsSection>
 
-      {/* Invite new member */}
-      <SettingsSlidePanel
-        title={t("inviteTitle")}
-        subtitle={t("inviteSubtitle")}
-        icon="+"
-        defaultOpen={members.length <= 1}
-      >
+      <SettingsSection title={t("inviteTitle")} description={t("inviteSubtitle")}>
         <StaffInviteForm />
-      </SettingsSlidePanel>
+      </SettingsSection>
 
-      {/* Role explanation */}
-      <SettingsSlidePanel
+      <SettingsSection
         title={t("rolesExplainTitle")}
-        subtitle={t("rolesExplainSubtitle")}
-        icon="?"
+        description={t("rolesExplainSubtitle")}
       >
-        <div className="space-y-4 text-sm text-zinc-600">
+        <div className="settings-roles-grid">
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-1">
-              {t("roleOwnerTitle")}
-            </h4>
+            <h3 className="settings-roles-grid__title">{t("roleOwnerTitle")}</h3>
             <p>{t("roleOwnerDesc")}</p>
           </div>
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-1">
-              {t("roleAdminTitle")}
-            </h4>
+            <h3 className="settings-roles-grid__title">{t("roleAdminTitle")}</h3>
             <p>{t("roleAdminDesc")}</p>
           </div>
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-1">
-              {t("roleOperatorTitle")}
-            </h4>
+            <h3 className="settings-roles-grid__title">{t("roleOperatorTitle")}</h3>
             <p>{t("roleOperatorDesc")}</p>
           </div>
         </div>
-      </SettingsSlidePanel>
-    </AdminRetroPageFrame>
+      </SettingsSection>
+    </>
   );
 }

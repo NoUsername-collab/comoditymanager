@@ -21,9 +21,9 @@ html[data-layout-chrome="compact"] .admin-page-main [class*="lg:grid-cols"],
 html[data-layout-chrome="compact"] .ml-content [class*="sm:grid-cols"],
 html[data-layout-chrome="compact"] .ml-content [class*="md:grid-cols"],
 html[data-layout-chrome="compact"] .ml-content [class*="lg:grid-cols"],
-html[data-layout-chrome="compact"] .admin-retro-page [class*="sm:grid-cols"],
-html[data-layout-chrome="compact"] .admin-retro-page [class*="md:grid-cols"],
-html[data-layout-chrome="compact"] .admin-retro-page [class*="lg:grid-cols"] {
+html[data-layout-chrome="compact"] .admin-page [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="lg:grid-cols"] {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
@@ -37,13 +37,13 @@ html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-2 {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-/* ── Retro XP windows (real class names) ── */
-html[data-layout-chrome="compact"] .admin-xp-window {
+/* ── Admin panels (real class names) ── */
+html[data-layout-chrome="compact"] .admin-panel {
   max-width: 100%;
   overflow-x: clip;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window__body {
+html[data-layout-chrome="compact"] .admin-panel__body {
   max-height: min(
     62dvh,
     calc(
@@ -53,12 +53,12 @@ html[data-layout-chrome="compact"] .admin-xp-window__body {
   overflow-y: auto;
 }
 
-html[data-layout-chrome="compact"] .admin-win98-body {
+html[data-layout-chrome="compact"] .admin-panel-body {
   padding: 0.65rem !important;
   min-width: 0;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window .flex.items-end.justify-between {
+html[data-layout-chrome="compact"] .admin-panel .flex.items-end.justify-between {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
@@ -631,9 +631,7 @@ html[data-layout-chrome="compact"] .admin-factory-reset__cancel {
   min-height: var(--ml-touch-min, 2.75rem);
 }
 
-/* Retro modals: restore 44px close on compact */
-html[data-layout-chrome="compact"][data-admin-retro="winxp"] .admin-floating-panel__close,
-html[data-layout-chrome="compact"][data-admin-retro="win95"] .admin-floating-panel__close {
+html[data-layout-chrome="compact"] .admin-floating-panel__close {
   width: var(--ml-touch-min, 2.75rem) !important;
   height: var(--ml-touch-min, 2.75rem) !important;
   min-width: var(--ml-touch-min, 2.75rem) !important;
@@ -783,7 +781,7 @@ html[data-layout-chrome="compact"] .admin-text-action {
   margin: 0;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window table tbody a {
+html[data-layout-chrome="compact"] .admin-panel table tbody a {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -824,11 +822,11 @@ html[data-layout-chrome="compact"] .checkin-modal table {
   overscroll-behavior-x: contain;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window {
+html[data-layout-chrome="compact"] .admin-panel {
   word-break: break-word;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window table {
+html[data-layout-chrome="compact"] .admin-panel table {
   display: block;
   max-width: 100%;
   overflow-x: auto;
@@ -846,8 +844,8 @@ html[data-layout-chrome="compact"] :is(
   .admin-floating-panel,
   .admin-floating-panel__body,
   .admin-panel-section,
-  .admin-xp-window,
-  .admin-win98-body,
+  .admin-panel,
+  .admin-panel-body,
   .bd-card,
   .availability-detail-panel,
   .admin-quick-panel,
@@ -907,11 +905,11 @@ html[data-layout-chrome="compact"] .gantt-popover-premium__btn {
   flex: none;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window .admin-panel-section {
+html[data-layout-chrome="compact"] .admin-panel .admin-panel-section {
   padding: 0.85rem;
 }
 
-html[data-layout-chrome="compact"] .admin-xp-window table {
+html[data-layout-chrome="compact"] .admin-panel table {
   display: block;
   max-width: 100%;
   overflow-x: auto;
@@ -987,20 +985,20 @@ html[data-layout-chrome="compact"] .hospira-admin-main .rounded-xl {
 /* ── Pass 6: second mobile-more pass ── */
 
 /* Statistics KPI cards: 2-up (override universal 1-col stack) */
-html[data-layout-chrome="compact"] .admin-retro-page .admin-xp-window .grid.sm\:grid-cols-2,
-html[data-layout-chrome="compact"] .admin-retro-page .admin-xp-window .grid.lg\:grid-cols-4 {
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.sm\:grid-cols-2,
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.lg\:grid-cols-4 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page .admin-xp-window .grid.sm\:grid-cols-3 {
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.sm\:grid-cols-3 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page .admin-xp-window .grid > .rounded-2xl {
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid > .rounded-2xl {
   min-width: 0;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page .admin-xp-window .grid > .rounded-2xl p {
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid > .rounded-2xl p {
   overflow-wrap: anywhere;
 }
 
@@ -1660,7 +1658,7 @@ html[data-layout-chrome="compact"] .platform-header__brand {
   align-items: center;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-page-toolbar {
+html[data-layout-chrome="compact"] .admin-page-toolbar {
   position: sticky;
   top: 0;
   z-index: 20;
@@ -2876,7 +2874,7 @@ html[data-layout-chrome="compact"] .admin-empty-state__action {
   touch-action: manipulation;
 }
 
-html[data-layout-chrome="compact"] .admin-retro-back {
+html[data-layout-chrome="compact"] .admin-page-back {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;

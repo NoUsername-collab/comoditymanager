@@ -1,5 +1,5 @@
 import { BuildingForm } from "@/components/admin/BuildingForm";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { listRoomOptions } from "@/services/room-catalog";
 import { createBuildingAction } from "../actions";
 import { getTranslations } from "next-intl/server";
@@ -20,7 +20,7 @@ export default async function NewBuildingPage({
   const backToStructure = return_to === "structure";
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={tCommon("newBuilding")}
       backHref={
         backToStructure
@@ -42,6 +42,6 @@ export default async function NewBuildingPage({
         catalogOptions={catalogOptions}
         returnTo={backToStructure ? "structure" : undefined}
       />
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

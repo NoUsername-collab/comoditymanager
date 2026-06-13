@@ -1,0 +1,18 @@
+/* Panou secțiune admin — tema default (fără chrome decorativ) */
+
+.admin-panel__titlebar {
+  display: none;
+}
+
+.admin-panel {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.admin-panel-body {
+  padding: 0;
+  background: transparent;
+  border: none;
+}

@@ -3,9 +3,8 @@
 @import "../../styles/themes/admin-night-overrides.css";
 @import "../../styles/themes/BookingCard.css";
 @import "./admin-palette.css";
-@import "./admin-retro.css";
+@import "./admin-panel.css";
 @import "./admin-overlays.css";
-@import "./admin-retro-universal.css";
 @import "./admin-history.css";
 @import "./admin-feedback.css";
 @import "./admin-settings.css";

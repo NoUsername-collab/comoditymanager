@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { RoomEditForm } from "@/components/admin/RoomEditForm";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { listBuildings } from "@/services/buildings";
 import { listAllFloors } from "@/services/floors";
 import {
@@ -64,7 +64,7 @@ export default async function EditRoomPage({
   }
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={room ? tPage("titleWithName", { name: room.name }) : tPage("title")}
       backHref={
         backToStructure
@@ -88,6 +88,6 @@ export default async function EditRoomPage({
           returnTo={backToStructure ? "structure" : undefined}
         />
       )}
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

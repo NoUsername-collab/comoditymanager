@@ -1,11 +1,11 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { CalendarAvailabilityStream } from "@/components/admin/calendar/CalendarAvailabilityStream";
 import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 import { GanttCalendarLazy } from "@/components/admin/GanttCalendarLazy";
 import { GanttAvailabilityHeatmapPanelLazy } from "@/components/admin/gantt/GanttAvailabilityHeatmapPanelLazy";
 import { GanttCereriQueueLazy } from "@/components/admin/gantt/GanttCereriQueueLazy";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import type { GanttViewMode } from "@/components/admin/gantt/GanttToolbar";
 import { readAvailabilityPanelState, mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { resolveGanttRange } from "@/domain/gantt/view-range";
@@ -141,10 +141,10 @@ export default async function AdminCalendarPage({
         ? dataResult.error.message
         : t("genericError");
     return (
-      <AdminRetroPageFrame title={t("title")}>
+      <AdminPageFrame title={t("title")}>
         <p className="text-red-600">{msg}</p>
         <p className="mt-2 text-sm">{t("loadError")}</p>
-      </AdminRetroPageFrame>
+      </AdminPageFrame>
     );
   }
 
@@ -265,7 +265,7 @@ export default async function AdminCalendarPage({
   );
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={t("ganttTitle")}
       description={
         unassignedCereri.length > 0 ? (
@@ -282,7 +282,7 @@ export default async function AdminCalendarPage({
       }
       className="gantt-calendar-page w-full max-w-none"
     >
-      <RetroXpWindow
+      <AdminPanel
         title={t("windowGantt")}
         className="w-full"
         controlTitles={{
@@ -313,7 +313,7 @@ export default async function AdminCalendarPage({
           departuresCount={todayDeparturesCount}
           cleanCount={todayCleanCount}
         />
-      </RetroXpWindow>
+      </AdminPanel>
       <GanttAvailabilityHeatmapPanelLazy
         open={availabilityState.open}
         closeHref={closeAvailabilityHref}
@@ -337,7 +337,7 @@ export default async function AdminCalendarPage({
           </Suspense>
         ) : null}
       </GanttAvailabilityHeatmapPanelLazy>
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }
 

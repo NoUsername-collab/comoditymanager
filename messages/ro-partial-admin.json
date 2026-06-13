@@ -221,9 +221,6 @@
       "openBookings": "Deschide cereri",
       "attentionToday": "Atenție azi",
       "noRoomsConfigured": "Încă nu ai camere configurate",
-      "retroMinimize": "Minimizează",
-      "retroMaximize": "Maximizează",
-      "retroClose": "Închide fereastra"
     },
     "dashboard": {
       "quickCereri": "Cereri noi",

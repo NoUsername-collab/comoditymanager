@@ -1,6 +1,6 @@
 import { MonthCompareCards } from "@/components/admin/dashboard/MonthCompareCards";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { loadMonthComparison } from "@/services/month-comparison";
 import { loadStatisticsReport } from "@/services/statistics";
 import { StatisticsAllYearsSection } from "@/components/admin/statistics/StatisticsAllYearsSection";
@@ -79,7 +79,7 @@ export default async function AdminStatisticsPage({
   const dateTag = locale === "ro" ? "ro-RO" : locale === "bg" ? "bg-BG" : "en-GB";
 
   return (
-    <AdminRetroPageFrame
+    <AdminPageFrame
       title={tPages("title")}
       description={tPages("continuous")}
       className="statistics-page"
@@ -91,13 +91,13 @@ export default async function AdminStatisticsPage({
       )}
 
       {monthCompare && (
-        <RetroXpWindow title={tPages("monthCompare")} className="mb-4">
+        <AdminPanel title={tPages("monthCompare")} className="mb-4">
           <MonthCompareCards compare={monthCompare} />
-        </RetroXpWindow>
+        </AdminPanel>
       )}
 
       {report && (
-        <RetroXpWindow
+        <AdminPanel
           title={tPages("reportsRange", {
             first: report.firstYear,
             last: report.lastYear,
@@ -254,7 +254,7 @@ export default async function AdminStatisticsPage({
               {tPages("noDataForYear", { year: focusYear })}
             </p>
           )}
-        </RetroXpWindow>
+        </AdminPanel>
       )}
 
       {!report && !error && (
@@ -262,7 +262,7 @@ export default async function AdminStatisticsPage({
           {tPages("noBookingsYet")}
         </p>
       )}
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }
 

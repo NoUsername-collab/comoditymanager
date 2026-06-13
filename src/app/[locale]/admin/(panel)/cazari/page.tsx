@@ -17,8 +17,8 @@ import {
 import { loadCazariPageData } from "@/services/cazari-page-data";
 import { buildCazariLabels } from "@/services/cazari-labels";
 import { AdminStaySearchForm } from "@/components/admin/AdminStaySearchForm";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
-import { RetroXpWindow } from "@/components/admin/retro/RetroXpWindow";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { CazariOpsToolbar } from "@/components/admin/cazari/CazariOpsToolbar";
 import { ConfirmedBuckets } from "@/components/admin/cazari/ConfirmedBuckets";
 import { StayHistoryPanel } from "@/components/admin/cazari/StayHistoryPanel";
@@ -96,11 +96,11 @@ export default async function AdminCazariPage({
   };
 
   return (
-    <AdminRetroPageFrame title={tPages("title")} className="cazari-page">
+    <AdminPageFrame title={tPages("title")} className="cazari-page">
       <CazariOperativeShell today={effectiveToday}>
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,30%)]">
         <div className="min-w-0">
-          <RetroXpWindow
+          <AdminPanel
             title={tPages("searchFilter")}
             className="cazari-filter-panel mb-3"
             bodyClassName="cazari-filter-panel__body"
@@ -132,7 +132,7 @@ export default async function AdminCazariPage({
                 }}
               />
             </div>
-          </RetroXpWindow>
+          </AdminPanel>
 
           {params.reaccepted === "1" && (
             <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
@@ -169,7 +169,7 @@ export default async function AdminCazariPage({
           ) : null}
 
           {view === "confirmate" ? (
-            <RetroXpWindow
+            <AdminPanel
               title={tPages("confirmedTitle", { count: confirmateVisible.length })}
               className="mb-3"
             >
@@ -195,7 +195,7 @@ export default async function AdminCazariPage({
                   </Link>
                 </div>
               )}
-            </RetroXpWindow>
+            </AdminPanel>
           ) : null}
         </div>
 
@@ -215,6 +215,6 @@ export default async function AdminCazariPage({
         </aside>
       </div>
       </CazariOperativeShell>
-    </AdminRetroPageFrame>
+    </AdminPageFrame>
   );
 }

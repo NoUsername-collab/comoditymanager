@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
-import { AdminRetroPageFrame } from "@/components/admin/retro/AdminRetroPageFrame";
 import { AdminRoomCatalogPanel } from "@/components/admin/catalog/AdminRoomCatalogPanel";
+import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { listRoomOptions, listRoomTypes } from "@/services/room-catalog";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
@@ -39,19 +40,8 @@ export default async function LocationSetupPage() {
   }
 
   return (
-    <AdminRetroPageFrame
-      title={tPage("setup.title")}
-      className="admin-settings-page w-full max-w-none"
-      description={tPage("setup.description")}
-    >
-      <div className="mb-4">
-        <Link
-          href="/admin/settings/location"
-          className="text-sm text-zinc-600 underline hover:text-zinc-900"
-        >
-          {tPage("backToLocationHub")}
-        </Link>
-      </div>
+    <>
+      <SettingsPageHeader title={tPage("setup.title")} description={tPage("setup.description")} />
 
       <div className="mb-4 grid gap-2 md:grid-cols-2">
         <Link
@@ -78,17 +68,13 @@ export default async function LocationSetupPage() {
         </Link>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-bold text-zinc-900">{tCommon("modularCatalog")}</h2>
-        <p className="mt-1 text-sm text-zinc-600">{tPage("catalog.subtitle")}</p>
-        <div className="mt-4">
-          <AdminRoomCatalogPanel
-            types={catalogTypes}
-            options={catalogOptions}
-            catalogError={catalogError}
-          />
-        </div>
-      </section>
-    </AdminRetroPageFrame>
+      <SettingsSection title={tCommon("modularCatalog")} description={tPage("catalog.subtitle")}>
+        <AdminRoomCatalogPanel
+          types={catalogTypes}
+          options={catalogOptions}
+          catalogError={catalogError}
+        />
+      </SettingsSection>
+    </>
   );
 }
