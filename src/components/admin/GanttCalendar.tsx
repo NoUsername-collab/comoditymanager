@@ -92,6 +92,7 @@ const GanttStickyViewportHeader = dynamic(
 import {
   resolveGanttColumnMetrics,
   resolveGanttDayGridOptions,
+  resolveGanttTableLayout,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
@@ -174,6 +175,15 @@ export function GanttCalendar({
         viewRange.days.length
       ),
     [compactChrome, density, isPortrait, columnMetrics.dayMin, viewRange.days.length]
+  );
+  const tableLayout = useMemo(
+    () =>
+      resolveGanttTableLayout(
+        viewRange.days.length,
+        columnMetrics,
+        dayGridOptions
+      ),
+    [viewRange.days.length, columnMetrics, dayGridOptions]
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
 
@@ -668,16 +678,19 @@ export function GanttCalendar({
         {/* ── Table ──────────────────────────────────────────────── */}
         <table
           className={[
-            "w-full table-fixed border-separate border-spacing-0 text-xs",
-            "min-w-full",
-          ].join(" ")}
+            "table-fixed border-separate border-spacing-0 text-xs",
+            !dayGridOptions?.fixed && "w-full min-w-full",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           style={{
-            minWidth: `max(100%, calc(${columnMetrics.roomCol} + ${viewRange.days.length} * ${columnMetrics.dayMin}))`,
+            width: tableLayout.tableWidth,
+            minWidth: tableLayout.tableMinWidth,
           }}
         >
           <colgroup>
-            <col style={{ width: columnMetrics.roomCol }} />
-            <col />
+            <col style={{ width: tableLayout.roomCol }} />
+            <col style={dayGridOptions?.fixed ? { width: tableLayout.daysCol } : undefined} />
           </colgroup>
           <thead ref={theadRef} className="gantt-thead-sticky">
             <tr className="gantt-head-main-row">

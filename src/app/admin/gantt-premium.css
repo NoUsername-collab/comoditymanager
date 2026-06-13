@@ -4265,16 +4265,21 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable {
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-day-grid--fixed,
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-day-header-grid.gantt-day-grid--fixed,
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-summary-row__grid.gantt-day-grid--fixed {
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  min-width: max-content;
 }
 
-/* Desktop calendar — lock row geometry (table rows ignore tr max-height) */
+/* Desktop calendar — lock row height; keep horizontal grid intact */
 html:not([data-layout-chrome="compact"]) .gantt-room-row > td {
   height: var(--gantt-row-h);
   max-height: var(--gantt-row-h);
-  overflow: hidden;
   box-sizing: border-box;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-room-row > td:last-child {
+  overflow-x: visible;
+  overflow-y: hidden;
+  padding: 0;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-room-cell {
@@ -4284,12 +4289,13 @@ html:not([data-layout-chrome="compact"]) .gantt-room-cell {
 html:not([data-layout-chrome="compact"]) .gantt-drag-row {
   height: var(--gantt-row-h) !important;
   max-height: var(--gantt-row-h) !important;
-  overflow: hidden;
+  overflow-x: visible;
+  overflow-y: hidden;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-drag-row {
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact {

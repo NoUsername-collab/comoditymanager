@@ -146,6 +146,42 @@ export function ganttDayGridStyle(
   };
 }
 
+/** Pixel width of the day timeline when columns are fixed-width. */
+export function ganttTimelineWidth(dayCount: number, dayMin: string): string {
+  return `calc(${dayCount} * ${dayMin})`;
+}
+
+export type GanttTableLayout = {
+  roomCol: string;
+  daysCol: string;
+  tableWidth: string;
+  tableMinWidth: string;
+};
+
+/** Keep header, FREE row and room rows on the same scroll width. */
+export function resolveGanttTableLayout(
+  dayCount: number,
+  metrics: GanttColumnMetrics,
+  dayGridOptions?: GanttDayGridOptions
+): GanttTableLayout {
+  const timeline = ganttTimelineWidth(dayCount, metrics.dayMin);
+  if (dayGridOptions?.fixed) {
+    const tableWidth = `calc(${metrics.roomCol} + ${timeline})`;
+    return {
+      roomCol: metrics.roomCol,
+      daysCol: timeline,
+      tableWidth,
+      tableMinWidth: tableWidth,
+    };
+  }
+  return {
+    roomCol: metrics.roomCol,
+    daysCol: "auto",
+    tableWidth: "100%",
+    tableMinWidth: `max(100%, calc(${metrics.roomCol} + ${timeline}))`,
+  };
+}
+
 export function dayCellClass(
   col: { isWeekend: boolean; isToday: boolean; isPast: boolean },
   compact: boolean,
