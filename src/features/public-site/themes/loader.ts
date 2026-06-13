@@ -1,4 +1,7 @@
 export {
   publicThemeClassName,
   resolvePublicThemeStyle,
-} from "@/design/themes/public";
+  listDesignThemes,
+  THEME_SURFACES,
+  type ThemeSurface,
+} from "@/design/themes";

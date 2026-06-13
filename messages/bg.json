@@ -35,6 +35,200 @@
     "pickDates": "Изберете check-in и check-out.",
     "previewFailed": "Неуспешно зареждане на опциите"
   },
+  },
+  "guestApp": {
+    "meta": {
+      "fallbackName": "Stay",
+      "title": "{name} — your stay",
+      "description": "Wi-Fi, info and services for your stay at {name}."
+    },
+    "shell": {
+      "eyebrow": "Guest app",
+      "back": "Back home",
+      "navLabel": "Guest app navigation",
+      "offline": "You're offline — some information may be unavailable.",
+      "callReception": "Call reception",
+      "callReceptionShort": "Reception",
+      "featureTitles": {
+        "hotel_info": "About the property",
+        "gallery": "Photo gallery",
+        "online_checkin": "Online check-in",
+        "wifi": "Wi-Fi",
+        "facilities": "Facilities",
+        "services": "Services",
+        "travel_tips": "Tips",
+        "green_stay": "Green stay",
+        "online_payment": "Online payment"
+      }
+    },
+    "nav": {
+      "home": "Home",
+      "menu": "More",
+      "wifi": "Wi-Fi",
+      "hotel_info": "Info",
+      "online_checkin": "Check-in",
+      "travel_tips": "Tips"
+    },
+    "home": {
+      "welcome": "Welcome",
+      "sectionFeatures": "Everything you need",
+      "wifiQuickTitle": "Wi-Fi — quick connect",
+      "wifiQuickMore": "Details",
+      "wifiNetwork": "Network",
+      "wifiPassword": "Password",
+      "callReception": "Call reception",
+      "getDirections": "Directions",
+      "nightsCount": "{count, plural, one {# night} other {# nights}}",
+      "ctaPrepareCheckin": "Prepare for check-in",
+      "ctaCheckinToday": "Check in today",
+      "ctaConnectWifi": "Connect to Wi-Fi",
+      "ctaSeeTips": "See local tips",
+      "ctaCheckoutInfo": "Check-out information",
+      "shareStay": "Save stay link",
+      "shareSuccess": "Link shared",
+      "linkCopied": "Link copied",
+      "shareFailed": "Could not share the link",
+      "daysUntilCheckout": "{count, plural, one {# day left} other {# days left}}",
+      "daysUntilCheckin": "{count, plural, one {Check-in in # day} other {Check-in in # days}}",
+      "checkoutTodayShort": "Check-out today"
+    },
+    "phase": {
+      "confirmed": "Your booking is confirmed. We look forward to welcoming you!",
+      "checkinToday": "It's check-in day — welcome!",
+      "checkedIn": "Enjoy your stay! Everything you need is below.",
+      "checkoutToday": "Check-out is today. Thank you for staying with us!",
+      "checkedOut": "Your stay has ended. We hope to see you again soon!"
+    },
+    "featureDesc": {
+      "hotel_info": "Address, contact and property details",
+      "gallery": "Photos of the property",
+      "online_checkin": "Complete your details before arrival",
+      "wifi": "Network and password — quick copy",
+      "facilities": "Shared spaces and amenities",
+      "services": "Services available during your stay",
+      "travel_tips": "Local recommendations",
+      "green_stay": "Sustainable stay options",
+      "online_payment": "Fast and secure payments"
+    },
+    "contact": {
+      "call": "Call",
+      "email": "Email",
+      "directions": "Directions"
+    },
+    "wifi": {
+      "copyAll": "Copy all Wi-Fi details",
+      "copyAllSuccess": "Wi-Fi details copied",
+      "copyAllFailed": "Could not copy — please try again",
+      "networkLabel": "Network",
+      "passwordLabel": "Password",
+      "qrAlt": "Wi-Fi QR code — scan to connect",
+      "qrHint": "Open your phone camera and scan to connect automatically."
+    },
+    "install": {
+      "title": "Save this app to your home screen",
+      "iosSteps": "In Safari: Share → Add to Home Screen for quick access during your stay.",
+      "androidSteps": "In Chrome: Menu ⋮ → Add to Home screen for quick access.",
+      "dismiss": "Got it"
+    },
+    "milestones": {
+      "ariaLabel": "Stay milestones",
+      "confirmed": "Confirmed",
+      "checkedIn": "Check-in",
+      "checkedOut": "Check-out"
+    },
+    "features": {
+      "hotel_info": "About the property",
+      "gallery": "Photo gallery",
+      "online_checkin": "Online check-in",
+      "wifi": "Wi-Fi",
+      "facilities": "Facilities",
+      "services": "Services",
+      "travel_tips": "Tips & recommendations",
+      "green_stay": "Green stay",
+      "online_payment": "Online payment"
+    },
+    "badges": {
+      "demo": "Demo"
+    },
+    "copy": {
+      "copy": "Copy",
+      "copied": "Copied",
+      "failed": "Error",
+      "copyAria": "Copy {label}",
+      "copiedLive": "{label} copied to clipboard",
+      "failedLive": "Could not copy. Please try again."
+    },
+    "access": {
+      "eyebrow": "Guest app",
+      "deniedTitle": "Access unavailable",
+      "scheduled": {
+        "beforeTitle": "Link activates soon",
+        "afterTitle": "Your stay has ended",
+        "beforeBody": "The app becomes available from {date}.",
+        "afterBody": "Access was active until {date}.",
+        "stayPeriod": "Stay:",
+        "beforeHint": "Come back after {date} or contact reception."
+      },
+      "errors": {
+        "generic": "You cannot access this page.",
+        "serviceUnavailable": "The service is temporarily unavailable. Please try again later.",
+        "disabled": "The guest app is disabled. Please contact reception.",
+        "setupIncomplete": "The guest app is not configured on this environment yet.",
+        "notFound": "Invalid or unknown code.",
+        "wrongHost": "Open this link on the property's website. Ask reception for an updated link.",
+        "revoked": "Access has been revoked.",
+        "notConfirmed": "The booking is not confirmed."
+      }
+    },
+    "feature": {
+      "mockBanner": "Demo content — full functionality coming soon.",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "website": "Website",
+      "wifiNetwork": "Wi-Fi network",
+      "wifiPassword": "Wi-Fi password",
+      "checkinBody": "Online check-in for {name} — demo form. Official details will be completed at reception.",
+      "checkinCta": "Start check-in (coming soon)",
+      "demoBreakfast": "Breakfast — 08:00–10:30 (demo)",
+      "demoParking": "Parking — included (demo)",
+      "demoWellness": "Wellness / sauna — by appointment (demo)"
+    },
+    "empty": {
+      "callReception": "Call reception",
+      "hotel": {
+        "title": "Information unavailable",
+        "description": "Property details are not published yet. Please contact reception."
+      },
+      "wifi": {
+        "title": "Wi-Fi not configured",
+        "description": "Connection details are not available online. Ask at reception."
+      },
+      "tips": {
+        "title": "No tips yet",
+        "description": "Recommendations will appear here once configured."
+      },
+      "gallery": {
+        "title": "Gallery coming soon",
+        "description": "Property photos will be available soon."
+      },
+      "payment": {
+        "title": "Online payment unavailable",
+        "description": "Payment is currently at reception or via a separate link."
+      }
+    },
+    "greenStay": {
+      "success": "Request recorded (demo). Reception will be notified in the final version.",
+      "checkbox": "I request to skip daily housekeeping for tomorrow (demo — not sent to reception yet).",
+      "submit": "Submit request"
+    },
+    "error": {
+      "title": "Something went wrong",
+      "body": "The guest app page could not load. Check the link from the property or contact reception.",
+      "retry": "Try again",
+      "code": "Code: {digest}"
+    }
+  },
   "public": {
     "shell": {
       "backHome": "Начало",

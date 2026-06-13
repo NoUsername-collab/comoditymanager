@@ -45,3 +45,31 @@ export function buildGuestStayMilestones(input: {
       idx < currentIdx ? "done" : idx === currentIdx ? "current" : "upcoming",
   }));
 }
+
+export type GuestPhaseHintKey =
+  | "phase.confirmed"
+  | "phase.checkinToday"
+  | "phase.checkedIn"
+  | "phase.checkoutToday"
+  | "phase.checkedOut";
+
+export function resolveGuestPhaseHintKey(input: {
+  today: string;
+  checkIn: string;
+  checkOut: string;
+  checkedInAt: string | null;
+}): GuestPhaseHintKey {
+  const phase = resolveGuestStayPhase(input);
+  if (phase === "checked_out") return "phase.checkedOut";
+  if (input.today === input.checkOut) return "phase.checkoutToday";
+  if (phase === "checked_in") return "phase.checkedIn";
+  if (input.today === input.checkIn) return "phase.checkinToday";
+  return "phase.confirmed";
+}
+
+export function countStayNights(checkIn: string, checkOut: string): number {
+  const start = new Date(`${checkIn}T12:00:00`);
+  const end = new Date(`${checkOut}T12:00:00`);
+  const nights = Math.round((end.getTime() - start.getTime()) / 86_400_000);
+  return Math.max(1, nights);
+}

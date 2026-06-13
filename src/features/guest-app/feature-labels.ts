@@ -15,7 +15,9 @@ const FEATURE_LABELS: Record<GuestAppFeatureId, string> = {
 export function visibleGuestAppFeatures(
   features: GuestAppFeatureDef[],
 ): GuestAppFeatureDef[] {
-  return features.filter((f) => f.state !== "hidden");
+  return features
+    .filter((f) => f.state !== "hidden")
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
 export function guestAppFeatureLabel(id: GuestAppFeatureId): string {

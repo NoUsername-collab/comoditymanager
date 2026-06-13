@@ -1,41 +1,56 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { copyTextToClipboard } from "@/lib/guest-app/copy-text";
+import { useGuestAppToast } from "./GuestAppToast";
 
-export function GuestAppCopyField({
-  label,
-  value,
-}: {
+type Props = {
   label: string;
   value: string;
-}) {
-  const [copied, setCopied] = useState(false);
+  compact?: boolean;
+};
+
+export function GuestAppCopyField({ label, value, compact = false }: Props) {
+  const t = useTranslations("guestApp.copy");
+  const { showToast } = useGuestAppToast();
+  const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
 
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* ignore */
-    }
+    const ok = await copyTextToClipboard(value);
+    setStatus(ok ? "copied" : "failed");
+    showToast(ok ? t("copiedLive", { label }) : t("failedLive"));
+    window.setTimeout(() => setStatus("idle"), 2500);
   }
 
   return (
-    <div className="rounded-xl border border-white/10 bg-zinc-900/60 p-4">
-      <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-        {label}
-      </p>
-      <div className="mt-2 flex items-center gap-2">
-        <code className="flex-1 break-all text-sm text-zinc-100">{value}</code>
-        <button
-          type="button"
-          onClick={copy}
-          className="shrink-0 rounded-lg bg-[var(--guest-app-primary)] px-3 py-1.5 text-xs font-semibold text-white"
+    <div
+      className={
+        compact
+          ? "guest-app__copy-field guest-app__copy-field--compact"
+          : "guest-app__panel guest-app__copy-field"
+      }
+    >
+      <p className="guest-app__copy-field__label">{label}</p>
+      <button
+        type="button"
+        onClick={copy}
+        className="guest-app__copy-field__row"
+        aria-label={t("copyAria", { label })}
+      >
+        <code className="guest-app__copy-field__value">{value}</code>
+        <span
+          className={[
+            "guest-app__copy-field__btn",
+            status === "copied" && "guest-app__copy-field__btn--success",
+            status === "failed" && "guest-app__copy-field__btn--failed",
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
-          {copied ? "Copiat" : "Copiază"}
-        </button>
-      </div>
+          {status === "copied" ? t("copied") : status === "failed" ? t("failed") : t("copy")}
+        </span>
+      </button>
     </div>
   );
 }

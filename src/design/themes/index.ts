@@ -4,6 +4,7 @@ export type {
   DesignThemeDefinition,
   PublicThemeTokens,
   AdminPrimitiveTokens,
+  GuestAppThemeSource,
 } from "./types";
 export {
   DESIGN_THEMES,
@@ -12,6 +13,20 @@ export {
   migrateDesignThemeId,
 } from "./catalog";
 export { resolvePublicThemeStyle, publicThemeClassName } from "./public";
+export {
+  resolveGuestAppThemeStyle,
+  guestAppThemeClassName,
+  resolveGuestAppThemeId,
+  parseGuestAppThemeSource,
+  type GuestAppAppearanceInput,
+} from "./guest-app";
+export {
+  THEME_SURFACES,
+  listDesignThemes,
+  assertDesignThemeId,
+  resolveThemeForSurface,
+  type ThemeSurface,
+} from "./registry";
 export {
   adminThemeCssVars,
   applyAdminThemeToDocument,

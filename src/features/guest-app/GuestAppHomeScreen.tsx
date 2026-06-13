@@ -1,17 +1,20 @@
-import { Link } from "@/i18n/navigation";
 import type {
   GuestAccessBookingSnapshot,
   GuestAppSettings,
 } from "@/domain/guest-app/types";
 import { buildGuestStayMilestones } from "@/domain/guest-app/stay-milestone";
-import { guestAppFeatureHref } from "@/domain/guest-app/routes";
-import {
-  guestAppFeatureBadge,
-  guestAppFeatureLabel,
-  visibleGuestAppFeatures,
-} from "@/features/guest-app/feature-labels";
+import { visibleGuestAppFeatures } from "@/features/guest-app/feature-labels";
+import { GuestAppQuickActions } from "@/features/guest-app/GuestAppQuickActions";
+import { GuestFeatureLink } from "@/features/guest-app/GuestFeatureLink";
+import { GuestHomePrimaryCta } from "@/features/guest-app/GuestHomePrimaryCta";
+import { GuestInstallHint } from "@/features/guest-app/GuestInstallHint";
+import { GuestShareStayButton } from "@/features/guest-app/GuestShareStayButton";
 import { GuestStayMilestoneStrip } from "@/features/guest-app/GuestStayMilestoneStrip";
+import { GuestStayPhaseBanner } from "@/features/guest-app/GuestStayPhaseBanner";
+import { GuestWifiQrCode } from "@/features/guest-app/GuestWifiQrCode";
+import { GuestWifiQuickCard } from "@/features/guest-app/GuestWifiQuickCard";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   accessCode: string;
@@ -21,13 +24,14 @@ type Props = {
   today: string;
 };
 
-export function GuestAppHomeScreen({
+export async function GuestAppHomeScreen({
   accessCode,
   booking,
   settings,
   locale,
   today,
 }: Props) {
+  const t = await getTranslations("guestApp");
   const features = visibleGuestAppFeatures(settings.features);
   const period = formatStayPeriod(
     booking.checkIn,
@@ -41,53 +45,72 @@ export function GuestAppHomeScreen({
     checkOut: booking.checkOut,
     checkedInAt: booking.checkedInAt,
   });
+  const wifiFeature = features.find((feature) => feature.id === "wifi");
+  const hotel = settings.content.hotel;
+  const wifi = settings.content.wifi;
+  const hasWifiCredentials = Boolean(wifi?.networkName || wifi?.password);
 
   return (
     <div className="space-y-6">
       <GuestStayMilestoneStrip steps={milestones} />
 
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-4">
-        <p className="text-sm text-zinc-400">Bun venit</p>
-        <h1 className="mt-1 text-xl font-semibold">{booking.guestName}</h1>
-        <p className="mt-2 text-sm text-zinc-300">{period}</p>
+      <GuestStayPhaseBanner
+        today={today}
+        checkIn={booking.checkIn}
+        checkOut={booking.checkOut}
+        checkedInAt={booking.checkedInAt}
+      />
+
+      <section className="guest-app__hero">
+        <p className="guest-app__hero__eyebrow">
+          {t("home.welcome")}, {booking.guestName}
+        </p>
+        <h1 className="guest-app__hero__title">{period}</h1>
         {booking.roomLabels.length > 0 ? (
-          <p className="mt-1 text-sm text-zinc-400">
-            {booking.roomLabels.join(" · ")}
+          <p className="guest-app__hero__rooms">{booking.roomLabels.join(" · ")}</p>
+        ) : null}
+        {settings.content.hotel?.shortDescription ? (
+          <p className="guest-app__hero__desc">
+            {settings.content.hotel.shortDescription}
           </p>
         ) : null}
+        <GuestAppQuickActions phone={hotel?.phone} address={hotel?.address} />
+        <div className="guest-app__hero__actions">
+          <GuestHomePrimaryCta
+            accessCode={accessCode}
+            today={today}
+            checkIn={booking.checkIn}
+            checkOut={booking.checkOut}
+            checkedInAt={booking.checkedInAt}
+            features={features}
+            hasWifiCredentials={hasWifiCredentials}
+          />
+          <GuestShareStayButton />
+        </div>
       </section>
 
-      {settings.content.hotel?.shortDescription ? (
-        <p className="text-sm leading-relaxed text-zinc-300">
-          {settings.content.hotel.shortDescription}
-        </p>
+      <GuestInstallHint />
+
+      {wifiFeature && wifi && hasWifiCredentials ? (
+        <>
+          <GuestWifiQuickCard accessCode={accessCode} wifi={wifi} />
+          {wifi.networkName ? (
+            <GuestWifiQrCode
+              networkName={wifi.networkName}
+              password={wifi.password}
+            />
+          ) : null}
+        </>
       ) : null}
 
-      <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
-          Tot ce ai nevoie
-        </h2>
-        <ul className="grid gap-2">
-          {features.map((feature) => {
-            const badge = guestAppFeatureBadge(feature.state);
-            return (
-              <li key={feature.id}>
-                <Link
-                  href={guestAppFeatureHref(accessCode, feature.id)}
-                  className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-zinc-900/80 px-4 py-3 text-left transition hover:border-[var(--guest-app-accent)] hover:bg-zinc-900"
-                >
-                  <span className="font-medium text-zinc-100">
-                    {guestAppFeatureLabel(feature.id)}
-                  </span>
-                  {badge ? (
-                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-200">
-                      {badge}
-                    </span>
-                  ) : null}
-                </Link>
-              </li>
-            );
-          })}
+      <section id="features">
+        <h2 className="guest-app__section-title mb-3">{t("home.sectionFeatures")}</h2>
+        <ul className="guest-app__feature-list">
+          {features.map((feature) => (
+            <li key={feature.id}>
+              <GuestFeatureLink accessCode={accessCode} feature={feature} />
+            </li>
+          ))}
         </ul>
       </section>
     </div>

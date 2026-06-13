@@ -1,5 +1,7 @@
 /** Guest app domain — pure types, fără DB / framework. */
 
+import type { GuestAppThemeSource } from "@/design/themes/types";
+
 export type GuestAppFeatureId =
   | "hotel_info"
   | "gallery"
@@ -21,8 +23,10 @@ export type GuestAppFeatureDef = {
 };
 
 export type GuestAppAppearance = {
-  primaryColor?: string;
-  accentColor?: string;
+  /** `inherit` = same family as public site; `custom` = override colors only. */
+  themeId?: GuestAppThemeSource;
+  primaryColor?: string | null;
+  accentColor?: string | null;
   logoUrl?: string | null;
 };
 

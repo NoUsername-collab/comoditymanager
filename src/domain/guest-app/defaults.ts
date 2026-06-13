@@ -16,8 +16,9 @@ export const DEFAULT_GUEST_APP_FEATURES: GuestAppFeatureDef[] = [
 export const DEFAULT_GUEST_APP_SETTINGS: GuestAppSettings = {
   enabled: true,
   appearance: {
-    primaryColor: "#0f766e",
-    accentColor: "#14b8a6",
+    themeId: "inherit",
+    primaryColor: null,
+    accentColor: null,
   },
   features: DEFAULT_GUEST_APP_FEATURES,
   content: {

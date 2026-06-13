@@ -1,3 +1,4 @@
+import { parseGuestAppThemeSource } from "@/design/themes/guest-app";
 import type {
   GuestAppAppearance,
   GuestAppContent,
@@ -35,9 +36,16 @@ export function mapGuestAppSettingsRow(row: {
   features: unknown;
   content: unknown;
 }): GuestAppSettings {
-  const appearance = {
+  const rawAppearance = (row.appearance ?? {}) as GuestAppAppearance;
+  const hasCustomColors =
+    Boolean(rawAppearance.primaryColor) || Boolean(rawAppearance.accentColor);
+  const themeId =
+    parseGuestAppThemeSource(rawAppearance.themeId) ??
+    (hasCustomColors ? "custom" : DEFAULT_GUEST_APP_SETTINGS.appearance.themeId);
+  const appearance: GuestAppAppearance = {
     ...DEFAULT_GUEST_APP_SETTINGS.appearance,
-    ...((row.appearance ?? {}) as GuestAppAppearance),
+    ...rawAppearance,
+    themeId,
   };
   const content = {
     ...DEFAULT_GUEST_APP_SETTINGS.content,

@@ -43,3 +43,6 @@ export type DesignThemeDefinition = {
   public: PublicThemeTokens;
   admin: Record<DesignThemeMode, AdminPrimitiveTokens>;
 };
+
+/** Guest app theme selection — `inherit` follows public site. */
+export type GuestAppThemeSource = DesignThemeId | "inherit" | "custom";

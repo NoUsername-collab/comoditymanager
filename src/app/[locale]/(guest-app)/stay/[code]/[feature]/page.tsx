@@ -25,7 +25,6 @@ export default async function GuestStayFeaturePage({
   return (
     <GuestAppFeatureScreen
       featureId={featureId}
-      accessCode={session.accessCode}
       settings={session.settings}
       booking={session.booking}
     />

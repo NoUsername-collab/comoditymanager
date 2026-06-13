@@ -35,6 +35,199 @@
     "pickDates": "Alege check-in și check-out.",
     "previewFailed": "Nu am putut calcula variantele"
   },
+  "guestApp": {
+    "meta": {
+      "fallbackName": "Cazare",
+      "title": "{name} — sejurul tău",
+      "description": "Informații, Wi-Fi și servicii pentru sejurul tău la {name}."
+    },
+    "shell": {
+      "eyebrow": "Guest app",
+      "back": "Înapoi acasă",
+      "navLabel": "Navigare guest app",
+      "offline": "Fără conexiune — unele informații pot fi indisponibile.",
+      "callReception": "Sună recepția",
+      "callReceptionShort": "Recepție",
+      "featureTitles": {
+        "hotel_info": "Despre unitate",
+        "gallery": "Galerie foto",
+        "online_checkin": "Check-in online",
+        "wifi": "Wi-Fi",
+        "facilities": "Facilități",
+        "services": "Servicii",
+        "travel_tips": "Sfaturi",
+        "green_stay": "Opțiune verde",
+        "online_payment": "Plată online"
+      }
+    },
+    "nav": {
+      "home": "Acasă",
+      "menu": "Mai mult",
+      "wifi": "Wi-Fi",
+      "hotel_info": "Info",
+      "online_checkin": "Check-in",
+      "travel_tips": "Tips"
+    },
+    "home": {
+      "welcome": "Bun venit",
+      "sectionFeatures": "Tot ce ai nevoie",
+      "wifiQuickTitle": "Wi-Fi — conectare rapidă",
+      "wifiQuickMore": "Detalii",
+      "wifiNetwork": "Rețea",
+      "wifiPassword": "Parolă",
+      "callReception": "Sună recepția",
+      "getDirections": "Indicații",
+      "nightsCount": "{count, plural, one {# noapte} few {# nopți} other {# nopți}}",
+      "ctaPrepareCheckin": "Pregătește check-in",
+      "ctaCheckinToday": "Check-in astăzi",
+      "ctaConnectWifi": "Conectează-te la Wi-Fi",
+      "ctaSeeTips": "Vezi recomandări locale",
+      "ctaCheckoutInfo": "Informații check-out",
+      "shareStay": "Salvează linkul sejurului",
+      "shareSuccess": "Link trimis",
+      "linkCopied": "Link copiat",
+      "shareFailed": "Nu s-a putut partaja linkul",
+      "daysUntilCheckout": "{count, plural, one {Mai ai # zi} few {Mai ai # zile} other {Mai ai # zile}}",
+      "daysUntilCheckin": "{count, plural, one {Check-in în # zi} few {Check-in în # zile} other {Check-in în # zile}}",
+      "checkoutTodayShort": "Check-out astăzi"
+    },
+    "phase": {
+      "confirmed": "Rezervarea e confirmată. Te așteptăm cu drag!",
+      "checkinToday": "Astăzi e ziua de check-in — bun venit!",
+      "checkedIn": "Bun sejur! Găsești mai jos tot ce ai nevoie.",
+      "checkoutToday": "Check-out astăzi. Mulțumim că ai ales să stai la noi!",
+      "checkedOut": "Sejur încheiat. Sperăm să te revedem curând!"
+    },
+    "featureDesc": {
+      "hotel_info": "Adresă, contact și detalii despre unitate",
+      "gallery": "Fotografii ale pensiunii",
+      "online_checkin": "Completează datele înainte de sosire",
+      "wifi": "Rețea și parolă — copiere rapidă",
+      "facilities": "Spații comune și dotări",
+      "services": "Servicii disponibile în timpul sejurului",
+      "travel_tips": "Recomandări din zonă",
+      "green_stay": "Opțiuni sustenabile pentru sejur",
+      "online_payment": "Plăți rapide și sigure"
+    },
+    "contact": {
+      "call": "Sună",
+      "email": "Email",
+      "directions": "Indicații"
+    },
+    "wifi": {
+      "copyAll": "Copiază toate datele Wi-Fi",
+      "copyAllSuccess": "Date Wi-Fi copiate",
+      "copyAllFailed": "Nu s-a putut copia — încearcă din nou",
+      "networkLabel": "Rețea",
+      "passwordLabel": "Parolă",
+      "qrAlt": "Cod QR Wi-Fi — scanează pentru conectare",
+      "qrHint": "Deschide camera telefonului și scanează codul pentru conectare automată."
+    },
+    "install": {
+      "title": "Salvează aplicația pe ecranul principal",
+      "iosSteps": "În Safari: Share → Add to Home Screen pentru acces rapid la sejur.",
+      "androidSteps": "În Chrome: Meniu ⋮ → Add to Home screen pentru acces rapid.",
+      "dismiss": "Am înțeles"
+    },
+    "milestones": {
+      "ariaLabel": "Etape sejur",
+      "confirmed": "Confirmată",
+      "checkedIn": "Check-in",
+      "checkedOut": "Check-out"
+    },
+    "features": {
+      "hotel_info": "Despre unitate",
+      "gallery": "Galerie foto",
+      "online_checkin": "Check-in online",
+      "wifi": "Wi-Fi",
+      "facilities": "Facilități",
+      "services": "Servicii",
+      "travel_tips": "Sfaturi & recomandări",
+      "green_stay": "Opțiune verde",
+      "online_payment": "Plată online"
+    },
+    "badges": {
+      "demo": "Demo"
+    },
+    "copy": {
+      "copy": "Copiază",
+      "copied": "Copiat",
+      "failed": "Eroare",
+      "copyAria": "Copiază {label}",
+      "copiedLive": "{label} copiat în clipboard",
+      "failedLive": "Nu s-a putut copia. Încearcă din nou."
+    },
+    "access": {
+      "eyebrow": "Guest app",
+      "deniedTitle": "Acces indisponibil",
+      "scheduled": {
+        "beforeTitle": "Linkul se activează în curând",
+        "afterTitle": "Șederea s-a încheiat",
+        "beforeBody": "Aplicația devine disponibilă din {date}.",
+        "afterBody": "Accesul a fost activ până pe {date}.",
+        "stayPeriod": "Sejur:",
+        "beforeHint": "Reveniți după {date} sau contactați recepția."
+      },
+      "errors": {
+        "generic": "Nu puteți accesa această pagină.",
+        "serviceUnavailable": "Serviciul nu este disponibil momentan. Reîncercați mai târziu.",
+        "disabled": "Aplicația pentru oaspeți este dezactivată. Contactați recepția.",
+        "setupIncomplete": "Aplicația nu este încă configurată pe acest mediu.",
+        "notFound": "Cod invalid sau inexistent.",
+        "wrongHost": "Linkul trebuie deschis de pe adresa pensiunii. Cere recepției linkul actualizat.",
+        "revoked": "Accesul a fost revocat.",
+        "notConfirmed": "Rezervarea nu este confirmată."
+      }
+    },
+    "feature": {
+      "mockBanner": "Conținut demonstrativ — funcționalitatea completă vine în curând.",
+      "address": "Adresă",
+      "phone": "Telefon",
+      "email": "Email",
+      "website": "Web",
+      "wifiNetwork": "Rețea Wi-Fi",
+      "wifiPassword": "Parolă Wi-Fi",
+      "checkinBody": "Check-in online pentru {name} — formular demo. La recepție veți completa datele oficiale.",
+      "checkinCta": "Începe check-in (în curând)",
+      "demoBreakfast": "Mic dejun — 08:00–10:30 (demo)",
+      "demoParking": "Parcare — inclusă (demo)",
+      "demoWellness": "Wellness / saună — cu programare (demo)"
+    },
+    "empty": {
+      "callReception": "Sună recepția",
+      "hotel": {
+        "title": "Informații indisponibile",
+        "description": "Detaliile despre unitate nu sunt încă publicate. Contactați recepția."
+      },
+      "wifi": {
+        "title": "Wi-Fi neconfigurat",
+        "description": "Datele de conectare nu sunt disponibile online. Întrebați la recepție."
+      },
+      "tips": {
+        "title": "Niciun sfat încă",
+        "description": "Recomandările vor apărea aici când sunt configurate."
+      },
+      "gallery": {
+        "title": "Galerie în pregătire",
+        "description": "Fotografiile unității vor fi disponibile în curând."
+      },
+      "payment": {
+        "title": "Plată online indisponibilă",
+        "description": "Plata se face momentan la recepție sau prin link separat."
+      }
+    },
+    "greenStay": {
+      "success": "Cererea a fost înregistrată (demo). Recepția va fi notificată în versiunea finală.",
+      "checkbox": "Solicit omiterea curățăeniei zilnice pentru ziua de mâine (demo — nu se trimite încă la recepție).",
+      "submit": "Trimite cererea"
+    },
+    "error": {
+      "title": "Ceva nu a mers bine",
+      "body": "Pagina guest app nu s-a putut încărca. Verificați linkul primit de la pensiune sau contactați recepția.",
+      "retry": "Reîncearcă",
+      "code": "Cod: {digest}"
+    }
+  },
   "public": {
     "shell": {
       "backHome": "Acasă",
@@ -624,6 +817,10 @@
         "general": "General",
         "enabled": "Guest app activă",
         "appearance": "Aspect",
+        "themeSource": "Familie temă",
+        "themeInherit": "Ca site-ul public (recomandat)",
+        "themeCustom": "Culori personalizate",
+        "themeHint": "Guest app folosește același catalog de teme ca site-ul public și admin. Implicit moștenește tema site-ului.",
         "primaryColor": "Culoare principală",
         "accentColor": "Culoare accent",
         "logoUrl": "Logo (URL)",

@@ -1,25 +1,26 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatRoDate } from "@/lib/stay-dates";
 import type { GuestAccessDenyReason, GuestAccessSchedule } from "@/domain/guest-app/types";
 import { GuestAppShell } from "@/features/guest-app/GuestAppShell";
 import type { GuestAppAppearance } from "@/domain/guest-app/types";
+import { useLocale } from "next-intl";
 
-const ERROR_MESSAGES: Partial<Record<GuestAccessDenyReason, string>> = {
-  disabled:
-    "Aplicația pentru oaspeți este dezactivată. Contactați recepția.",
-  setup_incomplete:
-    "Aplicația nu este încă configurată pe acest mediu.",
-  not_found: "Cod invalid sau inexistent.",
-  wrong_host:
-    "Linkul trebuie deschis de pe adresa pensiunii. Cere recepției linkul actualizat.",
-  revoked: "Accesul a fost revocat.",
-  booking_not_confirmed: "Rezervarea nu este confirmată.",
-};
+const ERROR_KEYS = {
+  disabled: "errors.disabled",
+  setup_incomplete: "errors.setupIncomplete",
+  not_found: "errors.notFound",
+  wrong_host: "errors.wrongHost",
+  revoked: "errors.revoked",
+  booking_not_confirmed: "errors.notConfirmed",
+} as const;
 
 type Props = {
+  accessCode: string;
   pensionName: string;
+  publicThemeId: string;
   appearance?: GuestAppAppearance;
   reason: GuestAccessDenyReason;
   message?: string;
@@ -27,40 +28,46 @@ type Props = {
 };
 
 export function GuestAccessGate({
+  accessCode,
   pensionName,
+  publicThemeId,
   appearance = {},
   reason,
   message,
   schedule,
 }: Props) {
+  const t = useTranslations("guestApp.access");
+  const locale = useLocale();
   const isScheduled =
     reason === "before_check_in" || reason === "after_check_out";
 
   if (isScheduled && schedule) {
     const title =
-      reason === "before_check_in"
-        ? "Linkul se activează în curând"
-        : "Șederea s-a încheiat";
-
+      reason === "before_check_in" ? t("scheduled.beforeTitle") : t("scheduled.afterTitle");
     const body =
       reason === "before_check_in"
-        ? `Aplicația devine disponibilă din ${formatRoDate(schedule.opensOn)}.`
-        : `Accesul a fost activ până pe ${formatRoDate(schedule.closesOn)}.`;
+        ? t("scheduled.beforeBody", { date: formatRoDate(schedule.opensOn) })
+        : t("scheduled.afterBody", { date: formatRoDate(schedule.closesOn) });
 
     return (
-      <GuestAppShell appearance={appearance} pensionName={pensionName}>
-        <div className="rounded-2xl border border-amber-500/35 bg-amber-950/30 p-6 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wide text-amber-200/80">
-            Guest app
-          </p>
-          <h1 className="mt-2 text-lg font-semibold text-amber-50">{title}</h1>
-          <p className="mt-2 text-sm text-amber-100/90">{body}</p>
-          <p className="mt-4 text-sm text-amber-100/75">
-            Sejur: {formatStayPeriod(schedule.checkIn, schedule.checkOut, "ro", true)}
+      <GuestAppShell
+        accessCode={accessCode}
+        appearance={appearance}
+        publicThemeId={publicThemeId}
+        pensionName={pensionName}
+        showNavigation={false}
+      >
+        <div className="guest-app__alert-warn">
+          <p className="guest-app__alert-warn__eyebrow">{t("eyebrow")}</p>
+          <h1 className="guest-app__alert-warn__title">{title}</h1>
+          <p className="guest-app__alert-warn__body">{body}</p>
+          <p className="guest-app__alert-warn__body mt-4">
+            {t("scheduled.stayPeriod")}{" "}
+            {formatStayPeriod(schedule.checkIn, schedule.checkOut, locale, true)}
           </p>
           {reason === "before_check_in" ? (
-            <p className="mt-3 text-xs text-amber-200/60">
-              Reveniți după {formatRoDate(schedule.opensOn)} sau contactați recepția.
+            <p className="guest-app__muted mt-3 text-xs">
+              {t("scheduled.beforeHint", { date: formatRoDate(schedule.opensOn) })}
             </p>
           ) : null}
         </div>
@@ -69,13 +76,22 @@ export function GuestAccessGate({
   }
 
   const text =
-    message ?? ERROR_MESSAGES[reason] ?? "Nu puteți accesa această pagină.";
+    message ??
+    (reason in ERROR_KEYS
+      ? t(ERROR_KEYS[reason as keyof typeof ERROR_KEYS])
+      : t("errors.generic"));
 
   return (
-    <GuestAppShell appearance={appearance} pensionName={pensionName}>
-      <div className="rounded-2xl border border-red-500/30 bg-red-950/40 p-6 text-center">
-        <h1 className="text-lg font-semibold text-red-100">Acces indisponibil</h1>
-        <p className="mt-2 text-sm text-red-200/90">{text}</p>
+    <GuestAppShell
+      accessCode={accessCode}
+      appearance={appearance}
+      publicThemeId={publicThemeId}
+      pensionName={pensionName}
+      showNavigation={false}
+    >
+      <div className="guest-app__alert-error">
+        <h1 className="guest-app__alert-error__title">{t("deniedTitle")}</h1>
+        <p className="guest-app__alert-error__body">{text}</p>
       </div>
     </GuestAppShell>
   );

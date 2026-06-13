@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { DESIGN_THEME_IDS } from "@/design/themes/catalog";
 import { DEFAULT_GUEST_APP_FEATURES } from "@/domain/guest-app/defaults";
 import type {
   GuestAppFeatureDef,
@@ -9,6 +10,7 @@ import type {
   GuestAppFeatureState,
   GuestAppSettings,
 } from "@/domain/guest-app/types";
+import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
 import { saveGuestAppSettingsAction } from "@/app/[locale]/admin/(panel)/settings/guest-app/actions";
 
@@ -30,15 +32,19 @@ export function GuestAppSettingsForm({
   settings: GuestAppSettings;
 }) {
   const t = useTranslations("admin.pages.guestApp");
+  const tThemes = useTranslations("admin.pages.publicSite.themes");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const [enabled, setEnabled] = useState(settings.enabled);
+  const [themeId, setThemeId] = useState<GuestAppThemeSource>(
+    settings.appearance.themeId ?? "inherit",
+  );
   const [primaryColor, setPrimaryColor] = useState(
-    settings.appearance.primaryColor ?? "#0f766e",
+    settings.appearance.primaryColor ?? "#d6b55a",
   );
   const [accentColor, setAccentColor] = useState(
-    settings.appearance.accentColor ?? "#14b8a6",
+    settings.appearance.accentColor ?? "#e8cc72",
   );
   const [logoUrl, setLogoUrl] = useState(settings.appearance.logoUrl ?? "");
 
@@ -85,8 +91,9 @@ export function GuestAppSettingsForm({
       const result = await saveGuestAppSettingsAction({
         enabled,
         appearance: {
-          primaryColor,
-          accentColor,
+          themeId,
+          primaryColor: themeId === "custom" ? primaryColor : null,
+          accentColor: themeId === "custom" ? accentColor : null,
           logoUrl: logoUrl.trim() || null,
         },
         features,
@@ -131,26 +138,45 @@ export function GuestAppSettingsForm({
 
       <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
         <h2 className="text-sm font-semibold text-zinc-900">{t("appearance")}</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className={labelClass}>
-            {t("primaryColor")}
-            <input
-              type="color"
-              className={inputClass}
-              value={primaryColor}
-              onChange={(e) => setPrimaryColor(e.target.value)}
-            />
-          </label>
-          <label className={labelClass}>
-            {t("accentColor")}
-            <input
-              type="color"
-              className={inputClass}
-              value={accentColor}
-              onChange={(e) => setAccentColor(e.target.value)}
-            />
-          </label>
-        </div>
+        <p className="text-xs text-zinc-500">{t("themeHint")}</p>
+        <label className={labelClass}>
+          {t("themeSource")}
+          <select
+            className={inputClass}
+            value={themeId}
+            onChange={(e) => setThemeId(e.target.value as GuestAppThemeSource)}
+          >
+            <option value="inherit">{t("themeInherit")}</option>
+            {DESIGN_THEME_IDS.map((id) => (
+              <option key={id} value={id}>
+                {tThemes(`${id}.title`)}
+              </option>
+            ))}
+            <option value="custom">{t("themeCustom")}</option>
+          </select>
+        </label>
+        {themeId === "custom" ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className={labelClass}>
+              {t("primaryColor")}
+              <input
+                type="color"
+                className={inputClass}
+                value={primaryColor}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+              />
+            </label>
+            <label className={labelClass}>
+              {t("accentColor")}
+              <input
+                type="color"
+                className={inputClass}
+                value={accentColor}
+                onChange={(e) => setAccentColor(e.target.value)}
+              />
+            </label>
+          </div>
+        ) : null}
         <label className={labelClass}>
           {t("logoUrl")}
           <input
