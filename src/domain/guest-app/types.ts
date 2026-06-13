@@ -45,6 +45,12 @@ export type GuestAppHotelContent = {
   website?: string;
 };
 
+export type GuestAppListItem = {
+  title: string;
+  description?: string;
+  icon?: string;
+};
+
 export type GuestAppGreenStayContent = {
   enabled?: boolean;
   description?: string;
@@ -54,6 +60,8 @@ export type GuestAppContent = {
   hotel?: GuestAppHotelContent;
   wifi?: GuestAppWifiContent;
   travelTips?: string[];
+  facilities?: GuestAppListItem[];
+  services?: GuestAppListItem[];
   greenStay?: GuestAppGreenStayContent;
 };
 
@@ -70,9 +78,15 @@ export type GuestAccessBookingSnapshot = {
   checkIn: string;
   checkOut: string;
   guestName: string;
+  guestEmail?: string | null;
+  guestPhone?: string | null;
   roomLabels: string[];
+  roomImageUrls: string[];
+  totalPrice: number | null;
   /** Check-in operațional înregistrat de recepție (null = încă doar confirmată). */
   checkedInAt: string | null;
+  paymentStatus: "paid" | "partial" | "unpaid" | null;
+  paymentAmountPaid: number | null;
 };
 
 export type GuestAccessDenyReason =

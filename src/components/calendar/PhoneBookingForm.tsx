@@ -1,14 +1,12 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  submitPhoneBookingAction,
-  suggestExistingGuestAction,
-} from "@/app/[locale]/(public)/calendar/actions";
+import { submitPhoneBookingAction } from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
+import { useGuestIdentityAutofill } from "@/hooks/useGuestIdentityAutofill";
 import {
   addDays,
   clampCheckInDate,
@@ -31,13 +29,28 @@ export function PhoneBookingForm({
   const defaultDates = defaultNewStayDates(today);
   const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
   const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
-  const [guestLastName, setGuestLastName] = useState("");
-  const [guestFirstName, setGuestFirstName] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [identityHint, setIdentityHint] = useState<string | null>(null);
-  const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">("neutral");
-  const [identityPending, startIdentityTransition] = useTransition();
+  const guestIdentityHints = useMemo(
+    () => ({
+      onFound: (name: string) => tForm("existingGuestFound", { name }),
+      onWatchlist: (name: string) => tForm("existingGuestWatchlist", { name }),
+      onBlacklist: (name: string) => tForm("existingGuestBlacklist", { name }),
+    }),
+    [tForm],
+  );
+  const {
+    guestLastName,
+    guestFirstName,
+    guestPhone,
+    guestEmail,
+    onLastNameChange,
+    onFirstNameChange,
+    onPhoneChange,
+    onEmailChange,
+    maybeAutofillGuest,
+    identityHint,
+    identityHintTone,
+    identityPending,
+  } = useGuestIdentityAutofill(guestIdentityHints);
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
   function onCheckInChange(value: string) {
@@ -49,37 +62,6 @@ export function PhoneBookingForm({
     }
     const earliestOut = addDays(nextCheckIn, 1);
     if (!checkOut || checkOut <= nextCheckIn) setCheckOut(earliestOut);
-  }
-
-  function maybeAutofillGuest() {
-    const hasIdentity =
-      guestEmail.trim().length > 0 ||
-      guestPhone.trim().length > 0 ||
-      (guestLastName.trim().length > 1 && guestFirstName.trim().length > 1);
-    if (!hasIdentity) return;
-    startIdentityTransition(async () => {
-      const res = await suggestExistingGuestAction({
-        guest_last_name: guestLastName,
-        guest_first_name: guestFirstName,
-        guest_email: guestEmail,
-        guest_phone: guestPhone,
-      });
-      if (!res.ok || !res.match) return;
-      setGuestLastName(res.match.lastName);
-      setGuestFirstName(res.match.firstName);
-      setGuestEmail(res.match.email ?? guestEmail);
-      setGuestPhone(res.match.phone ?? guestPhone);
-      if (res.match.flagLevel === "blacklist") {
-        setIdentityHintTone("warn");
-        setIdentityHint(tForm("existingGuestBlacklist", { name: res.match.displayName }));
-      } else if (res.match.flagLevel === "watchlist") {
-        setIdentityHintTone("warn");
-        setIdentityHint(tForm("existingGuestWatchlist", { name: res.match.displayName }));
-      } else {
-        setIdentityHintTone("neutral");
-        setIdentityHint(tForm("existingGuestFound", { name: res.match.displayName }));
-      }
-    });
   }
 
   const [state, formAction, pending] = useActionState(
@@ -149,14 +131,8 @@ export function PhoneBookingForm({
         compact
         lastName={guestLastName}
         firstName={guestFirstName}
-        onLastNameChange={(value) => {
-          setGuestLastName(value);
-          if (identityHint) setIdentityHint(null);
-        }}
-        onFirstNameChange={(value) => {
-          setGuestFirstName(value);
-          if (identityHint) setIdentityHint(null);
-        }}
+        onLastNameChange={onLastNameChange}
+        onFirstNameChange={onFirstNameChange}
         onIdentityBlur={maybeAutofillGuest}
       />
       <div className="grid grid-cols-2 gap-2">
@@ -167,10 +143,7 @@ export function PhoneBookingForm({
             type="tel"
             required
             value={guestPhone}
-            onChange={(e) => {
-              setGuestPhone(e.target.value);
-              if (identityHint) setIdentityHint(null);
-            }}
+            onChange={(e) => onPhoneChange(e.target.value)}
             onBlur={maybeAutofillGuest}
             className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
           />
@@ -181,10 +154,7 @@ export function PhoneBookingForm({
             name="guest_email"
             type="email"
             value={guestEmail}
-            onChange={(e) => {
-              setGuestEmail(e.target.value);
-              if (identityHint) setIdentityHint(null);
-            }}
+            onChange={(e) => onEmailChange(e.target.value)}
             onBlur={maybeAutofillGuest}
             className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
           />

@@ -8,6 +8,7 @@ import type {
   GuestAppFeatureDef,
   GuestAppFeatureId,
   GuestAppFeatureState,
+  GuestAppListItem,
   GuestAppSettings,
 } from "@/domain/guest-app/types";
 import type { GuestAppThemeSource } from "@/design/themes/types";
@@ -24,6 +25,28 @@ function linesToList(raw: string): string[] {
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean);
+}
+
+function listItemsToLines(items: GuestAppListItem[] | undefined): string {
+  return (items ?? [])
+    .map((item) => {
+      const parts = [item.icon, item.title, item.description].filter(Boolean);
+      return parts.join(" | ");
+    })
+    .join("\n");
+}
+
+function linesToListItems(raw: string): GuestAppListItem[] {
+  return linesToList(raw).map((line) => {
+    const parts = line.split("|").map((part) => part.trim());
+    if (parts.length >= 3) {
+      return { icon: parts[0], title: parts[1], description: parts[2] };
+    }
+    if (parts.length === 2) {
+      return { title: parts[0], description: parts[1] };
+    }
+    return { title: line };
+  });
 }
 
 export function GuestAppSettingsForm({
@@ -78,6 +101,12 @@ export function GuestAppSettingsForm({
     green.description ?? "",
   );
   const [greenEnabled, setGreenEnabled] = useState(green.enabled ?? true);
+  const [facilitiesText, setFacilitiesText] = useState(
+    listItemsToLines(settings.content.facilities),
+  );
+  const [servicesText, setServicesText] = useState(
+    listItemsToLines(settings.content.services),
+  );
 
   function setFeatureState(id: GuestAppFeatureId, state: GuestAppFeatureState) {
     setFeatures((prev) =>
@@ -112,6 +141,8 @@ export function GuestAppSettingsForm({
             instructions: wifiInstructions.trim() || undefined,
           },
           travelTips: linesToList(travelTips),
+          facilities: linesToListItems(facilitiesText),
+          services: linesToListItems(servicesText),
           greenStay: {
             enabled: greenEnabled,
             description: greenDescription.trim() || undefined,
@@ -314,6 +345,34 @@ export function GuestAppSettingsForm({
             rows={4}
             value={travelTips}
             onChange={(e) => setTravelTips(e.target.value)}
+          />
+        </label>
+      </section>
+
+      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
+        <h2 className="text-sm font-semibold text-zinc-900">{t("facilities")}</h2>
+        <p className="text-xs text-zinc-500">{t("listItemsHint")}</p>
+        <label className={labelClass}>
+          {t("facilitiesList")}
+          <textarea
+            className={inputClass}
+            rows={4}
+            value={facilitiesText}
+            onChange={(e) => setFacilitiesText(e.target.value)}
+          />
+        </label>
+      </section>
+
+      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
+        <h2 className="text-sm font-semibold text-zinc-900">{t("services")}</h2>
+        <p className="text-xs text-zinc-500">{t("listItemsHint")}</p>
+        <label className={labelClass}>
+          {t("servicesList")}
+          <textarea
+            className={inputClass}
+            rows={4}
+            value={servicesText}
+            onChange={(e) => setServicesText(e.target.value)}
           />
         </label>
       </section>

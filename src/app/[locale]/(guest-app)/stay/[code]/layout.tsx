@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { GuestAccessGate } from "@/features/guest-app/GuestAccessGate";
 import { GuestAppShell } from "@/features/guest-app/GuestAppShell";
+import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
 import { getGuestAppSettingsPublic } from "@/services/guest-app/settings";
@@ -91,14 +92,23 @@ export default async function GuestStayLayout({
     );
   }
 
+  const visibleFeatures = visibleGuestAppFeaturesForBooking(
+    session.settings,
+    session.booking,
+  );
+  const receptionPhone =
+    session.settings.content.hotel?.phone?.trim() ||
+    publicConfig?.contact.phone?.trim() ||
+    null;
+
   return (
     <GuestAppShell
       accessCode={session.accessCode}
       appearance={session.settings.appearance}
       publicThemeId={publicThemeId}
       pensionName={pensionName}
-      features={session.settings.features}
-      receptionPhone={session.settings.content.hotel?.phone}
+      features={visibleFeatures}
+      receptionPhone={receptionPhone}
       stayProgress={{
         today,
         checkIn: session.booking.checkIn,

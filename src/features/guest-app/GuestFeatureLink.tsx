@@ -14,7 +14,7 @@ type Props = {
 
 export function GuestFeatureLink({ accessCode, feature }: Props) {
   const t = useTranslations("guestApp");
-  const badge = guestAppFeatureBadge(feature.state);
+  const badge = guestAppFeatureBadge(feature);
 
   return (
     <Link

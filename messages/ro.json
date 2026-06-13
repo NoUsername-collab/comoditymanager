@@ -180,7 +180,7 @@
       }
     },
     "feature": {
-      "mockBanner": "Conținut demonstrativ — funcționalitatea completă vine în curând.",
+      "mockBanner": "Conținut incomplet — completați din admin sau site-ul public.",
       "address": "Adresă",
       "phone": "Telefon",
       "email": "Email",
@@ -214,12 +214,59 @@
       "payment": {
         "title": "Plată online indisponibilă",
         "description": "Plata se face momentan la recepție sau prin link separat."
+      },
+      "facilities": {
+        "title": "Facilități neconfigurate",
+        "description": "Lista facilităților va apărea aici când este completată."
+      },
+      "services": {
+        "title": "Servicii neconfigurate",
+        "description": "Serviciile disponibile vor apărea aici când sunt completate."
       }
     },
+    "precheckin": {
+      "intro": "Completează datele de contact înainte de sosire, {name}. Recepția le va folosi la check-in.",
+      "phone": "Telefon",
+      "email": "Email",
+      "documentType": "Tip act",
+      "documentOptional": "Opțional",
+      "documentCi": "Carte de identitate",
+      "documentPassport": "Pașaport",
+      "documentPermit": "Permis de ședere",
+      "documentNumber": "Număr act",
+      "notes": "Mențiuni pentru recepție",
+      "submit": "Trimite datele",
+      "submitting": "Se trimite…",
+      "successTitle": "Date trimise",
+      "successBody": "Recepția a primit informațiile. La sosire veți finaliza check-in-ul.",
+      "errors": {
+        "phoneRequired": "Telefonul este obligatoriu.",
+        "migration": "Funcția nu este disponibilă pe acest mediu — contactați pensiunea.",
+        "generic": "Nu s-a putut trimite. Încercați din nou."
+      }
+    },
+    "payment": {
+      "total": "Total sejur",
+      "paid": "Achitat",
+      "balance": "Rest de plată",
+      "statusPaid": "Rezervarea este achitată integral.",
+      "statusPartial": "Există un avans înregistrat — restul se plătește la recepție.",
+      "statusUnpaid": "Plata se face la recepție sau prin link trimis de pensiune.",
+      "receptionNote": "Plata online directă din app va fi disponibilă într-o versiune viitoare."
+    },
     "greenStay": {
-      "success": "Cererea a fost înregistrată (demo). Recepția va fi notificată în versiunea finală.",
-      "checkbox": "Solicit omiterea curățăeniei zilnice pentru ziua de mâine (demo — nu se trimite încă la recepție).",
-      "submit": "Trimite cererea"
+      "success": "Cererea a fost înregistrată. Recepția o va confirma.",
+      "skipDate": "Zi fără curățenie",
+      "note": "Mențiuni (opțional)",
+      "pendingTitle": "Cereri în așteptare",
+      "submit": "Trimite cererea",
+      "submitting": "Se trimite…",
+      "errors": {
+        "disabled": "Opțiunea verde nu este activă.",
+        "dateRequired": "Selectați data.",
+        "migration": "Funcția nu este disponibilă pe acest mediu.",
+        "generic": "Nu s-a putut trimite. Încercați din nou."
+      }
     },
     "error": {
       "title": "Ceva nu a mers bine",
@@ -825,7 +872,7 @@
         "accentColor": "Culoare accent",
         "logoUrl": "Logo (URL)",
         "features": "Funcții",
-        "featuresHint": "Mock = demo pentru oaspeți; Live = pregătit pentru integrare; Ascuns = nu apare în app.",
+        "featuresHint": "Demo = badge vizibil pentru oaspeți; Activ = funcționalitate reală; Ascuns = nu apare în app.",
         "stateMock": "Demo (mock)",
         "stateLive": "Activ (live)",
         "stateHidden": "Ascuns",
@@ -839,6 +886,11 @@
         "wifiInstructions": "Instrucțiuni conectare",
         "travelTips": "Sfaturi & recomandări",
         "travelTipsHint": "Câte un sfat pe linie",
+        "facilities": "Facilități",
+        "facilitiesList": "Listă facilități",
+        "services": "Servicii",
+        "servicesList": "Listă servicii",
+        "listItemsHint": "Câte un element pe linie: Titlu | Descriere sau Emoji | Titlu | Descriere. Gol = folosește beneficiile de pe site-ul public.",
         "greenStay": "Opțiune verde",
         "greenStayEnabled": "Oferă opțiunea de a omite curățenia",
         "greenStayDescription": "Text explicativ pentru oaspete",

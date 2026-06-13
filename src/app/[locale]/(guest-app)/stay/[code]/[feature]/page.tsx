@@ -1,7 +1,10 @@
 import { GuestAppFeatureScreen } from "@/features/guest-app/GuestAppFeatureScreen";
 import { parseGuestAppFeatureSlug } from "@/domain/guest-app/routes";
-import { visibleGuestAppFeatures } from "@/features/guest-app/feature-labels";
+import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
+import { resolveGuestAppContext } from "@/services/guest-app/resolve-context";
+import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export default async function GuestStayFeaturePage({
@@ -9,7 +12,11 @@ export default async function GuestStayFeaturePage({
 }: {
   params: Promise<{ code: string; feature: string }>;
 }) {
-  const { code, feature: featureSlug } = await params;
+  const [{ code, feature: featureSlug }, locale, today] = await Promise.all([
+    params,
+    getLocale(),
+    getEffectiveToday(),
+  ]);
   const featureId = parseGuestAppFeatureSlug(featureSlug);
   if (!featureId) notFound();
 
@@ -19,14 +26,24 @@ export default async function GuestStayFeaturePage({
   }));
   if (!session.ok) notFound();
 
-  const visible = visibleGuestAppFeatures(session.settings.features);
+  const visible = visibleGuestAppFeaturesForBooking(
+    session.settings,
+    session.booking,
+  );
   if (!visible.some((f) => f.id === featureId)) notFound();
+
+  const ctx = await resolveGuestAppContext(
+    session.settings,
+    session.booking,
+    locale,
+  );
 
   return (
     <GuestAppFeatureScreen
       featureId={featureId}
-      settings={session.settings}
-      booking={session.booking}
+      accessCode={session.accessCode}
+      today={today}
+      ctx={ctx}
     />
   );
 }

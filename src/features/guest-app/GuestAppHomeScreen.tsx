@@ -1,9 +1,6 @@
-import type {
-  GuestAccessBookingSnapshot,
-  GuestAppSettings,
-} from "@/domain/guest-app/types";
+import type { GuestAppResolvedContext } from "@/services/guest-app/resolve-context";
 import { buildGuestStayMilestones } from "@/domain/guest-app/stay-milestone";
-import { visibleGuestAppFeatures } from "@/features/guest-app/feature-labels";
+import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { GuestAppQuickActions } from "@/features/guest-app/GuestAppQuickActions";
 import { GuestFeatureLink } from "@/features/guest-app/GuestFeatureLink";
 import { GuestHomePrimaryCta } from "@/features/guest-app/GuestHomePrimaryCta";
@@ -18,21 +15,14 @@ import { getTranslations } from "next-intl/server";
 
 type Props = {
   accessCode: string;
-  booking: GuestAccessBookingSnapshot;
-  settings: GuestAppSettings;
-  locale: string;
+  ctx: GuestAppResolvedContext;
   today: string;
 };
 
-export async function GuestAppHomeScreen({
-  accessCode,
-  booking,
-  settings,
-  locale,
-  today,
-}: Props) {
+export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
   const t = await getTranslations("guestApp");
-  const features = visibleGuestAppFeatures(settings.features);
+  const { booking, settings, locale, hotel, wifi } = ctx;
+  const features = visibleGuestAppFeaturesForBooking(settings, booking);
   const period = formatStayPeriod(
     booking.checkIn,
     booking.checkOut,
@@ -46,8 +36,6 @@ export async function GuestAppHomeScreen({
     checkedInAt: booking.checkedInAt,
   });
   const wifiFeature = features.find((feature) => feature.id === "wifi");
-  const hotel = settings.content.hotel;
-  const wifi = settings.content.wifi;
   const hasWifiCredentials = Boolean(wifi?.networkName || wifi?.password);
 
   return (
@@ -69,12 +57,10 @@ export async function GuestAppHomeScreen({
         {booking.roomLabels.length > 0 ? (
           <p className="guest-app__hero__rooms">{booking.roomLabels.join(" · ")}</p>
         ) : null}
-        {settings.content.hotel?.shortDescription ? (
-          <p className="guest-app__hero__desc">
-            {settings.content.hotel.shortDescription}
-          </p>
+        {hotel.shortDescription ? (
+          <p className="guest-app__hero__desc">{hotel.shortDescription}</p>
         ) : null}
-        <GuestAppQuickActions phone={hotel?.phone} address={hotel?.address} />
+        <GuestAppQuickActions phone={hotel.phone} address={hotel.address} />
         <div className="guest-app__hero__actions">
           <GuestHomePrimaryCta
             accessCode={accessCode}

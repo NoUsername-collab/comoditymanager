@@ -1023,3 +1023,123 @@
   white-space: nowrap;
   border: 0;
 }
+
+.guest-app__gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.guest-app__gallery-item {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0.875rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 88%, transparent);
+}
+
+.guest-app__gallery-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.guest-app__gallery-item__caption {
+  padding: 0.5rem 0.625rem;
+  font-size: 0.6875rem;
+  color: var(--guest-muted);
+}
+
+.guest-app__list-items {
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.guest-app__list-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  border-radius: 0.875rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 88%, transparent);
+  padding: 0.875rem;
+}
+
+.guest-app__list-item__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.guest-app__list-item__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.guest-app__list-item__desc {
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--guest-muted);
+}
+
+.guest-app__form .guest-app__field {
+  display: block;
+}
+
+.guest-app__field__label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--guest-muted);
+}
+
+.guest-app__field__input {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 92%, transparent);
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--guest-fg);
+}
+
+.guest-app__form-error {
+  font-size: 0.8125rem;
+  color: #fecaca;
+}
+
+.guest-app__payment-dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.guest-app__payment-dl div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.guest-app__payment-dl dt {
+  font-size: 0.8125rem;
+  color: var(--guest-muted);
+}
+
+.guest-app__payment-dl dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.guest-app__payment-dl__balance dd {
+  color: var(--guest-accent);
+}

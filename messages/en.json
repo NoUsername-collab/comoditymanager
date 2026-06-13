@@ -180,7 +180,7 @@
       }
     },
     "feature": {
-      "mockBanner": "Demo content — full functionality coming soon.",
+      "mockBanner": "Content incomplete — finish setup in admin or the public site.",
       "address": "Address",
       "phone": "Phone",
       "email": "Email",
@@ -214,12 +214,59 @@
       "payment": {
         "title": "Online payment unavailable",
         "description": "Payment is currently at reception or via a separate link."
+      },
+      "facilities": {
+        "title": "Facilities not configured",
+        "description": "The facilities list will appear here once configured."
+      },
+      "services": {
+        "title": "Services not configured",
+        "description": "Available services will appear here once configured."
       }
     },
+    "precheckin": {
+      "intro": "Complete your contact details before arrival, {name}. Reception will use them at check-in.",
+      "phone": "Phone",
+      "email": "Email",
+      "documentType": "ID type",
+      "documentOptional": "Optional",
+      "documentCi": "National ID",
+      "documentPassport": "Passport",
+      "documentPermit": "Residence permit",
+      "documentNumber": "ID number",
+      "notes": "Notes for reception",
+      "submit": "Submit details",
+      "submitting": "Submitting…",
+      "successTitle": "Details submitted",
+      "successBody": "Reception has your information. You will complete check-in on arrival.",
+      "errors": {
+        "phoneRequired": "Phone number is required.",
+        "migration": "This feature is not available on this environment — contact the property.",
+        "generic": "Could not submit. Please try again."
+      }
+    },
+    "payment": {
+      "total": "Stay total",
+      "paid": "Paid",
+      "balance": "Balance due",
+      "statusPaid": "This booking is fully paid.",
+      "statusPartial": "A deposit is recorded — pay the balance at reception.",
+      "statusUnpaid": "Payment is at reception or via a link from the property.",
+      "receptionNote": "Direct online payment from the app will be available in a future update."
+    },
     "greenStay": {
-      "success": "Request recorded (demo). Reception will be notified in the final version.",
-      "checkbox": "I request to skip daily housekeeping for tomorrow (demo — not sent to reception yet).",
-      "submit": "Submit request"
+      "success": "Your request has been recorded. Reception will confirm it.",
+      "skipDate": "Day without housekeeping",
+      "note": "Notes (optional)",
+      "pendingTitle": "Pending requests",
+      "submit": "Submit request",
+      "submitting": "Submitting…",
+      "errors": {
+        "disabled": "Green stay is not enabled.",
+        "dateRequired": "Please select a date.",
+        "migration": "This feature is not available on this environment.",
+        "generic": "Could not submit. Please try again."
+      }
     },
     "error": {
       "title": "Something went wrong",
@@ -825,7 +872,7 @@
         "accentColor": "Accent color",
         "logoUrl": "Logo (URL)",
         "features": "Features",
-        "featuresHint": "Mock = demo for guests; Live = ready for integration; Hidden = not shown in app.",
+        "featuresHint": "Demo = badge visible to guests; Active = real functionality; Hidden = not shown in app.",
         "stateMock": "Demo (mock)",
         "stateLive": "Active (live)",
         "stateHidden": "Hidden",
@@ -839,6 +886,11 @@
         "wifiInstructions": "Connection instructions",
         "travelTips": "Tips & recommendations",
         "travelTipsHint": "One tip per line",
+        "facilities": "Facilities",
+        "facilitiesList": "Facilities list",
+        "services": "Services",
+        "servicesList": "Services list",
+        "listItemsHint": "One item per line: Title | Description or Emoji | Title | Description. Empty = use public site benefits.",
         "greenStay": "Green stay",
         "greenStayEnabled": "Offer skip-housekeeping option",
         "greenStayDescription": "Explanation text for guests",

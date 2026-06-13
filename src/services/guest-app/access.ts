@@ -35,9 +35,9 @@ async function loadBookingSnapshot(
     .from("bookings")
     .select(
       `
-      id, status, check_in, check_out, guest_name,
+      id, status, check_in, check_out, guest_name, guest_email, guest_phone, total_price,
       booking_rooms (
-        rooms ( name )
+        rooms ( name, image_url )
       )
     `,
     )
@@ -52,19 +52,23 @@ async function loadBookingSnapshot(
   if (!data) return null;
 
   const roomLabels: string[] = [];
+  const roomImageUrls: string[] = [];
   const bookingRooms = data.booking_rooms as
-    | { rooms: { name: string } | { name: string }[] | null }[]
+    | { rooms: { name: string; image_url?: string | null } | { name: string; image_url?: string | null }[] | null }[]
     | null;
   for (const row of bookingRooms ?? []) {
     const r = row.rooms;
-    const name = Array.isArray(r) ? r[0]?.name : r?.name;
-    if (name) roomLabels.push(name);
+    const room = Array.isArray(r) ? r[0] : r;
+    if (room?.name) roomLabels.push(room.name);
+    if (room?.image_url) roomImageUrls.push(String(room.image_url));
   }
 
   let checkedInAt: string | null = null;
+  let paymentStatus: GuestAccessBookingSnapshot["paymentStatus"] = null;
+  let paymentAmountPaid: number | null = null;
   const checkinResult = await supabase
     .from("checkins")
-    .select("checked_in_at")
+    .select("checked_in_at, payment_status, payment_amount_paid")
     .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId)
     .not("checked_in_at", "is", null)
@@ -78,7 +82,18 @@ async function loadBookingSnapshot(
     }
   } else if (checkinResult.data?.checked_in_at) {
     checkedInAt = String(checkinResult.data.checked_in_at);
+    const ps = checkinResult.data.payment_status;
+    if (ps === "paid" || ps === "partial" || ps === "unpaid") {
+      paymentStatus = ps;
+    }
+    if (checkinResult.data.payment_amount_paid != null) {
+      paymentAmountPaid = Number(checkinResult.data.payment_amount_paid);
+    }
   }
+
+  const totalRaw = data.total_price;
+  const totalPrice =
+    totalRaw != null && Number(totalRaw) > 0 ? Number(totalRaw) : null;
 
   return {
     id: String(data.id),
@@ -86,8 +101,14 @@ async function loadBookingSnapshot(
     checkIn: String(data.check_in),
     checkOut: String(data.check_out),
     guestName: String(data.guest_name),
+    guestEmail: data.guest_email ? String(data.guest_email) : null,
+    guestPhone: data.guest_phone ? String(data.guest_phone) : null,
     roomLabels,
+    roomImageUrls,
+    totalPrice,
     checkedInAt,
+    paymentStatus,
+    paymentAmountPaid,
   };
 }
 

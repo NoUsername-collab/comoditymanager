@@ -4,10 +4,8 @@ import {
   useEffect,
   useMemo,
   useState,
-  useTransition,
   type ReactNode,
 } from "react";
-import { suggestExistingGuestAction } from "@/app/[locale]/(public)/calendar/actions";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { BookingRow } from "@/services/bookings";
@@ -40,6 +38,7 @@ import {
   parseIso,
   todayIso,
 } from "@/lib/stay-dates";
+import { useGuestIdentityAutofill } from "@/hooks/useGuestIdentityAutofill";
 
 export type GanttQuickRoomOption = {
   id: string;
@@ -393,15 +392,32 @@ export function GanttQuickActionPanel({
   const [blockPreset, setBlockPreset] =
     useState<BlockReasonPresetId>("maintenance");
   const [blockCustom, setBlockCustom] = useState("");
-  const [guestLastName, setGuestLastName] = useState("");
-  const [guestFirstName, setGuestFirstName] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
-  const [identityHint, setIdentityHint] = useState<string | null>(null);
-  const [identityHintTone, setIdentityHintTone] = useState<
-    "neutral" | "warn"
-  >("neutral");
-  const [identityPending, startIdentityTransition] = useTransition();
+  const guestIdentityHints = useMemo(
+    () => ({
+      onFound: (name: string) =>
+        tGantt("quick.existingGuestFound", { name }),
+      onWatchlist: (name: string) =>
+        tGantt("quick.existingGuestWatchlist", { name }),
+      onBlacklist: (name: string) =>
+        tGantt("quick.existingGuestBlacklist", { name }),
+    }),
+    [tGantt],
+  );
+  const {
+    guestLastName,
+    guestFirstName,
+    guestEmail,
+    guestPhone,
+    onLastNameChange,
+    onFirstNameChange,
+    onEmailChange,
+    onPhoneChange,
+    maybeAutofillGuest,
+    identityHint,
+    identityHintTone,
+    identityPending,
+    resetGuestIdentity,
+  } = useGuestIdentityAutofill(guestIdentityHints);
   const [moveBookingId, setMoveBookingId] = useState(defaultBooking?.id ?? "");
   const [moveSourceRoomId, setMoveSourceRoomId] = useState(
     defaultBooking?.room_ids[0] ?? ""
@@ -652,49 +668,6 @@ export function GanttQuickActionPanel({
       }
       onClose();
       router.refresh();
-    });
-  }
-
-  function maybeAutofillGuest() {
-    const hasIdentity =
-      guestEmail.trim().length > 0 ||
-      guestPhone.trim().length > 0 ||
-      (guestLastName.trim().length > 1 && guestFirstName.trim().length > 1);
-    if (!hasIdentity) return;
-    startIdentityTransition(async () => {
-      const res = await suggestExistingGuestAction({
-        guest_last_name: guestLastName,
-        guest_first_name: guestFirstName,
-        guest_email: guestEmail,
-        guest_phone: guestPhone,
-      });
-      if (!res.ok || !res.match) return;
-      setGuestLastName(res.match.lastName);
-      setGuestFirstName(res.match.firstName);
-      setGuestEmail(res.match.email ?? guestEmail);
-      setGuestPhone(res.match.phone ?? guestPhone);
-      if (res.match.flagLevel === "blacklist") {
-        setIdentityHintTone("warn");
-        setIdentityHint(
-          tGantt("quick.existingGuestBlacklist", {
-            name: res.match.displayName,
-          }),
-        );
-      } else if (res.match.flagLevel === "watchlist") {
-        setIdentityHintTone("warn");
-        setIdentityHint(
-          tGantt("quick.existingGuestWatchlist", {
-            name: res.match.displayName,
-          }),
-        );
-      } else {
-        setIdentityHintTone("neutral");
-        setIdentityHint(
-          tGantt("quick.existingGuestFound", {
-            name: res.match.displayName,
-          }),
-        );
-      }
     });
   }
 
@@ -990,10 +963,7 @@ export function GanttQuickActionPanel({
                 <input
                   className={inputClass}
                   value={guestLastName}
-                  onChange={(e) => {
-                    setGuestLastName(e.target.value);
-                    if (identityHint) setIdentityHint(null);
-                  }}
+                  onChange={(e) => onLastNameChange(e.target.value)}
                   onBlur={maybeAutofillGuest}
                 />
               </label>
@@ -1002,10 +972,7 @@ export function GanttQuickActionPanel({
                 <input
                   className={inputClass}
                   value={guestFirstName}
-                  onChange={(e) => {
-                    setGuestFirstName(e.target.value);
-                    if (identityHint) setIdentityHint(null);
-                  }}
+                  onChange={(e) => onFirstNameChange(e.target.value)}
                   onBlur={maybeAutofillGuest}
                 />
               </label>
@@ -1028,10 +995,7 @@ export function GanttQuickActionPanel({
                 type="email"
                 className={inputClass}
                 value={guestEmail}
-                onChange={(e) => {
-                  setGuestEmail(e.target.value);
-                  if (identityHint) setIdentityHint(null);
-                }}
+                onChange={(e) => onEmailChange(e.target.value)}
                 onBlur={maybeAutofillGuest}
               />
             </label>
@@ -1042,10 +1006,7 @@ export function GanttQuickActionPanel({
                 type="tel"
                 required
                 value={guestPhone}
-                onChange={(e) => {
-                  setGuestPhone(e.target.value);
-                  if (identityHint) setIdentityHint(null);
-                }}
+                onChange={(e) => onPhoneChange(e.target.value)}
                 onBlur={maybeAutofillGuest}
               />
             </label>
