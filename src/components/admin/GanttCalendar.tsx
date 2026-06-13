@@ -94,6 +94,7 @@ import {
   resolveGanttDayGridOptions,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
+import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import { GanttFooterLegend } from "@/components/admin/gantt/GanttFooterLegend";
 import { GanttVirtualizedBody } from "@/components/admin/gantt/GanttVirtualizedBody";
 
@@ -154,6 +155,7 @@ export function GanttCalendar({
   const compact =
     viewRange.zoom === "quarter" || density === "compact";
   const ganttRowHeight = density === "compact" ? GANTT_ROW_H_COMPACT : GANTT_ROW_H;
+  const summaryFilterActive = filter !== "all";
   const columnMetrics = useMemo(
     () =>
       resolveGanttColumnMetrics(
@@ -180,6 +182,8 @@ export function GanttCalendar({
     occupancyByRoom,
     displaySegmentsByRoom,
     filteredRooms,
+    dailyFreeCounts,
+    focusIso,
     todaySummary,
     operativeCheckInEligible,
     todayFlagsByRoom,
@@ -579,6 +583,10 @@ export function GanttCalendar({
         panActive={isHeaderPanActive}
         scrollTitle={scrollDragTitle}
         dayGridOptions={dayGridOptions}
+        dailyFreeCounts={dailyFreeCounts}
+        activeFocusIso={summaryFilterActive ? focusIso : null}
+        filterActive={summaryFilterActive}
+        onSummaryDayClick={handleSummaryDayClick}
       />
     <div
       key={viewRange.periodKey}
@@ -689,6 +697,18 @@ export function GanttCalendar({
                 />
               </th>
             </tr>
+            <GanttDailySummaryRow
+              counts={dailyFreeCounts}
+              viewRange={viewRange}
+              compact={compact}
+              activeFocusIso={summaryFilterActive ? focusIso : null}
+              filterActive={summaryFilterActive}
+              onDayClick={handleSummaryDayClick}
+              onPanPointerDown={handleHeaderPanPointerDown}
+              panActive={isHeaderPanActive}
+              scrollTitle={scrollDragTitle}
+              dayGridOptions={dayGridOptions}
+            />
           </thead>
           <GanttVirtualizedBody
             shellRef={shellRef}

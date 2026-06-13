@@ -40,9 +40,9 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Off-screen paint skip for room rows (all viewports) */
+/* content-visibility:auto breaks absolute stay bars + inner horizontal scroll */
 .gantt-room-row {
-  content-visibility: auto;
+  content-visibility: visible;
   contain-intrinsic-size: auto var(--gantt-row-h);
 }
 
@@ -107,10 +107,6 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   z-index: auto;
 }
 
-.gantt-calendar-page .gantt-summary-row {
-  display: none !important;
-}
-
 .gantt-head-main-row > th,
 .gantt-summary-row > td {
   background-clip: padding-box;
@@ -168,7 +164,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-viewport-header__row--summary {
-  display: none;
+  border-top: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
 }
 
 .gantt-viewport-header__room,
@@ -2203,10 +2199,20 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 
 .gantt-drag-row__stays {
   position: relative;
+  display: grid;
+  grid-template: 1fr / 1fr;
   height: 100%;
   width: 100%;
   min-height: 0;
   overflow: hidden;
+}
+
+/* All stays/holds share one lane — never stack vertically in the row */
+.gantt-drag-row__stays > .gantt-draggable-stay,
+.gantt-drag-row__stays > .gantt-occ-bar {
+  grid-area: 1 / 1;
+  align-self: start;
+  justify-self: stretch;
 }
 
 .gantt-occ-bar--hold {
@@ -4263,11 +4269,7 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gant
   min-width: 100%;
 }
 
-/* Desktop calendar — lock row geometry (content-visibility + table rows break absolute stays) */
-html:not([data-layout-chrome="compact"]) .gantt-room-row {
-  content-visibility: visible;
-}
-
+/* Desktop calendar — lock row geometry (table rows ignore tr max-height) */
 html:not([data-layout-chrome="compact"]) .gantt-room-row > td {
   height: var(--gantt-row-h);
   max-height: var(--gantt-row-h);
