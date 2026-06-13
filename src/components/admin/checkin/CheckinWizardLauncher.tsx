@@ -4,9 +4,15 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { loadCheckinWizardContextAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import type { CheckinWizardContextResult } from "@/app/[locale]/admin/(panel)/checkin/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
+import type {
+  BookingForCheckin,
+  CheckinGuestInput,
+  CheckinSettings,
+  PaymentStatus,
+} from "@/domain/checkin/types";
 
 const CheckinStepper = dynamic(
   () =>
@@ -24,17 +30,31 @@ const CheckinStepper = dynamic(
         <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-amber-600" />
       </div>
     ),
-  }
+  },
 );
+
+export type CheckinWizardMode = "create" | "edit";
+
+export type CheckinWizardEditState = {
+  checkinId: string;
+  guests: CheckinGuestInput[];
+  paymentStatus: PaymentStatus;
+  paymentAmountPaid: number;
+  depositAmount: number;
+  keysHandedRooms: string[];
+  notes: string;
+};
 
 type Props = {
   bookingId: string;
   open: boolean;
+  mode?: CheckinWizardMode;
   onClose: () => void;
   onSuccess?: () => void;
   /** When provided, skips the server fetch (e.g. booking detail page). */
   booking?: BookingForCheckin;
   settings?: CheckinSettings;
+  editState?: CheckinWizardEditState;
 };
 
 function CheckinWizardLoading({ label }: { label: string }) {
@@ -53,10 +73,12 @@ function CheckinWizardLoading({ label }: { label: string }) {
 export function CheckinWizardLauncher({
   bookingId,
   open,
+  mode = "create",
   onClose,
   onSuccess,
   booking: prefetchedBooking,
   settings: prefetchedSettings,
+  editState: prefetchedEditState,
 }: Props) {
   const t = useTranslations("admin.checkIn");
   const tCommon = useTranslations("common");
@@ -69,6 +91,7 @@ export function CheckinWizardLauncher({
   const prefetchRef = useRef({
     booking: prefetchedBooking,
     settings: prefetchedSettings,
+    editState: prefetchedEditState,
   });
 
   const hasPrefetch = !!(prefetchedBooking && prefetchedSettings);
@@ -77,7 +100,17 @@ export function CheckinWizardLauncher({
   const [context, setContext] = useState<{
     booking: BookingForCheckin;
     settings: CheckinSettings;
-  } | null>(hasPrefetch ? { booking: prefetchedBooking!, settings: prefetchedSettings! } : null);
+    editState?: CheckinWizardEditState;
+    partialPayment?: CheckinWizardContextResult["partialPayment"];
+  } | null>(
+    hasPrefetch
+      ? {
+          booking: prefetchedBooking!,
+          settings: prefetchedSettings!,
+          editState: prefetchedEditState,
+        }
+      : null,
+  );
 
   useEffect(() => {
     onCloseRef.current = onClose;
@@ -88,6 +121,7 @@ export function CheckinWizardLauncher({
     prefetchRef.current = {
       booking: prefetchedBooking,
       settings: prefetchedSettings,
+      editState: prefetchedEditState,
     };
   });
 
@@ -100,11 +134,15 @@ export function CheckinWizardLauncher({
       return;
     }
 
-    const { booking: prefetchBooking, settings: prefetchSettings } =
+    const { booking: prefetchBooking, settings: prefetchSettings, editState } =
       prefetchRef.current;
 
     if (prefetchBooking && prefetchSettings) {
-      setContext({ booking: prefetchBooking, settings: prefetchSettings });
+      setContext({
+        booking: prefetchBooking,
+        settings: prefetchSettings,
+        editState,
+      });
       setLoading(false);
       return;
     }
@@ -113,7 +151,9 @@ export function CheckinWizardLauncher({
     setLoading(true);
     setContext(null);
 
-    void loadCheckinWizardContextAction(bookingId).then((res) => {
+    void loadCheckinWizardContextAction(bookingId, {
+      edit: mode === "edit",
+    }).then((res) => {
       if (cancelled) return;
       setLoading(false);
 
@@ -127,7 +167,10 @@ export function CheckinWizardLauncher({
         return;
       }
 
-      if (res.roomCheckinComplete ?? res.hasExistingCheckin) {
+      if (
+        mode === "create" &&
+        (res.roomCheckinComplete ?? res.hasExistingCheckin)
+      ) {
         showToastRef.current({
           kind: "info",
           title: tRef.current("title"),
@@ -138,8 +181,23 @@ export function CheckinWizardLauncher({
         return;
       }
 
+      if (mode === "edit" && !res.editContext) {
+        showToastRef.current({
+          kind: "error",
+          title: tCommonRef.current("error"),
+          message: tRef.current("noCheckinToEdit"),
+        });
+        onCloseRef.current();
+        return;
+      }
+
       if (res.booking && res.settings) {
-        setContext({ booking: res.booking, settings: res.settings });
+        setContext({
+          booking: res.booking,
+          settings: res.settings,
+          editState: res.editContext,
+          partialPayment: res.partialPayment,
+        });
         return;
       }
 
@@ -154,17 +212,18 @@ export function CheckinWizardLauncher({
     return () => {
       cancelled = true;
     };
-  }, [open, bookingId, hasPrefetch]);
+  }, [open, bookingId, mode, hasPrefetch]);
 
   if (!open) return null;
 
   const ready = !!context && !loading;
+  const panelTitle = mode === "edit" ? t("editTitle") : t("title");
 
   return (
     <AdminFloatingPanel
       open
       onClose={onClose}
-      title={t("title")}
+      title={panelTitle}
       variant="modal"
       width={680}
       className="checkin-modal"
@@ -173,6 +232,23 @@ export function CheckinWizardLauncher({
         <CheckinStepper
           booking={context.booking}
           settings={context.settings}
+          mode={mode}
+          checkinId={context.editState?.checkinId}
+          initialGuests={context.editState?.guests}
+          initialPaymentStatus={
+            context.editState?.paymentStatus ??
+            context.partialPayment?.paymentStatus
+          }
+          initialPaymentAmountPaid={
+            context.editState?.paymentAmountPaid ??
+            context.partialPayment?.paymentAmountPaid
+          }
+          initialDepositAmount={
+            context.editState?.depositAmount ??
+            context.partialPayment?.depositAmount
+          }
+          initialKeysHandedRooms={context.editState?.keysHandedRooms}
+          initialNotes={context.editState?.notes}
           onComplete={() => {
             onSuccessRef.current?.();
             onCloseRef.current();

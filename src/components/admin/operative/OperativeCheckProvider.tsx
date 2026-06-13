@@ -12,7 +12,10 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import dynamic from "next/dynamic";
-import { CheckinWizardLauncher } from "@/components/admin/checkin/CheckinWizardLauncher";
+import {
+  CheckinWizardLauncher,
+  type CheckinWizardMode,
+} from "@/components/admin/checkin/CheckinWizardLauncher";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
 const BookingCheckoutPanel = dynamic(
@@ -35,6 +38,8 @@ export type OperativeCheckRequest = {
   roomNames?: string[];
   checkedInRooms?: string[];
   today?: string;
+  /** Deschide wizard-ul în mod editare (check-in deja înregistrat). */
+  editExisting?: boolean;
 };
 
 type CheckoutDialogState = OperativeCheckRequest;
@@ -61,6 +66,8 @@ export function OperativeCheckProvider({
   const tGantt = useTranslations("admin.gantt");
   const tServer = useTranslations("admin.serverActions");
   const [checkinBookingId, setCheckinBookingId] = useState<string | null>(null);
+  const [checkinWizardMode, setCheckinWizardMode] =
+    useState<CheckinWizardMode>("create");
   const [checkoutDialog, setCheckoutDialog] =
     useState<CheckoutDialogState | null>(null);
 
@@ -68,6 +75,12 @@ export function OperativeCheckProvider({
     (args: OperativeCheckRequest): boolean => {
       const effectiveToday = args.today ?? today;
       const status = args.status ?? "confirmata";
+
+      if (args.editExisting) {
+        setCheckinWizardMode("edit");
+        setCheckinBookingId(args.bookingId);
+        return true;
+      }
 
       if (
         !canOfferOperativeCheckIn({
@@ -89,6 +102,7 @@ export function OperativeCheckProvider({
         return false;
       }
 
+      setCheckinWizardMode("create");
       setCheckinBookingId(args.bookingId);
       return true;
     },
@@ -99,7 +113,10 @@ export function OperativeCheckProvider({
     setCheckoutDialog(args);
   }, []);
 
-  const closeCheckinWizard = useCallback(() => setCheckinBookingId(null), []);
+  const closeCheckinWizard = useCallback(() => {
+    setCheckinBookingId(null);
+    setCheckinWizardMode("create");
+  }, []);
   const refreshAfterCheckin = useCallback(() => router.refresh(), [router]);
 
   const value = useMemo(
@@ -114,6 +131,7 @@ export function OperativeCheckProvider({
         <CheckinWizardLauncher
           bookingId={checkinBookingId}
           open
+          mode={checkinWizardMode}
           onClose={closeCheckinWizard}
           onSuccess={refreshAfterCheckin}
         />

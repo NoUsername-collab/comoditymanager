@@ -22,8 +22,10 @@ import { NationalIdTypePicker } from "@/components/admin/guests/NationalIdTypePi
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
   createCheckinAction,
+  updateCheckinAction,
   type CreateCheckinResult,
 } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import type { CheckinWizardMode } from "@/components/admin/checkin/CheckinWizardLauncher";
 import type { CheckinTransferOffer } from "@/domain/checkin/identity-result";
 import { createInitialCheckinGuests } from "@/components/admin/checkin/checkin-guest-defaults";
 import {
@@ -41,6 +43,7 @@ import { isIdentityStatusCritical } from "@/domain/guest/profile-data";
 import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { CheckinRoomPicker } from "@/components/admin/checkin/CheckinRoomPicker";
+import { CheckinPaymentStep } from "@/components/admin/checkin/CheckinPaymentStep";
 import { TouristSheetView } from "@/components/admin/checkin/TouristSheetView";
 import { MrzScanDialog } from "@/components/admin/checkin/MrzScanDialog";
 import { mrzToGuestPatch, type MrzMappedIdentity } from "@/domain/guest/mrz";
@@ -54,24 +57,41 @@ import type {
   ValidationResult,
 } from "@/domain/checkin/types";
 import {
-  CHECKIN_PAYMENT_OPTIONS,
   paymentAmountForStatus,
 } from "@/domain/checkin/types";
+import { isCheckinPaymentSettled } from "@/domain/checkin/payment-panel";
 
 type Props = {
   booking: BookingForCheckin;
   settings: CheckinSettings;
+  mode?: CheckinWizardMode;
+  checkinId?: string;
+  initialGuests?: CheckinGuestInput[];
+  initialPaymentStatus?: PaymentStatus;
+  initialPaymentAmountPaid?: number;
+  initialDepositAmount?: number;
+  initialKeysHandedRooms?: string[];
+  initialNotes?: string;
   onComplete: () => void;
   onCancel: () => void;
 };
 
 const FULL_CORE = ["identity", "payment", "validate", "finish"] as const;
 const CONTINUE_CORE = ["identity", "validate", "finish"] as const;
+const CONTINUE_WITH_PAYMENT = ["identity", "payment", "validate", "finish"] as const;
 type StepKey = "rooms" | (typeof FULL_CORE)[number];
 
 export function CheckinStepper({
   booking,
   settings,
+  mode = "create",
+  checkinId,
+  initialGuests,
+  initialPaymentStatus,
+  initialPaymentAmountPaid,
+  initialDepositAmount,
+  initialKeysHandedRooms,
+  initialNotes,
   onComplete,
   onCancel,
 }: Props) {
@@ -87,15 +107,25 @@ export function CheckinStepper({
       ),
     [booking.room_names, booking.checked_in_rooms],
   );
-  const isContinuation = roomProgress.checked > 0;
+  const isEditMode = mode === "edit" && !!checkinId;
+  const isContinuation = roomProgress.checked > 0 && !isEditMode;
+  const paymentSettled = isCheckinPaymentSettled(
+    initialPaymentStatus,
+    booking.total_price,
+  );
   const needsRoomPicker =
     roomProgress.isMultiRoom && roomProgress.pendingRooms.length > 0;
   const needsRoomPickerStep =
     needsRoomPicker && roomProgress.pendingRooms.length > 1;
   const steps = useMemo((): StepKey[] => {
-    const core = isContinuation ? CONTINUE_CORE : FULL_CORE;
+    if (isEditMode) return [...FULL_CORE];
+    const core = isContinuation
+      ? paymentSettled
+        ? CONTINUE_CORE
+        : CONTINUE_WITH_PAYMENT
+      : FULL_CORE;
     return needsRoomPickerStep ? ["rooms", ...core] : [...core];
-  }, [isContinuation, needsRoomPickerStep]);
+  }, [isContinuation, needsRoomPickerStep, isEditMode, paymentSettled]);
 
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
@@ -118,6 +148,7 @@ export function CheckinStepper({
   );
 
   const [guests, setGuests] = useState<CheckinGuestInput[]>(() => {
+    if (initialGuests?.length) return initialGuests;
     if (needsRoomPicker && roomProgress.pendingRooms.length !== 1) {
       return [];
     }
@@ -186,15 +217,22 @@ export function CheckinStepper({
   const [sheetData, setSheetData] = useState<TouristSheetData | null>(null);
 
   // Payment data
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("unpaid");
-  const [paymentAmount, setPaymentAmount] = useState(booking.total_price);
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(
+    initialPaymentStatus ?? "unpaid",
+  );
+  const [paymentAmount, setPaymentAmount] = useState(
+    initialPaymentAmountPaid ?? booking.total_price,
+  );
   const [depositAmount, setDepositAmount] = useState(
-    settings.checkin_deposit ? settings.checkin_deposit_amount : 0,
+    initialDepositAmount ??
+      (settings.checkin_deposit ? settings.checkin_deposit_amount : 0),
   );
 
   // Finalize data
-  const [keysHandedRooms, setKeysHandedRooms] = useState<string[]>([]);
-  const [notes, setNotes] = useState("");
+  const [keysHandedRooms, setKeysHandedRooms] = useState<string[]>(
+    initialKeysHandedRooms ?? [],
+  );
+  const [notes, setNotes] = useState(initialNotes ?? "");
 
   // Validation result (computed before validate step)
   const [validation, setValidation] = useState<ValidationResult | null>(null);
@@ -298,7 +336,7 @@ export function CheckinStepper({
       setTransferOffer(null);
       showToast({
         kind: "success",
-        title: t("success"),
+        title: isEditMode ? t("updatedSuccess") : t("success"),
       });
       setSheetData(buildTouristSheetData(booking, guests, settings));
       return;
@@ -334,6 +372,11 @@ export function CheckinStepper({
       );
       if (transferToGuestId) {
         fd.set("transfer_booking_to_guest_id", transferToGuestId);
+      }
+      if (isEditMode && checkinId) {
+        fd.set("checkin_id", checkinId);
+        handleCheckinResult(await updateCheckinAction(fd));
+        return;
       }
 
       handleCheckinResult(await createCheckinAction(fd));
@@ -496,7 +539,7 @@ export function CheckinStepper({
         )}
 
         {stepKey === "payment" && (
-          <StepPayment
+          <CheckinPaymentStep
             booking={booking}
             settings={settings}
             paymentStatus={paymentStatus}
@@ -1171,106 +1214,6 @@ function StepValidation({
         <p className="checkin-validation__note">
           {t("validation.warningNote")}
         </p>
-      )}
-    </div>
-  );
-}
-
-function StepPayment({
-  booking,
-  settings,
-  paymentStatus,
-  paymentAmount,
-  depositAmount,
-  onPaymentStatusChange,
-  onPaymentAmountChange,
-  onDepositAmountChange,
-  t,
-}: {
-  booking: BookingForCheckin;
-  settings: CheckinSettings;
-  paymentStatus: PaymentStatus;
-  paymentAmount: number;
-  depositAmount: number;
-  onPaymentStatusChange: (v: PaymentStatus) => void;
-  onPaymentAmountChange: (v: number) => void;
-  onDepositAmountChange: (v: number) => void;
-  t: ReturnType<typeof useTranslations>;
-}) {
-  return (
-    <div className="checkin-step-payment">
-      <div className="checkin-payment__total">
-        <span className="checkin-payment__total-label">{t("payment.totalDue")}</span>
-        <span className="checkin-payment__total-value">
-          {booking.total_price}
-        </span>
-      </div>
-
-      <div className="checkin-payment__options">
-        {CHECKIN_PAYMENT_OPTIONS.map((s) => (
-          <label
-            key={s}
-            className={[
-              "checkin-payment__option",
-              s === "online" && "checkin-payment__option--online",
-            ]
-              .filter(Boolean)
-              .join(" ")}
-          >
-            <input
-              type="radio"
-              name="payment_status"
-              value={s}
-              checked={paymentStatus === s}
-              onChange={() => {
-                onPaymentStatusChange(s);
-                onPaymentAmountChange(
-                  paymentAmountForStatus(s, booking.total_price, paymentAmount)
-                );
-              }}
-            />
-            <span>{t(`payment.${s}`)}</span>
-          </label>
-        ))}
-      </div>
-
-      {paymentStatus === "online" && (
-        <div className="checkin-payment__mock" role="status">
-          <span className="checkin-payment__mock-icon" aria-hidden>
-            💳
-          </span>
-          <div>
-            <p className="checkin-payment__mock-title">{t("payment.onlineMockTitle")}</p>
-            <p className="checkin-payment__mock-text">{t("payment.onlineMockHint")}</p>
-          </div>
-        </div>
-      )}
-
-      {paymentStatus === "partial" && (
-        <label className="checkin-field">
-          <span className="checkin-field__label">{t("payment.amountPaid")}</span>
-          <input
-            type="number"
-            className="checkin-field__input"
-            min={0}
-            max={booking.total_price}
-            value={paymentAmount}
-            onChange={(e) => onPaymentAmountChange(Number(e.target.value))}
-          />
-        </label>
-      )}
-
-      {settings.checkin_deposit && (
-        <label className="checkin-field">
-          <span className="checkin-field__label">{t("payment.deposit")}</span>
-          <input
-            type="number"
-            className="checkin-field__input"
-            min={0}
-            value={depositAmount}
-            onChange={(e) => onDepositAmountChange(Number(e.target.value))}
-          />
-        </label>
       )}
     </div>
   );

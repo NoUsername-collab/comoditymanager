@@ -9,6 +9,12 @@ import {
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { BookingCheckoutPanel } from "@/components/admin/checkout/BookingCheckoutPanel";
+import { BookingCheckinPaymentPanel } from "@/components/admin/checkin/BookingCheckinPaymentPanel";
+import {
+  checkinPaymentBalance,
+  isCheckinPaymentSettled,
+} from "@/domain/checkin/payment-panel";
+import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import {
   undoBookingCheckInAction,
   undoBookingCheckOutAction,
@@ -44,6 +50,10 @@ type Props = {
   bookingForCheckin?: BookingForCheckin;
   checkinSettings?: CheckinSettings;
   hasCheckinRecord?: boolean;
+  checkinId?: string | null;
+  totalPrice?: number;
+  checkinPaymentStatus?: StoredPaymentStatus | null;
+  checkinPaymentAmountPaid?: number;
 };
 
 export function BookingOperationalPanel({
@@ -60,20 +70,35 @@ export function BookingOperationalPanel({
   bookingForCheckin,
   checkinSettings,
   hasCheckinRecord = false,
+  checkinId = null,
+  totalPrice = 0,
+  checkinPaymentStatus = null,
+  checkinPaymentAmountPaid = 0,
 }: Props) {
   const router = useRouter();
   const t = useTranslations("admin.operational");
   const tCheckIn = useTranslations("admin.checkIn");
   const tCazari = useTranslations("admin.pages.cazari");
   const tCommon = useTranslations("common");
+  const tPayment = useTranslations("admin.checkinPayment");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
   const [checkinModalOpen, setCheckinModalOpen] = useState(false);
+  const [checkinWizardMode, setCheckinWizardMode] = useState<"create" | "edit">(
+    "create",
+  );
   const [checkoutPanel, setCheckoutPanel] = useState<{
     intent: "set" | "edit";
   } | null>(null);
-  const [editCheckInOpen, setEditCheckInOpen] = useState(false);
+  const [editCheckInTimeOpen, setEditCheckInTimeOpen] = useState(false);
+  const [paymentPanelOpen, setPaymentPanelOpen] = useState(false);
+
+  const paymentDue =
+    hasCheckinRecord &&
+    totalPrice > 0 &&
+    !isCheckinPaymentSettled(checkinPaymentStatus, totalPrice);
+  const paymentBalance = checkinPaymentBalance(totalPrice, checkinPaymentAmountPaid);
 
   const hasPhone = isValidGuestPhone(guestPhone);
   const today = todayIso();
@@ -146,10 +171,12 @@ export function BookingOperationalPanel({
 
   function openCheckInWizard() {
     if (canEditCheckInTime) {
-      setEditCheckInOpen(true);
+      setCheckinWizardMode("edit");
+      setCheckinModalOpen(true);
       return;
     }
     if (!checkInEnabled) return;
+    setCheckinWizardMode("create");
     setCheckinModalOpen(true);
   }
 
@@ -235,7 +262,7 @@ export function BookingOperationalPanel({
                 type="button"
                 className="bd-ops__lane-edit"
                 disabled={pending}
-                onClick={() => setEditCheckInOpen(true)}
+                onClick={() => setEditCheckInTimeOpen(true)}
               >
                 {tCommon("edit")}
               </button>
@@ -258,6 +285,30 @@ export function BookingOperationalPanel({
                   partialHint: tCazari("checkinPartialHint"),
                 }}
               />
+            </div>
+          ) : null}
+
+          {paymentDue ? (
+            <div className="bd-ops__payment-alert">
+              <p className="bd-ops__payment-text">
+                {checkinPaymentStatus === "partial"
+                  ? tPayment("paymentPartial", {
+                      paid: checkinPaymentAmountPaid,
+                      total: totalPrice,
+                    })
+                  : tPayment("paymentUnpaid")}
+              </p>
+              <p className="bd-ops__payment-balance">
+                {tPayment("balanceDue", { amount: paymentBalance })}
+              </p>
+              <button
+                type="button"
+                className="bd-ops__btn bd-ops__btn--primary"
+                disabled={pending || !checkinId}
+                onClick={() => setPaymentPanelOpen(true)}
+              >
+                {tPayment("recordPayment")}
+              </button>
             </div>
           ) : null}
 
@@ -382,9 +433,13 @@ export function BookingOperationalPanel({
       <CheckinWizardLauncher
         bookingId={bookingId}
         open={checkinModalOpen}
+        mode={checkinWizardMode}
         booking={bookingForCheckin}
         settings={checkinSettings}
-        onClose={() => setCheckinModalOpen(false)}
+        onClose={() => {
+          setCheckinModalOpen(false);
+          setCheckinWizardMode("create");
+        }}
         onSuccess={() => router.refresh()}
       />
 
@@ -405,7 +460,7 @@ export function BookingOperationalPanel({
         />
       ) : null}
 
-      {editCheckInOpen ? (
+      {editCheckInTimeOpen ? (
         <GanttCheckTimeDialog
           open
           mode="checkin"
@@ -416,9 +471,24 @@ export function BookingOperationalPanel({
           plannedCheckOut={plannedCheckOut}
           actualCheckInAt={actualCheckInAt}
           actualCheckOutAt={actualCheckOutAt}
-          onClose={() => setEditCheckInOpen(false)}
+          onClose={() => setEditCheckInTimeOpen(false)}
           onSuccess={() => {
-            setEditCheckInOpen(false);
+            setEditCheckInTimeOpen(false);
+            router.refresh();
+          }}
+        />
+      ) : null}
+
+      {paymentPanelOpen && checkinId ? (
+        <BookingCheckinPaymentPanel
+          open
+          bookingId={bookingId}
+          guestName={guestName}
+          plannedCheckIn={plannedCheckIn}
+          plannedCheckOut={plannedCheckOut}
+          onClose={() => setPaymentPanelOpen(false)}
+          onSuccess={() => {
+            setPaymentPanelOpen(false);
             router.refresh();
           }}
         />

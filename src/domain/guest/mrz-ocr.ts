@@ -3,6 +3,8 @@
 import {
   correctTd1Block,
   refineTd1Candidates,
+  correctTd2Block,
+  refineTd2Candidates,
   scoreMrzLines,
 } from "@/domain/guest/mrz-parse";
 
@@ -185,6 +187,12 @@ function pickBestBlock(candidates: string[][]): string[] | null {
     if (refined) return refined;
   }
 
+  const td2Candidates = candidates.filter((block) => block.length === 2);
+  if (td2Candidates.length > 0) {
+    const refined = refineTd2Candidates(td2Candidates);
+    if (refined) return refined;
+  }
+
   let best: string[] | null = null;
   let bestScore = 0;
   for (const block of candidates) {
@@ -233,7 +241,7 @@ export function normalizeMrzBlock(lines: string[]): string[] | null {
     const fitted = fitTd1Block(cleaned.slice(0, 3));
     return correctTd1Block(fitted);
   }
-  if (format === "TD2") return fitTd2Block(cleaned.slice(0, 2));
+  if (format === "TD2") return correctTd2Block(fitTd2Block(cleaned.slice(0, 2)));
   return fitTd3Block(cleaned.slice(0, 2));
 }
 

@@ -1,6 +1,7 @@
 import { parse } from "mrz";
 
 const TD1_LEN = 30;
+const TD2_LEN = 36;
 
 /** Scor pentru a alege cel mai probabil bloc MRZ din zgomot OCR. */
 export function scoreMrzLines(lines: string[]): number {
@@ -159,6 +160,105 @@ function fixOcrMrzChar(ch: string): string {
   return ch;
 }
 
+/** Prenume frecvente RO — prefix matching când OCR lipește separatorii «<». */
+const RO_GIVEN_NAME_PREFIXES = [
+  "CRISTINA",
+  "ALEXANDRA",
+  "ALEXANDRU",
+  "ANDREEA",
+  "CONSTANTIN",
+  "DANIELA",
+  "ELISABETA",
+  "FLORINA",
+  "GABRIELA",
+  "GEORGETA",
+  "LAURENTIU",
+  "MADALINA",
+  "MIHAELA",
+  "PETRONELA",
+  "RUXANDRA",
+  "SIMONA",
+  "STEFAN",
+  "CATALIN",
+  "CIPRIAN",
+  "GHEORGHE",
+  "IOANA",
+  "MARIA",
+  "ELENA",
+  "ALINA",
+  "MONICA",
+  "LAURA",
+  "DIANA",
+  "MIRELA",
+  "ADRIANA",
+  "CARMEN",
+  "ROXANA",
+  "CORINA",
+  "LUCIA",
+  "STELA",
+  "GEORGE",
+  "ANDREI",
+  "MARIUS",
+  "FLORIN",
+  "BOGDAN",
+  "DRAGOS",
+  "NICOLAE",
+  "ADRIAN",
+  "DANIEL",
+  "MATEI",
+  "ANA",
+  "ION",
+  "VASILE",
+  "RADU",
+];
+
+function decodeMrzInitialOcr(chunk: string): string {
+  const raw = chunk.toUpperCase();
+  if (/^SK$/i.test(raw) || /^KS$/i.test(raw)) return "E";
+  if (/^K$/i.test(raw)) return "E";
+  const trimmed = raw.replace(/^S+/, "");
+  if (trimmed.length === 1) return trimmed;
+  return trimmed;
+}
+
+function stripGivenNameSeparator(rest: string): string {
+  if (/^S[A-Z]{4,}/.test(rest)) return rest.slice(1);
+  return rest;
+}
+
+/** Desparte prenume lipite de OCR (ex. CRISTINASIOANASK → CRISTINA<IOANA<E). */
+export function splitTd2GivenNameBlob(blob: string): string {
+  let rest = blob.replace(/^S+/, "");
+
+  if (!rest) return blob;
+
+  const parts: string[] = [];
+  let guard = 0;
+
+  while (rest.length > 0 && guard++ < 8) {
+    const prefix = RO_GIVEN_NAME_PREFIXES.filter((name) => rest.startsWith(name)).sort(
+      (a, b) => b.length - a.length,
+    )[0];
+
+    if (prefix) {
+      parts.push(prefix);
+      rest = stripGivenNameSeparator(rest.slice(prefix.length));
+      continue;
+    }
+
+    if (rest.length <= 3) {
+      const initial = decodeMrzInitialOcr(rest);
+      if (initial) parts.push(initial);
+      break;
+    }
+
+    break;
+  }
+
+  if (parts.length <= 1) return blob;
+  return parts.join("<");
+}
+
 /** Corecții OCR specifice TD1 (buletin RO) pe poziții ICAO. */
 export function correctTd1Block(lines: string[]): string[] {
   if (lines.length < 3) return lines;
@@ -167,6 +267,73 @@ export function correctTd1Block(lines: string[]): string[] {
     correctTd1Line2(lines[1] ?? ""),
     correctTd1Line3(lines[2] ?? ""),
   ];
+}
+
+/**
+ * TD2 linia 1: câmp nume (poziții 5–35).
+ * OCR confundă «<<» cu «<» și filler «<» cu «L» — parserul duplică numele.
+ */
+function correctTd2Line1(line: string): string {
+  const prefix = line.padEnd(TD2_LEN, "<").slice(0, 5);
+  let nameField = line.padEnd(TD2_LEN, "<").slice(5, TD2_LEN);
+
+  nameField = nameField
+    .split("")
+    .map((ch) => fixOcrNameChar(ch))
+    .join("");
+
+  nameField = nameField.replace(/L+(?=<|$)/g, (run) => "<".repeat(run.length));
+
+  if (!/^[A-Z]{2,}<<[A-Z]/.test(nameField)) {
+    nameField = nameField.replace(
+      /^([A-Z]{2,})<([A-Z]{2,})/,
+      (_match, surname: string, given: string) => `${surname}<<${given}`,
+    );
+  }
+
+  const sepIdx = nameField.indexOf("<<");
+  if (sepIdx !== -1) {
+    const surname = nameField.slice(0, sepIdx);
+    const givenRaw = nameField.slice(sepIdx + 2);
+    const givenAlpha = givenRaw.match(/^[A-Z]+/)?.[0] ?? "";
+    const fillerTail = givenRaw.slice(givenAlpha.length);
+
+    if (givenAlpha.length >= 8) {
+      const expanded = splitTd2GivenNameBlob(givenAlpha);
+      if (expanded.includes("<")) {
+        nameField = `${surname}<<${expanded}${fillerTail}`;
+      }
+    }
+  }
+
+  return prefix + nameField.padEnd(TD2_LEN - 5, "<").slice(0, TD2_LEN - 5);
+}
+
+/** Corecții OCR pe bloc TD2 (CI electronic 2×36). */
+export function correctTd2Block(lines: string[]): string[] {
+  if (lines.length < 2) return lines;
+  return [correctTd2Line1(lines[0] ?? ""), lines[1]!.padEnd(TD2_LEN, "<").slice(0, TD2_LEN)];
+}
+
+/** Încearcă corecții + alege varianta cu cel mai bun scor checksum. */
+export function refineTd2Candidates(candidates: string[][]): string[] | null {
+  let bestLines: string[] | null = null;
+  let bestScore = 0;
+
+  for (const raw of candidates) {
+    if (raw.length < 2) continue;
+    const variants = [raw.slice(0, 2), correctTd2Block(raw.slice(0, 2))];
+
+    for (const lines of variants) {
+      const score = scoreMrzLines(lines);
+      if (score > bestScore) {
+        bestScore = score;
+        bestLines = lines;
+      }
+    }
+  }
+
+  return bestScore > 0 ? bestLines : null;
 }
 
 /** Încearcă corecții + alege varianta cu cel mai bun scor checksum. */

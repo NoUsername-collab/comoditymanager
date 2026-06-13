@@ -400,6 +400,16 @@ export default async function BookingDetailPage({
                 bookingForCheckin={bookingForCheckin}
                 checkinSettings={effectiveCheckinSettings}
                 hasCheckinRecord={hasCheckinRecord}
+                checkinId={existingCheckin?.id ?? null}
+                totalPrice={booking.total_price ?? 0}
+                checkinPaymentStatus={
+                  existingCheckin?.payment_status ??
+                  operativeBooking.checkin_payment_status ??
+                  null
+                }
+                checkinPaymentAmountPaid={
+                  Number(existingCheckin?.payment_amount_paid ?? 0)
+                }
               />
             </div>
           )}

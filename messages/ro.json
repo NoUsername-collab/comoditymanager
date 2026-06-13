@@ -653,6 +653,18 @@
       "phoneRequiredForCheckIn": "Check-in blocat: completează telefonul pe rezervare sau în profilul clientului.",
       "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua sosirii ({date})."
     },
+    "checkinPayment": {
+      "title": "Plată check-in",
+      "confirm": "Salvează plata",
+      "successTitle": "Plată înregistrată",
+      "recordPayment": "Înregistrează plata",
+      "noCheckin": "Nu există check-in — completează mai întâi sosirea.",
+      "balanceDue": "Rest de plată: {amount} RON",
+      "paymentPaid": "Plată înregistrată integral.",
+      "paymentPartial": "Plată parțială: {paid} / {total} RON.",
+      "paymentUnpaid": "Plata nu este înregistrată.",
+      "paymentUnknown": "Status plată necunoscut."
+    },
     "checkout": {
       "title": "Check-out",
       "editTitle": "Editează check-out",
@@ -2398,6 +2410,7 @@
     },
     "checkIn": {
       "title": "Check-in",
+      "editTitle": "Editează check-in",
       "startCheckin": "Check-in",
       "cancel": "Anulează",
       "back": "Înapoi",
@@ -2412,6 +2425,8 @@
         "cancel": "Anulează"
       },
       "alreadyCheckedIn": "Toate camerele acestei rezervări sunt deja primite.",
+      "noCheckinToEdit": "Nu există un check-in salvat de editat.",
+      "updatedSuccess": "Check-in actualizat",
       "migrationRequired": "Sistemul de check-in nu e activ în baza de date. Rulează migrarea 048_checkin_system.sql în Supabase (SQL Editor), apoi încearcă din nou.",
       "registeredGuests": {
         "onlyHint": "Doar clienți înregistrați cu date în profil — completează sau actualizează identitatea aici; la salvare se sincronizează în fișa clientului.",

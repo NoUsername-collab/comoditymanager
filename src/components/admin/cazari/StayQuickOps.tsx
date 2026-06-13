@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { BookingCheckoutPanel } from "@/components/admin/checkout/BookingCheckoutPanel";
 import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
@@ -69,7 +68,6 @@ export function StayQuickOps({
   const { showToast } = useAdminFx();
   const { today, openCheckInWizard, openCheckOut } = useOperativeCheck();
   const [pending, startTransition] = useTransition();
-  const [editCheckInOpen, setEditCheckInOpen] = useState(false);
   const [editCheckOutOpen, setEditCheckOutOpen] = useState(false);
   const isConfirmed = bookingStatus === "confirmata";
   const hasPhone = isValidGuestPhone(guestPhone);
@@ -170,7 +168,7 @@ export function StayQuickOps({
 
   function handleCheckIn() {
     if (canEditCheckInTime) {
-      setEditCheckInOpen(true);
+      openCheckInWizard({ ...operativeArgs, editExisting: true });
       return;
     }
     openCheckInWizard(operativeArgs);
@@ -241,25 +239,6 @@ export function StayQuickOps({
       >
         {labels.edit}
       </Link>
-
-      {editCheckInOpen ? (
-        <GanttCheckTimeDialog
-          open
-          mode="checkin"
-          intent="edit"
-          bookingId={bookingId}
-          guestName={guestName}
-          plannedCheckIn={plannedCheckIn}
-          plannedCheckOut={plannedCheckOut}
-          actualCheckInAt={actualCheckInAt}
-          actualCheckOutAt={actualCheckOutAt}
-          onClose={() => setEditCheckInOpen(false)}
-          onSuccess={() => {
-            setEditCheckInOpen(false);
-            router.refresh();
-          }}
-        />
-      ) : null}
 
       {editCheckOutOpen ? (
         <BookingCheckoutPanel

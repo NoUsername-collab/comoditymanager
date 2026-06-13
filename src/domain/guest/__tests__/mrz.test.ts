@@ -14,6 +14,12 @@ const RO_CI_TD1 = [
   "POPESCU<<ION<<<<<<<<<<<<<<<<<<",
 ];
 
+/** CI electronic RO — OCR tipic: «<» în loc de «<<», «L» în loc de filler. */
+const RO_EID_TD2_OCR = [
+  "IDROUPETRIK<CRISTINASIOANASK<LLLLLL<",
+  "XB674552<7ROU9604113F310411621257731",
+];
+
 describe("parseMrzIdentity", () => {
   it("parses TD1 sample", () => {
     const result = parseMrzIdentity(TD1_SAMPLE);
@@ -41,6 +47,18 @@ describe("parseMrzIdentity", () => {
 
   it("rejects invalid line count", () => {
     expect(parseMrzIdentity("ABC\nDEF")).toEqual({ ok: false, error: "invalid_format" });
+  });
+
+  it("parses Romanian eID TD2 with noisy OCR on name line", () => {
+    const result = parseMrzIdentity(RO_EID_TD2_OCR);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.lastName).toBe("PETRIK");
+    expect(result.data.firstName).toBe("CRISTINA IOANA E");
+    expect(result.data.documentNumber).toBe("XB674552");
+    expect(result.data.birthDate).toBe("1996-04-11");
+    expect(result.data.nationality).toBe("România");
+    expect(result.data.format).toBe("TD2");
   });
 });
 

@@ -653,6 +653,18 @@
       "phoneRequiredForCheckIn": "Check-in blocked: add a phone number on the booking or guest profile.",
       "checkInOnlyOnArrivalDay": "Check-in is only available on the arrival date ({date})."
     },
+    "checkinPayment": {
+      "title": "Check-in payment",
+      "confirm": "Save payment",
+      "successTitle": "Payment recorded",
+      "recordPayment": "Record payment",
+      "noCheckin": "No check-in yet — complete arrival first.",
+      "balanceDue": "Balance due: {amount} RON",
+      "paymentPaid": "Payment recorded in full.",
+      "paymentPartial": "Partial payment: {paid} / {total} RON.",
+      "paymentUnpaid": "Payment not recorded.",
+      "paymentUnknown": "Payment status unknown."
+    },
     "checkout": {
       "title": "Check-out",
       "editTitle": "Edit check-out",
@@ -2398,6 +2410,7 @@
     },
     "checkIn": {
       "title": "Check-in",
+      "editTitle": "Edit check-in",
       "startCheckin": "Check-in",
       "cancel": "Cancel",
       "back": "Back",
@@ -2412,6 +2425,8 @@
         "cancel": "Cancel"
       },
       "alreadyCheckedIn": "All rooms for this booking have already been received.",
+      "noCheckinToEdit": "No saved check-in to edit.",
+      "updatedSuccess": "Check-in updated",
       "migrationRequired": "The check-in system is not set up in the database. Run migration 048_checkin_system.sql in Supabase (SQL Editor), then try again.",
       "registeredGuests": {
         "onlyHint": "Registered guests with profile data only — updates sync to the client file on save.",

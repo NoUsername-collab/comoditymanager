@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { extractMrzLinesFromOcrText } from "@/domain/guest/mrz-ocr";
-import { correctTd1Block, refineTd1Candidates, scoreMrzLines } from "@/domain/guest/mrz-parse";
+import { correctTd1Block, correctTd2Block, refineTd1Candidates, scoreMrzLines, splitTd2GivenNameBlob } from "@/domain/guest/mrz-parse";
 import { parseMrzIdentity } from "@/domain/guest/mrz";
 
 const RO_CI_TD1 = [
@@ -29,6 +29,24 @@ describe("correctTd1Block", () => {
       RO_CI_TD1[2]!,
     ]);
     expect(corrected[1]?.slice(0, 6)).toBe("900101");
+  });
+});
+
+describe("correctTd2Block", () => {
+  it("restores surname/given separator from single chevron OCR", () => {
+    const corrected = correctTd2Block([
+      "IDROUPETRIK<CRISTINASIOANASK<LLLLLL<",
+      "XB674552<7ROU9604113F310411621257731",
+    ]);
+    expect(corrected[0]).toContain("PETRIK<<CRISTINA<IOANA<E");
+    expect(corrected[0]).not.toContain("LLLLLL");
+    expect(corrected[0]?.length).toBe(36);
+  });
+});
+
+describe("splitTd2GivenNameBlob", () => {
+  it("splits merged Romanian given names and initial", () => {
+    expect(splitTd2GivenNameBlob("CRISTINASIOANASK")).toBe("CRISTINA<IOANA<E");
   });
 });
 

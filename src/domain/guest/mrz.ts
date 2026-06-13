@@ -132,6 +132,36 @@ function inferNationalId(
   return { type: preferredType ?? null, value: cleaned || null };
 }
 
+/** Curăță nume după parse — fallback când OCR strică separatorul «<<». */
+function sanitizeMrzPersonNames(
+  lastName: string,
+  firstName: string,
+): { lastName: string; firstName: string } {
+  const clean = (value: string) =>
+    value
+      .replace(/<+/g, " ")
+      .replace(/\s+L+\s*$/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  let last = clean(lastName);
+  let first = clean(firstName);
+
+  if (last && first && last === first) {
+    first = "";
+  }
+
+  if (!first && last.includes(" ")) {
+    const splitAt = last.indexOf(" ");
+    return {
+      lastName: last.slice(0, splitAt).trim(),
+      firstName: last.slice(splitAt + 1).trim(),
+    };
+  }
+
+  return { lastName: last, firstName: first };
+}
+
 export function parseMrzIdentity(input: string | string[]): MrzParseResult {
   const rawLines = Array.isArray(input)
     ? input.map((line) => line.trim())
@@ -147,8 +177,12 @@ export function parseMrzIdentity(input: string | string[]): MrzParseResult {
   const parsed = attempt.parsed;
   const fields = parsed.fields as Record<string, unknown>;
   const nationalityCode = String(fields.nationality ?? fields.issuingState ?? "").trim() || null;
-  const lastName = String(fields.lastName ?? "").trim();
-  const firstName = String(fields.firstName ?? "").trim();
+  const rawNames = sanitizeMrzPersonNames(
+    String(fields.lastName ?? "").trim(),
+    String(fields.firstName ?? "").trim(),
+  );
+  const lastName = rawNames.lastName;
+  const firstName = rawNames.firstName;
   const documentNumber =
     parsed.documentNumber?.trim() ||
     String(fields.documentNumber ?? "").trim() ||

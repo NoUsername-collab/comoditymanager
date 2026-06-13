@@ -652,6 +652,31 @@
   margin: 0;
 }
 
+.bd-ops__payment-alert {
+  margin-top: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fcd34d;
+  background: #fffbeb;
+}
+
+.bd-ops__payment-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.bd-ops__payment-balance {
+  margin: 0.2rem 0 0.45rem;
+  font-size: 0.8125rem;
+  color: #78350f;
+}
+
+.bd-ops__payment-alert .bd-ops__btn {
+  width: 100%;
+}
+
 .bd-ops__lane-actions {
   display: flex;
   flex-wrap: wrap;
