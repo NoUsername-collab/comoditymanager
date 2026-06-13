@@ -148,81 +148,143 @@ function parseOptionalDate(fd: FormData, key: string): string | null {
   return v;
 }
 
-export async function updateGuestIdentityAction(formData: FormData) {
-  const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
-  const guestId = String(formData.get("guest_id") ?? "");
-  if (!guestId) throw new Error(t("invalidGuest"));
+export type GuestIdentityActionResult =
+  | { ok: true }
+  | { ok: false; error: string };
 
-  const phoneRaw = String(formData.get("phone") ?? "").trim();
-  assertValidGuestPhone(phoneRaw);
-  await updateGuestPhone(guestId, phoneRaw);
+function isDuplicateNationalIdDbError(message: string): boolean {
+  return /duplicate key|guests_tenant_national_id_uidx|guests_tenant_cnp_uidx|guests_national_id_uidx/i.test(
+    message
+  );
+}
 
-  const rawDocType = parseOptionalStr(formData, "doc_type");
-  const docType = rawDocType && VALID_DOC_TYPES.has(rawDocType)
-    ? (rawDocType as GuestDocType)
-    : null;
-
-  const rawSex = parseOptionalStr(formData, "sex");
-  const sex = rawSex && VALID_SEX.has(rawSex) ? (rawSex as GuestSex) : null;
-
-  // National ID — type + value
-  const rawNationalIdType = parseOptionalStr(formData, "national_id_type");
-  const nationalIdType = rawNationalIdType && VALID_NATIONAL_ID_TYPES.has(rawNationalIdType as NationalIdType)
-    ? (rawNationalIdType as GuestNationalIdType)
-    : null;
-
-  const nationalIdRaw = parseOptionalStr(formData, "national_id");
-  let nationalId: string | null = null;
-  let idBirthDate: string | null = null;
-  let idSex: GuestSex | null = null;
-
-  // Validate national ID if both type and value are provided
-  if (nationalIdType && nationalIdRaw) {
-    const cleaned = cleanNationalId(nationalIdRaw);
-    const result = validateNationalId(nationalIdType, cleaned);
-    if (!result.valid) {
-      throw new Error(`Cod personal invalid (${nationalIdType.toUpperCase()})`);
-    }
-    nationalId = cleaned;
-
-    // Extract birth date + sex from validated national ID
-    if (result.data?.birthDate) idBirthDate = result.data.birthDate;
-    if (result.data?.sex) idSex = result.data.sex;
-
-    // Check for duplicate national ID
-    const existing = await findGuestByNationalId(cleaned, guestId);
-    if (existing) {
-      throw new Error(`Cod personal deja asociat clientului: ${existing.display_name}`);
-    }
+function mapGuestIdentityActionError(
+  error: unknown,
+  tActions: (key: string, values?: Record<string, string>) => string,
+  tIdentity: (key: string, values?: Record<string, string | number>) => string
+): string {
+  if (!(error instanceof Error)) {
+    return tIdentity("saveFailed");
   }
 
-  // Legacy CNP field — synced when national_id_type is 'cnp'
-  const cnp = nationalIdType === "cnp" ? nationalId : null;
+  const msg = error.message;
 
-  const input: GuestIdentityInput = {
-    doc_type: docType,
-    doc_series: parseOptionalStr(formData, "doc_series"),
-    doc_number: parseOptionalStr(formData, "doc_number"),
-    doc_issued_by: parseOptionalStr(formData, "doc_issued_by"),
-    doc_issue_date: parseOptionalDate(formData, "doc_issue_date"),
-    doc_expiry_date: parseOptionalDate(formData, "doc_expiry_date"),
-    national_id_type: nationalIdType,
-    national_id: nationalId,
-    cnp,
-    // National-ID-extracted data takes precedence when available
-    birth_date: idBirthDate ?? parseOptionalDate(formData, "birth_date"),
-    birth_place: parseOptionalStr(formData, "birth_place"),
-    nationality: parseOptionalStr(formData, "nationality"),
-    address: parseOptionalStr(formData, "address"),
-    city: parseOptionalStr(formData, "city"),
-    county: parseOptionalStr(formData, "county"),
-    country: parseOptionalStr(formData, "country"),
-    sex: idSex ?? sex,
-  };
+  if (msg === "guest.national_id_taken") {
+    return tIdentity("nationalIdTaken");
+  }
+  if (msg === "guest.doc_expiry_required") {
+    return tIdentity("docExpiryRequired");
+  }
+  if (msg === "guest.phone_required") {
+    return tIdentity("phoneRequired");
+  }
+  if (msg === "auth.role_forbidden") {
+    return tActions("roleForbidden");
+  }
+  if (isDuplicateNationalIdDbError(msg)) {
+    return tIdentity("nationalIdTaken");
+  }
 
-  await updateGuestIdentity(guestId, input);
-  revalidateGuestPaths(guestId);
+  return msg || tIdentity("saveFailed");
+}
+
+export async function updateGuestIdentityAction(
+  formData: FormData
+): Promise<GuestIdentityActionResult> {
+  const [tActions, tIdentity] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    getTranslations("admin.guests.identity"),
+  ]);
+
+  try {
+    await requireAdmin();
+    const guestId = String(formData.get("guest_id") ?? "");
+    if (!guestId) {
+      return { ok: false, error: tActions("invalidGuest") };
+    }
+
+    const phoneRaw = String(formData.get("phone") ?? "").trim();
+    assertValidGuestPhone(phoneRaw);
+    await updateGuestPhone(guestId, phoneRaw);
+
+    const rawDocType = parseOptionalStr(formData, "doc_type");
+    const docType = rawDocType && VALID_DOC_TYPES.has(rawDocType)
+      ? (rawDocType as GuestDocType)
+      : null;
+
+    const rawSex = parseOptionalStr(formData, "sex");
+    const sex = rawSex && VALID_SEX.has(rawSex) ? (rawSex as GuestSex) : null;
+
+    const rawNationalIdType = parseOptionalStr(formData, "national_id_type");
+    const nationalIdType =
+      rawNationalIdType &&
+      VALID_NATIONAL_ID_TYPES.has(rawNationalIdType as NationalIdType)
+        ? (rawNationalIdType as GuestNationalIdType)
+        : null;
+
+    const nationalIdRaw = parseOptionalStr(formData, "national_id");
+    let nationalId: string | null = null;
+    let idBirthDate: string | null = null;
+    let idSex: GuestSex | null = null;
+
+    if (nationalIdType && nationalIdRaw) {
+      const cleaned = cleanNationalId(nationalIdRaw);
+      const result = validateNationalId(nationalIdType, cleaned);
+      if (!result.valid) {
+        return {
+          ok: false,
+          error: tIdentity("nationalIdInvalid", {
+            type: nationalIdType.toUpperCase(),
+          }),
+        };
+      }
+      nationalId = cleaned;
+
+      if (result.data?.birthDate) idBirthDate = result.data.birthDate;
+      if (result.data?.sex) idSex = result.data.sex;
+
+      const existing = await findGuestByNationalId(cleaned, guestId);
+      if (existing) {
+        return {
+          ok: false,
+          error: tIdentity("nationalIdTakenNamed", {
+            name: existing.display_name,
+          }),
+        };
+      }
+    }
+
+    const cnp = nationalIdType === "cnp" ? nationalId : null;
+
+    const input: GuestIdentityInput = {
+      doc_type: docType,
+      doc_series: parseOptionalStr(formData, "doc_series"),
+      doc_number: parseOptionalStr(formData, "doc_number"),
+      doc_issued_by: parseOptionalStr(formData, "doc_issued_by"),
+      doc_issue_date: parseOptionalDate(formData, "doc_issue_date"),
+      doc_expiry_date: parseOptionalDate(formData, "doc_expiry_date"),
+      national_id_type: nationalIdType,
+      national_id: nationalId,
+      cnp,
+      birth_date: idBirthDate ?? parseOptionalDate(formData, "birth_date"),
+      birth_place: parseOptionalStr(formData, "birth_place"),
+      nationality: parseOptionalStr(formData, "nationality"),
+      address: parseOptionalStr(formData, "address"),
+      city: parseOptionalStr(formData, "city"),
+      county: parseOptionalStr(formData, "county"),
+      country: parseOptionalStr(formData, "country"),
+      sex: idSex ?? sex,
+    };
+
+    await updateGuestIdentity(guestId, input);
+    revalidateGuestPaths(guestId);
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: mapGuestIdentityActionError(error, tActions, tIdentity),
+    };
+  }
 }
 
 export async function saveGuestStayReviewAction(formData: FormData) {

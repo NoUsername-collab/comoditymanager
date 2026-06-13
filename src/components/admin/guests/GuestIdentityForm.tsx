@@ -226,12 +226,12 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
     formData.set("country", country);
     formData.set("sex", sex);
 
-    try {
-      await runAdminAction(() => updateGuestIdentityAction(formData));
-      setSuccess(true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t("saveFailed"));
+    const result = await runAdminAction(() => updateGuestIdentityAction(formData));
+    if (!result.ok) {
+      setError(result.error);
+      return;
     }
+    setSuccess(true);
   }
 
   const showDocFields = docType !== "";
