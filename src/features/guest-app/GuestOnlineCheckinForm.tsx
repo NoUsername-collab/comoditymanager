@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { submitGuestPrecheckinAction } from "@/app/[locale]/(guest-app)/stay/[code]/actions";
 import type { GuestAccessBookingSnapshot } from "@/domain/guest-app/types";
-import type { GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
+import type { GuestPrecheckinDocType, GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
 import { mrzToPrecheckinFields, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import { GuestMrzScanDialog } from "@/features/guest-app/GuestMrzScanDialog";
 
@@ -14,6 +14,11 @@ type Props = {
   prefill: GuestPrecheckinPrefill;
   alreadySubmitted: boolean;
 };
+
+function parsePrecheckinDocType(value: string): GuestPrecheckinDocType {
+  if (value === "ci" || value === "pasaport" || value === "permis") return value;
+  return "";
+}
 
 export function GuestOnlineCheckinForm({
   accessCode,
@@ -188,7 +193,7 @@ export function GuestOnlineCheckinForm({
             <select
               className="guest-app__field__input"
               value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
+              onChange={(e) => setDocumentType(parsePrecheckinDocType(e.target.value))}
             >
               <option value="">{t("documentOptional")}</option>
               <option value="ci">{t("documentCi")}</option>

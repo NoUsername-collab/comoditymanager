@@ -8,6 +8,7 @@ import {
 } from "@/domain/guest/national-id";
 import { detectMrzFormat, normalizeMrzBlock, splitMrzInput } from "@/domain/guest/mrz-ocr";
 import { parseMrzLinesBestEffort } from "@/domain/guest/mrz-parse";
+import type { GuestPrecheckinDocType } from "@/domain/guest-app/precheckin-prefill";
 
 export type MrzMappedIdentity = {
   lastName: string;
@@ -273,14 +274,14 @@ export function mrzToGuestProfileFields(data: MrzMappedIdentity): GuestProfileMr
 }
 
 export type PrecheckinMrzFields = {
-  documentType: string;
+  documentType: GuestPrecheckinDocType;
   documentNumber: string;
   notesAppend: string;
 };
 
 /** Mapare MRZ → câmpuri pre-check-in guest app. */
 export function mrzToPrecheckinFields(data: MrzMappedIdentity): PrecheckinMrzFields {
-  const documentType =
+  const documentType: GuestPrecheckinDocType =
     data.documentType === "passport"
       ? "pasaport"
       : data.documentType === "ci"
