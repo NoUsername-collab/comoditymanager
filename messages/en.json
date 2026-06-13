@@ -243,6 +243,35 @@
         "phoneRequired": "Phone number is required.",
         "migration": "This feature is not available on this environment — contact the property.",
         "generic": "Could not submit. Please try again."
+      },
+      "mrz": {
+        "scanButton": "Scan MRZ",
+        "title": "MRZ scan (passport / ID)",
+        "close": "Close",
+        "intro": "Align the MRZ zone (bottom 2–3 lines on the back of the document) or paste the text manually.",
+        "tabPaste": "Paste text",
+        "tabCamera": "Camera",
+        "pasteLabel": "MRZ lines",
+        "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
+        "parse": "Parse MRZ",
+        "cameraHint": "Hold the MRZ straight with good lighting, then capture.",
+        "capture": "Capture & read",
+        "previewTitle": "Extracted data",
+        "fieldName": "Name",
+        "fieldDocument": "Document no.",
+        "fieldNationalId": "Personal ID no.",
+        "fieldBirthDate": "Birth date",
+        "fieldNationality": "Nationality",
+        "checksumWarning": "Invalid checksum — verify before applying.",
+        "apply": "Apply to form",
+        "errors": {
+          "empty": "Enter MRZ lines.",
+          "invalid_format": "Invalid format — TD1 is 3×30 chars, passport 2×44.",
+          "unsupported": "Could not parse MRZ.",
+          "camera": "Camera unavailable. Use paste or grant browser permission.",
+          "ocrNoMrz": "No MRZ detected in the image. Retry or paste manually.",
+          "ocrFailed": "OCR failed. Please try again."
+        }
       }
     },
     "payment": {
@@ -2463,6 +2492,36 @@
       "finish": {
         "partialSessionHint": "Partial check-in — remaining rooms are received when guests arrive.",
         "roomsThisSession": "Rooms in this session"
+      },
+      "mrz": {
+        "scanButton": "Scan MRZ",
+        "title": "MRZ scan (passport / ID)",
+        "intro": "Align the MRZ zone (bottom 2–3 lines on the back of the document) or paste the text manually.",
+        "tabPaste": "Paste text",
+        "tabCamera": "Camera",
+        "pasteLabel": "MRZ lines",
+        "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
+        "parse": "Parse MRZ",
+        "cameraHint": "Hold the MRZ straight with good lighting, then capture.",
+        "capture": "Capture & read",
+        "previewTitle": "Extracted data",
+        "fieldName": "Name",
+        "fieldDocument": "Document no.",
+        "fieldNationalId": "Personal ID no.",
+        "fieldBirthDate": "Birth date",
+        "fieldNationality": "Nationality",
+        "checksumWarning": "Invalid checksum — verify before applying.",
+        "apply": "Apply to form",
+        "appliedTitle": "MRZ applied",
+        "appliedBody": "Document fields were filled in. Review and correct if needed.",
+        "errors": {
+          "empty": "Enter MRZ lines.",
+          "invalid_format": "Invalid format — TD1 is 3×30 chars, passport 2×44.",
+          "unsupported": "Could not parse MRZ.",
+          "camera": "Camera unavailable. Use paste or grant browser permission.",
+          "ocrNoMrz": "No MRZ detected in the image. Retry or paste manually.",
+          "ocrFailed": "OCR failed. Please try again."
+        }
       },
       "fisa": {
         "legalHint": "Per OPANAF 381/2026: CNP required for Romanian citizens. Foreign guests: passport or ID (series + number).",

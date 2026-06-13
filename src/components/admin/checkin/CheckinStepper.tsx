@@ -42,6 +42,8 @@ import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentity
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { CheckinRoomPicker } from "@/components/admin/checkin/CheckinRoomPicker";
 import { TouristSheetView } from "@/components/admin/checkin/TouristSheetView";
+import { MrzScanDialog } from "@/components/admin/checkin/MrzScanDialog";
+import { mrzToGuestPatch, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import type {
   BookingForCheckin,
@@ -370,6 +372,23 @@ export function CheckinStepper({
     );
   }
 
+  function applyGuestMrzScan(index: number, data: MrzMappedIdentity) {
+    const patch = mrzToGuestPatch(data);
+    setGuests((prev) =>
+      prev.map((g, i) => {
+        if (i !== index) return g;
+        const next = { ...g, ...patch };
+        next.full_name = guestFullName(next);
+        return next;
+      }),
+    );
+    showToast({
+      kind: "success",
+      title: t("mrz.appliedTitle"),
+      message: t("mrz.appliedBody"),
+    });
+  }
+
   // ── Render ────────────────────────────────────────────────
 
   const stepKey = steps[currentStep];
@@ -458,6 +477,7 @@ export function CheckinStepper({
                 : undefined
             }
             updateGuest={updateGuest}
+            onApplyMrz={applyGuestMrzScan}
             registeredOnly={registeredOnly}
             emptyRegistered={registeredOnly && guests.length === 0}
             t={t}
@@ -614,6 +634,7 @@ function StepIdentity({
   onScopeChange,
   onRemoveGuest,
   updateGuest,
+  onApplyMrz,
   registeredOnly,
   emptyRegistered,
   t,
@@ -628,6 +649,7 @@ function StepIdentity({
   onScopeChange: (scope: CheckinIdentityScope) => void;
   onRemoveGuest?: (index: number) => void;
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
+  onApplyMrz: (index: number, data: MrzMappedIdentity) => void;
   registeredOnly: boolean;
   emptyRegistered: boolean;
   t: ReturnType<typeof useTranslations>;
@@ -734,6 +756,7 @@ function StepIdentity({
               }
               onRemove={onRemoveGuest}
               updateGuest={updateGuest}
+              onApplyMrz={(data) => onApplyMrz(idx, data)}
               cnpRule={settings.checkin_cnp_rule}
               t={t}
             />
@@ -752,6 +775,7 @@ function GuestIdentityCard({
   canRemove,
   onRemove,
   updateGuest,
+  onApplyMrz,
   cnpRule,
   t,
 }: {
@@ -762,10 +786,13 @@ function GuestIdentityCard({
   canRemove: boolean;
   onRemove?: (index: number) => void;
   updateGuest: (i: number, f: keyof CheckinGuestInput, v: string | boolean | null) => void;
+  onApplyMrz: (data: MrzMappedIdentity) => void;
   cnpRule: import("@/domain/checkin/types").CheckinCnpRule;
   t: ReturnType<typeof useTranslations>;
 }) {
   const tIdentity = useTranslations("admin.guests.identity");
+  const tMrz = useTranslations("admin.checkIn.mrz");
+  const [mrzOpen, setMrzOpen] = useState(false);
   const keysOnly = !!guest.keys_only;
   const present = guest.present_at_checkin !== false && !keysOnly;
   const roGuest = isRomanianNationality(guest.nationality);
@@ -872,7 +899,21 @@ function GuestIdentityCard({
         <p className="checkin-guest-form__absent-hint">{t("field.absentHint")}</p>
       ) : (
         <>
-          <div className="checkin-guest-form__section-title">{t("fisa.sectionPersonal")}</div>
+          <div className="checkin-guest-form__section-row">
+            <div className="checkin-guest-form__section-title">{t("fisa.sectionPersonal")}</div>
+            <button
+              type="button"
+              className="checkin-stepper__btn checkin-stepper__btn--secondary checkin-guest-form__mrz-btn"
+              onClick={() => setMrzOpen(true)}
+            >
+              {tMrz("scanButton")}
+            </button>
+          </div>
+          <MrzScanDialog
+            open={mrzOpen}
+            onClose={() => setMrzOpen(false)}
+            onApply={onApplyMrz}
+          />
           <div className="checkin-guest-form__grid">
             <label className="checkin-field">
               <span className="checkin-field__label">{t("field.lastName")}</span>

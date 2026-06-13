@@ -19,6 +19,11 @@ import {
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
+import { MrzScanDialog } from "@/components/admin/checkin/MrzScanDialog";
+import {
+  mrzToGuestProfileFields,
+  type MrzMappedIdentity,
+} from "@/domain/guest/mrz";
 
 type DocType = "ci" | "passport" | "foreign_id" | "other" | "";
 
@@ -100,6 +105,8 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const [idAutoFilled, setIdAutoFilled] = useState(Boolean(initialExtracted?.birthDate));
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [mrzOpen, setMrzOpen] = useState(false);
+  const tMrz = useTranslations("admin.checkIn.mrz");
 
   const expectedLength = NATIONAL_ID_LENGTH[nationalIdType];
 
@@ -159,6 +166,26 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
     },
     [applyExtractedIdentity, nationalId]
   );
+
+  function applyMrzScan(data: MrzMappedIdentity) {
+    const fields = mrzToGuestProfileFields(data);
+    if (fields.docType) setDocType(fields.docType);
+    if (fields.docNumber) setDocNumber(fields.docNumber);
+    if (fields.docExpiryDate) setDocExpiryDate(fields.docExpiryDate);
+    if (fields.nationalId) {
+      setNationalId(fields.nationalId);
+      setNationalIdType(fields.nationalIdType);
+    }
+    if (fields.nationality) {
+      setNationality(fields.nationality);
+      setCountry(fields.country);
+    }
+    if (fields.birthDate) setBirthDate(fields.birthDate);
+    if (fields.sex) setSex(fields.sex);
+    setIdAutoFilled(fields.idAutoFilled);
+    setIdError(null);
+    setSuccess(false);
+  }
 
   async function handleSubmit() {
     setError(null);
@@ -220,7 +247,16 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 
         {/* Document type */}
         <div className="guest-identity-form__section">
-          <h4 className="guest-identity-form__section-title">{t("documentSection")}</h4>
+          <div className="guest-identity-form__section-row">
+            <h4 className="guest-identity-form__section-title">{t("documentSection")}</h4>
+            <button
+              type="button"
+              className="guest-identity-form__mrz-btn"
+              onClick={() => setMrzOpen(true)}
+            >
+              {tMrz("scanButton")}
+            </button>
+          </div>
           <div className="guest-identity-form__row">
             <label className="guest-identity-form__field">
               <span className="guest-identity-form__label">{t("docType")}</span>
@@ -492,6 +528,12 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
         title={t("errorTitle")}
         message={error ?? ""}
         onClose={() => setError(null)}
+      />
+
+      <MrzScanDialog
+        open={mrzOpen}
+        onClose={() => setMrzOpen(false)}
+        onApply={applyMrzScan}
       />
     </>
   );

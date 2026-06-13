@@ -1143,3 +1143,228 @@
 .guest-app__payment-dl__balance dd {
   color: var(--guest-accent);
 }
+
+.guest-app__mrz-trigger {
+  width: 100%;
+}
+
+.guest-app__mrz-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.guest-app__mrz-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.guest-app__mrz-sheet {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 32rem);
+  max-height: min(92dvh, 720px);
+  overflow: auto;
+  border-radius: 1.25rem 1.25rem 0 0;
+  border: 1px solid var(--guest-border);
+  background: var(--guest-card-elevated);
+  padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+.guest-app__mrz-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.guest-app__mrz-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.guest-app__mrz-close {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--guest-border);
+  border-radius: 0.75rem;
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--guest-fg);
+}
+
+.guest-app__mrz__intro {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--guest-muted);
+}
+
+.guest-app__mrz__tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.guest-app__mrz__tab {
+  flex: 1;
+  min-height: 2.5rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 88%, transparent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--guest-fg);
+}
+
+.guest-app__mrz__tab--active {
+  border-color: var(--guest-accent);
+  background: color-mix(in srgb, var(--guest-accent) 10%, var(--guest-card));
+  color: var(--guest-accent);
+}
+
+.guest-app__mrz__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--guest-muted);
+}
+
+.guest-app__mrz__textarea {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 92%, transparent);
+  padding: 0.625rem 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--guest-fg);
+}
+
+.guest-app__mrz__parse-btn {
+  margin-top: 0.65rem;
+  width: 100%;
+}
+
+.guest-app__mrz__camera-wrap {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--guest-border);
+  background: #000;
+  aspect-ratio: 4 / 3;
+}
+
+.guest-app__mrz__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.guest-app__mrz__hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--guest-muted);
+}
+
+.guest-app__mrz__preview {
+  margin-top: 0.875rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-card) 88%, transparent);
+  padding: 0.75rem;
+}
+
+.guest-app__mrz__preview-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.guest-app__mrz__preview-dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.guest-app__mrz__preview-dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.guest-app__mrz__preview-dl dt {
+  color: var(--guest-muted);
+}
+
+.guest-app__mrz__preview-dl dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.guest-app__mrz__warn {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: #fbbf24;
+}
+
+.guest-app__mrz__error {
+  margin: 0.65rem 0 0;
+  font-size: 0.8125rem;
+  color: #fecaca;
+}
+
+.guest-app__mrz__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.guest-app__mrz__actions .guest-app__mrz__btn {
+  flex: 1;
+}
+
+.guest-app__mrz__btn {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.guest-app__mrz__btn--secondary {
+  border: 1px solid var(--guest-border);
+  background: transparent;
+  color: var(--guest-fg);
+}
+
+.guest-app__mrz__btn--primary {
+  border: none;
+  background: var(--guest-primary);
+  color: var(--guest-primary-fg);
+}
+
+.guest-app__mrz__btn--primary:disabled {
+  opacity: 0.55;
+}

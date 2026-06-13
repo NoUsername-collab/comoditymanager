@@ -243,6 +243,35 @@
         "phoneRequired": "Telefonul este obligatoriu.",
         "migration": "Funcția nu este disponibilă pe acest mediu — contactați pensiunea.",
         "generic": "Nu s-a putut trimite. Încercați din nou."
+      },
+      "mrz": {
+        "scanButton": "Scanează MRZ",
+        "title": "Citire MRZ (pașaport / CI)",
+        "close": "Închide",
+        "intro": "Poziționează zona MRZ (cele 2–3 rânduri de jos de pe spatele documentului) sau lipește textul manual.",
+        "tabPaste": "Lipește text",
+        "tabCamera": "Cameră",
+        "pasteLabel": "Linii MRZ",
+        "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
+        "parse": "Citește MRZ",
+        "cameraHint": "Ține MRZ-ul drept, cu lumină bună. Apasă Captură când textul e clar.",
+        "capture": "Captură & citește",
+        "previewTitle": "Date extrase",
+        "fieldName": "Nume",
+        "fieldDocument": "Nr. document",
+        "fieldNationalId": "CNP / cod personal",
+        "fieldBirthDate": "Data nașterii",
+        "fieldNationality": "Cetățenie",
+        "checksumWarning": "Checksum invalid — verifică datele înainte de aplicare.",
+        "apply": "Aplică în formular",
+        "errors": {
+          "empty": "Introdu liniile MRZ.",
+          "invalid_format": "Format invalid — TD1 are 3×30 caractere, pașaport 2×44.",
+          "unsupported": "Nu s-a putut interpreta MRZ-ul.",
+          "camera": "Camera nu e disponibilă. Folosește lipire text sau permisiuni browser.",
+          "ocrNoMrz": "Nu s-a detectat MRZ în imagine. Încearcă din nou sau lipește manual.",
+          "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou."
+        }
       }
     },
     "payment": {
@@ -2463,6 +2492,36 @@
       "finish": {
         "partialSessionHint": "Check-in parțial — restul camerelor se primesc când sosesc oaspeții.",
         "roomsThisSession": "Camere în sesiunea asta"
+      },
+      "mrz": {
+        "scanButton": "Scanează MRZ",
+        "title": "Citire MRZ (pașaport / CI)",
+        "intro": "Poziționează zona MRZ (cele 2–3 rânduri de jos de pe spatele documentului) sau lipește textul manual.",
+        "tabPaste": "Lipește text",
+        "tabCamera": "Cameră",
+        "pasteLabel": "Linii MRZ",
+        "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
+        "parse": "Citește MRZ",
+        "cameraHint": "Ține MRZ-ul drept, cu lumină bună. Apasă Captură când textul e clar.",
+        "capture": "Captură & citește",
+        "previewTitle": "Date extrase",
+        "fieldName": "Nume",
+        "fieldDocument": "Nr. document",
+        "fieldNationalId": "CNP / cod personal",
+        "fieldBirthDate": "Data nașterii",
+        "fieldNationality": "Cetățenie",
+        "checksumWarning": "Checksum invalid — verifică datele înainte de aplicare.",
+        "apply": "Aplică în formular",
+        "appliedTitle": "MRZ aplicat",
+        "appliedBody": "Datele documentului au fost completate. Verifică și corectează dacă e nevoie.",
+        "errors": {
+          "empty": "Introdu liniile MRZ.",
+          "invalid_format": "Format invalid — TD1 are 3×30 caractere, pașaport 2×44.",
+          "unsupported": "Nu s-a putut interpreta MRZ-ul.",
+          "camera": "Camera nu e disponibilă. Folosește lipire text sau permisiuni browser.",
+          "ocrNoMrz": "Nu s-a detectat MRZ în imagine. Încearcă din nou sau lipește manual.",
+          "ocrFailed": "Citirea OCR a eșuat. Încearcă din nou."
+        }
       },
       "fisa": {
         "legalHint": "Conform OPANAF 381/2026: CNP obligatoriu pentru cetățeni români. Străinii: pașaport sau CI (serie + număr).",
