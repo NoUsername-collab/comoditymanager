@@ -148,7 +148,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
           <span className="gantt-room-cell__name">{room.name}</span>
         </div>
       </td>
-      <td className="relative w-full overflow-visible p-0 align-top">
+      <td className="relative w-full overflow-hidden p-0 align-top">
         <GanttDragCreateLayer
           roomId={room.id}
           roomName={room.name}

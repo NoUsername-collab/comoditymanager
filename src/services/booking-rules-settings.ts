@@ -49,7 +49,9 @@ async function loadBookingRulesUncached(
     throw new Error(error.message);
   }
 
-  return parseBookingRulesRow(data ?? undefined);
+  return parseBookingRulesRow(
+    data as Record<string, unknown> | null | undefined
+  );
 }
 
 const getCachedBookingRules = (tenantId: string) =>

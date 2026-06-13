@@ -11,6 +11,7 @@ import {
 } from "react";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
+import { GANTT_ROW_H, GANTT_ROW_H_COMPACT } from "@/domain/gantt/layout";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useGanttDensity } from "@/hooks/useGanttDensity";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
@@ -152,6 +153,7 @@ export function GanttCalendar({
   const { density, toggleDensity } = useGanttDensity();
   const compact =
     viewRange.zoom === "quarter" || density === "compact";
+  const ganttRowHeight = density === "compact" ? GANTT_ROW_H_COMPACT : GANTT_ROW_H;
   const columnMetrics = useMemo(
     () =>
       resolveGanttColumnMetrics(
@@ -704,6 +706,7 @@ export function GanttCalendar({
             checkInTime={checkInTime}
             checkOutTime={checkOutTime}
             compact={compact}
+            rowHeight={ganttRowHeight}
             touch={touch}
             todayFlagsByRoom={todayFlagsByRoom}
             onOccOpen={handleOccOpen}

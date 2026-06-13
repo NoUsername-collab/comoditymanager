@@ -3031,7 +3031,8 @@
       "settings": {
         "updated": "Setări pensiune",
         "appearance_updated": "Temă panou",
-        "operational_updated": "Setări operaționale"
+        "operational_updated": "Setări operaționale",
+        "booking_rules_updated": "Reguli rezervare / prețuri"
       },
       "location_admin": {
         "unlocked": "Administrare locație deblocată",
@@ -3051,6 +3052,9 @@
       "occupancy": {
         "hold_created": "Hold cameră",
         "block_created": "Blocare cameră"
+      },
+      "invoice": {
+        "issued": "Factură emisă"
       },
       "activity": {
         "undone": "Acțiune anulată (undo)"

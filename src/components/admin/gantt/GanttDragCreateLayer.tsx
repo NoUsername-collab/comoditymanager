@@ -485,7 +485,7 @@ export function GanttDragCreateLayer({
       <div className="pointer-events-none absolute inset-0">{renderGrid}</div>
 
       <div className="pointer-events-none absolute inset-0 z-[2]">
-        <div className="relative h-full w-full">{children}</div>
+        <div className="gantt-drag-row__stays">{children}</div>
       </div>
 
       {ghost && drag && (

@@ -6,7 +6,11 @@ export type ActivityJournalCategory = "rezervari" | "admin";
 export function activityJournalCategory(
   action: ActivityAction
 ): ActivityJournalCategory {
-  if (action.startsWith("booking.") || action.startsWith("checkin.")) {
+  if (
+    action.startsWith("booking.") ||
+    action.startsWith("checkin.") ||
+    action.startsWith("invoice.")
+  ) {
     return "rezervari";
   }
   return "admin";

@@ -3032,7 +3032,8 @@
       "settings": {
         "updated": "Property settings",
         "appearance_updated": "Dashboard theme",
-        "operational_updated": "Operational settings"
+        "operational_updated": "Operational settings",
+        "booking_rules_updated": "Booking rules / pricing"
       },
       "location_admin": {
         "unlocked": "Location admin unlocked",
@@ -3052,6 +3053,9 @@
       "occupancy": {
         "hold_created": "Room hold",
         "block_created": "Room block"
+      },
+      "invoice": {
+        "issued": "Invoice issued"
       },
       "activity": {
         "undone": "Action undone"

@@ -9,7 +9,7 @@ import {
   type CSSProperties,
   type RefObject,
 } from "react";
-import { GANTT_ROW_H } from "@/domain/gantt/layout";
+import { GANTT_ROW_H, GANTT_ROW_H_COMPACT } from "@/domain/gantt/layout";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { OccupancySegment } from "@/domain/occupancy/types";
@@ -143,6 +143,8 @@ type GanttBodyProps = {
   checkInTime: string;
   checkOutTime: string;
   compact: boolean;
+  /** Pixel height for window virtualizer — must match --gantt-row-h for active density */
+  rowHeight?: number;
   touch: boolean;
   todayFlagsByRoom: Map<string, RoomTodayFlags>;
   onOccOpen: (seg: OccupancySegment, roomName: string) => void;
@@ -295,14 +297,15 @@ function GanttPlainBody(props: GanttBodyProps & { virtualItems: VirtualItem[] })
 function GanttWindowVirtualBody(
   props: GanttBodyProps & { virtualItems: VirtualItem[] }
 ) {
-  const { virtualItems, shellRef, theadRef, ...rest } = props;
+  const { virtualItems, shellRef, theadRef, rowHeight = GANTT_ROW_H, ...rest } =
+    props;
   const virtualItemsRef = useRef(virtualItems);
   virtualItemsRef.current = virtualItems;
 
   const estimateSize = useCallback((index: number) => {
     const item = virtualItemsRef.current[index];
-    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : GANTT_ROW_H;
-  }, []);
+    return item?.kind === "building" ? GANTT_BUILDING_HEADER_H : rowHeight;
+  }, [rowHeight]);
 
   const { range, paddingTop, paddingBottom } = useWindowVirtualRange({
     count: virtualItems.length,

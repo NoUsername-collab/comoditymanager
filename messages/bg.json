@@ -2696,7 +2696,8 @@
       "settings": {
         "updated": "Property settings",
         "appearance_updated": "Dashboard theme",
-        "operational_updated": "Operational settings"
+        "operational_updated": "Operational settings",
+        "booking_rules_updated": "Booking rules / pricing"
       },
       "location_admin": {
         "unlocked": "Location admin unlocked",
@@ -2712,6 +2713,9 @@
       "checkin": {
         "created": "Настаняване извършено",
         "updated": "Настаняване актуализирано"
+      },
+      "invoice": {
+        "issued": "Издадена фактура"
       },
       "actorPublicSite": "Публичен сайт",
       "actorSystem": "Система",
