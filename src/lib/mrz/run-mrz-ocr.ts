@@ -1,5 +1,7 @@
 "use client";
 
+type TesseractPsm = import("tesseract.js").PSM;
+
 function enhanceMrzContrast(imageData: ImageData): void {
   const { data } = imageData;
   for (let i = 0; i < data.length; i += 4) {
@@ -77,7 +79,7 @@ async function getMrzWorker(): Promise<import("tesseract.js").Worker> {
 
 async function recognizeMrzText(
   source: HTMLCanvasElement | HTMLImageElement | string,
-  psm?: number,
+  psm?: TesseractPsm,
 ): Promise<string> {
   const { PSM } = await import("tesseract.js");
   const worker = await getMrzWorker();
