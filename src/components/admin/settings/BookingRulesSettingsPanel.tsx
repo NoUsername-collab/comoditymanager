@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateBookingRulesSettingsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
 import {
@@ -61,7 +61,7 @@ export function BookingRulesSettingsPanel({
 }: Props) {
   const t = useTranslations("admin.pages.settings.booking");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
-  const [pending, startTransition] = useTransition();
+  const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState(initial);
 
   const policyPreview = useMemo(
@@ -72,51 +72,65 @@ export function BookingRulesSettingsPanel({
   function save(partial: Partial<BookingRulesSettings>) {
     if (!settingsPartialChanged(settings, partial)) return;
 
+    const previous = settings;
     const updated = { ...settings, ...partial };
     setSettings(updated);
-    startTransition(async () => {
-      const fd = new FormData();
-      if (partial.cancellationPolicyType !== undefined) {
-        fd.set("cancellation_policy_type", partial.cancellationPolicyType);
-      }
-      if (partial.cancellationPolicyDays !== undefined) {
-        fd.set("cancellation_policy_days", String(partial.cancellationPolicyDays));
-      }
-      if (partial.cancellationPolicyCustomText !== undefined) {
-        fd.set(
-          "cancellation_policy_custom_text",
-          partial.cancellationPolicyCustomText ?? ""
-        );
-      }
-      if (partial.pricingWeekendEnabled !== undefined) {
-        fd.set("pricing_weekend_enabled", partial.pricingWeekendEnabled ? "1" : "0");
-      }
-      if (partial.pricingWeekendMode !== undefined) {
-        fd.set("pricing_weekend_mode", partial.pricingWeekendMode);
-      }
-      if (partial.pricingWeekendMultiplier !== undefined) {
-        fd.set(
-          "pricing_weekend_multiplier",
-          String(partial.pricingWeekendMultiplier)
-        );
-      }
-      if (partial.pricingSeasons !== undefined) {
-        fd.set("pricing_seasons", JSON.stringify(partial.pricingSeasons));
-      }
-      if (partial.invoiceSeries !== undefined) {
-        fd.set("invoice_series", partial.invoiceSeries);
-      }
-      if (partial.invoiceSellerRegCom !== undefined) {
-        fd.set("invoice_seller_reg_com", partial.invoiceSellerRegCom ?? "");
-      }
 
-      const result = await updateBookingRulesSettingsAction(fd);
-      if (result.ok) {
-        notifySuccess(t("saved"));
-      } else {
-        notifyError(result.error ?? t("saveError"));
+    void (async () => {
+      setIsSaving(true);
+      try {
+        const fd = new FormData();
+        if (partial.cancellationPolicyType !== undefined) {
+          fd.set("cancellation_policy_type", partial.cancellationPolicyType);
+        }
+        if (partial.cancellationPolicyDays !== undefined) {
+          fd.set("cancellation_policy_days", String(partial.cancellationPolicyDays));
+        }
+        if (partial.cancellationPolicyCustomText !== undefined) {
+          fd.set(
+            "cancellation_policy_custom_text",
+            partial.cancellationPolicyCustomText ?? ""
+          );
+        }
+        if (partial.pricingWeekendEnabled !== undefined) {
+          fd.set("pricing_weekend_enabled", partial.pricingWeekendEnabled ? "1" : "0");
+        }
+        if (partial.pricingWeekendMode !== undefined) {
+          fd.set("pricing_weekend_mode", partial.pricingWeekendMode);
+        }
+        if (partial.pricingWeekendMultiplier !== undefined) {
+          fd.set(
+            "pricing_weekend_multiplier",
+            String(partial.pricingWeekendMultiplier)
+          );
+        }
+        if (partial.pricingSeasons !== undefined) {
+          fd.set("pricing_seasons", JSON.stringify(partial.pricingSeasons));
+        }
+        if (partial.invoiceSeries !== undefined) {
+          fd.set("invoice_series", partial.invoiceSeries);
+        }
+        if (partial.invoiceSellerRegCom !== undefined) {
+          fd.set("invoice_seller_reg_com", partial.invoiceSellerRegCom ?? "");
+        }
+
+        const result = await updateBookingRulesSettingsAction(fd);
+        if (result.ok) {
+          notifySuccess(t("saved"));
+        } else {
+          notifyError(result.error ?? t("saveError"));
+          setSettings(previous);
+        }
+      } catch (e) {
+        notifyError(
+          t("saveError"),
+          e instanceof Error ? e.message : undefined
+        );
+        setSettings(previous);
+      } finally {
+        setIsSaving(false);
       }
-    });
+    })();
   }
 
   function updateSeason(index: number, patch: Partial<PricingSeason>) {
@@ -153,7 +167,7 @@ export function BookingRulesSettingsPanel({
   const weekendPercent = Math.round((settings.pricingWeekendMultiplier - 1) * 100);
 
   return (
-    <div className={`checkin-settings ${pending ? "checkin-settings--pending" : ""}`}>
+    <div className="checkin-settings">
       <h3 className="checkin-settings__title">{t("cancellationTitle")}</h3>
 
       <SettingRow label={t("policyType")} description={t("policyTypeDesc")}>
@@ -264,7 +278,7 @@ export function BookingRulesSettingsPanel({
             type="button"
             className="checkin-stepper__btn checkin-stepper__btn--secondary"
             onClick={addSeason}
-            disabled={settings.pricingSeasons.length >= 8}
+            disabled={isSaving || settings.pricingSeasons.length >= 8}
           >
             {t("addSeason")}
           </button>

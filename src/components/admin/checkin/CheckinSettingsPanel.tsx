@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { updateCheckinSettingsAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
@@ -143,8 +143,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
   const t = useTranslations("admin.pages.settings.checkin");
   const router = useRouter();
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
-  const [pending, startTransition] = useTransition();
-  const [fisaPending, startFisaTransition] = useTransition();
+  const [isSaving, setIsSaving] = useState(false);
+  const [fisaSaving, setFisaSaving] = useState(false);
   const [settings, setSettings] = useState<CheckinSettings>(initial);
   const [fisaDraft, setFisaDraft] = useState<FisaAnafDraft>(() =>
     buildFisaAnafDraft(initial)
@@ -179,28 +179,42 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
       for (const [key, value] of Object.entries(partial)) {
         appendFormValue(fd, key, value);
       }
-      const result = await updateCheckinSettingsAction(fd);
-      if (result.ok) {
-        notifySuccess(t("saved"));
-        if (!isFisaOnlyPartial(partial)) {
-          router.refresh();
-        }
-        return { ok: true };
-      }
 
-      notifyError(t("saveError"), result.error ?? "");
-      setSettings(current);
-      settingsRef.current = current;
-      return { ok: false, error: result.error ?? t("saveError") };
+      try {
+        const result = await updateCheckinSettingsAction(fd);
+        if (result.ok) {
+          notifySuccess(t("saved"));
+          if (!isFisaOnlyPartial(partial)) {
+            router.refresh();
+          }
+          return { ok: true };
+        }
+
+        notifyError(t("saveError"), result.error ?? "");
+        setSettings(current);
+        settingsRef.current = current;
+        return { ok: false, error: result.error ?? t("saveError") };
+      } catch (e) {
+        const message = e instanceof Error ? e.message : t("saveError");
+        notifyError(t("saveError"), message);
+        setSettings(current);
+        settingsRef.current = current;
+        return { ok: false, error: message };
+      }
     },
     [notifyError, notifySuccess, router, t]
   );
 
   const persist = useCallback(
     (partial: Partial<CheckinSettings>) => {
-      startTransition(async () => {
-        await savePartial(partial);
-      });
+      void (async () => {
+        setIsSaving(true);
+        try {
+          await savePartial(partial);
+        } finally {
+          setIsSaving(false);
+        }
+      })();
     },
     [savePartial]
   );
@@ -218,18 +232,23 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
   function saveFisaAnaf() {
     setFisaSaveError(null);
     setFisaSaveOk(false);
-    startFisaTransition(async () => {
-      const result = await savePartial(fisaAnafDraftToSettings(fisaDraft));
-      if (result.ok) {
-        setFisaSaveOk(true);
-      } else {
-        setFisaSaveError(result.error ?? t("saveError"));
+    void (async () => {
+      setFisaSaving(true);
+      try {
+        const result = await savePartial(fisaAnafDraftToSettings(fisaDraft));
+        if (result.ok) {
+          setFisaSaveOk(true);
+        } else {
+          setFisaSaveError(result.error ?? t("saveError"));
+        }
+      } finally {
+        setFisaSaving(false);
       }
-    });
+    })();
   }
 
   return (
-    <div className={`checkin-settings ${pending ? "checkin-settings--pending" : ""}`}>
+    <div className="checkin-settings">
       <h3 className="checkin-settings__title">{t("title")}</h3>
 
       <SettingRow label={t("docRule")} description={t("docRuleDesc")}>
@@ -456,10 +475,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         <button
           type="button"
           className="checkin-fisa-save__btn"
-          disabled={!fisaDirty || fisaPending || pending}
+          disabled={!fisaDirty || fisaSaving || isSaving}
           onClick={saveFisaAnaf}
         >
-          {fisaPending ? t("fisaSaving") : t("fisaSave")}
+          {fisaSaving ? t("fisaSaving") : t("fisaSave")}
         </button>
       </div>
     </div>

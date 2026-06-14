@@ -11,7 +11,8 @@ import {
   requireLocationAdmin,
   requireStaff,
 } from "@/lib/auth/require-staff";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
 import {
   updatePensionSettings,
@@ -25,7 +26,7 @@ import {
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
 import { updateBookingRulesSettings } from "@/services/booking-rules-settings";
-import { updateCheckinSettings } from "@/services/checkin/settings";
+import { updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
@@ -374,7 +375,18 @@ export async function updateFiscalBillingSettingsAction(
   formData: FormData
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const t = await getTranslations("admin.serverActions");
-  const { memberRole } = await requireStaff();
+
+  let memberRole: "owner" | "admin" | "operator" | null = null;
+  try {
+    ({ memberRole } = await requireStaff());
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "auth.role_forbidden";
+    if (msg === "auth.login_required") {
+      return { ok: false, error: t("invalidUserOrPassword") };
+    }
+    return { ok: false, error: t("roleForbidden") };
+  }
+
   if (memberRole !== "owner" && memberRole !== "admin") {
     return { ok: false, error: t("roleForbidden") };
   }
@@ -428,7 +440,10 @@ export async function updateFiscalBillingSettingsAction(
       summary: "Setări fiscale / facturare actualizate",
       metadata: { section: "fiscal" },
     });
+    const tenantId = await resolveTenantIdForData();
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.pensionSettings), "max");
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidateTag(checkinSettingsCacheTag(tenantId), "max");
     revalidatePath("/admin/settings");
     return { ok: true };
   } catch (e) {

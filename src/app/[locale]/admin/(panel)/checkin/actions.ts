@@ -546,7 +546,20 @@ export async function updateCheckinAction(
 export async function updateCheckinSettingsAction(
   formData: FormData,
 ): Promise<{ ok: boolean; error?: string }> {
-  await requireAdmin();
+  const t = await getTranslations("admin.serverActions");
+
+  try {
+    await requireAdmin();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "auth.role_forbidden";
+    if (msg === "auth.login_required") {
+      return { ok: false, error: t("invalidUserOrPassword") };
+    }
+    if (msg === "auth.tenant_member_required" || msg === "auth.role_forbidden") {
+      return { ok: false, error: t("roleForbidden") };
+    }
+    return { ok: false, error: msg };
+  }
 
   try {
     const input: Record<string, unknown> = {};

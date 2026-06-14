@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { updateFiscalBillingSettingsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
@@ -98,7 +98,8 @@ export function FiscalBillingSettingsPanel({
   const tCheckin = useTranslations("admin.pages.settings.checkin");
   const router = useRouter();
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
-  const [pending, startTransition] = useTransition();
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [bookingRules, setBookingRules] = useState(initialBooking);
   const [checkinSettings, setCheckinSettings] = useState(initialCheckin);
@@ -127,11 +128,14 @@ export function FiscalBillingSettingsPanel({
   }
 
   function cancelEdit() {
+    setSaveError(null);
+    setIsSaving(false);
     setDraft(buildDraft(bookingRules, checkinSettings, country));
     setEditing(false);
   }
 
   function saveDraft() {
+    setSaveError(null);
     const address = formatFisaPropertyAddress(draft.addressParts);
     const nextBooking: Partial<BookingRulesSettings> = {};
     const nextCheckin: Partial<CheckinSettings> = {};
@@ -177,54 +181,64 @@ export function FiscalBillingSettingsPanel({
       return;
     }
 
-    startTransition(async () => {
-      const fd = new FormData();
-      if (nextBooking.invoiceSeries !== undefined) {
-        fd.set("invoice_series", nextBooking.invoiceSeries);
-      }
-      if (nextBooking.invoiceSellerRegCom !== undefined) {
-        fd.set("invoice_seller_reg_com", nextBooking.invoiceSellerRegCom ?? "");
-      }
-      if (nextBooking.invoiceVatEnabled !== undefined) {
-        fd.set("invoice_vat_enabled", nextBooking.invoiceVatEnabled ? "true" : "false");
-      }
-      if (nextBooking.invoiceVatRate !== undefined) {
-        fd.set(
-          "invoice_vat_rate",
-          nextBooking.invoiceVatRate != null ? String(nextBooking.invoiceVatRate) : ""
-        );
-      }
-      if (nextBooking.invoicePricesIncludeVat !== undefined) {
-        fd.set(
-          "invoice_prices_include_vat",
-          nextBooking.invoicePricesIncludeVat ? "true" : "false"
-        );
-      }
-      if (nextCheckin.fisa_owner_cui !== undefined) {
-        fd.set("fisa_owner_cui", nextCheckin.fisa_owner_cui ?? "");
-      }
-      if (nextCheckin.fisa_tourism_license !== undefined) {
-        fd.set("fisa_tourism_license", nextCheckin.fisa_tourism_license ?? "");
-      }
-      if (nextCheckin.fisa_property_address !== undefined) {
-        fd.set("fisa_property_address", nextCheckin.fisa_property_address ?? "");
-      }
+    void (async () => {
+      setIsSaving(true);
+      try {
+        const fd = new FormData();
+        if (nextBooking.invoiceSeries !== undefined) {
+          fd.set("invoice_series", nextBooking.invoiceSeries);
+        }
+        if (nextBooking.invoiceSellerRegCom !== undefined) {
+          fd.set("invoice_seller_reg_com", nextBooking.invoiceSellerRegCom ?? "");
+        }
+        if (nextBooking.invoiceVatEnabled !== undefined) {
+          fd.set("invoice_vat_enabled", nextBooking.invoiceVatEnabled ? "true" : "false");
+        }
+        if (nextBooking.invoiceVatRate !== undefined) {
+          fd.set(
+            "invoice_vat_rate",
+            nextBooking.invoiceVatRate != null ? String(nextBooking.invoiceVatRate) : ""
+          );
+        }
+        if (nextBooking.invoicePricesIncludeVat !== undefined) {
+          fd.set(
+            "invoice_prices_include_vat",
+            nextBooking.invoicePricesIncludeVat ? "true" : "false"
+          );
+        }
+        if (nextCheckin.fisa_owner_cui !== undefined) {
+          fd.set("fisa_owner_cui", nextCheckin.fisa_owner_cui ?? "");
+        }
+        if (nextCheckin.fisa_tourism_license !== undefined) {
+          fd.set("fisa_tourism_license", nextCheckin.fisa_tourism_license ?? "");
+        }
+        if (nextCheckin.fisa_property_address !== undefined) {
+          fd.set("fisa_property_address", nextCheckin.fisa_property_address ?? "");
+        }
 
-      const result = await updateFiscalBillingSettingsAction(fd);
-      if (!result.ok) {
-        notifyError(t("saveError"), result.error ?? "");
-        return;
-      }
+        const result = await updateFiscalBillingSettingsAction(fd);
+        if (!result.ok) {
+          setSaveError(result.error ?? t("saveError"));
+          notifyError(t("saveError"), result.error ?? "");
+          return;
+        }
 
-      const updatedBooking = { ...bookingRules, ...nextBooking };
-      const updatedCheckin = { ...checkinSettings, ...nextCheckin };
-      setBookingRules(updatedBooking);
-      setCheckinSettings(updatedCheckin);
-      setDraft(buildDraft(updatedBooking, updatedCheckin, country));
-      setEditing(false);
-      notifySuccess(t("saved"));
-      router.refresh();
-    });
+        const updatedBooking = { ...bookingRules, ...nextBooking };
+        const updatedCheckin = { ...checkinSettings, ...nextCheckin };
+        setBookingRules(updatedBooking);
+        setCheckinSettings(updatedCheckin);
+        setDraft(buildDraft(updatedBooking, updatedCheckin, country));
+        setEditing(false);
+        notifySuccess(t("saved"));
+        router.refresh();
+      } catch (e) {
+        const message = e instanceof Error ? e.message : t("saveError");
+        setSaveError(message);
+        notifyError(t("saveError"), message);
+      } finally {
+        setIsSaving(false);
+      }
+    })();
   }
 
   function labelFor(key: "taxId" | "regCom" | "tourismLicense") {
@@ -237,9 +251,7 @@ export function FiscalBillingSettingsPanel({
   }
 
   return (
-    <div
-      className={`fiscal-settings ${pending ? "checkin-settings--pending" : ""}`}
-    >
+    <div className="fiscal-settings">
       <div className="fiscal-settings__head">
         <div>
           <h3 className="checkin-settings__title">{t("title")}</h3>
@@ -258,15 +270,14 @@ export function FiscalBillingSettingsPanel({
             <button
               type="button"
               className="checkin-stepper__btn checkin-stepper__btn--primary"
-              disabled={pending}
+              disabled={isSaving}
               onClick={saveDraft}
             >
-              {t("save")}
+              {isSaving ? t("save") + "…" : t("save")}
             </button>
             <button
               type="button"
               className="checkin-stepper__btn checkin-stepper__btn--secondary"
-              disabled={pending}
               onClick={cancelEdit}
             >
               {t("cancel")}
@@ -274,6 +285,12 @@ export function FiscalBillingSettingsPanel({
           </div>
         )}
       </div>
+
+      {saveError ? (
+        <p className="checkin-fisa-save__error" role="alert">
+          {saveError}
+        </p>
+      ) : null}
 
       <div className="fiscal-settings__profile">
         <div className="fiscal-settings__country-badge">
