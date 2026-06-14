@@ -15,6 +15,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
 type Props = {
@@ -147,20 +149,20 @@ export function RoomForm({
         </p>
       ) : null}
       <div className="admin-room-form__mode flex gap-2">
-        <button
-          type="button"
+        <AdminButton
+          variant={mode === "single" ? "primary" : "secondary"}
+          size="sm"
           onClick={() => setMode("single")}
-          className={`rounded-lg px-3 py-1.5 text-sm ${mode === "single" ? "bg-zinc-900 text-white" : "border border-zinc-300"}`}
         >
           {tRooms("singleRoom")}
-        </button>
-        <button
-          type="button"
+        </AdminButton>
+        <AdminButton
+          variant={mode === "bulk" ? "primary" : "secondary"}
+          size="sm"
           onClick={() => setMode("bulk")}
-          className={`rounded-lg px-3 py-1.5 text-sm ${mode === "bulk" ? "bg-zinc-900 text-white" : "border border-zinc-300"}`}
         >
           {tRooms("bulkMany")}
-        </button>
+        </AdminButton>
       </div>
 
       <AdminPendingForm action={createRoomAction} className="admin-room-form__fields space-y-4">
@@ -169,7 +171,7 @@ export function RoomForm({
 
         <label className="block">
           <span className="text-sm font-medium">{tCommon("building")} *</span>
-          <select
+          <AdminSelect
             name="building_id"
             required
             value={buildingId}
@@ -177,21 +179,21 @@ export function RoomForm({
               setBuildingId(e.target.value);
               setFloorId("");
             }}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
           >
             {buildings.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
 
         <label className="block">
           <span className="text-sm font-medium">{tRooms("floorOptional")}</span>
-          <select
+          <AdminSelect
             name="floor_id"
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
             value={floorId}
             onChange={(e) => setFloorId(e.target.value)}
           >
@@ -201,17 +203,17 @@ export function RoomForm({
                 {f.name}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
 
         <label className="block">
           <span className="text-sm font-medium">{tRooms("roomTypeRequired")}</span>
-          <select
+          <AdminSelect
             name="room_type_definition_id"
             required
             value={typeId}
             onChange={(e) => setTypeId(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
           >
             {types.map((t) => (
               <option key={t.id} value={t.id}>
@@ -219,17 +221,17 @@ export function RoomForm({
                 {t.base_price_per_night > 0 ? ` · ${t.base_price_per_night} RON` : ""}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
 
         {mode === "single" ? (
           <label className="block">
             <span className="text-sm font-medium">{tRooms("roomNameRequired")}</span>
-            <input
+            <AdminInput
               name="name"
               required
               placeholder={tRooms("roomNamePlaceholderPlain")}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
         ) : (
@@ -266,12 +268,12 @@ export function RoomForm({
                   <span className="mt-0.5 block text-xs text-zinc-500">
                     {tRooms("namePrefixEmptyHint")}
                   </span>
-                  <input
+                  <AdminInput
                     name="name_prefix"
                     value={namePrefix}
                     onChange={(e) => setNamePrefix(e.target.value)}
                     placeholder={tRooms("namePrefixPlaceholder")}
-                    className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                    className="mt-1"
                   />
                 </label>
               ) : (
@@ -279,7 +281,7 @@ export function RoomForm({
               )}
               <label className="block">
                 <span className="text-sm font-medium">{tRooms("startNumber")}</span>
-                <input
+                <AdminInput
                   name="start_number"
                   type="number"
                   min={1}
@@ -289,19 +291,19 @@ export function RoomForm({
                     setStartNumber(v);
                     if (endNumber < v) setEndNumber(v);
                   }}
-                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                  className="mt-1"
                 />
               </label>
               <label className="block">
                 <span className="text-sm font-medium">{tRooms("endNumber")}</span>
-                <input
+                <AdminInput
                   name="end_number"
                   type="number"
                   min={startNumber}
                   max={startNumber + 49}
                   value={endNumber}
                   onChange={(e) => setEndNumber(Number(e.target.value) || startNumber)}
-                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                  className="mt-1"
                 />
               </label>
               <input type="hidden" name="bulk_count" value={bulkCount} />
@@ -345,24 +347,24 @@ export function RoomForm({
             <span className="block text-xs text-zinc-500">
               {tRooms("autoPriceHint", { suggestedPrice })}
             </span>
-            <input
+            <AdminInput
               name="price_per_night"
               type="number"
               min={0}
               step={1}
               key={`${buildingId}-${typeId}`}
               defaultValue={suggestedPrice || building?.default_price_per_night || 0}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block">
             <span className="text-sm font-medium">{tCommon("displayOrder")}</span>
-            <input
+            <AdminInput
               name="sort_order"
               type="number"
               value={sortOrder}
               onChange={(e) => setSortOrder(Number(e.target.value) || 1)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
         </div>
@@ -374,19 +376,19 @@ export function RoomForm({
 
         <label className="block">
           <span className="text-sm font-medium">{tRooms("maxExtraBeds")}</span>
-          <input
+          <AdminInput
             name="max_extra_beds_per_room"
             type="number"
             min={0}
             max={4}
             defaultValue={1}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
           />
         </label>
 
         <AdminSubmitButton
           disabled={bulkBlocked}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          size="md"
         >
           {mode === "bulk" ? tRooms("createRooms") : tRooms("saveRoom")}
         </AdminSubmitButton>

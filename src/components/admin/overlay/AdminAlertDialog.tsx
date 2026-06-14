@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminFloatingPanel } from "./AdminFloatingPanel";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { useTranslations } from "next-intl";
 
 export function AdminAlertDialog({
@@ -25,13 +26,9 @@ export function AdminAlertDialog({
     >
       <p className="admin-alert-dialog__message">{message}</p>
       <div className="admin-alert-dialog__actions">
-        <button
-          type="button"
-          className="admin-floating-panel__btn admin-floating-panel__btn--primary"
-          onClick={onClose}
-        >
+        <AdminButton variant="primary" size="sm" onClick={onClose}>
           {tCommon("ok")}
-        </button>
+        </AdminButton>
       </div>
     </AdminFloatingPanel>
   );

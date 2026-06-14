@@ -13,6 +13,8 @@ import {
 } from "@/app/[locale]/admin/(panel)/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminSelect } from "@/components/admin/ui/AdminInput";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
 type RoomOption = { id: string; name: string; building_name: string };
@@ -140,8 +142,9 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
 
         <label className="block text-xs font-semibold text-zinc-600">
           {tGantt("moveRoom.targetRoom")}
-          <select
-            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm"
+          <AdminSelect
+            fieldSize="sm"
+            className="mt-1"
             value={targetRoomId}
             onChange={(e) => {
               setTargetRoomId(e.target.value);
@@ -154,7 +157,7 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
                 {r.name} · {r.building_name}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
 
         {previewText ? (
@@ -169,17 +172,17 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
           </p>
         ) : null}
 
-        <button
-          type="button"
-          className="admin-floating-panel__btn admin-floating-panel__btn--primary w-full"
+        <AdminButton
+          variant="primary"
+          fullWidth
           disabled={pending || !targetRoomId}
           onClick={submit}
         >
           {tGantt("moveRoom.confirm")}
-        </button>
-        <button type="button" className="admin-floating-panel__btn w-full" onClick={onClose}>
+        </AdminButton>
+        <AdminButton variant="secondary" fullWidth onClick={onClose}>
           {tCommon("cancel")}
-        </button>
+        </AdminButton>
       </div>
     </AdminFloatingPanel>
   );

@@ -3,7 +3,7 @@
 .admin-overlay-stack {
   position: fixed;
   inset: 0;
-  z-index: 100000;
+  z-index: var(--z-overlay, 200);
   pointer-events: none;
 }
 

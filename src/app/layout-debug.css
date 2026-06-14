@@ -4,7 +4,7 @@
   position: fixed;
   right: max(0.5rem, env(safe-area-inset-right, 0px));
   bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
-  z-index: 2147483646;
+  z-index: var(--z-debug, 9999);
   width: min(22rem, calc(100vw - 1rem));
   max-height: min(50vh, 20rem);
   overflow: auto;

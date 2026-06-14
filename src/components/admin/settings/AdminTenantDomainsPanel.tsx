@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import {
   addCustomDomainAction,
   removeCustomDomainAction,
@@ -72,17 +74,15 @@ export function AdminTenantDomainsPanel({
             }}
           >
             <p className="text-sm font-medium text-zinc-900">{t("addCustomTitle")}</p>
-            <input
+            <AdminInput
               name="domain"
               type="text"
               required
               placeholder="www.pensiunea-mea.ro"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
             />
             <label className="block text-sm text-zinc-700">{t("routingKind")}</label>
-            <select
+            <AdminSelect
               name="routing_kind"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm"
               defaultValue="custom_public"
             >
               {allowedKinds.map((kind) => (
@@ -90,19 +90,15 @@ export function AdminTenantDomainsPanel({
                   {t(`kinds.${kind}`)}
                 </option>
               ))}
-            </select>
+            </AdminSelect>
             {error && (
               <p className="text-sm text-red-600" role="alert">
                 {error}
               </p>
             )}
-            <button
-              type="submit"
-              disabled={pending}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-            >
+            <AdminButton type="submit" variant="primary" disabled={pending}>
               {pending ? t("adding") : t("addDomain")}
-            </button>
+            </AdminButton>
           </form>
 
           {customDomains.length > 0 && (
@@ -127,12 +123,9 @@ export function AdminTenantDomainsPanel({
                         }}
                       >
                         <input type="hidden" name="domain_id" value={d.id} />
-                        <button
-                          type="submit"
-                          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs"
-                        >
+                        <AdminButton type="submit" variant="secondary" size="sm">
                           {t("markVerified")}
-                        </button>
+                        </AdminButton>
                       </form>
                     )}
                     <form
@@ -142,12 +135,9 @@ export function AdminTenantDomainsPanel({
                       }}
                     >
                       <input type="hidden" name="domain_id" value={d.id} />
-                      <button
-                        type="submit"
-                        className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-700"
-                      >
+                      <AdminButton type="submit" variant="danger" size="sm">
                         {t("remove")}
-                      </button>
+                      </AdminButton>
                     </form>
                   </div>
                 </li>

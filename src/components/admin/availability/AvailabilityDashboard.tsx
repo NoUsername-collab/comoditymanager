@@ -15,6 +15,7 @@ import type {
   DayAvailabilityDetail,
 } from "@/services/availability-month";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { AvailabilityLiveSync } from "./AvailabilityLiveSync";
@@ -424,7 +425,7 @@ export function AvailabilityDashboard({
           ]
             .filter(Boolean)
             .join(" ")}
-          style={{ "--chip-color": "#64748b" } as React.CSSProperties}
+          style={{ "--chip-color": "var(--text-muted)" } as React.CSSProperties}
           onClick={() =>
             router.push(
                 buildTargetHref(
@@ -488,7 +489,7 @@ export function AvailabilityDashboard({
             ]
               .filter(Boolean)
               .join(" ")}
-            style={{ "--chip-color": "#94a3b8" } as React.CSSProperties}
+            style={{ "--chip-color": "var(--text-faint)" } as React.CSSProperties}
             onClick={() =>
               pushParams({
                 feat: opt.value === "all" ? undefined : opt.value,
@@ -508,23 +509,25 @@ export function AvailabilityDashboard({
             <strong>{rangeStats.min}</strong> {tAvail("freeRooms").toLowerCase()} / {tCommon("night")}
           </p>
           <div className="avail-interval-bar__actions flex gap-2">
-            <button
-              type="button"
-              className="avail-interval-bar__copy rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
+            <AdminButton
+              variant="secondary"
+              size="sm"
+              className="avail-interval-bar__copy"
               onClick={copyIntervalText}
             >
               {tAvail("copyForClient")}
-            </button>
-            <button
-              type="button"
-              className="avail-interval-bar__clear rounded-lg border border-zinc-300 px-3 py-1 text-xs font-semibold hover:bg-white"
+            </AdminButton>
+            <AdminButton
+              variant="secondary"
+              size="sm"
+              className="avail-interval-bar__clear"
               onClick={() => {
                 setRangeStart(null);
                 setRangeEnd(null);
               }}
             >
               {tAvail("clearInterval")}
-            </button>
+            </AdminButton>
           </div>
         </div>
       )}

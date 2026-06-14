@@ -104,7 +104,7 @@ export function GanttStayPopover({
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
   const isCerere = data.status === "cerere_noua";
-  const accent = data.buildingColor ?? (isCerere ? "#d97706" : "#059669");
+  const accent = data.buildingColor ?? (isCerere ? "var(--pending-border)" : "var(--active-border)");
   const nights = stayNightCount(data.checkIn, data.checkOut);
   const rooms = resolveRoomList(data);
   const keysHandedRooms = data.keysHandedRooms ?? [];

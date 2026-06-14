@@ -3,10 +3,10 @@
 import { Link } from "@/i18n/navigation";
 
 const LEVELS = [
-  { id: "error", label: "Errors", color: "#991b1b" },
-  { id: "warn", label: "Warnings", color: "#92400e" },
-  { id: "info", label: "Info", color: "#1e40af" },
-  { id: "debug", label: "Debug", color: "#6b7280" },
+  { id: "error", label: "Errors", color: "var(--cancelled-text)" },
+  { id: "warn", label: "Warnings", color: "var(--pending-text)" },
+  { id: "info", label: "Info", color: "var(--accent)" },
+  { id: "debug", label: "Debug", color: "var(--text-muted)" },
 ] as const;
 
 const SOURCES = [

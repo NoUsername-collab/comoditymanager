@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import {
   enableGuestAppFromOwnerAction,
   loadGuestAccessLinkAction,
@@ -106,36 +108,22 @@ export function GuestAccessSharePanel({
 
       {url ? (
         <div className="space-y-2">
-          <input
+          <AdminInput
             readOnly
             value={url}
-            className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-800"
+            fieldSize="sm"
           />
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white"
-              onClick={copyUrl}
-            >
+            <AdminButton variant="primary" size="sm" onClick={copyUrl}>
               {t("copy")}
-            </button>
-            <button
-              type="button"
-              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-semibold text-zinc-700"
-              onClick={regenerate}
-              disabled={pending}
-            >
+            </AdminButton>
+            <AdminButton variant="secondary" size="sm" onClick={regenerate} disabled={pending}>
               {t("regenerate")}
-            </button>
+            </AdminButton>
             {guestEmail ? (
-              <button
-                type="button"
-                className="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800"
-                onClick={sendEmail}
-                disabled={pending}
-              >
+              <AdminButton variant="soft" size="sm" onClick={sendEmail} disabled={pending}>
                 {t("sendEmail")}
-              </button>
+              </AdminButton>
             ) : null}
           </div>
         </div>
@@ -147,14 +135,9 @@ export function GuestAccessSharePanel({
       {error ? (
         <div className="mt-2 space-y-2">
           <p className="text-xs text-red-600">{error}</p>
-          <button
-            type="button"
-            className="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
-            onClick={enableAndRegenerate}
-            disabled={pending}
-          >
+          <AdminButton variant="primary" size="sm" onClick={enableAndRegenerate} disabled={pending}>
             {t("enableAndRegenerate")}
-          </button>
+          </AdminButton>
         </div>
       ) : null}
     </div>

@@ -1,0 +1,305 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Admin UI Primitives — AdminButton, AdminInput, AdminSelect, AdminTextarea
+   Single source of truth for interactive form elements.
+   Uses theme variables from _base.css.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── AdminButton ── */
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--admin-font);
+  font-weight: 600;
+  line-height: 1.25;
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    box-shadow 0.12s ease,
+    transform 0.08s ease;
+  white-space: nowrap;
+}
+
+.admin-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* — Sizes — */
+
+.admin-btn--sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.6875rem;
+  min-height: 1.75rem;
+}
+
+.admin-btn--md {
+  padding: 0.45rem 1rem;
+  font-size: 0.75rem;
+  min-height: 2.125rem;
+}
+
+.admin-btn--lg {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.8125rem;
+  min-height: 2.5rem;
+}
+
+/* — Variant: primary — */
+
+.admin-btn--primary {
+  border: 1px solid transparent;
+  background: var(--admin-btn-primary-bg);
+  color: var(--admin-btn-primary-text);
+}
+
+.admin-btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--admin-btn-primary-bg) 88%, black);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--admin-btn-primary-bg) 30%, transparent);
+}
+
+.admin-btn--primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* — Variant: secondary — */
+
+.admin-btn--secondary {
+  border: 1px solid var(--admin-panel-border, #d4d4d8);
+  background: var(--surface, #fff);
+  color: var(--admin-text, #18181b);
+}
+
+.admin-btn--secondary:hover:not(:disabled) {
+  background: var(--surface-2, #fafafa);
+  border-color: var(--border-strong, #a1a1aa);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.admin-btn--secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* — Variant: danger — */
+
+.admin-btn--danger {
+  border: 1px solid var(--cancelled-border, #ef4444);
+  background: var(--cancelled-bg, #fef2f2);
+  color: var(--cancelled-text, #991b1b);
+}
+
+.admin-btn--danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--cancelled-bg, #fef2f2) 70%, var(--cancelled-border, #ef4444));
+  border-color: color-mix(in srgb, var(--cancelled-border, #ef4444) 80%, black);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--cancelled-border) 25%, transparent);
+}
+
+.admin-btn--danger:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* — Variant: ghost — */
+
+.admin-btn--ghost {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.admin-btn--ghost:hover:not(:disabled) {
+  background: var(--surface-2, #f4f4f5);
+  border-color: var(--border, #e4e4e7);
+  color: var(--admin-text, #18181b);
+}
+
+.admin-btn--ghost:active:not(:disabled) {
+  background: var(--surface-3, #e4e4e7);
+  transform: translateY(1px);
+}
+
+/* — Variant: soft (pill-shaped, lightweight) — */
+
+.admin-btn--soft {
+  border: 1px solid var(--border, #e4e4e7);
+  border-radius: 999px;
+  background: var(--surface, #fff);
+  color: var(--admin-text, #18181b);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.admin-btn--soft:hover:not(:disabled) {
+  border-color: var(--border-strong, #a1a1aa);
+  background: var(--surface-2, #fafafa);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.admin-btn--soft:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* — Icon-only modifier — */
+
+.admin-btn--icon-only {
+  gap: 0;
+}
+
+.admin-btn--icon-only.admin-btn--sm {
+  width: 1.75rem;
+  padding: 0;
+}
+
+.admin-btn--icon-only.admin-btn--md {
+  width: 2.125rem;
+  padding: 0;
+}
+
+.admin-btn--icon-only.admin-btn--lg {
+  width: 2.5rem;
+  padding: 0;
+}
+
+/* — Full-width modifier — */
+
+.admin-btn--full {
+  width: 100%;
+}
+
+/* ── AdminInput / AdminSelect / AdminTextarea ── */
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-field__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+  line-height: 1.3;
+}
+
+.admin-field__input,
+.admin-field__select,
+.admin-field__textarea {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--admin-input-border, var(--border));
+  background: var(--admin-input-bg, var(--surface));
+  color: var(--admin-text, #18181b);
+  font-family: var(--admin-font);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.admin-field__input::placeholder,
+.admin-field__textarea::placeholder {
+  color: var(--text-faint, #a1a1aa);
+  opacity: 1;
+}
+
+.admin-field__input:focus,
+.admin-field__select:focus,
+.admin-field__textarea:focus {
+  outline: none;
+  border-color: var(--admin-focus-ring, var(--accent));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--admin-focus-ring, var(--accent)) 18%, transparent);
+}
+
+.admin-field__input:disabled,
+.admin-field__select:disabled,
+.admin-field__textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* — Sizes — */
+
+.admin-field__input--sm,
+.admin-field__select--sm {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.6875rem;
+  min-height: 1.75rem;
+}
+
+.admin-field__input--md,
+.admin-field__select--md {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
+  min-height: 2.125rem;
+}
+
+.admin-field__input--lg,
+.admin-field__select--lg {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.875rem;
+  min-height: 2.5rem;
+}
+
+.admin-field__textarea--sm {
+  padding: 0.4rem 0.5rem;
+  font-size: 0.6875rem;
+}
+
+.admin-field__textarea--md {
+  padding: 0.5rem 0.65rem;
+  font-size: 0.8125rem;
+}
+
+.admin-field__textarea--lg {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+/* — Error state — */
+
+.admin-field__input--error,
+.admin-field__select--error,
+.admin-field__textarea--error {
+  border-color: var(--cancelled-border, #ef4444);
+}
+
+.admin-field__input--error:focus,
+.admin-field__select--error:focus,
+.admin-field__textarea--error:focus {
+  border-color: var(--cancelled-border, #ef4444);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cancelled-border, #ef4444) 18%, transparent);
+}
+
+.admin-field__error {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--cancelled-text, #991b1b);
+  line-height: 1.3;
+}
+
+/* — Select caret — */
+
+.admin-field__select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 12 12'%3E%3Cpath stroke='%2371717a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m3 4.5 3 3 3-3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 1.75rem;
+}
+
+/* — Checkbox / radio keep native styling — */
+
+.admin-field__input[type="checkbox"],
+.admin-field__input[type="radio"] {
+  width: auto;
+  min-height: auto;
+}

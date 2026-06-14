@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -213,42 +215,43 @@ export function GanttCheckTimeDialog({
 
         <label className="mt-4 block text-xs font-semibold">
           {tGantt("checkTime.dateTime")}
-          <input
+          <AdminInput
             type="datetime-local"
             value={atLocal}
             onChange={(e) => setAtLocal(e.target.value)}
             min={datetimeBounds?.min}
             max={datetimeBounds?.max}
-            className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+            fieldSize="sm"
+            className="mt-1"
             disabled={pending || (mode === "checkin" && intent === "set" && !checkInAllowed)}
           />
         </label>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          <button
-            type="button"
-            className="rounded-md px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+          <AdminButton
+            variant="primary"
+            size="sm"
             disabled={submitDisabled}
             onClick={() => submit(atLocal)}
           >
             {pending ? tCommon("saving") : cta}
-          </button>
-          <button
-            type="button"
-            className="rounded-md border px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+          </AdminButton>
+          <AdminButton
+            variant="secondary"
+            size="sm"
             disabled={submitDisabled}
             onClick={() => submit()}
           >
             {tCommon("now")}
-          </button>
-          <button
-            type="button"
-            className="rounded-md px-3 py-1.5 text-xs opacity-70"
+          </AdminButton>
+          <AdminButton
+            variant="ghost"
+            size="sm"
             disabled={pending}
             onClick={onClose}
           >
             {tCommon("cancel")}
-          </button>
+          </AdminButton>
         </div>
       </div>
     </AdminPortal>

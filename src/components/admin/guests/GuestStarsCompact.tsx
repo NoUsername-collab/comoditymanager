@@ -1,11 +1,11 @@
 import { useTranslations } from "next-intl";
 
 function starTone(value: number): string {
-  if (value <= 1.5) return "#dc2626";
-  if (value <= 2.5) return "#ea580c";
-  if (value <= 3.5) return "#f59e0b";
-  if (value <= 4.5) return "#facc15";
-  return "#fde047";
+  if (value <= 1.5) return "var(--star-compact-1)";
+  if (value <= 2.5) return "var(--star-compact-2)";
+  if (value <= 3.5) return "var(--star-compact-3)";
+  if (value <= 4.5) return "var(--star-compact-4)";
+  return "var(--star-compact-5)";
 }
 
 export function GuestStarsCompact({
@@ -28,8 +28,8 @@ export function GuestStarsCompact({
   const reviewCount = count ?? 0;
   const hasReviews = reviewCount > 0;
   const tone = starTone(safeValue);
-  const emptyStroke = "#94a3b8";
-  const emptyFill = "#f8fafc";
+  const emptyStroke = "var(--star-empty-stroke)";
+  const emptyFill = "var(--star-empty-fill)";
 
   return (
     <span

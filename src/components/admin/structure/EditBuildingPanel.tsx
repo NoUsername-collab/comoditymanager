@@ -11,6 +11,7 @@ import {
 import { deleteBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
@@ -70,25 +71,25 @@ export function EditBuildingPanel({ building }: { building: Building }) {
             <input type="hidden" name="building_id" value={building.id} />
             <label className="block text-sm">
               <span className="font-medium">{tBuildings("buildingNameRequired")}</span>
-              <input
+              <AdminInput
                 name="name"
                 required
                 defaultValue={building.name}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                className="mt-1"
               />
             </label>
             <label className="block text-sm">
               <span className="font-medium">{tBuildings("acPolicyRequired")}</span>
-              <select
+              <AdminSelect
                 name="ac_mode"
                 value={acMode}
                 onChange={(e) => setAcMode(e.target.value as AcMode)}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                className="mt-1"
               >
                 <option value="all_rooms">{tBuildings("acPolicyAllRooms")}</option>
                 <option value="none">{tCommon("withoutAc")}</option>
                 <option value="per_room">{tBuildings("acPolicyPerRoom")}</option>
-              </select>
+              </AdminSelect>
             </label>
             <ColorPalettePicker
               key={building.id}
@@ -98,26 +99,26 @@ export function EditBuildingPanel({ building }: { building: Building }) {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block text-sm">
                 <span className="font-medium">{tBuildings("defaultPricePerNightRon")}</span>
-                <input
+                <AdminInput
                   name="default_price_per_night"
                   type="number"
                   min={0}
                   step={1}
                   defaultValue={building.default_price_per_night ?? 0}
-                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                  className="mt-1"
                 />
               </label>
               <label className="block text-sm">
                 <span className="font-medium">{tCommon("displayOrder")}</span>
-                <input
+                <AdminInput
                   name="sort_order"
                   type="number"
                   defaultValue={building.sort_order}
-                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                  className="mt-1"
                 />
               </label>
             </div>
-            <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+            <AdminSubmitButton size="md">
               {t("saveBuilding")}
             </AdminSubmitButton>
           </form>

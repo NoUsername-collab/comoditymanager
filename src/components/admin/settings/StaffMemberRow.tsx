@@ -6,6 +6,7 @@ import {
   changeStaffRoleAction,
   deactivateStaffAction,
 } from "@/app/[locale]/admin/(panel)/settings/staff/actions";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import type { TenantMember } from "@/services/tenant-members";
 
 const ROLE_COLORS: Record<string, string> = {
@@ -83,14 +84,14 @@ export function StaffMemberRow({ member }: { member: TenantMember }) {
           <>
             {/* Role change dropdown */}
             <div className="relative">
-              <button
-                type="button"
+              <AdminButton
+                variant="secondary"
+                size="sm"
                 onClick={() => setShowRoleMenu((v) => !v)}
                 disabled={pending}
-                className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50 disabled:opacity-50"
               >
                 {t("changeRole")}
-              </button>
+              </AdminButton>
 
               {showRoleMenu && (
                 <div className="admin-staff-row__role-menu absolute right-0 top-full z-10 mt-1 min-w-[140px] rounded-lg border border-zinc-200 bg-white py-1 shadow-lg">
@@ -111,14 +112,14 @@ export function StaffMemberRow({ member }: { member: TenantMember }) {
             </div>
 
             {/* Deactivate */}
-            <button
-              type="button"
+            <AdminButton
+              variant="danger"
+              size="sm"
               onClick={handleDeactivate}
               disabled={pending}
-              className="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
             >
               {pending ? tCommon("saving") : t("deactivate")}
-            </button>
+            </AdminButton>
           </>
         )}
       </div>

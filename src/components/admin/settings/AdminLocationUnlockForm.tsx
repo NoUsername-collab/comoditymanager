@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import {
   lockLocationAdminAction,
   unlockLocationAdminAction,
@@ -33,11 +35,11 @@ export function AdminLocationUnlockForm({ isOwner = false }: { isOwner?: boolean
       </p>
       <label className="block text-sm">
         {tPage("ownerPassword")}
-        <input
+        <AdminInput
           name="owner_password"
           type="password"
           autoComplete="current-password"
-          className="mt-1 w-full max-w-sm rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1 max-w-sm"
           required
         />
       </label>
@@ -46,13 +48,9 @@ export function AdminLocationUnlockForm({ isOwner = false }: { isOwner?: boolean
           {error}
         </p>
       )}
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 active:translate-y-px active:bg-zinc-950 disabled:opacity-60"
-      >
+      <AdminButton type="submit" variant="primary" disabled={pending}>
         {pending ? tPage("checking") : tPage("openLocationAdmin")}
-      </button>
+      </AdminButton>
     </form>
   );
 }
@@ -73,13 +71,9 @@ export function AdminLocationLockButton() {
         }
       }}
     >
-      <button
-        type="submit"
-        disabled={pending}
-        className="admin-location-lock-btn rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px active:bg-zinc-100 disabled:opacity-60"
-      >
+      <AdminButton type="submit" variant="secondary" disabled={pending}>
         {pending ? tPage("closing") : tPage("closeLocationAdmin")}
-      </button>
+      </AdminButton>
     </form>
   );
 }

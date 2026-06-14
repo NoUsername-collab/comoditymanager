@@ -3,6 +3,7 @@
 import type { RoomOptionDefinition, RoomTypeDefinition } from "@/types/room-catalog";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { useTranslations } from "next-intl";
 import {
   createRoomOptionAction,
@@ -53,19 +54,19 @@ export function AdminRoomCatalogPanel({
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="text-sm">
                     {tCommon("name")}
-                    <input name="name" defaultValue={t.name} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="name" defaultValue={t.name} required className="mt-1" fieldSize="sm" />
                   </label>
                   <label className="text-sm">
                     {tCatalog("capacity")}
-                    <input name="capacity_base" type="number" min={1} defaultValue={t.capacity_base} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="capacity_base" type="number" min={1} defaultValue={t.capacity_base} className="mt-1" fieldSize="sm" />
                   </label>
                   <label className="text-sm">
                     {tCatalog("basePricePerNight")}
-                    <input name="base_price_per_night" type="number" min={0} defaultValue={t.base_price_per_night} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="base_price_per_night" type="number" min={0} defaultValue={t.base_price_per_night} className="mt-1" fieldSize="sm" />
                   </label>
                   <label className="text-sm">
                     {tCommon("displayOrder")}
-                    <input name="sort_order" type="number" defaultValue={t.sort_order} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="sort_order" type="number" defaultValue={t.sort_order} className="mt-1" fieldSize="sm" />
                   </label>
                 </div>
                 {options.length > 0 && (
@@ -90,7 +91,7 @@ export function AdminRoomCatalogPanel({
                   <input type="checkbox" name="is_active" defaultChecked={t.is_active} />
                   {tCommon("active")} {t.is_system && <span className="text-zinc-400">({tCatalog("system")})</span>}
                 </label>
-                <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
+                <AdminSubmitButton size="sm">
                   {tCatalog("saveType")}
                 </AdminSubmitButton>
               </AdminPendingForm>
@@ -103,22 +104,22 @@ export function AdminRoomCatalogPanel({
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-sm">
               {tCommon("name")}
-              <input name="name" placeholder={tCatalog("familySuite")} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="name" placeholder={tCatalog("familySuite")} required className="mt-1" fieldSize="sm" />
             </label>
             <label className="text-sm">
               {tCatalog("capacity")}
-              <input name="capacity_base" type="number" min={1} defaultValue={2} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="capacity_base" type="number" min={1} defaultValue={2} className="mt-1" fieldSize="sm" />
             </label>
             <label className="text-sm">
               {tCatalog("basePrice")}
-              <input name="base_price_per_night" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="base_price_per_night" type="number" min={0} defaultValue={0} className="mt-1" fieldSize="sm" />
             </label>
             <label className="text-sm">
               {tCommon("displayOrder")}
-              <input name="sort_order" type="number" defaultValue={types.length + 1} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="sort_order" type="number" defaultValue={types.length + 1} className="mt-1" fieldSize="sm" />
             </label>
           </div>
-          <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
+          <AdminSubmitButton size="sm">
             {tCatalog("addType")}
           </AdminSubmitButton>
         </AdminPendingForm>
@@ -137,26 +138,26 @@ export function AdminRoomCatalogPanel({
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="text-sm">
                     {tCommon("name")}
-                    <input name="name" defaultValue={o.name} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="name" defaultValue={o.name} required className="mt-1" fieldSize="sm" />
                   </label>
                   <label className="text-sm">
                     {tCatalog("addonPerNight")}
-                    <input name="price_per_night_addon" type="number" min={0} defaultValue={o.price_per_night_addon} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="price_per_night_addon" type="number" min={0} defaultValue={o.price_per_night_addon} className="mt-1" fieldSize="sm" />
                   </label>
                   <label className="text-sm">
                     {tCommon("displayOrder")}
-                    <input name="sort_order" type="number" defaultValue={o.sort_order} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="sort_order" type="number" defaultValue={o.sort_order} className="mt-1" fieldSize="sm" />
                   </label>
                   <label className="text-sm sm:col-span-2 lg:col-span-1">
                     {tCommon("description")}
-                    <input name="description" defaultValue={o.description ?? ""} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+                    <AdminInput name="description" defaultValue={o.description ?? ""} className="mt-1" fieldSize="sm" />
                   </label>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" name="is_active" defaultChecked={o.is_active} />
                   {tCommon("active")} {o.is_system && <span className="text-zinc-400">({tCatalog("system")} · {o.slug})</span>}
                 </label>
-                <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
+                <AdminSubmitButton size="sm">
                   {tCatalog("saveOption")}
                 </AdminSubmitButton>
               </AdminPendingForm>
@@ -169,18 +170,18 @@ export function AdminRoomCatalogPanel({
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="text-sm">
               {tCommon("name")}
-              <input name="name" placeholder={tCatalog("balcony")} required className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="name" placeholder={tCatalog("balcony")} required className="mt-1" fieldSize="sm" />
             </label>
             <label className="text-sm">
               {tCatalog("addonPerNight")}
-              <input name="price_per_night_addon" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="price_per_night_addon" type="number" min={0} defaultValue={0} className="mt-1" fieldSize="sm" />
             </label>
             <label className="text-sm">
               {tCommon("description")}
-              <input name="description" className="mt-1 w-full rounded-lg border px-2 py-1.5" />
+              <AdminInput name="description" className="mt-1" fieldSize="sm" />
             </label>
           </div>
-          <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs text-white disabled:opacity-50">
+          <AdminSubmitButton size="sm">
             {tCatalog("addOption")}
           </AdminSubmitButton>
         </AdminPendingForm>

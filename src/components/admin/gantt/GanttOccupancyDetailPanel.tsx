@@ -13,6 +13,7 @@ import {
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 
 export type GanttOccDetail = {
@@ -100,18 +101,18 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
           <p className="text-sm text-zinc-500">{tGantt("occupancy.noAutoExpire")}</p>
         ) : null}
 
-        <button
-          type="button"
-          className="admin-floating-panel__btn admin-floating-panel__btn--primary w-full"
+        <AdminButton
+          variant="primary"
+          fullWidth
           disabled={pending}
           onClick={releaseOrDelete}
         >
           {isHold ? tGantt("occupancy.releaseHold") : tGantt("occupancy.deleteBlock")}
-        </button>
+        </AdminButton>
 
-        <button type="button" className="admin-floating-panel__btn w-full" onClick={onClose}>
+        <AdminButton variant="secondary" fullWidth onClick={onClose}>
           {tCommon("close")}
-        </button>
+        </AdminButton>
       </div>
     </AdminFloatingPanel>
   );

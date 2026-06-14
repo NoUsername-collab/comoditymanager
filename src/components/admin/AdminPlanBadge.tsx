@@ -1,10 +1,10 @@
 import { getTenantContext } from "@/core/tenant/context";
 
 const PLAN_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-  free:         { bg: "#374151", text: "#9ca3af", label: "FREE" },
-  essential:    { bg: "#1e3a5f", text: "#60a5fa", label: "ESSENTIAL" },
-  professional: { bg: "#3b1f6e", text: "#a78bfa", label: "PRO" },
-  business:     { bg: "#713f12", text: "#fbbf24", label: "BUSINESS" },
+  free:         { bg: "var(--plan-free-bg)", text: "var(--plan-free-text)", label: "FREE" },
+  essential:    { bg: "var(--plan-essential-bg)", text: "var(--plan-essential-text)", label: "ESSENTIAL" },
+  professional: { bg: "var(--plan-professional-bg)", text: "var(--plan-professional-text)", label: "PRO" },
+  business:     { bg: "var(--plan-business-bg)", text: "var(--plan-business-text)", label: "BUSINESS" },
 };
 
 export function AdminPlanBadge() {

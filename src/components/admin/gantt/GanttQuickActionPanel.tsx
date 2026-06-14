@@ -30,6 +30,8 @@ import {
 } from "@/domain/gantt/block-reasons";
 import { showGanttCreateUndoToast } from "@/components/admin/gantt/gantt-create-undo";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import {
   addDays,
@@ -75,12 +77,7 @@ type Props = {
 };
 
 const labelClass =
-  "block text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500";
-const inputClass =
-  "mt-1 w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100";
-
-const softButtonClass =
-  "inline-flex items-center justify-center rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-50";
+  "admin-field__label block uppercase tracking-[0.08em]";
 
 function SummaryCard({
   title,
@@ -196,9 +193,9 @@ function IntervalPlanner({
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <label className={labelClass}>
           Check-in
-          <input
+          <AdminInput
             type="date"
-            className={inputClass}
+            className="mt-1"
             value={checkIn}
             min={minCheckIn}
             onChange={(e) => onCheckInChange(e.target.value)}
@@ -206,9 +203,9 @@ function IntervalPlanner({
         </label>
         <label className={labelClass}>
           Check-out
-          <input
+          <AdminInput
             type="date"
-            className={inputClass}
+            className="mt-1"
             value={checkOut}
             min={checkIn ? minCheckOutDate(checkIn, minCheckIn) : minCheckIn}
             onChange={(e) => onCheckOutChange(e.target.value)}
@@ -217,33 +214,33 @@ function IntervalPlanner({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button type="button" className={softButtonClass} onClick={() => onShift(-7)}>
+        <AdminButton variant="soft" size="sm" onClick={() => onShift(-7)}>
           -7 zile
-        </button>
-        <button type="button" className={softButtonClass} onClick={() => onShift(-1)}>
+        </AdminButton>
+        <AdminButton variant="soft" size="sm" onClick={() => onShift(-1)}>
           -1 zi
-        </button>
-        <button type="button" className={softButtonClass} onClick={() => onShift(1)}>
+        </AdminButton>
+        <AdminButton variant="soft" size="sm" onClick={() => onShift(1)}>
           +1 zi
-        </button>
-        <button type="button" className={softButtonClass} onClick={() => onShift(7)}>
+        </AdminButton>
+        <AdminButton variant="soft" size="sm" onClick={() => onShift(7)}>
           +7 zile
-        </button>
-        <button type="button" className={softButtonClass} onClick={onToday}>
+        </AdminButton>
+        <AdminButton variant="soft" size="sm" onClick={onToday}>
           Azi
-        </button>
+        </AdminButton>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {[1, 2, 3, 7].map((value) => (
-          <button
+          <AdminButton
             key={value}
-            type="button"
-            className={softButtonClass}
+            variant="soft"
+            size="sm"
             onClick={() => onSetDuration(value)}
           >
             {nightLabel(value)}
-          </button>
+          </AdminButton>
         ))}
       </div>
     </section>
@@ -786,8 +783,8 @@ export function GanttQuickActionPanel({
             {!draft ? (
               <label className={labelClass}>
                 Cameră
-                <select
-                  className={inputClass}
+                <AdminSelect
+                  className="mt-1"
                   value={roomId}
                   onChange={(e) => {
                     setError(null);
@@ -799,7 +796,7 @@ export function GanttQuickActionPanel({
                       {room.name} · {room.building_name}
                     </option>
                   ))}
-                </select>
+                </AdminSelect>
               </label>
             ) : null}
 
@@ -857,8 +854,8 @@ export function GanttQuickActionPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <label className={labelClass}>
                 Motiv
-                <input
-                  className={inputClass}
+                <AdminInput
+                  className="mt-1"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
                   placeholder={tGantt("quick.holdReasonPlaceholder")}
@@ -866,10 +863,10 @@ export function GanttQuickActionPanel({
               </label>
               <label className={labelClass}>
                 Expiră după
-                <input
+                <AdminInput
                   type="number"
                   min={1}
-                  className={inputClass}
+                  className="mt-1"
                   value={expiresHours}
                   onChange={(e) => setExpiresHours(e.target.value)}
                   placeholder={tGantt("quick.hoursOptionalPlaceholder")}
@@ -878,22 +875,24 @@ export function GanttQuickActionPanel({
             </div>
             <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
-                <button
-                  type="button"
-                  className="admin-floating-panel__btn gantt-quick-panel__action flex-1"
+                <AdminButton
+                  variant="secondary"
+                  size="sm"
+                  className="gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
                   Înapoi la radial
-                </button>
+                </AdminButton>
               ) : null}
-              <button
-                type="button"
-                className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
+              <AdminButton
+                variant="primary"
+                size="sm"
+                className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={pending || !activeRoomId || hasConflict || intervalInvalid}
                 onClick={submitHold}
               >
                 {pending ? tCommon("saving") : "Creează hold"}
-              </button>
+              </AdminButton>
             </div>
           </>
         ) : null}
@@ -902,8 +901,8 @@ export function GanttQuickActionPanel({
           <>
             <label className={labelClass}>
               Motiv blocare
-              <select
-                className={inputClass}
+              <AdminSelect
+                className="mt-1"
                 value={blockPreset}
                 onChange={(e) =>
                   setBlockPreset(e.target.value as BlockReasonPresetId)
@@ -914,13 +913,13 @@ export function GanttQuickActionPanel({
                     {preset.label}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </label>
             {blockPreset === "other" || blockCustom ? (
               <label className={labelClass}>
                 Detalii
-                <input
-                  className={inputClass}
+                <AdminInput
+                  className="mt-1"
                   value={blockCustom}
                   onChange={(e) => setBlockCustom(e.target.value)}
                   placeholder={tGantt("quick.shortDescription")}
@@ -929,17 +928,19 @@ export function GanttQuickActionPanel({
             ) : null}
             <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
-                <button
-                  type="button"
-                  className="admin-floating-panel__btn gantt-quick-panel__action flex-1"
+                <AdminButton
+                  variant="secondary"
+                  size="sm"
+                  className="gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
                   Înapoi la radial
-                </button>
+                </AdminButton>
               ) : null}
-              <button
-                type="button"
-                className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
+              <AdminButton
+                variant="primary"
+                size="sm"
+                className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
                   !activeRoomId ||
@@ -950,7 +951,7 @@ export function GanttQuickActionPanel({
                 onClick={submitBlock}
               >
                 {pending ? tCommon("saving") : "Creează blocarea"}
-              </button>
+              </AdminButton>
             </div>
           </>
         ) : null}
@@ -960,8 +961,8 @@ export function GanttQuickActionPanel({
             <div className="grid gap-3 sm:grid-cols-2">
               <label className={labelClass}>
                 Nume
-                <input
-                  className={inputClass}
+                <AdminInput
+                  className="mt-1"
                   value={guestLastName}
                   onChange={(e) => onLastNameChange(e.target.value)}
                   onBlur={maybeAutofillGuest}
@@ -969,8 +970,8 @@ export function GanttQuickActionPanel({
               </label>
               <label className={labelClass}>
                 Prenume
-                <input
-                  className={inputClass}
+                <AdminInput
+                  className="mt-1"
                   value={guestFirstName}
                   onChange={(e) => onFirstNameChange(e.target.value)}
                   onBlur={maybeAutofillGuest}
@@ -991,9 +992,9 @@ export function GanttQuickActionPanel({
             )}
             <label className={labelClass}>
               Email
-              <input
+              <AdminInput
                 type="email"
-                className={inputClass}
+                className="mt-1"
                 value={guestEmail}
                 onChange={(e) => onEmailChange(e.target.value)}
                 onBlur={maybeAutofillGuest}
@@ -1001,8 +1002,8 @@ export function GanttQuickActionPanel({
             </label>
             <label className={labelClass}>
               Telefon *
-              <input
-                className={inputClass}
+              <AdminInput
+                className="mt-1"
                 type="tel"
                 required
                 value={guestPhone}
@@ -1012,17 +1013,19 @@ export function GanttQuickActionPanel({
             </label>
             <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
-                <button
-                  type="button"
-                  className="admin-floating-panel__btn gantt-quick-panel__action flex-1"
+                <AdminButton
+                  variant="secondary"
+                  size="sm"
+                  className="gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
                   Înapoi la radial
-                </button>
+                </AdminButton>
               ) : null}
-              <button
-                type="button"
-                className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
+              <AdminButton
+                variant="primary"
+                size="sm"
+                className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
                   !activeRoomId ||
@@ -1037,7 +1040,7 @@ export function GanttQuickActionPanel({
                   : mode === "cerere"
                     ? tGantt("quick.createRequest")
                     : tGantt("quick.confirmStay")}
-              </button>
+              </AdminButton>
             </div>
           </>
         ) : null}
@@ -1046,8 +1049,8 @@ export function GanttQuickActionPanel({
           <>
             <label className={labelClass}>
               Rezervare confirmată
-              <select
-                className={inputClass}
+              <AdminSelect
+                className="mt-1"
                 value={moveBookingId}
                 onChange={(e) => {
                   const nextBookingId = e.target.value;
@@ -1066,7 +1069,7 @@ export function GanttQuickActionPanel({
                     {booking.guest_name} · {booking.room_names.join(", ")}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </label>
 
             {confirmedBookings.length === 0 ? (
@@ -1098,8 +1101,8 @@ export function GanttQuickActionPanel({
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className={labelClass}>
                     Din camera
-                    <select
-                      className={inputClass}
+                    <AdminSelect
+                      className="mt-1"
                       value={moveSourceRoomId}
                       onChange={(e) => {
                         setError(null);
@@ -1111,12 +1114,12 @@ export function GanttQuickActionPanel({
                           {selectedBooking.room_names[index] ?? id}
                         </option>
                       ))}
-                    </select>
+                    </AdminSelect>
                   </label>
                   <label className={labelClass}>
                     În camera
-                    <select
-                      className={inputClass}
+                    <AdminSelect
+                      className="mt-1"
                       value={moveTargetRoomId}
                       onChange={(e) => {
                         setError(null);
@@ -1129,20 +1132,21 @@ export function GanttQuickActionPanel({
                           {option.name} · {option.building_name}
                         </option>
                       ))}
-                    </select>
+                    </AdminSelect>
                   </label>
                 </div>
                 {movePreview ? (
                   <SummaryCard title="Preview mutare" tone="info" body={movePreview} />
                 ) : null}
-                <button
-                  type="button"
-                  className="admin-floating-panel__btn admin-floating-panel__btn--primary gantt-quick-panel__action gantt-quick-panel__action--primary w-full"
+                <AdminButton
+                  variant="primary"
+                  fullWidth
+                  className="gantt-quick-panel__action gantt-quick-panel__action--primary"
                   disabled={pending || !moveTargetRoomId}
                   onClick={submitMove}
                 >
                   {pending ? tCommon("saving") : "Confirmă mutarea"}
-                </button>
+                </AdminButton>
               </>
             ) : null}
           </>
@@ -1159,13 +1163,14 @@ export function GanttQuickActionPanel({
       </div>
 
       <div className="gantt-quick-panel__footer">
-        <button
-          type="button"
-          className="admin-floating-panel__btn gantt-quick-panel__cancel w-full"
+        <AdminButton
+          variant="secondary"
+          fullWidth
+          className="gantt-quick-panel__cancel"
           onClick={onClose}
         >
           Anulează
-        </button>
+        </AdminButton>
       </div>
     </AdminFloatingPanel>
   );

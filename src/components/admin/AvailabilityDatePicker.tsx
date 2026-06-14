@@ -3,6 +3,8 @@
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { viewDateLabel } from "@/lib/availability-date";
 import { todayIso } from "@/lib/stay-dates";
 
@@ -43,21 +45,16 @@ export function AvailabilityDatePicker({
       </div>
       <label className="flex items-center gap-2 text-sm text-zinc-600">
         <span className="sr-only">{tPicker("chooseDate")}</span>
-        <input
+        <AdminInput
           type="date"
           value={selectedDate}
           onChange={(e) => setDate(e.target.value)}
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-800 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
         />
       </label>
       {selectedDate !== effectiveToday && (
-        <button
-          type="button"
-          onClick={() => setDate(effectiveToday)}
-          className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 shadow-sm hover:bg-zinc-50"
-        >
+        <AdminButton variant="secondary" size="sm" onClick={() => setDate(effectiveToday)}>
           {tCommon("todayShort")}
-        </button>
+        </AdminButton>
       )}
     </div>
   );

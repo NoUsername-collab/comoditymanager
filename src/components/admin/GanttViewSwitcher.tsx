@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
+import { AdminSelect } from "@/components/admin/ui/AdminInput";
 
 export type GanttViewMode = "all" | "building" | "room";
 
@@ -111,24 +112,26 @@ export function GanttViewSwitcher({
       </div>
 
       {view === "building" && buildings.length > 0 && (
-        <select
+        <AdminSelect
           value={buildingId || buildings[0]?.id || ""}
           onChange={(e) => go({ view: "building", building: e.target.value })}
-          className="gantt-view-switcher__select rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800"
+          fieldSize="sm"
+          className="gantt-view-switcher__select"
         >
           {buildings.map((b) => (
             <option key={b.id} value={b.id}>
               {b.name}
             </option>
           ))}
-        </select>
+        </AdminSelect>
       )}
 
       {view === "room" && rooms.length > 0 && (
-        <select
+        <AdminSelect
           value={roomId || rooms[0]?.id || ""}
           onChange={(e) => go({ view: "room", room: e.target.value })}
-          className="gantt-view-switcher__select max-w-xs rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800"
+          fieldSize="sm"
+          className="gantt-view-switcher__select max-w-xs"
         >
           {buildings.map((b) => {
             const group = rooms.filter((r) => r.building_id === b.id);
@@ -143,7 +146,7 @@ export function GanttViewSwitcher({
               </optgroup>
             );
           })}
-        </select>
+        </AdminSelect>
       )}
 
       <span className="ml-auto text-xs text-zinc-500">

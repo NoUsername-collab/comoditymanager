@@ -210,8 +210,8 @@ html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link {
   align-items: center;
   justify-content: flex-start;
   gap: 0.45rem;
-  min-height: 2.1rem;
-  padding: 0.42rem 0.55rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.65rem;
   border-radius: 0.55rem;
   border: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 65%, transparent);
   background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 5%, transparent);

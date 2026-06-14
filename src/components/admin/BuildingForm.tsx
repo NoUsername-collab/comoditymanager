@@ -8,6 +8,7 @@ import type { OptionPolicyMode } from "@/types/room-catalog";
 import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 
 export function BuildingForm({
   action,
@@ -34,26 +35,26 @@ export function BuildingForm({
       {returnTo && <input type="hidden" name="return_to" value={returnTo} />}
       <label className="block">
         <span className="text-sm font-medium">{tBuildings("buildingNameRequired")}</span>
-        <input
+        <AdminInput
           name="name"
           required
           placeholder={tBuildings("buildingNamePlaceholder")}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         />
       </label>
 
       <label className="block">
         <span className="text-sm font-medium">{tBuildings("acPolicyRequired")}</span>
-        <select
+        <AdminSelect
           name="ac_mode"
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
           value={acMode}
           onChange={(e) => setAcMode(e.target.value as AcMode)}
         >
           <option value="all_rooms">{tBuildings("acPolicyAllRooms")}</option>
           <option value="none">{tCommon("withoutAc")}</option>
           <option value="per_room">{tBuildings("acPolicyPerRoom")}</option>
-        </select>
+        </AdminSelect>
       </label>
 
       {nonAcOptions.length > 0 && (
@@ -64,17 +65,17 @@ export function BuildingForm({
           {nonAcOptions.map((opt) => (
             <label key={opt.id} className="block text-sm">
               <span className="font-medium">{opt.name}</span>
-              <select
+              <AdminSelect
                 name={`policy_${opt.id}`}
                 defaultValue="per_room"
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+                className="mt-1"
               >
                 {policyOptions.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </label>
           ))}
         </fieldset>
@@ -87,27 +88,27 @@ export function BuildingForm({
         <span className="mt-0.5 block text-xs text-zinc-500">
           {tBuildings("defaultPriceHint")}
         </span>
-        <input
+        <AdminInput
           name="default_price_per_night"
           type="number"
           min={0}
           step={1}
           defaultValue={250}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         />
       </label>
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("displayOrder")}</span>
-        <input
+        <AdminInput
           name="sort_order"
           type="number"
           defaultValue={1}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         />
       </label>
 
-      <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+      <AdminSubmitButton size="md">
         {tBuildings("saveBuilding")}
       </AdminSubmitButton>
     </AdminPendingForm>

@@ -1,3 +1,6 @@
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminSelect } from "@/components/admin/ui/AdminInput";
+
 type MonthOption = {
   value: string;
   label: string;
@@ -44,25 +47,23 @@ export function StatisticsExportPanel({
       >
         <label className="flex min-w-[8rem] flex-col gap-1 text-xs font-medium text-zinc-600">
           {labels.year}
-          <select
+          <AdminSelect
             name="year"
             defaultValue={String(focusYear)}
-            className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
           >
             {years.map((year) => (
               <option key={year} value={year}>
                 {year}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
 
         <label className="flex min-w-[10rem] flex-col gap-1 text-xs font-medium text-zinc-600">
           {labels.month}
-          <select
+          <AdminSelect
             name="month"
             defaultValue="all"
-            className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900"
           >
             <option value="all">{labels.monthAll}</option>
             {months.map((month) => (
@@ -70,7 +71,7 @@ export function StatisticsExportPanel({
                 {month.label}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </label>
 
         <fieldset className="flex min-w-[12rem] flex-col gap-2">
@@ -100,12 +101,9 @@ export function StatisticsExportPanel({
           </span>
         </label>
 
-        <button
-          type="submit"
-          className="inline-flex min-h-[2.75rem] items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
-        >
+        <AdminButton type="submit" variant="primary">
           {labels.download}
-        </button>
+        </AdminButton>
       </form>
     </div>
   );

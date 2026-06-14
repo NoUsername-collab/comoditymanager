@@ -5,16 +5,16 @@ import { useTranslations } from "next-intl";
 
 function starTone(value: number, variant: "positive" | "negative"): string {
   if (variant === "negative") {
-    if (value <= 1.5) return "#991b1b";
-    if (value <= 2.5) return "#dc2626";
-    if (value <= 3.5) return "#ea580c";
-    return "#f59e0b";
+    if (value <= 1.5) return "var(--star-negative-1)";
+    if (value <= 2.5) return "var(--star-negative-2)";
+    if (value <= 3.5) return "var(--star-negative-3)";
+    return "var(--star-negative-4)";
   }
-  if (value <= 1.5) return "#f59e0b";
-  if (value <= 2.5) return "#facc15";
-  if (value <= 3.5) return "#fde047";
-  if (value <= 4.5) return "#84cc16";
-  return "#22c55e";
+  if (value <= 1.5) return "var(--star-positive-1)";
+  if (value <= 2.5) return "var(--star-positive-2)";
+  if (value <= 3.5) return "var(--star-positive-3)";
+  if (value <= 4.5) return "var(--star-positive-4)";
+  return "var(--star-positive-5)";
 }
 
 export function GuestNoteStarsInput({
@@ -69,8 +69,8 @@ export function GuestNoteStarsInput({
                 <svg width={20} height={20} viewBox="0 0 24 24" aria-hidden="true">
                   <polygon
                     points="12,2 15,9 22,9 16.5,13.5 18.5,21 12,16.8 5.5,21 7.5,13.5 2,9 9,9"
-                    fill={filled ? tone : "#f8fafc"}
-                    stroke={filled ? tone : "#94a3b8"}
+                    fill={filled ? tone : "var(--star-empty-fill)"}
+                    stroke={filled ? tone : "var(--star-empty-stroke)"}
                     strokeWidth="1.8"
                     strokeLinejoin="round"
                   />

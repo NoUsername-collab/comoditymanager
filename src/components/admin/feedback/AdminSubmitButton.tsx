@@ -4,17 +4,29 @@ import { useFormStatus } from "react-dom";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
+import {
+  AdminButton,
+  type AdminButtonVariant,
+  type AdminButtonSize,
+} from "@/components/admin/ui/AdminButton";
 
-type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   children: ReactNode;
   pendingLabel?: string;
+  variant?: AdminButtonVariant;
+  size?: AdminButtonSize;
+  fullWidth?: boolean;
 };
 
 export function AdminSubmitButton({
   children,
   pendingLabel,
   disabled,
-  ...props
+  variant = "primary",
+  size = "md",
+  fullWidth,
+  className,
+  ...rest
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const { pending: formPending } = useFormStatus();
@@ -22,8 +34,17 @@ export function AdminSubmitButton({
   const pending = formPending || globalPending;
 
   return (
-    <button type="submit" disabled={disabled || pending} aria-busy={pending} {...props}>
+    <AdminButton
+      type="submit"
+      variant={variant}
+      size={size}
+      fullWidth={fullWidth}
+      disabled={disabled || pending}
+      aria-busy={pending}
+      className={className}
+      {...rest}
+    >
       {formPending ? (pendingLabel ?? tCommon("processing")) : children}
-    </button>
+    </AdminButton>
   );
 }

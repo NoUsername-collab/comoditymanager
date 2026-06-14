@@ -279,7 +279,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 9999;
+  z-index: var(--z-system, 500);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,7 +333,7 @@
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
-  z-index: 10000;
+  z-index: calc(var(--z-system, 500) + 1);
   display: flex;
   align-items: flex-start;
   gap: 0.4rem;

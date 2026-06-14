@@ -52,7 +52,7 @@ export function GanttUnassignedRow({
               <div
                 key={col.iso}
                 className={[
-                  "gantt-day-cell min-w-0 shadow-[inset_0_0_0_1px_#fde68a]",
+                  "gantt-day-cell min-w-0 shadow-[inset_0_0_0_1px_var(--pending-border)]",
                   col.isWeekend && "gantt-day-cell--weekend",
                   col.isToday && "gantt-day-cell--today",
                   col.isPast && "gantt-day-cell--past",
@@ -90,7 +90,7 @@ export function GanttUnassignedRow({
                   bookingId={b.id}
                   bookingCheckIn={b.check_in}
                   dayCount={dayCount}
-                  buildingColor="#d97706"
+                  buildingColor="var(--pending-border)"
                   todayHighlight={stayTodayHighlight(b)}
                   occupancyPhase={occupancyPhase(b.check_in, b.check_out, today)}
                   roomIds={b.room_ids ?? []}

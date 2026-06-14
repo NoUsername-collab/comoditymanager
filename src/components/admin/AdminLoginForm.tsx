@@ -6,6 +6,7 @@ import {
   loginAction,
   type LoginFormState,
 } from "@/app/[locale]/admin/login/actions";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 export function AdminLoginForm({
@@ -49,23 +50,23 @@ export function AdminLoginForm({
           <input type="hidden" name="next" value={next} />
           <label className="block text-sm">
             {t("username")}
-            <input
+            <AdminInput
               name="username"
               type="text"
               autoComplete="username"
               placeholder={t("usernameOrEmailPlaceholder")}
               defaultValue={initialUsername}
-              className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder:text-zinc-400 disabled:opacity-60"
+              className="mt-1"
               required
             />
           </label>
           <label className="block text-sm">
             {t("password")}
-            <input
+            <AdminInput
               name="password"
               type="password"
               autoComplete="current-password"
-              className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 disabled:opacity-60"
+              className="mt-1"
               required
             />
           </label>

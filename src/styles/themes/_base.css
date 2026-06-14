@@ -5,6 +5,18 @@
  */
 
 html {
+  /* ── Z-index scale ── */
+  --z-base: 0;
+  --z-raised: 1;
+  --z-dropdown: 20;
+  --z-sticky: 50;
+  --z-modal-backdrop: 80;
+  --z-modal: 85;
+  --z-toast: 100;
+  --z-overlay: 200;
+  --z-system: 500;
+  --z-debug: 9999;
+
   /* Contract generic */
   --bg: #eef0f8;
   --surface: #ffffff;
@@ -108,7 +120,12 @@ html {
   --status-block-border: var(--booking-block-border);
   --status-block-text: var(--booking-block-text);
 
-  --card-radius: 8px;
+  /* ── Border radius scale ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --card-radius: var(--radius-md);
   --card-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --card-shadow: var(--shadow);
   --card-border-style: solid;
@@ -196,6 +213,34 @@ html {
 
   --admin-overlay: rgba(15, 23, 42, 0.45);
 
+  /* ── Plan badge semantic colors ── */
+  --plan-free-bg: #374151;
+  --plan-free-text: #9ca3af;
+  --plan-essential-bg: #1e3a5f;
+  --plan-essential-text: #60a5fa;
+  --plan-professional-bg: #3b1f6e;
+  --plan-professional-text: #a78bfa;
+  --plan-business-bg: #713f12;
+  --plan-business-text: #fbbf24;
+
+  /* ── Rating star colors ── */
+  --star-negative-1: #991b1b;
+  --star-negative-2: #dc2626;
+  --star-negative-3: #ea580c;
+  --star-negative-4: #f59e0b;
+  --star-positive-1: #f59e0b;
+  --star-positive-2: #facc15;
+  --star-positive-3: #fde047;
+  --star-positive-4: #84cc16;
+  --star-positive-5: #22c55e;
+  --star-compact-1: #dc2626;
+  --star-compact-2: #ea580c;
+  --star-compact-3: #f59e0b;
+  --star-compact-4: #facc15;
+  --star-compact-5: #fde047;
+  --star-empty-fill: var(--surface-2);
+  --star-empty-stroke: var(--text-faint);
+
   --admin-loading-track: color-mix(in srgb, var(--accent) 14%, transparent);
   --admin-loading-accent: var(--accent);
   --admin-loading-accent-muted: var(--accent-muted);
@@ -204,6 +249,22 @@ html {
 
 html[data-theme] {
   font-family: var(--card-font);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBAL FOCUS-VISIBLE — keyboard accessibility for all interactive
+   elements. Uses accent color with offset so it works on any bg.
+   ═══════════════════════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--admin-focus-ring, var(--accent));
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-offset: 0;
+  border-color: var(--admin-focus-ring, var(--accent));
 }
 
 /* ═══════════════════════════════════════════════════════════════════

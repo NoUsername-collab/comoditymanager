@@ -27,8 +27,8 @@ export function GuestBlacklistPanel({
   const { pending } = useAdminPending();
   const isBlacklisted = initiallyBlacklisted;
   const dangerButtonStyle = {
-    border: "1px solid #7f1d1d",
-    background: "#050505",
+    border: "1px solid var(--admin-danger-border)",
+    background: "var(--admin-danger-bg)",
     color: "var(--admin-danger-text)",
   } as const;
   const neutralButtonStyle = {
@@ -95,9 +95,9 @@ export function GuestBlacklistPanel({
               placeholder={tGuests("blacklist.placeholder")}
               className="w-full rounded px-3 py-2 text-sm"
               style={{
-                border: "1px solid #7f1d1d",
-                background: "#0f0f10",
-                color: "#fca5a5",
+                border: "1px solid var(--admin-danger-border)",
+                background: "var(--admin-danger-bg)",
+                color: "var(--admin-danger-text)",
               }}
               required
             />

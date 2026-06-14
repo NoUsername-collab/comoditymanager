@@ -298,7 +298,7 @@ html[data-layout-chrome="compact"] .hospira-logs-table-wrap table {
 /* ── Gantt landscape: compact toolbar touch targets ── */
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--gantt-touch-min, 1.35rem) !important;
+  min-height: var(--gantt-touch-min, 2.5rem) !important;
 }
 
 /* ── Gantt portrait toolbar: gantt-scoped touch min ── */
@@ -312,8 +312,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-jump {
-  min-width: var(--gantt-touch-min, 1.35rem);
-  min-height: var(--gantt-touch-min, 1.35rem);
+  min-width: var(--gantt-touch-min, 2.5rem);
+  min-height: var(--gantt-touch-min, 2.5rem);
 }
 
 /* ── HUD tools: no wrap in 2-row grid header ── */
@@ -1172,7 +1172,7 @@ html[data-layout-chrome="compact"] .ml-shell--hospira-admin th:first-child {
 
 /* Gear portaled menu: above HUD / Gantt chrome, below modals (100000) */
 html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
-  z-index: 99990;
+  z-index: var(--z-overlay, 200);
   max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
   right: auto;
   overflow: visible;
@@ -1361,7 +1361,7 @@ html[data-layout-chrome="compact"] .checkin-modal {
 
 /* Gantt context menu: stay on-screen */
 html[data-layout-chrome="compact"] .gantt-ctx-menu {
-  z-index: 99985;
+  z-index: var(--z-overlay, 200);
   max-height: min(70dvh, var(--ml-vvh, 100dvh));
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -1502,11 +1502,11 @@ html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .flex.flex-wrap.items
 
 /* Operative check-in/out dialog (custom portal, not AdminFloatingPanel) */
 html[data-layout-chrome="compact"] .gantt-check-time-dialog__backdrop {
-  z-index: 100000;
+  z-index: var(--z-overlay, 200);
 }
 
 html[data-layout-chrome="compact"] .gantt-check-time-dialog {
-  z-index: 100001;
+  z-index: calc(var(--z-overlay, 200) + 1);
   max-width: min(22rem, calc(100vw - 1rem));
   max-height: min(
     92dvh,
@@ -1538,7 +1538,7 @@ html[data-layout-chrome="compact"] .gantt-check-time-dialog .mt-4.flex button {
 
 /* Context menu backdrop aligned with menu stack */
 html[data-layout-chrome="compact"] .gantt-ctx-menu-backdrop {
-  z-index: 99984;
+  z-index: calc(var(--z-overlay, 200) - 1);
 }
 
 /* Settings location unlock */

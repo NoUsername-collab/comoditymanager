@@ -38,12 +38,12 @@ function semanticStayVars(
   const tone =
     occupancyPhase === "past"
       ? {
-          fill: "#52525b",
-          border: "#3f3f46",
-          text: "#0a0a0a",
-          tab: "#27272a",
-          badge: "color-mix(in srgb, #0a0a0a 12%, #71717a)",
-          glow: "color-mix(in srgb, #3f3f46 40%, transparent)",
+          fill: "var(--past-bg)",
+          border: "var(--past-border)",
+          text: "var(--past-text)",
+          tab: "color-mix(in srgb, var(--past-border) 85%, black)",
+          badge: "color-mix(in srgb, var(--past-text) 12%, var(--past-bg))",
+          glow: "color-mix(in srgb, var(--past-border) 40%, transparent)",
         }
       : isCerere
         ? {

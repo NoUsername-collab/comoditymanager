@@ -6,6 +6,8 @@ import { updateGuestProfileControlsAction } from "@/app/[locale]/admin/(panel)/g
 import type { GuestProfileRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminSelect, AdminTextarea } from "@/components/admin/ui/AdminInput";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 
 export function GuestProfileControlsForm({
@@ -34,14 +36,13 @@ export function GuestProfileControlsForm({
 
       <label className="guest-profile-controls-form__field block max-w-md space-y-1 text-sm">
         <span className="font-bold">{tGuests("profileControls.profileState")}</span>
-        <select
+        <AdminSelect
           name="flag_level"
           defaultValue={profile?.flag_level === "watchlist" ? "watchlist" : "normal"}
-          className="w-full border border-zinc-300 bg-white"
         >
           <option value="normal">{tGuests("profileControls.normal")}</option>
           <option value="watchlist">{tGuests("profileControls.watchlist")}</option>
-        </select>
+        </AdminSelect>
         <span className="block text-xs text-zinc-500">
           {tGuests("profileControls.blacklistManagedSeparately")}
         </span>
@@ -85,21 +86,16 @@ export function GuestProfileControlsForm({
         width={620}
       >
         <div className="space-y-4 p-4">
-          <textarea
+          <AdminTextarea
             rows={7}
             value={manualNote}
             onChange={(e) => setManualNote(e.target.value)}
             placeholder={tGuests("profileControls.notePlaceholder")}
-            className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
           />
           <div className="flex flex-wrap justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => setNoteOpen(false)}
-              className="rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700"
-            >
+            <AdminButton variant="secondary" onClick={() => setNoteOpen(false)}>
               {tCommon("close")}
-            </button>
+            </AdminButton>
             <button
               type="button"
               onClick={() => setNoteOpen(false)}

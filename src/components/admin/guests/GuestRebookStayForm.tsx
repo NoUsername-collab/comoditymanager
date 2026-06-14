@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from "react"
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput, AdminTextarea } from "@/components/admin/ui/AdminInput";
 import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges";
 import {
   previewGuestRebookRoomsAction,
@@ -227,42 +229,42 @@ export function GuestRebookStayForm({
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm">
             {t("lastName")}
-            <input
+            <AdminInput
               name="guest_last_name"
               required
               value={guestLastName}
               onChange={(e) => setGuestLastName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block text-sm">
             {t("firstName")}
-            <input
+            <AdminInput
               name="guest_first_name"
               value={guestFirstName}
               onChange={(e) => setGuestFirstName(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block text-sm">
             {t("email")}
-            <input
+            <AdminInput
               name="guest_email"
               type="email"
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block text-sm">
             {t("phone")}
-            <input
+            <AdminInput
               name="guest_phone"
               type="tel"
               required
               value={guestPhone}
               onChange={(e) => setGuestPhone(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
         </div>
@@ -273,49 +275,49 @@ export function GuestRebookStayForm({
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm">
             {t("checkIn")}
-            <input
+            <AdminInput
               name="check_in"
               type="date"
               required
               min={today}
               value={checkIn}
               onChange={(e) => onCheckInChange(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block text-sm">
             {t("checkOut")}
-            <input
+            <AdminInput
               name="check_out"
               type="date"
               required
               min={checkIn ? addDays(checkIn, 1) : today}
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block text-sm">
             {t("adults")}
-            <input
+            <AdminInput
               name="num_adults"
               type="number"
               min={1}
               required
               value={numAdults}
               onChange={(e) => setNumAdults(Math.max(1, Number(e.target.value) || 1))}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
           <label className="block text-sm">
             {t("children")}
-            <input
+            <AdminInput
               name="num_children"
               type="number"
               min={0}
               value={numChildren}
               onChange={(e) => setNumChildren(Math.max(0, Number(e.target.value) || 0))}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1"
             />
           </label>
         </div>
@@ -345,22 +347,22 @@ export function GuestRebookStayForm({
         {hasMinor && (
           <label className="block text-sm">
             {t("minorAge")}
-            <input
+            <AdminInput
               name="minor_age"
               value={minorAge}
               onChange={(e) => setMinorAge(e.target.value)}
-              className="mt-1 w-full max-w-xs rounded-lg border border-zinc-300 px-3 py-2"
+              className="mt-1 max-w-xs"
             />
           </label>
         )}
         <label className="block text-sm">
           {t("notes")}
-          <textarea
+          <AdminTextarea
             name="notes"
             rows={3}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
           />
         </label>
       </section>
@@ -454,23 +456,22 @@ export function GuestRebookStayForm({
       </section>
 
       <div className="guest-rebook-form__actions flex flex-wrap gap-3">
-        <button
-          type="button"
+        <AdminButton
+          variant="secondary"
           onClick={() => {
             if (onCancel) onCancel();
             else if (backHref) router.push(backHref);
           }}
-          className="rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-medium text-zinc-700"
         >
           {tCommon("cancel")}
-        </button>
-        <button
+        </AdminButton>
+        <AdminButton
           type="submit"
+          variant="primary"
           disabled={!canSubmit || previewPending}
-          className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-zinc-300"
         >
           {embedded ? t("confirm") : t("submit")}
-        </button>
+        </AdminButton>
       </div>
     </AdminPendingForm>
   );

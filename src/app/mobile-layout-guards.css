@@ -264,7 +264,7 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
 .pwa-install-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10050;
+  z-index: var(--z-overlay, 200);
   border: none;
   background: rgb(0 0 0 / 0.45);
   cursor: pointer;
@@ -272,7 +272,7 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
 
 .pwa-install-sheet {
   position: fixed;
-  z-index: 10051;
+  z-index: calc(var(--z-overlay, 200) + 1);
   left: 0.75rem;
   right: 0.75rem;
   bottom: max(0.75rem, var(--ml-safe-bottom, 0px));

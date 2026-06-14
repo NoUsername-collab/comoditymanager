@@ -3,6 +3,7 @@
 import { updateBuildingDefaultPriceAction } from "@/app/[locale]/admin/(panel)/buildings/update-price-action";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 
 export function BuildingDefaultPriceForm({
   buildingId,
@@ -19,19 +20,17 @@ export function BuildingDefaultPriceForm({
       <input type="hidden" name="building_id" value={buildingId} />
       <label className="text-xs text-zinc-600">
         Preț implicit camere noi (RON/noapte)
-        <input
+        <AdminInput
           name="default_price_per_night"
           type="number"
           min={0}
           step={1}
           defaultValue={defaultPrice}
-          className="mt-1 block w-28 rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-sm tabular-nums"
+          fieldSize="sm"
+          className="mt-1 w-28 tabular-nums"
         />
       </label>
-      <AdminSubmitButton
-        pendingLabel="…"
-        className="rounded-lg border border-zinc-300 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 hover:bg-zinc-50 disabled:opacity-60"
-      >
+      <AdminSubmitButton size="sm">
         Salvează
       </AdminSubmitButton>
     </AdminPendingForm>

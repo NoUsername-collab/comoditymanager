@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { RoomOptionFields } from "@/components/admin/catalog/RoomOptionFields";
 
 type RoomData = {
@@ -72,26 +73,26 @@ export function RoomEditForm({
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("building")}</span>
-        <select
+        <AdminSelect
           name="building_id"
           value={buildingId}
           onChange={(e) => setBuildingId(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         >
           {buildings.map((b) => (
             <option key={b.id} value={b.id}>
               {b.name}
             </option>
           ))}
-        </select>
+        </AdminSelect>
       </label>
 
       <label className="block">
         <span className="text-sm font-medium">{tEdit("floor")}</span>
-        <select
+        <AdminSelect
           name="floor_id"
           defaultValue={room.floor_id ?? ""}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         >
           <option value="">{tEdit("withoutFloor")}</option>
           {floors.map((f) => (
@@ -99,32 +100,32 @@ export function RoomEditForm({
               {f.name}
             </option>
           ))}
-        </select>
+        </AdminSelect>
       </label>
 
       <label className="block">
         <span className="text-sm font-medium">{tEdit("roomType")}</span>
-        <select
+        <AdminSelect
           name="room_type_definition_id"
           value={typeId}
           onChange={(e) => setTypeId(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         >
           {types.map((t) => (
             <option key={t.id} value={t.id}>
               {t.name}
             </option>
           ))}
-        </select>
+        </AdminSelect>
       </label>
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("name")}</span>
-        <input
+        <AdminInput
           name="name"
           defaultValue={room.name}
           required
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         />
       </label>
 
@@ -138,22 +139,22 @@ export function RoomEditForm({
       <div className="grid grid-cols-2 gap-4">
         <label className="block">
           <span className="text-sm font-medium">{tEdit("capacity")}</span>
-          <input
+          <AdminInput
             name="capacity_base"
             type="number"
             min={1}
             defaultValue={room.capacity_base}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
           />
         </label>
         <label className="block">
           <span className="text-sm font-medium">{tEdit("pricePerNight")}</span>
-          <input
+          <AdminInput
             name="price_per_night"
             type="number"
             min={0}
             defaultValue={room.price_per_night}
-            className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+            className="mt-1"
           />
         </label>
       </div>
@@ -170,27 +171,27 @@ export function RoomEditForm({
 
       <label className="block">
         <span className="text-sm font-medium">{tEdit("maxExtraBeds")}</span>
-        <input
+        <AdminInput
           name="max_extra_beds_per_room"
           type="number"
           min={0}
           max={4}
           defaultValue={room.max_extra_beds_per_room}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         />
       </label>
 
       <label className="block">
         <span className="text-sm font-medium">{tCommon("displayOrder")}</span>
-        <input
+        <AdminInput
           name="sort_order"
           type="number"
           defaultValue={room.sort_order}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2"
+          className="mt-1"
         />
       </label>
 
-      <AdminSubmitButton className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+      <AdminSubmitButton size="md">
         {tEdit("saveChanges")}
       </AdminSubmitButton>
     </AdminPendingForm>

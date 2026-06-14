@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminSelect } from "@/components/admin/ui/AdminInput";
 import { updateBuildingPoliciesAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 
@@ -62,32 +63,34 @@ export function BuildingPoliciesForm({
 
           <label className="block text-sm">
             <span className="font-medium">{tPolicies("acPolicy")}</span>
-            <select
+            <AdminSelect
               name="ac_mode"
               value={acMode}
               onChange={(e) => setAcMode(e.target.value as AcMode)}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+              className="mt-1"
+              fieldSize="sm"
             >
               <option value="all_rooms">{tPolicies("policyAllRooms")}</option>
               <option value="none">{tCommon("withoutAc")}</option>
               <option value="per_room">{tPolicies("policyPerRoom")}</option>
-            </select>
+            </AdminSelect>
           </label>
 
           {otherOptions.map((opt) => (
             <label key={opt.id} className="block text-sm">
               <span className="font-medium">{opt.name}</span>
-              <select
+              <AdminSelect
                 name={`policy_${opt.id}`}
                 defaultValue={policyFor(opt.id)}
-                className="mt-1 w-full rounded-lg border border-zinc-300 px-2 py-1.5 text-sm"
+                className="mt-1"
+                fieldSize="sm"
               >
                 {policyOptions.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}
                   </option>
                 ))}
-              </select>
+              </AdminSelect>
             </label>
           ))}
 
@@ -95,7 +98,7 @@ export function BuildingPoliciesForm({
             <input type="hidden" name={`policy_${acOption.id}`} value={acMode} />
           )}
 
-          <AdminSubmitButton className="rounded-lg bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50">
+          <AdminSubmitButton size="sm">
             {tPolicies("savePolicies")}
           </AdminSubmitButton>
         </AdminPendingForm>
