@@ -15,7 +15,10 @@ import { getPensionSettings } from "@/services/pension-settings";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { getTenantDisplayName } from "@/services/tenants";
 import { getLocale } from "next-intl/server";
-import { getTenantContext } from "@/core/tenant/context";
+import {
+  resolveShowBrandingForRequest,
+  resolveTenantCountryForRequest,
+} from "@/lib/tenant/resolve-fiscal-tenant";
 import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
 
 export type IssuedInvoiceRecord = {
@@ -113,7 +116,7 @@ export async function issueBookingInvoice(
     getStayPricingRules(),
     getLocale(),
     resolveTenantIdForData(),
-    Promise.resolve(getTenantContext().tenant.country as TenantCountry),
+    resolveTenantCountryForRequest(),
   ]);
 
   if (!booking) return { ok: false, error: "booking.not_found" };
@@ -248,7 +251,7 @@ export async function previewBookingInvoice(
       getStayPricingRules(),
       getLocale(),
       resolveTenantIdForData(),
-      Promise.resolve(getTenantContext().tenant.country as TenantCountry),
+      resolveTenantCountryForRequest(),
     ]);
 
   if (!booking || booking.room_ids.length === 0) return null;

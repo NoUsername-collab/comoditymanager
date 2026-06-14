@@ -31,6 +31,20 @@ describe("guestRequiresDocumentExpiry", () => {
     ).toBe(false);
   });
 
+  it("does not require expiry for RO CI with valid CNP", () => {
+    expect(
+      guestRequiresDocumentExpiry({
+        ...baseGuest,
+        nationality: "România",
+        document_type: "ci",
+        document_series: "XB",
+        document_number: "340090",
+        national_id: "1850101410014",
+        national_id_type: "cnp",
+      }),
+    ).toBe(false);
+  });
+
   it("skips absent or keys-only guests", () => {
     expect(
       guestRequiresDocumentExpiry({

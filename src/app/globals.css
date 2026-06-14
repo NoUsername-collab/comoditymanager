@@ -2450,13 +2450,15 @@ html[data-theme="default"][data-mode="night"] {
   }
 }
 
-/* Factură informativă — print (folosește clasa .no-print, nu print:hidden în CSS brut) */
+/* Factură informativă + fallback print din pagina admin */
 @media print {
   body {
     background: white;
   }
   .admin-hud,
   .admin-hud-alert,
+  .ml-bottom-nav,
+  .onboarding-bar,
   .no-print {
     display: none !important;
   }

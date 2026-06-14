@@ -2334,14 +2334,91 @@
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  .ml-shell,
+  .admin-shell,
+  .admin-page-main,
+  .ml-main,
+  .ml-content,
+  .admin-page,
+  .admin-panel,
+  .admin-panel-body,
+  .admin-invoice-page,
+  .issued-invoice-root {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    display: block !important;
+    content-visibility: visible !important;
+    contain: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .admin-hud,
+  .admin-hud-alert,
+  .ml-bottom-nav,
+  .onboarding-bar,
+  .admin-page-back,
+  .admin-page-toolbar,
+  .admin-page-desc,
+  .admin-panel__titlebar,
+  .sim-bottom-strip,
+  .admin-dn-liquid,
+  .admin-theme-loading,
+  .no-print {
+    display: none !important;
+  }
+
   .issued-invoice-sheet {
-    border: none;
-    box-shadow: none;
-    border-radius: 0;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    break-inside: avoid;
   }
 
   .issued-invoice-sheet__header {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
+  }
+
+  .issued-invoice-sheet__table {
+    display: table !important;
+    width: 100% !important;
+  }
+
+  .issued-invoice-sheet__table thead {
+    display: table-header-group !important;
+  }
+
+  .issued-invoice-sheet__table tbody {
+    display: table-row-group !important;
+  }
+
+  .issued-invoice-sheet__table tr {
+    display: table-row !important;
+  }
+
+  .issued-invoice-sheet__table th,
+  .issued-invoice-sheet__table td {
+    display: table-cell !important;
   }
 }

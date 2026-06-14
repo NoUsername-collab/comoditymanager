@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { IssuedInvoiceDocument } from "@/domain/invoice/issued-invoice";
 import { formatInvoiceMoney } from "@/domain/invoice/issued-invoice";
 import { getCountryFiscalProfile } from "@/domain/fiscal/country-fiscal-profile";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { printIssuedInvoiceSheet } from "@/lib/invoice/print-issued-invoice";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 
 type Props = {
@@ -38,6 +39,7 @@ export function IssuedInvoiceView({
   const formatMoney = (amount: number) =>
     formatInvoiceMoney(amount, document.currency, dateTag);
   const [localIssuing, setLocalIssuing] = useState(false);
+  const sheetRef = useRef<HTMLElement>(null);
 
   const issuedLabel = new Date(document.issued_at).toLocaleDateString(dateTag, {
     day: "numeric",
@@ -46,6 +48,11 @@ export function IssuedInvoiceView({
   });
 
   function printInvoice() {
+    const sheet = sheetRef.current;
+    if (sheet) {
+      printIssuedInvoiceSheet(sheet, `${t("title")} ${document.display_number}`);
+      return;
+    }
     window.print();
   }
 
@@ -82,7 +89,11 @@ export function IssuedInvoiceView({
         </button>
       </div>
 
-      <article className="issued-invoice-sheet" aria-label={t("title")}>
+      <article
+        ref={sheetRef}
+        className="issued-invoice-sheet"
+        aria-label={t("title")}
+      >
         <header className="issued-invoice-sheet__header">
           <div>
             <p className="issued-invoice-sheet__eyebrow">{t("documentTitle")}</p>

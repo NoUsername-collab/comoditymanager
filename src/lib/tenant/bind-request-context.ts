@@ -1,7 +1,8 @@
 import {
   DEV_FALLBACK_TENANT,
-  resetTenantContext,
+  getTenantContext,
   setTenantContext,
+  TenantContextMissingError,
   type TenantContext,
 } from "@/core/tenant/context";
 import { resolveRequestTenant } from "@/lib/tenant/active";
@@ -13,8 +14,6 @@ import { getTenantBySlug } from "@/services/tenants";
  * Production: host tenant only — never "first row in tenants table".
  */
 export async function bindTenantContextFromRequest(): Promise<TenantContext> {
-  resetTenantContext();
-
   const fromHost = await resolveRequestTenant();
   if (fromHost) {
     return setTenantContext(tenantRowToRecord(fromHost));
@@ -32,6 +31,21 @@ export async function bindTenantContextFromRequest(): Promise<TenantContext> {
   }
 
   throw new Error("auth.tenant_host_required");
+}
+
+/**
+ * Idempotent bind — safe when only a page RSC re-runs (client nav / refresh)
+ * and the admin layout did not re-execute bindTenantContextFromRequest().
+ */
+export async function ensureTenantContextFromRequest(): Promise<TenantContext> {
+  try {
+    return getTenantContext();
+  } catch (error) {
+    if (!(error instanceof TenantContextMissingError)) {
+      throw error;
+    }
+    return bindTenantContextFromRequest();
+  }
 }
 
 /** Guest/public routes on wrong host — bind when possible, otherwise null. */

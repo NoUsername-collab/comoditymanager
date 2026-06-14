@@ -2,7 +2,7 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { issueBookingInvoiceAction } from "@/app/[locale]/admin/(panel)/bookings/invoice-actions";
 import { IssuedInvoiceView } from "@/components/admin/invoice/IssuedInvoiceView";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
@@ -17,14 +17,21 @@ type Props = {
 
 export function BookingInvoicePanel({
   bookingId,
-  document,
-  issued,
+  document: initialDocument,
+  issued: initialIssued,
   showHospiraBranding,
 }: Props) {
   const t = useTranslations("admin.issuedInvoice");
   const { showToast } = useAdminFx();
   const router = useRouter();
   const [issuing, setIssuing] = useState(false);
+  const [document, setDocument] = useState(initialDocument);
+  const [issued, setIssued] = useState(initialIssued);
+
+  useEffect(() => {
+    setDocument(initialDocument);
+    setIssued(initialIssued);
+  }, [initialDocument, initialIssued]);
 
   async function handleIssue() {
     setIssuing(true);
@@ -39,6 +46,7 @@ export function BookingInvoicePanel({
       return;
     }
     showToast({ kind: "success", title: t("issueSuccess") });
+    setIssued(true);
     router.refresh();
   }
 

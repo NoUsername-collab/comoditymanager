@@ -303,6 +303,24 @@ export async function updateCheckinPaymentAction(
   }
 }
 
+function mapCreateCheckinError(
+  err: unknown,
+  t: Awaited<ReturnType<typeof getTranslations<"admin.checkIn">>>,
+): { ok: false; error: string } | { ok: false; needsTransfer: true; transferOffer: CheckinTransferOffer } {
+  const msg = err instanceof Error ? err.message : "Unknown error";
+  if (isCheckinMigrationMissing(msg)) {
+    return { ok: false, error: t("migrationRequired") };
+  }
+  const transferOffer = decodeCheckinTransferRequired(msg);
+  if (transferOffer) {
+    return { ok: false, needsTransfer: true, transferOffer };
+  }
+  if (msg.startsWith("checkin.blocked:")) {
+    return { ok: false, error: msg.replace("checkin.blocked: ", "") };
+  }
+  return { ok: false, error: msg };
+}
+
 /**
  * Server action: create a check-in from the stepper form.
  */
@@ -405,16 +423,8 @@ export async function createCheckinAction(
 
     return { ok: true, checkinId };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
-    const transferOffer = decodeCheckinTransferRequired(msg);
-    if (transferOffer) {
-      return { ok: false, needsTransfer: true, transferOffer };
-    }
-    return { ok: false, error: msg };
+    const t = await getTranslations("admin.checkIn");
+    return mapCreateCheckinError(err, t);
   }
 }
 
@@ -527,16 +537,8 @@ export async function updateCheckinAction(
 
     return { ok: true, checkinId };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
-    const transferOffer = decodeCheckinTransferRequired(msg);
-    if (transferOffer) {
-      return { ok: false, needsTransfer: true, transferOffer };
-    }
-    return { ok: false, error: msg };
+    const t = await getTranslations("admin.checkIn");
+    return mapCreateCheckinError(err, t);
   }
 }
 

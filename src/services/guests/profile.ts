@@ -88,7 +88,16 @@ export async function updateGuestIdentity(
 
   const hasDocumentNumber = Boolean(input.doc_number?.trim());
   const hasDocumentType = input.doc_type != null;
-  if ((hasDocumentNumber || hasDocumentType) && !input.doc_expiry_date) {
+  const roCiWithValidCnp =
+    input.doc_type === "ci" &&
+    Boolean(input.national_id?.trim() || input.cnp?.trim()) &&
+    (input.national_id_type === "cnp" || Boolean(input.cnp?.trim()));
+
+  if (
+    (hasDocumentNumber || hasDocumentType) &&
+    !input.doc_expiry_date &&
+    !roCiWithValidCnp
+  ) {
     throw new Error("guest.doc_expiry_required");
   }
 

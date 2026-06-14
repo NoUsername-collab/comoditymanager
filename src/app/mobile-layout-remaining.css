@@ -466,8 +466,7 @@ html[data-layout-chrome="compact"] .hospira-admin-main .overflow-x-auto {
 }
 
 /* ── Invoice / factura ── */
-html[data-layout-chrome="compact"] .admin-invoice-page table {
-  display: block;
+html[data-layout-chrome="compact"] .admin-invoice-page .issued-invoice-sheet__table-wrap {
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;

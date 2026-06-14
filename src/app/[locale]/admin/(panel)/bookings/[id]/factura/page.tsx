@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { BookingInvoicePanel } from "@/components/admin/invoice/BookingInvoicePanel";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { getTenantContext } from "@/core/tenant/context";
+import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
+import { resolveShowBrandingForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
 import {
   loadActiveBookingInvoice,
   previewBookingInvoice,
@@ -14,8 +15,9 @@ export default async function BookingInvoicePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [{ id }, tPage, tCommon, booking] = await Promise.all([
+  const [{ id }, , tPage, tCommon, booking] = await Promise.all([
     params,
+    ensureTenantContextFromRequest(),
     getTranslations("admin.pages.invoice"),
     getTranslations("admin.common"),
     params.then(({ id }) => getBookingById(id)),
@@ -31,7 +33,7 @@ export default async function BookingInvoicePage({
   if (!preview) notFound();
 
   const document = active?.document ?? preview;
-  const showHospiraBranding = getTenantContext().showBranding;
+  const showHospiraBranding = await resolveShowBrandingForRequest();
 
   return (
     <AdminPageFrame

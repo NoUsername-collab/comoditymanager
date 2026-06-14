@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
+import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { issueBookingInvoice } from "@/services/issued-invoice";
 import { getTranslations } from "next-intl/server";
@@ -10,6 +11,7 @@ import { getTranslations } from "next-intl/server";
 export async function issueBookingInvoiceAction(
   bookingId: string
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  await ensureTenantContextFromRequest();
   const t = await getTranslations("admin.serverActions");
   await requireLocationAdmin();
 
@@ -40,7 +42,6 @@ export async function issueBookingInvoiceAction(
 
   revalidateTag(CACHE_TAGS.pensionSettings, "max");
   revalidatePath(`/admin/bookings/${bookingId}`);
-  revalidatePath(`/admin/bookings/${bookingId}/factura`);
 
   return { ok: true };
 }

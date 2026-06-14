@@ -24,6 +24,7 @@ import {
   mrzToGuestProfileFields,
   type MrzMappedIdentity,
 } from "@/domain/guest/mrz";
+import { normalizeIsoDateInput } from "@/lib/iso-date-input";
 
 type DocType = "ci" | "passport" | "foreign_id" | "other" | "";
 
@@ -71,8 +72,12 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const [docSeries, setDocSeries] = useState(guest.doc_series ?? "");
   const [docNumber, setDocNumber] = useState(guest.doc_number ?? "");
   const [docIssuedBy, setDocIssuedBy] = useState(guest.doc_issued_by ?? "");
-  const [docIssueDate, setDocIssueDate] = useState(guest.doc_issue_date ?? "");
-  const [docExpiryDate, setDocExpiryDate] = useState(guest.doc_expiry_date ?? "");
+  const [docIssueDate, setDocIssueDate] = useState(
+    normalizeIsoDateInput(guest.doc_issue_date),
+  );
+  const [docExpiryDate, setDocExpiryDate] = useState(
+    normalizeIsoDateInput(guest.doc_expiry_date),
+  );
 
   const initialNationalId = guest.national_id ?? guest.cnp ?? "";
   const initialNationalIdType = (guest.national_id_type as NationalIdType) ?? "cnp";
@@ -236,6 +241,10 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 
   const showDocFields = docType !== "";
   const showCiFields = docType === "ci";
+  const roIdentity =
+    /^(ro|românia|romania)$/i.test(country.trim()) ||
+    /^(ro|românia|romania)$/i.test(nationality.trim());
+  const cnpInCiSection = showCiFields && roIdentity;
   const idTypeLabel = t(`nationalIdTypes.${nationalIdType}`);
 
   return (
@@ -262,7 +271,13 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
               <span className="guest-identity-form__label">{t("docType")}</span>
               <select
                 value={docType}
-                onChange={(e) => setDocType(e.target.value as DocType)}
+                onChange={(e) => {
+                  const next = e.target.value as DocType;
+                  setDocType(next);
+                  if (next === "ci" && roIdentity) {
+                    setNationalIdType("cnp");
+                  }
+                }}
                 className="guest-identity-form__select"
               >
                 <option value="">{t("selectDocType")}</option>
@@ -276,6 +291,37 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
 
           {showDocFields && (
             <div className="guest-identity-form__row guest-identity-form__row--multi">
+              {cnpInCiSection ? (
+                <label className="guest-identity-form__field guest-identity-form__field--wide">
+                  <span className="guest-identity-form__label">
+                    {t("nationalIdTypes.cnp")} *
+                  </span>
+                  <input
+                    type="text"
+                    value={nationalId}
+                    onChange={(e) => handleNationalIdChange(e.target.value)}
+                    placeholder={t("nationalIdPlaceholder", {
+                      digits: NATIONAL_ID_LENGTH.cnp,
+                    })}
+                    maxLength={NATIONAL_ID_LENGTH.cnp + 2}
+                    inputMode="numeric"
+                    className={[
+                      "guest-identity-form__input",
+                      idError && "guest-identity-form__input--error",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  />
+                  {idError ? (
+                    <span className="guest-identity-form__error">{idError}</span>
+                  ) : null}
+                  {idAutoFilled && birthDate ? (
+                    <span className="guest-identity-form__hint">
+                      {t("birthDateFromId", { date: birthDate })}
+                    </span>
+                  ) : null}
+                </label>
+              ) : null}
               {showCiFields && (
                 <label className="guest-identity-form__field guest-identity-form__field--small">
                   <span className="guest-identity-form__label">{t("docSeries")}</span>
@@ -354,6 +400,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
             </label>
           </div>
 
+          {!cnpInCiSection ? (
           <div className="guest-identity-form__row guest-identity-form__row--multi">
             <label className="guest-identity-form__field guest-identity-form__field--small">
               <span className="guest-identity-form__label">{t("nationalIdType")}</span>
@@ -396,6 +443,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
               </span>
             </label>
           </div>
+          ) : null}
 
           <div className="guest-identity-form__row guest-identity-form__row--multi">
             <label className="guest-identity-form__field">

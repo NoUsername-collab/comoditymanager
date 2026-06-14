@@ -4,6 +4,7 @@ import {
   extractIdentityFromNationalId,
   type NationalIdType,
 } from "@/domain/guest/national-id";
+import { normalizeIsoDateInput } from "@/lib/iso-date-input";
 
 export function mapGuestRowToCheckinInput(
   guest: GuestRow,
@@ -33,7 +34,7 @@ export function mapGuestRowToCheckinInput(
     document_number: guest.doc_number ?? "",
     nationality: guest.nationality ?? "România",
     birth_date: extracted?.birthDate ?? guest.birth_date,
-    doc_expiry_date: guest.doc_expiry_date,
+    doc_expiry_date: normalizeIsoDateInput(guest.doc_expiry_date) || null,
     room_label: options.roomLabel,
     is_representative: options.isRepresentative,
     guest_id: guest.id,

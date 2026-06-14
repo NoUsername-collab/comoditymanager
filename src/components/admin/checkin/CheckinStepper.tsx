@@ -410,6 +410,16 @@ export function CheckinStepper({
             next.birth_date = null;
           }
         }
+        if (field === "document_type") {
+          const uiType = checkinUiDocTypeValue(
+            value == null
+              ? null
+              : (String(value) as CheckinGuestInput["document_type"]),
+          );
+          if (uiType === "ci" && isRomanianNationality(next.nationality)) {
+            next.national_id_type = "cnp";
+          }
+        }
         return next;
       }),
     );
@@ -843,6 +853,7 @@ function GuestIdentityCard({
   const uiDocType = checkinUiDocTypeValue(guest.document_type);
   const showDocFields = uiDocType !== "";
   const showCiFields = uiDocType === "ci";
+  const cnpInCiSection = showCiFields && roGuest;
   const expectedIdLength = NATIONAL_ID_LENGTH[idType];
   const idState = guest.national_id?.trim()
     ? validateNationalId(idType, cleanNationalId(guest.national_id))
@@ -1060,6 +1071,36 @@ function GuestIdentityCard({
             </label>
 
             {showDocFields && showCiFields && (
+              <label className="checkin-field checkin-field--span2">
+                <span className="checkin-field__label">
+                  {tIdentity("nationalIdTypes.cnp")}
+                  <span className="checkin-field__required"> *</span>
+                </span>
+                <input
+                  type="text"
+                  className="checkin-field__input"
+                  inputMode="numeric"
+                  maxLength={NATIONAL_ID_LENGTH.cnp + 2}
+                  value={guest.national_id ?? ""}
+                  onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
+                  placeholder={tIdentity("nationalIdPlaceholder", {
+                    digits: NATIONAL_ID_LENGTH.cnp,
+                  })}
+                />
+                {idState && !idState.valid && guest.national_id?.trim() ? (
+                  <span className="checkin-field__error">
+                    {tIdentity("nationalIdInvalid", { type: "CNP" })}
+                  </span>
+                ) : null}
+                {idState?.valid && idState.data?.birthDate ? (
+                  <span className="checkin-field__hint">
+                    {t("field.birthDateFromId", { date: idState.data.birthDate })}
+                  </span>
+                ) : null}
+              </label>
+            )}
+
+            {showDocFields && showCiFields && (
               <label className="checkin-field">
                 <span className="checkin-field__label">{tIdentity("docSeries")}</span>
                 <input
@@ -1094,7 +1135,9 @@ function GuestIdentityCard({
               <label className="checkin-field checkin-field--span2">
                 <span className="checkin-field__label">
                   {tIdentity("docExpiryDate")}
-                  <span className="checkin-field__required"> *</span>
+                  {!cnpInCiSection ? (
+                    <span className="checkin-field__required"> *</span>
+                  ) : null}
                 </span>
                 <input
                   type="date"
@@ -1103,12 +1146,14 @@ function GuestIdentityCard({
                   onChange={(e) =>
                     updateGuest(idx, "doc_expiry_date", e.target.value)
                   }
-                  required
+                  required={!cnpInCiSection}
                 />
               </label>
             )}
           </div>
 
+          {!cnpInCiSection ? (
+            <>
           <div className="checkin-guest-form__section-title">
             {tIdentity("personalSection")}
           </div>
@@ -1157,6 +1202,8 @@ function GuestIdentityCard({
               </span>
             </label>
           </div>
+            </>
+          ) : null}
         </>
       )}
     </div>
