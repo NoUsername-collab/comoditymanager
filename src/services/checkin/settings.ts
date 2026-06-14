@@ -7,7 +7,9 @@ import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { CheckinSettings } from "@/domain/checkin/types";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 
-const CHECKIN_SETTINGS_SELECT = [
+import { getTenantById } from "@/services/tenants";
+
+const CHECKIN_SETTINGS_BASE_COLUMNS = [
   "display_name",
   "checkin_doc_rule",
   "checkin_phone_rule",
@@ -22,13 +24,38 @@ const CHECKIN_SETTINGS_SELECT = [
   "checkout_time_until",
   "late_checkout_allowed",
   "late_checkout_fee",
-  "checkout_block_unpaid",
   "early_checkin_allowed",
   "early_checkin_fee",
   "fisa_property_address",
   "fisa_owner_cui",
   "fisa_tourism_license",
+] as const;
+
+const CHECKIN_SETTINGS_SELECT = [
+  ...CHECKIN_SETTINGS_BASE_COLUMNS,
+  "checkout_block_unpaid",
 ].join(", ");
+
+const CHECKIN_SETTINGS_SELECT_WITHOUT_CHECKOUT_BLOCK =
+  CHECKIN_SETTINGS_BASE_COLUMNS.join(", ");
+
+const CHECKIN_SETTINGS_FISA_READ = [
+  "display_name",
+  "checkin_cnp_rule",
+  "fisa_property_address",
+  "fisa_owner_cui",
+  "fisa_tourism_license",
+].join(", ");
+
+const CHECKIN_SETTINGS_SELECT_VARIANTS = [
+  CHECKIN_SETTINGS_SELECT,
+  CHECKIN_SETTINGS_SELECT_WITHOUT_CHECKOUT_BLOCK,
+  CHECKIN_SETTINGS_FISA_READ,
+] as const;
+
+function checkinSettingsCacheTag(tenantId: string): string {
+  return `checkin-settings-${tenantId}`;
+}
 
 /** Default settings used when DB row is missing or columns not yet migrated */
 export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
@@ -121,24 +148,45 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
 
 // ── Read ────────────────────────────────────────────────────
 
+async function loadCheckinSettingsRow(
+  tenantId: string,
+): Promise<Record<string, unknown> | null> {
+  const supabase = createPublicAdminClient();
+
+  for (const select of CHECKIN_SETTINGS_SELECT_VARIANTS) {
+    const { data, error } = await supabase
+      .from("pension_settings")
+      .select(select)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+
+    if (!error) {
+      return (data as Record<string, unknown> | null) ?? null;
+    }
+    if (!isCheckinMigrationMissing(error.message)) {
+      throw new Error(error.message);
+    }
+  }
+
+  return null;
+}
+
 async function getCheckinSettingsUncached(
   tenantId: string,
 ): Promise<CheckinSettings> {
-  const supabase = createPublicAdminClient();
-  const { data, error } = await supabase
-    .from("pension_settings")
-    .select(CHECKIN_SETTINGS_SELECT)
-    .eq("tenant_id", tenantId)
-    .maybeSingle();
-
-  if (error) {
-    if (isCheckinMigrationMissing(error.message)) {
+  try {
+    const data = await loadCheckinSettingsRow(tenantId);
+    if (!data) return { ...DEFAULT_CHECKIN_SETTINGS };
+    return mapRow(data);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      isCheckinMigrationMissing(error.message)
+    ) {
       return { ...DEFAULT_CHECKIN_SETTINGS };
     }
-    throw new Error(error.message);
+    throw error;
   }
-  if (!data) return { ...DEFAULT_CHECKIN_SETTINGS };
-  return mapRow(data as unknown as Record<string, unknown>);
 }
 
 const getCachedCheckinSettings = (tenantId: string) =>
@@ -149,6 +197,7 @@ const getCachedCheckinSettings = (tenantId: string) =>
       tags: [
         CACHE_TAGS.pensionSettings,
         tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        checkinSettingsCacheTag(tenantId),
       ],
       revalidate: 300,
     }
@@ -214,6 +263,8 @@ export async function updateCheckinSettings(
 
   if (Object.keys(update).length === 0) return;
 
+  await ensurePensionSettingsRow(tenantId, supabase);
+
   const { data, error } = await supabase
     .from("pension_settings")
     .update(update)
@@ -231,3 +282,31 @@ export async function updateCheckinSettings(
     throw new Error("settings.pension_settings_missing");
   }
 }
+
+async function ensurePensionSettingsRow(
+  tenantId: string,
+  supabase: Awaited<ReturnType<typeof getTenantScope>>["supabase"]
+): Promise<void> {
+  const { data: existing, error: readError } = await supabase
+    .from("pension_settings")
+    .select("tenant_id")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+
+  if (readError) {
+    throw new Error(readError.message);
+  }
+  if (existing) return;
+
+  const tenant = await getTenantById(tenantId);
+  const { error: insertError } = await supabase.from("pension_settings").insert({
+    tenant_id: tenantId,
+    display_name: tenant?.display_name?.trim() || "Pensiune",
+  });
+
+  if (insertError) {
+    throw new Error(insertError.message);
+  }
+}
+
+export { checkinSettingsCacheTag };

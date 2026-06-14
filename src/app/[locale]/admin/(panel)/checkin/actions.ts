@@ -12,7 +12,7 @@ import { getTranslations } from "next-intl/server";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { createCheckin } from "@/services/checkin/create";
 import { updateCheckin } from "@/services/checkin/update";
-import { getCheckinSettings, updateCheckinSettings } from "@/services/checkin/settings";
+import { getCheckinSettings, updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
 import {
   getCheckinByBookingId,
@@ -624,6 +624,7 @@ export async function updateCheckinSettingsAction(
       "max",
     );
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidateTag(checkinSettingsCacheTag(tenantId), "max");
     revalidatePath("/admin/settings");
 
     return { ok: true };

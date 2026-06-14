@@ -130,6 +130,15 @@ function fisaAnafDraftToSettings(draft: FisaAnafDraft): Pick<
   };
 }
 
+function isFisaOnlyPartial(partial: Partial<CheckinSettings>): boolean {
+  return Object.keys(partial).every(
+    (key) =>
+      key === "fisa_property_address" ||
+      key === "fisa_owner_cui" ||
+      key === "fisa_tourism_license"
+  );
+}
+
 export function CheckinSettingsPanel({ settings: initial }: Props) {
   const t = useTranslations("admin.pages.settings.checkin");
   const router = useRouter();
@@ -141,6 +150,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
     buildFisaAnafDraft(initial)
   );
   const [fisaSaveError, setFisaSaveError] = useState<string | null>(null);
+  const [fisaSaveOk, setFisaSaveOk] = useState(false);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
@@ -149,6 +159,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
     settingsRef.current = initial;
     setFisaDraft(buildFisaAnafDraft(initial));
     setFisaSaveError(null);
+    setFisaSaveOk(false);
   }, [initial]);
 
   const savePartial = useCallback(
@@ -171,7 +182,9 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
       const result = await updateCheckinSettingsAction(fd);
       if (result.ok) {
         notifySuccess(t("saved"));
-        router.refresh();
+        if (!isFisaOnlyPartial(partial)) {
+          router.refresh();
+        }
         return { ok: true };
       }
 
@@ -204,9 +217,12 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
   function saveFisaAnaf() {
     setFisaSaveError(null);
+    setFisaSaveOk(false);
     startFisaTransition(async () => {
       const result = await savePartial(fisaAnafDraftToSettings(fisaDraft));
-      if (!result.ok) {
+      if (result.ok) {
+        setFisaSaveOk(true);
+      } else {
         setFisaSaveError(result.error ?? t("saveError"));
       }
     });
@@ -393,9 +409,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         <div className="checkin-setting-row__right checkin-setting-row__right--wide">
           <FisaPropertyAddressFields
             parts={fisaDraft.addressParts}
-            onPartsChange={(addressParts) =>
-              setFisaDraft((current) => ({ ...current, addressParts }))
-            }
+            onPartsChange={(addressParts) => {
+              setFisaSaveOk(false);
+              setFisaDraft((current) => ({ ...current, addressParts }));
+            }}
           />
         </div>
       </div>
@@ -405,9 +422,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           type="text"
           className="checkin-field__input"
           value={fisaDraft.cui}
-          onChange={(e) =>
-            setFisaDraft((current) => ({ ...current, cui: e.target.value }))
-          }
+          onChange={(e) => {
+            setFisaSaveOk(false);
+            setFisaDraft((current) => ({ ...current, cui: e.target.value }));
+          }}
         />
       </SettingRow>
 
@@ -416,9 +434,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           type="text"
           className="checkin-field__input"
           value={fisaDraft.license}
-          onChange={(e) =>
-            setFisaDraft((current) => ({ ...current, license: e.target.value }))
-          }
+          onChange={(e) => {
+            setFisaSaveOk(false);
+            setFisaDraft((current) => ({ ...current, license: e.target.value }));
+          }}
         />
       </SettingRow>
 
@@ -427,6 +446,11 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         {fisaSaveError ? (
           <p className="checkin-fisa-save__error" role="alert">
             {fisaSaveError}
+          </p>
+        ) : null}
+        {fisaSaveOk ? (
+          <p className="checkin-fisa-save__ok" role="status">
+            {t("saved")}
           </p>
         ) : null}
         <button

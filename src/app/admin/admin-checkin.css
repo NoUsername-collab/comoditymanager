@@ -780,6 +780,12 @@
   color: #b91c1c;
 }
 
+.checkin-fisa-save__ok {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #15803d;
+}
+
 .checkin-fisa-save__btn {
   min-height: 2.5rem;
   padding: 0.45rem 1rem;
