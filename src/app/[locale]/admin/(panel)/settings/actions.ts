@@ -136,7 +136,6 @@ export async function updateStatisticsVisibilityAction(
       metadata: { statistics_visibility: visibility },
     });
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
-    revalidatePath("/admin/settings");
     revalidatePath("/admin/statistics");
     return { ok: true };
   } catch (e) {
@@ -354,7 +353,6 @@ export async function updateBookingRulesSettingsAction(
       summary: "Reguli rezervare / prețuri actualizate",
     });
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
-    revalidatePath("/admin/settings");
     revalidatePath("/termeni");
     return { ok: true };
   } catch (e) {
@@ -444,7 +442,6 @@ export async function updateFiscalBillingSettingsAction(
     revalidateTag(tenantTag(tenantId, CACHE_TAGS.pensionSettings), "max");
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
     revalidateTag(checkinSettingsCacheTag(tenantId), "max");
-    revalidatePath("/admin/settings");
     return { ok: true };
   } catch (e) {
     if (

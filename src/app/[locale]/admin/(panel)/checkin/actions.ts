@@ -638,7 +638,6 @@ export async function updateCheckinSettingsAction(
     );
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
     revalidateTag(checkinSettingsCacheTag(tenantId), "max");
-    revalidatePath("/admin/settings");
 
     return { ok: true };
   } catch (err) {

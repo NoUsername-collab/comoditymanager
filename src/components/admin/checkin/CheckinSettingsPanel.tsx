@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { updateCheckinSettingsAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
@@ -130,18 +129,8 @@ function fisaAnafDraftToSettings(draft: FisaAnafDraft): Pick<
   };
 }
 
-function isFisaOnlyPartial(partial: Partial<CheckinSettings>): boolean {
-  return Object.keys(partial).every(
-    (key) =>
-      key === "fisa_property_address" ||
-      key === "fisa_owner_cui" ||
-      key === "fisa_tourism_license"
-  );
-}
-
 export function CheckinSettingsPanel({ settings: initial }: Props) {
   const t = useTranslations("admin.pages.settings.checkin");
-  const router = useRouter();
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
   const [fisaSaving, setFisaSaving] = useState(false);
@@ -184,9 +173,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         const result = await updateCheckinSettingsAction(fd);
         if (result.ok) {
           notifySuccess(t("saved"));
-          if (!isFisaOnlyPartial(partial)) {
-            router.refresh();
-          }
           return { ok: true };
         }
 
@@ -202,7 +188,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         return { ok: false, error: message };
       }
     },
-    [notifyError, notifySuccess, router, t]
+    [notifyError, notifySuccess, t]
   );
 
   const persist = useCallback(

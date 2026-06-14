@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { updateFiscalBillingSettingsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
@@ -96,7 +95,6 @@ export function FiscalBillingSettingsPanel({
 }: Props) {
   const t = useTranslations("admin.pages.settings.fiscal");
   const tCheckin = useTranslations("admin.pages.settings.checkin");
-  const router = useRouter();
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -230,7 +228,6 @@ export function FiscalBillingSettingsPanel({
         setDraft(buildDraft(updatedBooking, updatedCheckin, country));
         setEditing(false);
         notifySuccess(t("saved"));
-        router.refresh();
       } catch (e) {
         const message = e instanceof Error ? e.message : t("saveError");
         setSaveError(message);
