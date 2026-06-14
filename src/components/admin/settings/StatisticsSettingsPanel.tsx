@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
 import { updateStatisticsVisibilityAction } from "@/app/[locale]/admin/(panel)/settings/actions";
 import type { StatisticsVisibility } from "@/domain/settings/statistics-visibility";
 import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
@@ -20,20 +20,22 @@ export function StatisticsSettingsPanel({
   canAccess,
 }: Props) {
   const t = useTranslations("admin.pages.settings.statistics");
-  const { showToast } = useAdminFx();
+  const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [visibility, setVisibility] = useState(initialVisibility);
   const [pending, startTransition] = useTransition();
 
   function save(next: StatisticsVisibility) {
+    if (next === visibility) return;
+
     setVisibility(next);
     startTransition(async () => {
       const fd = new FormData();
       fd.set("statistics_visibility", next);
       const res = await updateStatisticsVisibilityAction(fd);
       if (res.ok) {
-        showToast({ kind: "success", title: t("saved") });
+        notifySuccess(t("saved"));
       } else {
-        showToast({ kind: "error", title: res.error ?? t("saveError") });
+        notifyError(res.error ?? t("saveError"));
         setVisibility(initialVisibility);
       }
     });

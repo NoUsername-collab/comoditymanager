@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
@@ -561,9 +561,16 @@ export async function updateCheckinSettingsAction(
       "fisa_owner_cui",
       "fisa_tourism_license",
     ];
+    const nullableTextFields = new Set([
+      "fisa_property_address",
+      "fisa_owner_cui",
+      "fisa_tourism_license",
+    ]);
     for (const f of fields) {
       const v = formData.get(f);
-      if (v != null) input[f] = String(v);
+      if (v == null) continue;
+      const text = String(v).trim();
+      input[f] = nullableTextFields.has(f) ? text || null : text;
     }
 
     const intFields = ["checkin_min_payment_pct"];
@@ -617,6 +624,7 @@ export async function updateCheckinSettingsAction(
       "max",
     );
     revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidatePath("/admin/settings");
 
     return { ok: true };
   } catch (err) {
@@ -624,6 +632,10 @@ export async function updateCheckinSettingsAction(
     if (isCheckinMigrationMissing(msg)) {
       const t = await getTranslations("admin.checkIn");
       return { ok: false, error: t("migrationRequired") };
+    }
+    if (msg === "settings.pension_settings_missing") {
+      const t = await getTranslations("admin.pages.settings.checkin");
+      return { ok: false, error: t("saveMissingRow") };
     }
     return { ok: false, error: msg };
   }

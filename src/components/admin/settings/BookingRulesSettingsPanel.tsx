@@ -3,7 +3,10 @@
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { updateBookingRulesSettingsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
-import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import {
+  settingsPartialChanged,
+  useSettingsSaveFeedback,
+} from "@/hooks/useSettingsSaveFeedback";
 import {
   buildCancellationPolicyText,
   type BookingRulesSettings,
@@ -45,7 +48,7 @@ function SettingRow({
 
 export function BookingRulesSettingsPanel({ settings: initial, locale }: Props) {
   const t = useTranslations("admin.pages.settings.booking");
-  const { showToast } = useAdminFx();
+  const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [pending, startTransition] = useTransition();
   const [settings, setSettings] = useState(initial);
 
@@ -55,6 +58,8 @@ export function BookingRulesSettingsPanel({ settings: initial, locale }: Props) 
   );
 
   function save(partial: Partial<BookingRulesSettings>) {
+    if (!settingsPartialChanged(settings, partial)) return;
+
     const updated = { ...settings, ...partial };
     setSettings(updated);
     startTransition(async () => {
@@ -95,9 +100,9 @@ export function BookingRulesSettingsPanel({ settings: initial, locale }: Props) 
 
       const result = await updateBookingRulesSettingsAction(fd);
       if (result.ok) {
-        showToast({ kind: "success", title: t("saved") });
+        notifySuccess(t("saved"));
       } else {
-        showToast({ kind: "error", title: result.error ?? t("saveError") });
+        notifyError(result.error ?? t("saveError"));
       }
     });
   }

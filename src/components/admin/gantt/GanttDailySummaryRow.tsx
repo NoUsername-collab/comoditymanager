@@ -6,6 +6,7 @@ import {
 } from "@/domain/gantt/daily-free-counts";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { useTranslations } from "next-intl";
+import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import {
   ganttDayGridStyle,
   type GanttDayGridOptions,
@@ -35,7 +36,10 @@ export function GanttDailySummaryRow({
   dayGridOptions?: GanttDayGridOptions;
 }) {
   const tCommon = useTranslations("admin.common");
+  const { compactChrome } = useCompactLayoutHints();
   const dayCount = viewRange.days.length;
+  const summaryCellPy =
+    compactChrome ? "py-0" : compact ? "py-[0.25rem]" : "py-[0.36rem]";
 
   return (
     <tr className="gantt-summary-row border-b border-zinc-200">
@@ -84,7 +88,8 @@ export function GanttDailySummaryRow({
                 onClick={() => onDayClick(col.iso)}
                 className={[
                   "gantt-summary-cell min-w-0 border-r border-zinc-100/80 transition",
-                  compact ? "gantt-summary-cell--compact py-[0.25rem]" : "py-[0.36rem]",
+                  compact ? "gantt-summary-cell--compact" : "",
+                  summaryCellPy,
                   col.isWeekend && "gantt-summary-cell--weekend",
                   col.isToday && "gantt-summary-cell--today",
                   `gantt-summary-cell--${heat}`,

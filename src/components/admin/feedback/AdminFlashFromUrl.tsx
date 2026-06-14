@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation"
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -13,16 +13,23 @@ function AdminFlashFromUrlInner() {
   const pathname = usePathname();
   const router = useRouter();
   const { celebrateConfirm, notifyCancel, notifyMoved, showToast } = useAdminFx();
+  const handledFlashKeyRef = useRef<string | null>(null);
+
+  const confirmed = searchParams.get("confirmed");
+  const toast = searchParams.get("toast");
+  const saved = searchParams.get("saved");
+  const flashQuery = searchParams.toString();
 
   useEffect(() => {
-    const confirmed = searchParams.get("confirmed");
-    const toast = searchParams.get("toast");
-    const saved = searchParams.get("saved");
-
     if (!confirmed && !toast && saved !== "1") return;
 
-    const flashKey = `ce-flash:${pathname}?${searchParams.toString()}`;
-    if (sessionStorage.getItem(flashKey)) return;
+    const flashKey = `ce-flash:${pathname}?${flashQuery}`;
+    if (handledFlashKeyRef.current === flashKey) return;
+    if (sessionStorage.getItem(flashKey)) {
+      handledFlashKeyRef.current = flashKey;
+      return;
+    }
+    handledFlashKeyRef.current = flashKey;
     sessionStorage.setItem(flashKey, "1");
 
     if (confirmed === "1") {
@@ -51,14 +58,14 @@ function AdminFlashFromUrlInner() {
       });
     }
 
-    const next = new URLSearchParams(searchParams.toString());
+    const next = new URLSearchParams(flashQuery);
     next.delete("confirmed");
     next.delete("toast");
     if (pathname.startsWith("/admin/settings")) next.delete("saved");
     const q = next.toString();
     router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- toast fns + t* are stable enough; avoid re-firing on every intl render
-  }, [searchParams, pathname, router]);
+  }, [confirmed, toast, saved, flashQuery, pathname, router]);
 
   return null;
 }

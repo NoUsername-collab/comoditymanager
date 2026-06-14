@@ -76,7 +76,7 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   onToggleCollapsed: (buildingId: string) => void;
 }) {
   return (
-    <tr className="gantt-building-header-row border-t border-zinc-200">
+    <tr className="gantt-building-header-row">
       <td
         colSpan={2}
         className={[

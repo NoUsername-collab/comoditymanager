@@ -757,6 +757,39 @@
   color: var(--admin-text-muted);
 }
 
+.checkin-setting-row--stack {
+  align-items: start;
+}
+
+.checkin-setting-row__right--wide {
+  width: min(100%, 28rem);
+}
+
+.checkin-fisa-address {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.checkin-fisa-address__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.checkin-fisa-address__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+}
+
+.checkin-fisa-address__label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--admin-text-muted);
+}
+
 /* ── Fișă turist — formular oficial diegetic (OPANAF) ─────── */
 
 .tourist-sheet-root {
@@ -1178,6 +1211,10 @@
 
 @media (max-width: 640px) {
   .checkin-identity-scope__options {
+    grid-template-columns: 1fr;
+  }
+
+  .checkin-fisa-address__row {
     grid-template-columns: 1fr;
   }
 }

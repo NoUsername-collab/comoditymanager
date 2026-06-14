@@ -3478,8 +3478,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-azi-above {
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row > td {
-  padding-top: 0.2rem !important;
-  padding-bottom: 0.2rem !important;
+  padding: 0 !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label {
@@ -4033,6 +4032,25 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell--premium,
 html[data-layout-chrome="compact"] .gantt-viewport-header--calendar {
   --gantt-day-header-row-h: 0.87rem;
+  --gantt-summary-row-h: 0.38rem;
+}
+
+/* Desktop calendar — summary flush to first building row (no dead band) */
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-thead-sticky .gantt-summary-row {
+  line-height: 1;
+  box-shadow: none !important;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row > td {
+  vertical-align: middle;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row:first-of-type {
+  border-top: none !important;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row:first-of-type > td.gantt-building-header {
+  padding-top: 0.25rem !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

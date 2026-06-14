@@ -559,7 +559,9 @@ html[data-layout-chrome="compact"] .gantt-cereri-card__main {
 /* ── Row heights: 20 camere vizibile fără scroll (calc din viewport) ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page {
   --gantt-visible-room-rows: 20;
-  --gantt-thead-stack-h: var(--gantt-day-header-row-h, 1.02rem);
+  --gantt-thead-stack-h: calc(
+    var(--gantt-day-header-row-h, 0.87rem) + var(--gantt-summary-row-h, 0.38rem)
+  );
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-calendar-page {
@@ -572,6 +574,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-ca
 
 html[data-layout-chrome="compact"] .gantt-shell--premium {
   --gantt-day-header-row-h: 0.87rem;
+  --gantt-summary-row-h: 0.38rem;
   --gantt-building-row-h: 10px;
   --gantt-header-separator: 0.5px;
   --gantt-unassigned-row-h: 11px;
@@ -646,17 +649,28 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-da
 
 /* FREE / disponibilitate — −60% vertical, lipit de date + grid */
 html[data-layout-chrome="compact"] .gantt-summary-row {
+  height: var(--gantt-summary-row-h, 0.38rem) !important;
+  max-height: var(--gantt-summary-row-h, 0.38rem) !important;
+  overflow: hidden !important;
+  line-height: 0 !important;
   border-bottom-width: var(--gantt-header-separator, 0.5px) !important;
   border-bottom-color: color-mix(in srgb, var(--border) 55%, transparent) !important;
 }
 
+html[data-layout-chrome="compact"] .gantt-thead-sticky .gantt-summary-row {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 html[data-layout-chrome="compact"] .gantt-thead-sticky .gantt-summary-row > td {
   padding: 0 !important;
-  height: var(--gantt-summary-row-h, 0.38rem);
-  max-height: var(--gantt-summary-row-h, 0.38rem);
+  height: var(--gantt-summary-row-h, 0.38rem) !important;
+  max-height: var(--gantt-summary-row-h, 0.38rem) !important;
+  overflow: hidden !important;
   border-top-width: var(--gantt-header-separator, 0.5px);
   border-top-color: color-mix(in srgb, var(--border) 55%, transparent);
   vertical-align: middle;
+  background-clip: border-box !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-summary-row__label {
@@ -750,8 +764,8 @@ html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header-row {
-  border-top-width: var(--gantt-header-separator, 0.5px) !important;
-  border-top-color: color-mix(in srgb, var(--border) 40%, transparent) !important;
+  margin-top: 0 !important;
+  border-top-width: 0 !important;
   border-bottom-width: var(--gantt-header-separator, 0.5px) !important;
   border-bottom-color: color-mix(in srgb, var(--border) 35%, transparent) !important;
 }
@@ -1468,10 +1482,19 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-header-cell__
   line-height: 1 !important;
 }
 
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row {
+  height: var(--gantt-summary-row-h, 0.38rem) !important;
+  max-height: var(--gantt-summary-row-h, 0.38rem) !important;
+  overflow: hidden !important;
+  line-height: 0 !important;
+}
+
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row > td {
   padding: 0 !important;
   height: var(--gantt-summary-row-h, 0.38rem) !important;
   max-height: var(--gantt-summary-row-h, 0.38rem) !important;
+  overflow: hidden !important;
+  background-clip: border-box !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label {
@@ -1590,7 +1613,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row {
-  border-top-width: var(--gantt-header-separator, 0.5px) !important;
+  margin-top: 0 !important;
+  border-top-width: 0 !important;
   border-bottom-width: var(--gantt-header-separator, 0.5px) !important;
   border-bottom-color: color-mix(in srgb, var(--border) 35%, transparent) !important;
 }

@@ -214,10 +214,20 @@ export async function updateCheckinSettings(
 
   if (Object.keys(update).length === 0) return;
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("pension_settings")
     .update(update)
-    .eq("tenant_id", tenantId);
+    .eq("tenant_id", tenantId)
+    .select("tenant_id")
+    .maybeSingle();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (isCheckinMigrationMissing(error.message)) {
+      throw new Error("checkin.migration_required");
+    }
+    throw new Error(error.message);
+  }
+  if (!data) {
+    throw new Error("settings.pension_settings_missing");
+  }
 }

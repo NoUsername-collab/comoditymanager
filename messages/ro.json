@@ -792,6 +792,8 @@
         "checkin": {
           "title": "Reguli Check-in",
           "saved": "Setare salvată",
+          "saveError": "Nu s-a putut salva setarea",
+          "saveMissingRow": "Setările pensiunii nu sunt configurate în baza de date.",
           "docRule": "Document identitate",
           "docRuleDesc": "Obligativitate document la check-in",
           "cnpRule": "CNP / cod personal",
@@ -828,6 +830,12 @@
           "fisaNote": "Date pentru Fișa de ocupare a capacității de cazare — OPANAF 381/2026.",
           "fisaAddress": "Adresa imobilului",
           "fisaAddressDesc": "Secțiunea I — adresa unde se află unitatea de cazare",
+          "fisaStreet": "Stradă și număr",
+          "fisaStreetPlaceholder": "ex. Str. Mihai Viteazu nr. 12",
+          "fisaLocality": "Localitate",
+          "fisaLocalityPlaceholder": "ex. Sinaia",
+          "fisaCounty": "Județ",
+          "fisaCountyPlaceholder": "ex. Prahova",
           "fisaCui": "CUI proprietar (opțional)",
           "fisaLicense": "Nr. autorizație turism",
           "fisaLicenseDesc": "Dacă ai autorizație de la autoritatea locală / DTITL"

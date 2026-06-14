@@ -792,6 +792,8 @@
         "checkin": {
           "title": "Check-in Rules",
           "saved": "Setting saved",
+          "saveError": "Could not save setting",
+          "saveMissingRow": "Property settings row is missing in the database.",
           "docRule": "ID document",
           "docRuleDesc": "Document requirement at check-in",
           "cnpRule": "CNP / personal ID",
@@ -828,6 +830,12 @@
           "fisaNote": "Data for the accommodation occupancy sheet — OPANAF 381/2026.",
           "fisaAddress": "Property address",
           "fisaAddressDesc": "Section I — address of the accommodation unit",
+          "fisaStreet": "Street and number",
+          "fisaStreetPlaceholder": "e.g. 12 Mihai Viteazu St",
+          "fisaLocality": "Locality",
+          "fisaLocalityPlaceholder": "e.g. Sinaia",
+          "fisaCounty": "County",
+          "fisaCountyPlaceholder": "e.g. Prahova",
           "fisaCui": "Owner tax ID (optional)",
           "fisaLicense": "Tourism licence no.",
           "fisaLicenseDesc": "If you have a local tourism authority licence"
