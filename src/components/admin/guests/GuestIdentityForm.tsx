@@ -315,11 +315,6 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
                   {idError ? (
                     <span className="guest-identity-form__error">{idError}</span>
                   ) : null}
-                  {idAutoFilled && birthDate ? (
-                    <span className="guest-identity-form__hint">
-                      {t("birthDateFromId", { date: birthDate })}
-                    </span>
-                  ) : null}
                 </label>
               ) : null}
               {showCiFields && (
@@ -433,11 +428,6 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
               {idError && (
                 <span className="guest-identity-form__error">{idError}</span>
               )}
-              {idAutoFilled && birthDate ? (
-                <span className="guest-identity-form__hint">
-                  {t("birthDateFromId", { date: birthDate })}
-                </span>
-              ) : null}
               <span className="guest-identity-form__hint">
                 {t("nationalIdHint", { type: idTypeLabel, digits: expectedLength })}
               </span>
@@ -464,17 +454,21 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
                 <option value="F">{t("sexF")}</option>
               </select>
             </label>
-            {!idAutoFilled ? (
-              <label className="guest-identity-form__field">
-                <span className="guest-identity-form__label">{t("birthDate")}</span>
-                <input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="guest-identity-form__input"
-                />
-              </label>
-            ) : null}
+            <label className="guest-identity-form__field">
+              <span className="guest-identity-form__label">
+                {t("birthDate")}
+                {idAutoFilled && birthDate ? (
+                  <span className="guest-identity-form__auto-tag">{t("fromId")}</span>
+                ) : null}
+              </span>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                readOnly={idAutoFilled && Boolean(birthDate)}
+                className="guest-identity-form__input"
+              />
+            </label>
             <label className="guest-identity-form__field">
               <span className="guest-identity-form__label">{t("birthPlace")}</span>
               <input

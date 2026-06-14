@@ -2758,6 +2758,7 @@
         "cnpInvalid": "CNP invalid — verifică cele 13 cifre",
         "cnpDerivedBirth": "Data nașterii din CNP: {date}",
         "birthDateFromId": "Data nașterii (din cod personal): {date}",
+        "birthDateFromIdShort": "din CNP",
         "representative": "Reprezentant",
         "documentSeries": "Serie document",
         "roomLabel": "Camera / spațiu",

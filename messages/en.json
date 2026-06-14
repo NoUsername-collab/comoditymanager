@@ -2759,6 +2759,7 @@
         "cnpInvalid": "Invalid CNP — check 13 digits",
         "cnpDerivedBirth": "Birth date from CNP: {date}",
         "birthDateFromId": "Birth date (from personal ID): {date}",
+        "birthDateFromIdShort": "from CNP",
         "representative": "Representative",
         "documentSeries": "Document series",
         "roomLabel": "Room / space",

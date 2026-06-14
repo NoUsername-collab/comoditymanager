@@ -2544,6 +2544,7 @@
         "documentNumber": "Номер на документ",
         "nationality": "Националност",
         "birthDate": "Дата на раждане",
+        "birthDateFromIdShort": "от ЕГН",
         "selectDoc": "— Избери —",
         "docCi": "Лична карта",
         "docPassport": "Паспорт",

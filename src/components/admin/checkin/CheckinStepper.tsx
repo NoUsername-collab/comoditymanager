@@ -859,7 +859,8 @@ function GuestIdentityCard({
     ? validateNationalId(idType, cleanNationalId(guest.national_id))
     : null;
   const birthFromNationalId = extractIdentityFromNationalId(idType, guest.national_id);
-  const showManualBirthDate = !birthFromNationalId?.birthDate;
+  const birthDateFromId = birthFromNationalId?.birthDate ?? null;
+  const birthDateLocked = Boolean(birthDateFromId && guest.birth_date === birthDateFromId);
   const idTypeLabel = tIdentity(`nationalIdTypes.${idType}`);
   const roomLocked = identityScope === "rep" || identityScope === "per_room";
   const showPresentToggle =
@@ -1002,17 +1003,24 @@ function GuestIdentityCard({
               />
             </label>
 
-            {showManualBirthDate ? (
-              <label className="checkin-field">
-                <span className="checkin-field__label">{t("field.birthDate")}</span>
-                <input
-                  type="date"
-                  className="checkin-field__input"
-                  value={guest.birth_date ?? ""}
-                  onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
-                />
-              </label>
-            ) : null}
+            <label className="checkin-field">
+              <span className="checkin-field__label">
+                {t("field.birthDate")}
+                {birthDateLocked ? (
+                  <span className="checkin-field__hint-inline">
+                    {" "}
+                    ({t("field.birthDateFromIdShort")})
+                  </span>
+                ) : null}
+              </span>
+              <input
+                type="date"
+                className="checkin-field__input"
+                value={guest.birth_date ?? birthDateFromId ?? ""}
+                readOnly={birthDateLocked}
+                onChange={(e) => updateGuest(idx, "birth_date", e.target.value)}
+              />
+            </label>
 
             <label className="checkin-field">
               <span className="checkin-field__label">{t("field.phone")}</span>
@@ -1090,11 +1098,6 @@ function GuestIdentityCard({
                 {idState && !idState.valid && guest.national_id?.trim() ? (
                   <span className="checkin-field__error">
                     {tIdentity("nationalIdInvalid", { type: "CNP" })}
-                  </span>
-                ) : null}
-                {idState?.valid && idState.data?.birthDate ? (
-                  <span className="checkin-field__hint">
-                    {t("field.birthDateFromId", { date: idState.data.birthDate })}
                   </span>
                 ) : null}
               </label>

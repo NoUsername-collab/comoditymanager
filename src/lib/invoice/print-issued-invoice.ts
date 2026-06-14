@@ -1,4 +1,4 @@
-/** Self-contained styles for the isolated invoice print window. */
+/** Self-contained styles for the isolated invoice print document. */
 const ISSUED_INVOICE_PRINT_CSS = `
   @page { size: A4 portrait; margin: 12mm; }
   * { box-sizing: border-box; }
@@ -135,45 +135,93 @@ function escapeHtml(value: string): string {
     .replaceAll('"', "&quot;");
 }
 
-/**
- * Opens a minimal document with only the invoice sheet so the browser print
- * preview is not blocked by admin shell overflow / content-visibility rules.
- * Falls back to window.print() when popups are blocked.
- */
-export function printIssuedInvoiceSheet(
-  sheet: HTMLElement,
-  title: string
-): void {
-  const printWindow = window.open("", "_blank", "noopener,noreferrer");
-  if (!printWindow) {
-    window.print();
-    return;
-  }
-
-  const html = `<!DOCTYPE html>
+function buildPrintHtml(sheetHtml: string, title: string): string {
+  return `<!DOCTYPE html>
 <html lang="ro">
   <head>
     <meta charset="utf-8" />
     <title>${escapeHtml(title)}</title>
     <style>${ISSUED_INVOICE_PRINT_CSS}</style>
   </head>
-  <body>${sheet.outerHTML}</body>
+  <body>${sheetHtml}</body>
 </html>`;
+}
 
-  printWindow.document.open();
-  printWindow.document.write(html);
-  printWindow.document.close();
-
-  const runPrint = () => {
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+function printInCurrentWindow(sheet: HTMLElement): void {
+  document.documentElement.classList.add("invoice-print-mode");
+  const cleanup = () => {
+    document.documentElement.classList.remove("invoice-print-mode");
   };
+  window.addEventListener("afterprint", cleanup, { once: true });
+  window.setTimeout(cleanup, 60_000);
+  void sheet.offsetHeight;
+  window.print();
+}
 
-  if (printWindow.document.readyState === "complete") {
-    runPrint();
+/**
+ * Prints only the invoice sheet via a hidden iframe (no popup tab).
+ * Avoids admin shell overflow issues and noopener blank-tab bugs in Chrome.
+ */
+export function printIssuedInvoiceSheet(
+  sheet: HTMLElement,
+  title: string
+): void {
+  const html = buildPrintHtml(sheet.outerHTML, title);
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.setAttribute("title", title);
+  Object.assign(iframe.style, {
+    position: "fixed",
+    right: "0",
+    bottom: "0",
+    width: "0",
+    height: "0",
+    border: "0",
+    visibility: "hidden",
+  });
+
+  document.body.appendChild(iframe);
+
+  const win = iframe.contentWindow;
+  const doc = win?.document;
+  if (!win || !doc) {
+    iframe.remove();
+    printInCurrentWindow(sheet);
     return;
   }
 
-  printWindow.onload = runPrint;
+  doc.open();
+  doc.write(html);
+  doc.close();
+
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
+    iframe.remove();
+  };
+
+  win.addEventListener("afterprint", cleanup, { once: true });
+  window.setTimeout(cleanup, 60_000);
+
+  const triggerPrint = () => {
+    try {
+      win.focus();
+      win.print();
+    } catch {
+      cleanup();
+      printInCurrentWindow(sheet);
+    }
+  };
+
+  if (doc.readyState === "complete") {
+    requestAnimationFrame(() => requestAnimationFrame(triggerPrint));
+    return;
+  }
+
+  iframe.addEventListener(
+    "load",
+    () => requestAnimationFrame(() => requestAnimationFrame(triggerPrint)),
+    { once: true },
+  );
 }
