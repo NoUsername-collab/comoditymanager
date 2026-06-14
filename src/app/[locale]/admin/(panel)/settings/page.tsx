@@ -21,11 +21,17 @@ import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHead
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsOverview } from "@/components/admin/settings/SettingsOverview";
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
-import { getTenantContext } from "@/core/tenant/context";
+import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
 import { BookingRulesSettingsPanel } from "@/components/admin/settings/BookingRulesSettingsPanel";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import { resolveRequestTenant } from "@/lib/tenant/active";
 import { getLocale } from "next-intl/server";
 import { updateAppearanceSettingsAction } from "./actions";
+
+function resolveTenantCountry(country: string | null | undefined): TenantCountry {
+  if (country === "BG" || country === "MD") return country;
+  return "RO";
+}
 
 export default async function SettingsPage({
   searchParams,
@@ -69,7 +75,6 @@ export default async function SettingsPage({
 
   const statisticsVisibility = pensionStatisticsVisibility(settings);
   const statisticsAccess = canAccessStatistics(memberRole, statisticsVisibility);
-  const tenantCountry = getTenantContext().tenant.country;
 
   const appearance = settings ? pensionAppearanceSettings(settings) : null;
   const inlineSections = new Set([
@@ -84,6 +89,14 @@ export default async function SettingsPage({
   const section = inlineSections.has(params.section ?? "overview")
     ? (params.section ?? "overview")
     : "overview";
+
+  const showBookingSection =
+    section === "booking" &&
+    (isOwner || memberRole === "admin") &&
+    bookingRules != null;
+  const tenantCountry = showBookingSection
+    ? resolveTenantCountry((await resolveRequestTenant())?.country)
+    : "RO";
 
   const alerts: SettingsAlert[] = [
     params.saved === "1" ? { tone: "success", message: t("saved") } : null,
@@ -198,7 +211,7 @@ export default async function SettingsPage({
         </>
       ) : null}
 
-      {section === "booking" && (isOwner || memberRole === "admin") && bookingRules ? (
+      {showBookingSection ? (
         <>
           <SettingsPageHeader
             title={t("navBooking")}
