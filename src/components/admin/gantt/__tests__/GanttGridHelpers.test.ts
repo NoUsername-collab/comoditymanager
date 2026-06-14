@@ -68,17 +68,7 @@ describe("resolveGanttDayGridOptions", () => {
 });
 
 describe("resolveGanttTableLayout", () => {
-  it("uses exact table width when columns are fixed", () => {
-    const metrics = { roomCol: ROOM_COL_W, dayMin: DAY_COL_MIN_W };
-    expect(resolveGanttTableLayout(30, metrics, { dayMin: DAY_COL_MIN_W, fixed: true })).toEqual({
-      roomCol: ROOM_COL_W,
-      daysCol: `calc(30 * ${DAY_COL_MIN_W})`,
-      tableWidth: `calc(${ROOM_COL_W} + calc(30 * ${DAY_COL_MIN_W}))`,
-      tableMinWidth: `calc(${ROOM_COL_W} + calc(30 * ${DAY_COL_MIN_W}))`,
-    });
-  });
-
-  it("fills viewport when columns stretch", () => {
+  it("always fills viewport width with scroll min when needed", () => {
     const metrics = { roomCol: ROOM_COL_W, dayMin: DAY_COL_MIN_W };
     expect(resolveGanttTableLayout(30, metrics)).toEqual({
       roomCol: ROOM_COL_W,
@@ -92,7 +82,7 @@ describe("resolveGanttTableLayout", () => {
 describe("ganttDayGridStyle", () => {
   it("uses fixed columns when fixed", () => {
     expect(ganttDayGridStyle(30, { dayMin: DAY_COL_MIN_W, fixed: true })).toEqual({
-      gridTemplateColumns: `repeat(30, ${DAY_COL_MIN_W})`,
+      gridTemplateColumns: `repeat(30, minmax(${DAY_COL_MIN_W}, 1fr))`,
     });
   });
 

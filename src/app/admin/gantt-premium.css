@@ -4262,11 +4262,16 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable {
   --gantt-unassigned-row-h: 37px;
 }
 
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-scroll,
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-shell {
+  width: 100%;
+}
+
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-day-grid--fixed,
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-day-header-grid.gantt-day-grid--fixed,
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-summary-row__grid.gantt-day-grid--fixed {
   width: 100%;
-  min-width: max-content;
+  min-width: 0;
 }
 
 /* Desktop calendar — lock row height; keep horizontal grid intact */

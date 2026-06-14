@@ -133,7 +133,7 @@ export function ganttDayGridStyle(
 ): CSSProperties {
   if (options?.fixed && options.dayMin) {
     return {
-      gridTemplateColumns: `repeat(${dayCount}, ${options.dayMin})`,
+      gridTemplateColumns: `repeat(${dayCount}, minmax(${options.dayMin}, 1fr))`,
     };
   }
   if (options?.dayMin) {
@@ -158,22 +158,12 @@ export type GanttTableLayout = {
   tableMinWidth: string;
 };
 
-/** Keep header, FREE row and room rows on the same scroll width. */
+/** Table always fills viewport; scroll only when timeline min width exceeds screen. */
 export function resolveGanttTableLayout(
   dayCount: number,
-  metrics: GanttColumnMetrics,
-  dayGridOptions?: GanttDayGridOptions
+  metrics: GanttColumnMetrics
 ): GanttTableLayout {
   const timeline = ganttTimelineWidth(dayCount, metrics.dayMin);
-  if (dayGridOptions?.fixed) {
-    const tableWidth = `calc(${metrics.roomCol} + ${timeline})`;
-    return {
-      roomCol: metrics.roomCol,
-      daysCol: timeline,
-      tableWidth,
-      tableMinWidth: tableWidth,
-    };
-  }
   return {
     roomCol: metrics.roomCol,
     daysCol: "auto",

@@ -177,13 +177,8 @@ export function GanttCalendar({
     [compactChrome, density, isPortrait, columnMetrics.dayMin, viewRange.days.length]
   );
   const tableLayout = useMemo(
-    () =>
-      resolveGanttTableLayout(
-        viewRange.days.length,
-        columnMetrics,
-        dayGridOptions
-      ),
-    [viewRange.days.length, columnMetrics, dayGridOptions]
+    () => resolveGanttTableLayout(viewRange.days.length, columnMetrics),
+    [viewRange.days.length, columnMetrics]
   );
   const dayIsos = useMemo(() => viewRange.days.map((d) => d.iso), [viewRange.days]);
 
@@ -677,12 +672,7 @@ export function GanttCalendar({
 
         {/* ── Table ──────────────────────────────────────────────── */}
         <table
-          className={[
-            "table-fixed border-separate border-spacing-0 text-xs",
-            !dayGridOptions?.fixed && "w-full min-w-full",
-          ]
-            .filter(Boolean)
-            .join(" ")}
+          className="w-full min-w-full table-fixed border-separate border-spacing-0 text-xs"
           style={{
             width: tableLayout.tableWidth,
             minWidth: tableLayout.tableMinWidth,
@@ -690,7 +680,7 @@ export function GanttCalendar({
         >
           <colgroup>
             <col style={{ width: tableLayout.roomCol }} />
-            <col style={dayGridOptions?.fixed ? { width: tableLayout.daysCol } : undefined} />
+            <col />
           </colgroup>
           <thead ref={theadRef} className="gantt-thead-sticky">
             <tr className="gantt-head-main-row">
