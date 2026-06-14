@@ -838,7 +838,10 @@
           "fisaCountyPlaceholder": "ex. Prahova",
           "fisaCui": "CUI proprietar (opțional)",
           "fisaLicense": "Nr. autorizație turism",
-          "fisaLicenseDesc": "Dacă ai autorizație de la autoritatea locală / DTITL"
+          "fisaLicenseDesc": "Dacă ai autorizație de la autoritatea locală / DTITL",
+          "fisaSave": "Salvează date ANAF",
+          "fisaSaving": "Se salvează…",
+          "fisaSaveHint": "Completează adresa, CUI și autorizația, apoi apasă Salvează. Datele se folosesc la fișa turist și facturare."
         },
         "booking": {
           "saved": "Setări salvate",

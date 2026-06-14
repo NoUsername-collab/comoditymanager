@@ -838,7 +838,10 @@
           "fisaCountyPlaceholder": "e.g. Prahova",
           "fisaCui": "Owner tax ID (optional)",
           "fisaLicense": "Tourism licence no.",
-          "fisaLicenseDesc": "If you have a local tourism authority licence"
+          "fisaLicenseDesc": "If you have a local tourism authority licence",
+          "fisaSave": "Save ANAF details",
+          "fisaSaving": "Saving…",
+          "fisaSaveHint": "Fill in address, tax ID and licence, then click Save. Used for tourist sheet and invoicing."
         },
         "booking": {
           "saved": "Settings saved",

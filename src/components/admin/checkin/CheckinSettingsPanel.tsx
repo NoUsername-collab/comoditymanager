@@ -52,44 +52,16 @@ function appendFormValue(fd: FormData, key: string, value: unknown) {
 }
 
 function FisaPropertyAddressFields({
-  value,
-  onCommit,
+  parts,
+  onPartsChange,
 }: {
-  value: string | null;
-  onCommit: (address: string | null) => void;
+  parts: FisaPropertyAddressParts;
+  onPartsChange: (parts: FisaPropertyAddressParts) => void;
 }) {
   const t = useTranslations("admin.pages.settings.checkin");
-  const initial = useMemo(() => parseFisaPropertyAddress(value), [value]);
-  const [parts, setParts] = useState<FisaPropertyAddressParts>(initial);
-  const debounceRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    setParts(parseFisaPropertyAddress(value));
-  }, [value]);
-
-  useEffect(
-    () => () => {
-      if (debounceRef.current != null) {
-        window.clearTimeout(debounceRef.current);
-      }
-    },
-    []
-  );
-
-  function scheduleCommit(next: FisaPropertyAddressParts) {
-    if (debounceRef.current != null) {
-      window.clearTimeout(debounceRef.current);
-    }
-    debounceRef.current = window.setTimeout(() => {
-      debounceRef.current = null;
-      onCommit(formatFisaPropertyAddress(next));
-    }, 450);
-  }
 
   function updatePart(key: keyof FisaPropertyAddressParts, raw: string) {
-    const next = { ...parts, [key]: raw };
-    setParts(next);
-    scheduleCommit(next);
+    onPartsChange({ ...parts, [key]: raw });
   }
 
   return (
@@ -133,53 +105,111 @@ function FisaPropertyAddressFields({
   );
 }
 
+type FisaAnafDraft = {
+  addressParts: FisaPropertyAddressParts;
+  cui: string;
+  license: string;
+};
+
+function buildFisaAnafDraft(settings: CheckinSettings): FisaAnafDraft {
+  return {
+    addressParts: parseFisaPropertyAddress(settings.fisa_property_address),
+    cui: settings.fisa_owner_cui ?? "",
+    license: settings.fisa_tourism_license ?? "",
+  };
+}
+
+function fisaAnafDraftToSettings(draft: FisaAnafDraft): Pick<
+  CheckinSettings,
+  "fisa_property_address" | "fisa_owner_cui" | "fisa_tourism_license"
+> {
+  return {
+    fisa_property_address: formatFisaPropertyAddress(draft.addressParts),
+    fisa_owner_cui: draft.cui.trim() || null,
+    fisa_tourism_license: draft.license.trim() || null,
+  };
+}
+
 export function CheckinSettingsPanel({ settings: initial }: Props) {
   const t = useTranslations("admin.pages.settings.checkin");
   const router = useRouter();
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [pending, startTransition] = useTransition();
+  const [fisaPending, startFisaTransition] = useTransition();
   const [settings, setSettings] = useState<CheckinSettings>(initial);
+  const [fisaDraft, setFisaDraft] = useState<FisaAnafDraft>(() =>
+    buildFisaAnafDraft(initial)
+  );
+  const [fisaSaveError, setFisaSaveError] = useState<string | null>(null);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
   useEffect(() => {
     setSettings(initial);
     settingsRef.current = initial;
+    setFisaDraft(buildFisaAnafDraft(initial));
+    setFisaSaveError(null);
   }, [initial]);
 
-  const persist = useCallback(
-    (partial: Partial<CheckinSettings>) => {
+  const savePartial = useCallback(
+    async (
+      partial: Partial<CheckinSettings>
+    ): Promise<{ ok: boolean; error?: string }> => {
       const current = settingsRef.current;
-      if (!settingsPartialChanged(current, partial)) return;
+      if (!settingsPartialChanged(current, partial)) {
+        return { ok: true };
+      }
 
       const updated = { ...current, ...partial };
       settingsRef.current = updated;
       setSettings(updated);
 
-      startTransition(async () => {
-        const fd = new FormData();
-        for (const [key, value] of Object.entries(partial)) {
-          appendFormValue(fd, key, value);
-        }
-        const result = await updateCheckinSettingsAction(fd);
-        if (result.ok) {
-          notifySuccess(t("saved"));
-          router.refresh();
-          return;
-        }
-        notifyError(t("saveError"), result.error ?? "");
-        setSettings(current);
-        settingsRef.current = current;
-      });
+      const fd = new FormData();
+      for (const [key, value] of Object.entries(partial)) {
+        appendFormValue(fd, key, value);
+      }
+      const result = await updateCheckinSettingsAction(fd);
+      if (result.ok) {
+        notifySuccess(t("saved"));
+        router.refresh();
+        return { ok: true };
+      }
+
+      notifyError(t("saveError"), result.error ?? "");
+      setSettings(current);
+      settingsRef.current = current;
+      return { ok: false, error: result.error ?? t("saveError") };
     },
     [notifyError, notifySuccess, router, t]
   );
 
-  function commitTextField(
-    key: "fisa_owner_cui" | "fisa_tourism_license",
-    raw: string
-  ) {
-    persist({ [key]: raw.trim() || null });
+  const persist = useCallback(
+    (partial: Partial<CheckinSettings>) => {
+      startTransition(async () => {
+        await savePartial(partial);
+      });
+    },
+    [savePartial]
+  );
+
+  const fisaDirty = useMemo(() => {
+    const saved = fisaAnafDraftToSettings(buildFisaAnafDraft(settings));
+    const draft = fisaAnafDraftToSettings(fisaDraft);
+    return (
+      saved.fisa_property_address !== draft.fisa_property_address ||
+      saved.fisa_owner_cui !== draft.fisa_owner_cui ||
+      saved.fisa_tourism_license !== draft.fisa_tourism_license
+    );
+  }, [fisaDraft, settings]);
+
+  function saveFisaAnaf() {
+    setFisaSaveError(null);
+    startFisaTransition(async () => {
+      const result = await savePartial(fisaAnafDraftToSettings(fisaDraft));
+      if (!result.ok) {
+        setFisaSaveError(result.error ?? t("saveError"));
+      }
+    });
   }
 
   return (
@@ -362,8 +392,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         </div>
         <div className="checkin-setting-row__right checkin-setting-row__right--wide">
           <FisaPropertyAddressFields
-            value={settings.fisa_property_address}
-            onCommit={(address) => persist({ fisa_property_address: address })}
+            parts={fisaDraft.addressParts}
+            onPartsChange={(addressParts) =>
+              setFisaDraft((current) => ({ ...current, addressParts }))
+            }
           />
         </div>
       </div>
@@ -372,17 +404,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         <input
           type="text"
           className="checkin-field__input"
-          value={settings.fisa_owner_cui ?? ""}
-          onChange={(e) => {
-            const next = e.target.value;
-            const updated = {
-              ...settingsRef.current,
-              fisa_owner_cui: next || null,
-            };
-            settingsRef.current = updated;
-            setSettings(updated);
-          }}
-          onBlur={(e) => commitTextField("fisa_owner_cui", e.target.value)}
+          value={fisaDraft.cui}
+          onChange={(e) =>
+            setFisaDraft((current) => ({ ...current, cui: e.target.value }))
+          }
         />
       </SettingRow>
 
@@ -390,19 +415,29 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         <input
           type="text"
           className="checkin-field__input"
-          value={settings.fisa_tourism_license ?? ""}
-          onChange={(e) => {
-            const next = e.target.value;
-            const updated = {
-              ...settingsRef.current,
-              fisa_tourism_license: next || null,
-            };
-            settingsRef.current = updated;
-            setSettings(updated);
-          }}
-          onBlur={(e) => commitTextField("fisa_tourism_license", e.target.value)}
+          value={fisaDraft.license}
+          onChange={(e) =>
+            setFisaDraft((current) => ({ ...current, license: e.target.value }))
+          }
         />
       </SettingRow>
+
+      <div className="checkin-fisa-save">
+        <p className="checkin-fisa-save__hint">{t("fisaSaveHint")}</p>
+        {fisaSaveError ? (
+          <p className="checkin-fisa-save__error" role="alert">
+            {fisaSaveError}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          className="checkin-fisa-save__btn"
+          disabled={!fisaDirty || fisaPending || pending}
+          onClick={saveFisaAnaf}
+        >
+          {fisaPending ? t("fisaSaving") : t("fisaSave")}
+        </button>
+      </div>
     </div>
   );
 }

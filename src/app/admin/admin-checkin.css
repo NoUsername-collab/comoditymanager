@@ -757,6 +757,46 @@
   color: var(--admin-text-muted);
 }
 
+.checkin-fisa-save {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--admin-border);
+}
+
+.checkin-fisa-save__hint {
+  margin: 0;
+  max-width: 32rem;
+  font-size: 0.68rem;
+  color: var(--admin-text-muted);
+}
+
+.checkin-fisa-save__error {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #b91c1c;
+}
+
+.checkin-fisa-save__btn {
+  min-height: 2.5rem;
+  padding: 0.45rem 1rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: var(--admin-accent, #18181b);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkin-fisa-save__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .checkin-setting-row--stack {
   align-items: start;
 }
