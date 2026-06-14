@@ -187,19 +187,21 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 /* ── Check-in stepper & buttons ── */
-/* Fișă turist — rămâne hârtie oficială chiar în night theme */
+/* Fișă turist — formular print alb-negru chiar în night theme */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet--official,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__paper,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__field-value,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__table th,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__table td {
-  color: #1a1a1a !important;
-  background: #f4f0e6 !important;
+  color: #111 !important;
+  background: #fff !important;
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__stamp {
-  color: #8b1e1e !important;
-  border-color: #8b1e1e !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__stamp,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .tourist-sheet__hospira-mark {
+  color: #111 !important;
+  border-color: #111 !important;
+  background: #f5f5f5 !important;
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-start-btn {

@@ -35,6 +35,9 @@ export type BookingRulesSettings = {
   invoiceSeries: string;
   invoiceNextNumber: number;
   invoiceSellerRegCom: string | null;
+  invoiceVatEnabled: boolean;
+  invoiceVatRate: number | null;
+  invoicePricesIncludeVat: boolean;
 };
 
 export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
@@ -48,6 +51,9 @@ export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
   invoiceSeries: "HSP",
   invoiceNextNumber: 1,
   invoiceSellerRegCom: null,
+  invoiceVatEnabled: true,
+  invoiceVatRate: null,
+  invoicePricesIncludeVat: true,
 };
 
 function parsePolicyType(raw: unknown): CancellationPolicyType {
@@ -157,6 +163,18 @@ export function parseBookingRulesRow(
       row.invoice_seller_reg_com != null
         ? String(row.invoice_seller_reg_com).trim() || null
         : null,
+    invoiceVatEnabled:
+      row.invoice_vat_enabled != null
+        ? Boolean(row.invoice_vat_enabled)
+        : DEFAULT_BOOKING_RULES.invoiceVatEnabled,
+    invoiceVatRate:
+      row.invoice_vat_rate != null && row.invoice_vat_rate !== ""
+        ? Math.min(100, Math.max(0, Number(row.invoice_vat_rate)))
+        : null,
+    invoicePricesIncludeVat:
+      row.invoice_prices_include_vat != null
+        ? Boolean(row.invoice_prices_include_vat)
+        : DEFAULT_BOOKING_RULES.invoicePricesIncludeVat,
   };
 }
 

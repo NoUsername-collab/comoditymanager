@@ -25,6 +25,7 @@ import {
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
 import { updateBookingRulesSettings } from "@/services/booking-rules-settings";
+import { updateCheckinSettings } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
@@ -361,6 +362,86 @@ export async function updateBookingRulesSettingsAction(
       e.message === "settings.booking_rules_migration_required"
     ) {
       return { ok: false, error: t("bookingRulesMigrationRequired") };
+    }
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
+}
+
+export async function updateFiscalBillingSettingsAction(
+  formData: FormData
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("admin.serverActions");
+  const { memberRole } = await requireStaff();
+  if (memberRole !== "owner" && memberRole !== "admin") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  const bookingPartial: Parameters<typeof updateBookingRulesSettings>[0] = {};
+  const checkinPartial: Parameters<typeof updateCheckinSettings>[0] = {};
+
+  if (formData.has("invoice_series")) {
+    bookingPartial.invoiceSeries = String(formData.get("invoice_series") ?? "HSP")
+      .trim()
+      .slice(0, 12);
+  }
+  if (formData.has("invoice_seller_reg_com")) {
+    const raw = String(formData.get("invoice_seller_reg_com") ?? "").trim();
+    bookingPartial.invoiceSellerRegCom = raw || null;
+  }
+  if (formData.has("invoice_vat_enabled")) {
+    bookingPartial.invoiceVatEnabled =
+      String(formData.get("invoice_vat_enabled")) === "true";
+  }
+  if (formData.has("invoice_vat_rate")) {
+    const raw = String(formData.get("invoice_vat_rate") ?? "").trim();
+    bookingPartial.invoiceVatRate = raw ? Number(raw) : null;
+  }
+  if (formData.has("invoice_prices_include_vat")) {
+    bookingPartial.invoicePricesIncludeVat =
+      String(formData.get("invoice_prices_include_vat")) === "true";
+  }
+
+  for (const key of [
+    "fisa_property_address",
+    "fisa_owner_cui",
+    "fisa_tourism_license",
+  ] as const) {
+    if (formData.has(key)) {
+      const raw = String(formData.get(key) ?? "").trim();
+      checkinPartial[key] = raw || null;
+    }
+  }
+
+  try {
+    if (Object.keys(bookingPartial).length > 0) {
+      await updateBookingRulesSettings(bookingPartial);
+    }
+    if (Object.keys(checkinPartial).length > 0) {
+      await updateCheckinSettings(checkinPartial);
+    }
+    await logAdminActivityFromSession({
+      action: "settings.updated",
+      entityType: "settings",
+      summary: "Setări fiscale / facturare actualizate",
+      metadata: { section: "fiscal" },
+    });
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidatePath("/admin/settings");
+    return { ok: true };
+  } catch (e) {
+    if (
+      e instanceof Error &&
+      (e.message === "settings.booking_rules_migration_required" ||
+        e.message === "checkin.migration_required")
+    ) {
+      return { ok: false, error: t("bookingRulesMigrationRequired") };
+    }
+    if (e instanceof Error && e.message === "settings.pension_settings_missing") {
+      const tFiscal = await getTranslations("admin.pages.settings.fiscal");
+      return { ok: false, error: tFiscal("saveMissingRow") };
     }
     return {
       ok: false,

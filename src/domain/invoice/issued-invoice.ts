@@ -1,5 +1,12 @@
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import {
+  computeVatBreakdown,
+  getCountryFiscalProfile,
+  resolveInvoiceVatRate,
+  type FiscalCurrency,
+  type TenantCountry,
+} from "@/domain/fiscal/country-fiscal-profile";
+import {
   computeRoomStayPricing,
   type RoomStayPricingLine,
 } from "@/domain/pricing/nightly-rates";
@@ -38,7 +45,12 @@ export type IssuedInvoiceDocument = {
   nights: number;
   lines: IssuedInvoiceLine[];
   subtotal: number;
+  subtotal_net: number;
+  vat_rate: number;
+  vat_amount: number;
   total: number;
+  currency: FiscalCurrency;
+  prices_include_vat: boolean;
   uses_recorded_total: boolean;
   legal_note: string;
 };
@@ -46,7 +58,21 @@ export type IssuedInvoiceDocument = {
 const LEGAL_NOTE_RO =
   "Document fiscal emis din Hospira. Nu înlocuiește integrarea e-Factura ANAF până la activarea modulului dedicat.";
 const LEGAL_NOTE_EN =
-  "Fiscal document issued from Hospira. Does not replace ANAF e-Factura integration until the dedicated module is enabled.";
+  "Fiscal document issued from Hospira. Does not replace official fiscal integration until enabled.";
+const LEGAL_NOTE_BG =
+  "Fiscal document issued from Hospira. Does not replace official fiscal integration for Bulgaria.";
+
+function buildLegalNote(locale: "ro" | "en" | "bg", country: TenantCountry): string {
+  if (locale === "en") return LEGAL_NOTE_EN;
+  if (locale === "bg") return LEGAL_NOTE_BG;
+  if (country === "MD") {
+    return "Document fiscal emis din Hospira. Nu înlocuiește integrarea cu SFS / casa de marcat.";
+  }
+  if (country === "BG") {
+    return "Document fiscal emis din Hospira. Nu înlocuiește integrarea NRA / e-facturare.";
+  }
+  return LEGAL_NOTE_RO;
+}
 
 function buildLineFromRoomPricing(
   room: {
@@ -101,6 +127,10 @@ export function buildIssuedInvoiceDocument(input: {
   }>;
   pricing_rules?: StayPricingRules | null;
   locale?: "ro" | "en" | "bg";
+  country?: TenantCountry;
+  vat_enabled?: boolean;
+  vat_rate?: number | null;
+  prices_include_vat?: boolean;
 }): IssuedInvoiceDocument {
   const lines = input.rooms.map((room) =>
     buildLineFromRoomPricing(
@@ -113,13 +143,22 @@ export function buildIssuedInvoiceDocument(input: {
       )
     )
   );
-  const subtotal =
+  const linesTotal =
     Math.round(lines.reduce((sum, line) => sum + line.line_total, 0) * 100) /
     100;
   const uses_recorded_total =
     input.total_price != null && input.total_price > 0;
-  const total = uses_recorded_total ? input.total_price! : subtotal;
+  const grossBase = uses_recorded_total ? input.total_price! : linesTotal;
   const locale = input.locale ?? "ro";
+  const country = input.country ?? "RO";
+  const profile = getCountryFiscalProfile(country);
+  const vatEnabled = input.vat_enabled ?? true;
+  const vatRate = resolveInvoiceVatRate(country, input.vat_rate);
+  const pricesIncludeVat = input.prices_include_vat ?? true;
+  const breakdown = computeVatBreakdown(grossBase, vatRate, {
+    enabled: vatEnabled,
+    pricesIncludeVat,
+  });
 
   return {
     series: input.series,
@@ -137,18 +176,43 @@ export function buildIssuedInvoiceDocument(input: {
     check_out: input.check_out,
     nights: stayNightCount(input.check_in, input.check_out),
     lines,
-    subtotal,
-    total,
+    subtotal: breakdown.gross,
+    subtotal_net: breakdown.net,
+    vat_rate: breakdown.rate,
+    vat_amount: breakdown.vat,
+    total: breakdown.gross,
+    currency: profile.currency,
+    prices_include_vat: pricesIncludeVat,
     uses_recorded_total,
-    legal_note: locale === "en" ? LEGAL_NOTE_EN : LEGAL_NOTE_RO,
+    legal_note: buildLegalNote(locale, country),
   };
 }
 
-export function formatInvoiceRon(amount: number, locale = "ro-RO"): string {
-  return new Intl.NumberFormat(locale, {
+export function formatInvoiceMoney(
+  amount: number,
+  currency: FiscalCurrency,
+  locale = "ro-RO"
+): string {
+  const tag =
+    currency === "BGN"
+      ? locale.startsWith("bg")
+        ? "bg-BG"
+        : "en-GB"
+      : currency === "MDL"
+        ? "ro-MD"
+        : locale.startsWith("en")
+          ? "en-GB"
+          : "ro-RO";
+
+  return new Intl.NumberFormat(tag, {
     style: "currency",
-    currency: "RON",
+    currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+/** @deprecated Use formatInvoiceMoney */
+export function formatInvoiceRon(amount: number, locale = "ro-RO"): string {
+  return formatInvoiceMoney(amount, "RON", locale);
 }

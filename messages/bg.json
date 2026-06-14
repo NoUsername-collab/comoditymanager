@@ -768,6 +768,30 @@
           "fisaLicense": "№ туристическо разрешение",
           "fisaLicenseDesc": "Ако имате разрешение от местната власт / DTITL"
         },
+        "fiscal": {
+          "title": "Данъци и фактуриране",
+          "subtitle": "Официални данни за държавата на имота — проверете и редактирайте при нужда.",
+          "edit": "Редактирай",
+          "save": "Запази",
+          "cancel": "Отказ",
+          "saved": "Фискалните настройки са запазени",
+          "saveError": "Не можа да се запази",
+          "saveMissingRow": "Липсва ред с настройки на имота в базата данни.",
+          "incompleteWarning": "Липсват задължителни данни за фактура (ДДС номер + адрес).",
+          "completeOk": "Минималните данни за фактура са попълнени.",
+          "propertyName": "Наименование",
+          "invoiceSeries": "Серия фактура",
+          "invoiceSeriesDesc": "напр. HSP, FAC",
+          "vatEnabled": "Прилагане на ДДС",
+          "vatRate": "ДДС за настаняване",
+          "vatRateDesc": "Официално по подразбиране: {default}% · валута {currency}",
+          "vatDisabled": "Без ДДС",
+          "pricesIncludeVat": "Цените включват ДДС",
+          "pricesIncludeVatDesc": "Ако да, сумите са бруто; ДДС се изважда.",
+          "yes": "Да",
+          "no": "Не",
+          "invoiceNextHint": "Следващият номер се задава при издаване."
+        },
         "locationTitle": "Location administration",
         "locationSubtitleUnlocked": "Unlocked for configuration",
         "locationSubtitleLocked": "Requires Admin password",
@@ -2418,7 +2442,9 @@
         "guestSignature": "Подпис гост",
         "receptionSignature": "Подпис рецепция",
         "savePdf": "Запази PDF (печат)",
-        "close": "Затвори"
+        "close": "Затвори",
+        "poweredBy": "Генерирано с {brand}",
+        "platformTag": "Евиденция настаняване"
       },
       "field": {
         "fullName": "Пълно име",

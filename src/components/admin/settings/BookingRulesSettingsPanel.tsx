@@ -14,9 +14,15 @@ import {
   type PricingSeason,
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
+import type { CheckinSettings } from "@/domain/checkin/types";
+import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
+import { FiscalBillingSettingsPanel } from "@/components/admin/settings/FiscalBillingSettingsPanel";
 
 type Props = {
   settings: BookingRulesSettings;
+  checkinSettings: CheckinSettings;
+  propertyName: string;
+  country: TenantCountry;
   locale: "ro" | "en" | "bg";
 };
 
@@ -46,7 +52,13 @@ function SettingRow({
   );
 }
 
-export function BookingRulesSettingsPanel({ settings: initial, locale }: Props) {
+export function BookingRulesSettingsPanel({
+  settings: initial,
+  checkinSettings,
+  propertyName,
+  country,
+  locale,
+}: Props) {
   const t = useTranslations("admin.pages.settings.booking");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [pending, startTransition] = useTransition();
@@ -332,29 +344,13 @@ export function BookingRulesSettingsPanel({ settings: initial, locale }: Props) 
         )}
       </div>
 
-      <h3 className="checkin-settings__title">{t("invoiceTitle")}</h3>
-      <p className="checkin-settings__note">{t("invoiceNote")}</p>
-
-      <SettingRow label={t("invoiceSeries")} description={t("invoiceSeriesDesc")}>
-        <input
-          className="checkin-field__input checkin-field__input--narrow"
-          value={settings.invoiceSeries}
-          maxLength={12}
-          onChange={(e) => save({ invoiceSeries: e.target.value.toUpperCase() })}
-        />
-      </SettingRow>
-
-      <SettingRow label={t("invoiceRegCom")} description={t("invoiceRegComDesc")}>
-        <input
-          className="checkin-field__input"
-          value={settings.invoiceSellerRegCom ?? ""}
-          onChange={(e) =>
-            save({ invoiceSellerRegCom: e.target.value.trim() || null })
-          }
-        />
-      </SettingRow>
-
-      <p className="checkin-settings__note">{t("invoiceSellerHint")}</p>
+      <FiscalBillingSettingsPanel
+        country={country}
+        propertyName={propertyName}
+        bookingRules={settings}
+        checkinSettings={checkinSettings}
+        locale={locale}
+      />
     </div>
   );
 }

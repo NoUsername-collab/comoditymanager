@@ -21,6 +21,7 @@ import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHead
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsOverview } from "@/components/admin/settings/SettingsOverview";
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
+import { getTenantContext } from "@/core/tenant/context";
 import { BookingRulesSettingsPanel } from "@/components/admin/settings/BookingRulesSettingsPanel";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
 import { getLocale } from "next-intl/server";
@@ -68,6 +69,7 @@ export default async function SettingsPage({
 
   const statisticsVisibility = pensionStatisticsVisibility(settings);
   const statisticsAccess = canAccessStatistics(memberRole, statisticsVisibility);
+  const tenantCountry = getTenantContext().tenant.country;
 
   const appearance = settings ? pensionAppearanceSettings(settings) : null;
   const inlineSections = new Set([
@@ -205,6 +207,9 @@ export default async function SettingsPage({
           <SettingsSection title={t("bookingTitle")} description={t("bookingSubtitle")}>
             <BookingRulesSettingsPanel
               settings={bookingRules}
+              checkinSettings={checkinSettings}
+              propertyName={settings.display_name}
+              country={tenantCountry}
               locale={locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"}
             />
           </SettingsSection>

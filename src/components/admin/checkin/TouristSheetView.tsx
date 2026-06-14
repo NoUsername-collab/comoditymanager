@@ -2,11 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
+import { PLATFORM_NAME } from "@/lib/platform/branding";
 import { formatRoDate } from "@/lib/stay-dates";
 
 type Props = {
   data: TouristSheetData;
   onClose?: () => void;
+  showHospiraBranding?: boolean;
 };
 
 function formatSheetDate(iso: string): string {
@@ -17,7 +19,11 @@ function formatSheetDate(iso: string): string {
   }
 }
 
-export function TouristSheetView({ data, onClose }: Props) {
+export function TouristSheetView({
+  data,
+  onClose,
+  showHospiraBranding = true,
+}: Props) {
   const t = useTranslations("admin.checkIn.fisa");
 
   function printSheet() {
@@ -66,6 +72,12 @@ export function TouristSheetView({ data, onClose }: Props) {
                 <span>{t("registryNr")}</span>
                 <strong>{data.registryRef}</strong>
               </div>
+              {showHospiraBranding ? (
+                <div className="tourist-sheet__hospira-mark" aria-hidden>
+                  <span className="tourist-sheet__hospira-name">{PLATFORM_NAME}</span>
+                  <span className="tourist-sheet__hospira-tag">{t("platformTag")}</span>
+                </div>
+              ) : null}
             </div>
 
             <h1 className="tourist-sheet__title">{t("title")}</h1>
@@ -142,6 +154,11 @@ export function TouristSheetView({ data, onClose }: Props) {
                 <span className="tourist-sheet__signature-label">{t("receptionSignature")}</span>
               </div>
             </div>
+            {showHospiraBranding ? (
+              <p className="tourist-sheet__brand">
+                {t("poweredBy", { brand: PLATFORM_NAME })}
+              </p>
+            ) : null}
           </footer>
         </div>
       </article>

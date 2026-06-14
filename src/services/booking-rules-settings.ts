@@ -22,13 +22,17 @@ const BOOKING_RULES_SELECT = [
   "invoice_series",
   "invoice_next_number",
   "invoice_seller_reg_com",
+  "invoice_vat_enabled",
+  "invoice_vat_rate",
+  "invoice_prices_include_vat",
 ].join(", ");
 
 function isBookingRulesMigrationMissing(message: string): boolean {
   return (
     message.includes("cancellation_policy_type") ||
     message.includes("pricing_weekend_enabled") ||
-    message.includes("invoice_series")
+    message.includes("invoice_series") ||
+    message.includes("invoice_vat_enabled")
   );
 }
 
@@ -111,6 +115,15 @@ export async function updateBookingRulesSettings(
   }
   if (input.invoiceSellerRegCom !== undefined) {
     update.invoice_seller_reg_com = input.invoiceSellerRegCom;
+  }
+  if (input.invoiceVatEnabled !== undefined) {
+    update.invoice_vat_enabled = input.invoiceVatEnabled;
+  }
+  if (input.invoiceVatRate !== undefined) {
+    update.invoice_vat_rate = input.invoiceVatRate;
+  }
+  if (input.invoicePricesIncludeVat !== undefined) {
+    update.invoice_prices_include_vat = input.invoicePricesIncludeVat;
   }
 
   if (Object.keys(update).length === 0) return;

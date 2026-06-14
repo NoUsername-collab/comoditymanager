@@ -15,6 +15,8 @@ import { getPensionSettings } from "@/services/pension-settings";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { getTenantDisplayName } from "@/services/tenants";
 import { getLocale } from "next-intl/server";
+import { getTenantContext } from "@/core/tenant/context";
+import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
 
 export type IssuedInvoiceRecord = {
   id: string;
@@ -24,6 +26,12 @@ export type IssuedInvoiceRecord = {
 
 function mapInvoiceRow(row: Record<string, unknown>): IssuedInvoiceRecord {
   const lines = Array.isArray(row.lines) ? row.lines : [];
+  const currency =
+    row.currency === "BGN" || row.currency === "MDL" ? row.currency : "RON";
+  const vatRate = row.vat_rate != null ? Number(row.vat_rate) : 0;
+  const vatAmount = row.vat_amount != null ? Number(row.vat_amount) : 0;
+  const subtotalNet =
+    row.subtotal_net != null ? Number(row.subtotal_net) : Number(row.subtotal);
   const document: IssuedInvoiceDocument = {
     series: String(row.series),
     invoice_number: Number(row.invoice_number),
@@ -43,7 +51,12 @@ function mapInvoiceRow(row: Record<string, unknown>): IssuedInvoiceRecord {
     nights: stayNightCount(String(row.check_in), String(row.check_out)),
     lines: lines as IssuedInvoiceDocument["lines"],
     subtotal: Number(row.subtotal),
+    subtotal_net: subtotalNet,
+    vat_rate: vatRate,
+    vat_amount: vatAmount,
     total: Number(row.total),
+    currency,
+    prices_include_vat: vatAmount > 0 ? true : true,
     uses_recorded_total: false,
     legal_note: "",
   };
@@ -91,6 +104,7 @@ export async function issueBookingInvoice(
     pricingRules,
     locale,
     tenantId,
+    tenantCountry,
   ] = await Promise.all([
     getBookingById(bookingId),
     getPensionSettings(),
@@ -99,6 +113,7 @@ export async function issueBookingInvoice(
     getStayPricingRules(),
     getLocale(),
     resolveTenantIdForData(),
+    Promise.resolve(getTenantContext().tenant.country as TenantCountry),
   ]);
 
   if (!booking) return { ok: false, error: "booking.not_found" };
@@ -164,6 +179,10 @@ export async function issueBookingInvoice(
     rooms: roomsForInvoice,
     pricing_rules: pricingRules,
     locale: locale === "bg" ? "bg" : locale === "en" ? "en" : "ro",
+    country: tenantCountry,
+    vat_enabled: bookingRules.invoiceVatEnabled,
+    vat_rate: bookingRules.invoiceVatRate,
+    prices_include_vat: bookingRules.invoicePricesIncludeVat,
   });
 
   const { data: inserted, error: insertError } = await supabase
@@ -184,7 +203,11 @@ export async function issueBookingInvoice(
       check_in: document.check_in,
       check_out: document.check_out,
       subtotal: document.subtotal,
+      subtotal_net: document.subtotal_net,
+      vat_rate: document.vat_rate,
+      vat_amount: document.vat_amount,
       total: document.total,
+      currency: document.currency,
       lines: document.lines,
       status: "issued",
     })
@@ -216,7 +239,7 @@ export async function previewBookingInvoice(
   const active = await loadActiveBookingInvoice(bookingId);
   if (active) return active.document;
 
-  const [booking, pension, checkinSettings, bookingRules, pricingRules, locale, tenantId] =
+  const [booking, pension, checkinSettings, bookingRules, pricingRules, locale, tenantId, tenantCountry] =
     await Promise.all([
       getBookingById(bookingId),
       getPensionSettings(),
@@ -225,6 +248,7 @@ export async function previewBookingInvoice(
       getStayPricingRules(),
       getLocale(),
       resolveTenantIdForData(),
+      Promise.resolve(getTenantContext().tenant.country as TenantCountry),
     ]);
 
   if (!booking || booking.room_ids.length === 0) return null;
@@ -257,5 +281,9 @@ export async function previewBookingInvoice(
     })),
     pricing_rules: pricingRules,
     locale: locale === "bg" ? "bg" : locale === "en" ? "en" : "ro",
+    country: tenantCountry,
+    vat_enabled: bookingRules.invoiceVatEnabled,
+    vat_rate: bookingRules.invoiceVatRate,
+    prices_include_vat: bookingRules.invoicePricesIncludeVat,
   });
 }
