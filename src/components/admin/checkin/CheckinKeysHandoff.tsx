@@ -1,5 +1,7 @@
 "use client";
 
+import type { KeyEligibility } from "@/domain/checkin/key-rules";
+
 type Props = {
   rooms: string[];
   keysHandedRooms: string[];
@@ -11,8 +13,11 @@ type Props = {
     selectAll: string;
     noneYet: string;
     partialHint: string;
+    blockedNoId?: string;
+    blockedUnpaid?: string;
   };
   disabled?: boolean;
+  roomEligibility?: Map<string, KeyEligibility>;
 };
 
 function roomKey(room: string): string {
@@ -26,6 +31,7 @@ export function CheckinKeysHandoff({
   onToggleAll,
   labels,
   disabled = false,
+  roomEligibility,
 }: Props) {
   const allSelected =
     rooms.length > 0 &&
@@ -57,16 +63,31 @@ export function CheckinKeysHandoff({
       <ul className="checkin-keys-handoff__list">
         {rooms.map((room) => {
           const checked = keysHandedRooms.some((r) => roomKey(r) === roomKey(room));
+          const eligibility = roomEligibility?.get(room);
+          const blocked = eligibility ? !eligibility.allowed : false;
+          const blockReason = blocked && eligibility?.reason === "keys_blocked_no_id"
+            ? labels.blockedNoId
+            : blocked && eligibility?.reason === "keys_blocked_unpaid"
+              ? labels.blockedUnpaid
+              : undefined;
           return (
             <li key={room}>
-              <label className="checkin-checkbox checkin-keys-handoff__item">
+              <label
+                className={`checkin-checkbox checkin-keys-handoff__item${blocked ? " checkin-keys-handoff__item--blocked" : ""}`}
+                title={blockReason}
+              >
                 <input
                   type="checkbox"
-                  checked={checked}
-                  disabled={disabled}
+                  checked={checked && !blocked}
+                  disabled={disabled || blocked}
                   onChange={() => onToggleRoom(room)}
                 />
-                <span className="checkin-keys-handoff__room">{room}</span>
+                <span className="checkin-keys-handoff__room">
+                  {blocked ? "🔒 " : ""}{room}
+                </span>
+                {blockReason && (
+                  <span className="checkin-keys-handoff__block-reason">{blockReason}</span>
+                )}
               </label>
             </li>
           );

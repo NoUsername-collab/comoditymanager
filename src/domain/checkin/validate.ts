@@ -17,6 +17,7 @@ import {
   guestHasDocumentExpiry,
   guestRequiresDocumentExpiry,
 } from "./document-rules";
+import { canHandKeysForRoom } from "./key-rules";
 import type {
   CheckinFlag,
   CheckinFormData,
@@ -125,6 +126,25 @@ export function validateCheckin(
     } else if (paid < totalDue) {
       // payment_rule = "at_checkout" — just a flag, not blocked
       flags.push("unpaid");
+    }
+  }
+
+  // ── KEY RULES ─────────────────────────────────────────────
+  const keysHandedRooms = data.keys_handed_rooms ?? [];
+  if (keysHandedRooms.length > 0 && settings.checkin_key_rule !== "always") {
+    for (const room of keysHandedRooms) {
+      const eligibility = canHandKeysForRoom(
+        room,
+        data.guests,
+        settings,
+        paid,
+        totalDue,
+      );
+      if (!eligibility.allowed && eligibility.reason) {
+        if (!flags.includes(eligibility.reason)) {
+          flags.push(eligibility.reason);
+        }
+      }
     }
   }
 

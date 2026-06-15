@@ -193,6 +193,66 @@ export async function getKeysHandedRoomsByBookingIds(
   return result;
 }
 
+/** Camere cu cel puțin un oaspete identificat (CNP valid sau document) per rezervare. */
+export async function getRoomIdentityStatusByBookingIds(
+  bookingIds: string[],
+): Promise<Map<string, string[]>> {
+  const result = new Map<string, string[]>();
+  if (!bookingIds.length) return result;
+
+  const { tenantId, supabase } = await getTenantScope();
+
+  const { data: checkins, error: checkinErr } = await supabase
+    .from("checkins")
+    .select("id, booking_id")
+    .eq("tenant_id", tenantId)
+    .in("booking_id", bookingIds);
+
+  if (checkinErr) {
+    if (isCheckinMigrationMissing(checkinErr.message)) return result;
+    throw new Error(checkinErr.message);
+  }
+  if (!checkins?.length) return result;
+
+  const checkinToBooking = new Map<string, string>();
+  for (const row of checkins) {
+    checkinToBooking.set(row.id as string, row.booking_id as string);
+  }
+
+  const checkinIds = [...checkinToBooking.keys()];
+  const { data: guests, error: guestErr } = await supabase
+    .from("checkin_guests")
+    .select("checkin_id, room_label, national_id, document_number, document_series")
+    .eq("tenant_id", tenantId)
+    .in("checkin_id", checkinIds);
+
+  if (guestErr) {
+    if (isCheckinMigrationMissing(guestErr.message)) return result;
+    throw new Error(guestErr.message);
+  }
+
+  for (const guest of guests ?? []) {
+    const bookingId = checkinToBooking.get(guest.checkin_id as string);
+    const label = (guest.room_label as string | null)?.trim();
+    if (!bookingId || !label) continue;
+
+    const hasId = Boolean(
+      (guest.national_id as string | null)?.trim() ||
+      (guest.document_number as string | null)?.trim() ||
+      (guest.document_series as string | null)?.trim(),
+    );
+    if (!hasId) continue;
+
+    const list = result.get(bookingId) ?? [];
+    if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
+      list.push(label);
+      result.set(bookingId, list);
+    }
+  }
+
+  return result;
+}
+
 export async function getCheckedInRoomsForBooking(
   bookingId: string,
 ): Promise<string[]> {

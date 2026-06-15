@@ -40,6 +40,9 @@ export function optionalDateForDb(
   return trimmed ? trimmed : null;
 }
 
+export type CheckinKeyRule = "always" | "id_verified" | "paid";
+export type CheckinIdsPerRoom = "one" | "two_non_family";
+
 export type CheckinFlag =
   | "no_document"
   | "no_cnp"
@@ -48,7 +51,9 @@ export type CheckinFlag =
   | "no_phone"
   | "group_partial"
   | "checkout_blocked"
-  | "early_checkin";
+  | "early_checkin"
+  | "keys_blocked_no_id"
+  | "keys_blocked_unpaid";
 
 export type CheckinDocRule = "required" | "recommended" | "optional";
 export type CheckinPhoneRule = "required" | "recommended" | "optional";
@@ -131,6 +136,12 @@ export interface CheckinSettings {
   checkout_block_unpaid: boolean;
   early_checkin_allowed: boolean;
   early_checkin_fee: number;
+  /** Regula de distribuire chei la check-in. */
+  checkin_key_rule: CheckinKeyRule;
+  /** Câte persoane trebuie identificate per cameră. */
+  checkin_ids_per_room: CheckinIdsPerRoom;
+  /** Valoare custom (doar dacă checkin_ids_per_room ar fi extins cu 'custom'). */
+  checkin_ids_per_room_custom: number | null;
   /** Secțiunea I — Fișă ocupare capacitate cazare (OPANAF 381/2026) */
   fisa_property_address: string | null;
   fisa_owner_cui: string | null;

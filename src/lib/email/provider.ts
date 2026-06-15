@@ -78,7 +78,7 @@ class ResendProvider implements IEmailProvider {
 class NoopProvider implements IEmailProvider {
   async send(message: EmailMessage): Promise<EmailResult> {
     if (process.env.NODE_ENV === "development") {
-      console.log(`[EMAIL-NOOP] To: ${message.to} | Subject: ${message.subject}`);
+      console.log(`[EMAIL-NOOP] Subject: ${message.subject}`);
     }
     return { success: true, messageId: `noop-${Date.now()}` };
   }

@@ -358,6 +358,37 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         </select>
       </SettingRow>
 
+      <SettingRow label={t("keyRule")} description={t("keyRuleDesc")}>
+        <select
+          className="checkin-field__input"
+          value={settings.checkin_key_rule}
+          onChange={(e) =>
+            persist({
+              checkin_key_rule: e.target.value as CheckinSettings["checkin_key_rule"],
+            })
+          }
+        >
+          <option value="always">{t("keyRuleAlways")}</option>
+          <option value="id_verified">{t("keyRuleIdVerified")}</option>
+          <option value="paid">{t("keyRulePaid")}</option>
+        </select>
+      </SettingRow>
+
+      <SettingRow label={t("idsPerRoom")} description={t("idsPerRoomDesc")}>
+        <select
+          className="checkin-field__input"
+          value={settings.checkin_ids_per_room}
+          onChange={(e) =>
+            persist({
+              checkin_ids_per_room: e.target.value as CheckinSettings["checkin_ids_per_room"],
+            })
+          }
+        >
+          <option value="one">{t("idsPerRoomOne")}</option>
+          <option value="two_non_family">{t("idsPerRoomTwoNonFamily")}</option>
+        </select>
+      </SettingRow>
+
       <SettingRow label={t("checkinTime")} description={t("checkinTimeDesc")}>
         <input
           type="time"

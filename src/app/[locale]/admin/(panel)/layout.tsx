@@ -12,7 +12,7 @@ import {
   getPensionSettings,
   pensionAppearanceSettings,
 } from "@/services/pension-settings";
-import { getStaffShellAccess } from "@/lib/auth/require-staff";
+import { getStaffShellAccess, requireStaff } from "@/lib/auth/require-staff";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
@@ -31,7 +31,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [, t, simBundle, shellData] = await Promise.all([
+  const [, , t, simBundle, shellData] = await Promise.all([
+    requireStaff(),
     bindTenantContextFromRequest(),
     getTranslations("admin.layout"),
     (async () => {

@@ -572,6 +572,8 @@ export async function updateCheckinSettingsAction(
       "checkin_cnp_rule",
       "checkin_payment_rule",
       "group_checkin_mode",
+      "checkin_key_rule",
+      "checkin_ids_per_room",
       "fisa_property_address",
       "fisa_owner_cui",
       "fisa_tourism_license",

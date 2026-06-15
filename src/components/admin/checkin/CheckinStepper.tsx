@@ -10,6 +10,8 @@ import {
   isRomanianNationality,
 } from "@/domain/checkin/identity-rules";
 import { validateCheckin } from "@/domain/checkin/validate";
+import { computeKeyEligibilityByRoom } from "@/domain/checkin/key-rules";
+import { detectFamilyRooms, type IdsPerRoomConfig } from "@/domain/checkin/guest-layout";
 import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
 import {
   cleanNationalId,
@@ -157,6 +159,7 @@ export function CheckinStepper({
         booking,
         roomProgress.pendingRooms,
         effectiveIdentityScope(settings.group_checkin_mode, null),
+        idsPerRoomConfig,
       );
     }
     return createInitialCheckinGuests(booking, settings);
@@ -171,9 +174,9 @@ export function CheckinStepper({
     }
     setOperatorScope(scope);
     if (needsRoomPicker && roomPickerDone && selectedRooms.length > 0) {
-      setGuests(buildCheckinGuestSlotsForRooms(booking, selectedRooms, scope));
+      setGuests(buildCheckinGuestSlotsForRooms(booking, selectedRooms, scope, idsPerRoomConfig));
     } else {
-      setGuests(buildCheckinGuestSlots(booking, scope));
+      setGuests(buildCheckinGuestSlots(booking, scope, idsPerRoomConfig));
     }
   }
 
@@ -181,7 +184,7 @@ export function CheckinStepper({
     roomLabels: string[],
     scope: CheckinIdentityScope = identityScope,
   ): CheckinGuestInput[] {
-    return buildCheckinGuestSlotsForRooms(booking, roomLabels, scope);
+    return buildCheckinGuestSlotsForRooms(booking, roomLabels, scope, idsPerRoomConfig);
   }
 
   function confirmRoomSelection() {
@@ -203,6 +206,14 @@ export function CheckinStepper({
       return [...prev, room];
     });
   }
+
+  const idsPerRoomConfig = useMemo((): IdsPerRoomConfig | undefined => {
+    if (settings.checkin_ids_per_room === "one") return undefined;
+    return {
+      rule: settings.checkin_ids_per_room,
+      familyRooms: detectFamilyRooms(booking),
+    };
+  }, [settings.checkin_ids_per_room, booking]);
 
   const registeredOnly = (booking.registered_guests?.length ?? 0) > 0;
   const maxSelectableRooms =
@@ -570,7 +581,9 @@ export function CheckinStepper({
           <StepFinish
             booking={booking}
             guests={guests}
+            settings={settings}
             paymentStatus={paymentStatus}
+            paymentAmountPaid={paymentAmountForStatus(paymentStatus, booking.total_price, paymentAmount)}
             validation={validation}
             receivingRooms={receivingRoomLabels}
             keysHandedRooms={keysHandedRooms}
@@ -1272,7 +1285,9 @@ function StepValidation({
 function StepFinish({
   booking,
   guests,
+  settings,
   paymentStatus,
+  paymentAmountPaid,
   validation,
   receivingRooms,
   keysHandedRooms,
@@ -1285,7 +1300,9 @@ function StepFinish({
 }: {
   booking: BookingForCheckin;
   guests: CheckinGuestInput[];
+  settings: CheckinSettings;
   paymentStatus: PaymentStatus;
+  paymentAmountPaid: number;
   validation: ValidationResult | null;
   receivingRooms: string[];
   keysHandedRooms: string[];
@@ -1296,6 +1313,19 @@ function StepFinish({
   isPartialSession: boolean;
   t: ReturnType<typeof useTranslations>;
 }) {
+  const roomEligibility = useMemo(
+    () =>
+      settings.checkin_key_rule !== "always"
+        ? computeKeyEligibilityByRoom(
+            receivingRooms,
+            guests,
+            settings,
+            paymentAmountPaid,
+            booking.total_price,
+          )
+        : undefined,
+    [receivingRooms, guests, settings, paymentAmountPaid, booking.total_price],
+  );
   return (
     <div className="checkin-step-finish">
       {isPartialSession ? (
@@ -1343,12 +1373,15 @@ function StepFinish({
         keysHandedRooms={keysHandedRooms}
         onToggleRoom={onToggleKeysRoom}
         onToggleAll={onToggleAllKeys}
+        roomEligibility={roomEligibility}
         labels={{
           title: t("keysHandoff.title"),
           hint: t("keysHandoff.hint"),
           selectAll: t("keysHandoff.selectAll"),
           noneYet: t("keysHandoff.noneYet"),
           partialHint: t("keysHandoff.partialHint"),
+          blockedNoId: t("keysHandoff.blockedNoId"),
+          blockedUnpaid: t("keysHandoff.blockedUnpaid"),
         }}
       />
 

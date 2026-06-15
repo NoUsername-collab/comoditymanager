@@ -57,6 +57,8 @@ export type BookingRow = {
   keys_handed_rooms?: string[];
   /** Ultima înregistrare check-in — plată. */
   checkin_payment_status?: StoredPaymentStatus | null;
+  /** Camere cu cel puțin un oaspete identificat (CNP/document). */
+  room_id_verified?: string[];
   /** Status identitate din profilul oaspete. */
   guest_identity_status?: GuestIdentityStatus | null;
 };

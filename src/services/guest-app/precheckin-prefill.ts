@@ -52,7 +52,7 @@ async function loadGuestForPrefill(guestId: string): Promise<GuestPrecheckinPref
   const { tenantId, supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("guests")
-    .select("*")
+    .select("id, last_name, first_name, display_name, phone, phone_normalized, email, email_normalized, notes, tags, created_at, updated_at, identity_status, doc_type, doc_series, doc_number, doc_issued_by, doc_issue_date, doc_expiry_date, national_id_type, national_id, cnp, birth_date, birth_place, nationality, address, city, county, country, sex")
     .eq("tenant_id", tenantId)
     .eq("id", guestId)
     .maybeSingle();

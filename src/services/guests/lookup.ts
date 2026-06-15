@@ -211,11 +211,14 @@ const loadGuestByNationalId = cache(async (
 ): Promise<GuestRow | null> => {
   const { tenantId, supabase } = await getTenantScope();
 
+  const sanitized = cleaned.replace(/[^a-zA-Z0-9]/g, "");
+  if (!sanitized) return null;
+
   let query = supabase
     .from("guests")
     .select("*")
     .eq("tenant_id", tenantId)
-    .or(`national_id.eq.${cleaned},cnp.eq.${cleaned}`)
+    .or(`national_id.eq.${sanitized},cnp.eq.${sanitized}`)
     .limit(1)
     .maybeSingle();
 
@@ -224,7 +227,7 @@ const loadGuestByNationalId = cache(async (
       .from("guests")
       .select("*")
       .eq("tenant_id", tenantId)
-      .or(`national_id.eq.${cleaned},cnp.eq.${cleaned}`)
+      .or(`national_id.eq.${sanitized},cnp.eq.${sanitized}`)
       .neq("id", excludeGuestId)
       .limit(1)
       .maybeSingle();

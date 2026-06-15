@@ -3,6 +3,7 @@ import type {
   BookingForCheckin,
   CheckinGuestInput,
   CheckinIdentityScope,
+  CheckinIdsPerRoom,
   GroupCheckinMode,
 } from "./types";
 
@@ -86,15 +87,21 @@ export function createKeysOnlyRoomSlot(
   };
 }
 
+export interface IdsPerRoomConfig {
+  rule: CheckinIdsPerRoom;
+  familyRooms?: string[];
+}
+
 /** Sloturi pentru camerele selectate la sosire incrementală. */
 export function buildCheckinGuestSlotsForRooms(
   booking: BookingForCheckin,
   roomLabels: string[],
   scope: CheckinIdentityScope = "per_room",
+  idsPerRoom?: IdsPerRoomConfig,
 ): CheckinGuestInput[] {
   const registered = booking.registered_guests ?? [];
   if (!roomLabels.length) {
-    return buildCheckinGuestSlots(booking, scope);
+    return buildCheckinGuestSlots(booking, scope, idsPerRoom);
   }
 
   if (scope === "rep") {
@@ -110,11 +117,48 @@ export function buildCheckinGuestSlotsForRooms(
     return assignRegisteredGuestsToRooms(registered, roomLabels);
   }
 
-  return roomLabels.map((room, index) =>
-    index === 0
-      ? createGuestSlot(booking, room, true)
-      : createKeysOnlyRoomSlot(booking, room),
-  );
+  if (!idsPerRoom || idsPerRoom.rule === "one") {
+    return roomLabels.map((room, index) =>
+      index === 0
+        ? createGuestSlot(booking, room, true)
+        : createKeysOnlyRoomSlot(booking, room),
+    );
+  }
+
+  const familySet = new Set(idsPerRoom.familyRooms ?? []);
+  const slots: CheckinGuestInput[] = [];
+  roomLabels.forEach((room, index) => {
+    slots.push(createGuestSlot(booking, room, index === 0));
+    if (!familySet.has(room)) {
+      slots.push(createGuestSlot(booking, room, false));
+    }
+  });
+  return slots;
+}
+
+/** Detect family rooms: rooms where all registered guests share the same last name. */
+export function detectFamilyRooms(
+  booking: BookingForCheckin,
+): string[] {
+  const registered = booking.registered_guests ?? [];
+  if (registered.length === 0) return [];
+
+  const byRoom = new Map<string, string[]>();
+  for (const g of registered) {
+    const room = g.room_label?.trim();
+    if (!room) continue;
+    const lastName = (g.last_name ?? g.full_name?.split(" ")[0] ?? "").trim().toLowerCase();
+    if (!byRoom.has(room)) byRoom.set(room, []);
+    byRoom.get(room)!.push(lastName);
+  }
+
+  const familyRooms: string[] = [];
+  for (const [room, names] of byRoom) {
+    if (names.length > 0 && names.every((n) => n === names[0])) {
+      familyRooms.push(room);
+    }
+  }
+  return familyRooms;
 }
 
 /**
@@ -170,6 +214,7 @@ export function assignRegisteredGuestsToRooms(
 export function buildCheckinGuestSlots(
   booking: BookingForCheckin,
   scope: CheckinIdentityScope,
+  idsPerRoom?: IdsPerRoomConfig,
 ): CheckinGuestInput[] {
   const rooms = bookingRooms(booking);
 
@@ -178,9 +223,16 @@ export function buildCheckinGuestSlots(
   }
 
   if (scope === "per_room") {
-    return rooms.map((room, index) =>
-      createGuestSlot(booking, room, index === 0),
-    );
+    const needsTwo = idsPerRoom?.rule === "two_non_family";
+    const familySet = new Set(idsPerRoom?.familyRooms ?? []);
+    const slots: CheckinGuestInput[] = [];
+    rooms.forEach((room, index) => {
+      slots.push(createGuestSlot(booking, room, index === 0));
+      if (needsTwo && !familySet.has(room)) {
+        slots.push(createGuestSlot(booking, room, false));
+      }
+    });
+    return slots;
   }
 
   const count = Math.max(1, booking.num_adults);

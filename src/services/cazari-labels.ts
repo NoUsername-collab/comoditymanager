@@ -86,6 +86,8 @@ export function buildCazariLabels({
     checkinRoomChecked: tPages("checkinRoomChecked"),
     checkinRoomPending: tPages("checkinRoomPending"),
     checkinRoomKeyHanded: tPages("checkinRoomKeyHanded"),
+    checkinRoomIdVerified: tPages("checkinRoomIdVerified"),
+    checkinRoomIdMissing: tPages("checkinRoomIdMissing"),
     checkinAllRoomsDone: tPages("checkinAllRoomsDone"),
     checkinPartialHint: tPages("checkinPartialHint"),
     edit: tCommon("edit"),

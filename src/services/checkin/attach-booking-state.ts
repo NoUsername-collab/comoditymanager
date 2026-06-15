@@ -4,7 +4,7 @@ import type { GuestIdentityStatus } from "@/domain/guest/types";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { BookingRow } from "@/services/bookings/types";
-import { getCheckedInRoomsByBookingIds, getKeysHandedRoomsByBookingIds } from "./queries";
+import { getCheckedInRoomsByBookingIds, getKeysHandedRoomsByBookingIds, getRoomIdentityStatusByBookingIds } from "./queries";
 import { syncBookingOperativeCheckInFromRecord } from "./sync";
 
 type CheckinLite = {
@@ -20,6 +20,7 @@ function attachCheckinFields(
   checkedRoomsByBooking: Map<string, string[]>,
   keysHandedByBooking: Map<string, string[]>,
   identityByGuest: Map<string, GuestIdentityStatus>,
+  roomIdVerifiedByBooking: Map<string, string[]>,
 ): BookingRow[] {
   return stays.map((stay) => {
     const checkin = latestByBooking.get(stay.id);
@@ -44,6 +45,7 @@ function attachCheckinFields(
       checked_in_rooms,
       keys_handed_rooms: keysHandedByBooking.get(stay.id) ?? [],
       checkin_payment_status: checkin?.payment_status ?? null,
+      room_id_verified: roomIdVerifiedByBooking.get(stay.id) ?? [],
       guest_identity_status: stay.guest_id
         ? identityByGuest.get(stay.guest_id) ?? "draft"
         : null,
@@ -96,7 +98,7 @@ export async function attachCheckinRecordState(
       ),
     ];
 
-    const [{ data, error }, checkedRoomsByBooking, keysHandedByBooking, identityByGuest] =
+    const [{ data, error }, checkedRoomsByBooking, keysHandedByBooking, identityByGuest, roomIdVerifiedByBooking] =
       await Promise.all([
         supabase
           .from("checkins")
@@ -112,6 +114,9 @@ export async function attachCheckinRecordState(
         ),
         loadGuestIdentityStatuses(guestIds).catch(
           () => new Map<string, GuestIdentityStatus>(),
+        ),
+        getRoomIdentityStatusByBookingIds(bookingIds).catch(
+          () => new Map<string, string[]>(),
         ),
       ]);
 
@@ -161,6 +166,7 @@ export async function attachCheckinRecordState(
       checkedRoomsByBooking,
       keysHandedByBooking,
       identityByGuest,
+      roomIdVerifiedByBooking,
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

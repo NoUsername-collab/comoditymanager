@@ -817,6 +817,15 @@
           "groupIndividual": "Toți oaspeții (individual)",
           "groupPerRoom": "Pe cameră (reprezentant / cameră)",
           "groupBoth": "Recepția alege la check-in",
+          "keyRule": "Regula de distribuire chei",
+          "keyRuleDesc": "Când se înmânează cheile camerelor",
+          "keyRuleAlways": "Întotdeauna",
+          "keyRuleIdVerified": "Doar cu ID verificat",
+          "keyRulePaid": "Doar cu plata efectuată",
+          "idsPerRoom": "Persoane identificate per cameră",
+          "idsPerRoomDesc": "Câte persoane trebuie identificate în fiecare cameră",
+          "idsPerRoomOne": "1 persoană",
+          "idsPerRoomTwoNonFamily": "2 pentru non-familie, 1 pentru familie",
           "checkinTime": "Ora check-in de la",
           "checkinTimeDesc": "Ora minimă de check-in",
           "checkoutTime": "Ora check-out până la",
@@ -1147,6 +1156,8 @@
         "checkinRoomChecked": "Primită",
         "checkinRoomPending": "Așteaptă",
         "checkinRoomKeyHanded": "Chei predate",
+        "checkinRoomIdVerified": "ID verificat",
+        "checkinRoomIdMissing": "ID lipsă",
         "checkinAllRoomsDone": "Toate camerele sunt primite",
         "checkinPartialHint": "Oaspeții pot sosi pe rând — primești câte o cameră pe parcurs.",
         "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua sosirii ({date}).",
@@ -2649,7 +2660,9 @@
         "no_phone": "Telefon lipsă",
         "group_partial": "Grup parțial",
         "checkout_blocked": "Check-out blocat",
-        "early_checkin": "Check-in devreme"
+        "early_checkin": "Check-in devreme",
+        "keys_blocked_no_id": "Chei blocate — lipsește identificarea",
+        "keys_blocked_unpaid": "Chei blocate — plata insuficientă"
       },
       "validation": {
         "pending": "Se verifică datele, plata și documentele…",
@@ -2676,7 +2689,9 @@
         "hint": "Bifează camerele pentru care ai dat cheia acum. Poți selecta toate sau pe rând.",
         "selectAll": "Toate cheile",
         "noneYet": "Nicio cheie marcată — confirmă dacă ai înmânat chei sau coduri.",
-        "partialHint": "Nu toate camerele au cheie încă — normal la sosire parțială."
+        "partialHint": "Nu toate camerele au cheie încă — normal la sosire parțială.",
+        "blockedNoId": "Cheia blocată — lipsește identificarea",
+        "blockedUnpaid": "Cheia blocată — plata insuficientă"
       },
       "finish": {
         "partialSessionHint": "Check-in parțial — restul camerelor se primesc când sosesc oaspeții.",

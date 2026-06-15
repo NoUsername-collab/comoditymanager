@@ -71,6 +71,8 @@ export type CazariLabels = {
   checkinRoomChecked: string;
   checkinRoomPending: string;
   checkinRoomKeyHanded: string;
+  checkinRoomIdVerified: string;
+  checkinRoomIdMissing: string;
   checkinAllRoomsDone: string;
   checkinPartialHint: string;
   edit: string;

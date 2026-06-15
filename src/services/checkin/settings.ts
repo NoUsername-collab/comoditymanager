@@ -31,7 +31,19 @@ const CHECKIN_SETTINGS_BASE_COLUMNS = [
   "fisa_tourism_license",
 ] as const;
 
+const CHECKIN_SETTINGS_EXTENDED_COLUMNS = [
+  "checkin_key_rule",
+  "checkin_ids_per_room",
+  "checkin_ids_per_room_custom",
+] as const;
+
 const CHECKIN_SETTINGS_SELECT = [
+  ...CHECKIN_SETTINGS_BASE_COLUMNS,
+  "checkout_block_unpaid",
+  ...CHECKIN_SETTINGS_EXTENDED_COLUMNS,
+].join(", ");
+
+const CHECKIN_SETTINGS_SELECT_WITHOUT_EXTENDED = [
   ...CHECKIN_SETTINGS_BASE_COLUMNS,
   "checkout_block_unpaid",
 ].join(", ");
@@ -49,6 +61,7 @@ const CHECKIN_SETTINGS_FISA_READ = [
 
 const CHECKIN_SETTINGS_SELECT_VARIANTS = [
   CHECKIN_SETTINGS_SELECT,
+  CHECKIN_SETTINGS_SELECT_WITHOUT_EXTENDED,
   CHECKIN_SETTINGS_SELECT_WITHOUT_CHECKOUT_BLOCK,
   CHECKIN_SETTINGS_FISA_READ,
 ] as const;
@@ -68,7 +81,7 @@ export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
   checkin_deposit: false,
   checkin_deposit_amount: 0,
   walkin_allowed: true,
-  group_checkin_mode: "both",
+  group_checkin_mode: "per_room",
   checkin_time_from: "14:00",
   checkout_time_until: "12:00",
   late_checkout_allowed: true,
@@ -76,6 +89,9 @@ export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
   checkout_block_unpaid: true,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
+  checkin_key_rule: "always",
+  checkin_ids_per_room: "one",
+  checkin_ids_per_room_custom: null,
   fisa_property_address: null,
   fisa_owner_cui: null,
   fisa_tourism_license: null,
@@ -133,6 +149,16 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
         ? Boolean(row.early_checkin_allowed)
         : DEFAULT_CHECKIN_SETTINGS.early_checkin_allowed,
     early_checkin_fee: Number(row.early_checkin_fee) || 0,
+    checkin_key_rule:
+      (row.checkin_key_rule as CheckinSettings["checkin_key_rule"]) ??
+      DEFAULT_CHECKIN_SETTINGS.checkin_key_rule,
+    checkin_ids_per_room:
+      (row.checkin_ids_per_room as CheckinSettings["checkin_ids_per_room"]) ??
+      DEFAULT_CHECKIN_SETTINGS.checkin_ids_per_room,
+    checkin_ids_per_room_custom:
+      row.checkin_ids_per_room_custom != null
+        ? Number(row.checkin_ids_per_room_custom)
+        : null,
     fisa_property_address:
       row.fisa_property_address != null
         ? String(row.fisa_property_address)
@@ -254,6 +280,12 @@ export async function updateCheckinSettings(
     update.early_checkin_allowed = input.early_checkin_allowed;
   if (input.early_checkin_fee != null)
     update.early_checkin_fee = input.early_checkin_fee;
+  if (input.checkin_key_rule != null)
+    update.checkin_key_rule = input.checkin_key_rule;
+  if (input.checkin_ids_per_room != null)
+    update.checkin_ids_per_room = input.checkin_ids_per_room;
+  if (input.checkin_ids_per_room_custom !== undefined)
+    update.checkin_ids_per_room_custom = input.checkin_ids_per_room_custom;
   if (input.fisa_property_address !== undefined)
     update.fisa_property_address = input.fisa_property_address;
   if (input.fisa_owner_cui !== undefined)

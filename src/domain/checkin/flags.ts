@@ -83,6 +83,8 @@ export function flagSeverity(
     case "invalid_cnp":
     case "no_phone":
     case "early_checkin":
+    case "keys_blocked_no_id":
+    case "keys_blocked_unpaid":
       return "warning";
     case "group_partial":
       return "info";
@@ -108,6 +110,10 @@ export function flagIcon(flag: CheckinFlag): string {
       return "🔴"; // 🔴
     case "early_checkin":
       return "⏰"; // ⏰
+    case "keys_blocked_no_id":
+      return "🔑"; // 🔑
+    case "keys_blocked_unpaid":
+      return "🔑"; // 🔑
     default:
       return "❓"; // ❓
   }

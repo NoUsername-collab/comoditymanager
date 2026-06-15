@@ -6,6 +6,8 @@ type Labels = {
   roomChecked: string;
   roomPending: string;
   roomKeyHanded: string;
+  roomIdVerified?: string;
+  roomIdMissing?: string;
   allRoomsDone: string;
   partialHint: string;
 };
@@ -14,6 +16,7 @@ type Props = {
   roomNames: string[];
   checkedInRooms: string[];
   keysHandedRooms?: string[];
+  roomIdVerified?: string[];
   isConfirmed: boolean;
   /** Titlu progres (ex. „2 din 4 camere primite”) — rezolvat pe server. */
   progressTitle?: string;
@@ -24,6 +27,7 @@ export function StayCheckinProgress({
   roomNames,
   checkedInRooms,
   keysHandedRooms = [],
+  roomIdVerified = [],
   isConfirmed,
   progressTitle,
   labels,
@@ -90,6 +94,9 @@ export function StayCheckinProgress({
             const keyHanded = keysHandedRooms.some(
               (r) => r.toLowerCase() === room.toLowerCase(),
             );
+            const idOk = roomIdVerified.some(
+              (r) => r.toLowerCase() === room.toLowerCase(),
+            );
             return (
               <li
                 key={room}
@@ -103,6 +110,14 @@ export function StayCheckinProgress({
               >
                 <span className="stay-checkin-progress__room-dot" aria-hidden />
                 <span className="stay-checkin-progress__room-name">{room}</span>
+                {done ? (
+                  <span
+                    className={`stay-checkin-progress__room-badge stay-checkin-progress__room-badge--${idOk ? "ok" : "warn"}`}
+                    title={idOk ? labels.roomIdVerified : labels.roomIdMissing}
+                  >
+                    ID {idOk ? "✓" : "✗"}
+                  </span>
+                ) : null}
                 {keyHanded ? (
                   <span
                     className="stay-checkin-progress__room-key"

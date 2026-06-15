@@ -44,16 +44,15 @@ const DATA_TABLES = [
 export async function GET(request: NextRequest): Promise<NextResponse> {
   // ── Auth: Vercel Cron sends CRON_SECRET ──────────────────────────
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  } else if (process.env.NODE_ENV === "production") {
+  if (!cronSecret) {
     return NextResponse.json(
       { error: "CRON_SECRET not configured" },
       { status: 500 }
     );
+  }
+  const authHeader = request.headers.get("authorization");
+  if (authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {

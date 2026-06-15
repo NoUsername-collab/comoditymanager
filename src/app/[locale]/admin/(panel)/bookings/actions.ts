@@ -124,7 +124,7 @@ export async function cancelBookingAction(formData: FormData) {
   }
 
   revalidateBookingDetailSurfaces(id);
-  const base = returnTo.startsWith("/admin") ? returnTo : "/admin/bookings";
+  const base = safeAdminReturnPath(returnTo, "/admin/bookings");
   await redirect(appendQueryParam(base, "toast", "cancelled"));
 }
 

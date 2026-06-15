@@ -28,6 +28,8 @@ export function StayInfo({
     "checked_in_rooms" in stay ? (stay.checked_in_rooms ?? []) : [];
   const keysHandedRooms =
     "keys_handed_rooms" in stay ? (stay.keys_handed_rooms ?? []) : [];
+  const roomIdVerified =
+    "room_id_verified" in stay ? (stay.room_id_verified ?? []) : [];
   const roomProgress = isConfirmed
     ? computeRoomCheckinProgress(stay.room_names, checkedInRooms)
     : null;
@@ -130,6 +132,7 @@ export function StayInfo({
           roomNames={stay.room_names ?? []}
           checkedInRooms={checkedInRooms}
           keysHandedRooms={keysHandedRooms}
+          roomIdVerified={roomIdVerified}
           isConfirmed={isConfirmed}
           progressTitle={labels.checkinRoomsProgress(
             roomProgress.checked,
@@ -139,6 +142,8 @@ export function StayInfo({
             roomChecked: labels.checkinRoomChecked,
             roomPending: labels.checkinRoomPending,
             roomKeyHanded: labels.checkinRoomKeyHanded,
+            roomIdVerified: labels.checkinRoomIdVerified,
+            roomIdMissing: labels.checkinRoomIdMissing,
             allRoomsDone: labels.checkinAllRoomsDone,
             partialHint: labels.checkinPartialHint,
           }}

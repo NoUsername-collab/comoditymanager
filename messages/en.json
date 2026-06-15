@@ -817,6 +817,15 @@
           "groupIndividual": "All guests (individual)",
           "groupPerRoom": "Per room (one rep per room)",
           "groupBoth": "Reception chooses at check-in",
+          "keyRule": "Key distribution rule",
+          "keyRuleDesc": "When room keys are handed to guests",
+          "keyRuleAlways": "Always",
+          "keyRuleIdVerified": "Only with verified ID",
+          "keyRulePaid": "Only when paid",
+          "idsPerRoom": "IDs per room",
+          "idsPerRoomDesc": "How many guests must be identified per room",
+          "idsPerRoomOne": "1 person",
+          "idsPerRoomTwoNonFamily": "2 for non-family, 1 for family",
           "checkinTime": "Check-in time from",
           "checkinTimeDesc": "Earliest check-in time",
           "checkoutTime": "Checkout time until",
@@ -1148,6 +1157,8 @@
         "checkinRoomChecked": "Received",
         "checkinRoomPending": "Waiting",
         "checkinRoomKeyHanded": "Keys handed",
+        "checkinRoomIdVerified": "ID verified",
+        "checkinRoomIdMissing": "ID missing",
         "checkinAllRoomsDone": "All rooms received",
         "checkinPartialHint": "Guests may arrive separately — receive one room at a time.",
         "checkInOnlyOnArrivalDay": "Check-in is only available on the arrival date ({date}).",
@@ -2650,7 +2661,9 @@
         "no_phone": "Missing phone",
         "group_partial": "Partial group",
         "checkout_blocked": "Checkout blocked",
-        "early_checkin": "Early check-in"
+        "early_checkin": "Early check-in",
+        "keys_blocked_no_id": "Keys blocked — ID verification missing",
+        "keys_blocked_unpaid": "Keys blocked — payment insufficient"
       },
       "validation": {
         "pending": "Checking data, payment, and documents…",
@@ -2677,7 +2690,9 @@
         "hint": "Check rooms where you handed a key or code now. Select all or one by one.",
         "selectAll": "All keys",
         "noneYet": "No keys marked — confirm if you handed keys or access codes.",
-        "partialHint": "Not all rooms have keys yet — normal for partial arrival."
+        "partialHint": "Not all rooms have keys yet — normal for partial arrival.",
+        "blockedNoId": "Key blocked — ID verification missing",
+        "blockedUnpaid": "Key blocked — payment insufficient"
       },
       "finish": {
         "partialSessionHint": "Partial check-in — remaining rooms are received when guests arrive.",

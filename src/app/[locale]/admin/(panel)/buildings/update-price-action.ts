@@ -6,11 +6,15 @@ import {
   getBuildingDefaultPrice,
   updateBuildingDefaultPrice,
 } from "@/services/buildings";
+import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
 
 export async function updateBuildingDefaultPriceAction(formData: FormData) {
-  const t = await getTranslations("admin.serverActions");
+  const [t] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireLocationAdmin(),
+  ]);
   const building_id = String(formData.get("building_id") ?? "");
   const price = Number(formData.get("default_price_per_night") ?? 0);
   if (!building_id) throw new Error(t("idMissing"));

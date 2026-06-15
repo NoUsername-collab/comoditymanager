@@ -5,6 +5,7 @@ import {
   isTenantRequestHost,
   shouldSkipTenantErrorLog,
 } from "@/lib/tenant/error-safeguard";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 type Body = {
   message?: string;
@@ -24,6 +25,12 @@ export async function POST(request: Request) {
       : null;
   if (!isTenantRequestHost(host) && !devTenantSlug) {
     return NextResponse.json({ ok: false }, { status: 404 });
+  }
+
+  const clientIp = h.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = checkRateLimit(`tenant-err:${clientIp}`, 10, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json({ ok: false }, { status: 429 });
   }
 
   let body: Body;
