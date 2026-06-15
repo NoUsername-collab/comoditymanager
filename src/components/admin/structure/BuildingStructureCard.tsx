@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/navigation";
+import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { useTranslations } from "next-intl";
 import type { StructureBuilding } from "@/services/location-structure";
 import type { RoomOptionDefinition } from "@/types/room-catalog";
@@ -63,18 +63,15 @@ export function BuildingStructureCard({
           <EditBuildingPanel building={building} />
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link
+          <AdminLinkButton
             href={`/admin/rooms/new?building=${building.id}&return_to=structure`}
-            className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50"
+            size="sm"
           >
             + {tCommon("room")}
-          </Link>
-          <Link
-            href="/admin/buildings"
-            className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50"
-          >
+          </AdminLinkButton>
+          <AdminLinkButton href="/admin/buildings" size="sm">
             {t("occupancyDashboard")}
-          </Link>
+          </AdminLinkButton>
         </div>
       </header>
 

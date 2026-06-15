@@ -1,4 +1,4 @@
-import { Link } from "@/i18n/navigation";
+import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { useTranslations } from "next-intl";
 import type { AvailabilityDashboard as AvailabilityDashboardData } from "@/services/availability-month";
 
@@ -89,12 +89,9 @@ export function AvailabilityLightSummary({
             {tSummary("snapshotHint")}
           </p>
         </div>
-        <Link
-          href={homeHref}
-          className="rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-2 text-sm font-semibold text-zinc-800 hover:bg-white"
-        >
+        <AdminLinkButton href={homeHref} variant="secondary">
           {tSummary("openFullPanel")} →
-        </Link>
+        </AdminLinkButton>
       </div>
 
       <div className="mt-4 grid gap-3 md:grid-cols-4">

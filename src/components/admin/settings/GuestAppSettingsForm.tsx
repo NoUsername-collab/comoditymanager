@@ -14,11 +14,10 @@ import type {
 import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
 import { saveGuestAppSettingsAction } from "@/app/[locale]/admin/(panel)/settings/guest-app/actions";
+import { AdminInput, AdminSelect, AdminTextarea } from "@/components/admin/ui/AdminInput";
 
 const labelClass =
   "block text-xs font-semibold uppercase tracking-wide text-zinc-500";
-const inputClass =
-  "mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm";
 
 function linesToList(raw: string): string[] {
   return raw
@@ -172,8 +171,8 @@ export function GuestAppSettingsForm({
         <p className="text-xs text-zinc-500">{t("themeHint")}</p>
         <label className={labelClass}>
           {t("themeSource")}
-          <select
-            className={inputClass}
+          <AdminSelect
+            className="mt-1"
             value={themeId}
             onChange={(e) => setThemeId(e.target.value as GuestAppThemeSource)}
           >
@@ -184,24 +183,24 @@ export function GuestAppSettingsForm({
               </option>
             ))}
             <option value="custom">{t("themeCustom")}</option>
-          </select>
+          </AdminSelect>
         </label>
         {themeId === "custom" ? (
           <div className="grid gap-3 sm:grid-cols-2">
             <label className={labelClass}>
               {t("primaryColor")}
-              <input
+              <AdminInput
                 type="color"
-                className={inputClass}
+                className="mt-1"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
               />
             </label>
             <label className={labelClass}>
               {t("accentColor")}
-              <input
+              <AdminInput
                 type="color"
-                className={inputClass}
+                className="mt-1"
                 value={accentColor}
                 onChange={(e) => setAccentColor(e.target.value)}
               />
@@ -210,8 +209,8 @@ export function GuestAppSettingsForm({
         ) : null}
         <label className={labelClass}>
           {t("logoUrl")}
-          <input
-            className={inputClass}
+          <AdminInput
+            className="mt-1"
             value={logoUrl}
             onChange={(e) => setLogoUrl(e.target.value)}
             placeholder="https://..."
@@ -231,8 +230,8 @@ export function GuestAppSettingsForm({
               <span className="text-sm font-medium">
                 {guestAppFeatureLabel(feature.id)}
               </span>
-              <select
-                className="rounded border border-zinc-300 px-2 py-1 text-sm"
+              <AdminSelect
+                fieldSize="sm"
                 value={feature.state}
                 onChange={(e) =>
                   setFeatureState(
@@ -244,7 +243,7 @@ export function GuestAppSettingsForm({
                 <option value="mock">{t("stateMock")}</option>
                 <option value="live">{t("stateLive")}</option>
                 <option value="hidden">{t("stateHidden")}</option>
-              </select>
+              </AdminSelect>
             </li>
           ))}
         </ul>
@@ -254,8 +253,8 @@ export function GuestAppSettingsForm({
         <h2 className="text-sm font-semibold text-zinc-900">{t("hotelContent")}</h2>
         <label className={labelClass}>
           {t("shortDescription")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={2}
             value={shortDescription}
             onChange={(e) => setShortDescription(e.target.value)}
@@ -263,8 +262,8 @@ export function GuestAppSettingsForm({
         </label>
         <label className={labelClass}>
           {t("longDescription")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={4}
             value={longDescription}
             onChange={(e) => setLongDescription(e.target.value)}
@@ -272,8 +271,8 @@ export function GuestAppSettingsForm({
         </label>
         <label className={labelClass}>
           {t("address")}
-          <input
-            className={inputClass}
+          <AdminInput
+            className="mt-1"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
           />
@@ -281,17 +280,17 @@ export function GuestAppSettingsForm({
         <div className="grid gap-3 sm:grid-cols-2">
           <label className={labelClass}>
             {t("phone")}
-            <input
-              className={inputClass}
+            <AdminInput
+              className="mt-1"
               value={hotelPhone}
               onChange={(e) => setHotelPhone(e.target.value)}
             />
           </label>
           <label className={labelClass}>
             Email
-            <input
+            <AdminInput
               type="email"
-              className={inputClass}
+              className="mt-1"
               value={hotelEmail}
               onChange={(e) => setHotelEmail(e.target.value)}
             />
@@ -299,8 +298,8 @@ export function GuestAppSettingsForm({
         </div>
         <label className={labelClass}>
           Website
-          <input
-            className={inputClass}
+          <AdminInput
+            className="mt-1"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
           />
@@ -311,24 +310,24 @@ export function GuestAppSettingsForm({
         <h2 className="text-sm font-semibold text-zinc-900">Wi-Fi</h2>
         <label className={labelClass}>
           {t("wifiNetwork")}
-          <input
-            className={inputClass}
+          <AdminInput
+            className="mt-1"
             value={wifiName}
             onChange={(e) => setWifiName(e.target.value)}
           />
         </label>
         <label className={labelClass}>
           {t("wifiPassword")}
-          <input
-            className={inputClass}
+          <AdminInput
+            className="mt-1"
             value={wifiPassword}
             onChange={(e) => setWifiPassword(e.target.value)}
           />
         </label>
         <label className={labelClass}>
           {t("wifiInstructions")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={2}
             value={wifiInstructions}
             onChange={(e) => setWifiInstructions(e.target.value)}
@@ -340,8 +339,8 @@ export function GuestAppSettingsForm({
         <h2 className="text-sm font-semibold text-zinc-900">{t("travelTips")}</h2>
         <label className={labelClass}>
           {t("travelTipsHint")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={4}
             value={travelTips}
             onChange={(e) => setTravelTips(e.target.value)}
@@ -354,8 +353,8 @@ export function GuestAppSettingsForm({
         <p className="text-xs text-zinc-500">{t("listItemsHint")}</p>
         <label className={labelClass}>
           {t("facilitiesList")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={4}
             value={facilitiesText}
             onChange={(e) => setFacilitiesText(e.target.value)}
@@ -368,8 +367,8 @@ export function GuestAppSettingsForm({
         <p className="text-xs text-zinc-500">{t("listItemsHint")}</p>
         <label className={labelClass}>
           {t("servicesList")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={4}
             value={servicesText}
             onChange={(e) => setServicesText(e.target.value)}
@@ -389,8 +388,8 @@ export function GuestAppSettingsForm({
         </label>
         <label className={labelClass}>
           {t("greenStayDescription")}
-          <textarea
-            className={inputClass}
+          <AdminTextarea
+            className="mt-1"
             rows={3}
             value={greenDescription}
             onChange={(e) => setGreenDescription(e.target.value)}

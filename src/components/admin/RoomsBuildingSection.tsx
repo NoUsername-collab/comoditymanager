@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
+import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { useTranslations } from "next-intl";
 import type { RoomDashboard } from "@/services/room-dashboard";
 import { getBuildingTheme } from "@/lib/building-theme";
@@ -56,12 +56,12 @@ export function RoomsBuildingSection({
             {AC_LABELS[acMode]} · {active.length} {tCommon("activeRooms")}
           </p>
         </div>
-        <Link
+        <AdminLinkButton
           href={`/admin/rooms/new?building=${buildingId}`}
-          className="rounded-lg border border-white/80 bg-white px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-zinc-50"
+          size="sm"
         >
           + {tCommon("room")}
-        </Link>
+        </AdminLinkButton>
       </div>
 
       <div className="px-5 py-4">

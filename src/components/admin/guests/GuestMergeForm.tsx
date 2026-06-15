@@ -6,6 +6,7 @@ import { mergeGuestsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminSelect } from "@/components/admin/ui/AdminInput";
 
 export function GuestMergeForm({
   guestId,
@@ -34,11 +35,10 @@ export function GuestMergeForm({
       <p className="text-sm font-semibold text-amber-950">
         {t("title")}
       </p>
-      <select
+      <AdminSelect
         name="source_id"
         value={selected}
         onChange={(e) => setSelected(e.target.value)}
-        className="w-full border border-zinc-300 px-2 py-2 text-sm"
         required
         disabled={pending}
       >
@@ -50,7 +50,7 @@ export function GuestMergeForm({
             {d.phone ? ` · ${d.phone}` : ""}
           </option>
         ))}
-      </select>
+      </AdminSelect>
       <AdminSubmitButton
         type="submit"
         disabled={!selected}

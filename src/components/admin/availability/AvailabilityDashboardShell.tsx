@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Link } from "@/i18n/navigation";
+import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { AvailabilityDashboardLazy } from "@/components/admin/availability/AvailabilityDashboardLazy";
 import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 import { loadAvailabilityDashboard } from "@/services/availability-month";
@@ -112,31 +112,33 @@ export async function AvailabilityDashboardShell({
     <div className={className}>
       <div className="availability-dashboard-nav mb-4 flex flex-wrap items-center justify-between gap-4">
         <div className="availability-dashboard-nav__controls flex items-center gap-2">
-          <Link
+          <AdminLinkButton
             href={buildHref(
               basePath,
               buildBaseQuery(prevY, prevM, sharedExtra),
               anchorHash
             )}
-            className="availability-dashboard-nav__btn border border-zinc-300 text-sm font-medium"
+            variant="secondary"
+            className="availability-dashboard-nav__btn"
             aria-label={tNav("previous")}
           >
             ←
-          </Link>
+          </AdminLinkButton>
           <span className="availability-dashboard-nav__title px-2 py-1.5 text-sm font-medium capitalize">
             {dashboard.title}
           </span>
-          <Link
+          <AdminLinkButton
             href={buildHref(
               basePath,
               buildBaseQuery(nextY, nextM, sharedExtra),
               anchorHash
             )}
-            className="availability-dashboard-nav__btn border border-zinc-300 text-sm font-medium"
+            variant="secondary"
+            className="availability-dashboard-nav__btn"
             aria-label={tNav("next")}
           >
             →
-          </Link>
+          </AdminLinkButton>
         </div>
         <p className="text-sm">
           <strong>{dashboard.total_rooms}</strong> {tCommon("rooms")}

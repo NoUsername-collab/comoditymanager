@@ -65,7 +65,7 @@ export async function setAdminLocationUnlock(): Promise<void> {
   jar.set(ADMIN_LOCATION_UNLOCK_COOKIE, encodeToken(until), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: true,
     path: "/",
     maxAge: Math.floor(TTL_MS / 1000),
   });

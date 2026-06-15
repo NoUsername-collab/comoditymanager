@@ -9,7 +9,6 @@ export function HospiraLogsProbeButton() {
   const [probeResult, setProbeResult] = useState<{
     ok: boolean;
     message: string;
-    stack?: string;
     logWritten?: boolean;
   } | null>(null);
 
@@ -39,14 +38,11 @@ export function HospiraLogsProbeButton() {
               } catch (error) {
                 const message =
                   error instanceof Error ? error.message : String(error);
-                const stack =
-                  error instanceof Error ? error.stack ?? undefined : undefined;
-                console.error("[hospira-logs-probe]", { message, stack });
+                console.error("[hospira-logs-probe]", error);
                 setProbeResult({
                   ok: true,
                   logWritten: true,
                   message,
-                  stack,
                 });
               }
             });
@@ -75,11 +71,6 @@ export function HospiraLogsProbeButton() {
           <p className="whitespace-pre-wrap break-words font-mono">
             {probeResult.message}
           </p>
-          {probeResult.stack && (
-            <pre className="mt-2 max-h-32 overflow-auto font-mono text-[10px] leading-relaxed opacity-80">
-              {probeResult.stack}
-            </pre>
-          )}
           {probeResult.ok && probeResult.logWritten && (
             <Link
               href="/hospira-admin/logs#dev-logs"

@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 
 export type AdminDeleteFormAction = (
   formData: FormData
@@ -79,14 +80,15 @@ export function DeleteConfirmButton({
         >
           {pending ? tCommon("deleting") : tCommon("confirmDelete")}
         </button>
-        <button
-          type="button"
+        <AdminButton
+          variant="secondary"
+          size="sm"
           disabled={pending}
           onClick={() => setOpen(false)}
-          className="delete-confirm-form__cancel rounded-md border border-zinc-300 bg-white px-3 py-1 text-xs text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px active:bg-zinc-100"
+          className="delete-confirm-form__cancel"
         >
           {tCommon("cancel")}
-        </button>
+        </AdminButton>
       </div>
     </form>
   );

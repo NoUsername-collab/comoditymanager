@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
+import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { useTranslations } from "next-intl";
 import type { BuildingDashboard } from "@/services/building-dashboard";
 import type { BuildingTheme } from "@/lib/building-theme";
@@ -67,12 +67,12 @@ export function BuildingDashboardCardInteractive({
               defaultPrice={building.default_price_per_night ?? 0}
             />
           </div>
-          <Link
+          <AdminLinkButton
             href={`/admin/rooms/new?building=${building.id}`}
-            className="shrink-0 rounded-lg border border-white/90 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-800 shadow-sm transition hover:bg-white hover:shadow"
+            size="sm"
           >
             + {tCommon("room")}
-          </Link>
+          </AdminLinkButton>
         </header>
 
         <div className="mt-3 flex flex-wrap items-end gap-3 sm:gap-4">

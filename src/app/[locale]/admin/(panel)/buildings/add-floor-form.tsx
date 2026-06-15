@@ -8,6 +8,7 @@ import {
 } from "./actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 
 export function AddFloorForm({
   buildingId,
@@ -76,32 +77,35 @@ export function AddFloorForm({
             <input type="hidden" name="building_id" value={buildingId} />
             <label className="flex flex-col text-sm">
               {tFloor("newFloor")}
-              <input
+              <AdminInput
                 name="name"
                 required
                 placeholder={tCommon("floorPlaceholder")}
-                className="mt-1 rounded border border-zinc-300 px-2 py-1"
+                fieldSize="sm"
+                className="mt-1"
               />
             </label>
             <label className="flex flex-col text-sm">
               {tFloor("levelNumber")}
-              <input
+              <AdminInput
                 name="level_number"
                 type="number"
                 placeholder="0"
-                className="mt-1 w-20 rounded border border-zinc-300 px-2 py-1"
+                fieldSize="sm"
+                className="mt-1 w-20"
               />
             </label>
             <label className="flex flex-col text-sm">
               {tCommon("displayOrder")}
-              <input
+              <AdminInput
                 name="sort_order"
                 type="number"
                 defaultValue={nextSortOrder}
-                className="mt-1 w-16 rounded border border-zinc-300 px-2 py-1"
+                fieldSize="sm"
+                className="mt-1 w-16"
               />
             </label>
-            <AdminSubmitButton className="rounded bg-zinc-800 px-3 py-1.5 text-sm text-white disabled:opacity-50">
+            <AdminSubmitButton size="sm">
               + {tFloor("floor")}
             </AdminSubmitButton>
           </form>

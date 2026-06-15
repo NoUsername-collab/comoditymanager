@@ -3,6 +3,7 @@
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 
 export function GanttAvailabilityHeatmapPanel({
   open,
@@ -41,22 +42,20 @@ export function GanttAvailabilityHeatmapPanel({
             <p className="mt-1 text-xs text-zinc-500">{roomCountLabel}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium"
+            <AdminButton
+              variant="secondary"
               onClick={() => router.push(prevHref)}
               aria-label={tCommon("previous")}
             >
               ←
-            </button>
-            <button
-              type="button"
-              className="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium"
+            </AdminButton>
+            <AdminButton
+              variant="secondary"
               onClick={() => router.push(nextHref)}
               aria-label={tCommon("next")}
             >
               →
-            </button>
+            </AdminButton>
           </div>
         </div>
 

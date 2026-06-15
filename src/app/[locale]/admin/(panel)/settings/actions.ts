@@ -11,6 +11,7 @@ import {
   requireLocationAdmin,
   requireStaff,
 } from "@/lib/auth/require-staff";
+import { checkRateLimit, getClientIp, RATE_LIMIT_PASSWORD_VERIFY } from "@/lib/rate-limit";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
@@ -35,10 +36,17 @@ import { migrateLegacyPaletteKey } from "@/lib/themes";
 import { getTranslations } from "next-intl/server";
 
 export async function unlockLocationAdminAction(formData: FormData) {
-  const [t, { user }] = await Promise.all([
+  const [t, { user }, ip] = await Promise.all([
     getTranslations("admin.serverActions"),
     requireStaff(),
+    getClientIp(),
   ]);
+
+  const rl = checkRateLimit(`pwd:${ip}`, RATE_LIMIT_PASSWORD_VERIFY.limit, RATE_LIMIT_PASSWORD_VERIFY.windowMs);
+  if (!rl.allowed) {
+    return { error: t("ownerPasswordIncorrect") };
+  }
+
   const owner_password = String(formData.get("owner_password") ?? "");
 
   const ok = await verifyLocationUnlockPassword(owner_password, user);

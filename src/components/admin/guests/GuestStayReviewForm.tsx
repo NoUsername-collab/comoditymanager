@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminTextarea } from "@/components/admin/ui/AdminInput";
 import { GuestNoteStarsInput } from "@/components/admin/guests/GuestNoteStarsInput";
 
 export function GuestStayReviewForm({
@@ -38,12 +39,12 @@ export function GuestStayReviewForm({
             variant="positive"
             defaultValue={review?.positive_stars ?? 3}
           />
-          <textarea
+          <AdminTextarea
             name="positive_note"
             rows={3}
             defaultValue={review?.positive_note ?? ""}
             placeholder={tGuests("review.positiveNotePlaceholder")}
-            className="w-full border border-emerald-200 bg-emerald-50/40 px-3 py-2"
+            className="border-emerald-200 bg-emerald-50/40"
           />
         </div>
 
@@ -54,12 +55,12 @@ export function GuestStayReviewForm({
             variant="negative"
             defaultValue={review?.negative_stars ?? 3}
           />
-          <textarea
+          <AdminTextarea
             name="negative_note"
             rows={3}
             defaultValue={review?.negative_note ?? ""}
             placeholder={tGuests("review.negativeNotePlaceholder")}
-            className="w-full border border-red-200 bg-red-50/40 px-3 py-2"
+            className="border-red-200 bg-red-50/40"
           />
         </div>
 

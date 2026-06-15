@@ -33,7 +33,7 @@ export default function PublicError({
   return (
     <main className="public-section" style={{ textAlign: "center", padding: "4rem 1rem" }}>
       <h1>Eroare</h1>
-      <p>{error.message || "Ceva nu a mers bine."}</p>
+      <p>Ceva nu a mers bine.</p>
       <button type="button" onClick={reset}>
         Reîncearcă
       </button>

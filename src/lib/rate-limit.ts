@@ -4,8 +4,11 @@
  * Uses a sliding window per key (typically IP address).
  * Entries are lazily cleaned up on each check to prevent unbounded growth.
  *
- * NOTE: This is per-process. In a multi-instance deployment, consider
- * a Redis-based solution. For a single-server pension app, this is sufficient.
+ * NOTE: Per-process — state resets on each Vercel cold start. This means
+ * a determined attacker could get `limit` extra attempts per cold start.
+ * Acceptable for a pension app; Supabase Auth adds its own rate limiting
+ * (default 30 req/min) as a second layer. For high-security endpoints,
+ * use a persistent store (Redis / Upstash).
  */
 
 type RateLimitEntry = {
@@ -87,3 +90,6 @@ export const RATE_LIMIT_BOOKING_SUBMIT = { limit: 5, windowMs: 10 * 60 * 1000 };
 
 /** Public preview: max 30 previews per 5 minutes per IP */
 export const RATE_LIMIT_BOOKING_PREVIEW = { limit: 30, windowMs: 5 * 60 * 1000 };
+
+/** Password verification (location unlock): max 5 attempts per 15 minutes per IP */
+export const RATE_LIMIT_PASSWORD_VERIFY = { limit: 5, windowMs: 15 * 60 * 1000 };

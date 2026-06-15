@@ -37,8 +37,8 @@ export default function HospiraLogsError({
       <div className="hospira-admin-error__card max-w-2xl rounded-lg border border-red-900 bg-red-950/30 p-4 text-center">
         <p className="text-lg font-semibold text-red-300">{logsT("title")}</p>
         <p className="mt-2 text-sm text-red-200/80">{logsT("hint")}</p>
-        <p className="mt-2 whitespace-pre-wrap break-words text-left font-mono text-sm text-red-300/90">
-          {error.message || t("fallback")}
+        <p className="mt-2 text-sm text-red-300/90">
+          {t("fallback")}
         </p>
         {error.digest && (
           <p className="mt-2 font-mono text-xs text-neutral-500">

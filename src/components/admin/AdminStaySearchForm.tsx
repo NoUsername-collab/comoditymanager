@@ -6,6 +6,8 @@ import {
   useAdminPending,
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 
 function buildCazariHref(
   q: string,
@@ -45,12 +47,12 @@ export function AdminStaySearchForm({
         });
       }}
     >
-      <input
+      <AdminInput
         name="q"
         type="search"
         defaultValue={defaultQuery ?? ""}
         placeholder={t("searchStay")}
-        className="min-w-0 w-full flex-1 border border-zinc-300 px-3 py-2 text-base sm:text-sm"
+        className="min-w-0 w-full flex-1"
         disabled={pending}
       />
       <button
@@ -61,10 +63,9 @@ export function AdminStaySearchForm({
         {pending ? "…" : t("searchGuest")}
       </button>
       {defaultQuery?.trim() ? (
-        <button
-          type="button"
+        <AdminButton
+          variant="secondary"
           disabled={pending}
-          className="border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 disabled:opacity-60"
           onClick={() => {
             void runAdminAction(async () => {
               router.push(buildCazariHref("", preserveParams));
@@ -72,7 +73,7 @@ export function AdminStaySearchForm({
           }}
         >
           {t("cancel")}
-        </button>
+        </AdminButton>
       ) : null}
     </form>
   );

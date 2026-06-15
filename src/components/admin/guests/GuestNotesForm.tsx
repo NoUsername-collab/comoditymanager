@@ -6,6 +6,8 @@ import { updateGuestNotesAction } from "@/app/[locale]/admin/(panel)/guests/acti
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { AdminTextarea } from "@/components/admin/ui/AdminInput";
 
 export function GuestNotesForm({
   guestId,
@@ -58,21 +60,21 @@ export function GuestNotesForm({
         width={640}
       >
         <div className="guest-notes-form__body space-y-4 p-4">
-          <textarea
+          <AdminTextarea
             rows={8}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder={tGuests("notes.placeholder")}
-            className="guest-notes-form__textarea w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm"
+            className="guest-notes-form__textarea"
           />
           <div className="guest-notes-form__actions flex flex-wrap justify-end gap-2">
-            <button
-              type="button"
+            <AdminButton
+              variant="secondary"
               onClick={() => setOpen(false)}
-              className="guest-notes-form__cancel rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700"
+              className="guest-notes-form__cancel"
             >
               {tCommon("close")}
-            </button>
+            </AdminButton>
             <button
               type="button"
               onClick={() => void saveNotes()}

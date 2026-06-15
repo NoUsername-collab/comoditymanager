@@ -5,6 +5,7 @@ import type { StructureFloor, StructureRoom } from "@/services/location-structur
 import { assignRoomFloorAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 import { RoomManageActions } from "@/components/admin/rooms/RoomManageActions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import { AdminSelect } from "@/components/admin/ui/AdminInput";
 
 export function RoomStructureRow({
   room,
@@ -37,12 +38,13 @@ export function RoomStructureRow({
           <label className="sr-only" htmlFor={`floor-${room.id}`}>
             {t("assignFloor")}
           </label>
-          <select
+          <AdminSelect
             id={`floor-${room.id}`}
             name="floor_id"
             defaultValue={room.floor_id ?? ""}
             onChange={(e) => e.currentTarget.form?.requestSubmit()}
-            className="room-structure-row__floor-select max-w-[9rem] rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-xs text-zinc-800"
+            fieldSize="sm"
+            className="room-structure-row__floor-select max-w-[9rem]"
           >
             <option value="">{t("noFloorOption")}</option>
             {floors.map((f) => (
@@ -50,7 +52,7 @@ export function RoomStructureRow({
                 {f.name}
               </option>
             ))}
-          </select>
+          </AdminSelect>
         </form>
         <RoomManageActions
           roomId={room.id}

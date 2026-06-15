@@ -14,6 +14,7 @@ import {
 import { deleteFloorAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
 import { RoomStructureRow } from "./RoomStructureRow";
 
@@ -106,32 +107,35 @@ export function FloorStructureSection({
             <input type="hidden" name="floor_id" value={floor.id} />
             <label className="flex flex-col text-sm">
               {tFloor("newFloor")}
-              <input
+              <AdminInput
                 name="name"
                 required
                 defaultValue={floor.name}
-                className="mt-1 rounded border border-zinc-300 px-2 py-1"
+                fieldSize="sm"
+                className="mt-1"
               />
             </label>
             <label className="flex flex-col text-sm">
               {tFloor("levelNumber")}
-              <input
+              <AdminInput
                 name="level_number"
                 type="number"
                 defaultValue={floor.level_number ?? ""}
-                className="mt-1 w-20 rounded border border-zinc-300 px-2 py-1"
+                fieldSize="sm"
+                className="mt-1 w-20"
               />
             </label>
             <label className="flex flex-col text-sm">
               {tCommon("displayOrder")}
-              <input
+              <AdminInput
                 name="sort_order"
                 type="number"
                 defaultValue={floor.sort_order}
-                className="mt-1 w-16 rounded border border-zinc-300 px-2 py-1"
+                fieldSize="sm"
+                className="mt-1 w-16"
               />
             </label>
-            <AdminSubmitButton className="rounded bg-zinc-800 px-3 py-1.5 text-sm text-white disabled:opacity-50">
+            <AdminSubmitButton size="sm">
               {t("saveFloor")}
             </AdminSubmitButton>
           </form>
