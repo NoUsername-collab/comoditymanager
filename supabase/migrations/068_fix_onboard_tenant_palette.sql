@@ -1,14 +1,30 @@
--- Fix: onboard_new_tenant() inserts pension_settings without admin_palette_key,
--- relying on a column default of 'pension' (from migration 008) which violates
--- the CHECK constraint added in migration 011 (only allows 'default', 'win95', etc.).
--- Migration 011 changed the default to 'default' but some DB instances may not
--- have applied it correctly. This migration fixes both the function and the default.
+-- Fix admin_palette_key CHECK constraint to match current app theme IDs.
+--
+-- History: migration 008 added admin_palette_key with default 'pension'.
+-- Migration 011 changed default to 'default' and added CHECK for
+-- ('default','win95','winxp'). Migration 014 expanded with country themes.
+-- The app now uses theme IDs: 'noir' (was 'default'), 'alpine', 'mediterranean'.
+-- Writing any of these to the DB violates the old CHECK constraint.
 
--- Ensure column default is 'default' (not 'pension')
+-- 1. Drop old CHECK constraint first (it blocks writing new theme IDs)
 alter table public.pension_settings
-  alter column admin_palette_key set default 'default';
+  drop constraint if exists pension_settings_admin_palette_key_check;
 
--- Redefine onboard_new_tenant to explicitly set admin_palette_key
+-- 2. Migrate existing rows to new theme IDs
+update public.pension_settings
+set admin_palette_key = 'noir'
+where admin_palette_key not in ('noir', 'alpine', 'mediterranean');
+
+-- 3. Add new CHECK constraint with current theme IDs
+alter table public.pension_settings
+  add constraint pension_settings_admin_palette_key_check
+  check (admin_palette_key in ('noir', 'alpine', 'mediterranean'));
+
+-- 4. Update column default
+alter table public.pension_settings
+  alter column admin_palette_key set default 'noir';
+
+-- 4. Redefine onboard_new_tenant to use new default
 create or replace function public.onboard_new_tenant(
   p_slug text,
   p_display_name text,
@@ -56,7 +72,7 @@ begin
   values (v_tenant_id, p_owner_id, p_owner_email, 'owner', now());
 
   insert into public.pension_settings (tenant_id, display_name, admin_palette_key)
-  values (v_tenant_id, p_display_name, 'default');
+  values (v_tenant_id, p_display_name, 'noir');
 
   insert into public.room_option_definitions (tenant_id, slug, name, price_per_night_addon, sort_order, is_system)
   values
@@ -77,5 +93,80 @@ begin
   );
 
   return v_tenant_id;
+end;
+$$;
+
+-- 5. Redefine admin_factory_reset_for_tenant to use new theme ID
+create or replace function public.admin_factory_reset_for_tenant(p_tenant_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_display_name text;
+begin
+  if p_tenant_id is null then
+    raise exception 'tenant_id required';
+  end if;
+
+  if not public.is_service_role() then
+    if auth.uid() is null or not public.auth_user_is_active_member(p_tenant_id) then
+      raise exception 'tenant.forbidden';
+    end if;
+    if public.auth_tenant_id() is distinct from p_tenant_id then
+      raise exception 'tenant.forbidden';
+    end if;
+  end if;
+
+  if not exists (select 1 from public.tenants where id = p_tenant_id) then
+    raise exception 'tenant not found: %', p_tenant_id;
+  end if;
+
+  select display_name into v_display_name
+  from public.tenants
+  where id = p_tenant_id;
+
+  delete from public.admin_activity_log where tenant_id = p_tenant_id;
+  delete from public.room_holds where tenant_id = p_tenant_id;
+  delete from public.room_blocks where tenant_id = p_tenant_id;
+  delete from public.booking_room_segments where tenant_id = p_tenant_id;
+  delete from public.booking_rooms where tenant_id = p_tenant_id;
+  delete from public.bookings where tenant_id = p_tenant_id;
+  delete from public.guests where tenant_id = p_tenant_id;
+  delete from public.rooms where tenant_id = p_tenant_id;
+  delete from public.floors where tenant_id = p_tenant_id;
+  delete from public.buildings where tenant_id = p_tenant_id;
+
+  update public.pension_settings
+  set
+    display_name = coalesce(v_display_name, display_name),
+    default_check_in_time = '14:00',
+    default_check_out_time = '11:00',
+    total_extra_beds_max = 2,
+    admin_palette_source = 'catalog',
+    admin_palette_key = 'noir',
+    admin_day_night = 'night',
+    updated_at = now()
+  where tenant_id = p_tenant_id;
+
+  if not found then
+    insert into public.pension_settings (
+      tenant_id,
+      display_name,
+      total_extra_beds_max,
+      admin_palette_source,
+      admin_palette_key,
+      admin_day_night
+    )
+    values (
+      p_tenant_id,
+      coalesce(v_display_name, 'Pensiune'),
+      2,
+      'catalog',
+      'noir',
+      'night'
+    );
+  end if;
 end;
 $$;

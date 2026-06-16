@@ -334,7 +334,7 @@ async function ensurePensionSettingsRow(
   const { error: insertError } = await supabase.from("pension_settings").insert({
     tenant_id: tenantId,
     display_name: tenant?.display_name?.trim() || "Pensiune",
-    admin_palette_key: "default",
+    admin_palette_key: "noir",
   });
 
   if (insertError) {
