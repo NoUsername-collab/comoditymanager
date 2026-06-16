@@ -3088,7 +3088,9 @@
         "updated": "Property settings",
         "appearance_updated": "Dashboard theme",
         "operational_updated": "Operational settings",
-        "booking_rules_updated": "Booking rules / pricing"
+        "booking_rules_updated": "Booking rules / pricing",
+        "guest_app_updated": "Guest app settings",
+        "public_site_updated": "Public site settings"
       },
       "location_admin": {
         "unlocked": "Location admin unlocked",

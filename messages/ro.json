@@ -3087,7 +3087,9 @@
         "updated": "Setări pensiune",
         "appearance_updated": "Temă panou",
         "operational_updated": "Setări operaționale",
-        "booking_rules_updated": "Reguli rezervare / prețuri"
+        "booking_rules_updated": "Reguli rezervare / prețuri",
+        "guest_app_updated": "Setări aplicație oaspeți",
+        "public_site_updated": "Setări pagină publică"
       },
       "location_admin": {
         "unlocked": "Administrare locație deblocată",

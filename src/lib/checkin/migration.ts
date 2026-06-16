@@ -17,6 +17,8 @@ export function isCheckinMigrationMissing(message: string): boolean {
     lower.includes("checkin_deposit") ||
     lower.includes("walkin_allowed") ||
     lower.includes("group_checkin_mode") ||
+    lower.includes("checkin_key_rule") ||
+    lower.includes("checkin_ids_per_room") ||
     /relation[^"]*checkins/.test(lower) ||
     /relation[^"]*checkin_guests/.test(lower)
   );
