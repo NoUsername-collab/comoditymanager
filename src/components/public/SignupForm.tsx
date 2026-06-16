@@ -18,8 +18,39 @@ export function SignupForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorField, setErrorField] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState<SignupSuccess | null>(null);
   const redirectTimer = useRef<number | null>(null);
+
+  function validateField(name: string, value: string): string | null {
+    switch (name) {
+      case "pension_name":
+        if (!value.trim() || value.trim().length < 2) return t("pensionNameRequired");
+        if (value.length > 100) return t("pensionNameTooLong");
+        return null;
+      case "email":
+        if (!value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+          return t("invalidEmail");
+        return null;
+      case "password":
+        if (value.length < 8) return t("passwordMinLength");
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  function handleBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    if (!value) return;
+    const err = validateField(name, value);
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (err) next[name] = err;
+      else delete next[name];
+      return next;
+    });
+  }
 
   useEffect(() => {
     return () => {
@@ -55,6 +86,7 @@ export function SignupForm() {
         setPending(true);
         setError(null);
         setErrorField(null);
+        setFieldErrors({});
         formData.set("locale", locale);
 
         try {
@@ -94,9 +126,14 @@ export function SignupForm() {
           maxLength={100}
           placeholder={t("pensionNamePlaceholder")}
           autoComplete="organization"
-          className={`signup-form__input ${errorField === "pension_name" ? "signup-form__input--error" : ""}`}
+          onBlur={handleBlur}
+          className={`signup-form__input ${errorField === "pension_name" || fieldErrors.pension_name ? "signup-form__input--error" : ""}`}
         />
-        <p className="signup-form__hint">{t("pensionNameHint")}</p>
+        {fieldErrors.pension_name ? (
+          <p className="signup-form__field-error">{fieldErrors.pension_name}</p>
+        ) : (
+          <p className="signup-form__hint">{t("pensionNameHint")}</p>
+        )}
       </div>
 
       <div className="signup-form__field">
@@ -110,8 +147,12 @@ export function SignupForm() {
           required
           placeholder={t("emailPlaceholder")}
           autoComplete="email"
-          className={`signup-form__input ${errorField === "email" ? "signup-form__input--error" : ""}`}
+          onBlur={handleBlur}
+          className={`signup-form__input ${errorField === "email" || fieldErrors.email ? "signup-form__input--error" : ""}`}
         />
+        {fieldErrors.email && (
+          <p className="signup-form__field-error">{fieldErrors.email}</p>
+        )}
       </div>
 
       <div className="signup-form__field">
@@ -126,9 +167,14 @@ export function SignupForm() {
           minLength={8}
           placeholder={t("passwordPlaceholder")}
           autoComplete="new-password"
-          className={`signup-form__input ${errorField === "password" ? "signup-form__input--error" : ""}`}
+          onBlur={handleBlur}
+          className={`signup-form__input ${errorField === "password" || fieldErrors.password ? "signup-form__input--error" : ""}`}
         />
-        <p className="signup-form__hint">{t("passwordHint")}</p>
+        {fieldErrors.password ? (
+          <p className="signup-form__field-error">{fieldErrors.password}</p>
+        ) : (
+          <p className="signup-form__hint">{t("passwordHint")}</p>
+        )}
       </div>
 
       <div className="signup-form__field">

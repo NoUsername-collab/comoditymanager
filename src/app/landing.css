@@ -523,11 +523,17 @@
 /* ── Stats band ────────────────────────────────────────────────────── */
 
 .landing-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
   justify-content: center;
   margin-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  .landing-stats {
+    gap: 1rem;
+  }
 }
 
 .landing-stats--inline {
@@ -535,11 +541,17 @@
 }
 
 .landing-stat {
-  min-width: 7rem;
-  padding: 0.875rem 1.25rem;
+  padding: 0.75rem 0.625rem;
   border-radius: 0.875rem;
   border: 1px solid color-mix(in srgb, var(--site-accent, #d6b55a) 18%, var(--site-border, #1b1824));
   background: color-mix(in srgb, var(--site-card, #0e0c14) 90%, transparent);
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .landing-stat {
+    padding: 0.875rem 1.25rem;
+  }
 }
 
 .landing-stat__value {
