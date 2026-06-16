@@ -60,8 +60,12 @@ export function evaluateCnpRule(
 
     if (ro) {
       if (!guest.national_id?.trim()) {
-        blockers.push(`${name}: CNP obligatoriu (lege ANAF)`);
-        flags.push("no_cnp");
+        if (rule === "required") {
+          blockers.push(`${name}: CNP obligatoriu`);
+        }
+        if (rule !== "optional") {
+          flags.push("no_cnp");
+        }
       } else if (!guestHasValidCnp(guest)) {
         blockers.push(`${name}: CNP invalid`);
         flags.push("invalid_cnp");

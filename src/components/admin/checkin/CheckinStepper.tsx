@@ -1095,7 +1095,7 @@ function GuestIdentityCard({
               <label className="checkin-field checkin-field--span2">
                 <span className="checkin-field__label">
                   {tIdentity("nationalIdTypes.cnp")}
-                  <span className="checkin-field__required"> *</span>
+                  {cnpRule === "required" && <span className="checkin-field__required"> *</span>}
                 </span>
                 <input
                   type="text"
@@ -1166,60 +1166,55 @@ function GuestIdentityCard({
                 />
               </label>
             )}
-          </div>
 
-          {!cnpInCiSection ? (
-            <>
-          <div className="checkin-guest-form__section-title">
-            {tIdentity("personalSection")}
-          </div>
-          <div className="checkin-guest-form__grid checkin-guest-form__grid--national-id">
-            <label className="checkin-field">
-              <span className="checkin-field__label">{tIdentity("nationalIdType")}</span>
-              <NationalIdTypePicker
-                value={idType}
-                onChange={(type) => updateGuest(idx, "national_id_type", type)}
-                labelForType={(type) => tIdentity(`nationalIdTypes.${type}`)}
-                triggerClassName="checkin-field__input"
-              />
-            </label>
+            {showDocFields && !cnpInCiSection && (
+              <>
+                <label className="checkin-field">
+                  <span className="checkin-field__label">{tIdentity("nationalIdType")}</span>
+                  <NationalIdTypePicker
+                    value={idType}
+                    onChange={(type) => updateGuest(idx, "national_id_type", type)}
+                    labelForType={(type) => tIdentity(`nationalIdTypes.${type}`)}
+                    triggerClassName="checkin-field__input"
+                  />
+                </label>
 
-            <label className="checkin-field checkin-field--span2">
-              <span className="checkin-field__label">
-                {idTypeLabel}
-                {roGuest && <span className="checkin-field__required"> *</span>}
-              </span>
-              <input
-                type="text"
-                className="checkin-field__input"
-                inputMode="numeric"
-                maxLength={expectedIdLength + 2}
-                value={guest.national_id ?? ""}
-                onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
-                placeholder={tIdentity("nationalIdPlaceholder", {
-                  digits: expectedIdLength,
-                })}
-              />
-              {idState && !idState.valid && (
-                <span className="checkin-field__error">
-                  {tIdentity("nationalIdInvalid", { type: idType.toUpperCase() })}
-                </span>
-              )}
-              {idState?.valid && idState.data?.birthDate && (
-                <span className="checkin-field__hint">
-                  {t("field.birthDateFromId", { date: idState.data.birthDate })}
-                </span>
-              )}
-              <span className="checkin-field__hint">
-                {tIdentity("nationalIdHint", {
-                  type: idTypeLabel,
-                  digits: expectedIdLength,
-                })}
-              </span>
-            </label>
+                <label className="checkin-field checkin-field--span2">
+                  <span className="checkin-field__label">
+                    {idTypeLabel}
+                    {roGuest && cnpRule === "required" && <span className="checkin-field__required"> *</span>}
+                  </span>
+                  <input
+                    type="text"
+                    className="checkin-field__input"
+                    inputMode="numeric"
+                    maxLength={expectedIdLength + 2}
+                    value={guest.national_id ?? ""}
+                    onChange={(e) => updateGuest(idx, "national_id", e.target.value)}
+                    placeholder={tIdentity("nationalIdPlaceholder", {
+                      digits: expectedIdLength,
+                    })}
+                  />
+                  {idState && !idState.valid && (
+                    <span className="checkin-field__error">
+                      {tIdentity("nationalIdInvalid", { type: idType.toUpperCase() })}
+                    </span>
+                  )}
+                  {idState?.valid && idState.data?.birthDate && (
+                    <span className="checkin-field__hint">
+                      {t("field.birthDateFromId", { date: idState.data.birthDate })}
+                    </span>
+                  )}
+                  <span className="checkin-field__hint">
+                    {tIdentity("nationalIdHint", {
+                      type: idTypeLabel,
+                      digits: expectedIdLength,
+                    })}
+                  </span>
+                </label>
+              </>
+            )}
           </div>
-            </>
-          ) : null}
         </>
       )}
     </div>

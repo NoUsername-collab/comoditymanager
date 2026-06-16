@@ -495,6 +495,36 @@
   margin-bottom: 0.75rem;
 }
 
+.checkin-settings__section {
+  margin-bottom: 1.25rem;
+}
+
+.checkin-settings__section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.35rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--admin-border, #e4e4e7);
+}
+
+.checkin-settings__section:first-child .checkin-settings__section-header {
+  margin-top: 0;
+}
+
+.checkin-settings__section-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text, #18181b);
+}
+
+.checkin-settings__section-desc {
+  font-size: 0.6875rem;
+  color: var(--admin-text-muted, #a1a1aa);
+}
+
 .checkin-setting-row {
   display: flex;
   justify-content: space-between;
