@@ -2459,6 +2459,8 @@
       "roleForbidden": "Nu ai permisiunea să editezi datele de identitate.",
       "selectProfileToMerge": "Selectează profilul de combinat",
       "invalidReview": "Review invalid",
+      "reviewNoteRequired": "Nota de review este obligatorie.",
+      "reviewSinglePolarity": "Alege fie pozitiv, fie negativ — nu ambele.",
       "bookingIdMissing": "ID rezervare lipsă.",
       "checkInError": "Eroare check-in.",
       "checkOutError": "Eroare check-out.",
@@ -3300,7 +3302,9 @@
         "negativeNote": "Notă negativă",
         "negativeNotePlaceholder": "Probleme, incidente sau ce trebuie știut la următoarea cazare.",
         "saving": "Salvez review-ul…",
-        "saveStayReview": "Salvează review sejur"
+        "saveStayReview": "Salvează review sejur",
+        "noteRequired": "Scrie o notă scurtă înainte de salvare.",
+        "chooseToneRequired": "Alege pozitiv sau negativ înainte de salvare."
       },
       "traits": {
         "positive": {

@@ -2354,6 +2354,8 @@
       "roleForbidden": "Нямате право да редактирате данни за самоличност.",
       "selectProfileToMerge": "Избери профил за обединяване",
       "invalidReview": "Невалиден review",
+      "reviewNoteRequired": "Бележката за review е задължителна.",
+      "reviewSinglePolarity": "Избери позитивен или негативен тон — не и двете.",
       "bookingIdMissing": "Липсва ID на резервация.",
       "checkInError": "Грешка при check-in.",
       "checkOutError": "Грешка при check-out.",
@@ -3072,7 +3074,9 @@
         "problemDetails": "Детайли за проблем / контекст",
         "problemPlaceholder": "Какво се случи, как беше решено, какво трябва да знае staff следващия път.",
         "saving": "Записвам review…",
-        "saveStayReview": "Запази review на престоя"
+        "saveStayReview": "Запази review на престоя",
+        "noteRequired": "Напиши кратка бележка преди запис.",
+        "chooseToneRequired": "Избери позитивен или негативен тон преди запис."
       },
       "traits": {
         "positive": {

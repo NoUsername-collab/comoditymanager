@@ -294,14 +294,26 @@ export async function saveGuestStayReviewAction(formData: FormData) {
   const bookingId = String(formData.get("booking_id") ?? "");
   if (!guestId || !bookingId) throw new Error(t("invalidReview"));
 
-  await saveGuestStayReview({
-    guestId,
-    bookingId,
-    positiveNote: String(formData.get("positive_note") ?? ""),
-    negativeNote: String(formData.get("negative_note") ?? ""),
-    positiveStars: parseOptionalStarsField(formData.get("positive_stars")),
-    negativeStars: parseOptionalStarsField(formData.get("negative_stars")),
-  });
+  try {
+    await saveGuestStayReview({
+      guestId,
+      bookingId,
+      positiveNote: String(formData.get("positive_note") ?? ""),
+      negativeNote: String(formData.get("negative_note") ?? ""),
+      positiveStars: parseOptionalStarsField(formData.get("positive_stars")),
+      negativeStars: parseOptionalStarsField(formData.get("negative_stars")),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "guest.review_note_required") {
+        throw new Error(t("reviewNoteRequired"));
+      }
+      if (error.message === "guest.review_single_polarity") {
+        throw new Error(t("reviewSinglePolarity"));
+      }
+    }
+    throw error;
+  }
 
   revalidateGuestPaths(guestId, bookingId);
 }

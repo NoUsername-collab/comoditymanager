@@ -16,6 +16,7 @@ export type GuestStayRatingValue = {
 type BaseProps = {
   disabled?: boolean;
   initialReview?: GuestStayReviewRow | null;
+  formKey?: string;
 };
 
 type FormProps = BaseProps & {
@@ -57,6 +58,24 @@ function initialFromReview(
   return { polarity: null, intensity: 3, note: "" };
 }
 
+export function readGuestStayRatingFromForm(form: HTMLFormElement): {
+  polarity: ReviewPolarity | null;
+  note: string;
+} {
+  const positiveNote = String(
+    (form.elements.namedItem("positive_note") as HTMLTextAreaElement | null)
+      ?.value ?? ""
+  ).trim();
+  const negativeNote = String(
+    (form.elements.namedItem("negative_note") as HTMLTextAreaElement | null)
+      ?.value ?? ""
+  ).trim();
+
+  if (positiveNote) return { polarity: "positive", note: positiveNote };
+  if (negativeNote) return { polarity: "negative", note: negativeNote };
+  return { polarity: null, note: "" };
+}
+
 export function GuestStayRatingFields(props: FormProps | ControlledProps) {
   const tGuests = useTranslations("admin.guests.review");
   const isControlled = props.mode === "controlled";
@@ -92,39 +111,56 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
         ? "border-red-200 bg-red-50/40"
         : "";
 
-  const positiveNote =
-    state.polarity === "positive" ? state.note : "";
-  const negativeNote =
-    state.polarity === "negative" ? state.note : "";
-  const positiveStars =
-    state.polarity === "positive" ? state.intensity : "";
-  const negativeStars =
-    state.polarity === "negative" ? state.intensity : "";
+  const positiveNoteName = !isControlled
+    ? (props.positiveNoteName ?? "positive_note")
+    : "positive_note";
+  const negativeNoteName = !isControlled
+    ? (props.negativeNoteName ?? "negative_note")
+    : "negative_note";
+  const positiveStarsName = !isControlled
+    ? (props.positiveStarsName ?? "positive_stars")
+    : "positive_stars";
+  const negativeStarsName = !isControlled
+    ? (props.negativeStarsName ?? "negative_stars")
+    : "negative_stars";
+
+  const defaultNote =
+    state.polarity === "positive"
+      ? (props.initialReview?.positive_note ?? "")
+      : state.polarity === "negative"
+        ? (props.initialReview?.negative_note ?? "")
+        : "";
+
+  const textareaKey = `${props.formKey ?? "stay"}-${state.polarity ?? "none"}`;
 
   return (
     <div className="guest-stay-rating space-y-3">
-      {!isControlled ? (
+      {!isControlled && state.polarity ? (
         <>
-          <input
-            type="hidden"
-            name={props.positiveNoteName ?? "positive_note"}
-            value={positiveNote}
-          />
-          <input
-            type="hidden"
-            name={props.negativeNoteName ?? "negative_note"}
-            value={negativeNote}
-          />
-          <input
-            type="hidden"
-            name={props.positiveStarsName ?? "positive_stars"}
-            value={positiveStars}
-          />
-          <input
-            type="hidden"
-            name={props.negativeStarsName ?? "negative_stars"}
-            value={negativeStars}
-          />
+          <input type="hidden" name="review_polarity" value={state.polarity} />
+          {state.polarity === "positive" ? (
+            <>
+              <input type="hidden" name={negativeNoteName} value="" />
+              <input type="hidden" name={negativeStarsName} value="" />
+              <input
+                type="hidden"
+                name={positiveStarsName}
+                value={state.intensity}
+                readOnly
+              />
+            </>
+          ) : (
+            <>
+              <input type="hidden" name={positiveNoteName} value="" />
+              <input type="hidden" name={positiveStarsName} value="" />
+              <input
+                type="hidden"
+                name={negativeStarsName}
+                value={state.intensity}
+                readOnly
+              />
+            </>
+          )}
         </>
       ) : null}
 
@@ -225,10 +261,14 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
             />
           ) : (
             <AdminTextarea
+              key={textareaKey}
+              name={
+                state.polarity === "positive" ? positiveNoteName : negativeNoteName
+              }
               rows={3}
               disabled={props.disabled}
-              value={state.note}
-              onChange={(e) => patch({ note: e.target.value })}
+              defaultValue={defaultNote}
+              required
               placeholder={
                 state.polarity === "positive"
                   ? tGuests("positiveNotePlaceholder")

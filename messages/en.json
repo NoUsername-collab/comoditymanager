@@ -2494,6 +2494,8 @@
       "roleForbidden": "You do not have permission to edit identity data.",
       "selectProfileToMerge": "Select profile to merge",
       "invalidReview": "Invalid review",
+      "reviewNoteRequired": "A review note is required.",
+      "reviewSinglePolarity": "Choose either a positive or a negative review — not both.",
       "bookingIdMissing": "Booking ID missing.",
       "checkInError": "Check-in error.",
       "checkOutError": "Check-out error.",
@@ -3335,7 +3337,9 @@
         "negativeNote": "Negative note",
         "negativeNotePlaceholder": "Issues, incidents, or what to know for the next stay.",
         "saving": "Saving review…",
-        "saveStayReview": "Save stay review"
+        "saveStayReview": "Save stay review",
+        "noteRequired": "Write a short note before saving.",
+        "chooseToneRequired": "Choose positive or negative before saving."
       },
       "traits": {
         "positive": {
