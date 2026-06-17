@@ -11,10 +11,12 @@ import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
 import { CheckinSettingsPanel } from "@/components/admin/checkin/CheckinSettingsPanel";
+import { EmailSettingsPanel } from "@/components/admin/settings/EmailSettingsPanel";
 import { StatisticsSettingsPanel } from "@/components/admin/settings/StatisticsSettingsPanel";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { pensionStatisticsVisibility } from "@/services/pension-settings";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
+import { getEmailSettings, DEFAULT_EMAIL_SETTINGS } from "@/services/email-settings";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
@@ -44,7 +46,7 @@ export default async function SettingsPage({
   }>;
 }) {
   const staffPromise = requireStaff();
-  const [t, params, staff, checkinSettings, bookingRules, locale, pensionResult] =
+  const [t, params, staff, checkinSettings, bookingRules, locale, emailSettings, pensionResult] =
     await Promise.all([
       getTranslations("admin.pages.settings"),
       searchParams,
@@ -52,6 +54,7 @@ export default async function SettingsPage({
       getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
       getBookingRulesSettings().catch(() => null),
       getLocale(),
+      getEmailSettings().catch(() => DEFAULT_EMAIL_SETTINGS),
       (async () => {
         try {
           return {
@@ -85,6 +88,7 @@ export default async function SettingsPage({
     "booking",
     "checkin",
     "history",
+    "email",
   ]);
   const section = inlineSections.has(params.section ?? "overview")
     ? (params.section ?? "overview")
@@ -240,6 +244,18 @@ export default async function SettingsPage({
             description={t("checkin.docRuleDesc")}
           >
             <CheckinSettingsPanel settings={checkinSettings} />
+          </SettingsSection>
+        </>
+      ) : null}
+
+      {section === "email" && (isOwner || memberRole === "admin") ? (
+        <>
+          <SettingsPageHeader
+            title={t("navEmail")}
+            description={t("navEmailDesc")}
+          />
+          <SettingsSection title={t("emailTitle")} description={t("emailSubtitle")}>
+            <EmailSettingsPanel settings={emailSettings} />
           </SettingsSection>
         </>
       ) : null}

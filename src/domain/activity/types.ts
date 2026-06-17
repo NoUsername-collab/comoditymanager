@@ -55,6 +55,8 @@ export type ActivityAction =
   | "settings.public_site_updated"
   | "settings.guest_app_updated"
   | "settings.booking_rules_updated"
+  | "settings.email_updated"
+  | "email.test_sent"
   | "location_admin.unlocked"
   | "location_admin.locked"
   | "staff.password_changed"

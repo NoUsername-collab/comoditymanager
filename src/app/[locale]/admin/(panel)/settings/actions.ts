@@ -470,6 +470,105 @@ export async function updateFiscalBillingSettingsAction(
   }
 }
 
+export async function updateEmailSettingsAction(
+  formData: FormData
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("admin.serverActions");
+  const { memberRole } = await requireStaff();
+  if (memberRole !== "owner" && memberRole !== "admin") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  const { updateEmailSettings } = await import("@/services/email-settings");
+
+  const partial: Record<string, unknown> = {};
+  const boolKeys = [
+    "email_enabled",
+    "email_notify_new_request",
+    "email_notify_confirmation",
+    "email_notify_cancellation",
+    "email_notify_daily_summary",
+  ];
+  for (const key of boolKeys) {
+    if (formData.has(key)) {
+      partial[key] = String(formData.get(key)) === "true";
+    }
+  }
+  if (formData.has("email_reply_to")) {
+    partial.email_reply_to = String(formData.get("email_reply_to") ?? "").trim() || null;
+  }
+  if (formData.has("email_custom_footer")) {
+    partial.email_custom_footer = String(formData.get("email_custom_footer") ?? "").trim() || null;
+  }
+
+  try {
+    await updateEmailSettings(partial);
+    await logAdminActivityFromSession({
+      action: "settings.email_updated",
+      entityType: "settings",
+      summary: "Email notification settings updated",
+    });
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
+}
+
+export async function sendTestEmailAction(): Promise<
+  { ok: true } | { ok: false; error: string }
+> {
+  const t = await getTranslations("admin.serverActions");
+  const { user, memberRole } = await requireStaff();
+  if (memberRole !== "owner" && memberRole !== "admin") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  const email = user.email;
+  if (!email) {
+    return { ok: false, error: "No email on account" };
+  }
+
+  const { sendEmail } = await import("@/lib/email/provider");
+  const { testEmailTemplate } = await import("@/lib/email/templates");
+  const { getEmailSettings } = await import("@/services/email-settings");
+  const { getPensionSettings } = await import("@/services/pension-settings");
+
+  const [emailSettings, pension] = await Promise.all([
+    getEmailSettings(),
+    getPensionSettings(),
+  ]);
+
+  const pensionName = pension?.display_name ?? "Pensiune";
+  const template = testEmailTemplate({
+    pensionName,
+    customFooter: emailSettings.email_custom_footer,
+  });
+
+  const result = await sendEmail({
+    to: email,
+    subject: template.subject,
+    html: template.html,
+    text: template.text,
+    replyTo: emailSettings.email_reply_to || undefined,
+  });
+
+  if (!result.success) {
+    return { ok: false, error: result.error ?? "Send failed" };
+  }
+
+  await logAdminActivityFromSession({
+    action: "email.test_sent",
+    entityType: "settings",
+    summary: `Test email sent to ${email}`,
+  });
+
+  return { ok: true };
+}
+
 /** @deprecated — folosește updateAppearanceSettingsAction sau updateOperationalSettingsAction */
 export async function updateSettingsAction(formData: FormData) {
   return updateOperationalSettingsAction(formData);

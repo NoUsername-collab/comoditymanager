@@ -15,6 +15,7 @@ import {
   bookingCancelledToGuest,
   guestAppLinkToGuest,
 } from "@/lib/email/templates";
+import type { EmailSettings } from "@/services/email-settings";
 
 /** Log email failures without crashing the main flow */
 function logEmailResult(context: string, result: EmailResult): void {
@@ -37,7 +38,9 @@ export async function notifyOwnerNewRequest(data: {
   rooms: string[];
   bookingId: string;
   baseUrl: string;
+  emailSettings?: EmailSettings;
 }): Promise<void> {
+  if (data.emailSettings && (!data.emailSettings.email_enabled || !data.emailSettings.email_notify_new_request)) return;
   try {
     const template = newBookingRequestToOwner({
       pensionName: data.pensionName,
@@ -57,7 +60,7 @@ export async function notifyOwnerNewRequest(data: {
       subject: template.subject,
       html: template.html,
       text: template.text,
-      replyTo: data.guestEmail,
+      replyTo: data.emailSettings?.email_reply_to || data.guestEmail,
     });
 
     logEmailResult("notifyOwnerNewRequest", result);
@@ -79,7 +82,9 @@ export async function notifyGuestConfirmed(data: {
   checkInTime?: string;
   checkOutTime?: string;
   guestAppUrl?: string;
+  emailSettings?: EmailSettings;
 }): Promise<void> {
+  if (data.emailSettings && (!data.emailSettings.email_enabled || !data.emailSettings.email_notify_confirmation)) return;
   try {
     const template = bookingConfirmedToGuest({
       pensionName: data.pensionName,
@@ -99,6 +104,7 @@ export async function notifyGuestConfirmed(data: {
       subject: template.subject,
       html: template.html,
       text: template.text,
+      replyTo: data.emailSettings?.email_reply_to || undefined,
     });
 
     logEmailResult("notifyGuestConfirmed", result);
@@ -150,7 +156,9 @@ export async function notifyGuestCancelled(data: {
   checkIn: string;
   checkOut: string;
   reason?: string;
+  emailSettings?: EmailSettings;
 }): Promise<void> {
+  if (data.emailSettings && (!data.emailSettings.email_enabled || !data.emailSettings.email_notify_cancellation)) return;
   try {
     const template = bookingCancelledToGuest({
       pensionName: data.pensionName,
@@ -165,6 +173,7 @@ export async function notifyGuestCancelled(data: {
       subject: template.subject,
       html: template.html,
       text: template.text,
+      replyTo: data.emailSettings?.email_reply_to || undefined,
     });
 
     logEmailResult("notifyGuestCancelled", result);

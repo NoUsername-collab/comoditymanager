@@ -16,7 +16,10 @@ interface EmailContent {
 }
 
 // ─── Shared layout ──────────────────────────────────────────────
-function wrap(pensionName: string, body: string): string {
+function wrap(pensionName: string, body: string, customFooter?: string | null): string {
+  const footerLine = customFooter
+    ? `<tr><td style="padding:12px 28px;text-align:center"><span style="color:#3f3f46;font-size:13px;font-style:italic">${customFooter}</span></td></tr>`
+    : "";
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
@@ -30,6 +33,7 @@ function wrap(pensionName: string, body: string): string {
         <tr><td style="padding:28px">
           ${body}
         </td></tr>
+        ${footerLine}
         <tr><td style="padding:16px 28px;background:#fafafa;border-top:1px solid #e4e4e7;text-align:center">
           <span style="color:#a1a1aa;font-size:12px">${platformPoweredByLabel()}</span>
         </td></tr>
@@ -194,6 +198,22 @@ export function bookingCancelledToGuest(data: {
       ${p("Dacă ai întrebări, nu ezita să ne contactezi.")}
     `),
     text: `Rezervare anulată — ${data.pensionName}\n\n${data.guestName}, rezervarea pentru ${data.checkIn} → ${data.checkOut} a fost anulată.${data.reason ? `\nMotiv: ${data.reason}` : ""}`,
+  };
+}
+
+// ─── Template: Test email ───────────────────────────────────────
+export function testEmailTemplate(data: {
+  pensionName: string;
+  customFooter?: string | null;
+}): EmailContent {
+  return {
+    subject: `Email test — ${data.pensionName}`,
+    html: wrap(data.pensionName, `
+      ${h2("Email configurat corect!")}
+      ${p("Acest email confirma ca sistemul de notificari functioneaza. Emailurile vor fi trimise automat conform setarilor tale.")}
+      ${p("Poti modifica setarile oricand din panoul de administrare.")}
+    `, data.customFooter),
+    text: `Email test — ${data.pensionName}\n\nSistemul de notificari functioneaza corect.`,
   };
 }
 

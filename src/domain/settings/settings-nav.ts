@@ -103,6 +103,14 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         memberRoles: ["owner", "admin"],
       },
       {
+        id: "email",
+        labelKey: "navEmail",
+        descriptionKey: "navEmailDesc",
+        href: "/admin/settings?section=email",
+        section: "email",
+        memberRoles: ["owner", "admin"],
+      },
+      {
         id: "domains",
         labelKey: "navDomains",
         descriptionKey: "navDomainsDesc",
