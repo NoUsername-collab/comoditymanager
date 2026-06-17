@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -37,6 +38,28 @@ function textToGallery(raw: string): PublicGalleryItem[] {
         caption: caption ? { ro: caption, en: caption, bg: caption } : undefined,
       };
     });
+}
+
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="settings-section">
+      <header className="settings-section__head">
+        <div>
+          <h2 className="settings-section__title">{title}</h2>
+          {description ? <p className="settings-section__desc">{description}</p> : null}
+        </div>
+      </header>
+      <div className="settings-section__body">{children}</div>
+    </section>
+  );
 }
 
 export function PublicSiteSettingsForm({
@@ -203,20 +226,23 @@ export function PublicSiteSettingsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="settings-form-stack">
       {error ? (
-        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-          {error}
-        </p>
+        <div className="settings-alerts">
+          <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+            {error}
+          </p>
+        </div>
       ) : null}
 
-      <section className="space-y-3">
-        <h3 className="text-sm font-bold text-zinc-900">{t("templateTitle")}</h3>
-        <div className="pub-settings-grid pub-settings-grid--3">
+      <FormSection title={t("templateTitle")} description={t("templateSectionDesc")}>
+        <div className="pub-settings-grid pub-settings-grid--3" role="radiogroup" aria-label={t("templateTitle")}>
           {PUBLIC_TEMPLATE_OPTIONS.map((option) => (
             <button
               key={option}
               type="button"
+              role="radio"
+              aria-checked={templateId === option}
               className={[
                 "pub-settings-card",
                 templateId === option && "pub-settings-card--active",
@@ -226,21 +252,20 @@ export function PublicSiteSettingsForm({
               onClick={() => setTemplateId(option)}
             >
               <p className="pub-settings-card__title">{t(`templates.${option}.title`)}</p>
-              <p className="pub-settings-card__desc">
-                {t(`templates.${option}.desc`)}
-              </p>
+              <p className="pub-settings-card__desc">{t(`templates.${option}.desc`)}</p>
             </button>
           ))}
         </div>
-      </section>
+      </FormSection>
 
-      <section className="space-y-3">
-        <h3 className="text-sm font-bold text-zinc-900">{t("themeTitle")}</h3>
-        <div className="pub-settings-grid pub-settings-grid--3">
+      <FormSection title={t("themeTitle")} description={t("themeSectionDesc")}>
+        <div className="pub-settings-grid pub-settings-grid--3" role="radiogroup" aria-label={t("themeTitle")}>
           {PUBLIC_THEME_OPTIONS.map((option) => (
             <button
               key={option}
               type="button"
+              role="radio"
+              aria-checked={themeId === option}
               className={[
                 "pub-settings-card",
                 themeId === option && "pub-settings-card--active",
@@ -254,179 +279,208 @@ export function PublicSiteSettingsForm({
             </button>
           ))}
         </div>
-      </section>
+      </FormSection>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <label className="pub-settings-field">
-          <span>{t("heroTitle")}</span>
-          <input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} />
-        </label>
-        <label className="pub-settings-field">
-          <span>{t("heroBadge")}</span>
-          <input value={heroBadge} onChange={(e) => setHeroBadge(e.target.value)} />
-        </label>
-        <label className="pub-settings-field md:col-span-2">
-          <span>{t("heroSubtitle")}</span>
-          <textarea
-            rows={2}
-            value={heroSubtitle}
-            onChange={(e) => setHeroSubtitle(e.target.value)}
-          />
-        </label>
-        <label className="pub-settings-field md:col-span-2">
-          <span>{t("heroTagline")}</span>
-          <textarea
-            rows={2}
-            value={heroTagline}
-            onChange={(e) => setHeroTagline(e.target.value)}
-          />
-        </label>
-        <label className="pub-settings-field">
-          <span>{t("heroCtaPrimary")}</span>
-          <input
-            value={heroCtaPrimary}
-            onChange={(e) => setHeroCtaPrimary(e.target.value)}
-          />
-        </label>
-        <label className="pub-settings-field">
-          <span>{t("heroCtaSecondary")}</span>
-          <input
-            value={heroCtaSecondary}
-            onChange={(e) => setHeroCtaSecondary(e.target.value)}
-          />
-        </label>
-        <label className="pub-settings-field md:col-span-2">
-          <span>{t("heroImageUrl")}</span>
-          <input
-            value={heroImageUrl}
-            onChange={(e) => setHeroImageUrl(e.target.value)}
-            placeholder="https://..."
-          />
-        </label>
-      </section>
+      <FormSection title={t("heroSectionTitle")} description={t("heroSectionDesc")}>
+        <div className="admin-settings-fields admin-settings-fields--2col">
+          <label>
+            <span>{t("heroTitle")}</span>
+            <input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} />
+          </label>
+          <label>
+            <span>{t("heroBadge")}</span>
+            <input value={heroBadge} onChange={(e) => setHeroBadge(e.target.value)} />
+          </label>
+          <label className="admin-settings-fields__full">
+            <span>{t("heroSubtitle")}</span>
+            <textarea
+              rows={2}
+              value={heroSubtitle}
+              onChange={(e) => setHeroSubtitle(e.target.value)}
+            />
+          </label>
+          <label className="admin-settings-fields__full">
+            <span>{t("heroTagline")}</span>
+            <textarea
+              rows={2}
+              value={heroTagline}
+              onChange={(e) => setHeroTagline(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>{t("heroCtaPrimary")}</span>
+            <input
+              value={heroCtaPrimary}
+              onChange={(e) => setHeroCtaPrimary(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>{t("heroCtaSecondary")}</span>
+            <input
+              value={heroCtaSecondary}
+              onChange={(e) => setHeroCtaSecondary(e.target.value)}
+            />
+          </label>
+          <label className="admin-settings-fields__full">
+            <span>{t("heroImageUrl")}</span>
+            <input
+              value={heroImageUrl}
+              onChange={(e) => setHeroImageUrl(e.target.value)}
+              placeholder="https://..."
+            />
+          </label>
+        </div>
+      </FormSection>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <h3 className="md:col-span-2 text-sm font-bold text-zinc-900">{t("contactTitle")}</h3>
-        <label className="pub-settings-field">
-          <span>Email</span>
-          <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
-        </label>
-        <label className="pub-settings-field">
-          <span>{t("phone")}</span>
-          <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
-        </label>
-        <label className="pub-settings-field">
-          <span>WhatsApp</span>
-          <input
-            value={contactWhatsapp}
-            onChange={(e) => setContactWhatsapp(e.target.value)}
-            placeholder="+40..."
-          />
-        </label>
-        <label className="pub-settings-field">
-          <span>Telegram</span>
-          <input
-            value={contactTelegram}
-            onChange={(e) => setContactTelegram(e.target.value)}
-            placeholder="@username"
-          />
-        </label>
-        <label className="pub-settings-field">
-          <span>Facebook</span>
-          <input
-            value={contactFacebook}
-            onChange={(e) => setContactFacebook(e.target.value)}
-          />
-        </label>
-        <label className="pub-settings-field">
-          <span>Instagram</span>
-          <input
-            value={contactInstagram}
-            onChange={(e) => setContactInstagram(e.target.value)}
-          />
-        </label>
-      </section>
+      <FormSection title={t("contactTitle")} description={t("contactSectionDesc")}>
+        <div className="admin-settings-fields admin-settings-fields--2col">
+          <label>
+            <span>Email</span>
+            <input
+              type="email"
+              value={contactEmail}
+              onChange={(e) => setContactEmail(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>{t("phone")}</span>
+            <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
+          </label>
+          <label>
+            <span>WhatsApp</span>
+            <input
+              value={contactWhatsapp}
+              onChange={(e) => setContactWhatsapp(e.target.value)}
+              placeholder="+40..."
+            />
+          </label>
+          <label>
+            <span>Telegram</span>
+            <input
+              value={contactTelegram}
+              onChange={(e) => setContactTelegram(e.target.value)}
+              placeholder="@username"
+            />
+          </label>
+          <label>
+            <span>Facebook</span>
+            <input
+              value={contactFacebook}
+              onChange={(e) => setContactFacebook(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>Instagram</span>
+            <input
+              value={contactInstagram}
+              onChange={(e) => setContactInstagram(e.target.value)}
+            />
+          </label>
+        </div>
+      </FormSection>
 
-      <section className="space-y-3">
-        <h3 className="text-sm font-bold text-zinc-900">{t("sectionsTitle")}</h3>
-        <label className="pub-settings-section-toggle">
-          <input type="checkbox" checked={introVisible} onChange={(e) => setIntroVisible(e.target.checked)} />
-          {t("sectionIntro")}
-        </label>
-        <label className="pub-settings-section-toggle">
-          <input
-            type="checkbox"
-            checked={benefitsVisible}
-            onChange={(e) => setBenefitsVisible(e.target.checked)}
-          />
-          {t("sectionBenefits")}
-        </label>
-        <label className="pub-settings-section-toggle">
-          <input type="checkbox" checked={stepsVisible} onChange={(e) => setStepsVisible(e.target.checked)} />
-          {t("sectionSteps")}
-        </label>
-        <label className="pub-settings-section-toggle">
-          <input type="checkbox" checked={ctaVisible} onChange={(e) => setCtaVisible(e.target.checked)} />
-          {t("sectionCta")}
-        </label>
-        <label className="pub-settings-section-toggle">
-          <input
-            type="checkbox"
-            checked={galleryVisible}
-            onChange={(e) => setGalleryVisible(e.target.checked)}
-          />
-          {t("sectionGallery")}
-        </label>
-        <label className="pub-settings-field">
-          <span>{t("galleryHelp")}</span>
-          <textarea
-            rows={5}
-            value={galleryText}
-            onChange={(e) => setGalleryText(e.target.value)}
-            placeholder={"https://example.com/photo.jpg | Cameră dublă"}
-          />
-        </label>
-      </section>
+      <FormSection title={t("sectionsTitle")} description={t("sectionsSectionDesc")}>
+        <div className="pub-settings-toggles">
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={introVisible}
+              onChange={(e) => setIntroVisible(e.target.checked)}
+            />
+            {t("sectionIntro")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={benefitsVisible}
+              onChange={(e) => setBenefitsVisible(e.target.checked)}
+            />
+            {t("sectionBenefits")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={stepsVisible}
+              onChange={(e) => setStepsVisible(e.target.checked)}
+            />
+            {t("sectionSteps")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={ctaVisible}
+              onChange={(e) => setCtaVisible(e.target.checked)}
+            />
+            {t("sectionCta")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={galleryVisible}
+              onChange={(e) => setGalleryVisible(e.target.checked)}
+            />
+            {t("sectionGallery")}
+          </label>
+        </div>
+        <div className="admin-settings-fields">
+          <label>
+            <span>{t("galleryHelp")}</span>
+            <textarea
+              rows={5}
+              value={galleryText}
+              onChange={(e) => setGalleryText(e.target.value)}
+              placeholder="https://example.com/photo.jpg | Cameră dublă"
+            />
+          </label>
+        </div>
+      </FormSection>
 
-      <section className="grid gap-4 md:grid-cols-2">
-        <h3 className="md:col-span-2 text-sm font-bold text-zinc-900">{t("bookingTitle")}</h3>
-        <label className="pub-settings-section-toggle">
-          <input
-            type="checkbox"
-            checked={bookingEnabled}
-            onChange={(e) => setBookingEnabled(e.target.checked)}
-          />
-          {t("bookingEnabled")}
-        </label>
-        <label className="pub-settings-field">
-          <span>{t("bookingPosition")}</span>
-          <select
-            value={bookingNavPosition}
-            onChange={(e) =>
-              setBookingNavPosition(
-                e.target.value as PublicSiteSettingsInput["bookingNavPosition"]
-              )
-            }
-          >
-            <option value="nav">{t("bookingPosNav")}</option>
-            <option value="footer">{t("bookingPosFooter")}</option>
-            <option value="both">{t("bookingPosBoth")}</option>
-            <option value="hidden">{t("bookingPosHidden")}</option>
-          </select>
-        </label>
-        <label className="pub-settings-section-toggle md:col-span-2">
-          <input
-            type="checkbox"
-            checked={published}
-            onChange={(e) => setPublished(e.target.checked)}
-          />
-          {t("published")}
-        </label>
-      </section>
+      <FormSection title={t("bookingTitle")} description={t("bookingSectionDesc")}>
+        <div className="admin-settings-fields admin-settings-fields--2col">
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={bookingEnabled}
+              onChange={(e) => setBookingEnabled(e.target.checked)}
+            />
+            {t("bookingEnabled")}
+          </label>
+          <label>
+            <span>{t("bookingPosition")}</span>
+            <select
+              value={bookingNavPosition}
+              onChange={(e) =>
+                setBookingNavPosition(
+                  e.target.value as PublicSiteSettingsInput["bookingNavPosition"]
+                )
+              }
+            >
+              <option value="nav">{t("bookingPosNav")}</option>
+              <option value="footer">{t("bookingPosFooter")}</option>
+              <option value="both">{t("bookingPosBoth")}</option>
+              <option value="hidden">{t("bookingPosHidden")}</option>
+            </select>
+          </label>
+          <label className="pub-settings-section-toggle admin-settings-fields__full">
+            <input
+              type="checkbox"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+            />
+            {t("published")}
+          </label>
+        </div>
+      </FormSection>
 
-      <AdminSubmitButton type="submit" disabled={pending}>
-        {pending ? t("saving") : t("save")}
-      </AdminSubmitButton>
+      <div className="settings-form-stack__submit">
+        <AdminSubmitButton
+          type="submit"
+          disabled={pending}
+          className="settings-form-stack__btn"
+        >
+          {pending ? t("saving") : t("save")}
+        </AdminSubmitButton>
+      </div>
     </form>
   );
 }

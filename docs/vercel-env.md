@@ -16,6 +16,10 @@ Proiect live: `comoditymanager.vercel.app`
 | `OPERATOR_EMAIL` | ✅ | Nu | Email cont Operator (diferit de Admin) |
 | `ADMIN_LOCATION_UNLOCK_SECRET` | Recomandat | **Da** | `npm run env:secret` local, copiază valoarea |
 | `NEXT_PUBLIC_PENSION_NAME` | Opțional | Nu | ex. `Casa Emil` |
+| `RESEND_API_KEY` | Pentru email | **Da** | [Resend](https://resend.com) → API Keys (`re_...`). **Nu** în Supabase. |
+| `RESEND_MAIL_DOMAIN` | Opțional | Nu | Domeniu verificat în Resend dacă diferă de `NEXT_PUBLIC_PLATFORM_DOMAIN` |
+
+**Email:** după ce adaugi `RESEND_API_KEY` pe Vercel, fă **Redeploy** (Deployments → ⋯ → Redeploy). Variabilele noi nu intră în deploy-ul vechi. From/reply-to vin din Setări în app, nu din env.
 
 ### Interzis pe Production
 
