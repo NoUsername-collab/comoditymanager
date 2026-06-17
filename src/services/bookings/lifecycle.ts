@@ -34,7 +34,7 @@ import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 
 import { getBookingById } from "./queries";
-import { assertPostCheckoutEditAllowed } from "./post-checkout-guard";
+import { assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
 import { createBookingRequest } from "./create";
 
 export async function confirmBookingWithRooms(
@@ -297,9 +297,7 @@ export async function shiftBookingByDays(
 ): Promise<{ check_in: string; check_out: string }> {
   const booking = await getBookingById(bookingId);
   if (!booking) throw new Error("booking.not_found");
-  if (booking.actual_check_out_at) {
-    await assertPostCheckoutEditAllowed(bookingId);
-  }
+  await assertBookingPostCheckoutEditAllowed(booking);
 
   const newCheckIn = addDays(booking.check_in, dayDelta);
   const newCheckOut = addDays(booking.check_out, dayDelta);

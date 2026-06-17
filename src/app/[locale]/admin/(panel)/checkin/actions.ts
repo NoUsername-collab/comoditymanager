@@ -14,6 +14,7 @@ import { createCheckin } from "@/services/checkin/create";
 import { updateCheckin } from "@/services/checkin/update";
 import { getCheckinSettings, updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
+import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-checkout-guard";
 import {
   getCheckinByBookingId,
   getCheckedInRoomsForBooking,
@@ -269,12 +270,7 @@ export async function updateCheckinPaymentAction(
 
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: "Booking not found" };
-    if (booking.actual_check_out_at) {
-      const { assertPostCheckoutEditAllowed } = await import(
-        "@/services/bookings/post-checkout-guard"
-      );
-      await assertPostCheckoutEditAllowed(bookingId);
-    }
+    await assertBookingPostCheckoutEditAllowed(booking);
 
     const bookingForCheckin = mapBookingToForCheckin(booking);
     const settings = await getCheckinSettings();
@@ -447,12 +443,7 @@ export async function updateCheckinAction(
 
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: "Booking not found" };
-    if (booking.actual_check_out_at) {
-      const { assertPostCheckoutEditAllowed } = await import(
-        "@/services/bookings/post-checkout-guard"
-      );
-      await assertPostCheckoutEditAllowed(bookingId);
-    }
+    await assertBookingPostCheckoutEditAllowed(booking);
 
     const type = (formData.get("type") as CheckinType) ?? "reservation";
     const paymentStatus =
@@ -507,9 +498,6 @@ export async function updateCheckinAction(
     const transferBookingToGuestId =
       String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
       undefined;
-
-    const booking = await getBookingById(bookingId);
-    if (!booking) return { ok: false, error: "Booking not found" };
 
     const [checkedInRooms, registeredGuests] = await Promise.all([
       getCheckedInRoomsForBooking(bookingId).catch(() => [] as string[]),

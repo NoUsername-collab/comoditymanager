@@ -15,6 +15,7 @@ import {
   updateBookingGuestPhone,
 } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
+import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-checkout-guard";
 import { saveGuestStayReview } from "@/services/guest-profiles";
 import { getTranslations } from "next-intl/server";
 
@@ -440,12 +441,7 @@ export async function editBookingDatesAction(
 
     const before = await getBookingById(id);
     if (!before) throw new Error("booking.not_found");
-    if (before.actual_check_out_at) {
-      const { assertPostCheckoutEditAllowed } = await import(
-        "@/services/bookings/post-checkout-guard"
-      );
-      await assertPostCheckoutEditAllowed(id);
-    }
+    await assertBookingPostCheckoutEditAllowed(before);
 
     const { error } = await supabase
       .from("bookings")

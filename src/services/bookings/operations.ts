@@ -36,7 +36,7 @@ import {
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
-import { assertPostCheckoutEditAllowed } from "./post-checkout-guard";
+import { assertPostCheckoutEditAllowed, assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
 
 import { getBookingById } from "./queries";
 
@@ -92,9 +92,7 @@ export async function updateBookingGuestPhone(
     getTenantScope(),
   ]);
   if (!booking) throw new Error("booking.not_found");
-  if (booking.actual_check_out_at) {
-    await assertPostCheckoutEditAllowed(bookingId);
-  }
+  await assertBookingPostCheckoutEditAllowed(booking);
 
   const phone = rawPhone.trim();
   const phoneNorm = normalizePhone(phone);
@@ -246,7 +244,7 @@ export async function editBookingCheckIn(
   }
 
   if (booking.actual_check_out_at) {
-    await assertPostCheckoutEditAllowed(bookingId);
+    await assertBookingPostCheckoutEditAllowed(booking);
   }
 
   const ts = parseOperationalTimestamp(at);
