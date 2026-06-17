@@ -55,6 +55,7 @@ type Props = {
   totalPrice?: number;
   checkinPaymentStatus?: StoredPaymentStatus | null;
   checkinPaymentAmountPaid?: number;
+  canEditAfterCheckout?: boolean;
 };
 
 export function BookingOperationalPanel({
@@ -76,6 +77,7 @@ export function BookingOperationalPanel({
   totalPrice = 0,
   checkinPaymentStatus = null,
   checkinPaymentAmountPaid = 0,
+  canEditAfterCheckout = false,
 }: Props) {
   const router = useRouter();
   const t = useTranslations("admin.operational");
@@ -83,6 +85,7 @@ export function BookingOperationalPanel({
   const tCazari = useTranslations("admin.pages.cazari");
   const tCommon = useTranslations("common");
   const tPayment = useTranslations("admin.checkinPayment");
+  const tServer = useTranslations("admin.serverActions");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
@@ -126,19 +129,23 @@ export function BookingOperationalPanel({
     canWizardCheckIn && roomProgress.isPartial && roomProgress.remaining > 0;
   const canEditCheckInTime =
     !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
+  const canCheckOut =
+    !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
+  const canEditCheckOut = !!actualCheckOutAt;
+  const postCheckoutLocked = !!actualCheckOutAt && !canEditAfterCheckout;
+  const canEditCheckInTimeEffective =
+    canEditCheckInTime && !postCheckoutLocked;
+  const canEditCheckOutEffective = canEditCheckOut && !postCheckoutLocked;
+  const checkoutLockedTitle = postCheckoutLocked ? tServer("checkoutLocked") : "";
   const checkInEnabled =
     canNewCheckIn ||
     canContinueRooms ||
     needsWizardForFisa ||
-    canEditCheckInTime;
-
-  const canCheckOut =
-    !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
-  const canEditCheckOut = !!actualCheckOutAt;
+    canEditCheckInTimeEffective;
 
   const checkInLabel = needsWizardForFisa
     ? tCazari("completeCheckinForFisa")
-    : canEditCheckInTime
+    : canEditCheckInTimeEffective
       ? `${tCommon("edit")} ${t("checkInLabel")}`
       : canContinueRooms
         ? roomProgress.remaining === 1
@@ -146,17 +153,21 @@ export function BookingOperationalPanel({
           : tCazari("checkInContinue")
         : tCheckIn("startCheckin");
 
-  const checkInBlockedTitle = canEditCheckInTime
-    ? ""
-    : !hasPhone
+  const checkInBlockedTitle = canEditCheckInTimeEffective
+    ? checkoutLockedTitle
+    : postCheckoutLocked
+      ? checkoutLockedTitle
+      : !hasPhone
       ? t("phoneRequiredForCheckIn")
       : !isArrivalDay && !canContinueRooms
         ? t("checkInOnlyOnArrivalDay", { date: plannedCheckIn })
         : "";
 
-  const checkoutBlockedTitle = canEditCheckOut
-    ? ""
-    : actualCheckOutAt
+  const checkoutBlockedTitle = canEditCheckOutEffective
+    ? checkoutLockedTitle
+    : postCheckoutLocked
+      ? checkoutLockedTitle
+      : actualCheckOutAt
       ? tCazari("checkoutAlreadyDone")
       : !actualCheckInAt
         ? tCazari("checkoutNeedsCheckin")
@@ -172,22 +183,22 @@ export function BookingOperationalPanel({
   const connectorDone = checkInStepDone && !actualCheckOutAt;
 
   function openCheckInWizard() {
-    if (canEditCheckInTime) {
+    if (canEditCheckInTimeEffective) {
       setCheckinWizardMode("edit");
       setCheckinModalOpen(true);
       return;
     }
-    if (!checkInEnabled) return;
+    if (!checkInEnabled || postCheckoutLocked) return;
     setCheckinWizardMode("create");
     setCheckinModalOpen(true);
   }
 
   function openCheckOut() {
-    if (canEditCheckOut) {
+    if (canEditCheckOutEffective) {
       setCheckoutPanel({ intent: "edit" });
       return;
     }
-    if (!canCheckOut) return;
+    if (!canCheckOut || postCheckoutLocked) return;
     setCheckoutPanel({ intent: "set" });
   }
 
@@ -259,7 +270,7 @@ export function BookingOperationalPanel({
                   : t("notRecorded")}
               </p>
             </div>
-            {canEditCheckInTime ? (
+            {canEditCheckInTimeEffective ? (
               <button
                 type="button"
                 className="bd-ops__lane-edit"
@@ -318,7 +329,7 @@ export function BookingOperationalPanel({
           ) : null}
 
           <div className="bd-ops__lane-actions">
-            {(canWizardCheckIn || canEditCheckInTime) && !actualCheckOutAt && (
+            {(canWizardCheckIn || canEditCheckInTimeEffective) && !actualCheckOutAt && (
               <button
                 type="button"
                 className={[
@@ -331,7 +342,7 @@ export function BookingOperationalPanel({
                 title={checkInBlockedTitle}
                 onClick={openCheckInWizard}
               >
-                {!canEditCheckInTime && (
+                {!canEditCheckInTimeEffective && (
                   <span className="checkin-start-btn__icon" aria-hidden>
                     {canContinueRooms ? "🛏" : "🔑"}
                   </span>
@@ -339,7 +350,7 @@ export function BookingOperationalPanel({
                 {checkInLabel}
               </button>
             )}
-            {actualCheckInAt && !actualCheckOutAt && (
+            {actualCheckInAt && !actualCheckOutAt && !postCheckoutLocked && (
               <button
                 type="button"
                 className="bd-ops__btn bd-ops__btn--ghost"
@@ -383,7 +394,7 @@ export function BookingOperationalPanel({
                   : t("notRecorded")}
               </p>
             </div>
-            {canEditCheckOut ? (
+            {canEditCheckOutEffective ? (
               <button
                 type="button"
                 className="bd-ops__lane-edit"
@@ -396,23 +407,23 @@ export function BookingOperationalPanel({
           </div>
 
           <div className="bd-ops__lane-actions">
-            {(canCheckOut || canEditCheckOut) && (
+            {(canCheckOut || canEditCheckOutEffective) && (
               <button
                 type="button"
                 className={[
                   "bd-ops__btn",
                   canCheckOut ? "bd-ops__btn--primary" : "bd-ops__btn--ghost",
                 ].join(" ")}
-                disabled={pending || (!canCheckOut && !canEditCheckOut)}
+                disabled={pending || (!canCheckOut && !canEditCheckOutEffective)}
                 title={checkoutBlockedTitle}
                 onClick={openCheckOut}
               >
-                {canEditCheckOut
+                {canEditCheckOutEffective
                   ? `${tCommon("edit")} ${t("checkOutLabel")}`
                   : t("checkOutAction")}
               </button>
             )}
-            {actualCheckOutAt && (
+            {actualCheckOutAt && !postCheckoutLocked && (
               <button
                 type="button"
                 className="bd-ops__btn bd-ops__btn--ghost"

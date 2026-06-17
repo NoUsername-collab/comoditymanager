@@ -6,11 +6,15 @@ import { OperativeCheckProvider } from "@/components/admin/operative/OperativeCh
 export function CazariOperativeShell({
   children,
   today,
+  canEditAfterCheckout = false,
 }: {
   children: ReactNode;
   today: string;
+  canEditAfterCheckout?: boolean;
 }) {
   return (
-    <OperativeCheckProvider today={today}>{children}</OperativeCheckProvider>
+    <OperativeCheckProvider today={today} canEditAfterCheckout={canEditAfterCheckout}>
+      {children}
+    </OperativeCheckProvider>
   );
 }

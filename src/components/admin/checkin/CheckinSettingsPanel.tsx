@@ -360,6 +360,22 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </label>
         </SettingRow>
 
+        <SettingRow
+          label={t("allowPostCheckoutEdits")}
+          description={t("allowPostCheckoutEditsDesc")}
+        >
+          <label className="checkin-toggle">
+            <input
+              type="checkbox"
+              checked={settings.allow_post_checkout_edits}
+              onChange={(e) =>
+                persist({ allow_post_checkout_edits: e.target.checked })
+              }
+            />
+            <span className="checkin-toggle__slider" />
+          </label>
+        </SettingRow>
+
         <SettingRow label={t("deposit")} description={t("depositDesc")}>
           <label className="checkin-toggle">
             <input

@@ -46,6 +46,8 @@ type CheckoutDialogState = OperativeCheckRequest;
 
 export type OperativeCheckOps = {
   today: string;
+  /** Owner or Setări → Check-in allows edits after check-out. */
+  canEditAfterCheckout: boolean;
   /** Deschide wizard-ul complet de check-in (identitate → plată → fișă). */
   openCheckInWizard: (args: OperativeCheckRequest) => boolean;
   /** Check-out operațional (doar ora). */
@@ -57,9 +59,11 @@ const Ctx = createContext<OperativeCheckOps | null>(null);
 export function OperativeCheckProvider({
   children,
   today,
+  canEditAfterCheckout = false,
 }: {
   children: ReactNode;
   today: string;
+  canEditAfterCheckout?: boolean;
 }) {
   const router = useRouter();
   const { showToast } = useAdminFx();
@@ -120,8 +124,8 @@ export function OperativeCheckProvider({
   const refreshAfterCheckin = useCallback(() => router.refresh(), [router]);
 
   const value = useMemo(
-    () => ({ today, openCheckInWizard, openCheckOut }),
-    [today, openCheckInWizard, openCheckOut]
+    () => ({ today, canEditAfterCheckout, openCheckInWizard, openCheckOut }),
+    [today, canEditAfterCheckout, openCheckInWizard, openCheckOut]
   );
 
   return (

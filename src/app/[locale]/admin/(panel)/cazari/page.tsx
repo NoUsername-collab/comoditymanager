@@ -24,6 +24,7 @@ import { ConfirmedBuckets } from "@/components/admin/cazari/ConfirmedBuckets";
 import { StayHistoryPanel } from "@/components/admin/cazari/StayHistoryPanel";
 import { StayList } from "@/components/admin/cazari/StayList";
 import { CazariOperativeShell } from "@/components/admin/cazari/CazariOperativeShell";
+import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminCazariPage({
@@ -37,7 +38,7 @@ export default async function AdminCazariPage({
     reaccepted?: string;
   }>;
 }) {
-  const [tPages, tCommon, tFlow, params, effectiveToday, cazariResult] =
+  const [tPages, tCommon, tFlow, params, effectiveToday, cazariResult, postCheckoutPolicy] =
     await Promise.all([
       getTranslations("admin.pages.cazari"),
       getTranslations("admin.common"),
@@ -45,6 +46,11 @@ export default async function AdminCazariPage({
       searchParams,
       getEffectiveToday(),
       loadCazariPageData(),
+      resolvePostCheckoutEditPolicy().catch(() => ({
+        memberRole: null,
+        allowPostCheckoutEdits: false,
+        canEditAfterCheckout: false,
+      })),
     ]);
 
   const q = firstCazariQueryValue(params.q).trim();
@@ -97,7 +103,10 @@ export default async function AdminCazariPage({
 
   return (
     <AdminPageFrame title={tPages("title")} className="cazari-page">
-      <CazariOperativeShell today={effectiveToday}>
+      <CazariOperativeShell
+        today={effectiveToday}
+        canEditAfterCheckout={postCheckoutPolicy.canEditAfterCheckout}
+      >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,30%)]">
         <div className="min-w-0">
           <AdminPanel

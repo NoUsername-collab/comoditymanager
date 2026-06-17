@@ -134,6 +134,8 @@ export interface CheckinSettings {
   late_checkout_fee: number;
   /** Blochează check-out operațional când plata nu e înregistrată (owner). */
   checkout_block_unpaid: boolean;
+  /** Permite admin/operator să editeze rezervări după check-out (altfel doar owner). */
+  allow_post_checkout_edits: boolean;
   early_checkin_allowed: boolean;
   early_checkin_fee: number;
   /** Regula de distribuire chei la check-in. */

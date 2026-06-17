@@ -20,6 +20,7 @@ import { sortRoomsLikeLocationStructure } from "@/domain/room/display-order";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 import { parseIso } from "@/lib/stay-dates";
 
 function toUrlSearchParams(params: Record<string, string | undefined>) {
@@ -65,7 +66,7 @@ export default async function AdminCalendarPage({
   const todayPromise = getEffectiveToday();
   const localePromise = getLocale();
 
-  const [t, tCommon, tGanttRange, locale, params, effectiveToday, dataResult] =
+  const [t, tCommon, tGanttRange, locale, params, effectiveToday, dataResult, postCheckoutPolicy] =
     await Promise.all([
       getTranslations("admin.pages.calendar"),
       getTranslations("admin.common"),
@@ -96,6 +97,11 @@ export default async function AdminCalendarPage({
         })
         .then((data) => ({ ok: true as const, data }))
         .catch((error) => ({ ok: false as const, error })),
+      resolvePostCheckoutEditPolicy().catch(() => ({
+        memberRole: null,
+        allowPostCheckoutEdits: false,
+        canEditAfterCheckout: false,
+      })),
     ]);
   const refDate = parseIso(effectiveToday);
   const year = Number(params.y) || refDate.getFullYear();
@@ -308,6 +314,7 @@ export default async function AdminCalendarPage({
           layerFilter={layer}
           focusDay={focusDay}
           today={effectiveToday}
+          canEditAfterCheckout={postCheckoutPolicy.canEditAfterCheckout}
           cereriCount={todayCereriCount}
           arrivalsCount={todayArrivalsCount}
           departuresCount={todayDeparturesCount}

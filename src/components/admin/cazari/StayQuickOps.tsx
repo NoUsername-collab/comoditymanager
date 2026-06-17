@@ -65,8 +65,10 @@ export function StayQuickOps({
 }: Props) {
   const router = useRouter();
   const tCommon = useTranslations("common");
+  const tServer = useTranslations("admin.serverActions");
   const { showToast } = useAdminFx();
-  const { today, openCheckInWizard, openCheckOut } = useOperativeCheck();
+  const { today, openCheckInWizard, openCheckOut, canEditAfterCheckout } =
+    useOperativeCheck();
   const [pending, startTransition] = useTransition();
   const [editCheckOutOpen, setEditCheckOutOpen] = useState(false);
   const isConfirmed = bookingStatus === "confirmata";
@@ -107,15 +109,21 @@ export function StayQuickOps({
     isConfirmed && !!actualCheckInAt && !actualCheckOutAt && roomProgress.isComplete;
   const canEditCheckInTime =
     isConfirmed && !!actualCheckInAt && hasCheckinRecord && roomProgress.isComplete;
-  const canMove = isConfirmed;
+  const postCheckoutLocked = !!actualCheckOutAt && !canEditAfterCheckout;
+  const canEditCheckInTimeEffective =
+    canEditCheckInTime && !postCheckoutLocked;
+  const canMove =
+    isConfirmed && (!actualCheckOutAt || canEditAfterCheckout);
   const checkInEnabled =
-    canNewCheckIn || canContinueRooms || needsWizardForFisa || canEditCheckInTime;
+    canNewCheckIn || canContinueRooms || needsWizardForFisa || canEditCheckInTimeEffective;
 
   const canEditCheckOut = isConfirmed && !!actualCheckOutAt;
+  const canEditCheckOutEffective = canEditCheckOut && !postCheckoutLocked;
+  const checkoutLockedTitle = postCheckoutLocked ? tServer("checkoutLocked") : "";
 
   const checkInLabel = needsWizardForFisa
     ? labels.completeCheckinForFisa
-    : canEditCheckInTime
+    : canEditCheckInTimeEffective
       ? `${labels.edit} ${labels.checkIn}`
       : canContinueRooms
         ? roomProgress.remaining === 1
@@ -123,14 +131,16 @@ export function StayQuickOps({
           : labels.checkInContinue
         : labels.checkIn;
 
-  const checkOutLabel = canEditCheckOut
+  const checkOutLabel = canEditCheckOutEffective
     ? `${labels.edit} ${labels.checkOut}`
     : labels.checkOut;
 
   const checkInTitle = !isConfirmed
     ? labels.checkActionsOnlyConfirmed
-    : canEditCheckInTime
-      ? ""
+    : postCheckoutLocked
+      ? checkoutLockedTitle
+      : canEditCheckInTimeEffective
+        ? ""
       : !hasPhone
         ? labels.phoneRequiredForCheckIn
         : !isArrivalDay && !canContinueRooms
@@ -139,8 +149,10 @@ export function StayQuickOps({
 
   const checkoutTitle = !isConfirmed
     ? labels.checkActionsOnlyConfirmed
-    : canEditCheckOut
-      ? ""
+    : postCheckoutLocked
+      ? checkoutLockedTitle
+      : canEditCheckOutEffective
+        ? ""
       : actualCheckOutAt
         ? labels.checkoutAlreadyDone
         : !actualCheckInAt
@@ -167,7 +179,8 @@ export function StayQuickOps({
   }
 
   function handleCheckIn() {
-    if (canEditCheckInTime) {
+    if (postCheckoutLocked) return;
+    if (canEditCheckInTimeEffective) {
       openCheckInWizard({ ...operativeArgs, editExisting: true });
       return;
     }
@@ -175,7 +188,8 @@ export function StayQuickOps({
   }
 
   function handleCheckOut() {
-    if (canEditCheckOut) {
+    if (postCheckoutLocked) return;
+    if (canEditCheckOutEffective) {
       setEditCheckOutOpen(true);
       return;
     }
@@ -196,7 +210,7 @@ export function StayQuickOps({
         title={checkInTitle}
         onClick={handleCheckIn}
       >
-        {!canEditCheckInTime && (
+        {!canEditCheckInTimeEffective && (
           <span className="checkin-start-btn__icon" aria-hidden>
             {canContinueRooms ? "🛏" : "🔑"}
           </span>
@@ -206,7 +220,7 @@ export function StayQuickOps({
       <button
         type="button"
         className="rounded border border-sky-300 bg-sky-50 px-2 py-1 text-[11px] font-bold text-sky-900 disabled:cursor-not-allowed disabled:opacity-45"
-        disabled={(!canCheckOut && !canEditCheckOut) || pending}
+        disabled={(!canCheckOut && !canEditCheckOutEffective) || pending}
         title={checkoutTitle}
         onClick={handleCheckOut}
       >

@@ -269,6 +269,12 @@ export async function updateCheckinPaymentAction(
 
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: "Booking not found" };
+    if (booking.actual_check_out_at) {
+      const { assertPostCheckoutEditAllowed } = await import(
+        "@/services/bookings/post-checkout-guard"
+      );
+      await assertPostCheckoutEditAllowed(bookingId);
+    }
 
     const bookingForCheckin = mapBookingToForCheckin(booking);
     const settings = await getCheckinSettings();
@@ -438,6 +444,15 @@ export async function updateCheckinAction(
     const bookingId = String(formData.get("booking_id") ?? "");
     if (!checkinId) return { ok: false, error: "checkin_id required" };
     if (!bookingId) return { ok: false, error: "booking_id required" };
+
+    const booking = await getBookingById(bookingId);
+    if (!booking) return { ok: false, error: "Booking not found" };
+    if (booking.actual_check_out_at) {
+      const { assertPostCheckoutEditAllowed } = await import(
+        "@/services/bookings/post-checkout-guard"
+      );
+      await assertPostCheckoutEditAllowed(bookingId);
+    }
 
     const type = (formData.get("type") as CheckinType) ?? "reservation";
     const paymentStatus =
@@ -612,6 +627,7 @@ export async function updateCheckinSettingsAction(
       "late_checkout_allowed",
       "checkout_block_unpaid",
       "early_checkin_allowed",
+      "allow_post_checkout_edits",
     ];
     for (const f of boolFields) {
       const v = formData.get(f);

@@ -118,6 +118,7 @@ export function GanttCalendar({
   layerFilter = "all",
   focusDay = null,
   today: todayProp,
+  canEditAfterCheckout = false,
   cereriCount = 0,
   arrivalsCount = 0,
   departuresCount = 0,
@@ -137,6 +138,8 @@ export function GanttCalendar({
   focusDay?: string | null;
   /** Effective "today" — sim date when simulation is active */
   today?: string;
+  /** Owner or Setări → Check-in allows edits after check-out. */
+  canEditAfterCheckout?: boolean;
   /** Today board badge counts for the radial controller */
   cereriCount?: number;
   arrivalsCount?: number;
@@ -566,7 +569,10 @@ export function GanttCalendar({
 
   // ─── Render ────────────────────────────────────────────────────────
   return (
-    <GanttOperativeCheckProvider today={effectiveToday}>
+    <GanttOperativeCheckProvider
+      today={effectiveToday}
+      canEditAfterCheckout={canEditAfterCheckout}
+    >
     <GanttStayTapPopoverProvider>
     <GanttContextMenuProvider
       onRequestCreate={setCreateDraft}

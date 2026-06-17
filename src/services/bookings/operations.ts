@@ -36,6 +36,7 @@ import {
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
+import { assertPostCheckoutEditAllowed } from "./post-checkout-guard";
 
 import { getBookingById } from "./queries";
 
@@ -91,6 +92,9 @@ export async function updateBookingGuestPhone(
     getTenantScope(),
   ]);
   if (!booking) throw new Error("booking.not_found");
+  if (booking.actual_check_out_at) {
+    await assertPostCheckoutEditAllowed(bookingId);
+  }
 
   const phone = rawPhone.trim();
   const phoneNorm = normalizePhone(phone);
@@ -241,6 +245,10 @@ export async function editBookingCheckIn(
     throw new Error("booking.checkin_not_recorded");
   }
 
+  if (booking.actual_check_out_at) {
+    await assertPostCheckoutEditAllowed(bookingId);
+  }
+
   const ts = parseOperationalTimestamp(at);
   if (booking.actual_check_out_at) {
     const checkOutAt = new Date(booking.actual_check_out_at);
@@ -283,6 +291,7 @@ export async function editBookingCheckOut(
   bookingId: string,
   at?: string | null
 ): Promise<void> {
+  await assertPostCheckoutEditAllowed(bookingId);
   const booking = await requireConfirmedBooking(bookingId);
   if (!booking.actual_check_in_at) {
     throw new Error("booking.checkin_required_before_checkout");
@@ -370,6 +379,7 @@ export async function undoBookingCheckIn(bookingId: string): Promise<void> {
 }
 
 export async function undoBookingCheckOut(bookingId: string): Promise<void> {
+  await assertPostCheckoutEditAllowed(bookingId);
   const [booking, { tenantId, supabase }] = await Promise.all([
     requireConfirmedBooking(bookingId),
     getTenantScope(),

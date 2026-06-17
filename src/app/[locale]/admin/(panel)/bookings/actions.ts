@@ -163,6 +163,9 @@ function mapBookingOpsError(
     if (e.message === "booking.checkout_already_recorded") {
       return t("checkoutAlreadyDone");
     }
+    if (e.message === "booking.checkout_locked") {
+      return t("checkoutLocked");
+    }
   }
   return e instanceof Error ? e.message : t("checkInError");
 }
@@ -437,6 +440,12 @@ export async function editBookingDatesAction(
 
     const before = await getBookingById(id);
     if (!before) throw new Error("booking.not_found");
+    if (before.actual_check_out_at) {
+      const { assertPostCheckoutEditAllowed } = await import(
+        "@/services/bookings/post-checkout-guard"
+      );
+      await assertPostCheckoutEditAllowed(id);
+    }
 
     const { error } = await supabase
       .from("bookings")

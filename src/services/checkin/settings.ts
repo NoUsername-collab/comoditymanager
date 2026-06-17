@@ -40,6 +40,7 @@ const CHECKIN_SETTINGS_EXTENDED_COLUMNS = [
 const CHECKIN_SETTINGS_SELECT = [
   ...CHECKIN_SETTINGS_BASE_COLUMNS,
   "checkout_block_unpaid",
+  "allow_post_checkout_edits",
   ...CHECKIN_SETTINGS_EXTENDED_COLUMNS,
 ].join(", ");
 
@@ -87,6 +88,7 @@ export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
   late_checkout_allowed: true,
   late_checkout_fee: 0,
   checkout_block_unpaid: true,
+  allow_post_checkout_edits: false,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
   checkin_key_rule: "always",
@@ -144,6 +146,10 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
       row.checkout_block_unpaid != null
         ? Boolean(row.checkout_block_unpaid)
         : DEFAULT_CHECKIN_SETTINGS.checkout_block_unpaid,
+    allow_post_checkout_edits:
+      row.allow_post_checkout_edits != null
+        ? Boolean(row.allow_post_checkout_edits)
+        : DEFAULT_CHECKIN_SETTINGS.allow_post_checkout_edits,
     early_checkin_allowed:
       row.early_checkin_allowed != null
         ? Boolean(row.early_checkin_allowed)
@@ -276,6 +282,8 @@ export async function updateCheckinSettings(
     update.late_checkout_fee = input.late_checkout_fee;
   if (input.checkout_block_unpaid != null)
     update.checkout_block_unpaid = input.checkout_block_unpaid;
+  if (input.allow_post_checkout_edits != null)
+    update.allow_post_checkout_edits = input.allow_post_checkout_edits;
   if (input.early_checkin_allowed != null)
     update.early_checkin_allowed = input.early_checkin_allowed;
   if (input.early_checkin_fee != null)

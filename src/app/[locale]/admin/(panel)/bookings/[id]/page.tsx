@@ -26,6 +26,8 @@ import {
   getCheckinSettings,
 } from "@/services/checkin";
 import { attachCheckinRecordState } from "@/services/checkin/attach-booking-state";
+import { isBookingEditableAfterCheckout } from "@/domain/booking/post-checkout-edit";
+import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 import type { BookingForCheckin } from "@/domain/checkin/types";
 import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
 import {
@@ -54,6 +56,11 @@ export default async function BookingDetailPage({
     loadBookingConfirmContext(id).catch(() => null)
   );
   const checkinSettingsPromise = getCheckinSettings().catch(() => null);
+  const postCheckoutPolicyPromise = resolvePostCheckoutEditPolicy().catch(() => ({
+    memberRole: null,
+    allowPostCheckoutEdits: false,
+    canEditAfterCheckout: false,
+  }));
   const bookingExtrasPromise = ctxPromise.then((ctx) => {
     if (!ctx) {
       return {
@@ -81,7 +88,7 @@ export default async function BookingDetailPage({
     }));
   });
 
-  const [tPage, tCommon, tFlow, tStay, sp, ctx, bookingExtras, checkinSettings, pricingRules] =
+  const [tPage, tCommon, tFlow, tStay, sp, ctx, bookingExtras, checkinSettings, postCheckoutPolicy, pricingRules] =
     await Promise.all([
       getTranslations("admin.pages.bookingDetail"),
       getTranslations("admin.common"),
@@ -91,6 +98,7 @@ export default async function BookingDetailPage({
       ctxPromise,
       bookingExtrasPromise,
       checkinSettingsPromise,
+      postCheckoutPolicyPromise,
       getStayPricingRules().catch(() => null),
     ]);
   const returnTo = safeReturnTo(sp.return_to);
@@ -137,7 +145,11 @@ export default async function BookingDetailPage({
   const isCancelled = booking.status === "anulata";
   const canConfirm = booking.status === "cerere_noua" || isCancelled;
   const canCancel = booking.status !== "anulata";
-  const canEditDates = true;
+  const canEditDates = isBookingEditableAfterCheckout(booking, {
+    memberRole: postCheckoutPolicy.memberRole,
+    allowPostCheckoutEdits: postCheckoutPolicy.allowPostCheckoutEdits,
+  });
+  const canEditAfterCheckout = postCheckoutPolicy.canEditAfterCheckout;
   const checkedIn = !!booking.actual_check_in_at;
   const cancelMessage =
     booking.status === "confirmata"
@@ -412,6 +424,7 @@ export default async function BookingDetailPage({
                 checkinPaymentAmountPaid={
                   Number(existingCheckin?.payment_amount_paid ?? 0)
                 }
+                canEditAfterCheckout={canEditAfterCheckout}
               />
             </div>
           )}
