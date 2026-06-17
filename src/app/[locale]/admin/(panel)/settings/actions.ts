@@ -519,7 +519,7 @@ export async function updateEmailSettingsAction(
 }
 
 export async function sendTestEmailAction(): Promise<
-  { ok: true } | { ok: false; error: string }
+  { ok: true; to: string } | { ok: false; error: string }
 > {
   const t = await getTranslations("admin.serverActions");
   const { user, memberRole } = await requireStaff();
@@ -529,10 +529,15 @@ export async function sendTestEmailAction(): Promise<
 
   const email = user.email;
   if (!email) {
-    return { ok: false, error: "No email on account" };
+    return { ok: false, error: t("emailAccountMissing") };
   }
 
-  const { sendEmail } = await import("@/lib/email/provider");
+  const { sendEmail, isEmailDeliveryConfigured } = await import(
+    "@/lib/email/provider"
+  );
+  if (!isEmailDeliveryConfigured()) {
+    return { ok: false, error: t("emailProviderNotConfigured") };
+  }
   const { testEmailTemplate } = await import("@/lib/email/templates");
   const { getEmailSettings } = await import("@/services/email-settings");
   const { getPensionSettings } = await import("@/services/pension-settings");
@@ -566,7 +571,7 @@ export async function sendTestEmailAction(): Promise<
     summary: `Test email sent to ${email}`,
   });
 
-  return { ok: true };
+  return { ok: true, to: email };
 }
 
 /** @deprecated — folosește updateAppearanceSettingsAction sau updateOperationalSettingsAction */

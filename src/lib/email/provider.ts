@@ -30,6 +30,32 @@ export interface IEmailProvider {
   send(message: EmailMessage): Promise<EmailResult>;
 }
 
+export type EmailProviderKind = "resend" | "noop";
+
+export type EmailDeliveryConfig = {
+  configured: boolean;
+  provider: EmailProviderKind;
+  fromAddress: string;
+};
+
+export function getEmailFromAddress(): string {
+  return process.env.EMAIL_FROM ?? PLATFORM_EMAIL_FROM;
+}
+
+/** True when a real outbound provider (Resend) is configured. */
+export function getEmailDeliveryConfig(): EmailDeliveryConfig {
+  const resendKey = process.env.RESEND_API_KEY?.trim();
+  return {
+    configured: Boolean(resendKey),
+    provider: resendKey ? "resend" : "noop",
+    fromAddress: getEmailFromAddress(),
+  };
+}
+
+export function isEmailDeliveryConfigured(): boolean {
+  return getEmailDeliveryConfig().configured;
+}
+
 // ─── Resend Provider ─────────────────────────────────────────────
 class ResendProvider implements IEmailProvider {
   private apiKey: string;
@@ -85,21 +111,14 @@ class NoopProvider implements IEmailProvider {
 }
 
 // ─── Provider Factory ────────────────────────────────────────────
-let _provider: IEmailProvider | null = null;
-
 export function getEmailProvider(): IEmailProvider {
-  if (_provider) return _provider;
+  const { configured, fromAddress } = getEmailDeliveryConfig();
+  const resendKey = process.env.RESEND_API_KEY?.trim();
 
-  const resendKey = process.env.RESEND_API_KEY;
-  const fromAddress = process.env.EMAIL_FROM ?? PLATFORM_EMAIL_FROM;
-
-  if (resendKey) {
-    _provider = new ResendProvider(resendKey, fromAddress);
-  } else {
-    _provider = new NoopProvider();
+  if (configured && resendKey) {
+    return new ResendProvider(resendKey, fromAddress);
   }
-
-  return _provider;
+  return new NoopProvider();
 }
 
 /**

@@ -16,6 +16,7 @@ import { StatisticsSettingsPanel } from "@/components/admin/settings/StatisticsS
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { pensionStatisticsVisibility } from "@/services/pension-settings";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
+import { getEmailDeliveryConfig } from "@/lib/email/provider";
 import { getEmailSettings, DEFAULT_EMAIL_SETTINGS } from "@/services/email-settings";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { requireStaff } from "@/lib/auth/require-staff";
@@ -255,7 +256,10 @@ export default async function SettingsPage({
             description={t("navEmailDesc")}
           />
           <SettingsSection title={t("emailTitle")} description={t("emailSubtitle")}>
-            <EmailSettingsPanel settings={emailSettings} />
+            <EmailSettingsPanel
+              settings={emailSettings}
+              delivery={getEmailDeliveryConfig()}
+            />
           </SettingsSection>
         </>
       ) : null}

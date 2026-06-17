@@ -6,6 +6,7 @@ import {
   updateEmailSettingsAction,
   sendTestEmailAction,
 } from "@/app/[locale]/admin/(panel)/settings/actions";
+import type { EmailDeliveryConfig } from "@/lib/email/provider";
 import type { EmailSettings } from "@/services/email-settings";
 import {
   settingsPartialChanged,
@@ -14,6 +15,7 @@ import {
 
 type Props = {
   settings: EmailSettings;
+  delivery: EmailDeliveryConfig;
 };
 
 function SettingRow({
@@ -38,7 +40,7 @@ function SettingRow({
   );
 }
 
-export function EmailSettingsPanel({ settings: initial }: Props) {
+export function EmailSettingsPanel({ settings: initial, delivery }: Props) {
   const t = useTranslations("admin.pages.settings.email");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
@@ -104,7 +106,7 @@ export function EmailSettingsPanel({ settings: initial }: Props) {
     try {
       const result = await sendTestEmailAction();
       if (result.ok) {
-        notifySuccess(t("testSent"));
+        notifySuccess(t("testSentTo", { email: result.to }));
       } else {
         notifyError(t("testFailed"), result.error ?? "");
       }
@@ -290,11 +292,21 @@ export function EmailSettingsPanel({ settings: initial }: Props) {
           </span>
         </div>
 
+        {!delivery.configured ? (
+          <p className="checkin-fisa-save__hint" role="status">
+            {t("providerNotConfigured")}
+          </p>
+        ) : (
+          <p className="checkin-fisa-save__hint">
+            {t("providerFrom", { from: delivery.fromAddress })}
+          </p>
+        )}
+
         <div className="checkin-fisa-save">
           <button
             type="button"
             className="checkin-fisa-save__btn"
-            disabled={disabled || isSendingTest || isSaving}
+            disabled={!delivery.configured || isSendingTest || isSaving}
             onClick={handleSendTest}
           >
             {isSendingTest ? t("testSending") : t("testSend")}
