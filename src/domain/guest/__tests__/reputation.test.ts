@@ -139,12 +139,12 @@ describe("isReturningGuest", () => {
 });
 
 describe("ratingFromNegativeSeverity", () => {
-  it("maps severity 1 to rating 1", () => {
-    expect(ratingFromNegativeSeverity(1)).toBe(1);
+  it("maps severity 1 (minor) to rating 5", () => {
+    expect(ratingFromNegativeSeverity(1)).toBe(5);
   });
 
-  it("maps severity 5 to rating 3", () => {
-    expect(ratingFromNegativeSeverity(5)).toBe(3);
+  it("maps severity 5 (major) to rating 1", () => {
+    expect(ratingFromNegativeSeverity(5)).toBe(1);
   });
 });
 
@@ -166,18 +166,29 @@ describe("computeStayReviewEffectiveStars", () => {
         positiveNote: "",
         negativeNote: "Noise complaint",
         positiveStars: null,
-        negativeStars: 1,
+        negativeStars: 5,
       })
     ).toBe(1);
   });
 
-  it("averages positive and mapped negative when both notes exist", () => {
+  it("maps minor negative to higher guest rating", () => {
+    expect(
+      computeStayReviewEffectiveStars({
+        positiveNote: "",
+        negativeNote: "Small mess",
+        positiveStars: null,
+        negativeStars: 1,
+      })
+    ).toBe(5);
+  });
+
+  it("averages positive and mapped negative when both notes exist (legacy)", () => {
     expect(
       computeStayReviewEffectiveStars({
         positiveNote: "Polite",
         negativeNote: "Minor mess",
         positiveStars: 4,
-        negativeStars: 5,
+        negativeStars: 3,
       })
     ).toBe(3.5);
   });

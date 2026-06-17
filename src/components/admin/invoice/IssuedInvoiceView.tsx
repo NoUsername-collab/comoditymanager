@@ -6,6 +6,8 @@ import type { IssuedInvoiceDocument } from "@/domain/invoice/issued-invoice";
 import { formatInvoiceMoney } from "@/domain/invoice/issued-invoice";
 import { getCountryFiscalProfile } from "@/domain/fiscal/country-fiscal-profile";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { resolveInvoiceSeason } from "@/lib/invoice/invoice-season";
+import { INVOICE_SEASON_CSS } from "@/lib/invoice/invoice-season-styles";
 import { printIssuedInvoiceSheet } from "@/lib/invoice/print-issued-invoice";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 
@@ -40,6 +42,7 @@ export function IssuedInvoiceView({
     formatInvoiceMoney(amount, document.currency, dateTag);
   const [localIssuing, setLocalIssuing] = useState(false);
   const sheetRef = useRef<HTMLElement>(null);
+  const season = resolveInvoiceSeason(document.check_in);
 
   const issuedLabel = new Date(document.issued_at).toLocaleDateString(dateTag, {
     day: "numeric",
@@ -68,6 +71,7 @@ export function IssuedInvoiceView({
 
   return (
     <div className="issued-invoice-root">
+      <style dangerouslySetInnerHTML={{ __html: INVOICE_SEASON_CSS }} />
       <div className="issued-invoice-actions no-print">
         {!issued && onIssue ? (
           <button
@@ -92,6 +96,7 @@ export function IssuedInvoiceView({
       <article
         ref={sheetRef}
         className="issued-invoice-sheet"
+        data-invoice-season={season}
         aria-label={t("title")}
       >
         <header className="issued-invoice-sheet__header">

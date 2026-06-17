@@ -264,6 +264,10 @@ export async function saveGuestStayReview(input: {
     throw new Error("guest.review_note_required");
   }
 
+  if (positiveNote && negativeNote) {
+    throw new Error("guest.review_single_polarity");
+  }
+
   const effectiveStars = computeStayReviewEffectiveStars({
     positiveNote,
     negativeNote,

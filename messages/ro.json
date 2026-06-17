@@ -678,7 +678,7 @@
       "paymentUnknown": "Status plată necunoscut.",
       "lateNote": "Peste ora standard de check-out ({until}). Notă pentru recepție — fără taxă automată.",
       "addReview": "Adaugă evaluare rapidă",
-      "reviewIntro": "Stelele de pe fiecare notă influențează ratingul general al clientului. Completează cel puțin o notă.",
+      "reviewIntro": "Alege pozitiv sau negativ, setează intensitatea 1–5, apoi adaugă nota.",
       "positiveNote": "Notă pozitivă",
       "positiveNotePlaceholder": "Opțional — ce a mers bine la acest sejur",
       "negativeNote": "Notă negativă",
@@ -3256,7 +3256,26 @@
       "review": {
         "editStayReview": "Editează review-ul sejurului",
         "rateStay": "Evaluează acest sejur",
-        "noteStarsIntro": "Alege intensitatea pe fiecare notă (stele). Cel puțin o notă este necesară. Ratingul general al clientului se calculează din aceste stele.",
+        "intro": "Alege pozitiv sau negativ — un singur tip per sejur. Setează intensitatea 1–5, apoi scrie nota. Stelele din profil se calculează din ratingurile pe sejur.",
+        "chooseTone": "Tip evaluare",
+        "positiveTone": "Pozitiv",
+        "negativeTone": "Negativ",
+        "intensity": "Intensitate",
+        "intensityValue": "nivel {value}/5",
+        "positiveLevel": {
+          "1": "OK",
+          "2": "Bine",
+          "3": "Foarte bine",
+          "4": "Excelent",
+          "5": "Excepțional"
+        },
+        "negativeLevel": {
+          "1": "Minor",
+          "2": "Ușor",
+          "3": "Moderat",
+          "4": "Serios",
+          "5": "Belea mare"
+        },
         "stars": "Stele",
         "starsOption": "{count} stele",
         "starOption": "{count} stea",
@@ -3270,11 +3289,11 @@
           "5": "Excepțional"
         },
         "negativeStarsLevel": {
-          "1": "Foarte grav",
-          "2": "Grav",
+          "1": "Minor",
+          "2": "Ușor",
           "3": "Moderat",
-          "4": "Minor",
-          "5": "Ușor"
+          "4": "Serios",
+          "5": "Belea mare"
         },
         "positiveNote": "Notă pozitivă",
         "positiveNotePlaceholder": "Ce a mers bine, comportament apreciat, mențiuni utile pentru viitor.",

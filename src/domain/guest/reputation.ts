@@ -28,10 +28,10 @@ export function clampGuestNoteStars(value: number): number {
   return Math.max(1, Math.min(5, Math.round(value)));
 }
 
-/** Gravitate notă negativă (1=foarte grav) → contribuție la rating 1–5. */
+/** Gravitate notă negativă (1=minor, 5=foarte grav) → contribuție la rating 1–5. */
 export function ratingFromNegativeSeverity(severity: number): number {
   const s = clampGuestNoteStars(severity);
-  return roundGuestStars(1 + ((s - 1) * 2) / 4);
+  return roundGuestStars(6 - s);
 }
 
 /** Rating efectiv per sejur din stelele notelor pozitive/negative. */

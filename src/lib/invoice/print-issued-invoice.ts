@@ -1,3 +1,5 @@
+import { INVOICE_SEASON_CSS } from "@/lib/invoice/invoice-season-styles";
+
 /** Self-contained styles for the isolated invoice print document. */
 const ISSUED_INVOICE_PRINT_CSS = `
   @page { size: A4 portrait; margin: 12mm; }
@@ -125,6 +127,8 @@ const ISSUED_INVOICE_PRINT_CSS = `
     text-transform: uppercase;
     color: #b45309;
   }
+
+  ${INVOICE_SEASON_CSS}
 `;
 
 function escapeHtml(value: string): string {

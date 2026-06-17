@@ -678,7 +678,7 @@
       "paymentUnknown": "Payment status unknown.",
       "lateNote": "Past standard checkout time ({until}). Note for reception — no automatic fee.",
       "addReview": "Add quick review",
-      "reviewIntro": "Stars on each note affect the guest’s overall rating. Fill in at least one note.",
+      "reviewIntro": "Choose positive or negative, set intensity 1–5, then add a note.",
       "positiveNote": "Positive note",
       "positiveNotePlaceholder": "Optional — what went well on this stay",
       "negativeNote": "Negative note",
@@ -3291,7 +3291,26 @@
       "review": {
         "editStayReview": "Edit stay review",
         "rateStay": "Rate this stay",
-        "noteStarsIntro": "Set intensity for each note (stars). At least one note is required. The guest’s overall rating is computed from these stars.",
+        "intro": "Choose positive or negative — only one per stay. Pick intensity 1–5, then write the note. Guest profile stars are computed from stay ratings.",
+        "chooseTone": "Review tone",
+        "positiveTone": "Positive",
+        "negativeTone": "Negative",
+        "intensity": "Intensity",
+        "intensityValue": "level {value}/5",
+        "positiveLevel": {
+          "1": "OK",
+          "2": "Good",
+          "3": "Very good",
+          "4": "Excellent",
+          "5": "Outstanding"
+        },
+        "negativeLevel": {
+          "1": "Minor",
+          "2": "Light",
+          "3": "Moderate",
+          "4": "Serious",
+          "5": "Major issue"
+        },
         "stars": "Stars",
         "starsOption": "{count} stars",
         "starOption": "{count} star",
@@ -3305,11 +3324,11 @@
           "5": "Outstanding"
         },
         "negativeStarsLevel": {
-          "1": "Very severe",
-          "2": "Severe",
+          "1": "Minor",
+          "2": "Light",
           "3": "Moderate",
-          "4": "Minor",
-          "5": "Mild"
+          "4": "Serious",
+          "5": "Major issue"
         },
         "positiveNote": "Positive note",
         "positiveNotePlaceholder": "What went well, appreciated behavior, useful notes for the future.",
@@ -3409,7 +3428,7 @@
       },
       "scoreHints": {
         "starsLabel": "How the star rating is calculated",
-        "stars": "Average of stars from post-stay reviews (1–5). Each positive/negative note has its own stars: positive 1=OK … 5=outstanding; negative 1=very severe … 5=mild. Overall rating combines these values. With no reviews yet we show 0."
+        "stars": "Average star rating from stay reviews (1–5). Each stay gets one positive or negative review with intensity 1–5; profile stars are the average of those stay ratings. With no reviews yet we show 0."
       },
       "stayBlock": {
         "guestsSummary": "{adults} adults + {children} children",

@@ -22,7 +22,10 @@ import type { BookingCheckoutPanelData } from "@/domain/booking/checkout-panel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { datetimeLocalNow, isoToDatetimeLocal } from "@/lib/operational-check";
 import { stayNightCount } from "@/lib/stay-dates";
-import { GuestNoteStarsInput } from "@/components/admin/guests/GuestNoteStarsInput";
+import {
+  GuestStayRatingFields,
+  type GuestStayRatingValue,
+} from "@/components/admin/guests/GuestStayRatingFields";
 import "@/app/admin/booking-checkout-panel.css";
 
 export type BookingCheckoutPanelProps = {
@@ -62,10 +65,11 @@ export function BookingCheckoutPanel({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [atLocal, setAtLocal] = useState(datetimeLocalNow);
   const [addReview, setAddReview] = useState(false);
-  const [positiveNote, setPositiveNote] = useState("");
-  const [negativeNote, setNegativeNote] = useState("");
-  const [positiveStars, setPositiveStars] = useState(3);
-  const [negativeStars, setNegativeStars] = useState(3);
+  const [reviewRating, setReviewRating] = useState<GuestStayRatingValue>({
+    polarity: null,
+    intensity: 3,
+    note: "",
+  });
 
   const isEdit = intent === "edit";
 
@@ -78,10 +82,7 @@ export function BookingCheckoutPanel({
       setData(null);
       setLoadError(null);
       setAddReview(false);
-      setPositiveNote("");
-      setNegativeNote("");
-      setPositiveStars(3);
-      setNegativeStars(3);
+      setReviewRating({ polarity: null, intensity: 3, note: "" });
       return;
     }
     setAtLocal(datetimeLocalNow());
@@ -101,17 +102,18 @@ export function BookingCheckoutPanel({
       if (res.data.existingReviewStars != null) {
         setAddReview(true);
       }
-      if (res.data.existingReviewPositiveNote) {
-        setPositiveNote(res.data.existingReviewPositiveNote);
-      }
-      if (res.data.existingReviewNegativeNote) {
-        setNegativeNote(res.data.existingReviewNegativeNote);
-      }
-      if (res.data.existingReviewPositiveStars != null) {
-        setPositiveStars(res.data.existingReviewPositiveStars);
-      }
-      if (res.data.existingReviewNegativeStars != null) {
-        setNegativeStars(res.data.existingReviewNegativeStars);
+      if (res.data.existingReviewPositiveNote?.trim()) {
+        setReviewRating({
+          polarity: "positive",
+          intensity: res.data.existingReviewPositiveStars ?? 3,
+          note: res.data.existingReviewPositiveNote,
+        });
+      } else if (res.data.existingReviewNegativeNote?.trim()) {
+        setReviewRating({
+          polarity: "negative",
+          intensity: res.data.existingReviewNegativeStars ?? 3,
+          note: res.data.existingReviewNegativeNote,
+        });
       }
     });
 
@@ -160,13 +162,21 @@ export function BookingCheckoutPanel({
       const fd = new FormData();
       fd.set("id", bookingId);
       if (at) fd.set("at", at);
-      if (!isEdit && addReview && data?.guestId) {
-        fd.set("add_review", "1");
-        fd.set("guest_id", data.guestId);
-        fd.set("positive_stars", String(positiveStars));
-        fd.set("negative_stars", String(negativeStars));
-        fd.set("positive_note", positiveNote);
-        fd.set("negative_note", negativeNote);
+      if (!isEdit && addReview && data?.guestId && reviewRating.polarity) {
+        const note = reviewRating.note.trim();
+        if (note) {
+          fd.set("add_review", "1");
+          fd.set("guest_id", data.guestId);
+          if (reviewRating.polarity === "positive") {
+            fd.set("positive_stars", String(reviewRating.intensity));
+            fd.set("positive_note", note);
+            fd.set("negative_note", "");
+          } else {
+            fd.set("negative_stars", String(reviewRating.intensity));
+            fd.set("negative_note", note);
+            fd.set("positive_note", "");
+          }
+        }
       }
 
       const res = isEdit
@@ -278,41 +288,13 @@ export function BookingCheckoutPanel({
 
             {addReview ? (
               <div className="booking-checkout-panel__review-fields">
-                <p className="booking-checkout-panel__review-intro">{t("reviewIntro")}</p>
-                <div className="booking-checkout-panel__field booking-checkout-panel__field--positive">
-                  <span>{t("positiveNote")}</span>
-                  <GuestNoteStarsInput
-                    variant="positive"
-                    value={positiveStars}
-                    onChange={setPositiveStars}
-                    disabled={submitDisabled}
-                  />
-                  <textarea
-                    rows={2}
-                    value={positiveNote}
-                    onChange={(e) => setPositiveNote(e.target.value)}
-                    disabled={submitDisabled}
-                    className="booking-checkout-panel__textarea"
-                    placeholder={t("positiveNotePlaceholder")}
-                  />
-                </div>
-                <div className="booking-checkout-panel__field booking-checkout-panel__field--negative">
-                  <span>{t("negativeNote")}</span>
-                  <GuestNoteStarsInput
-                    variant="negative"
-                    value={negativeStars}
-                    onChange={setNegativeStars}
-                    disabled={submitDisabled}
-                  />
-                  <textarea
-                    rows={2}
-                    value={negativeNote}
-                    onChange={(e) => setNegativeNote(e.target.value)}
-                    disabled={submitDisabled}
-                    className="booking-checkout-panel__textarea"
-                    placeholder={t("negativeNotePlaceholder")}
-                  />
-                </div>
+                <GuestStayRatingFields
+                  mode="controlled"
+                  value={reviewRating}
+                  onChange={setReviewRating}
+                  disabled={submitDisabled}
+                  textareaClassName="booking-checkout-panel__textarea"
+                />
                 <Link
                   href={`/admin/guests/${data.guestId}`}
                   className="booking-checkout-panel__profile-link"

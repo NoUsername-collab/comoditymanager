@@ -15,6 +15,7 @@ import { GuestRebookStayCollapse } from "@/components/admin/guests/GuestRebookSt
 import { loadGuestRebookPanelPayload } from "@/services/guest-rebook";
 import { GuestProfileSection } from "@/components/admin/guests/GuestProfileSection";
 import { GuestStayReviewForm } from "@/components/admin/guests/GuestStayReviewForm";
+import { GuestStayStarsInline } from "@/components/admin/guests/GuestStayStarsInline";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
@@ -373,7 +374,12 @@ export default async function GuestDetailPage({
                         <div className="guest-history__item-top">
                           <div>
                             <p className="guest-history__period">
-                              {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                              <span className="guest-history__period-text">
+                                {formatStayPeriod(stay.check_in, stay.check_out, true)}
+                              </span>
+                              {stay.review && stay.review.stars > 0 ? (
+                                <GuestStayStarsInline value={stay.review.stars} />
+                              ) : null}
                             </p>
                             <p className="guest-history__meta">
                               {statusLabel(stay.status, tFlow)}
@@ -381,31 +387,28 @@ export default async function GuestDetailPage({
                               {stay.total_price != null ? ` · ${stay.total_price} RON` : ""}
                             </p>
                             <p className="guest-history__ref">{formatBookingRef(stay.id)}</p>
-                            {stay.review && (
+                            {stay.review ? (
                               <div className="guest-history__review">
-                                <p className="guest-history__review-stars">
-                                  {tPage("reviewSummary", { stars: stay.review.stars })}
-                                </p>
                                 {stay.review.positive_note ? (
                                   <p className="guest-history__review-note guest-history__review-note--positive">
-                                    {tGuests("review.positiveNote")}
+                                    {tGuests("review.positiveTone")}
                                     {stay.review.positive_stars != null
-                                      ? ` · ${tGuests("review.starsOption", { count: stay.review.positive_stars })}`
+                                      ? ` · ${tGuests("review.intensityValue", { value: stay.review.positive_stars })}`
                                       : ""}
                                     : {stay.review.positive_note}
                                   </p>
                                 ) : null}
                                 {stay.review.negative_note ? (
                                   <p className="guest-history__review-note guest-history__review-note--negative">
-                                    {tGuests("review.negativeNote")}
+                                    {tGuests("review.negativeTone")}
                                     {stay.review.negative_stars != null
-                                      ? ` · ${tGuests("review.starsOption", { count: stay.review.negative_stars })}`
+                                      ? ` · ${tGuests("review.intensityValue", { value: stay.review.negative_stars })}`
                                       : ""}
                                     : {stay.review.negative_note}
                                   </p>
                                 ) : null}
                               </div>
-                            )}
+                            ) : null}
                           </div>
                           <Link
                             href={`/admin/bookings/${stay.id}`}
