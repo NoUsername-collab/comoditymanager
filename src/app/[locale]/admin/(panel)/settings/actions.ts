@@ -538,27 +538,29 @@ export async function sendTestEmailAction(): Promise<
   if (!isEmailDeliveryConfigured()) {
     return { ok: false, error: t("emailProviderNotConfigured") };
   }
+  const { resolveTransactionalEmailIdentity } = await import(
+    "@/services/email-identity"
+  );
   const { testEmailTemplate } = await import("@/lib/email/templates");
   const { getEmailSettings } = await import("@/services/email-settings");
-  const { getPensionSettings } = await import("@/services/pension-settings");
 
-  const [emailSettings, pension] = await Promise.all([
+  const [identity, emailSettings] = await Promise.all([
+    resolveTransactionalEmailIdentity(),
     getEmailSettings(),
-    getPensionSettings(),
   ]);
 
-  const pensionName = pension?.display_name ?? "Pensiune";
   const template = testEmailTemplate({
-    pensionName,
+    pensionName: identity.displayName,
     customFooter: emailSettings.email_custom_footer,
   });
 
   const result = await sendEmail({
+    from: identity.fromAddress,
     to: email,
     subject: template.subject,
     html: template.html,
     text: template.text,
-    replyTo: emailSettings.email_reply_to || undefined,
+    replyTo: identity.defaultReplyTo ?? undefined,
   });
 
   if (!result.success) {

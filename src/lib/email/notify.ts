@@ -1,13 +1,3 @@
-/**
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║  REZOVA — Notification Dispatcher                              ║
- * ║                                                                ║
- * ║  High-level notification functions called from server actions. ║
- * ║  Each function: builds template → sends via provider.          ║
- * ║  Failures are logged but NEVER block the main operation.       ║
- * ╚══════════════════════════════════════════════════════════════════╝
- */
-
 import { sendEmail, type EmailResult } from "@/lib/email/provider";
 import {
   newBookingRequestToOwner,
@@ -16,15 +6,32 @@ import {
   guestAppLinkToGuest,
 } from "@/lib/email/templates";
 import type { EmailSettings } from "@/services/email-settings";
+import {
+  resolveTransactionalEmailIdentity,
+  type TransactionalEmailIdentity,
+} from "@/services/email-identity";
 
-/** Log email failures without crashing the main flow */
 function logEmailResult(context: string, result: EmailResult): void {
   if (!result.success) {
     console.error(`[EMAIL-FAIL] ${context}: ${result.error}`);
   }
 }
 
-// ─── Notify owner: new booking request ──────────────────────────
+function pickReplyTo(
+  identity: TransactionalEmailIdentity,
+  ...candidates: Array<string | null | undefined>
+): string | undefined {
+  for (const value of candidates) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return identity.defaultReplyTo ?? undefined;
+}
+
+async function loadIdentity() {
+  return resolveTransactionalEmailIdentity();
+}
+
 export async function notifyOwnerNewRequest(data: {
   ownerEmail: string;
   pensionName: string;
@@ -40,8 +47,15 @@ export async function notifyOwnerNewRequest(data: {
   baseUrl: string;
   emailSettings?: EmailSettings;
 }): Promise<void> {
-  if (data.emailSettings && (!data.emailSettings.email_enabled || !data.emailSettings.email_notify_new_request)) return;
+  if (
+    data.emailSettings &&
+    (!data.emailSettings.email_enabled ||
+      !data.emailSettings.email_notify_new_request)
+  ) {
+    return;
+  }
   try {
+    const identity = await loadIdentity();
     const template = newBookingRequestToOwner({
       pensionName: data.pensionName,
       guestName: data.guestName,
@@ -56,11 +70,16 @@ export async function notifyOwnerNewRequest(data: {
     });
 
     const result = await sendEmail({
+      from: identity.fromAddress,
       to: data.ownerEmail,
       subject: template.subject,
       html: template.html,
       text: template.text,
-      replyTo: data.emailSettings?.email_reply_to || data.guestEmail,
+      replyTo: pickReplyTo(
+        identity,
+        data.emailSettings?.email_reply_to,
+        data.guestEmail,
+      ),
     });
 
     logEmailResult("notifyOwnerNewRequest", result);
@@ -69,7 +88,6 @@ export async function notifyOwnerNewRequest(data: {
   }
 }
 
-// ─── Notify guest: booking confirmed ────────────────────────────
 export async function notifyGuestConfirmed(data: {
   guestEmail: string;
   pensionName: string;
@@ -84,8 +102,15 @@ export async function notifyGuestConfirmed(data: {
   guestAppUrl?: string;
   emailSettings?: EmailSettings;
 }): Promise<void> {
-  if (data.emailSettings && (!data.emailSettings.email_enabled || !data.emailSettings.email_notify_confirmation)) return;
+  if (
+    data.emailSettings &&
+    (!data.emailSettings.email_enabled ||
+      !data.emailSettings.email_notify_confirmation)
+  ) {
+    return;
+  }
   try {
+    const identity = await loadIdentity();
     const template = bookingConfirmedToGuest({
       pensionName: data.pensionName,
       guestName: data.guestName,
@@ -100,11 +125,12 @@ export async function notifyGuestConfirmed(data: {
     });
 
     const result = await sendEmail({
+      from: identity.fromAddress,
       to: data.guestEmail,
       subject: template.subject,
       html: template.html,
       text: template.text,
-      replyTo: data.emailSettings?.email_reply_to || undefined,
+      replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
     });
 
     logEmailResult("notifyGuestConfirmed", result);
@@ -113,7 +139,6 @@ export async function notifyGuestConfirmed(data: {
   }
 }
 
-// ─── Notify guest: guest app link ───────────────────────────────
 export async function notifyGuestAppLink(data: {
   guestEmail: string;
   pensionName: string;
@@ -125,6 +150,7 @@ export async function notifyGuestAppLink(data: {
   checkOutTime?: string;
 }): Promise<void> {
   try {
+    const identity = await loadIdentity();
     const template = guestAppLinkToGuest({
       pensionName: data.pensionName,
       guestName: data.guestName,
@@ -136,10 +162,12 @@ export async function notifyGuestAppLink(data: {
     });
 
     const result = await sendEmail({
+      from: identity.fromAddress,
       to: data.guestEmail,
       subject: template.subject,
       html: template.html,
       text: template.text,
+      replyTo: pickReplyTo(identity),
     });
 
     logEmailResult("notifyGuestAppLink", result);
@@ -148,7 +176,6 @@ export async function notifyGuestAppLink(data: {
   }
 }
 
-// ─── Notify guest: booking cancelled ────────────────────────────
 export async function notifyGuestCancelled(data: {
   guestEmail: string;
   pensionName: string;
@@ -158,8 +185,15 @@ export async function notifyGuestCancelled(data: {
   reason?: string;
   emailSettings?: EmailSettings;
 }): Promise<void> {
-  if (data.emailSettings && (!data.emailSettings.email_enabled || !data.emailSettings.email_notify_cancellation)) return;
+  if (
+    data.emailSettings &&
+    (!data.emailSettings.email_enabled ||
+      !data.emailSettings.email_notify_cancellation)
+  ) {
+    return;
+  }
   try {
+    const identity = await loadIdentity();
     const template = bookingCancelledToGuest({
       pensionName: data.pensionName,
       guestName: data.guestName,
@@ -169,11 +203,12 @@ export async function notifyGuestCancelled(data: {
     });
 
     const result = await sendEmail({
+      from: identity.fromAddress,
       to: data.guestEmail,
       subject: template.subject,
       html: template.html,
       text: template.text,
-      replyTo: data.emailSettings?.email_reply_to || undefined,
+      replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
     });
 
     logEmailResult("notifyGuestCancelled", result);

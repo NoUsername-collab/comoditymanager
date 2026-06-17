@@ -7,6 +7,7 @@ import {
   sendTestEmailAction,
 } from "@/app/[locale]/admin/(panel)/settings/actions";
 import type { EmailDeliveryConfig } from "@/lib/email/provider";
+import type { TransactionalEmailIdentity } from "@/services/email-identity";
 import type { EmailSettings } from "@/services/email-settings";
 import {
   settingsPartialChanged,
@@ -16,6 +17,7 @@ import {
 type Props = {
   settings: EmailSettings;
   delivery: EmailDeliveryConfig;
+  identity: TransactionalEmailIdentity;
 };
 
 function SettingRow({
@@ -40,7 +42,11 @@ function SettingRow({
   );
 }
 
-export function EmailSettingsPanel({ settings: initial, delivery }: Props) {
+export function EmailSettingsPanel({
+  settings: initial,
+  delivery,
+  identity,
+}: Props) {
   const t = useTranslations("admin.pages.settings.email");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
@@ -239,6 +245,23 @@ export function EmailSettingsPanel({ settings: initial, delivery }: Props) {
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">
+            {t("senderTitle")}
+          </span>
+          <span className="checkin-settings__section-desc">
+            {t("senderDesc")}
+          </span>
+        </div>
+
+        <SettingRow label={t("senderFrom")} description={t("senderFromDesc")}>
+          <code className="checkin-field__input checkin-field__input--readonly">
+            {identity.fromAddress}
+          </code>
+        </SettingRow>
+      </div>
+
+      <div className="checkin-settings__section">
+        <div className="checkin-settings__section-header">
+          <span className="checkin-settings__section-title">
             {t("customizationTitle")}
           </span>
           <span className="checkin-settings__section-desc">
@@ -250,13 +273,16 @@ export function EmailSettingsPanel({ settings: initial, delivery }: Props) {
           <input
             type="email"
             className="checkin-field__input"
-            placeholder="contact@pensiune.ro"
+            placeholder={identity.defaultReplyTo ?? "contact@pensiune.ro"}
             value={replyTo}
-            disabled={disabled}
             onChange={(e) => setReplyTo(e.target.value)}
             onBlur={() => persist({ email_reply_to: replyTo.trim() || null })}
           />
         </SettingRow>
+
+        {!settings.email_reply_to && identity.defaultReplyTo ? (
+          <p className="checkin-fisa-save__hint">{t("replyToFallbackHint")}</p>
+        ) : null}
 
         <div className="checkin-setting-row checkin-setting-row--stack">
           <div className="checkin-setting-row__left">
@@ -271,7 +297,6 @@ export function EmailSettingsPanel({ settings: initial, delivery }: Props) {
             <textarea
               className="checkin-field__input checkin-field__input--textarea"
               rows={2}
-              disabled={disabled}
               value={customFooter}
               onChange={(e) => setCustomFooter(e.target.value)}
               onBlur={() =>
@@ -298,7 +323,7 @@ export function EmailSettingsPanel({ settings: initial, delivery }: Props) {
           </p>
         ) : (
           <p className="checkin-fisa-save__hint">
-            {t("providerFrom", { from: delivery.fromAddress })}
+            {t("providerFrom", { from: identity.fromAddress })}
           </p>
         )}
 

@@ -5,7 +5,7 @@ export const PLATFORM_NAME = "Hospira";
 
 export const PLATFORM_CONTACT_EMAIL = "contact@hospira.ro";
 
-/** Default outbound email when EMAIL_FROM is unset. */
+/** Legacy platform from string — prefer resolveTransactionalEmailIdentity(). */
 export const PLATFORM_EMAIL_FROM = `${PLATFORM_NAME} <noreply@${platformDomainFromRequestHost(null)}>`;
 
 /** Platform apex URL (landing, signup). For tenant pages use resolveTenantPublicSiteUrl(). */

@@ -17,6 +17,7 @@ import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { pensionStatisticsVisibility } from "@/services/pension-settings";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
 import { getEmailDeliveryConfig } from "@/lib/email/provider";
+import { resolveTransactionalEmailIdentity } from "@/services/email-identity";
 import { getEmailSettings, DEFAULT_EMAIL_SETTINGS } from "@/services/email-settings";
 import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
 import { requireStaff } from "@/lib/auth/require-staff";
@@ -47,7 +48,7 @@ export default async function SettingsPage({
   }>;
 }) {
   const staffPromise = requireStaff();
-  const [t, params, staff, checkinSettings, bookingRules, locale, emailSettings, pensionResult] =
+  const [t, params, staff, checkinSettings, bookingRules, locale, emailSettings, emailIdentity, pensionResult] =
     await Promise.all([
       getTranslations("admin.pages.settings"),
       searchParams,
@@ -56,6 +57,7 @@ export default async function SettingsPage({
       getBookingRulesSettings().catch(() => null),
       getLocale(),
       getEmailSettings().catch(() => DEFAULT_EMAIL_SETTINGS),
+      resolveTransactionalEmailIdentity().catch(() => null),
       (async () => {
         try {
           return {
@@ -256,10 +258,15 @@ export default async function SettingsPage({
             description={t("navEmailDesc")}
           />
           <SettingsSection title={t("emailTitle")} description={t("emailSubtitle")}>
-            <EmailSettingsPanel
-              settings={emailSettings}
-              delivery={getEmailDeliveryConfig()}
-            />
+            {emailIdentity ? (
+              <EmailSettingsPanel
+                settings={emailSettings}
+                delivery={getEmailDeliveryConfig()}
+                identity={emailIdentity}
+              />
+            ) : (
+              <p>{t("genericError")}</p>
+            )}
           </SettingsSection>
         </>
       ) : null}
