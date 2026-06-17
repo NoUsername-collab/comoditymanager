@@ -102,17 +102,11 @@ export function BookingCheckoutPanel({
       if (res.data.existingReviewStars != null) {
         setAddReview(true);
       }
-      if (res.data.existingReviewPositiveNote?.trim()) {
+      if (res.data.existingReviewNote?.trim()) {
         setReviewRating({
-          polarity: "positive",
-          intensity: res.data.existingReviewPositiveStars ?? 3,
-          note: res.data.existingReviewPositiveNote,
-        });
-      } else if (res.data.existingReviewNegativeNote?.trim()) {
-        setReviewRating({
-          polarity: "negative",
-          intensity: res.data.existingReviewNegativeStars ?? 3,
-          note: res.data.existingReviewNegativeNote,
+          polarity: res.data.existingReviewPolarity ?? "positive",
+          intensity: res.data.existingReviewIntensity ?? 3,
+          note: res.data.existingReviewNote,
         });
       }
     });
@@ -167,15 +161,9 @@ export function BookingCheckoutPanel({
         if (note) {
           fd.set("add_review", "1");
           fd.set("guest_id", data.guestId);
-          if (reviewRating.polarity === "positive") {
-            fd.set("positive_stars", String(reviewRating.intensity));
-            fd.set("positive_note", note);
-            fd.set("negative_note", "");
-          } else {
-            fd.set("negative_stars", String(reviewRating.intensity));
-            fd.set("negative_note", note);
-            fd.set("positive_note", "");
-          }
+          fd.set("review_polarity", reviewRating.polarity);
+          fd.set("review_intensity", String(reviewRating.intensity));
+          fd.set("review_note", note);
         }
       }
 

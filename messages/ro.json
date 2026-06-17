@@ -2460,7 +2460,7 @@
       "selectProfileToMerge": "Selectează profilul de combinat",
       "invalidReview": "Review invalid",
       "reviewNoteRequired": "Nota de review este obligatorie.",
-      "reviewSinglePolarity": "Alege fie pozitiv, fie negativ — nu ambele.",
+      "reviewPolarityRequired": "Alege pozitiv sau negativ înainte de salvare.",
       "bookingIdMissing": "ID rezervare lipsă.",
       "checkInError": "Eroare check-in.",
       "checkOutError": "Eroare check-out.",

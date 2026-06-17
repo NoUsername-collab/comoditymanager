@@ -389,24 +389,20 @@ export default async function GuestDetailPage({
                             <p className="guest-history__ref">{formatBookingRef(stay.id)}</p>
                             {stay.review ? (
                               <div className="guest-history__review">
-                                {stay.review.positive_note ? (
-                                  <p className="guest-history__review-note guest-history__review-note--positive">
-                                    {tGuests("review.positiveTone")}
-                                    {stay.review.positive_stars != null
-                                      ? ` · ${tGuests("review.intensityValue", { value: stay.review.positive_stars })}`
-                                      : ""}
-                                    : {stay.review.positive_note}
-                                  </p>
-                                ) : null}
-                                {stay.review.negative_note ? (
-                                  <p className="guest-history__review-note guest-history__review-note--negative">
-                                    {tGuests("review.negativeTone")}
-                                    {stay.review.negative_stars != null
-                                      ? ` · ${tGuests("review.intensityValue", { value: stay.review.negative_stars })}`
-                                      : ""}
-                                    : {stay.review.negative_note}
-                                  </p>
-                                ) : null}
+                                <p
+                                  className={[
+                                    "guest-history__review-note",
+                                    stay.review.polarity === "positive"
+                                      ? "guest-history__review-note--positive"
+                                      : "guest-history__review-note--negative",
+                                  ].join(" ")}
+                                >
+                                  {stay.review.polarity === "positive"
+                                    ? tGuests("review.positiveTone")
+                                    : tGuests("review.negativeTone")}
+                                  {` · ${tGuests("review.intensityValue", { value: stay.review.intensity })}`}
+                                  : {stay.review.note}
+                                </p>
                               </div>
                             ) : null}
                           </div>

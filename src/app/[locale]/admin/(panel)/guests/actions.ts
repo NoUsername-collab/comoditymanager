@@ -287,6 +287,14 @@ export async function updateGuestIdentityAction(
   }
 }
 
+function parseReviewPolarity(
+  value: FormDataEntryValue | null
+): "positive" | "negative" | null {
+  const raw = String(value ?? "").trim();
+  if (raw === "positive" || raw === "negative") return raw;
+  return null;
+}
+
 export async function saveGuestStayReviewAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
   await requireAdmin();
@@ -294,22 +302,24 @@ export async function saveGuestStayReviewAction(formData: FormData) {
   const bookingId = String(formData.get("booking_id") ?? "");
   if (!guestId || !bookingId) throw new Error(t("invalidReview"));
 
+  const polarity = parseReviewPolarity(formData.get("review_polarity"));
+  const intensity = parseOptionalStarsField(formData.get("review_intensity"));
+  const note = String(formData.get("review_note") ?? "");
+
+  if (!polarity) throw new Error(t("reviewPolarityRequired"));
+
   try {
     await saveGuestStayReview({
       guestId,
       bookingId,
-      positiveNote: String(formData.get("positive_note") ?? ""),
-      negativeNote: String(formData.get("negative_note") ?? ""),
-      positiveStars: parseOptionalStarsField(formData.get("positive_stars")),
-      negativeStars: parseOptionalStarsField(formData.get("negative_stars")),
+      polarity,
+      intensity: intensity ?? 3,
+      note,
     });
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "guest.review_note_required") {
         throw new Error(t("reviewNoteRequired"));
-      }
-      if (error.message === "guest.review_single_polarity") {
-        throw new Error(t("reviewSinglePolarity"));
       }
     }
     throw error;

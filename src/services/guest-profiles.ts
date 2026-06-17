@@ -14,6 +14,7 @@ import {
   toGuestBookingFlagSummary,
   computeGuestProfileSnapshot,
   computeStayReviewEffectiveStars,
+  clampGuestNoteStars,
 } from "@/domain/guest/reputation";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { getAdminUser } from "@/lib/auth/require-admin";
@@ -244,39 +245,19 @@ async function getBookingReviewCheck(
 export async function saveGuestStayReview(input: {
   bookingId: string;
   guestId: string;
-  positiveNote: string;
-  negativeNote: string;
-  positiveStars: number | null;
-  negativeStars: number | null;
+  polarity: "positive" | "negative";
+  intensity: number;
+  note: string;
 }): Promise<void> {
-  const positiveNote = input.positiveNote.trim();
-  const negativeNote = input.negativeNote.trim();
-  const positiveStars =
-    positiveNote.length > 0 && input.positiveStars != null
-      ? Math.max(1, Math.min(5, Math.round(input.positiveStars)))
-      : null;
-  const negativeStars =
-    negativeNote.length > 0 && input.negativeStars != null
-      ? Math.max(1, Math.min(5, Math.round(input.negativeStars)))
-      : null;
+  const note = input.note.trim();
+  const intensity = clampGuestNoteStars(input.intensity);
+  const polarity = input.polarity === "negative" ? "negative" : "positive";
 
-  if (!positiveNote && !negativeNote) {
+  if (!note) {
     throw new Error("guest.review_note_required");
   }
 
-  if (positiveNote && negativeNote) {
-    throw new Error("guest.review_single_polarity");
-  }
-
-  const effectiveStars = computeStayReviewEffectiveStars({
-    positiveNote,
-    negativeNote,
-    positiveStars,
-    negativeStars,
-  });
-  if (effectiveStars == null) {
-    throw new Error("guest.review_note_required");
-  }
+  const effectiveStars = computeStayReviewEffectiveStars({ polarity, intensity });
   const [booking, today] = await Promise.all([
     getBookingReviewCheck(input.bookingId),
     getEffectiveToday(),
@@ -299,10 +280,9 @@ export async function saveGuestStayReview(input: {
       booking_id: input.bookingId,
       guest_id: input.guestId,
       stars: effectiveStars,
-      positive_note: positiveNote || null,
-      negative_note: negativeNote || null,
-      positive_stars: positiveStars,
-      negative_stars: negativeStars,
+      polarity,
+      intensity,
+      note,
       reviewed_at: now,
       reviewed_by: actor?.id ?? null,
       reviewed_by_email: actor?.email ?? null,
@@ -320,10 +300,9 @@ export async function saveGuestStayReview(input: {
     metadata: {
       booking_id: input.bookingId,
       stars: effectiveStars,
-      positive_note: positiveNote || null,
-      negative_note: negativeNote || null,
-      positive_stars: positiveStars,
-      negative_stars: negativeStars,
+      polarity,
+      intensity,
+      note,
     },
   });
 }

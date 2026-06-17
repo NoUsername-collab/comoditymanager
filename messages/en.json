@@ -2495,7 +2495,7 @@
       "selectProfileToMerge": "Select profile to merge",
       "invalidReview": "Invalid review",
       "reviewNoteRequired": "A review note is required.",
-      "reviewSinglePolarity": "Choose either a positive or a negative review — not both.",
+      "reviewPolarityRequired": "Choose positive or negative before saving.",
       "bookingIdMissing": "Booking ID missing.",
       "checkInError": "Check-in error.",
       "checkOutError": "Check-out error.",

@@ -1,4 +1,5 @@
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
+import type { GuestStayReviewPolarity } from "@/domain/guest/types";
 
 export type BookingCheckoutPanelData = {
   bookingId: string;
@@ -15,8 +16,7 @@ export type BookingCheckoutPanelData = {
   checkoutBlockUnpaid: boolean;
   checkoutTimeUntil: string | null;
   existingReviewStars: number | null;
-  existingReviewPositiveNote: string | null;
-  existingReviewNegativeNote: string | null;
-  existingReviewPositiveStars: number | null;
-  existingReviewNegativeStars: number | null;
+  existingReviewPolarity: GuestStayReviewPolarity | null;
+  existingReviewIntensity: number | null;
+  existingReviewNote: string | null;
 };

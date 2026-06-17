@@ -2,6 +2,7 @@ import type {
   GuestBookingFlagSummary,
   GuestFlagLevel,
   GuestProfileRow,
+  GuestStayReviewPolarity,
   GuestStayReviewRow,
 } from "./types";
 import { stayNightCount } from "@/lib/stay-dates";
@@ -34,31 +35,16 @@ export function ratingFromNegativeSeverity(severity: number): number {
   return roundGuestStars(6 - s);
 }
 
-/** Rating efectiv per sejur din stelele notelor pozitive/negative. */
+/** Rating efectiv per sejur din polarity + intensity. */
 export function computeStayReviewEffectiveStars(input: {
-  positiveNote: string | null | undefined;
-  negativeNote: string | null | undefined;
-  positiveStars: number | null | undefined;
-  negativeStars: number | null | undefined;
-}): number | null {
-  const posNote = input.positiveNote?.trim() ?? "";
-  const negNote = input.negativeNote?.trim() ?? "";
-  const hasPositive = posNote.length > 0;
-  const hasNegative = negNote.length > 0;
-
-  if (!hasPositive && !hasNegative) return null;
-
-  const positiveRating = hasPositive
-    ? clampGuestNoteStars(input.positiveStars ?? 3)
-    : null;
-  const negativeRating = hasNegative
-    ? ratingFromNegativeSeverity(input.negativeStars ?? 3)
-    : null;
-
-  if (positiveRating != null && negativeRating != null) {
-    return roundGuestStars((positiveRating + negativeRating) / 2);
+  polarity: GuestStayReviewPolarity;
+  intensity: number;
+}): number {
+  const intensity = clampGuestNoteStars(input.intensity);
+  if (input.polarity === "positive") {
+    return intensity;
   }
-  return positiveRating ?? negativeRating;
+  return ratingFromNegativeSeverity(intensity);
 }
 
 export function resolveGuestStarsAverage(
@@ -184,18 +170,18 @@ export function mapGuestProfileRow(row: Record<string, unknown>): GuestProfileRo
 export function mapGuestStayReviewRow(
   row: Record<string, unknown>
 ): GuestStayReviewRow {
+  const polarity =
+    row.polarity === "negative" ? "negative" : "positive";
+  const intensity = clampGuestNoteStars(Number(row.intensity ?? row.stars ?? 3));
+  const note = String(row.note ?? "").trim() || "Review";
+
   return {
     booking_id: String(row.booking_id),
     guest_id: String(row.guest_id),
-    stars: Number(row.stars ?? 0),
-    positive_note:
-      row.positive_note != null ? String(row.positive_note) : null,
-    negative_note:
-      row.negative_note != null ? String(row.negative_note) : null,
-    positive_stars:
-      row.positive_stars != null ? Number(row.positive_stars) : null,
-    negative_stars:
-      row.negative_stars != null ? Number(row.negative_stars) : null,
+    stars: Number(row.stars ?? computeStayReviewEffectiveStars({ polarity, intensity })),
+    polarity,
+    intensity,
+    note,
     reviewed_at: String(row.reviewed_at),
     reviewed_by: row.reviewed_by != null ? String(row.reviewed_by) : null,
     reviewed_by_email:
@@ -233,13 +219,11 @@ export function computeGuestProfileSnapshot(args: {
   const effectiveRatings = reviews
     .map((review) =>
       computeStayReviewEffectiveStars({
-        positiveNote: review.positive_note,
-        negativeNote: review.negative_note,
-        positiveStars: review.positive_stars,
-        negativeStars: review.negative_stars,
-      }) ?? (review.stars > 0 ? review.stars : null)
+        polarity: review.polarity,
+        intensity: review.intensity,
+      })
     )
-    .filter((value): value is number => value != null);
+    .filter((value): value is number => Number.isFinite(value));
 
   const starsAvg =
     effectiveRatings.length > 0

@@ -149,24 +149,20 @@ describe("ratingFromNegativeSeverity", () => {
 });
 
 describe("computeStayReviewEffectiveStars", () => {
-  it("uses positive stars directly when only positive note", () => {
+  it("uses positive intensity directly", () => {
     expect(
       computeStayReviewEffectiveStars({
-        positiveNote: "Great guest",
-        negativeNote: "",
-        positiveStars: 5,
-        negativeStars: null,
+        polarity: "positive",
+        intensity: 5,
       })
     ).toBe(5);
   });
 
-  it("maps negative severity when only negative note", () => {
+  it("maps negative severity to guest rating", () => {
     expect(
       computeStayReviewEffectiveStars({
-        positiveNote: "",
-        negativeNote: "Noise complaint",
-        positiveStars: null,
-        negativeStars: 5,
+        polarity: "negative",
+        intensity: 5,
       })
     ).toBe(1);
   });
@@ -174,34 +170,10 @@ describe("computeStayReviewEffectiveStars", () => {
   it("maps minor negative to higher guest rating", () => {
     expect(
       computeStayReviewEffectiveStars({
-        positiveNote: "",
-        negativeNote: "Small mess",
-        positiveStars: null,
-        negativeStars: 1,
+        polarity: "negative",
+        intensity: 1,
       })
     ).toBe(5);
-  });
-
-  it("averages positive and mapped negative when both notes exist (legacy)", () => {
-    expect(
-      computeStayReviewEffectiveStars({
-        positiveNote: "Polite",
-        negativeNote: "Minor mess",
-        positiveStars: 4,
-        negativeStars: 3,
-      })
-    ).toBe(3.5);
-  });
-
-  it("returns null when no notes", () => {
-    expect(
-      computeStayReviewEffectiveStars({
-        positiveNote: "",
-        negativeNote: "",
-        positiveStars: 5,
-        negativeStars: 1,
-      })
-    ).toBeNull();
   });
 });
 
@@ -219,10 +191,9 @@ describe("computeGuestProfileSnapshot", () => {
           booking_id: "b1",
           guest_id: "guest-1",
           stars: 4,
-          positive_note: "Nice",
-          negative_note: null,
-          positive_stars: 4,
-          negative_stars: null,
+          polarity: "positive",
+          intensity: 4,
+          note: "Nice",
           reviewed_at: "2026-01-10T12:00:00Z",
           reviewed_by: null,
           reviewed_by_email: null,

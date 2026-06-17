@@ -37,14 +37,15 @@ export type GuestBookingFlagSummary = Pick<
   | "manual_note"
 >;
 
+export type GuestStayReviewPolarity = "positive" | "negative";
+
 export type GuestStayReviewRow = {
   booking_id: string;
   guest_id: string;
   stars: number;
-  positive_note: string | null;
-  negative_note: string | null;
-  positive_stars: number | null;
-  negative_stars: number | null;
+  polarity: GuestStayReviewPolarity;
+  intensity: number;
+  note: string;
   reviewed_at: string;
   reviewed_by: string | null;
   reviewed_by_email: string | null;

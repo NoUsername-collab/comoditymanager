@@ -15,6 +15,7 @@ import {
   updateBookingGuestPhone,
 } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
+import { saveGuestStayReview } from "@/services/guest-profiles";
 import { getTranslations } from "next-intl/server";
 
 function safeAdminReturnPath(raw: string, fallback: string): string {
@@ -273,10 +274,9 @@ export async function loadBookingCheckoutPanelAction(
         checkoutBlockUnpaid: settings.checkout_block_unpaid,
         checkoutTimeUntil: settings.checkout_time_until,
         existingReviewStars: review?.stars ?? null,
-        existingReviewPositiveNote: review?.positive_note ?? null,
-        existingReviewNegativeNote: review?.negative_note ?? null,
-        existingReviewPositiveStars: review?.positive_stars ?? null,
-        existingReviewNegativeStars: review?.negative_stars ?? null,
+        existingReviewPolarity: review?.polarity ?? null,
+        existingReviewIntensity: review?.intensity ?? null,
+        existingReviewNote: review?.note ?? null,
       },
     };
   } catch (e) {
@@ -301,19 +301,19 @@ export async function completeBookingCheckoutAction(
     const addReview = formData.get("add_review") === "1";
     const guestId = String(formData.get("guest_id") ?? "").trim();
     if (addReview && guestId) {
-      const { saveGuestStayReview } = await import("@/services/guest-profiles");
-      const positiveNote = String(formData.get("positive_note") ?? "").trim();
-      const negativeNote = String(formData.get("negative_note") ?? "").trim();
-      if (positiveNote || negativeNote) {
-        const positiveStarsRaw = String(formData.get("positive_stars") ?? "").trim();
-        const negativeStarsRaw = String(formData.get("negative_stars") ?? "").trim();
+      const polarityRaw = String(formData.get("review_polarity") ?? "").trim();
+      const note = String(formData.get("review_note") ?? "").trim();
+      const intensityRaw = String(formData.get("review_intensity") ?? "").trim();
+      if (
+        note &&
+        (polarityRaw === "positive" || polarityRaw === "negative")
+      ) {
         await saveGuestStayReview({
           guestId,
           bookingId: id,
-          positiveNote,
-          negativeNote,
-          positiveStars: positiveStarsRaw ? Number(positiveStarsRaw) : null,
-          negativeStars: negativeStarsRaw ? Number(negativeStarsRaw) : null,
+          polarity: polarityRaw,
+          intensity: intensityRaw ? Number(intensityRaw) : 3,
+          note,
         });
       }
     }

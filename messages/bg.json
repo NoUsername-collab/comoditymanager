@@ -2355,7 +2355,7 @@
       "selectProfileToMerge": "Избери профил за обединяване",
       "invalidReview": "Невалиден review",
       "reviewNoteRequired": "Бележката за review е задължителна.",
-      "reviewSinglePolarity": "Избери позитивен или негативен тон — не и двете.",
+      "reviewPolarityRequired": "Избери позитивен или негативен тон преди запис.",
       "bookingIdMissing": "Липсва ID на резервация.",
       "checkInError": "Грешка при check-in.",
       "checkOutError": "Грешка при check-out.",
