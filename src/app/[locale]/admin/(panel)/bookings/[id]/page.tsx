@@ -16,6 +16,8 @@ import { BookingStayEditor } from "@/components/admin/BookingStayEditor";
 import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestAccessSharePanel } from "@/components/admin/bookings/GuestAccessSharePanel";
+import { GuestFeedbackBadge } from "@/components/admin/bookings/GuestFeedbackBadge";
+import { getGuestFeedbackByBookingId } from "@/services/guest-feedback";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { getStayPricingRules } from "@/services/booking-rules-settings";
@@ -68,6 +70,9 @@ export default async function BookingDetailPage({
         existingCheckin: null as Awaited<
           ReturnType<typeof getCheckinByBookingId>
         >,
+        guestFeedback: null as Awaited<
+          ReturnType<typeof getGuestFeedbackByBookingId>
+        >,
       };
     }
     const { booking } = ctx;
@@ -82,9 +87,11 @@ export default async function BookingDetailPage({
         })
       ).catch(() => []),
       getCheckinByBookingId(booking.id).catch(() => null),
-    ]).then(([dedupCandidates, existingCheckin]) => ({
+      getGuestFeedbackByBookingId(booking.id).catch(() => null),
+    ]).then(([dedupCandidates, existingCheckin, guestFeedback]) => ({
       dedupCandidates,
       existingCheckin,
+      guestFeedback,
     }));
   });
 
@@ -114,7 +121,7 @@ export default async function BookingDetailPage({
     canFulfill,
   } = ctx;
 
-  const { dedupCandidates, existingCheckin } = bookingExtras;
+  const { dedupCandidates, existingCheckin, guestFeedback } = bookingExtras;
   const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
 
   const [bookingWithCheckin] = await attachCheckinRecordState([booking]);
@@ -342,6 +349,14 @@ export default async function BookingDetailPage({
             <div className="bd-card bd-card--tight">
               <p className="bd-card__title">{tPage("message")}</p>
               <div className="bd-notes">{booking.notes}</div>
+            </div>
+          )}
+
+          {/* Guest feedback */}
+          {guestFeedback && (
+            <div className="bd-card bd-card--tight">
+              <p className="bd-card__title">{tPage("guestFeedback")}</p>
+              <GuestFeedbackBadge feedback={guestFeedback} />
             </div>
           )}
 

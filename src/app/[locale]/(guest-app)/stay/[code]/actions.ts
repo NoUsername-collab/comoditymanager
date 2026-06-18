@@ -135,3 +135,45 @@ export async function submitGuestGreenStayAction(input: {
     };
   }
 }
+
+export async function submitGuestFeedbackAction(input: {
+  accessCode: string;
+  stars: number;
+  comment: string;
+}): Promise<GuestStayActionResult> {
+  const gate = await withGuestSession(input.accessCode);
+  if (!gate.ok) return { ok: false, error: gate.error };
+
+  const stars = Math.round(input.stars);
+  if (stars < 1 || stars > 5) return { ok: false, error: "invalidStars" };
+
+  const comment = input.comment.trim();
+
+  try {
+    const { tenantId, supabase } = await getGuestAppPublicDb();
+    const { error } = await supabase.from("guest_feedback").upsert(
+      withTenantId(tenantId, {
+        booking_id: gate.session.booking.id,
+        stars,
+        comment,
+        submitted_at: new Date().toISOString(),
+      }),
+      { onConflict: "booking_id" },
+    );
+
+    if (error) {
+      if (error.message.includes("guest_feedback")) {
+        return { ok: false, error: "migration" };
+      }
+      return { ok: false, error: error.message };
+    }
+
+    revalidatePath(`/stay/${gate.session.accessCode}`);
+    return { ok: true };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "generic",
+    };
+  }
+}

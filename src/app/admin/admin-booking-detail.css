@@ -315,6 +315,36 @@
   margin-top: 0.12rem;
 }
 
+/* ── Guest feedback ────────────────────────────────────────────── */
+.bd-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.bd-feedback__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bd-feedback__stars {
+  display: inline-flex;
+  gap: 0.1rem;
+}
+
+.bd-feedback__date {
+  font-size: 0.75rem;
+  color: var(--admin-muted, #71717a);
+}
+
+.bd-feedback__comment {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--admin-text, #18181b);
+  white-space: pre-wrap;
+}
+
 /* ── Stay inline (edit button + saved indicator in banner) ────── */
 .bd-stay-inline {
   display: inline-flex;

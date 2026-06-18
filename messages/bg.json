@@ -91,6 +91,29 @@
       "daysUntilCheckin": "{count, plural, one {Check-in in # day} other {Check-in in # days}}",
       "checkoutTodayShort": "Check-out today"
     },
+    "today": {
+      "sectionTitle": "Какво можете да направите сега",
+      "checkinNow": "Настаняване сега",
+      "checkinNowDesc": "Попълнете бързо онлайн настаняването",
+      "connectWifi": "Свържете се с WiFi",
+      "connectWifiDesc": "Достъп до WiFi мрежата на обекта",
+      "prepareCheckin": "Подгответе настаняването",
+      "prepareCheckinDesc": "Попълнете данните преди пристигане",
+      "discoverPlace": "Открийте мястото",
+      "discoverPlaceDesc": "Полезна информация за обекта",
+      "payNow": "Платете сега",
+      "payNowDesc": "Финализирайте плащането за престоя",
+      "checkoutInfo": "Информация за напускане",
+      "checkoutInfoDesc": "Детайли за заминаването ви",
+      "exploreTips": "Разгледайте района",
+      "exploreTipsDesc": "Местни съвети и препоръки",
+      "requestService": "Поискайте услуга",
+      "requestServiceDesc": "Поискайте нещо от рецепцията",
+      "goGreen": "Зелен престой",
+      "goGreenDesc": "Откажете ежедневното почистване",
+      "leaveFeedback": "Оставете отзив",
+      "leaveFeedbackDesc": "Разкажете ни за престоя си"
+    },
     "phase": {
       "confirmed": "Your booking is confirmed. We look forward to welcoming you!",
       "checkinToday": "It's check-in day — welcome!",
@@ -311,6 +334,34 @@
       "body": "The guest app page could not load. Check the link from the property or contact reception.",
       "retry": "Try again",
       "code": "Code: {digest}"
+    },
+    "feedback": {
+      "sectionTitle": "Как беше престоят ви?",
+      "description": "Бихме искали да чуем вашето мнение за престоя при нас. Вашият отзив ни помага да подобрим услугите си.",
+      "rating": "Оценка",
+      "comment": "Коментар (незадължително)",
+      "commentPlaceholder": "Кажете ни какво ви е харесало или какво можем да подобрим...",
+      "submit": "Изпрати отзив",
+      "submitting": "Изпращане...",
+      "thankYou": "Благодарим за отзива!",
+      "thankYouDesc": "Вашето мнение е важно и ни помага да предоставим по-добро изживяване.",
+      "starsRequired": "Моля, изберете оценка.",
+      "errorGeneric": "Възникна грешка. Моля, опитайте отново."
+    },
+    "weather": {
+      "title": "Времето",
+      "conditions": {
+        "clear": "Ясно",
+        "cloudy": "Облачно",
+        "fog": "Мъгла",
+        "drizzle": "Ръми",
+        "rain": "Дъжд",
+        "freezingRain": "Леден дъжд",
+        "snow": "Сняг",
+        "showers": "Превалявания",
+        "snowShowers": "Снежни превалявания",
+        "thunderstorm": "Гръмотевична буря"
+      }
     }
   },
   "public": {
@@ -1312,7 +1363,8 @@
         "email": "Имейл",
         "phone": "Телефон",
         "night": "нощ",
-        "nights": "нощи"
+        "nights": "нощи",
+        "guestFeedback": "Отзив на гост"
       },
       "roomsNew": {
         "title": "New room — Hospira",

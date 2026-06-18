@@ -311,6 +311,57 @@
       "body": "Pagina guest app nu s-a putut încărca. Verificați linkul primit de la pensiune sau contactați recepția.",
       "retry": "Reîncearcă",
       "code": "Cod: {digest}"
+    },
+    "feedback": {
+      "sectionTitle": "Cum a fost sejurul?",
+      "description": "Ne-ar face placere sa aflam parerea ta despre sejurul la noi. Feedback-ul tau ne ajuta sa ne imbunatatim serviciile.",
+      "rating": "Rating",
+      "comment": "Comentariu (optional)",
+      "commentPlaceholder": "Spune-ne ce ti-a placut sau ce putem imbunatati...",
+      "submit": "Trimite feedback",
+      "submitting": "Se trimite...",
+      "thankYou": "Multumim pentru feedback!",
+      "thankYouDesc": "Parerea ta conteaza si ne ajuta sa oferim o experienta mai buna.",
+      "starsRequired": "Te rugam sa selectezi un rating.",
+      "errorGeneric": "A aparut o eroare. Te rugam sa incerci din nou."
+    },
+    "today": {
+      "sectionTitle": "Ce poti face acum",
+      "checkinNow": "Check-in acum",
+      "checkinNowDesc": "Completeaza check-in-ul online rapid",
+      "connectWifi": "Conecteaza-te la WiFi",
+      "connectWifiDesc": "Acceseaza reteaua WiFi a cazarii",
+      "prepareCheckin": "Pregateste check-in",
+      "prepareCheckinDesc": "Completeaza datele inainte de sosire",
+      "discoverPlace": "Descopera locatia",
+      "discoverPlaceDesc": "Informatii utile despre cazare",
+      "payNow": "Plateste acum",
+      "payNowDesc": "Finalizeaza plata sejurului",
+      "checkoutInfo": "Info check-out",
+      "checkoutInfoDesc": "Detalii pentru plecare",
+      "exploreTips": "Exploreaza zona",
+      "exploreTipsDesc": "Sfaturi si recomandari locale",
+      "requestService": "Solicita un serviciu",
+      "requestServiceDesc": "Cere ceva de la receptie",
+      "goGreen": "Sejur verde",
+      "goGreenDesc": "Renunta la curatenia zilnica",
+      "leaveFeedback": "Lasa un review",
+      "leaveFeedbackDesc": "Spune-ne cum a fost sejurul tau"
+    },
+    "weather": {
+      "title": "Vremea",
+      "conditions": {
+        "clear": "Senin",
+        "cloudy": "Innorat",
+        "fog": "Ceata",
+        "drizzle": "Burnita",
+        "rain": "Ploaie",
+        "freezingRain": "Ploaie inghetata",
+        "snow": "Ninsoare",
+        "showers": "Averse",
+        "snowShowers": "Averse de ninsoare",
+        "thunderstorm": "Furtuna"
+      }
     }
   },
   "public": {
@@ -1453,7 +1504,8 @@
         "email": "Email",
         "phone": "Telefon",
         "night": "noapte",
-        "nights": "nopți"
+        "nights": "nopți",
+        "guestFeedback": "Feedback oaspete"
       },
       "roomsNew": {
         "title": "Cameră nouă — Hospira",

@@ -91,6 +91,29 @@
       "daysUntilCheckin": "{count, plural, one {Check-in in # day} other {Check-in in # days}}",
       "checkoutTodayShort": "Check-out today"
     },
+    "today": {
+      "sectionTitle": "What you can do now",
+      "checkinNow": "Check-in now",
+      "checkinNowDesc": "Complete your online check-in quickly",
+      "connectWifi": "Connect to WiFi",
+      "connectWifiDesc": "Access the accommodation WiFi network",
+      "prepareCheckin": "Prepare check-in",
+      "prepareCheckinDesc": "Fill in your details before arrival",
+      "discoverPlace": "Discover the place",
+      "discoverPlaceDesc": "Useful information about the accommodation",
+      "payNow": "Pay now",
+      "payNowDesc": "Finalize your stay payment",
+      "checkoutInfo": "Check-out info",
+      "checkoutInfoDesc": "Details for your departure",
+      "exploreTips": "Explore the area",
+      "exploreTipsDesc": "Local tips and recommendations",
+      "requestService": "Request a service",
+      "requestServiceDesc": "Ask reception for something",
+      "goGreen": "Green stay",
+      "goGreenDesc": "Skip daily cleaning",
+      "leaveFeedback": "Leave a review",
+      "leaveFeedbackDesc": "Tell us about your stay"
+    },
     "phase": {
       "confirmed": "Your booking is confirmed. We look forward to welcoming you!",
       "checkinToday": "It's check-in day — welcome!",
@@ -311,6 +334,34 @@
       "body": "The guest app page could not load. Check the link from the property or contact reception.",
       "retry": "Try again",
       "code": "Code: {digest}"
+    },
+    "feedback": {
+      "sectionTitle": "How was your stay?",
+      "description": "We would love to hear your opinion about your stay with us. Your feedback helps us improve our services.",
+      "rating": "Rating",
+      "comment": "Comment (optional)",
+      "commentPlaceholder": "Tell us what you liked or what we can improve...",
+      "submit": "Send feedback",
+      "submitting": "Sending...",
+      "thankYou": "Thank you for your feedback!",
+      "thankYouDesc": "Your opinion matters and helps us provide a better experience.",
+      "starsRequired": "Please select a rating.",
+      "errorGeneric": "An error occurred. Please try again."
+    },
+    "weather": {
+      "title": "Weather",
+      "conditions": {
+        "clear": "Clear",
+        "cloudy": "Cloudy",
+        "fog": "Fog",
+        "drizzle": "Drizzle",
+        "rain": "Rain",
+        "freezingRain": "Freezing rain",
+        "snow": "Snow",
+        "showers": "Showers",
+        "snowShowers": "Snow showers",
+        "thunderstorm": "Thunderstorm"
+      }
     }
   },
   "public": {
@@ -1454,7 +1505,8 @@
         "email": "Email",
         "phone": "Phone",
         "night": "night",
-        "nights": "nights"
+        "nights": "nights",
+        "guestFeedback": "Guest feedback"
       },
       "roomsNew": {
         "title": "New room — Hospira",

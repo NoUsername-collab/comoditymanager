@@ -35,6 +35,7 @@ export type GuestAppResolvedContext = {
   precheckinSubmitted: boolean;
   precheckinPrefill: GuestPrecheckinPrefill;
   greenStayPendingDates: string[];
+  feedbackSubmitted: boolean;
 };
 
 function mapBenefits(
@@ -99,12 +100,13 @@ function listItemsOrBenefits(
 async function loadGuestLiveState(bookingId: string): Promise<{
   precheckinSubmitted: boolean;
   greenStayPendingDates: string[];
+  feedbackSubmitted: boolean;
 }> {
   try {
     const { getGuestAppPublicDb } = await import("./public-db");
     const { tenantId, supabase } = await getGuestAppPublicDb();
 
-    const [precheckin, greenRows] = await Promise.all([
+    const [precheckin, greenRows, feedback] = await Promise.all([
       supabase
         .from("guest_precheckin_submissions")
         .select("id")
@@ -118,15 +120,22 @@ async function loadGuestLiveState(bookingId: string): Promise<{
         .eq("booking_id", bookingId)
         .eq("status", "pending")
         .order("skip_date", { ascending: true }),
+      supabase
+        .from("guest_feedback")
+        .select("id")
+        .eq("tenant_id", tenantId)
+        .eq("booking_id", bookingId)
+        .maybeSingle(),
     ]);
 
     const precheckinSubmitted = Boolean(precheckin.data);
     const greenStayPendingDates =
       greenRows.data?.map((row) => String(row.skip_date)) ?? [];
+    const feedbackSubmitted = Boolean(feedback.data);
 
-    return { precheckinSubmitted, greenStayPendingDates };
+    return { precheckinSubmitted, greenStayPendingDates, feedbackSubmitted };
   } catch {
-    return { precheckinSubmitted: false, greenStayPendingDates: [] };
+    return { precheckinSubmitted: false, greenStayPendingDates: [], feedbackSubmitted: false };
   }
 }
 

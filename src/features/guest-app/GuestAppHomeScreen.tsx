@@ -8,8 +8,13 @@ import { GuestInstallHint } from "@/features/guest-app/GuestInstallHint";
 import { GuestShareStayButton } from "@/features/guest-app/GuestShareStayButton";
 import { GuestStayMilestoneStrip } from "@/features/guest-app/GuestStayMilestoneStrip";
 import { GuestStayPhaseBanner } from "@/features/guest-app/GuestStayPhaseBanner";
+import { GuestFeedbackForm } from "@/features/guest-app/GuestFeedbackForm";
+import { GuestTodayCards } from "@/features/guest-app/GuestTodayCards";
+import { GuestWeatherWidget } from "@/features/guest-app/GuestWeatherWidget";
 import { GuestWifiQrCode } from "@/features/guest-app/GuestWifiQrCode";
 import { GuestWifiQuickCard } from "@/features/guest-app/GuestWifiQuickCard";
+import { resolveGuestStayPhase } from "@/domain/guest-app/stay-milestone";
+import { getWeatherCoordinates } from "@/services/weather-coordinates";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { getTranslations } from "next-intl/server";
 
@@ -37,6 +42,7 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
   });
   const wifiFeature = features.find((feature) => feature.id === "wifi");
   const hasWifiCredentials = Boolean(wifi?.networkName || wifi?.password);
+  const weatherCoords = await getWeatherCoordinates();
 
   return (
     <div className="space-y-6">
@@ -75,7 +81,40 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
         </div>
       </section>
 
+      <GuestTodayCards
+        accessCode={accessCode}
+        today={today}
+        checkIn={booking.checkIn}
+        checkOut={booking.checkOut}
+        checkedInAt={booking.checkedInAt}
+        features={features}
+        hasWifiCredentials={hasWifiCredentials}
+      />
+
       <GuestInstallHint />
+
+      {(() => {
+        const phase = resolveGuestStayPhase({
+          today,
+          checkIn: booking.checkIn,
+          checkOut: booking.checkOut,
+          checkedInAt: booking.checkedInAt,
+        });
+        const showFeedback =
+          phase === "checked_out" ||
+          (phase === "checked_in" && today === booking.checkOut);
+        return showFeedback ? (
+          <section id="feedback">
+            <h2 className="guest-app__section-title mb-3">
+              {t("feedback.sectionTitle")}
+            </h2>
+            <GuestFeedbackForm
+              accessCode={accessCode}
+              alreadySubmitted={ctx.feedbackSubmitted}
+            />
+          </section>
+        ) : null;
+      })()}
 
       {wifiFeature && wifi && hasWifiCredentials ? (
         <>
@@ -87,6 +126,10 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
             />
           ) : null}
         </>
+      ) : null}
+
+      {weatherCoords ? (
+        <GuestWeatherWidget lat={weatherCoords.lat} lng={weatherCoords.lng} />
       ) : null}
 
       <section id="features">

@@ -1383,3 +1383,231 @@
 .guest-app__mrz__btn--primary:disabled {
   opacity: 0.55;
 }
+
+/* ── Today cards ─────────────────────────────────────────── */
+
+.guest-today__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.625rem;
+}
+
+.guest-today__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.875rem;
+  border-radius: 1rem;
+  border: 1px solid var(--guest-border);
+  background: var(--guest-card);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.guest-today__card:first-child:nth-last-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.guest-today__card:hover {
+  transform: translateY(-1px);
+}
+
+.guest-today__card__icon {
+  display: flex;
+  height: 2.25rem;
+  width: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+}
+
+.guest-today__card__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.guest-today__card__desc {
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--guest-muted);
+}
+
+.guest-today__card--teal {
+  border-color: rgba(20, 184, 166, 0.25);
+}
+.guest-today__card--teal:hover {
+  border-color: rgba(20, 184, 166, 0.5);
+}
+.guest-today__card--teal .guest-today__card__icon {
+  background: rgba(20, 184, 166, 0.12);
+  color: #14b8a6;
+}
+.guest-today__card--teal .guest-today__card__label {
+  color: #0d9488;
+}
+
+.guest-today__card--blue {
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.guest-today__card--blue:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+}
+.guest-today__card--blue .guest-today__card__icon {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+.guest-today__card--blue .guest-today__card__label {
+  color: #2563eb;
+}
+
+.guest-today__card--amber {
+  border-color: rgba(245, 158, 11, 0.25);
+}
+.guest-today__card--amber:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+.guest-today__card--amber .guest-today__card__icon {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+.guest-today__card--amber .guest-today__card__label {
+  color: #d97706;
+}
+
+.guest-today__card--rose {
+  border-color: rgba(244, 63, 94, 0.25);
+}
+.guest-today__card--rose:hover {
+  border-color: rgba(244, 63, 94, 0.5);
+}
+.guest-today__card--rose .guest-today__card__icon {
+  background: rgba(244, 63, 94, 0.12);
+  color: #f43f5e;
+}
+.guest-today__card--rose .guest-today__card__label {
+  color: #e11d48;
+}
+
+.guest-today__card--emerald {
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.guest-today__card--emerald:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+.guest-today__card--emerald .guest-today__card__icon {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+.guest-today__card--emerald .guest-today__card__label {
+  color: #059669;
+}
+
+/* ── Guest Feedback Stars ─────────────────────────────── */
+
+.guest-feedback__stars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.guest-feedback__star {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--guest-border);
+  transition: color 0.15s, transform 0.15s;
+}
+
+.guest-feedback__star:hover {
+  transform: scale(1.15);
+}
+
+.guest-feedback__star--active {
+  color: #f59e0b;
+}
+
+.guest-feedback__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: #f59e0b;
+}
+
+.guest-feedback__badge svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* ── Weather Widget ───────────────────────────────────── */
+
+.guest-weather__card {
+  background: var(--guest-card-bg, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--guest-border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.guest-weather__current {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.guest-weather__emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.guest-weather__temp {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--guest-fg);
+}
+
+.guest-weather__desc {
+  font-size: 0.875rem;
+  color: var(--guest-muted);
+  text-transform: capitalize;
+}
+
+.guest-weather__range {
+  font-size: 0.8125rem;
+  color: var(--guest-muted);
+  margin-left: auto;
+}
+
+.guest-weather__forecast {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--guest-border);
+}
+
+.guest-weather__day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.guest-weather__day-name {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--guest-muted);
+}
+
+.guest-weather__day-emoji {
+  font-size: 1.25rem;
+}
+
+.guest-weather__day-range {
+  font-size: 0.75rem;
+  color: var(--guest-muted);
+}
