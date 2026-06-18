@@ -54,6 +54,7 @@ export {
   ADMIN_MORE_LINKS,
   filterAdminMoreLinks,
   type AdminMoreLink,
+  type AdminMoreLinksFilter,
 } from "./admin-more-links";
 export { MobileDrawerPortal } from "./MobileDrawerPortal";
 export { useMobileDrawer } from "./use-mobile-drawer";

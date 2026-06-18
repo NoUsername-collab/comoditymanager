@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { getPensionSettings } from "@/services/pension-settings";
-import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
-import { pensionStatisticsVisibility } from "@/services/pension-settings";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { SettingsShell } from "@/components/admin/settings/SettingsShell";
@@ -20,10 +18,6 @@ export default async function SettingsLayout({
   ]);
 
   const { role, memberRole } = staff;
-  const statisticsAccess = canAccessStatistics(
-    memberRole,
-    pensionStatisticsVisibility(pensionResult),
-  );
 
   const description =
     role === "operator" ? t("descriptionOperator") : t("descriptionAdmin");
@@ -39,7 +33,6 @@ export default async function SettingsLayout({
         <SettingsShell
           role={role}
           memberRole={memberRole ?? "operator"}
-          statisticsAccess={statisticsAccess}
           propertyName={pensionResult?.display_name}
           checkInTime={pensionResult?.default_check_in_time}
           checkOutTime={pensionResult?.default_check_out_time}

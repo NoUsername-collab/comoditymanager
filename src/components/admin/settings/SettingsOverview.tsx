@@ -12,7 +12,6 @@ import type { ReactNode } from "react";
 type Props = {
   role: "admin" | "operator";
   memberRole: "owner" | "admin" | "operator";
-  statisticsAccess?: boolean;
   propertyName: string;
   checkInTime: string;
   checkOutTime: string;
@@ -22,7 +21,6 @@ type Props = {
 export function SettingsOverview({
   role,
   memberRole,
-  statisticsAccess,
   propertyName,
   checkInTime,
   checkOutTime,
@@ -32,7 +30,6 @@ export function SettingsOverview({
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
     role,
     memberRole,
-    statisticsAccess,
   });
 
   const quickItems = navGroups

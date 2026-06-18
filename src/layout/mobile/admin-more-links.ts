@@ -24,9 +24,18 @@ export const ADMIN_MORE_LINKS: AdminMoreLink[] = [
   { href: "/admin/devlog", labelKey: "devlog", icon: "history" },
 ];
 
+export type AdminMoreLinksFilter = {
+  locationUnlocked: boolean;
+  statisticsAccess?: boolean;
+};
+
 export function filterAdminMoreLinks(
   links: AdminMoreLink[],
-  locationUnlocked: boolean
+  { locationUnlocked, statisticsAccess = false }: AdminMoreLinksFilter,
 ): AdminMoreLink[] {
-  return links.filter((link) => !link.locationConfig || locationUnlocked);
+  return links.filter((link) => {
+    if (link.labelKey === "statistics" && !statisticsAccess) return false;
+    if (link.locationConfig && !locationUnlocked) return false;
+    return true;
+  });
 }

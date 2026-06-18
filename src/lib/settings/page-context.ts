@@ -54,8 +54,11 @@ export async function buildSettingsAlerts(
           message: options?.isOwner ? t("locationClosedOwner") : t("locationClosed"),
         }
       : null,
-    params.statistics === "forbidden"
+    params.statistics === "forbidden" || params.access === "statistics"
       ? { tone: "warning", message: t("statisticsForbidden") }
+      : null,
+    params.access === "role"
+      ? { tone: "warning", message: t("roleForbidden") }
       : null,
   ].filter((alert): alert is SettingsAlert => alert !== null);
 

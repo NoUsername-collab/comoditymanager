@@ -264,7 +264,6 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".phone-booking-form__submit");
     expect(flawless).toContain(".gantt-quick-panel__footer");
     expect(flawless).toContain(".gantt-quick-panel__cancel");
-    expect(flawless).toContain(".statistics-settings__link");
     expect(flawless).toContain(".statistics-settings__select");
     expect(flawless).toContain(".admin-fx-settings__row");
     expect(flawless).toContain(".bd-confirm__header");

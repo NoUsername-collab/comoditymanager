@@ -13,8 +13,10 @@ function deltaLabel(delta: number | null, suffix = "%"): string {
 
 export async function MonthCompareCards({
   compare,
+  showReportsLink = true,
 }: {
   compare: MonthComparison;
+  showReportsLink?: boolean;
 }) {
   const t = await getTranslations("admin.home");
   const tCommon = await getTranslations("admin.common");
@@ -45,9 +47,11 @@ export async function MonthCompareCards({
               {py ? ` (${py.monthLabel} ${py.year})` : ""}
             </p>
           </div>
-          <AdminTextActionLink href="/admin/statistics" variant="primary" className="text-sm">
-            {t("fullStatistics")}
-          </AdminTextActionLink>
+          {showReportsLink ? (
+            <AdminTextActionLink href="/admin/statistics" variant="primary" className="text-sm">
+              {t("fullStatistics")}
+            </AdminTextActionLink>
+          ) : null}
         </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">

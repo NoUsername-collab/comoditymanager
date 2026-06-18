@@ -18,7 +18,6 @@ type SummaryChip = {
 type Props = {
   role: "admin" | "operator";
   memberRole: "owner" | "admin" | "operator";
-  statisticsAccess?: boolean;
   propertyName?: string;
   checkInTime?: string;
   checkOutTime?: string;
@@ -28,7 +27,6 @@ type Props = {
 export function SettingsShell({
   role,
   memberRole,
-  statisticsAccess,
   propertyName,
   checkInTime,
   checkOutTime,
@@ -40,7 +38,6 @@ export function SettingsShell({
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
     role,
     memberRole,
-    statisticsAccess,
   });
   const activeId = resolveActiveSettingsNavId(pathname);
 

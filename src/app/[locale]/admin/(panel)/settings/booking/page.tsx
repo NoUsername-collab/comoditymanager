@@ -29,7 +29,7 @@ export default async function SettingsBookingPage({
   const { memberRole } = ctx.staff;
   const isOwner = memberRole === "owner";
   if (!isOwner && memberRole !== "admin") {
-    await redirect("/admin/settings?statistics=forbidden");
+    await redirect("/admin/settings?access=role");
   }
 
   const alerts = await buildSettingsAlerts(params);

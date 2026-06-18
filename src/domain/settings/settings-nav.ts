@@ -60,14 +60,6 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     labelKey: "navGroupOperations",
     items: [
       {
-        id: "statistics",
-        labelKey: "navStatistics",
-        descriptionKey: "navStatisticsDesc",
-        href: "/admin/settings/statistics",
-        matchPath: "/admin/settings/statistics",
-        memberRoles: ["owner", "admin", "operator"],
-      },
-      {
         id: "booking",
         labelKey: "navBooking",
         descriptionKey: "navBookingDesc",
@@ -132,6 +124,20 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     ],
   },
   {
+    id: "access",
+    labelKey: "navGroupAccess",
+    items: [
+      {
+        id: "statistics",
+        labelKey: "navStatistics",
+        descriptionKey: "navStatisticsDesc",
+        href: "/admin/settings/statistics",
+        matchPath: "/admin/settings/statistics",
+        memberRoles: ["owner"],
+      },
+    ],
+  },
+  {
     id: "organization",
     labelKey: "navGroupOrganization",
     items: [
@@ -160,16 +166,12 @@ export function filterSettingsNav(
   ctx: {
     role: "admin" | "operator";
     memberRole: "owner" | "admin" | "operator";
-    statisticsAccess?: boolean;
   },
 ): SettingsNavGroup[] {
   return groups
     .map((group) => ({
       ...group,
       items: group.items.filter((item) => {
-        if (item.id === "statistics") {
-          return ctx.memberRole === "owner" || ctx.statisticsAccess === true;
-        }
         if (item.roles && !item.roles.includes(ctx.role)) return false;
         if (item.memberRoles && !item.memberRoles.includes(ctx.memberRole)) {
           return false;

@@ -58,7 +58,7 @@ export default async function AdminStatisticsPage({
   ]);
   const visibility = pensionStatisticsVisibility(pension);
   if (!canAccessStatistics(memberRole, visibility)) {
-    await redirect("/admin/settings?statistics=forbidden");
+    await redirect("/admin/settings?access=statistics");
   }
 
   let report: Awaited<ReturnType<typeof loadStatisticsReport>> | null = null;
@@ -103,7 +103,7 @@ export default async function AdminStatisticsPage({
 
       {monthCompare && (
         <AdminPanel title={tPages("monthCompare")} className="mb-4">
-          <MonthCompareCards compare={monthCompare} />
+          <MonthCompareCards compare={monthCompare} showReportsLink={false} />
         </AdminPanel>
       )}
 

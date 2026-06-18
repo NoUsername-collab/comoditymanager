@@ -19,11 +19,13 @@ export function AdminMobileMoreDrawer({
   open,
   onClose,
   locationUnlocked = false,
+  statisticsAccess = false,
   triggerRef,
 }: {
   open: boolean;
   onClose: () => void;
   locationUnlocked?: boolean;
+  statisticsAccess?: boolean;
   triggerRef?: RefObject<HTMLElement | null>;
 }) {
   const pathname = usePathname();
@@ -31,7 +33,10 @@ export function AdminMobileMoreDrawer({
   const tCommon = useTranslations("common");
   const panelId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
-  const links = filterAdminMoreLinks(ADMIN_MORE_LINKS, locationUnlocked);
+  const links = filterAdminMoreLinks(ADMIN_MORE_LINKS, {
+    locationUnlocked,
+    statisticsAccess,
+  });
   const router = useRouter();
   const prefetchHrefs = useMemo(() => links.map((link) => link.href), [links]);
   useAdminRoutePrefetch(prefetchHrefs);

@@ -17,9 +17,11 @@ import { AdminMobileMoreDrawer } from "@/layout/components/AdminMobileMoreDrawer
 export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   cereriCount,
   locationUnlocked = false,
+  statisticsAccess = false,
 }: {
   cereriCount: number;
   locationUnlocked?: boolean;
+  statisticsAccess?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -103,6 +105,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
       open={moreOpen}
       onClose={() => setMoreOpen(false)}
       locationUnlocked={locationUnlocked}
+      statisticsAccess={statisticsAccess}
       triggerRef={moreTriggerRef}
     />
     </>

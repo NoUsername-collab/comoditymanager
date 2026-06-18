@@ -29,7 +29,7 @@ export default async function SettingsOverviewPage({
     loadSettingsStaffContext(),
   ]);
 
-  const { staff, pensionResult, statisticsAccess, appearance } = ctx;
+  const { staff, pensionResult, appearance } = ctx;
   const { role, memberRole } = staff;
   const isOwner = memberRole === "owner";
   const error = pensionSettingsErrorMessage(pensionResult.error, t);
@@ -55,7 +55,6 @@ export default async function SettingsOverviewPage({
       <SettingsOverview
         role={role}
         memberRole={memberRole ?? "operator"}
-        statisticsAccess={statisticsAccess}
         propertyName={settings.display_name}
         checkInTime={settings.default_check_in_time}
         checkOutTime={settings.default_check_out_time}

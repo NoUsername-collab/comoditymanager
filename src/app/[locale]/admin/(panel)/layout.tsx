@@ -8,11 +8,13 @@ import { AdminTopBar } from "@/components/admin/AdminTopBar";
 import { SimOverlay } from "@/components/admin/SimOverlay";
 import { countCereriNoi } from "@/services/bookings";
 import type { ThemeSettings } from "@/lib/themes";
+import { getStaffShellAccess, requireStaff } from "@/lib/auth/require-staff";
+import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import {
   getPensionSettings,
   pensionAppearanceSettings,
+  pensionStatisticsVisibility,
 } from "@/services/pension-settings";
-import { getStaffShellAccess, requireStaff } from "@/lib/auth/require-staff";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
@@ -31,7 +33,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [, , t, simBundle, shellData] = await Promise.all([
+  const [staff, , t, simBundle, shellData] = await Promise.all([
     requireStaff(),
     bindTenantContextFromRequest(),
     getTranslations("admin.layout"),
@@ -61,6 +63,10 @@ export default async function AdminLayout({
   const checkInTime = pension?.default_check_in_time ?? "14:00";
   const checkOutTime = pension?.default_check_out_time ?? "11:00";
   const { isAdmin, locationUnlocked } = staffAccess;
+  const statisticsAccess = canAccessStatistics(
+    staff.memberRole,
+    pensionStatisticsVisibility(pension),
+  );
 
   let appearanceSettings: ThemeSettings = DEFAULT_APPEARANCE;
   if (pension) {
@@ -73,6 +79,7 @@ export default async function AdminLayout({
         <AdminMobileBottomNav
           cereriCount={cereriCount}
           locationUnlocked={locationUnlocked}
+          statisticsAccess={statisticsAccess}
         />
 
         <div className="admin-hud">

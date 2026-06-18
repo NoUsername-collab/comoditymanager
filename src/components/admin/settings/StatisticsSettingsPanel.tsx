@@ -1,24 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
 import { updateStatisticsVisibilityAction } from "@/app/[locale]/admin/(panel)/settings/actions";
 import type { StatisticsVisibility } from "@/domain/settings/statistics-visibility";
-import { AdminHudIcon } from "@/components/admin/AdminHudIcons";
 
 type Props = {
   visibility: StatisticsVisibility;
-  canConfigure: boolean;
-  canAccess: boolean;
 };
 
-export function StatisticsSettingsPanel({
-  visibility: initialVisibility,
-  canConfigure,
-  canAccess,
-}: Props) {
+export function StatisticsSettingsPanel({ visibility: initialVisibility }: Props) {
   const t = useTranslations("admin.pages.settings.statistics");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [visibility, setVisibility] = useState(initialVisibility);
@@ -43,37 +35,26 @@ export function StatisticsSettingsPanel({
 
   return (
     <div className={`statistics-settings${pending ? " statistics-settings--pending" : ""}`}>
-      {canAccess ? (
-        <Link
-          href="/admin/statistics"
-          className="statistics-settings__link"
+      <div className="statistics-settings__visibility">
+        <label className="statistics-settings__label" htmlFor="statistics-visibility">
+          {t("visibilityLabel")}
+        </label>
+        <p className="statistics-settings__hint">{t("visibilityHint")}</p>
+        <select
+          id="statistics-visibility"
+          className="statistics-settings__select"
+          value={visibility}
+          disabled={pending}
+          onChange={(e) => save(e.target.value as StatisticsVisibility)}
         >
-          <AdminHudIcon name="chart" className="statistics-settings__link-icon" />
-          <span>{t("openReports")}</span>
-        </Link>
-      ) : (
-        <p className="text-sm text-zinc-500">{t("ownerOnlyHint")}</p>
-      )}
-
-      {canConfigure ? (
-        <div className="statistics-settings__visibility">
-          <label className="statistics-settings__label" htmlFor="statistics-visibility">
-            {t("visibilityLabel")}
-          </label>
-          <p className="statistics-settings__hint">{t("visibilityHint")}</p>
-          <select
-            id="statistics-visibility"
-            className="statistics-settings__select"
-            value={visibility}
-            disabled={pending}
-            onChange={(e) => save(e.target.value as StatisticsVisibility)}
-          >
-            <option value="owner">{t("visibilityOwner")}</option>
-            <option value="admin">{t("visibilityAdmin")}</option>
-            <option value="all">{t("visibilityAll")}</option>
-          </select>
-        </div>
-      ) : null}
+          <option value="owner">{t("visibilityOwner")}</option>
+          <option value="admin">{t("visibilityAdmin")}</option>
+          <option value="all">{t("visibilityAll")}</option>
+        </select>
+        <p className="statistics-settings__hint statistics-settings__hint--reports">
+          {t("reportsEntryHint")}
+        </p>
+      </div>
     </div>
   );
 }
