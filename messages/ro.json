@@ -792,6 +792,8 @@
         "navFiscalDesc": "TVA, serie facturi, date ANAF / fișă turist",
         "navCheckin": "Check-in",
         "navCheckinDesc": "Reguli document, plată, walk-in",
+        "navHistory": "Activitate",
+        "navHistoryDesc": "Jurnal rezervări și acțiuni admin",
         "navGuestApp": "Guest app",
         "navGuestAppDesc": "Conținut pentru oaspeți /stay",
         "navPublicSite": "Site public",
