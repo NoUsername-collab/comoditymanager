@@ -15,9 +15,69 @@ import { resolveRequestTenant } from "@/lib/tenant/active";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";
 import { withTenantId } from "@/lib/tenant/scope";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
+import { getMfaAccessState } from "@/lib/auth/mfa-session";
+import { getTenantMemberRole } from "@/services/tenant-members";
 import { getTranslations } from "next-intl/server";
 
-export type LoginFormState = { error: string | null };
+export type LoginFormState = {
+  error: string | null;
+  mfaRequired?: boolean;
+};
+
+async function finalizeStaffLogin(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  user: { id: string; email?: string | null },
+  next: string,
+  tenant: Awaited<ReturnType<typeof resolveRequestTenant>>,
+  role: Awaited<ReturnType<typeof resolveStaffRole>>
+): Promise<never> {
+  const t = await getTranslations("admin.serverActions");
+  const safeNext =
+    next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
+      ? next
+      : "/admin";
+
+  const loginSummary = t("loginSummary", { role: role ?? "staff" });
+
+  if (
+    !tenant &&
+    safeNext.startsWith("/hospira-admin") &&
+    user.email &&
+    isPlatformAdminEmail(user.email)
+  ) {
+    await logLoginActivity(undefined, user, loginSummary);
+    redirect(safeNext);
+  }
+
+  let platformSlug: string | null = null;
+  if (!tenant) {
+    platformSlug = await getPrimaryTenantSlugForUser(
+      supabase,
+      user.id,
+      user.email
+    );
+    if (!platformSlug) {
+      await supabase.auth.signOut();
+      redirect("/admin/login?error=no_tenant");
+    }
+  }
+
+  await logLoginActivity(tenant?.id, user, loginSummary);
+
+  if (tenant) {
+    await localeRedirectInternal(safeNext);
+  }
+
+  if (platformSlug) {
+    const requestHost =
+      (await headers()).get("x-forwarded-host") ??
+      (await headers()).get("host");
+    redirect(buildTenantAdminUrl(platformSlug, safeNext, requestHost));
+  }
+
+  await supabase.auth.signOut();
+  redirect("/admin/login?error=no_tenant");
+}
 
 async function logLoginActivity(
   tenantId: string | undefined,
@@ -92,55 +152,60 @@ export async function loginAction(
     return { error: t("notMemberOfPension") };
   }
 
+  const memberRole = tenant
+    ? await getTenantMemberRole(tenant.id, user.id)
+    : null;
+
+  const mfaState = await getMfaAccessState(supabase, {
+    email: user.email,
+    memberRole,
+  });
+
   const safeNext =
     next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
       ? next
       : "/admin";
 
-  const loginSummary = t("loginSummary", { role: role ?? "staff" });
-
-  // Platform admin — redirect to /hospira-admin without tenant check
-  if (
-    !tenant &&
-    safeNext.startsWith("/hospira-admin") &&
-    user.email &&
-    isPlatformAdminEmail(user.email)
-  ) {
-    await logLoginActivity(undefined, user, loginSummary);
-    redirect(safeNext);
+  if (mfaState.kind === "needs_enrollment") {
+    const enrollNext = encodeURIComponent(safeNext);
+    redirect(`/admin/security/mfa?next=${enrollNext}`);
   }
 
-  // Platform host: owner/staff may lack app_metadata.role but have tenant_members
-  let platformSlug: string | null = null;
-  if (!tenant) {
-    platformSlug = await getPrimaryTenantSlugForUser(
-      supabase,
-      user.id,
-      user.email
-    );
-    if (!platformSlug) {
-      await supabase.auth.signOut();
-      return { error: t("noTenantLinked") };
-    }
+  if (mfaState.kind === "needs_challenge") {
+    return { error: null, mfaRequired: true };
   }
 
-  await logLoginActivity(tenant?.id, user, loginSummary);
+  return finalizeStaffLogin(supabase, user, safeNext, tenant, role);
+}
 
-  // Already on tenant host (slug.hospira.ro) — stay on same domain
-  if (tenant) {
-    await localeRedirectInternal(safeNext);
+export async function completeLoginAfterMfaAction(next: string): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/admin/login");
   }
 
-  // Platform login (test.hospira.ro) → admin lives on tenant subdomain
-  if (platformSlug) {
-    const requestHost =
-      (await headers()).get("x-forwarded-host") ??
-      (await headers()).get("host");
-    redirect(buildTenantAdminUrl(platformSlug, safeNext, requestHost));
+  const tenant = await resolveRequestTenant();
+  const role = await resolveStaffRole(user);
+
+  if (tenant && !role) {
+    await supabase.auth.signOut();
+    redirect("/admin/login?error=unauthorized");
   }
 
-  await supabase.auth.signOut();
-  return { error: t("noTenantLinked") };
+  const mfaState = await getMfaAccessState(supabase, {
+    email: user.email,
+    memberRole: tenant ? await getTenantMemberRole(tenant.id, user.id) : null,
+  });
+
+  if (mfaState.kind !== "ok") {
+    redirect("/admin/login");
+  }
+
+  await finalizeStaffLogin(supabase, user, next, tenant, role);
 }
 
 export async function logoutAction() {

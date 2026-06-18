@@ -93,3 +93,9 @@ export const RATE_LIMIT_BOOKING_PREVIEW = { limit: 30, windowMs: 5 * 60 * 1000 }
 
 /** Password verification (location unlock): max 5 attempts per 15 minutes per IP */
 export const RATE_LIMIT_PASSWORD_VERIFY = { limit: 5, windowMs: 15 * 60 * 1000 };
+
+/** Guest stay code lookup: max 30 attempts per 5 minutes per IP (brute-force guard) */
+export const RATE_LIMIT_GUEST_ACCESS = { limit: 30, windowMs: 5 * 60 * 1000 };
+
+/** Guest stay form submissions: max 10 per 10 minutes per IP */
+export const RATE_LIMIT_GUEST_STAY_ACTION = { limit: 10, windowMs: 10 * 60 * 1000 };

@@ -6,6 +6,8 @@ import {
   loginAction,
   type LoginFormState,
 } from "@/app/[locale]/admin/login/actions";
+import { useState } from "react";
+import { MfaChallengeForm } from "@/components/admin/auth/MfaChallengeForm";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
@@ -19,12 +21,32 @@ export function AdminLoginForm({
   initialUsername?: string;
 }) {
   const t = useTranslations("admin.login");
+  const tMfa = useTranslations("admin.mfa");
+  const [showMfa, setShowMfa] = useState(false);
   const [state, formAction, isPending] = useActionState(loginAction, {
     error: initialError,
   } satisfies LoginFormState);
 
+  const mfaStep = showMfa || Boolean(state.mfaRequired);
   const error = state.error;
   const busy = isPending;
+
+  if (mfaStep) {
+    return (
+      <div className="mt-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-blue-700">
+          {tMfa("loginStep")}
+        </p>
+        <h2 className="mt-1 text-lg font-semibold text-zinc-900">
+          {tMfa("loginTitle")}
+        </h2>
+        <MfaChallengeForm
+          next={next}
+          onCancel={() => setShowMfa(false)}
+        />
+      </div>
+    );
+  }
 
   return (
     <>

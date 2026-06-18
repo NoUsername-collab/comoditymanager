@@ -5,10 +5,28 @@ import { resolveGuestAccessByCode } from "@/services/guest-app/access";
 import { getGuestAppPublicDb } from "@/services/guest-app/public-db";
 import { withTenantId } from "@/lib/tenant/scope";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
+import {
+  checkRateLimit,
+  getClientIp,
+  RATE_LIMIT_GUEST_STAY_ACTION,
+} from "@/lib/rate-limit";
 
 export type GuestStayActionResult =
   | { ok: true }
   | { ok: false; error: string };
+
+async function assertGuestStayActionRateLimit(): Promise<GuestStayActionResult | null> {
+  const ip = await getClientIp();
+  const rl = checkRateLimit(
+    `guest-stay:${ip}`,
+    RATE_LIMIT_GUEST_STAY_ACTION.limit,
+    RATE_LIMIT_GUEST_STAY_ACTION.windowMs,
+  );
+  if (!rl.allowed) {
+    return { ok: false, error: "rateLimited" };
+  }
+  return null;
+}
 
 async function withGuestSession(accessCode: string) {
   return runInPublicBookingMode(async () => {
@@ -33,6 +51,9 @@ export async function submitGuestPrecheckinAction(input: {
   nationality?: string;
   notes?: string;
 }): Promise<GuestStayActionResult> {
+  const rateLimited = await assertGuestStayActionRateLimit();
+  if (rateLimited) return rateLimited;
+
   const gate = await withGuestSession(input.accessCode);
   if (!gate.ok) return { ok: false, error: gate.error };
 
@@ -94,6 +115,9 @@ export async function submitGuestGreenStayAction(input: {
   skipDate: string;
   note?: string;
 }): Promise<GuestStayActionResult> {
+  const rateLimited = await assertGuestStayActionRateLimit();
+  if (rateLimited) return rateLimited;
+
   const gate = await withGuestSession(input.accessCode);
   if (!gate.ok) return { ok: false, error: gate.error };
 
@@ -141,6 +165,9 @@ export async function submitGuestFeedbackAction(input: {
   stars: number;
   comment: string;
 }): Promise<GuestStayActionResult> {
+  const rateLimited = await assertGuestStayActionRateLimit();
+  if (rateLimited) return rateLimited;
+
   const gate = await withGuestSession(input.accessCode);
   if (!gate.ok) return { ok: false, error: gate.error };
 

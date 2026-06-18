@@ -5,6 +5,10 @@ import { probeHospiraLogsErrorAction } from "@/app/[locale]/hospira-admin/(panel
 import { Link } from "@/i18n/navigation";
 
 export function HospiraLogsProbeButton() {
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
   const [pending, startTransition] = useTransition();
   const [probeResult, setProbeResult] = useState<{
     ok: boolean;

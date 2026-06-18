@@ -1,6 +1,6 @@
 {
   "name": "casa-emil",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,6 +9,8 @@
     "analyze": "node scripts/analyze-build.mjs",
     "start": "next start",
     "test": "vitest run",
+    "test:security": "vitest run src/lib/security/ src/lib/auth/__tests__/ src/lib/__tests__/rate-limit.test.ts",
+    "audit:tenant-queries": "vitest run src/lib/security/__tests__/tenant-query-audit.test.ts",
     "test:mobile": "vitest run src/layout/mobile/__tests__/",
     "test:watch": "vitest",
     "lint": "eslint",

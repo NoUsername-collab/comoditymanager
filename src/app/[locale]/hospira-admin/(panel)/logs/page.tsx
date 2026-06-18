@@ -13,7 +13,10 @@ export default async function LogsPage({
 }) {
   const params = await searchParams;
 
-  if (params.throw === "page" || params.throw === "1") {
+  if (
+    process.env.NODE_ENV !== "production" &&
+    (params.throw === "page" || params.throw === "1")
+  ) {
     await probeHospiraLogsPageThrow();
   }
 

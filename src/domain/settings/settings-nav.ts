@@ -128,6 +128,13 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     labelKey: "navGroupAccess",
     items: [
       {
+        id: "security",
+        labelKey: "navSecurity",
+        descriptionKey: "navSecurityDesc",
+        href: "/admin/settings/security",
+        matchPath: "/admin/settings/security",
+      },
+      {
         id: "statistics",
         labelKey: "navStatistics",
         descriptionKey: "navStatisticsDesc",

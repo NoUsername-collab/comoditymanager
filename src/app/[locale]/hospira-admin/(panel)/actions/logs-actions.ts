@@ -5,7 +5,14 @@ import { capturePlatformAdminError } from "@/services/dev-logs";
 
 type HospiraLogsProbeMode = "action" | "ssr";
 
+function assertProbeAllowedInEnvironment(): void {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("[hospira-admin/logs:probe] Disabled in production.");
+  }
+}
+
 async function runHospiraLogsProbe(mode: HospiraLogsProbeMode): Promise<never> {
+  assertProbeAllowedInEnvironment();
   const session = await getPlatformAdminOrNull();
   if (!session) {
     throw new Error(

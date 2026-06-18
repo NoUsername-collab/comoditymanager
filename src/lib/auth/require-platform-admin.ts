@@ -7,6 +7,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 
 const FALLBACK_EMAILS = "admin@hospira.ro";
 
@@ -64,5 +65,16 @@ export async function requirePlatformAdmin(): Promise<PlatformAdminSession> {
   if (!session) {
     redirect("/");
   }
+
+  const supabase = await createClient();
+  const mfaRedirect = await resolveMfaRedirectPath(supabase, {
+    email: session.email,
+    memberRole: null,
+    next: "/hospira-admin",
+  });
+  if (mfaRedirect) {
+    redirect(mfaRedirect);
+  }
+
   return session;
 }

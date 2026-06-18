@@ -12,8 +12,10 @@ import {
 } from "@/lib/auth/alpha-gate-edge";
 import {
   ADMIN_LOCATION_UNLOCK_COOKIE,
-  isAdminLocationUnlockCookieFresh,
 } from "@/lib/auth/admin-location-unlock-cookie";
+import { isAdminLocationUnlockTokenValidEdge } from "@/lib/auth/admin-location-unlock-edge";
+import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
+import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { pathBlockedForOperator } from "@/lib/auth/roles";
 import { resolveStaffRoleOnTenantHost, resolveTenantMemberRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
 import { isPlatformAdminEmailEdge } from "@/lib/auth/require-platform-admin";
@@ -128,6 +130,26 @@ function requestHostFrom(request: NextRequest): string | null {
   return request.headers.get("x-forwarded-host") ?? request.headers.get("host");
 }
 
+async function mfaRedirectIfNeeded(
+  request: NextRequest,
+  supabase: SupabaseClient,
+  user: { id: string; email?: string | null },
+  path: string,
+  memberRole: "owner" | "admin" | "operator" | null
+): Promise<NextResponse | null> {
+  if (isMfaExemptAdminPath(path)) return null;
+
+  const redirectPath = await resolveMfaRedirectPath(supabase, {
+    email: user.email,
+    memberRole,
+    next: path + (request.nextUrl.search ? request.nextUrl.search : ""),
+  });
+
+  if (!redirectPath) return null;
+
+  return NextResponse.redirect(new URL(redirectPath, request.url));
+}
+
 async function runTenantAppProxy(
   request: NextRequest,
   slug: string | undefined,
@@ -210,6 +232,26 @@ async function runTenantAppProxy(
       return NextResponse.redirect(redirectUrl);
     }
 
+    const memberRole =
+      slug != null
+        ? await resolveTenantMemberRoleOnTenantHost(user.id, { slug }, supabase)
+        : customDomain != null
+          ? await resolveTenantMemberRoleOnTenantHost(
+              user.id,
+              { customDomain },
+              supabase
+            )
+          : null;
+
+    const mfaRedirect = await mfaRedirectIfNeeded(
+      request,
+      supabase,
+      user,
+      path,
+      memberRole
+    );
+    if (mfaRedirect) return mfaRedirect;
+
     if (
       path.startsWith("/admin") &&
       !isLoginPage &&
@@ -232,7 +274,7 @@ async function runTenantAppProxy(
 
       if (memberRole !== "owner") {
         const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
-        if (!isAdminLocationUnlockCookieFresh(unlock)) {
+        if (!(await isAdminLocationUnlockTokenValidEdge(unlock))) {
           const redirectUrl = request.nextUrl.clone();
           redirectUrl.pathname = "/admin/settings";
           redirectUrl.searchParams.set("location", "locked");
@@ -260,7 +302,33 @@ async function runTenantAppProxy(
       }
     }
 
-    const next = request.nextUrl.searchParams.get("next") || "/receptie";
+    const memberRole =
+      slug != null
+        ? await resolveTenantMemberRoleOnTenantHost(user.id, { slug }, supabase)
+        : customDomain != null
+          ? await resolveTenantMemberRoleOnTenantHost(
+              user.id,
+              { customDomain },
+              supabase
+            )
+          : null;
+
+    const loginNext = request.nextUrl.searchParams.get("next") || "/receptie";
+    const mfaRedirectPath = await resolveMfaRedirectPath(supabase, {
+      email: user.email,
+      memberRole,
+      next: loginNext,
+    });
+
+    if (mfaRedirectPath?.startsWith("/admin/security/mfa")) {
+      return NextResponse.redirect(new URL(mfaRedirectPath, request.url));
+    }
+
+    if (mfaRedirectPath?.startsWith("/admin/login")) {
+      return supabaseResponse;
+    }
+
+    const next = loginNext;
     const safe =
       next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
         ? next
@@ -394,12 +462,23 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(deny);
       }
 
+      const mfaRedirect = await mfaRedirectIfNeeded(
+        request,
+        haSupa,
+        haUser,
+        path,
+        null
+      );
+      if (mfaRedirect) return mfaRedirect;
+
       return haResponse;
     }
 
     // Admin lives on tenant subdomains — send guests to login, owners to subdomain
     if (
-      (path.startsWith("/admin") && path !== "/admin/login") ||
+      (path.startsWith("/admin") &&
+        path !== "/admin/login" &&
+        !isMfaExemptAdminPath(path)) ||
       path.startsWith("/calendar") ||
       path.startsWith("/receptie")
     ) {
@@ -449,6 +528,20 @@ export async function proxy(request: NextRequest) {
             !next.includes("://")
               ? next
               : "/admin";
+
+          const mfaRedirectPath = await resolveMfaRedirectPath(supabase, {
+            email: user.email,
+            memberRole: null,
+            next: safe,
+          });
+
+          if (mfaRedirectPath?.startsWith("/admin/security/mfa")) {
+            return NextResponse.redirect(new URL(mfaRedirectPath, request.url));
+          }
+
+          if (mfaRedirectPath?.startsWith("/admin/login")) {
+            return loginResponse;
+          }
 
           // Platform admin routes stay on platform domain
           if (safe.startsWith("/hospira-admin")) {

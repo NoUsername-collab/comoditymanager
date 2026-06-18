@@ -10,6 +10,11 @@ import type {
   GuestAccessResult,
 } from "@/domain/guest-app/types";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import {
+  checkRateLimit,
+  getClientIp,
+  RATE_LIMIT_GUEST_ACCESS,
+} from "@/lib/rate-limit";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
 import { withTenantId } from "@/lib/tenant/scope";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -152,6 +157,16 @@ export async function resolveGuestAccessByCode(
   rawCode: string,
 ): Promise<GuestAccessResult> {
   return runInPublicBookingMode(async () => {
+    const ip = await getClientIp();
+    const rl = checkRateLimit(
+      `guest-access:${ip}`,
+      RATE_LIMIT_GUEST_ACCESS.limit,
+      RATE_LIMIT_GUEST_ACCESS.windowMs,
+    );
+    if (!rl.allowed) {
+      return { ok: false, reason: "not_found" };
+    }
+
     const accessCode = normalizeAccessCode(rawCode);
     if (!accessCode) return { ok: false, reason: "not_found" };
 

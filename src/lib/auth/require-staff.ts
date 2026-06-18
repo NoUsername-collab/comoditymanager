@@ -10,6 +10,7 @@ import {
   tenantMemberRoleToStaffRole,
 } from "@/lib/auth/tenant-staff";
 import { locationAccessibleForMemberRole } from "@/lib/auth/location-unlock";
+import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
   getTenantMemberRole,
@@ -66,6 +67,14 @@ export async function requireStaff() {
 
   if (!ctx.role) {
     throw new Error("auth.tenant_member_required");
+  }
+
+  const mfaRedirect = await resolveMfaRedirectPath(ctx.supabase, {
+    email: ctx.user.email,
+    memberRole: ctx.memberRole,
+  });
+  if (mfaRedirect) {
+    await redirect(mfaRedirect);
   }
 
   return {
