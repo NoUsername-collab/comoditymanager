@@ -13,6 +13,8 @@ import type {
   GuestAppSettings,
 } from "@/domain/guest-app/types";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
+import { getPensionIdentity } from "@/services/pension-identity";
+import { resolveHotelContactWithPrimary } from "@/domain/settings/pension-identity";
 import { loadGuestPrecheckinPrefill } from "@/services/guest-app/precheckin-prefill";
 
 export type GuestGalleryDisplayItem = {
@@ -145,6 +147,20 @@ export async function resolveGuestAppContext(
   locale: string,
 ): Promise<GuestAppResolvedContext> {
   const publicConfig = await getPublicSiteConfig().catch(() => null);
+  const identity =
+    settings.usePrimaryContact
+      ? await getPensionIdentity().catch(() => null)
+      : null;
+  const hotelSource = settings.usePrimaryContact && identity
+    ? {
+        ...settings.content.hotel,
+        ...resolveHotelContactWithPrimary(
+          identity.contact,
+          settings.content.hotel,
+          true,
+        ),
+      }
+    : settings.content.hotel;
 
   const benefitsSection = publicConfig?.sections.find(
     (section) => section.sectionType === "benefits" && section.visible,
@@ -177,7 +193,7 @@ export async function resolveGuestAppContext(
     settings,
     booking,
     locale,
-    hotel: mergeHotel(settings.content.hotel, publicConfig, locale),
+    hotel: mergeHotel(hotelSource, publicConfig, locale),
     wifi: settings.content.wifi,
     travelTips: settings.content.travelTips ?? [],
     facilities: listItemsOrBenefits(settings.content.facilities, benefits),

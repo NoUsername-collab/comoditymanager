@@ -17,6 +17,7 @@ import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
 import {
   updatePensionSettings,
+  updatePensionSettingsPartial,
   updateStatisticsVisibility,
   STATISTICS_VISIBILITY_MIGRATION_ERROR,
 } from "@/services/pension-settings";
@@ -27,12 +28,13 @@ import {
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
 import { updateBookingRulesSettings } from "@/services/booking-rules-settings";
-import { updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
+import { checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { runFactoryReset } from "@/services/database-reset";
 import { updateStaffPasswordByEmail } from "@/services/staff-accounts";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
+import { parseEmailSettingsPartial } from "@/domain/settings/schemas/email";
 import { getTranslations } from "next-intl/server";
 
 export async function unlockLocationAdminAction(formData: FormData) {
@@ -162,7 +164,6 @@ export async function updateStatisticsVisibilityAction(
 
 export async function updateOperationalSettingsAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  const display_name = String(formData.get("display_name") ?? "");
   const default_check_in_time = String(
     formData.get("default_check_in_time") ?? "14:00"
   );
@@ -181,7 +182,7 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   if (!pension) throw new Error(t("settingsMissing"));
 
   await updatePensionSettings(id, {
-    display_name,
+    display_name: pension.display_name,
     default_check_in_time,
     default_check_out_time,
     total_extra_beds_max,
@@ -194,7 +195,7 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     action: "settings.operational_updated",
     entityType: "settings",
     entityId: id,
-    summary: `Operațional: ${display_name}`,
+    summary: `Operațional: ore & capacitate`,
     metadata: {
       default_check_in_time,
       default_check_out_time,
@@ -203,9 +204,44 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   });
 
   revalidateTag(CACHE_TAGS.pensionSettings, "max");
+  revalidateTag(checkinSettingsCacheTag(await resolveTenantIdForData()), "max");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/location");
   await redirect("/admin/settings/location?saved=1");
+}
+
+export async function updatePensionIdentityAction(
+  input: import("@/services/pension-identity").PensionIdentityInput,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("admin.serverActions");
+  const { memberRole } = await requireStaff();
+  if (memberRole !== "owner" && memberRole !== "admin") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  try {
+    const { updatePensionIdentity } = await import("@/services/pension-identity");
+    await updatePensionIdentity(input);
+    await logAdminActivityFromSession({
+      action: "settings.updated",
+      entityType: "settings",
+      summary: "Identitate pensiune actualizată",
+      metadata: { displayName: input.displayName },
+    });
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidatePath("/admin/settings/identity");
+    revalidatePath("/admin/settings");
+    revalidatePath("/");
+    return { ok: true };
+  } catch (e) {
+    if (e instanceof Error && e.message === "settings.identity_migration_required") {
+      return { ok: false, error: t("genericError") };
+    }
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
 }
 
 function mapStaffPasswordError(
@@ -397,28 +433,27 @@ export async function updateFiscalBillingSettingsAction(
     return { ok: false, error: t("roleForbidden") };
   }
 
-  const bookingPartial: Parameters<typeof updateBookingRulesSettings>[0] = {};
-  const checkinPartial: Parameters<typeof updateCheckinSettings>[0] = {};
+  const atomicUpdate: Record<string, unknown> = {};
 
   if (formData.has("invoice_series")) {
-    bookingPartial.invoiceSeries = String(formData.get("invoice_series") ?? "HSP")
+    atomicUpdate.invoice_series = String(formData.get("invoice_series") ?? "HSP")
       .trim()
       .slice(0, 12);
   }
   if (formData.has("invoice_seller_reg_com")) {
     const raw = String(formData.get("invoice_seller_reg_com") ?? "").trim();
-    bookingPartial.invoiceSellerRegCom = raw || null;
+    atomicUpdate.invoice_seller_reg_com = raw || null;
   }
   if (formData.has("invoice_vat_enabled")) {
-    bookingPartial.invoiceVatEnabled =
+    atomicUpdate.invoice_vat_enabled =
       String(formData.get("invoice_vat_enabled")) === "true";
   }
   if (formData.has("invoice_vat_rate")) {
     const raw = String(formData.get("invoice_vat_rate") ?? "").trim();
-    bookingPartial.invoiceVatRate = raw ? Number(raw) : null;
+    atomicUpdate.invoice_vat_rate = raw ? Number(raw) : null;
   }
   if (formData.has("invoice_prices_include_vat")) {
-    bookingPartial.invoicePricesIncludeVat =
+    atomicUpdate.invoice_prices_include_vat =
       String(formData.get("invoice_prices_include_vat")) === "true";
   }
 
@@ -429,16 +464,13 @@ export async function updateFiscalBillingSettingsAction(
   ] as const) {
     if (formData.has(key)) {
       const raw = String(formData.get(key) ?? "").trim();
-      checkinPartial[key] = raw || null;
+      atomicUpdate[key] = raw || null;
     }
   }
 
   try {
-    if (Object.keys(bookingPartial).length > 0) {
-      await updateBookingRulesSettings(bookingPartial);
-    }
-    if (Object.keys(checkinPartial).length > 0) {
-      await updateCheckinSettings(checkinPartial);
+    if (Object.keys(atomicUpdate).length > 0) {
+      await updatePensionSettingsPartial(atomicUpdate);
     }
     await logAdminActivityFromSession({
       action: "settings.updated",
@@ -495,24 +527,25 @@ export async function updateEmailSettingsAction(
     }
   }
   if (formData.has("email_reply_to")) {
-    partial.email_reply_to = String(formData.get("email_reply_to") ?? "").trim() || null;
+    partial.email_reply_to = String(formData.get("email_reply_to") ?? "").trim();
   }
   if (formData.has("email_from_name")) {
-    partial.email_from_name = String(formData.get("email_from_name") ?? "").trim() || null;
+    partial.email_from_name = String(formData.get("email_from_name") ?? "").trim();
   }
   if (formData.has("email_from_address")) {
-    const address = String(formData.get("email_from_address") ?? "").trim();
-    if (address && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
-      return { ok: false, error: t("invalidEmail") };
-    }
-    partial.email_from_address = address || null;
+    partial.email_from_address = String(formData.get("email_from_address") ?? "").trim();
   }
   if (formData.has("email_custom_footer")) {
-    partial.email_custom_footer = String(formData.get("email_custom_footer") ?? "").trim() || null;
+    partial.email_custom_footer = String(formData.get("email_custom_footer") ?? "").trim();
+  }
+
+  const parsed = parseEmailSettingsPartial(partial);
+  if (!parsed.ok) {
+    return { ok: false, error: parsed.error };
   }
 
   try {
-    await updateEmailSettings(partial);
+    await updateEmailSettings(parsed.data);
     await logAdminActivityFromSession({
       action: "settings.email_updated",
       entityType: "settings",

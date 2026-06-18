@@ -11,6 +11,8 @@ import { getTenantById } from "@/services/tenants";
 
 const CHECKIN_SETTINGS_BASE_COLUMNS = [
   "display_name",
+  "default_check_in_time",
+  "default_check_out_time",
   "checkin_doc_rule",
   "checkin_phone_rule",
   "checkin_cnp_rule",
@@ -135,8 +137,12 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
     group_checkin_mode:
       (row.group_checkin_mode as CheckinSettings["group_checkin_mode"]) ??
       DEFAULT_CHECKIN_SETTINGS.group_checkin_mode,
-    checkin_time_from: parseTimeField(row.checkin_time_from),
-    checkout_time_until: parseTimeField(row.checkout_time_until),
+    checkin_time_from: parseTimeField(
+      row.default_check_in_time ?? row.checkin_time_from,
+    ),
+    checkout_time_until: parseTimeField(
+      row.default_check_out_time ?? row.checkout_time_until,
+    ),
     late_checkout_allowed:
       row.late_checkout_allowed != null
         ? Boolean(row.late_checkout_allowed)
@@ -272,10 +278,6 @@ export async function updateCheckinSettings(
     update.walkin_allowed = input.walkin_allowed;
   if (input.group_checkin_mode != null)
     update.group_checkin_mode = input.group_checkin_mode;
-  if (input.checkin_time_from !== undefined)
-    update.checkin_time_from = input.checkin_time_from;
-  if (input.checkout_time_until !== undefined)
-    update.checkout_time_until = input.checkout_time_until;
   if (input.late_checkout_allowed != null)
     update.late_checkout_allowed = input.late_checkout_allowed;
   if (input.late_checkout_fee != null)
@@ -294,12 +296,6 @@ export async function updateCheckinSettings(
     update.checkin_ids_per_room = input.checkin_ids_per_room;
   if (input.checkin_ids_per_room_custom !== undefined)
     update.checkin_ids_per_room_custom = input.checkin_ids_per_room_custom;
-  if (input.fisa_property_address !== undefined)
-    update.fisa_property_address = input.fisa_property_address;
-  if (input.fisa_owner_cui !== undefined)
-    update.fisa_owner_cui = input.fisa_owner_cui;
-  if (input.fisa_tourism_license !== undefined)
-    update.fisa_tourism_license = input.fisa_tourism_license;
 
   if (Object.keys(update).length === 0) return;
 

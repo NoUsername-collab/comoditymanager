@@ -67,6 +67,7 @@ export type GuestAppContent = {
 
 export type GuestAppSettings = {
   enabled: boolean;
+  usePrimaryContact: boolean;
   appearance: GuestAppAppearance;
   features: GuestAppFeatureDef[];
   content: GuestAppContent;

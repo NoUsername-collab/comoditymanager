@@ -3,7 +3,7 @@
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import type { GuestAppSettingsInput } from "@/services/guest-app/mutations";
+import { parseGuestAppSettingsInput } from "@/domain/settings/schemas/guest-app";
 import { upsertGuestAppSettingsImpl } from "@/services/guest-app/mutations";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { resolveRequestTenant } from "@/lib/tenant/active";
@@ -11,7 +11,7 @@ import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
 
 export async function saveGuestAppSettingsAction(
-  input: GuestAppSettingsInput,
+  input: unknown,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const [t, staff] = await Promise.all([
@@ -28,7 +28,12 @@ export async function saveGuestAppSettingsAction(
       return { ok: false, error: t("tenantNotResolved") };
     }
 
-    await upsertGuestAppSettingsImpl(tenant.id, input);
+    const parsed = parseGuestAppSettingsInput(input);
+    if (!parsed.ok) {
+      return { ok: false, error: parsed.error };
+    }
+
+    await upsertGuestAppSettingsImpl(tenant.id, parsed.data);
 
     revalidatePath("/admin/settings/guest-app");
     revalidatePath("/stay", "layout");
@@ -37,7 +42,7 @@ export async function saveGuestAppSettingsAction(
       action: "settings.guest_app_updated",
       entityType: "settings",
       summary: "Guest app: setări actualizate",
-      metadata: { enabled: input.enabled },
+      metadata: { enabled: parsed.data.enabled },
     });
 
     await redirect("/admin/settings/guest-app?saved=1");

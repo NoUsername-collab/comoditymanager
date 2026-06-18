@@ -2,6 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireStaffRole } from "@/lib/auth/require-staff";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
@@ -554,7 +555,7 @@ export async function updateCheckinSettingsAction(
   const t = await getTranslations("admin.serverActions");
 
   try {
-    await requireAdmin();
+    await requireStaffRole(["admin"]);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "auth.role_forbidden";
     if (msg === "auth.login_required") {
@@ -577,20 +578,12 @@ export async function updateCheckinSettingsAction(
       "group_checkin_mode",
       "checkin_key_rule",
       "checkin_ids_per_room",
-      "fisa_property_address",
-      "fisa_owner_cui",
-      "fisa_tourism_license",
     ];
-    const nullableTextFields = new Set([
-      "fisa_property_address",
-      "fisa_owner_cui",
-      "fisa_tourism_license",
-    ]);
+
     for (const f of fields) {
       const v = formData.get(f);
       if (v == null) continue;
-      const text = String(v).trim();
-      input[f] = nullableTextFields.has(f) ? text || null : text;
+      input[f] = String(v).trim();
     }
 
     const intFields = ["checkin_min_payment_pct"];
@@ -620,12 +613,6 @@ export async function updateCheckinSettingsAction(
     for (const f of boolFields) {
       const v = formData.get(f);
       if (v != null) input[f] = v === "true";
-    }
-
-    const timeFields = ["checkin_time_from", "checkout_time_until"];
-    for (const f of timeFields) {
-      const v = formData.get(f);
-      if (v != null) input[f] = String(v) || null;
     }
 
     await updateCheckinSettings(input);

@@ -7,6 +7,8 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getPensionSettings } from "@/services/pension-settings";
+import { getPensionIdentity } from "@/services/pension-identity";
+import { resolveContactWithPrimary } from "@/domain/settings/pension-identity";
 import {
   isPublicSiteMigrationMissing,
   mapPublicSiteSectionRow,
@@ -48,13 +50,14 @@ async function loadDefaultCopy() {
 async function getPublicSiteConfigUncached(
   tenantId: string
 ): Promise<PublicSiteConfig> {
-  const [pension, copy, tFooter] = await Promise.all([
+  const [pension, identity, copy, tFooter] = await Promise.all([
     getPensionSettings().catch(() => null),
+    getPensionIdentity().catch(() => null),
     loadDefaultCopy(),
     getTranslations("public.footer"),
   ]);
 
-  const displayName = pension?.display_name ?? "Casa Emil";
+  const displayName = identity?.displayName ?? pension?.display_name ?? "Casa Emil";
   const checkInTime = pension?.default_check_in_time ?? "14:00";
   const checkOutTime = pension?.default_check_out_time ?? "11:00";
   const fallback = buildDefaultPublicSiteConfig({
@@ -70,7 +73,7 @@ async function getPublicSiteConfigUncached(
   const settingsResult = await supabase
     .from("public_site_settings")
     .select(
-      "id, template_id, theme_id, published, booking_enabled, booking_nav_position, hero, contact, seo"
+      "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo"
     )
     .eq("tenant_id", tenantId)
     .maybeSingle();
@@ -101,6 +104,19 @@ async function getPublicSiteConfigUncached(
 
   const settings = mapPublicSiteSettingsRow(settingsResult.data);
   const sections = (sectionsResult.data ?? []).map(mapPublicSiteSectionRow);
+  const primaryContact = identity?.contact ?? {
+    email: null,
+    phone: null,
+    whatsapp: null,
+    telegram: null,
+    facebook: null,
+    instagram: null,
+  };
+  const resolvedContact = resolveContactWithPrimary(
+    primaryContact,
+    settings.contact,
+    settings.usePrimaryContact,
+  );
 
   return {
     ...settings,
@@ -109,12 +125,12 @@ async function getPublicSiteConfigUncached(
     checkOutTime,
     sections: sections.length > 0 ? sections : fallback.sections,
     contact: {
-      email: settings.contact.email ?? fallback.contact.email ?? null,
-      phone: settings.contact.phone ?? null,
-      whatsapp: settings.contact.whatsapp ?? null,
-      telegram: settings.contact.telegram ?? null,
-      facebook: settings.contact.facebook ?? null,
-      instagram: settings.contact.instagram ?? null,
+      email: resolvedContact.email ?? fallback.contact.email ?? null,
+      phone: resolvedContact.phone,
+      whatsapp: resolvedContact.whatsapp,
+      telegram: resolvedContact.telegram,
+      facebook: resolvedContact.facebook,
+      instagram: resolvedContact.instagram,
     },
   };
 }

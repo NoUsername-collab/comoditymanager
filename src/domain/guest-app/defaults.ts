@@ -15,6 +15,7 @@ export const DEFAULT_GUEST_APP_FEATURES: GuestAppFeatureDef[] = [
 
 export const DEFAULT_GUEST_APP_SETTINGS: GuestAppSettings = {
   enabled: true,
+  usePrimaryContact: true,
   appearance: {
     themeId: "inherit",
     primaryColor: null,

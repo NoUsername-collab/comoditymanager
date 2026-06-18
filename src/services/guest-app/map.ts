@@ -32,6 +32,7 @@ function mergeFeatures(raw: unknown): GuestAppFeatureDef[] {
 
 export function mapGuestAppSettingsRow(row: {
   enabled: boolean;
+  use_primary_contact?: boolean;
   appearance: unknown;
   features: unknown;
   content: unknown;
@@ -54,6 +55,7 @@ export function mapGuestAppSettingsRow(row: {
 
   return {
     enabled: row.enabled !== false,
+    usePrimaryContact: row.use_primary_contact !== false,
     appearance,
     features: mergeFeatures(row.features),
     content,

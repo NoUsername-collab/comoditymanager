@@ -1,19 +1,11 @@
-import type {
-  GuestAppContent,
-  GuestAppFeatureDef,
-  GuestAppSettings,
-} from "@/domain/guest-app/types";
+import type { GuestAppSettingsInputParsed } from "@/domain/settings/schemas/guest-app";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import { withTenantId } from "@/lib/tenant/scope";
 import { mapGuestAppSettingsRow } from "./map";
 import { getGuestAppPublicDb } from "./public-db";
+import type { GuestAppSettings } from "@/domain/guest-app/types";
 
-export type GuestAppSettingsInput = {
-  enabled: boolean;
-  appearance: GuestAppSettings["appearance"];
-  features: GuestAppFeatureDef[];
-  content: GuestAppContent;
-};
+export type GuestAppSettingsInput = GuestAppSettingsInputParsed;
 
 export async function upsertGuestAppSettingsImpl(
   tenantId: string,
@@ -23,6 +15,7 @@ export async function upsertGuestAppSettingsImpl(
   const { error } = await supabase.from("guest_app_settings").upsert(
     withTenantId(tenantId, {
       enabled: input.enabled,
+      use_primary_contact: input.usePrimaryContact,
       appearance: input.appearance,
       features: input.features,
       content: input.content,
@@ -38,7 +31,7 @@ export async function ensureGuestAppSettingsRow(
   const { supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("guest_app_settings")
-    .select("enabled, appearance, features, content")
+    .select("enabled, use_primary_contact, appearance, features, content")
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
@@ -49,6 +42,7 @@ export async function ensureGuestAppSettingsRow(
   const { error: insError } = await supabase.from("guest_app_settings").insert(
     withTenantId(tenantId, {
       enabled: defaults.enabled,
+      use_primary_contact: defaults.usePrimaryContact,
       appearance: defaults.appearance,
       features: defaults.features,
       content: defaults.content,
@@ -65,6 +59,7 @@ export async function enableGuestAppForOwner(tenantId: string): Promise<GuestApp
 
   await upsertGuestAppSettingsImpl(tenantId, {
     enabled: true,
+    usePrimaryContact: current.usePrimaryContact,
     appearance: current.appearance,
     features: current.features,
     content: current.content,

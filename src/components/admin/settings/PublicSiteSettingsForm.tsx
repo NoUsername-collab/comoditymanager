@@ -80,6 +80,9 @@ export function PublicSiteSettingsForm({
   const [bookingNavPosition, setBookingNavPosition] = useState(
     config.bookingNavPosition
   );
+  const [usePrimaryContact, setUsePrimaryContact] = useState(
+    config.usePrimaryContact ?? true
+  );
 
   const [heroTitle, setHeroTitle] = useState(
     pickLocalized(config.hero.title, locale, [config.displayName])
@@ -185,6 +188,7 @@ export function PublicSiteSettingsForm({
       published,
       bookingEnabled,
       bookingNavPosition,
+      usePrimaryContact,
       hero: {
         ...config.hero,
         badge: localized(heroBadge),
@@ -333,6 +337,14 @@ export function PublicSiteSettingsForm({
       </FormSection>
 
       <FormSection title={t("contactTitle")} description={t("contactSectionDesc")}>
+        <label className="mb-4 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={usePrimaryContact}
+            onChange={(e) => setUsePrimaryContact(e.target.checked)}
+          />
+          <span>{t("usePrimaryContact")}</span>
+        </label>
         <div className="admin-settings-fields admin-settings-fields--2col">
           <label>
             <span>Email</span>

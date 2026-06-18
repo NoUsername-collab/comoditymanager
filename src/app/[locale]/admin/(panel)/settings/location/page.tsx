@@ -93,15 +93,17 @@ export default async function LocationAdminPage({
 
           <SettingsSection
             title={tPage("operational.title")}
-            description={tPage("operational.subtitle", { name: settings.display_name })}
+            description={tPage("operational.subtitle")}
           >
+            <p className="mb-4 text-sm text-zinc-500">
+              {tPage("operational.identityHint")}{" "}
+              <Link href="/admin/settings/identity" className="underline">
+                {tPage("operational.identityLink")}
+              </Link>
+            </p>
             <AdminPendingForm action={updateOperationalSettingsAction} className="admin-settings-form">
               <input type="hidden" name="id" value={settings.id} />
               <div className="admin-settings-fields">
-                <label>
-                  <span>{tPage("operational.displayName")}</span>
-                  <input name="display_name" defaultValue={settings.display_name} />
-                </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label>
                     <span>{tCommon("checkInHour")}</span>

@@ -140,6 +140,7 @@ export function buildDefaultPublicSiteConfig(args: {
     published: true,
     bookingEnabled: true,
     bookingNavPosition: "nav",
+    usePrimaryContact: true,
     displayName: args.displayName,
     checkInTime: args.checkInTime,
     checkOutTime: args.checkOutTime,

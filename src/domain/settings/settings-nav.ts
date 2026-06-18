@@ -3,10 +3,7 @@ export type SettingsNavItem = {
   labelKey: string;
   descriptionKey?: string;
   href: string;
-  /** Match pathname prefix for sub-routes */
   matchPath?: string;
-  /** Inline hub section (?section=) */
-  section?: string;
   roles?: Array<"owner" | "admin" | "operator">;
   memberRoles?: Array<"owner" | "admin" | "operator">;
 };
@@ -17,31 +14,44 @@ export type SettingsNavGroup = {
   items: SettingsNavItem[];
 };
 
+/** Legacy ?section= values → dedicated routes */
+export const SETTINGS_SECTION_REDIRECTS: Record<string, string> = {
+  appearance: "/admin/settings/appearance",
+  statistics: "/admin/settings/statistics",
+  booking: "/admin/settings/booking",
+  fiscal: "/admin/settings/fiscal",
+  checkin: "/admin/settings/checkin",
+  email: "/admin/settings/email",
+  identity: "/admin/settings/identity",
+  preferences: "/admin/settings/appearance",
+  history: "/admin/istoric",
+};
+
 export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   {
-    id: "personal",
-    labelKey: "navGroupPersonal",
+    id: "identity",
+    labelKey: "navGroupIdentity",
     items: [
       {
         id: "overview",
         labelKey: "navOverview",
         descriptionKey: "navOverviewDesc",
         href: "/admin/settings",
-        section: "overview",
+      },
+      {
+        id: "identity",
+        labelKey: "navIdentity",
+        descriptionKey: "navIdentityDesc",
+        href: "/admin/settings/identity",
+        matchPath: "/admin/settings/identity",
+        memberRoles: ["owner", "admin"],
       },
       {
         id: "appearance",
         labelKey: "navAppearance",
         descriptionKey: "navAppearanceDesc",
-        href: "/admin/settings?section=appearance",
-        section: "appearance",
-      },
-      {
-        id: "preferences",
-        labelKey: "navPreferences",
-        descriptionKey: "navPreferencesDesc",
-        href: "/admin/settings?section=preferences",
-        section: "preferences",
+        href: "/admin/settings/appearance",
+        matchPath: "/admin/settings/appearance",
       },
     ],
   },
@@ -53,32 +63,33 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         id: "statistics",
         labelKey: "navStatistics",
         descriptionKey: "navStatisticsDesc",
-        href: "/admin/settings?section=statistics",
-        section: "statistics",
+        href: "/admin/settings/statistics",
+        matchPath: "/admin/settings/statistics",
         memberRoles: ["owner", "admin", "operator"],
       },
       {
         id: "booking",
         labelKey: "navBooking",
         descriptionKey: "navBookingDesc",
-        href: "/admin/settings?section=booking",
-        section: "booking",
+        href: "/admin/settings/booking",
+        matchPath: "/admin/settings/booking",
+        memberRoles: ["owner", "admin"],
+      },
+      {
+        id: "fiscal",
+        labelKey: "navFiscal",
+        descriptionKey: "navFiscalDesc",
+        href: "/admin/settings/fiscal",
+        matchPath: "/admin/settings/fiscal",
         memberRoles: ["owner", "admin"],
       },
       {
         id: "checkin",
         labelKey: "navCheckin",
         descriptionKey: "navCheckinDesc",
-        href: "/admin/settings?section=checkin",
-        section: "checkin",
+        href: "/admin/settings/checkin",
+        matchPath: "/admin/settings/checkin",
         roles: ["admin"],
-      },
-      {
-        id: "history",
-        labelKey: "navHistory",
-        descriptionKey: "navHistoryDesc",
-        href: "/admin/settings?section=history",
-        section: "history",
       },
     ],
   },
@@ -106,8 +117,8 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         id: "email",
         labelKey: "navEmail",
         descriptionKey: "navEmailDesc",
-        href: "/admin/settings?section=email",
-        section: "email",
+        href: "/admin/settings/email",
+        matchPath: "/admin/settings/email",
         memberRoles: ["owner", "admin"],
       },
       {
@@ -169,28 +180,22 @@ export function filterSettingsNav(
     .filter((group) => group.items.length > 0);
 }
 
-export function resolveActiveSettingsNavId(
-  pathname: string,
-  section: string | null,
-): string {
+export function resolveActiveSettingsNavId(pathname: string): string {
+  const normalized = pathname.replace(/\/$/, "");
+
+  if (normalized === "/admin/settings") {
+    return "overview";
+  }
+
   for (const group of SETTINGS_NAV_GROUPS) {
     for (const item of group.items) {
-      if (item.matchPath && pathname.startsWith(item.matchPath)) {
+      if (item.id === "overview") continue;
+      if (item.matchPath && normalized.startsWith(item.matchPath)) {
         return item.id;
       }
     }
   }
 
-  if (pathname === "/admin/settings" || pathname.endsWith("/settings")) {
-    if (section && section !== "overview") {
-      const match = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).find(
-        (i) => i.section === section,
-      );
-      if (match) return match.id;
-    }
-    return "overview";
-  }
-
-  if (pathname.includes("/settings/location")) return "location";
+  if (normalized.includes("/settings/location")) return "location";
   return "overview";
 }

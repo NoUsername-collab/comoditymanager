@@ -14,15 +14,9 @@ import {
   type PricingSeason,
   type WeekendPricingMode,
 } from "@/domain/settings/booking-rules";
-import type { CheckinSettings } from "@/domain/checkin/types";
-import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
-import { FiscalBillingSettingsPanel } from "@/components/admin/settings/FiscalBillingSettingsPanel";
 
 type Props = {
   settings: BookingRulesSettings;
-  checkinSettings: CheckinSettings;
-  propertyName: string;
-  country: TenantCountry;
   locale: "ro" | "en" | "bg";
 };
 
@@ -54,9 +48,6 @@ function SettingRow({
 
 export function BookingRulesSettingsPanel({
   settings: initial,
-  checkinSettings,
-  propertyName,
-  country,
   locale,
 }: Props) {
   const t = useTranslations("admin.pages.settings.booking");
@@ -357,14 +348,6 @@ export function BookingRulesSettingsPanel({
           </div>
         )}
       </div>
-
-      <FiscalBillingSettingsPanel
-        country={country}
-        propertyName={propertyName}
-        bookingRules={settings}
-        checkinSettings={checkinSettings}
-        locale={locale}
-      />
     </div>
   );
 }

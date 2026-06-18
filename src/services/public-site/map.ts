@@ -51,6 +51,7 @@ export function mapPublicSiteSettingsRow(row: {
   published: boolean;
   booking_enabled: boolean;
   booking_nav_position: string;
+  use_primary_contact?: boolean;
   hero: unknown;
   contact: unknown;
   seo: unknown;
@@ -62,6 +63,7 @@ export function mapPublicSiteSettingsRow(row: {
     published: row.published !== false,
     bookingEnabled: row.booking_enabled !== false,
     bookingNavPosition: parseBookingNav(row.booking_nav_position),
+    usePrimaryContact: row.use_primary_contact !== false,
     hero: (row.hero ?? {}) as PublicHeroConfig,
     contact: (row.contact ?? {}) as PublicContactConfig,
     seo: (row.seo ?? {}) as PublicSeoConfig,

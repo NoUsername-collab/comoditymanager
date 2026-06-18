@@ -3,7 +3,7 @@
 
 create table if not exists public.guest_feedback (
   id uuid primary key default gen_random_uuid(),
-  tenant_id uuid not null references public.pensions(id) on delete cascade,
+  tenant_id uuid not null references public.tenants (id) on delete cascade,
   booking_id uuid not null references public.bookings(id) on delete cascade,
   stars smallint not null check (stars between 1 and 5),
   comment text not null default '',

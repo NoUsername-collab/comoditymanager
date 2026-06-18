@@ -161,3 +161,41 @@ export function pensionStatisticsVisibility(
 ): StatisticsVisibility {
   return settings?.statistics_visibility ?? DEFAULT_STATISTICS_VISIBILITY;
 }
+
+/** Single-row partial update on pension_settings (atomic per tenant). */
+export async function updatePensionSettingsPartial(
+  fields: Record<string, unknown>,
+): Promise<void> {
+  if (Object.keys(fields).length === 0) return;
+
+  const { tenantId, supabase } = await getTenantScope();
+
+  const { data: existing, error: readError } = await supabase
+    .from("pension_settings")
+    .select("tenant_id")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+
+  if (readError) throw new Error(readError.message);
+
+  if (!existing) {
+    const { error: insertError } = await supabase.from("pension_settings").insert({
+      tenant_id: tenantId,
+      display_name: "Pensiune",
+      admin_palette_key: "noir",
+      ...fields,
+    });
+    if (insertError) throw new Error(insertError.message);
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("pension_settings")
+    .update(fields)
+    .eq("tenant_id", tenantId)
+    .select("tenant_id")
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("settings.pension_settings_missing");
+}

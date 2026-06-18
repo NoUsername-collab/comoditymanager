@@ -59,6 +59,9 @@ export function GuestAppSettingsForm({
   const [error, setError] = useState<string | null>(null);
 
   const [enabled, setEnabled] = useState(settings.enabled);
+  const [usePrimaryContact, setUsePrimaryContact] = useState(
+    settings.usePrimaryContact ?? true,
+  );
   const [themeId, setThemeId] = useState<GuestAppThemeSource>(
     settings.appearance.themeId ?? "inherit",
   );
@@ -118,6 +121,7 @@ export function GuestAppSettingsForm({
     startTransition(async () => {
       const result = await saveGuestAppSettingsAction({
         enabled,
+        usePrimaryContact,
         appearance: {
           themeId,
           primaryColor: themeId === "custom" ? primaryColor : null,
@@ -251,6 +255,14 @@ export function GuestAppSettingsForm({
 
       <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
         <h2 className="text-sm font-semibold text-zinc-900">{t("hotelContent")}</h2>
+        <label className="flex items-center gap-2 text-sm text-zinc-700">
+          <input
+            type="checkbox"
+            checked={usePrimaryContact}
+            onChange={(e) => setUsePrimaryContact(e.target.checked)}
+          />
+          <span>{t("usePrimaryContact")}</span>
+        </label>
         <label className={labelClass}>
           {t("shortDescription")}
           <AdminTextarea

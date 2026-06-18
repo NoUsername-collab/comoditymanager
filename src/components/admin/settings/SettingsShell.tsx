@@ -1,7 +1,6 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import {
@@ -37,15 +36,13 @@ export function SettingsShell({
 }: Props) {
   const t = useTranslations("admin.pages.settings");
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const section = searchParams.get("section");
 
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
     role,
     memberRole,
     statisticsAccess,
   });
-  const activeId = resolveActiveSettingsNavId(pathname, section);
+  const activeId = resolveActiveSettingsNavId(pathname);
 
   const roleLabel =
     memberRole === "owner"

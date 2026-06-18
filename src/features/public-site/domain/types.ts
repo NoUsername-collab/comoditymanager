@@ -85,6 +85,7 @@ export type PublicSiteSettingsRow = {
   published: boolean;
   bookingEnabled: boolean;
   bookingNavPosition: PublicBookingNavPosition;
+  usePrimaryContact: boolean;
   hero: PublicHeroConfig;
   contact: PublicContactConfig;
   seo: PublicSeoConfig;
@@ -104,6 +105,7 @@ export type PublicSiteSettingsInput = {
   published: boolean;
   bookingEnabled: boolean;
   bookingNavPosition: PublicBookingNavPosition;
+  usePrimaryContact: boolean;
   hero: PublicHeroConfig;
   contact: PublicContactConfig;
   seo: PublicSeoConfig;

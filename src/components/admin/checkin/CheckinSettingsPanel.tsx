@@ -1,14 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { updateCheckinSettingsAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
-import {
-  formatFisaPropertyAddress,
-  parseFisaPropertyAddress,
-  type FisaPropertyAddressParts,
-} from "@/domain/checkin/fisa-property-address";
 import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
@@ -50,105 +45,17 @@ function appendFormValue(fd: FormData, key: string, value: unknown) {
   fd.set(key, String(value));
 }
 
-function FisaPropertyAddressFields({
-  parts,
-  onPartsChange,
-}: {
-  parts: FisaPropertyAddressParts;
-  onPartsChange: (parts: FisaPropertyAddressParts) => void;
-}) {
-  const t = useTranslations("admin.pages.settings.checkin");
-
-  function updatePart(key: keyof FisaPropertyAddressParts, raw: string) {
-    onPartsChange({ ...parts, [key]: raw });
-  }
-
-  return (
-    <div className="checkin-fisa-address">
-      <label className="checkin-fisa-address__field">
-        <span className="checkin-fisa-address__label">{t("fisaStreet")}</span>
-        <input
-          type="text"
-          className="checkin-field__input checkin-field__input--wide"
-          value={parts.street}
-          onChange={(e) => updatePart("street", e.target.value)}
-          placeholder={t("fisaStreetPlaceholder")}
-          autoComplete="street-address"
-        />
-      </label>
-      <div className="checkin-fisa-address__row">
-        <label className="checkin-fisa-address__field">
-          <span className="checkin-fisa-address__label">{t("fisaLocality")}</span>
-          <input
-            type="text"
-            className="checkin-field__input"
-            value={parts.locality}
-            onChange={(e) => updatePart("locality", e.target.value)}
-            placeholder={t("fisaLocalityPlaceholder")}
-            autoComplete="address-level2"
-          />
-        </label>
-        <label className="checkin-fisa-address__field">
-          <span className="checkin-fisa-address__label">{t("fisaCounty")}</span>
-          <input
-            type="text"
-            className="checkin-field__input"
-            value={parts.county}
-            onChange={(e) => updatePart("county", e.target.value)}
-            placeholder={t("fisaCountyPlaceholder")}
-            autoComplete="address-level1"
-          />
-        </label>
-      </div>
-    </div>
-  );
-}
-
-type FisaAnafDraft = {
-  addressParts: FisaPropertyAddressParts;
-  cui: string;
-  license: string;
-};
-
-function buildFisaAnafDraft(settings: CheckinSettings): FisaAnafDraft {
-  return {
-    addressParts: parseFisaPropertyAddress(settings.fisa_property_address),
-    cui: settings.fisa_owner_cui ?? "",
-    license: settings.fisa_tourism_license ?? "",
-  };
-}
-
-function fisaAnafDraftToSettings(draft: FisaAnafDraft): Pick<
-  CheckinSettings,
-  "fisa_property_address" | "fisa_owner_cui" | "fisa_tourism_license"
-> {
-  return {
-    fisa_property_address: formatFisaPropertyAddress(draft.addressParts),
-    fisa_owner_cui: draft.cui.trim() || null,
-    fisa_tourism_license: draft.license.trim() || null,
-  };
-}
-
 export function CheckinSettingsPanel({ settings: initial }: Props) {
   const t = useTranslations("admin.pages.settings.checkin");
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
-  const [fisaSaving, setFisaSaving] = useState(false);
   const [settings, setSettings] = useState<CheckinSettings>(initial);
-  const [fisaDraft, setFisaDraft] = useState<FisaAnafDraft>(() =>
-    buildFisaAnafDraft(initial)
-  );
-  const [fisaSaveError, setFisaSaveError] = useState<string | null>(null);
-  const [fisaSaveOk, setFisaSaveOk] = useState(false);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
   useEffect(() => {
     setSettings(initial);
     settingsRef.current = initial;
-    setFisaDraft(buildFisaAnafDraft(initial));
-    setFisaSaveError(null);
-    setFisaSaveOk(false);
   }, [initial]);
 
   const savePartial = useCallback(
@@ -204,34 +111,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
     },
     [savePartial]
   );
-
-  const fisaDirty = useMemo(() => {
-    const saved = fisaAnafDraftToSettings(buildFisaAnafDraft(settings));
-    const draft = fisaAnafDraftToSettings(fisaDraft);
-    return (
-      saved.fisa_property_address !== draft.fisa_property_address ||
-      saved.fisa_owner_cui !== draft.fisa_owner_cui ||
-      saved.fisa_tourism_license !== draft.fisa_tourism_license
-    );
-  }, [fisaDraft, settings]);
-
-  function saveFisaAnaf() {
-    setFisaSaveError(null);
-    setFisaSaveOk(false);
-    void (async () => {
-      setFisaSaving(true);
-      try {
-        const result = await savePartial(fisaAnafDraftToSettings(fisaDraft));
-        if (result.ok) {
-          setFisaSaveOk(true);
-        } else {
-          setFisaSaveError(result.error ?? t("saveError"));
-        }
-      } finally {
-        setFisaSaving(false);
-      }
-    })();
-  }
 
   return (
     <div className="checkin-settings">
@@ -406,28 +285,8 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">{t("sectionSchedule")}</span>
-          <span className="checkin-settings__section-desc">{t("sectionScheduleDesc")}</span>
+          <span className="checkin-settings__section-desc">{t("sectionScheduleManaged")}</span>
         </div>
-
-        <SettingRow label={t("checkinTime")} description={t("checkinTimeDesc")}>
-          <input
-            type="time"
-            className="checkin-field__input"
-            value={settings.checkin_time_from ?? ""}
-            onChange={(e) => persist({ checkin_time_from: e.target.value || null })}
-          />
-        </SettingRow>
-
-        <SettingRow label={t("checkoutTime")} description={t("checkoutTimeDesc")}>
-          <input
-            type="time"
-            className="checkin-field__input"
-            value={settings.checkout_time_until ?? ""}
-            onChange={(e) =>
-              persist({ checkout_time_until: e.target.value || null })
-            }
-          />
-        </SettingRow>
 
         <SettingRow label={t("walkinAllowed")} description={t("walkinAllowedDesc")}>
           <label className="checkin-toggle">
@@ -480,76 +339,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
             <option value="both">{t("groupBoth")}</option>
           </select>
         </SettingRow>
-      </div>
-
-      {/* ── ANAF / Fișă turist ──────────────────────────────── */}
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">{t("sectionAnaf")}</span>
-          <span className="checkin-settings__section-desc">{t("sectionAnafDesc")}</span>
-        </div>
-
-        <div className="checkin-setting-row checkin-setting-row--stack">
-          <div className="checkin-setting-row__left">
-            <span className="checkin-setting-row__label">{t("fisaAddress")}</span>
-            <span className="checkin-setting-row__desc">{t("fisaAddressDesc")}</span>
-          </div>
-          <div className="checkin-setting-row__right checkin-setting-row__right--wide">
-            <FisaPropertyAddressFields
-              parts={fisaDraft.addressParts}
-              onPartsChange={(addressParts) => {
-                setFisaSaveOk(false);
-                setFisaDraft((current) => ({ ...current, addressParts }));
-              }}
-            />
-          </div>
-        </div>
-
-        <SettingRow label={t("fisaCui")}>
-          <input
-            type="text"
-            className="checkin-field__input"
-            value={fisaDraft.cui}
-            onChange={(e) => {
-              setFisaSaveOk(false);
-              setFisaDraft((current) => ({ ...current, cui: e.target.value }));
-            }}
-          />
-        </SettingRow>
-
-        <SettingRow label={t("fisaLicense")} description={t("fisaLicenseDesc")}>
-          <input
-            type="text"
-            className="checkin-field__input"
-            value={fisaDraft.license}
-            onChange={(e) => {
-              setFisaSaveOk(false);
-              setFisaDraft((current) => ({ ...current, license: e.target.value }));
-            }}
-          />
-        </SettingRow>
-
-        <div className="checkin-fisa-save">
-          <p className="checkin-fisa-save__hint">{t("fisaSaveHint")}</p>
-          {fisaSaveError ? (
-            <p className="checkin-fisa-save__error" role="alert">
-              {fisaSaveError}
-            </p>
-          ) : null}
-          {fisaSaveOk ? (
-            <p className="checkin-fisa-save__ok" role="status">
-              {t("saved")}
-            </p>
-          ) : null}
-          <button
-            type="button"
-            className="checkin-fisa-save__btn"
-            disabled={!fisaDirty || fisaSaving || isSaving}
-            onClick={saveFisaAnaf}
-          >
-            {fisaSaving ? t("fisaSaving") : t("fisaSave")}
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -1,5 +1,23 @@
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import { getTranslations } from "next-intl/server";
+import { requireStaff } from "@/lib/auth/require-staff";
+import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminIstoricPage() {
-  await redirect("/admin/settings?section=history");
+  const [t] = await Promise.all([
+    getTranslations("admin.pages.settings"),
+    requireStaff(),
+  ]);
+
+  return (
+    <AdminPageFrame
+      title={t("navHistory")}
+      description={t("historySubtitle")}
+      className="admin-settings-page w-full max-w-none"
+    >
+      <AdminActivityHistoryPanel />
+    </AdminPageFrame>
+  );
 }
