@@ -564,6 +564,11 @@
   width: 10rem;
 }
 
+.checkin-setting-row__right .checkin-field__input--wide {
+  width: min(18rem, 42vw);
+  min-width: 14rem;
+}
+
 /* ── Toggle Switch ────────────────────────────────────────── */
 
 .checkin-toggle {

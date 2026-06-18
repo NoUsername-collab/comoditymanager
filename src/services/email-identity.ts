@@ -56,10 +56,16 @@ async function resolveTransactionalEmailIdentityUncached(): Promise<Transactiona
     ]);
 
   const displayName =
+    emailSettings?.email_from_name?.trim() ||
     pension?.display_name?.trim() ||
     tenant?.display_name?.trim() ||
     publicSite?.displayName?.trim() ||
     platformPensionNameFallback();
+
+  const customFrom = emailSettings?.email_from_address?.trim();
+  const fromAddress = customFrom
+    ? `${displayName} <${customFrom}>`
+    : formatTransactionalFromAddress(displayName, mailDomain);
 
   const defaultReplyTo =
     emailSettings?.email_reply_to?.trim() ||
@@ -70,7 +76,7 @@ async function resolveTransactionalEmailIdentityUncached(): Promise<Transactiona
   return {
     displayName,
     mailDomain,
-    fromAddress: formatTransactionalFromAddress(displayName, mailDomain),
+    fromAddress,
     defaultReplyTo,
   };
 }

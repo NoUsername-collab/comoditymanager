@@ -11,6 +11,8 @@ export type EmailSettings = {
   email_notify_confirmation: boolean;
   email_notify_cancellation: boolean;
   email_notify_daily_summary: boolean;
+  email_from_name: string | null;
+  email_from_address: string | null;
   email_reply_to: string | null;
   email_custom_footer: string | null;
 };
@@ -21,12 +23,14 @@ export const DEFAULT_EMAIL_SETTINGS: EmailSettings = {
   email_notify_confirmation: true,
   email_notify_cancellation: true,
   email_notify_daily_summary: false,
+  email_from_name: null,
+  email_from_address: null,
   email_reply_to: null,
   email_custom_footer: null,
 };
 
 const EMAIL_COLUMNS =
-  "email_enabled, email_notify_new_request, email_notify_confirmation, email_notify_cancellation, email_notify_daily_summary, email_reply_to, email_custom_footer";
+  "email_enabled, email_notify_new_request, email_notify_confirmation, email_notify_cancellation, email_notify_daily_summary, email_from_name, email_from_address, email_reply_to, email_custom_footer";
 
 function mapRow(row: Record<string, unknown>): EmailSettings {
   return {
@@ -35,6 +39,8 @@ function mapRow(row: Record<string, unknown>): EmailSettings {
     email_notify_confirmation: row.email_notify_confirmation !== false,
     email_notify_cancellation: row.email_notify_cancellation !== false,
     email_notify_daily_summary: row.email_notify_daily_summary === true,
+    email_from_name: typeof row.email_from_name === "string" ? row.email_from_name : null,
+    email_from_address: typeof row.email_from_address === "string" ? row.email_from_address : null,
     email_reply_to: typeof row.email_reply_to === "string" ? row.email_reply_to : null,
     email_custom_footer: typeof row.email_custom_footer === "string" ? row.email_custom_footer : null,
   };
@@ -89,6 +95,8 @@ export async function updateEmailSettings(
   if (input.email_notify_confirmation !== undefined) update.email_notify_confirmation = input.email_notify_confirmation;
   if (input.email_notify_cancellation !== undefined) update.email_notify_cancellation = input.email_notify_cancellation;
   if (input.email_notify_daily_summary !== undefined) update.email_notify_daily_summary = input.email_notify_daily_summary;
+  if (input.email_from_name !== undefined) update.email_from_name = input.email_from_name || null;
+  if (input.email_from_address !== undefined) update.email_from_address = input.email_from_address || null;
   if (input.email_reply_to !== undefined) update.email_reply_to = input.email_reply_to || null;
   if (input.email_custom_footer !== undefined) update.email_custom_footer = input.email_custom_footer || null;
 

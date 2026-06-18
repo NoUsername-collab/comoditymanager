@@ -51,6 +51,8 @@ export function EmailSettingsPanel({
   const { notifySuccess, notifyError } = useSettingsSaveFeedback();
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState<EmailSettings>(initial);
+  const [fromName, setFromName] = useState(initial.email_from_name ?? "");
+  const [fromAddress, setFromAddress] = useState(initial.email_from_address ?? "");
   const [replyTo, setReplyTo] = useState(initial.email_reply_to ?? "");
   const [customFooter, setCustomFooter] = useState(
     initial.email_custom_footer ?? ""
@@ -62,6 +64,8 @@ export function EmailSettingsPanel({
   useEffect(() => {
     setSettings(initial);
     settingsRef.current = initial;
+    setFromName(initial.email_from_name ?? "");
+    setFromAddress(initial.email_from_address ?? "");
     setReplyTo(initial.email_reply_to ?? "");
     setCustomFooter(initial.email_custom_footer ?? "");
   }, [initial]);
@@ -252,11 +256,43 @@ export function EmailSettingsPanel({
           </span>
         </div>
 
-        <SettingRow label={t("senderFrom")} description={t("senderFromDesc")}>
-          <code className="checkin-field__input checkin-field__input--readonly">
-            {identity.fromAddress}
-          </code>
-        </SettingRow>
+        <div className="checkin-setting-row checkin-setting-row--stack">
+          <div className="checkin-setting-row__left">
+            <span className="checkin-setting-row__label">{t("senderFromName")}</span>
+            <span className="checkin-setting-row__desc">{t("senderFromNameDesc")}</span>
+          </div>
+          <div className="checkin-setting-row__right checkin-setting-row__right--wide">
+            <input
+              type="text"
+              className="checkin-field__input"
+              placeholder={identity.displayName}
+              value={fromName}
+              onChange={(e) => setFromName(e.target.value)}
+              onBlur={() => persist({ email_from_name: fromName.trim() || null })}
+            />
+          </div>
+        </div>
+
+        <div className="checkin-setting-row checkin-setting-row--stack">
+          <div className="checkin-setting-row__left">
+            <span className="checkin-setting-row__label">{t("senderFromAddress")}</span>
+            <span className="checkin-setting-row__desc">{t("senderFromAddressDesc")}</span>
+          </div>
+          <div className="checkin-setting-row__right checkin-setting-row__right--wide">
+            <input
+              type="email"
+              className="checkin-field__input"
+              placeholder={identity.defaultReplyTo ?? `noreply@${identity.mailDomain}`}
+              value={fromAddress}
+              onChange={(e) => setFromAddress(e.target.value)}
+              onBlur={() => persist({ email_from_address: fromAddress.trim() || null })}
+            />
+          </div>
+        </div>
+
+        <p className="checkin-fisa-save__hint">
+          {t("senderPreview")}: <strong>{fromName.trim() || identity.displayName} &lt;{fromAddress.trim() || `noreply@${identity.mailDomain}`}&gt;</strong>
+        </p>
       </div>
 
       <div className="checkin-settings__section">

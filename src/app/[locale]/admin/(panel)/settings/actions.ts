@@ -497,6 +497,16 @@ export async function updateEmailSettingsAction(
   if (formData.has("email_reply_to")) {
     partial.email_reply_to = String(formData.get("email_reply_to") ?? "").trim() || null;
   }
+  if (formData.has("email_from_name")) {
+    partial.email_from_name = String(formData.get("email_from_name") ?? "").trim() || null;
+  }
+  if (formData.has("email_from_address")) {
+    const address = String(formData.get("email_from_address") ?? "").trim();
+    if (address && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)) {
+      return { ok: false, error: t("invalidEmail") };
+    }
+    partial.email_from_address = address || null;
+  }
   if (formData.has("email_custom_footer")) {
     partial.email_custom_footer = String(formData.get("email_custom_footer") ?? "").trim() || null;
   }
