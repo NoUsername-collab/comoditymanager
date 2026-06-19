@@ -3,6 +3,7 @@ import {
   hasVerifiedTotpFactor,
   isMfaExemptAdminPath,
   isMfaMandatoryForUser,
+  isMfaRecommendedForUser,
 } from "@/lib/auth/mfa-policy";
 
 afterEach(() => {
@@ -10,26 +11,30 @@ afterEach(() => {
 });
 
 describe("isMfaMandatoryForUser", () => {
-  it("requires MFA for owners", () => {
-    expect(isMfaMandatoryForUser({ memberRole: "owner" })).toBe(true);
-  });
-
-  it("requires MFA for platform admin emails", () => {
+  it("never blocks app access (2FA optional by default)", () => {
+    expect(isMfaMandatoryForUser({ memberRole: "owner" })).toBe(false);
     process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
     expect(
       isMfaMandatoryForUser({ email: "ops@hospira.ro", memberRole: "admin" })
+    ).toBe(false);
+  });
+});
+
+describe("isMfaRecommendedForUser", () => {
+  it("recommends MFA for owners", () => {
+    expect(isMfaRecommendedForUser({ memberRole: "owner" })).toBe(true);
+  });
+
+  it("recommends MFA for platform admin emails", () => {
+    process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
+    expect(
+      isMfaRecommendedForUser({ email: "ops@hospira.ro", memberRole: "admin" })
     ).toBe(true);
   });
 
-  it("does not require MFA for regular staff", () => {
+  it("does not recommend MFA for regular staff", () => {
     expect(
-      isMfaMandatoryForUser({ email: "staff@pension.ro", memberRole: "admin" })
-    ).toBe(false);
-    expect(
-      isMfaMandatoryForUser({
-        email: "staff@pension.ro",
-        memberRole: "operator",
-      })
+      isMfaRecommendedForUser({ email: "staff@pension.ro", memberRole: "admin" })
     ).toBe(false);
   });
 });

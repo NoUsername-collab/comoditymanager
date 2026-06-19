@@ -14,11 +14,10 @@ import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 type Props = {
-  mandatory: boolean;
   next?: string;
 };
 
-export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
+export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
   const t = useTranslations("admin.mfa");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -144,7 +143,6 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
   }, [code, factorId, next, router, t]);
 
   const handleUnenroll = useCallback(async () => {
-    if (mandatory) return;
     setBusy(true);
     setError(null);
     try {
@@ -159,7 +157,7 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
     } finally {
       setBusy(false);
     }
-  }, [mandatory, refreshStatus, t]);
+  }, [refreshStatus, t]);
 
   const handleCopySecret = useCallback(async () => {
     if (!secret) return;
@@ -187,16 +185,14 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
         <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
           {t("enrolledSuccess")}
         </p>
-        {!mandatory ? (
-          <button
-            type="button"
-            className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50"
-            onClick={() => void handleUnenroll()}
-            disabled={busy}
-          >
-            {t("disable")}
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50"
+          onClick={() => void handleUnenroll()}
+          disabled={busy}
+        >
+          {t("disable")}
+        </button>
       </div>
     );
   }
@@ -206,9 +202,7 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
       <p className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-950">
         {t("webPwaExplain")}
       </p>
-      <p className="text-sm text-zinc-600">
-        {mandatory ? t("mandatoryLead") : t("optionalLead")}
-      </p>
+      <p className="text-sm text-zinc-600">{t("optionalLead")}</p>
 
       {!factorId ? (
         <button

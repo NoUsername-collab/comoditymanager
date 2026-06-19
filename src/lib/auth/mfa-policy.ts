@@ -18,11 +18,16 @@ export function isMfaExemptAdminPath(path: string): boolean {
   );
 }
 
-/**
- * Owner accounts and Hospira platform admins must enroll TOTP.
- * Other staff may enroll optionally from settings.
- */
-export function isMfaMandatoryForUser(opts: {
+/** 2FA is optional by default — app stays usable without enrollment. */
+export function isMfaMandatoryForUser(_opts: {
+  email?: string | null;
+  memberRole?: TenantMemberRole | null;
+}): boolean {
+  return false;
+}
+
+/** Show the post-signup security reminder (not a login block). */
+export function isMfaRecommendedForUser(opts: {
   email?: string | null;
   memberRole?: TenantMemberRole | null;
 }): boolean {

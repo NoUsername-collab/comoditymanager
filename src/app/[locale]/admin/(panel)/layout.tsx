@@ -20,6 +20,7 @@ import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { OnboardingBar } from "@/components/admin/onboarding/OnboardingBar";
+import { MfaSecurityReminder } from "@/components/admin/settings/MfaSecurityReminder";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
 
@@ -96,6 +97,11 @@ export default async function AdminLayout({
         </div>
 
         <OnboardingBar />
+
+        <MfaSecurityReminder
+          email={staff.user.email}
+          memberRole={staff.memberRole}
+        />
 
         {cereriCount > 0 && (
           <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">

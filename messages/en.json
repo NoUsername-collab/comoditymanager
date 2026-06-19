@@ -683,6 +683,8 @@
       "challengePwaLead": "Open your authenticator app, copy the 6-digit code, and return to Hospira (web or PWA).",
       "mandatoryLead": "Two-factor authentication is required for your account before you can access the admin panel.",
       "optionalLead": "You can optionally enable two-factor authentication for extra security.",
+      "securityReminder": "Security: two-factor authentication is not active on this account.",
+      "securityReminderCta": "Set up 2FA",
       "startEnroll": "Set up authenticator",
       "startingEnroll": "Preparing…",
       "scanQr": "Scan this QR code with your authenticator app",

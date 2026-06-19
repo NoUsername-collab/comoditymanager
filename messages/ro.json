@@ -683,6 +683,8 @@
       "challengePwaLead": "Deschide aplicația de autentificare, copiază codul de 6 cifre și revino în Hospira (web sau PWA).",
       "mandatoryLead": "Autentificarea în doi pași este obligatorie pentru contul tău înainte de accesul în panou.",
       "optionalLead": "Poți activa opțional autentificarea în doi pași pentru securitate suplimentară.",
+      "securityReminder": "Securitate: autentificarea în doi pași nu e activă pe cont.",
+      "securityReminderCta": "Configurează 2FA",
       "startEnroll": "Configurează autentificatorul",
       "startingEnroll": "Se pregătește…",
       "scanQr": "Scanează codul QR cu aplicația de autentificare",
