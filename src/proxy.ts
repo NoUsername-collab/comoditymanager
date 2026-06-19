@@ -15,6 +15,7 @@ import {
 } from "@/lib/auth/admin-location-unlock-cookie";
 import { isAdminLocationUnlockTokenValidEdge } from "@/lib/auth/admin-location-unlock-edge";
 import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
+import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { pathBlockedForOperator } from "@/lib/auth/roles";
 import { resolveStaffRoleOnTenantHost, resolveTenantMemberRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
@@ -161,6 +162,7 @@ async function runTenantAppProxy(
   if (slug) requestHeaders.set("x-tenant-slug", slug);
   if (customDomain) requestHeaders.set("x-tenant-domain", customDomain);
   requestHeaders.set("x-tenant-domain-kind", routingKind);
+  requestHeaders.set("x-admin-path", path);
 
   const tenantRequest = new NextRequest(request.url, {
     headers: requestHeaders,
@@ -320,7 +322,7 @@ async function runTenantAppProxy(
       next: loginNext,
     });
 
-    if (mfaRedirectPath?.startsWith("/admin/security/mfa")) {
+    if (mfaRedirectPath?.startsWith(MFA_SETUP_PATH)) {
       return NextResponse.redirect(new URL(mfaRedirectPath, request.url));
     }
 
@@ -342,6 +344,7 @@ async function runTenantAppProxy(
   if (customDomain) {
     supabaseResponse.headers.set("x-tenant-domain", customDomain);
   }
+  supabaseResponse.headers.set("x-admin-path", path);
 
   return supabaseResponse;
 }
@@ -535,7 +538,7 @@ export async function proxy(request: NextRequest) {
             next: safe,
           });
 
-          if (mfaRedirectPath?.startsWith("/admin/security/mfa")) {
+          if (mfaRedirectPath?.startsWith(MFA_SETUP_PATH)) {
             return NextResponse.redirect(new URL(mfaRedirectPath, request.url));
           }
 

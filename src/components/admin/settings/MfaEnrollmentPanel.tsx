@@ -6,6 +6,10 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { readPwaInstallContext } from "@/lib/pwa/install";
+import {
+  clearUnverifiedTotpFactors,
+  mapMfaEnrollError,
+} from "@/lib/auth/mfa-enroll";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
@@ -71,13 +75,15 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
     setError(null);
     try {
       const supabase = createClient();
+      await clearUnverifiedTotpFactors(supabase);
+
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "CasaEmil Admin",
+        friendlyName: "Hospira Admin",
       });
 
       if (enrollError || !data?.totp) {
-        setError(t("enrollFailed"));
+        setError(mapMfaEnrollError(enrollError?.message, t));
         return;
       }
 
@@ -89,8 +95,10 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
         color: { dark: "#111111", light: "#ffffff" },
       });
       setQrDataUrl(dataUrl);
-    } catch {
-      setError(t("enrollFailed"));
+    } catch (e) {
+      setError(
+        mapMfaEnrollError(e instanceof Error ? e.message : undefined, t)
+      );
     } finally {
       setBusy(false);
     }

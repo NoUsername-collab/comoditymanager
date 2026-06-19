@@ -10,6 +10,8 @@ import {
   tenantMemberRoleToStaffRole,
 } from "@/lib/auth/tenant-staff";
 import { locationAccessibleForMemberRole } from "@/lib/auth/location-unlock";
+import { getRequestAdminPath } from "@/lib/auth/admin-path";
+import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
@@ -69,12 +71,17 @@ export async function requireStaff() {
     throw new Error("auth.tenant_member_required");
   }
 
-  const mfaRedirect = await resolveMfaRedirectPath(ctx.supabase, {
-    email: ctx.user.email,
-    memberRole: ctx.memberRole,
-  });
-  if (mfaRedirect) {
-    await redirect(mfaRedirect);
+  const adminPath = await getRequestAdminPath();
+  const onMfaExemptRoute = adminPath ? isMfaExemptAdminPath(adminPath) : false;
+
+  if (!onMfaExemptRoute) {
+    const mfaRedirect = await resolveMfaRedirectPath(ctx.supabase, {
+      email: ctx.user.email,
+      memberRole: ctx.memberRole,
+    });
+    if (mfaRedirect) {
+      await redirect(mfaRedirect);
+    }
   }
 
   return {

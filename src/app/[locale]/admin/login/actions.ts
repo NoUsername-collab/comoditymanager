@@ -16,6 +16,7 @@ import { buildTenantAdminUrl } from "@/lib/tenant/host";
 import { withTenantId } from "@/lib/tenant/scope";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
+import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { getTenantMemberRole } from "@/services/tenant-members";
 import { getTranslations } from "next-intl/server";
 
@@ -168,7 +169,7 @@ export async function loginAction(
 
   if (mfaState.kind === "needs_enrollment") {
     const enrollNext = encodeURIComponent(safeNext);
-    redirect(`/admin/security/mfa?next=${enrollNext}`);
+    redirect(`${MFA_SETUP_PATH}?next=${enrollNext}`);
   }
 
   if (mfaState.kind === "needs_challenge") {

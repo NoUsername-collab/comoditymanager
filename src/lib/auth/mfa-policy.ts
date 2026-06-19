@@ -1,11 +1,14 @@
+import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
 import type { TenantMemberRole } from "@/services/tenant-members";
+
+export { MFA_SETUP_PATH };
 
 /** Paths reachable before MFA enrollment or AAL2 step-up. */
 export const MFA_EXEMPT_ADMIN_PATHS = [
   "/admin/login",
   "/admin/security/mfa",
-  "/admin/settings/security",
+  MFA_SETUP_PATH,
 ] as const;
 
 export function isMfaExemptAdminPath(path: string): boolean {

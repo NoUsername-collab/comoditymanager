@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
 import type { TenantMemberRole } from "@/services/tenant-members";
 
@@ -21,7 +22,7 @@ export async function resolveMfaRedirectPath(
       : "/admin";
 
   if (mfaState.kind === "needs_enrollment") {
-    return `/admin/security/mfa?next=${encodeURIComponent(safeNext)}`;
+    return `${MFA_SETUP_PATH}?next=${encodeURIComponent(safeNext)}`;
   }
 
   if (mfaState.kind === "needs_challenge") {

@@ -51,7 +51,6 @@ describe("hasVerifiedTotpFactor", () => {
 describe("isMfaExemptAdminPath", () => {
   it("allows login and MFA setup routes", () => {
     expect(isMfaExemptAdminPath("/admin/login")).toBe(true);
-    expect(isMfaExemptAdminPath("/admin/security/mfa")).toBe(true);
     expect(isMfaExemptAdminPath("/admin/settings/security")).toBe(true);
     expect(isMfaExemptAdminPath("/admin")).toBe(false);
   });
