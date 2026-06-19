@@ -25,6 +25,7 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
+import { addDays, todayIso } from "@/lib/stay-dates";
 import { GanttPinnedSelectionChip } from "@/components/admin/gantt/GanttPinnedSelectionChip";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {

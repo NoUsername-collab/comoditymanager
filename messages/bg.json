@@ -3124,7 +3124,7 @@
       "undoneBadge": "Отменено",
       "checkoutEarlyDetail": "Ранно напускане",
       "checkoutEarlyDetailFee": "Ранно напускане · ориентировъчна такса {fee} RON",
-      "checkoutLateDetail": "Късен checkout",
+      "checkoutLateDetail": "Късен checkout"
     },
     "bookingActivity": {
       "title": "История на действията",

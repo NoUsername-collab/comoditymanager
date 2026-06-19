@@ -89,12 +89,14 @@ export function GanttUnassignedRow({
                   guestTotal={guestPartyTotal(b.num_adults, b.num_children)}
                   bookingId={b.id}
                   bookingCheckIn={b.check_in}
+                  bookingCheckOut={b.check_out}
                   dayCount={dayCount}
                   buildingColor="var(--pending-border)"
                   todayHighlight={stayTodayHighlight(b)}
                   occupancyPhase={occupancyPhase(b.check_in, b.check_out, today)}
                   roomIds={b.room_ids ?? []}
                   today={today}
+                  checkOutTime={checkOutTime}
                   popover={{
                     bookingId: b.id,
                     guestName: b.guest_name,
