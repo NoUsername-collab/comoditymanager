@@ -4,7 +4,10 @@ import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin
 import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import { shouldBlockCheckoutForUnpaid } from "@/domain/booking/checkout-readiness";
+import {
+  buildCheckoutActivityMetadata,
+  shouldBlockCheckoutForUnpaid,
+} from "@/domain/booking/checkout-readiness";
 import { operativeCheckInDateFromAt } from "@/domain/booking/operative-checkin";
 import { getCheckinByBookingId } from "@/services/checkin/queries";
 import { getCheckinSettings } from "@/services/checkin/settings";
@@ -35,7 +38,7 @@ import {
 } from "@/services/room-occupancy";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
-import { parseOperationalTimestamp } from "@/lib/operational-check";
+import { parseOperationalTimestamp, isoToDatetimeLocal } from "@/lib/operational-check";
 import { assertPostCheckoutEditAllowed, assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
 
 import { getBookingById } from "./queries";
@@ -220,16 +223,26 @@ export async function setBookingCheckOut(
 
   if (error) throw new Error(error.message);
 
+  const atLocal = isoToDatetimeLocal(ts);
+  const checkoutMeta = buildCheckoutActivityMetadata({
+    at: ts,
+    atLocal,
+    plannedCheckOut: booking.check_out,
+    settings,
+  });
+  const earlyDeparture = checkoutMeta.early_departure === true;
+
   await logAdminActivityFromSession({
     action: "booking.checkout.set",
     entityType: "booking",
     entityId: bookingId,
-    summary: `Check-out: ${booking.guest_name}`,
+    summary: earlyDeparture
+      ? `Check-out devreme: ${booking.guest_name}`
+      : `Check-out: ${booking.guest_name}`,
     undoable: true,
     metadata: {
-      at: ts,
+      ...checkoutMeta,
       actual_check_in_at: booking.actual_check_in_at,
-      planned_check_out: booking.check_out,
     },
   });
 }
@@ -305,6 +318,8 @@ export async function editBookingCheckOut(
     throw new Error("booking.checkout_before_checkin_not_allowed");
   }
 
+  const settings = await getCheckinSettings();
+
   const [user, { tenantId, supabase }] = await Promise.all([
     getAdminUser(),
     getTenantScope(),
@@ -320,13 +335,25 @@ export async function editBookingCheckOut(
 
   if (error) throw new Error(error.message);
 
+  const atLocal = isoToDatetimeLocal(ts);
+  const checkoutMeta = buildCheckoutActivityMetadata({
+    at: ts,
+    atLocal,
+    plannedCheckOut: booking.check_out,
+    settings,
+  });
+  const earlyDeparture = checkoutMeta.early_departure === true;
+
   await logAdminActivityFromSession({
     action: "booking.checkout.set",
     entityType: "booking",
     entityId: bookingId,
-    summary: `Check-out editat: ${booking.guest_name}`,
+    summary: earlyDeparture
+      ? `Check-out devreme editat: ${booking.guest_name}`
+      : `Check-out editat: ${booking.guest_name}`,
     undoable: true,
     metadata: {
+      ...checkoutMeta,
       previous_at: booking.actual_check_out_at,
       new_at: ts,
       actual_check_in_at: booking.actual_check_in_at,

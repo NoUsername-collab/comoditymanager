@@ -1,4 +1,5 @@
 import { isOperativeCheckInDay } from "@/domain/booking/operative-checkin";
+import { isEarlyDeparture } from "@/domain/booking/checkout-readiness";
 import {
   computeRoomCheckinProgress,
   shouldShowRoomCheckinProgress,
@@ -8,6 +9,25 @@ import { isIdentityStatusCritical } from "@/domain/guest/profile-data";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { stayNightProgress } from "@/domain/gantt/stay-progress";
+import { isoToDatetimeLocal } from "@/lib/operational-check";
+
+export type GanttDeparturePolicy = {
+  earlyCheckoutAllowed: boolean;
+  earlyCheckoutFee: number;
+  checkoutTimeUntil: string | null;
+};
+
+export function resolveGanttEarlyDeparture(args: {
+  actualCheckOutAt?: string | null;
+  plannedCheckOut: string;
+  checkoutTimeUntil: string | null;
+}): boolean {
+  if (!args.actualCheckOutAt?.trim()) return false;
+  const atLocal = isoToDatetimeLocal(args.actualCheckOutAt);
+  return isEarlyDeparture(atLocal, args.plannedCheckOut, {
+    checkout_time_until: args.checkoutTimeUntil,
+  });
+}
 
 const CHECKIN_SEG_MIN = 22;
 const CHECKIN_SEG_MAX = 36;

@@ -5,6 +5,8 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
+import { flagIcon, flagSeverity } from "@/domain/checkin/flags";
+import type { CheckinFlag } from "@/domain/checkin/types";
 import { formatGuestPartyDetail } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { CheckinModal } from "@/components/admin/checkin/CheckinModal";
@@ -46,6 +48,60 @@ function matchesQuestSearch(item: CheckInQuestItem, query: string): boolean {
     .join(" ")
     .toLowerCase();
   return haystack.includes(query);
+}
+
+function uniqueFlags(flags: CheckinFlag[]): CheckinFlag[] {
+  return [...new Set(flags)];
+}
+
+function QuestReadinessIssues({
+  item,
+  t,
+  tCheckIn,
+}: {
+  item: CheckInQuestItem;
+  t: ReturnType<typeof useTranslations<"admin.dashboard.checkInQuest">>;
+  tCheckIn: ReturnType<typeof useTranslations<"admin.checkIn">>;
+}) {
+  const { readiness } = item;
+  const flags = uniqueFlags(readiness.flags);
+
+  if (readiness.status === "ok") {
+    return (
+      <div className="checkin-quest__issues">
+        <span className="checkin-quest__issue checkin-quest__issue--ok">
+          {t("readyLabel")}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="checkin-quest__issues"
+      aria-label={
+        readiness.status === "blocked"
+          ? t("blockedCount", { count: flags.length })
+          : t("issuesTitle")
+      }
+    >
+      {flags.map((flag) => {
+        const severity = flagSeverity(flag);
+        return (
+          <span
+            key={flag}
+            className={`checkin-quest__issue checkin-quest__issue--${severity}`}
+            title={tCheckIn(`flag.${flag}`)}
+          >
+            <span className="checkin-quest__issue-icon" aria-hidden>
+              {flagIcon(flag)}
+            </span>
+            {tCheckIn(`flag.${flag}`)}
+          </span>
+        );
+      })}
+    </div>
+  );
 }
 
 export function CheckInMilestoneBoard({
@@ -237,7 +293,17 @@ export function CheckInMilestoneBoard({
           {displayed.map((item, index) => (
             <li key={item.bookingId} className="checkin-quest__step">
               <div className="checkin-quest__connector" aria-hidden />
-              <article className="checkin-quest__card">
+              <article
+                className={[
+                  "checkin-quest__card",
+                  item.readiness.status === "blocked" &&
+                    "checkin-quest__card--blocked",
+                  item.readiness.status === "warning" &&
+                    "checkin-quest__card--warning",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
                 <div className="checkin-quest__card-badge" aria-hidden>
                   {index + 1 + completedCount}
                 </div>
@@ -253,6 +319,7 @@ export function CheckInMilestoneBoard({
                   <p className="checkin-quest__dates">
                     {formatStayPeriod(item.checkIn, item.checkOut, locale, true)}
                   </p>
+                  <QuestReadinessIssues item={item} t={t} tCheckIn={tCheckIn} />
                 </div>
                 <div className="checkin-quest__card-actions">
                   <button

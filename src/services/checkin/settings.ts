@@ -28,6 +28,8 @@ const CHECKIN_SETTINGS_BASE_COLUMNS = [
   "late_checkout_fee",
   "early_checkin_allowed",
   "early_checkin_fee",
+  "early_checkout_allowed",
+  "early_checkout_fee",
   "fisa_property_address",
   "fisa_owner_cui",
   "fisa_tourism_license",
@@ -93,6 +95,8 @@ export const DEFAULT_CHECKIN_SETTINGS: CheckinSettings = {
   allow_post_checkout_edits: false,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
+  early_checkout_allowed: true,
+  early_checkout_fee: 0,
   checkin_key_rule: "always",
   checkin_ids_per_room: "one",
   checkin_ids_per_room_custom: null,
@@ -161,6 +165,11 @@ function mapRow(row: Record<string, unknown>): CheckinSettings {
         ? Boolean(row.early_checkin_allowed)
         : DEFAULT_CHECKIN_SETTINGS.early_checkin_allowed,
     early_checkin_fee: Number(row.early_checkin_fee) || 0,
+    early_checkout_allowed:
+      row.early_checkout_allowed != null
+        ? Boolean(row.early_checkout_allowed)
+        : DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
+    early_checkout_fee: Number(row.early_checkout_fee) || 0,
     checkin_key_rule:
       (row.checkin_key_rule as CheckinSettings["checkin_key_rule"]) ??
       DEFAULT_CHECKIN_SETTINGS.checkin_key_rule,
@@ -290,6 +299,10 @@ export async function updateCheckinSettings(
     update.early_checkin_allowed = input.early_checkin_allowed;
   if (input.early_checkin_fee != null)
     update.early_checkin_fee = input.early_checkin_fee;
+  if (input.early_checkout_allowed != null)
+    update.early_checkout_allowed = input.early_checkout_allowed;
+  if (input.early_checkout_fee != null)
+    update.early_checkout_fee = input.early_checkout_fee;
   if (input.checkin_key_rule != null)
     update.checkin_key_rule = input.checkin_key_rule;
   if (input.checkin_ids_per_room != null)

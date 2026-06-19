@@ -927,6 +927,16 @@
           "minPaymentPct": "Мин. % плащане",
           "walkinAllowed": "Walk-in разрешен",
           "walkinAllowedDesc": "Позволява настаняване без предварителна резервация",
+          "earlyCheckinAllowed": "Ранно настаняване разрешено",
+          "earlyCheckinAllowedDesc": "Рецепцията може да настани преди стандартния час",
+          "earlyCheckinFee": "Ориентировъчна такса ранно настаняване (RON)",
+          "earlyCheckoutAllowed": "Ранно напускане разрешено",
+          "earlyCheckoutAllowedDesc": "Рецепцията може да регистрира напускане преди планираната дата/час",
+          "earlyCheckoutFee": "Ориентировъчна такса ранно напускане (RON)",
+          "lateCheckoutAllowed": "Късен checkout разрешен",
+          "lateCheckoutAllowedDesc": "Бележка при напускане след стандартния час",
+          "lateCheckoutFee": "Ориентировъчна такса късен checkout (RON)",
+          "policyFeeHint": "Ориентировъчна сума за рецепция — без автоматично таксуване",
           "groupMode": "Групово настаняване",
           "groupModeDesc": "Как се обработва групово настаняване",
           "groupRep": "Само титуляр на резервацията",
@@ -2620,7 +2630,10 @@
         "checkedInTitle": "Check-in записан!",
         "allDoneTitle": "Перфектен ден на рецепцията!",
         "allDoneMessage": "Всички днешни пристигания са регистрирани. Браво!",
-        "noArrivalsToday": "Няма планирани пристигания днес — време за подготовка или нови заявки."
+        "noArrivalsToday": "Няма планирани пристигания днес — време за подготовка или нови заявки.",
+        "issuesTitle": "Проблеми при check-in",
+        "readyLabel": "Готов за check-in",
+        "blockedCount": "{count, plural, one {# блокиращ проблем} other {# блокиращи проблема}}"
       }
     },
     "stayEditor": {
@@ -2692,6 +2705,7 @@
         "group_partial": "Частична група",
         "checkout_blocked": "Напускането блокирано",
         "early_checkin": "Ранно настаняване",
+        "early_checkout": "Ранно напускане",
         "keys_blocked_no_id": "Ключовете са блокирани — липсва идентификация",
         "keys_blocked_unpaid": "Ключовете са блокирани — недостатъчно плащане"
       },
@@ -3105,7 +3119,10 @@
       "undoStateChanged": "Данните са се променили междувременно — отмяната не е безопасна.",
       "undoSuccessMessage": "Предишното състояние е възстановено.",
       "undoSuccessTitle": "Действието е отменено",
-      "undoneBadge": "Отменено"
+      "undoneBadge": "Отменено",
+      "checkoutEarlyDetail": "Ранно напускане",
+      "checkoutEarlyDetailFee": "Ранно напускане · ориентировъчна такса {fee} RON",
+      "checkoutLateDetail": "Късен checkout",
     },
     "bookingActivity": {
       "title": "История на действията",

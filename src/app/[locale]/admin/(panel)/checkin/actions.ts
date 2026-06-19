@@ -596,6 +596,7 @@ export async function updateCheckinSettingsAction(
       "checkin_deposit_amount",
       "late_checkout_fee",
       "early_checkin_fee",
+      "early_checkout_fee",
     ];
     for (const f of numFields) {
       const v = formData.get(f);
@@ -608,6 +609,7 @@ export async function updateCheckinSettingsAction(
       "late_checkout_allowed",
       "checkout_block_unpaid",
       "early_checkin_allowed",
+      "early_checkout_allowed",
       "allow_post_checkout_edits",
     ];
     for (const f of boolFields) {

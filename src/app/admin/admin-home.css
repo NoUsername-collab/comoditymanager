@@ -1162,13 +1162,31 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 0.65rem 0.85rem;
-  align-items: center;
+  align-items: start;
   padding: 0.65rem 0.75rem;
   border-radius: 0.65rem;
   border: 1px solid #e4e4e7;
   background: var(--admin-panel-bg, #fff);
   box-shadow: 0 2px 8px color-mix(in srgb, #000 4%, transparent);
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+}
+
+.checkin-quest__card--blocked {
+  border-color: #fca5a5;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #fef2f2 85%, var(--admin-panel-bg, #fff)),
+    var(--admin-panel-bg, #fff)
+  );
+}
+
+.checkin-quest__card--warning {
+  border-color: #fcd34d;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #fffbeb 80%, var(--admin-panel-bg, #fff)),
+    var(--admin-panel-bg, #fff)
+  );
 }
 
 .checkin-quest__card:hover {
@@ -1203,6 +1221,54 @@
   margin: 0.12rem 0 0;
   font-size: 0.72rem;
   color: #71717a;
+}
+
+.checkin-quest__issues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.45rem;
+}
+
+.checkin-quest__issue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.3;
+  border: 1px solid transparent;
+}
+
+.checkin-quest__issue-icon {
+  font-size: 0.68rem;
+  line-height: 1;
+}
+
+.checkin-quest__issue--error {
+  color: #991b1b;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.checkin-quest__issue--warning {
+  color: #92400e;
+  background: #fef3c7;
+  border-color: #fde68a;
+}
+
+.checkin-quest__issue--info {
+  color: #1e40af;
+  background: #dbeafe;
+  border-color: #bfdbfe;
+}
+
+.checkin-quest__issue--ok {
+  color: #047857;
+  background: #d1fae5;
+  border-color: #a7f3d0;
 }
 
 .checkin-quest__card-actions {

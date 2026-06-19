@@ -21,6 +21,10 @@ import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
+import {
+  DEFAULT_CHECKIN_SETTINGS,
+  getCheckinSettings,
+} from "@/services/checkin/settings";
 import { parseIso } from "@/lib/stay-dates";
 
 function toUrlSearchParams(params: Record<string, string | undefined>) {
@@ -173,6 +177,15 @@ export default async function AdminCalendarPage({
   const checkOutTime =
     settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
+  const checkinSettings = await getCheckinSettings().catch(
+    () => DEFAULT_CHECKIN_SETTINGS
+  );
+  const departurePolicy = {
+    earlyCheckoutAllowed: checkinSettings.early_checkout_allowed,
+    earlyCheckoutFee: checkinSettings.early_checkout_fee,
+    checkoutTimeUntil: checkinSettings.checkout_time_until ?? checkOutTime,
+  };
+
   const buildingById = new Map(activeBuildings.map((b) => [b.id, b]));
 
   const ganttRoomsAll = sortRoomsLikeLocationStructure(
@@ -309,6 +322,7 @@ export default async function AdminCalendarPage({
           }))}
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
+          departurePolicy={departurePolicy}
           filter={filter}
           featureFilter={feat}
           layerFilter={layer}

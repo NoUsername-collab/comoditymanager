@@ -298,6 +298,96 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
             <span className="checkin-toggle__slider" />
           </label>
         </SettingRow>
+
+        <SettingRow
+          label={t("earlyCheckinAllowed")}
+          description={t("earlyCheckinAllowedDesc")}
+        >
+          <label className="checkin-toggle">
+            <input
+              type="checkbox"
+              checked={settings.early_checkin_allowed}
+              onChange={(e) =>
+                persist({ early_checkin_allowed: e.target.checked })
+              }
+            />
+            <span className="checkin-toggle__slider" />
+          </label>
+        </SettingRow>
+
+        {settings.early_checkin_allowed && (
+          <SettingRow label={t("earlyCheckinFee")} description={t("policyFeeHint")}>
+            <input
+              type="number"
+              className="checkin-field__input"
+              min={0}
+              value={settings.early_checkin_fee}
+              onChange={(e) =>
+                persist({ early_checkin_fee: Number(e.target.value) || 0 })
+              }
+            />
+          </SettingRow>
+        )}
+
+        <SettingRow
+          label={t("earlyCheckoutAllowed")}
+          description={t("earlyCheckoutAllowedDesc")}
+        >
+          <label className="checkin-toggle">
+            <input
+              type="checkbox"
+              checked={settings.early_checkout_allowed}
+              onChange={(e) =>
+                persist({ early_checkout_allowed: e.target.checked })
+              }
+            />
+            <span className="checkin-toggle__slider" />
+          </label>
+        </SettingRow>
+
+        {settings.early_checkout_allowed && (
+          <SettingRow label={t("earlyCheckoutFee")} description={t("policyFeeHint")}>
+            <input
+              type="number"
+              className="checkin-field__input"
+              min={0}
+              value={settings.early_checkout_fee}
+              onChange={(e) =>
+                persist({ early_checkout_fee: Number(e.target.value) || 0 })
+              }
+            />
+          </SettingRow>
+        )}
+
+        <SettingRow
+          label={t("lateCheckoutAllowed")}
+          description={t("lateCheckoutAllowedDesc")}
+        >
+          <label className="checkin-toggle">
+            <input
+              type="checkbox"
+              checked={settings.late_checkout_allowed}
+              onChange={(e) =>
+                persist({ late_checkout_allowed: e.target.checked })
+              }
+            />
+            <span className="checkin-toggle__slider" />
+          </label>
+        </SettingRow>
+
+        {settings.late_checkout_allowed && (
+          <SettingRow label={t("lateCheckoutFee")} description={t("policyFeeHint")}>
+            <input
+              type="number"
+              className="checkin-field__input"
+              min={0}
+              value={settings.late_checkout_fee}
+              onChange={(e) =>
+                persist({ late_checkout_fee: Number(e.target.value) || 0 })
+              }
+            />
+          </SettingRow>
+        )}
       </div>
 
       {/* ── Chei & camere ───────────────────────────────────── */}

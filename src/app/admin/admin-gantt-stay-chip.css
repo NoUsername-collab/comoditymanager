@@ -342,7 +342,11 @@
 }
 
 .gantt-stay--chip .gantt-stay__phase-badge {
+  position: relative;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
   border-radius: 0.2rem;
   padding: 0.1rem 0.28rem;
   font-size: 0.5rem;
@@ -350,10 +354,63 @@
   letter-spacing: 0.06em;
   line-height: 1;
   text-transform: uppercase;
+  background: color-mix(in srgb, var(--stay-text, currentColor) 12%, transparent) !important;
+  color: color-mix(in srgb, var(--stay-text, currentColor) 78%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--stay-border) 35%, transparent);
+  box-shadow: none;
+}
+
+.gantt-stay--chip .gantt-stay__phase-badge--ready {
   background: color-mix(in srgb, #10b981 22%, transparent) !important;
-  color: color-mix(in srgb, #047857 90%, white) !important;
-  border: 1px solid color-mix(in srgb, #10b981 40%, transparent);
-  box-shadow: 0 0 8px color-mix(in srgb, #10b981 25%, transparent);
+  color: color-mix(in srgb, #047857 92%, white) !important;
+  border: 1px solid color-mix(in srgb, #10b981 45%, transparent);
+  box-shadow:
+    0 0 10px color-mix(in srgb, #22c55e 45%, transparent),
+    inset 0 0 8px color-mix(in srgb, #86efac 25%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__phase-gem {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #bbf7d0, #16a34a 55%, #047857);
+  box-shadow:
+    0 0 6px #22c55e,
+    0 0 12px color-mix(in srgb, #22c55e 55%, transparent);
+  animation: gantt-phase-gem-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gantt-phase-gem-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.88;
+    transform: scale(1.08);
+  }
+}
+
+.gantt-stay--chip .gantt-stay__micro-dot--early-out,
+.gantt-stay--chip .gantt-stay__today-icon--early-out {
+  color: #b91c1c !important;
+  background: color-mix(in srgb, #ef4444 24%, transparent) !important;
+  box-shadow: 0 0 8px color-mix(in srgb, #ef4444 35%, transparent);
+}
+
+.gantt-stay--chip .gantt-stay__policy-note {
+  display: block;
+  margin-top: 0.12rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: color-mix(in srgb, var(--stay-text, currentColor) 72%, transparent);
+  opacity: 0.92;
 }
 
 .gantt-stay--chip .gantt-stay__today-icon {

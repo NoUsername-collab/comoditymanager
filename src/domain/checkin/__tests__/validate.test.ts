@@ -27,6 +27,8 @@ const defaultSettings: CheckinSettings = {
   late_checkout_fee: 0,
   early_checkin_allowed: true,
   early_checkin_fee: 0,
+  early_checkout_allowed: true,
+  early_checkout_fee: 0,
   checkin_key_rule: "always",
   checkin_ids_per_room: "one",
   checkin_ids_per_room_custom: null,

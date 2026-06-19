@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  isEarlyDeparture,
+  isEarlyDepartureDate,
+  isEarlyDepartureTime,
   isLateCheckout,
   isUnpaidForCheckout,
   shouldBlockCheckoutForUnpaid,
@@ -44,6 +47,31 @@ describe("isLateCheckout", () => {
     ).toBe(true);
     expect(
       isLateCheckout("2026-06-11T11:30", { checkout_time_until: "12:00" })
+    ).toBe(false);
+  });
+});
+
+describe("isEarlyDeparture", () => {
+  const settings = { checkout_time_until: "12:00" };
+
+  it("detects departure before planned checkout date", () => {
+    expect(
+      isEarlyDepartureDate("2026-06-09T10:00", "2026-06-11")
+    ).toBe(true);
+    expect(isEarlyDeparture("2026-06-09T10:00", "2026-06-11", settings)).toBe(
+      true
+    );
+  });
+
+  it("detects departure before standard hour on checkout day", () => {
+    expect(
+      isEarlyDepartureTime("2026-06-11T09:30", "2026-06-11", settings)
+    ).toBe(true);
+    expect(
+      isEarlyDeparture("2026-06-11T09:30", "2026-06-11", settings)
+    ).toBe(true);
+    expect(
+      isEarlyDeparture("2026-06-11T12:00", "2026-06-11", settings)
     ).toBe(false);
   });
 });

@@ -28,6 +28,9 @@ type Props = {
   showUnpaid?: boolean;
   showMissingIdentity?: boolean;
   keysMicroLabel?: string | null;
+  checkinReady?: boolean;
+  earlyDeparture?: boolean;
+  earlyDepartureNote?: string | null;
 };
 
 function semanticStayVars(
@@ -109,6 +112,9 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   showUnpaid = false,
   showMissingIdentity = false,
   keysMicroLabel = null,
+  checkinReady = false,
+  earlyDeparture = false,
+  earlyDepartureNote = null,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
@@ -175,7 +181,8 @@ export const GanttBookingBar = memo(function GanttBookingBar({
             keysMicroLabel ||
             guestTotal > 0 ||
             todayHighlight === "arrival" ||
-            todayHighlight === "departure") && (
+            todayHighlight === "departure" ||
+            earlyDeparture) && (
             <span className="gantt-stay__micro" aria-hidden>
               {keysMicroLabel ? (
                 <span className="gantt-stay__micro-keys" title={keysMicroLabel}>
@@ -185,8 +192,18 @@ export const GanttBookingBar = memo(function GanttBookingBar({
               {todayHighlight === "arrival" ? (
                 <span className="gantt-stay__micro-dot gantt-stay__micro-dot--in">↓</span>
               ) : null}
-              {todayHighlight === "departure" ? (
-                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--out">↑</span>
+              {(todayHighlight === "departure" || earlyDeparture) ? (
+                <span
+                  className={[
+                    "gantt-stay__micro-dot gantt-stay__micro-dot--out",
+                    earlyDeparture && "gantt-stay__micro-dot--early-out",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  title={earlyDepartureNote ?? undefined}
+                >
+                  ↑
+                </span>
               ) : null}
               {showUnpaid ? (
                 <span className="gantt-stay__micro-dot gantt-stay__micro-dot--pay">$</span>
@@ -203,6 +220,8 @@ export const GanttBookingBar = memo(function GanttBookingBar({
 
         {(showAlerts ||
           todayHighlight ||
+          earlyDeparture ||
+          earlyDepartureNote ||
           (occupancyPhase === "active" && !isCerere) ||
           guestTotal > 0) && (
           <span className="gantt-stay__details">
@@ -212,8 +231,22 @@ export const GanttBookingBar = memo(function GanttBookingBar({
                     ↓
                   </span>
                 )}
-                {todayHighlight === "departure" && (
-                  <span className="gantt-stay__today-icon" aria-hidden title="Plecare azi">
+                {(todayHighlight === "departure" || earlyDeparture) && (
+                  <span
+                    className={[
+                      "gantt-stay__today-icon",
+                      earlyDeparture && "gantt-stay__today-icon--early-out",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    aria-hidden
+                    title={
+                      earlyDepartureNote ??
+                      (todayHighlight === "departure"
+                        ? tGantt("stayCard.departureToday")
+                        : tGantt("stayCard.earlyDepartureRecorded"))
+                    }
+                  >
                     ↑
                   </span>
                 )}
@@ -239,7 +272,27 @@ export const GanttBookingBar = memo(function GanttBookingBar({
                 )}
                 <span className="gantt-stay__detail-badges">
                   {occupancyPhase === "active" && !isCerere && (
-                    <span className="gantt-stay__phase-badge">IN</span>
+                    <span
+                      className={[
+                        "gantt-stay__phase-badge",
+                        checkinReady && "gantt-stay__phase-badge--ready",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                      title={
+                        checkinReady
+                          ? tGantt("stayCard.milestoneDone")
+                          : tGantt("stayCard.milestonePending")
+                      }
+                    >
+                      {checkinReady ? (
+                        <span
+                          className="gantt-stay__phase-gem"
+                          aria-hidden
+                        />
+                      ) : null}
+                      IN
+                    </span>
                   )}
                   {guestTotal > 0 && (
                     <span
@@ -251,6 +304,11 @@ export const GanttBookingBar = memo(function GanttBookingBar({
                   )}
                 </span>
               </span>
+              {earlyDepartureNote ? (
+                <span className="gantt-stay__policy-note" title={earlyDepartureNote}>
+                  {earlyDepartureNote}
+                </span>
+              ) : null}
           </span>
         )}
       </span>

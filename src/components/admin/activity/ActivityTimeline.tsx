@@ -144,6 +144,27 @@ export function ActivityTimeline({
               </p>
               <p className="mt-1.5 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-xs text-zinc-500">
                 <span>{actorLabel(entry)}</span>
+                {entry.action === "booking.checkout.set" &&
+                  entry.metadata?.early_departure === true && (
+                    <>
+                      <span aria-hidden>·</span>
+                      <span className="text-red-700">
+                        {Number(entry.metadata?.early_checkout_fee) > 0
+                          ? t("checkoutEarlyDetailFee", {
+                              fee: String(entry.metadata?.early_checkout_fee),
+                            })
+                          : t("checkoutEarlyDetail")}
+                      </span>
+                    </>
+                  )}
+                {entry.action === "booking.checkout.set" &&
+                  entry.metadata?.late_departure === true &&
+                  entry.metadata?.early_departure !== true && (
+                    <>
+                      <span aria-hidden>·</span>
+                      <span className="text-amber-700">{t("checkoutLateDetail")}</span>
+                    </>
+                  )}
                 {entry.entity_type === "booking" && entry.entity_id && (
                   <span className="inline-flex flex-wrap items-center gap-x-1">
                     <span aria-hidden>·</span>

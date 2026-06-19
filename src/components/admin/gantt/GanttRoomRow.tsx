@@ -16,6 +16,7 @@ import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
 import { stayTodayHighlight } from "@/domain/gantt/today-activity";
+import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { guestPartyTotal } from "@/lib/guest-party";
 import { nightOccupied } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
@@ -67,6 +68,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onCtrlDragEnd,
   today,
   dayGridOptions,
+  departurePolicy,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -87,6 +89,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
   dayGridOptions?: GanttDayGridOptions;
+  departurePolicy?: GanttDeparturePolicy;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
@@ -265,6 +268,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 guestTotal={guests}
                 bookingId={b.id}
                 bookingCheckIn={b.check_in}
+                bookingCheckOut={b.check_out}
                 dayCount={dayCount}
                 compactLabel={compactLabel}
                 roomNames={b.room_names}
@@ -288,6 +292,8 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 actualCheckInAt={b.actual_check_in_at}
                 actualCheckOutAt={b.actual_check_out_at}
                 today={today}
+                checkOutTime={checkOutTime}
+                departurePolicy={departurePolicy}
                 popover={{
                   bookingId: b.id,
                   guestName: b.guest_name,

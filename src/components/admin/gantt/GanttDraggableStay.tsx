@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "@/i18n/navigation";
@@ -18,8 +18,10 @@ import {
   isGanttBarCompact,
   isGanttStayMissingIdentity,
   isGanttStayUnpaid,
+  resolveGanttEarlyDeparture,
   resolveGanttStayTimeline,
   shouldShowGanttStayAlerts,
+  type GanttDeparturePolicy,
 } from "@/domain/gantt/stay-card-display";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
@@ -61,6 +63,7 @@ type Props = {
   guestTotal: number;
   bookingId: string;
   bookingCheckIn: string;
+  bookingCheckOut: string;
   dayCount: number;
   compactLabel?: string;
   roomNames?: string[];
@@ -81,6 +84,8 @@ type Props = {
   moveRoomDraft?: MoveRoomDraft | null;
   onMoveRoom?: () => void;
   today?: string;
+  checkOutTime?: string;
+  departurePolicy?: GanttDeparturePolicy;
 };
 
 export const GanttDraggableStay = memo(function GanttDraggableStay({
@@ -91,6 +96,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   guestTotal,
   bookingId,
   bookingCheckIn,
+  bookingCheckOut,
   dayCount,
   compactLabel,
   roomNames = [],
@@ -111,8 +117,11 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   moveRoomDraft,
   onMoveRoom,
   today,
+  checkOutTime = "12:00",
+  departurePolicy,
 }: Props) {
   const locale = useLocale();
+  const tGantt = useTranslations("admin.gantt");
   const router = useRouter();
   const touch = useIsTouchDevice();
   const { openMenu } = useGanttContextMenu();
@@ -185,6 +194,65 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     keysProgress.isMultiRoom &&
     keysProgress.checked > 0 &&
     keysProgress.isPartial;
+
+  const checkoutUntil =
+    departurePolicy?.checkoutTimeUntil ?? checkOutTime ?? "12:00";
+  const earlyDeparture = resolveGanttEarlyDeparture({
+    actualCheckOutAt,
+    plannedCheckOut: bookingCheckOut,
+    checkoutTimeUntil: checkoutUntil,
+  });
+
+  const earlyDepartureNote = useMemo(() => {
+    const policy = departurePolicy ?? {
+      earlyCheckoutAllowed: true,
+      earlyCheckoutFee: 0,
+      checkoutTimeUntil: checkoutUntil,
+    };
+
+    if (earlyDeparture) {
+      if (!policy.earlyCheckoutAllowed) {
+        return tGantt("stayCard.earlyDepartureRecordedBlocked");
+      }
+      if (policy.earlyCheckoutFee > 0) {
+        return tGantt("stayCard.earlyDepartureRecordedFee", {
+          fee: policy.earlyCheckoutFee,
+        });
+      }
+      return tGantt("stayCard.earlyDepartureRecorded");
+    }
+
+    if (
+      todayHighlight === "departure" &&
+      !actualCheckOutAt &&
+      !isCerere
+    ) {
+      if (!policy.earlyCheckoutAllowed) {
+        return tGantt("stayCard.earlyDeparturePolicyBlocked", {
+          until: checkoutUntil,
+        });
+      }
+      if (policy.earlyCheckoutFee > 0) {
+        return tGantt("stayCard.earlyDeparturePolicyFee", {
+          fee: policy.earlyCheckoutFee,
+          until: checkoutUntil,
+        });
+      }
+      return tGantt("stayCard.earlyDeparturePolicy", { until: checkoutUntil });
+    }
+
+    return null;
+  }, [
+    actualCheckOutAt,
+    checkoutUntil,
+    departurePolicy,
+    earlyDeparture,
+    isCerere,
+    tGantt,
+    todayHighlight,
+  ]);
+
+  const checkinReady = stayTimeline?.milestoneReached ?? false;
 
   const title = [
     popover.guestName,
@@ -478,6 +546,9 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
               ? `${keysProgress.checked}/${keysProgress.total}`
               : null
           }
+          checkinReady={checkinReady}
+          earlyDeparture={earlyDeparture}
+          earlyDepartureNote={earlyDepartureNote}
         />
       </div>
       {showPopover && (

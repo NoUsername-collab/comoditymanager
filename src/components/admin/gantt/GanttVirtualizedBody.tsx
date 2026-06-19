@@ -19,6 +19,7 @@ import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
 import type { GanttDayGridOptions } from "@/components/admin/gantt/GanttGridHelpers";
+import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarker";
 import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
@@ -155,6 +156,7 @@ type GanttBodyProps = {
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
   dayGridOptions?: GanttDayGridOptions;
+  departurePolicy?: GanttDeparturePolicy;
   emptyMessage?: string;
   /** Inner .gantt-scroll scroll — window virtualizer mis-measures on compact mobile */
   disableVirtualization?: boolean;
@@ -220,6 +222,7 @@ function GanttTbodyRows({
   today,
   dayGridOptions,
   emptyMessage,
+  departurePolicy,
 }: GanttTbodyRowsProps) {
   return (
     <>
@@ -270,6 +273,7 @@ function GanttTbodyRows({
               onCtrlDragEnd={onCtrlDragEnd}
               today={today}
               dayGridOptions={dayGridOptions}
+              departurePolicy={departurePolicy}
             />
           </Fragment>
         );

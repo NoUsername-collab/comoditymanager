@@ -52,6 +52,7 @@ export type CheckinFlag =
   | "group_partial"
   | "checkout_blocked"
   | "early_checkin"
+  | "early_checkout"
   | "keys_blocked_no_id"
   | "keys_blocked_unpaid";
 
@@ -138,6 +139,9 @@ export interface CheckinSettings {
   allow_post_checkout_edits: boolean;
   early_checkin_allowed: boolean;
   early_checkin_fee: number;
+  /** Plecare devreme — înainte de data/ora planificată de check-out. */
+  early_checkout_allowed: boolean;
+  early_checkout_fee: number;
   /** Regula de distribuire chei la check-in. */
   checkin_key_rule: CheckinKeyRule;
   /** Câte persoane trebuie identificate per cameră. */

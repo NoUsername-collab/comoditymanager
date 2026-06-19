@@ -15,6 +15,7 @@ import {
   loadBookingCheckoutPanelAction,
 } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import {
+  isEarlyDeparture,
   isLateCheckout,
   shouldBlockCheckoutForUnpaid,
 } from "@/domain/booking/checkout-readiness";
@@ -139,6 +140,13 @@ export function BookingCheckoutPanel({
     });
   }, [atLocal, data, isEdit]);
 
+  const earlyNote = useMemo(() => {
+    if (!data?.plannedCheckOut || isEdit) return false;
+    return isEarlyDeparture(atLocal, data.plannedCheckOut, {
+      checkout_time_until: data.checkoutTimeUntil,
+    });
+  }, [atLocal, data, isEdit]);
+
   const paymentLabel = useMemo(() => {
     if (!data?.paymentStatus) return t("paymentUnknown");
     if (data.paymentStatus === "paid") return t("paymentPaid");
@@ -240,6 +248,21 @@ export function BookingCheckoutPanel({
         {!isEdit && data && !paymentBlocked && data.paymentStatus !== "paid" ? (
           <p className="booking-checkout-panel__alert booking-checkout-panel__alert--warn">
             {paymentLabel}
+          </p>
+        ) : null}
+
+        {earlyNote ? (
+          <p className="booking-checkout-panel__alert booking-checkout-panel__alert--early">
+            {data?.earlyCheckoutAllowed === false
+              ? t("earlyNotAllowed", {
+                  until: data?.checkoutTimeUntil ?? "",
+                })
+              : (data?.earlyCheckoutFee ?? 0) > 0
+                ? t("earlyNoteFee", {
+                    until: data?.checkoutTimeUntil ?? "",
+                    fee: data?.earlyCheckoutFee ?? 0,
+                  })
+                : t("earlyNote", { until: data?.checkoutTimeUntil ?? "" })}
           </p>
         ) : null}
 

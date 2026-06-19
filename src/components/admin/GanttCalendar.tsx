@@ -46,7 +46,7 @@ import {
   type GanttOpsPickerMode,
 } from "@/components/admin/gantt/GanttOpsPickerPanel";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
-import { addDays, todayIso } from "@/lib/stay-dates";
+import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { useGanttCalendarNavigation } from "@/hooks/useGanttCalendarNavigation";
 import { GanttCompactToolbar } from "@/components/admin/gantt/GanttCompactToolbar";
 import { GanttFiltersPanel } from "@/components/admin/gantt/GanttFiltersPanel";
@@ -123,6 +123,7 @@ export function GanttCalendar({
   arrivalsCount = 0,
   departuresCount = 0,
   cleanCount = 0,
+  departurePolicy,
 }: {
   viewRange: GanttViewRange;
   rooms: GanttRoom[];
@@ -145,6 +146,7 @@ export function GanttCalendar({
   arrivalsCount?: number;
   departuresCount?: number;
   cleanCount?: number;
+  departurePolicy?: GanttDeparturePolicy;
 }) {
   const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
@@ -746,6 +748,7 @@ export function GanttCalendar({
             onCtrlDragEnd={handleCtrlDragEnd}
             today={effectiveToday}
             dayGridOptions={dayGridOptions}
+            departurePolicy={departurePolicy}
             disableVirtualization={compactChrome}
             emptyMessage={
               filter !== "all"

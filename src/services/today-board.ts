@@ -4,9 +4,19 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
-import type { GuestFlagLevel } from "@/domain/guest/types";
+import {
+  assessPendingCheckinReadiness,
+  currentHourLocal,
+  snapshotFromQuestItem,
+  type PendingCheckinReadiness,
+} from "@/domain/checkin/pending-readiness";
+import type { PaymentStatus } from "@/domain/checkin/types";
+import type { GuestFlagLevel, GuestIdentityStatus } from "@/domain/guest/types";
 import type { BookingRow } from "@/services/bookings";
-import { todayIso } from "@/lib/stay-dates";
+import {
+  DEFAULT_CHECKIN_SETTINGS,
+  getCheckinSettings,
+} from "@/services/checkin";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 export type RoomToClean = {
@@ -26,12 +36,16 @@ export type CheckInQuestItem = {
   guestLabel: string;
   guestPhone: string | null;
   guestEmail: string;
+  guestIdentityStatus: GuestIdentityStatus | null;
+  paymentStatus: PaymentStatus | null;
+  paymentAmountPaid: number | null;
   totalPrice: number;
   roomNames: string[];
   checkIn: string;
   checkOut: string;
   numAdults: number;
   numChildren: number;
+  readiness: PendingCheckinReadiness;
 };
 
 export type TodayBoard = {
@@ -105,6 +119,71 @@ function mapBookingRow(b: {
     actual_check_in_by: b.actual_check_in_by ?? null,
     actual_check_out_by: null,
   };
+}
+
+type CheckinPaymentLite = {
+  payment_status: PaymentStatus;
+  payment_amount_paid: number;
+};
+
+async function loadGuestIdentityStatuses(
+  supabase: ReturnType<typeof createPublicAdminClient>,
+  tenantId: string,
+  guestIds: string[],
+): Promise<Map<string, GuestIdentityStatus>> {
+  const map = new Map<string, GuestIdentityStatus>();
+  if (!guestIds.length) return map;
+
+  const { data, error } = await supabase
+    .from("guests")
+    .select("id, identity_status")
+    .eq("tenant_id", tenantId)
+    .in("id", guestIds);
+
+  if (error) throw new Error(error.message);
+
+  for (const row of data ?? []) {
+    map.set(
+      row.id as string,
+      (row.identity_status as GuestIdentityStatus | null) ?? "draft",
+    );
+  }
+
+  return map;
+}
+
+async function loadLatestCheckinPayments(
+  supabase: ReturnType<typeof createPublicAdminClient>,
+  tenantId: string,
+  bookingIds: string[],
+): Promise<Map<string, CheckinPaymentLite>> {
+  const map = new Map<string, CheckinPaymentLite>();
+  if (!bookingIds.length) return map;
+
+  const { data, error } = await supabase
+    .from("checkins")
+    .select("booking_id, payment_status, payment_amount_paid, created_at")
+    .eq("tenant_id", tenantId)
+    .in("booking_id", bookingIds)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    if (/checkins|relation.*does not exist/i.test(error.message)) {
+      return map;
+    }
+    throw new Error(error.message);
+  }
+
+  for (const row of data ?? []) {
+    const bookingId = row.booking_id as string;
+    if (map.has(bookingId)) continue;
+    map.set(bookingId, {
+      payment_status: row.payment_status as PaymentStatus,
+      payment_amount_paid: Number(row.payment_amount_paid ?? 0),
+    });
+  }
+
+  return map;
 }
 
 async function loadTodayBoardImpl(
@@ -203,12 +282,38 @@ async function loadTodayBoardImpl(
   const pendingCheckIns: CheckInQuestItem[] = [];
   let completedCheckInsToday = 0;
 
-  for (const row of arrivals) {
-    if (row.actual_check_in_at) {
-      completedCheckInsToday += 1;
-      continue;
-    }
-    pendingCheckIns.push({
+  const pendingArrivals = arrivals.filter((row) => !row.actual_check_in_at);
+  completedCheckInsToday = arrivals.length - pendingArrivals.length;
+
+  const guestIds = [
+    ...new Set(
+      pendingArrivals
+        .map((row) => row.guest_id)
+        .filter(Boolean) as string[],
+    ),
+  ];
+  const pendingBookingIds = pendingArrivals.map((row) => row.id);
+
+  const [identityByGuest, paymentByBooking, checkinSettings] = await Promise.all([
+    loadGuestIdentityStatuses(supabase, tenantId, guestIds),
+    loadLatestCheckinPayments(supabase, tenantId, pendingBookingIds),
+    getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+  ]);
+
+  const readinessNow = {
+    today,
+    currentHour: currentHourLocal(),
+  };
+
+  for (const row of pendingArrivals) {
+    const guestIdentityStatus = row.guest_id
+      ? identityByGuest.get(row.guest_id) ?? "draft"
+      : "draft";
+    const payment = paymentByBooking.get(row.id);
+    const paymentStatus = payment?.payment_status ?? null;
+    const paymentAmountPaid = payment?.payment_amount_paid ?? null;
+
+    const baseItem = {
       bookingId: row.id,
       guestName: row.guest_name,
       guestLastName: row.guest_last_name,
@@ -216,16 +321,28 @@ async function loadTodayBoardImpl(
       guestLabel: formatGuestGanttLabel(
         row.guest_last_name,
         row.guest_first_name,
-        row.guest_name
+        row.guest_name,
       ),
       guestPhone: row.guest_phone,
       guestEmail: row.guest_email,
+      guestIdentityStatus,
+      paymentStatus,
+      paymentAmountPaid,
       totalPrice: row.total_price ?? 0,
       roomNames: row.room_names,
       checkIn: row.check_in,
       checkOut: row.check_out,
       numAdults: row.num_adults,
       numChildren: row.num_children,
+    };
+
+    pendingCheckIns.push({
+      ...baseItem,
+      readiness: assessPendingCheckinReadiness(
+        snapshotFromQuestItem(baseItem),
+        checkinSettings,
+        readinessNow,
+      ),
     });
   }
 

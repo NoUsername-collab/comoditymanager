@@ -78,6 +78,12 @@
   color: #1e40af;
 }
 
+.booking-checkout-panel__alert--early {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .booking-checkout-panel__alert--error {
   border: 1px solid #fecaca;
   background: #fef2f2;

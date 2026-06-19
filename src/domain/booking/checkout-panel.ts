@@ -15,6 +15,10 @@ export type BookingCheckoutPanelData = {
   paymentAmountPaid: number;
   checkoutBlockUnpaid: boolean;
   checkoutTimeUntil: string | null;
+  earlyCheckoutAllowed: boolean;
+  earlyCheckoutFee: number;
+  lateCheckoutAllowed: boolean;
+  lateCheckoutFee: number;
   existingReviewStars: number | null;
   existingReviewPolarity: GuestStayReviewPolarity | null;
   existingReviewIntensity: number | null;
