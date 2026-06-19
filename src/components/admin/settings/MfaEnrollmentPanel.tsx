@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { readPwaInstallContext } from "@/lib/pwa/install";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
@@ -24,6 +25,17 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [code, setCode] = useState("");
+  const [pwaInstalled, setPwaInstalled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [secretCopied, setSecretCopied] = useState(false);
+
+  useEffect(() => {
+    const ctx = readPwaInstallContext();
+    setPwaInstalled(ctx.installed);
+    setIsMobile(ctx.isMobile);
+  }, []);
+
+  const preferManualSetup = pwaInstalled || isMobile;
 
   const refreshStatus = useCallback(async () => {
     setLoading(true);
@@ -141,6 +153,17 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
     }
   }, [mandatory, refreshStatus, t]);
 
+  const handleCopySecret = useCallback(async () => {
+    if (!secret) return;
+    try {
+      await navigator.clipboard.writeText(secret);
+      setSecretCopied(true);
+      window.setTimeout(() => setSecretCopied(false), 2000);
+    } catch {
+      setError(t("copySecretFailed"));
+    }
+  }, [secret, t]);
+
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-sm text-zinc-600">
@@ -172,6 +195,9 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
 
   return (
     <div className="space-y-4">
+      <p className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-950">
+        {t("webPwaExplain")}
+      </p>
       <p className="text-sm text-zinc-600">
         {mandatory ? t("mandatoryLead") : t("optionalLead")}
       </p>
@@ -187,22 +213,62 @@ export function MfaEnrollmentPanel({ mandatory, next = "/admin" }: Props) {
         </button>
       ) : (
         <div className="space-y-4">
-          <div>
-            <p className="text-sm font-medium text-zinc-900">{t("scanQr")}</p>
-            {qrDataUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
+          {preferManualSetup ? (
+            <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-800">
+              <p className="font-medium text-zinc-900">{t("mobileSetupTitle")}</p>
+              <ol className="mt-2 list-decimal space-y-1 pl-4">
+                <li>{t("mobileSetupStep1")}</li>
+                <li>{t("mobileSetupStep2")}</li>
+                <li>{t("mobileSetupStep3")}</li>
+              </ol>
+            </div>
+          ) : null}
+
+          {secret ? (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-zinc-900">
+                {preferManualSetup ? t("manualKeyLead") : t("manualSecret")}
+              </p>
+              <div className="flex flex-wrap items-start gap-2">
+                <code className="min-w-0 flex-1 break-all rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-800">
+                  {secret}
+                </code>
+                <button
+                  type="button"
+                  className="shrink-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
+                  onClick={() => void handleCopySecret()}
+                >
+                  {secretCopied ? t("copySecretDone") : t("copySecret")}
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          {!preferManualSetup && qrDataUrl ? (
+            <div>
+              <p className="text-sm font-medium text-zinc-900">{t("scanQr")}</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={qrDataUrl}
                 alt={t("qrAlt")}
                 className="mt-2 rounded-lg border border-zinc-200 bg-white p-2"
               />
-            ) : null}
-            {secret ? (
-              <p className="mt-2 break-all font-mono text-xs text-zinc-600">
-                {t("manualSecret")}: {secret}
-              </p>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
+
+          {preferManualSetup && qrDataUrl ? (
+            <details className="rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm">
+              <summary className="cursor-pointer font-medium text-zinc-700">
+                {t("qrDesktopOnly")}
+              </summary>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={qrDataUrl}
+                alt={t("qrAlt")}
+                className="mt-2 rounded-lg border border-zinc-200 bg-white p-2"
+              />
+            </details>
+          ) : null}
           <label className="block text-sm">
             {t("codeLabel")}
             <AdminInput
