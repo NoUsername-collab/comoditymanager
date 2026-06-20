@@ -1,10 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { CheckinSettingsPanel } from "@/components/admin/checkin/CheckinSettingsPanel";
+import { TeamPermissionsPanel } from "@/components/admin/settings/TeamPermissionsPanel";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
-import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
 import {
   buildSettingsAlerts,
   loadSettingsStaffContext,
@@ -13,19 +12,18 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function SettingsCheckinPage({
+export default async function SettingsTeamPermissionsPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const [t, params, ctx, checkinSettings] = await Promise.all([
+  const [t, params, ctx] = await Promise.all([
     getTranslations("admin.pages.settings"),
     searchParams,
     loadSettingsStaffContext(),
-    getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
   ]);
 
-  if (ctx.staff.role !== "admin") {
+  if (ctx.staff.memberRole !== "owner") {
     await redirect("/admin/settings?access=role");
   }
 
@@ -36,10 +34,15 @@ export default async function SettingsCheckinPage({
   return (
     <>
       <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navCheckin")} description={t("checkin.docRuleDesc")} />
-      <SettingsSection title={t("checkin.title")} description={t("checkin.docRuleDesc")}>
-        <p className="mb-4 text-sm text-zinc-500">{t("checkin.scheduleManagedInLocation")}</p>
-        <CheckinSettingsPanel settings={checkinSettings} />
+      <SettingsPageHeader
+        title={t("navTeamPermissions")}
+        description={t("navTeamPermissionsDesc")}
+      />
+      <SettingsSection
+        title={t("teamPermissionsSectionTitle")}
+        description={t("teamPermissionsSectionDesc")}
+      >
+        <TeamPermissionsPanel permissions={ctx.teamPermissions} />
       </SettingsSection>
     </>
   );

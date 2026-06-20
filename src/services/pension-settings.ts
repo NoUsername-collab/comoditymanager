@@ -9,6 +9,12 @@ import {
   parseStatisticsVisibility,
   type StatisticsVisibility,
 } from "@/domain/settings/statistics-visibility";
+import {
+  DEFAULT_TEAM_PERMISSIONS,
+  parseTeamPermissions,
+  teamPermissionsToJson,
+  type TeamPermissions,
+} from "@/domain/settings/team-permissions";
 import type { ThemeId, ThemeMode, ThemeSettings } from "@/lib/themes";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
 
@@ -22,6 +28,7 @@ export type PensionSettings = {
   admin_palette_key: ThemeId;
   admin_day_night: ThemeMode;
   statistics_visibility: StatisticsVisibility;
+  team_permissions: TeamPermissions;
 };
 
 function parseDayNight(raw: unknown): ThemeMode {
@@ -35,25 +42,41 @@ function isStatisticsVisibilityColumnMissing(message: string): boolean {
   return message.includes("statistics_visibility");
 }
 
+function isTeamPermissionsColumnMissing(message: string): boolean {
+  return message.includes("team_permissions");
+}
+
 async function getPensionSettingsUncached(tenantId: string): Promise<PensionSettings | null> {
   // Always read from public — pension settings are global, not sim-scoped
   const supabase = createPublicAdminClient();
   let result = await supabase
     .from("pension_settings")
-    .select(`${PENSION_SETTINGS_BASE_SELECT}, statistics_visibility`)
+    .select(`${PENSION_SETTINGS_BASE_SELECT}, statistics_visibility, team_permissions`)
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
   let statisticsVisibility = DEFAULT_STATISTICS_VISIBILITY;
+  let teamPermissions = DEFAULT_TEAM_PERMISSIONS;
 
-  if (result.error && isStatisticsVisibilityColumnMissing(result.error.message)) {
-    result = await supabase
-      .from("pension_settings")
-      .select(PENSION_SETTINGS_BASE_SELECT)
-      .eq("tenant_id", tenantId)
-      .maybeSingle();
-  } else if (result.data && "statistics_visibility" in result.data) {
-    statisticsVisibility = parseStatisticsVisibility(result.data.statistics_visibility);
+  if (result.error) {
+    const message = result.error.message;
+    if (
+      isStatisticsVisibilityColumnMissing(message) ||
+      isTeamPermissionsColumnMissing(message)
+    ) {
+      result = await supabase
+        .from("pension_settings")
+        .select(PENSION_SETTINGS_BASE_SELECT)
+        .eq("tenant_id", tenantId)
+        .maybeSingle();
+    }
+  } else if (result.data) {
+    if ("statistics_visibility" in result.data) {
+      statisticsVisibility = parseStatisticsVisibility(result.data.statistics_visibility);
+    }
+    if ("team_permissions" in result.data) {
+      teamPermissions = parseTeamPermissions(result.data.team_permissions);
+    }
   }
 
   if (result.error) throw new Error(result.error.message);
@@ -74,6 +97,7 @@ async function getPensionSettingsUncached(tenantId: string): Promise<PensionSett
     ),
     admin_day_night: parseDayNight(data.admin_day_night),
     statistics_visibility: statisticsVisibility,
+    team_permissions: teamPermissions,
   };
 }
 
@@ -160,6 +184,38 @@ export function pensionStatisticsVisibility(
   settings: PensionSettings | null
 ): StatisticsVisibility {
   return settings?.statistics_visibility ?? DEFAULT_STATISTICS_VISIBILITY;
+}
+
+export const TEAM_PERMISSIONS_MIGRATION_ERROR =
+  "settings.team_permissions_migration_required";
+
+export async function getTeamPermissions(): Promise<TeamPermissions> {
+  const settings = await getPensionSettings();
+  return settings?.team_permissions ?? DEFAULT_TEAM_PERMISSIONS;
+}
+
+export function pensionTeamPermissions(
+  settings: PensionSettings | null,
+): TeamPermissions {
+  return settings?.team_permissions ?? DEFAULT_TEAM_PERMISSIONS;
+}
+
+export async function updateTeamPermissions(
+  permissions: TeamPermissions,
+): Promise<void> {
+  const { tenantId, supabase } = await getTenantScope();
+  const payload = teamPermissionsToJson(permissions);
+  const { error } = await supabase
+    .from("pension_settings")
+    .update({ team_permissions: payload })
+    .eq("tenant_id", tenantId);
+
+  if (error) {
+    if (isTeamPermissionsColumnMissing(error.message)) {
+      throw new Error(TEAM_PERMISSIONS_MIGRATION_ERROR);
+    }
+    throw new Error(error.message);
+  }
 }
 
 /** Single-row partial update on pension_settings (atomic per tenant). */

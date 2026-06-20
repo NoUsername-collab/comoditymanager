@@ -1,3 +1,6 @@
+import type { PermissionGroupId, TeamPermissions } from "@/domain/settings/team-permissions";
+import { canStaffPermission } from "@/domain/settings/team-permissions";
+
 export type SettingsNavItem = {
   id: string;
   labelKey: string;
@@ -6,6 +9,7 @@ export type SettingsNavItem = {
   matchPath?: string;
   roles?: Array<"owner" | "admin" | "operator">;
   memberRoles?: Array<"owner" | "admin" | "operator">;
+  permissionGroup?: PermissionGroupId;
 };
 
 export type SettingsNavGroup = {
@@ -44,7 +48,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navIdentityDesc",
         href: "/admin/settings/identity",
         matchPath: "/admin/settings/identity",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "pension_settings",
       },
       {
         id: "appearance",
@@ -65,7 +69,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navBookingDesc",
         href: "/admin/settings/booking",
         matchPath: "/admin/settings/booking",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "pension_settings",
       },
       {
         id: "fiscal",
@@ -73,7 +77,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navFiscalDesc",
         href: "/admin/settings/fiscal",
         matchPath: "/admin/settings/fiscal",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "pension_settings",
       },
       {
         id: "checkin",
@@ -81,7 +85,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navCheckinDesc",
         href: "/admin/settings/checkin",
         matchPath: "/admin/settings/checkin",
-        roles: ["admin"],
+        permissionGroup: "pension_settings",
       },
     ],
   },
@@ -95,7 +99,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navGuestAppDesc",
         href: "/admin/settings/guest-app",
         matchPath: "/admin/settings/guest-app",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "pension_settings",
       },
       {
         id: "public-site",
@@ -103,7 +107,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navPublicSiteDesc",
         href: "/admin/settings/public-site",
         matchPath: "/admin/settings/public-site",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "pension_settings",
       },
       {
         id: "email",
@@ -111,7 +115,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navEmailDesc",
         href: "/admin/settings/email",
         matchPath: "/admin/settings/email",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "pension_settings",
       },
       {
         id: "domains",
@@ -119,7 +123,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navDomainsDesc",
         href: "/admin/settings/domains",
         matchPath: "/admin/settings/domains",
-        roles: ["admin"],
+        permissionGroup: "pension_settings",
       },
     ],
   },
@@ -154,7 +158,15 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navTeamDesc",
         href: "/admin/settings/staff",
         matchPath: "/admin/settings/staff",
-        roles: ["admin"],
+        permissionGroup: "team_admin",
+      },
+      {
+        id: "team-permissions",
+        labelKey: "navTeamPermissions",
+        descriptionKey: "navTeamPermissionsDesc",
+        href: "/admin/settings/team-permissions",
+        matchPath: "/admin/settings/team-permissions",
+        memberRoles: ["owner"],
       },
       {
         id: "location",
@@ -162,7 +174,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navLocationDesc",
         href: "/admin/settings/location",
         matchPath: "/admin/settings/location",
-        memberRoles: ["owner", "admin"],
+        permissionGroup: "location_structure",
       },
     ],
   },
@@ -173,15 +185,27 @@ export function filterSettingsNav(
   ctx: {
     role: "admin" | "operator";
     memberRole: "owner" | "admin" | "operator";
+    teamPermissions?: TeamPermissions | null;
   },
 ): SettingsNavGroup[] {
   return groups
     .map((group) => ({
       ...group,
       items: group.items.filter((item) => {
-        if (item.roles && !item.roles.includes(ctx.role)) return false;
         if (item.memberRoles && !item.memberRoles.includes(ctx.memberRole)) {
           return false;
+        }
+        if (item.roles && !item.roles.includes(ctx.role)) return false;
+        if (item.permissionGroup) {
+          if (
+            !canStaffPermission(
+              ctx.memberRole,
+              item.permissionGroup,
+              ctx.teamPermissions,
+            )
+          ) {
+            return false;
+          }
         }
         return true;
       }),
@@ -206,5 +230,6 @@ export function resolveActiveSettingsNavId(pathname: string): string {
   }
 
   if (normalized.includes("/settings/location")) return "location";
+  if (normalized.includes("/settings/team-permissions")) return "team-permissions";
   return "overview";
 }

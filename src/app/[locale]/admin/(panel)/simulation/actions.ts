@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { requireStaffRole } from "@/lib/auth/require-admin";
+import { requireStaffPermission } from "@/lib/auth/require-admin";
 import {
   startSimulation,
   stopSimulation,
@@ -32,7 +32,7 @@ async function revalidateSimSurfaces() {
 }
 
 export async function startSimulationAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     const state = await startSimulation();
@@ -51,7 +51,7 @@ export async function startSimulationAction(): Promise<SimActionResult> {
 }
 
 export async function stopSimulationAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     await stopSimulation();
@@ -66,7 +66,7 @@ export async function stopSimulationAction(): Promise<SimActionResult> {
 }
 
 export async function advanceDayAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     const state = await advanceSimulation(1);
@@ -85,7 +85,7 @@ export async function advanceDayAction(): Promise<SimActionResult> {
 }
 
 export async function advanceWeekAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     const state = await advanceSimulation(7);
@@ -104,7 +104,7 @@ export async function advanceWeekAction(): Promise<SimActionResult> {
 }
 
 export async function advanceMonthAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     const state = await advanceSimulation(30);
@@ -123,7 +123,7 @@ export async function advanceMonthAction(): Promise<SimActionResult> {
 }
 
 export async function advanceToNextCheckInAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     const sim = await getSimStatus();
@@ -148,7 +148,7 @@ export async function advanceToNextCheckInAction(): Promise<SimActionResult> {
 }
 
 export async function advanceToNextCheckOutAction(): Promise<SimActionResult> {
-  await requireStaffRole(["admin"]);
+  await requireStaffPermission("reports_tools");
 
   try {
     const sim = await getSimStatus();

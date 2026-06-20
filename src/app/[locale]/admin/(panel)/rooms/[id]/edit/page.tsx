@@ -10,6 +10,7 @@ import {
 } from "@/services/room-catalog";
 import { getRoomById } from "@/services/rooms-admin";
 import { updateRoomAction } from "./actions";
+import { guardOperatorRoute } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 export default async function EditRoomPage({
@@ -19,6 +20,7 @@ export default async function EditRoomPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ return_to?: string }>;
 }) {
+  await guardOperatorRoute("/admin/rooms/edit");
   const [tPage, tCommon, tStruct, { id }, { return_to }] = await Promise.all([
     getTranslations("admin.pages.roomEdit"),
     getTranslations("admin.common"),

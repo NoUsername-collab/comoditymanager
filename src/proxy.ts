@@ -17,8 +17,14 @@ import { isAdminLocationUnlockTokenValidEdge } from "@/lib/auth/admin-location-u
 import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
 import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
-import { pathBlockedForOperator } from "@/lib/auth/roles";
-import { resolveStaffRoleOnTenantHost, resolveTenantMemberRoleOnTenantHost } from "@/lib/auth/tenant-staff-edge";
+import { pathPermissionGroup } from "@/domain/settings/team-permission-paths";
+import { canStaffPermission } from "@/domain/settings/team-permissions";
+import { getTeamPermissionsOnEdge } from "@/lib/auth/team-permissions-edge";
+import {
+  resolveStaffRoleOnTenantHost,
+  resolveTenantMemberRoleOnTenantHost,
+  resolveTenantIdOnEdge,
+} from "@/lib/auth/tenant-staff-edge";
 import { isPlatformAdminEmailEdge } from "@/lib/auth/require-platform-admin";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
 import { buildTenantAdminUrl, parseTenantFromHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
@@ -254,27 +260,32 @@ async function runTenantAppProxy(
     );
     if (mfaRedirect) return mfaRedirect;
 
-    if (
-      path.startsWith("/admin") &&
-      !isLoginPage &&
-      (isLocationAdminPath(path) || pathBlockedForOperator(path))
-    ) {
-      const memberRole =
+    if (path.startsWith("/admin") && !isLoginPage) {
+      const permGroup = pathPermissionGroup(path);
+      const tenantId =
         slug != null
-          ? await resolveTenantMemberRoleOnTenantHost(
-              user.id,
-              { slug },
-              supabase
-            )
+          ? await resolveTenantIdOnEdge({ slug })
           : customDomain != null
-            ? await resolveTenantMemberRoleOnTenantHost(
-                user.id,
-                { customDomain },
-                supabase
-              )
+            ? await resolveTenantIdOnEdge({ customDomain })
             : null;
+      const teamPermissions = tenantId
+        ? await getTeamPermissionsOnEdge(tenantId)
+        : null;
 
-      if (memberRole !== "owner") {
+      if (
+        permGroup &&
+        !canStaffPermission(memberRole, permGroup, teamPermissions)
+      ) {
+        const redirectUrl = request.nextUrl.clone();
+        redirectUrl.pathname = "/admin/settings";
+        redirectUrl.searchParams.set("access", "permission");
+        return NextResponse.redirect(redirectUrl);
+      }
+
+      if (
+        permGroup === "location_structure" &&
+        memberRole !== "owner"
+      ) {
         const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
         if (!(await isAdminLocationUnlockTokenValidEdge(unlock))) {
           const redirectUrl = request.nextUrl.clone();

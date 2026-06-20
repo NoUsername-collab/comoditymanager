@@ -27,6 +27,7 @@ type Props = {
   bookingRules: BookingRulesSettings;
   checkinSettings: CheckinSettings;
   locale: "ro" | "en" | "bg";
+  readOnly?: boolean;
 };
 
 type FiscalDraft = {
@@ -92,6 +93,7 @@ export function FiscalBillingSettingsPanel({
   bookingRules: initialBooking,
   checkinSettings: initialCheckin,
   locale,
+  readOnly = false,
 }: Props) {
   const t = useTranslations("admin.pages.settings.fiscal");
   const tCheckin = useTranslations("admin.pages.settings.checkin");
@@ -254,7 +256,7 @@ export function FiscalBillingSettingsPanel({
           <h3 className="checkin-settings__title">{t("title")}</h3>
           <p className="checkin-settings__note">{t("subtitle")}</p>
         </div>
-        {!editing ? (
+        {!readOnly && !editing ? (
           <button
             type="button"
             className="checkin-stepper__btn checkin-stepper__btn--secondary"
@@ -262,7 +264,7 @@ export function FiscalBillingSettingsPanel({
           >
             {t("edit")}
           </button>
-        ) : (
+        ) : !readOnly && editing ? (
           <div className="fiscal-settings__edit-actions">
             <button
               type="button"
@@ -280,7 +282,7 @@ export function FiscalBillingSettingsPanel({
               {t("cancel")}
             </button>
           </div>
-        )}
+        ) : null}
       </div>
 
       {saveError ? (

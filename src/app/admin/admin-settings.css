@@ -1542,3 +1542,86 @@
     gap: 0.75rem;
   }
 }
+
+/* Team permissions (Setări → Permisiuni echipă) */
+.team-permissions__intro {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.team-permissions__grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .team-permissions__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.team-permissions__card {
+  padding: 1rem 1.125rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.75rem;
+  background: var(--admin-panel-bg, #fff);
+}
+
+.team-permissions__card-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--admin-text, #18181b);
+}
+
+.team-permissions__card-desc {
+  margin: 0 0 0.875rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.team-permissions__card-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.team-permissions__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.team-permissions__toggle input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--admin-accent, #059669);
+}
+
+.team-permissions__owner-note {
+  margin: 0.25rem 0 0;
+  padding-top: 0.625rem;
+  border-top: 1px dashed var(--admin-panel-border, #e4e4e7);
+  font-size: 0.75rem;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.team-permissions__owner-label {
+  display: inline-block;
+  margin-right: 0.35rem;
+  font-weight: 600;
+  color: var(--admin-text, #18181b);
+}
+
+.team-permissions__actions {
+  margin-top: 1.25rem;
+}
+
+.team-permissions--pending {
+  opacity: 0.7;
+  pointer-events: none;
+}

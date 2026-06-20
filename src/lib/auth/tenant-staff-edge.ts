@@ -49,7 +49,7 @@ async function supabaseRpc<T>(
   return (await res.json()) as T;
 }
 
-async function resolveTenantIdOnEdge(ref: TenantHostRef): Promise<string | null> {
+export async function resolveTenantIdOnEdge(ref: TenantHostRef): Promise<string | null> {
   const anon = edgeAnonConfig();
   if (!anon) return null;
 

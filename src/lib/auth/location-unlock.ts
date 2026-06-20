@@ -8,6 +8,11 @@ import {
   getTenantMemberRole,
   type TenantMemberRole,
 } from "@/services/tenant-members";
+import {
+  canStaffPermission,
+  DEFAULT_TEAM_PERMISSIONS,
+  type TeamPermissions,
+} from "@/domain/settings/team-permissions";
 
 /** Verifică parola unui cont Supabase fără a schimba sesiunea curentă. */
 export async function verifyPasswordForEmail(
@@ -64,12 +69,18 @@ export async function getTenantMemberRoleForRequest(
   return getTenantMemberRole(tenant.id, userId);
 }
 
-/** Owner: acces permanent. Staff admin: necesită unlock 2h. */
+/** Owner: acces permanent. Staff cu location_structure: necesită unlock 2h. */
 export async function locationAccessibleForMemberRole(
-  memberRole: TenantMemberRole | null
+  memberRole: TenantMemberRole | null,
+  permissions: TeamPermissions | null = DEFAULT_TEAM_PERMISSIONS,
 ): Promise<boolean> {
   if (memberRole === "owner") return true;
-  if (memberRole === "admin") return isAdminLocationUnlocked();
+  if (!canStaffPermission(memberRole, "location_structure", permissions)) {
+    return false;
+  }
+  if (memberRole === "admin" || memberRole === "operator") {
+    return isAdminLocationUnlocked();
+  }
   return false;
 }
 

@@ -2,6 +2,7 @@ import { BuildingForm } from "@/components/admin/BuildingForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { listRoomOptions } from "@/services/room-catalog";
 import { createBuildingAction } from "../actions";
+import { guardOperatorRoute } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 export default async function NewBuildingPage({
@@ -9,6 +10,7 @@ export default async function NewBuildingPage({
 }: {
   searchParams: Promise<{ return_to?: string }>;
 }) {
+  await guardOperatorRoute("/admin/buildings/new");
   const [tPage, tCommon, tStruct, { return_to }, catalogOptions] =
     await Promise.all([
       getTranslations("admin.pages.buildingsNew"),

@@ -795,6 +795,10 @@
         "navDomainsDesc": "Hospira поддомейн и собствени домейни",
         "navTeam": "Екип",
         "navTeamDesc": "Членове, роли, покани",
+        "navTeamPermissions": "Права на екипа",
+        "navTeamPermissionsDesc": "Какво може админ и рецепционист",
+        "teamPermissionsSectionTitle": "Групи права",
+        "teamPermissionsSectionDesc": "Отметете какво може всеки рол. Собственикът има пълен достъп.",
         "navLocation": "Локация",
         "navLocationDesc": "Структура, стаи, каталог",
         "loading": "Зареждане…",
@@ -881,6 +885,43 @@
           "providerFrom": "Ще се изпраща от: {from}",
           "saved": "Запазено",
           "saveError": "Грешка при запис"
+        },
+        "teamPermissions": {
+          "intro": "Собственикът винаги има пълен достъп. Настройте правата на админ и рецепционист.",
+          "roleAdmin": "Админ",
+          "roleOperator": "Рецепционист",
+          "roleOwner": "Собственик",
+          "ownerFullAccess": "Пълен достъп — не може да се променя",
+          "save": "Запази правата",
+          "saving": "Запис…",
+          "saved": "Правата са запазени",
+          "saveError": "Грешка при запис",
+          "groups": {
+            "reception_ops": {
+              "title": "Рецепция",
+              "desc": "Check-in/out, бърза рецепция, наличност, профили на гости."
+            },
+            "booking_management": {
+              "title": "Управление на резервации",
+              "desc": "Потвърждение, анулиране, редакции, rebook, преместване на стаи."
+            },
+            "pension_settings": {
+              "title": "Настройки на обекта",
+              "desc": "Идентичност, правила, имейл, guest app, публичен сайт, тема."
+            },
+            "location_structure": {
+              "title": "Структура на локацията",
+              "desc": "Сгради, стаи, каталог, фактури, factory reset."
+            },
+            "team_admin": {
+              "title": "Администрация на екипа",
+              "desc": "Покани, смяна на роли, деактивиране."
+            },
+            "reports_tools": {
+              "title": "Отчети и инструменти",
+              "desc": "Статистики, export, симулация."
+            }
+          }
         },
         "identity": {
           "sectionTitle": "Основни данни",

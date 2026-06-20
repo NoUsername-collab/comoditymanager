@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireStaffPermission } from "@/lib/auth/require-admin";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import {
   createGuestRebookStay,
@@ -23,7 +23,7 @@ export async function loadGuestRebookPanelAction(
   guestId: string,
   sourceBookingId: string
 ) {
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     const draft = await loadGuestRebookDraft(guestId, sourceBookingId);
     const rooms = await previewGuestRebookRooms({
@@ -54,7 +54,7 @@ export async function previewGuestRebookRoomsAction(input: {
   num_adults: number;
   num_children: number;
 }) {
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   if (!input.check_in || !input.check_out || input.check_out <= input.check_in) {
     return { ok: false as const, error: "errors.pickDates" };
   }
@@ -68,7 +68,7 @@ export async function previewGuestRebookRoomsAction(input: {
 }
 
 export async function submitGuestRebookStayAction(formData: FormData) {
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   const t = await getTranslations("admin.serverActions");
 
   const guestId = String(formData.get("guest_id") ?? "");

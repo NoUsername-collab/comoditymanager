@@ -2,7 +2,7 @@
 
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { revalidateBookingDetailSurfaces } from "@/lib/cache/revalidate-admin";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
 import {
   cancelBooking,
   confirmBookingWithRooms,
@@ -36,7 +36,7 @@ export async function confirmBookingAction(formData: FormData) {
   );
 
   const [, total_price, before] = await Promise.all([
-    requireAdmin(),
+    requireStaffPermission("booking_management"),
     resolveTotalPriceForConfirm(id, roomIds, formData),
     import("@/services/bookings").then((m) => m.getBookingById(id)),
   ]);
@@ -96,7 +96,7 @@ function appendQueryParam(path: string, key: string, value: string): string {
 }
 
 export async function cancelBookingAction(formData: FormData) {
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   const id = String(formData.get("id") ?? "");
   const returnTo = String(formData.get("return_to") ?? "/admin/bookings");
 
@@ -175,7 +175,7 @@ export async function updateBookingGuestPhoneAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   const phone = String(formData.get("guest_phone") ?? "").trim();
   if (!id) return { ok: false, error: t("bookingIdMissing") };
@@ -195,7 +195,7 @@ export async function setBookingCheckInAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
@@ -214,7 +214,7 @@ export async function setBookingCheckOutAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
@@ -236,7 +236,7 @@ export async function loadBookingCheckoutPanelAction(
   | { ok: false; error: string }
 > {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = bookingId.trim();
   if (!id) return { ok: false, error: t("bookingIdMissing") };
 
@@ -299,7 +299,7 @@ export async function completeBookingCheckoutAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
 
@@ -340,7 +340,7 @@ export async function undoBookingCheckInAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
@@ -365,7 +365,7 @@ export async function undoBookingCheckOutAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
@@ -384,7 +384,7 @@ export async function editBookingCheckInAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
@@ -403,7 +403,7 @@ export async function editBookingCheckOutAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const id = readBookingId(formData);
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
@@ -422,7 +422,7 @@ export async function editBookingDatesAction(
   formData: FormData
 ): Promise<OpsActionResult> {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   const id = readBookingId(formData);
   const check_in = String(formData.get("check_in") ?? "").trim();
   const check_out = String(formData.get("check_out") ?? "").trim();

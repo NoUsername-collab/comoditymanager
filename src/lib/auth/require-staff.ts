@@ -2,9 +2,13 @@ import { cache } from "react";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
 import {
-  pathBlockedForOperator,
   type StaffRole,
 } from "@/lib/auth/roles";
+import {
+  canStaffPermission,
+  type PermissionGroupId,
+} from "@/domain/settings/team-permissions";
+import { pathPermissionGroup } from "@/domain/settings/team-permission-paths";
 import {
   resolveStaffRole,
   tenantMemberRoleToStaffRole,
@@ -18,6 +22,7 @@ import {
   getTenantMemberRole,
   type TenantMemberRole,
 } from "@/services/tenant-members";
+import { getTeamPermissions } from "@/services/pension-settings";
 
 /**
  * Cached per-request: resolves the authenticated staff user, role,
@@ -54,9 +59,13 @@ export const getStaffShellAccess = cache(async () => {
   if (!ctx.user || !ctx.role) {
     return { isAdmin: false, locationUnlocked: false };
   }
+  const permissions = await getTeamPermissions();
   return {
     isAdmin: ctx.role === "admin",
-    locationUnlocked: await locationAccessibleForMemberRole(ctx.memberRole),
+    locationUnlocked: await locationAccessibleForMemberRole(
+      ctx.memberRole,
+      permissions,
+    ),
   };
 });
 
@@ -100,9 +109,14 @@ export async function requireStaffRole(allowed: StaffRole[]) {
   return ctx;
 }
 
-/** @deprecated alias */
+/** Any authenticated staff (admin or operator). Owner maps to admin StaffRole. */
+export async function requireAnyStaff() {
+  return requireStaff();
+}
+
+/** @deprecated Misleading name — allows operator too. Prefer requireAnyStaff() or requireStaffRole(). */
 export async function requireAdmin() {
-  const { user } = await requireStaffRole(["admin", "operator"]);
+  const { user } = await requireAnyStaff();
   return user;
 }
 
@@ -121,20 +135,55 @@ export async function getAdminUser() {
   return getStaffUser();
 }
 
-/** Configurare locație: owner acces direct; staff admin după confirmare parolă owner. */
+/** Configurare locație: owner acces direct; staff cu permisiune + unlock owner. */
 export async function requireLocationAdmin() {
   const ctx = await requireStaff();
-  const accessible = await locationAccessibleForMemberRole(ctx.memberRole);
+  const permissions = await getTeamPermissions();
+  if (!canStaffPermission(ctx.memberRole, "location_structure", permissions)) {
+    await redirect("/admin/settings?access=permission");
+  }
+  const accessible = await locationAccessibleForMemberRole(
+    ctx.memberRole,
+    permissions,
+  );
   if (!accessible) {
     await redirect("/admin/settings?location=locked");
   }
   return ctx;
 }
 
-export async function guardOperatorRoute(pathname: string) {
+export async function requireStaffPermission(group: PermissionGroupId) {
+  const ctx = await requireStaff();
+  const permissions = await getTeamPermissions();
+  if (!canStaffPermission(ctx.memberRole, group, permissions)) {
+    throw new Error("auth.permission_forbidden");
+  }
+  return ctx;
+}
+
+export async function guardStaffPermissionRoute(pathname: string) {
   const ctx = await cachedStaffContext();
   if (!ctx.user || !ctx.role) return;
-  if (ctx.role === "operator" && pathBlockedForOperator(pathname)) {
-    await redirect("/admin/settings?location=forbidden");
+
+  const group = pathPermissionGroup(pathname);
+  if (!group) return;
+
+  const permissions = await getTeamPermissions();
+  if (!canStaffPermission(ctx.memberRole, group, permissions)) {
+    await redirect("/admin/settings?access=permission");
   }
+
+  if (group === "location_structure" && ctx.memberRole !== "owner") {
+    const accessible = await locationAccessibleForMemberRole(
+      ctx.memberRole,
+      permissions,
+    );
+    if (!accessible) {
+      await redirect("/admin/settings?location=locked");
+    }
+  }
+}
+
+export async function guardOperatorRoute(pathname: string) {
+  await guardStaffPermissionRoute(pathname);
 }

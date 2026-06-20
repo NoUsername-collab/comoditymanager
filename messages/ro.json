@@ -862,6 +862,10 @@
         "navDomainsDesc": "Subdomeniu Hospira și domenii proprii",
         "navTeam": "Echipă",
         "navTeamDesc": "Membri, roluri, invitații",
+        "navTeamPermissions": "Permisiuni echipă",
+        "navTeamPermissionsDesc": "Ce poate face adminul și recepționerul",
+        "teamPermissionsSectionTitle": "Grupuri de permisiuni",
+        "teamPermissionsSectionDesc": "Bifează ce poate face fiecare rol. Proprietarul are acces complet.",
         "navLocation": "Locație",
         "navLocationDesc": "Structură, camere, catalog",
         "loading": "Se încarcă…",
@@ -949,6 +953,43 @@
           "providerFrom": "Se trimite de la: {from}",
           "saved": "Salvat",
           "saveError": "Eroare la salvare"
+        },
+        "teamPermissions": {
+          "intro": "Proprietarul are mereu acces complet. Ajustează ce pot face adminul angajat și recepționerul.",
+          "roleAdmin": "Admin angajat",
+          "roleOperator": "Recepționer",
+          "roleOwner": "Proprietar",
+          "ownerFullAccess": "Acces complet — nemodificabil",
+          "save": "Salvează permisiuni",
+          "saving": "Se salvează…",
+          "saved": "Permisiuni salvate",
+          "saveError": "Eroare la salvare",
+          "groups": {
+            "reception_ops": {
+              "title": "Operațiuni recepție",
+              "desc": "Check-in/out, recepție rapidă, disponibilitate, profil oaspeți."
+            },
+            "booking_management": {
+              "title": "Gestionare rezervări",
+              "desc": "Confirmare, anulare, editări rezervări, rebook, mutări camere."
+            },
+            "pension_settings": {
+              "title": "Setări pensiune & canale",
+              "desc": "Identitate, reguli rezervare, email, guest app, site public, aspect global."
+            },
+            "location_structure": {
+              "title": "Structură locație",
+              "desc": "Clădiri, camere, catalog, facturi, reset fabrică."
+            },
+            "team_admin": {
+              "title": "Administrare echipă",
+              "desc": "Invitații, schimbare rol, dezactivare membri."
+            },
+            "reports_tools": {
+              "title": "Rapoarte & instrumente",
+              "desc": "Statistici, export, mod simulare."
+            }
+          }
         },
         "identity": {
           "sectionTitle": "Date principale",

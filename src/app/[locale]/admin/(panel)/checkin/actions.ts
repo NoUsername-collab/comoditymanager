@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { requireAdmin } from "@/lib/auth/require-admin";
-import { requireStaffRole } from "@/lib/auth/require-staff";
+import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
@@ -89,7 +88,7 @@ export async function loadCheckinWizardContextAction(
   bookingId: string,
   options?: { edit?: boolean },
 ): Promise<CheckinWizardContextResult> {
-  await requireAdmin();
+  await requireAnyStaff();
 
   try {
     if (!bookingId) return { ok: false, error: "booking_id required" };
@@ -190,7 +189,7 @@ export async function loadBookingCheckinPaymentPanelAction(
   | { ok: true; data: BookingCheckinPaymentPanelData }
   | { ok: false; error: string }
 > {
-  await requireAdmin();
+  await requireAnyStaff();
 
   try {
     const id = bookingId.trim();
@@ -256,7 +255,7 @@ export async function loadBookingCheckinPaymentPanelAction(
 export async function updateCheckinPaymentAction(
   formData: FormData,
 ): Promise<{ ok: boolean; error?: string }> {
-  await requireAdmin();
+  await requireAnyStaff();
 
   try {
     const checkinId = String(formData.get("checkin_id") ?? "");
@@ -330,7 +329,7 @@ function mapCreateCheckinError(
 export async function createCheckinAction(
   formData: FormData,
 ): Promise<CreateCheckinResult> {
-  await requireAdmin();
+  await requireAnyStaff();
 
   try {
     const bookingId = String(formData.get("booking_id") ?? "");
@@ -434,7 +433,7 @@ export async function createCheckinAction(
 export async function updateCheckinAction(
   formData: FormData,
 ): Promise<CreateCheckinResult> {
-  await requireAdmin();
+  await requireAnyStaff();
 
   try {
     const checkinId = String(formData.get("checkin_id") ?? "");
@@ -555,7 +554,7 @@ export async function updateCheckinSettingsAction(
   const t = await getTranslations("admin.serverActions");
 
   try {
-    await requireStaffRole(["admin"]);
+    await requireStaffPermission("pension_settings");
   } catch (e) {
     const msg = e instanceof Error ? e.message : "auth.role_forbidden";
     if (msg === "auth.login_required") {
@@ -657,7 +656,7 @@ export async function updateCheckinSettingsAction(
 export async function loadTouristSheetAction(
   bookingId: string,
 ): Promise<LoadTouristSheetResult> {
-  await requireAdmin();
+  await requireAnyStaff();
 
   try {
     if (!bookingId) return { ok: false, error: "booking_id required" };

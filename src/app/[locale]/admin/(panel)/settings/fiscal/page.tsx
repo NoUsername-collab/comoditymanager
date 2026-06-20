@@ -68,6 +68,7 @@ export default async function SettingsFiscalPage({
           bookingRules={bookingRules}
           checkinSettings={checkinSettings}
           locale={locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"}
+          readOnly={!isOwner}
         />
       </SettingsSection>
     </>

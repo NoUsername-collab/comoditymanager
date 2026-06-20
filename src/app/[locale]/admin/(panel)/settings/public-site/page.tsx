@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { Link } from "@/i18n/navigation";
 import { PublicSiteSettingsForm } from "@/components/admin/settings/PublicSiteSettingsForm";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
@@ -29,7 +30,9 @@ export default async function PublicSiteSettingsPage({
     );
   }
 
-  const canEdit = staff.memberRole === "owner" || staff.role === "admin";
+  if (staff.role === "operator") {
+    await redirect("/admin/settings?access=role");
+  }
 
   return (
     <>
@@ -53,13 +56,9 @@ export default async function PublicSiteSettingsPage({
             : []
         }
       />
-      {!canEdit ? (
-        <SettingsAlerts alerts={[{ tone: "warning", message: t("readOnly") }]} />
-      ) : (
-        <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
-          <PublicSiteSettingsForm config={config} locale={locale} />
-        </Suspense>
-      )}
+      <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
+        <PublicSiteSettingsForm config={config} locale={locale} />
+      </Suspense>
     </>
   );
 }

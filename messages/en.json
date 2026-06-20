@@ -862,6 +862,10 @@
         "navDomainsDesc": "Hospira subdomain and custom domains",
         "navTeam": "Team",
         "navTeamDesc": "Members, roles, invitations",
+        "navTeamPermissions": "Team permissions",
+        "navTeamPermissionsDesc": "What admin and receptionist can do",
+        "teamPermissionsSectionTitle": "Permission groups",
+        "teamPermissionsSectionDesc": "Toggle what each role can do. Owner always has full access.",
         "navLocation": "Location",
         "navLocationDesc": "Structure, rooms, catalog",
         "loading": "Loading…",
@@ -949,6 +953,43 @@
           "providerFrom": "Will send from: {from}",
           "saved": "Saved",
           "saveError": "Save error"
+        },
+        "teamPermissions": {
+          "intro": "Owner always has full access. Adjust what employed admin and receptionist can do.",
+          "roleAdmin": "Employed admin",
+          "roleOperator": "Receptionist",
+          "roleOwner": "Owner",
+          "ownerFullAccess": "Full access — cannot be changed",
+          "save": "Save permissions",
+          "saving": "Saving…",
+          "saved": "Permissions saved",
+          "saveError": "Save error",
+          "groups": {
+            "reception_ops": {
+              "title": "Reception operations",
+              "desc": "Check-in/out, quick reception, availability, guest profiles."
+            },
+            "booking_management": {
+              "title": "Booking management",
+              "desc": "Confirm, cancel, edit bookings, rebook, room moves."
+            },
+            "pension_settings": {
+              "title": "Property settings & channels",
+              "desc": "Identity, booking rules, email, guest app, public site, global theme."
+            },
+            "location_structure": {
+              "title": "Location structure",
+              "desc": "Buildings, rooms, catalog, invoices, factory reset."
+            },
+            "team_admin": {
+              "title": "Team administration",
+              "desc": "Invites, role changes, deactivate members."
+            },
+            "reports_tools": {
+              "title": "Reports & advanced tools",
+              "desc": "Statistics, export, simulation mode."
+            }
+          }
         },
         "identity": {
           "sectionTitle": "Primary details",

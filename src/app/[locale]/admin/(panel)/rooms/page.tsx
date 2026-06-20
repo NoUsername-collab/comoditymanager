@@ -10,12 +10,14 @@ import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
+import { guardOperatorRoute } from "@/lib/auth/require-staff";
 
 export default async function AdminRoomsPage({
   searchParams,
 }: {
   searchParams: Promise<{ date?: string }>;
 }) {
+  await guardOperatorRoute("/admin/rooms");
   const [t, params, dataResult] = await Promise.all([
     getTranslations("admin.pages.rooms"),
     searchParams,

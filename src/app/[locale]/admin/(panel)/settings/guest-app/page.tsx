@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { GuestAppSettingsForm } from "@/components/admin/settings/GuestAppSettingsForm";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
@@ -28,8 +29,11 @@ export default async function GuestAppSettingsPage({
     );
   }
 
+  if (staff.role === "operator") {
+    await redirect("/admin/settings?access=role");
+  }
+
   const settings = await ensureGuestAppSettingsRow(tenant.id).catch(() => null);
-  const canEdit = staff.memberRole === "owner" || staff.role === "admin";
 
   return (
     <>
@@ -43,8 +47,6 @@ export default async function GuestAppSettingsPage({
       />
       {!settings ? (
         <p className="settings-empty settings-empty--error">{t("loadError")}</p>
-      ) : !canEdit ? (
-        <SettingsAlerts alerts={[{ tone: "warning", message: t("readOnly") }]} />
       ) : (
         <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
           <GuestAppSettingsForm settings={settings} />

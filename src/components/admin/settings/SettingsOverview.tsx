@@ -9,9 +9,12 @@ import {
 
 import type { ReactNode } from "react";
 
+import type { TeamPermissions } from "@/domain/settings/team-permissions";
+
 type Props = {
   role: "admin" | "operator";
   memberRole: "owner" | "admin" | "operator";
+  teamPermissions?: TeamPermissions | null;
   propertyName: string;
   checkInTime: string;
   checkOutTime: string;
@@ -21,6 +24,7 @@ type Props = {
 export function SettingsOverview({
   role,
   memberRole,
+  teamPermissions,
   propertyName,
   checkInTime,
   checkOutTime,
@@ -30,6 +34,7 @@ export function SettingsOverview({
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
     role,
     memberRole,
+    teamPermissions,
   });
 
   const quickItems = navGroups

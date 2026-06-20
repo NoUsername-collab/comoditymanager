@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaffRole } from "@/lib/auth/require-staff";
+import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 import { getTenantScope } from "@/lib/tenant/scope";
 import {
@@ -20,7 +20,7 @@ type ActionResult =
 
 /** Only owner and admin can manage staff */
 async function requireStaffManager() {
-  const ctx = await requireStaffRole(["admin"]);
+  const ctx = await requireStaffPermission("team_admin");
   const { tenantId } = await getTenantScope();
   return { ...ctx, tenant: { id: tenantId } };
 }

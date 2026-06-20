@@ -18,7 +18,7 @@ import {
 import type { NationalIdType } from "@/domain/guest/national-id";
 import { parseGuestTags } from "@/domain/guest/tags";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
 import {
   findGuestByNationalId,
   mergeGuests,
@@ -63,7 +63,7 @@ function parseOptionalStarsField(value: FormDataEntryValue | null): number | nul
 
 export async function updateGuestNotesAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const guestId = String(formData.get("guest_id") ?? "");
   const notes = String(formData.get("notes") ?? "");
   if (!guestId) throw new Error(t("invalidGuest"));
@@ -73,7 +73,7 @@ export async function updateGuestNotesAction(formData: FormData) {
 
 export async function updateGuestTagsAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const guestId = String(formData.get("guest_id") ?? "");
   if (!guestId) throw new Error(t("invalidGuest"));
   const tags = formData.getAll("tags").map(String) as GuestTag[];
@@ -83,7 +83,7 @@ export async function updateGuestTagsAction(formData: FormData) {
 
 export async function mergeGuestsAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   const targetId = String(formData.get("target_id") ?? "");
   const sourceId = String(formData.get("source_id") ?? "");
   if (!targetId || !sourceId) throw new Error(t("selectProfileToMerge"));
@@ -94,7 +94,7 @@ export async function mergeGuestsAction(formData: FormData) {
 
 export async function rebookLastStayAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   const guestId = String(formData.get("guest_id") ?? "");
   if (!guestId) throw new Error(t("invalidGuest"));
   const bookingId = await rebookGuestLastStay(guestId);
@@ -104,7 +104,7 @@ export async function rebookLastStayAction(formData: FormData) {
 
 export async function rebookNextYearAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   const guestId = String(formData.get("guest_id") ?? "");
   if (!guestId) throw new Error(t("invalidGuest"));
   const bookingId = await rebookGuestSamePeriodNextYear(guestId);
@@ -114,7 +114,7 @@ export async function rebookNextYearAction(formData: FormData) {
 
 export async function updateGuestProfileControlsAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const guestId = String(formData.get("guest_id") ?? "");
   if (!guestId) throw new Error(t("invalidGuest"));
 
@@ -197,7 +197,7 @@ export async function updateGuestIdentityAction(
   ]);
 
   try {
-    await requireAdmin();
+    await requireAnyStaff();
     const guestId = String(formData.get("guest_id") ?? "");
     if (!guestId) {
       return { ok: false, error: tActions("invalidGuest") };
@@ -297,7 +297,7 @@ function parseReviewPolarity(
 
 export async function saveGuestStayReviewAction(formData: FormData) {
   const t = await getTranslations("admin.serverActions");
-  await requireAdmin();
+  await requireAnyStaff();
   const guestId = String(formData.get("guest_id") ?? "");
   const bookingId = String(formData.get("booking_id") ?? "");
   if (!guestId || !bookingId) throw new Error(t("invalidReview"));

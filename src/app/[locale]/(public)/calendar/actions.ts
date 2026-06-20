@@ -12,7 +12,7 @@ import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { stayNightCount } from "@/lib/stay-dates";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireAnyStaff } from "@/lib/auth/require-admin";
 import {
   checkRateLimit,
   getClientIp,
@@ -231,7 +231,7 @@ export async function submitPhoneBookingAction(formData: FormData) {
       getTranslations("errors"),
       getTranslations("public.serverActions"),
     ]),
-    requireAdmin(),
+    requireAnyStaff(),
   ]);
 
   const check_in = String(formData.get("check_in") ?? "");
@@ -290,7 +290,7 @@ export async function suggestExistingGuestAction(input: {
   guest_phone?: string;
 }) {
   const [, t] = await Promise.all([
-    requireAdmin(),
+    requireAnyStaff(),
     getTranslations("errors"),
   ]);
   try {

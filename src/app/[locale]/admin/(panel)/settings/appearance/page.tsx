@@ -43,25 +43,31 @@ export default async function SettingsAppearancePage({
     );
   }
 
+  const canEditGlobalTheme = ctx.staff.role === "admin";
+
   return (
     <>
       <SettingsAlerts alerts={alerts} />
       <SettingsPageHeader title={t("navAppearance")} description={t("visualsSubtitle")} />
-      <AdminPendingForm action={updateAppearanceSettingsAction} className="settings-form-stack">
-        <input type="hidden" name="id" value={settings.id} />
-        <SettingsSection title={t("visualsTitle")} description={t("visualsSubtitle")}>
-          <AdminDisplayLayoutPicker />
-          <AdminPalettePicker />
-        </SettingsSection>
-        <SettingsSection title={t("fxTitle")} description={t("fxSubtitle")}>
-          <AdminFxSettings />
-        </SettingsSection>
-        <div className="settings-form-stack__submit">
-          <AdminSubmitButton type="submit" className="settings-form-stack__btn">
-            {t("saveTheme")}
-          </AdminSubmitButton>
-        </div>
-      </AdminPendingForm>
+      <SettingsSection title={t("displayLayoutTitle")} description={t("displayLayoutHint")}>
+        <AdminDisplayLayoutPicker />
+      </SettingsSection>
+      {canEditGlobalTheme ? (
+        <AdminPendingForm action={updateAppearanceSettingsAction} className="settings-form-stack">
+          <input type="hidden" name="id" value={settings.id} />
+          <SettingsSection title={t("visualsTitle")} description={t("visualsSubtitle")}>
+            <AdminPalettePicker />
+          </SettingsSection>
+          <SettingsSection title={t("fxTitle")} description={t("fxSubtitle")}>
+            <AdminFxSettings />
+          </SettingsSection>
+          <div className="settings-form-stack__submit">
+            <AdminSubmitButton type="submit" className="settings-form-stack__btn">
+              {t("saveTheme")}
+            </AdminSubmitButton>
+          </div>
+        </AdminPendingForm>
+      ) : null}
     </>
   );
 }

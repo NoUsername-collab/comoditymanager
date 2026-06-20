@@ -2,7 +2,7 @@
 
 import { after } from "next/server";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
-import { requireAdmin, getAdminUser } from "@/lib/auth/require-admin";
+import { requireAnyStaff, requireStaffPermission, getStaffUser } from "@/lib/auth/require-admin";
 import {
   revalidateAdminCalendar,
   revalidateBookingSurfaces,
@@ -58,9 +58,9 @@ export async function createRoomHoldsFromGanttAction(input: {
   | ActionErr
 > {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
-    const user = await getAdminUser();
+    const user = await getStaffUser();
     const ids = await createRoomHolds({
       roomIds: input.roomIds,
       checkIn: input.checkIn,
@@ -99,9 +99,9 @@ export async function createRoomHoldFromGanttAction(input: {
   expiresHours?: number | null;
 }): Promise<ActionOk | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
-    const user = await getAdminUser();
+    const user = await getStaffUser();
     const id = await createRoomHold({
       roomId: input.roomId,
       checkIn: input.checkIn,
@@ -140,9 +140,9 @@ export async function createRoomBlockFromGanttAction(input: {
   reason: string;
 }): Promise<ActionOk | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
-    const user = await getAdminUser();
+    const user = await getStaffUser();
     const id = await createRoomBlock({
       roomId: input.roomId,
       checkIn: input.checkIn,
@@ -177,7 +177,7 @@ export async function quickConfirmCerereFromGanttAction(
   bookingId: string
 ): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: t("bookingNotFound") };
@@ -208,7 +208,7 @@ export async function extendRoomHoldAction(
   holdId: string
 ): Promise<{ ok: true; check_out: string } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
     const check_out = await extendRoomHoldOneNight(holdId);
     revalidateAdminCalendar();
@@ -225,7 +225,7 @@ export async function extendRoomBlockAction(
   blockId: string
 ): Promise<{ ok: true; check_out: string } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
     const check_out = await extendRoomBlockOneNight(blockId);
     revalidateAdminCalendar();
@@ -242,9 +242,9 @@ export async function releaseRoomHoldAction(
   holdId: string
 ): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
-    const user = await getAdminUser();
+    const user = await getStaffUser();
     await releaseRoomHold(holdId, actorEmail(user));
     revalidateAdminCalendar();
     return { ok: true };
@@ -260,7 +260,7 @@ export async function deleteRoomBlockAction(
   blockId: string
 ): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
     await deleteRoomBlock(blockId);
     revalidateAdminCalendar();
@@ -279,9 +279,9 @@ export async function undoGanttCreateAction(input: {
   ids?: string[];
 }): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
-    const user = await getAdminUser();
+    const user = await getStaffUser();
     if (input.kind === "hold") {
       const holdIds = input.ids ?? (input.id ? [input.id] : []);
       for (const holdId of holdIds) {
@@ -312,7 +312,7 @@ export async function createCerereFromGanttAction(input: {
   guestPhone?: string;
 }): Promise<ActionOk | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
@@ -363,7 +363,7 @@ export async function createDirectStayFromGanttAction(input: {
   guestPhone?: string;
 }): Promise<ActionOk | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
@@ -420,7 +420,7 @@ export async function checkGanttIntervalAction(input: {
   checkIn: string;
   checkOut: string;
 }): Promise<{ ok: true; free: boolean } | ActionErr> {
-  await requireAdmin();
+  await requireAnyStaff();
   try {
     await assertRoomsAvailableForOccupancy(
       input.checkIn,
@@ -438,7 +438,7 @@ export async function shiftBookingOnGanttAction(
   dayDelta: number
 ): Promise<{ ok: true; check_in: string; check_out: string } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     if (!Number.isInteger(dayDelta) || Math.abs(dayDelta) > 366) {
       return { ok: false, error: t("invalidMove") };
@@ -468,7 +468,7 @@ export async function previewRoomMoveAction(input: {
   | ActionErr
 > {
   const t = await getT();
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     const preview = await previewRoomMoveFromPivot(input);
     return { ok: true, preview };
@@ -487,7 +487,7 @@ export async function moveBookingRoomFromPivotAction(input: {
   pivotDate?: string;
 }): Promise<{ ok: true } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     await moveBookingRoomFromPivot(input);
     revalidateBookingSurfacesExtended({
@@ -508,7 +508,7 @@ export async function adjustBookingStayNightsAction(
   nightDelta: number
 ): Promise<{ ok: true; check_in: string; check_out: string } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
   try {
     if (!Number.isInteger(nightDelta) || Math.abs(nightDelta) !== 1) {
       return { ok: false, error: t("invalidAdjustment") };
@@ -532,7 +532,7 @@ export async function duplicateBookingAsCerereAction(
   bookingId: string
 ): Promise<{ ok: true; id: string } | ActionErr> {
   const t = await getT();
-  await requireAdmin();
+  await requireAnyStaff();
   try {
     const id = await duplicateBookingAsCerere(bookingId);
     revalidateBookingSurfacesExtended({

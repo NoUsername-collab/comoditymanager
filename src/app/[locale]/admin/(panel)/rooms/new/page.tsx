@@ -12,6 +12,7 @@ import {
 import { listAllRooms } from "@/services/rooms-admin";
 import { roomScopeKey } from "@/domain/room/scope-key";
 import { createRoomAction } from "../actions";
+import { guardOperatorRoute } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 export default async function NewRoomPage({
@@ -25,6 +26,7 @@ export default async function NewRoomPage({
     names?: string;
   }>;
 }) {
+  await guardOperatorRoute("/admin/rooms/new");
   const [
     tPage,
     tActions,

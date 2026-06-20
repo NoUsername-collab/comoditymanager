@@ -7,6 +7,7 @@ import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { parseViewDate } from "@/lib/availability-date";
+import { guardOperatorRoute } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 export default async function BuildingsPage({
@@ -14,6 +15,7 @@ export default async function BuildingsPage({
 }: {
   searchParams: Promise<{ date?: string }>;
 }) {
+  await guardOperatorRoute("/admin/buildings");
   const paramsPromise = searchParams;
   const [t, params, dashboardsResult] = await Promise.all([
     getTranslations("admin.pages.buildings"),

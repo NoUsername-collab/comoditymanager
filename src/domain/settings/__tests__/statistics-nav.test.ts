@@ -8,6 +8,40 @@ import {
   SETTINGS_NAV_GROUPS,
 } from "@/domain/settings/settings-nav";
 
+describe("filterSettingsNav operator ACL", () => {
+  const ctx = (memberRole: "owner" | "admin" | "operator") => ({
+    role: memberRole === "operator" ? ("operator" as const) : ("admin" as const),
+    memberRole,
+  });
+
+  function navItemIds(memberRole: "owner" | "admin" | "operator") {
+    return filterSettingsNav(SETTINGS_NAV_GROUPS, ctx(memberRole)).flatMap((g) =>
+      g.items.map((i) => i.id),
+    );
+  }
+
+  it("hides admin-only settings from operator", () => {
+    const ids = navItemIds("operator");
+    expect(ids).not.toContain("identity");
+    expect(ids).not.toContain("booking");
+    expect(ids).not.toContain("fiscal");
+    expect(ids).not.toContain("checkin");
+    expect(ids).not.toContain("guest-app");
+    expect(ids).not.toContain("public-site");
+    expect(ids).not.toContain("email");
+    expect(ids).not.toContain("domains");
+    expect(ids).not.toContain("team");
+    expect(ids).not.toContain("location");
+  });
+
+  it("shows overview and appearance to operator", () => {
+    const ids = navItemIds("operator");
+    expect(ids).toContain("overview");
+    expect(ids).toContain("appearance");
+    expect(ids).toContain("security");
+  });
+});
+
 describe("filterSettingsNav statistics ACL", () => {
   const ctx = (memberRole: "owner" | "admin" | "operator") => ({
     role: memberRole === "operator" ? ("operator" as const) : ("admin" as const),
@@ -21,8 +55,12 @@ describe("filterSettingsNav statistics ACL", () => {
     expect(
       ownerNav.some((g) => g.id === "access" && g.items.some((i) => i.id === "statistics")),
     ).toBe(true);
-    expect(ownerNav.some((g) => g.id === "access")).toBe(true);
-    expect(adminNav.some((g) => g.id === "access")).toBe(false);
+    expect(
+      adminNav.some((g) => g.id === "access" && g.items.some((i) => i.id === "statistics")),
+    ).toBe(false);
+    expect(
+      adminNav.some((g) => g.id === "access" && g.items.some((i) => i.id === "security")),
+    ).toBe(true);
   });
 
   it("does not keep statistics under operations", () => {

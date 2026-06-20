@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireAnyStaff } from "@/lib/auth/require-admin";
 import {
   loadDayAvailabilityDetail,
   loadDayAvailabilityDetailWithKnownDay,
@@ -13,7 +13,7 @@ export async function fetchDayAvailabilityDetailAction(
   featureFilter: "all" | "ac" | "fridge" = "all",
   knownDay?: DayAvailability | null
 ) {
-  await requireAdmin();
+  await requireAnyStaff();
   if (knownDay && knownDay.iso === iso) {
     return loadDayAvailabilityDetailWithKnownDay(
       knownDay,

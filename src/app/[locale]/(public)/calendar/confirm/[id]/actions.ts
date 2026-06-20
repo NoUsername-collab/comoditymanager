@@ -4,10 +4,10 @@ import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { revalidatePublicBookingSurfaces } from "@/lib/cache/revalidate-admin";
 import { confirmBookingWithRooms } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
-import { requireAdmin } from "@/lib/auth/require-admin";
+import { requireStaffPermission } from "@/lib/auth/require-admin";
 
 export async function quickConfirmAction(formData: FormData) {
-  await requireAdmin();
+  await requireStaffPermission("booking_management");
 
   const id = String(formData.get("id") ?? "");
   const roomIds = formData.getAll("room_ids").map(String).filter(Boolean);

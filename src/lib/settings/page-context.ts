@@ -4,8 +4,12 @@ import {
   getPensionSettings,
   pensionAppearanceSettings,
   pensionStatisticsVisibility,
+  pensionTeamPermissions,
 } from "@/services/pension-settings";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
+import type { PermissionGroupId } from "@/domain/settings/team-permissions";
+import { canStaffPermission } from "@/domain/settings/team-permissions";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 
 export async function loadSettingsStaffContext() {
@@ -18,10 +22,10 @@ export async function loadSettingsStaffContext() {
     }));
 
   const statisticsVisibility = pensionStatisticsVisibility(pensionResult.settings);
-  const statisticsAccess = canAccessStatistics(
-    staff.memberRole,
-    statisticsVisibility,
-  );
+  const teamPermissions = pensionTeamPermissions(pensionResult.settings);
+  const statisticsAccess =
+    canStaffPermission(staff.memberRole, "reports_tools", teamPermissions) &&
+    canAccessStatistics(staff.memberRole, statisticsVisibility);
   const appearance = pensionResult.settings
     ? pensionAppearanceSettings(pensionResult.settings)
     : null;
@@ -31,8 +35,17 @@ export async function loadSettingsStaffContext() {
     pensionResult,
     statisticsVisibility,
     statisticsAccess,
+    teamPermissions,
     appearance,
   };
+}
+
+export async function guardSettingsPermission(group: PermissionGroupId) {
+  const ctx = await loadSettingsStaffContext();
+  if (!canStaffPermission(ctx.staff.memberRole, group, ctx.teamPermissions)) {
+    await redirect("/admin/settings?access=permission");
+  }
+  return ctx;
 }
 
 export async function buildSettingsAlerts(
@@ -57,7 +70,7 @@ export async function buildSettingsAlerts(
     params.statistics === "forbidden" || params.access === "statistics"
       ? { tone: "warning", message: t("statisticsForbidden") }
       : null,
-    params.access === "role"
+    params.access === "role" || params.access === "permission"
       ? { tone: "warning", message: t("roleForbidden") }
       : null,
   ].filter((alert): alert is SettingsAlert => alert !== null);

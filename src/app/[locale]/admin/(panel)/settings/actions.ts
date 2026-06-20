@@ -10,6 +10,8 @@ import { verifyLocationUnlockPassword } from "@/lib/auth/location-unlock";
 import {
   requireLocationAdmin,
   requireStaff,
+  requireStaffRole,
+  requireStaffPermission,
 } from "@/lib/auth/require-staff";
 import { checkRateLimit, getClientIp, RATE_LIMIT_PASSWORD_VERIFY } from "@/lib/rate-limit";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
@@ -19,9 +21,15 @@ import {
   updatePensionSettings,
   updatePensionSettingsPartial,
   updateStatisticsVisibility,
+  updateTeamPermissions,
   STATISTICS_VISIBILITY_MIGRATION_ERROR,
+  TEAM_PERMISSIONS_MIGRATION_ERROR,
 } from "@/services/pension-settings";
 import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibility";
+import {
+  parseTeamPermissions,
+  teamPermissionsToJson,
+} from "@/domain/settings/team-permissions";
 import {
   parsePricingSeasons,
   type CancellationPolicyType,
@@ -94,7 +102,7 @@ export async function updateAppearanceSettingsAction(formData: FormData) {
 
   const [t, settings, pension] = await Promise.all([
     getTranslations("admin.serverActions"),
-    requireStaff(),
+    requireStaffPermission("pension_settings"),
     import("@/services/pension-settings").then((m) => m.getPensionSettings()),
   ]);
 
@@ -162,6 +170,48 @@ export async function updateStatisticsVisibilityAction(
   }
 }
 
+export async function updateTeamPermissionsAction(
+  formData: FormData,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const t = await getTranslations("admin.serverActions");
+  const { memberRole } = await requireStaff();
+  if (memberRole !== "owner") {
+    return { ok: false, error: t("roleForbidden") };
+  }
+
+  let parsed: ReturnType<typeof parseTeamPermissions>;
+  try {
+    parsed = parseTeamPermissions(
+      JSON.parse(String(formData.get("team_permissions") ?? "{}")),
+    );
+  } catch {
+    return { ok: false, error: t("genericError") };
+  }
+
+  try {
+    await updateTeamPermissions(teamPermissionsToJson(parsed));
+    await logAdminActivityFromSession({
+      action: "settings.team_permissions_updated",
+      entityType: "settings",
+      summary: "Permisiuni echipă actualizate",
+    });
+    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    revalidatePath("/admin/settings/team-permissions");
+    return { ok: true };
+  } catch (e) {
+    if (
+      e instanceof Error &&
+      e.message === TEAM_PERMISSIONS_MIGRATION_ERROR
+    ) {
+      return { ok: false, error: t("genericError") };
+    }
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
+}
+
 export async function updateOperationalSettingsAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const default_check_in_time = String(
@@ -214,8 +264,9 @@ export async function updatePensionIdentityAction(
   input: import("@/services/pension-identity").PensionIdentityInput,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const t = await getTranslations("admin.serverActions");
-  const { memberRole } = await requireStaff();
-  if (memberRole !== "owner" && memberRole !== "admin") {
+  try {
+    await requireStaffPermission("pension_settings");
+  } catch {
     return { ok: false, error: t("roleForbidden") };
   }
 
@@ -429,7 +480,7 @@ export async function updateFiscalBillingSettingsAction(
     return { ok: false, error: t("roleForbidden") };
   }
 
-  if (memberRole !== "owner" && memberRole !== "admin") {
+  if (memberRole !== "owner") {
     return { ok: false, error: t("roleForbidden") };
   }
 

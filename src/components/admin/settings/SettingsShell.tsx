@@ -10,6 +10,8 @@ import {
   type SettingsNavGroup,
 } from "@/domain/settings/settings-nav";
 
+import type { TeamPermissions } from "@/domain/settings/team-permissions";
+
 type SummaryChip = {
   label: string;
   value: ReactNode;
@@ -18,6 +20,7 @@ type SummaryChip = {
 type Props = {
   role: "admin" | "operator";
   memberRole: "owner" | "admin" | "operator";
+  teamPermissions?: TeamPermissions | null;
   propertyName?: string;
   checkInTime?: string;
   checkOutTime?: string;
@@ -27,6 +30,7 @@ type Props = {
 export function SettingsShell({
   role,
   memberRole,
+  teamPermissions,
   propertyName,
   checkInTime,
   checkOutTime,
@@ -38,6 +42,7 @@ export function SettingsShell({
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
     role,
     memberRole,
+    teamPermissions,
   });
   const activeId = resolveActiveSettingsNavId(pathname);
 
