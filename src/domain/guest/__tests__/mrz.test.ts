@@ -21,8 +21,8 @@ const RO_EID_TD2_OCR = [
 ];
 
 describe("parseMrzIdentity", () => {
-  it("parses TD1 sample", () => {
-    const result = parseMrzIdentity(TD1_SAMPLE);
+  it("parses TD1 sample", async () => {
+    const result = await parseMrzIdentity(TD1_SAMPLE);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.data.lastName).toBe("ERIKSSON");
@@ -31,8 +31,8 @@ describe("parseMrzIdentity", () => {
     expect(result.data.format).toBe("TD1");
   });
 
-  it("maps to guest patch with names", () => {
-    const result = parseMrzIdentity(TD1_SAMPLE);
+  it("maps to guest patch with names", async () => {
+    const result = await parseMrzIdentity(TD1_SAMPLE);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     const patch = mrzToGuestPatch(result.data);
@@ -41,16 +41,16 @@ describe("parseMrzIdentity", () => {
     expect(patch.birth_date).toBe("1974-08-12");
   });
 
-  it("rejects empty input", () => {
-    expect(parseMrzIdentity("")).toEqual({ ok: false, error: "empty" });
+  it("rejects empty input", async () => {
+    expect(await parseMrzIdentity("")).toEqual({ ok: false, error: "empty" });
   });
 
-  it("rejects invalid line count", () => {
-    expect(parseMrzIdentity("ABC\nDEF")).toEqual({ ok: false, error: "invalid_format" });
+  it("rejects invalid line count", async () => {
+    expect(await parseMrzIdentity("ABC\nDEF")).toEqual({ ok: false, error: "invalid_format" });
   });
 
-  it("parses Romanian eID TD2 with noisy OCR on name line", () => {
-    const result = parseMrzIdentity(RO_EID_TD2_OCR);
+  it("parses Romanian eID TD2 with noisy OCR on name line", async () => {
+    const result = await parseMrzIdentity(RO_EID_TD2_OCR);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.data.lastName).toBe("PETRIK");
@@ -84,8 +84,8 @@ describe("extractMrzLinesFromOcrText", () => {
     expect(lines?.every((line) => line.length === 30)).toBe(true);
   });
 
-  it("finds Romanian CI TD1 sample", () => {
-    const result = parseMrzIdentity(RO_CI_TD1);
+  it("finds Romanian CI TD1 sample", async () => {
+    const result = await parseMrzIdentity(RO_CI_TD1);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.data.lastName).toBe("POPESCU");
@@ -100,8 +100,8 @@ describe("extractMrzLinesFromOcrText", () => {
 });
 
 describe("mrzToPrecheckinFields", () => {
-  it("maps passport document type", () => {
-    const result = parseMrzIdentity(TD1_SAMPLE);
+  it("maps passport document type", async () => {
+    const result = await parseMrzIdentity(TD1_SAMPLE);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     const fields = mrzToPrecheckinFields(result.data);

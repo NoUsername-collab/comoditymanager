@@ -7,7 +7,7 @@ import {
   type TenantDomainRoutingKind,
 } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
-import { requireStaff } from "@/lib/auth/require-staff";
+import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { getActiveTenantIdForData } from "@/lib/tenant/active";
 import {
   addCustomTenantDomain,
@@ -26,10 +26,7 @@ function planHasFeature(planId: string, feature: CoreFeature): boolean {
 }
 
 export async function addCustomDomainAction(formData: FormData) {
-  const { role } = await requireStaff();
-  if (role !== "admin") {
-    return { ok: false as const, error: "admin_only" };
-  }
+  await requireStaffPermission("pension_settings");
 
   const tenantId = await getActiveTenantIdForData();
   const tenant = await getTenantById(tenantId);
@@ -79,10 +76,7 @@ export async function addCustomDomainAction(formData: FormData) {
 }
 
 export async function verifyCustomDomainAction(formData: FormData) {
-  const { role } = await requireStaff();
-  if (role !== "admin") {
-    return { ok: false as const, error: "admin_only" };
-  }
+  await requireStaffPermission("pension_settings");
 
   const domainId = String(formData.get("domain_id") ?? "");
   const tenantId = await getActiveTenantIdForData();
@@ -97,10 +91,7 @@ export async function verifyCustomDomainAction(formData: FormData) {
 }
 
 export async function removeCustomDomainAction(formData: FormData) {
-  const { role } = await requireStaff();
-  if (role !== "admin") {
-    return { ok: false as const, error: "admin_only" };
-  }
+  await requireStaffPermission("pension_settings");
 
   const domainId = String(formData.get("domain_id") ?? "");
   const tenantId = await getActiveTenantIdForData();

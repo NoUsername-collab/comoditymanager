@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { parseGuestAppSettingsInput } from "@/domain/settings/schemas/guest-app";
 import { upsertGuestAppSettingsImpl } from "@/services/guest-app/mutations";
-import { requireStaff } from "@/lib/auth/require-staff";
+import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
@@ -16,10 +16,10 @@ export async function saveGuestAppSettingsAction(
   try {
     const [t, staff] = await Promise.all([
       getTranslations("admin.serverActions"),
-      requireStaff(),
+      requireStaffPermission("pension_settings"),
     ]);
 
-    if (staff.memberRole !== "owner" && staff.role !== "admin") {
+    if (staff.role !== "admin") {
       return { ok: false, error: t("forbidden") };
     }
 

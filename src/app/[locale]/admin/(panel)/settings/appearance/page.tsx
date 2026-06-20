@@ -10,6 +10,7 @@ import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import {
   buildSettingsAlerts,
+  canEditPensionSettingsUi,
   loadSettingsStaffContext,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
@@ -43,7 +44,7 @@ export default async function SettingsAppearancePage({
     );
   }
 
-  const canEditGlobalTheme = ctx.staff.role === "admin";
+  const canEditGlobalTheme = canEditPensionSettingsUi(ctx);
 
   return (
     <>
@@ -62,7 +63,7 @@ export default async function SettingsAppearancePage({
             <AdminFxSettings />
           </SettingsSection>
           <div className="settings-form-stack__submit">
-            <AdminSubmitButton type="submit" className="settings-form-stack__btn">
+            <AdminSubmitButton type="submit" variant="primary" size="lg">
               {t("saveTheme")}
             </AdminSubmitButton>
           </div>

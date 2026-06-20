@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { PensionIdentityForm } from "@/components/admin/settings/PensionIdentityForm";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
@@ -7,7 +6,7 @@ import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { getPensionIdentity } from "@/services/pension-identity";
 import {
   buildSettingsAlerts,
-  loadSettingsStaffContext,
+  guardSettingsPermission,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
 
@@ -21,14 +20,9 @@ export default async function SettingsIdentityPage({
   const [t, params, ctx, identity] = await Promise.all([
     getTranslations("admin.pages.settings"),
     searchParams,
-    loadSettingsStaffContext(),
+    guardSettingsPermission("pension_settings"),
     getPensionIdentity(),
   ]);
-
-  const { memberRole } = ctx.staff;
-  if (memberRole !== "owner" && memberRole !== "admin") {
-    await redirect("/admin/settings");
-  }
 
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);

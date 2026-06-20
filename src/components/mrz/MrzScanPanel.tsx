@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { extractMrzLinesFromOcrTexts } from "@/domain/guest/mrz-ocr";
-import { parseMrzIdentity, type MrzMappedIdentity } from "@/domain/guest/mrz";
+import type { MrzMappedIdentity, MrzParseResult } from "@/domain/guest/mrz";
 import { runMrzOcrOnImage } from "@/lib/mrz/run-mrz-ocr";
 
 type TabId = "paste" | "camera";
@@ -100,10 +100,7 @@ export function MrzScanPanel({
     };
   }, [open, tab, stopCamera, t]);
 
-  function showParseResult(
-    lines: string[],
-    result: ReturnType<typeof parseMrzIdentity>,
-  ) {
+  function showParseResult(lines: string[], result: MrzParseResult) {
     if (!result.ok) {
       setPreview(null);
       setParsedLines([]);
@@ -116,18 +113,20 @@ export function MrzScanPanel({
     setError(result.data.checksumValid ? null : t("errors.checksumInvalid"));
   }
 
-  function handleParsePaste() {
+  async function handleParsePaste() {
     setError(null);
     const lines = pasteValue
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean);
-    showParseResult(lines, parseMrzIdentity(pasteValue));
+    const { parseMrzIdentity } = await import("@/domain/guest/mrz");
+    showParseResult(lines, await parseMrzIdentity(pasteValue));
   }
 
-  function handleParseLines(lines: string[]) {
+  async function handleParseLines(lines: string[]) {
     setError(null);
-    showParseResult(lines, parseMrzIdentity(lines));
+    const { parseMrzIdentity } = await import("@/domain/guest/mrz");
+    showParseResult(lines, await parseMrzIdentity(lines));
   }
 
   function handleCapture() {

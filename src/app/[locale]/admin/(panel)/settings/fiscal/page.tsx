@@ -1,5 +1,4 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { FiscalBillingSettingsPanel } from "@/components/admin/settings/FiscalBillingSettingsPanel";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
@@ -10,7 +9,8 @@ import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
   buildSettingsAlerts,
-  loadSettingsStaffContext,
+  canEditFiscalBilling,
+  guardSettingsPermission,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
 
@@ -30,22 +30,18 @@ export default async function SettingsFiscalPage({
     await Promise.all([
       getTranslations("admin.pages.settings"),
       searchParams,
-      loadSettingsStaffContext(),
+      guardSettingsPermission("pension_settings"),
       getBookingRulesSettings().catch(() => null),
       getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
       getLocale(),
       resolveRequestTenant(),
     ]);
 
-  const { memberRole } = ctx.staff;
-  const isOwner = memberRole === "owner";
-  if (!isOwner && memberRole !== "admin") {
-    await redirect("/admin/settings?access=role");
-  }
-
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);
   if (error) alerts.push({ tone: "error", message: error });
+  const readOnly = !canEditFiscalBilling(ctx);
+  if (readOnly) alerts.push({ tone: "info", message: t("fiscal.readOnly") });
 
   const settings = ctx.pensionResult.settings;
   if (!settings || !bookingRules) {
@@ -68,7 +64,7 @@ export default async function SettingsFiscalPage({
           bookingRules={bookingRules}
           checkinSettings={checkinSettings}
           locale={locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"}
-          readOnly={!isOwner}
+          readOnly={readOnly}
         />
       </SettingsSection>
     </>

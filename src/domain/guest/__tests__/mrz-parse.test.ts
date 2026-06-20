@@ -63,7 +63,7 @@ describe("extractMrzLinesFromOcrText", () => {
     expect(lines).toEqual(RO_CI_TD1);
   });
 
-  it("refines OCR typo block when checksum validates after correction", () => {
+  it("refines OCR typo block when checksum validates after correction", async () => {
     const noisy = refineTd1Candidates([
       [
         RO_CI_TD1[0]!,
@@ -72,7 +72,7 @@ describe("extractMrzLinesFromOcrText", () => {
       ],
     ]);
     expect(noisy).not.toBeNull();
-    const parsed = parseMrzIdentity(noisy!);
+    const parsed = await parseMrzIdentity(noisy!);
     expect(parsed.ok).toBe(true);
   });
 });

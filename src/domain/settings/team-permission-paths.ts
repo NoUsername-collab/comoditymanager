@@ -9,7 +9,11 @@ const PENSION_SETTINGS_PREFIXES = [
   "/admin/settings/public-site",
   "/admin/settings/email",
   "/admin/settings/domains",
-  "/admin/settings/appearance",
+] as const;
+
+const OWNER_ONLY_SETTINGS_PREFIXES = [
+  "/admin/settings/statistics",
+  "/admin/settings/team-permissions",
 ] as const;
 
 function matchesPrefix(path: string, prefix: string): boolean {
@@ -46,4 +50,12 @@ export function pathPermissionGroup(pathname: string): PermissionGroupId | null 
   }
 
   return null;
+}
+
+/** Owner-only settings routes (ACL page, team permission matrix). */
+export function pathRequiresOwner(pathname: string): boolean {
+  const path = pathname.replace(/\/$/, "") || "/";
+  return OWNER_ONLY_SETTINGS_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
 }

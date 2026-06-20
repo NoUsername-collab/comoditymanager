@@ -36,20 +36,31 @@ export function PensionIdentityForm({ identity }: Props) {
   }
 
   return (
-    <form className="admin-settings-form settings-form-stack" onSubmit={handleSubmit}>
-      {saved ? <p className="settings-alert settings-alert--success">{t("saved")}</p> : null}
-      {error ? <p className="settings-alert settings-alert--error">{error}</p> : null}
+    <form className="settings-form-stack" onSubmit={handleSubmit}>
+      {saved || error ? (
+        <div className="settings-alerts">
+          {saved ? (
+            <p className="settings-alerts__item settings-alerts__item--success" role="status">
+              {t("saved")}
+            </p>
+          ) : null}
+          {error ? (
+            <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+              {error}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
-      <label>
-        <span>{t("displayName")}</span>
-        <input
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          required
-        />
-      </label>
-
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="admin-settings-fields admin-settings-fields--2col">
+        <label className="admin-settings-fields__full">
+          <span>{t("displayName")}</span>
+          <input
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            required
+          />
+        </label>
         <label>
           <span>{t("email")}</span>
           <input
@@ -123,13 +134,14 @@ export function PensionIdentityForm({ identity }: Props) {
             }
           />
         </label>
+        <p className="admin-settings-hint admin-settings-fields__full">{t("channelsHint")}</p>
       </div>
 
-      <p className="text-sm text-zinc-500">{t("channelsHint")}</p>
-
-      <AdminSubmitButton type="submit" disabled={pending} className="settings-form-stack__btn">
-        {pending ? t("saving") : t("save")}
-      </AdminSubmitButton>
+      <div className="settings-form-stack__submit">
+        <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
+          {pending ? t("saving") : t("save")}
+        </AdminSubmitButton>
+      </div>
     </form>
   );
 }

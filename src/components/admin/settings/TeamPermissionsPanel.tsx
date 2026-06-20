@@ -107,10 +107,10 @@ export function TeamPermissionsPanel({ permissions: initial }: Props) {
         ))}
       </div>
 
-      <div className="team-permissions__actions">
+      <div className="team-permissions__actions settings-form-stack__submit">
         <button
           type="button"
-          className="admin-btn admin-btn--primary"
+          className="admin-btn admin-btn--primary admin-btn--lg"
           disabled={pending}
           onClick={save}
         >

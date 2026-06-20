@@ -1159,7 +1159,8 @@
           "pricesIncludeVatDesc": "Dacă da, totalul camerei este brut; TVA se extrage.",
           "yes": "Da",
           "no": "Nu",
-          "invoiceNextHint": "Următorul număr de factură se alocă automat la emitere."
+          "invoiceNextHint": "Următorul număr de factură se alocă automat la emitere.",
+          "readOnly": "Doar proprietarul poate edita setările fiscale. Poți vizualiza datele mai jos."
         },
         "bookingTitle": "Rezervări & prețuri",
         "bookingSubtitle": "Politici anulare, prețuri și fiscal pe țara pensiunii",

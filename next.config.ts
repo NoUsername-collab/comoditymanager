@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BUILD_SHA:
       process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
   },
+  experimental: {
+    optimizePackageImports: ["date-fns", "@supabase/supabase-js"],
+  },
   headers: async () => [
     {
       source: "/(.*)",

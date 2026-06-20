@@ -12,9 +12,20 @@ function edgeServiceConfig(): { url: string; key: string } | null {
 }
 
 /** Edge middleware: load team permissions for a tenant (falls back to defaults). */
+const EDGE_PERMISSIONS_TTL_MS = 60_000;
+const edgePermissionsCache = new Map<
+  string,
+  { at: number; value: TeamPermissions }
+>();
+
 export async function getTeamPermissionsOnEdge(
   tenantId: string,
 ): Promise<TeamPermissions> {
+  const hit = edgePermissionsCache.get(tenantId);
+  if (hit && Date.now() - hit.at < EDGE_PERMISSIONS_TTL_MS) {
+    return hit.value;
+  }
+
   const service = edgeServiceConfig();
   if (!service) return DEFAULT_TEAM_PERMISSIONS;
 
@@ -28,11 +39,13 @@ export async function getTeamPermissionsOnEdge(
       apikey: service.key,
       Authorization: `Bearer ${service.key}`,
     },
-    cache: "no-store",
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) return DEFAULT_TEAM_PERMISSIONS;
 
   const rows = (await res.json()) as Array<{ team_permissions?: unknown }>;
-  return parseTeamPermissions(rows[0]?.team_permissions);
+  const value = parseTeamPermissions(rows[0]?.team_permissions);
+  edgePermissionsCache.set(tenantId, { at: Date.now(), value });
+  return value;
 }

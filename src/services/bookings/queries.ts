@@ -36,6 +36,7 @@ import { parseOperationalTimestamp } from "@/lib/operational-check";
 
 import {
   BOOKING_ROW_SELECT,
+  GANTT_BOOKING_ROW_SELECT,
   CERERE_LIST_PAGE_SELECT,
   BOOKING_ROW_WITH_UPDATED_SELECT,
   type BookingRow,
@@ -55,7 +56,7 @@ async function listBookingsForRangeImpl(
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("bookings")
-    .select(BOOKING_ROW_SELECT)
+    .select(GANTT_BOOKING_ROW_SELECT)
     .eq("tenant_id", tenantId)
     .neq("status", "anulata")
     .lte("check_in", rangeEnd)

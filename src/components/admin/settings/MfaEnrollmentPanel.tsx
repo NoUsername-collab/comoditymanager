@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import QRCode from "qrcode";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -11,6 +10,7 @@ import {
   mapMfaEnrollError,
 } from "@/lib/auth/mfa-enroll";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 type Props = {
@@ -88,6 +88,7 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
 
       setFactorId(data.id);
       setSecret(data.totp.secret);
+      const QRCode = (await import("qrcode")).default;
       const dataUrl = await QRCode.toDataURL(data.totp.uri, {
         margin: 1,
         width: 200,
@@ -181,48 +182,54 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
 
   if (enrolled) {
     return (
-      <div className="space-y-4">
-        <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          {t("enrolledSuccess")}
-        </p>
-        <button
+      <div className="settings-form-stack">
+        <div className="settings-alerts">
+          <p className="settings-alerts__item settings-alerts__item--success" role="status">
+            {t("enrolledSuccess")}
+          </p>
+        </div>
+        <AdminButton
           type="button"
-          className="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50"
+          variant="danger"
+          size="lg"
           onClick={() => void handleUnenroll()}
           disabled={busy}
         >
           {t("disable")}
-        </button>
+        </AdminButton>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <p className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-950">
-        {t("webPwaExplain")}
-      </p>
-      <p className="text-sm text-zinc-600">{t("optionalLead")}</p>
+    <div className="settings-form-stack">
+      <div className="settings-alerts">
+        <p className="settings-alerts__item settings-alerts__item--info">{t("webPwaExplain")}</p>
+      </div>
+      <p className="admin-settings-hint">{t("optionalLead")}</p>
 
       {!factorId ? (
-        <button
+        <AdminButton
           type="button"
-          className="admin-login-submit"
+          variant="primary"
+          size="lg"
           onClick={() => void handleEnroll()}
           disabled={busy}
         >
           {busy ? t("startingEnroll") : t("startEnroll")}
-        </button>
+        </AdminButton>
       ) : (
-        <div className="space-y-4">
+        <div className="settings-form-stack">
           {preferManualSetup ? (
-            <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-3 text-sm text-zinc-800">
-              <p className="font-medium text-zinc-900">{t("mobileSetupTitle")}</p>
-              <ol className="mt-2 list-decimal space-y-1 pl-4">
-                <li>{t("mobileSetupStep1")}</li>
-                <li>{t("mobileSetupStep2")}</li>
-                <li>{t("mobileSetupStep3")}</li>
-              </ol>
+            <div className="settings-alerts">
+              <div className="settings-alerts__item settings-alerts__item--info">
+                <p className="font-semibold">{t("mobileSetupTitle")}</p>
+                <ol className="mt-2 list-decimal space-y-1 pl-4">
+                  <li>{t("mobileSetupStep1")}</li>
+                  <li>{t("mobileSetupStep2")}</li>
+                  <li>{t("mobileSetupStep3")}</li>
+                </ol>
+              </div>
             </div>
           ) : null}
 
@@ -232,16 +239,17 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
                 {preferManualSetup ? t("manualKeyLead") : t("manualSecret")}
               </p>
               <div className="flex flex-wrap items-start gap-2">
-                <code className="min-w-0 flex-1 break-all rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs text-zinc-800">
+                <code className="admin-settings-fields min-w-0 flex-1 break-all rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-xs">
                   {secret}
                 </code>
-                <button
+                <AdminButton
                   type="button"
-                  className="shrink-0 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-800 hover:bg-zinc-50"
+                  variant="secondary"
+                  size="md"
                   onClick={() => void handleCopySecret()}
                 >
                   {secretCopied ? t("copySecretDone") : t("copySecret")}
-                </button>
+                </AdminButton>
               </div>
             </div>
           ) : null}
@@ -271,8 +279,8 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
               />
             </details>
           ) : null}
-          <label className="block text-sm">
-            {t("codeLabel")}
+          <label className="admin-settings-fields">
+            <span>{t("codeLabel")}</span>
             <AdminInput
               type="text"
               inputMode="numeric"
@@ -280,27 +288,30 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
               placeholder={t("codePlaceholder")}
               value={code}
               onChange={(event) => setCode(event.target.value)}
-              className="mt-1 tracking-widest"
+              className="tracking-widest"
               minLength={6}
               maxLength={6}
               pattern="[0-9]{6}"
             />
           </label>
-          <button
+          <AdminButton
             type="button"
-            className="admin-login-submit"
+            variant="primary"
+            size="lg"
             onClick={() => void handleVerifyEnrollment()}
             disabled={busy || code.trim().length < 6}
           >
             {busy ? t("verifying") : t("confirmEnroll")}
-          </button>
+          </AdminButton>
         </div>
       )}
 
       {error ? (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
+        <div className="settings-alerts">
+          <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+            {error}
+          </p>
+        </div>
       ) : null}
     </div>
   );

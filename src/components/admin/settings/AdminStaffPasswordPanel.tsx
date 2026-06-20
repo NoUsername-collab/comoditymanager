@@ -9,7 +9,7 @@ import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton
 
 function roleLabel(
   role: StaffAccount["role"],
-  tStaff: ReturnType<typeof useTranslations<"admin.pages.staffManagement">>
+  tStaff: ReturnType<typeof useTranslations<"admin.pages.staffManagement">>,
 ): string {
   if (role === "owner") return tStaff("roleOwnerTitle");
   if (role === "admin") return tStaff("roleAdminTitle");
@@ -30,21 +30,20 @@ export function AdminStaffPasswordPanel({
 
   if (accounts.length === 0) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm text-amber-950">
-        <p>{tPage("noStaffForTenant")}</p>
-        <Link
-          href="/admin/settings/staff"
-          className="mt-2 inline-block font-semibold underline"
-        >
-          {tPage("inviteStaffLink")}
-        </Link>
+      <div className="settings-alerts">
+        <p className="settings-alerts__item settings-alerts__item--warning">
+          {tPage("noStaffForTenant")}{" "}
+          <Link href="/admin/settings/staff" className="font-semibold underline">
+            {tPage("inviteStaffLink")}
+          </Link>
+        </p>
       </div>
     );
   }
 
   return (
     <form
-      className="admin-staff-password-panel admin-settings-fields space-y-4"
+      className="admin-staff-password-panel settings-form-stack"
       action={async (formData) => {
         setPending(true);
         setError(null);
@@ -58,51 +57,62 @@ export function AdminStaffPasswordPanel({
         }
       }}
     >
-      <p className="text-xs text-zinc-500">{tPage("tenantStaffHint")}</p>
-      <label>
-        <span>{tPage("staffAccount")}</span>
-        <select name="staff_email" required defaultValue={accounts[0]?.email}>
-          {accounts.map((a) => (
-            <option key={a.memberId} value={a.email}>
-              {roleLabel(a.role, tStaff)} — {a.email}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label>
-        <span>{tPage("newPassword")}</span>
-        <input
-          name="new_password"
-          type="password"
-          autoComplete="new-password"
-          minLength={8}
-          required
-        />
-        <p className="admin-settings-hint">{tPage("minLength")}</p>
-      </label>
-      <label>
-        <span>{tPage("confirmPassword")}</span>
-        <input
-          name="confirm_password"
-          type="password"
-          autoComplete="new-password"
-          minLength={8}
-          required
-        />
-      </label>
-      {error && (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-      {success && (
-        <p className="text-sm text-green-700" role="status">
-          {success}
-        </p>
-      )}
-      <AdminSubmitButton className="admin-staff-password-panel__submit rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60">
-        {pending ? tCommon("saving") : tPage("changePassword")}
-      </AdminSubmitButton>
+      {error || success ? (
+        <div className="settings-alerts">
+          {error ? (
+            <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {success ? (
+            <p className="settings-alerts__item settings-alerts__item--success" role="status">
+              {success}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      <p className="admin-settings-hint">{tPage("tenantStaffHint")}</p>
+
+      <div className="admin-settings-fields">
+        <label>
+          <span>{tPage("staffAccount")}</span>
+          <select name="staff_email" required defaultValue={accounts[0]?.email}>
+            {accounts.map((a) => (
+              <option key={a.memberId} value={a.email}>
+                {roleLabel(a.role, tStaff)} — {a.email}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>{tPage("newPassword")}</span>
+          <input
+            name="new_password"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+          />
+          <p className="admin-settings-hint">{tPage("minLength")}</p>
+        </label>
+        <label>
+          <span>{tPage("confirmPassword")}</span>
+          <input
+            name="confirm_password"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+          />
+        </label>
+      </div>
+
+      <div className="settings-form-stack__submit">
+        <AdminSubmitButton variant="primary" size="lg" disabled={pending}>
+          {pending ? tCommon("saving") : tPage("changePassword")}
+        </AdminSubmitButton>
+      </div>
     </form>
   );
 }

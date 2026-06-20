@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
+import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { BuildingStructureCard } from "@/components/admin/structure/BuildingStructureCard";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { formatAdminError } from "@/lib/admin/format-error";
@@ -85,34 +86,22 @@ export default async function LocationStructurePage() {
 
       <SettingsAlerts alerts={error ? [{ tone: "error", message: error }] : []} />
 
-      <div className="mb-4 grid gap-2 sm:grid-cols-3">
-        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-            {tCommon("buildings")}
-          </p>
-          <p className="mt-0.5 text-xl font-bold tabular-nums text-zinc-900">
-            {structures.length}
-          </p>
+      <div className="admin-settings-summary mb-4">
+        <div className="admin-settings-summary__chip">
+          <span className="admin-settings-summary__label">{tCommon("buildings")}</span>
+          <span className="admin-settings-summary__value">{structures.length}</span>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-            {tCommon("floors")}
-          </p>
-          <p className="mt-0.5 text-xl font-bold tabular-nums text-zinc-900">
-            {totalFloors}
-          </p>
+        <div className="admin-settings-summary__chip">
+          <span className="admin-settings-summary__label">{tCommon("floors")}</span>
+          <span className="admin-settings-summary__value">{totalFloors}</span>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">
-            {tCommon("rooms")}
-          </p>
-          <p className="mt-0.5 text-xl font-bold tabular-nums text-zinc-900">
-            {totalRooms}
-          </p>
+        <div className="admin-settings-summary__chip">
+          <span className="admin-settings-summary__label">{tCommon("rooms")}</span>
+          <span className="admin-settings-summary__value">{totalRooms}</span>
         </div>
       </div>
 
-      <p className="mb-4 max-w-3xl text-sm leading-snug text-zinc-600">{t("workflowHint")}</p>
+      <p className="admin-settings-hint mb-4 max-w-3xl">{t("workflowHint")}</p>
 
       <div className="space-y-4">
         {structures.map((s) => (
@@ -126,30 +115,26 @@ export default async function LocationStructurePage() {
       </div>
 
       {structures.length === 0 && !error && (
-        <div className="mt-4 rounded-xl border border-dashed border-zinc-300 bg-zinc-50 px-4 py-4 text-center">
-          <p className="text-sm text-zinc-600">{t("noBuildingsYet")}</p>
-          <Link
+        <div className="settings-empty settings-empty--bordered mt-4">
+          <p>{t("noBuildingsYet")}</p>
+          <AdminLinkButton
             href="/admin/buildings/new?return_to=structure"
-            className="mt-4 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
+            variant="primary"
+            size="lg"
+            className="mt-4"
           >
             {t("createFirstBuilding")}
-          </Link>
+          </AdminLinkButton>
         </div>
       )}
 
-      <div className="mt-5 flex flex-wrap gap-2 border-t border-zinc-200 pt-4 text-sm">
-        <Link
-          href="/admin/buildings"
-          className="rounded-lg border border-zinc-200 px-3 py-2 text-zinc-700 hover:bg-zinc-50"
-        >
+      <div className="settings-dialog-actions mt-5 border-t border-zinc-200 pt-4">
+        <AdminLinkButton href="/admin/buildings" variant="secondary" size="md">
           {t("linkOccupancy")}
-        </Link>
-        <Link
-          href="/admin/rooms"
-          className="rounded-lg border border-zinc-200 px-3 py-2 text-zinc-700 hover:bg-zinc-50"
-        >
+        </AdminLinkButton>
+        <AdminLinkButton href="/admin/rooms" variant="secondary" size="md">
           {t("linkRoomsList")}
-        </Link>
+        </AdminLinkButton>
       </div>
     </>
   );

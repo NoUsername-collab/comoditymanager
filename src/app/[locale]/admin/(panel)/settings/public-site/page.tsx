@@ -1,23 +1,26 @@
 import { Suspense } from "react";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { Link } from "@/i18n/navigation";
 import { PublicSiteSettingsForm } from "@/components/admin/settings/PublicSiteSettingsForm";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
-import { requireStaff } from "@/lib/auth/require-staff";
 import { getPublicSiteConfigForAdmin } from "@/services/public-site/queries";
 import { getLocale, getTranslations } from "next-intl/server";
+import {
+  buildSettingsAlerts,
+  canEditPensionSettingsUi,
+  guardSettingsPermission,
+} from "@/lib/settings/page-context";
 
 export default async function PublicSiteSettingsPage({
   searchParams,
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, params, locale, staff, config] = await Promise.all([
+  const [t, params, locale, ctx, config] = await Promise.all([
     getTranslations("admin.pages.publicSite"),
     searchParams,
     getLocale(),
-    requireStaff(),
+    guardSettingsPermission("pension_settings"),
     getPublicSiteConfigForAdmin().catch(() => null),
   ]);
 
@@ -30,9 +33,9 @@ export default async function PublicSiteSettingsPage({
     );
   }
 
-  if (staff.role === "operator") {
-    await redirect("/admin/settings?access=role");
-  }
+  const alerts = await buildSettingsAlerts(params);
+  const readOnly = !canEditPensionSettingsUi(ctx);
+  if (readOnly) alerts.push({ tone: "info", message: t("readOnly") });
 
   return (
     <>
@@ -49,15 +52,9 @@ export default async function PublicSiteSettingsPage({
           </Link>
         }
       />
-      <SettingsAlerts
-        alerts={
-          params.saved === "1"
-            ? [{ tone: "success", message: t("saved") }]
-            : []
-        }
-      />
+      <SettingsAlerts alerts={alerts} />
       <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
-        <PublicSiteSettingsForm config={config} locale={locale} />
+        <PublicSiteSettingsForm config={config} locale={locale} readOnly={readOnly} />
       </Suspense>
     </>
   );

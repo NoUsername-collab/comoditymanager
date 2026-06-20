@@ -8,9 +8,7 @@ export function StaffList({ members }: { members: TenantMember[] }) {
   const t = useTranslations("admin.pages.staffManagement");
 
   if (members.length === 0) {
-    return (
-      <p className="text-sm text-zinc-500 py-4">{t("noMembers")}</p>
-    );
+    return <p className="settings-empty">{t("noMembers")}</p>;
   }
 
   // Sort: owner first, then admin, then operator

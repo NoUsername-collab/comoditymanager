@@ -8,7 +8,10 @@ import {
   canStaffPermission,
   type PermissionGroupId,
 } from "@/domain/settings/team-permissions";
-import { pathPermissionGroup } from "@/domain/settings/team-permission-paths";
+import {
+  pathPermissionGroup,
+  pathRequiresOwner,
+} from "@/domain/settings/team-permission-paths";
 import {
   resolveStaffRole,
   tenantMemberRoleToStaffRole,
@@ -164,6 +167,10 @@ export async function requireStaffPermission(group: PermissionGroupId) {
 export async function guardStaffPermissionRoute(pathname: string) {
   const ctx = await cachedStaffContext();
   if (!ctx.user || !ctx.role) return;
+
+  if (pathRequiresOwner(pathname) && ctx.memberRole !== "owner") {
+    await redirect("/admin/settings?access=role");
+  }
 
   const group = pathPermissionGroup(pathname);
   if (!group) return;

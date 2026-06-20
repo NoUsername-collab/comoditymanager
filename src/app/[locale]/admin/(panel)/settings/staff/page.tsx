@@ -1,26 +1,21 @@
 import { getTranslations } from "next-intl/server";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { requireStaff } from "@/lib/auth/require-staff";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { StaffList } from "@/components/admin/settings/StaffList";
 import { StaffInviteForm } from "@/components/admin/settings/StaffInviteForm";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { listActiveTenantMembers } from "@/services/tenant-members";
+import { guardSettingsPermission } from "@/lib/settings/page-context";
 
 export default async function StaffManagementPage() {
   const tenantPromise = resolveRequestTenant();
-  const [t, staff, members] = await Promise.all([
+  const [t, , members] = await Promise.all([
     getTranslations("admin.pages.staffManagement"),
-    requireStaff(),
+    guardSettingsPermission("team_admin"),
     tenantPromise.then((resolvedTenant) =>
       resolvedTenant ? listActiveTenantMembers(resolvedTenant.id) : [],
     ),
   ]);
-
-  if (staff.role !== "admin") {
-    await redirect("/admin/settings?access=role");
-  }
 
   return (
     <>

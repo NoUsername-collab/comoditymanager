@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
 import { inviteStaffAction } from "@/app/[locale]/admin/(panel)/settings/staff/actions";
 
 export function StaffInviteForm() {
@@ -15,7 +14,7 @@ export function StaffInviteForm() {
 
   return (
     <form
-      className="admin-staff-invite"
+      className="admin-staff-invite settings-form-stack"
       action={async (formData) => {
         setPending(true);
         setError(null);
@@ -26,9 +25,8 @@ export function StaffInviteForm() {
             setError(result.error);
           } else {
             setSuccess(t("inviteSuccess"));
-            // Reset form
             const form = document.querySelector<HTMLFormElement>(
-              ".admin-staff-invite"
+              ".admin-staff-invite",
             );
             form?.reset();
           }
@@ -37,58 +35,52 @@ export function StaffInviteForm() {
         }
       }}
     >
+      {error || success ? (
+        <div className="settings-alerts">
+          {error ? (
+            <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {success ? (
+            <p className="settings-alerts__item settings-alerts__item--success" role="status">
+              {success}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       <div className="admin-staff-invite__fields">
-        <div className="admin-staff-invite__field">
-          <label
-            htmlFor="staff-email"
-            className="block text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1"
-          >
-            {t("emailLabel")}
+        <div className="admin-staff-invite__field admin-settings-fields">
+          <label htmlFor="staff-email">
+            <span>{t("emailLabel")}</span>
+            <input
+              id="staff-email"
+              name="email"
+              type="email"
+              required
+              placeholder={t("emailPlaceholder")}
+            />
           </label>
-          <AdminInput
-            id="staff-email"
-            name="email"
-            type="email"
-            required
-            placeholder={t("emailPlaceholder")}
-          />
         </div>
 
-        <div className="admin-staff-invite__field">
-          <label
-            htmlFor="staff-role"
-            className="block text-xs font-semibold uppercase tracking-wide text-zinc-500 mb-1"
-          >
-            {t("roleLabel")}
+        <div className="admin-staff-invite__field admin-settings-fields">
+          <label htmlFor="staff-role">
+            <span>{t("roleLabel")}</span>
+            <select id="staff-role" name="role" defaultValue="operator">
+              <option value="operator">{t("roleOperator")}</option>
+              <option value="admin">{t("roleAdmin")}</option>
+            </select>
+            <p className="admin-settings-hint">{t("roleHint")}</p>
           </label>
-          <AdminSelect
-            id="staff-role"
-            name="role"
-            defaultValue="operator"
-          >
-            <option value="operator">{t("roleOperator")}</option>
-            <option value="admin">{t("roleAdmin")}</option>
-          </AdminSelect>
-          <p className="text-xs text-zinc-400 mt-1">{t("roleHint")}</p>
         </div>
 
         <div className="admin-staff-invite__submit">
-          <AdminButton type="submit" variant="primary" disabled={pending}>
+          <AdminButton type="submit" variant="primary" size="lg" disabled={pending}>
             {pending ? tCommon("saving") : t("inviteButton")}
           </AdminButton>
         </div>
       </div>
-
-      {error && (
-        <p className="mt-2 text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-      {success && (
-        <p className="mt-2 text-sm text-green-700" role="status">
-          {success}
-        </p>
-      )}
     </form>
   );
 }

@@ -65,9 +65,11 @@ function FormSection({
 export function PublicSiteSettingsForm({
   config,
   locale,
+  readOnly = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  readOnly?: boolean;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const [pending, startTransition] = useTransition();
@@ -231,6 +233,7 @@ export function PublicSiteSettingsForm({
 
   return (
     <form onSubmit={handleSubmit} className="settings-form-stack">
+      <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
       {error ? (
         <div className="settings-alerts">
           <p className="settings-alerts__item settings-alerts__item--error" role="alert">
@@ -484,15 +487,14 @@ export function PublicSiteSettingsForm({
         </div>
       </FormSection>
 
-      <div className="settings-form-stack__submit">
-        <AdminSubmitButton
-          type="submit"
-          disabled={pending}
-          className="settings-form-stack__btn"
-        >
-          {pending ? t("saving") : t("save")}
-        </AdminSubmitButton>
-      </div>
+      {!readOnly ? (
+        <div className="settings-form-stack__submit">
+          <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
+            {pending ? t("saving") : t("save")}
+          </AdminSubmitButton>
+        </div>
+      ) : null}
+      </fieldset>
     </form>
   );
 }

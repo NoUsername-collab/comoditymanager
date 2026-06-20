@@ -14,7 +14,9 @@ import {
   getPensionSettings,
   pensionAppearanceSettings,
   pensionStatisticsVisibility,
+  pensionTeamPermissions,
 } from "@/services/pension-settings";
+import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
@@ -64,10 +66,10 @@ export default async function AdminLayout({
   const checkInTime = pension?.default_check_in_time ?? "14:00";
   const checkOutTime = pension?.default_check_out_time ?? "11:00";
   const { isAdmin, locationUnlocked } = staffAccess;
-  const statisticsAccess = canAccessStatistics(
-    staff.memberRole,
-    pensionStatisticsVisibility(pension),
-  );
+  const teamPermissions = pensionTeamPermissions(pension);
+  const statisticsAccess =
+    canStaffPermission(staff.memberRole, "reports_tools", teamPermissions) &&
+    canAccessStatistics(staff.memberRole, pensionStatisticsVisibility(pension));
 
   let appearanceSettings: ThemeSettings = DEFAULT_APPEARANCE;
   if (pension) {

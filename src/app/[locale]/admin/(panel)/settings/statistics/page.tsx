@@ -1,12 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { StatisticsSettingsPanel } from "@/components/admin/settings/StatisticsSettingsPanel";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import {
   buildSettingsAlerts,
-  loadSettingsStaffContext,
+  guardSettingsOwner,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
 
@@ -20,13 +19,8 @@ export default async function SettingsStatisticsPage({
   const [t, params, ctx] = await Promise.all([
     getTranslations("admin.pages.settings"),
     searchParams,
-    loadSettingsStaffContext(),
+    guardSettingsOwner(),
   ]);
-
-  const { memberRole } = ctx.staff;
-  if (memberRole !== "owner") {
-    await redirect("/admin/settings?access=role");
-  }
 
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);

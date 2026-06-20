@@ -1,27 +1,22 @@
 import { getTranslations } from "next-intl/server";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { AdminTenantDomainsPanel } from "@/components/admin/settings/AdminTenantDomainsPanel";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { allowedCustomRoutingKindsForPlan } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { getActiveTenantIdForData, resolveRequestTenant } from "@/lib/tenant/active";
-import { requireStaff } from "@/lib/auth/require-staff";
 import { PLAN_CONFIGS, type CoreFeature, type PlanId } from "@/core/config/plans";
 import { listTenantDomains } from "@/services/tenant-domains";
 import { headers } from "next/headers";
+import { guardSettingsPermission } from "@/lib/settings/page-context";
 
 export default async function SettingsDomainsPage() {
-  const [t, staff, tenant, domains, requestHeaders] = await Promise.all([
+  const [t, , tenant, domains, requestHeaders] = await Promise.all([
     getTranslations("admin.domains"),
-    requireStaff(),
+    guardSettingsPermission("pension_settings"),
     resolveRequestTenant(),
     getActiveTenantIdForData().then((id) => listTenantDomains(id)),
     headers(),
   ]);
-
-  if (staff.role !== "admin") {
-    await redirect("/admin/settings?access=role");
-  }
 
   const requestHost =
     requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");

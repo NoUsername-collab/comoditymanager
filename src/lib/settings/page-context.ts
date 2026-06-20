@@ -40,12 +40,34 @@ export async function loadSettingsStaffContext() {
   };
 }
 
+export type SettingsStaffContext = Awaited<
+  ReturnType<typeof loadSettingsStaffContext>
+>;
+
 export async function guardSettingsPermission(group: PermissionGroupId) {
   const ctx = await loadSettingsStaffContext();
   if (!canStaffPermission(ctx.staff.memberRole, group, ctx.teamPermissions)) {
     await redirect("/admin/settings?access=permission");
   }
   return ctx;
+}
+
+export async function guardSettingsOwner() {
+  const ctx = await loadSettingsStaffContext();
+  if (ctx.staff.memberRole !== "owner") {
+    await redirect("/admin/settings?access=role");
+  }
+  return ctx;
+}
+
+/** Fiscal billing edits are owner-only; admins may view. */
+export function canEditFiscalBilling(ctx: SettingsStaffContext): boolean {
+  return ctx.staff.memberRole === "owner";
+}
+
+/** Global theme and pension channel editors — owner and employed admin. */
+export function canEditPensionSettingsUi(ctx: SettingsStaffContext): boolean {
+  return ctx.staff.role === "admin";
 }
 
 export async function buildSettingsAlerts(

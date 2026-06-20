@@ -70,7 +70,11 @@ export default async function AdminCalendarPage({
   const todayPromise = getEffectiveToday();
   const localePromise = getLocale();
 
-  const [t, tCommon, tGanttRange, locale, params, effectiveToday, dataResult, postCheckoutPolicy] =
+  const checkinSettingsPromise = getCheckinSettings().catch(
+    () => DEFAULT_CHECKIN_SETTINGS,
+  );
+
+  const [t, tCommon, tGanttRange, locale, params, effectiveToday, dataResult, postCheckoutPolicy, checkinSettings] =
     await Promise.all([
       getTranslations("admin.pages.calendar"),
       getTranslations("admin.common"),
@@ -106,6 +110,7 @@ export default async function AdminCalendarPage({
         allowPostCheckoutEdits: false,
         canEditAfterCheckout: false,
       })),
+      checkinSettingsPromise,
     ]);
   const refDate = parseIso(effectiveToday);
   const year = Number(params.y) || refDate.getFullYear();
@@ -177,9 +182,6 @@ export default async function AdminCalendarPage({
   const checkOutTime =
     settings?.default_check_out_time ?? DEFAULT_CHECK_OUT_TIME;
 
-  const checkinSettings = await getCheckinSettings().catch(
-    () => DEFAULT_CHECKIN_SETTINGS
-  );
   const departurePolicy = {
     earlyCheckoutAllowed: checkinSettings.early_checkout_allowed,
     earlyCheckoutFee: checkinSettings.early_checkout_fee,

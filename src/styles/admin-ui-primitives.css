@@ -53,6 +53,19 @@
   min-height: 2.5rem;
 }
 
+@media (max-width: 899px) {
+  .admin-btn--md,
+  .admin-btn--lg {
+    min-height: 2.75rem;
+  }
+
+  .admin-btn--icon-only.admin-btn--md,
+  .admin-btn--icon-only.admin-btn--lg {
+    width: 2.75rem;
+    min-height: 2.75rem;
+  }
+}
+
 /* — Variant: primary — */
 
 .admin-btn--primary {

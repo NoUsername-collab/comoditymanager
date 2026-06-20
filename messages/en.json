@@ -1159,7 +1159,8 @@
           "pricesIncludeVatDesc": "If yes, room totals are gross; VAT is extracted.",
           "yes": "Yes",
           "no": "No",
-          "invoiceNextHint": "Next invoice number is assigned when you issue."
+          "invoiceNextHint": "Next invoice number is assigned when you issue.",
+          "readOnly": "Only the owner can edit fiscal settings. You can view the data below."
         },
         "bookingTitle": "Bookings & pricing",
         "bookingSubtitle": "Cancellation, pricing and country-specific tax & billing",

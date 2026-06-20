@@ -43,28 +43,14 @@ export default async function LocationSetupPage() {
     <>
       <SettingsPageHeader title={tPage("setup.title")} description={tPage("setup.description")} />
 
-      <div className="mb-4 grid gap-2 md:grid-cols-2">
-        <Link
-          href="/admin/settings/location/structure"
-          className="rounded-xl border-2 border-zinc-900 bg-zinc-900 px-3 py-3 text-white shadow-sm hover:bg-zinc-800"
-        >
-          <span className="block text-sm font-semibold">
-            {tPage("structure.cardStructureTitle")}
-          </span>
-          <span className="mt-1 block text-sm text-zinc-200">
-            {tPage("structure.cardStructureBody")}
-          </span>
+      <div className="settings-overview__grid mb-4">
+        <Link href="/admin/settings/location/structure" className="settings-overview-card">
+          <span className="settings-overview-card__title">{tPage("structure.cardStructureTitle")}</span>
+          <span className="settings-overview-card__desc">{tPage("structure.cardStructureBody")}</span>
         </Link>
-        <Link
-          href="/admin/rooms/new?return_to=structure"
-          className="rounded-xl border border-zinc-300 bg-white px-3 py-3 hover:bg-zinc-50"
-        >
-          <span className="block text-sm font-semibold text-zinc-900">
-            {tPage("setup.addRoomsTitle")}
-          </span>
-          <span className="mt-1 block text-sm text-zinc-600">
-            {tPage("setup.addRoomsBody")}
-          </span>
+        <Link href="/admin/rooms/new?return_to=structure" className="settings-overview-card">
+          <span className="settings-overview-card__title">{tPage("setup.addRoomsTitle")}</span>
+          <span className="settings-overview-card__desc">{tPage("setup.addRoomsBody")}</span>
         </Link>
       </div>
 

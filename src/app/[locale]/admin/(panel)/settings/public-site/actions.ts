@@ -3,7 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
-import { requireStaff } from "@/lib/auth/require-staff";
+import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { logAdminActivityFromSession } from "@/services/activity-log";
@@ -16,10 +16,10 @@ export async function savePublicSiteSettingsAction(
   try {
     const [t, staff] = await Promise.all([
       getTranslations("admin.serverActions"),
-      requireStaff(),
+      requireStaffPermission("pension_settings"),
     ]);
 
-    if (staff.memberRole !== "owner" && staff.role !== "admin") {
+    if (staff.role !== "admin") {
       return { ok: false, error: t("forbidden") };
     }
 

@@ -1,5 +1,4 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { BookingRulesSettingsPanel } from "@/components/admin/settings/BookingRulesSettingsPanel";
 import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
@@ -7,7 +6,7 @@ import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
 import {
   buildSettingsAlerts,
-  loadSettingsStaffContext,
+  guardSettingsPermission,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
 
@@ -21,16 +20,10 @@ export default async function SettingsBookingPage({
   const [t, params, ctx, bookingRules, locale] = await Promise.all([
     getTranslations("admin.pages.settings"),
     searchParams,
-    loadSettingsStaffContext(),
+    guardSettingsPermission("pension_settings"),
     getBookingRulesSettings().catch(() => null),
     getLocale(),
   ]);
-
-  const { memberRole } = ctx.staff;
-  const isOwner = memberRole === "owner";
-  if (!isOwner && memberRole !== "admin") {
-    await redirect("/admin/settings?access=role");
-  }
 
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);

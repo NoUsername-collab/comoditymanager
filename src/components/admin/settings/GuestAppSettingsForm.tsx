@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { DESIGN_THEME_IDS } from "@/design/themes/catalog";
@@ -14,10 +15,8 @@ import type {
 import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
 import { saveGuestAppSettingsAction } from "@/app/[locale]/admin/(panel)/settings/guest-app/actions";
-import { AdminInput, AdminSelect, AdminTextarea } from "@/components/admin/ui/AdminInput";
-
-const labelClass =
-  "block text-xs font-semibold uppercase tracking-wide text-zinc-500";
+import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 
 function linesToList(raw: string): string[] {
   return raw
@@ -48,12 +47,31 @@ function linesToListItems(raw: string): GuestAppListItem[] {
   });
 }
 
+function FormSection({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <SettingsSection title={title} description={description}>
+      {children}
+    </SettingsSection>
+  );
+}
+
 export function GuestAppSettingsForm({
   settings,
+  readOnly = false,
 }: {
   settings: GuestAppSettings;
+  readOnly?: boolean;
 }) {
   const t = useTranslations("admin.pages.guestApp");
+  const tCommon = useTranslations("admin.common");
   const tThemes = useTranslations("admin.pages.publicSite.themes");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -116,7 +134,8 @@ export function GuestAppSettingsForm({
     );
   }
 
-  function handleSave() {
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setError(null);
     startTransition(async () => {
       const result = await saveGuestAppSettingsAction({
@@ -157,272 +176,243 @@ export function GuestAppSettingsForm({
   }
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("general")}</h2>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-          />
-          {t("enabled")}
-        </label>
-      </section>
+    <form onSubmit={handleSubmit} className="settings-form-stack">
+      <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
+        {error ? (
+          <div className="settings-alerts">
+            <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+              {error}
+            </p>
+          </div>
+        ) : null}
 
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("appearance")}</h2>
-        <p className="text-xs text-zinc-500">{t("themeHint")}</p>
-        <label className={labelClass}>
-          {t("themeSource")}
-          <AdminSelect
-            className="mt-1"
-            value={themeId}
-            onChange={(e) => setThemeId(e.target.value as GuestAppThemeSource)}
-          >
-            <option value="inherit">{t("themeInherit")}</option>
-            {DESIGN_THEME_IDS.map((id) => (
-              <option key={id} value={id}>
-                {tThemes(`${id}.title`)}
-              </option>
-            ))}
-            <option value="custom">{t("themeCustom")}</option>
-          </AdminSelect>
-        </label>
-        {themeId === "custom" ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className={labelClass}>
-              {t("primaryColor")}
-              <AdminInput
-                type="color"
-                className="mt-1"
-                value={primaryColor}
-                onChange={(e) => setPrimaryColor(e.target.value)}
+        <FormSection title={t("general")}>
+          <div className="admin-settings-fields">
+            <label className="pub-settings-section-toggle">
+              <input
+                type="checkbox"
+                checked={enabled}
+                onChange={(e) => setEnabled(e.target.checked)}
               />
+              <span>{t("enabled")}</span>
             </label>
-            <label className={labelClass}>
-              {t("accentColor")}
-              <AdminInput
-                type="color"
-                className="mt-1"
-                value={accentColor}
-                onChange={(e) => setAccentColor(e.target.value)}
+          </div>
+        </FormSection>
+
+        <FormSection title={t("appearance")} description={t("themeHint")}>
+          <div className="admin-settings-fields admin-settings-fields--2col">
+            <label className="admin-settings-fields__full">
+              <span>{t("themeSource")}</span>
+              <select
+                value={themeId}
+                onChange={(e) => setThemeId(e.target.value as GuestAppThemeSource)}
+              >
+                <option value="inherit">{t("themeInherit")}</option>
+                {DESIGN_THEME_IDS.map((id) => (
+                  <option key={id} value={id}>
+                    {tThemes(`${id}.title`)}
+                  </option>
+                ))}
+                <option value="custom">{t("themeCustom")}</option>
+              </select>
+            </label>
+            {themeId === "custom" ? (
+              <>
+                <label>
+                  <span>{t("primaryColor")}</span>
+                  <input
+                    type="color"
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <span>{t("accentColor")}</span>
+                  <input
+                    type="color"
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                  />
+                </label>
+              </>
+            ) : null}
+            <label className="admin-settings-fields__full">
+              <span>{t("logoUrl")}</span>
+              <input
+                value={logoUrl}
+                onChange={(e) => setLogoUrl(e.target.value)}
+                placeholder="https://..."
               />
             </label>
           </div>
-        ) : null}
-        <label className={labelClass}>
-          {t("logoUrl")}
-          <AdminInput
-            className="mt-1"
-            value={logoUrl}
-            onChange={(e) => setLogoUrl(e.target.value)}
-            placeholder="https://..."
-          />
-        </label>
-      </section>
+        </FormSection>
 
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("features")}</h2>
-        <p className="text-xs text-zinc-500">{t("featuresHint")}</p>
-        <ul className="space-y-2">
-          {features.map((feature) => (
-            <li
-              key={feature.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-100 px-3 py-2"
-            >
-              <span className="text-sm font-medium">
-                {guestAppFeatureLabel(feature.id)}
-              </span>
-              <AdminSelect
-                fieldSize="sm"
-                value={feature.state}
-                onChange={(e) =>
-                  setFeatureState(
-                    feature.id,
-                    e.target.value as GuestAppFeatureState,
-                  )
-                }
-              >
-                <option value="mock">{t("stateMock")}</option>
-                <option value="live">{t("stateLive")}</option>
-                <option value="hidden">{t("stateHidden")}</option>
-              </AdminSelect>
-            </li>
-          ))}
-        </ul>
-      </section>
+        <FormSection title={t("features")} description={t("featuresHint")}>
+          <ul className="admin-settings-list">
+            {features.map((feature) => (
+              <li key={feature.id} className="admin-settings-list__row">
+                <span className="admin-settings-list__label">
+                  {guestAppFeatureLabel(feature.id)}
+                </span>
+                <select
+                  value={feature.state}
+                  onChange={(e) =>
+                    setFeatureState(
+                      feature.id,
+                      e.target.value as GuestAppFeatureState,
+                    )
+                  }
+                >
+                  <option value="mock">{t("stateMock")}</option>
+                  <option value="live">{t("stateLive")}</option>
+                  <option value="hidden">{t("stateHidden")}</option>
+                </select>
+              </li>
+            ))}
+          </ul>
+        </FormSection>
 
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("hotelContent")}</h2>
-        <label className="flex items-center gap-2 text-sm text-zinc-700">
-          <input
-            type="checkbox"
-            checked={usePrimaryContact}
-            onChange={(e) => setUsePrimaryContact(e.target.checked)}
-          />
-          <span>{t("usePrimaryContact")}</span>
-        </label>
-        <label className={labelClass}>
-          {t("shortDescription")}
-          <AdminTextarea
-            className="mt-1"
-            rows={2}
-            value={shortDescription}
-            onChange={(e) => setShortDescription(e.target.value)}
-          />
-        </label>
-        <label className={labelClass}>
-          {t("longDescription")}
-          <AdminTextarea
-            className="mt-1"
-            rows={4}
-            value={longDescription}
-            onChange={(e) => setLongDescription(e.target.value)}
-          />
-        </label>
-        <label className={labelClass}>
-          {t("address")}
-          <AdminInput
-            className="mt-1"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-        </label>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className={labelClass}>
-            {t("phone")}
-            <AdminInput
-              className="mt-1"
-              value={hotelPhone}
-              onChange={(e) => setHotelPhone(e.target.value)}
-            />
-          </label>
-          <label className={labelClass}>
-            Email
-            <AdminInput
-              type="email"
-              className="mt-1"
-              value={hotelEmail}
-              onChange={(e) => setHotelEmail(e.target.value)}
-            />
-          </label>
+        <FormSection title={t("hotelContent")}>
+          <div className="admin-settings-fields admin-settings-fields--2col">
+            <label className="pub-settings-section-toggle admin-settings-fields__full">
+              <input
+                type="checkbox"
+                checked={usePrimaryContact}
+                onChange={(e) => setUsePrimaryContact(e.target.checked)}
+              />
+              <span>{t("usePrimaryContact")}</span>
+            </label>
+            <label className="admin-settings-fields__full">
+              <span>{t("shortDescription")}</span>
+              <textarea
+                rows={2}
+                value={shortDescription}
+                onChange={(e) => setShortDescription(e.target.value)}
+              />
+            </label>
+            <label className="admin-settings-fields__full">
+              <span>{t("longDescription")}</span>
+              <textarea
+                rows={4}
+                value={longDescription}
+                onChange={(e) => setLongDescription(e.target.value)}
+              />
+            </label>
+            <label className="admin-settings-fields__full">
+              <span>{t("address")}</span>
+              <input value={address} onChange={(e) => setAddress(e.target.value)} />
+            </label>
+            <label>
+              <span>{t("phone")}</span>
+              <input value={hotelPhone} onChange={(e) => setHotelPhone(e.target.value)} />
+            </label>
+            <label>
+              <span>Email</span>
+              <input
+                type="email"
+                value={hotelEmail}
+                onChange={(e) => setHotelEmail(e.target.value)}
+              />
+            </label>
+            <label className="admin-settings-fields__full">
+              <span>Website</span>
+              <input value={website} onChange={(e) => setWebsite(e.target.value)} />
+            </label>
+          </div>
+        </FormSection>
+
+        <FormSection title="Wi-Fi">
+          <div className="admin-settings-fields">
+            <label>
+              <span>{t("wifiNetwork")}</span>
+              <input value={wifiName} onChange={(e) => setWifiName(e.target.value)} />
+            </label>
+            <label>
+              <span>{t("wifiPassword")}</span>
+              <input
+                value={wifiPassword}
+                onChange={(e) => setWifiPassword(e.target.value)}
+              />
+            </label>
+            <label>
+              <span>{t("wifiInstructions")}</span>
+              <textarea
+                rows={2}
+                value={wifiInstructions}
+                onChange={(e) => setWifiInstructions(e.target.value)}
+              />
+            </label>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("travelTips")}>
+          <div className="admin-settings-fields">
+            <label>
+              <span>{t("travelTipsHint")}</span>
+              <textarea
+                rows={4}
+                value={travelTips}
+                onChange={(e) => setTravelTips(e.target.value)}
+              />
+            </label>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("facilities")} description={t("listItemsHint")}>
+          <div className="admin-settings-fields">
+            <label>
+              <span>{t("facilitiesList")}</span>
+              <textarea
+                rows={4}
+                value={facilitiesText}
+                onChange={(e) => setFacilitiesText(e.target.value)}
+              />
+            </label>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("services")} description={t("listItemsHint")}>
+          <div className="admin-settings-fields">
+            <label>
+              <span>{t("servicesList")}</span>
+              <textarea
+                rows={4}
+                value={servicesText}
+                onChange={(e) => setServicesText(e.target.value)}
+              />
+            </label>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("greenStay")}>
+          <div className="admin-settings-fields">
+            <label className="pub-settings-section-toggle">
+              <input
+                type="checkbox"
+                checked={greenEnabled}
+                onChange={(e) => setGreenEnabled(e.target.checked)}
+              />
+              <span>{t("greenStayEnabled")}</span>
+            </label>
+            <label>
+              <span>{t("greenStayDescription")}</span>
+              <textarea
+                rows={3}
+                value={greenDescription}
+                onChange={(e) => setGreenDescription(e.target.value)}
+              />
+            </label>
+          </div>
+        </FormSection>
+      </fieldset>
+
+      {!readOnly ? (
+        <div className="settings-form-stack__submit">
+          <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
+            {pending ? tCommon("saving") : t("save")}
+          </AdminSubmitButton>
         </div>
-        <label className={labelClass}>
-          Website
-          <AdminInput
-            className="mt-1"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-          />
-        </label>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">Wi-Fi</h2>
-        <label className={labelClass}>
-          {t("wifiNetwork")}
-          <AdminInput
-            className="mt-1"
-            value={wifiName}
-            onChange={(e) => setWifiName(e.target.value)}
-          />
-        </label>
-        <label className={labelClass}>
-          {t("wifiPassword")}
-          <AdminInput
-            className="mt-1"
-            value={wifiPassword}
-            onChange={(e) => setWifiPassword(e.target.value)}
-          />
-        </label>
-        <label className={labelClass}>
-          {t("wifiInstructions")}
-          <AdminTextarea
-            className="mt-1"
-            rows={2}
-            value={wifiInstructions}
-            onChange={(e) => setWifiInstructions(e.target.value)}
-          />
-        </label>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("travelTips")}</h2>
-        <label className={labelClass}>
-          {t("travelTipsHint")}
-          <AdminTextarea
-            className="mt-1"
-            rows={4}
-            value={travelTips}
-            onChange={(e) => setTravelTips(e.target.value)}
-          />
-        </label>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("facilities")}</h2>
-        <p className="text-xs text-zinc-500">{t("listItemsHint")}</p>
-        <label className={labelClass}>
-          {t("facilitiesList")}
-          <AdminTextarea
-            className="mt-1"
-            rows={4}
-            value={facilitiesText}
-            onChange={(e) => setFacilitiesText(e.target.value)}
-          />
-        </label>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("services")}</h2>
-        <p className="text-xs text-zinc-500">{t("listItemsHint")}</p>
-        <label className={labelClass}>
-          {t("servicesList")}
-          <AdminTextarea
-            className="mt-1"
-            rows={4}
-            value={servicesText}
-            onChange={(e) => setServicesText(e.target.value)}
-          />
-        </label>
-      </section>
-
-      <section className="space-y-3 rounded-xl border border-zinc-200 bg-white p-4">
-        <h2 className="text-sm font-semibold text-zinc-900">{t("greenStay")}</h2>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={greenEnabled}
-            onChange={(e) => setGreenEnabled(e.target.checked)}
-          />
-          {t("greenStayEnabled")}
-        </label>
-        <label className={labelClass}>
-          {t("greenStayDescription")}
-          <AdminTextarea
-            className="mt-1"
-            rows={3}
-            value={greenDescription}
-            onChange={(e) => setGreenDescription(e.target.value)}
-          />
-        </label>
-      </section>
-
-      {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-          {error}
-        </p>
       ) : null}
-
-      <button
-        type="button"
-        disabled={pending}
-        className="admin-settings-submit__btn rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-        onClick={handleSave}
-      >
-        {pending ? "…" : t("save")}
-      </button>
-    </div>
+    </form>
   );
 }

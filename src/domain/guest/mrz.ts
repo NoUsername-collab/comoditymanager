@@ -7,7 +7,6 @@ import {
   type NationalIdType,
 } from "@/domain/guest/national-id";
 import { detectMrzFormat, normalizeMrzBlock, splitMrzInput } from "@/domain/guest/mrz-ocr";
-import { parseMrzLinesBestEffort } from "@/domain/guest/mrz-parse";
 import type { GuestPrecheckinDocType } from "@/domain/guest-app/precheckin-prefill";
 
 export type MrzMappedIdentity = {
@@ -162,7 +161,7 @@ function sanitizeMrzPersonNames(
   return { lastName: last, firstName: first };
 }
 
-export function parseMrzIdentity(input: string | string[]): MrzParseResult {
+export async function parseMrzIdentity(input: string | string[]): Promise<MrzParseResult> {
   const rawLines = Array.isArray(input)
     ? input.map((line) => line.trim())
     : splitMrzInput(input);
@@ -171,6 +170,7 @@ export function parseMrzIdentity(input: string | string[]): MrzParseResult {
   const lines = normalizeMrzBlock(rawLines) ?? rawLines;
   if (!detectMrzFormat(lines)) return { ok: false, error: "invalid_format" };
 
+  const { parseMrzLinesBestEffort } = await import("@/domain/guest/mrz-parse");
   const attempt = parseMrzLinesBestEffort(lines);
   if (!attempt) return { ok: false, error: "unsupported" };
 

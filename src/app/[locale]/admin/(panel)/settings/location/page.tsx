@@ -133,7 +133,7 @@ export default async function LocationAdminPage({
                 </label>
               </div>
               <div className="settings-form-stack__submit">
-                <AdminSubmitButton type="submit" className="settings-form-stack__btn">
+                <AdminSubmitButton type="submit" variant="primary" size="lg">
                   {tPage("operational.save")}
                 </AdminSubmitButton>
               </div>
@@ -144,43 +144,21 @@ export default async function LocationAdminPage({
             title={tPage("structure.title")}
             description={tPage("structure.subtitle")}
           >
-            <div className="space-y-4">
-              <p className="text-sm text-zinc-600">{tPage("structure.hint")}</p>
-              <div className="admin-settings-location-nav grid gap-3 md:grid-cols-2">
-                <Link
-                  href="/admin/settings/location/structure"
-                  className="admin-settings-location-nav__card rounded-xl border-2 border-zinc-900 bg-zinc-900 px-4 py-4 text-white shadow-sm hover:bg-zinc-800"
-                >
-                  <span className="block text-sm font-semibold">
-                    {tPage("structure.cardStructureTitle")}
-                  </span>
-                  <span className="mt-1 block text-sm text-zinc-200">
-                    {tPage("structure.cardStructureBody")}
-                  </span>
-                  <span className="mt-2 inline-block text-xs font-bold uppercase tracking-wide text-emerald-300">
-                    {tPage("structure.recommended")}
-                  </span>
+            <div className="settings-form-stack">
+              <p className="admin-settings-hint">{tPage("structure.hint")}</p>
+              <div className="settings-overview__grid">
+                <Link href="/admin/settings/location/structure" className="settings-overview-card">
+                  <span className="settings-overview-card__title">{tPage("structure.cardStructureTitle")}</span>
+                  <span className="settings-overview-card__desc">{tPage("structure.cardStructureBody")}</span>
                 </Link>
-                <Link
-                  href="/admin/settings/location/setup"
-                  className="admin-settings-location-nav__card rounded-xl border border-emerald-600 bg-emerald-50 px-4 py-4 hover:bg-emerald-100"
-                >
-                  <span className="block text-sm font-semibold text-emerald-950">
-                    {tPage("structure.cardModularTitle")}
-                  </span>
-                  <span className="mt-1 block text-sm text-emerald-900">
-                    {tPage("structure.cardModularBody")}
-                  </span>
+                <Link href="/admin/settings/location/setup" className="settings-overview-card">
+                  <span className="settings-overview-card__title">{tPage("structure.cardModularTitle")}</span>
+                  <span className="settings-overview-card__desc">{tPage("structure.cardModularBody")}</span>
                 </Link>
               </div>
-              <Link
-                href="/admin/rooms"
-                className="admin-settings-location-nav__rooms-link mt-3 block rounded-xl border border-zinc-300 bg-white px-4 py-3 hover:bg-zinc-50"
-              >
-                <span className="text-sm font-semibold text-zinc-900">{tCommon("rooms")}</span>
-                <span className="mt-0.5 block text-sm text-zinc-600">
-                  {tPage("structure.cardRoomsBody")}
-                </span>
+              <Link href="/admin/rooms" className="settings-overview-card">
+                <span className="settings-overview-card__title">{tCommon("rooms")}</span>
+                <span className="settings-overview-card__desc">{tPage("structure.cardRoomsBody")}</span>
               </Link>
             </div>
           </SettingsSection>

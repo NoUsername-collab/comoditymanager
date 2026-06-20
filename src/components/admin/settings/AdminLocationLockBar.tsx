@@ -10,9 +10,7 @@ export async function AdminLocationLockBar() {
   const isOwner = memberRole === "owner";
 
   if (isOwner) {
-    return (
-      <p className="max-w-xl text-xs text-zinc-500">{t("ownerLockHint")}</p>
-    );
+    return <p className="admin-settings-hint max-w-xl">{t("ownerLockHint")}</p>;
   }
 
   const untilMs = await getAdminLocationUnlockUntilMs();
@@ -25,9 +23,9 @@ export async function AdminLocationLockBar() {
 
   return (
     <div className="admin-location-lock-bar flex flex-wrap items-center gap-3">
-      <span className="admin-location-lock-bar__badge rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900">
+      <p className="settings-alerts__item settings-alerts__item--warning mb-0">
         {t("sessionActive", { time: expiresAt })}
-      </span>
+      </p>
       <AdminLocationLockButton />
     </div>
   );

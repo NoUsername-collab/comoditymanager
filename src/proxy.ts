@@ -17,7 +17,10 @@ import { isAdminLocationUnlockTokenValidEdge } from "@/lib/auth/admin-location-u
 import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
 import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
-import { pathPermissionGroup } from "@/domain/settings/team-permission-paths";
+import {
+  pathPermissionGroup,
+  pathRequiresOwner,
+} from "@/domain/settings/team-permission-paths";
 import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { getTeamPermissionsOnEdge } from "@/lib/auth/team-permissions-edge";
 import {
@@ -261,37 +264,41 @@ async function runTenantAppProxy(
     if (mfaRedirect) return mfaRedirect;
 
     if (path.startsWith("/admin") && !isLoginPage) {
-      const permGroup = pathPermissionGroup(path);
-      const tenantId =
-        slug != null
-          ? await resolveTenantIdOnEdge({ slug })
-          : customDomain != null
-            ? await resolveTenantIdOnEdge({ customDomain })
-            : null;
-      const teamPermissions = tenantId
-        ? await getTeamPermissionsOnEdge(tenantId)
-        : null;
-
-      if (
-        permGroup &&
-        !canStaffPermission(memberRole, permGroup, teamPermissions)
-      ) {
+      if (pathRequiresOwner(path) && memberRole !== "owner") {
         const redirectUrl = request.nextUrl.clone();
         redirectUrl.pathname = "/admin/settings";
-        redirectUrl.searchParams.set("access", "permission");
+        redirectUrl.searchParams.set("access", "role");
         return NextResponse.redirect(redirectUrl);
       }
 
-      if (
-        permGroup === "location_structure" &&
-        memberRole !== "owner"
-      ) {
-        const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
-        if (!(await isAdminLocationUnlockTokenValidEdge(unlock))) {
+      const permGroup = pathPermissionGroup(path);
+
+      if (permGroup) {
+        const tenantId =
+          slug != null
+            ? await resolveTenantIdOnEdge({ slug })
+            : customDomain != null
+              ? await resolveTenantIdOnEdge({ customDomain })
+              : null;
+        const teamPermissions = tenantId
+          ? await getTeamPermissionsOnEdge(tenantId)
+          : null;
+
+        if (!canStaffPermission(memberRole, permGroup, teamPermissions)) {
           const redirectUrl = request.nextUrl.clone();
           redirectUrl.pathname = "/admin/settings";
-          redirectUrl.searchParams.set("location", "locked");
+          redirectUrl.searchParams.set("access", "permission");
           return NextResponse.redirect(redirectUrl);
+        }
+
+        if (permGroup === "location_structure" && memberRole !== "owner") {
+          const unlock = request.cookies.get(ADMIN_LOCATION_UNLOCK_COOKIE)?.value;
+          if (!(await isAdminLocationUnlockTokenValidEdge(unlock))) {
+            const redirectUrl = request.nextUrl.clone();
+            redirectUrl.pathname = "/admin/settings";
+            redirectUrl.searchParams.set("location", "locked");
+            return NextResponse.redirect(redirectUrl);
+          }
         }
       }
     }
