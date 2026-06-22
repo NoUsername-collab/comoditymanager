@@ -99,6 +99,8 @@ html {
   );
   --gantt-bar-fill-pending: var(--booking-pending-bg);
   --gantt-bar-fill-past: var(--booking-past-bg);
+  --gantt-cap-ok: var(--active-border);
+  --gantt-cap-problem: var(--error);
 
   --booking-cancelled-bg: var(--cancelled-bg);
   --booking-cancelled-border: var(--cancelled-border);
@@ -214,12 +216,8 @@ html {
   --admin-switch-active-bg: var(--accent);
   --admin-switch-active-text: #ffffff;
 
-  /* Gradient doar pentru tab „cereri” — tonuri suficient de închise pentru text alb */
-  --admin-cereri-grad: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 92%, black 8%),
-    color-mix(in srgb, var(--accent) 72%, black 28%)
-  );
+  /* Tab „cereri” — fill plat (brand accent, fără gradient operațional) */
+  --admin-cereri-grad: var(--admin-btn-primary-bg);
 
   --admin-cereri-fill-bg: var(--admin-btn-primary-bg);
   --admin-cereri-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 86%, black);

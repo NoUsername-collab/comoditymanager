@@ -58,7 +58,7 @@ export function GuestIdentityCard({
   });
 
   return (
-    <section className="guest-hero">
+    <section className="guest-hero admin-surface-card">
       <div className="guest-hero__top">
         <div className="guest-hero__avatar">
           {(guest.display_name?.[0] ?? "?").toUpperCase()}

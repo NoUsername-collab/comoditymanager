@@ -40,6 +40,7 @@ export function AdminPalettePicker() {
 
       <div className="admin-palette-block">
         <p className="admin-palette-block__desc">{t("familyDescription")}</p>
+        <p className="admin-palette-block__hint">{t("ganttBrandHint")}</p>
 
         <div className="pub-settings-grid pub-settings-grid--3">
           {DESIGN_THEME_IDS.map((id) => {

@@ -589,7 +589,7 @@
 .admin-route-skeleton__row,
 .admin-route-skeleton__card {
   border-radius: 0.65rem;
-  background: linear-gradient(90deg, #f4f4f5 0%, #e4e4e7 50%, #f4f4f5 100%);
+  background: var(--surface-2);
   animation: admin-route-skeleton-pulse 1.2s ease-in-out infinite;
 }
 

@@ -417,7 +417,7 @@
   width: 1.8rem;
   height: 1.8rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 70%, var(--text)) 100%);
+  background: var(--accent);
   color: #fff;
   font-size: 0.68rem;
   font-weight: 800;
@@ -941,11 +941,7 @@
   z-index: 1;
   margin: 0 -0.25rem -0.25rem;
   padding: 0.65rem 0.25rem 0.15rem;
-  background: linear-gradient(
-    180deg,
-    transparent,
-    color-mix(in srgb, var(--surface) 88%, var(--accent) 6%) 28%
-  );
+  background: var(--admin-surface-bg, var(--surface));
 }
 
 .guest-history__item .guest-rebook-collapse {
@@ -976,7 +972,7 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 60%, var(--text)) 100%);
+  background: var(--accent);
   color: #fff;
   font-size: 1.25rem;
   font-weight: 900;

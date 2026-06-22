@@ -33,6 +33,13 @@ export const designTokenKeys = {
   cancelledBorder: "--cancelled-border",
   cancelledText: "--cancelled-text",
 
+  /* Gantt bar fills (semantic — independent of brand accent) */
+  ganttBarFillActive: "--gantt-bar-fill-active",
+  ganttBarFillPending: "--gantt-bar-fill-pending",
+  ganttBarFillPast: "--gantt-bar-fill-past",
+  ganttCapOk: "--gantt-cap-ok",
+  ganttCapProblem: "--gantt-cap-problem",
+
   /* Spacing / radius (px strings match CSS) */
   radiusSm: "--radius-sm",
   radiusMd: "--radius-md",
@@ -46,11 +53,17 @@ export const designTokenKeys = {
   adminElevationShadow: "--admin-elevation-shadow",
 
   adminTintInfoBg: "--admin-tint-info-bg",
+  adminTintInfoBorder: "--admin-tint-info-border",
   adminTintWarningBg: "--admin-tint-warning-bg",
+  adminTintWarningBorder: "--admin-tint-warning-border",
   adminTintSuccessBg: "--admin-tint-success-bg",
+  adminTintSuccessBorder: "--admin-tint-success-border",
   adminTintDangerBg: "--admin-tint-danger-bg",
+  adminTintDangerBorder: "--admin-tint-danger-border",
   adminTintVioletBg: "--admin-tint-violet-bg",
+  adminTintVioletBorder: "--admin-tint-violet-border",
   adminTintSkyBg: "--admin-tint-sky-bg",
+  adminTintSkyBorder: "--admin-tint-sky-border",
 } as const;
 
 /** Default light-theme values — sync with _base.css / default-day.css */
@@ -65,6 +78,8 @@ export const designTokenDefaults = {
   radiusSm: 6,
   radiusMd: 10,
   radiusLg: 14,
+  ganttCapOk: "#22c55e",
+  ganttCapProblem: "#dc2626",
 } as const;
 
 export type DesignTokenKey = keyof typeof designTokenKeys;

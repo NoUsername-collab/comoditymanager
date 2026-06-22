@@ -2082,6 +2082,7 @@
       },
       "palette": {
         "familyDescription": "Same 3 families as the public site — Noir, Alpine, Mediterranean — each with Day and Night.",
+        "ganttBrandHint": "Gantt uses semantic booking colors (confirmed, request, past). Brand palette applies to the admin header and public site — not to stay bars.",
         "previewTheme": "Preview {theme}",
         "descriptionPrefix": "Active theme:",
         "descriptionSuffix": "Day / Night on the same skeleton.",

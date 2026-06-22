@@ -1183,11 +1183,7 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
   --ml-admin-nav-offset: calc(var(--ml-bottom-nav-height) + var(--ml-safe-top));
   /* Light shell — never mix from dark admin-page-bg (noir stays readable) */
   --gantt-day-page-bg: color-mix(in srgb, #ffffff 90%, var(--admin-accent-muted, #ecfdf5));
-  --gantt-day-nav-bg: linear-gradient(
-    135deg,
-    color-mix(in srgb, #ffffff 94%, var(--admin-accent-muted, #ecfdf5)) 0%,
-    color-mix(in srgb, #ffffff 86%, var(--admin-accent-muted, #d1fae5)) 100%
-  );
+  --gantt-day-nav-bg: color-mix(in srgb, #ffffff 90%, var(--admin-accent-muted, #ecfdf5));
   --gantt-day-toolbar-bg: color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5));
   --gantt-day-toolbar-border: color-mix(
     in srgb,
@@ -1374,22 +1370,14 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active {
-  background: linear-gradient(
-    135deg,
-    var(--admin-accent, #059669) 0%,
-    color-mix(in srgb, var(--admin-accent) 78%, white) 100%
-  ) !important;
+  background: var(--admin-accent, #059669) !important;
   border-color: color-mix(in srgb, var(--admin-accent) 55%, transparent) !important;
   color: #fff !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active:hover,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn--active:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--admin-accent) 92%, white) 0%,
-    var(--admin-accent) 100%
-  ) !important;
+  background: color-mix(in srgb, var(--admin-accent) 88%, white) !important;
   filter: none !important;
 }
 
@@ -1472,11 +1460,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky .gan
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-thead-sticky .gantt-head-main-row__days,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__days {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, #ffffff 96%, var(--admin-accent-muted, #ecfdf5)) 0%,
-    color-mix(in srgb, #ffffff 88%, var(--admin-accent-muted, #ecfdf5)) 100%
-  );
+  background: var(--admin-surface-bg, color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5)));
 }
 
 /* Premium calendar density — override padding that caused dead space */

@@ -125,6 +125,7 @@ export function ActivityJournal({ entries }: { entries: ActivityLogEntry[] }) {
         aria-labelledby={`activity-tab-${active}`}
         className={[
           "activity-journal__panel",
+          "admin-surface-card",
           `activity-journal__panel--${active}`,
         ].join(" ")}
       >

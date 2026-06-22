@@ -56,7 +56,7 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 | Item | Stare | Fișiere |
 |------|-------|---------|
 | Spine 4px pe **rândul clădire** (sidebar stânga) | **Done** — `::before` 4px (`--building-spine`) | `globals.css`, `gantt-mobile.css`, `GanttVirtualizedBody.tsx` |
-| Gradient pe chrome Gantt (header viewport, summary, room column) | **Parțial** — chrome principal flat; rămân zone toolbar/mobile | `gantt-premium.css`, `globals.css` |
+| Gradient pe chrome Gantt (header viewport, summary, room column) | **Done** — chrome + mobile + cereri queue flat | `gantt-premium.css`, `gantt-mobile.css`, `globals.css` |
 | Legendă footer cu swatch gradient | **Done** — swatch-uri token `--gantt-bar-fill-*` | `GanttFooterLegend.tsx`, `globals.css` |
 | Bară turnover (azi check-out + check-in) cu gradient | **Done** — hard-stop flat 50/50 | `admin-gantt-stay-chip.css` |
 | Hold/block: shadow pe chip | **Done** — `box-shadow: none` | `admin-gantt-stay-chip.css` |
@@ -71,14 +71,14 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 | Check-in flow | **Done** (operațional; print factură neschimbat) | `admin-checkin.css` |
 | Toolbar cazări | **Done** — alert cereri flat | `admin-cazari-toolbar.css` |
 | Clasa `.admin-surface-card` | **Adoptată** în TSX cheie | `admin-surfaces.css`, statistici, disponibilitate, quick panel |
-| Istoric, feedback, simulare, guests | **Parțial** | diverse `admin-*.css` |
+| Istoric, feedback, simulare, guests | **Done** | `admin-history.css`, `admin-guests.css`, `admin-feedback.css`, `admin-simulation.css` |
 
 ### P2 — curățenie & consistență
 
 - [x] Comentariu `Nestio` → `Hospira` în `platform-split.css`; gradiente marketing header flatten parțial
 - [x] `GanttFooterLegend` — swatch-uri plate ca în UI real
-- [ ] Audit noapte (`default-night.css`) — spine Gantt, contrast cap health
-- [ ] Documentare în UI Setări: „Gantt = semantic, brand = header”
+- [x] Audit noapte (`default-night.css`) — spine Gantt, contrast cap health, tokeni admin-surface/tint
+- [x] Documentare în UI Setări: „Gantt = semantic, brand = header” (ro/en/bg)
 
 ### Out of scope (intenționat)
 
@@ -125,20 +125,21 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 
 ---
 
-## 6. Status sinteză (2026-06-22, post P0/P1)
+## 6. Status sinteză (2026-06-22, post P0/P1/P2)
 
 | Zonă | Aliniere | Notă |
 |------|----------|------|
 | **Bare Gantt stay** | ~95% | Flat + spine + cap + turnover hard-stop |
-| **Chrome Gantt** | ~75% | Header/summary/viewport/toolbar flat; mobile + zone secundare rămân |
+| **Chrome Gantt** | ~92% | Shell, summary, cereri queue, mobile nav flat; hatch hold/block păstrat |
 | **Rând clădire (spine sidebar)** | ~90% | 4px desktop / 2px compact, `--building-spine` |
-| **Admin flat (setări, cazări, check-in, avail.)** | ~80% | Tokeni + `.admin-surface-card`; guests/history parțial |
-| **Dashboard** | ~70% | KPI flat; hero liquid = delight zone documentat |
-| **Check-in / disponibilitate** | ~85% | Operațional flat; print factură intact |
+| **Admin flat (setări, cazări, check-in, avail.)** | ~92% | Tokeni + `.admin-surface-card`; guests/history/feedback/simulation flat |
+| **Dashboard** | ~88% | KPI + check-in quest flat; hero liquid = delight zone documentat |
+| **Check-in / disponibilitate** | ~90% | Operațional flat; print factură intact |
+| **Temă noapte** | ~90% | `default-night.css` + overrides: gantt fills, cap contrast, admin tints |
 | **Site public** | N/A | Brand deliberate, nu țintă flat PMS |
 | **Platformă Hospira** | ~85% | Naming Hospira; marketing header flat solid |
 
-**Verdict:** P0 Gantt + P1 operațional major **implementate**; rămân P2 (noapte, setări UI copy, guests/history/simulation sweep).
+**Verdict:** P0 + P1 + P2 **implementate** (~96% aliniere operațională). Excepții intenționate: hero dashboard liquid, facturi print, hatch Gantt hold/block, preview paletă setări, site public brand.
 
 ---
 
@@ -176,7 +177,7 @@ Plan executabil pentru agent Cursor / sesiuni viitoare. Estimări: **S** ≤1h, 
 | B5 | `.admin-surface-card` în TSX | statistici, disponibilitate, quick panel | S | ≥4 componente adoptate |
 | B6 | Platform Hospira naming + flat ops | `platform-split.css` | S | Comentariu Hospira; footer/logo solid |
 
-### Faza C — P2 curățenie (rămas)
+### Faza C — P2 curățenie ✅ Done 2026-06-22
 
 | # | Task | Fișiere | Efort | DoD |
 |---|------|---------|-------|-----|

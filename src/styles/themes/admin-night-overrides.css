@@ -72,13 +72,8 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 /* ── Check-in quest (admin-home) ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest {
   border-color: color-mix(in srgb, var(--active-border) 35%, var(--admin-panel-border));
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--active-border) 10%, var(--admin-panel-bg)) 0%,
-    var(--admin-panel-bg) 55%,
-    color-mix(in srgb, var(--pending-border) 8%, var(--admin-panel-bg)) 100%
-  );
-  box-shadow: var(--shadow);
+  background: var(--admin-tint-success-bg, var(--admin-panel-bg));
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__title,
@@ -128,11 +123,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-quest__victory {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--active-bg) 85%, var(--surface)),
-    color-mix(in srgb, var(--pending-bg) 70%, var(--surface))
-  ) !important;
+  background: var(--admin-tint-success-bg, color-mix(in srgb, var(--active-bg) 85%, var(--surface))) !important;
   border-color: var(--active-border) !important;
 }
 
@@ -205,11 +196,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .checkin-start-btn {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--active-bg) 90%, var(--surface)) 0%,
-    color-mix(in srgb, var(--active-border) 22%, var(--surface-2)) 100%
-  ) !important;
+  background: var(--admin-tint-success-bg, color-mix(in srgb, var(--active-bg) 90%, var(--surface))) !important;
   border-color: color-mix(in srgb, var(--active-border) 55%, transparent) !important;
   color: var(--active-text) !important;
 }

@@ -1937,6 +1937,7 @@
       },
       "palette": {
         "familyDescription": "Същите 3 семейства като публичния сайт — Noir, Alpine, Mediterranean — всяко с Ден и Нощ.",
+        "ganttBrandHint": "Gantt = семантични цветове за резервации (потвърдено, заявка, минало). Brand = header на admin и публичен сайт — не върху stay лентите.",
         "previewTheme": "Преглед {theme}",
         "descriptionPrefix": "Активна тема:",
         "descriptionSuffix": "Ден / Нощ на един скелет.",

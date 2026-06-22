@@ -391,16 +391,10 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   align-items: center;
   gap: 0.55rem 0.75rem;
   border-radius: 1rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 82%, transparent);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, #ffffff 97%, var(--admin-accent-muted, #d1fae5)) 0%,
-    color-mix(in srgb, #fafafa 96%, var(--admin-accent-muted, #d1fae5)) 100%
-  );
+  border: 1px solid var(--admin-surface-border, color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 82%, transparent));
+  background: var(--admin-surface-bg, var(--admin-panel-bg, #fff));
   padding: 0.45rem 0.55rem;
-  box-shadow:
-    0 6px 14px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .gantt-inline-controls {
@@ -588,15 +582,9 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   gap: 0.35rem;
   padding: 0.55rem 0.6rem 0.6rem;
   border-radius: 0.95rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 84%, transparent);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, #ffffff 96%, var(--admin-accent-muted, #d1fae5)) 0%,
-    color-mix(in srgb, #fafafa 96%, var(--admin-accent-muted, #d1fae5)) 100%
-  );
-  box-shadow:
-    0 8px 18px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.84);
+  border: 1px solid var(--admin-surface-border, color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 84%, transparent));
+  background: var(--admin-surface-bg, var(--admin-panel-bg, #fff));
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .gantt-inline-controls__picker-label {
@@ -1379,15 +1367,9 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   min-width: 0;
   padding: 0.55rem 0.6rem 0.6rem;
   border-radius: 0.95rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 84%, transparent);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, #ffffff 96%, var(--admin-accent-muted, #d1fae5)) 0%,
-    color-mix(in srgb, #fafafa 96%, var(--admin-accent-muted, #d1fae5)) 100%
-  );
-  box-shadow:
-    0 8px 18px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.84);
+  border: 1px solid var(--admin-surface-border, color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 84%, transparent));
+  background: var(--admin-surface-bg, var(--admin-panel-bg, #fff));
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .gantt-seg--compact .gantt-seg__track {
@@ -1401,15 +1383,9 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   min-height: 3.18rem;
   padding: 0.3rem 0.46rem;
   border-radius: 0.98rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 68%, transparent);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 98%, transparent) 0%,
-    color-mix(in srgb, var(--surface-2) 96%, transparent) 100%
-  );
-  box-shadow:
-    0 4px 12px color-mix(in srgb, var(--text) 4%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--surface) 82%, transparent);
+  border: 1px solid var(--admin-surface-border, color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 68%, transparent));
+  background: var(--admin-surface-bg, var(--surface));
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .gantt-seg--inline .gantt-seg__label {
@@ -1639,18 +1615,14 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   height: 0.92rem;
   transform: translateX(-50%) rotate(45deg);
   border-top-left-radius: 0.22rem;
-  background: linear-gradient(
-    180deg,
-    var(--gantt-home-surface-top) 0%,
-    var(--gantt-home-surface-bottom) 100%
-  );
+  background: var(--gantt-home-surface-top, var(--surface));
   border: 1.5px solid var(--accent);
   box-shadow:
     0 0 0 2.5px var(--gantt-home-ring-inner),
     0 0 0 5px var(--gantt-home-ring-mid),
     0 0 0 7.5px var(--gantt-home-ring-outer),
-    0 0 16px color-mix(in srgb, var(--accent) 22%, transparent),
-    0 6px 12px rgba(15, 23, 42, 0.08);
+    0 0 14px color-mix(in srgb, var(--accent) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .gantt-radial__body {
@@ -1660,11 +1632,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   height: 0.71rem;
   margin-top: 0.43rem;
   border-radius: 0.35rem;
-  background: linear-gradient(
-    180deg,
-    var(--gantt-home-surface-top) 0%,
-    var(--gantt-home-surface-bottom) 100%
-  );
+  background: var(--gantt-home-surface-top, var(--surface));
   border: 1.5px solid var(--accent);
   box-shadow:
     0 0 0 2.5px var(--gantt-home-ring-inner),
@@ -1682,11 +1650,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   height: 0.39rem;
   transform: translateX(-50%);
   border-radius: 0.28rem 0.28rem 0 0;
-  background: linear-gradient(
-    180deg,
-    var(--gantt-home-door-top) 0%,
-    var(--gantt-home-door-bottom) 100%
-  );
+  background: var(--gantt-home-door-bottom, var(--accent));
 }
 
 .gantt-radial__action {
@@ -1837,11 +1801,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   min-height: 2.2rem;
   border-radius: 0.9rem;
   border: 1px solid color-mix(in srgb, #f59e0b 55%, #fcd34d);
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, #fef3c7 85%, #fff) 0%,
-    #fffbeb 100%
-  );
+  background: var(--admin-tint-warning-bg, #fffbeb);
   padding: 0.46rem 0.82rem;
   font-size: 0.72rem;
   font-weight: 900;
@@ -1884,13 +1844,9 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 
 /* —— Listă cereri (persistentă, indiferent de lună) —— */
 .gantt-cereri-queue {
-  border: 1px solid color-mix(in srgb, #f59e0b 35%, var(--admin-panel-border, #e4e4e7));
+  border: 1px solid var(--admin-tint-warning-border, color-mix(in srgb, #f59e0b 35%, var(--admin-panel-border, #e4e4e7)));
   border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, #fffbeb 55%, var(--admin-panel-bg, #fff)) 0%,
-    var(--admin-panel-bg, #fff) 55%
-  );
+  background: var(--admin-tint-warning-bg, color-mix(in srgb, #fffbeb 55%, var(--admin-panel-bg, #fff)));
   padding: 0.65rem 0.75rem 0.7rem;
   scroll-margin-top: 6rem;
 }
@@ -1898,12 +1854,8 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 .gantt-cereri-queue--embedded {
   border: none;
   border-radius: 0;
-  border-top: 1px solid color-mix(in srgb, #f59e0b 32%, var(--admin-panel-border, #e4e4e7));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, #fffbeb 70%, var(--admin-panel-bg, #fff)) 0%,
-    color-mix(in srgb, #fffbeb 25%, var(--admin-panel-bg, #fff)) 100%
-  );
+  border-top: 1px solid var(--admin-tint-warning-border, color-mix(in srgb, #f59e0b 32%, var(--admin-panel-border, #e4e4e7)));
+  background: var(--admin-tint-warning-bg, color-mix(in srgb, #fffbeb 70%, var(--admin-panel-bg, #fff)));
   padding: 0.55rem 0.85rem 0.65rem;
   scroll-margin-top: 4.5rem;
 }
@@ -2478,7 +2430,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-room-row--drag-span td:last-child {
-  background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+  background: var(--admin-tint-sky-bg, #f0f9ff);
 }
 
 .gantt-drag-row.gantt-room-row--drag-span::after {
@@ -2490,7 +2442,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   min-width: 2.75rem;
   height: var(--gantt-stay-h);
   border-radius: 0.8rem;
-  background: linear-gradient(180deg, rgba(14, 165, 233, 0.22) 0%, rgba(56, 189, 248, 0.34) 100%);
+  background: color-mix(in srgb, #0ea5e9 28%, transparent);
   border: 1px solid rgba(2, 132, 199, 0.55);
   box-shadow:
     0 6px 14px rgba(14, 165, 233, 0.18),
@@ -2500,7 +2452,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-drag-row.gantt-room-row--drag-span.gantt-room-row--drag-span-conflict::after {
-  background: linear-gradient(180deg, rgba(251, 113, 133, 0.22) 0%, rgba(248, 113, 113, 0.34) 100%);
+  background: color-mix(in srgb, #f87171 28%, transparent);
   border-color: rgba(220, 38, 38, 0.52);
   box-shadow:
     0 6px 14px rgba(239, 68, 68, 0.16),
@@ -2509,7 +2461,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 
 /* Rând sumar — camere libere / zi */
 .gantt-summary-row {
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  background: var(--admin-surface-bg, var(--surface));
   border-bottom: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
 }
 
@@ -2579,38 +2531,22 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-summary-cell--high {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 94%, var(--success)) 0%,
-    color-mix(in srgb, var(--surface-2) 90%, var(--success)) 100%
-  );
+  background: color-mix(in srgb, var(--success) 10%, var(--surface));
   color: var(--admin-text, #18181b);
 }
 
 .gantt-summary-cell--mid {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 95%, var(--warning)) 0%,
-    color-mix(in srgb, var(--surface-2) 91%, var(--warning)) 100%
-  );
+  background: color-mix(in srgb, var(--warning) 8%, var(--surface));
   color: var(--admin-text, #18181b);
 }
 
 .gantt-summary-cell--low {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 94%, var(--warning)) 0%,
-    color-mix(in srgb, var(--surface-2) 84%, var(--warning)) 100%
-  );
+  background: color-mix(in srgb, var(--warning) 14%, var(--surface));
   color: var(--admin-text, #18181b);
 }
 
 .gantt-summary-cell--full {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 90%, var(--error)) 0%,
-    color-mix(in srgb, var(--surface-2) 78%, var(--error)) 100%
-  );
+  background: color-mix(in srgb, var(--error) 12%, var(--surface));
   color: var(--admin-text, #18181b);
 }
 
@@ -2752,14 +2688,12 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   padding: 0.78rem 0.88rem 0.92rem;
   border-radius: 0.15rem 0.15rem 0.2rem 0.2rem;
   background-color: #fffef8;
-  background-image:
-    repeating-linear-gradient(
-      transparent,
-      transparent 1.12rem,
-      color-mix(in srgb, var(--stay-note-accent, #059669) 9%, #d4d4d8) 1.12rem,
-      color-mix(in srgb, var(--stay-note-accent, #059669) 9%, #d4d4d8) 1.13rem
-    ),
-    linear-gradient(165deg, #ffffff 0%, #fffef5 48%, #fef9e8 100%);
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 1.12rem,
+    color-mix(in srgb, var(--stay-note-accent, #059669) 9%, #d4d4d8) 1.12rem,
+    color-mix(in srgb, var(--stay-note-accent, #059669) 9%, #d4d4d8) 1.13rem
+  );
   border: 1px solid color-mix(in srgb, var(--stay-note-accent, #059669) 18%, #e7e5e4);
   box-shadow:
     0 1px 0 color-mix(in srgb, #000 6%, transparent),
@@ -2776,25 +2710,20 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   bottom: 0;
   width: 0.85rem;
   height: 0.85rem;
-  background: linear-gradient(
-    225deg,
-    color-mix(in srgb, #000 7%, transparent) 0%,
-    transparent 55%
-  );
+  background: color-mix(in srgb, #000 7%, transparent);
   clip-path: polygon(100% 0, 0 100%, 100% 100%);
   opacity: 0.45;
   pointer-events: none;
 }
 
 .gantt-stay-note__paper--cerere {
-  background-image:
-    repeating-linear-gradient(
-      transparent,
-      transparent 1.12rem,
-      color-mix(in srgb, #d97706 10%, #d4d4d8) 1.12rem,
-      color-mix(in srgb, #d97706 10%, #d4d4d8) 1.13rem
-    ),
-    linear-gradient(165deg, #fffef8 0%, #fffbeb 55%, #fef3c7 100%);
+  background-color: #fffbeb;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 1.12rem,
+    color-mix(in srgb, #d97706 10%, #d4d4d8) 1.12rem,
+    color-mix(in srgb, #d97706 10%, #d4d4d8) 1.13rem
+  );
 }
 
 .gantt-stay-note__pin {
@@ -2845,11 +2774,11 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-stay-note__alert--unpaid {
-  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  background: var(--gantt-cap-problem, #dc2626);
 }
 
 .gantt-stay-note__alert--identity {
-  background: linear-gradient(180deg, #f87171 0%, #b91c1c 100%);
+  background: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 82%, #b91c1c);
 }
 
 .gantt-stay-note__block--progress {
@@ -2907,21 +2836,13 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-stay-note .gantt-stay__timeline--checkin .gantt-stay__timeline-fill {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, #10b981 90%, white) 0%,
-    color-mix(in srgb, #059669 92%, white) 100%
-  );
-  box-shadow: 0 0 6px color-mix(in srgb, #10b981 35%, transparent);
+  background: var(--gantt-cap-ok, var(--active-border));
+  box-shadow: none;
 }
 
 .gantt-stay-note .gantt-stay__timeline--nights .gantt-stay__timeline-fill {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--stay-note-accent, #059669) 82%, white) 0%,
-    color-mix(in srgb, var(--stay-note-accent, #059669) 96%, #1e3a5f) 100%
-  );
-  box-shadow: 0 0 6px color-mix(in srgb, var(--stay-note-accent, #059669) 28%, transparent);
+  background: color-mix(in srgb, var(--stay-note-accent, #059669) 88%, var(--surface));
+  box-shadow: none;
 }
 
 .gantt-stay-note__block {
@@ -3015,7 +2936,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 
 /* Pinned selection (Ctrl+drag multi-room) */
 .gantt-room-row--pinned td:last-child {
-  background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+  background: var(--admin-tint-info-bg, #eff6ff);
 }
 
 .gantt-drag-row.gantt-room-row--pinned::after {
@@ -3027,7 +2948,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   min-width: 2.75rem;
   height: var(--gantt-stay-h);
   border-radius: 0.8rem;
-  background: linear-gradient(180deg, rgba(59, 130, 246, 0.18) 0%, rgba(96, 165, 250, 0.28) 100%);
+  background: color-mix(in srgb, #3b82f6 26%, transparent);
   border: 1.5px solid rgba(37, 99, 235, 0.5);
   box-shadow:
     0 4px 12px rgba(59, 130, 246, 0.14),
@@ -3045,9 +2966,9 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.85rem;
-  border-top: 1px solid rgba(37, 99, 235, 0.3);
-  background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
-  box-shadow: 0 -4px 16px rgba(59, 130, 246, 0.12);
+  border-top: 1px solid color-mix(in srgb, #2563eb 30%, var(--border));
+  background: var(--admin-tint-info-bg, #eff6ff);
+  box-shadow: none;
   font-size: 0.75rem;
   font-weight: 700;
   color: #1e40af;

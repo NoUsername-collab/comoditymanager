@@ -11,12 +11,8 @@
 
 .booking-checkout-panel__hero {
   border-radius: 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--border, #e4e4e7) 90%, transparent);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, #f97316 8%, var(--surface, #fff)) 0%,
-    var(--surface, #fff) 100%
-  );
+  border: 1px solid var(--admin-tint-warning-border, color-mix(in srgb, var(--border, #e4e4e7) 90%, transparent));
+  background: var(--admin-tint-warning-bg, var(--surface, #fff));
   padding: 0.7rem 0.8rem;
 }
 
@@ -141,7 +137,7 @@
 
 .booking-checkout-panel__btn--primary {
   border: 1px solid #ea580c;
-  background: linear-gradient(180deg, #fb923c 0%, #ea580c 100%);
+  background: #ea580c;
   color: #fff7ed;
 }
 

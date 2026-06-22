@@ -105,11 +105,7 @@ html[data-theme="default"][data-mode="night"] {
   --admin-switch-active-bg: var(--accent);
   --admin-switch-active-text: #0b0d12;
 
-  --admin-cereri-grad: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 88%, #0b0d12),
-    color-mix(in srgb, var(--accent) 62%, #0b0d12)
-  );
+  --admin-cereri-grad: var(--admin-btn-primary-bg);
 
   --admin-cereri-fill-bg: var(--admin-btn-primary-bg);
   --admin-cereri-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 82%, white);
@@ -142,4 +138,33 @@ html[data-theme="default"][data-mode="night"] {
   --gantt-zone-checkout-text: var(--text-muted);
   --gantt-zone-clean-text: var(--text);
   --gantt-zone-checkin-text: var(--text-muted);
+
+  /* ── Admin flat surfaces (night) ── */
+  --admin-surface-bg: var(--surface);
+  --admin-surface-border: var(--border);
+  --admin-surface-shadow: none;
+
+  --admin-tint-info-bg: color-mix(in srgb, var(--info) 10%, var(--surface));
+  --admin-tint-info-border: color-mix(in srgb, var(--info) 28%, var(--border));
+  --admin-tint-warning-bg: color-mix(in srgb, var(--pending-bg) 85%, var(--surface));
+  --admin-tint-warning-border: color-mix(in srgb, var(--pending-border) 35%, var(--border));
+  --admin-tint-success-bg: color-mix(in srgb, var(--active-bg) 80%, var(--surface));
+  --admin-tint-success-border: color-mix(in srgb, var(--active-border) 35%, var(--border));
+  --admin-tint-danger-bg: color-mix(in srgb, var(--cancelled-bg) 75%, var(--surface));
+  --admin-tint-danger-border: color-mix(in srgb, var(--cancelled-border) 35%, var(--border));
+  --admin-tint-violet-bg: color-mix(in srgb, var(--blocked-bg) 80%, var(--surface));
+  --admin-tint-violet-border: color-mix(in srgb, var(--blocked-border) 30%, var(--border));
+  --admin-tint-sky-bg: color-mix(in srgb, var(--hold-bg) 80%, var(--surface));
+  --admin-tint-sky-border: color-mix(in srgb, var(--hold-border) 30%, var(--border));
+
+  /* ── Gantt semantic fills — contrast AA pe fundal închis ── */
+  --gantt-bar-fill-active: color-mix(
+    in srgb,
+    var(--active-bg) 42%,
+    var(--active-border) 58%
+  );
+  --gantt-bar-fill-pending: var(--pending-bg);
+  --gantt-bar-fill-past: var(--past-bg);
+  --gantt-cap-ok: #34d399;
+  --gantt-cap-problem: #f87171;
 }

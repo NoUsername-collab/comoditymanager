@@ -2081,6 +2081,7 @@
       },
       "palette": {
         "familyDescription": "Aceleași 3 familii ca site-ul public — Noir, Alpine, Mediterranean — fiecare cu variantă Zi și Noapte.",
+        "ganttBrandHint": "Gantt = culori semantice rezervări (confirmat, cerere, trecut). Brand = header admin și site public — nu pe barele de stay.",
         "previewTheme": "Preview {theme}",
         "day": "Zi",
         "night": "Noapte",

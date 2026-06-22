@@ -14,7 +14,7 @@ export function AdminEmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="admin-empty-state">
+    <div className="admin-empty-state admin-surface-card">
       <span className="admin-empty-state__emoji" aria-hidden>
         {emoji}
       </span>
