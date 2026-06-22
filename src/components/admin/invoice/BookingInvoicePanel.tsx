@@ -12,14 +12,14 @@ type Props = {
   bookingId: string;
   document: IssuedInvoiceDocument;
   issued: boolean;
-  showHospiraBranding: boolean;
+  showPlatformBranding: boolean;
 };
 
 export function BookingInvoicePanel({
   bookingId,
   document: initialDocument,
   issued: initialIssued,
-  showHospiraBranding,
+  showPlatformBranding,
 }: Props) {
   const t = useTranslations("admin.issuedInvoice");
   const { showToast } = useAdminFx();
@@ -53,7 +53,7 @@ export function BookingInvoicePanel({
   return (
     <IssuedInvoiceView
       document={document}
-      showHospiraBranding={showHospiraBranding}
+      showPlatformBranding={showPlatformBranding}
       issued={issued}
       onIssue={issued ? undefined : handleIssue}
       issuing={issuing}

@@ -203,7 +203,7 @@
       "reputationExcellent": "Excelent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklist",
-      "welcomeHome": "Bun venit la Hospira!",
+      "welcomeHome": "Bun venit la Nestio!",
       "loadDataError": "Nu s-au putut încărca datele",
       "achievements": "Realizări",
       "homeEyebrow": "Acasă · panou recepție",
@@ -241,7 +241,7 @@
       "moodFullWeek": "Săptămână plină — camerele se mișcă bine. Continuă tot așa!",
       "moodQuietEvening": "Seară liniștită — toate camerele sunt libere diseară. Poți respira.",
       "moodAllFree": "Nicio cameră ocupată diseară — perfect pentru pregătiri sau odihnă.",
-      "moodDefault": "Totul arată bine la recepție. O zi bună la Hospira!",
+      "moodDefault": "Totul arată bine la recepție. O zi bună la Nestio!",
       "briefingArrivals": "{count, plural, one {# sosire} few {# sosiri} other {# sosiri}}",
       "briefingDepartures": "{count, plural, one {# plecare} few {# plecări} other {# plecări}}",
       "briefingClean": "{count} de curățat",
@@ -311,8 +311,8 @@
     },
     "pages": {
       "calendar": {
-        "title": "Calendar — Hospira",
-        "ganttTitle": "Calendar Gantt — Hospira",
+        "title": "Calendar — Nestio",
+        "ganttTitle": "Calendar Gantt — Nestio",
         "windowGantt": "Gantt",
         "unassignedTitle": "Cereri neconfirmate",
         "unassignedSubtitle": "Fără cameră în perioada afișată",
@@ -322,7 +322,7 @@
         "heatmapError": "Eroare la încărcarea heatmap-ului."
       },
       "cazari": {
-        "title": "Cazări — Hospira",
+        "title": "Cazări — Nestio",
         "searchFilter": "Caută și filtrează",
         "results": "Rezultate",
         "operational": "Operațional",
@@ -334,7 +334,7 @@
         "historyEmpty": "Istoricul este gol"
       },
       "statistics": {
-        "title": "Statistici — Hospira",
+        "title": "Statistici — Nestio",
         "monthCompare": "Comparativ lună",
         "continuous": "Înregistrare continuă",
         "guestNights": "Nopți oaspeți",
@@ -347,7 +347,7 @@
         "nights": "Nopți"
       },
       "location": {
-        "title": "Administrare locație — Hospira",
+        "title": "Administrare locație — Nestio",
         "operational": "Operațional",
         "operationalSubtitle": "{name} · ore și paturi extra",
         "displayName": "Nume afișat",
@@ -370,7 +370,7 @@
         "confirmAllocate": "Confirmă și alocă camere"
       },
       "roomsNew": {
-        "title": "Cameră nouă — Hospira",
+        "title": "Cameră nouă — Nestio",
         "migrationHint": "pentru tipuri și"
       },
       "home": {

@@ -7,11 +7,11 @@ export type StaffLoginUsername =
   | typeof ADMIN_LOGIN_USERNAME;
 
 export function getAdminEmail(): string {
-  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@hospira.ro";
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@nestio.ro";
 }
 
 export function getOperatorEmail(): string {
-  return process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@hospira.ro";
+  return process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@nestio.ro";
 }
 
 export function normalizeLoginUsername(input: string): string {

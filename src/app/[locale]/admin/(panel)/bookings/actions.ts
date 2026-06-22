@@ -64,7 +64,11 @@ export async function confirmBookingAction(formData: FormData) {
         "@/services/guest-app/access"
       );
       const link = await resolveGuestAccessLinkForBooking(id, baseUrl);
-      const pensionSettings = await getPensionSettings().catch(() => null);
+      const { getEmailSettings } = await import("@/services/email-settings");
+      const [pensionSettings, emailSettings] = await Promise.all([
+        getPensionSettings().catch(() => null),
+        getEmailSettings().catch(() => null),
+      ]);
 
       const { notifyGuestConfirmed } = await import("@/lib/email/notify");
       await notifyGuestConfirmed({
@@ -78,6 +82,7 @@ export async function confirmBookingAction(formData: FormData) {
         checkInTime: pensionSettings?.default_check_in_time,
         checkOutTime: pensionSettings?.default_check_out_time,
         guestAppUrl: link?.url,
+        emailSettings: emailSettings ?? undefined,
       });
     } catch { /* email failure must never crash */ }
   })();
@@ -112,7 +117,11 @@ export async function cancelBookingAction(formData: FormData) {
       try {
         const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
         const { getTenantDisplayName } = await import("@/services/tenants");
-        const pensionName = await getTenantDisplayName(await resolveTenantIdForData());
+        const { getEmailSettings } = await import("@/services/email-settings");
+        const [pensionName, emailSettings] = await Promise.all([
+          getTenantDisplayName(await resolveTenantIdForData()),
+          getEmailSettings().catch(() => null),
+        ]);
         const { notifyGuestCancelled } = await import("@/lib/email/notify");
         await notifyGuestCancelled({
           guestEmail: bookingBefore.guest_email,
@@ -120,6 +129,7 @@ export async function cancelBookingAction(formData: FormData) {
           guestName: bookingBefore.guest_name,
           checkIn: bookingBefore.check_in,
           checkOut: bookingBefore.check_out,
+          emailSettings: emailSettings ?? undefined,
         });
       } catch { /* email failure must never crash */ }
     })();

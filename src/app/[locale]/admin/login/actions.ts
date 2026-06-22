@@ -41,7 +41,7 @@ async function finalizeStaffLogin(
 
   if (
     !tenant &&
-    safeNext.startsWith("/hospira-admin") &&
+    safeNext.startsWith("/nestio-admin") &&
     user.email &&
     isPlatformAdminEmail(user.email)
   ) {

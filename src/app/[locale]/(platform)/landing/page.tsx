@@ -84,7 +84,7 @@ export default async function LandingPage() {
             <h2 className="landing-section__title">{t("problemTitle")}</h2>
             <div className="landing-comparison">
               <div className="landing-comparison__col landing-comparison__col--bad">
-                <h3 className="landing-comparison__heading">{t("withoutHospira")}</h3>
+                <h3 className="landing-comparison__heading">{t("withoutNestio")}</h3>
                 <ul className="landing-comparison__list">
                   <li>{t("problem1")}</li>
                   <li>{t("problem2")}</li>
@@ -93,7 +93,7 @@ export default async function LandingPage() {
                 </ul>
               </div>
               <div className="landing-comparison__col landing-comparison__col--good">
-                <h3 className="landing-comparison__heading">{t("withHospira")}</h3>
+                <h3 className="landing-comparison__heading">{t("withNestio")}</h3>
                 <ul className="landing-comparison__list">
                   <li>{t("solution1")}</li>
                   <li>{t("solution2")}</li>

@@ -33,7 +33,7 @@ export default async function BookingInvoicePage({
   if (!preview) notFound();
 
   const document = active?.document ?? preview;
-  const showHospiraBranding = await resolveShowBrandingForRequest();
+  const showPlatformBranding = await resolveShowBrandingForRequest();
 
   return (
     <AdminPageFrame
@@ -49,7 +49,7 @@ export default async function BookingInvoicePage({
           bookingId={id}
           document={document}
           issued={Boolean(active)}
-          showHospiraBranding={showHospiraBranding}
+          showPlatformBranding={showPlatformBranding}
         />
       </div>
     </AdminPageFrame>

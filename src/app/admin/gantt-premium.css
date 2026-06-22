@@ -3720,7 +3720,7 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
    Calendar — HUD minimal + extra vertical savings
    ═══════════════════════════════════════════════════════════════ */
 
-/* Brand: pill + FREE → mic „dev Hospira” stânga sus */
+/* Brand: pill + FREE → mic „dev Nestio” stânga sus */
 .admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text {
   gap: 0;
   padding: 0;
@@ -3744,7 +3744,7 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
 }
 
 .admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text::before {
-  content: "dev Hospira";
+  content: "dev Nestio";
   font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 0.01em;

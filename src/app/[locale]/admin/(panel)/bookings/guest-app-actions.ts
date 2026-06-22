@@ -169,9 +169,11 @@ export async function sendGuestAppLinkEmailAction(
     const link = await resolveGuestAccessLinkForBooking(bookingId, baseUrl);
     if (!link) return { ok: false, error: t("errors.linkUnavailable") };
 
-    const [tenantId, pensionSettings] = await Promise.all([
+    const { getEmailSettings } = await import("@/services/email-settings");
+    const [tenantId, pensionSettings, emailSettings] = await Promise.all([
       resolveTenantIdForData(),
       getPensionSettings().catch(() => null),
+      getEmailSettings().catch(() => null),
     ]);
     const pensionName = await getTenantDisplayName(tenantId);
 
@@ -184,6 +186,7 @@ export async function sendGuestAppLinkEmailAction(
       guestAppUrl: link.url,
       checkInTime: pensionSettings?.default_check_in_time,
       checkOutTime: pensionSettings?.default_check_out_time,
+      emailSettings: emailSettings ?? undefined,
     });
 
     return { ok: true };

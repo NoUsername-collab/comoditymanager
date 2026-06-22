@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // The module reads process.env at import time, so we stub env before importing.
-vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN", "hospira.ro");
+vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN", "nestio.ro");
 vi.stubEnv("NEXT_PUBLIC_PLATFORM_HOSTS", "");
 vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
 
@@ -20,20 +20,20 @@ describe("parseTenantFromHost", () => {
     expect(parseTenantFromHost("127.0.0.1")).toEqual({ type: "platform" });
   });
 
-  it("returns platform for hospira.ro", () => {
-    expect(parseTenantFromHost("hospira.ro")).toEqual({ type: "platform" });
+  it("returns platform for nestio.ro", () => {
+    expect(parseTenantFromHost("nestio.ro")).toEqual({ type: "platform" });
   });
 
-  it("returns platform for www.hospira.ro", () => {
-    expect(parseTenantFromHost("www.hospira.ro")).toEqual({ type: "platform" });
+  it("returns platform for www.nestio.ro", () => {
+    expect(parseTenantFromHost("www.nestio.ro")).toEqual({ type: "platform" });
   });
 
-  it("returns platform for test.hospira.ro (staging apex)", () => {
-    expect(parseTenantFromHost("test.hospira.ro")).toEqual({ type: "platform" });
+  it("returns platform for test.nestio.ro (staging apex)", () => {
+    expect(parseTenantFromHost("test.nestio.ro")).toEqual({ type: "platform" });
   });
 
-  it("returns tenant with slug for slug.hospira.ro", () => {
-    expect(parseTenantFromHost("casa-emil.hospira.ro")).toEqual({
+  it("returns tenant with slug for slug.nestio.ro", () => {
+    expect(parseTenantFromHost("casa-emil.nestio.ro")).toEqual({
       type: "tenant",
       slug: "casa-emil",
     });
@@ -54,7 +54,7 @@ describe("parseTenantFromHost", () => {
   });
 
   it("returns tenant for hyphenated slug", () => {
-    expect(parseTenantFromHost("my-pension.hospira.ro")).toEqual({
+    expect(parseTenantFromHost("my-pension.nestio.ro")).toEqual({
       type: "tenant",
       slug: "my-pension",
     });
@@ -73,14 +73,14 @@ describe("parseTenantFromHost", () => {
     });
   });
 
-  it("does not treat dotted subdomain as tenant (a.b.hospira.ro)", () => {
+  it("does not treat dotted subdomain as tenant (a.b.nestio.ro)", () => {
     // slug contains a dot, so it should NOT be parsed as tenant
-    const result = parseTenantFromHost("a.b.hospira.ro");
-    // "a.b" contains a dot, so it won't match as tenant for hospira.ro
-    // but "a" might match as tenant for test.hospira.ro since test.hospira.ro is a platform root
-    // The function checks platform roots longest first: test.hospira.ro, then hospira.ro
-    // For "a.b.hospira.ro" against "test.hospira.ro" — doesn't end with .test.hospira.ro
-    // For "a.b.hospira.ro" against "hospira.ro" — slug would be "a.b" which contains "."
+    const result = parseTenantFromHost("a.b.nestio.ro");
+    // "a.b" contains a dot, so it won't match as tenant for nestio.ro
+    // but "a" might match as tenant for test.nestio.ro since test.nestio.ro is a platform root
+    // The function checks platform roots longest first: test.nestio.ro, then nestio.ro
+    // For "a.b.nestio.ro" against "test.nestio.ro" — doesn't end with .test.nestio.ro
+    // For "a.b.nestio.ro" against "nestio.ro" — slug would be "a.b" which contains "."
     // So it falls through to custom
     expect(result.type).not.toBe("tenant");
   });

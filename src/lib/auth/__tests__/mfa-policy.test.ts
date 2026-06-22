@@ -7,15 +7,16 @@ import {
 } from "@/lib/auth/mfa-policy";
 
 afterEach(() => {
+  delete process.env.NESTIO_ADMIN_EMAILS;
   delete process.env.HOSPIRA_ADMIN_EMAILS;
 });
 
 describe("isMfaMandatoryForUser", () => {
   it("never blocks app access (2FA optional by default)", () => {
     expect(isMfaMandatoryForUser({ memberRole: "owner" })).toBe(false);
-    process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
+    process.env.NESTIO_ADMIN_EMAILS = "ops@nestio.ro";
     expect(
-      isMfaMandatoryForUser({ email: "ops@hospira.ro", memberRole: "admin" })
+      isMfaMandatoryForUser({ email: "ops@nestio.ro", memberRole: "admin" })
     ).toBe(false);
   });
 });
@@ -26,9 +27,9 @@ describe("isMfaRecommendedForUser", () => {
   });
 
   it("recommends MFA for platform admin emails", () => {
-    process.env.HOSPIRA_ADMIN_EMAILS = "ops@hospira.ro";
+    process.env.NESTIO_ADMIN_EMAILS = "ops@nestio.ro";
     expect(
-      isMfaRecommendedForUser({ email: "ops@hospira.ro", memberRole: "admin" })
+      isMfaRecommendedForUser({ email: "ops@nestio.ro", memberRole: "admin" })
     ).toBe(true);
   });
 

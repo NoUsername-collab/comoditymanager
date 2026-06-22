@@ -58,8 +58,8 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("hospira admin has compact table and input rules", () => {
-    expect(flawless).toContain(".ml-shell--hospira-admin");
-    expect(flawless).toContain(".hospira-admin-error");
+    expect(flawless).toContain(".ml-shell--nestio-admin");
+    expect(flawless).toContain(".nestio-admin-error");
   });
 
   it("compact chrome uses card layouts for hospira logs and tenants", () => {
@@ -141,7 +141,7 @@ describe("mobile compatibility CSS rules", () => {
 
   it("pass 16 hospira forms, receptie checkbox, FAQ, drawer safe-area", () => {
     expect(flawless).toContain(".tenant-billing-toggle");
-    expect(flawless).toContain(".hospira-tenant-option");
+    expect(flawless).toContain(".nestio-tenant-option");
     expect(flawless).toContain(".hospira-dashboard__cta");
     expect(flawless).toContain(".phone-booking-form__checkbox");
     expect(flawless).toContain(".landing-faq__q");

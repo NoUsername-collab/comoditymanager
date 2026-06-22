@@ -284,14 +284,14 @@ html[data-layout-chrome="compact"] .informal-invoice-sheet > div {
   padding-inline: 1rem !important;
 }
 
-/* ── Hospira logs tables ── */
-html[data-layout-chrome="compact"] .hospira-logs-table-wrap {
+/* ── Nestio logs tables ── */
+html[data-layout-chrome="compact"] .nestio-logs-table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
 
-html[data-layout-chrome="compact"] .hospira-logs-table-wrap table {
+html[data-layout-chrome="compact"] .nestio-logs-table-wrap table {
   min-width: 36rem;
 }
 
@@ -642,8 +642,8 @@ html[data-layout-chrome="compact"] .admin-floating-panel__close {
   justify-content: center !important;
 }
 
-/* Hospira admin tenant header */
-html[data-layout-chrome="compact"] .hospira-admin-header,
+/* Nestio admin tenant header */
+html[data-layout-chrome="compact"] .nestio-admin-header,
 html[data-layout-chrome="compact"] .hospira-tenant-detail__head {
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -977,8 +977,8 @@ html[data-layout-chrome="compact"] .admin-panel-section textarea {
 }
 
 html[data-layout-chrome="compact"] .hospira-tenant-detail__head + *,
-html[data-layout-chrome="compact"] .hospira-admin-main .rounded-lg,
-html[data-layout-chrome="compact"] .hospira-admin-main .rounded-xl {
+html[data-layout-chrome="compact"] .nestio-admin-main .rounded-lg,
+html[data-layout-chrome="compact"] .nestio-admin-main .rounded-xl {
   min-width: 0;
 }
 
@@ -1149,21 +1149,21 @@ html[data-layout-chrome="compact"] .public-hero__badge {
   white-space: normal;
 }
 
-/* Hospira admin tables: scroll + sane cell widths */
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin table {
+/* Nestio admin tables: scroll + sane cell widths */
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin table {
   min-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin th,
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin td {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin th,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin td {
   min-width: 3.25rem;
   max-width: 11rem;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin td:first-child,
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin th:first-child {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin td:first-child,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin th:first-child {
   min-width: 4.5rem;
   max-width: 9rem;
 }
@@ -1275,7 +1275,7 @@ html[data-layout-chrome="compact"] .location-structure-page article header {
   align-items: stretch;
 }
 
-/* Hospira tenant detail: back link + form controls */
+/* Nestio tenant detail: back link + form controls */
 html[data-layout-chrome="compact"] .hospira-tenant-detail__head a {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
@@ -1283,9 +1283,9 @@ html[data-layout-chrome="compact"] .hospira-tenant-detail__head a {
   padding-inline: 0.15rem;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin select,
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin input[type="text"],
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin button {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin select,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin input[type="text"],
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin button {
   font-size: 16px;
   min-height: var(--ml-touch-min, 2.75rem);
 }
@@ -1605,17 +1605,17 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__link:focus-visible {
   outline-offset: 2px;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-error {
+html[data-layout-chrome="compact"] .nestio-admin-error {
   padding-bottom: max(1.5rem, var(--ml-safe-bottom, 0px));
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-error__card {
+html[data-layout-chrome="compact"] .nestio-admin-error__card {
   width: min(100%, 24rem);
   margin-inline: auto;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-error__card button,
-html[data-layout-chrome="compact"] .hospira-admin-error__card a {
+html[data-layout-chrome="compact"] .nestio-admin-error__card button,
+html[data-layout-chrome="compact"] .nestio-admin-error__card a {
   width: 100%;
 }
 
@@ -1676,18 +1676,18 @@ html[data-layout-chrome="compact"] .booking-ops-actions {
   contain-intrinsic-size: auto 8rem;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header {
   padding-top: max(0.25rem, var(--ml-safe-top, 0px));
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header__inner {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
   padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
     max(0.85rem, var(--ml-safe-right, 0px));
   flex-wrap: wrap;
   row-gap: 0.35rem;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-main {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
   padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
     max(0.85rem, var(--ml-safe-right, 0px));
   padding-bottom: max(var(--ml-space-lg, 1rem), var(--ml-safe-bottom, 0px));
@@ -1696,11 +1696,11 @@ html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-main 
 /* Pull-to-refresh containment on admin scroll roots */
 html[data-layout-chrome="compact"] .admin-page-main,
 html[data-layout-chrome="compact"] .gantt-scroll,
-html[data-layout-chrome="compact"] .hospira-admin-main .overflow-x-auto {
+html[data-layout-chrome="compact"] .nestio-admin-main .overflow-x-auto {
   overscroll-behavior: contain;
 }
 
-/* ── Pass 11: Hospira + Cazări mobile best UX (390×844) ── */
+/* ── Pass 11: Nestio + Cazări mobile best UX (390×844) ── */
 
 html[data-layout-chrome="compact"] .hospira-health-row {
   flex-direction: row;
@@ -2028,13 +2028,13 @@ html[data-layout-chrome="compact"] .guest-booking-form .site-btn-secondary {
   justify-content: center;
 }
 
-/* ── Pass 16: Hospira forms, receptie checkbox, FAQ, drawer safe-area ── */
+/* ── Pass 16: Nestio forms, receptie checkbox, FAQ, drawer safe-area ── */
 
 html[data-layout-chrome="compact"] .tenant-billing-toggle,
 html[data-layout-chrome="compact"] .hospira-impersonate-link,
 html[data-layout-chrome="compact"] .hospira-dashboard__cta,
-html[data-layout-chrome="compact"] .hospira-tenant-option,
-html[data-layout-chrome="compact"] .hospira-log-filter {
+html[data-layout-chrome="compact"] .nestio-tenant-option,
+html[data-layout-chrome="compact"] .nestio-log-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   touch-action: manipulation;
 }
@@ -2044,7 +2044,7 @@ html[data-layout-chrome="compact"] .hospira-dashboard__cta {
   justify-content: center;
 }
 
-html[data-layout-chrome="compact"] .hospira-tenant-option input[type="checkbox"] {
+html[data-layout-chrome="compact"] .nestio-tenant-option input[type="checkbox"] {
   width: 1.25rem;
   height: 1.25rem;
   min-width: 1.25rem;

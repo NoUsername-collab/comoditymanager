@@ -437,7 +437,7 @@ export async function proxy(request: NextRequest) {
   const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
   if (alphaRedirect) return alphaRedirect;
 
-  // ── PLATFORM (hospira.ro / test.hospira.ro) ──────────────────
+  // ── PLATFORM (nestio.ro / test.nestio.ro) ──────────────────
   if (domain.type === "platform") {
     const requestHost = requestHostFrom(request);
 
@@ -447,8 +447,18 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Hospira internal admin — platform domain only, email-gated
+    // Legacy route — redirect during Hospira → Nestio transition
     if (path.startsWith("/hospira-admin")) {
+      const legacy = request.nextUrl.clone();
+      legacy.pathname = request.nextUrl.pathname.replace(
+        "/hospira-admin",
+        "/nestio-admin"
+      );
+      return NextResponse.redirect(legacy, 308);
+    }
+
+    // Nestio internal admin — platform domain only, email-gated
+    if (path.startsWith("/nestio-admin")) {
       const { configured, url, key } = getEdgeSupabaseConfig();
       if (!configured || !url || !key) {
         const noAuth = request.nextUrl.clone();
@@ -565,8 +575,12 @@ export async function proxy(request: NextRequest) {
           }
 
           // Platform admin routes stay on platform domain
-          if (safe.startsWith("/hospira-admin")) {
-            return NextResponse.redirect(new URL(safe, request.url));
+          if (
+            safe.startsWith("/nestio-admin") ||
+            safe.startsWith("/hospira-admin")
+          ) {
+            const normalized = safe.replace("/hospira-admin", "/nestio-admin");
+            return NextResponse.redirect(new URL(normalized, request.url));
           }
 
           const slug = await getPrimaryTenantSlugForUser(
@@ -588,7 +602,7 @@ export async function proxy(request: NextRequest) {
     return intlMiddleware(request);
   }
 
-  // ── TENANT (slug.hospira.ro or custom domain) ────────────────
+  // ── TENANT (slug.nestio.ro or custom domain) ────────────────
   const requestHost = requestHostFrom(request);
 
   if (domain.type === "custom") {

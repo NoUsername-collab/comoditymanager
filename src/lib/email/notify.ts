@@ -4,12 +4,37 @@ import {
   bookingConfirmedToGuest,
   bookingCancelledToGuest,
   guestAppLinkToGuest,
+  dailySummaryToOwner,
 } from "@/lib/email/templates";
 import type { EmailSettings } from "@/services/email-settings";
+import { getEmailSettings } from "@/services/email-settings";
 import {
   resolveTransactionalEmailIdentity,
+  resolveTransactionalEmailIdentityForTenant,
   type TransactionalEmailIdentity,
 } from "@/services/email-identity";
+
+type EmailNotifyFlag =
+  | "email_notify_new_request"
+  | "email_notify_confirmation"
+  | "email_notify_cancellation"
+  | "email_notify_daily_summary";
+
+/** Load tenant email settings; null when load fails (callers still send — legacy behavior). */
+export async function loadEmailSettingsSafe(): Promise<EmailSettings | null> {
+  return getEmailSettings().catch(() => null);
+}
+
+/** True when a notification should be sent given loaded settings. */
+export function shouldSendEmailNotification(
+  settings: EmailSettings | null | undefined,
+  flag?: EmailNotifyFlag,
+): boolean {
+  if (!settings) return true;
+  if (!settings.email_enabled) return false;
+  if (flag && !settings[flag]) return false;
+  return true;
+}
 
 function logEmailResult(context: string, result: EmailResult): void {
   if (!result.success) {
@@ -47,11 +72,7 @@ export async function notifyOwnerNewRequest(data: {
   baseUrl: string;
   emailSettings?: EmailSettings;
 }): Promise<void> {
-  if (
-    data.emailSettings &&
-    (!data.emailSettings.email_enabled ||
-      !data.emailSettings.email_notify_new_request)
-  ) {
+  if (!shouldSendEmailNotification(data.emailSettings, "email_notify_new_request")) {
     return;
   }
   try {
@@ -102,11 +123,7 @@ export async function notifyGuestConfirmed(data: {
   guestAppUrl?: string;
   emailSettings?: EmailSettings;
 }): Promise<void> {
-  if (
-    data.emailSettings &&
-    (!data.emailSettings.email_enabled ||
-      !data.emailSettings.email_notify_confirmation)
-  ) {
+  if (!shouldSendEmailNotification(data.emailSettings, "email_notify_confirmation")) {
     return;
   }
   try {
@@ -148,7 +165,11 @@ export async function notifyGuestAppLink(data: {
   guestAppUrl: string;
   checkInTime?: string;
   checkOutTime?: string;
+  emailSettings?: EmailSettings;
 }): Promise<void> {
+  if (!shouldSendEmailNotification(data.emailSettings)) {
+    return;
+  }
   try {
     const identity = await loadIdentity();
     const template = guestAppLinkToGuest({
@@ -167,7 +188,7 @@ export async function notifyGuestAppLink(data: {
       subject: template.subject,
       html: template.html,
       text: template.text,
-      replyTo: pickReplyTo(identity),
+      replyTo: pickReplyTo(identity, data.emailSettings?.email_reply_to),
     });
 
     logEmailResult("notifyGuestAppLink", result);

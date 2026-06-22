@@ -13,7 +13,7 @@ export type LayoutSurface =
   | "admin"
   | "public"
   | "platform"
-  | "hospira-admin"
+  | "nestio-admin"
   | "auth";
 
 export type MobileLayoutState = {

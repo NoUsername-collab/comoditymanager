@@ -8,7 +8,7 @@ import {
   shouldSkipTenantErrorLog,
 } from "@/lib/tenant/error-safeguard";
 import { getTenantBySlug } from "@/services/tenants";
-import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
+import { throwIfDbError } from "@/lib/nestio-admin/format-db-error";
 import { getTenantScope } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
@@ -71,7 +71,7 @@ async function resolveTenantIdForLog(
   return null;
 }
 
-/** Tenant anchor for Hospira platform admin (hospira.ro — fără host tenant). */
+/** Tenant anchor for Nestio platform admin (nestio.ro — fără host tenant). */
 async function resolvePlatformLogTenantId(): Promise<string> {
   const devSlug = process.env.DEV_TENANT_SLUG?.trim();
   if (devSlug) {
@@ -128,7 +128,7 @@ async function insertDevLogRow(
 
 /**
  * Scrie un log în dev_logs (public schema, service role).
- * Aruncă la eșec insert — vizibil în Hospira admin logs + error boundary.
+ * Aruncă la eșec insert — vizibil în Nestio admin logs + error boundary.
  */
 export async function writeDevLog(input: LogInput): Promise<void> {
   const tenantId = await resolveTenantIdForLog(input.requestHost);
@@ -142,7 +142,7 @@ export async function writeDevLog(input: LogInput): Promise<void> {
 }
 
 /**
- * Scrie dev_log din context Hospira platform admin (fără subdomain tenant).
+ * Scrie dev_log din context Nestio platform admin (fără subdomain tenant).
  * Aruncă la orice eșec — folosit când trebuie să știm exact ce s-a întâmplat.
  */
 export async function writePlatformDevLog(
@@ -153,7 +153,7 @@ export async function writePlatformDevLog(
 }
 
 /**
- * Captează o eroare tenant în dev_logs (Hospira admin).
+ * Captează o eroare tenant în dev_logs (Nestio admin).
  * Nu înlocuiește throw-ul acțiunii — doar persistă diagnosticul.
  */
 export async function captureTenantError(
@@ -187,7 +187,7 @@ export async function captureTenantError(
 }
 
 /**
- * Captează eroare din Hospira platform admin în dev_logs.
+ * Captează eroare din Nestio platform admin în dev_logs.
  * Aruncă dacă scrierea eșuează — nu ascunde problema.
  */
 export async function capturePlatformAdminError(
@@ -205,7 +205,7 @@ export async function capturePlatformAdminError(
 
   await writePlatformDevLog({
     level: "error",
-    source: extra?.source ?? "hospira-platform",
+    source: extra?.source ?? "nestio-platform",
     message,
     stack,
     context: {

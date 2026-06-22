@@ -3,8 +3,8 @@ import { formatTransactionalFromAddress } from "@/domain/email/from-address";
 
 describe("formatTransactionalFromAddress", () => {
   it("formats display name and domain", () => {
-    expect(formatTransactionalFromAddress("Casa Emil", "hospira.ro")).toBe(
-      "Casa Emil <noreply@hospira.ro>",
+    expect(formatTransactionalFromAddress("Casa Emil", "nestio.ro")).toBe(
+      "Casa Emil <noreply@nestio.ro>",
     );
   });
 

@@ -309,8 +309,8 @@ html[data-layout-chrome="compact"] .gantt-inline-controls__period-main {
   min-width: 0;
 }
 
-/* ── Hospira admin tables ── */
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin table {
+/* ── Nestio admin tables ── */
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin table {
   display: block;
   max-width: 100%;
   overflow-x: auto;

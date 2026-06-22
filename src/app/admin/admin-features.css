@@ -676,69 +676,69 @@
 /* ── App density: Tailwind prea aerisit (admin + hospira + public) ── */
 @media (min-width: 768px) {
   .admin-page-main :where(.space-y-8) > :not([hidden]) ~ :not([hidden]),
-  .hospira-admin-main :where(.space-y-8) > :not([hidden]) ~ :not([hidden]) {
+  .nestio-admin-main :where(.space-y-8) > :not([hidden]) ~ :not([hidden]) {
     margin-block-start: 1.25rem;
   }
 
   .admin-page-main :where(.space-y-6) > :not([hidden]) ~ :not([hidden]),
-  .hospira-admin-main :where(.space-y-6) > :not([hidden]) ~ :not([hidden]) {
+  .nestio-admin-main :where(.space-y-6) > :not([hidden]) ~ :not([hidden]) {
     margin-block-start: 0.9rem;
   }
 
   .admin-page-main :where(.gap-5),
-  .hospira-admin-main :where(.gap-5) {
+  .nestio-admin-main :where(.gap-5) {
     gap: var(--ml-space-md, 0.85rem);
   }
 
   .admin-page-main :where(.rounded-2xl),
-  .hospira-admin-main :where(.rounded-2xl),
+  .nestio-admin-main :where(.rounded-2xl),
   .ml-content :where(.rounded-2xl) {
     border-radius: 0.75rem;
   }
 
   .admin-page-main :where(.mb-6),
-  .hospira-admin-main :where(.mb-6) {
+  .nestio-admin-main :where(.mb-6) {
     margin-bottom: var(--ml-space-lg, 1rem);
   }
 
   .admin-page-main :where(.mb-8),
-  .hospira-admin-main :where(.mb-8) {
+  .nestio-admin-main :where(.mb-8) {
     margin-bottom: 1.25rem;
   }
 
   .admin-page-main :where(.gap-6),
-  .hospira-admin-main :where(.gap-6) {
+  .nestio-admin-main :where(.gap-6) {
     gap: var(--ml-space-lg, 1rem);
   }
 
   .admin-page-main :where(.space-y-5) > :not([hidden]) ~ :not([hidden]),
-  .hospira-admin-main :where(.space-y-5) > :not([hidden]) ~ :not([hidden]) {
+  .nestio-admin-main :where(.space-y-5) > :not([hidden]) ~ :not([hidden]) {
     margin-block-start: var(--ml-space-lg, 1rem);
   }
 
   .admin-page-main :where(.mt-8),
-  .hospira-admin-main :where(.mt-8) {
+  .nestio-admin-main :where(.mt-8) {
     margin-top: 1.25rem;
   }
 
   .admin-page-main :where(.p-5),
-  .hospira-admin-main :where(.p-5) {
+  .nestio-admin-main :where(.p-5) {
     padding: var(--ml-space-lg, 1rem);
   }
 
   .admin-page-main :where(.mt-6),
-  .hospira-admin-main :where(.mt-6) {
+  .nestio-admin-main :where(.mt-6) {
     margin-top: var(--ml-space-lg, 1rem);
   }
 
   .admin-page-main :where(.py-6),
-  .hospira-admin-main :where(.py-6),
+  .nestio-admin-main :where(.py-6),
   .ml-content.public-page:where(.py-6) {
     padding-block: var(--ml-space-lg, 1rem);
   }
 
   .admin-page-main :where(.space-y-4) > :not([hidden]) ~ :not([hidden]),
-  .hospira-admin-main :where(.space-y-4) > :not([hidden]) ~ :not([hidden]) {
+  .nestio-admin-main :where(.space-y-4) > :not([hidden]) ~ :not([hidden]) {
     margin-block-start: var(--ml-space-md, 0.75rem);
   }
 }

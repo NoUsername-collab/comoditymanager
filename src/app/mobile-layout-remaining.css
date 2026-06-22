@@ -425,42 +425,42 @@ html[data-layout-chrome="compact"] .platform-footer__bottom p {
   line-height: 1.45;
 }
 
-/* ── Hospira admin ── */
+/* ── Nestio admin ── */
 .hospira-tenant-row {
   content-visibility: auto;
   contain-intrinsic-size: auto 2.75rem;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-header__inner {
+html[data-layout-chrome="compact"] .nestio-admin-header__inner {
   padding-inline: 0.85rem;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-main {
+html[data-layout-chrome="compact"] .nestio-admin-main {
   padding: 0.85rem 0.85rem 1.5rem !important;
   max-width: 100%;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-main .grid {
+html[data-layout-chrome="compact"] .nestio-admin-main .grid {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-main h1 {
+html[data-layout-chrome="compact"] .nestio-admin-main h1 {
   font-size: 1.35rem;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-main table {
+html[data-layout-chrome="compact"] .nestio-admin-main table {
   font-size: 0.75rem;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-main th,
-html[data-layout-chrome="compact"] .hospira-admin-main td {
+html[data-layout-chrome="compact"] .nestio-admin-main th,
+html[data-layout-chrome="compact"] .nestio-admin-main td {
   padding: 0.5rem 0.4rem;
   white-space: nowrap;
 }
 
-html[data-layout-chrome="compact"] .hospira-admin-main .overflow-x-auto {
+html[data-layout-chrome="compact"] .nestio-admin-main .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }

@@ -174,9 +174,11 @@ export async function submitGuestRequestAction(formData: FormData) {
             "@/services/tenants"
           );
           const tenantId = await requireTenantIdForData();
-          const [emails, pensionName] = await Promise.all([
+          const { getEmailSettings } = await import("@/services/email-settings");
+          const [emails, pensionName, emailSettings] = await Promise.all([
             getTenantNotificationEmails(tenantId),
             getTenantDisplayName(tenantId),
+            getEmailSettings().catch(() => null),
           ]);
           if (emails.length === 0) return;
           const { platformSiteUrl } = await import("@/lib/platform/branding");
@@ -203,6 +205,7 @@ export async function submitGuestRequestAction(formData: FormData) {
                 rooms: rooms.map((r) => r.name),
                 bookingId: bookingId ?? "unknown",
                 baseUrl,
+                emailSettings: emailSettings ?? undefined,
               })
             )
           );

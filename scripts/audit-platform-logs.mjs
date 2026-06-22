@@ -1,5 +1,5 @@
 /**
- * One-off platform audit for Hospira admin logs report.
+ * One-off platform audit for Nestio admin logs report.
  * Usage: node scripts/audit-platform-logs.mjs [--file=.env.staging.local]
  */
 import { readFileSync, existsSync } from "fs";

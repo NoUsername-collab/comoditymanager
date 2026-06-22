@@ -1,15 +1,15 @@
 /**
- * Platform Admin service — cross-tenant queries for Hospira internal panel.
+ * Platform Admin service — cross-tenant queries for Nestio internal panel.
  * All queries use service_role client (bypasses RLS).
  */
 
 import { cache } from "react";
-import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
-import { safeCount } from "@/lib/hospira-admin/safe-count";
+import { throwIfDbError } from "@/lib/nestio-admin/format-db-error";
+import { safeCount } from "@/lib/nestio-admin/safe-count";
 import {
   getTenantResourceCounts,
   loadTenantResourceCounts,
-} from "@/lib/hospira-admin/tenant-resource-counts";
+} from "@/lib/nestio-admin/tenant-resource-counts";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { TenantRow } from "./tenants";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";

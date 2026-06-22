@@ -8,7 +8,7 @@ import { formatRoDate } from "@/lib/stay-dates";
 type Props = {
   data: TouristSheetData;
   onClose?: () => void;
-  showHospiraBranding?: boolean;
+  showPlatformBranding?: boolean;
 };
 
 function formatSheetDate(iso: string): string {
@@ -22,7 +22,7 @@ function formatSheetDate(iso: string): string {
 export function TouristSheetView({
   data,
   onClose,
-  showHospiraBranding = true,
+  showPlatformBranding = true,
 }: Props) {
   const t = useTranslations("admin.checkIn.fisa");
 
@@ -72,7 +72,7 @@ export function TouristSheetView({
                 <span>{t("registryNr")}</span>
                 <strong>{data.registryRef}</strong>
               </div>
-              {showHospiraBranding ? (
+              {showPlatformBranding ? (
                 <div className="tourist-sheet__hospira-mark" aria-hidden>
                   <span className="tourist-sheet__hospira-name">{PLATFORM_NAME}</span>
                   <span className="tourist-sheet__hospira-tag">{t("platformTag")}</span>
@@ -154,7 +154,7 @@ export function TouristSheetView({
                 <span className="tourist-sheet__signature-label">{t("receptionSignature")}</span>
               </div>
             </div>
-            {showHospiraBranding ? (
+            {showPlatformBranding ? (
               <p className="tourist-sheet__brand">
                 {t("poweredBy", { brand: PLATFORM_NAME })}
               </p>

@@ -412,7 +412,7 @@ const bgAdminNav = {
 };
 
 const bgAdminShell = {
-  eyebrow: "Hospira · Control",
+  eyebrow: "Nestio · Control",
   title: "Админ панел",
   publicSite: "Публичен сайт",
 };
@@ -440,7 +440,7 @@ const roAdminNav = {
 };
 
 const roAdminShell = {
-  eyebrow: "Hospira · Control",
+  eyebrow: "Nestio · Control",
   title: "Panou administrare",
   publicSite: "Site public",
 };

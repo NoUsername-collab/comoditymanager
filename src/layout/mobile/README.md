@@ -1,6 +1,6 @@
 # Mobile Layout
 
-Decoupled viewport layout system for Hospira. When working with AI, say **"Mobile layout"** to target this module.
+Decoupled viewport layout system for Nestio. When working with AI, say **"Mobile layout"** to target this module.
 
 ## Modes (`data-layout-mode` on `<html>`)
 

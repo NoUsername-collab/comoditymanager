@@ -5,9 +5,9 @@ export type AdminFxPrefs = {
 };
 
 function storageKey(): string {
-  if (typeof window === "undefined") return "hospira-admin-fx";
+  if (typeof window === "undefined") return "nestio-admin-fx";
   const slug = tenantSlugFromHost(window.location.host);
-  return slug ? `hospira-admin-fx:${slug}` : "hospira-admin-fx";
+  return slug ? `nestio-admin-fx:${slug}` : "nestio-admin-fx";
 }
 
 export function readAdminFxPrefs(): AdminFxPrefs {

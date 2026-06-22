@@ -3,7 +3,7 @@
  * Portrait + landscape; loaded only on /admin/calendar.
  */
 
-/* ── Gantt-only: hide top HUD (Hospira/FREE) — stays on Home tab ── */
+/* ── Gantt-only: hide top HUD (Nestio/FREE) — stays on Home tab ── */
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-hud,
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-hud-alert {
   display: none !important;

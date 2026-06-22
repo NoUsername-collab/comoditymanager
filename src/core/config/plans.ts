@@ -1,6 +1,6 @@
 /**
  * ╔══════════════════════════════════════════════════════════════════╗
- * ║  HOSPIRA — Plan & Feature Gating                               ║
+ * ║  NESTIO — Plan & Feature Gating                               ║
  * ║                                                                ║
  * ║  4 cloud plans: Free / Essential / Professional / Business     ║
  * ║  Every feature in the app checks against this config.          ║
@@ -28,7 +28,7 @@ export type ModuleId =
   | "public_page"      // Public booking page
   | "advanced_reports" // Advanced statistics
   | "multi_property"   // Multiple buildings/locations
-  | "white_label"      // Remove Hospira branding
+  | "white_label"      // Remove Nestio branding
   | "api_access";      // REST API
 
 // ─── Core Features (gated by plan) ──────────────────────────────
@@ -310,7 +310,7 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     label: "White Label",
     icon: "palette",
     pricePerMonth: 15,
-    description: "Elimina branding-ul Hospira",
+    description: "Elimina branding-ul Nestio",
   },
   api_access: {
     id: "api_access",

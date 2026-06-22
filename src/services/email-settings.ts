@@ -84,6 +84,13 @@ export async function getEmailSettings(): Promise<EmailSettings> {
   return loadEmailSettings(tenantId);
 }
 
+/** Cron / platform jobs — explicit tenant, no request context. */
+export async function getEmailSettingsForTenant(
+  tenantId: string,
+): Promise<EmailSettings> {
+  return getEmailSettingsUncached(tenantId);
+}
+
 export async function updateEmailSettings(
   input: Partial<EmailSettings>,
 ): Promise<void> {

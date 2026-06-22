@@ -6,7 +6,7 @@ export default async function GuestAppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // /stay on platform apex (test.hospira.ro) has no tenant — child routes show access unavailable.
+  // /stay on platform apex (test.nestio.ro) has no tenant — child routes show access unavailable.
   await tryBindTenantContextFromRequest();
   return children;
 }

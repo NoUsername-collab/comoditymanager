@@ -4,7 +4,7 @@ import { formatTransactionalFromAddress } from "@/domain/email/from-address";
 import { platformPensionNameFallback } from "@/lib/platform/branding";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
-import { getEmailSettings } from "@/services/email-settings";
+import { getEmailSettings, getEmailSettingsForTenant } from "@/services/email-settings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
 import { listTenantDomains } from "@/services/tenant-domains";
@@ -84,3 +84,36 @@ async function resolveTransactionalEmailIdentityUncached(): Promise<Transactiona
 export const resolveTransactionalEmailIdentity = cache(
   resolveTransactionalEmailIdentityUncached,
 );
+
+/** Cron / jobs — explicit tenant, no request headers. */
+export async function resolveTransactionalEmailIdentityForTenant(
+  tenantId: string,
+): Promise<TransactionalEmailIdentity> {
+  const [emailSettings, tenant, mailDomain] = await Promise.all([
+    getEmailSettingsForTenant(tenantId).catch(() => null),
+    getTenantById(tenantId).catch(() => null),
+    resolveMailDomain(tenantId, null),
+  ]);
+
+  const displayName =
+    emailSettings?.email_from_name?.trim() ||
+    tenant?.display_name?.trim() ||
+    platformPensionNameFallback();
+
+  const customFrom = emailSettings?.email_from_address?.trim();
+  const fromAddress = customFrom
+    ? `${displayName} <${customFrom}>`
+    : formatTransactionalFromAddress(displayName, mailDomain);
+
+  const defaultReplyTo =
+    emailSettings?.email_reply_to?.trim() ||
+    tenant?.owner_email?.trim() ||
+    null;
+
+  return {
+    displayName,
+    mailDomain,
+    fromAddress,
+    defaultReplyTo,
+  };
+}

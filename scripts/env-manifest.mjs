@@ -36,6 +36,13 @@ export const ENV_MANIFEST = [
     description: "Cheie service_role — doar server, niciodată în browser",
   },
   {
+    key: "NESTIO_ADMIN_EMAILS",
+    requirement: "runtime",
+    recommendedInProduction: true,
+    description:
+      "Email-uri platform admin (virgulă) — acces /nestio-admin. Legacy: HOSPIRA_ADMIN_EMAILS",
+  },
+  {
     key: "ADMIN_EMAIL",
     requirement: "runtime",
     description: "Email cont Admin în Supabase Auth (login: Admin)",

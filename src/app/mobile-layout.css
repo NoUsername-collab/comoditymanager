@@ -386,14 +386,14 @@ html[data-layout-chrome="compact"] .ml-shell--auth input,
 html[data-layout-chrome="compact"] .ml-shell--auth select,
 html[data-layout-chrome="compact"] .ml-shell--auth textarea,
 html[data-layout-chrome="compact"] .ml-shell--auth button,
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin input,
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin button {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin input,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin button {
   font-size: 16px;
 }
 
 html[data-layout-chrome="compact"] .admin-shell button,
 html[data-layout-chrome="compact"] .site-themed button,
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin button {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin button {
   min-height: var(--ml-touch-min);
 }
 

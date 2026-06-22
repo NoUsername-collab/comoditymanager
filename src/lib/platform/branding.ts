@@ -1,12 +1,9 @@
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
 
 /** Product name shown in UI, emails, and dev fallbacks. */
-export const PLATFORM_NAME = "Hospira";
+export const PLATFORM_NAME = "Nestio";
 
-export const PLATFORM_CONTACT_EMAIL = "contact@hospira.ro";
-
-/** Legacy platform from string — prefer resolveTransactionalEmailIdentity(). */
-export const PLATFORM_EMAIL_FROM = `${PLATFORM_NAME} <noreply@${platformDomainFromRequestHost(null)}>`;
+export const PLATFORM_CONTACT_EMAIL = "contact@nestio.ro";
 
 /** Platform apex URL (landing, signup). For tenant pages use resolveTenantPublicSiteUrl(). */
 export function platformSiteUrl(requestHost?: string | null): string {

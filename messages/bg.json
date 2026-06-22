@@ -368,7 +368,7 @@
     "shell": {
       "backHome": "Начало",
       "legalEyebrow": "Правни",
-      "brandFallback": "Hospira"
+      "brandFallback": "Nestio"
     },
     "header": {
       "subtitle": "Къща за гости · Таснад"
@@ -390,7 +390,8 @@
       "terms": "Общи условия",
       "privacy": "Поверителност (GDPR)",
       "contact": "Контакт",
-      "contactEmail": "contact@hospira.ro",
+      "contactNotConfigured": "Настройте контакт в админ панела",
+      "contactEmail": "contact@nestio.ro",
       "copyright": "© {year} {name} · Таснад, Румъния"
     },
     "home": {
@@ -565,7 +566,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Hospira — <email>contact@hospira.ro</email>"
+      "s4Body": "Nestio — <email>contact@nestio.ro</email>"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -582,7 +583,7 @@
       "retentionTitle": "Retention",
       "retentionBody": "We keep data as long as needed to manage the booking and meet legal obligations (accounting, tax).",
       "rightsTitle": "Your rights",
-      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@hospira.ro</email>."
+      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@nestio.ro</email>."
     },
     "staffPanel": {
       "badge": "Екип",
@@ -620,11 +621,11 @@
       "paginationPage": "Страница {page} / {total}"
     },
     "shell": {
-      "eyebrow": "Hospira · Control",
+      "eyebrow": "Nestio · Control",
       "title": "Админ панел",
       "publicSite": "Публичен сайт",
       "settings": "Настройки",
-      "brandFallback": "Hospira"
+      "brandFallback": "Nestio"
     },
     "pwa": {
       "installApp": "Инсталирай приложението",
@@ -632,17 +633,17 @@
       "iosTitle": "Добави на началния екран",
       "iosStep1": "Натисни Share долу в Safari",
       "iosStep2": "Избери „Добави на началния екран“",
-      "iosStep3": "Натисни Добави — Hospira се отваря без лентата на браузъра",
+      "iosStep3": "Натисни Добави — Nestio се отваря без лентата на браузъра",
       "androidManualTitle": "Инсталирай от Chrome",
       "androidManualStep": "Меню ⋮ → Инсталирай приложение",
-      "desktopManualTitle": "Инсталирай Hospira в Chrome",
+      "desktopManualTitle": "Инсталирай Nestio в Chrome",
       "desktopStep1": "Отвори менюто на Chrome (⋮) вдясно от адресната лента",
-      "desktopStep2": "Избери „Инсталирай Hospira…” или „Save and share” → „Install”",
+      "desktopStep2": "Избери „Инсталирай Nestio…” или „Save and share” → „Install”",
       "desktopStep3": "Потвърди — приложението се отваря в отделен прозорец",
       "close": "Разбрах"
     },
     "login": {
-      "eyebrow": "Hospira",
+      "eyebrow": "Nestio",
       "title": "Админ",
       "lead": "Само за персонал.",
       "backToSite": "← Обратно към сайта",
@@ -669,8 +670,8 @@
       "backToPassword": "← Обратно към паролата",
       "securityEyebrow": "Сигурност",
       "securityTitle": "Настрой двустепенна автентикация",
-      "securityLead": "Hospira остава web/PWA приложение. Автентикаторът (Google Authenticator, Authy и др.) генерира само 6-цифрения код при вход — на телефон или PC.",
-      "webPwaExplain": "Не инсталираш отделно Hospira приложение: работиш в браузър или PWA. Автентикаторът е само за кодове, не замества панела.",
+      "securityLead": "Nestio остава web/PWA приложение. Автентикаторът (Google Authenticator, Authy и др.) генерира само 6-цифрения код при вход — на телефон или PC.",
+      "webPwaExplain": "Не инсталираш отделно Nestio приложение: работиш в браузър или PWA. Автентикаторът е само за кодове, не замества панела.",
       "mobileSetupTitle": "На телефон или инсталиран PWA",
       "mobileSetupStep1": "Инсталирай Google Authenticator, Authy или Microsoft Authenticator.",
       "mobileSetupStep2": "Избери „Въведи ключ ръчно“ — не сканирай QR на същия телефон.",
@@ -680,7 +681,7 @@
       "copySecret": "Копирай ключа",
       "copySecretDone": "Копирано!",
       "copySecretFailed": "Ключът не можа да се копира. Избери го ръчно.",
-      "challengePwaLead": "Отвори приложението за автентикация, копирай 6-цифрения код и се върни в Hospira (web или PWA).",
+      "challengePwaLead": "Отвори приложението за автентикация, копирай 6-цифрения код и се върни в Nestio (web или PWA).",
       "mandatoryLead": "Двустепенната автентикация е задължителна за твоя акаунт преди достъп до панела.",
       "optionalLead": "Можеш опционално да активираш двустепенна автентикация за допълнителна сигурност.",
       "securityReminder": "Сигурност: двустепенната автентикация не е активна на този акаунт.",
@@ -730,7 +731,7 @@
     },
     "pages": {
       "bookings": {
-        "title": "Нови заявки — Hospira",
+        "title": "Нови заявки — Nestio",
         "description": "Потвърди наличност и разпредели стаи.",
         "windowTitle": "Нови заявки ({count})",
         "showingPartial": "Показани {shown} от {total} заявки",
@@ -745,7 +746,7 @@
         "emptyAction": "Отвори публичния календар"
       },
       "rooms": {
-        "title": "Rooms — Hospira",
+        "title": "Rooms — Nestio",
         "description": "Compact day grid for room status.",
         "addRoom": "+ Add room",
         "inactiveRooms": "Inactive rooms",
@@ -753,7 +754,7 @@
         "genericError": "Error"
       },
       "settings": {
-        "title": "Settings — Hospira",
+        "title": "Settings — Nestio",
         "navAria": "Навигация на настройки",
         "navTitle": "Настройки",
         "navGroupIdentity": "Идентичност",
@@ -792,7 +793,7 @@
         "navEmail": "Имейл",
         "navEmailDesc": "Имейл известия, Reply-to, footer",
         "navDomains": "Домейни",
-        "navDomainsDesc": "Hospira поддомейн и собствени домейни",
+        "navDomainsDesc": "Nestio поддомейн и собствени домейни",
         "navTeam": "Екип",
         "navTeamDesc": "Членове, роли, покани",
         "navTeamPermissions": "Права на екипа",
@@ -881,7 +882,7 @@
           "testSent": "Тестовият имейл е изпратен!",
           "testSentTo": "Тестовият имейл е изпратен до {email}",
           "testFailed": "Изпращането не успя",
-          "providerNotConfigured": "Имейл доставката не е конфигурирана на сървъра (RESEND_API_KEY). Свържете се с Hospira или админа на deploy.",
+          "providerNotConfigured": "Имейл доставката не е конфигурирана на сървъра (RESEND_API_KEY). Свържете се с Nestio или админа на deploy.",
           "providerFrom": "Ще се изпраща от: {from}",
           "saved": "Запазено",
           "saveError": "Грешка при запис"
@@ -1122,7 +1123,7 @@
           "visibilityAll": "Целият екип (вкл. оператори)"
         },
         "domainsPanelInfo": "Избери как гостите виждат обекта онлайн.",
-        "domainsSubtitle": "Hospira поддомейн и собствен домейн",
+        "domainsSubtitle": "Nestio поддомейн и собствен домейн",
         "domainsTitle": "Домейни и сайт",
         "locationPanelInfoOwner": "Като собственик имаш постоянен достъп до структура, стаи и каталог.",
         "locationSubtitleOwner": "Пълен достъп — без допълнителна парола",
@@ -1138,7 +1139,7 @@
         "roleOwner": "Собственик"
       },
       "publicSite": {
-        "title": "Публичен сайт — Hospira",
+        "title": "Публичен сайт — Nestio",
         "description": "Шаблон, тема, hero съдържание, секции и контакт за посетители.",
         "backSettings": "Обратно към настройки",
         "previewSite": "Преглед на сайта",
@@ -1206,7 +1207,7 @@
         }
       },
       "guests": {
-        "title": "Клиенти — Hospira",
+        "title": "Клиенти — Nestio",
         "description": "Профили на клиенти, дедупликация и история на престоите.",
         "searchTitle": "Търси клиент",
         "searchHint": "Търсенето приоритизира рискови профили и последно обновени записи.",
@@ -1240,8 +1241,8 @@
       },
       "calendar": {
         "genericError": "Грешка",
-        "title": "Календар — Hospira",
-        "ganttTitle": "Gantt календар — Hospira",
+        "title": "Календар — Nestio",
+        "ganttTitle": "Gantt календар — Nestio",
         "windowGantt": "Gantt",
         "unassignedTitle": "Непотвърдени заявки",
         "unassignedSubtitle": "Без стая в показания период",
@@ -1252,7 +1253,7 @@
         "buildingFilterSuffix": " · филтър сграда"
       },
       "cazari": {
-        "title": "Престои — Hospira",
+        "title": "Престои — Nestio",
         "searchFilter": "Търси и филтрирай",
         "results": "Резултати",
         "operational": "Оперативни",
@@ -1347,7 +1348,7 @@
         "reacceptedBanner": "Престоят е приет отново — виж го при потвърдените."
       },
       "statistics": {
-        "title": "Статистика — Hospira",
+        "title": "Статистика — Nestio",
         "monthCompare": "Month comparison",
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
@@ -1374,7 +1375,7 @@
         "monthCol": "Месец",
         "monthlyKpis": "Месечен ADR / RevPAR — {year}",
         "exportTitle": "Експорт счетоводство",
-        "exportDescription": "CSV за импорт в Saga C или ContaPlus. Включва издадените фактури от Hospira.",
+        "exportDescription": "CSV за импорт в Saga C или ContaPlus. Включва издадените фактури от Nestio.",
         "exportMonth": "Месец",
         "exportMonthAll": "Цяла година",
         "exportFormat": "Формат",
@@ -1390,7 +1391,7 @@
         "occupancyCompareTitle": "Заетост на стаи — сравнение по години"
       },
       "location": {
-        "title": "Администрация локация — Hospira",
+        "title": "Администрация локация — Nestio",
         "operational": "Operational",
         "operationalSubtitle": "{name} · hours and extra beds",
         "displayName": "Display name",
@@ -1479,7 +1480,7 @@
         "guestProfile": "Профил на гост",
         "persons": "Гости",
         "contact": "Контакт",
-        "title": "Резервация — Hospira",
+        "title": "Резервация — Nestio",
         "bookingReference": "Референция:",
         "viewInCalendar": "Виж в календара",
         "status": "Статус:",
@@ -1504,7 +1505,7 @@
         "guestFeedback": "Отзив на гост"
       },
       "roomsNew": {
-        "title": "New room — Hospira",
+        "title": "New room — Nestio",
         "migrationHint": "for types and",
         "catalogRunMigration": "Стартирай миграцията",
         "addBuildingFirst": "Първо добави",
@@ -1527,7 +1528,7 @@
         "descriptionSuffix": "Цветът се вижда в календара."
       },
       "settingsLocation": {
-        "title": "Администрация на локацията — Hospira",
+        "title": "Администрация на локацията — Nestio",
         "description": "Админ хъб за цялата конфигурация: структура, стаи, модулен каталог и staff акаунти.",
         "backToSettings": "← Назад към настройки",
         "unlockedForTwoHours": "Администрацията на локацията е отключена за 2 часа.",
@@ -1657,15 +1658,15 @@
         "addBuilding": "+ Добави сграда",
         "buildingFloorsTitle": "{name} — етажи и стаи",
         "listDescription": "Избери дата — виж свободни / заети стаи по сграда и в мрежата.",
-        "listTitle": "Сгради — Hospira",
+        "listTitle": "Сгради — Nestio",
         "newHint": "Можеш да добавиш <strong>нови стаи</strong> след създаването. Цветът се вижда в календара.",
-        "newTitle": "Нова сграда — Hospira",
+        "newTitle": "Нова сграда — Nestio",
         "noBuildings": "Все още няма сгради — добави първата с бутона по-горе.",
         "unknownError": "Неизвестна грешка"
       },
       "disponibilitate": {
         "description": "Heat map, KPI, свободни уикенди, филтър сграда, Shift+click интервал, live обновяване.",
-        "title": "Наличност — Hospira"
+        "title": "Наличност — Nestio"
       }
     },
     "common": {
@@ -1895,7 +1896,7 @@
       "reputationExcellent": "Excellent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklisted",
-      "welcomeHome": "Добре дошли в Hospira!",
+      "welcomeHome": "Добре дошли в Nestio!",
       "loadDataError": "Данните не могат да се заредят",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -1961,7 +1962,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Hospira",
+      "locationAdminTitle": "Location administration — Nestio",
       "noRoomsConfigured": "Все още няма конфигурирани стаи",
       "achievements": "Постижения",
       "homeEyebrow": "Начало · панел рецепция",
@@ -2014,9 +2015,9 @@
       "informalDocument": "Информативен документ",
       "addFloor": "Добави етаж",
       "floorPlaceholder": "Партер / Етаж 1",
-      "buildingsTitle": "Сгради — Hospira",
-      "availabilityTitle": "Наличност — Hospira",
-      "newRoomTitle": "Нова стая — Hospira",
+      "buildingsTitle": "Сгради — Nestio",
+      "availabilityTitle": "Наличност — Nestio",
+      "newRoomTitle": "Нова стая — Nestio",
       "seeAllRequests": "Виж всички",
       "roomGridTitle": "Мрежа стаи",
       "todayTitle": "Днес — {dayLabel}",
@@ -2106,7 +2107,7 @@
       "floors": "Етажи",
       "tenantMemberRequired": "Акаунтът не е член на този обект. Използвай правилния поддомейн или помоли собственика за достъп.",
       "tenantScopeMismatch": "Tenant в URL не съвпада с заредените данни. Презареди страницата или влез през поддомейна на обекта.",
-      "tenantHostRequired": "Отвори приложението на поддомейна на обекта (напр. obekt.hospira.ro), не на общия домейн.",
+      "tenantHostRequired": "Отвори приложението на поддомейна на обекта (напр. obekt.nestio.ro), не на общия домейн.",
       "loginRequired": "Трябва да влезеш в системата.",
       "roleForbidden": "Нямаш право за това действие.",
       "attention": "Внимание",
@@ -2232,7 +2233,7 @@
       "tight": "Натоварено",
       "freeRooms": "Свободни стаи",
       "clickForDayCard": "Клик = пълна дневна карта",
-      "clipboardPrefix": "Hospira",
+      "clipboardPrefix": "Nestio",
       "kpiRelaxedLabel": "Дни с ≥3 свободни стаи",
       "kpiFullLabel": "Пълни дни",
       "kpiMinLabel": "Минимум свободни",
@@ -3512,19 +3513,19 @@
         "error": "Грешка. Опитай отново.",
         "invalid_domain": "Невалиден домейн.",
         "plan_not_allowed": "Планът ти не включва този режим.",
-        "reserved_domain": "Не можеш да използваш домейна на платформата Hospira."
+        "reserved_domain": "Не можеш да използваш домейна на платформата Nestio."
       },
-      "hospiraSubdomain": "Hospira поддомейн (по подразбиране, винаги активен)",
-      "hospiraSubdomainHint": "Публичен сайт, календар за резервации и админ.",
+      "nestioSubdomain": "Nestio поддомейн (по подразбиране, винаги активен)",
+      "nestioSubdomainHint": "Публичен сайт, календар за резервации и админ.",
       "kinds": {
         "custom_brand": "Собствен — само начална страница; останалото на поддомейн",
         "custom_full": "Собствен — сайт + админ + резервации",
-        "custom_public": "Собствен — сайт + резервации; админ на Hospira",
-        "hospira_subdomain": "Hospira поддомейн (пълно приложение)"
+        "custom_public": "Собствен — сайт + резервации; админ на Nestio",
+        "hospira_subdomain": "Nestio поддомейн (пълно приложение)"
       },
       "markVerified": "Маркирай като верифициран (след DNS + Vercel)",
       "openSite": "Отвори сайта",
-      "pageDescription": "Hospira поддомейн и собствени домейни (всички режими).",
+      "pageDescription": "Nestio поддомейн и собствени домейни (всички режими).",
       "pageTitle": "Домейни",
       "remove": "Премахни",
       "routingKind": "Режим на показване",
@@ -3653,12 +3654,12 @@
     "heroCtaSecondary": "Vizhte cenite",
     "heroNote": "Bez kreditna karta. 3 stai bezplatno, zavinagi.",
     "problemTitle": "Zvuchi poznato?",
-    "withoutHospira": "Bez Hospira",
+    "withoutNestio": "Bez Nestio",
     "problem1": "Rezervacii na hartiya ili Excel",
     "problem2": "Dvojni rezervacii i obyrkvane",
     "problem3": "Gostite se obazhdhat za nalichnost",
     "problem4": "15-18% komisiona kym Booking.com",
-    "withHospira": "S Hospira",
+    "withNestio": "S Nestio",
     "solution1": "Digitalen kalendar sys vsichki rezervacii",
     "solution2": "Nevyzmozhno e da se rezervira dvoyno",
     "solution3": "Gostite rezervirat direktno na vashiya sajt",
@@ -3792,7 +3793,7 @@
         "rooms": "Stai",
         "team": "Ekip",
         "gantt": "Gantt & heatmap",
-        "branding": "Branding Hospira",
+        "branding": "Branding Nestio",
         "modules": "Moduli"
       },
       "rooms": {
@@ -3856,9 +3857,9 @@
       "rights": "Vsichki prava zapazeni."
     }
   },
-  "hospiraAdmin": {
+  "nestioAdmin": {
     "nav": {
-      "menuAria": "Hospira admin menu",
+      "menuAria": "Nestio admin menu",
       "menuOpen": "Otvori meniuto",
       "menuClose": "Zatvori meniuto",
       "dashboard": "Tablo",
@@ -3888,7 +3889,7 @@
   "alphaGate": {
     "eyebrow": "Alpha · ogranichen dostap",
     "title": "Vavedete parola za dostap",
-    "lead": "Hospira e v chastno testvane. Ako ste poluchili parolata ot ekipa, vavedete ya po-dolu.",
+    "lead": "Nestio e v chastno testvane. Ako ste poluchili parolata ot ekipa, vavedete ya po-dolu.",
     "passwordLabel": "Alpha parola",
     "submit": "Vlez",
     "checking": "Proverka…",

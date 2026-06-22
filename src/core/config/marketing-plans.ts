@@ -4,7 +4,7 @@ import {
   PLAN_CONFIGS,
 } from "@/core/config/plans";
 
-/** Cloud plans shown on hospira.ro landing & pricing. */
+/** Cloud plans shown on nestio.ro landing & pricing. */
 export const CLOUD_PLAN_ORDER: CloudPlan[] = [
   "free",
   "essential",

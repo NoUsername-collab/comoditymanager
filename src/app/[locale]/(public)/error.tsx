@@ -24,7 +24,7 @@ export default function PublicError({
         <h1>Pensiune negăsită</h1>
         <p>
           Subdomeniul nu este înregistrat încă. Verifică adresa sau{" "}
-          <a href="https://www.hospira.ro/signup">înscrie pensiunea</a>.
+          <a href="https://www.nestio.ro/signup">înscrie pensiunea</a>.
         </p>
       </main>
     );

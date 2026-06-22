@@ -1,18 +1,24 @@
 /**
- * Platform admin guard — gates Hospira internal panel.
+ * Platform admin guard — gates Nestio internal panel.
  *
- * Checks the authenticated user's email against HOSPIRA_ADMIN_EMAILS env var.
+ * Checks the authenticated user's email against NESTIO_ADMIN_EMAILS env var
+ * (legacy HOSPIRA_ADMIN_EMAILS still accepted during transition).
  * Requires both valid Supabase auth AND email match.
  */
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
+import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 
-const FALLBACK_EMAILS = "admin@hospira.ro";
+/** Dev fallback when NESTIO_ADMIN_EMAILS is unset (production must set the env var). */
+const FALLBACK_EMAILS = `admin@nestio.ro,${PLATFORM_CONTACT_EMAIL}`;
 
 function getPlatformAdminEmails(): string[] {
-  const raw = process.env.HOSPIRA_ADMIN_EMAILS?.trim() || FALLBACK_EMAILS;
+  const raw =
+    process.env.NESTIO_ADMIN_EMAILS?.trim() ||
+    process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
+    FALLBACK_EMAILS;
   return raw
     .split(",")
     .map((e) => e.trim().toLowerCase())
@@ -70,7 +76,7 @@ export async function requirePlatformAdmin(): Promise<PlatformAdminSession> {
   const mfaRedirect = await resolveMfaRedirectPath(supabase, {
     email: session.email,
     memberRole: null,
-    next: "/hospira-admin",
+    next: "/nestio-admin",
   });
   if (mfaRedirect) {
     redirect(mfaRedirect);

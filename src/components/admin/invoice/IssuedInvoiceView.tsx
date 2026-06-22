@@ -13,7 +13,7 @@ import { PLATFORM_NAME } from "@/lib/platform/branding";
 
 type Props = {
   document: IssuedInvoiceDocument;
-  showHospiraBranding: boolean;
+  showPlatformBranding: boolean;
   issued?: boolean;
   onIssue?: () => Promise<void>;
   issuing?: boolean;
@@ -21,7 +21,7 @@ type Props = {
 
 export function IssuedInvoiceView({
   document,
-  showHospiraBranding,
+  showPlatformBranding,
   issued = true,
   onIssue,
   issuing = false,
@@ -191,7 +191,7 @@ export function IssuedInvoiceView({
             </div>
           </div>
           <p className="issued-invoice-sheet__legal">{document.legal_note}</p>
-          {showHospiraBranding ? (
+          {showPlatformBranding ? (
             <p className="issued-invoice-sheet__brand">
               {t("poweredBy", { brand: PLATFORM_NAME })}
             </p>

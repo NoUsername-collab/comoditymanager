@@ -46,8 +46,8 @@ export async function PublicFooter({ config }: { config: PublicSiteConfig }) {
                 ))}
               </div>
             ) : (
-              <p className="public-footer__contact">
-                <a href={`mailto:${t("contactEmail")}`}>{t("contactEmail")}</a>
+              <p className="public-footer__contact public-footer__contact--muted">
+                {t("contactNotConfigured")}
               </p>
             )}
           </div>

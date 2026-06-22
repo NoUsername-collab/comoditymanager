@@ -25,6 +25,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  delete process.env.NESTIO_ADMIN_EMAILS;
   delete process.env.HOSPIRA_ADMIN_EMAILS;
 });
 
@@ -34,26 +35,34 @@ afterEach(() => {
 
 describe("isPlatformAdminEmail", () => {
   it("returns true for the default admin email when env is not set", () => {
+    delete process.env.NESTIO_ADMIN_EMAILS;
     delete process.env.HOSPIRA_ADMIN_EMAILS;
-    expect(isPlatformAdminEmail("admin@hospira.ro")).toBe(true);
+    expect(isPlatformAdminEmail("admin@nestio.ro")).toBe(true);
   });
 
   it("returns false for a random email when env is not set", () => {
+    delete process.env.NESTIO_ADMIN_EMAILS;
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     expect(isPlatformAdminEmail("random@email.com")).toBe(false);
   });
 
   it("is case insensitive", () => {
+    delete process.env.NESTIO_ADMIN_EMAILS;
     delete process.env.HOSPIRA_ADMIN_EMAILS;
-    expect(isPlatformAdminEmail("ADMIN@hospira.ro")).toBe(true);
-    expect(isPlatformAdminEmail("Admin@Hospira.Ro")).toBe(true);
+    expect(isPlatformAdminEmail("ADMIN@nestio.ro")).toBe(true);
+    expect(isPlatformAdminEmail("Admin@Nestio.Ro")).toBe(true);
   });
 
-  it("recognises emails from the env var", () => {
-    process.env.HOSPIRA_ADMIN_EMAILS = "a@b.com, c@d.com";
+  it("recognises emails from NESTIO_ADMIN_EMAILS", () => {
+    process.env.NESTIO_ADMIN_EMAILS = "a@b.com, c@d.com";
     expect(isPlatformAdminEmail("a@b.com")).toBe(true);
     expect(isPlatformAdminEmail("c@d.com")).toBe(true);
-    expect(isPlatformAdminEmail("admin@hospira.ro")).toBe(false);
+    expect(isPlatformAdminEmail("admin@nestio.ro")).toBe(false);
+  });
+
+  it("falls back to legacy HOSPIRA_ADMIN_EMAILS", () => {
+    process.env.HOSPIRA_ADMIN_EMAILS = "legacy@nestio.ro";
+    expect(isPlatformAdminEmail("legacy@nestio.ro")).toBe(true);
   });
 });
 
@@ -67,11 +76,13 @@ describe("isPlatformAdminEmailEdge", () => {
   });
 
   it("returns true for a valid admin email", () => {
+    delete process.env.NESTIO_ADMIN_EMAILS;
     delete process.env.HOSPIRA_ADMIN_EMAILS;
-    expect(isPlatformAdminEmailEdge("admin@hospira.ro")).toBe(true);
+    expect(isPlatformAdminEmailEdge("admin@nestio.ro")).toBe(true);
   });
 
   it("returns false for an invalid email", () => {
+    delete process.env.NESTIO_ADMIN_EMAILS;
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     expect(isPlatformAdminEmailEdge("nobody@example.com")).toBe(false);
   });

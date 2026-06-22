@@ -124,12 +124,12 @@ html[data-layout-chrome="compact"] .checkin-modal {
 
 /* sim strip: see mobile-layout-flawless.css */
 
-/* ── Hospira admin ── */
-.ml-shell--hospira-admin .hospira-admin-header__nav--wide {
+/* ── Nestio admin ── */
+.ml-shell--nestio-admin .nestio-admin-header__nav--wide {
   display: flex;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header__nav--wide {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__nav--wide {
   display: none;
 }
 
@@ -137,16 +137,16 @@ html[data-layout-chrome="compact"] .ml-mobile-menu--hospira {
   display: block;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header__inner {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
   padding-inline: 0.85rem;
   gap: 0.5rem;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header__email {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__email {
   display: none;
 }
 
-html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-main {
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
   padding: 1rem 0.85rem 1.5rem;
 }
 
@@ -335,7 +335,7 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
   }
 
   html[data-layout-chrome="compact"] .public-header,
-  html[data-layout-chrome="compact"] .hospira-admin-header,
+  html[data-layout-chrome="compact"] .nestio-admin-header,
   html[data-layout-chrome="compact"] .admin-hud__header {
     padding-top: max(0.5rem, var(--ml-safe-top, 0px));
   }

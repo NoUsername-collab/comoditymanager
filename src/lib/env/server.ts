@@ -9,7 +9,8 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  // Platform admin
+  // Platform admin (NESTIO_ADMIN_EMAILS preferred; HOSPIRA_ADMIN_EMAILS legacy)
+  NESTIO_ADMIN_EMAILS: z.string().optional(),
   HOSPIRA_ADMIN_EMAILS: z.string().optional(),
   // Legacy staff emails — optional in multi-tenant (role comes from tenant_members DB).
   ADMIN_EMAIL: z.string().email().optional(),

@@ -2,7 +2,7 @@
  * Creeaza contul platform admin in Supabase Auth.
  *
  * In .env.local:
- *   HOSPIRA_ADMIN_EMAILS=contact@hospira.ro
+ *   NESTIO_ADMIN_EMAILS=contact@nestio.ro
  *   ADMIN_INITIAL_PASSWORD=parola-ta    (sterge dupa!)
  *
  * Ruleaza: npm run setup-platform-admin
@@ -25,7 +25,9 @@ if (!loaded) {
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const emails = process.env.HOSPIRA_ADMIN_EMAILS?.trim();
+const emails =
+  process.env.NESTIO_ADMIN_EMAILS?.trim() ||
+  process.env.HOSPIRA_ADMIN_EMAILS?.trim();
 const password = process.env.ADMIN_INITIAL_PASSWORD;
 
 if (!url || !serviceKey) {
@@ -36,7 +38,7 @@ if (!url || !serviceKey) {
 }
 if (!emails) {
   console.error(
-    `Adauga HOSPIRA_ADMIN_EMAILS in ${envFile} (ex: contact@hospira.ro)`
+    `Adauga NESTIO_ADMIN_EMAILS in ${envFile} (ex: contact@nestio.ro)`
   );
   process.exit(1);
 }

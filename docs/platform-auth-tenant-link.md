@@ -23,10 +23,10 @@ App code: `prepare_platform_session` RPC when present; **service-role fallback**
 ## Deploy checklist
 
 1. Supabase SQL Editor → paste full `supabase/migrations/038_platform_login_tenant_slug.sql` → Run.
-2. Staging: `039_fix_staging_tenant_domains.sql` + `UPDATE platform_settings SET value = 'test.hospira.ro' WHERE key = 'tenant_domain_suffix';`
-3. Vercel **Production + Preview**: `NEXT_PUBLIC_PLATFORM_DOMAIN=test.hospira.ro`, `NEXT_PUBLIC_SITE_URL=https://test.hospira.ro` → **Redeploy**.
-4. Vercel Domains: `test.hospira.ro` and `*.test.hospira.ro` **Valid**.
-5. Test login → redirect must be `https://{slug}.test.hospira.ro/admin` (not `*.hospira.ro`).
+2. Staging: `039_fix_staging_tenant_domains.sql` + `UPDATE platform_settings SET value = 'test.nestio.ro' WHERE key = 'tenant_domain_suffix';`
+3. Vercel **Production + Preview**: `NEXT_PUBLIC_PLATFORM_DOMAIN=test.nestio.ro`, `NEXT_PUBLIC_SITE_URL=https://test.nestio.ro` → **Redeploy**.
+4. Vercel Domains: `test.nestio.ro` and `*.test.nestio.ro` **Valid**.
+5. Test login → redirect must be `https://{slug}.test.nestio.ro/admin` (not `*.nestio.ro`).
 
 ## Diagnose “no property linked” for a client
 
@@ -45,7 +45,7 @@ WHERE lower(trim(u.email)) = lower(trim('CLIENT_EMAIL_HERE'));
 |--------|---------|
 | Auth row, no `member_id` | Signup never finished `onboard_new_tenant` — client must sign up again (after deploy) or run 038 backfill if orphan email row |
 | `member_id` but `user_id` ≠ `auth_id` | Run migration **038** (or redeploy app with fallback — auto-relinks on login) |
-| Row OK | Login on **tenant URL** `{slug}.test.hospira.ro/admin/login` or redeploy |
+| Row OK | Login on **tenant URL** `{slug}.test.nestio.ro/admin/login` or redeploy |
 
 ## Do not use
 

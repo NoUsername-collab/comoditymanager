@@ -1,5 +1,5 @@
 -- ============================================================
--- Audit migrări CasaEmil / Hospira
+-- Audit migrări CasaEmil / Nestio
 -- Rulează în Supabase → SQL Editor (read-only, nu modifică nimic).
 -- Fiecare rând = o migrare + marker verificat în schema public.
 -- ============================================================

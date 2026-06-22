@@ -15,7 +15,7 @@ const ALLOWLIST_FILES = new Set([
   "tenant-members.ts",
   "tenant-domains.ts",
   "onboarding.ts",
-  "hospira-logs-page-data.ts",
+  "nestio-logs-page-data.ts",
   "database-reset.ts",
 ]);
 
