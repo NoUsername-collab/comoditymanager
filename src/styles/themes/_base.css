@@ -138,6 +138,26 @@ html {
   --card-shadow: var(--shadow);
   --card-border-style: solid;
 
+  /* Admin flat surfaces — operational PMS (Gantt keeps --card-shadow) */
+  --admin-surface-bg: var(--surface);
+  --admin-surface-border: var(--border);
+  --admin-surface-radius: var(--radius-md);
+  --admin-surface-shadow: none;
+  --admin-elevation-shadow: var(--shadow-lg);
+
+  --admin-tint-info-bg: color-mix(in srgb, var(--info) 7%, var(--surface));
+  --admin-tint-info-border: color-mix(in srgb, var(--info) 22%, var(--border));
+  --admin-tint-warning-bg: var(--pending-bg);
+  --admin-tint-warning-border: color-mix(in srgb, var(--pending-border) 30%, var(--border));
+  --admin-tint-success-bg: var(--active-bg);
+  --admin-tint-success-border: color-mix(in srgb, var(--active-border) 30%, var(--border));
+  --admin-tint-danger-bg: var(--cancelled-bg);
+  --admin-tint-danger-border: color-mix(in srgb, var(--cancelled-border) 30%, var(--border));
+  --admin-tint-violet-bg: var(--blocked-bg);
+  --admin-tint-violet-border: color-mix(in srgb, var(--blocked-border) 25%, var(--border));
+  --admin-tint-sky-bg: var(--hold-bg);
+  --admin-tint-sky-border: color-mix(in srgb, var(--hold-border) 25%, var(--border));
+
   --gantt-zone-checkout: var(--weekend-bg);
   --gantt-zone-clean: var(--surface);
   --gantt-zone-checkin: var(--surface-2);

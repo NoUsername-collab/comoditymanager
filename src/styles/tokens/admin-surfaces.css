@@ -1,0 +1,30 @@
+/**
+ * Contract suprafețe admin — flat operational PMS.
+ * Variabilele canonice sunt în _base.css (--admin-surface-*, --admin-tint-*).
+ * Gantt rămâne pe --card-shadow; aceste tokeni sunt pentru liste, dashboard, setări.
+ *
+ * Mapare nativă: src/domain/design/tokens.ts
+ */
+
+.admin-surface-card {
+  border-radius: var(--admin-surface-radius);
+  border: 1px solid var(--admin-surface-border);
+  background: var(--admin-surface-bg);
+  box-shadow: var(--admin-surface-shadow);
+}
+
+.admin-surface-card--interactive {
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.admin-surface-card--interactive:hover {
+  border-color: color-mix(in srgb, var(--admin-accent) 28%, var(--admin-surface-border));
+}
+
+.admin-surface-card--interactive:active {
+  filter: brightness(0.98);
+  transform: scale(0.995);
+  transition-duration: 0.06s;
+}

@@ -195,7 +195,9 @@ export const GanttBookingBar = memo(function GanttBookingBar({
         )}
 
         <span className="gantt-stay__primary min-w-0 flex-1">
-          <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
+          <span className="gantt-stay-chrome__label gantt-stay__surface-text min-w-0 truncate">
+            {label}
+          </span>
           {(showUnpaid ||
             showMissingIdentity ||
             keysMicroLabel ||
@@ -325,7 +327,11 @@ export const GanttBookingBar = memo(function GanttBookingBar({
                 </span>
               </span>
               {earlyDepartureNote ? (
-                <span className="gantt-stay__policy-note" title={earlyDepartureNote}>
+                <span
+                  className="gantt-stay__policy-note gantt-stay__surface-text"
+                  title={earlyDepartureNote}
+                  aria-hidden
+                >
                   {earlyDepartureNote}
                 </span>
               ) : null}
@@ -361,15 +367,20 @@ export const GanttBookingBar = memo(function GanttBookingBar({
       )}
 
       {isCerere && (
-        <span className="gantt-stay__stamp" aria-hidden>
+        <span className="gantt-stay__stamp gantt-stay__surface-text" aria-hidden>
           CERERE
         </span>
       )}
     </>
   );
 
+  const accessibleLabel = [title, earlyDepartureNote, capHealthLabel]
+    .filter(Boolean)
+    .join(" · ");
+
   const barProps = {
-    title,
+    title: accessibleLabel || title,
+    "aria-label": accessibleLabel || title,
     className,
     style,
   };

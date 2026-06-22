@@ -1442,6 +1442,7 @@
         "emptyRequestFilterDesc": "Reset the filter or search by another criterion.",
         "emptyRequestWaitingDesc": "New website requests appear here until you confirm or cancel them.",
         "seeNewRequests": "See new requests",
+        "pendingPinnedHint": "Requests awaiting confirmation — shown automatically above confirmed stays.",
         "historyFiltered": "Filtered history ({count})",
         "historyRecent": "Recent history ({count})",
         "historyFilteredHint": "History results use the same filter as the main list.",

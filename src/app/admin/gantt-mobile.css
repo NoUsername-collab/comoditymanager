@@ -997,7 +997,7 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__body {
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__primary {
   display: flex;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   align-items: center;
   gap: 0.08rem;
 }

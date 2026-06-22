@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/themes/_base.css";
+@import "../styles/tokens/admin-surfaces.css";
 @import "../styles/themes/globals.css";
 @import "./locale-loading.css";
 @import "./admin-login.css";

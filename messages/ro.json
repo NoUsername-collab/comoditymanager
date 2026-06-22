@@ -1441,6 +1441,7 @@
         "emptyRequestFilterDesc": "Resetează filtrul sau caută după alt criteriu.",
         "emptyRequestWaitingDesc": "Cererile noi de pe site apar aici până le confirmi sau anulezi.",
         "seeNewRequests": "Vezi cereri noi",
+        "pendingPinnedHint": "Cereri care necesită confirmare — afișate automat deasupra cazărilor confirmate.",
         "historyFiltered": "Istoric filtrat ({count})",
         "historyRecent": "Istoric recent ({count})",
         "historyFilteredHint": "Rezultatele din istoric folosesc același filtru ca lista principală.",

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   filterCazariListsByQuery,
+  shouldPinCereriAboveConfirmate,
+  sortCereriByPriority,
   splitOperationalStays,
 } from "@/domain/cazari/page-splits";
 
@@ -73,5 +75,41 @@ describe("page-splits", () => {
     expect(result.confirmate).toHaveLength(2);
     expect(result.confirmateVisible).toHaveLength(1);
     expect(result.hiddenConfirmateCount).toBe(1);
+  });
+
+  it("sorts cereri with unassigned rooms first, then by check-in", () => {
+    const sorted = sortCereriByPriority([
+      {
+        ...baseStay,
+        status: "cerere_noua",
+        check_in: "2026-06-20",
+        room_names: ["Camera 1"],
+      },
+      {
+        ...baseStay,
+        status: "cerere_noua",
+        check_in: "2026-06-25",
+        room_names: [],
+      },
+      {
+        ...baseStay,
+        status: "cerere_noua",
+        check_in: "2026-06-10",
+        room_names: [],
+      },
+    ]);
+
+    expect(sorted.map((s) => s.check_in)).toEqual([
+      "2026-06-10",
+      "2026-06-25",
+      "2026-06-20",
+    ]);
+  });
+
+  it("pins cereri above confirmate only on the default confirmate view", () => {
+    expect(shouldPinCereriAboveConfirmate("confirmate", 2)).toBe(true);
+    expect(shouldPinCereriAboveConfirmate("confirmate", 0)).toBe(false);
+    expect(shouldPinCereriAboveConfirmate("cereri", 2)).toBe(false);
+    expect(shouldPinCereriAboveConfirmate("anulate", 1)).toBe(false);
   });
 });

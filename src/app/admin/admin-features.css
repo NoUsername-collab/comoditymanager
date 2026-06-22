@@ -26,26 +26,26 @@
 }
 
 .admin-summary-chip {
-  border-radius: 0.75rem;
-  border: 1px solid #e4e4e7;
-  background: linear-gradient(145deg, #ffffff 0%, #fafafa 100%);
+  border-radius: var(--admin-surface-radius, 0.75rem);
+  border: 1px solid var(--admin-surface-border, #e4e4e7);
+  background: var(--admin-surface-bg, #ffffff);
   padding: 0.625rem 0.75rem;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .admin-summary-chip--sky {
-  border-color: #bae6fd;
-  background: linear-gradient(145deg, #f0f9ff 0%, #ffffff 100%);
+  border-color: var(--admin-tint-sky-border, #bae6fd);
+  background: var(--admin-tint-sky-bg, #f0f9ff);
 }
 
 .admin-summary-chip--amber {
-  border-color: #fde68a;
-  background: linear-gradient(145deg, #fffbeb 0%, #ffffff 100%);
+  border-color: var(--admin-tint-warning-border, #fde68a);
+  background: var(--admin-tint-warning-bg, #fffbeb);
 }
 
 .admin-summary-chip--violet {
-  border-color: #ddd6fe;
-  background: linear-gradient(145deg, #f5f3ff 0%, #ffffff 100%);
+  border-color: var(--admin-tint-violet-border, #ddd6fe);
+  background: var(--admin-tint-violet-bg, #f5f3ff);
 }
 
 .admin-summary-chip__label {
@@ -76,9 +76,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 1rem;
-  border: 1px dashed #d4d4d8;
-  background: linear-gradient(160deg, #fafafa 0%, #f4f4f5 100%);
+  border-radius: var(--admin-surface-radius, 1rem);
+  border: 1px dashed var(--admin-surface-border, #d4d4d8);
+  background: var(--surface-2, #fafafa);
   padding: 1rem 0.85rem;
   text-align: center;
 }
@@ -125,7 +125,7 @@
   top: 1.75rem;
   bottom: 0;
   width: 2px;
-  background: linear-gradient(180deg, #e4e4e7 0%, #f4f4f5 100%);
+  background: var(--border, #e4e4e7);
 }
 
 .activity-timeline--compact .activity-timeline__item {
@@ -157,19 +157,17 @@
 }
 
 .activity-timeline__card {
-  border-radius: 0.875rem;
-  border: 1px solid #e4e4e7;
-  background: #ffffff;
+  border-radius: var(--admin-surface-radius, 0.875rem);
+  border: 1px solid var(--admin-surface-border, #e4e4e7);
+  background: var(--admin-surface-bg, #ffffff);
   padding: 0.75rem 1rem;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--admin-surface-shadow, none);
   transition:
-    box-shadow 0.2s ease,
     border-color 0.2s ease;
 }
 
 .activity-timeline__card:hover {
-  border-color: #d4d4d8;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  border-color: var(--border-strong, #d4d4d8);
 }
 
 .activity-timeline__card:active {
@@ -184,18 +182,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(251, 191, 36, 0.5);
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-radius: var(--radius-sm, 0.5rem);
+  border: 1px solid var(--admin-tint-warning-border, rgba(251, 191, 36, 0.5));
+  background: var(--admin-tint-warning-bg, #fffbeb);
   padding: 0.25rem 0.5rem;
   font-size: 0.6875rem;
   font-weight: 600;
-  color: #92400e;
+  color: var(--pending-text, #92400e);
   cursor: pointer;
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
-    box-shadow 0.15s ease,
     transform 0.1s ease;
   line-height: 1;
   white-space: nowrap;
@@ -203,9 +200,8 @@
 }
 
 .activity-undo-btn:hover {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-color: rgba(251, 191, 36, 0.8);
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, var(--pending-border, #f59e0b));
+  border-color: color-mix(in srgb, var(--pending-border, #f59e0b) 55%, var(--border));
 }
 
 .activity-undo-btn:active {
@@ -238,44 +234,39 @@
 /* ── Stay cards (colour-coded outlines) ────────────────────────── */
 
 .stay-card {
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm, 0.5rem);
   border: 1.5px solid;
   padding: 0.4rem 0.625rem;
   content-visibility: auto;
   contain-intrinsic-size: auto 4.5rem;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .stay-card--red {
-  border-color: rgba(239, 68, 68, 0.45);
-  background: rgba(254, 242, 242, 0.6);
+  border-color: color-mix(in srgb, var(--cancelled-border, #ef4444) 45%, transparent);
+  background: color-mix(in srgb, var(--admin-tint-danger-bg, #fef2f2) 60%, transparent);
 }
 
 .stay-card--red:hover {
-  border-color: rgba(239, 68, 68, 0.7);
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+  border-color: color-mix(in srgb, var(--cancelled-border, #ef4444) 70%, transparent);
 }
 
 .stay-card--yellow {
-  border-color: rgba(245, 158, 11, 0.45);
-  background: rgba(255, 251, 235, 0.6);
+  border-color: color-mix(in srgb, var(--pending-border, #f59e0b) 45%, transparent);
+  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 60%, transparent);
 }
 
 .stay-card--yellow:hover {
-  border-color: rgba(245, 158, 11, 0.7);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+  border-color: color-mix(in srgb, var(--pending-border, #f59e0b) 70%, transparent);
 }
 
 .stay-card--green {
-  border-color: rgba(34, 197, 94, 0.35);
-  background: rgba(240, 253, 244, 0.5);
+  border-color: color-mix(in srgb, var(--active-border, #22c55e) 35%, transparent);
+  background: color-mix(in srgb, var(--admin-tint-success-bg, #f0fdf4) 50%, transparent);
 }
 
 .stay-card--green:hover {
-  border-color: rgba(34, 197, 94, 0.6);
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+  border-color: color-mix(in srgb, var(--active-border, #22c55e) 60%, transparent);
 }
 
 /* ── Cazări: progres check-in per cameră ─────────────────────── */
@@ -283,22 +274,14 @@
 .stay-checkin-progress {
   margin-top: 0.45rem;
   padding: 0.45rem 0.55rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 251, 235, 0.95) 0%,
-    rgba(254, 243, 199, 0.55) 100%
-  );
+  border-radius: var(--radius-sm, 0.5rem);
+  border: 1px solid var(--admin-tint-warning-border, rgba(245, 158, 11, 0.35));
+  background: var(--admin-tint-warning-bg, #fffbeb);
 }
 
 .stay-checkin-progress--complete {
-  border-color: rgba(34, 197, 94, 0.4);
-  background: linear-gradient(
-    135deg,
-    rgba(240, 253, 244, 0.95) 0%,
-    rgba(209, 250, 229, 0.55) 100%
-  );
+  border-color: var(--admin-tint-success-border, rgba(34, 197, 94, 0.4));
+  background: var(--admin-tint-success-bg, #f0fdf4);
 }
 
 .stay-checkin-progress__head {
@@ -356,12 +339,12 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  background: var(--pending-border, #f59e0b);
   transition: width 0.35s ease;
 }
 
 .stay-checkin-progress--complete .stay-checkin-progress__bar-fill {
-  background: linear-gradient(90deg, #22c55e, #4ade80);
+  background: var(--active-border, #22c55e);
 }
 
 .stay-checkin-progress__rooms {
@@ -408,17 +391,17 @@
 }
 
 .checkin-start-btn--continue {
-  border-color: #f59e0b !important;
-  background: linear-gradient(180deg, #fffbeb, #fef3c7) !important;
-  color: #92400e !important;
+  border-color: var(--pending-border, #f59e0b) !important;
+  background: var(--admin-tint-warning-bg, #fffbeb) !important;
+  color: var(--pending-text, #92400e) !important;
 }
 
 .admin-panel-section {
-  border-radius: 0.75rem;
-  border: 1px solid #e4e4e7;
-  background: #ffffff;
+  border-radius: var(--admin-surface-radius, 0.75rem);
+  border: 1px solid var(--admin-surface-border, #e4e4e7);
+  background: var(--admin-surface-bg, #ffffff);
   padding: 0.9rem 1rem;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .admin-panel-section__title {
@@ -438,7 +421,6 @@
   padding: 0.55rem 1.15rem;
   font-weight: 700;
   letter-spacing: 0.01em;
-  box-shadow: 0 2px 8px rgba(190, 24, 93, 0.15);
 }
 
 .admin-cereri-cta__icon {
@@ -453,16 +435,15 @@
 }
 
 .admin-today-board {
-  border-radius: 1.25rem;
-  border: 1px solid #bae6fd;
-  background: linear-gradient(155deg, #f0f9ff 0%, #ffffff 55%, #ecfdf5 100%);
-  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.08);
+  border-radius: var(--admin-surface-radius, 1.25rem);
+  border: 1px solid var(--admin-tint-sky-border, #bae6fd);
+  background: var(--admin-tint-sky-bg, #f0f9ff);
+  box-shadow: var(--admin-surface-shadow, none);
   padding: 0.35rem 0.5rem;
 }
 
 .admin-today-board--compact {
-  border-radius: 0.65rem;
-  box-shadow: 0 1px 6px rgba(56, 189, 248, 0.06);
+  border-radius: var(--radius-sm, 0.65rem);
 }
 
 .admin-today-board__badge {
@@ -476,9 +457,9 @@
 }
 
 .admin-avail-hint {
-  border-radius: 1.25rem;
-  border: 1px dashed #d4d4d8;
-  background: linear-gradient(160deg, #fafafa 0%, #f0fdf4 100%);
+  border-radius: var(--admin-surface-radius, 1.25rem);
+  border: 1px dashed var(--admin-surface-border, #d4d4d8);
+  background: var(--surface-2, #fafafa);
   padding: 2rem 1.5rem;
   text-align: center;
 }
@@ -490,11 +471,11 @@
 }
 
 .admin-metric-card {
-  border-radius: 0.75rem;
-  border: 1px solid #f4f4f5;
-  background: linear-gradient(160deg, #fafafa 0%, #ffffff 100%);
+  border-radius: var(--admin-surface-radius, 0.75rem);
+  border: 1px solid var(--admin-surface-border, #f4f4f5);
+  background: var(--admin-surface-bg, #ffffff);
   padding: 0.75rem 0.9rem;
-  transition: box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .admin-metric-card__label {
@@ -574,7 +555,7 @@
 }
 
 .admin-metric-card:hover {
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: var(--border-strong, #e4e4e7);
 }
 
 .admin-metric-card:active {

@@ -99,7 +99,7 @@ export function GanttOccupancyBar({
         <span className="gantt-occ-bar__glyph" aria-hidden>
           {kind === "block" ? "⊘" : "⏳"}
         </span>
-        <span className="gantt-occ-bar__label-text">{label}</span>
+        <span className="gantt-occ-bar__label-text gantt-stay__surface-text">{label}</span>
       </span>
     </div>
   );

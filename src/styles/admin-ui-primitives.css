@@ -76,12 +76,11 @@
 
 .admin-btn--primary:hover:not(:disabled) {
   background: color-mix(in srgb, var(--admin-btn-primary-bg) 88%, black);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--admin-btn-primary-bg) 30%, transparent);
 }
 
 .admin-btn--primary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--admin-btn-primary-bg) 78%, black);
   transform: translateY(1px);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 /* — Variant: secondary — */
@@ -95,12 +94,11 @@
 .admin-btn--secondary:hover:not(:disabled) {
   background: var(--surface-2, #fafafa);
   border-color: var(--border-strong, #a1a1aa);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .admin-btn--secondary:active:not(:disabled) {
+  background: var(--surface-3, #e4e4e7);
   transform: translateY(1px);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /* — Variant: danger — */
@@ -114,12 +112,11 @@
 .admin-btn--danger:hover:not(:disabled) {
   background: color-mix(in srgb, var(--cancelled-bg, #fef2f2) 70%, var(--cancelled-border, #ef4444));
   border-color: color-mix(in srgb, var(--cancelled-border, #ef4444) 80%, black);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--cancelled-border) 25%, transparent);
 }
 
 .admin-btn--danger:active:not(:disabled) {
+  background: color-mix(in srgb, var(--cancelled-bg, #fef2f2) 55%, var(--cancelled-border, #ef4444));
   transform: translateY(1px);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 /* — Variant: ghost — */
@@ -148,19 +145,16 @@
   border-radius: 999px;
   background: var(--surface, #fff);
   color: var(--admin-text, #18181b);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .admin-btn--soft:hover:not(:disabled) {
   border-color: var(--border-strong, #a1a1aa);
   background: var(--surface-2, #fafafa);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .admin-btn--soft:active:not(:disabled) {
+  background: var(--surface-3, #e4e4e7);
   transform: translateY(0);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 /* — Icon-only modifier — */

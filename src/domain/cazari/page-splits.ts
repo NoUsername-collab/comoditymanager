@@ -1,4 +1,5 @@
 import type { ConfirmedStayLike } from "@/domain/cazari/confirmed-buckets";
+import type { CazariView } from "@/domain/cazari/horizon";
 import type { CazariPageLists } from "@/services/cazari-page-data";
 import { matchesStaySearchQuery } from "@/domain/cazari/stay-search";
 
@@ -53,6 +54,25 @@ export function filterCazariListsByQuery(
   };
 }
 
+/** Cereri fără cameră alocată apar primele, apoi după data sosirii. */
+export function sortCereriByPriority<
+  T extends OperationalStaySlice & { room_names: string[] },
+>(cereri: T[]): T[] {
+  return [...cereri].sort((a, b) => {
+    const aUnassigned = a.room_names.length === 0 ? 0 : 1;
+    const bUnassigned = b.room_names.length === 0 ? 0 : 1;
+    if (aUnassigned !== bUnassigned) return aUnassigned - bUnassigned;
+    return a.check_in.localeCompare(b.check_in);
+  });
+}
+
+export function shouldPinCereriAboveConfirmate(
+  view: CazariView,
+  cereriCount: number
+): boolean {
+  return view === "confirmate" && cereriCount > 0;
+}
+
 export function splitOperationalStays<T extends OperationalStaySlice>(
   filteredStays: T[],
   effectiveToday: string,
@@ -63,7 +83,9 @@ export function splitOperationalStays<T extends OperationalStaySlice>(
   confirmateVisible: T[];
   hiddenConfirmateCount: number;
 } {
-  const cereri = filteredStays.filter((s) => s.status === "cerere_noua");
+  const cereri = sortCereriByPriority(
+    filteredStays.filter((s) => s.status === "cerere_noua")
+  );
   const confirmate = filteredStays.filter((s) => s.status === "confirmata");
   const confirmateVisible = confirmate.filter(
     (s) =>

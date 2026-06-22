@@ -67,7 +67,7 @@
 .gantt-stay--chip .gantt-stay__primary {
   display: flex;
   min-width: 0;
-  flex: 1;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: flex-start;
   padding: 0 0.1rem;
@@ -82,6 +82,17 @@
   letter-spacing: -0.01em;
   line-height: 1.1;
   text-align: left;
+}
+
+/* Bară Gantt — fără text pe suprafață; badge-uri + cap rămân vizibile */
+.gantt-stay--chip .gantt-stay__surface-text,
+.gantt-occ-bar--chip .gantt-stay__surface-text {
+  display: none !important;
+}
+
+.gantt-stay--chip .gantt-stay__body {
+  justify-content: flex-start;
+  gap: 0.12rem;
 }
 
 .gantt-stay--chip .gantt-stay__details {
@@ -646,10 +657,10 @@
   opacity: 0.85;
 }
 
-@container gantt-occ (max-width: 48px) {
-  .gantt-occ-bar--chip .gantt-occ-bar__label-text {
-    display: none;
-  }
+.gantt-occ-bar--chip .gantt-occ-bar__label {
+  flex: 0 0 auto;
+  justify-content: center;
+  padding-inline: 0.2rem !important;
 }
 
 html[data-theme="default"] .gantt-stay--chip .gantt-stay__phase-badge {

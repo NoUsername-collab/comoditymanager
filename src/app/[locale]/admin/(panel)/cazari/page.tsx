@@ -12,6 +12,7 @@ import {
 } from "@/domain/cazari/horizon";
 import {
   filterCazariListsByQuery,
+  shouldPinCereriAboveConfirmate,
   splitOperationalStays,
 } from "@/domain/cazari/page-splits";
 import { loadCazariPageData } from "@/services/cazari-page-data";
@@ -178,6 +179,21 @@ export default async function AdminCazariPage({
           ) : null}
 
           {view === "confirmate" ? (
+            <>
+              {shouldPinCereriAboveConfirmate(view, cereri.length) ? (
+                <StayList
+                  title={`${tCommon("newRequestsLabel")} (${cereri.length})`}
+                  subtitle={tPages("pendingPinnedHint")}
+                  items={cereri}
+                  variant="cereri"
+                  returnTo={buildCazariPageHref({
+                    h: horizon,
+                    q: q || undefined,
+                  })}
+                  hasQuery={!!q}
+                  labels={labels}
+                />
+              ) : null}
             <AdminPanel
               title={tPages("confirmedTitle", { count: confirmateVisible.length })}
               className="mb-3"
@@ -205,6 +221,7 @@ export default async function AdminCazariPage({
                 </div>
               )}
             </AdminPanel>
+            </>
           ) : null}
         </div>
 
