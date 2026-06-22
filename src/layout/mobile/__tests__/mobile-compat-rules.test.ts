@@ -43,12 +43,22 @@ describe("mobile compatibility CSS rules", () => {
       "utf8"
     );
     expect(globals).toContain(".admin-gear__dropdown--portal");
-    expect(globals).toMatch(/z-index:\s*99990/);
+    expect(globals).toMatch(
+      /\.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/
+    );
+    expect(flawless).toMatch(
+      /html\[data-layout-chrome="compact"\] \.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/
+    );
   });
 
   it("Gantt check-time dialog clears bottom nav on compact", () => {
     expect(flawless).toContain(".gantt-check-time-dialog");
-    expect(flawless).toMatch(/z-index:\s*10000/);
+    expect(flawless).toMatch(
+      /html\[data-layout-chrome="compact"\] \.gantt-check-time-dialog[\s\S]*z-index:\s*calc\(var\(--z-overlay/
+    );
+    expect(flawless).toMatch(
+      /html\[data-layout-chrome="compact"\] \.gantt-check-time-dialog__backdrop[\s\S]*z-index:\s*var\(--z-overlay/
+    );
   });
 
   it("respects prefers-reduced-motion for nav pulse", () => {
