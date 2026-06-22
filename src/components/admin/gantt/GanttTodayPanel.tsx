@@ -41,7 +41,7 @@ export function GanttTodayPanel({
   return (
     <div
       className={[
-        "gantt-today-panel rounded-xl border border-emerald-200/80 bg-gradient-to-r from-amber-50/80 via-white to-slate-100/90 shadow-sm ring-1 ring-emerald-500/10",
+        "gantt-today-panel rounded-xl border border-emerald-200/80 bg-[var(--admin-surface-bg,var(--surface))] shadow-none ring-1 ring-emerald-500/10",
         compact ? "gantt-today-panel--compact" : "mx-3 mt-3 px-3 py-2.5",
       ]
         .filter(Boolean)

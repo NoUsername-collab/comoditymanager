@@ -24,6 +24,7 @@ import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarke
 import { DayGrid } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
+import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
 import type { AcMode } from "@/types/database";
 
@@ -101,6 +102,10 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
           .join(" ")}
         style={
           {
+            "--building-spine": resolveGanttBuildingColor(
+              group.buildingColor,
+              group.buildingAcMode
+            ),
             "--marker-color": resolveGanttAcMarkerColor(group.buildingAcMode, {
               buildingHasAnyRoomAc: group.hasAnyRoomAc,
             }),

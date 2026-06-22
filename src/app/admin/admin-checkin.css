@@ -6,8 +6,8 @@
   align-items: center;
   gap: 0.5rem;
   border-radius: 0.75rem;
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid var(--admin-tint-success-border, rgba(34, 197, 94, 0.4));
+  background: var(--admin-tint-success-bg, #f0fdf4);
   padding: 0.625rem 1.25rem;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -21,9 +21,9 @@
 }
 
 .checkin-start-btn:hover {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  background: color-mix(in srgb, var(--admin-tint-success-bg, #f0fdf4) 82%, var(--active-border));
   border-color: rgba(34, 197, 94, 0.7);
-  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.2);
+  box-shadow: none;
 }
 
 .checkin-start-btn:active {
@@ -87,13 +87,13 @@
 }
 
 .checkin-stepper__indicator--active {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  background: var(--admin-tint-info-bg, #eff6ff);
   color: #1d4ed8;
-  border: 1px solid rgba(59, 130, 246, 0.25);
+  border: 1px solid var(--admin-tint-info-border, rgba(59, 130, 246, 0.25));
 }
 
 .checkin-stepper__indicator--done {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  background: var(--admin-tint-success-bg, #f0fdf4);
   color: #15803d;
 }
 
@@ -157,13 +157,13 @@
 }
 
 .checkin-stepper__btn--primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--info, #3b82f6);
   color: white;
   border-color: rgba(59, 130, 246, 0.5);
 }
 
 .checkin-stepper__btn--primary:hover {
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  box-shadow: none;
 }
 
 .checkin-stepper__btn--primary:disabled {
@@ -271,18 +271,18 @@
 }
 
 .checkin-validation--ok {
-  border-color: rgba(34, 197, 94, 0.4);
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: var(--admin-tint-success-border, rgba(34, 197, 94, 0.4));
+  background: var(--admin-tint-success-bg, #f0fdf4);
 }
 
 .checkin-validation--warning {
-  border-color: rgba(245, 158, 11, 0.4);
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-color: var(--admin-tint-warning-border, rgba(245, 158, 11, 0.4));
+  background: var(--admin-tint-warning-bg, #fffbeb);
 }
 
 .checkin-validation--blocked {
-  border-color: rgba(239, 68, 68, 0.4);
-  background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+  border-color: var(--admin-tint-danger-border, rgba(239, 68, 68, 0.4));
+  background: var(--admin-tint-danger-bg, #fef2f2);
 }
 
 .checkin-validation__status {
@@ -390,8 +390,8 @@
 }
 
 .checkin-payment__option:has(input:checked) {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-color: var(--admin-tint-info-border, rgba(59, 130, 246, 0.5));
+  background: var(--admin-tint-info-bg, #eff6ff);
   color: #1d4ed8;
 }
 
@@ -400,8 +400,8 @@
 }
 
 .checkin-payment__option--online:has(input:checked) {
-  border-color: rgba(139, 92, 246, 0.55);
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+  border-color: var(--admin-tint-violet-border, rgba(139, 92, 246, 0.55));
+  background: var(--admin-tint-violet-bg, #f5f3ff);
   color: #6d28d9;
 }
 
@@ -416,8 +416,8 @@
   margin-top: 0.15rem;
   padding: 0.65rem 0.75rem;
   border-radius: 0.55rem;
-  border: 1px dashed rgba(139, 92, 246, 0.45);
-  background: linear-gradient(135deg, #faf5ff 0%, #f5f3ff 100%);
+  border: 1px dashed var(--admin-tint-violet-border, rgba(139, 92, 246, 0.45));
+  background: var(--admin-tint-violet-bg, #faf5ff);
 }
 
 .checkin-payment__mock-icon {

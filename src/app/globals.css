@@ -455,8 +455,14 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 .gantt-building-header::before {
-  content: none;
-  display: none;
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--building-spine, var(--marker-color, #64748b));
+  z-index: 0;
 }
 
 .gantt-building-header .gantt-ac-marker--sm {
@@ -485,8 +491,8 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 .gantt-room-column-header {
-  background: linear-gradient(135deg, #f8fafc 0%, #f4f4f5 55%, #fafafa 100%);
-  box-shadow: inset 0 -1px 0 0 #e4e4e7;
+  background: var(--admin-surface-bg, var(--surface));
+  box-shadow: inset 0 -1px 0 0 var(--admin-surface-border, #e4e4e7);
 }
 
 .gantt-room-cell {
@@ -510,11 +516,7 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 .gantt-room-row:hover .gantt-room-cell {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--marker-color) 7%, white) 0%,
-    #ffffff 55%
-  );
+  background: color-mix(in srgb, var(--marker-color) 6%, var(--surface));
 }
 
 .gantt-room-row:hover .gantt-room-cell::before {
@@ -681,24 +683,16 @@ html[data-theme="default"][data-mode="night"] {
 .gantt-day-header-grid .gantt-day-header-cell {
   position: relative;
   z-index: 1;
-  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  background: var(--admin-surface-bg, var(--surface));
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 88%, transparent);
 }
 
 .gantt-day-header-grid .gantt-day-header-cell--weekend {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 80%, var(--surface-2)) 0%,
-    color-mix(in srgb, var(--surface-2) 94%, var(--accent-muted)) 100%
-  );
+  background: color-mix(in srgb, var(--surface-2) 55%, var(--surface));
 }
 
 .gantt-day-header-grid .gantt-day-header-cell--today {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--surface) 84%, var(--accent-muted)) 0%,
-    color-mix(in srgb, var(--surface-2) 76%, var(--accent-muted)) 100%
-  );
+  background: color-mix(in srgb, var(--accent-muted) 12%, var(--surface));
   box-shadow:
     inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
     inset -2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
@@ -887,12 +881,50 @@ html[data-theme="default"][data-mode="night"] {
   box-shadow: inset 0 0 0 1px #cbd5e1;
 }
 
+.gantt-legend-swatch--stay-active {
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--gantt-bar-fill-active, var(--booking-active-bg));
+  box-shadow: inset 2px 0 0 var(--booking-active-border);
+}
+
+.gantt-legend-swatch--stay-pending {
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--gantt-bar-fill-pending, var(--booking-pending-bg));
+}
+
+.gantt-legend-swatch--stay-past {
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--gantt-bar-fill-past, var(--booking-past-bg));
+}
+
+.gantt-legend-swatch--stay-hold {
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--hold-bg, #fef08a);
+  box-shadow: inset 2px 0 0 #ca8a04;
+}
+
+.gantt-legend-swatch--stay-block {
+  width: 1.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--blocked-bg, #fef08a);
+  box-shadow: inset 2px 0 0 #52525b;
+}
+
 .gantt-footer-legend {
   line-height: 1.45;
 }
 
 .gantt-room-column-header {
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  background: var(--admin-surface-bg, var(--surface)) !important;
 }
 
 .gantt-day-cell--compact {

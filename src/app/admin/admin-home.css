@@ -20,6 +20,8 @@
 }
 
 /* —— Hero —— */
+/* Delight zone: `.admin-home-hero--liquid` + mood variants păstrează gradiente/atmosferă.
+   KPI-urile (`.admin-home-kpi*`) și secțiunile operaționale rămân flat (`--admin-surface-*`). */
 .admin-home-hero {
   display: flex;
   flex-direction: column;
@@ -303,8 +305,8 @@
   align-items: baseline;
   gap: 0.2rem;
   border-radius: 0.4rem;
-  border: 1px solid color-mix(in srgb, var(--admin-panel-border) 80%, transparent);
-  background: color-mix(in srgb, var(--admin-panel-bg) 92%, var(--admin-accent-muted));
+  border: 1px solid var(--admin-surface-border, color-mix(in srgb, var(--admin-panel-border) 80%, transparent));
+  background: var(--admin-surface-bg, color-mix(in srgb, var(--admin-panel-bg) 92%, var(--admin-accent-muted)));
   padding: 0.18rem 0.45rem;
   font-size: 0.6rem;
   font-weight: 700;
@@ -312,13 +314,14 @@
   white-space: nowrap;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .admin-home-kpi--alert {
-  border-color: color-mix(in srgb, #f87171 55%, var(--admin-panel-border));
-  background: color-mix(in srgb, #fef2f2 70%, var(--admin-panel-bg));
+  border-color: var(--admin-tint-danger-border, color-mix(in srgb, #f87171 55%, var(--admin-panel-border)));
+  background: var(--admin-tint-danger-bg, color-mix(in srgb, #fef2f2 70%, var(--admin-panel-bg)));
   color: #991b1b;
-  animation: admin-home-kpi-glow 2.8s ease-in-out infinite;
+  animation: none;
 }
 
 @keyframes admin-home-kpi-glow {
@@ -835,26 +838,14 @@
   padding: 1rem 1.1rem 1.15rem;
   border-radius: calc(var(--admin-radius, 0.75rem) + 6px);
   border: 1px solid color-mix(in srgb, var(--quest-accent) 28%, var(--admin-panel-border));
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--quest-accent) 8%, var(--admin-panel-bg)) 0%,
-    var(--admin-panel-bg, #fff) 55%,
-    color-mix(in srgb, #fbbf24 6%, var(--admin-panel-bg)) 100%
-  );
-  box-shadow:
-    0 1px 2px color-mix(in srgb, var(--admin-page-bg) 5%, transparent),
-    0 14px 36px color-mix(in srgb, var(--quest-accent) 10%, transparent);
+  background: var(--admin-surface-bg, var(--admin-panel-bg, #fff));
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .checkin-quest--victory {
   border-color: color-mix(in srgb, var(--quest-accent) 45%, #86efac);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #86efac 22%, var(--admin-panel-bg)) 0%,
-    var(--admin-panel-bg) 50%,
-    color-mix(in srgb, #fde68a 18%, var(--admin-panel-bg)) 100%
-  );
-  animation: checkin-quest-victory-pulse 2.4s ease-in-out infinite;
+  background: var(--admin-tint-success-bg, color-mix(in srgb, #86efac 12%, var(--admin-panel-bg)));
+  animation: none;
 }
 
 @keyframes checkin-quest-victory-pulse {

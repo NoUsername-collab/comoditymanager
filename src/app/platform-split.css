@@ -1,4 +1,4 @@
-/* ── Nestio platform: white · blue · professional ───────────────── */
+/* ── Hospira platform: white · blue · professional (marketing shell) ─ */
 
 .platform-shell--split {
   --light-bg: #f8fafc;
@@ -45,13 +45,13 @@
 }
 
 .platform-header--split .platform-header__logo {
-  background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+  background: var(--light-accent, #2563eb);
   color: #ffffff;
-  box-shadow: 0 4px 16px color-mix(in srgb, #2563eb 35%, transparent);
+  box-shadow: none;
 }
 
 .platform-header--split .platform-header__cta {
-  background: linear-gradient(145deg, #1d4ed8 0%, #2563eb 100%);
+  background: var(--light-accent-deep, #1d4ed8);
   color: #ffffff;
 }
 
@@ -72,7 +72,7 @@
 
 .platform-shell--split .platform-footer {
   border-top-color: var(--light-border);
-  background: linear-gradient(180deg, #ffffff 0%, var(--light-bg-soft) 100%);
+  background: var(--light-card, #ffffff);
 }
 
 .platform-shell--split .platform-footer__brand,

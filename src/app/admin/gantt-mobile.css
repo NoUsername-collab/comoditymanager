@@ -846,8 +846,7 @@ html[data-layout-chrome="compact"] .gantt-building-header__chevron {
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header::before {
-  content: none !important;
-  display: none !important;
+  width: 2px !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-building-header,
@@ -1643,8 +1642,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header__
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header::before {
-  content: none !important;
-  display: none !important;
+  width: 2px !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header,

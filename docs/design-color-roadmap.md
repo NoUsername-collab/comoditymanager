@@ -55,28 +55,28 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 
 | Item | Stare | Fișiere |
 |------|-------|---------|
-| Spine 4px pe **rândul clădire** (sidebar stânga) | **Lipsă** — `::before` dezactivat (`content: none`) | `globals.css`, `gantt-mobile.css` |
-| Gradient pe chrome Gantt (header viewport, summary, room column) | **Rămas** (~46× `linear-gradient` în shell) | `gantt-premium.css`, `globals.css` |
-| Legendă footer cu swatch gradient | **Rămas** | `GanttFooterLegend.tsx` |
-| Bară turnover (azi check-out + check-in) cu gradient | **Rămas** | `admin-gantt-stay-chip.css` |
-| Hold/block: shadow pe chip | **Parțial** — încă `box-shadow` | `admin-gantt-stay-chip.css` |
-| Componente TSX cu `bg-gradient-*` în Gantt | **Rămas** | `GanttDayHeader`, `GanttTodayPanel`, `GanttQuickActionPanel` |
+| Spine 4px pe **rândul clădire** (sidebar stânga) | **Done** — `::before` 4px (`--building-spine`) | `globals.css`, `gantt-mobile.css`, `GanttVirtualizedBody.tsx` |
+| Gradient pe chrome Gantt (header viewport, summary, room column) | **Parțial** — chrome principal flat; rămân zone toolbar/mobile | `gantt-premium.css`, `globals.css` |
+| Legendă footer cu swatch gradient | **Done** — swatch-uri token `--gantt-bar-fill-*` | `GanttFooterLegend.tsx`, `globals.css` |
+| Bară turnover (azi check-out + check-in) cu gradient | **Done** — hard-stop flat 50/50 | `admin-gantt-stay-chip.css` |
+| Hold/block: shadow pe chip | **Done** — `box-shadow: none` | `admin-gantt-stay-chip.css` |
+| Componente TSX cu `bg-gradient-*` în Gantt | **Done** | `GanttDayHeader`, `GanttTodayPanel`, `GanttQuickActionPanel` |
 
 ### P1 — admin operațional flat
 
 | Item | Stare | Fișiere |
 |------|-------|---------|
-| Dashboard hero „liquid” / mood gradients | **Rămas** (~16 gradiente) | `admin-home.css`, `admin-liquid-shader.css` |
-| Disponibilitate premium panels | **Rămas** | `availability-premium.css`, `AvailabilityDatePicker.tsx` |
-| Check-in flow | **Rămas** (12 gradiente) | `admin-checkin.css` |
-| Toolbar cazări | **Rămas** | `admin-cazari-toolbar.css` |
-| Clasa `.admin-surface-card` | **Definită, nefolosită în TSX** | `admin-surfaces.css` — migrare componente |
+| Dashboard hero „liquid” / mood gradients | **Delight zone** — documentat; KPI flat | `admin-home.css` |
+| Disponibilitate premium panels | **Done** | `availability-premium.css`, `AvailabilityDatePicker.tsx` |
+| Check-in flow | **Done** (operațional; print factură neschimbat) | `admin-checkin.css` |
+| Toolbar cazări | **Done** — alert cereri flat | `admin-cazari-toolbar.css` |
+| Clasa `.admin-surface-card` | **Adoptată** în TSX cheie | `admin-surfaces.css`, statistici, disponibilitate, quick panel |
 | Istoric, feedback, simulare, guests | **Parțial** | diverse `admin-*.css` |
 
 ### P2 — curățenie & consistență
 
-- [ ] Comentariu `Nestio` → `Hospira` în `platform-split.css`; decide dacă gradientele marketing rămân
-- [ ] `GanttFooterLegend` — swatch-uri plate ca în UI real
+- [x] Comentariu `Nestio` → `Hospira` în `platform-split.css`; gradiente marketing header flatten parțial
+- [x] `GanttFooterLegend` — swatch-uri plate ca în UI real
 - [ ] Audit noapte (`default-night.css`) — spine Gantt, contrast cap health
 - [ ] Documentare în UI Setări: „Gantt = semantic, brand = header”
 
@@ -125,17 +125,74 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 
 ---
 
-## 6. Status sinteză (2026-06-22)
+## 6. Status sinteză (2026-06-22, post P0/P1)
 
 | Zonă | Aliniere | Notă |
 |------|----------|------|
-| **Bare Gantt stay** | ~90% | Flat + spine + cap OK; turnover + legendă încă cu gradient |
-| **Chrome Gantt** | ~40% | Multe gradiente pe header/grid |
-| **Rând clădire (spine sidebar)** | ~0% | Explicit dezactivat; de reimplementat |
-| **Admin flat (setări, cazări parțial)** | ~60% | Tokeni există; acoperire incompletă |
-| **Dashboard** | ~50% | Carduri flat; hero liquid cu gradiente |
-| **Check-in / disponibilitate** | ~30% | Premium styling încă gradient-heavy |
+| **Bare Gantt stay** | ~95% | Flat + spine + cap + turnover hard-stop |
+| **Chrome Gantt** | ~75% | Header/summary/viewport/toolbar flat; mobile + zone secundare rămân |
+| **Rând clădire (spine sidebar)** | ~90% | 4px desktop / 2px compact, `--building-spine` |
+| **Admin flat (setări, cazări, check-in, avail.)** | ~80% | Tokeni + `.admin-surface-card`; guests/history parțial |
+| **Dashboard** | ~70% | KPI flat; hero liquid = delight zone documentat |
+| **Check-in / disponibilitate** | ~85% | Operațional flat; print factură intact |
 | **Site public** | N/A | Brand deliberate, nu țintă flat PMS |
-| **Platformă Hospira** | ~70% | Funcțional; CSS marketing încă „Nestio” în comentarii |
+| **Platformă Hospira** | ~85% | Naming Hospira; marketing header flat solid |
 
-**Verdict:** direcția corectă pe **barele Gantt** și **contract tokeni**; codebase-ul **nu e 100% aliniat** — shell Gantt, dashboard hero, check-in și disponibilitate au încă multe gradiente operaționale.
+**Verdict:** P0 Gantt + P1 operațional major **implementate**; rămân P2 (noapte, setări UI copy, guests/history/simulation sweep).
+
+---
+
+## 7. Plan implementare AI (agent)
+
+Plan executabil pentru agent Cursor / sesiuni viitoare. Estimări: **S** ≤1h, **M** 1–3h, **L** 3–6h.
+
+### Ce NU se atinge
+
+| Zonă | Motiv |
+|------|--------|
+| `public-site.css` | Brand public — gradiente/atmosferă deliberate |
+| `issued-invoice-sheet__header` / print facturi | Gradient header acceptabil (roadmap out of scope) |
+| Bare Gantt stay deja flat | `gantt-cards-theme.css`, `--gantt-bar-fill-*` — doar regresie |
+| Hero dashboard `--liquid` | Delight zone; KPI/secțiuni operaționale = flat |
+
+### Faza A — P0 Gantt chrome (prioritate maximă) ✅ Done 2026-06-22
+
+| # | Task | Fișiere | Efort | DoD |
+|---|------|---------|-------|-----|
+| A1 | Spine 4px rând clădire (`--building-spine`) | `globals.css`, `gantt-mobile.css`, `GanttVirtualizedBody.tsx` | S | Bandă vizibilă stânga; 2px pe compact |
+| A2 | Flat chrome: shell, head row, summary, viewport | `gantt-premium.css`, `globals.css` | M | Fără `linear-gradient` pe header zile/coloane |
+| A3 | Legendă footer swatch token | `GanttFooterLegend.tsx`, `globals.css` | S | Swatch = culori reale bare |
+| A4 | Turnover + hold/block flat | `admin-gantt-stay-chip.css` | S | Hard-stop 50/50; occ chip fără shadow |
+| A5 | TSX Gantt fără `bg-gradient-*` | `GanttDayHeader`, `GanttTodayPanel`, `GanttQuickActionPanel` | S | `--admin-surface-bg` / clase CSS |
+
+### Faza B — P1 admin operațional ✅ Done 2026-06-22 (major)
+
+| # | Task | Fișiere | Efort | DoD |
+|---|------|---------|-------|-----|
+| B1 | Check-in flat (`--admin-tint-*`) | `admin-checkin.css` | M | 0 gradiente operaționale; print intact |
+| B2 | Disponibilitate KPI + matrix | `availability-premium.css`, `AvailabilityDatePicker.tsx` | M | `--admin-surface-*` |
+| B3 | Toolbar cazări alert flat | `admin-cazari-toolbar.css` | S | Fără sweep gradient |
+| B4 | Dashboard KPI flat; hero delight | `admin-home.css` | M | Comentariu delight; KPI fără glow |
+| B5 | `.admin-surface-card` în TSX | statistici, disponibilitate, quick panel | S | ≥4 componente adoptate |
+| B6 | Platform Hospira naming + flat ops | `platform-split.css` | S | Comentariu Hospira; footer/logo solid |
+
+### Faza C — P2 curățenie (rămas)
+
+| # | Task | Fișiere | Efort | DoD |
+|---|------|---------|-------|-----|
+| C1 | Audit temă noapte Gantt | `default-night.css`, `admin-night-overrides.css` | M | Spine + cap health contrast AA |
+| C2 | Sweep guests/history/feedback/simulation | `admin-guests.css`, `admin-history.css`, etc. | L | 0 gradient operațional |
+| C3 | Gantt mobile chrome rămas | `gantt-mobile.css` | M | `--gantt-day-nav-bg` etc. flat |
+| C4 | gantt-premium zone secundare | `gantt-premium.css` (cereri queue, inline dock) | M | <5 gradiente rămase în shell |
+| C5 | Copy Setări: Gantt semantic vs brand | componentă setări temă | S | Text vizibil operator |
+| C6 | Mirror tokens TS dacă lipsesc chei | `tokens.ts` | S | Paritate `_base.css` |
+
+### Ordine recomandată pentru agent
+
+```
+A (Gantt) → B (admin ops) → C1 (noapte) → C3/C4 (Gantt rest) → C2 (sweep CSS) → C5/C6
+```
+
+### Prompt tip pentru sesiune următoare
+
+> Continuă flat alignment per `docs/design-color-roadmap.md` Faza C. Folosește `--admin-surface-*`, `--gantt-bar-fill-*`, `tokens.ts`. Nu atinge public-site / invoice print. Actualizează checkbox-uri roadmap. Rulează `tsc` + teste relevante.

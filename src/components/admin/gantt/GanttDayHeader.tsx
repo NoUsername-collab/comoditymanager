@@ -34,7 +34,7 @@ export const GanttDayHeader = memo(function GanttDayHeader({
   return (
     <div
       className={[
-        "gantt-day-header-grid grid w-full min-w-0 border-b border-zinc-300 bg-gradient-to-b from-slate-50 to-zinc-100/90",
+        "gantt-day-header-grid grid w-full min-w-0 border-b border-zinc-300 bg-[var(--admin-surface-bg,var(--surface))]",
         dayGridOptions?.fixed && "gantt-day-grid--fixed",
         "gantt-day-header-grid--pan",
         panActive && "gantt-day-header-grid--panning",

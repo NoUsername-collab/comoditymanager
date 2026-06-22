@@ -68,23 +68,23 @@ function LegendBody({
           {tCommon("room")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="mr-0.5 inline-block h-3 w-7 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-[inset_2px_0_0_#059669]" />
+          <span className="gantt-legend-swatch gantt-legend-swatch--stay-active" />
           {tLayers("confirmate")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-7 rounded-full bg-gradient-to-r from-amber-300 to-amber-400" />
+          <span className="gantt-legend-swatch gantt-legend-swatch--stay-pending" />
           {tCommon("request")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-7 rounded-full bg-slate-300" />
+          <span className="gantt-legend-swatch gantt-legend-swatch--stay-past" />
           {tLayers("trecute")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-7 rounded-full bg-yellow-300" />
+          <span className="gantt-legend-swatch gantt-legend-swatch--stay-hold" />
           {tLayers("hold")}
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <span className="inline-block h-3 w-7 rounded-full bg-yellow-400" />
+          <span className="gantt-legend-swatch gantt-legend-swatch--stay-block" />
           {tLayers("block")}
         </span>
       </div>
@@ -102,7 +102,7 @@ export function GanttFooterLegend({
   const tGantt = useTranslations("admin.gantt");
 
   return (
-    <details className="gantt-footer-legend gantt-footer-legend--collapsible border-t border-zinc-100 bg-zinc-50/60 px-3 py-2 text-[11px] text-zinc-600">
+    <details className="gantt-footer-legend gantt-footer-legend--collapsible border-t border-zinc-100 bg-[var(--admin-surface-bg,var(--surface))] px-3 py-2 text-[11px] text-zinc-600">
       <summary className="gantt-footer-legend__toggle list-none text-xs font-medium text-zinc-700">
         {tGantt("legend")}
       </summary>

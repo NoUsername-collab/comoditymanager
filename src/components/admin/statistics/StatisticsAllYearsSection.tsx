@@ -38,7 +38,7 @@ export function StatisticsAllYearsSection({
   formatKpi: (value: number | null, revenueComplete: boolean) => string;
 }) {
   return (
-    <div className="statistics-years-section overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
+    <div className="statistics-years-section admin-surface-card overflow-hidden">
       <div className="border-b border-zinc-100 px-5 py-3">
         <h3 className="text-sm font-semibold text-zinc-900">{title}</h3>
       </div>

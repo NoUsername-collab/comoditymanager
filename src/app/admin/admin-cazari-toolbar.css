@@ -127,34 +127,13 @@
 
 .cazari-view-filter--cereri-alert {
   border-color: color-mix(in srgb, #ef4444 55%, var(--admin-panel-border));
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #fef2f2 90%, white),
-    color-mix(in srgb, #fee2e2 70%, white)
-  );
+  background: var(--admin-tint-danger-bg, #fef2f2);
   color: #991b1b;
   animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
 }
 
 .cazari-view-filter--cereri-alert::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  bottom: -2px;
-  left: 0;
-  width: 45%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 28%,
-    rgba(255, 255, 255, 0.85) 48%,
-    rgba(254, 249, 195, 0.5) 52%,
-    rgba(255, 255, 255, 0.25) 72%,
-    transparent 100%
-  );
-  animation: admin-cereri-light-sweep 2.6s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .cazari-view-filter--cereri-alert .cazari-view-filter__label,

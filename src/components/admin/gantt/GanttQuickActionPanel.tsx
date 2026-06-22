@@ -156,7 +156,7 @@ function IntervalPlanner({
       : invalidMessage;
 
   return (
-    <section className="rounded-[1.65rem] border border-zinc-200 bg-[linear-gradient(180deg,_rgba(255,255,255,0.98),_rgba(244,244,245,0.96))] p-4 shadow-[0_18px_42px_-28px_rgba(15,23,42,0.45)]">
+    <section className="admin-surface-card rounded-[1.65rem] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
@@ -299,9 +299,9 @@ function ActionRadial({
 
   return (
     <div className="relative mx-auto h-[20rem] max-w-[30rem] overflow-visible">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/70 bg-[radial-gradient(circle,rgba(236,253,245,0.9)_0%,rgba(255,255,255,0)_72%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/70 bg-emerald-50/40" />
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-zinc-200/80" />
-      <div className="absolute left-1/2 top-1/2 z-20 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border border-emerald-200 bg-white/95 px-3 text-center shadow-[0_24px_60px_-24px_rgba(16,185,129,0.65)] backdrop-blur-sm">
+      <div className="absolute left-1/2 top-1/2 z-20 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border border-emerald-200 bg-white px-3 text-center shadow-none">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
             Release

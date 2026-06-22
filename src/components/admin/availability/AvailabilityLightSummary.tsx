@@ -76,7 +76,7 @@ export function AvailabilityLightSummary({
   ] as const;
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white/90 p-4 shadow-sm">
+    <div className="admin-surface-card overflow-hidden p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-500">
