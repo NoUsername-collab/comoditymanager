@@ -417,6 +417,35 @@
   min-width: 0.7rem;
   border-left: 1px solid color-mix(in srgb, var(--stay-tab-end, #000) 55%, transparent);
   background: var(--stay-tab-end, var(--stay-fill)) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.gantt-stay--chip.gantt-stay--cap-ok .gantt-stay__end-tab--ok,
+.gantt-stay--chip .gantt-stay__end-tab--ok {
+  background: color-mix(in srgb, var(--booking-active-border, #10b981) 88%, black) !important;
+  border-left-color: color-mix(in srgb, var(--booking-active-border, #10b981) 70%, black);
+  color: #ffffff;
+}
+
+.gantt-stay--chip.gantt-stay--cap-problem .gantt-stay__end-tab--problem,
+.gantt-stay--chip .gantt-stay__end-tab--problem {
+  background: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 92%, black) !important;
+  border-left-color: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 75%, black);
+  color: #ffffff;
+}
+
+.gantt-stay--chip .gantt-stay__end-tab--problem .gantt-stay__end-tab-arrow {
+  display: none;
+}
+
+.gantt-stay--chip .gantt-stay__end-tab-mark {
+  font-size: 0.55rem;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .gantt-stay--chip .gantt-stay-edge {
@@ -521,9 +550,14 @@
   .gantt-stay--chip .gantt-stay-chrome__label,
   .gantt-stay--chip .gantt-stay__timeline,
   .gantt-stay--chip .gantt-stay__phase-badge,
-  .gantt-stay--chip .gantt-stay__end-tab,
   .gantt-stay--chip .gantt-stay__stamp {
     display: none !important;
+  }
+
+  .gantt-stay--chip .gantt-stay__end-tab {
+    display: flex !important;
+    min-width: 0.55rem;
+    padding-inline: 0.08rem;
   }
 
   .gantt-stay--chip .gantt-stay__body {

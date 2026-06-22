@@ -9,6 +9,9 @@ import {
   SETTINGS_NAV_GROUPS,
   type SettingsNavGroup,
 } from "@/domain/settings/settings-nav";
+import { navItemHasIssues } from "@/domain/setup-issues/paths";
+import type { SetupIssue } from "@/domain/setup-issues/types";
+import { SetupIssueBadge } from "@/components/admin/setup-issues/SetupIssueBadge";
 
 import type { TeamPermissions } from "@/domain/settings/team-permissions";
 
@@ -24,6 +27,7 @@ type Props = {
   propertyName?: string;
   checkInTime?: string;
   checkOutTime?: string;
+  setupIssues?: SetupIssue[];
   children: ReactNode;
 };
 
@@ -34,6 +38,7 @@ export function SettingsShell({
   propertyName,
   checkInTime,
   checkOutTime,
+  setupIssues = [],
   children,
 }: Props) {
   const t = useTranslations("admin.pages.settings");
@@ -69,6 +74,7 @@ export function SettingsShell({
               key={group.id}
               group={group}
               activeId={activeId}
+              setupIssues={setupIssues}
               t={t}
             />
           ))}
@@ -93,10 +99,12 @@ export function SettingsShell({
 function SettingsNavGroupBlock({
   group,
   activeId,
+  setupIssues,
   t,
 }: {
   group: SettingsNavGroup;
   activeId: string;
+  setupIssues: SetupIssue[];
   t: ReturnType<typeof useTranslations>;
 }) {
   return (
@@ -105,6 +113,7 @@ function SettingsNavGroupBlock({
       <ul className="settings-shell__group-list">
         {group.items.map((item) => {
           const active = item.id === activeId;
+          const hasIssue = navItemHasIssues(setupIssues, item);
           return (
             <li key={item.id}>
               <Link
@@ -112,12 +121,18 @@ function SettingsNavGroupBlock({
                 className={[
                   "settings-shell__link",
                   active && "settings-shell__link--active",
+                  hasIssue && "settings-shell__link--has-issue",
                 ]
                   .filter(Boolean)
                   .join(" ")}
                 aria-current={active ? "page" : undefined}
               >
-                <span className="settings-shell__link-label">{t(item.labelKey)}</span>
+                <span className="settings-shell__link-row">
+                  <span className="settings-shell__link-label">{t(item.labelKey)}</span>
+                  {hasIssue ? (
+                    <SetupIssueBadge className="settings-shell__issue-badge" />
+                  ) : null}
+                </span>
                 {item.descriptionKey ? (
                   <span className="settings-shell__link-desc">{t(item.descriptionKey)}</span>
                 ) : null}

@@ -313,3 +313,41 @@ export function shouldShowGanttStayAlerts(args: {
   if (args.timeline) return true;
   return isOperativeCheckInDay(args.bookingCheckIn, args.today);
 }
+
+/** Capăt dreapta (săgeată) — verde OK vs roșu problemă pe carduri Gantt. */
+export type GanttStayCapHealth = "neutral" | "ok" | "problem";
+
+export function resolveGanttStayCapHealth(args: {
+  isCerere: boolean;
+  occupancyPhase: OccupancyPhase;
+  showUnpaid: boolean;
+  showMissingIdentity: boolean;
+  milestoneReached: boolean;
+  roomNames: string[];
+  checkedInRooms: string[];
+  bookingCheckIn: string;
+  today: string;
+}): GanttStayCapHealth {
+  if (args.isCerere || args.occupancyPhase === "past") {
+    return "neutral";
+  }
+
+  if (args.milestoneReached) {
+    return "ok";
+  }
+
+  if (args.showUnpaid || args.showMissingIdentity) {
+    return "problem";
+  }
+
+  const rooms = computeRoomCheckinProgress(
+    args.roomNames,
+    args.checkedInRooms,
+  );
+  const onCheckInDay = isOperativeCheckInDay(args.bookingCheckIn, args.today);
+  if ((onCheckInDay || rooms.checked > 0) && !rooms.isComplete) {
+    return "problem";
+  }
+
+  return "ok";
+}

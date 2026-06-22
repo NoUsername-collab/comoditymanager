@@ -56,6 +56,16 @@ html[data-theme] .gantt-stay-chrome .gantt-cereri-card__tab {
   background-image: none !important;
 }
 
+html[data-theme] .gantt-stay-chrome.gantt-stay--cap-ok .gantt-stay__end-tab--ok {
+  background-color: color-mix(in srgb, var(--booking-active-border) 88%, black) !important;
+}
+
+html[data-theme] .gantt-stay-chrome.gantt-stay--cap-problem .gantt-stay__end-tab--problem {
+  background-color: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 92%, black) !important;
+  border-left-color: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 75%, black) !important;
+  color: #ffffff !important;
+}
+
 html[data-theme] .gantt-stay-chrome.gantt-stay--cerere .gantt-stay__end-tab,
 html[data-theme] .gantt-cereri-card .gantt-cereri-card__tab {
   background-color: color-mix(in srgb, var(--booking-pending-border) 85%, black) !important;
@@ -136,6 +146,18 @@ html[data-theme="default"] .gantt-stay__end-tab,
 html[data-theme="default"] .gantt-stay-edge,
 html[data-theme="default"] .gantt-stay__phase-badge {
   display: none !important;
+}
+
+html[data-theme="default"] .gantt-stay--chip .gantt-stay__end-tab {
+  display: flex !important;
+}
+
+html[data-theme="default"] .gantt-stay--chip.gantt-stay--cap-ok .gantt-stay__end-tab--ok {
+  background: color-mix(in srgb, var(--booking-active-border, #10b981) 88%, black) !important;
+}
+
+html[data-theme="default"] .gantt-stay--chip.gantt-stay--cap-problem .gantt-stay__end-tab--problem {
+  background: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 92%, black) !important;
 }
 
 html[data-theme="default"] .gantt-stay-chrome.gantt-stay--filled,

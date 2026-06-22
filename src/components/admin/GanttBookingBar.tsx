@@ -5,7 +5,10 @@ import { useTranslations } from "next-intl";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { memo, type CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
-import type { GanttStayTimeline as GanttStayTimelineModel } from "@/domain/gantt/stay-card-display";
+import type {
+  GanttStayCapHealth,
+  GanttStayTimeline as GanttStayTimelineModel,
+} from "@/domain/gantt/stay-card-display";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
@@ -29,6 +32,8 @@ type Props = {
   showMissingIdentity?: boolean;
   keysMicroLabel?: string | null;
   checkinReady?: boolean;
+  capHealth?: GanttStayCapHealth;
+  capHealthLabel?: string;
   earlyDeparture?: boolean;
   earlyDepartureNote?: string | null;
 };
@@ -124,6 +129,8 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   showMissingIdentity = false,
   keysMicroLabel = null,
   checkinReady = false,
+  capHealth = "neutral",
+  capHealthLabel,
   earlyDeparture = false,
   earlyDepartureNote = null,
 }: Props) {
@@ -145,6 +152,8 @@ export const GanttBookingBar = memo(function GanttBookingBar({
     todayHighlight === "arrival" && "gantt-stay--today-arrival",
     todayHighlight === "departure" && "gantt-stay--today-departure",
     todayHighlight === "turnover" && "gantt-stay--today-turnover",
+    capHealth === "ok" && "gantt-stay--cap-ok",
+    capHealth === "problem" && "gantt-stay--cap-problem",
     continuesBefore && "gantt-stay--from-prev",
     continuesAfter && "gantt-stay--to-next",
     interactive && "cursor-pointer",
@@ -325,8 +334,25 @@ export const GanttBookingBar = memo(function GanttBookingBar({
       </span>
 
       {!continuesAfter && (
-        <span className="gantt-stay__end-tab shrink-0" aria-hidden>
-          <span className="gantt-stay__end-tab-arrow">›</span>
+        <span
+          className={[
+            "gantt-stay__end-tab shrink-0",
+            capHealth === "ok" && "gantt-stay__end-tab--ok",
+            capHealth === "problem" && "gantt-stay__end-tab--problem",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          title={capHealthLabel}
+          aria-label={capHealthLabel}
+        >
+          <span className="gantt-stay__end-tab-arrow" aria-hidden>
+            ›
+          </span>
+          {capHealth === "problem" ? (
+            <span className="gantt-stay__end-tab-mark" aria-hidden>
+              !
+            </span>
+          ) : null}
         </span>
       )}
 

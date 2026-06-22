@@ -19,6 +19,7 @@ export async function AdminTopBar({
   simActive = false,
   simDate,
   simDays,
+  hasSetupIssues = false,
 }: {
   cereriCount: number;
   locationUnlocked?: boolean;
@@ -26,6 +27,7 @@ export async function AdminTopBar({
   simActive?: boolean;
   simDate?: string | null;
   simDays?: number;
+  hasSetupIssues?: boolean;
 }) {
   const t = await getTranslations("admin.shell");
   const tCommon = await getTranslations("common");
@@ -58,7 +60,7 @@ export async function AdminTopBar({
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
           <AdminVersionBadge />
-          <AdminGearMenu>
+          <AdminGearMenu hasUnresolvedIssues={hasSetupIssues}>
             <Link
               href="/admin/settings"
               className="admin-gear__item admin-gear__item--link"

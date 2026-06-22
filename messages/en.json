@@ -627,6 +627,10 @@
       "settings": "Settings",
       "brandFallback": "Hospira"
     },
+    "setupIssues": {
+      "mfaNotEnabled": "Two-factor authentication is not active on this account",
+      "gearAriaLabel": "Settings — action required"
+    },
     "pwa": {
       "installApp": "Install app",
       "installHint": "On your home screen — opens full screen like a native app",

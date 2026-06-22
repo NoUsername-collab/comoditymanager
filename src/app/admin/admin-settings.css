@@ -122,6 +122,21 @@
   color: var(--admin-text, #18181b);
 }
 
+.settings-shell__link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.settings-shell__link--has-issue .settings-shell__link-label {
+  color: color-mix(in srgb, #ef4444 85%, var(--admin-text, #18181b));
+}
+
+.settings-shell__issue-badge {
+  margin-top: 0.05rem;
+}
+
 .settings-shell__link-desc {
   display: none;
 }

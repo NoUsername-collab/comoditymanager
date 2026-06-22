@@ -4,6 +4,7 @@ import {
   isGanttStayMissingIdentity,
   isGanttStayMilestoneReached,
   isGanttStayUnpaid,
+  resolveGanttStayCapHealth,
   resolveGanttStayTimeline,
   shouldShowGanttPopoverNights,
   shouldShowGanttPopoverRoomKeys,
@@ -138,6 +139,64 @@ describe("stay-card-display", () => {
         identityStatus: "complete",
       }),
     ).toBe(false);
+  });
+
+  it("resolves cap health from milestone and alerts", () => {
+    expect(
+      resolveGanttStayCapHealth({
+        isCerere: false,
+        occupancyPhase: "active",
+        showUnpaid: false,
+        showMissingIdentity: false,
+        milestoneReached: true,
+        roomNames: ["7"],
+        checkedInRooms: ["7"],
+        bookingCheckIn: "2026-06-10",
+        today: "2026-06-11",
+      }),
+    ).toBe("ok");
+
+    expect(
+      resolveGanttStayCapHealth({
+        isCerere: false,
+        occupancyPhase: "active",
+        showUnpaid: true,
+        showMissingIdentity: false,
+        milestoneReached: false,
+        roomNames: ["7"],
+        checkedInRooms: ["7"],
+        bookingCheckIn: "2026-06-10",
+        today: "2026-06-10",
+      }),
+    ).toBe("problem");
+
+    expect(
+      resolveGanttStayCapHealth({
+        isCerere: false,
+        occupancyPhase: "future",
+        showUnpaid: false,
+        showMissingIdentity: false,
+        milestoneReached: false,
+        roomNames: ["7"],
+        checkedInRooms: [],
+        bookingCheckIn: "2026-06-20",
+        today: "2026-06-10",
+      }),
+    ).toBe("ok");
+
+    expect(
+      resolveGanttStayCapHealth({
+        isCerere: true,
+        occupancyPhase: "future",
+        showUnpaid: false,
+        showMissingIdentity: false,
+        milestoneReached: false,
+        roomNames: ["7"],
+        checkedInRooms: [],
+        bookingCheckIn: "2026-06-20",
+        today: "2026-06-10",
+      }),
+    ).toBe("neutral");
   });
 
   it("shows popover room keys for multi-room stays after check-in", () => {

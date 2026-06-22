@@ -16,9 +16,11 @@ import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progre
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import {
   isGanttBarCompact,
+  isGanttStayMilestoneReached,
   isGanttStayMissingIdentity,
   isGanttStayUnpaid,
   resolveGanttEarlyDeparture,
+  resolveGanttStayCapHealth,
   resolveGanttStayTimeline,
   shouldShowGanttStayAlerts,
   type GanttDeparturePolicy,
@@ -252,7 +254,41 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     todayHighlight,
   ]);
 
-  const checkinReady = stayTimeline?.milestoneReached ?? false;
+  const milestoneReached = isGanttStayMilestoneReached({
+    isCerere,
+    roomNames,
+    checkedInRooms,
+    paymentStatus,
+    totalPrice,
+    bookingCheckIn,
+    today: effectiveToday,
+    occupancyPhase,
+    guestId,
+    identityStatus,
+  });
+  const checkinReady = milestoneReached;
+  const capHealth = resolveGanttStayCapHealth({
+    isCerere,
+    occupancyPhase,
+    showUnpaid,
+    showMissingIdentity,
+    milestoneReached,
+    roomNames,
+    checkedInRooms,
+    bookingCheckIn,
+    today: effectiveToday,
+  });
+  const capHealthLabel = useMemo(() => {
+    if (capHealth === "ok") return tGantt("stayCard.milestoneDone");
+    if (capHealth === "problem") {
+      const parts: string[] = [];
+      if (showUnpaid) parts.push(tGantt("stayCard.unpaid"));
+      if (showMissingIdentity) parts.push(tGantt("stayCard.missingIdentity"));
+      if (parts.length === 0) parts.push(tGantt("stayCard.milestonePending"));
+      return parts.join(" · ");
+    }
+    return undefined;
+  }, [capHealth, showUnpaid, showMissingIdentity, tGantt]);
 
   const title = [
     popover.guestName,
@@ -547,6 +583,8 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
               : null
           }
           checkinReady={checkinReady}
+          capHealth={capHealth}
+          capHealthLabel={capHealthLabel}
           earlyDeparture={earlyDeparture}
           earlyDepartureNote={earlyDepartureNote}
         />

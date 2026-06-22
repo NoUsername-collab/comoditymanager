@@ -627,6 +627,10 @@
       "settings": "Setări",
       "brandFallback": "Hospira"
     },
+    "setupIssues": {
+      "mfaNotEnabled": "Autentificarea în doi pași nu e activă pe cont",
+      "gearAriaLabel": "Setări — acțiune necesară"
+    },
     "pwa": {
       "installApp": "Instalează aplicația",
       "installHint": "Pe ecranul principal — se deschide full screen, ca o aplicație",

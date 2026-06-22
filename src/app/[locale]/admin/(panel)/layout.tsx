@@ -22,7 +22,7 @@ import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { OnboardingBar } from "@/components/admin/onboarding/OnboardingBar";
-import { MfaSecurityReminder } from "@/components/admin/settings/MfaSecurityReminder";
+import { resolveSetupIssues } from "@/services/setup-issues";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
 
@@ -36,8 +36,9 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [staff, , t, simBundle, shellData] = await Promise.all([
-    requireStaff(),
+  const staffPromise = requireStaff();
+  const [staff, , t, simBundle, shellData, setupIssues] = await Promise.all([
+    staffPromise,
     bindTenantContextFromRequest(),
     getTranslations("admin.layout"),
     (async () => {
@@ -59,6 +60,12 @@ export default async function AdminLayout({
       ]);
       return { cereriCount, pension, staffAccess };
     })(),
+    staffPromise.then((staffCtx) =>
+      resolveSetupIssues({
+        email: staffCtx.user.email,
+        memberRole: staffCtx.memberRole,
+      })
+    ),
   ]);
 
   const { simStatus, simDbBackup } = simBundle;
@@ -94,16 +101,12 @@ export default async function AdminLayout({
               simActive={simStatus.active}
               simDate={simStatus.active ? simStatus.currentDate : null}
               simDays={simStatus.active ? simStatus.daysAdvanced : 0}
+              hasSetupIssues={setupIssues.length > 0}
             />
           </div>
         </div>
 
         <OnboardingBar />
-
-        <MfaSecurityReminder
-          email={staff.user.email}
-          memberRole={staff.memberRole}
-        />
 
         {cereriCount > 0 && (
           <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">

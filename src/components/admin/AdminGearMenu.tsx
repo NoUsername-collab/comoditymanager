@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { useTranslations } from "next-intl";
 import { HudIconGear } from "@/components/admin/AdminHudIcons";
+import { SetupIssueBadge } from "@/components/admin/setup-issues/SetupIssueBadge";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { computeFixedDropdownPosition } from "@/lib/ui/viewport-position";
 import { isLanguageSwitcherEventTarget } from "@/lib/i18n/language-switcher-dom";
@@ -16,8 +17,14 @@ const MENU_ESTIMATE = { width: 184, height: 220 };
  * Gear dropdown — right-edge of admin top bar.
  * Portaled to document.body so it stays above sticky page chrome (Gantt header, etc.).
  */
-export function AdminGearMenu({ children }: { children: React.ReactNode }) {
+type Props = {
+  children: React.ReactNode;
+  hasUnresolvedIssues?: boolean;
+};
+
+export function AdminGearMenu({ children, hasUnresolvedIssues = false }: Props) {
   const t = useTranslations("admin.shell");
+  const tIssues = useTranslations("admin.setupIssues");
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState<MenuPos | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -99,10 +106,15 @@ export function AdminGearMenu({ children }: { children: React.ReactNode }) {
         className="admin-gear__trigger"
         aria-expanded={open}
         aria-haspopup="menu"
-        aria-label={t("settings")}
+        aria-label={
+          hasUnresolvedIssues ? tIssues("gearAriaLabel") : t("settings")
+        }
         onClick={() => setOpen((v) => !v)}
       >
         <HudIconGear className="admin-gear__icon" />
+        {hasUnresolvedIssues ? (
+          <SetupIssueBadge className="admin-gear__issue-badge" />
+        ) : null}
       </button>
 
       {menu ? <AdminPortal>{menu}</AdminPortal> : null}

@@ -1866,6 +1866,7 @@ html[data-theme="default"][data-mode="night"] {
 }
 
 .admin-gear__trigger {
+  position: relative;
   display: grid;
   place-items: center;
   width: 2rem;
@@ -1898,6 +1899,69 @@ html[data-theme="default"][data-mode="night"] {
 .admin-gear__icon {
   width: 1.1rem;
   height: 1.1rem;
+}
+
+.admin-gear__issue-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(30%, -30%);
+}
+
+/* ── Setup issue indicators (gear + settings nav) ── */
+.setup-issue-badge {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 0 2px var(--admin-panel-bg, #fff);
+}
+
+.setup-issue-badge--pulse {
+  animation: setup-issue-pulse 2s ease-in-out infinite;
+}
+
+@keyframes setup-issue-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup-issue-badge--pulse {
+    animation: none;
+  }
+}
+
+.admin-gear__issue-badge.setup-issue-badge--pulse {
+  animation: setup-issue-pulse-gear 2s ease-in-out infinite;
+}
+
+@keyframes setup-issue-pulse-gear {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translate(30%, -30%) scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translate(30%, -30%) scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-gear__issue-badge.setup-issue-badge--pulse {
+    animation: none;
+  }
 }
 
 .admin-gear__dropdown {
