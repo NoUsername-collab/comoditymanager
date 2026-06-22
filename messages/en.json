@@ -629,6 +629,9 @@
     },
     "setupIssues": {
       "mfaNotEnabled": "Two-factor authentication is not active on this account",
+      "themeNotConfigured": "Admin theme has not been confirmed in settings",
+      "buildingsNotColored": "One or more buildings need a Gantt color",
+      "contactEmailMissing": "Contact email is missing for the property",
       "gearAriaLabel": "Settings — action required"
     },
     "pwa": {

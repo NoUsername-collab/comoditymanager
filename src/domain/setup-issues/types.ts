@@ -11,4 +11,7 @@ export type SetupIssue = {
 
 export const SETUP_ISSUE_IDS = {
   MFA_NOT_ENABLED: "mfa-not-enabled",
+  THEME_NOT_CONFIGURED: "theme-not-configured",
+  BUILDINGS_NOT_COLORED: "buildings-not-colored",
+  CONTACT_EMAIL_MISSING: "contact-email-missing",
 } as const;

@@ -629,6 +629,9 @@
     },
     "setupIssues": {
       "mfaNotEnabled": "Autentificarea în doi pași nu e activă pe cont",
+      "themeNotConfigured": "Tema admin nu a fost confirmată în setări",
+      "buildingsNotColored": "Una sau mai multe clădiri au nevoie de culoare în Gantt",
+      "contactEmailMissing": "Lipsește emailul de contact al pensiunii",
       "gearAriaLabel": "Setări — acțiune necesară"
     },
     "pwa": {

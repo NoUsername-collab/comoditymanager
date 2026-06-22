@@ -478,10 +478,10 @@ export async function proxy(request: NextRequest) {
     }
 
     // Legacy route — redirect during Nestio → Hospira transition
-    if (path.startsWith("/hospira-admin")) {
+    if (path.startsWith("/nestio-admin")) {
       const legacy = request.nextUrl.clone();
       legacy.pathname = request.nextUrl.pathname.replace(
-        "/hospira-admin",
+        "/nestio-admin",
         "/hospira-admin"
       );
       return NextResponse.redirect(legacy, 308);
@@ -606,10 +606,10 @@ export async function proxy(request: NextRequest) {
 
           // Platform admin routes stay on platform domain
           if (
-            safe.startsWith("/hospira-admin") ||
+            safe.startsWith("/nestio-admin") ||
             safe.startsWith("/hospira-admin")
           ) {
-            const normalized = safe.replace("/hospira-admin", "/hospira-admin");
+            const normalized = safe.replace("/nestio-admin", "/hospira-admin");
             return NextResponse.redirect(new URL(normalized, request.url));
           }
 

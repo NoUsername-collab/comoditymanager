@@ -629,6 +629,9 @@
     },
     "setupIssues": {
       "mfaNotEnabled": "Двустепенната автентикация не е активна на този акаунт",
+      "themeNotConfigured": "Админ темата не е потвърдена в настройките",
+      "buildingsNotColored": "Една или повече сгради имат нужда от цвят в Gantt",
+      "contactEmailMissing": "Липсва имейл за контакт на обекта",
       "gearAriaLabel": "Настройки — необходимо действие"
     },
     "pwa": {
