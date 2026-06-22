@@ -21,6 +21,7 @@ import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialo
 import type { GanttDayGridOptions } from "@/components/admin/gantt/GanttGridHelpers";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarker";
+import { DayGrid } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttRoomRow } from "@/components/admin/gantt/GanttRoomRow";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
@@ -68,6 +69,12 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   dimHeader,
   onToggleFocus,
   onToggleCollapsed,
+  viewRange,
+  compact,
+  touch,
+  checkInTime,
+  checkOutTime,
+  dayGridOptions,
 }: {
   group: GanttBuildingGroup;
   collapsed: boolean;
@@ -75,13 +82,18 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
   dimHeader: boolean;
   onToggleFocus: (buildingId: string) => void;
   onToggleCollapsed: (buildingId: string) => void;
+  viewRange: GanttViewRange;
+  compact: boolean;
+  touch: boolean;
+  checkInTime: string;
+  checkOutTime: string;
+  dayGridOptions?: GanttDayGridOptions;
 }) {
   return (
     <tr className="gantt-building-header-row">
       <td
-        colSpan={2}
         className={[
-          "gantt-building-header px-2 py-1 text-left",
+          "gantt-building-header sticky left-0 z-10 px-2 py-1 text-left",
           focused && "gantt-building-header--focused",
           dimHeader && "gantt-building-header--dimmed",
         ]
@@ -120,6 +132,16 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
           />
           <span className="gantt-building-header__title">{group.buildingName}</span>
         </div>
+      </td>
+      <td className="gantt-building-header__days relative w-full overflow-hidden p-0 align-top">
+        <DayGrid
+          columns={viewRange.days}
+          compact={compact}
+          touch={touch}
+          checkInTime={checkInTime}
+          checkOutTime={checkOutTime}
+          dayGridOptions={dayGridOptions}
+        />
       </td>
     </tr>
   );
@@ -240,6 +262,12 @@ function GanttTbodyRows({
               dimHeader={dimHeader}
               onToggleFocus={onToggleFocusBuilding}
               onToggleCollapsed={onToggleCollapsedBuilding}
+              viewRange={viewRange}
+              compact={compact}
+              touch={touch}
+              checkInTime={checkInTime}
+              checkOutTime={checkOutTime}
+              dayGridOptions={dayGridOptions}
             />
           );
         }

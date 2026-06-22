@@ -42,8 +42,8 @@ export function GanttDailySummaryRow({
     compactChrome ? "py-0" : compact ? "py-[0.25rem]" : "py-[0.36rem]";
 
   return (
-    <tr className="gantt-summary-row border-b border-zinc-200">
-      <td className="gantt-summary-row__label sticky left-0 z-30 border-r border-zinc-200 align-middle">
+    <tr className="gantt-summary-row">
+      <td className="gantt-summary-row__label sticky left-0 z-30 align-middle">
         <span className="gantt-summary-row__label-title">
           {tCommon("free")}
         </span>
