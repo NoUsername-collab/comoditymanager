@@ -1,48 +1,41 @@
 /**
- * Carduri Gantt — culori DOAR din variabilele temei (--booking-*).
+ * Carduri Gantt — fill plat semantic + spine clădire (admin-gantt-stay-chip.css).
  * Importat după admin-gantt-stay-island.css ca să bată --gs-bg / culoarea clădire.
  */
 
-html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--filled:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--booking-active-bg) 94%, white) 0%,
-    color-mix(in srgb, var(--booking-active-bg) 84%, var(--booking-active-border)) 100%
-  ) !important;
-  border: 2px solid var(--booking-active-border) !important;
-  box-shadow:
-    0 2px 10px color-mix(in srgb, var(--booking-active-border) 20%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 45%, transparent) !important;
+html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--filled:not(.gantt-stay--cerere):not(.gantt-stay--phase-past),
+html[data-theme]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
+  background: var(--gantt-bar-fill-active) !important;
+  background-image: none !important;
+  border: 1.5px solid var(--booking-active-border) !important;
+  box-shadow: none !important;
   color: var(--booking-active-text) !important;
 }
 
 html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--cerere,
-html[data-theme] .gantt-shell .gantt-cereri-card.gantt-stay-chrome {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--booking-pending-bg) 96%, white) 0%,
-    color-mix(in srgb, var(--booking-pending-bg) 86%, var(--booking-pending-border)) 100%
-  ) !important;
-  border: 2px solid var(--booking-pending-border) !important;
-  box-shadow:
-    0 2px 10px color-mix(in srgb, var(--booking-pending-border) 18%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 42%, transparent) !important;
+html[data-theme] .gantt-shell .gantt-cereri-card.gantt-stay-chrome,
+html[data-theme]
+  .gantt-shell
+  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--cerere {
+  background: var(--gantt-bar-fill-pending) !important;
+  background-image: none !important;
+  border: 1.5px solid var(--booking-pending-border) !important;
+  box-shadow: none !important;
   color: var(--booking-pending-text) !important;
 }
 
-html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--phase-past {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--booking-past-bg) 96%, white) 0%,
-    color-mix(in srgb, var(--booking-past-bg) 90%, var(--booking-past-border)) 100%
-  ) !important;
-  border-color: var(--booking-past-border) !important;
+html[data-theme] .gantt-shell .gantt-stay-chrome.gantt-stay--phase-past,
+html[data-theme] .gantt-shell .gantt-booking-card.gantt-booking-card--past,
+html[data-theme] .gantt-shell .gantt-booking-card.gantt-stay--phase-past {
+  background: var(--gantt-bar-fill-past) !important;
+  background-image: none !important;
+  border: 1px solid var(--booking-past-border) !important;
   color: var(--booking-past-text) !important;
   opacity: 1;
   filter: none;
-  box-shadow:
-    0 1px 6px color-mix(in srgb, var(--booking-past-border) 16%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 30%, transparent) !important;
+  box-shadow: none !important;
 }
 
 html[data-theme] .gantt-stay-chrome__label,
@@ -91,74 +84,6 @@ html[data-theme]
 
 html[data-theme="default"] .gantt-stay--phase-active {
   box-shadow: none !important;
-}
-
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past),
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--cerere,
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--past,
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-cereri-card.gantt-stay-chrome {
-  background-image: none !important;
-}
-
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--booking-active-bg) 94%, white) 0%,
-    color-mix(in srgb, var(--booking-active-bg) 84%, var(--booking-active-border)) 100%
-  ) !important;
-  border-color: var(--booking-active-border) !important;
-  color: var(--booking-active-text) !important;
-}
-
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--pending.gantt-stay--cerere,
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-cereri-card.gantt-stay-chrome {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--booking-pending-bg) 96%, white) 0%,
-    color-mix(in srgb, var(--booking-pending-bg) 86%, var(--booking-pending-border)) 100%
-  ) !important;
-  border-color: var(--booking-pending-border) !important;
-  color: var(--booking-pending-text) !important;
-}
-
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-booking-card--past,
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-stay--phase-past {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--booking-past-bg) 96%, white) 0%,
-    color-mix(in srgb, var(--booking-past-bg) 90%, var(--booking-past-border)) 100%
-  ) !important;
-  border-color: var(--booking-past-border) !important;
-  color: var(--booking-past-text) !important;
-}
-
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-stay--chip.gantt-booking-card--past,
-html[data-theme="default"]
-  .gantt-shell
-  .gantt-booking-card.gantt-stay--chip.gantt-stay--phase-past {
-  background: var(--booking-past-bg, #8c8281) !important;
-  border-color: var(--booking-past-border, #6e6665) !important;
-  color: var(--booking-past-text, #1c1917) !important;
 }
 
 html[data-theme="default"] .gantt-shell .gantt-booking-card .gantt-stay__body,
@@ -220,4 +145,18 @@ html[data-theme="default"] .gantt-cereri-card {
 
 html[data-theme="default"] .gantt-booking-card--pending.gantt-stay--cerere {
   animation: gantt-booking-pulse 2s ease-in-out infinite;
+}
+
+html[data-mode="night"] .gantt-stay--chip .gantt-stay__spine,
+html[data-mode="night"] .gantt-stay-chrome .gantt-stay__spine {
+  box-shadow:
+    inset -1px 0 0 color-mix(in srgb, white 16%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--stay-spine, currentColor) 28%, transparent);
+}
+
+@media (hover: hover) {
+  html[data-theme] .gantt-shell .gantt-stay-chrome:not(.gantt-stay--phase-past):hover,
+  html[data-theme] .gantt-shell .gantt-stay-chrome:not(.gantt-stay--phase-past):focus-within {
+    filter: brightness(1.03);
+  }
 }

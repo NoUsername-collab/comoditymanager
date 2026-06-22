@@ -1,4 +1,4 @@
-/** Culori bară Gantt — fill plin din culoarea clădii + text lizibil */
+/** Culori bară Gantt — fill semantic + spine clădire (nu fill clădire). */
 
 function parseHex(hex: string): { r: number; g: number; b: number } | null {
   const raw = hex.trim().replace(/^#/, "");

@@ -38,44 +38,55 @@ function semanticStayVars(
   occupancyPhase?: OccupancyPhase,
   buildingColor?: string | null
 ): CSSProperties & Record<string, string> {
-  const tone =
-    occupancyPhase === "past"
-      ? {
-          fill: "var(--past-bg)",
-          border: "var(--past-border)",
-          text: "var(--past-text)",
-          tab: "color-mix(in srgb, var(--past-border) 85%, black)",
-          badge: "color-mix(in srgb, var(--past-text) 12%, var(--past-bg))",
-          glow: "color-mix(in srgb, var(--past-border) 40%, transparent)",
-        }
-      : isCerere
-        ? {
-            fill: "var(--booking-pending-bg)",
-            border: "var(--booking-pending-border)",
-            text: "var(--booking-pending-text)",
-            tab: "color-mix(in srgb, var(--booking-pending-border) 85%, black)",
-            badge:
-              "color-mix(in srgb, var(--booking-pending-text) 18%, transparent)",
-            glow:
-              "color-mix(in srgb, var(--booking-pending-border) 35%, transparent)",
-          }
-        : {
-            fill: "var(--booking-active-bg)",
-            border: "var(--booking-active-border)",
-            text: "var(--booking-active-text)",
-            tab: "color-mix(in srgb, var(--booking-active-border) 85%, black)",
-            badge:
-              "color-mix(in srgb, var(--booking-active-text) 18%, transparent)",
-            glow:
-              "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
-          };
+  const isPast = occupancyPhase === "past";
+  const building = buildingColor?.trim() || null;
 
-  const spine = buildingColor?.trim() || tone.border;
+  const tone = isPast
+    ? {
+        fill: "var(--gantt-bar-fill-past, var(--past-bg))",
+        border: "var(--past-border)",
+        text: "var(--past-text)",
+        tab: "color-mix(in srgb, var(--past-border) 85%, black)",
+        badge: "color-mix(in srgb, var(--past-text) 12%, var(--past-bg))",
+        glow: "color-mix(in srgb, var(--past-border) 40%, transparent)",
+      }
+    : isCerere
+      ? {
+          fill: "var(--gantt-bar-fill-pending, var(--booking-pending-bg))",
+          border: "var(--booking-pending-border)",
+          text: "var(--booking-pending-text)",
+          tab: "color-mix(in srgb, var(--booking-pending-border) 85%, black)",
+          badge:
+            "color-mix(in srgb, var(--booking-pending-text) 18%, transparent)",
+          glow:
+            "color-mix(in srgb, var(--booking-pending-border) 35%, transparent)",
+        }
+      : {
+          fill: "var(--gantt-bar-fill-active, color-mix(in srgb, var(--booking-active-bg) 55%, var(--booking-active-border) 45%))",
+          border: "var(--booking-active-border)",
+          text: "var(--booking-active-text)",
+          tab: "color-mix(in srgb, var(--booking-active-border) 85%, black)",
+          badge:
+            "color-mix(in srgb, var(--booking-active-text) 18%, transparent)",
+          glow:
+            "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
+        };
+
+  const borderColor =
+    building && !isPast
+      ? `color-mix(in srgb, ${building} 10%, ${tone.border})`
+      : tone.border;
+
+  const spine =
+    isPast && building
+      ? `color-mix(in srgb, ${building} 38%, var(--past-border))`
+      : building || tone.border;
 
   return {
     background: tone.fill,
     backgroundColor: tone.fill,
-    borderColor: tone.border,
+    borderColor,
+    borderWidth: isPast ? "1px" : "1.5px",
     color: tone.text,
     "--stay-fill": tone.fill,
     "--stay-border": tone.border,

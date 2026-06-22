@@ -2276,7 +2276,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-toolbar__legend-swatch--past {
-  background: var(--booking-past-bg, #8c8281);
+  background: var(--booking-past-bg, #e7e5e4);
   opacity: 1;
 }
 

@@ -38,12 +38,12 @@ html {
   --active-text: #166534;
   --active-glow: 0 0 0 1px #22c55e30;
 
-  --pending-bg: #fffbeb;
+  --pending-bg: #fef3c7;
   --pending-border: #f59e0b;
   --pending-text: #92400e;
 
-  --past-bg: #8c8281;
-  --past-border: #6e6665;
+  --past-bg: #e7e5e4;
+  --past-border: #a8a29e;
   --past-text: #1c1917;
 
   --blocked-bg: #faf5ff;
@@ -63,7 +63,7 @@ html {
   --error: #dc2626;
   --info: #4f7ef8;
 
-  --weekend-bg: rgba(79, 126, 248, 0.06);
+  --weekend-bg: rgba(79, 126, 248, 0.04);
   --today-bg: rgba(79, 126, 248, 0.07);
   --today-line: #4f7ef8;
 
@@ -91,6 +91,14 @@ html {
   --booking-past-bg: var(--past-bg);
   --booking-past-border: var(--past-border);
   --booking-past-text: var(--past-text);
+
+  --gantt-bar-fill-active: color-mix(
+    in srgb,
+    var(--booking-active-bg) 55%,
+    var(--booking-active-border) 45%
+  );
+  --gantt-bar-fill-pending: var(--booking-pending-bg);
+  --gantt-bar-fill-past: var(--booking-past-bg);
 
   --booking-cancelled-bg: var(--cancelled-bg);
   --booking-cancelled-border: var(--cancelled-border);

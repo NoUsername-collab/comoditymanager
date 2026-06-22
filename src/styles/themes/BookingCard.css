@@ -37,7 +37,7 @@
 }
 
 .gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
-  background: var(--booking-active-bg) !important;
+  background: var(--gantt-bar-fill-active, var(--booking-active-bg)) !important;
   border-color: var(--booking-active-border) !important;
   color: var(--booking-active-text) !important;
 }
