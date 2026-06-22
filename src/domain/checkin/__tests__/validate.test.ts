@@ -23,6 +23,7 @@ const defaultSettings: CheckinSettings = {
   checkin_time_from: "14:00",
   checkout_time_until: "12:00",
   checkout_block_unpaid: true,
+  allow_post_checkout_edits: false,
   late_checkout_allowed: true,
   late_checkout_fee: 0,
   early_checkin_allowed: true,

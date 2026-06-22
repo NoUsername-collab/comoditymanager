@@ -6,7 +6,10 @@ import { matchesStaySearchQuery } from "@/domain/cazari/stay-search";
 type OperationalStay = CazariPageLists["stays"][number];
 type HistoryStay = CazariPageLists["history"][number];
 type CancelledStay = CazariPageLists["cancelledHistory"][number];
-type OperationalStaySlice = ConfirmedStayLike & { status: string };
+type OperationalStaySlice = ConfirmedStayLike & {
+  status: string;
+  room_names: string[];
+};
 
 export type CazariFilteredLists = {
   filteredStays: OperationalStay[];
@@ -55,9 +58,9 @@ export function filterCazariListsByQuery(
 }
 
 /** Cereri fără cameră alocată apar primele, apoi după data sosirii. */
-export function sortCereriByPriority<
-  T extends OperationalStaySlice & { room_names: string[] },
->(cereri: T[]): T[] {
+export function sortCereriByPriority<T extends OperationalStaySlice>(
+  cereri: T[]
+): T[] {
   return [...cereri].sort((a, b) => {
     const aUnassigned = a.room_names.length === 0 ? 0 : 1;
     const bUnassigned = b.room_names.length === 0 ? 0 : 1;

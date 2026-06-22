@@ -53,18 +53,20 @@ describe("page-splits", () => {
   it("splits operational stays into cereri and visible confirmate", () => {
     const result = splitOperationalStays(
       [
-        { ...baseStay, status: "cerere_noua" },
+        { ...baseStay, status: "cerere_noua", room_names: [] },
         {
           ...baseStay,
           status: "confirmata",
           check_in: "2026-06-15",
           check_out: "2026-06-18",
+          room_names: [],
         },
         {
           ...baseStay,
           status: "confirmata",
           check_in: "2027-01-01",
           check_out: "2027-01-05",
+          room_names: [],
         },
       ],
       "2026-06-09",
