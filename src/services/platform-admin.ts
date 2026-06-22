@@ -4,12 +4,12 @@
  */
 
 import { cache } from "react";
-import { throwIfDbError } from "@/lib/nestio-admin/format-db-error";
-import { safeCount } from "@/lib/nestio-admin/safe-count";
+import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
+import { safeCount } from "@/lib/hospira-admin/safe-count";
 import {
   getTenantResourceCounts,
   loadTenantResourceCounts,
-} from "@/lib/nestio-admin/tenant-resource-counts";
+} from "@/lib/hospira-admin/tenant-resource-counts";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { TenantRow } from "./tenants";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";

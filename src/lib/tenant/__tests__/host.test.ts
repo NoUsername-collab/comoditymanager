@@ -1,11 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // The module reads process.env at import time, so we stub env before importing.
-vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN", "nestio.ro");
+vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN", "hospira.ro");
 vi.stubEnv("NEXT_PUBLIC_PLATFORM_HOSTS", "");
 vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
 
-const { parseTenantFromHost } = await import("@/lib/tenant/host");
+const {
+  parseTenantFromHost,
+  isPlatformRequestHost,
+} = await import("@/lib/tenant/host");
 
 describe("parseTenantFromHost", () => {
   it("returns platform for localhost", () => {
@@ -20,20 +23,20 @@ describe("parseTenantFromHost", () => {
     expect(parseTenantFromHost("127.0.0.1")).toEqual({ type: "platform" });
   });
 
-  it("returns platform for nestio.ro", () => {
-    expect(parseTenantFromHost("nestio.ro")).toEqual({ type: "platform" });
+  it("returns platform for hospira.ro", () => {
+    expect(parseTenantFromHost("hospira.ro")).toEqual({ type: "platform" });
   });
 
-  it("returns platform for www.nestio.ro", () => {
-    expect(parseTenantFromHost("www.nestio.ro")).toEqual({ type: "platform" });
+  it("returns platform for www.hospira.ro", () => {
+    expect(parseTenantFromHost("www.hospira.ro")).toEqual({ type: "platform" });
   });
 
-  it("returns platform for test.nestio.ro (staging apex)", () => {
-    expect(parseTenantFromHost("test.nestio.ro")).toEqual({ type: "platform" });
+  it("returns platform for test.hospira.ro (staging apex)", () => {
+    expect(parseTenantFromHost("test.hospira.ro")).toEqual({ type: "platform" });
   });
 
-  it("returns tenant with slug for slug.nestio.ro", () => {
-    expect(parseTenantFromHost("casa-emil.nestio.ro")).toEqual({
+  it("returns tenant with slug for slug.hospira.ro", () => {
+    expect(parseTenantFromHost("casa-emil.hospira.ro")).toEqual({
       type: "tenant",
       slug: "casa-emil",
     });
@@ -54,7 +57,7 @@ describe("parseTenantFromHost", () => {
   });
 
   it("returns tenant for hyphenated slug", () => {
-    expect(parseTenantFromHost("my-pension.nestio.ro")).toEqual({
+    expect(parseTenantFromHost("my-pension.hospira.ro")).toEqual({
       type: "tenant",
       slug: "my-pension",
     });
@@ -67,25 +70,71 @@ describe("parseTenantFromHost", () => {
     });
   });
 
+  it("returns custom for casaemil.ro tenant domain", () => {
+    expect(parseTenantFromHost("casaemil.ro")).toEqual({
+      type: "custom",
+      domain: "casaemil.ro",
+    });
+  });
+
   it("returns platform for something.vercel.app", () => {
     expect(parseTenantFromHost("preview-abc.vercel.app")).toEqual({
       type: "platform",
     });
   });
 
-  it("does not treat dotted subdomain as tenant (a.b.nestio.ro)", () => {
-    // slug contains a dot, so it should NOT be parsed as tenant
-    const result = parseTenantFromHost("a.b.nestio.ro");
-    // "a.b" contains a dot, so it won't match as tenant for nestio.ro
-    // but "a" might match as tenant for test.nestio.ro since test.nestio.ro is a platform root
-    // The function checks platform roots longest first: test.nestio.ro, then nestio.ro
-    // For "a.b.nestio.ro" against "test.nestio.ro" — doesn't end with .test.nestio.ro
-    // For "a.b.nestio.ro" against "nestio.ro" — slug would be "a.b" which contains "."
-    // So it falls through to custom
+  it("does not treat dotted subdomain as tenant (a.b.hospira.ro)", () => {
+    const result = parseTenantFromHost("a.b.hospira.ro");
     expect(result.type).not.toBe("tenant");
   });
 
   it("returns platform for empty string", () => {
     expect(parseTenantFromHost("")).toEqual({ type: "platform" });
+  });
+
+  it("strips www from custom domains", () => {
+    expect(parseTenantFromHost("www.casaemil.ro")).toEqual({
+      type: "custom",
+      domain: "casaemil.ro",
+    });
+  });
+
+  it("returns platform for www.hospira.ro via isPlatformRequestHost", () => {
+    expect(isPlatformRequestHost("www.hospira.ro")).toBe(true);
+  });
+});
+
+describe("parseTenantFromHost legacy nestio.ro hosts", () => {
+  it("still parses slug.nestio.ro as tenant", () => {
+    expect(parseTenantFromHost("casa-emil.nestio.ro")).toEqual({
+      type: "tenant",
+      slug: "casa-emil",
+    });
+  });
+
+  it("still treats nestio.ro as platform", () => {
+    expect(parseTenantFromHost("nestio.ro")).toEqual({ type: "platform" });
+  });
+});
+
+describe("parseTenantFromHost with legacy PLATFORM_DOMAIN env", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.stubEnv("NEXT_PUBLIC_PLATFORM_DOMAIN", "hospira.ro");
+    vi.stubEnv("NEXT_PUBLIC_PLATFORM_HOSTS", "");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
+  });
+
+  it("still parses slug.nestio.ro as tenant when env says hospira.ro", async () => {
+    const { parseTenantFromHost } = await import("@/lib/tenant/host");
+    expect(parseTenantFromHost("casa-emil.nestio.ro")).toEqual({
+      type: "tenant",
+      slug: "casa-emil",
+    });
+  });
+
+  it("still treats nestio.ro as platform when env says hospira.ro", async () => {
+    const { parseTenantFromHost } = await import("@/lib/tenant/host");
+    expect(parseTenantFromHost("nestio.ro")).toEqual({ type: "platform" });
   });
 });

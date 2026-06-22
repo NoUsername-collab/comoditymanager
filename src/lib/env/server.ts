@@ -9,9 +9,11 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  // Platform admin (NESTIO_ADMIN_EMAILS preferred; HOSPIRA_ADMIN_EMAILS legacy)
-  NESTIO_ADMIN_EMAILS: z.string().optional(),
+  // Platform admin (HOSPIRA_ADMIN_EMAILS preferred; NESTIO_ADMIN_EMAILS legacy)
   HOSPIRA_ADMIN_EMAILS: z.string().optional(),
+  NESTIO_ADMIN_EMAILS: z.string().optional(),
+  // Resend (optional — read at runtime by lib/email/provider; noop without RESEND_API_KEY)
+  // RESEND_API_KEY, RESEND_MAIL_DOMAIN — not validated here; see docs/vercel-env.md
   // Legacy staff emails — optional in multi-tenant (role comes from tenant_members DB).
   ADMIN_EMAIL: z.string().email().optional(),
   OPERATOR_EMAIL: z.string().email().optional(),

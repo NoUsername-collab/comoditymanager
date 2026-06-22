@@ -8,7 +8,7 @@ import {
   shouldSkipTenantErrorLog,
 } from "@/lib/tenant/error-safeguard";
 import { getTenantBySlug } from "@/services/tenants";
-import { throwIfDbError } from "@/lib/nestio-admin/format-db-error";
+import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
 import { getTenantScope } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";
@@ -71,7 +71,7 @@ async function resolveTenantIdForLog(
   return null;
 }
 
-/** Tenant anchor for Nestio platform admin (nestio.ro — fără host tenant). */
+/** Tenant anchor for Hospira platform admin (hospira.ro — fără host tenant). */
 async function resolvePlatformLogTenantId(): Promise<string> {
   const devSlug = process.env.DEV_TENANT_SLUG?.trim();
   if (devSlug) {

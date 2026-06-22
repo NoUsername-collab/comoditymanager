@@ -45,7 +45,7 @@
       "copyAdminLink": "Копирай admin линк",
       "cancelStay": "Отмени престоя",
       "cancelRequest": "Отмени заявката",
-      "welcomeHome": "Добре дошли в Nestio!",
+      "welcomeHome": "Добре дошли в Hospira!",
       "loadDataError": "Данните не могат да се заредят",
       "homeEyebrow": "Начало · панел рецепция",
       "currentMonthCalendar": "Календар текущ месец →",
@@ -109,8 +109,8 @@
     },
     "pages": {
       "calendar": {
-        "title": "Календар — Nestio",
-        "ganttTitle": "Gantt календар — Nestio",
+        "title": "Календар — Hospira",
+        "ganttTitle": "Gantt календар — Hospira",
         "windowGantt": "Gantt",
         "unassignedTitle": "Непотвърдени заявки",
         "unassignedSubtitle": "Без стая в показания период",
@@ -120,15 +120,15 @@
         "heatmapError": "Грешка при зареждане на heatmap."
       },
       "cazari": {
-        "title": "Престои — Nestio",
+        "title": "Престои — Hospira",
         "confirmedTitle": "Потвърдени престои ({count})",
         "noRoomBadge": "Без стая"
       },
       "statistics": {
-        "title": "Статистика — Nestio"
+        "title": "Статистика — Hospira"
       },
       "location": {
-        "title": "Администрация локация — Nestio"
+        "title": "Администрация локация — Hospira"
       }
     }
   },

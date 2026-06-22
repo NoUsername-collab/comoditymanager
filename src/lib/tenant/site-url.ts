@@ -5,7 +5,7 @@ import { platformSiteUrl } from "@/lib/platform/branding";
 
 /**
  * Base URL for tenant-scoped public pages (guest app, public calendar).
- * Must use the tenant subdomain — never the platform apex (test.nestio.ro).
+ * Must use the tenant subdomain — never the platform apex (test.hospira.ro).
  */
 export async function resolveTenantPublicSiteUrl(
   requestHost?: string | null,

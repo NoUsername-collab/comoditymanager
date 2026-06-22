@@ -3,8 +3,8 @@
  * Middleware face deja redirect la login; aceste fallback-uri sunt doar pentru dev parțial configurat.
  */
 
-const FALLBACK_ADMIN = "admin@nestio.ro";
-const FALLBACK_OPERATOR = "operator@nestio.ro";
+const FALLBACK_ADMIN = "admin@hospira.ro";
+const FALLBACK_OPERATOR = "operator@hospira.ro";
 
 export function getEdgeStaffEmails() {
   const admin = process.env.ADMIN_EMAIL?.trim().toLowerCase();

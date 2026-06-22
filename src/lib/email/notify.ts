@@ -206,11 +206,7 @@ export async function notifyGuestCancelled(data: {
   reason?: string;
   emailSettings?: EmailSettings;
 }): Promise<void> {
-  if (
-    data.emailSettings &&
-    (!data.emailSettings.email_enabled ||
-      !data.emailSettings.email_notify_cancellation)
-  ) {
+  if (!shouldSendEmailNotification(data.emailSettings, "email_notify_cancellation")) {
     return;
   }
   try {
@@ -235,5 +231,40 @@ export async function notifyGuestCancelled(data: {
     logEmailResult("notifyGuestCancelled", result);
   } catch (error) {
     console.error("[EMAIL-CRASH] notifyGuestCancelled:", error);
+  }
+}
+
+export async function notifyOwnerDailySummary(data: {
+  tenantId: string;
+  ownerEmail: string;
+  summary: {
+    pensionName: string;
+    date: string;
+    checkInsToday: { guestName: string; rooms: string[] }[];
+    checkOutsToday: { guestName: string; rooms: string[] }[];
+    pendingRequests: number;
+    occupancyPercent: number;
+  };
+  emailSettings: EmailSettings;
+}): Promise<void> {
+  if (!shouldSendEmailNotification(data.emailSettings, "email_notify_daily_summary")) {
+    return;
+  }
+  try {
+    const identity = await resolveTransactionalEmailIdentityForTenant(data.tenantId);
+    const template = dailySummaryToOwner(data.summary);
+
+    const result = await sendEmail({
+      from: identity.fromAddress,
+      to: data.ownerEmail,
+      subject: template.subject,
+      html: template.html,
+      text: template.text,
+      replyTo: pickReplyTo(identity, data.emailSettings.email_reply_to),
+    });
+
+    logEmailResult("notifyOwnerDailySummary", result);
+  } catch (error) {
+    console.error("[EMAIL-CRASH] notifyOwnerDailySummary:", error);
   }
 }

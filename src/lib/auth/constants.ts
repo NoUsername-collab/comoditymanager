@@ -1,3 +1,5 @@
+import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
+
 /** Utilizatori staff — mapare username → email Supabase (conturi separate). */
 export const OPERATOR_LOGIN_USERNAME = "Operator";
 export const ADMIN_LOGIN_USERNAME = "Admin";
@@ -7,12 +9,17 @@ export type StaffLoginUsername =
   | typeof ADMIN_LOGIN_USERNAME;
 
 export function getAdminEmail(): string {
-  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@nestio.ro";
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@hospira.ro";
 }
 
 export function getOperatorEmail(): string {
-  return process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@nestio.ro";
+  return (
+    process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@hospira.ro"
+  );
 }
+
+/** Platform contact shown in UI — not used for staff auth. */
+export { PLATFORM_CONTACT_EMAIL };
 
 export function normalizeLoginUsername(input: string): string {
   return input.trim();

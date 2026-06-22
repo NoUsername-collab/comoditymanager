@@ -102,12 +102,12 @@ if (service && !isValidJwtLikeKey(service)) {
 }
 
 // Platform admin emails (obligatoriu)
-const nestioAdminEmails =
-  process.env.NESTIO_ADMIN_EMAILS?.trim() ||
-  process.env.HOSPIRA_ADMIN_EMAILS?.trim();
-if (!nestioAdminEmails) {
+const hospiraAdminEmails =
+  process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
+  process.env.NESTIO_ADMIN_EMAILS?.trim();
+if (!hospiraAdminEmails) {
   warnings.push(
-    "NESTIO_ADMIN_EMAILS lipseste — nu vei putea accesa /nestio-admin (legacy: HOSPIRA_ADMIN_EMAILS)"
+    "HOSPIRA_ADMIN_EMAILS lipseste — nu vei putea accesa /hospira-admin (legacy: NESTIO_ADMIN_EMAILS)"
   );
 }
 
@@ -189,7 +189,7 @@ if (warnings.length) {
 console.log("");
 ok(`Profil: ${profile}`);
 ok(`Supabase: ${url?.replace(/https:\/\//, "").split(".")[0]}…`);
-ok(`Platform admin: ${nestioAdminEmails ?? "(nesetat)"}`);
+ok(`Platform admin: ${hospiraAdminEmails ?? "(nesetat)"}`);
 if (adminEmail || operatorEmail) {
   ok(`Staff legacy: Admin → ${adminEmail ?? "—"}, Operator → ${operatorEmail ?? "—"}`);
 }

@@ -4,11 +4,11 @@
  */
 
 import { cache } from "react";
-import { throwIfDbError } from "@/lib/nestio-admin/format-db-error";
+import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
 import {
   getTenantResourceCounts,
   loadTenantResourceCounts,
-} from "@/lib/nestio-admin/tenant-resource-counts";
+} from "@/lib/hospira-admin/tenant-resource-counts";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 
 // ─── Types ──────────────────────────────────────────────────────

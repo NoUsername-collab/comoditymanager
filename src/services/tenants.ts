@@ -114,7 +114,7 @@ const getCachedTenantBySlug = (slug: string) =>
     { revalidate: 300, tags: [`tenant-slug-${slug}`] }
   );
 
-/** Lookup by URL slug ({slug}.nestio.ro). */
+/** Lookup by URL slug ({slug}.hospira.ro). */
 export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
   return getCachedTenantBySlug(slug)();
 }

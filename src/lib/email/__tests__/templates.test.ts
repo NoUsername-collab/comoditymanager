@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 
 vi.mock("@/lib/platform/branding", () => ({
-  platformPoweredByLabel: () => "Powered by Nestio",
+  platformPoweredByLabel: () => "Powered by Hospira",
 }));
 
 import {

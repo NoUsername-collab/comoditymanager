@@ -20,9 +20,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nestio",
+  title: "Hospira",
   description: "Software modern pentru pensiuni si hoteluri mici",
-  applicationName: "Nestio",
+  applicationName: "Hospira",
   icons: {
     icon: [
       { url: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "Nestio",
+    title: "Hospira",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {

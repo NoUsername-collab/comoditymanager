@@ -36,11 +36,52 @@ export const ENV_MANIFEST = [
     description: "Cheie service_role — doar server, niciodată în browser",
   },
   {
-    key: "NESTIO_ADMIN_EMAILS",
+    key: "HOSPIRA_ADMIN_EMAILS",
     requirement: "runtime",
     recommendedInProduction: true,
     description:
-      "Email-uri platform admin (virgulă) — acces /nestio-admin. Legacy: HOSPIRA_ADMIN_EMAILS",
+      "Email-uri platform admin (virgulă) — acces /hospira-admin. Legacy: NESTIO_ADMIN_EMAILS",
+  },
+  {
+    key: "NESTIO_ADMIN_EMAILS",
+    requirement: "optional",
+    description:
+      "Legacy — înlocuit de HOSPIRA_ADMIN_EMAILS; acceptat temporar la tranziție",
+  },
+  {
+    key: "NEXT_PUBLIC_PLATFORM_DOMAIN",
+    requirement: "optional",
+    public: true,
+    recommendedInProduction: true,
+    description:
+      "Apex platform domain (ex. hospira.ro sau test.hospira.ro pe staging)",
+  },
+  {
+    key: "NEXT_PUBLIC_SITE_URL",
+    requirement: "optional",
+    public: true,
+    recommendedInProduction: true,
+    description: "URL public al platformei (ex. https://hospira.ro)",
+  },
+  {
+    key: "RESEND_API_KEY",
+    requirement: "optional",
+    recommendedInProduction: true,
+    description:
+      "Cheie API Resend (re_...) — fără ea emailurile sunt noop (dev OK)",
+  },
+  {
+    key: "RESEND_MAIL_DOMAIN",
+    requirement: "optional",
+    description:
+      "Domeniu verificat Resend pentru From implicit (altfel NEXT_PUBLIC_PLATFORM_DOMAIN)",
+  },
+  {
+    key: "CRON_SECRET",
+    requirement: "optional",
+    recommendedInProduction: true,
+    description:
+      "Secret pentru /api/cron/* — Vercel Cron îl injectează automat pe Production",
   },
   {
     key: "ADMIN_EMAIL",

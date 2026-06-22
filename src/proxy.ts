@@ -30,7 +30,7 @@ import {
 } from "@/lib/auth/tenant-staff-edge";
 import { isPlatformAdminEmailEdge } from "@/lib/auth/require-platform-admin";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
-import { buildTenantAdminUrl, parseTenantFromHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
+import { buildTenantAdminUrl, defaultPlatformApexHost, parseTenantFromHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
 import {
   isStaffOnlyPath,
   pathAllowedOnCustomDomain,
@@ -138,6 +138,36 @@ async function resolveEffectiveStaffRole(
 
 function requestHostFrom(request: NextRequest): string | null {
   return request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+}
+
+/** Forward proxy-injected headers to RSC (intl middleware only sees a cloned request). */
+function applyForwardedRequestHeaders(
+  source: NextResponse,
+  requestHeaders: Headers
+): NextResponse {
+  if (source.status >= 300 && source.status < 400) {
+    return source;
+  }
+
+  const forwarded = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+
+  source.cookies.getAll().forEach((cookie) => {
+    forwarded.cookies.set(cookie);
+  });
+
+  for (const key of [
+    "x-middleware-rewrite",
+    "x-middleware-next",
+    "x-nextjs-rewrite",
+    "x-nextjs-matched-path",
+  ]) {
+    const value = source.headers.get(key);
+    if (value) forwarded.headers.set(key, value);
+  }
+
+  return forwarded;
 }
 
 async function mfaRedirectIfNeeded(
@@ -364,7 +394,7 @@ async function runTenantAppProxy(
   }
   supabaseResponse.headers.set("x-admin-path", path);
 
-  return supabaseResponse;
+  return applyForwardedRequestHeaders(supabaseResponse, requestHeaders);
 }
 
 async function redirectPlatformUserToTenantAdmin(
@@ -437,7 +467,7 @@ export async function proxy(request: NextRequest) {
   const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
   if (alphaRedirect) return alphaRedirect;
 
-  // ── PLATFORM (nestio.ro / test.nestio.ro) ──────────────────
+  // ── PLATFORM (hospira.ro / test.hospira.ro) ──────────────────
   if (domain.type === "platform") {
     const requestHost = requestHostFrom(request);
 
@@ -447,18 +477,18 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Legacy route — redirect during Hospira → Nestio transition
+    // Legacy route — redirect during Nestio → Hospira transition
     if (path.startsWith("/hospira-admin")) {
       const legacy = request.nextUrl.clone();
       legacy.pathname = request.nextUrl.pathname.replace(
         "/hospira-admin",
-        "/nestio-admin"
+        "/hospira-admin"
       );
       return NextResponse.redirect(legacy, 308);
     }
 
-    // Nestio internal admin — platform domain only, email-gated
-    if (path.startsWith("/nestio-admin")) {
+    // Hospira internal admin — platform domain only, email-gated
+    if (path.startsWith("/hospira-admin")) {
       const { configured, url, key } = getEdgeSupabaseConfig();
       if (!configured || !url || !key) {
         const noAuth = request.nextUrl.clone();
@@ -576,10 +606,10 @@ export async function proxy(request: NextRequest) {
 
           // Platform admin routes stay on platform domain
           if (
-            safe.startsWith("/nestio-admin") ||
+            safe.startsWith("/hospira-admin") ||
             safe.startsWith("/hospira-admin")
           ) {
-            const normalized = safe.replace("/hospira-admin", "/nestio-admin");
+            const normalized = safe.replace("/hospira-admin", "/hospira-admin");
             return NextResponse.redirect(new URL(normalized, request.url));
           }
 
@@ -602,15 +632,20 @@ export async function proxy(request: NextRequest) {
     return intlMiddleware(request);
   }
 
-  // ── TENANT (slug.nestio.ro or custom domain) ────────────────
+  // ── TENANT (slug.hospira.ro or custom domain) ────────────────
   const requestHost = requestHostFrom(request);
 
   if (domain.type === "custom") {
     const resolved = await resolveDomainRoutingOnEdge(domain.domain);
     if (!resolved) {
       const url = request.nextUrl.clone();
-      url.pathname = "/";
-      return NextResponse.rewrite(url);
+      if (process.env.NODE_ENV === "production") {
+        url.protocol = "https:";
+      }
+      url.hostname = defaultPlatformApexHost();
+      url.pathname = "/landing";
+      url.search = "";
+      return NextResponse.redirect(url, 302);
     }
 
     const path = stripLocalePrefix(request.nextUrl.pathname);

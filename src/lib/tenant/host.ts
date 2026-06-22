@@ -1,25 +1,30 @@
 const PLATFORM_DOMAIN =
-  process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "nestio.ro";
+  process.env.NEXT_PUBLIC_PLATFORM_DOMAIN?.trim() || "hospira.ro";
 
-/** Staging project (test.nestio.ro) — used even if PLATFORM_DOMAIN env is wrong. */
+/** Staging project (test.hospira.ro) — used even if PLATFORM_DOMAIN env is wrong. */
 export function isStagingDeployment(): boolean {
-  if (PLATFORM_DOMAIN === "test.nestio.ro") return true;
+  if (PLATFORM_DOMAIN === "test.hospira.ro") return true;
   const site = process.env.NEXT_PUBLIC_SITE_URL?.toLowerCase() ?? "";
-  return site.includes("test.nestio.ro");
+  return site.includes("test.hospira.ro");
+}
+
+/** Platform apex for redirects when a custom domain is unknown. */
+export function defaultPlatformApexHost(): string {
+  return defaultPlatformDomain();
 }
 
 function defaultPlatformDomain(): string {
-  if (PLATFORM_DOMAIN && PLATFORM_DOMAIN !== "nestio.ro") {
+  if (PLATFORM_DOMAIN && PLATFORM_DOMAIN !== "hospira.ro") {
     return PLATFORM_DOMAIN;
   }
-  if (isStagingDeployment()) return "test.nestio.ro";
+  if (isStagingDeployment()) return "test.hospira.ro";
   return PLATFORM_DOMAIN;
 }
 
-/** Never emit tenant URLs on bare nestio.ro when this deploy is staging. */
+/** Never emit tenant URLs on bare hospira.ro when this deploy is staging. */
 function applyStagingTenantSuffix(platformDomain: string): string {
-  if (isStagingDeployment() && platformDomain === "nestio.ro") {
-    return "test.nestio.ro";
+  if (isStagingDeployment() && platformDomain === "hospira.ro") {
+    return "test.hospira.ro";
   }
   return platformDomain;
 }
@@ -31,18 +36,25 @@ const EXTRA_PLATFORM_HOSTS = (
   .map((h) => h.trim().toLowerCase())
   .filter(Boolean);
 
-/** Legacy platform domains kept during Hospira → Nestio transition. */
-const LEGACY_PLATFORM_ROOTS = ["hospira.ro", "test.hospira.ro"];
+/**
+ * Always-recognized platform apex hosts (legacy nestio.ro kept for transition).
+ */
+const CANONICAL_PLATFORM_ROOTS = [
+  "hospira.ro",
+  "test.hospira.ro",
+  "nestio.ro",
+  "test.nestio.ro",
+];
 
-/** All platform apex hosts, longest first (test.nestio.ro before nestio.ro). */
+/** All platform apex hosts, longest first (test.hospira.ro before hospira.ro). */
 export function getPlatformRoots(): string[] {
   const roots = new Set<string>([
     PLATFORM_DOMAIN,
     ...EXTRA_PLATFORM_HOSTS,
-    ...LEGACY_PLATFORM_ROOTS,
+    ...CANONICAL_PLATFORM_ROOTS,
   ]);
 
-  // Staging apex: when prod root is nestio.ro, test.nestio.ro is platform — not tenant slug "test"
+  // Staging apex: when prod root is hospira.ro, test.hospira.ro is platform — not tenant slug "test"
   if (PLATFORM_DOMAIN && !PLATFORM_DOMAIN.startsWith("test.")) {
     roots.add(`test.${PLATFORM_DOMAIN}`);
   }
@@ -50,8 +62,16 @@ export function getPlatformRoots(): string[] {
   return [...roots].sort((a, b) => b.length - a.length);
 }
 
-function normalizeHost(host: string): string {
+export function normalizeHost(host: string): string {
   return host.replace(/^www\./, "").split(":")[0]?.trim().toLowerCase() ?? "";
+}
+
+/** True when the request host is the platform apex (hospira.ro, test.hospira.ro, localhost, etc.). */
+export function isPlatformRequestHost(hostInput: string): boolean {
+  const host = normalizeHost(hostInput);
+  if (!host || host === "127.0.0.1" || host === "localhost") return true;
+  if (host.endsWith(".vercel.app")) return true;
+  return isPlatformHost(host);
 }
 
 function isPlatformHost(host: string): boolean {
@@ -109,7 +129,7 @@ export type ParsedTenantHost =
 
 /** Parse hostname → tenant context (shared by proxy + server). */
 export function parseTenantFromHost(hostInput: string): ParsedTenantHost {
-  const host = hostInput.split(":")[0]?.trim().toLowerCase() ?? "";
+  const host = normalizeHost(hostInput);
 
   if (!host || host === "127.0.0.1") {
     return { type: "platform" };
@@ -158,7 +178,7 @@ export function tenantDomainFromHost(hostInput: string): string | null {
   return parsed.type === "custom" ? parsed.domain : null;
 }
 
-/** Admin login on tenant subdomain, e.g. slug.test.nestio.ro/admin/login */
+/** Admin login on tenant subdomain, e.g. slug.test.hospira.ro/admin/login */
 export function buildTenantLoginUrl(
   slug: string,
   params?: Record<string, string | undefined>,
@@ -181,7 +201,7 @@ export function buildTenantLoginUrl(
   return `${protocol}://${host}/admin/login${query ? `?${query}` : ""}`;
 }
 
-/** Admin path on tenant subdomain, e.g. slug.test.nestio.ro/admin */
+/** Admin path on tenant subdomain, e.g. slug.test.hospira.ro/admin */
 export function buildTenantAdminUrl(
   slug: string,
   path = "/admin",
@@ -197,7 +217,7 @@ export function buildTenantAdminUrl(
   return `${protocol}://${host}${safePath}`;
 }
 
-/** Public tenant site origin, e.g. https://slug.test.nestio.ro */
+/** Public tenant site origin, e.g. https://slug.test.hospira.ro */
 export function buildTenantSiteUrl(
   slug: string,
   requestHost?: string | null,
@@ -211,7 +231,7 @@ export function buildTenantSiteUrl(
   return `${protocol}://${host}`;
 }
 
-/** Staging: redirect slug.nestio.ro → slug.test.nestio.ro (legacy .hospira.ro too). */
+/** Staging: redirect slug.hospira.ro → slug.test.hospira.ro (legacy .nestio.ro too). */
 export function stagingTenantHostCorrection(
   hostInput: string
 ): string | null {
@@ -221,11 +241,12 @@ export function stagingTenantHostCorrection(
   if (host.includes(".test.")) return null;
   if (isPlatformHost(host)) return null;
 
-  for (const suffix of [".nestio.ro", ".hospira.ro"]) {
+  for (const suffix of [".hospira.ro", ".nestio.ro"]) {
     if (!host.endsWith(suffix)) continue;
     const slug = host.slice(0, -suffix.length);
     if (!slug || slug.includes(".")) return null;
-    const stagingSuffix = suffix === ".hospira.ro" ? ".test.hospira.ro" : ".test.nestio.ro";
+    const stagingSuffix =
+      suffix === ".nestio.ro" ? ".test.nestio.ro" : ".test.hospira.ro";
     return `${slug}${stagingSuffix}`;
   }
 

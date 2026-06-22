@@ -5,9 +5,11 @@ import {
   TenantContextMissingError,
   type TenantContext,
 } from "@/core/tenant/context";
-import { resolveRequestTenant } from "@/lib/tenant/active";
+import { resolveRequestTenant, TenantNotFoundError } from "@/lib/tenant/active";
+import { parseTenantFromHost } from "@/lib/tenant/host";
 import { tenantRowToRecord } from "@/lib/tenant/record";
 import { getTenantBySlug } from "@/services/tenants";
+import { headers } from "next/headers";
 
 /**
  * Bind tenant context for the current request from host headers / DB.
@@ -17,6 +19,16 @@ export async function bindTenantContextFromRequest(): Promise<TenantContext> {
   const fromHost = await resolveRequestTenant();
   if (fromHost) {
     return setTenantContext(tenantRowToRecord(fromHost));
+  }
+
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
+  const parsed = parseTenantFromHost(host);
+  if (parsed.type === "tenant") {
+    throw new TenantNotFoundError(parsed.slug);
+  }
+  if (parsed.type === "custom") {
+    throw new TenantNotFoundError(parsed.domain);
   }
 
   if (process.env.NODE_ENV === "development") {
@@ -53,6 +65,9 @@ export async function tryBindTenantContextFromRequest(): Promise<TenantContext |
   try {
     return await bindTenantContextFromRequest();
   } catch (error) {
+    if (error instanceof TenantNotFoundError) {
+      return null;
+    }
     if (
       error instanceof Error &&
       error.message.includes("auth.tenant_host_required")

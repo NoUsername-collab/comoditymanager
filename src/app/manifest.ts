@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Nestio",
-    short_name: "Nestio",
+    name: "Hospira",
+    short_name: "Hospira",
     description: "Software modern pentru pensiuni și hoteluri mici",
     lang: "ro",
     dir: "ltr",

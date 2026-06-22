@@ -39,7 +39,7 @@ export function AdminTenantDomainsPanel({
 
   return (
     <div className="settings-form-stack tenant-domains-panel">
-      <SettingsSection title={t("nestioSubdomain")} description={t("nestioSubdomainHint")}>
+      <SettingsSection title={t("hospiraSubdomain")} description={t("hospiraSubdomainHint")}>
         <p className="font-mono text-sm font-semibold">{hospiraDomain?.domain ?? `${tenantSlug}.${platformDomain}`}</p>
         <a
           href={defaultUrl}
