@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hospira - Plan financiar P0-P4</title>
+<link rel="stylesheet" href="financial-ledger-plan.css">
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<h2>Intro</h2>
+<a href="#overview">Prezentare</a>
+<a href="#architecture">Arhitectura</a>
+<a href="#sprints">Sprint-uri</a>
+<h2>Faze</h2>
+<a href="#p0">P0 Ledger</a>
+<a href="#p1">P1 UI</a>
+<a href="#p2">P2 Multi-factura</a>
+<a href="#p3">P3 Proforma</a>
+<a href="#p4">P4 e-Factura</a>
+<h2>Final</h2>
+<a href="#report">Raport general</a>
+<a href="#invariants">Invariante</a>
+<a href="#checklist">Checklist</a>
+</nav>
+<main>
+<header class="hero">
+<h1>Plan implementare financiar</h1>
+<p class="subtitle">Hospira - Check-in, Plati, Facturi, Scalare 1000+ tenant-i</p>
+<div class="badge-row">
+<span class="badge p0">P0 Ledger</span>
+<span class="badge p1">P1 UI</span>
+<span class="badge p2">P2 Multi-factura</span>
+<span class="badge p3">P3 Proforma</span>
+<span class="badge p4">P4 e-Factura</span>
+</div>
+</header>
+<section id="overview">
+<h2>Prezentare</h2>
+<div class="card info">
+<p><strong>Problema:</strong> Plata e un singur camp pe check-in; factura max 1 per rezervare.</p>
+<p><strong>Solutia:</strong> Rezervare (contract) + Ledger plati (tranzactii) + Facturi (documente fiscale).</p>
+</div>
+<table>
+<tr><th>Faza</th><th>Livrabil</th><th>Efort</th><th>Impact</th></tr>
+<tr><td>P0</td><td>Ledger plati + istoric</td><td>Mediu</td><td>Split, avans, audit</td></tr>
+<tr><td>P1</td><td>UI Situatie financiara</td><td>Mic</td><td>Receptia vede restul</td></tr>
+<tr><td>P2</td><td>Multi-factura + buyer</td><td>Mare</td><td>Fiscal RO</td></tr>
+<tr><td>P3</td><td>Proforma + export</td><td>Mediu</td><td>Pensii mari</td></tr>
+<tr><td>P4</td><td>e-Factura integrari</td><td>Mare</td><td>Enterprise</td></tr>
+</table>
+</section>
+<section id="architecture">
+<h2>Arhitectura tinta</h2>
+<pre>bookings (1)
+  |-- booking_payments (N)     [P0]
+  |-- booking_invoices (N)     [P2]
+  |-- payment_allocations      [P2]
+  '-- fiscal_submission_jobs   [P4]
+
+checkins = oaspeti + chei; plata DERIVATA din ledger</pre>
+<pre>struct Stay {
+  Booking booking;
+  vector payments;    // P0
+  vector invoices;  // P2
+  FiscalProvider* fiscal;  // P4
+};</pre>
+</section>
+<section id="sprints">
+<h2>Sprint-uri</h2>
+<table>
+<tr><th>Sprint</th><th>Continut</th><th>Zile</th></tr>
+<tr><td>S1</td><td>P0.1-P0.4 SQL, domain, service</td><td>3-5</td></tr>
+<tr><td>S2</td><td>P0.5-P0.7 + P1.1-P1.4</td><td>4-6</td></tr>
+<tr><td>S3</td><td>P1.5-P1.6 QA receptie</td><td>2</td></tr>
+<tr><td>S4</td><td>P2.1-P2.4</td><td>5-8</td></tr>
+<tr><td>S5</td><td>P2.5-P2.8</td><td>3-5</td></tr>
+<tr><td>S6</td><td>P3</td><td>3-4</td></tr>
+<tr><td>S7-S9</td><td>P4 ANAF</td><td>2-4 sapt</td></tr>
+</table>
+</section>
+<section id="p0">
+<h2>P0 - Ledger plati</h2>
+<ol>
+<li><strong>P0.1</strong> Migrare 086_booking_payments_ledger.sql</li>
+<li><strong>P0.2</strong> domain/payments/ ledger.ts + teste</li>
+<li><strong>P0.3</strong> services/booking-payments.ts</li>
+<li><strong>P0.4</strong> payment-actions.ts + activity log</li>
+<li><strong>P0.5</strong> Integrare check-in + bridge checkins.payment_*</li>
+<li><strong>P0.6</strong> backfill script</li>
+<li><strong>P0.7</strong> QA: 2 plati, refund, Gantt badge</li>
+</ol>
+<div class="card ok">Livrabil: lista incasari, rest automat, istoric audit.</div>
+</section>
+<section id="p1">
+<h2>P1 - UI financiar</h2>
+<ol>
+<li>financial-snapshot.ts</li>
+<li>booking-financial.ts loader</li>
+<li>StayFinancialPanel + RecordPaymentDialog</li>
+<li>Montare: rezervare, check-in, Cazari, factura</li>
+<li>i18n ro/en/bg</li>
+<li>Mobile 44px touch</li>
+</ol>
+<pre>Total 1200 | Incasat 600 | Rest 600
+[+ Incasare] + istoric</pre>
+</section>
+<section id="p2">
+<h2>P2 - Multi-factura</h2>
+<ol>
+<li>DROP one_invoice_per_booking; payment_allocations</li>
+<li>invoice_kind: advance, partial, final, credit_note</li>
+<li>buyer editabil PF/firma + CUI</li>
+<li>UI: lista facturi, emite avans/diferenta</li>
+<li>Export Saga + nefacturat</li>
+</ol>
+<table>
+<tr><th>Scenariu</th><th>Facturi</th></tr>
+<tr><td>Avans+rest</td><td>ADVANCE 400 + FINAL 800</td></tr>
+<tr><td>2 platitori</td><td>PARTIAL x2</td></tr>
+</table>
+</section>
+<section id="p3">
+<h2>P3 - Proforma + export</h2>
+<ol>
+<li>Serie PF separata (nu HSP fiscal)</li>
+<li>PDF watermark PROFORMA</li>
+<li>Convert PF la avans</li>
+<li>Export: fiscal / proforme / plati / nefacturat</li>
+</ol>
+</section>
+<section id="p4">
+<h2>P4 - e-Factura Enterprise</h2>
+<ol>
+<li>interface FiscalProvider (internal_pdf | anaf)</li>
+<li>tenant_fiscal_settings</li>
+<li>fiscal_submission_jobs + cron async</li>
+<li>Stari: pending submitted accepted rejected</li>
+<li>Idempotency + retry</li>
+<li>UI badge ANAF</li>
+</ol>
+<div class="card warn">PDF instant in UI; ANAF in background.</div>
+</section>
+<section id="report">
+<h2>Raport general</h2>
+<h3>Inainte vs Dupa</h3>
+<table>
+<tr><th>Aspect</th><th>Azi</th><th>Dupa P4</th></tr>
+<tr><td>Plata</td><td>1 camp check-in</td><td>vector payments</td></tr>
+<tr><td>Facturi</td><td>max 1</td><td>N cu kind</td></tr>
+<tr><td>ANAF</td><td>PDF local</td><td>optional async</td></tr>
+</table>
+<h3>Fisiere noi</h3>
+<pre>src/domain/payments/
+src/services/booking-payments.ts
+src/services/booking-financial.ts
+src/components/admin/payments/
+supabase/migrations/086-089</pre>
+<h3>Recomandare</h3>
+<div class="card ok">
+<ol>
+<li>Nu sari P0</li>
+<li>P1 imediat dupa P0</li>
+<li>P2 la primul split real</li>
+<li>P3 pensii mari</li>
+<li>P4 la cerere ANAF</li>
+</ol>
+</div>
+</section>
+<section id="invariants">
+<h2>Invariante</h2>
+<pre>sum(payments) &lt;= totalDue
+sum(invoices) &lt;= totalDue
+allocations &lt;= payment.amount
+void = credit_note, nu DELETE
+tenant_id + RLS
+fiscal job idempotent</pre>
+</section>
+<section id="checklist">
+<h2>Checklist go-live</h2>
+<table>
+<tr><th>Faza</th><th>Verificari</th></tr>
+<tr><td>P0</td><td>migrare, backfill, bridge, teste</td></tr>
+<tr><td>P1</td><td>3 ecrane, i18n, mobile</td></tr>
+<tr><td>P2</td><td>multi-invoice, void, export</td></tr>
+<tr><td>P3</td><td>proforma, export dual</td></tr>
+<tr><td>P4</td><td>cron, credentiale, toggle tenant</td></tr>
+</table>
+</section>
+<footer>
+<p>Hospira - Plan P0-P4 - docs/financial-ledger-plan.html</p>
+<p>Urmatorul pas: <strong>P0.1 + P0.2 + P0.3</strong></p>
+</footer>
+</main>
+</div>
+</body>
+</html>
