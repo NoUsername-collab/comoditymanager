@@ -40,8 +40,11 @@ export function RoomSelectionWithGuard({
       opt.rooms.map((r) => ({ id: r.id, name: r.name }))
     );
 
+    // Infer required room count from first option (all options should have same count)
+    const requiredRoomCount = preview.options[0]?.rooms.length ?? 1;
+
     return {
-      requiredRoomCount: preview.room_count_needed ?? 1,
+      requiredRoomCount,
       selectedRoomIds,
       availableRooms,
     };

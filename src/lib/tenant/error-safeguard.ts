@@ -48,6 +48,8 @@ let processHandlersRegistered = false;
 
 export function registerTenantProcessErrorHandlers(): void {
   if (processHandlersRegistered) return;
+  if (typeof process === "undefined") return;
+
   processHandlersRegistered = true;
 
   process.on("unhandledRejection", (reason) => {

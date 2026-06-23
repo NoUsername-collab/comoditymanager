@@ -68,7 +68,7 @@ export function RoomCardCompact({
     >
       {/* Header: Room # + Price */}
       <div className="room-card-compact__header">
-        <span className="room-card-compact__number">{option.room_count}</span>
+        <span className="room-card-compact__number">{option.rooms.length}</span>
         <span className="room-card-compact__price">
           {formatMoney(locale, option.total_estimate_ron)}
         </span>
