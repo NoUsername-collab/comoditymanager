@@ -203,9 +203,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
         )}
 
         <span className="gantt-stay__primary min-w-0 flex-1">
-          <span className="gantt-stay-chrome__label gantt-stay__surface-text min-w-0 truncate">
-            {label}
-          </span>
+          <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
           {(showUnpaid ||
             showMissingIdentity ||
             keysMicroLabel ||

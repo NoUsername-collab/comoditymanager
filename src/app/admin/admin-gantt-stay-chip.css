@@ -84,8 +84,9 @@
   text-align: left;
 }
 
-/* Bară Gantt — fără text pe suprafață; badge-uri + cap rămân vizibile */
-.gantt-stay--chip .gantt-stay__surface-text,
+/* Bară Gantt — ascunde text redundant (CERERE, note policy); numele rămâne vizibil */
+.gantt-stay--chip .gantt-stay__stamp,
+.gantt-stay--chip .gantt-stay__policy-note,
 .gantt-occ-bar--chip .gantt-stay__surface-text {
   display: none !important;
 }
