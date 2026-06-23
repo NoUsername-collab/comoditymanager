@@ -677,18 +677,14 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  gap: 0.28rem;
-  min-height: 1.88rem;
-  padding: 0.28rem 0.55rem;
-  border-radius: 0.52rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  border-radius: 0.5rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   background: var(--surface, #fff);
-  color: var(--admin-text, #18181b);
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 1.1;
+  color: var(--admin-text-muted, #71717a);
   text-decoration: none;
-  white-space: nowrap;
   transition:
     border-color 0.12s ease,
     background 0.12s ease,
@@ -4200,10 +4196,10 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__home-btn {
-  min-height: 1.88rem;
-  padding: 0.34rem 0.55rem;
+  width: 1.88rem;
+  height: 1.88rem;
+  padding: 0;
   border-radius: 0.52rem;
-  font-size: 0.7rem;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__icon-btn svg {

@@ -442,10 +442,6 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-btn {
   padding: 0;
 }
 
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-label {
-  display: none;
-}
-
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--compact {
   display: inline-flex;
   align-items: center;

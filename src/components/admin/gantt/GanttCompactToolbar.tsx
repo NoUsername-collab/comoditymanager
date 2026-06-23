@@ -82,7 +82,7 @@ export function GanttCompactToolbar({
   onDensityToggle: () => void;
 }) {
   const tCommon = useTranslations("admin.common");
-  const tShell = useTranslations("admin.shell");
+  const tNav = useTranslations("admin.nav");
   const tLayers = useTranslations("admin.gantt.layers");
   const { compactChrome } = useCompactLayoutHints();
 
@@ -92,11 +92,10 @@ export function GanttCompactToolbar({
         <Link
           href="/admin"
           className="gantt-compact-toolbar__home-btn"
-          aria-label={tShell("home")}
-          title={tShell("home")}
+          aria-label={tNav("home")}
+          title={tNav("home")}
         >
-          <HudIconHome className="gantt-compact-toolbar__home-icon" />
-          <span className="gantt-compact-toolbar__home-label">{tShell("home")}</span>
+          <HudIconHome className="gantt-compact-toolbar__home-icon" aria-hidden />
         </Link>
 
         <GanttRadialController
