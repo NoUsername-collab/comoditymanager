@@ -3442,14 +3442,12 @@ html[data-layout-chrome="compact"] .stay-card__actions {
 }
 
 html[data-layout-chrome="compact"] .stay-quick-ops {
-  flex-wrap: wrap;
-  gap: 0.35rem;
+  /* Grid + display:contents groups — admin-cazari-cards.css */
+  gap: 0.4rem;
 }
 
 html[data-layout-chrome="compact"] .stay-quick-ops button,
 html[data-layout-chrome="compact"] .stay-quick-ops a {
-  flex: 1 1 calc(50% - 0.2rem);
-  min-width: calc(50% - 0.2rem);
   justify-content: center;
 }
 

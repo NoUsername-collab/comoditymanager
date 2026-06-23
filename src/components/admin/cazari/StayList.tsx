@@ -71,10 +71,10 @@ export function StayList({
 
   const rowClass =
     variant === "refuzate"
-      ? "stay-card stay-card--red grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]"
+      ? "stay-card stay-card--red stay-card--stacked"
       : variant === "cereri"
-        ? "stay-card stay-card--yellow grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]"
-        : "stay-card stay-card--green grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]";
+        ? "stay-card stay-card--yellow stay-card--stacked"
+        : "stay-card stay-card--green stay-card--stacked";
 
   return (
     <AdminPanel

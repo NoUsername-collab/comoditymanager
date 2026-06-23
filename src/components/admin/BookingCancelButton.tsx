@@ -26,9 +26,7 @@ export function BookingCancelButton({
   const runAdminAction = useRunAdminAction();
 
   const triggerClass =
-    variant === "compact"
-      ? "stay-card__cancel-trigger w-full rounded-md border border-red-200 bg-red-50 font-medium text-red-700 transition hover:bg-red-100 active:translate-y-px active:bg-red-200/80 disabled:opacity-50"
-      : undefined;
+    variant === "compact" ? "stay-card__cancel-trigger" : undefined;
 
   const panelClass =
     variant === "compact"

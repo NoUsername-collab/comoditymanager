@@ -46,8 +46,9 @@ export function TouristSheetLauncher({
         disabled={loading}
         onClick={() => void openSheet()}
         className={[
-          "rounded border border-amber-400/80 bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-950 hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60",
-          className,
+          "tourist-sheet-launcher",
+          className ||
+            "rounded border border-amber-400/80 bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-950 hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60",
         ]
           .filter(Boolean)
           .join(" ")}

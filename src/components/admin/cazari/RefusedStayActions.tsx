@@ -14,7 +14,7 @@ export function RefusedStayActions({
   const bookingHref = `/admin/bookings/${stay.id}?return_to=${encodeURIComponent(returnTo)}`;
 
   return (
-    <div className="flex shrink-0 flex-col items-stretch justify-center gap-1 sm:min-w-[140px]">
+    <div className="stay-card__actions stay-card__actions--refused">
       <CancelledStayUndoButton
         bookingId={stay.id}
         label={labels.acceptAgain}
@@ -22,7 +22,7 @@ export function RefusedStayActions({
       />
       <Link
         href={bookingHref}
-        className="inline-flex justify-center rounded-md border border-zinc-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px"
+        className="admin-btn admin-btn--secondary admin-btn--sm admin-btn--full stay-card__open-booking"
       >
         {labels.openBooking}
       </Link>

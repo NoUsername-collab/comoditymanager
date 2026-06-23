@@ -197,62 +197,82 @@ export function StayQuickOps({
   }
 
   return (
-    <div className="stay-quick-ops flex w-full flex-wrap items-stretch justify-stretch gap-1.5">
-      <button
-        type="button"
-        className={[
-          "checkin-start-btn stay-quick-ops__checkin stay-quick-ops__btn",
-          canContinueRooms && "checkin-start-btn--continue",
-        ]
-          .filter(Boolean)
-          .join(" ")}
-        disabled={!checkInEnabled || pending}
-        title={checkInTitle}
-        onClick={handleCheckIn}
-      >
-        {!canEditCheckInTimeEffective && (
-          <span className="checkin-start-btn__icon" aria-hidden>
-            {canContinueRooms ? "🛏" : "🔑"}
-          </span>
-        )}
-        {checkInLabel}
-      </button>
-      <button
-        type="button"
-        className="stay-quick-ops__btn stay-quick-ops__checkout rounded border border-sky-300 bg-sky-50 font-bold text-sky-900 disabled:cursor-not-allowed disabled:opacity-45"
-        disabled={(!canCheckOut && !canEditCheckOutEffective) || pending}
-        title={checkoutTitle}
-        onClick={handleCheckOut}
-      >
-        {checkOutLabel}
-      </button>
-      <button
-        type="button"
-        className="stay-quick-ops__btn stay-quick-ops__shift rounded border border-zinc-300 bg-zinc-50 font-bold text-zinc-800 disabled:cursor-not-allowed disabled:opacity-45"
-        disabled={!canMove || pending}
-        title={!canMove ? labels.moveOnlyConfirmed : ""}
-        onClick={() => moveStay(-1)}
-      >
-        -1d
-      </button>
-      <button
-        type="button"
-        className="stay-quick-ops__btn stay-quick-ops__shift rounded border border-zinc-300 bg-zinc-50 font-bold text-zinc-800 disabled:cursor-not-allowed disabled:opacity-45"
-        disabled={!canMove || pending}
-        title={!canMove ? labels.moveOnlyConfirmed : ""}
-        onClick={() => moveStay(1)}
-      >
-        +1d
-      </button>
-      {canEmitFisa && emitFisaLabel ? (
-        <TouristSheetLauncher bookingId={bookingId} label={emitFisaLabel} />
-      ) : null}
-      <Link
-        href={`/admin/bookings/${bookingId}`}
-        className="stay-quick-ops__btn stay-quick-ops__edit rounded bg-amber-100 font-bold text-amber-900 hover:bg-amber-200"
-      >
-        {labels.edit}
-      </Link>
+    <>
+      <div className="stay-quick-ops">
+        <div className="stay-quick-ops__primary">
+          <button
+            type="button"
+            className={[
+              "checkin-start-btn stay-quick-ops__checkin stay-quick-ops__btn",
+              canContinueRooms && "checkin-start-btn--continue",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            disabled={!checkInEnabled || pending}
+            title={checkInTitle}
+            onClick={handleCheckIn}
+          >
+            {!canEditCheckInTimeEffective && (
+              <span className="checkin-start-btn__icon" aria-hidden>
+                {canContinueRooms ? "🛏" : "🔑"}
+              </span>
+            )}
+            {checkInLabel}
+          </button>
+          <button
+            type="button"
+            className="stay-quick-ops__btn stay-quick-ops__checkout"
+            disabled={(!canCheckOut && !canEditCheckOutEffective) || pending}
+            title={checkoutTitle}
+            onClick={handleCheckOut}
+          >
+            {checkOutLabel}
+          </button>
+        </div>
+
+        <div
+          className="stay-quick-ops__shift-pair"
+          role="group"
+          aria-label={`${labels.movePrevDay} / ${labels.moveNextDay}`}
+        >
+          <button
+            type="button"
+            className="stay-quick-ops__btn stay-quick-ops__shift"
+            disabled={!canMove || pending}
+            title={!canMove ? labels.moveOnlyConfirmed : labels.movePrevDay}
+            aria-label={labels.movePrevDay}
+            onClick={() => moveStay(-1)}
+          >
+            -1d
+          </button>
+          <button
+            type="button"
+            className="stay-quick-ops__btn stay-quick-ops__shift"
+            disabled={!canMove || pending}
+            title={!canMove ? labels.moveOnlyConfirmed : labels.moveNextDay}
+            aria-label={labels.moveNextDay}
+            onClick={() => moveStay(1)}
+          >
+            +1d
+          </button>
+        </div>
+
+        <div className="stay-quick-ops__tertiary">
+          {canEmitFisa && emitFisaLabel ? (
+            <TouristSheetLauncher
+              bookingId={bookingId}
+              label={emitFisaLabel}
+              className="stay-quick-ops__btn stay-quick-ops__fisa"
+            />
+          ) : null}
+          <Link
+            href={`/admin/bookings/${bookingId}`}
+            className="stay-quick-ops__btn stay-quick-ops__edit"
+          >
+            {labels.edit}
+          </Link>
+        </div>
+      </div>
 
       {editCheckOutOpen ? (
         <BookingCheckoutPanel
@@ -270,6 +290,6 @@ export function StayQuickOps({
           }}
         />
       ) : null}
-    </div>
+    </>
   );
 }

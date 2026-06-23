@@ -127,6 +127,11 @@ html[data-layout-chrome="compact"] .stay-card {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
+html[data-layout-chrome="compact"] .stay-card--stacked {
+  display: flex;
+  flex-direction: column;
+}
+
 html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[140px\],
 html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[270px\] {
   min-width: 0 !important;

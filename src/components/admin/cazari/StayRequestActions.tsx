@@ -53,7 +53,7 @@ export function StayRequestActions({
 
   return (
     <div
-      className="stay-card__actions flex w-full shrink-0 flex-col items-stretch gap-1 sm:min-w-[160px]"
+      className="stay-card__actions stay-card__actions--requests"
       aria-busy={pending || undefined}
     >
       <AdminButton
@@ -69,18 +69,20 @@ export function StayRequestActions({
       </AdminButton>
       <Link
         href={bookingHref}
-        className="admin-btn admin-btn--secondary admin-btn--sm admin-btn--full stay-card__open-booking inline-flex items-center justify-center"
+        className="admin-btn admin-btn--secondary admin-btn--sm admin-btn--full stay-card__open-booking"
       >
         {labels.openBooking}
       </Link>
-      <BookingCancelButton
-        label={labels.cancelRequest}
-        confirmMessage={labels.cancelMessage}
-        formAction={cancelBookingAction}
-        bookingId={stay.id}
-        returnTo={returnTo}
-        variant="compact"
-      />
+      <div className="stay-card__danger-zone">
+        <BookingCancelButton
+          label={labels.cancelRequest}
+          confirmMessage={labels.cancelMessage}
+          formAction={cancelBookingAction}
+          bookingId={stay.id}
+          returnTo={returnTo}
+          variant="compact"
+        />
+      </div>
     </div>
   );
 }
