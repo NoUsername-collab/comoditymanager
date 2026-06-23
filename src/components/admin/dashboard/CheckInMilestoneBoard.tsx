@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -9,8 +10,15 @@ import { flagIcon, flagSeverity } from "@/domain/checkin/flags";
 import type { CheckinFlag } from "@/domain/checkin/types";
 import { formatGuestPartyDetail } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { CheckinModal } from "@/components/admin/checkin/CheckinModal";
 import type { CheckInQuestItem } from "@/services/today-board";
+
+const CheckinModal = dynamic(
+  () =>
+    import("@/components/admin/checkin/CheckinModal").then((m) => ({
+      default: m.CheckinModal,
+    })),
+  { ssr: false },
+);
 
 const QUEST_PREVIEW_LIMIT = 3;
 

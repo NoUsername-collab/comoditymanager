@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isProductionRuntime } from "@/lib/security/production-runtime";
 
 const serverEnvSchema = z.object({
   NODE_ENV: z
@@ -26,13 +27,6 @@ export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
 let cached: ServerEnv | null = null;
 
-function isProductionRuntime(): boolean {
-  return (
-    process.env.VERCEL_ENV === "production" ||
-    process.env.NODE_ENV === "production"
-  );
-}
-
 export function getServerEnv(): ServerEnv {
   if (cached) return cached;
 
@@ -53,6 +47,24 @@ export function getServerEnv(): ServerEnv {
     throw new Error(
       "ADMIN_FACTORY_RESET_ENABLED=true is not allowed in production"
     );
+  }
+
+  if (isProductionRuntime()) {
+    const adminEmails =
+      parsed.data.HOSPIRA_ADMIN_EMAILS?.trim() ||
+      parsed.data.NESTIO_ADMIN_EMAILS?.trim();
+    if (!adminEmails) {
+      throw new Error(
+        "HOSPIRA_ADMIN_EMAILS must be set in production (comma-separated platform admin emails)"
+      );
+    }
+
+    const unlockSecret = parsed.data.ADMIN_LOCATION_UNLOCK_SECRET?.trim();
+    if (!unlockSecret || unlockSecret.length < 32) {
+      throw new Error(
+        "ADMIN_LOCATION_UNLOCK_SECRET must be set in production (min 32 chars). Run: npm run env:secret"
+      );
+    }
   }
 
   cached = parsed.data;
@@ -82,11 +94,16 @@ export function getStaffEmails() {
 
 export function getLocationUnlockSecret(): string {
   const env = getServerEnv();
-  return (
-    env.ADMIN_LOCATION_UNLOCK_SECRET ??
-    env.SUPABASE_SERVICE_ROLE_KEY ??
-    "dev-insecure-unlock-secret"
-  );
+  const secret = env.ADMIN_LOCATION_UNLOCK_SECRET?.trim();
+  if (secret && secret.length >= 32) return secret;
+
+  if (isProductionRuntime()) {
+    throw new Error(
+      "ADMIN_LOCATION_UNLOCK_SECRET must be set in production (min 32 chars)"
+    );
+  }
+
+  return secret ?? "dev-insecure-unlock-secret";
 }
 
 export function isFactoryResetEnabled(): boolean {

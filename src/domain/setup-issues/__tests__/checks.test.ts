@@ -10,12 +10,26 @@ import {
   resolveContactEmailSetupIssue,
   resolveMfaSetupIssue,
   resolveThemeSetupIssue,
+  shouldResolveSetupIssues,
 } from "../checks";
 import { SETUP_ISSUE_IDS } from "../types";
 
 afterEach(() => {
   delete process.env.HOSPIRA_ADMIN_EMAILS;
   delete process.env.NESTIO_ADMIN_EMAILS;
+});
+
+describe("shouldResolveSetupIssues", () => {
+  it("skips work for operators", () => {
+    expect(
+      shouldResolveSetupIssues({ memberRole: "operator", email: "op@test.ro" })
+    ).toBe(false);
+  });
+
+  it("runs for owners and admins", () => {
+    expect(shouldResolveSetupIssues({ memberRole: "owner" })).toBe(true);
+    expect(shouldResolveSetupIssues({ memberRole: "admin" })).toBe(true);
+  });
 });
 
 describe("resolveMfaSetupIssue", () => {

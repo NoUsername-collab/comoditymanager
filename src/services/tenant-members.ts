@@ -8,11 +8,13 @@
  */
 
 import { cache } from "react";
+import { unstable_cache, revalidateTag } from "next/cache";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // ─── Types ─────────────────────────────────────────────────────────
-export type TenantMemberRole = "owner" | "admin" | "operator";
+export type { TenantMemberRole } from "@/domain/tenant/types";
+import type { TenantMemberRole } from "@/domain/tenant/types";
 
 export type TenantMember = {
   id: string;
@@ -26,6 +28,17 @@ export type TenantMember = {
   created_at: string;
 };
 
+const TENANT_MEMBER_SELECT =
+  "id, tenant_id, user_id, email, role, is_active, invited_at, accepted_at, created_at";
+
+function tenantMembersCacheTag(tenantId: string): string {
+  return `tenant-${tenantId}-members`;
+}
+
+function bustTenantMembersCache(tenantId: string): void {
+  revalidateTag(tenantMembersCacheTag(tenantId), "max");
+}
+
 export type InviteMemberInput = {
   tenantId: string;
   email: string;
@@ -34,18 +47,32 @@ export type InviteMemberInput = {
 };
 
 // ─── List all members of a tenant ──────────────────────────────────
-const loadTenantMembers = cache(async (tenantId: string): Promise<TenantMember[]> => {
+async function listTenantMembersUncached(tenantId: string): Promise<TenantMember[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_members")
-    .select("*")
+    .select(TENANT_MEMBER_SELECT)
     .eq("tenant_id", tenantId)
     .order("role", { ascending: true })
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
   return (data ?? []) as TenantMember[];
-});
+}
+
+const getCachedTenantMembers = (tenantId: string) =>
+  unstable_cache(
+    () => listTenantMembersUncached(tenantId),
+    ["tenant-members", tenantId],
+    {
+      tags: [tenantMembersCacheTag(tenantId)],
+      revalidate: 120,
+    }
+  );
+
+const loadTenantMembers = cache(async (tenantId: string): Promise<TenantMember[]> =>
+  getCachedTenantMembers(tenantId)()
+);
 
 export async function listTenantMembers(
   tenantId: string
@@ -69,7 +96,7 @@ export async function getTenantMemberByEmail(
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_members")
-    .select("*")
+    .select(TENANT_MEMBER_SELECT)
     .eq("tenant_id", tenantId)
     .eq("email", email.toLowerCase().trim())
     .maybeSingle();
@@ -141,6 +168,7 @@ export async function inviteTenantMember(
       .single();
 
     if (error) throw new Error(error.message);
+    bustTenantMembersCache(input.tenantId);
     return data as TenantMember;
   }
 
@@ -189,6 +217,7 @@ export async function inviteTenantMember(
     .single();
 
   if (error) throw new Error(error.message);
+  bustTenantMembersCache(input.tenantId);
   return data as TenantMember;
 }
 
@@ -234,6 +263,8 @@ export async function updateTenantMemberRole(
 
   if (error) throw new Error(error.message);
 
+  bustTenantMembersCache(tenantId);
+
   // Sync role to Supabase Auth app_metadata
   if (member?.user_id) {
     await supabase.auth.admin
@@ -267,6 +298,7 @@ export async function deactivateTenantMember(
     .eq("tenant_id", tenantId);
 
   if (error) throw new Error(error.message);
+  bustTenantMembersCache(tenantId);
 }
 
 // ─── Reactivate member ────────────────────────────────────────────
@@ -285,6 +317,7 @@ export async function reactivateTenantMember(
     .eq("tenant_id", tenantId);
 
   if (error) throw new Error(error.message);
+  bustTenantMembersCache(tenantId);
 }
 
 // ─── Get member by ID ──────────────────────────────────────────────
@@ -294,7 +327,7 @@ async function getTenantMemberById(
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_members")
-    .select("*")
+    .select(TENANT_MEMBER_SELECT)
     .eq("id", memberId)
     .maybeSingle();
 

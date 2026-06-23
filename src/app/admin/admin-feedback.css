@@ -118,6 +118,13 @@
   color: #52525b;
 }
 
+.admin-toast__close:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+  color: #52525b;
+}
+
 .admin-toast__close:active {
   filter: brightness(0.92);
   transform: scale(0.95);

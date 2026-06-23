@@ -1,8 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { StatisticsSettingsPanel } from "@/components/admin/settings/StatisticsSettingsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import {
   buildSettingsAlerts,
   guardSettingsOwner,
@@ -27,12 +26,14 @@ export default async function SettingsStatisticsPage({
   if (error) alerts.push({ tone: "error", message: error });
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navStatistics")} description={t("statisticsAclSubtitle")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navStatistics")}
+      description={t("statisticsAclSubtitle")}
+    >
       <SettingsSection title={t("statisticsAclTitle")} description={t("statisticsAclSubtitle")}>
         <StatisticsSettingsPanel visibility={ctx.statisticsVisibility} />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

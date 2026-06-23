@@ -1,4 +1,7 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
+import { isSimActive } from "@/domain/simulation/sim-cookie";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseViewDate, viewDateLabel } from "@/lib/availability-date";
@@ -106,10 +109,30 @@ async function loadStaysForAvailabilityImpl(
   return stays;
 }
 
+const getCachedStaysForAvailability = (
+  tenantId: string,
+  rangeStart: string,
+  rangeEnd: string
+) =>
+  unstable_cache(
+    () => loadStaysForAvailabilityImpl(tenantId, rangeStart, rangeEnd),
+    ["availability-stays", tenantId, rangeStart, rangeEnd],
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 45,
+    }
+  );
+
 const loadStaysForAvailability = cache(
   async (rangeStart: string, rangeEnd: string): Promise<NightStay[]> => {
     const { tenantId } = await getTenantScope();
-    return loadStaysForAvailabilityImpl(tenantId, rangeStart, rangeEnd);
+    if (await isSimActive()) {
+      return loadStaysForAvailabilityImpl(tenantId, rangeStart, rangeEnd);
+    }
+    return getCachedStaysForAvailability(tenantId, rangeStart, rangeEnd)();
   }
 );
 
@@ -300,4 +323,33 @@ async function listBuildingDashboardsImpl(
     });
 }
 
-export const listBuildingDashboards = cache(listBuildingDashboardsImpl);
+const getCachedBuildingDashboards = (tenantId: string, viewDate: string) =>
+  unstable_cache(
+    () => listBuildingDashboardsImpl(viewDate),
+    ["building-dashboards", tenantId, viewDate],
+    {
+      tags: [
+        CACHE_TAGS.buildings,
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+      ],
+      revalidate: 45,
+    }
+  );
+
+const loadBuildingDashboardsForRequest = cache(
+  async (tenantId: string, viewDate: string, viewDateParam?: string) => {
+    if (await isSimActive()) {
+      return listBuildingDashboardsImpl(viewDateParam);
+    }
+    return getCachedBuildingDashboards(tenantId, viewDate)();
+  }
+);
+
+export async function listBuildingDashboards(
+  viewDateParam?: string
+): Promise<BuildingDashboard[]> {
+  const viewDate = parseViewDate(viewDateParam);
+  const { tenantId } = await getTenantScope();
+  return loadBuildingDashboardsForRequest(tenantId, viewDate, viewDateParam);
+}

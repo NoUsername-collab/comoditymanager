@@ -126,8 +126,14 @@ function AdminToastViewport({
 }) {
   if (toasts.length === 0) return null;
 
+  const hasError = toasts.some((t) => t.kind === "error");
+
   return (
-    <div className="admin-toast-stack" aria-live="polite" aria-relevant="additions">
+    <div
+      className="admin-toast-stack"
+      aria-live={hasError ? "assertive" : "polite"}
+      aria-relevant="additions"
+    >
       {toasts.map((t) => (
         <AdminToastItem key={t.id} toast={t} onDismiss={onDismiss} />
       ))}
@@ -147,7 +153,10 @@ function AdminToastItem({
     toast.kind === "success" ? "✓" : toast.kind === "error" ? "!" : "i";
 
   return (
-    <div className={`admin-toast admin-toast--${toast.kind}`} role="status">
+    <div
+      className={`admin-toast admin-toast--${toast.kind}`}
+      role={toast.kind === "error" ? "alert" : "status"}
+    >
       <span className="admin-toast__icon" aria-hidden>
         {icon}
       </span>

@@ -7,7 +7,7 @@ import { AdminInput } from "@/components/admin/ui/AdminInput";
 import {
   lockLocationAdminAction,
   unlockLocationAdminAction,
-} from "@/app/[locale]/admin/(panel)/settings/actions";
+} from "@/features/settings/actions";
 
 export function AdminLocationUnlockForm({ isOwner = false }: { isOwner?: boolean }) {
   const tPage = useTranslations("admin.pages.settingsLocation.unlock");

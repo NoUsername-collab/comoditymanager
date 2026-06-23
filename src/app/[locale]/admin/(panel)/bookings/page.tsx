@@ -7,7 +7,7 @@ import {
   CERERE_LIST_PAGE_SIZE,
   countCereriNoi,
   listCereriNoiPage,
-} from "@/services/bookings";
+} from "@/services/bookings/queries";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";

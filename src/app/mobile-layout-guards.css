@@ -15,8 +15,12 @@ html.layout-chrome-compact body.ml-overflow-guard {
 }
 
 html[data-layout-chrome="compact"] .ml-content {
-  overflow-x: clip;
-  scroll-padding-top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem);
+  /* overflow-x: clip — mobile-layout-compact-fixes.css */
+  scroll-padding-top: calc(var(--ml-admin-chrome-top, var(--ml-safe-top, 0px)) + 0.5rem);
+  scroll-padding-bottom: var(
+    --ml-page-scroll-bottom,
+    calc(var(--ml-safe-bottom, 0px) + 0.35rem)
+  );
 }
 
 /* iOS: prevent focus zoom on inputs (16px minimum) */
@@ -39,7 +43,8 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__link {
 /* ── Admin page frames ── */
 html[data-layout-chrome="compact"] .admin-page-main > main,
 html[data-layout-mode="mobile"] .admin-page-main > main {
-  padding: 0.65rem 0 !important;
+  padding-block: var(--ml-page-gutter-block, 0.65rem) 0;
+  padding-inline: 0;
 }
 
 html[data-layout-chrome="compact"] .admin-page-toolbar {
@@ -80,6 +85,7 @@ html[data-layout-chrome="compact"] .ml-main,
 html[data-layout-chrome="compact"] .admin-panel__body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+  scroll-padding-bottom: var(--ml-page-scroll-bottom, calc(var(--ml-safe-bottom, 0px) + 0.35rem));
 }
 
 /* admin panels: see mobile-layout-flawless.css (.admin-panel) */
@@ -138,16 +144,11 @@ html[data-layout-chrome="compact"] .ml-mobile-menu--hospira {
 }
 
 html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
-  padding-inline: 0.85rem;
   gap: 0.5rem;
 }
 
 html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__email {
   display: none;
-}
-
-html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
-  padding: 1rem 0.85rem 1.5rem;
 }
 
 .ml-drawer--hospira {
@@ -331,12 +332,20 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
 /* PWA standalone (Add to Home Screen) — full safe-area on notched phones */
 @media (display-mode: standalone) {
   html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
-    padding-top: max(0.35rem, var(--ml-safe-top, 0px));
+    padding-bottom: max(0.15rem, var(--ml-safe-bottom, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   html[data-layout-chrome="compact"] .public-header,
   html[data-layout-chrome="compact"] .nestio-admin-header,
   html[data-layout-chrome="compact"] .admin-hud__header {
     padding-top: max(0.5rem, var(--ml-safe-top, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .ml-drawer--admin {
+    padding-top: max(0.75rem, var(--ml-safe-top, 0px));
   }
 }

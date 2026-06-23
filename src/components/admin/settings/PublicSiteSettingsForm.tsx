@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import {
   PUBLIC_TEMPLATE_OPTIONS,
@@ -13,8 +13,16 @@ import type {
   PublicSiteConfig,
   PublicSiteSettingsInput,
 } from "@/features/public-site/domain/types";
-import { savePublicSiteSettingsAction } from "@/app/[locale]/admin/(panel)/settings/public-site/actions";
+import type { PensionContact } from "@/domain/settings/pension-identity";
+import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
+import { savePublicSiteSettingsAction } from "@/features/settings/actions/public-site";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
+import { SettingsSection } from "@/components/admin/settings/SettingsSection";
+import { PublicSitePreview } from "@/components/admin/settings/PublicSitePreview";
+import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
+import { SettingsPreviewLayout } from "@/components/admin/settings/SettingsPreviewLayout";
+import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 
 function galleryToText(items: PublicGalleryItem[] | undefined): string {
   return (items ?? [])
@@ -44,34 +52,33 @@ function FormSection({
   title,
   description,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
+  defaultOpen?: boolean;
 }) {
   return (
-    <section className="settings-section">
-      <header className="settings-section__head">
-        <div>
-          <h2 className="settings-section__title">{title}</h2>
-          {description ? <p className="settings-section__desc">{description}</p> : null}
-        </div>
-      </header>
-      <div className="settings-section__body">{children}</div>
-    </section>
+    <SettingsSection title={title} description={description} defaultOpen={defaultOpen}>
+      {children}
+    </SettingsSection>
   );
 }
 
 export function PublicSiteSettingsForm({
   config,
   locale,
+  primaryContact,
   readOnly = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  primaryContact: PensionContact;
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.pages.publicSite");
+  const tSettings = useTranslations("admin.pages.settings");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -103,6 +110,16 @@ export function PublicSiteSettingsForm({
     pickLocalized(config.hero.ctaSecondary, locale)
   );
   const [heroImageUrl, setHeroImageUrl] = useState(config.hero.imageUrl ?? "");
+  const [seoTitle, setSeoTitle] = useState(
+    pickLocalized(config.seo.metaTitle, locale, [
+      pickLocalized(config.hero.title, locale, [config.displayName]),
+    ]),
+  );
+  const [seoDescription, setSeoDescription] = useState(
+    pickLocalized(config.seo.metaDescription, locale, [
+      pickLocalized(config.hero.subtitle, locale),
+    ]),
+  );
 
   const [contactEmail, setContactEmail] = useState(config.contact.email ?? "");
   const [contactPhone, setContactPhone] = useState(config.contact.phone ?? "");
@@ -145,79 +162,81 @@ export function PublicSiteSettingsForm({
   const [stepsVisible, setStepsVisible] = useState(sectionVisibility.steps);
   const [ctaVisible, setCtaVisible] = useState(sectionVisibility.cta);
 
-  function buildInput(): PublicSiteSettingsInput {
-    const localized = (value: string) => ({ ro: value, en: value, bg: value });
-
-    const baseSections = config.sections.filter(
-      (section) => section.sectionType !== "gallery"
-    );
-
-    const galleryItems = textToGallery(galleryText);
-    const galleryFromConfig = config.sections.find((s) => s.sectionType === "gallery");
-
-    const sections = [
-      ...baseSections.map((section) => {
-        if (section.sectionType === "intro") {
-          return { ...section, visible: introVisible };
-        }
-        if (section.sectionType === "benefits") {
-          return { ...section, visible: benefitsVisible };
-        }
-        if (section.sectionType === "steps") {
-          return { ...section, visible: stepsVisible };
-        }
-        if (section.sectionType === "cta") {
-          return { ...section, visible: ctaVisible };
-        }
-        return section;
+  const draftInput = useMemo(
+    () =>
+      buildInputFromState({
+        config,
+        templateId,
+        themeId,
+        published,
+        bookingEnabled,
+        bookingNavPosition,
+        usePrimaryContact,
+        heroTitle,
+        heroSubtitle,
+        heroTagline,
+        heroBadge,
+        heroCtaPrimary,
+        heroCtaSecondary,
+        heroImageUrl,
+        seoTitle,
+        seoDescription,
+        contactEmail,
+        contactPhone,
+        contactWhatsapp,
+        contactTelegram,
+        contactFacebook,
+        contactInstagram,
+        galleryText,
+        galleryVisible,
+        introVisible,
+        benefitsVisible,
+        stepsVisible,
+        ctaVisible,
       }),
-      {
-        id: galleryFromConfig?.id ?? "gallery",
-        sectionType: "gallery" as const,
-        sortOrder: galleryFromConfig?.sortOrder ?? 30,
-        visible: galleryVisible && galleryItems.length > 0,
-        payload: {
-          title: galleryFromConfig?.payload.title ?? localized("Galerie"),
-          lead: galleryFromConfig?.payload.lead ?? localized(""),
-          items: galleryItems,
-        },
-      },
-    ].map(({ id: _id, ...section }) => section);
-
-    return {
+    [
+      config,
       templateId,
       themeId,
       published,
       bookingEnabled,
       bookingNavPosition,
       usePrimaryContact,
-      hero: {
-        ...config.hero,
-        badge: localized(heroBadge),
-        title: localized(heroTitle),
-        subtitle: localized(heroSubtitle),
-        tagline: localized(heroTagline),
-        ctaPrimary: localized(heroCtaPrimary),
-        ctaSecondary: localized(heroCtaSecondary),
-        ctaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
-        ctaSecondaryHref: config.hero.ctaSecondaryHref ?? "#public-intro",
-        imageUrl: heroImageUrl.trim() || null,
-        showCheckTimes: config.hero.showCheckTimes ?? true,
-      },
-      contact: {
-        email: contactEmail.trim() || null,
-        phone: contactPhone.trim() || null,
-        whatsapp: contactWhatsapp.trim() || null,
-        telegram: contactTelegram.trim() || null,
-        facebook: contactFacebook.trim() || null,
-        instagram: contactInstagram.trim() || null,
-      },
-      seo: {
-        metaTitle: localized(heroTitle),
-        metaDescription: localized(heroSubtitle),
-      },
-      sections,
-    };
+      heroTitle,
+      heroSubtitle,
+      heroTagline,
+      heroBadge,
+      heroCtaPrimary,
+      heroCtaSecondary,
+      heroImageUrl,
+      seoTitle,
+      seoDescription,
+      contactEmail,
+      contactPhone,
+      contactWhatsapp,
+      contactTelegram,
+      contactFacebook,
+      contactInstagram,
+      galleryText,
+      galleryVisible,
+      introVisible,
+      benefitsVisible,
+      stepsVisible,
+      ctaVisible,
+    ],
+  );
+
+  const previewConfig = useMemo(
+    () => buildPublicSiteConfigFromInput(config, draftInput, primaryContact),
+    [config, draftInput, primaryContact],
+  );
+
+  const initialSnapshot = useRef(JSON.stringify(draftInput));
+  const dirty = JSON.stringify(draftInput) !== initialSnapshot.current;
+  useSettingsUnsavedWarning(!readOnly && dirty);
+
+  function buildInput(): PublicSiteSettingsInput {
+    return draftInput;
   }
 
   function handleSubmit(event: React.FormEvent) {
@@ -232,15 +251,23 @@ export function PublicSiteSettingsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="settings-form-stack">
-      <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
-      {error ? (
-        <div className="settings-alerts">
-          <p className="settings-alerts__item settings-alerts__item--error" role="alert">
-            {error}
-          </p>
-        </div>
-      ) : null}
+    <SettingsPreviewLayout
+      preview={<PublicSitePreview config={previewConfig} locale={locale} />}
+      form={
+        <form onSubmit={handleSubmit} className="settings-form-stack">
+          <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
+            {!readOnly && dirty ? (
+              <p className="settings-unsaved-banner" role="status">
+                {tSettings("unsavedChanges")}
+              </p>
+            ) : null}
+            {error ? (
+              <div className="settings-alerts">
+                <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+                  {error}
+                </p>
+              </div>
+            ) : null}
 
       <FormSection title={t("templateTitle")} description={t("templateSectionDesc")}>
         <div className="pub-settings-grid pub-settings-grid--3" role="radiogroup" aria-label={t("templateTitle")}>
@@ -293,6 +320,7 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("heroTitle")}</span>
             <input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} />
+            <SettingsFieldHint>{t("heroTitleHint")}</SettingsFieldHint>
           </label>
           <label>
             <span>{t("heroBadge")}</span>
@@ -335,6 +363,26 @@ export function PublicSiteSettingsForm({
               onChange={(e) => setHeroImageUrl(e.target.value)}
               placeholder="https://..."
             />
+            <SettingsFieldHint>{t("heroImageHint")}</SettingsFieldHint>
+          </label>
+        </div>
+      </FormSection>
+
+      <FormSection title={t("seoTitle")} description={t("seoSectionDesc")}>
+        <div className="admin-settings-fields">
+          <label>
+            <span>{t("seoMetaTitle")}</span>
+            <input value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} />
+            <SettingsFieldHint>{t("seoMetaTitleHint")}</SettingsFieldHint>
+          </label>
+          <label>
+            <span>{t("seoMetaDescription")}</span>
+            <textarea
+              rows={3}
+              value={seoDescription}
+              onChange={(e) => setSeoDescription(e.target.value)}
+            />
+            <SettingsFieldHint>{t("seoMetaDescriptionHint")}</SettingsFieldHint>
           </label>
         </div>
       </FormSection>
@@ -348,6 +396,7 @@ export function PublicSiteSettingsForm({
           />
           <span>{t("usePrimaryContact")}</span>
         </label>
+        <SettingsFieldHint className="mb-3 block">{t("usePrimaryContactHint")}</SettingsFieldHint>
         <div className="admin-settings-fields admin-settings-fields--2col">
           <label>
             <span>Email</span>
@@ -484,17 +533,122 @@ export function PublicSiteSettingsForm({
             />
             {t("published")}
           </label>
+          <SettingsFieldHint className="admin-settings-fields__full">{t("publishedHint")}</SettingsFieldHint>
         </div>
       </FormSection>
 
       {!readOnly ? (
-        <div className="settings-form-stack__submit">
+        <SettingsSaveBar status={pending ? "saving" : "idle"}>
           <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
             {pending ? t("saving") : t("save")}
           </AdminSubmitButton>
-        </div>
+        </SettingsSaveBar>
       ) : null}
-      </fieldset>
-    </form>
+          </fieldset>
+        </form>
+      }
+    />
   );
+}
+
+function buildInputFromState(args: {
+  config: PublicSiteConfig;
+  templateId: PublicSiteSettingsInput["templateId"];
+  themeId: PublicSiteSettingsInput["themeId"];
+  published: boolean;
+  bookingEnabled: boolean;
+  bookingNavPosition: PublicSiteSettingsInput["bookingNavPosition"];
+  usePrimaryContact: boolean;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroTagline: string;
+  heroBadge: string;
+  heroCtaPrimary: string;
+  heroCtaSecondary: string;
+  heroImageUrl: string;
+  seoTitle: string;
+  seoDescription: string;
+  contactEmail: string;
+  contactPhone: string;
+  contactWhatsapp: string;
+  contactTelegram: string;
+  contactFacebook: string;
+  contactInstagram: string;
+  galleryText: string;
+  galleryVisible: boolean;
+  introVisible: boolean;
+  benefitsVisible: boolean;
+  stepsVisible: boolean;
+  ctaVisible: boolean;
+}): PublicSiteSettingsInput {
+  const localized = (value: string) => ({ ro: value, en: value, bg: value });
+  const { config } = args;
+
+  const baseSections = config.sections.filter((section) => section.sectionType !== "gallery");
+  const galleryItems = textToGallery(args.galleryText);
+  const galleryFromConfig = config.sections.find((s) => s.sectionType === "gallery");
+
+  const sections = [
+    ...baseSections.map((section) => {
+      if (section.sectionType === "intro") {
+        return { ...section, visible: args.introVisible };
+      }
+      if (section.sectionType === "benefits") {
+        return { ...section, visible: args.benefitsVisible };
+      }
+      if (section.sectionType === "steps") {
+        return { ...section, visible: args.stepsVisible };
+      }
+      if (section.sectionType === "cta") {
+        return { ...section, visible: args.ctaVisible };
+      }
+      return section;
+    }),
+    {
+      id: galleryFromConfig?.id ?? "gallery",
+      sectionType: "gallery" as const,
+      sortOrder: galleryFromConfig?.sortOrder ?? 30,
+      visible: args.galleryVisible && galleryItems.length > 0,
+      payload: {
+        title: galleryFromConfig?.payload.title ?? localized("Galerie"),
+        lead: galleryFromConfig?.payload.lead ?? localized(""),
+        items: galleryItems,
+      },
+    },
+  ].map(({ id: _id, ...section }) => section);
+
+  return {
+    templateId: args.templateId,
+    themeId: args.themeId,
+    published: args.published,
+    bookingEnabled: args.bookingEnabled,
+    bookingNavPosition: args.bookingNavPosition,
+    usePrimaryContact: args.usePrimaryContact,
+    hero: {
+      ...config.hero,
+      badge: localized(args.heroBadge),
+      title: localized(args.heroTitle),
+      subtitle: localized(args.heroSubtitle),
+      tagline: localized(args.heroTagline),
+      ctaPrimary: localized(args.heroCtaPrimary),
+      ctaSecondary: localized(args.heroCtaSecondary),
+      ctaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
+      ctaSecondaryHref: config.hero.ctaSecondaryHref ?? "#public-intro",
+      imageUrl: args.heroImageUrl.trim() || null,
+      showCheckTimes: config.hero.showCheckTimes ?? true,
+    },
+    contact: {
+      email: args.contactEmail.trim() || null,
+      phone: args.contactPhone.trim() || null,
+      whatsapp: args.contactWhatsapp.trim() || null,
+      telegram: args.contactTelegram.trim() || null,
+      facebook: args.contactFacebook.trim() || null,
+      instagram: args.contactInstagram.trim() || null,
+    },
+    seo: {
+      metaTitle: localized(args.seoTitle || args.heroTitle),
+      metaDescription: localized(args.seoDescription || args.heroSubtitle),
+    },
+    sections,
+  };
 }

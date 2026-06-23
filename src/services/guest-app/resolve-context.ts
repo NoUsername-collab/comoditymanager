@@ -146,11 +146,18 @@ export async function resolveGuestAppContext(
   booking: GuestAccessBookingSnapshot,
   locale: string,
 ): Promise<GuestAppResolvedContext> {
-  const publicConfig = await getPublicSiteConfig().catch(() => null);
-  const identity =
-    settings.usePrimaryContact
-      ? await getPensionIdentity().catch(() => null)
-      : null;
+  const publicConfigPromise = getPublicSiteConfig().catch(() => null);
+  const identityPromise = settings.usePrimaryContact
+    ? getPensionIdentity().catch(() => null)
+    : Promise.resolve(null);
+
+  const [publicConfig, identity, liveState, precheckinPrefill] =
+    await Promise.all([
+      publicConfigPromise,
+      identityPromise,
+      loadGuestLiveState(booking.id),
+      loadGuestPrecheckinPrefill(booking),
+    ]);
   const hotelSource = settings.usePrimaryContact && identity
     ? {
         ...settings.content.hotel,
@@ -185,9 +192,6 @@ export async function resolveGuestAppContext(
   );
 
   const galleryItems = [...galleryFromSite, ...roomGallery];
-
-  const liveState = await loadGuestLiveState(booking.id);
-  const precheckinPrefill = await loadGuestPrecheckinPrefill(booking);
 
   return {
     settings,

@@ -44,6 +44,7 @@ export function GuestShareStayButton() {
       className="guest-app__share-btn"
       onClick={share}
       disabled={pending}
+      aria-busy={pending}
     >
       {t("shareStay")}
     </button>

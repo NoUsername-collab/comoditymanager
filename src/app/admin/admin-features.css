@@ -7,10 +7,8 @@
 @import "./admin-overlays.css";
 @import "./admin-history.css";
 @import "./admin-feedback.css";
-@import "./admin-settings.css";
 @import "./admin-action-links.css";
 @import "./admin-simulation.css";
-@import "./admin-checkin.css";
 @import "./admin-cazari-toolbar.css";
 
 /* Panou admin — componente noi (istoric, rezumat, goluri) */
@@ -269,6 +267,52 @@
   border-color: color-mix(in srgb, var(--active-border, #22c55e) 60%, transparent);
 }
 
+/* Cazări: cereri pinned above confirmate */
+.cazari-pinned-cereri {
+  border-left: 3px solid var(--pending-border, #f59e0b);
+  padding-left: 0.5rem;
+}
+
+.cazari-pinned-cereri .admin-panel__titlebar {
+  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 70%, transparent);
+}
+
+/* ── Stay card info (cazări list) ─────────────────────────────── */
+
+.stay-info__guest-name {
+  color: var(--admin-text);
+}
+
+.stay-info__guest-name--cancelled {
+  color: var(--admin-tint-danger-text);
+}
+
+.stay-info__contact {
+  color: var(--admin-text-muted);
+}
+
+.stay-info__meta {
+  color: var(--admin-text-muted);
+}
+
+.stay-info__meta-strong {
+  color: var(--admin-text);
+  font-weight: 500;
+}
+
+.stay-info__ref {
+  font-family: ui-monospace, monospace;
+  color: var(--text-faint);
+}
+
+.stay-info__profile-meta {
+  color: var(--admin-text-muted);
+}
+
+.stay-info__stars {
+  background: var(--surface-2);
+}
+
 /* ── Cazări: progres check-in per cameră ─────────────────────── */
 
 .stay-checkin-progress {
@@ -304,27 +348,27 @@
   margin: 0;
   font-size: 0.68rem;
   font-weight: 800;
-  color: #92400e;
+  color: var(--admin-tint-warning-text);
 }
 
 .stay-checkin-progress--complete .stay-checkin-progress__title {
-  color: #166534;
+  color: var(--admin-tint-success-text);
 }
 
 .stay-checkin-progress__hint {
   margin: 0.1rem 0 0;
   font-size: 0.58rem;
-  color: #a16207;
+  color: color-mix(in srgb, var(--admin-tint-warning-text) 82%, var(--admin-text-muted));
 }
 
 .stay-checkin-progress__pct {
   font-size: 0.62rem;
   font-weight: 800;
-  color: #b45309;
+  color: var(--status-pending-text);
 }
 
 .stay-checkin-progress--complete .stay-checkin-progress__pct {
-  color: #15803d;
+  color: var(--status-confirmed-text);
 }
 
 .stay-checkin-progress__bar {
@@ -369,20 +413,20 @@
 }
 
 .stay-checkin-progress__room--done {
-  border-color: rgba(22, 163, 74, 0.35);
-  background: rgba(220, 252, 231, 0.8);
-  color: #166534;
+  border-color: color-mix(in srgb, var(--active-border) 35%, transparent);
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 80%, white);
+  color: var(--admin-tint-success-text);
 }
 
 .stay-checkin-progress__room-dot {
   width: 0.35rem;
   height: 0.35rem;
   border-radius: 50%;
-  background: #f59e0b;
+  background: var(--pending-border);
 }
 
 .stay-checkin-progress__room--done .stay-checkin-progress__room-dot {
-  background: #22c55e;
+  background: var(--active-border);
 }
 
 .stay-checkin-progress__room-status {
@@ -609,6 +653,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+}
+
+.admin-route-skeleton--panel-home {
+  gap: 0.75rem;
+}
+
+.admin-route-skeleton--panel-home .admin-route-skeleton__toolbar {
+  height: 3rem;
 }
 
 .admin-route-skeleton--availability {

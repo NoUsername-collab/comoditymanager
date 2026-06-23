@@ -3,14 +3,14 @@ import { extractMrzLinesFromOcrText } from "@/domain/guest/mrz-ocr";
 import { mrzToGuestPatch, mrzToPrecheckinFields, parseMrzIdentity } from "@/domain/guest/mrz";
 
 const TD1_SAMPLE = [
-  "I<UTOD23145890<1233<<<<<<<<<<<",
-  "7408122F1204159UTO<<<<<<<<<<<2",
+  "I<SWED23145890<1233<<<<<<<<<<<",
+  "7408122F1204159SWE<<<<<<<<<<<2",
   "ERIKSSON<<ANNA<MARIA<<<<<<<<<<",
 ];
 
 const RO_CI_TD1 = [
   "IDROU0321789<<0<<<<<<<<<<<<<<<",
-  "9001017M2501017ROU<<<<<<<<<<<6",
+  "9001011M2501017ROU<<<<<<<<<<<8",
   "POPESCU<<ION<<<<<<<<<<<<<<<<<<",
 ];
 
@@ -49,6 +49,15 @@ describe("parseMrzIdentity", () => {
     expect(await parseMrzIdentity("ABC\nDEF")).toEqual({ ok: false, error: "invalid_format" });
   });
 
+  it("rejects corrupt checksum on Romanian CI", async () => {
+    const corrupt = [
+      RO_CI_TD1[0]!,
+      "9001017M2501017ROU<<<<<<<<<<<0",
+      RO_CI_TD1[2]!,
+    ];
+    expect(await parseMrzIdentity(corrupt)).toEqual({ ok: false, error: "checksum_failed" });
+  });
+
   it("parses Romanian eID TD2 with noisy OCR on name line", async () => {
     const result = await parseMrzIdentity(RO_EID_TD2_OCR);
     expect(result.ok).toBe(true);
@@ -75,9 +84,9 @@ describe("extractMrzLinesFromOcrText", () => {
   it("finds truncated TD1 lines from OCR", () => {
     const text = [
       "NOISE",
-      "IDROU0321789<<0<<<<<<<<<<<<<<", // 29 chars
-      "9001017M2501017ROU<<<<<<<<<<<", // 29 chars
-      "POPESCU<<ION<<<<<<<<<<<<<<<<<", // 29 chars
+      RO_CI_TD1[0]!.slice(0, -1),
+      RO_CI_TD1[1],
+      RO_CI_TD1[2]!.slice(0, -1),
     ].join("\n");
     const lines = extractMrzLinesFromOcrText(text);
     expect(lines).not.toBeNull();

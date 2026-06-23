@@ -1,8 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import { MrzScanPanel } from "@/components/mrz/MrzScanPanel";
 import type { MrzMappedIdentity } from "@/domain/guest/mrz";
+
+function GuestMrzLoading() {
+  const t = useTranslations("guestApp.precheckin.mrz");
+  return (
+    <p className="guest-app__mrz__loading" aria-busy="true" role="status">
+      {t("loading")}
+    </p>
+  );
+}
+
+const MrzScanPanel = dynamic(
+  () =>
+    import("@/components/mrz/MrzScanPanel").then((m) => ({
+      default: m.MrzScanPanel,
+    })),
+  { ssr: false, loading: GuestMrzLoading },
+);
 
 type Props = {
   open: boolean;

@@ -9,6 +9,9 @@ export type LiquidShaderHandle = {
   resize: () => void;
   setColors: (colors: LiquidShaderColors) => void;
   setIntensity: (opacity: number) => void;
+  /** Stop GPU frames (tab hidden / off-screen). */
+  pause: () => void;
+  resume: () => void;
   destroy: () => void;
 };
 
@@ -180,8 +183,14 @@ export function createLiquidShader(canvas: HTMLCanvasElement): LiquidShaderHandl
   const start = performance.now();
   let width = 0;
   let height = 0;
+  let paused = false;
 
   const render = (now: number) => {
+    raf = requestAnimationFrame(render);
+    if (paused || document.visibilityState === "hidden") {
+      return;
+    }
+
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = canvas.getBoundingClientRect();
     const w = Math.max(1, Math.floor(rect.width * dpr));
@@ -209,7 +218,6 @@ export function createLiquidShader(canvas: HTMLCanvasElement): LiquidShaderHandl
     gl.uniform1f(uOpacity, intensity);
 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    raf = requestAnimationFrame(render);
   };
 
   raf = requestAnimationFrame(render);
@@ -223,6 +231,12 @@ export function createLiquidShader(canvas: HTMLCanvasElement): LiquidShaderHandl
     },
     setIntensity(next) {
       intensity = next;
+    },
+    pause() {
+      paused = true;
+    },
+    resume() {
+      paused = false;
     },
     destroy() {
       cancelAnimationFrame(raf);

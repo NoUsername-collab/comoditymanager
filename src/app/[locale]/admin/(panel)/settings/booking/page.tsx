@@ -1,8 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { BookingRulesSettingsPanel } from "@/components/admin/settings/BookingRulesSettingsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
 import {
   buildSettingsAlerts,
@@ -32,23 +31,24 @@ export default async function SettingsBookingPage({
   const settings = ctx.pensionResult.settings;
   if (!settings || !bookingRules) {
     return (
-      <>
-        <SettingsPageHeader title={t("navBooking")} />
-        <SettingsAlerts alerts={alerts} />
-      </>
+      <SettingsPageLayout alerts={alerts} title={t("navBooking")}>
+        <p className="settings-empty">{t("notConfigured")}</p>
+      </SettingsPageLayout>
     );
   }
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navBooking")} description={t("bookingSubtitle")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navBooking")}
+      description={t("bookingSubtitle")}
+    >
       <SettingsSection title={t("bookingTitle")} description={t("bookingSubtitle")}>
         <BookingRulesSettingsPanel
           settings={bookingRules}
           locale={locale === "bg" ? "bg" : locale === "en" ? "en" : "ro"}
         />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

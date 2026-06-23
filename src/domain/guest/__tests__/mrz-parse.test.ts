@@ -1,13 +1,57 @@
 import { describe, expect, it } from "vitest";
 import { extractMrzLinesFromOcrText } from "@/domain/guest/mrz-ocr";
-import { correctTd1Block, correctTd2Block, refineTd1Candidates, scoreMrzLines, splitTd2GivenNameBlob } from "@/domain/guest/mrz-parse";
+import {
+  correctTd1Block,
+  correctTd2Block,
+  correctTd3Block,
+  isMrzParseChecksumValid,
+  parseMrzLinesBestEffort,
+  refineTd1Candidates,
+  scoreMrzLines,
+  splitTd2GivenNameBlob,
+  tryParseMrzBlock,
+} from "@/domain/guest/mrz-parse";
 import { parseMrzIdentity } from "@/domain/guest/mrz";
 
 const RO_CI_TD1 = [
   "IDROU0321789<<0<<<<<<<<<<<<<<<",
-  "9001017M2501017ROU<<<<<<<<<<<6",
+  "9001011M2501017ROU<<<<<<<<<<<8",
   "POPESCU<<ION<<<<<<<<<<<<<<<<<<",
 ];
+
+const TD3_PASSPORT = [
+  "P<UTOSMITH<<JOHN<<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+  "L898902C36UTO7408122F1204159ZE184226B<<<<<10",
+];
+
+describe("parseMrzLinesBestEffort", () => {
+  it("accepts only checksum-valid parses", () => {
+    expect(isMrzParseChecksumValid(parseMrzLinesBestEffort(RO_CI_TD1)!.parsed)).toBe(true);
+    expect(
+      parseMrzLinesBestEffort([
+        RO_CI_TD1[0]!,
+        "9001017M2501017ROU<<<<<<<<<<<0",
+        RO_CI_TD1[2]!,
+      ]),
+    ).toBeNull();
+  });
+});
+
+describe("tryParseMrzBlock", () => {
+  it("parses TD1 block with ICAO checksum", async () => {
+    const attempt = tryParseMrzBlock(RO_CI_TD1);
+    expect(attempt).not.toBeNull();
+    expect(isMrzParseChecksumValid(attempt!.parsed)).toBe(true);
+    const parsed = await parseMrzIdentity(RO_CI_TD1);
+    expect(parsed.ok).toBe(true);
+  });
+
+  it("parses TD3 passport sample", () => {
+    const attempt = tryParseMrzBlock(TD3_PASSPORT);
+    expect(isMrzParseChecksumValid(attempt!.parsed)).toBe(true);
+    expect(attempt?.parsed.format).toBe("TD3");
+  });
+});
 
 describe("scoreMrzLines", () => {
   it("prefers valid checksum over invalid noise", () => {
@@ -51,6 +95,16 @@ describe("splitTd2GivenNameBlob", () => {
 });
 
 describe("extractMrzLinesFromOcrText", () => {
+  it("returns null for checksum-invalid OCR noise only", () => {
+    const text = [
+      "GARBAGE",
+      "IDROU0321789<<0<<<<<<<<<<<<<<",
+      "9001017M2501017ROU<<<<<<<<<<<0",
+      "POPESCU<<ION<<<<<<<<<<<<<<<<<",
+    ].join("\n");
+    expect(extractMrzLinesFromOcrText(text)).toBeNull();
+  });
+
   it("picks valid block among OCR noise duplicates", () => {
     const text = [
       "GARBAGE LINE HERE",
@@ -67,7 +121,7 @@ describe("extractMrzLinesFromOcrText", () => {
     const noisy = refineTd1Candidates([
       [
         RO_CI_TD1[0]!,
-        "9OO1017M2501017ROU<<<<<<<<<<<6",
+        "9OO1011M25O1O17ROU<<<<<<<<<<<8",
         RO_CI_TD1[2]!,
       ],
     ]);

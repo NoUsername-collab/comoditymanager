@@ -34,6 +34,38 @@ describe("settings schemas", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("rejects javascript: URLs in public site hero", () => {
+    const result = parsePublicSiteSettingsInput({
+      templateId: "classic",
+      themeId: "noir",
+      published: true,
+      bookingEnabled: true,
+      bookingNavPosition: "nav",
+      usePrimaryContact: true,
+      hero: { ctaPrimaryHref: "javascript:alert(1)" },
+      contact: {},
+      seo: {},
+      sections: [],
+    });
+    expect(result.ok).toBe(false);
+  });
+
+  it("rejects javascript: contact URLs", () => {
+    const result = parsePublicSiteSettingsInput({
+      templateId: "classic",
+      themeId: "noir",
+      published: true,
+      bookingEnabled: true,
+      bookingNavPosition: "nav",
+      usePrimaryContact: true,
+      hero: {},
+      contact: { facebook: "javascript:alert(1)" },
+      seo: {},
+      sections: [],
+    });
+    expect(result.ok).toBe(false);
+  });
+
   it("rejects invalid email reply_to", () => {
     const result = parseEmailSettingsPartial({
       email_reply_to: "not-an-email",

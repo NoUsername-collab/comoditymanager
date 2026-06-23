@@ -1,5 +1,7 @@
 import { Link } from "@/i18n/navigation";
+import Image from "next/image";
 import { pickLocalized } from "@/features/public-site/domain/localized";
+import { safeNavHref } from "@/lib/security/html-escape";
 import type {
   PublicBenefitItem,
   PublicGalleryItem,
@@ -80,8 +82,15 @@ export function renderPublicSection(
           <div className={`pub-gallery pub-gallery--${template}`}>
             {items.map((item) => (
               <figure key={item.id} className="pub-gallery__item">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={item.url} alt={pickLocalized(item.caption, locale, [item.category ?? ""])} loading="lazy" />
+                <Image
+                  src={item.url}
+                  alt={pickLocalized(item.caption, locale, [item.category ?? ""])}
+                  width={800}
+                  height={600}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="pub-gallery__img"
+                  loading="lazy"
+                />
                 {pickLocalized(item.caption, locale) ? (
                   <figcaption>{pickLocalized(item.caption, locale)}</figcaption>
                 ) : null}
@@ -132,7 +141,7 @@ export function renderPublicSection(
             {lead ? <p className="pub-cta-band__text">{lead}</p> : null}
             {section.payload.ctaLabel ? (
               <Link
-                href={section.payload.ctaHref ?? "/calendar"}
+                href={safeNavHref(section.payload.ctaHref, "/calendar")}
                 className="pub-btn pub-btn--primary"
               >
                 {pickLocalized(section.payload.ctaLabel, locale)}

@@ -11,8 +11,8 @@ import {
   type StatBooking,
 } from "@/domain/statistics/aggregates";
 import type { StatisticsReport } from "@/domain/statistics/types";
-import { listAllRooms } from "@/services/rooms-admin";
-import { listBuildings } from "@/services/buildings";
+import { listAllRooms, listAllRoomsForTenant } from "@/services/rooms-admin";
+import { listBuildings, listBuildingsForTenant } from "@/services/buildings";
 
 const STATS_NOTE =
   "Occupancy uses today's active rooms as reference for the full history. Bookings stay in the database and reports expand automatically as operational history grows.";
@@ -113,19 +113,29 @@ export type StatisticsBaseData = {
 };
 
 /** Shared bookings + room snapshot — deduped when report and month compare load together. */
+async function loadStatisticsBaseDataForTenant(
+  tenantId: string
+): Promise<StatisticsBaseData> {
+  const [bookings, rooms, buildings] = await Promise.all([
+    loadAllBookingsForStatisticsCached(tenantId),
+    listAllRoomsForTenant(tenantId),
+    listBuildingsForTenant(tenantId),
+  ]);
+  return {
+    bookings,
+    snapshot: activeRoomSnapshot(rooms, buildings),
+  };
+}
+
+/** Shared bookings + room snapshot — deduped when report and month compare load together. */
 export const loadStatisticsBaseData = cache(
   async (): Promise<StatisticsBaseData> => {
-    const [bookings, rooms, buildings] = await Promise.all([
-      loadAllBookingsForStatistics(),
-      listAllRooms(),
-      listBuildings(),
-    ]);
-    return {
-      bookings,
-      snapshot: activeRoomSnapshot(rooms, buildings),
-    };
+    const { tenantId } = await getTenantScope();
+    return loadStatisticsBaseDataForTenant(tenantId);
   }
 );
+
+export { loadStatisticsBaseDataForTenant };
 
 function activeRoomSnapshot(
   rooms: Awaited<ReturnType<typeof listAllRooms>>,
@@ -141,11 +151,11 @@ function activeRoomSnapshot(
     }));
 }
 
-const loadStatisticsReportCached = cache(async (): Promise<StatisticsReport> => {
-  const [{ bookings, snapshot }, today] = await Promise.all([
-    loadStatisticsBaseData(),
-    getEffectiveToday(),
-  ]);
+async function buildStatisticsReportFromBase(
+  bookings: StatBooking[],
+  snapshot: ActiveRoomSnapshot[],
+  today: string
+): Promise<StatisticsReport> {
   const currentYear = Number(today.slice(0, 4));
   const yearsWithData = discoverYears(bookings, currentYear);
   const firstYear = yearsWithData[0] ?? currentYear;
@@ -165,8 +175,33 @@ const loadStatisticsReportCached = cache(async (): Promise<StatisticsReport> => 
     yearsWithData,
     note: STATS_NOTE,
   };
-});
+}
+
+async function loadStatisticsReportForTenant(
+  tenantId: string
+): Promise<StatisticsReport> {
+  const [{ bookings, snapshot }, today] = await Promise.all([
+    loadStatisticsBaseDataForTenant(tenantId),
+    getEffectiveToday(),
+  ]);
+  return buildStatisticsReportFromBase(bookings, snapshot, today);
+}
+
+const getCachedStatisticsReport = (tenantId: string) =>
+  unstable_cache(
+    () => loadStatisticsReportForTenant(tenantId),
+    ["statistics-report", tenantId],
+    {
+      tags: [
+        CACHE_TAGS.bookingCounts,
+        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
+        tenantTag(tenantId, CACHE_TAGS.rooms),
+      ],
+      revalidate: 120,
+    }
+  );
 
 export async function loadStatisticsReport(): Promise<StatisticsReport> {
-  return loadStatisticsReportCached();
+  const { tenantId } = await getTenantScope();
+  return getCachedStatisticsReport(tenantId)();
 }

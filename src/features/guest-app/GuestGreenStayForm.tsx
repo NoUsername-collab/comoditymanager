@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { submitGuestGreenStayAction } from "@/app/[locale]/(guest-app)/stay/[code]/actions";
+import { submitGuestGreenStayAction } from "@/features/guest-app/actions/stay";
 import { addDays } from "@/lib/stay-dates";
+import { useGuestAppToast } from "@/features/guest-app/GuestAppToast";
 
 type Props = {
   accessCode: string;
@@ -19,6 +20,7 @@ export function GuestGreenStayForm({
   pendingDates,
 }: Props) {
   const t = useTranslations("guestApp.greenStay");
+  const { showToast } = useGuestAppToast();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -44,6 +46,7 @@ export function GuestGreenStayForm({
         setError(t.has(key) ? t(key) : result.error);
         return;
       }
+      showToast(t("success"));
       setDone(true);
     });
   }

@@ -41,7 +41,7 @@ export async function getDefaultTenant(): Promise<TenantRow | null> {
     const supabase = createPublicAdminClient();
     const { data, error } = await supabase
       .from("tenants")
-      .select("*")
+      .select(TENANT_ROW_SELECT)
       .order("created_at", { ascending: true })
       .limit(1)
       .single();
@@ -58,7 +58,7 @@ async function getTenantByIdUncached(tenantId: string): Promise<TenantRow | null
     const supabase = createPublicAdminClient();
     const { data, error } = await supabase
       .from("tenants")
-      .select("*")
+      .select(TENANT_ROW_SELECT)
       .eq("id", tenantId)
       .single();
 
@@ -120,7 +120,7 @@ export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
 }
 
 /** Lookup by custom domain (rezervari.pensiunea.ro). */
-export async function getTenantByDomain(domain: string): Promise<TenantRow | null> {
+async function fetchTenantIdByDomain(domain: string): Promise<string | null> {
   try {
     const supabase = createPublicAdminClient();
     const { data, error } = await supabase.rpc("resolve_tenant_by_domain", {
@@ -129,10 +129,23 @@ export async function getTenantByDomain(domain: string): Promise<TenantRow | nul
 
     if (error || !data?.length) return null;
     const row = data[0] as { tenant_id: string };
-    return getTenantById(row.tenant_id);
+    return row.tenant_id ?? null;
   } catch {
     return null;
   }
+}
+
+const getCachedTenantIdByDomain = (domain: string) =>
+  unstable_cache(
+    () => fetchTenantIdByDomain(domain),
+    ["tenant-id-by-domain", domain],
+    { revalidate: 300, tags: [`tenant-domain-${domain}`] }
+  );
+
+export async function getTenantByDomain(domain: string): Promise<TenantRow | null> {
+  const tenantId = await getCachedTenantIdByDomain(domain)();
+  if (!tenantId) return null;
+  return getTenantById(tenantId);
 }
 
 /**

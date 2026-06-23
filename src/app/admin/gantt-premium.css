@@ -614,7 +614,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   font-size: 0.72rem;
   font-weight: 800;
   color: color-mix(in srgb, var(--admin-accent, #059669) 80%, #0f172a);
-  box-shadow: 0 6px 14px rgba(5, 150, 105, 0.08);
+  box-shadow: none;
 }
 
 .gantt-control-strip__buildings {
@@ -1313,7 +1313,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   border-radius: 0.95rem;
   border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 82%, transparent);
   background: color-mix(in srgb, #ffffff 96%, var(--admin-accent-muted, #d1fae5));
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
+  box-shadow: none;
 }
 
 .gantt-toolbar__stepper-label {
@@ -1727,7 +1727,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--admin-text, #18181b);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.04);
+  box-shadow: none;
 }
 
 .gantt-toolbar__select--wide {
@@ -1744,7 +1744,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   font-weight: 900;
   color: color-mix(in srgb, var(--admin-accent, #059669) 85%, #0f172a);
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(5, 150, 105, 0.08);
+  box-shadow: none;
   transition:
     background 0.12s ease,
     border-color 0.12s ease,
@@ -2662,6 +2662,22 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 
 .gantt-summary-filter-banner {
   animation: gantt-popover-in 0.2s ease-out;
+  border-color: var(--admin-tint-success-border);
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 90%, transparent);
+  color: var(--status-confirmed-text);
+}
+
+.gantt-summary-filter-banner__btn {
+  border-radius: 0.375rem;
+  border: 1px solid var(--admin-tint-success-border);
+  background: var(--admin-surface-bg);
+  padding: 0.25rem 0.625rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.gantt-summary-filter-banner__btn:hover {
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 55%, var(--admin-surface-bg));
 }
 
 .gantt-popover-premium--rich .gantt-popover-premium__body {
@@ -2734,10 +2750,8 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   height: 0.55rem;
   margin-left: -0.275rem;
   border-radius: 999px;
-  background: radial-gradient(circle at 35% 30%, #fca5a5 0%, #dc2626 58%, #991b1b 100%);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, #000 28%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, #000 18%, transparent);
+  background: var(--gantt-cap-problem, #dc2626);
+  box-shadow: none;
 }
 
 .gantt-stay-note__head {
@@ -3090,9 +3104,9 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-action-strip__badge--new {
-  background: rgba(248, 113, 113, 0.35);
-  color: #7f1d1d;
-  border: 1px solid rgba(248, 113, 113, 0.6);
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
+  border: 1px solid var(--admin-tint-warning-border);
 }
 
 .gantt-action-strip__badge--pulse {
@@ -3100,21 +3114,30 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 }
 
 .gantt-action-strip__badge--in {
-  background: rgba(16, 185, 129, 0.3);
-  color: #064e3b;
-  border: 1px solid rgba(16, 185, 129, 0.55);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+  border: 1px solid var(--admin-tint-success-border);
 }
 
 .gantt-action-strip__badge--out {
-  background: rgba(245, 158, 11, 0.3);
-  color: #713f12;
-  border: 1px solid rgba(245, 158, 11, 0.56);
+  background: color-mix(in srgb, var(--admin-tint-warning-bg) 85%, var(--surface));
+  color: var(--status-pending-text);
+  border: 1px solid var(--admin-tint-warning-border);
 }
 
 .gantt-action-strip__badge--clean {
-  background: rgba(129, 140, 248, 0.28);
-  color: #312e81;
-  border: 1px solid rgba(129, 140, 248, 0.56);
+  background: var(--admin-tint-violet-bg);
+  color: var(--admin-tint-violet-text);
+  border: 1px solid var(--admin-tint-violet-border);
+}
+
+.gantt-radial-ring {
+  border-color: color-mix(in srgb, var(--admin-tint-success-border) 70%, transparent);
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 40%, transparent);
+}
+
+.gantt-radial-hub {
+  border-color: var(--admin-tint-success-border);
 }
 
 /* ── Action buttons (hidden by default, slide in on reveal) ── */
@@ -3376,7 +3399,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__col
 
 /* ── Date header + FREE row (−25%) ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__room.gantt-room-column-header {
-  padding: var(--gantt-head-cell-py) 0.62rem !important;
+  padding: var(--gantt-head-cell-py) 0.3rem !important;
   font-size: 0.65rem;
   line-height: 1.1;
 }
@@ -3411,7 +3434,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row > td 
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label {
-  padding-inline: 0.62rem !important;
+  padding-inline: 0.3rem !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-row__label-title {
@@ -3439,7 +3462,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__tot
 
 html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-viewport-header__room,
 html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-viewport-header__summary-label {
-  padding: var(--gantt-head-cell-py, 0.42rem) 0.62rem !important;
+  padding: var(--gantt-head-cell-py, 0.42rem) 0.3rem !important;
   font-size: 0.65rem;
 }
 
@@ -3649,7 +3672,7 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
    Calendar — HUD minimal + extra vertical savings
    ═══════════════════════════════════════════════════════════════ */
 
-/* Brand: pill + FREE → mic „dev Nestio” stânga sus */
+/* Brand: pill + FREE → mic „dev Hospira” stânga sus */
 .admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text {
   gap: 0;
   padding: 0;
@@ -3673,7 +3696,7 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
 }
 
 .admin-shell:has(.gantt-calendar-page) .admin-hud__brand-text::before {
-  content: "dev Nestio";
+  content: "dev Hospira";
   font-size: 0.58rem;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -3918,6 +3941,12 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-head-main-r
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row__label {
   padding: 0.34rem 0.75rem;
+}
+
+/* Left column — same inset as header / LIBERE / building labels */
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-room-cell,
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-building-header-row > td.gantt-building-header {
+  padding-inline: 0.75rem !important;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-summary-row > td,

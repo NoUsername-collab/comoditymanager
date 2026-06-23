@@ -51,6 +51,10 @@ export function GuestAppHeader({ accessCode, pensionName, appearance }: Props) {
           <img
             src={appearance.logoUrl}
             alt={pensionName}
+            width={40}
+            height={40}
+            loading="lazy"
+            decoding="async"
             className="h-10 w-10 shrink-0 rounded-lg object-cover"
           />
         ) : (

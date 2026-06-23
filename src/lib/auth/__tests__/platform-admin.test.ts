@@ -46,6 +46,14 @@ describe("isPlatformAdminEmail", () => {
     expect(isPlatformAdminEmail("random@email.com")).toBe(false);
   });
 
+  it("denies all emails in production when env is not set", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    delete process.env.HOSPIRA_ADMIN_EMAILS;
+    delete process.env.NESTIO_ADMIN_EMAILS;
+    expect(isPlatformAdminEmail("admin@hospira.ro")).toBe(false);
+    vi.unstubAllEnvs();
+  });
+
   it("is case insensitive", () => {
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     delete process.env.NESTIO_ADMIN_EMAILS;

@@ -30,7 +30,7 @@ import {
 } from "@/lib/auth/tenant-staff-edge";
 import { isPlatformAdminEmailEdge } from "@/lib/auth/require-platform-admin";
 import { getEdgeSupabaseConfig } from "@/lib/env/edge";
-import { buildTenantAdminUrl, defaultPlatformApexHost, parseTenantFromHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
+import { buildTenantAdminUrl, defaultPlatformApexHost, stagingTenantHostCorrection } from "@/lib/tenant/host";
 import {
   isStaffOnlyPath,
   pathAllowedOnCustomDomain,
@@ -39,56 +39,14 @@ import {
 import { resolveDomainRoutingOnEdge } from "@/lib/tenant/domain-routing-edge";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { routing } from "./i18n/routing";
+import {
+  detectDomainContext,
+  isLocationAdminPath,
+  requestHostFrom,
+  stripLocalePrefix,
+} from "@/lib/proxy/request-context";
 
 const intlMiddleware = createIntlMiddleware(routing);
-
-// ─── Domain detection ──────────────────────────────────────────────
-
-type DomainContext =
-  | { type: "platform" }
-  | { type: "tenant"; slug: string }
-  | { type: "custom"; domain: string };
-
-function detectDomain(request: NextRequest): DomainContext {
-  const host = request.headers.get("host")?.split(":")[0] ?? "";
-
-  if (host === "localhost" || host === "127.0.0.1") {
-    const devSlug = request.headers.get("x-tenant-slug");
-    if (devSlug) return { type: "tenant", slug: devSlug };
-    return { type: "platform" };
-  }
-
-  if (host.endsWith(".localhost")) {
-    const slug = host.slice(0, -".localhost".length);
-    if (slug && !slug.includes(".")) return { type: "tenant", slug };
-  }
-
-  const parsed = parseTenantFromHost(host);
-  if (parsed.type === "platform") return { type: "platform" };
-  if (parsed.type === "tenant") return { type: "tenant", slug: parsed.slug };
-  return { type: "custom", domain: parsed.domain };
-}
-
-// ─── Helpers ───────────────────────────────────────────────────────
-
-function stripLocalePrefix(pathname: string): string {
-  const segments = pathname.split("/").filter(Boolean);
-  const first = segments[0];
-  if (
-    first &&
-    routing.locales.includes(first as (typeof routing.locales)[number])
-  ) {
-    return `/${segments.slice(1).join("/")}` || "/";
-  }
-  return pathname;
-}
-
-function isLocationAdminPath(path: string): boolean {
-  return (
-    path === "/admin/settings/location" ||
-    path.startsWith("/admin/settings/location/")
-  );
-}
 
 function alphaGateRedirectIfNeeded(
   request: NextRequest,
@@ -134,10 +92,6 @@ async function resolveEffectiveStaffRole(
     );
   }
   return null;
-}
-
-function requestHostFrom(request: NextRequest): string | null {
-  return request.headers.get("x-forwarded-host") ?? request.headers.get("host");
 }
 
 /** Forward proxy-injected headers to RSC (intl middleware only sees a cloned request). */
@@ -196,7 +150,7 @@ async function runTenantAppProxy(
   customDomain: string | undefined,
   routingKind: TenantDomainRoutingKind = "hospira_subdomain"
 ): Promise<NextResponse> {
-  const path = stripLocalePrefix(request.nextUrl.pathname);
+  const path = stripLocalePrefix(request.nextUrl.pathname, routing.locales);
   const requestHeaders = new Headers(request.headers);
   if (slug) requestHeaders.set("x-tenant-slug", slug);
   if (customDomain) requestHeaders.set("x-tenant-domain", customDomain);
@@ -461,8 +415,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  const domain = detectDomain(request);
-  const path = stripLocalePrefix(request.nextUrl.pathname);
+  const domain = detectDomainContext(request);
+  const path = stripLocalePrefix(request.nextUrl.pathname, routing.locales);
 
   const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
   if (alphaRedirect) return alphaRedirect;
@@ -648,7 +602,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url, 302);
     }
 
-    const path = stripLocalePrefix(request.nextUrl.pathname);
+    const path = stripLocalePrefix(request.nextUrl.pathname, routing.locales);
     const slug = resolved.slug;
     const routingKind = resolved.routingKind;
 

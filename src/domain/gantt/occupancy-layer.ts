@@ -1,6 +1,6 @@
 import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancyKind, OccupancySegment } from "@/domain/occupancy/types";
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/domain/booking/row";
 import { todayIso } from "@/lib/stay-dates";
 
 /** Filtru vizual timeline — spec timeline-spec.md */

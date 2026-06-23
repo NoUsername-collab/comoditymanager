@@ -8,7 +8,7 @@ import {
   addCustomDomainAction,
   removeCustomDomainAction,
   verifyCustomDomainAction,
-} from "@/app/[locale]/admin/(panel)/settings/domains/actions";
+} from "@/features/settings/actions/domains";
 import type { TenantDomainRoutingKind } from "@/lib/tenant/domain-routing";
 import type { TenantDomainRow } from "@/services/tenant-domains";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";

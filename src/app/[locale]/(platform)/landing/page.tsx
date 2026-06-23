@@ -1,6 +1,19 @@
+import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
+import { LandingHeroShowcase } from "@/components/platform/LandingHeroShowcase";
+import { LandingTools } from "@/components/platform/LandingTools";
+import { LandingTrustCards } from "@/components/platform/LandingTrustCards";
 import { PricingGrid } from "@/components/platform/PricingGrid";
+import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("landing");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+  };
+}
 
 export default async function LandingPage() {
   const [t, tp] = await Promise.all([
@@ -8,29 +21,46 @@ export default async function LandingPage() {
     getTranslations("pricing"),
   ]);
 
+  const demoHref = `mailto:${PLATFORM_CONTACT_EMAIL}?subject=${encodeURIComponent(t("demoEmailSubject"))}`;
+
   return (
     <main className="landing landing--split">
       <div className="landing-surface landing-surface--light">
         <div className="landing-surface__inner">
-          <section className="landing-hero">
+          <section className="landing-hero" aria-labelledby="landing-hero-title">
             <div className="landing-hero__glow" aria-hidden />
             <div className="landing-hero__grid">
               <div className="landing-hero__inner">
                 <span className="landing-hero__badge">{t("heroBadge")}</span>
-                <h1 className="landing-hero__title" suppressHydrationWarning>
+                <h1
+                  className="landing-hero__title"
+                  id="landing-hero-title"
+                  suppressHydrationWarning
+                >
                   {t("heroTitle")}
                 </h1>
                 <p className="landing-hero__subtitle">{t("heroSubtitle")}</p>
-                <div className="landing-hero__actions">
+                <div className="landing-hero__actions landing-hero__actions--multi">
                   <Link href="/signup" className="landing-cta landing-cta--primary">
                     {t("heroCta")}
                   </Link>
-                  <Link href="/preturi" className="landing-cta landing-cta--ghost">
-                    {t("heroCtaSecondary")}
+                  <a href={demoHref} className="landing-cta landing-cta--ghost">
+                    {t("heroCtaDemo")}
+                  </a>
+                  <Link href="/admin/login" className="landing-cta landing-cta--link">
+                    {t("heroCtaLogin")}
                   </Link>
                 </div>
-                <p className="landing-hero__note">{t("heroNote")}</p>
-                <div className="landing-stats landing-stats--inline">
+                <p className="landing-hero__note">
+                  {t("heroNote")}{" "}
+                  <a href="#instrumente" className="landing-hero__tools-link">
+                    {t("heroCtaSecondary")}
+                  </a>
+                </p>
+                <div
+                  className="landing-stats landing-stats--inline"
+                  aria-label={t("statsAria")}
+                >
                   <div className="landing-stat">
                     <span className="landing-stat__value">0 EUR</span>
                     <span className="landing-stat__label">{tp("statFree")}</span>
@@ -44,34 +74,21 @@ export default async function LandingPage() {
                     <span className="landing-stat__label">{tp("statCommission")}</span>
                   </div>
                 </div>
+                <figure className="landing-social-proof">
+                  <blockquote className="landing-social-proof__quote">
+                    <p>{t("heroSocialQuote")}</p>
+                  </blockquote>
+                  <figcaption className="landing-social-proof__caption">
+                    {t("heroSocialCaption")}
+                  </figcaption>
+                </figure>
               </div>
 
-              <div className="landing-showcase landing-showcase--pro" aria-hidden>
-                <div className="landing-showcase__chrome">
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <div className="landing-showcase__body">
-                  <div className="landing-showcase__sidebar">
-                    <span className="landing-showcase__nav landing-showcase__nav--active" />
-                    <span className="landing-showcase__nav" />
-                    <span className="landing-showcase__nav" />
-                    <span className="landing-showcase__nav" />
-                  </div>
-                  <div className="landing-showcase__main">
-                    <div className="landing-showcase__row landing-showcase__row--head" />
-                    <div className="landing-showcase__row" />
-                    <div className="landing-showcase__row landing-showcase__row--accent" />
-                    <div className="landing-showcase__row" />
-                    <div className="landing-showcase__row landing-showcase__row--muted" />
-                  </div>
-                </div>
-              </div>
+              <LandingHeroShowcase />
             </div>
           </section>
 
-          <section className="landing-trust">
+          <section className="landing-trust" aria-label={t("trustStripAria")}>
             <p className="landing-trust__lead">{t("trustLead")}</p>
             <div className="landing-trust__items">
               <span>{t("trust1")}</span>
@@ -80,8 +97,13 @@ export default async function LandingPage() {
             </div>
           </section>
 
-          <section className="landing-section">
-            <h2 className="landing-section__title">{t("problemTitle")}</h2>
+          <section
+            className="landing-section"
+            aria-labelledby="landing-problem-title"
+          >
+            <h2 className="landing-section__title" id="landing-problem-title">
+              {t("problemTitle")}
+            </h2>
             <div className="landing-comparison">
               <div className="landing-comparison__col landing-comparison__col--bad">
                 <h3 className="landing-comparison__heading">{t("withoutHospira")}</h3>
@@ -108,37 +130,39 @@ export default async function LandingPage() {
 
       <div className="landing-surface landing-surface--soft">
         <div className="landing-surface__inner">
-          <section className="landing-section">
-            <h2 className="landing-section__title">{t("featuresTitle")}</h2>
-            <p className="landing-section__lead">{t("featuresLead")}</p>
-            <div className="landing-features">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <article key={i} className="landing-feature">
-                  <div className="landing-feature__icon" aria-hidden>
-                    {t(`feature${i}Icon`)}
-                  </div>
-                  <h3 className="landing-feature__title">{t(`feature${i}Title`)}</h3>
-                  <p className="landing-feature__desc">{t(`feature${i}Desc`)}</p>
-                </article>
-              ))}
-            </div>
-          </section>
+          <LandingTools />
 
-          <section className="landing-section">
-            <h2 className="landing-section__title">{t("howTitle")}</h2>
-            <div className="landing-steps">
+          <section
+            className="landing-section"
+            aria-labelledby="landing-how-title"
+          >
+            <h2 className="landing-section__title" id="landing-how-title">
+              {t("howTitle")}
+            </h2>
+            <p className="landing-section__lead">{t("howLead")}</p>
+            <ol className="landing-steps">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="landing-step">
-                  <span className="landing-step__num">{i}</span>
+                <li key={i} className="landing-step">
+                  <span className="landing-step__num" aria-hidden>
+                    {i}
+                  </span>
                   <h3 className="landing-step__title">{t(`step${i}Title`)}</h3>
                   <p className="landing-step__desc">{t(`step${i}Desc`)}</p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           </section>
 
-          <section className="landing-section landing-section--pricing" id="preturi">
-            <h2 className="landing-section__title">{tp("gridTitle")}</h2>
+          <LandingTrustCards />
+
+          <section
+            className="landing-section landing-section--pricing"
+            id="preturi"
+            aria-labelledby="landing-pricing-title"
+          >
+            <h2 className="landing-section__title" id="landing-pricing-title">
+              {tp("gridTitle")}
+            </h2>
             <p className="landing-section__lead">{tp("gridLead")}</p>
             <PricingGrid featuredPlan="professional" />
             <p className="landing-pricing-note">{tp("vatNote")}</p>
@@ -149,12 +173,41 @@ export default async function LandingPage() {
             </div>
           </section>
 
-          <section className="landing-final-cta">
-            <h2 className="landing-final-cta__title">{t("finalCtaTitle")}</h2>
+          <section
+            className="landing-section"
+            aria-labelledby="landing-faq-title"
+          >
+            <h2 className="landing-section__title" id="landing-faq-title">
+              {tp("faqTitle")}
+            </h2>
+            <div className="landing-faq">
+              {[1, 2, 3, 4].map((i) => (
+                <details key={i} className="landing-faq__item">
+                  <summary className="landing-faq__q">{tp(`faq${i}Q`)}</summary>
+                  <p className="landing-faq__a">{tp(`faq${i}A`)}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          <section className="landing-final-cta" aria-labelledby="landing-final-title">
+            <h2 className="landing-final-cta__title" id="landing-final-title">
+              {t("finalCtaTitle")}
+            </h2>
             <p className="landing-final-cta__text">{t("finalCtaText")}</p>
-            <Link href="/signup" className="landing-cta landing-cta--primary landing-cta--large">
-              {t("finalCtaButton")}
-            </Link>
+            <div className="landing-final-cta__actions">
+              <Link href="/signup" className="landing-cta landing-cta--primary landing-cta--large">
+                {t("finalCtaButton")}
+              </Link>
+              <div className="landing-final-cta__secondary">
+                <a href={demoHref} className="landing-cta landing-cta--ghost">
+                  {t("heroCtaDemo")}
+                </a>
+                <Link href="/admin/login" className="landing-cta landing-cta--link">
+                  {t("heroCtaLogin")}
+                </Link>
+              </div>
+            </div>
           </section>
         </div>
       </div>

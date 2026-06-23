@@ -17,6 +17,11 @@ import { withTenantId } from "@/lib/tenant/scope";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
 import { getTenantMemberRole } from "@/services/tenant-members";
+import {
+  checkRateLimit,
+  getClientIp,
+  RATE_LIMIT_LOGIN,
+} from "@/lib/rate-limit";
 import { getTranslations } from "next-intl/server";
 
 export type LoginFormState = {
@@ -119,6 +124,16 @@ export async function loginAction(
   }
   if (!password) {
     return { error: t("enterPassword") };
+  }
+
+  const ip = await getClientIp();
+  const rl = checkRateLimit(
+    `login:${ip}`,
+    RATE_LIMIT_LOGIN.limit,
+    RATE_LIMIT_LOGIN.windowMs,
+  );
+  if (!rl.allowed) {
+    return { error: t("rateLimited") };
   }
 
   const email = resolveLoginIdentifier(username);

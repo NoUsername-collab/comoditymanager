@@ -55,7 +55,7 @@
   flex: 1;
   align-items: center;
   gap: 0.2rem;
-  padding: 0 0.32rem 0 0.28rem !important;
+  padding: 0 0.3rem !important;
 }
 
 .gantt-stay--chip .gantt-stay__edge-mark {
@@ -67,7 +67,7 @@
 .gantt-stay--chip .gantt-stay__primary {
   display: flex;
   min-width: 0;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   align-items: center;
   justify-content: flex-start;
   padding: 0 0.1rem;
@@ -93,6 +93,18 @@
 .gantt-stay--chip .gantt-stay__body {
   justify-content: flex-start;
   gap: 0.12rem;
+  padding: 0 0 0 0.28rem !important;
+}
+
+.gantt-stay--chip .gantt-stay__cap-strip {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  align-self: stretch;
+  gap: 0.1rem;
+  padding: 0 0.04rem;
 }
 
 .gantt-stay--chip .gantt-stay__details {
@@ -147,11 +159,11 @@
 }
 
 .gantt-stay--chip .gantt-stay__alert--unpaid {
-  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  background: var(--gantt-cap-problem, #dc2626);
 }
 
 .gantt-stay--chip .gantt-stay__alert--identity {
-  background: linear-gradient(180deg, #f87171 0%, #b91c1c 100%);
+  background: #b91c1c;
   padding-inline: 0.1rem;
 }
 
@@ -191,13 +203,18 @@
   width: var(--stay-timeline-fill, 0%);
   border-radius: inherit;
   background: color-mix(in srgb, var(--stay-spine, var(--stay-border)) 88%, white);
-  box-shadow: 0 0 6px color-mix(in srgb, var(--stay-spine, var(--stay-border)) 35%, transparent);
+  box-shadow: none;
   transition: width 0.28s ease;
   pointer-events: none;
 }
 
 .gantt-stay--chip .gantt-stay__timeline--hybrid .gantt-stay__timeline-fill {
-  background: linear-gradient(
+  background: color-mix(
+    in srgb,
+    var(--stay-spine, var(--stay-border)) 88%,
+    white
+  );
+  background-image: linear-gradient(
     90deg,
     color-mix(in srgb, #10b981 90%, white) 0%,
     color-mix(in srgb, #10b981 90%, white) var(--stay-checkin-seg, 30%),
@@ -207,12 +224,8 @@
 }
 
 .gantt-stay--chip .gantt-stay__timeline--checkin .gantt-stay__timeline-fill {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, #10b981 90%, white) 0%,
-    color-mix(in srgb, #059669 92%, white) 100%
-  );
-  box-shadow: 0 0 6px color-mix(in srgb, #10b981 40%, transparent);
+  background: color-mix(in srgb, #10b981 90%, white);
+  box-shadow: none;
 }
 
 .gantt-stay--chip .gantt-stay__timeline-divider {
@@ -321,9 +334,7 @@
   font-weight: 900 !important;
   line-height: 1 !important;
   background: color-mix(in srgb, var(--stay-text, currentColor) 14%, transparent) !important;
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--stay-border) 28%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--stay-border) 28%, transparent);
 }
 
 .gantt-stay--chip .gantt-stay__phase-badge {
@@ -349,19 +360,15 @@
   background: color-mix(in srgb, #10b981 22%, transparent) !important;
   color: color-mix(in srgb, #047857 92%, white) !important;
   border: 1px solid color-mix(in srgb, #10b981 45%, transparent);
-  box-shadow:
-    0 0 10px color-mix(in srgb, #22c55e 45%, transparent),
-    inset 0 0 8px color-mix(in srgb, #86efac 25%, transparent);
+  box-shadow: none;
 }
 
 .gantt-stay--chip .gantt-stay__phase-gem {
   width: 0.42rem;
   height: 0.42rem;
   border-radius: 999px;
-  background: radial-gradient(circle at 35% 35%, #bbf7d0, #16a34a 55%, #047857);
-  box-shadow:
-    0 0 6px #22c55e,
-    0 0 12px color-mix(in srgb, #22c55e 55%, transparent);
+  background: var(--gantt-cap-ok, #16a34a);
+  box-shadow: none;
   animation: gantt-phase-gem-pulse 2s ease-in-out infinite;
 }
 
@@ -381,7 +388,7 @@
 .gantt-stay--chip .gantt-stay__today-icon--early-out {
   color: #b91c1c !important;
   background: color-mix(in srgb, #ef4444 24%, transparent) !important;
-  box-shadow: 0 0 8px color-mix(in srgb, #ef4444 35%, transparent);
+  box-shadow: none;
 }
 
 .gantt-stay--chip .gantt-stay__policy-note {
@@ -449,14 +456,62 @@
   color: #ffffff;
 }
 
-.gantt-stay--chip .gantt-stay__end-tab--problem .gantt-stay__end-tab-arrow {
-  display: none;
-}
-
 .gantt-stay--chip .gantt-stay__end-tab-mark {
   font-size: 0.55rem;
   font-weight: 900;
   line-height: 1;
+}
+
+.gantt-stay--chip .gantt-stay__end-tab-bulb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.5rem;
+  height: 0.62rem;
+  flex-shrink: 0;
+  filter:
+    drop-shadow(0 0 0.5px #052e16)
+    drop-shadow(0 0 2px #86efac)
+    drop-shadow(0 0 4px #4ade80);
+  /* Static glow by default — pulse only on hover/focus to save GPU on dense Gantt */
+  animation: none;
+}
+
+.gantt-stay--chip:hover .gantt-stay__end-tab-bulb,
+.gantt-stay--chip:focus-within .gantt-stay__end-tab-bulb {
+  animation: gantt-cap-bulb-glow 2.2s ease-in-out infinite;
+}
+
+.gantt-stay--chip .gantt-stay__end-tab-bulb svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes gantt-cap-bulb-glow {
+  0%,
+  100% {
+    opacity: 1;
+    filter:
+      drop-shadow(0 0 0.5px #052e16)
+      drop-shadow(0 0 2px #86efac)
+      drop-shadow(0 0 4px #4ade80);
+  }
+  50% {
+    opacity: 0.94;
+    filter:
+      drop-shadow(0 0 0.5px #052e16)
+      drop-shadow(0 0 3px #bbf7d0)
+      drop-shadow(0 0 6px #22c55e);
+  }
+}
+
+html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
+  filter:
+    drop-shadow(0 0 0.5px #052e16)
+    drop-shadow(0 0 2px #bbf7d0)
+    drop-shadow(0 0 5px #4ade80)
+    drop-shadow(0 0 8px color-mix(in srgb, #22c55e 55%, transparent));
 }
 
 .gantt-stay--chip .gantt-stay-edge {
@@ -532,7 +587,8 @@
 }
 
 .gantt-stay--chip.gantt-stay--today-turnover .gantt-stay__spine {
-  background: linear-gradient(
+  background: #f59e0b;
+  background-image: linear-gradient(
     180deg,
     #f59e0b 0%,
     #f59e0b 50%,
@@ -560,15 +616,34 @@
 @container gantt-stay (max-width: 56px) {
   .gantt-stay--chip .gantt-stay-chrome__label,
   .gantt-stay--chip .gantt-stay__timeline,
-  .gantt-stay--chip .gantt-stay__phase-badge,
   .gantt-stay--chip .gantt-stay__stamp {
     display: none !important;
+  }
+
+  .gantt-stay--chip .gantt-stay__phase-badge,
+  .gantt-stay--chip .gantt-stay__alert,
+  .gantt-stay--chip .gantt-stay__badge {
+    display: none !important;
+  }
+
+  .gantt-stay--chip .gantt-stay__cap-strip {
+    gap: 0;
+    padding: 0;
   }
 
   .gantt-stay--chip .gantt-stay__end-tab {
     display: flex !important;
     min-width: 0.55rem;
     padding-inline: 0.08rem;
+  }
+
+  .gantt-stay--chip .gantt-stay__end-tab-bulb {
+    width: 0.38rem;
+    height: 0.48rem;
+  }
+
+  .gantt-stay--chip .gantt-stay__end-tab-mark {
+    font-size: 0.48rem;
   }
 
   .gantt-stay--chip .gantt-stay__body {
@@ -673,5 +748,9 @@ html[data-theme="default"] .gantt-stay--chip .gantt-stay__phase-badge {
 
   .gantt-stay--chip .gantt-stay__timeline-fill {
     transition: none;
+  }
+
+  .gantt-stay--chip .gantt-stay__end-tab-bulb {
+    animation: none;
   }
 }

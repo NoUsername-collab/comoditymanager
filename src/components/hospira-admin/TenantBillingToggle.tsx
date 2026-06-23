@@ -31,8 +31,8 @@ export function TenantBillingToggle({
         disabled={pending}
         className={`tenant-billing-toggle min-h-[var(--ml-touch-min,2.75rem)] rounded-full px-4 py-2 text-sm font-medium transition-colors ${
           isPaying
-            ? "bg-emerald-900 text-emerald-300 hover:bg-emerald-800"
-            : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+            ? "tenant-billing-toggle--paying"
+            : "tenant-billing-toggle--free"
         } disabled:opacity-50`}
       >
         {pending ? "..." : isPaying ? "Plătitor ✓" : "Gratuit"}

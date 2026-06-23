@@ -24,7 +24,7 @@ export function getBuildingTheme(
       accent: "#ea580c",
       accentLight: "#ffedd5",
       border: "border-orange-200",
-      headerBg: "bg-gradient-to-br from-orange-50 to-white",
+      headerBg: "bg-orange-50",
       barBg: "bg-orange-100",
       label: "Climat cald",
     };
@@ -35,7 +35,7 @@ export function getBuildingTheme(
     accent: "#2563eb",
     accentLight: "#dbeafe",
     border: "border-blue-200",
-    headerBg: "bg-gradient-to-br from-blue-50 to-white",
+    headerBg: "bg-blue-50",
     barBg: "bg-blue-100",
     label: "Climat rece (AC)",
   };

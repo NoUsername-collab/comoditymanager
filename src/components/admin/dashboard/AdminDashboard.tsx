@@ -98,7 +98,7 @@ export async function AdminDashboard({
       </header>
 
       {data.error && (
-        <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+        <p className="admin-banner admin-banner--danger mt-3" role="alert">
           {data.error}
         </p>
       )}
@@ -137,24 +137,26 @@ export async function AdminDashboard({
         </section>
       )}
 
-      {cereriPreview.length > 0 && (
-        <section
-          className="admin-home-panel admin-home-panel--cereri admin-home-section"
-          aria-labelledby="admin-home-cereri-title"
-        >
-          <div className="admin-home-panel__head">
-            <div>
-              <h2 id="admin-home-cereri-title" className="admin-home-panel__title">
-                {tCommon("cereriQueue")}
-              </h2>
-              <p className="admin-home-panel__desc">
-                {tDashboard("quickCereriDesc")}
-              </p>
-            </div>
+      <section
+        className="admin-home-panel admin-home-panel--cereri admin-home-section"
+        aria-labelledby="admin-home-cereri-title"
+      >
+        <div className="admin-home-panel__head">
+          <div>
+            <h2 id="admin-home-cereri-title" className="admin-home-panel__title">
+              {tCommon("cereriQueue")}
+            </h2>
+            <p className="admin-home-panel__desc">
+              {tDashboard("quickCereriDesc")}
+            </p>
+          </div>
+          {cereriPreview.length > 0 ? (
             <Link href="/admin/cazari" className="admin-home-panel__link">
               {tCommon("seeAll")} →
             </Link>
-          </div>
+          ) : null}
+        </div>
+        {cereriPreview.length > 0 ? (
           <ul className="admin-home-cereri-list">
             {cereriPreview.map((c) => (
               <li key={c.id}>
@@ -177,8 +179,16 @@ export async function AdminDashboard({
               </li>
             ))}
           </ul>
-        </section>
-      )}
+        ) : (
+          <AdminEmptyState
+            emoji="📬"
+            title={tCommon("noCereriPreview")}
+            description={tDashboard("milestoneInboxZero")}
+            actionHref="/admin/cazari?view=cereri"
+            actionLabel={tCommon("openBookings")}
+          />
+        )}
+      </section>
 
       <section
         className="admin-home-panel admin-home-section"

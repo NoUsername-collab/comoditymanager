@@ -28,3 +28,155 @@
   transform: scale(0.995);
   transition-duration: 0.06s;
 }
+
+/* Semantic status — înlocuiește Tailwind emerald/amber/red în admin TSX */
+.admin-status-badge {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+
+.admin-status-badge--confirmed {
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+}
+
+.admin-status-badge--pending {
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
+}
+
+.admin-status-badge--cancelled {
+  border-color: var(--admin-tint-danger-border);
+  background: var(--admin-tint-danger-bg);
+  color: var(--admin-tint-danger-text);
+}
+
+.admin-banner {
+  border-radius: 0.75rem;
+  border: 1px solid;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.admin-banner--success {
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+}
+
+.admin-banner--warning {
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
+}
+
+.admin-banner--danger {
+  border-color: var(--admin-tint-danger-border);
+  background: var(--admin-tint-danger-bg);
+  color: var(--admin-tint-danger-text);
+}
+
+.admin-banner--info {
+  border-color: var(--admin-tint-info-border);
+  background: var(--admin-tint-info-bg);
+  color: var(--admin-tint-info-text);
+}
+
+.admin-banner--muted {
+  border-color: var(--admin-surface-border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+}
+
+.admin-banner--compact {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.6875rem;
+  border-radius: 0.375rem;
+}
+
+.admin-text--success {
+  color: var(--status-confirmed-text);
+}
+
+.admin-text--warning {
+  color: var(--status-pending-text);
+}
+
+.admin-text--danger {
+  color: var(--admin-tint-danger-text);
+}
+
+/* Tip rezervare Gantt radial — aliniat la --booking-* / stay-card */
+.admin-booking-tone {
+  border: 1px solid;
+}
+
+.admin-booking-tone--cerere {
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
+}
+
+.admin-booking-tone--direct {
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+}
+
+.admin-booking-tone--hold {
+  border-color: var(--admin-tint-sky-border);
+  background: var(--admin-tint-sky-bg);
+  color: var(--admin-tint-sky-text);
+}
+
+.admin-booking-tone--block {
+  border-color: var(--admin-tint-violet-border);
+  background: var(--admin-tint-violet-bg);
+  color: var(--admin-tint-violet-text);
+}
+
+.admin-semantic-pill {
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
+  font-size: 0.5625rem;
+}
+
+.admin-semantic-pill--muted {
+  background: var(--surface-2);
+  color: var(--admin-text-muted);
+}
+
+.admin-semantic-pill--success {
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+}
+
+.admin-semantic-pill--warning {
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
+}
+
+.admin-text-link {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.admin-text-link--accent {
+  color: var(--active-text);
+}
+
+.admin-text-link--accent:hover {
+  color: color-mix(in srgb, var(--active-text) 85%, black);
+}

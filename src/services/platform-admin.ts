@@ -20,6 +20,7 @@ export interface PlatformTenantSummary extends TenantRow {
   member_count: number;
   room_count: number;
   booking_count: number;
+  domain_hosts: string[];
 }
 
 export interface PlatformStats {
@@ -27,11 +28,22 @@ export interface PlatformStats {
   activeTenants: number;
   trialTenants: number;
   suspendedTenants: number;
+  cancelledTenants: number;
+  signupsLast7d: number;
   totalRooms: number;
   totalBookings: number;
+  bookingsCreatedToday: number;
+  activeStaysToday: number;
+  recentErrors24h: number;
   mrr: number; // Monthly Recurring Revenue in EUR
   planDistribution: Record<string, number>;
 }
+
+export type TenantLastActivity = {
+  lastActivityAt: string | null;
+  lastAction: string | null;
+  lastActorEmail: string | null;
+};
 
 // ─── Queries ────────────────────────────────────────────────────
 
@@ -43,8 +55,16 @@ export type TenantFilterOption = {
 
 function attachResourceCounts<T extends { id: string }>(
   tenants: T[],
-  resourceCounts: Awaited<ReturnType<typeof loadTenantResourceCounts>>
-): Array<T & { member_count: number; room_count: number; booking_count: number }> {
+  resourceCounts: Awaited<ReturnType<typeof loadTenantResourceCounts>>,
+  domainMap: Map<string, string[]>
+): Array<
+  T & {
+    member_count: number;
+    room_count: number;
+    booking_count: number;
+    domain_hosts: string[];
+  }
+> {
   return tenants.map((tenant) => {
     const counts = getTenantResourceCounts(resourceCounts, tenant.id);
     return {
@@ -52,8 +72,27 @@ function attachResourceCounts<T extends { id: string }>(
       member_count: counts.member_count,
       room_count: counts.room_count,
       booking_count: counts.booking_count,
+      domain_hosts: domainMap.get(tenant.id) ?? [],
     };
   });
+}
+
+async function loadTenantDomainMap(
+  supabase: ReturnType<typeof createPublicAdminClient>
+): Promise<Map<string, string[]>> {
+  const { data: domainRows, error } = await supabase
+    .from("tenant_domains")
+    .select("tenant_id, domain");
+
+  throwIfDbError("tenant_domains (listAllTenants)", error);
+
+  const map = new Map<string, string[]>();
+  for (const row of domainRows ?? []) {
+    const list = map.get(row.tenant_id) ?? [];
+    list.push(row.domain);
+    map.set(row.tenant_id, list);
+  }
+  return map;
 }
 
 /** Lightweight tenant list for filters/dropdowns (no resource counts). */
@@ -81,9 +120,10 @@ export const listTenantFilterOptions = cache(async (): Promise<TenantFilterOptio
 export const listAllTenants = cache(async (): Promise<PlatformTenantSummary[]> => {
   const supabase = createPublicAdminClient();
 
-  const [{ data: tenants, error }, resourceCounts] = await Promise.all([
+  const [{ data: tenants, error }, resourceCounts, domainMap] = await Promise.all([
     supabase.from("tenants").select("*").order("created_at", { ascending: false }),
     loadTenantResourceCounts(supabase),
+    loadTenantDomainMap(supabase),
   ]);
 
   throwIfDbError("tenants (listAllTenants)", error);
@@ -91,17 +131,70 @@ export const listAllTenants = cache(async (): Promise<PlatformTenantSummary[]> =
     throw new Error("[tenants (listAllTenants)] no data returned");
   }
 
-  return attachResourceCounts(tenants, resourceCounts) as PlatformTenantSummary[];
+  return attachResourceCounts(
+    tenants,
+    resourceCounts,
+    domainMap
+  ) as PlatformTenantSummary[];
 });
+
+function todayIsoDate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function loadPlatformTodayMetrics() {
+  const supabase = createPublicAdminClient();
+  const today = todayIsoDate();
+  const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+  const [createdToday, activeStays, recentErrors] = await Promise.all([
+    safeCount(
+      supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", `${today}T00:00:00.000Z`)
+        .lt("created_at", `${today}T23:59:59.999Z`)
+    ),
+    safeCount(
+      supabase
+        .from("bookings")
+        .select("id", { count: "exact", head: true })
+        .lte("check_in", today)
+        .gt("check_out", today)
+        .neq("status", "anulata")
+    ),
+    safeCount(
+      supabase
+        .from("dev_logs")
+        .select("id", { count: "exact", head: true })
+        .eq("level", "error")
+        .gte("created_at", since24h)
+    ),
+  ]);
+
+  return {
+    bookingsCreatedToday: createdToday,
+    activeStaysToday: activeStays,
+    recentErrors24h: recentErrors,
+  };
+}
 
 /** Aggregate platform statistics. */
 export const getPlatformStats = cache(async (): Promise<PlatformStats> => {
-  const tenants = await listAllTenants();
+  const [tenants, todayMetrics] = await Promise.all([
+    listAllTenants(),
+    loadPlatformTodayMetrics(),
+  ]);
 
   const planDistribution: Record<string, number> = {};
   let mrr = 0;
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  let signupsLast7d = 0;
 
   for (const t of tenants) {
+    if (new Date(t.created_at).getTime() >= sevenDaysAgo) {
+      signupsLast7d += 1;
+    }
     const planId = t.plan_id || "free";
     planDistribution[planId] = (planDistribution[planId] || 0) + 1;
 
@@ -119,8 +212,13 @@ export const getPlatformStats = cache(async (): Promise<PlatformStats> => {
     activeTenants: tenants.filter((t) => t.status === "active").length,
     trialTenants: tenants.filter((t) => t.status === "trial").length,
     suspendedTenants: tenants.filter((t) => t.status === "suspended").length,
+    cancelledTenants: tenants.filter((t) => t.status === "cancelled").length,
+    signupsLast7d,
     totalRooms: tenants.reduce((sum, t) => sum + t.room_count, 0),
     totalBookings: tenants.reduce((sum, t) => sum + t.booking_count, 0),
+    bookingsCreatedToday: todayMetrics.bookingsCreatedToday,
+    activeStaysToday: todayMetrics.activeStaysToday,
+    recentErrors24h: todayMetrics.recentErrors24h,
     mrr,
     planDistribution,
   };
@@ -140,7 +238,7 @@ export const getPlatformTenantById = cache(async (
 
   if (error || !tenant) return null;
 
-  const [members, rooms, bookings] = await Promise.all([
+  const [members, rooms, bookings, domainMap] = await Promise.all([
     safeCount(
       supabase
         .from("tenant_members")
@@ -160,6 +258,7 @@ export const getPlatformTenantById = cache(async (
         .select("id", { count: "exact", head: true })
         .eq("tenant_id", tenantId)
     ),
+    loadTenantDomainMap(supabase),
   ]);
 
   return {
@@ -167,7 +266,39 @@ export const getPlatformTenantById = cache(async (
     member_count: members,
     room_count: rooms,
     booking_count: bookings,
+    domain_hosts: domainMap.get(tenantId) ?? [],
   } as PlatformTenantSummary;
+});
+
+/** Most recent admin_activity_log entry for a tenant. */
+export const getTenantLastActivity = cache(async (
+  tenantId: string
+): Promise<TenantLastActivity> => {
+  const supabase = createPublicAdminClient();
+
+  const { data, error } = await supabase
+    .from("admin_activity_log")
+    .select("action, actor_email, created_at")
+    .eq("tenant_id", tenantId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  throwIfDbError("admin_activity_log (last activity)", error);
+
+  if (!data) {
+    return {
+      lastActivityAt: null,
+      lastAction: null,
+      lastActorEmail: null,
+    };
+  }
+
+  return {
+    lastActivityAt: data.created_at,
+    lastAction: data.action,
+    lastActorEmail: data.actor_email ?? null,
+  };
 });
 
 // ─── Mutations ──────────────────────────────────────────────────

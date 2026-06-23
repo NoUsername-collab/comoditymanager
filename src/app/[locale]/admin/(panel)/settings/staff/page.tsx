@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { StaffList } from "@/components/admin/settings/StaffList";
 import { StaffInviteForm } from "@/components/admin/settings/StaffInviteForm";
@@ -18,26 +18,24 @@ export default async function StaffManagementPage() {
   ]);
 
   return (
-    <>
-      <SettingsPageHeader title={t("title")} description={t("description")} />
-
+    <SettingsPageLayout title={t("title")} description={t("description")}>
       <SettingsSection
         title={t("currentStaffTitle")}
         description={t("currentStaffSubtitle", { count: members.length })}
-        badge={
-          <span className="settings-section__count">{members.length}</span>
-        }
+        badge={<span className="settings-section__count">{members.length}</span>}
       >
         <StaffList members={members} />
       </SettingsSection>
 
-      <SettingsSection title={t("inviteTitle")} description={t("inviteSubtitle")}>
+      <SettingsSection title={t("inviteTitle")} description={t("inviteSubtitle")} defaultOpen={false}>
         <StaffInviteForm />
       </SettingsSection>
 
       <SettingsSection
         title={t("rolesExplainTitle")}
         description={t("rolesExplainSubtitle")}
+        defaultOpen={false}
+        collapsible={false}
       >
         <div className="settings-roles-grid">
           <div>
@@ -54,6 +52,6 @@ export default async function StaffManagementPage() {
           </div>
         </div>
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

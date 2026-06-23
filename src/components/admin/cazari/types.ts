@@ -44,7 +44,19 @@ export type CazariLabels = {
     href: string;
     label: string;
   };
+  emptyConfirmedFilter: {
+    title: string;
+    description: string;
+    href: string;
+    label: string;
+  };
   emptyRequest: {
+    title: string;
+    description: string;
+    href: string;
+    label: string;
+  };
+  emptyRequestFilter: {
     title: string;
     description: string;
     href: string;

@@ -4,6 +4,7 @@ import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin
 import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
+import { assertBookingConfirmable } from "@/domain/booking/lifecycle-guards";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -55,11 +56,7 @@ export async function confirmBookingWithRooms(
     getBookingById(bookingId),
     isSimActive(),
   ]);
-  if (!booking) throw new Error("booking.request_not_found");
-  if (booking.status === "confirmata") throw new Error("booking.already_confirmed");
-  if (booking.status !== "cerere_noua" && booking.status !== "anulata") {
-    throw new Error("booking.request_not_found");
-  }
+  assertBookingConfirmable(booking);
 
   if (simActive) {
     // Simulation mode: use individual operations on sim_sandbox schema.

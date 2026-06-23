@@ -182,7 +182,7 @@ describe("stay-card-display", () => {
         bookingCheckIn: "2026-06-20",
         today: "2026-06-10",
       }),
-    ).toBe("ok");
+    ).toBe("neutral");
 
     expect(
       resolveGanttStayCapHealth({

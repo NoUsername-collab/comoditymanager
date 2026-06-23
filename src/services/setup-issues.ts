@@ -1,120 +1,117 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import {
+  canReceiveOnboardingSetupIssues,
   resolveBuildingsColorSetupIssue,
   resolveContactEmailSetupIssue,
   resolveMfaSetupIssue,
   resolveThemeSetupIssue,
+  shouldResolveSetupIssues,
 } from "@/domain/setup-issues/checks";
 import type { SetupIssue } from "@/domain/setup-issues/types";
+import { isMfaRecommendedForUser } from "@/lib/auth/mfa-policy";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createClient } from "@/lib/supabase/server";
-import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { listBuildings } from "@/services/buildings";
-import type { TenantMemberRole } from "@/services/tenant-members";
+import { loadOnboardingIssueContext } from "@/services/setup-issues-context";
+import type { TenantMemberRole } from "@/domain/tenant/types";
 
 export type ResolveSetupIssuesOpts = {
   email?: string | null;
   memberRole?: TenantMemberRole | null;
 };
 
-async function hasAppearanceBeenSaved(tenantId: string): Promise<boolean> {
-  const supabase = createPublicAdminClient();
-  const { count, error } = await supabase
-    .from("admin_activity_log")
-    .select("id", { count: "exact", head: true })
-    .eq("tenant_id", tenantId)
-    .eq("action", "settings.appearance_updated");
-
-  if (error) return false;
-  return (count ?? 0) > 0;
-}
-
-async function loadOnboardingIssueContext(tenantId: string) {
-  const supabase = createPublicAdminClient();
-
-  const [pensionResult, publicSiteResult, appearanceSaved] = await Promise.all([
-    supabase
-      .from("pension_settings")
-      .select("admin_palette_key, contact_email")
-      .eq("tenant_id", tenantId)
-      .maybeSingle(),
-    supabase
-      .from("public_site_settings")
-      .select("contact, use_primary_contact")
-      .eq("tenant_id", tenantId)
-      .maybeSingle(),
-    hasAppearanceBeenSaved(tenantId),
-  ]);
-
-  const pensionRow = pensionResult.data;
-  const publicSiteRow = publicSiteResult.data;
-  const publicContact =
-    publicSiteRow?.contact && typeof publicSiteRow.contact === "object"
-      ? (publicSiteRow.contact as { email?: string | null })
-      : null;
-
-  return {
-    rawPaletteKey:
-      typeof pensionRow?.admin_palette_key === "string"
-        ? pensionRow.admin_palette_key
-        : null,
-    appearanceSaved,
-    pensionEmail:
-      typeof pensionRow?.contact_email === "string" ? pensionRow.contact_email : null,
-    publicSiteEmail:
-      typeof publicContact?.email === "string" ? publicContact.email : null,
-    usePrimaryContact: publicSiteRow?.use_primary_contact !== false,
-  };
-}
+const loadMfaFactors = cache(async (email: string) => {
+  const supabase = await createClient();
+  return supabase.auth.mfa.listFactors();
+});
 
 async function resolveSetupIssuesUncached(
   opts: ResolveSetupIssuesOpts
 ): Promise<SetupIssue[]> {
-  const supabase = await createClient();
-  const tenantId = await resolveTenantIdForData();
+  if (!shouldResolveSetupIssues(opts)) {
+    return [];
+  }
 
-  const [{ data: factors }, onboardingContext, buildings] = await Promise.all([
-    supabase.auth.mfa.listFactors(),
-    loadOnboardingIssueContext(tenantId),
-    listBuildings().catch(() => []),
-  ]);
-
+  const checkMfa = isMfaRecommendedForUser(opts);
+  const needsOnboarding = canReceiveOnboardingSetupIssues(opts);
   const issues: SetupIssue[] = [];
 
-  const mfaIssue = resolveMfaSetupIssue({ ...opts, factors });
-  if (mfaIssue) issues.push(mfaIssue);
+  const [factorsResult, onboardingBundle] = await Promise.all([
+    checkMfa ? loadMfaFactors(opts.email ?? "") : Promise.resolve({ data: null }),
+    needsOnboarding
+      ? Promise.all([
+          loadOnboardingIssueContext(),
+          listBuildings().catch(() => []),
+        ])
+      : Promise.resolve(null),
+  ]);
 
-  const themeIssue = resolveThemeSetupIssue({
-    ...opts,
-    rawPaletteKey: onboardingContext.rawPaletteKey,
-    appearanceSaved: onboardingContext.appearanceSaved,
-  });
-  if (themeIssue) issues.push(themeIssue);
+  if (checkMfa) {
+    const mfaIssue = resolveMfaSetupIssue({
+      ...opts,
+      factors: factorsResult.data,
+    });
+    if (mfaIssue) issues.push(mfaIssue);
+  }
 
-  const buildingsIssue = resolveBuildingsColorSetupIssue({
-    ...opts,
-    buildings,
-  });
-  if (buildingsIssue) issues.push(buildingsIssue);
+  if (needsOnboarding && onboardingBundle) {
+    const [onboardingContext, buildings] = onboardingBundle;
 
-  const contactIssue = resolveContactEmailSetupIssue({
-    ...opts,
-    pensionEmail: onboardingContext.pensionEmail,
-    publicSiteEmail: onboardingContext.publicSiteEmail,
-    usePrimaryContact: onboardingContext.usePrimaryContact,
-  });
-  if (contactIssue) issues.push(contactIssue);
+    const themeIssue = resolveThemeSetupIssue({
+      ...opts,
+      rawPaletteKey: onboardingContext.rawPaletteKey,
+      appearanceSaved: onboardingContext.appearanceSaved,
+    });
+    if (themeIssue) issues.push(themeIssue);
+
+    const buildingsIssue = resolveBuildingsColorSetupIssue({
+      ...opts,
+      buildings,
+    });
+    if (buildingsIssue) issues.push(buildingsIssue);
+
+    const contactIssue = resolveContactEmailSetupIssue({
+      ...opts,
+      pensionEmail: onboardingContext.pensionEmail,
+      publicSiteEmail: onboardingContext.publicSiteEmail,
+      usePrimaryContact: onboardingContext.usePrimaryContact,
+    });
+    if (contactIssue) issues.push(contactIssue);
+  }
 
   return issues;
 }
 
-const loadSetupIssues = cache(
-  (email: string, memberRole: string) =>
-    resolveSetupIssuesUncached({
-      email: email || null,
-      memberRole: (memberRole || null) as TenantMemberRole | null,
-    })
-);
+const getCachedSetupIssues = (
+  tenantId: string,
+  email: string,
+  memberRole: string,
+) =>
+  unstable_cache(
+    () =>
+      resolveSetupIssuesUncached({
+        email: email || null,
+        memberRole: (memberRole || null) as TenantMemberRole | null,
+      }),
+    ["setup-issues", tenantId, email, memberRole],
+    {
+      tags: [
+        CACHE_TAGS.pensionSettings,
+        CACHE_TAGS.buildings,
+        CACHE_TAGS.publicSite,
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        tenantTag(tenantId, CACHE_TAGS.buildings),
+      ],
+      revalidate: 300,
+    },
+  );
+
+const loadSetupIssues = cache(async (email: string, memberRole: string) => {
+  const tenantId = await resolveTenantIdForData();
+  return getCachedSetupIssues(tenantId, email, memberRole)();
+});
 
 /** Single source of truth for unresolved admin setup / security issues. */
 export async function resolveSetupIssues(
@@ -122,3 +119,6 @@ export async function resolveSetupIssues(
 ): Promise<SetupIssue[]> {
   return loadSetupIssues(opts.email ?? "", opts.memberRole ?? "");
 }
+
+/** Alias — same resolver, used in layouts and settings pages. */
+export const getSetupIssues = resolveSetupIssues;

@@ -32,9 +32,9 @@ export default function PublicError({
 
   return (
     <main className="public-section" style={{ textAlign: "center", padding: "4rem 1rem" }}>
-      <h1>Eroare</h1>
-      <p>Ceva nu a mers bine.</p>
-      <button type="button" onClick={reset}>
+      <h1>Ceva nu a mers bine</h1>
+      <p>Pagina nu s-a putut încărca. Reîncercați sau contactați pensiunea.</p>
+      <button type="button" onClick={reset} className="public-btn">
         Reîncearcă
       </button>
     </main>

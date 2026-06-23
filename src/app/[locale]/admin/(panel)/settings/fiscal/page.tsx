@@ -1,8 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { FiscalBillingSettingsPanel } from "@/components/admin/settings/FiscalBillingSettingsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
@@ -46,17 +45,18 @@ export default async function SettingsFiscalPage({
   const settings = ctx.pensionResult.settings;
   if (!settings || !bookingRules) {
     return (
-      <>
-        <SettingsPageHeader title={t("navFiscal")} />
-        <SettingsAlerts alerts={alerts} />
-      </>
+      <SettingsPageLayout alerts={alerts} title={t("navFiscal")}>
+        <p className="settings-empty">{t("notConfigured")}</p>
+      </SettingsPageLayout>
     );
   }
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navFiscal")} description={t("navFiscalDesc")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navFiscal")}
+      description={t("navFiscalDesc")}
+    >
       <SettingsSection title={t("fiscal.pageTitle")} description={t("fiscal.pageDesc")}>
         <FiscalBillingSettingsPanel
           country={resolveTenantCountry(tenant?.country)}
@@ -67,6 +67,6 @@ export default async function SettingsFiscalPage({
           readOnly={readOnly}
         />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

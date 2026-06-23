@@ -148,7 +148,7 @@ export function ActivityTimeline({
                   entry.metadata?.early_departure === true && (
                     <>
                       <span aria-hidden>·</span>
-                      <span className="text-red-700">
+                      <span className="admin-text--danger">
                         {Number(entry.metadata?.early_checkout_fee) > 0
                           ? t("checkoutEarlyDetailFee", {
                               fee: String(entry.metadata?.early_checkout_fee),
@@ -162,7 +162,7 @@ export function ActivityTimeline({
                   entry.metadata?.early_departure !== true && (
                     <>
                       <span aria-hidden>·</span>
-                      <span className="text-amber-700">{t("checkoutLateDetail")}</span>
+                      <span className="admin-text--warning">{t("checkoutLateDetail")}</span>
                     </>
                   )}
                 {entry.entity_type === "booking" && entry.entity_id && (

@@ -2,8 +2,7 @@ import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { getStaffUser } from "@/lib/auth/require-staff";
-import { getTenantMemberRole } from "@/services/tenant-members";
+import { cachedStaffContext } from "@/lib/auth/require-staff";
 import { resolveRequestTenant } from "./active";
 import { requireTenantIdForData } from "./guards";
 
@@ -45,13 +44,16 @@ function isPublicBookingMode(): boolean {
  * server action / server component render share the result.
  */
 const cachedAssertStaff = cache(async (tenantId: string): Promise<void> => {
-  const tenant = await resolveRequestTenant();
+  const [tenant, ctx] = await Promise.all([
+    resolveRequestTenant(),
+    cachedStaffContext(),
+  ]);
+
   if (!tenant) {
     throw new Error("auth.tenant_host_required");
   }
 
-  const user = await getStaffUser();
-  if (!user) {
+  if (!ctx.user) {
     throw new Error("auth.login_required");
   }
 
@@ -59,8 +61,7 @@ const cachedAssertStaff = cache(async (tenantId: string): Promise<void> => {
     throw new Error("auth.tenant_scope_mismatch");
   }
 
-  const role = await getTenantMemberRole(tenant.id, user.id);
-  if (!role) {
+  if (!ctx.memberRole) {
     throw new Error("auth.tenant_member_required");
   }
 });

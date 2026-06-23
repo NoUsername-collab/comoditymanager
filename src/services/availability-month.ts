@@ -28,7 +28,8 @@ import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 
 export type DayAvailabilityStatus = "available" | "full";
 
-export type DayAvailability = ComputedDay;
+export type { DayAvailability } from "@/domain/availability/day";
+import type { DayAvailability } from "@/domain/availability/day";
 
 export type MonthAvailabilityGrid = {
   year: number;

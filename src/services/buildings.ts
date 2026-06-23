@@ -35,6 +35,11 @@ const getCachedBuildings = (tenantId: string) =>
 
 const loadBuildings = cache((tenantId: string) => getCachedBuildings(tenantId)());
 
+/** Tenant-scoped buildings list — for cross-request caches (statistics, etc.). */
+export async function listBuildingsForTenant(tenantId: string): Promise<Building[]> {
+  return loadBuildings(tenantId);
+}
+
 export async function listBuildings(): Promise<Building[]> {
   const { tenantId } = await getTenantScope();
   return loadBuildings(tenantId);

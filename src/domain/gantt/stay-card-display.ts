@@ -314,7 +314,7 @@ export function shouldShowGanttStayAlerts(args: {
   return isOperativeCheckInDay(args.bookingCheckIn, args.today);
 }
 
-/** Capăt dreapta (săgeată) — verde OK vs roșu problemă pe carduri Gantt. */
+/** Capăt dreapta — bec OK vs roșu problemă pe carduri Gantt. */
 export type GanttStayCapHealth = "neutral" | "ok" | "problem";
 
 export function resolveGanttStayCapHealth(args: {
@@ -349,5 +349,5 @@ export function resolveGanttStayCapHealth(args: {
     return "problem";
   }
 
-  return "ok";
+  return "neutral";
 }

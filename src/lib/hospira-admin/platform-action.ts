@@ -1,4 +1,4 @@
-import { getPlatformAdminOrNull } from "@/lib/auth/require-platform-admin";
+import { getPlatformAdminWithMfaOrNull } from "@/lib/auth/require-platform-admin";
 import { isHospiraAdminDbError } from "@/lib/hospira-admin/format-db-error";
 import { capturePlatformAdminError } from "@/services/dev-logs";
 
@@ -23,7 +23,7 @@ export async function runPlatformAdminAction<T>(
 ): Promise<PlatformActionResult<T>> {
   let session: { userId: string; email: string } | null = null;
   try {
-    session = await getPlatformAdminOrNull();
+    session = await getPlatformAdminWithMfaOrNull();
     if (!session) {
       return { success: false, error: "Neautorizat." };
     }

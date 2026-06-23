@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
+import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -63,6 +64,8 @@ export function GanttCheckTimeDialog({
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
   const { showToast } = useAdminFx();
+  const { compactChrome } = useCompactLayoutHints();
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [atLocal, setAtLocal] = useState(datetimeLocalNow);
 
   const effectiveToday = todayProp ?? todayIso();
@@ -121,7 +124,14 @@ export function GanttCheckTimeDialog({
   useEffect(() => {
     if (!open) return;
     document.documentElement.classList.add("admin-modal-open");
+    const raf = requestAnimationFrame(() => {
+      const input = dialogRef.current?.querySelector<HTMLInputElement>(
+        'input[type="datetime-local"]'
+      );
+      input?.focus();
+    });
     return () => {
+      cancelAnimationFrame(raf);
       document.documentElement.classList.remove("admin-modal-open");
     };
   }, [open]);
@@ -194,21 +204,32 @@ export function GanttCheckTimeDialog({
         onClick={onClose}
       />
       <div
-        className="gantt-check-time-dialog fixed left-1/2 top-1/2 w-[min(22rem,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border p-4 shadow-xl"
+        ref={dialogRef}
+        className={[
+          "gantt-check-time-dialog fixed left-1/2 top-1/2 w-[min(22rem,92vw)] -translate-x-1/2 -translate-y-1/2 rounded-xl border p-4 shadow-xl",
+          compactChrome && "gantt-check-time-dialog--sheet",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         role="dialog"
         aria-labelledby="gantt-check-time-title"
+        aria-describedby="gantt-check-time-planned"
       >
         <h2 id="gantt-check-time-title" className="text-sm font-bold">
           {title}
         </h2>
         <p className="mt-1 text-xs opacity-80">{guestName}</p>
-        <p className="mt-0.5 text-[11px] opacity-65">
+        <p id="gantt-check-time-planned" className="mt-0.5 text-[11px] opacity-65">
           {tGantt("checkTime.planned")}:{" "}
           {formatStayPeriod(plannedCheckIn, plannedCheckOut, locale, true)}
         </p>
 
         {mode === "checkin" && intent === "set" && !checkInAllowed && (
-          <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          <p
+            className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900"
+            role="alert"
+            aria-live="polite"
+          >
             {tServer("checkInOnlyOnArrivalDay")}
           </p>
         )}

@@ -1,6 +1,7 @@
 import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 import { Link } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import { HospiraAdminMobileNav } from "@/layout/components/HospiraAdminMobileNav";
 import { MobileContent } from "@/layout/components/MobileContent";
 import { MobileShell } from "@/layout/components/MobileShell";
@@ -10,7 +11,10 @@ export default async function HospiraAdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const admin = await requirePlatformAdmin();
+  const [admin, t] = await Promise.all([
+    requirePlatformAdmin(),
+    getTranslations("hospiraAdmin.nav"),
+  ]);
 
   return (
     <MobileShell
@@ -18,7 +22,7 @@ export default async function HospiraAdminLayout({
       className="ml-shell--nestio-admin min-h-dvh bg-neutral-950 text-neutral-100"
     >
       <header className="nestio-admin-header border-b border-neutral-800 bg-neutral-900">
-        <div className="nestio-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-2.5">
+        <div className="nestio-admin-header__inner mx-auto flex max-w-7xl items-center justify-between gap-2 py-2.5">
           <div className="flex min-w-0 items-center gap-3">
             <HospiraAdminMobileNav />
             <Link
@@ -38,19 +42,25 @@ export default async function HospiraAdminLayout({
               href="/hospira-admin"
               className="text-neutral-400 transition-colors hover:text-white"
             >
-              Dashboard
+              {t("dashboard")}
             </Link>
             <Link
               href="/hospira-admin/tenants"
               className="text-neutral-400 transition-colors hover:text-white"
             >
-              Tenanți
+              {t("tenants")}
             </Link>
             <Link
               href="/hospira-admin/logs"
               className="text-neutral-400 transition-colors hover:text-white"
             >
-              Logs
+              {t("logs")}
+            </Link>
+            <Link
+              href="/hospira-admin/tools"
+              className="text-neutral-400 transition-colors hover:text-white"
+            >
+              {t("tools")}
             </Link>
           </nav>
 
@@ -62,7 +72,7 @@ export default async function HospiraAdminLayout({
 
       <MobileContent
         as="main"
-        className="nestio-admin-main mx-auto max-w-7xl px-4 py-5"
+        className="nestio-admin-main mx-auto max-w-7xl"
       >
         {children}
       </MobileContent>

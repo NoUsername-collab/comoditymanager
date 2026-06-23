@@ -64,6 +64,13 @@ export const designTokenKeys = {
   adminTintVioletBorder: "--admin-tint-violet-border",
   adminTintSkyBg: "--admin-tint-sky-bg",
   adminTintSkyBorder: "--admin-tint-sky-border",
+
+  adminTintInfoText: "--admin-tint-info-text",
+  adminTintWarningText: "--admin-tint-warning-text",
+  adminTintSuccessText: "--admin-tint-success-text",
+  adminTintDangerText: "--admin-tint-danger-text",
+  adminTintVioletText: "--admin-tint-violet-text",
+  adminTintSkyText: "--admin-tint-sky-text",
 } as const;
 
 /** Default light-theme values — sync with _base.css / default-day.css */

@@ -219,7 +219,7 @@
   padding: 0.85rem 1rem;
   border: 2px solid color-mix(in srgb, var(--accent) 32%, var(--border));
   background: color-mix(in srgb, var(--surface) 88%, var(--accent) 6%);
-  box-shadow: 0 12px 36px color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .guest-section__header--hero {
@@ -384,8 +384,8 @@
 
 .guest-card:hover {
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--text) 6%, transparent);
-  transform: translateY(-1px);
+  box-shadow: none;
+  transform: none;
 }
 
 .guest-card:active {
@@ -634,9 +634,9 @@
   margin: 0.5rem 0;
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid #fcd34d;
-  background: #fffbeb;
-  color: #92400e;
+  border: 1px solid var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
+  color: var(--admin-tint-warning-text);
   font-size: 0.78rem;
 }
 
@@ -959,7 +959,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   padding: 0.9rem;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--text) 4%, transparent);
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .guest-hero__top {
@@ -1261,7 +1261,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   padding: 1rem;
-  box-shadow: 0 3px 14px color-mix(in srgb, var(--text) 4%, transparent);
+  box-shadow: var(--admin-surface-shadow, none);
 }
 
 .guest-panel--aside {
@@ -1293,7 +1293,7 @@
 
 .guest-panel__warn {
   font-size: 0.78rem;
-  color: #92400e;
+  color: var(--admin-tint-warning-text);
 }
 
 /* ─── Guest Badges ─── */
@@ -1312,18 +1312,18 @@
 }
 
 .guest-badge--sky {
-  border-color: #bfdbfe;
-  background: color-mix(in srgb, #3b82f6 8%, var(--surface));
+  border-color: var(--admin-tint-info-border);
+  background: var(--admin-tint-info-bg);
 }
 
 .guest-badge--emerald {
-  border-color: #a7f3d0;
-  background: color-mix(in srgb, #10b981 8%, var(--surface));
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
 }
 
 .guest-badge--amber {
-  border-color: #fcd34d;
-  background: color-mix(in srgb, #f59e0b 8%, var(--surface));
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
 }
 
 .guest-badge--neutral {
@@ -1360,7 +1360,7 @@
   grid-column: 1 / -1;
   font-size: 0.7rem;
   font-weight: 600;
-  color: #92400e;
+  color: var(--admin-tint-warning-text);
 }
 
 .guest-badges--compact {
@@ -1390,24 +1390,24 @@
 }
 
 .guest-badge-chip--sky {
-  border-color: #bfdbfe;
-  background: color-mix(in srgb, #3b82f6 8%, var(--surface));
+  border-color: var(--admin-tint-info-border);
+  background: var(--admin-tint-info-bg);
 }
 
 .guest-badge-chip--emerald {
-  border-color: #a7f3d0;
-  background: color-mix(in srgb, #10b981 8%, var(--surface));
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
 }
 
 .guest-badge-chip--amber {
-  border-color: #fcd34d;
-  background: color-mix(in srgb, #f59e0b 10%, var(--surface));
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
 }
 
 .guest-badge-chip--alert {
-  border-color: #fcd34d;
-  background: #fffbeb;
-  color: #92400e;
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
+  color: var(--admin-tint-warning-text);
 }
 
 /* ─── Cereri noi (card list) ─── */
@@ -1422,8 +1422,8 @@
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
   border-radius: 0.75rem;
-  background: var(--surface);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--text) 6%, transparent);
+  background: var(--admin-surface-bg, var(--surface));
+  box-shadow: var(--admin-surface-shadow, none);
   content-visibility: auto;
   contain-intrinsic-size: auto 5rem;
 }
@@ -1546,18 +1546,18 @@
 }
 
 .guest-badges--cerere__stat--sky {
-  border-color: #bfdbfe;
-  background: color-mix(in srgb, #3b82f6 7%, var(--surface));
+  border-color: var(--admin-tint-info-border);
+  background: var(--admin-tint-info-bg);
 }
 
 .guest-badges--cerere__stat--emerald {
-  border-color: #a7f3d0;
-  background: color-mix(in srgb, #10b981 7%, var(--surface));
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
 }
 
 .guest-badges--cerere__stat--amber {
-  border-color: #fcd34d;
-  background: color-mix(in srgb, #f59e0b 9%, var(--surface));
+  border-color: var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
 }
 
 .guest-badges--cerere__stat--neutral {
@@ -1577,11 +1577,11 @@
   margin: 0.15rem 0 0;
   padding: 0.4rem 0.55rem;
   border-radius: 0.4rem;
-  border: 1px solid #fcd34d;
-  background: #fffbeb;
+  border: 1px solid var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
   font-size: 0.68rem;
   font-weight: 600;
-  color: #92400e;
+  color: var(--admin-tint-warning-text);
   line-height: 1.35;
 }
 
@@ -1620,15 +1620,15 @@
 }
 
 .guest-traits__tag--good {
-  border: 1px solid #a7f3d0;
-  background: color-mix(in srgb, #10b981 10%, var(--surface));
-  color: var(--status-confirmed-text, #047857);
+  border: 1px solid var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
 }
 
 .guest-traits__tag--bad {
-  border: 1px solid #fca5a5;
-  background: color-mix(in srgb, #ef4444 8%, var(--surface));
-  color: var(--admin-danger-text, #991b1b);
+  border: 1px solid var(--admin-tint-danger-border);
+  background: var(--admin-tint-danger-bg);
+  color: var(--admin-danger-text);
 }
 
 .guest-traits__empty {
@@ -1838,21 +1838,21 @@
 }
 
 .guest-stay-rating__polarity-btn--positive {
-  color: #166534;
+  color: var(--admin-tint-success-text);
 }
 
 .guest-stay-rating__polarity-btn--negative {
-  color: #991b1b;
+  color: var(--admin-tint-danger-text);
 }
 
 .guest-stay-rating__polarity-btn--positive.guest-stay-rating__polarity-btn--active {
-  border-color: #86efac;
-  background: #ecfdf5;
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
 }
 
 .guest-stay-rating__polarity-btn--negative.guest-stay-rating__polarity-btn--active {
-  border-color: #fca5a5;
-  background: #fef2f2;
+  border-color: var(--admin-tint-danger-border);
+  background: var(--admin-tint-danger-bg);
 }
 
 .guest-stay-rating__polarity-btn:active:not(:disabled) {
@@ -1891,15 +1891,15 @@
 }
 
 .guest-stay-rating__scale-btn--positive.guest-stay-rating__scale-btn--active {
-  border-color: #86efac;
-  background: #dcfce7;
-  color: #166534;
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--admin-tint-success-text);
 }
 
 .guest-stay-rating__scale-btn--negative.guest-stay-rating__scale-btn--active {
-  border-color: #fca5a5;
-  background: #fee2e2;
-  color: #991b1b;
+  border-color: var(--admin-tint-danger-border);
+  background: var(--admin-tint-danger-bg);
+  color: var(--admin-tint-danger-text);
 }
 
 .guest-stay-rating__level {
@@ -2141,11 +2141,11 @@
 .guest-identity-form__auto-tag {
   padding: 0.08rem 0.35rem;
   border-radius: 9999px;
-  background: color-mix(in srgb, #3b82f6 15%, var(--surface));
-  border: 1px solid #bfdbfe;
+  background: var(--admin-tint-info-bg);
+  border: 1px solid var(--admin-tint-info-border);
   font-size: 0.55rem;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--admin-tint-info-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -2267,15 +2267,15 @@
 }
 
 .guest-identity-status--partial {
-  border: 1px solid #fcd34d;
-  background: color-mix(in srgb, #f59e0b 10%, var(--surface));
-  color: #b45309;
+  border: 1px solid var(--admin-tint-warning-border);
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
 }
 
 .guest-identity-status--complete {
-  border: 1px solid #a7f3d0;
-  background: color-mix(in srgb, #10b981 10%, var(--surface));
-  color: #047857;
+  border: 1px solid var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
 }
 
 /* ─── Guest Dedup Warning ─── */
@@ -2288,18 +2288,18 @@
 }
 
 .dedup-warning--hard {
-  border-color: #f87171;
-  background: color-mix(in srgb, #ef4444 6%, var(--surface));
+  border-color: var(--cancelled-border);
+  background: color-mix(in srgb, var(--cancelled-border) 6%, var(--surface));
 }
 
 .dedup-warning--strong {
-  border-color: #fb923c;
-  background: color-mix(in srgb, #f97316 6%, var(--surface));
+  border-color: var(--warning);
+  background: color-mix(in srgb, var(--warning) 6%, var(--surface));
 }
 
 .dedup-warning--probable {
-  border-color: #fbbf24;
-  background: color-mix(in srgb, #f59e0b 6%, var(--surface));
+  border-color: var(--pending-border);
+  background: color-mix(in srgb, var(--pending-border) 6%, var(--surface));
 }
 
 .dedup-warning__header {

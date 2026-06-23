@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { updateFiscalBillingSettingsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
+import { updateFiscalBillingSettingsAction } from "@/features/settings/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
 import {
   formatFisaPropertyAddress,

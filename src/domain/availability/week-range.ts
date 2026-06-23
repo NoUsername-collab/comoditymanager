@@ -1,5 +1,5 @@
 import { addDays, formatIso, parseIso } from "@/lib/stay-dates";
-import type { DayAvailability } from "@/services/availability-month";
+import type { DayAvailability } from "@/domain/availability/day";
 
 export function mondayOfWeekIso(iso: string): string {
   const d = parseIso(iso);

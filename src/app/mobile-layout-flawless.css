@@ -298,7 +298,7 @@ html[data-layout-chrome="compact"] .nestio-logs-table-wrap table {
 /* ── Gantt landscape: compact toolbar touch targets ── */
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--gantt-touch-min, 2.5rem) !important;
+  min-height: var(--gantt-touch-min, 2.75rem) !important;
 }
 
 /* ── Gantt portrait toolbar: gantt-scoped touch min ── */
@@ -312,8 +312,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-jump {
-  min-width: var(--gantt-touch-min, 2.5rem);
-  min-height: var(--gantt-touch-min, 2.5rem);
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
 }
 
 /* ── HUD tools: no wrap in 2-row grid header ── */
@@ -1332,11 +1332,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
   padding-bottom: 0.25rem !important;
 }
 
-html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-scroll {
-  max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 7.5rem
-  );
-}
+/* gantt-scroll viewport bounds: mobile-layout-compact-fixes.css + admin/gantt-mobile.css */
 
 /* Cazări stay cards: action row stacks */
 html[data-layout-chrome="compact"] .stay-card__actions {
@@ -1541,6 +1537,49 @@ html[data-layout-chrome="compact"] .gantt-ctx-menu-backdrop {
   z-index: calc(var(--z-overlay, 200) - 1);
 }
 
+/* Gantt mobile bottom sheets */
+html[data-layout-chrome="compact"] .gantt-ctx-menu--sheet {
+  top: auto !important;
+  bottom: 0;
+  left: 0 !important;
+  right: 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 1rem 1rem 0 0;
+  padding-bottom: calc(0.35rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu--sheet .gantt-ctx-menu__confirm-msg {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog--sheet {
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  transform: none;
+  border-radius: 1rem 1rem 0 0;
+  padding-bottom: calc(1rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-actions,
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-actions button,
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-actions button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
 /* Settings location unlock */
 html[data-layout-chrome="compact"] .admin-location-unlock input {
   font-size: 16px;
@@ -1661,11 +1700,11 @@ html[data-layout-chrome="compact"] .platform-header__brand {
 html[data-layout-chrome="compact"] .admin-page-toolbar {
   position: sticky;
   top: 0;
-  z-index: 20;
-  padding-block: 0.5rem;
+  z-index: 4;
+  padding-block: 0.35rem 0.5rem;
   margin-bottom: 0.5rem;
-  background: var(--admin-bg, #0f0e14);
-  backdrop-filter: none;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 html[data-layout-chrome="compact"] .onboarding-checklist,
@@ -1681,16 +1720,8 @@ html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header 
 }
 
 html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
-  padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
-    max(0.85rem, var(--ml-safe-right, 0px));
   flex-wrap: wrap;
   row-gap: 0.35rem;
-}
-
-html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
-  padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
-    max(0.85rem, var(--ml-safe-right, 0px));
-  padding-bottom: max(var(--ml-space-lg, 1rem), var(--ml-safe-bottom, 0px));
 }
 
 /* Pull-to-refresh containment on admin scroll roots */
@@ -1808,13 +1839,6 @@ html[data-layout-chrome="compact"] .cerere-item {
   content-visibility: auto;
   contain: layout style;
   contain-intrinsic-size: auto 4.5rem;
-}
-
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-scroll {
-  max-height: calc(
-    var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 5.75rem
-  );
-  overflow-y: auto;
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar {
@@ -3287,5 +3311,167 @@ html[data-layout-chrome="compact"] .availability-month-matrix {
   box-shadow:
     0 1px 2px color-mix(in srgb, var(--admin-page-bg, #0f172a) 4%, transparent),
     0 4px 14px color-mix(in srgb, var(--admin-accent, #059669) 5%, transparent);
+}
+
+/* ── Pass 31: MRZ fullscreen camera, settings accordion, gantt cap touch ── */
+
+html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: var(--ml-vvh, 100dvh) !important;
+  height: var(--ml-vvh, 100dvh) !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__tab,
+html[data-layout-chrome="compact"] .mrz-scan__parse-btn,
+html[data-layout-chrome="compact"] .mrz-scan__actions .checkin-stepper__btn,
+html[data-layout-chrome="compact"] .checkin-guest-form__mrz-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 6rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-wrap {
+  aspect-ratio: 3 / 4;
+  max-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 14rem));
+  border-radius: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__torch-btn,
+html[data-layout-chrome="compact"] .mrz-scan__manual-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-wrap {
+  aspect-ratio: 3 / 4;
+  max-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 14rem));
+}
+
+html[data-layout-chrome="compact"] .guest-app__mrz__torch-btn,
+html[data-layout-chrome="compact"] .guest-app__mrz__manual-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.65rem;
+  background: var(--admin-panel-bg, #fff);
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__actions .checkin-stepper__btn {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 96%, transparent);
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__body {
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea {
+  font-size: max(16px, 1rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge {
+  min-width: 0.62rem;
+  min-height: 0.62rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn--edge,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops button,
+html[data-layout-chrome="compact"] .stay-quick-ops a {
+  flex: 1 1 calc(50% - 0.2rem);
+  min-width: calc(50% - 0.2rem);
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip,
+  html[data-layout-chrome="compact"] .gantt-cap-bulb-glow {
+    animation: none !important;
+  }
+}
+
+@media (display-mode: standalone) {
+  html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+    padding-top: max(0.45rem, var(--ml-safe-top, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
+    padding-top: var(--ml-safe-top, 0px);
+    padding-bottom: var(--ml-safe-bottom, 0px);
+  }
 }
 

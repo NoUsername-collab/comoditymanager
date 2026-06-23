@@ -20,13 +20,15 @@ html[data-layout-chrome="compact"] .availability-month-matrix tbody {
 
 /* ── Admin page frame (all AdminPageFrame pages) ── */
 html[data-layout-chrome="compact"] .admin-page {
-  padding: 0.35rem 0.25rem 0.5rem !important;
+  padding: var(--ml-page-gutter-block, 0.65rem) 0 0.5rem !important;
   max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
 }
 
 html[data-layout-chrome="compact"] .admin-page.admin-settings-page,
 html[data-layout-chrome="compact"] .admin-page.gantt-calendar-page {
-  padding-inline: 0.25rem !important;
+  padding-inline: 0 !important;
 }
 
 html[data-layout-chrome="compact"] .admin-page-desc {
@@ -356,6 +358,36 @@ html[data-layout-chrome="compact"] .landing-stat__label {
   line-height: 1.3;
 }
 
+html[data-layout-chrome="compact"] .landing-hero__title,
+html[data-layout-chrome="compact"] .landing-hero__subtitle,
+html[data-layout-chrome="compact"] .landing-hero__badge {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__badge {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__actions--multi .landing-cta:not(.landing-cta--link) {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__actions--multi .landing-cta--link {
+  align-self: center;
+}
+
+html[data-layout-chrome="compact"] .landing-final-cta__secondary {
+  flex-direction: column;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .landing-final-cta__secondary .landing-cta:not(.landing-cta--link) {
+  width: 100%;
+}
+
 html[data-layout-chrome="compact"] .layout-debug-overlay {
   width: min(18rem, calc(100vw - 1rem));
   max-width: calc(100vw - 1rem);
@@ -432,13 +464,11 @@ html[data-layout-chrome="compact"] .platform-footer__bottom p {
 }
 
 html[data-layout-chrome="compact"] .nestio-admin-header__inner {
-  padding-inline: 0.85rem;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 html[data-layout-chrome="compact"] .nestio-admin-main {
-  padding: 0.85rem 0.85rem 1.5rem !important;
   max-width: 100%;
 }
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidateAfterActivityUndo } from "@/lib/cache/revalidate-admin";
-import { requireStaff } from "@/lib/auth/require-staff";
+import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { undoActivityLogEntry } from "@/services/activity-undo";
 import { getTranslations } from "next-intl/server";
 
@@ -11,7 +11,7 @@ export async function undoActivityLogAction(
   logId: string
 ): Promise<UndoActivityResult> {
   const t = await getTranslations("admin.activity");
-  await requireStaff();
+  await requireStaffPermission("booking_management");
 
   if (!logId?.trim()) {
     return { ok: false, error: t("undoMissingId") };
@@ -41,7 +41,7 @@ export async function undoBookingCancellationAction(
   bookingId: string
 ): Promise<UndoActivityResult> {
   const t = await getTranslations("admin.activity");
-  await requireStaff();
+  await requireStaffPermission("booking_management");
 
   if (!bookingId?.trim()) {
     return { ok: false, error: t("undoMissingId") };

@@ -358,7 +358,7 @@ export function CheckinStepper({
       return;
     }
     setTransferOffer(null);
-    setError(result.error ?? "Unknown error");
+    setError(result.error ?? t("unknownError"));
   }
 
   function handleSubmit(transferToGuestId?: string) {
@@ -471,8 +471,10 @@ export function CheckinStepper({
 
   return (
     <div className="checkin-stepper">
-      {/* Step indicators */}
-      <div className="checkin-stepper__indicators">
+      <nav
+        className="checkin-stepper__indicators"
+        aria-label={t("stepProgressAria")}
+      >
         {steps.map((s, i) => (
           <div
             key={s}
@@ -483,14 +485,25 @@ export function CheckinStepper({
                   ? "checkin-stepper__indicator--done"
                   : ""
             }`}
+            aria-current={i === currentStep ? "step" : undefined}
           >
-            <span className="checkin-stepper__indicator-num">{i + 1}</span>
+            <span className="checkin-stepper__indicator-num" aria-hidden>
+              {i + 1}
+            </span>
             <span className="checkin-stepper__indicator-label">
               {t(`step.${s}`)}
             </span>
           </div>
         ))}
-      </div>
+      </nav>
+      <div
+        className="checkin-stepper__progress sr-only"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={steps.length}
+        aria-valuenow={currentStep + 1}
+        aria-label={t("stepProgressAria")}
+      />
 
       {/* Step content */}
       <div className="checkin-stepper__content">
@@ -636,7 +649,9 @@ export function CheckinStepper({
       ) : null}
 
       {error ? (
-        <div className="checkin-stepper__error">{error}</div>
+        <div className="checkin-stepper__error" role="alert" aria-live="assertive">
+          {error}
+        </div>
       ) : null}
 
       {/* Navigation buttons */}

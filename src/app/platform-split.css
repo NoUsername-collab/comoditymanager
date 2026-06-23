@@ -57,12 +57,12 @@
 
 .platform-header--split .platform-header__cta:hover {
   opacity: 1;
-  box-shadow: 0 8px 24px color-mix(in srgb, #2563eb 32%, transparent);
+  background: #1e40af;
 }
 
 .platform-header--split .platform-header__cta:active {
   opacity: 1;
-  box-shadow: 0 4px 12px color-mix(in srgb, #2563eb 25%, transparent);
+  box-shadow: none;
   transform: translateY(0);
   filter: brightness(0.92);
   transition-duration: 0.06s;
@@ -103,18 +103,7 @@
   --site-accent-fg: #ffffff;
   position: relative;
   color: var(--light-fg);
-  background:
-    radial-gradient(
-      ellipse 85% 55% at 8% -5%,
-      var(--light-glow) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 45% 35% at 92% 8%,
-      color-mix(in srgb, #93c5fd 35%, transparent) 0%,
-      transparent 55%
-    ),
-    linear-gradient(180deg, #ffffff 0%, var(--light-bg) 42%, var(--light-bg-soft) 100%);
+  background: var(--light-bg);
 }
 
 .landing-surface--light::after {
@@ -131,13 +120,7 @@
   --site-accent-fg: #ffffff;
   position: relative;
   color: var(--site-fg);
-  background:
-    radial-gradient(
-      ellipse 80% 50% at 50% 0%,
-      color-mix(in srgb, #bfdbfe 55%, transparent) 0%,
-      transparent 62%
-    ),
-    linear-gradient(180deg, var(--light-bg-soft) 0%, #ffffff 100%);
+  background: var(--light-bg-soft);
 }
 
 .landing-surface--soft::before {
@@ -147,12 +130,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--light-accent) 25%, transparent) 50%,
-    transparent 100%
-  );
+  background: color-mix(in srgb, var(--light-accent) 18%, transparent);
   pointer-events: none;
 }
 
@@ -172,19 +150,7 @@
 }
 
 .landing-surface--light .landing-hero__glow {
-  top: -15%;
-  left: -5%;
-  transform: none;
-  width: 58%;
-  height: 72%;
-  max-width: none;
-  max-height: none;
-  border-radius: 0;
-  background: radial-gradient(
-    ellipse at 25% 35%,
-    color-mix(in srgb, #ffffff 90%, #93c5fd 25%) 0%,
-    transparent 68%
-  );
+  display: none;
 }
 
 .landing-surface--light .landing-hero__badge {
@@ -195,20 +161,18 @@
 
 .landing-surface--light .landing-hero__title {
   color: var(--light-fg);
-  background: linear-gradient(
-    120deg,
-    #0f172a 0%,
-    #1e3a8a 55%,
-    #2563eb 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
-.landing-surface--light .landing-hero__subtitle,
+.landing-surface--light .landing-hero__subtitle {
+  color: var(--light-muted);
+}
+
 .landing-surface--light .landing-hero__note {
   color: var(--light-muted);
+}
+
+.landing-surface--light .landing-hero__tools-link {
+  color: var(--light-accent-deep);
 }
 
 .landing-surface--light .landing-cta--ghost {
@@ -230,16 +194,36 @@
   transition-duration: 0.06s;
 }
 
+.landing-surface--light .landing-cta--link {
+  color: var(--light-muted);
+  text-decoration-color: color-mix(in srgb, var(--light-muted) 45%, transparent);
+}
+
+.landing-surface--light .landing-cta--link:hover {
+  color: var(--light-accent-deep);
+  text-decoration-color: var(--light-accent);
+}
+
+.landing-surface--soft .landing-cta--link {
+  color: var(--light-muted);
+  text-decoration-color: color-mix(in srgb, var(--light-muted) 45%, transparent);
+}
+
+.landing-surface--soft .landing-cta--link:hover {
+  color: var(--light-accent-deep);
+  text-decoration-color: var(--light-accent);
+}
+
 .landing-surface--light .landing-cta--primary {
-  background: linear-gradient(145deg, #1d4ed8 0%, #3b82f6 100%);
+  background: var(--light-accent-deep, #1d4ed8);
   color: #ffffff;
-  box-shadow: 0 12px 32px color-mix(in srgb, #2563eb 28%, transparent);
+  box-shadow: none;
 }
 
 .landing-surface--light .landing-stat {
   background: #ffffff;
   border-color: color-mix(in srgb, var(--light-accent) 18%, var(--light-border));
-  box-shadow: 0 10px 28px color-mix(in srgb, #1d4ed8 8%, transparent);
+  box-shadow: none;
 }
 
 .landing-surface--light .landing-stat__value {
@@ -270,7 +254,7 @@
 .landing-surface--light .landing-comparison__col {
   background: var(--light-card);
   border-color: var(--light-border);
-  box-shadow: 0 12px 32px color-mix(in srgb, #1d4ed8 6%, transparent);
+  box-shadow: none;
 }
 
 .landing-surface--light .landing-comparison__col--bad {
@@ -307,7 +291,7 @@
 .landing-surface--soft .landing-feature {
   background: #ffffff;
   border-color: var(--light-border);
-  box-shadow: 0 12px 36px color-mix(in srgb, #1d4ed8 7%, transparent);
+  box-shadow: none;
 }
 
 .landing-surface--soft .landing-feature:hover {
@@ -332,12 +316,7 @@
 }
 
 .landing-surface--soft .landing-final-cta {
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in srgb, var(--light-accent-soft) 55%, transparent) 50%,
-    transparent 100%
-  );
+  background: color-mix(in srgb, var(--light-accent-soft) 35%, transparent);
 }
 
 .landing-surface--soft .landing-cta--ghost {
@@ -361,14 +340,12 @@
 .landing-surface--light .landing-price-card {
   background: #fff;
   border-color: var(--light-border);
-  box-shadow: 0 16px 40px color-mix(in srgb, #1d4ed8 7%, transparent);
+  box-shadow: none;
 }
 
 .landing-surface--light .landing-price-card--featured {
   border-color: var(--light-accent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--light-accent) 22%, transparent),
-    0 20px 48px color-mix(in srgb, #2563eb 16%, transparent);
+  box-shadow: none;
 }
 
 .landing-surface--light .landing-price-card__amount,
@@ -398,14 +375,8 @@
 
 .landing-showcase--pro {
   border-color: color-mix(in srgb, var(--light-accent) 22%, var(--light-border));
-  background: linear-gradient(
-    155deg,
-    #ffffff 0%,
-    var(--light-bg-soft) 100%
-  );
-  box-shadow:
-    0 28px 64px color-mix(in srgb, #1d4ed8 14%, transparent),
-    0 0 0 1px color-mix(in srgb, #93c5fd 35%, transparent);
+  background: var(--light-card);
+  box-shadow: none;
 }
 
 .landing-showcase--pro .landing-showcase__chrome {
@@ -485,4 +456,71 @@
 
 .landing-surface--soft .landing-faq__a {
   color: var(--light-muted);
+}
+
+/* Tools, trust cards, social proof (split theme) */
+.landing-surface--light .landing-social-proof {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--light-accent) 18%, var(--light-border));
+}
+
+.landing-surface--light .landing-social-proof__quote p {
+  color: var(--light-fg);
+}
+
+.landing-surface--light .landing-social-proof__caption {
+  color: var(--light-muted);
+}
+
+.landing-surface--soft .landing-tool {
+  background: #fff;
+  border-color: var(--light-border);
+}
+
+.landing-surface--soft .landing-tool:hover {
+  border-color: color-mix(in srgb, var(--light-accent) 35%, var(--light-border));
+}
+
+.landing-surface--soft .landing-tool__icon-wrap {
+  background: var(--light-accent-soft);
+  color: var(--light-accent-deep);
+}
+
+.landing-surface--soft .landing-tool__title {
+  color: var(--light-fg);
+}
+
+.landing-surface--soft .landing-tool__desc {
+  color: var(--light-muted);
+}
+
+.landing-surface--soft .landing-trust-card {
+  background: #fff;
+  border-color: var(--light-border);
+}
+
+.landing-surface--soft .landing-trust-card__title {
+  color: var(--light-fg);
+}
+
+.landing-surface--soft .landing-trust-card__desc,
+.landing-surface--soft .landing-trust-card__legal {
+  color: var(--light-muted);
+}
+
+.landing-surface--soft .landing-trust-card__legal a {
+  color: var(--light-accent-deep);
+}
+
+.landing-showcase--pro .landing-showcase__gantt-head {
+  border-bottom-color: var(--light-border);
+}
+
+.landing-showcase--pro .landing-showcase__gantt-day,
+.landing-showcase--pro .landing-showcase__gantt-room {
+  color: var(--light-muted);
+}
+
+.landing-showcase--pro .landing-showcase__gantt-track {
+  background: color-mix(in srgb, var(--light-muted) 10%, transparent);
 }

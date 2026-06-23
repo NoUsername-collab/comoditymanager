@@ -165,6 +165,17 @@ describe("bookingCancelledToGuest", () => {
     // No "Motiv" label should appear in the text when no reason
     expect(result.text).not.toContain("Motiv:");
   });
+
+  it("escapes HTML in guest-provided fields", () => {
+    const result = bookingCancelledToGuest({
+      ...data,
+      guestName: '<img src=x onerror="alert(1)">',
+      reason: "<script>evil</script>",
+    });
+    expect(result.html).not.toContain("<script>");
+    expect(result.html).toContain("&lt;script&gt;evil&lt;/script&gt;");
+    expect(result.html).not.toContain('onerror="alert(1)"');
+  });
 });
 
 // ---------------------------------------------------------------------------

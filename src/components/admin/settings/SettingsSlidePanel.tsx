@@ -23,6 +23,7 @@ export function SettingsSlidePanel({
 }: Props) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
+  const titleId = useId();
 
   return (
     <section
@@ -33,12 +34,14 @@ export function SettingsSlidePanel({
       ]
         .filter(Boolean)
         .join(" ")}
+      aria-labelledby={titleId}
     >
       <button
         type="button"
         className="admin-settings-panel__trigger"
         aria-expanded={open}
         aria-controls={panelId}
+        id={titleId}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="admin-settings-panel__trigger-main">
@@ -95,6 +98,7 @@ function PanelBody({
       ]
         .filter(Boolean)
         .join(" ")}
+      hidden={!open}
     >
       <div className="admin-settings-panel__inner">{children}</div>
     </div>

@@ -32,7 +32,7 @@ import { getTeamPermissions } from "@/services/pension-settings";
  * and tenant member role. Calling requireStaff() 5x in one request
  * = 1 set of network calls, not 5.
  */
-const cachedStaffContext = cache(async () => {
+export const cachedStaffContext = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -58,11 +58,13 @@ const cachedStaffContext = cache(async () => {
 
 /** Shell chrome: admin flag + location unlock without extra tenant_members queries. */
 export const getStaffShellAccess = cache(async () => {
-  const ctx = await cachedStaffContext();
+  const [ctx, permissions] = await Promise.all([
+    cachedStaffContext(),
+    getTeamPermissions(),
+  ]);
   if (!ctx.user || !ctx.role) {
     return { isAdmin: false, locationUnlocked: false };
   }
-  const permissions = await getTeamPermissions();
   return {
     isAdmin: ctx.role === "admin",
     locationUnlocked: await locationAccessibleForMemberRole(
@@ -85,8 +87,10 @@ export async function requireStaff() {
 
   const adminPath = await getRequestAdminPath();
   const onMfaExemptRoute = adminPath ? isMfaExemptAdminPath(adminPath) : false;
+  // proxy.ts already enforced MFA for tenant admin navigations (x-admin-path).
+  const mfaCheckedOnEdge = adminPath != null;
 
-  if (!onMfaExemptRoute) {
+  if (!onMfaExemptRoute && !mfaCheckedOnEdge) {
     const mfaRedirect = await resolveMfaRedirectPath(ctx.supabase, {
       email: ctx.user.email,
       memberRole: ctx.memberRole,

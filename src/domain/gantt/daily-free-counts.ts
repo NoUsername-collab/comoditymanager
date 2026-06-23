@@ -1,6 +1,6 @@
 import { nightOccupied } from "@/lib/stay-dates";
 import type { OccupancySegment } from "@/domain/occupancy/types";
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/domain/booking/row";
 import type { GanttRoom } from "@/domain/gantt/types";
 
 export type DailyFreeCount = {

@@ -1,5 +1,14 @@
 import type { PublicContactConfig } from "@/features/public-site/domain/types";
 
+const CONTACT_ICONS: Record<string, string> = {
+  email: "✉",
+  phone: "☎",
+  whatsapp: "WA",
+  telegram: "TG",
+  facebook: "f",
+  instagram: "◎",
+};
+
 function normalizeUrl(value: string | null | undefined, prefix?: string): string | null {
   const trimmed = value?.trim();
   if (!trimmed) return null;
@@ -56,31 +65,50 @@ export function buildPublicContactLinks(contact: PublicContactConfig) {
 export function PublicContactBar({
   contact,
   title = "Contact",
+  emptyHint,
 }: {
   contact: PublicContactConfig;
   title?: string;
+  emptyHint?: string;
 }) {
   const links = buildPublicContactLinks(contact);
-  if (links.length === 0) return null;
 
   return (
-    <section className="pub-contact-bar" aria-label={title}>
+    <section
+      className={[
+        "pub-contact-bar",
+        links.length === 0 && "pub-contact-bar--empty",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      aria-label={title}
+    >
       <div className="pub-contact-bar__inner">
-        <p className="pub-contact-bar__title">{title}</p>
-        <div className="pub-contact-bar__links">
-          {links.map((link) => (
-            <a
-              key={link.id}
-              href={link.href}
-              className={`pub-contact-chip pub-contact-chip--${link.id}`}
-              {...(link.external
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-            >
-              {link.label}
-            </a>
-          ))}
+        <div className="pub-contact-bar__head">
+          <p className="pub-contact-bar__title">{title}</p>
+          {links.length === 0 && emptyHint ? (
+            <p className="pub-contact-bar__empty">{emptyHint}</p>
+          ) : null}
         </div>
+        {links.length > 0 ? (
+          <div className="pub-contact-bar__links">
+            {links.map((link) => (
+              <a
+                key={link.id}
+                href={link.href}
+                className={`pub-contact-chip pub-contact-chip--${link.id}`}
+                {...(link.external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+              >
+                <span className="pub-contact-chip__icon" aria-hidden>
+                  {CONTACT_ICONS[link.id] ?? "•"}
+                </span>
+                <span className="pub-contact-chip__label">{link.label}</span>
+              </a>
+            ))}
+          </div>
+        ) : null}
       </div>
     </section>
   );

@@ -21,6 +21,12 @@ import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 
+const GUEST_PROFILE_SUMMARY_SELECT =
+  "guest_id, stars_avg, flag_level, blacklist_reason, review_count, completed_stays, total_nights, last_stay_check_out, manual_note, blacklisted_at, blacklisted_by, blacklisted_by_email, unblacklisted_at, unblacklisted_by, unblacklisted_by_email, created_at, updated_at";
+
+const GUEST_STAY_REVIEW_SELECT =
+  "booking_id, guest_id, stars, polarity, intensity, note, reviewed_at, reviewed_by, reviewed_by_email, updated_at";
+
 type BookingReviewCheckRow = {
   id: string;
   guest_id: string | null;
@@ -40,7 +46,7 @@ async function fetchGuestProfileRow(
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
-    .select("*")
+    .select(GUEST_PROFILE_SUMMARY_SELECT)
     .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .maybeSingle();
@@ -83,12 +89,11 @@ async function listGuestProfileSummariesImpl(
 ): Promise<Map<string, GuestBookingFlagSummary>> {
   const uniqueIds = [...new Set(guestIds.filter(Boolean))];
   if (uniqueIds.length === 0) return new Map();
-  await ensureGuestProfiles(uniqueIds);
 
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_profiles")
-    .select("*")
+    .select(GUEST_PROFILE_SUMMARY_SELECT)
     .eq("tenant_id", tenantId)
     .in("guest_id", uniqueIds);
 
@@ -136,7 +141,7 @@ export async function listGuestStayReviewsByBookingIds(
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_stay_reviews")
-    .select("*")
+    .select(GUEST_STAY_REVIEW_SELECT)
     .eq("tenant_id", tenantId)
     .in("booking_id", uniqueIds);
 
@@ -158,7 +163,7 @@ export async function listGuestStayReviewsForGuest(
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
     .from("guest_stay_reviews")
-    .select("*")
+    .select(GUEST_STAY_REVIEW_SELECT)
     .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
     .order("reviewed_at", { ascending: false });
@@ -220,7 +225,7 @@ export async function recomputeGuestProfile(
     })
     .eq("tenant_id", tenantId)
     .eq("guest_id", guestId)
-    .select("*")
+    .select(GUEST_PROFILE_SUMMARY_SELECT)
     .single();
 
   if (error) throw new Error(error.message);

@@ -3,22 +3,19 @@
 import { Link, usePathname } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { useMemo, useState } from "react";
 import {
   filterSettingsNav,
   resolveActiveSettingsNavId,
   SETTINGS_NAV_GROUPS,
   type SettingsNavGroup,
+  type SettingsNavItem,
 } from "@/domain/settings/settings-nav";
 import { navItemHasIssues } from "@/domain/setup-issues/paths";
 import type { SetupIssue } from "@/domain/setup-issues/types";
 import { SetupIssueBadge } from "@/components/admin/setup-issues/SetupIssueBadge";
 
 import type { TeamPermissions } from "@/domain/settings/team-permissions";
-
-type SummaryChip = {
-  label: string;
-  value: ReactNode;
-};
 
 type Props = {
   role: "admin" | "operator";
@@ -43,6 +40,7 @@ export function SettingsShell({
 }: Props) {
   const t = useTranslations("admin.pages.settings");
   const pathname = usePathname();
+  const [query, setQuery] = useState("");
 
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
     role,
@@ -50,7 +48,33 @@ export function SettingsShell({
     teamPermissions,
   });
   const activeId = resolveActiveSettingsNavId(pathname);
+  const normalizedQuery = query.trim().toLowerCase();
 
+  const filteredGroups = useMemo(() => {
+    if (!normalizedQuery) return navGroups;
+
+    return navGroups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => {
+          const label = t(item.labelKey).toLowerCase();
+          const desc = item.descriptionKey ? t(item.descriptionKey).toLowerCase() : "";
+          return (
+            label.includes(normalizedQuery) ||
+            desc.includes(normalizedQuery) ||
+            item.id.includes(normalizedQuery)
+          );
+        }),
+      }))
+      .filter((group) => group.items.length > 0);
+  }, [navGroups, normalizedQuery, t]);
+
+  const jumpItems = useMemo(
+    () => navGroups.flatMap((group) => group.items).filter((item) => item.id !== "overview"),
+    [navGroups],
+  );
+
+  const onOverview = pathname.replace(/\/$/, "") === "/admin/settings";
   const roleLabel =
     memberRole === "owner"
       ? t("roleOwner")
@@ -68,16 +92,35 @@ export function SettingsShell({
           ) : null}
         </div>
 
+        <label className="settings-shell__search">
+          <span className="sr-only">{t("navSearchLabel")}</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={t("navSearchPlaceholder")}
+            className="settings-shell__search-input"
+            autoComplete="off"
+            enterKeyHint="search"
+          />
+        </label>
+
         <nav className="settings-shell__nav-groups">
-          {navGroups.map((group) => (
-            <SettingsNavGroupBlock
-              key={group.id}
-              group={group}
-              activeId={activeId}
-              setupIssues={setupIssues}
-              t={t}
-            />
-          ))}
+          {filteredGroups.length > 0 ? (
+            filteredGroups.map((group) => (
+              <SettingsNavGroupBlock
+                key={group.id}
+                group={group}
+                activeId={activeId}
+                setupIssues={setupIssues}
+                t={t}
+              />
+            ))
+          ) : (
+            <p className="settings-shell__search-empty" role="status">
+              {t("navSearchEmpty")}
+            </p>
+          )}
         </nav>
 
         <div className="settings-shell__nav-foot">
@@ -91,7 +134,35 @@ export function SettingsShell({
         </div>
       </aside>
 
-      <div className="settings-shell__main">{children}</div>
+      <div className="settings-shell__main">
+        {!onOverview && jumpItems.length > 0 ? (
+          <nav
+            className="settings-quick-jump"
+            aria-label={t("quickJumpAria")}
+          >
+            <div className="settings-quick-jump__scroll">
+              {jumpItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className={[
+                    "settings-quick-jump__chip",
+                    item.id === activeId && "settings-quick-jump__chip--active",
+                    navItemHasIssues(setupIssues, item) &&
+                      "settings-quick-jump__chip--issue",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  aria-current={item.id === activeId ? "page" : undefined}
+                >
+                  {t(item.labelKey)}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        ) : null}
+        {children}
+      </div>
     </div>
   );
 }
@@ -111,36 +182,54 @@ function SettingsNavGroupBlock({
     <div className="settings-shell__group">
       <p className="settings-shell__group-label">{t(group.labelKey)}</p>
       <ul className="settings-shell__group-list">
-        {group.items.map((item) => {
-          const active = item.id === activeId;
-          const hasIssue = navItemHasIssues(setupIssues, item);
-          return (
-            <li key={item.id}>
-              <Link
-                href={item.href}
-                className={[
-                  "settings-shell__link",
-                  active && "settings-shell__link--active",
-                  hasIssue && "settings-shell__link--has-issue",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                aria-current={active ? "page" : undefined}
-              >
-                <span className="settings-shell__link-row">
-                  <span className="settings-shell__link-label">{t(item.labelKey)}</span>
-                  {hasIssue ? (
-                    <SetupIssueBadge className="settings-shell__issue-badge" />
-                  ) : null}
-                </span>
-                {item.descriptionKey ? (
-                  <span className="settings-shell__link-desc">{t(item.descriptionKey)}</span>
-                ) : null}
-              </Link>
-            </li>
-          );
-        })}
+        {group.items.map((item) => (
+          <SettingsNavLink
+            key={item.id}
+            item={item}
+            active={item.id === activeId}
+            hasIssue={navItemHasIssues(setupIssues, item)}
+            t={t}
+          />
+        ))}
       </ul>
     </div>
+  );
+}
+
+function SettingsNavLink({
+  item,
+  active,
+  hasIssue,
+  t,
+}: {
+  item: SettingsNavItem;
+  active: boolean;
+  hasIssue: boolean;
+  t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <li>
+      <Link
+        href={item.href}
+        className={[
+          "settings-shell__link",
+          active && "settings-shell__link--active",
+          hasIssue && "settings-shell__link--has-issue",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        aria-current={active ? "page" : undefined}
+      >
+        <span className="settings-shell__link-row">
+          <span className="settings-shell__link-label">{t(item.labelKey)}</span>
+          {hasIssue ? (
+            <SetupIssueBadge className="settings-shell__issue-badge" />
+          ) : null}
+        </span>
+        {item.descriptionKey ? (
+          <span className="settings-shell__link-desc">{t(item.descriptionKey)}</span>
+        ) : null}
+      </Link>
+    </li>
   );
 }

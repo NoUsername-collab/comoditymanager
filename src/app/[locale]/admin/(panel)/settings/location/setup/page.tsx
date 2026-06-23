@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { AdminRoomCatalogPanel } from "@/components/admin/catalog/AdminRoomCatalogPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { listRoomOptions, listRoomTypes } from "@/services/room-catalog";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
@@ -40,9 +40,7 @@ export default async function LocationSetupPage() {
   }
 
   return (
-    <>
-      <SettingsPageHeader title={tPage("setup.title")} description={tPage("setup.description")} />
-
+    <SettingsPageLayout title={tPage("setup.title")} description={tPage("setup.description")}>
       <div className="settings-overview__grid mb-4">
         <Link href="/admin/settings/location/structure" className="settings-overview-card">
           <span className="settings-overview-card__title">{tPage("structure.cardStructureTitle")}</span>
@@ -61,6 +59,6 @@ export default async function LocationSetupPage() {
           catalogError={catalogError}
         />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

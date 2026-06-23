@@ -6,19 +6,27 @@
  * devtools manipulation from forging a simulation state.
  */
 
+import { cache } from "react";
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import type { SimState, SimStatus } from "./sim-types";
 import { SIM_COOKIE } from "./sim-types";
 import { todayReal } from "./sim-clock";
 
-/** Secret for signing sim cookies — falls back to a build-time random */
+import { isProductionRuntime } from "@/lib/security/production-runtime";
+
+/** Secret for signing sim cookies — never reuse the Supabase service role key. */
 function getSimSecret(): string {
-  return (
-    process.env.SUPABASE_SERVICE_ROLE_KEY ??
-    process.env.SIM_COOKIE_SECRET ??
-    "sim-dev-fallback-secret"
-  );
+  const secret = process.env.SIM_COOKIE_SECRET?.trim();
+  if (secret && secret.length >= 32) return secret;
+
+  if (isProductionRuntime()) {
+    throw new Error(
+      "SIM_COOKIE_SECRET must be set in production when using simulation (min 32 chars)"
+    );
+  }
+
+  return secret ?? "sim-dev-fallback-secret";
 }
 
 function signPayload(payload: string): string {
@@ -68,7 +76,7 @@ function decodeSimCookie(raw: string): SimState | null {
  * Read the current simulation status from cookies.
  * Safe to call in any server context — returns inactive if cookie is absent or invalid.
  */
-export async function getSimStatus(): Promise<SimStatus> {
+export const getSimStatus = cache(async (): Promise<SimStatus> => {
   try {
     const jar = await cookies();
     const raw = jar.get(SIM_COOKIE)?.value;
@@ -80,7 +88,7 @@ export async function getSimStatus(): Promise<SimStatus> {
   } catch {
     return { active: false };
   }
-}
+});
 
 /**
  * Check whether sim is active (reads cookie).

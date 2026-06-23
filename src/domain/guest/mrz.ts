@@ -7,6 +7,10 @@ import {
   type NationalIdType,
 } from "@/domain/guest/national-id";
 import { detectMrzFormat, normalizeMrzBlock, splitMrzInput } from "@/domain/guest/mrz-ocr";
+import {
+  isMrzParseChecksumValid,
+  tryParseMrzBlock,
+} from "@/domain/guest/mrz-parse";
 import type { GuestPrecheckinDocType } from "@/domain/guest-app/precheckin-prefill";
 
 export type MrzMappedIdentity = {
@@ -30,7 +34,7 @@ export type MrzMappedIdentity = {
 
 export type MrzParseResult =
   | { ok: true; data: MrzMappedIdentity }
-  | { ok: false; error: "empty" | "invalid_format" | "unsupported" };
+  | { ok: false; error: "empty" | "invalid_format" | "unsupported" | "checksum_failed" };
 
 const COUNTRY_LABELS: Record<string, string> = {
   ROU: "România",
@@ -170,11 +174,19 @@ export async function parseMrzIdentity(input: string | string[]): Promise<MrzPar
   const lines = normalizeMrzBlock(rawLines) ?? rawLines;
   if (!detectMrzFormat(lines)) return { ok: false, error: "invalid_format" };
 
-  const { parseMrzLinesBestEffort } = await import("@/domain/guest/mrz-parse");
-  const attempt = parseMrzLinesBestEffort(lines);
-  if (!attempt) return { ok: false, error: "unsupported" };
+  const attempt = tryParseMrzBlock(lines);
+  if (!attempt) {
+    if (detectMrzFormat(lines)) {
+      return { ok: false, error: "checksum_failed" };
+    }
+    return { ok: false, error: "unsupported" };
+  }
 
   const parsed = attempt.parsed;
+  if (!isMrzParseChecksumValid(parsed)) {
+    return { ok: false, error: "checksum_failed" };
+  }
+
   const fields = parsed.fields as Record<string, unknown>;
   const nationalityCode = String(fields.nationality ?? fields.issuingState ?? "").trim() || null;
   const rawNames = sanitizeMrzPersonNames(
@@ -207,7 +219,7 @@ export async function parseMrzIdentity(input: string | string[]): Promise<MrzPar
     nationalIdType: national.type,
     expiryDate: mrzExpiryDateToIso(String(fields.expirationDate ?? "")),
     format: parsed.format,
-    checksumValid: parsed.valid,
+    checksumValid: isMrzParseChecksumValid(parsed),
     usedAutocorrect: attempt.usedAutocorrect,
     mrzLines: lines,
   };

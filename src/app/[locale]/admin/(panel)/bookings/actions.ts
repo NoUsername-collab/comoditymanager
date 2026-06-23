@@ -88,10 +88,13 @@ export async function confirmBookingAction(formData: FormData) {
   })();
 
   revalidateBookingDetailSurfaces(id);
-  const dest =
-    wasCancelled && !returnTo.includes("confirmed=")
+  let dest =
+    wasCancelled && !returnTo.includes("reaccepted=")
       ? appendQueryParam(returnTo, "reaccepted", "1")
       : returnTo;
+  if (!wasCancelled && !dest.includes("confirmed=")) {
+    dest = appendQueryParam(dest, "confirmed", "1");
+  }
   await redirect(dest);
 }
 

@@ -7,6 +7,11 @@ import type { BookingRow } from "@/services/bookings/types";
 import { getCheckedInRoomsByBookingIds, getKeysHandedRoomsByBookingIds, getRoomIdentityStatusByBookingIds } from "./queries";
 import { syncBookingOperativeCheckInFromRecord } from "./sync";
 
+export type AttachCheckinRecordOptions = {
+  /** Repair bookings missing actual_check_in_at when a checkin row exists. Off on read paths. */
+  repairOrphans?: boolean;
+};
+
 type CheckinLite = {
   booking_id: string;
   checked_in_at: string;
@@ -85,7 +90,9 @@ async function loadGuestIdentityStatuses(
  */
 export async function attachCheckinRecordState(
   stays: BookingRow[],
+  options?: AttachCheckinRecordOptions,
 ): Promise<BookingRow[]> {
+  const repairOrphans = options?.repairOrphans === true;
   if (!stays.length) return stays;
 
   try {
@@ -149,7 +156,7 @@ export async function attachCheckinRecordState(
       (stay) => latestByBooking.has(stay.id) && !stay.actual_check_in_at,
     );
 
-    if (orphans.length > 0) {
+    if (repairOrphans && orphans.length > 0) {
       await Promise.allSettled(
         orphans.map((stay) =>
           syncBookingOperativeCheckInFromRecord(

@@ -74,7 +74,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     for (const tenant of tenants) {
       try {
-        const emailSettings = await getEmailSettingsForTenant(tenant.id);
+        const [emailSettings, summary, recipients] = await Promise.all([
+          getEmailSettingsForTenant(tenant.id),
+          buildDailySummaryForTenant(tenant.id),
+          getTenantNotificationEmails(tenant.id),
+        ]);
+
         if (
           !emailSettings.email_enabled ||
           !emailSettings.email_notify_daily_summary
@@ -87,13 +92,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           continue;
         }
 
-        const summary = await buildDailySummaryForTenant(tenant.id);
         if (!summary) {
           results.push({ slug: tenant.slug, ok: false, error: "summary_unavailable" });
           continue;
         }
 
-        const recipients = await getTenantNotificationEmails(tenant.id);
         if (recipients.length === 0) {
           results.push({ slug: tenant.slug, ok: true, skipped: "no_recipients" });
           continue;

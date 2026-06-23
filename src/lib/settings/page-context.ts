@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getTranslations } from "next-intl/server";
 import { requireStaff } from "@/lib/auth/require-staff";
 import {
@@ -12,14 +13,16 @@ import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 
-export async function loadSettingsStaffContext() {
-  const staff = await requireStaff();
-  const pensionResult = await getPensionSettings()
-    .then((settings) => ({ settings, error: null as string | null }))
-    .catch((e) => ({
-      settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
-      error: e instanceof Error ? e.message : "generic",
-    }));
+export const loadSettingsStaffContext = cache(async () => {
+  const [staff, pensionResult] = await Promise.all([
+    requireStaff(),
+    getPensionSettings()
+      .then((settings) => ({ settings, error: null as string | null }))
+      .catch((e) => ({
+        settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
+        error: e instanceof Error ? e.message : "generic",
+      })),
+  ]);
 
   const statisticsVisibility = pensionStatisticsVisibility(pensionResult.settings);
   const teamPermissions = pensionTeamPermissions(pensionResult.settings);
@@ -38,7 +41,7 @@ export async function loadSettingsStaffContext() {
     teamPermissions,
     appearance,
   };
-}
+});
 
 export type SettingsStaffContext = Awaited<
   ReturnType<typeof loadSettingsStaffContext>
@@ -76,7 +79,7 @@ export async function buildSettingsAlerts(
 ): Promise<SettingsAlert[]> {
   const t = await getTranslations("admin.pages.settings");
   const alerts: SettingsAlert[] = [
-    params.saved === "1" ? { tone: "success", message: t("saved") } : null,
+    params.saved === "1" ? { tone: "success", message: t("savedGeneric") } : null,
     params.location === "locked"
       ? { tone: "warning", message: t("locationLocked") }
       : null,

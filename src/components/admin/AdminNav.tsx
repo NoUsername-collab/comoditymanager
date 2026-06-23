@@ -36,6 +36,10 @@ export function AdminNav({
         const isCazari = tab.href === "/admin/cazari";
         const badge = isCazari && cereriCount > 0 ? cereriCount : null;
         const quest = badge != null && !active;
+        const ariaLabel =
+          badge != null
+            ? t("staysPendingAria", { count: badge })
+            : undefined;
 
         return (
           <Link
@@ -58,6 +62,8 @@ export function AdminNav({
             ]
               .filter(Boolean)
               .join(" ")}
+            aria-current={active ? "page" : undefined}
+            aria-label={ariaLabel}
           >
             <AdminHudIcon
               name={tab.icon}

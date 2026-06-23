@@ -4,12 +4,12 @@
  */
 
 import { isAdminLocationUnlockCookieFresh } from "@/lib/auth/admin-location-unlock-cookie";
+import { isProductionRuntime } from "@/lib/security/production-runtime";
 
-function getEdgeLocationUnlockSecret(): string {
+function getEdgeLocationUnlockSecret(): string | null {
   const secret = process.env.ADMIN_LOCATION_UNLOCK_SECRET?.trim();
   if (secret && secret.length >= 32) return secret;
-  const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  if (serviceRole) return serviceRole;
+  if (isProductionRuntime()) return null;
   return "dev-insecure-unlock-secret";
 }
 
@@ -47,7 +47,10 @@ export async function isAdminLocationUnlockTokenValidEdge(
   const [payload, sig] = token.split(".");
   if (!payload || !sig) return false;
 
-  const expected = await signPayloadEdge(payload, getEdgeLocationUnlockSecret());
+  const secret = getEdgeLocationUnlockSecret();
+  if (!secret) return false;
+
+  const expected = await signPayloadEdge(payload, secret);
   if (!timingSafeEqualHex(sig, expected)) return false;
 
   const until = Number(payload);

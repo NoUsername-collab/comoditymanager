@@ -5,9 +5,10 @@ import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminLocationLockBar } from "@/components/admin/settings/AdminLocationLockBar";
 import { AdminStaffPasswordPanel } from "@/components/admin/settings/AdminStaffPasswordPanel";
-import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
+import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
+import type { SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 import { isFactoryResetEnabled } from "@/services/database-reset";
 import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
@@ -63,14 +64,12 @@ export default async function LocationAdminPage({
   ].filter((alert): alert is SettingsAlert => alert !== null);
 
   return (
-    <>
-      <SettingsPageHeader
-        title={tPage("title")}
-        description={tPage("description")}
-        actions={<AdminLocationLockBar />}
-      />
-      <SettingsAlerts alerts={alerts} />
-
+    <SettingsPageLayout
+      title={tPage("title")}
+      description={tPage("description")}
+      alerts={alerts}
+      actions={<AdminLocationLockBar />}
+    >
       {settings ? (
         <>
           <div className="settings-location-steps">
@@ -132,11 +131,11 @@ export default async function LocationAdminPage({
                   />
                 </label>
               </div>
-              <div className="settings-form-stack__submit">
+              <SettingsSaveBar>
                 <AdminSubmitButton type="submit" variant="primary" size="lg">
                   {tPage("operational.save")}
                 </AdminSubmitButton>
-              </div>
+              </SettingsSaveBar>
             </AdminPendingForm>
           </SettingsSection>
 
@@ -189,6 +188,6 @@ export default async function LocationAdminPage({
           ) : null}
         </>
       ) : null}
-    </>
+    </SettingsPageLayout>
   );
 }

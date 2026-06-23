@@ -197,11 +197,11 @@ export function StayQuickOps({
   }
 
   return (
-    <div className="stay-quick-ops flex flex-wrap items-center justify-end gap-1.5">
+    <div className="stay-quick-ops flex w-full flex-wrap items-stretch justify-stretch gap-1.5">
       <button
         type="button"
         className={[
-          "checkin-start-btn stay-quick-ops__checkin !px-2 !py-1 !text-[11px]",
+          "checkin-start-btn stay-quick-ops__checkin stay-quick-ops__btn",
           canContinueRooms && "checkin-start-btn--continue",
         ]
           .filter(Boolean)
@@ -219,7 +219,7 @@ export function StayQuickOps({
       </button>
       <button
         type="button"
-        className="rounded border border-sky-300 bg-sky-50 px-2 py-1 text-[11px] font-bold text-sky-900 disabled:cursor-not-allowed disabled:opacity-45"
+        className="stay-quick-ops__btn stay-quick-ops__checkout rounded border border-sky-300 bg-sky-50 font-bold text-sky-900 disabled:cursor-not-allowed disabled:opacity-45"
         disabled={(!canCheckOut && !canEditCheckOutEffective) || pending}
         title={checkoutTitle}
         onClick={handleCheckOut}
@@ -228,7 +228,7 @@ export function StayQuickOps({
       </button>
       <button
         type="button"
-        className="rounded border border-zinc-300 bg-zinc-50 px-2 py-1 text-[11px] font-bold text-zinc-800 disabled:cursor-not-allowed disabled:opacity-45"
+        className="stay-quick-ops__btn stay-quick-ops__shift rounded border border-zinc-300 bg-zinc-50 font-bold text-zinc-800 disabled:cursor-not-allowed disabled:opacity-45"
         disabled={!canMove || pending}
         title={!canMove ? labels.moveOnlyConfirmed : ""}
         onClick={() => moveStay(-1)}
@@ -237,7 +237,7 @@ export function StayQuickOps({
       </button>
       <button
         type="button"
-        className="rounded border border-zinc-300 bg-zinc-50 px-2 py-1 text-[11px] font-bold text-zinc-800 disabled:cursor-not-allowed disabled:opacity-45"
+        className="stay-quick-ops__btn stay-quick-ops__shift rounded border border-zinc-300 bg-zinc-50 font-bold text-zinc-800 disabled:cursor-not-allowed disabled:opacity-45"
         disabled={!canMove || pending}
         title={!canMove ? labels.moveOnlyConfirmed : ""}
         onClick={() => moveStay(1)}
@@ -249,7 +249,7 @@ export function StayQuickOps({
       ) : null}
       <Link
         href={`/admin/bookings/${bookingId}`}
-        className="rounded bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-200"
+        className="stay-quick-ops__btn stay-quick-ops__edit rounded bg-amber-100 font-bold text-amber-900 hover:bg-amber-200"
       >
         {labels.edit}
       </Link>

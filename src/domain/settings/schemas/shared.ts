@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isSafeHttpUrl, isSafeNavHref } from "@/lib/security/html-escape";
 
 export const localizedTextSchema = z
   .object({
@@ -13,7 +14,23 @@ export const optionalEmailSchema = z
   .transform((v) => (v === "" || v === null ? null : v));
 
 export const optionalUrlSchema = z
-  .union([z.literal(""), z.null(), z.string().url().max(2048)])
+  .union([
+    z.literal(""),
+    z.null(),
+    z
+      .string()
+      .max(2048)
+      .refine((v) => isSafeHttpUrl(v), { message: "invalid_url" }),
+  ])
+  .transform((v) => (v === "" || v === null ? null : v));
+
+export const safeNavHrefSchema = z
+  .string()
+  .max(2048)
+  .refine((v) => isSafeNavHref(v), { message: "invalid_href" });
+
+export const optionalSafeNavHrefSchema = z
+  .union([z.literal(""), z.null(), safeNavHrefSchema])
   .transform((v) => (v === "" || v === null ? null : v));
 
 export const hexColorSchema = z

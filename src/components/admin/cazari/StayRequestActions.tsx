@@ -7,6 +7,7 @@ import { quickConfirmCerereFromGanttAction } from "@/app/[locale]/admin/(panel)/
 import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import type { OperationalStay } from "@/components/admin/cazari/types";
 
 export type StayRequestActionLabels = {
@@ -28,7 +29,7 @@ export function StayRequestActions({
 }) {
   const router = useRouter();
   const tCommon = useTranslations("common");
-  const { showToast } = useAdminFx();
+  const { showToast, celebrateConfirm } = useAdminFx();
   const [pending, setPending] = useState(false);
 
   const bookingHref = `/admin/bookings/${stay.id}?return_to=${encodeURIComponent(returnTo)}`;
@@ -45,28 +46,30 @@ export function StayRequestActions({
         }
         return;
       }
-      showToast({
-        kind: "success",
-        title: labels.quickAcceptSuccess,
-        message: stay.guest_name,
-      });
+      celebrateConfirm(labels.quickAcceptSuccess, stay.guest_name);
       router.refresh();
     });
   }
 
   return (
-    <div className="stay-card__actions flex shrink-0 flex-col items-stretch gap-1 sm:min-w-[160px]">
-      <button
-        type="button"
+    <div
+      className="stay-card__actions flex w-full shrink-0 flex-col items-stretch gap-1 sm:min-w-[160px]"
+      aria-busy={pending || undefined}
+    >
+      <AdminButton
+        variant="primary"
+        size="sm"
+        fullWidth
         disabled={pending}
+        aria-busy={pending || undefined}
         onClick={quickAccept}
-        className="admin-cereri-fill inline-flex justify-center rounded-md px-2.5 py-1 text-[11px] font-semibold disabled:opacity-60"
+        className="admin-cereri-fill"
       >
-        {pending ? "..." : labels.quickAccept}
-      </button>
+        {pending ? tCommon("loading") : labels.quickAccept}
+      </AdminButton>
       <Link
         href={bookingHref}
-        className="inline-flex justify-center rounded-md border border-zinc-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-zinc-700 transition hover:bg-zinc-50 active:translate-y-px"
+        className="admin-btn admin-btn--secondary admin-btn--sm admin-btn--full stay-card__open-booking inline-flex items-center justify-center"
       >
         {labels.openBooking}
       </Link>

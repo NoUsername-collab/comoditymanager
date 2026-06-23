@@ -139,6 +139,14 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const showAlerts = showUnpaid || showMissingIdentity;
+  const showInBadge = occupancyPhase === "active" && !isCerere;
+  const showCapStrip =
+    showAlerts ||
+    showInBadge ||
+    guestTotal > 0 ||
+    todayHighlight === "arrival" ||
+    todayHighlight === "departure" ||
+    earlyDeparture;
 
   const className = [
     ganttStayChromeClass(),
@@ -240,104 +248,90 @@ export const GanttBookingBar = memo(function GanttBookingBar({
           )}
         </span>
 
-        {(showAlerts ||
-          todayHighlight ||
-          earlyDeparture ||
-          earlyDepartureNote ||
-          (occupancyPhase === "active" && !isCerere) ||
-          guestTotal > 0) && (
-          <span className="gantt-stay__details">
-            <span className="gantt-stay__details-head">
-                {todayHighlight === "arrival" && (
-                  <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
-                    ↓
-                  </span>
-                )}
-                {(todayHighlight === "departure" || earlyDeparture) && (
-                  <span
-                    className={[
-                      "gantt-stay__today-icon",
-                      earlyDeparture && "gantt-stay__today-icon--early-out",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                    aria-hidden
-                    title={
-                      earlyDepartureNote ??
-                      (todayHighlight === "departure"
-                        ? tGantt("stayCard.departureToday")
-                        : tGantt("stayCard.earlyDepartureRecorded"))
-                    }
-                  >
-                    ↑
-                  </span>
-                )}
-                {showAlerts && (
-                  <span className="gantt-stay__alerts" aria-hidden>
-                    {showUnpaid && (
-                      <span
-                        className="gantt-stay__alert gantt-stay__alert--unpaid"
-                        title={tGantt("stayCard.unpaid")}
-                      >
-                        $
-                      </span>
-                    )}
-                    {showMissingIdentity && (
-                      <span
-                        className="gantt-stay__alert gantt-stay__alert--identity"
-                        title={tGantt("stayCard.missingIdentity")}
-                      >
-                        ID
-                      </span>
-                    )}
-                  </span>
-                )}
-                <span className="gantt-stay__detail-badges">
-                  {occupancyPhase === "active" && !isCerere && (
-                    <span
-                      className={[
-                        "gantt-stay__phase-badge",
-                        checkinReady && "gantt-stay__phase-badge--ready",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                      title={
-                        checkinReady
-                          ? tGantt("stayCard.milestoneDone")
-                          : tGantt("stayCard.milestonePending")
-                      }
-                    >
-                      {checkinReady ? (
-                        <span
-                          className="gantt-stay__phase-gem"
-                          aria-hidden
-                        />
-                      ) : null}
-                      IN
-                    </span>
-                  )}
-                  {guestTotal > 0 && (
-                    <span
-                      className="gantt-stay__badge"
-                      title={`${guestTotal} persoane`}
-                    >
-                      {guestTotal}
-                    </span>
-                  )}
-                </span>
-              </span>
-              {earlyDepartureNote ? (
-                <span
-                  className="gantt-stay__policy-note gantt-stay__surface-text"
-                  title={earlyDepartureNote}
-                  aria-hidden
-                >
-                  {earlyDepartureNote}
-                </span>
-              ) : null}
+        {earlyDepartureNote ? (
+          <span
+            className="gantt-stay__policy-note gantt-stay__surface-text"
+            title={earlyDepartureNote}
+            aria-hidden
+          >
+            {earlyDepartureNote}
           </span>
-        )}
+        ) : null}
       </span>
+
+      {showCapStrip && (
+        <span className="gantt-stay__cap-strip">
+          {todayHighlight === "arrival" && (
+            <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
+              ↓
+            </span>
+          )}
+          {(todayHighlight === "departure" || earlyDeparture) && (
+            <span
+              className={[
+                "gantt-stay__today-icon",
+                earlyDeparture && "gantt-stay__today-icon--early-out",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              aria-hidden
+              title={
+                earlyDepartureNote ??
+                (todayHighlight === "departure"
+                  ? tGantt("stayCard.departureToday")
+                  : tGantt("stayCard.earlyDepartureRecorded"))
+              }
+            >
+              ↑
+            </span>
+          )}
+          {showAlerts && (
+            <span className="gantt-stay__alerts" aria-hidden>
+              {showUnpaid && (
+                <span
+                  className="gantt-stay__alert gantt-stay__alert--unpaid"
+                  title={tGantt("stayCard.unpaid")}
+                >
+                  $
+                </span>
+              )}
+              {showMissingIdentity && (
+                <span
+                  className="gantt-stay__alert gantt-stay__alert--identity"
+                  title={tGantt("stayCard.missingIdentity")}
+                >
+                  ID
+                </span>
+              )}
+            </span>
+          )}
+          {showInBadge && (
+            <span
+              className={[
+                "gantt-stay__phase-badge",
+                checkinReady && "gantt-stay__phase-badge--ready",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              title={
+                checkinReady
+                  ? tGantt("stayCard.milestoneDone")
+                  : tGantt("stayCard.milestonePending")
+              }
+            >
+              {checkinReady ? (
+                <span className="gantt-stay__phase-gem" aria-hidden />
+              ) : null}
+              IN
+            </span>
+          )}
+          {guestTotal > 0 && (
+            <span className="gantt-stay__badge" title={`${guestTotal} persoane`}>
+              {guestTotal}
+            </span>
+          )}
+        </span>
+      )}
 
       {!continuesAfter && (
         <span
@@ -351,14 +345,37 @@ export const GanttBookingBar = memo(function GanttBookingBar({
           title={capHealthLabel}
           aria-label={capHealthLabel}
         >
-          <span className="gantt-stay__end-tab-arrow" aria-hidden>
-            ›
-          </span>
-          {capHealth === "problem" ? (
+          {capHealth === "ok" ? (
+            <span className="gantt-stay__end-tab-bulb" aria-hidden>
+              <svg viewBox="0 0 12 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M6 1.25C4.07 1.25 2.5 2.82 2.5 4.75c0 1.35.67 2.54 1.7 3.26L5.75 10.1V11.5h.5v-1.4l1.55-1.99c1.03-.72 1.7-1.91 1.7-3.26 0-1.93-1.57-3.5-3.5-3.5Z"
+                  fill="#ecfccb"
+                  stroke="#14532d"
+                  strokeWidth="0.75"
+                />
+                <rect
+                  x="4.6"
+                  y="12"
+                  width="2.8"
+                  height="0.85"
+                  rx="0.2"
+                  fill="#dcfce7"
+                  stroke="#14532d"
+                  strokeWidth="0.45"
+                />
+                <rect x="4.85" y="13.1" width="2.3" height="0.65" rx="0.15" fill="#bbf7d0" />
+              </svg>
+            </span>
+          ) : capHealth === "problem" ? (
             <span className="gantt-stay__end-tab-mark" aria-hidden>
               !
             </span>
-          ) : null}
+          ) : (
+            <span className="gantt-stay__end-tab-arrow" aria-hidden>
+              ›
+            </span>
+          )}
         </span>
       )}
 

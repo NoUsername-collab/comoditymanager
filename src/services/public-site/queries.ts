@@ -6,9 +6,13 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
+import {
+  EMPTY_PENSION_CONTACT,
+  type PensionContact,
+} from "@/domain/settings/pension-identity";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getPensionIdentity } from "@/services/pension-identity";
-import { resolveContactWithPrimary } from "@/domain/settings/pension-identity";
+import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
 import {
   isPublicSiteMigrationMissing,
   mapPublicSiteSectionRow,
@@ -70,13 +74,20 @@ async function getPublicSiteConfigUncached(
 
   const supabase = createPublicAdminClient();
 
-  const settingsResult = await supabase
-    .from("public_site_settings")
-    .select(
-      "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo"
-    )
-    .eq("tenant_id", tenantId)
-    .maybeSingle();
+  const [settingsResult, sectionsResult] = await Promise.all([
+    supabase
+      .from("public_site_settings")
+      .select(
+        "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo"
+      )
+      .eq("tenant_id", tenantId)
+      .maybeSingle(),
+    supabase
+      .from("public_site_sections")
+      .select("id, section_type, sort_order, visible, payload")
+      .eq("tenant_id", tenantId)
+      .order("sort_order", { ascending: true }),
+  ]);
 
   if (settingsResult.error) {
     if (isPublicSiteMigrationMissing(settingsResult.error.message)) {
@@ -88,12 +99,6 @@ async function getPublicSiteConfigUncached(
   if (!settingsResult.data) {
     return fallback;
   }
-
-  const sectionsResult = await supabase
-    .from("public_site_sections")
-    .select("id, section_type, sort_order, visible, payload")
-    .eq("tenant_id", tenantId)
-    .order("sort_order", { ascending: true });
 
   if (sectionsResult.error) {
     if (isPublicSiteMigrationMissing(sectionsResult.error.message)) {
@@ -112,27 +117,15 @@ async function getPublicSiteConfigUncached(
     facebook: null,
     instagram: null,
   };
-  const resolvedContact = resolveContactWithPrimary(
-    primaryContact,
-    settings.contact,
-    settings.usePrimaryContact,
-  );
 
-  return {
-    ...settings,
+  return finalizePublicSiteConfig(settings, sections, {
     displayName,
     checkInTime,
     checkOutTime,
-    sections: sections.length > 0 ? sections : fallback.sections,
-    contact: {
-      email: resolvedContact.email ?? fallback.contact.email ?? null,
-      phone: resolvedContact.phone,
-      whatsapp: resolvedContact.whatsapp,
-      telegram: resolvedContact.telegram,
-      facebook: resolvedContact.facebook,
-      instagram: resolvedContact.instagram,
-    },
-  };
+    primaryContact,
+    fallbackSections: fallback.sections,
+    fallbackContactEmail: fallback.contact.email,
+  });
 }
 
 const getCachedPublicSiteConfig = (tenantId: string) =>
@@ -154,7 +147,27 @@ export async function getPublicSiteConfig(): Promise<PublicSiteConfig> {
   return loadPublicSiteConfig();
 }
 
+/** Admin reads use the same cached loader; save actions revalidate tags. */
 export async function getPublicSiteConfigForAdmin(): Promise<PublicSiteConfig> {
-  const tenantId = await resolveTenantIdForData();
-  return getPublicSiteConfigUncached(tenantId);
+  return loadPublicSiteConfig();
 }
+
+export type PublicSiteAdminBundle = {
+  config: PublicSiteConfig;
+  primaryContact: PensionContact;
+};
+
+/** Config + pension contact for settings UI — parallel cached service boundary. */
+export const getPublicSiteAdminBundle = cache(
+  async (): Promise<PublicSiteAdminBundle> => {
+    const [config, identity] = await Promise.all([
+      loadPublicSiteConfig(),
+      getPensionIdentity().catch(() => null),
+    ]);
+
+    return {
+      config,
+      primaryContact: identity?.contact ?? EMPTY_PENSION_CONTACT,
+    };
+  },
+);

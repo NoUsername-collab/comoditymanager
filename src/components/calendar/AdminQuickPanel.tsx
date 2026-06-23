@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { countCereriNoi, listCereriNoiPreview } from "@/services/bookings";
+import { countCereriNoi, listCereriNoiPreview } from "@/services/bookings/queries";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { PhoneBookingForm } from "./PhoneBookingForm";
 import { getTranslations } from "next-intl/server";

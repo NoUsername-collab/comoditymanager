@@ -9,6 +9,7 @@ import { useAdminFx } from "./AdminToastProvider";
 function AdminFlashFromUrlInner() {
   const tGuests = useTranslations("admin.guests");
   const tSettings = useTranslations("admin.pages.settings");
+  const tPublicSite = useTranslations("admin.pages.publicSite");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -53,8 +54,7 @@ function AdminFlashFromUrlInner() {
     } else if (saved === "1" && pathname.startsWith("/admin/settings")) {
       showToast({
         kind: "success",
-        title: tSettings("saved"),
-        message: tSettings("descriptionAdmin"),
+        title: resolveSettingsSavedToastTitle(pathname, tSettings, tPublicSite),
       });
     }
 
@@ -76,4 +76,15 @@ export function AdminFlashFromUrl() {
       <AdminFlashFromUrlInner />
     </Suspense>
   );
+}
+
+function resolveSettingsSavedToastTitle(
+  pathname: string,
+  tSettings: ReturnType<typeof useTranslations>,
+  tPublicSite: ReturnType<typeof useTranslations>,
+): string {
+  if (pathname.includes("/settings/public-site")) return tPublicSite("saved");
+  if (pathname.includes("/settings/appearance")) return tSettings("savedAppearance");
+  if (pathname.includes("/settings/identity")) return tSettings("identity.saved");
+  return tSettings("savedGeneric");
 }

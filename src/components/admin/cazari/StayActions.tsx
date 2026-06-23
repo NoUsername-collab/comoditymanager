@@ -22,7 +22,7 @@ export function StayActions({
       : labels.cancelRequestMsg(ref, stay.guest_name, period);
 
   return (
-    <div className="stay-card__actions flex shrink-0 flex-col items-stretch gap-1 sm:min-w-[270px]">
+    <div className="stay-card__actions flex w-full shrink-0 flex-col items-stretch gap-1 sm:min-w-[270px]">
       <StayQuickOps
         bookingId={stay.id}
         bookingStatus={stay.status}

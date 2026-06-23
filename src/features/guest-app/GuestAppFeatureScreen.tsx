@@ -7,11 +7,12 @@ import { GuestEmptyReceptionAction } from "@/features/guest-app/GuestEmptyRecept
 import { GuestGalleryGrid } from "@/features/guest-app/GuestGalleryGrid";
 import { GuestGreenStayForm } from "@/features/guest-app/GuestGreenStayForm";
 import { GuestListItemsPanel } from "@/features/guest-app/GuestListItemsPanel";
-import { GuestOnlineCheckinForm } from "@/features/guest-app/GuestOnlineCheckinForm";
+import { GuestOnlineCheckinSection } from "@/features/guest-app/GuestOnlineCheckinSection";
 import { GuestPaymentSummary } from "@/features/guest-app/GuestPaymentSummary";
 import { GuestWifiCopyAllButton } from "@/features/guest-app/GuestWifiCopyAllButton";
 import { GuestWifiQrCode } from "@/features/guest-app/GuestWifiQrCode";
 import { isGuestFeatureReady } from "@/features/guest-app/feature-labels";
+import { safeExternalHref } from "@/lib/security/html-escape";
 
 type Props = {
   featureId: GuestAppFeatureId;
@@ -95,7 +96,7 @@ export async function GuestAppFeatureScreen({
               <p>
                 <span className="guest-app__muted">{t("feature.website")}: </span>
                 <a
-                  href={ctx.hotel.website}
+                  href={safeExternalHref(ctx.hotel.website)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="guest-app__inline-link"
@@ -109,6 +110,7 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.hotel.title")}
             description={t("empty.hotel.description")}
+            icon="🏠"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )
@@ -135,6 +137,7 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.wifi.title")}
             description={t("empty.wifi.description")}
+            icon="📶"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )
@@ -156,6 +159,7 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.tips.title")}
             description={t("empty.tips.description")}
+            icon="💡"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )
@@ -177,13 +181,14 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.gallery.title")}
             description={t("empty.gallery.description")}
+            icon="🖼"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )
       ) : null}
 
       {featureId === "online_checkin" ? (
-        <GuestOnlineCheckinForm
+        <GuestOnlineCheckinSection
           accessCode={accessCode}
           booking={ctx.booking}
           prefill={ctx.precheckinPrefill}
@@ -198,6 +203,7 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.facilities.title")}
             description={t("empty.facilities.description")}
+            icon="🏊"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )
@@ -210,6 +216,7 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.services.title")}
             description={t("empty.services.description")}
+            icon="🛎"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )
@@ -222,6 +229,7 @@ export async function GuestAppFeatureScreen({
           <GuestAppEmptyState
             title={t("empty.payment.title")}
             description={t("empty.payment.description")}
+            icon="💳"
             action={<GuestEmptyReceptionAction phone={receptionPhone} />}
           />
         )

@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/hospira-admin", labelKey: "dashboard" as const, exact: true },
   { href: "/hospira-admin/tenants", labelKey: "tenants" as const, exact: false },
   { href: "/hospira-admin/logs", labelKey: "logs" as const, exact: false },
+  { href: "/hospira-admin/tools", labelKey: "tools" as const, exact: false },
 ];
 
 export function HospiraAdminMobileNav() {

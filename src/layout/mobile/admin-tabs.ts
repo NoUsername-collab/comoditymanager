@@ -23,6 +23,10 @@ export function filterAdminTabs(
 }
 
 export function isAdminTabActive(pathname: string, href: string): boolean {
-  if (href === "/admin") return pathname === "/admin";
-  return pathname.startsWith(href);
+  const path =
+    pathname.length > 1 && pathname.endsWith("/")
+      ? pathname.slice(0, -1)
+      : pathname;
+  if (href === "/admin") return path === "/admin";
+  return path === href || path.startsWith(`${href}/`);
 }

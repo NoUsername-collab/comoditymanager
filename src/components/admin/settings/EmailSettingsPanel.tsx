@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   updateEmailSettingsAction,
   sendTestEmailAction,
-} from "@/app/[locale]/admin/(panel)/settings/actions";
+} from "@/features/settings/actions";
 import type { EmailDeliveryConfig } from "@/lib/email/provider";
 import type { TransactionalEmailIdentity } from "@/services/email-identity";
 import type { EmailSettings } from "@/services/email-settings";

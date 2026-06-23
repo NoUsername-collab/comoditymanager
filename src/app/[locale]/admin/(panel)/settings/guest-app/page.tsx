@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { GuestAppSettingsForm } from "@/components/admin/settings/GuestAppSettingsForm";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { ensureGuestAppSettingsRow } from "@/services/guest-app/mutations";
 import { getTranslations } from "next-intl/server";
@@ -16,8 +15,9 @@ export default async function GuestAppSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, params, ctx, tenant] = await Promise.all([
+  const [t, tSettings, params, ctx, tenant] = await Promise.all([
     getTranslations("admin.pages.guestApp"),
+    getTranslations("admin.pages.settings"),
     searchParams,
     guardSettingsPermission("pension_settings"),
     resolveRequestTenant(),
@@ -25,10 +25,9 @@ export default async function GuestAppSettingsPage({
 
   if (!tenant) {
     return (
-      <>
-        <SettingsPageHeader title={t("title")} />
+      <SettingsPageLayout title={t("title")}>
         <p className="settings-empty settings-empty--error">{t("loadError")}</p>
-      </>
+      </SettingsPageLayout>
     );
   }
 
@@ -38,9 +37,14 @@ export default async function GuestAppSettingsPage({
   if (readOnly) alerts.push({ tone: "info", message: t("readOnly") });
 
   return (
-    <>
-      <SettingsPageHeader title={t("title")} description={t("description")} />
-      <SettingsAlerts alerts={alerts} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("title")}
+      description={t("description")}
+      previewHref="/stay/demo"
+      previewLabel={tSettings("viewOnSite")}
+      previewExternal
+    >
       {!settings ? (
         <p className="settings-empty settings-empty--error">{t("loadError")}</p>
       ) : (
@@ -48,6 +52,6 @@ export default async function GuestAppSettingsPage({
           <GuestAppSettingsForm settings={settings} readOnly={readOnly} />
         </Suspense>
       )}
-    </>
+    </SettingsPageLayout>
   );
 }

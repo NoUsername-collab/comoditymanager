@@ -843,10 +843,10 @@
 @keyframes checkin-quest-victory-pulse {
   0%,
   100% {
-    box-shadow: 0 14px 36px color-mix(in srgb, var(--quest-accent) 12%, transparent);
+    box-shadow: none;
   }
   50% {
-    box-shadow: 0 16px 42px color-mix(in srgb, var(--quest-glow) 28%, transparent);
+    box-shadow: none;
   }
 }
 
@@ -1064,7 +1064,7 @@
   font-weight: 900;
   color: #fff;
   background: var(--active-border, #059669);
-  box-shadow: 0 4px 14px color-mix(in srgb, #059669 35%, transparent);
+  box-shadow: none;
 }
 
 .checkin-quest__victory-title {
@@ -1125,8 +1125,8 @@
   border-radius: 0.65rem;
   border: 1px solid #e4e4e7;
   background: var(--admin-panel-bg, #fff);
-  box-shadow: 0 2px 8px color-mix(in srgb, #000 4%, transparent);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+  box-shadow: var(--admin-surface-shadow, none);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .checkin-quest__card--blocked {
@@ -1140,9 +1140,7 @@
 }
 
 .checkin-quest__card:hover {
-  transform: translateY(-1px);
   border-color: color-mix(in srgb, var(--quest-accent) 35%, #e4e4e7);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--quest-accent) 12%, transparent);
 }
 
 .checkin-quest__card-badge {
@@ -1156,7 +1154,7 @@
   color: #047857;
   background: var(--admin-tint-success-bg, #d1fae5);
   border: 2px solid #6ee7b7;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #6ee7b7 25%, transparent);
+  box-shadow: none;
 }
 
 .checkin-quest__guest {
@@ -1238,17 +1236,16 @@
   color: #fff;
   cursor: pointer;
   background: var(--active-border, #059669);
-  box-shadow: 0 3px 10px color-mix(in srgb, #059669 30%, transparent);
-  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: none;
+  transition: filter 0.12s ease;
 }
 
 .checkin-quest__cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 5px 14px color-mix(in srgb, #059669 38%, transparent);
+  filter: brightness(1.05);
 }
 
 .checkin-quest__cta:active {
-  transform: translateY(0);
+  filter: brightness(0.96);
 }
 
 .checkin-quest__link {

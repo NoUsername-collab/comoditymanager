@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { isHospiraAdminDbError } from "@/lib/hospira-admin/format-db-error";
 
-export default function NestioAdminError({
+export default function HospiraAdminError({
   error,
   reset,
 }: {
@@ -15,7 +15,7 @@ export default function NestioAdminError({
   const t = useTranslations("hospiraAdmin.error");
 
   useEffect(() => {
-    console.error("[nestio-admin]", {
+    console.error("[hospira-admin]", {
       name: error.name,
       message: error.message,
       digest: error.digest,

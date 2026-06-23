@@ -14,8 +14,9 @@ import type {
 } from "@/domain/guest-app/types";
 import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
-import { saveGuestAppSettingsAction } from "@/app/[locale]/admin/(panel)/settings/guest-app/actions";
+import { saveGuestAppSettingsAction } from "@/features/settings/actions/guest-app";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 
 function linesToList(raw: string): string[] {
@@ -407,11 +408,11 @@ export function GuestAppSettingsForm({
       </fieldset>
 
       {!readOnly ? (
-        <div className="settings-form-stack__submit">
+        <SettingsSaveBar status={pending ? "saving" : "idle"}>
           <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
             {pending ? tCommon("saving") : t("save")}
           </AdminSubmitButton>
-        </div>
+        </SettingsSaveBar>
       ) : null}
     </form>
   );

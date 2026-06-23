@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { MfaEnrollmentPanel } from "@/components/admin/settings/MfaEnrollmentPanel";
 
@@ -23,11 +23,10 @@ export default async function SettingsSecurityPage({
       : "/admin";
 
   return (
-    <>
-      <SettingsPageHeader title={t("settingsTitle")} description={t("settingsDesc")} />
+    <SettingsPageLayout title={t("settingsTitle")} description={t("settingsDesc")}>
       <SettingsSection title={t("settingsSectionTitle")} description={t("settingsSectionDesc")}>
         <MfaEnrollmentPanel next={next} />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

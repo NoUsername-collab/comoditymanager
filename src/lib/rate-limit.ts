@@ -99,3 +99,6 @@ export const RATE_LIMIT_GUEST_ACCESS = { limit: 30, windowMs: 5 * 60 * 1000 };
 
 /** Guest stay form submissions: max 10 per 10 minutes per IP */
 export const RATE_LIMIT_GUEST_STAY_ACTION = { limit: 10, windowMs: 10 * 60 * 1000 };
+
+/** Staff login: max 10 attempts per 15 minutes per IP (Supabase Auth adds its own limit) */
+export const RATE_LIMIT_LOGIN = { limit: 10, windowMs: 15 * 60 * 1000 };

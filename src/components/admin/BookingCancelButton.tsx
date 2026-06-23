@@ -27,7 +27,7 @@ export function BookingCancelButton({
 
   const triggerClass =
     variant === "compact"
-      ? "w-full rounded-md border border-red-200 bg-red-50 px-2 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-100 active:translate-y-px active:bg-red-200/80 disabled:opacity-50"
+      ? "stay-card__cancel-trigger w-full rounded-md border border-red-200 bg-red-50 font-medium text-red-700 transition hover:bg-red-100 active:translate-y-px active:bg-red-200/80 disabled:opacity-50"
       : undefined;
 
   const panelClass =
@@ -76,6 +76,7 @@ export function BookingCancelButton({
         })
       }
       className={`booking-cancel-form ${panelClass}`}
+      aria-live="polite"
     >
       <input type="hidden" name="id" value={bookingId} />
       <input type="hidden" name="return_to" value={returnTo} />
@@ -106,21 +107,21 @@ function ConfirmButtons({
   labels: { cancelling: string; confirmCancel: string; dismiss: string };
 }) {
   return (
-    <div className="booking-cancel-form__actions mt-2 flex gap-2">
-      <button
-        type="submit"
-        disabled={pending}
-        className={`booking-cancel-form__confirm ${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50`}
-      >
-        {pending ? labels.cancelling : labels.confirmCancel}
-      </button>
+    <div className="booking-cancel-form__actions mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:gap-2">
       <button
         type="button"
         disabled={pending}
         onClick={onCancel}
-        className={`booking-cancel-form__dismiss ${btnClass} border border-zinc-300 bg-white text-zinc-700`}
+        className={`booking-cancel-form__dismiss ${btnClass} border border-zinc-300 bg-white text-zinc-700 min-h-[var(--ml-touch-min,2.75rem)] sm:min-h-0`}
       >
         {labels.dismiss}
+      </button>
+      <button
+        type="submit"
+        disabled={pending}
+        className={`booking-cancel-form__confirm ${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 min-h-[var(--ml-touch-min,2.75rem)] sm:min-h-0`}
+      >
+        {pending ? labels.cancelling : labels.confirmCancel}
       </button>
     </div>
   );

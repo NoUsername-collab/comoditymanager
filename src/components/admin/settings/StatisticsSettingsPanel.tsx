@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
-import { updateStatisticsVisibilityAction } from "@/app/[locale]/admin/(panel)/settings/actions";
+import { updateStatisticsVisibilityAction } from "@/features/settings/actions";
 import type { StatisticsVisibility } from "@/domain/settings/statistics-visibility";
 
 type Props = {

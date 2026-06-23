@@ -254,6 +254,70 @@ const loadCheckinSettings = cache((tenantId: string) =>
   getCachedCheckinSettings(tenantId)()
 );
 
+export type CheckinDeparturePolicy = {
+  earlyCheckoutAllowed: boolean;
+  earlyCheckoutFee: number;
+  checkoutTimeUntil: string | null;
+};
+
+const DEPARTURE_POLICY_SELECT =
+  "default_check_out_time, early_checkout_allowed, early_checkout_fee, checkout_time_until";
+
+async function getCheckinDeparturePolicyUncached(
+  tenantId: string,
+): Promise<CheckinDeparturePolicy> {
+  const supabase = createPublicAdminClient();
+  const { data, error } = await supabase
+    .from("pension_settings")
+    .select(DEPARTURE_POLICY_SELECT)
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+
+  if (error || !data) {
+    return {
+      earlyCheckoutAllowed: DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
+      earlyCheckoutFee: DEFAULT_CHECKIN_SETTINGS.early_checkout_fee,
+      checkoutTimeUntil: DEFAULT_CHECKIN_SETTINGS.checkout_time_until,
+    };
+  }
+
+  const row = data as Record<string, unknown>;
+  return {
+    earlyCheckoutAllowed:
+      row.early_checkout_allowed != null
+        ? Boolean(row.early_checkout_allowed)
+        : DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
+    earlyCheckoutFee: Number(row.early_checkout_fee) || 0,
+    checkoutTimeUntil: parseTimeField(
+      row.checkout_time_until ?? row.default_check_out_time,
+    ),
+  };
+}
+
+const getCachedCheckinDeparturePolicy = (tenantId: string) =>
+  unstable_cache(
+    () => getCheckinDeparturePolicyUncached(tenantId),
+    ["checkin-departure-policy", tenantId],
+    {
+      tags: [
+        CACHE_TAGS.pensionSettings,
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        checkinSettingsCacheTag(tenantId),
+      ],
+      revalidate: 300,
+    },
+  );
+
+const loadCheckinDeparturePolicy = cache((tenantId: string) =>
+  getCachedCheckinDeparturePolicy(tenantId)(),
+);
+
+/** Narrow fetch for Gantt departure policy — avoids full checkin settings row. */
+export async function getCheckinDeparturePolicy(): Promise<CheckinDeparturePolicy> {
+  const tenantId = await resolveTenantIdForData();
+  return loadCheckinDeparturePolicy(tenantId);
+}
+
 /** Per-request dedupe + 5min cross-request cache (busted via pensionSettings tag). */
 export async function getCheckinSettings(): Promise<CheckinSettings> {
   const tenantId = await resolveTenantIdForData();

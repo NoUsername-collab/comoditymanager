@@ -124,7 +124,9 @@ export default async function BookingDetailPage({
   const { dedupCandidates, existingCheckin, guestFeedback } = bookingExtras;
   const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
 
-  const [bookingWithCheckin] = await attachCheckinRecordState([booking]);
+  const [bookingWithCheckin] = await attachCheckinRecordState([booking], {
+    repairOrphans: true,
+  });
   const operativeBooking = bookingWithCheckin ?? booking;
   const checkedInRooms = operativeBooking.checked_in_rooms ?? [];
   const keysHandedRooms = operativeBooking.keys_handed_rooms ?? [];

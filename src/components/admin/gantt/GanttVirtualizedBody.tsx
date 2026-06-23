@@ -14,7 +14,7 @@ import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
@@ -94,7 +94,7 @@ const GanttBuildingHeaderRow = memo(function GanttBuildingHeaderRow({
     <tr className="gantt-building-header-row">
       <td
         className={[
-          "gantt-building-header sticky left-0 z-10 px-2 py-1 text-left",
+          "gantt-building-header sticky left-0 z-10 px-3 py-1 text-left",
           focused && "gantt-building-header--focused",
           dimHeader && "gantt-building-header--dimmed",
         ]

@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { requireStaff } from "@/lib/auth/require-staff";
+import { canStaffPermission } from "@/domain/settings/team-permissions";
+import { getTeamPermissions } from "@/services/pension-settings";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { resolveTenantPublicSiteUrl } from "@/lib/tenant/site-url";
 import { getBookingById } from "@/services/bookings";
@@ -28,6 +30,17 @@ async function resolveBaseUrl(): Promise<string> {
 
 function isGuestAppOwner(staff: Awaited<ReturnType<typeof requireStaff>>): boolean {
   return staff.memberRole === "owner" || staff.role === "admin";
+}
+
+async function requireGuestAccessLinkPermission() {
+  const [staff, tenant] = await Promise.all([requireStaff(), resolveRequestTenant()]);
+  if (!tenant) throw new Error("auth.tenant_host_required");
+  if (isGuestAppOwner(staff)) return { staff, tenant };
+  const permissions = await getTeamPermissions();
+  if (canStaffPermission(staff.memberRole, "booking_management", permissions)) {
+    return { staff, tenant };
+  }
+  throw new Error("auth.permission_forbidden");
 }
 
 async function requireGuestAppOwnerAccess() {
@@ -73,12 +86,10 @@ export async function loadGuestAccessLinkAction(bookingId: string): Promise<
   | { ok: false; error: string }
 > {
   try {
-    const [t, staff, tenant] = await Promise.all([
+    const [t, { staff, tenant }] = await Promise.all([
       getTranslations("admin.pages.guestApp"),
-      requireStaff(),
-      resolveRequestTenant(),
+      requireGuestAccessLinkPermission(),
     ]);
-    if (!tenant) return { ok: false, error: t("errors.tenantNotResolved") };
 
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: t("errors.bookingNotFound") };

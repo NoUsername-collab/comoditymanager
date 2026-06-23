@@ -78,7 +78,7 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "Nestio Admin",
+        friendlyName: "Hospira Admin",
       });
 
       if (enrollError || !data?.totp) {

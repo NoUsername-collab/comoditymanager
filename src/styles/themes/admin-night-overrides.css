@@ -314,11 +314,10 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 /* ── Hero / liquid strip ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-home-hero--liquid {
   border-color: var(--admin-panel-border) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent-muted) 55%, var(--admin-panel-bg)) 0%,
-    var(--admin-panel-bg) 48%,
-    color-mix(in srgb, var(--bg) 35%, var(--admin-panel-bg)) 100%
+  background: color-mix(
+    in srgb,
+    var(--accent-muted) 12%,
+    var(--admin-panel-bg)
   ) !important;
 }
 

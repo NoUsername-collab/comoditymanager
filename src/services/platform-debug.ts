@@ -94,6 +94,30 @@ function buildTenantHealthCheck(
   };
 }
 
+/** Health check for a single tenant. */
+export const getTenantHealthCheck = cache(async (
+  tenantId: string
+): Promise<TenantHealthCheck | null> => {
+  const supabase = createPublicAdminClient();
+
+  const [{ data: tenant, error: tenantError }, resourceCounts] = await Promise.all([
+    supabase
+      .from("tenants")
+      .select("id, slug, display_name, status")
+      .eq("id", tenantId)
+      .maybeSingle(),
+    loadTenantResourceCounts(supabase),
+  ]);
+
+  throwIfDbError("tenants (single health check)", tenantError);
+  if (!tenant) return null;
+
+  return buildTenantHealthCheck(
+    tenant,
+    getTenantResourceCounts(resourceCounts, tenant.id)
+  );
+});
+
 /** Health snapshot for all tenants — 2 DB round-trips at 100+ tenants. */
 export const runTenantHealthChecks = cache(async (): Promise<TenantHealthCheck[]> => {
   const supabase = createPublicAdminClient();

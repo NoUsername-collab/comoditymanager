@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { inviteStaffAction } from "@/app/[locale]/admin/(panel)/settings/staff/actions";
+import { inviteStaffAction } from "@/features/settings/actions/staff";
 
 export function StaffInviteForm() {
   const t = useTranslations("admin.pages.staffManagement");

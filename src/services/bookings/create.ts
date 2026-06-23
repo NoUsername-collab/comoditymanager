@@ -6,6 +6,7 @@ import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin
 import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
+import { assertBookingRoomAssignable } from "@/domain/booking/lifecycle-guards";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -45,11 +46,7 @@ export async function assignBookingRoomHold(
   options?: { skipAvailabilityCheck?: boolean }
 ): Promise<void> {
   const booking = await getBookingById(bookingId);
-  if (!booking) throw new Error("booking.request_not_found");
-  if (booking.status === "anulata") throw new Error("booking.request_cancelled");
-  if (booking.status === "confirmata") {
-    throw new Error("booking.already_confirmed");
-  }
+  assertBookingRoomAssignable(booking);
 
   const unique = [...new Set(roomIds.filter(Boolean))];
   if (!options?.skipAvailabilityCheck) {

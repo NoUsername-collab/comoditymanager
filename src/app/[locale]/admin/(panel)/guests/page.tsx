@@ -86,8 +86,9 @@ export default async function AdminGuestsPage({
 }: {
   searchParams: Promise<{ q?: string; filter?: string; page?: string; selected?: string }>;
 }) {
-  const [t, raw, dataBundle] = await Promise.all([
+  const [t, tCommon, raw, dataBundle] = await Promise.all([
     getTranslations("admin.pages.guests"),
+    getTranslations("admin.common"),
     searchParams,
     searchParams.then(async (sp) => {
       const q = firstValue(sp.q);
@@ -206,6 +207,18 @@ export default async function AdminGuestsPage({
 
       {result.mode === "highlights" && highlights ? (
         <div className="guest-highlights">
+          {highlights.recent.length === 0 &&
+          highlights.blacklist.length === 0 &&
+          highlights.returning.length === 0 &&
+          highlights.rated.length === 0 ? (
+            <AdminEmptyState
+              emoji="👥"
+              title={t("highlightsEmptyTitle")}
+              description={t("highlightsEmptyDescription")}
+              actionHref="/admin/cazari"
+              actionLabel={t("highlightsEmptyCta")}
+            />
+          ) : null}
           <GuestRecentHeroSection
             eyebrow={t("filterRecent")}
             title={t("recentTitle")}
@@ -247,6 +260,16 @@ export default async function AdminGuestsPage({
               emoji="🔎"
               title={t("emptyTitle")}
               description={t("emptyDescription")}
+              actionHref={
+                q || (result.filter && result.filter !== "all")
+                  ? buildGuestListHref({})
+                  : undefined
+              }
+              actionLabel={
+                q || (result.filter && result.filter !== "all")
+                  ? tCommon("reset")
+                  : undefined
+              }
             />
           ) : (
             <>

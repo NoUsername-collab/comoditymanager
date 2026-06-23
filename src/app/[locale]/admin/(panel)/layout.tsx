@@ -1,45 +1,27 @@
 ﻿import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import "@/app/admin/admin-features.css";
 import { AdminShellClient } from "@/components/admin/AdminShellClient";
 
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";
-import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { AdminTopBarWithSetupIssues } from "@/components/admin/AdminTopBarWithSetupIssues";
 import { SimOverlay } from "@/components/admin/SimOverlay";
-import { countCereriNoi } from "@/services/bookings";
-import type { ThemeSettings } from "@/lib/themes";
-import { getStaffShellAccess, requireStaff } from "@/lib/auth/require-staff";
-import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
-import {
-  getPensionSettings,
-  pensionAppearanceSettings,
-  pensionStatisticsVisibility,
-  pensionTeamPermissions,
-} from "@/services/pension-settings";
-import { canStaffPermission } from "@/domain/settings/team-permissions";
+import { loadAdminShellContext } from "@/lib/admin/shell-context";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
-import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
-import { OnboardingBar } from "@/components/admin/onboarding/OnboardingBar";
-import { resolveSetupIssues } from "@/services/setup-issues";
-import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
+import { OnboardingBarLazy } from "@/components/admin/onboarding/OnboardingBarLazy";
+import { AdminMobileBottomNavWithSetupIssues } from "@/layout/components/AdminMobileBottomNavWithSetupIssues";
 import { MobileShell } from "@/layout/components/MobileShell";
-
-const DEFAULT_APPEARANCE: ThemeSettings = {
-  theme: "noir",
-  mode: "night",
-};
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const staffPromise = requireStaff();
-  const [staff, , t, simBundle, shellData, setupIssues] = await Promise.all([
-    staffPromise,
-    bindTenantContextFromRequest(),
+  const [shell, t, simBundle] = await Promise.all([
+    loadAdminShellContext(),
     getTranslations("admin.layout"),
     (async () => {
       const simStatus = await getSimStatus();
@@ -48,65 +30,39 @@ export default async function AdminLayout({
         : true;
       return { simStatus, simDbBackup };
     })(),
-    (async () => {
-      const pensionPromise = getPensionSettings().catch(() => null);
-      const [pension, cereriCount, staffAccess] = await Promise.all([
-        pensionPromise,
-        countCereriNoi().catch(() => 0),
-        getStaffShellAccess().catch(() => ({
-          isAdmin: false,
-          locationUnlocked: false,
-        })),
-      ]);
-      return { cereriCount, pension, staffAccess };
-    })(),
-    staffPromise.then((staffCtx) =>
-      resolveSetupIssues({
-        email: staffCtx.user.email,
-        memberRole: staffCtx.memberRole,
-      })
-    ),
   ]);
 
   const { simStatus, simDbBackup } = simBundle;
-  const { cereriCount, pension, staffAccess } = shellData;
-  const checkInTime = pension?.default_check_in_time ?? "14:00";
-  const checkOutTime = pension?.default_check_out_time ?? "11:00";
-  const { isAdmin, locationUnlocked } = staffAccess;
-  const teamPermissions = pensionTeamPermissions(pension);
-  const statisticsAccess =
-    canStaffPermission(staff.memberRole, "reports_tools", teamPermissions) &&
-    canAccessStatistics(staff.memberRole, pensionStatisticsVisibility(pension));
-
-  let appearanceSettings: ThemeSettings = DEFAULT_APPEARANCE;
-  if (pension) {
-    appearanceSettings = pensionAppearanceSettings(pension);
-  }
+  const {
+    staff,
+    cereriCount,
+    isAdmin,
+    locationUnlocked,
+    statisticsAccess,
+    appearanceSettings,
+  } = shell;
 
   return (
     <AdminAppearanceProvider initialSettings={appearanceSettings}>
       <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
-        <AdminMobileBottomNav
-          cereriCount={cereriCount}
-          locationUnlocked={locationUnlocked}
-          statisticsAccess={statisticsAccess}
-        />
-
         <div className="admin-hud">
           <div className="admin-hud__surface">
-            <AdminTopBar
+            <AdminTopBarWithSetupIssues
               cereriCount={cereriCount}
               locationUnlocked={locationUnlocked}
               isAdmin={isAdmin}
               simActive={simStatus.active}
               simDate={simStatus.active ? simStatus.currentDate : null}
               simDays={simStatus.active ? simStatus.daysAdvanced : 0}
-              hasSetupIssues={setupIssues.length > 0}
+              staffEmail={staff.user.email}
+              memberRole={staff.memberRole}
             />
           </div>
         </div>
 
-        <OnboardingBar />
+        <Suspense fallback={null}>
+          <OnboardingBarLazy />
+        </Suspense>
 
         {cereriCount > 0 && (
           <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">
@@ -121,6 +77,14 @@ export default async function AdminLayout({
           <div className="admin-page-main ml-main flex-1">{children}</div>
         </AdminShellClient>
 
+        <AdminMobileBottomNavWithSetupIssues
+          cereriCount={cereriCount}
+          locationUnlocked={locationUnlocked}
+          statisticsAccess={statisticsAccess}
+          staffEmail={staff.user.email}
+          memberRole={staff.memberRole}
+        />
+
         <SimOverlay
           active={simStatus.active}
           currentDate={simStatus.active ? simStatus.currentDate : null}
@@ -132,4 +96,3 @@ export default async function AdminLayout({
     </AdminAppearanceProvider>
   );
 }
-

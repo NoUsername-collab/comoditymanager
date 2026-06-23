@@ -1,9 +1,29 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import { MrzScanPanel } from "@/components/mrz/MrzScanPanel";
 import type { MrzMappedIdentity } from "@/domain/guest/mrz";
+
+function MrzScanLoading() {
+  const t = useTranslations("admin.checkIn.mrz");
+  return (
+    <p className="mrz-scan__loading text-sm text-neutral-500" aria-busy="true" aria-label={t("loading")}>
+      …
+    </p>
+  );
+}
+
+const MrzScanPanel = dynamic(
+  () =>
+    import("@/components/mrz/MrzScanPanel").then((m) => ({
+      default: m.MrzScanPanel,
+    })),
+  {
+    ssr: false,
+    loading: MrzScanLoading,
+  }
+);
 
 type Props = {
   open: boolean;
@@ -21,6 +41,7 @@ export function MrzScanDialog({ open, onClose, onApply }: Props) {
       title={t("title")}
       variant="modal"
       width={480}
+      className="mrz-scan-modal"
     >
       <MrzScanPanel
         open={open}

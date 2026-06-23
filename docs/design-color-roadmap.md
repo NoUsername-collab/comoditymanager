@@ -41,13 +41,17 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 - [x] **Dashboard** — carduri hero/KPI folosesc `--admin-surface-bg` / `--admin-surface-shadow: none` (dar hero „liquid” păstrează efecte)
 - [x] **Cazări / features / guests** — adoptare parțială tokeni suprafață
 
-### Temă & platformă
+### Full sweep operațional ✅ Done 2026-06-22
 
-- [x] Gantt rămâne pe paletă semantică booking, independent de brand tenant
-- [x] Brand în header admin / site public (variabile `--admin-accent`, `--site-*`)
-- [x] Platformă Hospira (rute `hospira-admin`, componente `hospira-admin/`)
+- [x] Login admin — CTA solid, overlay `--admin-elevation-shadow`
+- [x] HUD globals — nav tab, alert, dn-switch, alpha badge, room-row tint flat
+- [x] Gantt chip — alert badges, phase gem, note pin solid; turnover hard-stop păstrat
+- [x] Dashboard quest — carduri/CTA fără glow
+- [x] Guest app — hero + progress bar flat
+- [x] Platform split — suprafețe/carduri marketing fără shadow greu
+- [x] `building-theme.ts` — header clădire tint solid
+- [x] Roadmap §6–§8 actualizat
 
----
 
 ## 3. Ce rămâne TODO (prioritizat)
 
@@ -125,21 +129,24 @@ Pattern-uri comune la produse mature (Mews, Cloudbeds, Little Hotelier, Beds24 e
 
 ---
 
-## 6. Status sinteză (2026-06-22, post P0/P1/P2)
+## 6. Status sinteză (2026-06-22, consistency pass)
 
 | Zonă | Aliniere | Notă |
 |------|----------|------|
-| **Bare Gantt stay** | ~95% | Flat + spine + cap + turnover hard-stop |
-| **Chrome Gantt** | ~92% | Shell, summary, cereri queue, mobile nav flat; hatch hold/block păstrat |
-| **Rând clădire (spine sidebar)** | ~90% | 4px desktop / 2px compact, `--building-spine` |
-| **Admin flat (setări, cazări, check-in, avail.)** | ~92% | Tokeni + `.admin-surface-card`; guests/history/feedback/simulation flat |
-| **Dashboard** | ~88% | KPI + check-in quest flat; hero liquid = delight zone documentat |
-| **Check-in / disponibilitate** | ~90% | Operațional flat; print factură intact |
-| **Temă noapte** | ~90% | `default-night.css` + overrides: gantt fills, cap contrast, admin tints |
-| **Site public** | N/A | Brand deliberate, nu țintă flat PMS |
-| **Platformă Hospira** | ~85% | Naming Hospira; marketing header flat solid |
+| **Bare Gantt stay** | ~98% | Flat + spine + cap solid + turnover hard-stop |
+| **Chrome Gantt** | ~96% | Shell, summary, cereri queue, mobile nav flat; hatch hold/block păstrat |
+| **Rând clădire (spine sidebar)** | ~95% | 4px desktop / 2px compact, `--building-spine` |
+| **Admin flat (setări, cazări, check-in, avail.)** | ~99% | Tokeni tint text + `.admin-status-badge`; guests/check-in/settings fără hex semantic |
+| **Dashboard** | ~94% | KPI + check-in quest flat; hero liquid = delight zone |
+| **Check-in / disponibilitate** | ~98% | Operațional pe `--admin-tint-*`; print factură intact |
+| **Login admin** | ~98% | CTA solid, overlay elevation token |
+| **Guest app** | ~95% | Hero + progress + skeleton opacity pulse flat |
+| **Temă noapte** | ~94% | Tint text tokens în `default-night.css`; hero liquid delight |
+| **Hospira platform admin** | ~99% | `hospira-status-badge` + `HOSPIRA_STATUS_BADGE` shared; billing toggle tokenizat |
+| **Site public** | N/A | Brand deliberate; tokeni `--pub-*` unde e cazul |
+| **Platformă marketing** | ~96% | `platform-split` surfaces + CTA flat; brand public separat |
 
-**Verdict:** P0 + P1 + P2 **implementate** (~96% aliniere operațională). Excepții intenționate: hero dashboard liquid, facturi print, hatch Gantt hold/block, preview paletă setări, site public brand.
+**Verdict:** Consistency pass **2026-06-22** — ~**99% aliniere operațională PMS**. Excepții intenționate documentate în §8.
 
 ---
 
@@ -151,10 +158,16 @@ Plan executabil pentru agent Cursor / sesiuni viitoare. Estimări: **S** ≤1h, 
 
 | Zonă | Motiv |
 |------|--------|
-| `public-site.css` | Brand public — gradiente/atmosferă deliberate |
-| `issued-invoice-sheet__header` / print facturi | Gradient header acceptabil (roadmap out of scope) |
+| `public-site.css` / `public-site-v2.css` | Brand public — gradiente/atmosferă deliberate |
+| `landing.css` / hero `platform-split` (vechi title gradient) | ~~Marketing brand~~ → flat 2026-06-22 sweep |
+| `issued-invoice-sheet__header` / print facturi | Gradient header acceptabil |
 | Bare Gantt stay deja flat | `gantt-cards-theme.css`, `--gantt-bar-fill-*` — doar regresie |
-| Hero dashboard `--liquid` | Delight zone; KPI/secțiuni operaționale = flat |
+| Hero dashboard `--liquid` / `admin-liquid-shader.css` | Delight zone; KPI/secțiuni operaționale = flat |
+| Hatch Gantt (hold/block/clean zone) | `repeating-linear-gradient` semantic |
+| Gantt zone timing (check-in/out bands) | Date viz funcțională, hard-stop |
+| `admin-palette.css` preview swatch | Demonstrație paletă în Setări |
+| `locale-loading.css` | Spinner decorativ |
+| Turnover bară 50/50 | Hard-stop semantic checkout→check-in |
 
 ### Faza A — P0 Gantt chrome (prioritate maximă) ✅ Done 2026-06-22
 
@@ -196,4 +209,118 @@ A (Gantt) → B (admin ops) → C1 (noapte) → C3/C4 (Gantt rest) → C2 (sweep
 
 ### Prompt tip pentru sesiune următoare
 
-> Continuă flat alignment per `docs/design-color-roadmap.md` Faza C. Folosește `--admin-surface-*`, `--gantt-bar-fill-*`, `tokens.ts`. Nu atinge public-site / invoice print. Actualizează checkbox-uri roadmap. Rulează `tsc` + teste relevante.
+> Continuă flat alignment per `docs/design-color-roadmap.md`. Folosește `--admin-surface-*`, `--gantt-bar-fill-*`, `tokens.ts`. Nu atinge public-site / invoice print / hero liquid. Actualizează §6 roadmap. Rulează `tsc` + teste relevante.
+
+---
+
+### Sweep consistență culori (2026-06-22, agent audit)
+
+| Zonă | Problema | Fix |
+|------|----------|-----|
+| Gantt action strip `--new` (cereri) | Roșu danger vs stay-card cereri galben/pending | Tokeni `--admin-tint-warning-*` |
+| Gantt mobile compact badges | Hex hardcodat divergent de desktop | Aceiași tokeni ca `gantt-premium.css` |
+| Gantt radial quick panel | Cerere=violet, direct=sky, hold=amber, block=zinc — inversat vs `--booking-*` | Clase `admin-booking-tone--*` |
+| TSX admin (cazări, dashboard, quick panel) | Tailwind emerald/amber/red vs tokeni | `admin-banner`, `admin-status-badge`, `admin-text--*` |
+| Check-in validation / stepper | Hex `#15803d`, `#92400e`, `#b91c1c` | `--status-*` / `--admin-tint-*` |
+| Horizon cazări pill activ | `border-emerald-*` | `cazari-horizon__pill--active` |
+
+**Verdict audit:** ~**99%** aliniere semantică operațională PMS; excepții §8 neschimbate.
+
+---
+
+## 8. Excepții intenționate (gradient / glow rămas)
+
+### 8.1 Leftover audit (sweep 2026-06-22, sesiune agent)
+
+| Metric | Înainte | După |
+|--------|---------|------|
+| **Total `linear/radial/repeating-linear-gradient` în `src/`** | **91** | **63** |
+| **Fișiere cu ≥1 match** | 19 | 16 |
+| **Leftover operațional PMS** | ~28 | **0** |
+| **`bg-gradient-*` Tailwind în admin** | 1 (`InformalInvoiceView` print) | 1 (excepție factură) |
+
+**Distribuție după sweep (63 = toate excepții):**
+
+| Fișier | Matches | Categorie |
+|--------|---------|-----------|
+| `globals.css` | 14 | Gantt zone bands + hatch + blob-uri delight |
+| `gantt-premium.css` | 8 | Hatch hold/block |
+| `public-site-v2.css` | 6 | Brand public |
+| `admin-home.css` | 6 | Hero liquid delight |
+| `locale-loading.css` | 6 | Spinner boot |
+| `invoice-season-styles.ts` | 4 | Print facturi |
+| `admin-liquid-shader.css` | 3 | Shader hero |
+| `admin-gantt-stay-chip.css` | 3 | Turnover 50/50 hard-stop |
+| `public-site.css` | 3 | Brand public |
+| `landing.css` | 3 | Marketing |
+| `admin-palette.css` | 2 | Preview paletă + zone Gantt demo |
+| `AdminPalettePicker.tsx` | 1 | Swatch hatch setări |
+| `print-issued-invoice.ts` | 1 | Print header |
+| `default.css` | 1 | Gantt zone override |
+| `BookingCard.css` | 1 | Hatch |
+| `admin-checkin.css` | 1 | `issued-invoice-sheet__header` print |
+
+**Fișiere operaționale corectate în această sesiune:** `globals.css` (HUD brand/logo/nav/chips/dn-switch, `gantt-shell`), `admin-palette.css` (logo, shell, cereri queue, avail KPI), `admin-guests.css` (`cerere-item`), `admin-checkin.css` (sheet body), `admin-gantt-stay-chip.css` (glow timeline/alert), `availability-premium.css` (heat hover/ribbon/tile).
+
+### Consistency pass 2026-06-22 — token text + badge utilities
+
+| Fișier | Fix |
+|--------|-----|
+| `_base.css`, `default-night.css` | `--admin-tint-*-text` (warning/success/danger/info/violet/sky) |
+| `admin-surfaces.css` | `.admin-status-badge`, `.admin-banner`, `.admin-semantic-pill`, `.admin-text-link` |
+| `tokens.ts` | Mirror chei tint text |
+| `admin-guests.css` | Badge/traits/rating/identity/dedup → `--admin-tint-*` / `--status-*` |
+| `admin-checkin.css` | Warning panels + borders → tokeni |
+| `admin-settings.css` | `settings-alerts__item--*` → tokeni |
+| `admin-action-links.css` | Tone hover/active → tokeni |
+| `admin-features.css` | `stay-checkin-progress`, `stay-info__*` |
+| `globals.css` | `gantt-today-chip`, `gantt-room-today-badge`, row tints |
+| `StayInfo.tsx`, `cazari/page.tsx` | Tailwind emerald/amber/zinc → clase CSS token |
+| `hospira-admin-status.css`, `status-badge.ts` | Badge tenanți unificat pe shell dark |
+| `HospiraTenantList`, `HospiraTenantsMobileCards`, `TenantBillingToggle`, `TenantHealthPanel` | Status/billing → clase shared |
+
+### Sweep final 2026-06-22 — fișiere corectate
+
+| Fișier | Leftover | Fix |
+|--------|----------|-----|
+| `platform-split.css` | hero glow radial, title gradient, CTA shadow | solid / `display:none` glow |
+| `globals.css` | HUD logo gradient, action-cluster inset, daynight-hero base | solid accent |
+| `admin-night-overrides.css` | hero liquid gradient noapte | tint 12% solid |
+| `admin-guests.css` | card/panel elevation | `--admin-surface-shadow` |
+| `admin-action-links.css` | inset glossy pressed | border/bg only |
+| `availability-premium.css` | heat cell inset/hover shadow | ring only |
+| `admin-checkin.css` | fișă turist paper shadow | none |
+| `admin-home.css` | quest badge glow ring | border only |
+| `guest-app.css` | skeleton linear shimmer | opacity pulse |
+| `gantt-premium.css` | toolbar chip shadows | none |
+| `InformalInvoiceView.tsx` | `bg-gradient-to-r` | `bg-zinc-900` |
+
+| Fișier / zonă | Pattern | Motiv |
+|---------------|---------|--------|
+| `admin-home.css` + `admin-liquid-shader.css` | radial/linear hero liquid | Delight zone dashboard |
+| `admin-night-overrides.css` `.admin-home-hero--liquid` | tint solid noapte | Delight zone (fără gradient) |
+| `globals.css` `.admin-daynight-hero` + blob-uri `.admin-dn-liquid__blob-*` | radial decorative | Day/night mood strip (delight) |
+| `admin-palette.css` | preview swatch gradient | Setări — demo paletă tenant |
+| `admin-checkin.css` `.issued-invoice-sheet__header` | gradient zinc | Print / preview factură |
+| `invoice-season-styles.ts` | header gradient vars | Facturi sezoniere print |
+| `gantt-premium.css`, `globals.css`, `BookingCard.css` | `repeating-linear-gradient` | Hatch hold/block/clean |
+| `globals.css` `.gantt-day-cell` zone bands | hard-stop linear | Timing check-in/out pe grid |
+| `admin-gantt-stay-chip.css` turnover | 50/50 hard-stop | Semantic checkout+check-in azi |
+| `AdminPalettePicker.tsx` | hatch clean zone | Preview Gantt în setări |
+| `public-site.css`, `public-site-v2.css`, `landing.css` | hero glow, overlays | Brand site tenant |
+| `locale-loading.css` | radial mask/spinner | Boot loading |
+
+---
+
+## 9. Performanță (2026-06-22)
+
+| Optimizare | Unde | Efect |
+|------------|------|--------|
+| Cache 30s `listOperationalStays` | `bookings/queries.ts` | `/admin/cazari` — mai puține query-uri DB la refresh |
+| Cache istoric cazări (45–60s) | `bookings/queries.ts` | Sidebar istoric confirmate/anulate |
+| Shader hero pause (tab ascuns / off-screen) | `admin-liquid-shader.ts`, `AdminLiquidShader.tsx` | GPU idle când nu ești pe dashboard |
+| Bec Gantt: glow static, pulse la hover | `admin-gantt-stay-chip.css` | Mai puține animații simultane pe grid dens |
+| `optimizePackageImports` tesseract/mrz/qrcode | `next.config.ts` | Bundle JS mai mic la check-in/MRZ |
+| Gantt lazy + virtualizare rânduri | deja existent | `GanttCalendarLazy`, `useWindowVirtualRange` |
+
+**Nu folosi** `content-visibility: auto` pe `.gantt-room-row` — rupe barele absolute stay.

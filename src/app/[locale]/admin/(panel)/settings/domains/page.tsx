@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { AdminTenantDomainsPanel } from "@/components/admin/settings/AdminTenantDomainsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { allowedCustomRoutingKindsForPlan } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { getActiveTenantIdForData, resolveRequestTenant } from "@/lib/tenant/active";
@@ -29,8 +29,7 @@ export default async function SettingsDomainsPage() {
   const allowedKinds = allowedCustomRoutingKindsForPlan(planId);
 
   return (
-    <>
-      <SettingsPageHeader title={t("pageTitle")} description={t("pageDescription")} />
+    <SettingsPageLayout title={t("pageTitle")} description={t("pageDescription")}>
       <AdminTenantDomainsPanel
         domains={domains}
         tenantSlug={tenant?.slug ?? "tenant"}
@@ -38,6 +37,6 @@ export default async function SettingsDomainsPage() {
         allowedKinds={allowedKinds}
         canManageCustom={canManageCustom}
       />
-    </>
+    </SettingsPageLayout>
   );
 }

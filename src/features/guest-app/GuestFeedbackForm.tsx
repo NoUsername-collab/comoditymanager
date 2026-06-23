@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { submitGuestFeedbackAction } from "@/app/[locale]/(guest-app)/stay/[code]/actions";
+import { submitGuestFeedbackAction } from "@/features/guest-app/actions/stay";
 
 type Props = {
   accessCode: string;

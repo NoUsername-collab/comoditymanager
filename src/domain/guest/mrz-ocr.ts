@@ -5,6 +5,9 @@ import {
   refineTd1Candidates,
   correctTd2Block,
   refineTd2Candidates,
+  correctTd3Block,
+  refineTd3Candidates,
+  isAcceptableMrzScore,
   scoreMrzLines,
 } from "@/domain/guest/mrz-parse";
 
@@ -187,23 +190,49 @@ function pickBestBlock(candidates: string[][]): string[] | null {
     if (refined) return refined;
   }
 
-  const td2Candidates = candidates.filter((block) => block.length === 2);
+  const td2Candidates = candidates.filter(
+    (block) =>
+      block.length === 2 &&
+      !/^P[A-Z<]/.test(block[0] ?? "") &&
+      block.every((line) => line.length <= TD2_LEN + 2),
+  );
   if (td2Candidates.length > 0) {
     const refined = refineTd2Candidates(td2Candidates);
+    if (refined) return refined;
+  }
+
+  const td3Candidates = candidates.filter(
+    (block) =>
+      block.length === 2 &&
+      (looksLikeTd3Block(block) || block.every((line) => line.length >= TD3_LEN - 4)),
+  );
+  if (td3Candidates.length > 0) {
+    const refined = refineTd3Candidates(td3Candidates);
     if (refined) return refined;
   }
 
   let best: string[] | null = null;
   let bestScore = 0;
   for (const block of candidates) {
-    const score = scoreMrzLines(block);
-    if (score > bestScore) {
-      bestScore = score;
-      best = block;
+    const variants =
+      block.length === 3
+        ? [block, correctTd1Block(block)]
+        : block.length === 2 && looksLikeTd3Block(block)
+          ? [block, correctTd3Block(block)]
+          : block.length === 2
+            ? [block, correctTd2Block(block)]
+            : [block];
+
+    for (const variant of variants) {
+      const score = scoreMrzLines(variant);
+      if (score > bestScore) {
+        bestScore = score;
+        best = variant;
+      }
     }
   }
 
-  return bestScore > 0 ? best : candidates[0] ?? null;
+  return isAcceptableMrzScore(bestScore) ? best : null;
 }
 
 export function splitMrzInput(input: string): string[] {
@@ -242,7 +271,7 @@ export function normalizeMrzBlock(lines: string[]): string[] | null {
     return correctTd1Block(fitted);
   }
   if (format === "TD2") return correctTd2Block(fitTd2Block(cleaned.slice(0, 2)));
-  return fitTd3Block(cleaned.slice(0, 2));
+  return correctTd3Block(fitTd3Block(cleaned.slice(0, 2)));
 }
 
 /** Găsește blocul MRZ cu cel mai bun scor checksum din text OCR. */

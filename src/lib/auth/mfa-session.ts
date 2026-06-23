@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   hasVerifiedTotpFactor,
@@ -10,13 +11,12 @@ export type MfaAccessState =
   | { kind: "needs_enrollment" }
   | { kind: "needs_challenge" };
 
-export async function getMfaAccessState(
+async function getMfaAccessStateImpl(
   supabase: SupabaseClient,
-  opts: {
-    email?: string | null;
-    memberRole?: TenantMemberRole | null;
-  }
+  email: string,
+  memberRole: TenantMemberRole | null,
 ): Promise<MfaAccessState> {
+  const opts = { email: email || null, memberRole };
   const { data: aal, error: aalError } =
     await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
@@ -47,4 +47,21 @@ export async function getMfaAccessState(
   }
 
   return { kind: "ok" };
+}
+
+/** Per-request dedupe — layout may call MFA more than once; one round-trip total. */
+const loadMfaAccessState = cache(getMfaAccessStateImpl);
+
+export async function getMfaAccessState(
+  supabase: SupabaseClient,
+  opts: {
+    email?: string | null;
+    memberRole?: TenantMemberRole | null;
+  }
+): Promise<MfaAccessState> {
+  return loadMfaAccessState(
+    supabase,
+    opts.email ?? "",
+    opts.memberRole ?? null,
+  );
 }

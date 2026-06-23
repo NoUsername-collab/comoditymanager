@@ -38,8 +38,24 @@ export function AdminLiquidShader({ className = "", intensity = 0.78 }: Props) {
     setActive(true);
 
     const syncColors = () => handle.setColors(themeLiquidColors());
+
+    const syncPause = () => {
+      if (document.visibilityState === "hidden") handle.pause();
+      else handle.resume();
+    };
+
     const ro = new ResizeObserver(() => handle.resize());
     ro.observe(canvas);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.some((entry) => entry.isIntersecting);
+        if (visible && document.visibilityState === "visible") handle.resume();
+        else handle.pause();
+      },
+      { threshold: 0.01 }
+    );
+    io.observe(canvas);
 
     const mo = new MutationObserver(syncColors);
     mo.observe(document.documentElement, {
@@ -47,11 +63,14 @@ export function AdminLiquidShader({ className = "", intensity = 0.78 }: Props) {
       attributeFilter: ["data-theme", "data-mode", "style"],
     });
 
+    document.addEventListener("visibilitychange", syncPause);
     window.addEventListener("admin-theme-change", syncColors);
 
     return () => {
       ro.disconnect();
+      io.disconnect();
       mo.disconnect();
+      document.removeEventListener("visibilitychange", syncPause);
       window.removeEventListener("admin-theme-change", syncColors);
       handle.destroy();
       handleRef.current = null;

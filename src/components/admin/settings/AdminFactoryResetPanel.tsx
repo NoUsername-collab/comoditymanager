@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { factoryResetAction } from "@/app/[locale]/admin/(panel)/settings/actions";
+import { factoryResetAction } from "@/features/settings/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 
 export function AdminFactoryResetPanel() {

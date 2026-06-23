@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { cache } from "react";
 import {
   guestAccessClosesOn,
   guestAccessOpensOn,
@@ -152,8 +153,9 @@ export async function issueGuestAccessForBooking(
 
 /**
  * Rezolvă sesiunea oaspete după cod — fără autentificare staff.
+ * Dedupe per request (layout + page) via React cache.
  */
-export async function resolveGuestAccessByCode(
+export const resolveGuestAccessByCode = cache(async function resolveGuestAccessByCode(
   rawCode: string,
 ): Promise<GuestAccessResult> {
   return runInPublicBookingMode(async () => {
@@ -224,7 +226,7 @@ export async function resolveGuestAccessByCode(
       settings,
     };
   });
-}
+});
 
 /** Revocă accesul (ex. anulare rezervare). */
 export async function revokeGuestAccessForBooking(

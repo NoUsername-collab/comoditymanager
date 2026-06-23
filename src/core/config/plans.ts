@@ -310,7 +310,7 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     label: "White Label",
     icon: "palette",
     pricePerMonth: 15,
-    description: "Elimina branding-ul Nestio",
+    description: "Elimina branding-ul Hospira",
   },
   api_access: {
     id: "api_access",

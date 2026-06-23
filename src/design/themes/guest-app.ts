@@ -73,6 +73,9 @@ export function resolveGuestAppThemeStyle(
     "--guest-warn-border": `color-mix(in srgb, ${t.accent} 35%, transparent)`,
     "--guest-warn-fg": t.fg,
     "--guest-warn-muted": t.muted,
+    "--guest-danger-border": "color-mix(in srgb, #ef4444 30%, transparent)",
+    "--guest-danger-bg": `color-mix(in srgb, #7f1d1d 40%, ${t.card})`,
+    "--guest-danger-fg": "#fecaca",
     "--guest-app-primary": primary,
     "--guest-app-accent": accent,
   };

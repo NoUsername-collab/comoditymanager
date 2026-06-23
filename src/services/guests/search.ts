@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { formatGuestFullName } from "@/domain/guest-name";
 import {
   shiftStayDatesByYears,
@@ -30,6 +31,7 @@ import type { BookingStatus } from "@/domain/booking/types";
 import type { BookingRoomSegmentRow } from "@/domain/booking/segment-types";
 import { stayNightCount } from "@/lib/stay-dates";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { mapGuestRow } from "@/domain/guest/map-row";
 import {
@@ -166,13 +168,16 @@ async function fetchGuestListItemsByIds(
     .filter((guest): guest is GuestListItem => guest != null);
 }
 
-async function listGuestIdsForHighlights(limit = 8): Promise<{
+async function listGuestIdsForHighlightsUncached(
+  tenantId: string,
+  limit = 8
+): Promise<{
   blacklist: string[];
   returning: string[];
   recent: string[];
   rated: string[];
 }> {
-  const { tenantId, supabase } = await getTenantScope();
+  const supabase = createPublicAdminClient();
 
   const [blacklistRes, returningRes, recentRes, ratedRes] = await Promise.all([
     supabase
@@ -240,17 +245,31 @@ async function searchGuestIdsByQueryWindow(input: {
   const exactIds = new Set<string>();
 
   if (normalizedPhone) {
-    const { data, error } = await supabase
+    const phoneQuery = supabase
       .from("guests")
       .select("id")
       .eq("tenant_id", tenantId)
       .eq("phone_normalized", normalizedPhone)
       .limit(Math.max(windowEnd, 1));
-    if (error) throw new Error(error.message);
-    for (const row of data ?? []) exactIds.add(String(row.id));
-  }
+    const emailQuery =
+      normalizedEmail && !isPlaceholderEmail(normalizedEmail)
+        ? supabase
+            .from("guests")
+            .select("id")
+            .eq("tenant_id", tenantId)
+            .eq("email_normalized", normalizedEmail)
+            .limit(Math.max(windowEnd, 1))
+        : null;
 
-  if (normalizedEmail && !isPlaceholderEmail(normalizedEmail)) {
+    const [phoneRes, emailRes] = await Promise.all([
+      phoneQuery,
+      emailQuery ?? Promise.resolve({ data: null, error: null }),
+    ]);
+    if (phoneRes.error) throw new Error(phoneRes.error.message);
+    if (emailRes.error) throw new Error(emailRes.error.message);
+    for (const row of phoneRes.data ?? []) exactIds.add(String(row.id));
+    for (const row of emailRes.data ?? []) exactIds.add(String(row.id));
+  } else if (normalizedEmail && !isPlaceholderEmail(normalizedEmail)) {
     const { data, error } = await supabase
       .from("guests")
       .select("id")
@@ -381,21 +400,37 @@ async function listGuestIdsByFilter(
   return { ids: ids.slice(0, pageSize), hasMore: ids.length > pageSize };
 }
 
-const loadGuestHighlights = cache(async (): Promise<GuestHighlights> => {
-  const { blacklist, returning, recent, rated } = await listGuestIdsForHighlights(10);
-  const [blacklistGuests, returningGuests, recentGuests, ratedGuests] = await Promise.all([
-    fetchGuestListItemsByIds(blacklist),
-    fetchGuestListItemsByIds(returning),
-    fetchGuestListItemsByIds(recent),
-    fetchGuestListItemsByIds(rated),
-  ]);
+async function loadGuestHighlightsForTenant(tenantId: string): Promise<GuestHighlights> {
+  const { blacklist, returning, recent, rated } =
+    await listGuestIdsForHighlightsUncached(tenantId, 10);
+  const allIds = [...new Set([...blacklist, ...returning, ...recent, ...rated])];
+  const guestsById = new Map(
+    (await fetchGuestListItemsByIds(allIds)).map((guest) => [guest.id, guest] as const),
+  );
+  const pick = (ids: string[]) =>
+    ids.map((id) => guestsById.get(id)).filter((guest): guest is GuestListItem => !!guest);
 
   return {
-    blacklist: blacklistGuests,
-    returning: returningGuests,
-    rated: ratedGuests,
-    recent: recentGuests,
+    blacklist: pick(blacklist),
+    returning: pick(returning),
+    rated: pick(rated),
+    recent: pick(recent),
   };
+}
+
+const getCachedGuestHighlights = (tenantId: string) =>
+  unstable_cache(
+    () => loadGuestHighlightsForTenant(tenantId),
+    ["guest-highlights", tenantId],
+    {
+      tags: [`tenant-${tenantId}-guest-highlights`],
+      revalidate: 60,
+    }
+  );
+
+const loadGuestHighlights = cache(async (): Promise<GuestHighlights> => {
+  const { tenantId } = await getTenantScope();
+  return getCachedGuestHighlights(tenantId)();
 });
 
 export async function listGuestHighlights(): Promise<GuestHighlights> {

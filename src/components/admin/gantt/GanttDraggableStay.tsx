@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
@@ -31,11 +32,16 @@ import { GanttBookingBar } from "@/components/admin/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import {
-  GanttStayPopover,
-  type GanttStayPopoverData,
-} from "./GanttStayPopover";
+import type { GanttStayPopoverData } from "./GanttStayPopover";
 import { todayIso } from "@/lib/stay-dates";
+
+const GanttStayPopover = dynamic(
+  () =>
+    import("./GanttStayPopover").then((m) => ({
+      default: m.GanttStayPopover,
+    })),
+  { ssr: false, loading: () => null },
+);
 
 const DRAG_BLOCK_SELECTOR = [
   "a",

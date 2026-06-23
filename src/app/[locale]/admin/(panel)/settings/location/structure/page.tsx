@@ -1,7 +1,6 @@
-import { Link } from "@/i18n/navigation";
+﻿import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { BuildingStructureCard } from "@/components/admin/structure/BuildingStructureCard";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
@@ -70,22 +69,19 @@ export default async function LocationStructurePage() {
   const totalFloors = structures.reduce((n, s) => n + s.floors.length, 0);
 
   return (
-    <>
-      <SettingsPageHeader
-        title={t("pageTitle")}
-        description={t("pageDescription")}
-        actions={
-          <Link
-            href="/admin/buildings/new?return_to=structure"
-            className="settings-primary-link"
-          >
-            {tCommon("newBuilding")}
-          </Link>
-        }
-      />
-
-      <SettingsAlerts alerts={error ? [{ tone: "error", message: error }] : []} />
-
+    <SettingsPageLayout
+      title={t("pageTitle")}
+      description={t("pageDescription")}
+      alerts={error ? [{ tone: "error", message: error }] : []}
+      actions={
+        <Link
+          href="/admin/buildings/new?return_to=structure"
+          className="settings-primary-link"
+        >
+          {tCommon("newBuilding")}
+        </Link>
+      }
+    >
       <div className="admin-settings-summary mb-4">
         <div className="admin-settings-summary__chip">
           <span className="admin-settings-summary__label">{tCommon("buildings")}</span>
@@ -100,10 +96,7 @@ export default async function LocationStructurePage() {
           <span className="admin-settings-summary__value">{totalRooms}</span>
         </div>
       </div>
-
-      <p className="admin-settings-hint mb-4 max-w-3xl">{t("workflowHint")}</p>
-
-      <div className="space-y-4">
+      <div className="admin-settings-summary mb-4">
         {structures.map((s) => (
           <BuildingStructureCard
             key={s.building.id}
@@ -136,6 +129,6 @@ export default async function LocationStructurePage() {
           {t("linkRoomsList")}
         </AdminLinkButton>
       </div>
-    </>
+    </SettingsPageLayout>
   );
 }

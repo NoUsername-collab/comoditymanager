@@ -1,4 +1,4 @@
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/domain/booking/row";
 import type { GanttFilter } from "@/domain/gantt/filters";
 import { focusDayInRange } from "@/domain/gantt/filters";
 import {

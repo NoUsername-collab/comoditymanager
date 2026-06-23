@@ -38,7 +38,7 @@ export function CazariOpsToolbar({
   };
 
   return (
-    <>
+    <div className="cazari-sticky-toolbar">
       <div className="cazari-view-filters" role="tablist" aria-label={filtersAria}>
         {VIEWS.map((key) => {
           const active = view === key;
@@ -89,14 +89,14 @@ export function CazariOpsToolbar({
             className={[
               "cazari-horizon__pill rounded-full border px-2 py-0.5 text-[11px] font-semibold",
               horizon === key
-                ? "border-emerald-300 bg-emerald-50 text-emerald-800"
-                : "border-zinc-200 bg-white text-zinc-700",
+                ? "cazari-horizon__pill--active"
+                : "cazari-horizon__pill--idle",
             ].join(" ")}
           >
             {label}
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 }

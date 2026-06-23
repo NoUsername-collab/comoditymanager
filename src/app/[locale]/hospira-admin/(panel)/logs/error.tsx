@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { isHospiraAdminDbError } from "@/lib/hospira-admin/format-db-error";
 
-export default function NestioLogsError({
+export default function HospiraLogsError({
   error,
   reset,
 }: {

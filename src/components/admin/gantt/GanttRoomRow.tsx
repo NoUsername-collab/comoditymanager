@@ -19,7 +19,7 @@ import { stayTodayHighlight } from "@/domain/gantt/today-activity";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { guestPartyTotal } from "@/lib/guest-party";
 import { nightOccupied } from "@/lib/stay-dates";
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
@@ -143,7 +143,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
         .join(" ")}
     >
       <td
-        className="gantt-room-cell sticky left-0 z-10 px-1.5 py-[0.21rem] align-middle"
+        className="gantt-room-cell sticky left-0 z-10 py-[0.21rem] align-middle"
         style={{ "--marker-color": sidebarMarkerColor } as CSSProperties}
       >
         <div className="gantt-room-cell__row">

@@ -133,6 +133,19 @@ const getCachedRooms = (tenantId: string) =>
 
 const loadAllRoomsCached = cache((tenantId: string) => getCachedRooms(tenantId)());
 
+/** Tenant-scoped rooms list — for cross-request caches (statistics, etc.). */
+export async function listAllRoomsForTenant(
+  tenantId: string
+): Promise<
+  (Room & {
+    building_name: string;
+    floor_name: string | null;
+    room_type_name: string | null;
+  })[]
+> {
+  return loadAllRoomsCached(tenantId);
+}
+
 /** Admin / staff — requires tenant host + membership. */
 export async function listAllRooms(): Promise<
   (Room & {

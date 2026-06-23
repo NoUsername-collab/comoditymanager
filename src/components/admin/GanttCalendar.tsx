@@ -15,7 +15,7 @@ import { GANTT_ROW_H, GANTT_ROW_H_COMPACT } from "@/domain/gantt/layout";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useGanttDensity } from "@/hooks/useGanttDensity";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/services/bookings/types";
 import { type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttFilter } from "@/domain/gantt/filters";
@@ -664,14 +664,14 @@ export function GanttCalendar({
         />
 
         {filter === "free" && focusDay && (
-          <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs text-emerald-900">
+          <div className="gantt-summary-filter-banner mx-3 mt-2 flex flex-wrap items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs">
             <span>
               {tCommon("showingRooms")} <strong>{tCommon("free").toLowerCase()}</strong> {tCommon("onDay")}{" "}
               <strong>{formatDateWithDay(focusDay, locale, true)}</strong>
             </span>
             <button
               type="button"
-              className="rounded-md border border-emerald-300 bg-white px-2.5 py-1 font-semibold hover:bg-emerald-100"
+              className="gantt-summary-filter-banner__btn"
               onClick={() => handleSummaryDayClick(focusDay)}
             >
               {tCommon("resetFilter")}

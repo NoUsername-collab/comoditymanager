@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { updateBookingRulesSettingsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
+import { updateBookingRulesSettingsAction } from "@/features/settings/actions";
 import {
   settingsPartialChanged,
   useSettingsSaveFeedback,

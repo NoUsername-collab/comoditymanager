@@ -1,0 +1,355 @@
+/**
+ * Mobile alignment — single gutter contract for compact chrome.
+ * Parent: .admin-page-main owns horizontal inset; children stay flush.
+ */
+
+html[data-layout-chrome="compact"] {
+  --ml-page-gutter: 0.85rem;
+  --ml-page-gutter-tight: 0.35rem;
+  --ml-page-gutter-block: 0.65rem;
+  --ml-page-inline-start: max(var(--ml-page-gutter), var(--ml-safe-left, 0px));
+  --ml-page-inline-end: max(var(--ml-page-gutter), var(--ml-safe-right, 0px));
+}
+
+/* ── Admin shell: one gutter source ── */
+html[data-layout-chrome="compact"] .admin-shell .admin-page-main {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+  padding-block-start: 0;
+  /* padding-bottom: mobile-layout-compact-fixes.css (--ml-content-pad-bottom) */
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main > main,
+html[data-layout-chrome="compact"] .admin-page-main > .ml-content,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page,
+html[data-layout-chrome="compact"] .admin-page-main .ml-content.admin-page {
+  padding-inline: 0 !important;
+  margin-inline: 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main > main.admin-page,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.p-3,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.sm\:p-4 {
+  padding: 0 !important;
+}
+
+/* HUD + alerts align with page gutter */
+html[data-layout-chrome="compact"] .admin-hud__header {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+}
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+}
+
+html[data-layout-chrome="compact"] .admin-hud__center {
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
+/* Settings / nested pages — no second gutter */
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  padding-inline: 0 !important;
+  padding-block: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-shell {
+  padding-inline: 0;
+}
+
+/* Gantt: tight but symmetric gutter */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
+  padding-inline: max(var(--ml-page-gutter-tight), var(--ml-safe-left, 0px))
+    max(var(--ml-page-gutter-tight), var(--ml-safe-right, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
+  padding: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
+  margin-inline: 0 !important;
+}
+
+/* Platform / hospira admin — single gutter (no Tailwind px-* stacking) */
+html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-main,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+  padding-block: var(--ml-page-gutter-block)
+    max(var(--ml-page-gutter-block), var(--ml-safe-bottom, 0px));
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header__inner,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .hospira-tenant-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.5rem;
+  background: color-mix(in srgb, #0a0a0a 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/* Tablet portrait — same gutter token (no 1.1rem drift) */
+html[data-layout-chrome="compact"][data-layout-mode="tablet"][data-layout-orientation="portrait"]
+  .admin-page-main {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+}
+
+/* UX: sticky cazări filters + horizon on compact */
+html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.25rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 92%, transparent);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.45rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon__pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+/* UX: pinned cereri section — clear separation */
+html[data-layout-chrome="compact"] .cazari-pinned-cereri {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--admin-surface-border, #e4e4e7);
+  border-left: 3px solid var(--pending-border, #f59e0b);
+  padding-left: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-pinned-cereri .admin-panel__titlebar {
+  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, transparent);
+}
+
+/* Pass 31: zero double gutter on all admin pages */
+html[data-layout-chrome="compact"] .admin-page-main .admin-page {
+  padding-inline: 0 !important;
+  padding-block: var(--ml-page-gutter-block) 0.5rem !important;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.gantt-calendar-page,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.admin-settings-page {
+  padding-block: 0 !important;
+}
+
+/* Pass 31: sticky page context (guests, settings, home) */
+html[data-layout-chrome="compact"] .admin-page-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.5rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+html[data-layout-chrome="compact"] .guest-search {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.45rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/* Pass 31: cazări horizon — horizontal pill scroll, no wrap overflow */
+html[data-layout-chrome="compact"] .cazari-horizon {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 0.15rem;
+  margin-inline: 0;
+  scrollbar-width: none;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon__label {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon a,
+html[data-layout-chrome="compact"] .cazari-horizon__pill {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+  margin-inline: 0;
+  padding-inline: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Pass 31: list paint isolation */
+html[data-layout-chrome="compact"] .stay-list > li,
+html[data-layout-chrome="compact"] .stay-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 7rem;
+}
+
+html[data-layout-chrome="compact"] .guest-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 9rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 4.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .admin-page-toolbar,
+  html[data-layout-chrome="compact"] .guest-search {
+    backdrop-filter: none;
+  }
+}
+
+/* ── Pass 32: gutter safe-area, overflow, skeletons, cazări ops, MRZ camera ── */
+
+html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+  overflow-x: clip;
+  max-width: 100%;
+  padding-top: var(--ml-admin-chrome-top, var(--ml-safe-top, 0px));
+}
+
+html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+  padding-bottom: max(0.15rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .admin-route-skeleton--list,
+html[data-layout-chrome="compact"] .admin-route-skeleton--gantt,
+html[data-layout-chrome="compact"] .admin-route-skeleton--availability,
+html[data-layout-chrome="compact"] .admin-route-skeleton--panel-home {
+  min-height: min(70dvh, calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, 3.25rem) - 2rem));
+  contain: layout style;
+}
+
+html[data-layout-chrome="compact"] .admin-route-skeleton--gantt {
+  display: flex;
+  flex-direction: column;
+  min-height: min(
+    75dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, 3.25rem) - var(--ml-safe-bottom, 0px) - 1rem)
+  );
+}
+
+html[data-layout-chrome="compact"] .admin-route-skeleton--gantt .admin-route-skeleton__grid {
+  flex: 1;
+  min-height: 12rem;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions .stay-quick-ops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops__btn,
+html[data-layout-chrome="compact"] .stay-quick-ops__checkin,
+html[data-layout-chrome="compact"] .stay-quick-ops__checkout,
+html[data-layout-chrome="compact"] .stay-quick-ops__shift,
+html[data-layout-chrome="compact"] .stay-quick-ops__edit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.55rem;
+  font-size: max(12px, 0.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions > button,
+html[data-layout-chrome="compact"] .stay-card__actions .stay-card__cancel-trigger {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  font-size: max(12px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
+  aspect-ratio: auto;
+  width: 100%;
+  max-height: min(68dvh, calc(var(--ml-vvh, 100dvh) - 10rem));
+  min-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 12rem));
+  border-radius: 0;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+html[data-layout-chrome="compact"] .settings-loading {
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .hospira-tenant-card,
+html[data-layout-chrome="compact"] .statistics-page .statistics-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 5rem;
+}

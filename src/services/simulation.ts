@@ -11,6 +11,7 @@
  * which processes time-dependent events in sim_sandbox.
  */
 
+import { cache } from "react";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
 import {
   getSimStatus,
@@ -190,7 +191,7 @@ export async function getSimulationStatus(): Promise<SimStatus> {
 /**
  * Check if simulation sandbox schema exists in the database.
  */
-export async function isSimBackupPresent(): Promise<boolean> {
+export const isSimBackupPresent = cache(async (): Promise<boolean> => {
   const supabase = createPublicAdminClient();
   try {
     const { data, error } = await supabase.rpc("sim_is_active");
@@ -199,7 +200,7 @@ export async function isSimBackupPresent(): Promise<boolean> {
   } catch {
     return false;
   }
-}
+});
 
 /**
  * Emergency cleanup — force-drop sandbox schema.

@@ -8,23 +8,32 @@ import { GuestInstallHint } from "@/features/guest-app/GuestInstallHint";
 import { GuestShareStayButton } from "@/features/guest-app/GuestShareStayButton";
 import { GuestStayMilestoneStrip } from "@/features/guest-app/GuestStayMilestoneStrip";
 import { GuestStayPhaseBanner } from "@/features/guest-app/GuestStayPhaseBanner";
-import { GuestFeedbackForm } from "@/features/guest-app/GuestFeedbackForm";
+import { GuestFeedbackSection } from "@/features/guest-app/GuestFeedbackSection";
 import { GuestTodayCards } from "@/features/guest-app/GuestTodayCards";
-import { GuestWeatherWidget } from "@/features/guest-app/GuestWeatherWidget";
-import { GuestWifiQrCode } from "@/features/guest-app/GuestWifiQrCode";
+import { GuestWeatherSection } from "@/features/guest-app/GuestWeatherSection";
+import { GuestAppEmptyState } from "@/features/guest-app/GuestAppEmptyState";
+import { GuestEmptyReceptionAction } from "@/features/guest-app/GuestEmptyReceptionAction";
 import { GuestWifiQuickCard } from "@/features/guest-app/GuestWifiQuickCard";
-import { resolveGuestStayPhase } from "@/domain/guest-app/stay-milestone";
-import { getWeatherCoordinates } from "@/services/weather-coordinates";
+import {
+  countStayNights,
+  resolveGuestStayPhase,
+} from "@/domain/guest-app/stay-milestone";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { getTranslations } from "next-intl/server";
 
 type Props = {
   accessCode: string;
   ctx: GuestAppResolvedContext;
+  pensionName: string;
   today: string;
 };
 
-export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
+export async function GuestAppHomeScreen({
+  accessCode,
+  ctx,
+  pensionName,
+  today,
+}: Props) {
   const t = await getTranslations("guestApp");
   const { booking, settings, locale, hotel, wifi } = ctx;
   const features = visibleGuestAppFeaturesForBooking(settings, booking);
@@ -42,7 +51,7 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
   });
   const wifiFeature = features.find((feature) => feature.id === "wifi");
   const hasWifiCredentials = Boolean(wifi?.networkName || wifi?.password);
-  const weatherCoords = await getWeatherCoordinates();
+  const nights = countStayNights(booking.checkIn, booking.checkOut);
 
   return (
     <div className="space-y-6">
@@ -59,10 +68,16 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
         <p className="guest-app__hero__eyebrow">
           {t("home.welcome")}, {booking.guestName}
         </p>
-        <h1 className="guest-app__hero__title">{period}</h1>
-        {booking.roomLabels.length > 0 ? (
-          <p className="guest-app__hero__rooms">{booking.roomLabels.join(" · ")}</p>
-        ) : null}
+        <h1 className="guest-app__hero__title">{pensionName}</h1>
+        <p className="guest-app__hero__dates">{period}</p>
+        <div className="guest-app__hero__meta">
+          <span className="guest-app__hero__nights">
+            {t("home.nightsCount", { count: nights })}
+          </span>
+          {booking.roomLabels.length > 0 ? (
+            <span className="guest-app__hero__rooms">{booking.roomLabels.join(" · ")}</span>
+          ) : null}
+        </div>
         {hotel.shortDescription ? (
           <p className="guest-app__hero__desc">{hotel.shortDescription}</p>
         ) : null}
@@ -108,7 +123,7 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
             <h2 className="guest-app__section-title mb-3">
               {t("feedback.sectionTitle")}
             </h2>
-            <GuestFeedbackForm
+            <GuestFeedbackSection
               accessCode={accessCode}
               alreadySubmitted={ctx.feedbackSubmitted}
             />
@@ -117,30 +132,29 @@ export async function GuestAppHomeScreen({ accessCode, ctx, today }: Props) {
       })()}
 
       {wifiFeature && wifi && hasWifiCredentials ? (
-        <>
-          <GuestWifiQuickCard accessCode={accessCode} wifi={wifi} />
-          {wifi.networkName ? (
-            <GuestWifiQrCode
-              networkName={wifi.networkName}
-              password={wifi.password}
-            />
-          ) : null}
-        </>
+        <GuestWifiQuickCard accessCode={accessCode} wifi={wifi} />
       ) : null}
 
-      {weatherCoords ? (
-        <GuestWeatherWidget lat={weatherCoords.lat} lng={weatherCoords.lng} />
-      ) : null}
+      <GuestWeatherSection />
 
       <section id="features">
         <h2 className="guest-app__section-title mb-3">{t("home.sectionFeatures")}</h2>
-        <ul className="guest-app__feature-list">
-          {features.map((feature) => (
-            <li key={feature.id}>
-              <GuestFeatureLink accessCode={accessCode} feature={feature} />
-            </li>
-          ))}
-        </ul>
+        {features.length === 0 ? (
+          <GuestAppEmptyState
+            title={t("empty.features.title")}
+            description={t("empty.features.description")}
+            icon="✦"
+            action={<GuestEmptyReceptionAction phone={hotel.phone} />}
+          />
+        ) : (
+          <ul className="guest-app__feature-list">
+            {features.map((feature) => (
+              <li key={feature.id}>
+                <GuestFeatureLink accessCode={accessCode} feature={feature} />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );

@@ -2,11 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { submitGuestPrecheckinAction } from "@/app/[locale]/(guest-app)/stay/[code]/actions";
+import { submitGuestPrecheckinAction } from "@/features/guest-app/actions/stay";
 import type { GuestAccessBookingSnapshot } from "@/domain/guest-app/types";
 import type { GuestPrecheckinDocType, GuestPrecheckinPrefill } from "@/domain/guest-app/precheckin-prefill";
 import { mrzToPrecheckinFields, type MrzMappedIdentity } from "@/domain/guest/mrz";
 import { GuestMrzScanDialog } from "@/features/guest-app/GuestMrzScanDialog";
+import { useGuestAppToast } from "@/features/guest-app/GuestAppToast";
 
 type Props = {
   accessCode: string;
@@ -27,6 +28,7 @@ export function GuestOnlineCheckinForm({
   alreadySubmitted,
 }: Props) {
   const t = useTranslations("guestApp.precheckin");
+  const { showToast } = useGuestAppToast();
   const [pending, startTransition] = useTransition();
   const [submitted, setSubmitted] = useState(alreadySubmitted);
   const [error, setError] = useState<string | null>(null);
@@ -67,6 +69,8 @@ export function GuestOnlineCheckinForm({
         return trimmed ? `${trimmed}\n${fields.notesAppend}` : fields.notesAppend;
       });
     }
+    setMrzOpen(false);
+    showToast(t("mrz.appliedToast"));
   }
 
   function handleSubmit(event: React.FormEvent) {
@@ -91,6 +95,7 @@ export function GuestOnlineCheckinForm({
         setError(t.has(key) ? t(key) : result.error);
         return;
       }
+      showToast(t("submittedToast"));
       setSubmitted(true);
     });
   }
@@ -106,13 +111,25 @@ export function GuestOnlineCheckinForm({
           <p className="guest-app__subtle text-sm">{t("prefillFromProfile")}</p>
         ) : null}
 
-        <button
-          type="button"
-          className="guest-app__btn-secondary guest-app__mrz-trigger"
-          onClick={() => setMrzOpen(true)}
-        >
-          {t("mrz.scanButton")}
-        </button>
+        <div className="guest-app__checkin-mrz">
+          <p className="guest-app__checkin-mrz__lead">{t("mrz.leadShort")}</p>
+          <button
+            type="button"
+            className="guest-app__btn-primary guest-app__mrz-trigger"
+            onClick={() => setMrzOpen(true)}
+          >
+            {t("mrz.scanButton")}
+          </button>
+        </div>
+
+        <div className="guest-app__form-divider" role="separator">
+          {t("manualOrDivider")}
+        </div>
+
+        <section className="guest-app__checkin-manual" aria-labelledby="guest-checkin-manual-title">
+          <h3 id="guest-checkin-manual-title" className="guest-app__checkin-manual__title">
+            {t("manualTitle")}
+          </h3>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="guest-app__field">
@@ -226,6 +243,7 @@ export function GuestOnlineCheckinForm({
         <button type="submit" className="guest-app__btn-primary" disabled={pending}>
           {pending ? t("submitting") : t("submit")}
         </button>
+        </section>
       </form>
 
       <GuestMrzScanDialog

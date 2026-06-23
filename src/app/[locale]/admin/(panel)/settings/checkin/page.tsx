@@ -1,8 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { CheckinSettingsPanel } from "@/components/admin/checkin/CheckinSettingsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
 import {
   buildSettingsAlerts,
@@ -29,13 +28,15 @@ export default async function SettingsCheckinPage({
   if (error) alerts.push({ tone: "error", message: error });
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navCheckin")} description={t("checkin.docRuleDesc")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navCheckin")}
+      description={t("navCheckinDesc")}
+    >
       <SettingsSection title={t("checkin.title")} description={t("checkin.docRuleDesc")}>
         <p className="admin-settings-hint mb-4">{t("checkin.scheduleManagedInLocation")}</p>
         <CheckinSettingsPanel settings={checkinSettings} />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

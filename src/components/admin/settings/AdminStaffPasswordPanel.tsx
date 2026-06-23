@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { changeStaffPasswordAction } from "@/app/[locale]/admin/(panel)/settings/actions";
+import { changeStaffPasswordAction } from "@/features/settings/actions";
 import type { StaffAccount } from "@/services/staff-accounts";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 

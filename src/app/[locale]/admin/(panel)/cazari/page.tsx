@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { addDays } from "@/lib/stay-dates";
 import { getEffectiveToday } from "@/domain/simulation/sim-clock";
@@ -15,14 +16,17 @@ import {
   shouldPinCereriAboveConfirmate,
   splitOperationalStays,
 } from "@/domain/cazari/page-splits";
-import { loadCazariPageData } from "@/services/cazari-page-data";
+import { loadCazariPrimaryData } from "@/services/cazari-page-data";
 import { buildCazariLabels } from "@/services/cazari-labels";
 import { AdminStaySearchForm } from "@/components/admin/AdminStaySearchForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { CazariOpsToolbar } from "@/components/admin/cazari/CazariOpsToolbar";
 import { ConfirmedBuckets } from "@/components/admin/cazari/ConfirmedBuckets";
-import { StayHistoryPanel } from "@/components/admin/cazari/StayHistoryPanel";
+import {
+  CazariHistoryAside,
+  CazariHistoryAsideFallback,
+} from "@/components/admin/cazari/CazariHistoryAside";
 import { StayList } from "@/components/admin/cazari/StayList";
 import { CazariOperativeShell } from "@/components/admin/cazari/CazariOperativeShell";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
@@ -46,7 +50,7 @@ export default async function AdminCazariPage({
       getTranslations("booking.flowStatus"),
       searchParams,
       getEffectiveToday(),
-      loadCazariPageData(),
+      loadCazariPrimaryData(),
       resolvePostCheckoutEditPolicy().catch(() => ({
         memberRole: null,
         allowPostCheckoutEdits: false,
@@ -89,18 +93,6 @@ export default async function AdminCazariPage({
           : horizon === "60d"
             ? "180d"
             : "365d";
-
-  const confirmedLabels = {
-    ...labels,
-    emptyConfirmed: {
-      title: q ? tPages("emptyConfirmedFilter") : tPages("emptyConfirmedActive"),
-      description: q
-        ? tPages("emptyConfirmedFilterDesc")
-        : tPages("emptyConfirmedActiveDesc"),
-      href: "/admin/calendar",
-      label: tPages("openCalendar"),
-    },
-  };
 
   return (
     <AdminPageFrame title={tPages("title")} className="cazari-page">
@@ -145,7 +137,7 @@ export default async function AdminCazariPage({
           </AdminPanel>
 
           {params.reaccepted === "1" && (
-            <p className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+            <p className="admin-banner admin-banner--success mb-4">
               {tPages("reacceptedBanner")}
             </p>
           )}
@@ -182,6 +174,7 @@ export default async function AdminCazariPage({
             <>
               {shouldPinCereriAboveConfirmate(view, cereri.length) ? (
                 <StayList
+                  className="cazari-pinned-cereri"
                   title={`${tCommon("newRequestsLabel")} (${cereri.length})`}
                   subtitle={tPages("pendingPinnedHint")}
                   items={cereri}
@@ -208,7 +201,7 @@ export default async function AdminCazariPage({
                 today={effectiveToday}
                 returnTo={buildCazariPageHref({ h: horizon, q: q || undefined })}
                 hasQuery={!!q}
-                labels={confirmedLabels}
+                labels={labels}
               />
               {horizon !== "365d" && (
                 <div className="mt-3">
@@ -225,20 +218,14 @@ export default async function AdminCazariPage({
           ) : null}
         </div>
 
-        <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-          <StayHistoryPanel
-            completedItems={filtered.filteredHistory}
-            confirmedRecentItems={filtered.filteredConfirmedRecent}
-            cancelledItems={filtered.filteredCancelledHistory}
+        <Suspense fallback={<CazariHistoryAsideFallback />}>
+          <CazariHistoryAside
             query={q}
-            completedError={formatCazariError(cazariErrors.history)}
-            confirmedRecentError={formatCazariError(
-              cazariErrors.confirmedRecentHistory
-            )}
+            cancelledItems={filtered.filteredCancelledHistory}
             cancelledError={formatCazariError(cazariErrors.cancelledHistory)}
             labels={labels}
           />
-        </aside>
+        </Suspense>
       </div>
       </CazariOperativeShell>
     </AdminPageFrame>

@@ -22,6 +22,7 @@ export function StayList({
   hasQuery,
   labels,
   operativeToday,
+  className,
 }: {
   title: string;
   subtitle?: string;
@@ -31,12 +32,20 @@ export function StayList({
   hasQuery: boolean;
   labels: CazariLabels;
   operativeToday?: string;
+  className?: string;
 }) {
   const emptyState =
     variant === "confirmate"
       ? {
           emoji: "🛏",
-          ...labels.emptyConfirmed,
+          ...(hasQuery
+            ? {
+                title: labels.emptyConfirmedFilter.title,
+                description: labels.emptyConfirmedFilter.description,
+                href: labels.emptyConfirmedFilter.href,
+                label: labels.emptyConfirmedFilter.label,
+              }
+            : labels.emptyConfirmed),
         }
       : variant === "refuzate"
         ? {
@@ -50,7 +59,14 @@ export function StayList({
           }
         : {
             emoji: "📬",
-            ...labels.emptyRequest,
+            ...(hasQuery
+              ? {
+                  title: labels.emptyRequestFilter.title,
+                  description: labels.emptyRequestFilter.description,
+                  href: labels.emptyRequestFilter.href,
+                  label: labels.emptyRequestFilter.label,
+                }
+              : labels.emptyRequest),
           };
 
   const rowClass =
@@ -61,12 +77,15 @@ export function StayList({
         : "stay-card stay-card--green grid gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto]";
 
   return (
-    <AdminPanel title={title} className="mb-3">
+    <AdminPanel
+      title={title}
+      className={["mb-3", className].filter(Boolean).join(" ")}
+    >
       {subtitle ? (
         <p className="mb-2 text-[11px] text-zinc-500">{subtitle}</p>
       ) : null}
       {variant === "refuzate" ? (
-        <p className="mb-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[11px] text-red-900">
+        <p className="admin-banner admin-banner--danger admin-banner--compact mb-2">
           {labels.refusedHint}
         </p>
       ) : null}
@@ -79,7 +98,7 @@ export function StayList({
           actionLabel={"label" in emptyState ? emptyState.label : undefined}
         />
       ) : (
-        <ul className="space-y-2">
+        <ul className="stay-list space-y-2">
           {items.map((stay) => (
             <li key={stay.id} className={rowClass}>
               <StayInfo

@@ -105,15 +105,7 @@ html[data-layout-chrome="compact"] .admin-hud-alert {
   font-size: 0.68rem;
 }
 
-html[data-layout-chrome="compact"] .admin-page-main {
-  padding-inline: 0.85rem;
-  padding-top: 0;
-  padding-bottom: 0.5rem;
-}
-
-html[data-layout-chrome="compact"] .admin-page-main > main {
-  padding-inline: 0;
-}
+/* Page gutter: mobile-layout-alignment.css (--ml-page-inline-*) */
 
 /* ── Admin grids stack on mobile ── */
 html[data-layout-chrome="compact"] .admin-page-main .grid.xl\:grid-cols-\[minmax\(0\,1fr\)_minmax\(18rem\,30\%\)\],
@@ -412,9 +404,7 @@ html[data-layout-mode="tablet"] .admin-hud__center {
   overscroll-behavior-x: contain;
 }
 
-html[data-layout-mode="tablet"][data-layout-orientation="portrait"] .admin-page-main {
-  padding-inline: 1.1rem;
-}
+/* Tablet portrait gutter: mobile-layout-alignment.css */
 
 /* ── Long admin lists: skip off-screen paint on mobile ── */
 html[data-layout-chrome="compact"] .cerere-item,

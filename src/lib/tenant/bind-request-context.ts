@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
   DEV_FALLBACK_TENANT,
   getTenantContext,
@@ -15,7 +16,7 @@ import { headers } from "next/headers";
  * Bind tenant context for the current request from host headers / DB.
  * Production: host tenant only — never "first row in tenants table".
  */
-export async function bindTenantContextFromRequest(): Promise<TenantContext> {
+export const bindTenantContextFromRequest = cache(async (): Promise<TenantContext> => {
   const fromHost = await resolveRequestTenant();
   if (fromHost) {
     return setTenantContext(tenantRowToRecord(fromHost));
@@ -43,7 +44,7 @@ export async function bindTenantContextFromRequest(): Promise<TenantContext> {
   }
 
   throw new Error("auth.tenant_host_required");
-}
+});
 
 /**
  * Idempotent bind — safe when only a page RSC re-runs (client nav / refresh)

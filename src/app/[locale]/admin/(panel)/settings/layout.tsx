@@ -1,31 +1,24 @@
 import { Suspense } from "react";
+import "@/app/admin/admin-settings.css";
 import { getTranslations } from "next-intl/server";
-import { getPensionSettings, pensionTeamPermissions } from "@/services/pension-settings";
-import { requireStaff } from "@/lib/auth/require-staff";
+import { loadSettingsStaffContext } from "@/lib/settings/page-context";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { SettingsShell } from "@/components/admin/settings/SettingsShell";
-import { resolveSetupIssues } from "@/services/setup-issues";
+import { SettingsShellWithSetupIssues } from "@/components/admin/settings/SettingsShellWithSetupIssues";
 
 export default async function SettingsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const staffPromise = requireStaff();
-  const [t, tCommon, staff, pensionResult, setupIssues] = await Promise.all([
+  const [t, tCommon, ctx] = await Promise.all([
     getTranslations("admin.pages.settings"),
     getTranslations("common"),
-    staffPromise,
-    getPensionSettings().catch(() => null),
-    staffPromise.then((staffCtx) =>
-      resolveSetupIssues({
-        email: staffCtx.user.email,
-        memberRole: staffCtx.memberRole,
-      })
-    ),
+    loadSettingsStaffContext(),
   ]);
 
+  const { staff, pensionResult, teamPermissions } = ctx;
   const { role, memberRole } = staff;
+  const settings = pensionResult.settings;
 
   const description =
     role === "operator" ? t("descriptionOperator") : t("descriptionAdmin");
@@ -38,17 +31,17 @@ export default async function SettingsLayout({
       bodyClassName="admin-settings-page-body"
     >
       <Suspense fallback={<div className="settings-shell-loading">{tCommon("loading")}</div>}>
-        <SettingsShell
+        <SettingsShellWithSetupIssues
           role={role}
           memberRole={memberRole ?? "operator"}
-          teamPermissions={pensionTeamPermissions(pensionResult)}
-          propertyName={pensionResult?.display_name}
-          checkInTime={pensionResult?.default_check_in_time}
-          checkOutTime={pensionResult?.default_check_out_time}
-          setupIssues={setupIssues}
+          teamPermissions={teamPermissions}
+          propertyName={settings?.display_name}
+          checkInTime={settings?.default_check_in_time}
+          checkOutTime={settings?.default_check_out_time}
+          staffEmail={staff.user.email}
         >
           {children}
-        </SettingsShell>
+        </SettingsShellWithSetupIssues>
       </Suspense>
     </AdminPageFrame>
   );

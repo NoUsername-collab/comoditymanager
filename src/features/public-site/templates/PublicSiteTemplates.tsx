@@ -1,83 +1,30 @@
-import { Link } from "@/i18n/navigation";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import type { ReactNode } from "react";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
+import { PublicHomeExtras } from "@/features/public-site/home/PublicHomeExtras";
+import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { renderPublicSection } from "@/features/public-site/sections/render-section";
 import { getTranslations } from "next-intl/server";
-
-function HeroBlock({
-  config,
-  locale,
-  variant,
-  checkTimesLabel,
-}: {
-  config: PublicSiteConfig;
-  locale: string;
-  variant: "classic" | "editorial" | "immersive";
-  checkTimesLabel: string;
-}) {
-  const hero = config.hero;
-  const title = pickLocalized(hero.title, locale, [config.displayName]);
-  const subtitle = pickLocalized(hero.subtitle, locale);
-  const tagline = pickLocalized(hero.tagline, locale);
-  const badge = pickLocalized(hero.badge, locale);
-  const ctaPrimary = pickLocalized(hero.ctaPrimary, locale);
-  const ctaSecondary = pickLocalized(hero.ctaSecondary, locale);
-
-  return (
-    <section className={`pub-hero pub-hero--${variant}`}>
-      <div className="pub-hero__glow" aria-hidden />
-      {hero.imageUrl ? (
-        <div
-          className="pub-hero__media"
-          style={{ backgroundImage: `url(${hero.imageUrl})` }}
-          aria-hidden
-        />
-      ) : null}
-      <div className="pub-hero__inner">
-        {badge ? <p className="pub-hero__badge">{badge}</p> : null}
-        <h1 className="pub-hero__title">{title}</h1>
-        {subtitle ? <p className="pub-hero__subtitle">{subtitle}</p> : null}
-        {tagline ? <p className="pub-hero__tagline">{tagline}</p> : null}
-        {hero.showCheckTimes !== false ? (
-          <p className="pub-hero__meta">{checkTimesLabel}</p>
-        ) : null}
-        <div className="pub-hero__actions">
-          {config.bookingEnabled && ctaPrimary ? (
-            <Link href={hero.ctaPrimaryHref ?? "/calendar"} className="pub-btn pub-btn--primary">
-              {ctaPrimary}
-            </Link>
-          ) : null}
-          {ctaSecondary ? (
-            <Link
-              href={hero.ctaSecondaryHref ?? "#public-intro"}
-              className="pub-btn pub-btn--ghost"
-            >
-              {ctaSecondary}
-            </Link>
-          ) : null}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export function ClassicPublicTemplate({
   config,
   locale,
   checkTimesLabel,
+  afterHero,
 }: {
   config: PublicSiteConfig;
   locale: string;
   checkTimesLabel: string;
+  afterHero?: ReactNode;
 }) {
   return (
     <main className="pub-home pub-home--classic">
-      <HeroBlock
+      <PublicHeroBlock
         config={config}
         locale={locale}
         variant="classic"
         checkTimesLabel={checkTimesLabel}
       />
+      {afterHero}
       {config.sections.map((section) => (
         <div key={section.id}>{renderPublicSection(section, locale, "classic")}</div>
       ))}
@@ -89,19 +36,22 @@ export function EditorialPublicTemplate({
   config,
   locale,
   checkTimesLabel,
+  afterHero,
 }: {
   config: PublicSiteConfig;
   locale: string;
   checkTimesLabel: string;
+  afterHero?: ReactNode;
 }) {
   return (
     <main className="pub-home pub-home--editorial">
-      <HeroBlock
+      <PublicHeroBlock
         config={config}
         locale={locale}
         variant="editorial"
         checkTimesLabel={checkTimesLabel}
       />
+      {afterHero}
       <div className="pub-home__stack">
         {config.sections.map((section, index) => (
           <div
@@ -120,19 +70,22 @@ export function ImmersivePublicTemplate({
   config,
   locale,
   checkTimesLabel,
+  afterHero,
 }: {
   config: PublicSiteConfig;
   locale: string;
   checkTimesLabel: string;
+  afterHero?: ReactNode;
 }) {
   return (
     <main className="pub-home pub-home--immersive">
-      <HeroBlock
+      <PublicHeroBlock
         config={config}
         locale={locale}
         variant="immersive"
         checkTimesLabel={checkTimesLabel}
       />
+      {afterHero}
       <div className="pub-home__immersive-body">
         {config.sections.map((section) => (
           <div key={section.id}>{renderPublicSection(section, locale, "immersive")}</div>
@@ -154,6 +107,7 @@ export async function PublicSitePage({
     checkIn: config.checkInTime,
     checkOut: config.checkOutTime,
   });
+  const afterHero = <PublicHomeExtras config={config} locale={locale} />;
 
   switch (config.templateId) {
     case "editorial":
@@ -162,6 +116,7 @@ export async function PublicSitePage({
           config={config}
           locale={locale}
           checkTimesLabel={checkTimesLabel}
+          afterHero={afterHero}
         />
       );
     case "immersive":
@@ -170,6 +125,7 @@ export async function PublicSitePage({
           config={config}
           locale={locale}
           checkTimesLabel={checkTimesLabel}
+          afterHero={afterHero}
         />
       );
     case "classic":
@@ -179,6 +135,7 @@ export async function PublicSitePage({
           config={config}
           locale={locale}
           checkTimesLabel={checkTimesLabel}
+          afterHero={afterHero}
         />
       );
   }

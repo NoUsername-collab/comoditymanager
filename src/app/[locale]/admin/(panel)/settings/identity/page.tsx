@@ -1,8 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PensionIdentityForm } from "@/components/admin/settings/PensionIdentityForm";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { getPensionIdentity } from "@/services/pension-identity";
 import {
   buildSettingsAlerts,
@@ -29,12 +28,17 @@ export default async function SettingsIdentityPage({
   if (error) alerts.push({ tone: "error", message: error });
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navIdentity")} description={t("navIdentityDesc")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navIdentity")}
+      description={t("navIdentityDesc")}
+      previewHref="/"
+      previewLabel={t("seeEffectPreview")}
+      previewExternal
+    >
       <SettingsSection title={t("identity.sectionTitle")} description={t("identity.sectionDesc")}>
         <PensionIdentityForm identity={identity} />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

@@ -1,8 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { TeamPermissionsPanel } from "@/components/admin/settings/TeamPermissionsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import {
   buildSettingsAlerts,
   guardSettingsOwner,
@@ -27,18 +26,17 @@ export default async function SettingsTeamPermissionsPage({
   if (error) alerts.push({ tone: "error", message: error });
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader
-        title={t("navTeamPermissions")}
-        description={t("navTeamPermissionsDesc")}
-      />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navTeamPermissions")}
+      description={t("navTeamPermissionsDesc")}
+    >
       <SettingsSection
         title={t("teamPermissionsSectionTitle")}
         description={t("teamPermissionsSectionDesc")}
       >
         <TeamPermissionsPanel permissions={ctx.teamPermissions} />
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

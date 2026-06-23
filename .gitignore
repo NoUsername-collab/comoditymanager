@@ -29,6 +29,7 @@ e2e/.auth/
 *.pem
 
 # debug
+eslint-report.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,6 +1,6 @@
 "use server";
 
-import { getPlatformAdminOrNull } from "@/lib/auth/require-platform-admin";
+import { getPlatformAdminWithMfaOrNull } from "@/lib/auth/require-platform-admin";
 import { capturePlatformAdminError } from "@/services/dev-logs";
 
 type HospiraLogsProbeMode = "action" | "ssr";
@@ -13,7 +13,7 @@ function assertProbeAllowedInEnvironment(): void {
 
 async function runHospiraLogsProbe(mode: HospiraLogsProbeMode): Promise<never> {
   assertProbeAllowedInEnvironment();
-  const session = await getPlatformAdminOrNull();
+  const session = await getPlatformAdminWithMfaOrNull();
   if (!session) {
     throw new Error(
       `[hospira-admin/logs:probe${mode === "ssr" ? "-ssr" : ""}] Neautorizat — sesiune platform admin lipsă.`

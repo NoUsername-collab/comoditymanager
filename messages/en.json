@@ -42,10 +42,11 @@
       "description": "Wi-Fi, info and services for your stay at {name}."
     },
     "shell": {
-      "eyebrow": "Guest app",
+      "eyebrow": "Your stay",
       "back": "Back home",
       "navLabel": "Guest app navigation",
       "offline": "You're offline — some information may be unavailable.",
+      "loading": "Loading your stay…",
       "callReception": "Call reception",
       "callReceptionShort": "Reception",
       "featureTitles": {
@@ -103,6 +104,8 @@
       "discoverPlaceDesc": "Useful information about the accommodation",
       "payNow": "Pay now",
       "payNowDesc": "Finalize your stay payment",
+      "checkoutTomorrow": "Check-out tomorrow",
+      "checkoutTomorrowDesc": "Prepare for departure — times, parking, payment",
       "checkoutInfo": "Check-out info",
       "checkoutInfoDesc": "Details for your departure",
       "exploreTips": "Explore the area",
@@ -189,17 +192,23 @@
         "beforeBody": "The app becomes available from {date}.",
         "afterBody": "Access was active until {date}.",
         "stayPeriod": "Stay:",
-        "beforeHint": "Come back after {date} or contact reception."
+        "beforeHint": "Come back after {date} or contact reception.",
+        "afterHint": "For questions or a new booking, contact reception."
       },
+      "callReception": "Call reception",
       "errors": {
         "generic": "You cannot access this page.",
         "serviceUnavailable": "The service is temporarily unavailable. Please try again later.",
         "disabled": "The guest app is disabled. Please contact reception.",
         "setupIncomplete": "The guest app is not configured on this environment yet.",
         "notFound": "Invalid or unknown code.",
+        "notFoundHint": "If you received a new link, open that one. Otherwise ask reception for an updated link.",
         "wrongHost": "Open this link on the property's website. Ask reception for an updated link.",
+        "wrongHostHint": "Open the link from the property site (e.g. property.com/stay/…).",
         "revoked": "Access has been revoked.",
-        "notConfirmed": "The booking is not confirmed."
+        "revokedHint": "This link is no longer valid — ask reception for a new stay link.",
+        "notConfirmed": "The booking is not confirmed.",
+        "contactReception": "Contact reception for help."
       }
     },
     "feature": {
@@ -245,6 +254,10 @@
       "services": {
         "title": "Services not configured",
         "description": "Available services will appear here once configured."
+      },
+      "features": {
+        "title": "No features enabled",
+        "description": "Reception can help with stay information. Call or visit the front desk."
       }
     },
     "precheckin": {
@@ -266,6 +279,9 @@
       "notes": "Notes for reception",
       "submit": "Submit details",
       "submitting": "Submitting…",
+      "submittedToast": "Details submitted successfully",
+      "manualOrDivider": "or fill in manually",
+      "manualTitle": "Personal details",
       "successTitle": "Details submitted",
       "successBody": "Reception has your information. You will complete check-in on arrival.",
       "errors": {
@@ -276,6 +292,8 @@
       },
       "mrz": {
         "scanButton": "Scan MRZ",
+        "leadShort": "Scan your passport or e-ID — or fill in the fields below.",
+        "appliedToast": "MRZ data applied — review and correct if needed.",
         "title": "MRZ scan (passport / ID)",
         "close": "Close",
         "intro": "Align the MRZ zone (bottom 2–3 lines on the back of the document) or paste the text manually.",
@@ -284,7 +302,19 @@
         "pasteLabel": "MRZ lines",
         "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
         "parse": "Parse MRZ",
-        "cameraHint": "Hold the MRZ straight with good lighting, then capture.",
+        "loading": "Loading scanner…",
+        "cameraStarting": "Starting camera…",
+        "cameraStop": "Stop camera",
+        "cameraRetry": "Retry camera",
+        "cameraScanning": "Reading MRZ…",
+        "stabilizing": "Stabilizing read… {count}/{required}",
+        "scanSuccess": "MRZ detected — review details",
+        "scanRetry": "Scan again",
+        "torchOn": "Torch",
+        "torchOff": "Turn off torch",
+        "manualFallback": "Enter MRZ manually (paste text)",
+        "frameGuide": "Align the MRZ lines here",
+        "cameraHint": "Hold the document back in the frame. Scanning is automatic; tap Capture or use paste.",
         "capture": "Capture & read",
         "previewTitle": "Extracted data",
         "fieldName": "Name",
@@ -300,9 +330,13 @@
           "invalid_format": "Invalid format — TD1 is 3×30 chars, passport 2×44.",
           "unsupported": "Could not parse MRZ.",
           "camera": "Camera unavailable. Use paste or grant browser permission.",
+          "cameraDenied": "Camera access was denied. Allow camera in browser settings or use paste.",
+          "cameraUnsupported": "Camera is not available on this device or connection. Use paste.",
+          "cameraUnavailable": "Camera could not start. Check permissions or use paste.",
           "ocrNoMrz": "No MRZ detected in the image. Retry or paste manually.",
           "ocrFailed": "OCR failed. Please try again.",
-          "checksumInvalid": "Invalid checksum — the read data is likely wrong. Edit MRZ lines or retake the photo."
+          "checksumInvalid": "Invalid checksum — the read data is likely wrong. Edit MRZ lines or retake the photo.",
+          "checksum_failed": "Invalid checksum — OCR read is probably wrong. Reposition the document or paste manually."
         }
       }
     },
@@ -334,6 +368,11 @@
       "body": "The guest app page could not load. Check the link from the property or contact reception.",
       "retry": "Try again",
       "code": "Code: {digest}"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "body": "This section does not exist in the guest app or is no longer available.",
+      "backHome": "Back to home"
     },
     "feedback": {
       "sectionTitle": "How was your stay?",
@@ -391,6 +430,7 @@
       "privacy": "Privacy (GDPR)",
       "contact": "Contact",
       "contactNotConfigured": "Set up contact in admin",
+      "contactEmptyHint": "Add phone or email under Settings → Property identity or Public site.",
       "contactEmail": "contact@hospira.ro",
       "copyright": "© {year} {name}"
     },
@@ -419,7 +459,9 @@
       "step3Text": "We contact you with the final price and check-in / check-out details.",
       "ctaBandTitle": "Ready to send a request?",
       "ctaBandText": "Takes a few minutes. If dates aren't free, we'll tell you right away — no account, no card.",
-      "ctaBandButton": "Open calendar"
+      "ctaBandButton": "Open calendar",
+      "extrasAria": "Quick info",
+      "checkTimesLabel": "Stay schedule"
     },
     "calendar": {
       "eyebrow": "Online booking",
@@ -613,7 +655,12 @@
       "disponibilitate": "Availability",
       "buildings": "Buildings",
       "rooms": "Rooms",
-      "devlog": "Journal"
+      "devlog": "Journal",
+      "staysPendingAria": "{count, plural, one {Stays — # new request} other {Stays — # new requests}}",
+      "setupIssuesAria": "{count, plural, one {More — # setup issue} other {More — # setup issues}}",
+      "drawerGroupOperations": "Operations",
+      "drawerGroupConfig": "Configuration",
+      "drawerGroupOther": "Other"
     },
     "devlog": {
       "paginationPrev": "← Previous",
@@ -632,7 +679,8 @@
       "themeNotConfigured": "Admin theme has not been confirmed in settings",
       "buildingsNotColored": "One or more buildings need a Gantt color",
       "contactEmailMissing": "Contact email is missing for the property",
-      "gearAriaLabel": "Settings — action required"
+      "gearAriaLabel": "Settings — action required",
+      "menuHeading": "Setup incomplete"
     },
     "pwa": {
       "installApp": "Install app",
@@ -846,6 +894,68 @@
         "overviewTagline": "Configure your dashboard, operations, and guest channels",
         "overviewIntro": "Pick a section from the menu or below.",
         "overviewEmpty": "No sections available for your role.",
+        "completionTitle": "Setup progress",
+        "completionSummary": "{done} of {total} essentials complete",
+        "completionAria": "Setup {percent} percent — {done} of {total} complete",
+        "completionAllDone": "Looking good — you can refine details anytime.",
+        "completionPublicLive": "Public site: published",
+        "completionPublicDraft": "Public site: unpublished (draft)",
+        "completionContactEmail": "Property contact email",
+        "completionTheme": "Custom admin theme",
+        "completionBuildingsColor": "Building colors in Gantt",
+        "completionMfa": "Two-factor authentication (2FA)",
+        "completionPublicPublished": "Public site published",
+        "completionPublicContact": "Contact visible on site",
+        "completionPublicBooking": "Online booking enabled",
+        "identityPreviewLabel": "How identity appears",
+        "identityPreviewEmail": "Email sender",
+        "identityPreviewEmailFallback": "contact@yourdomain.ro",
+        "appearanceAdminHint": "Admin theme applies in the dashboard. The public site has its own theme — see Public site.",
+        "appearanceModeDay": "Day",
+        "appearanceModeNight": "Night",
+        "appearancePublicLink": "Configure public site",
+        "appearancePreviewAdmin": "Admin panel",
+        "appearancePreviewPublic": "Public site snippet",
+        "appearancePreviewPublicLead": "Guesthouse stay",
+        "appearancePreviewPublicCta": "Sample hero title",
+        "appearancePreviewPublicButton": "Check availability",
+        "quickLinksTitle": "Quick access",
+        "checklistTitle": "Setup progress",
+        "checklistProgress": "Sections ready",
+        "checklistProgressValue": "{done} of {total}",
+        "checklistContactHint": "Add a contact email under Property identity — used on the public site, guest app, and emails.",
+        "checklistIdentity": "Property name",
+        "checklistContact": "Contact email",
+        "checklistTheme": "Admin theme",
+        "checklistBuildings": "Building colors",
+        "checklistEmail": "Email channel",
+        "checklistMfa": "Two-factor auth",
+        "checklistPublicTitle": "Public site",
+        "checklistPublicPublished": "Site published",
+        "checklistPublicContact": "Contact on site",
+        "checklistPublicBooking": "Online booking",
+        "checklistFix": "Complete",
+        "viewOnSite": "View on site",
+        "navSearchLabel": "Search settings sections",
+        "navSearchPlaceholder": "Search settings…",
+        "navSearchEmpty": "No sections match your search.",
+        "quickJumpAria": "Quick jump between settings sections",
+        "allSaved": "All changes saved.",
+        "saveBarAria": "Settings save actions",
+        "livePreview": "Live preview",
+        "livePreviewAria": "Public site preview",
+        "unsavedChanges": "You have unsaved changes.",
+        "savedGeneric": "Settings saved.",
+        "savedAppearance": "Dashboard theme saved.",
+        "identityPreviewLabel": "As shown on the public site",
+        "asOnSite": "As it appears on the site",
+        "seeEffectPreview": "View live site",
+        "identityPreviewEmail": "Email sender",
+        "identityPreviewEmailFallback": "contact@guesthouse.com",
+        "appearanceAdminHint": "This theme applies to the admin panel (Gantt, reception). Visitors see the theme under Public site.",
+        "appearancePublicLink": "Public site theme",
+        "appearanceModeDay": "Day",
+        "appearanceModeNight": "Night",
         "navAppearance": "Appearance",
         "navAppearanceDesc": "Admin theme and layout density",
         "navPreferences": "Preferences",
@@ -999,10 +1109,35 @@
             }
           }
         },
+        "preview": {
+          "identityTitle": "As it appears on the site",
+          "identityHint": "Name and contact in header, footer, and emails.",
+          "identityEyebrow": "Property identity",
+          "identityEmpty": "Add at least one contact channel.",
+          "channel_email": "Email",
+          "channel_phone": "Phone",
+          "channel_whatsapp": "WhatsApp",
+          "channel_telegram": "Telegram",
+          "channel_facebook": "Facebook",
+          "channel_instagram": "Instagram",
+          "publicSiteTitle": "As it appears on the site",
+          "publicSiteHint": "Static summary — the editor on the left updates live.",
+          "publicSitePublished": "Published",
+          "publicSiteDraft": "Draft",
+          "publicSiteTemplate": "Template {template}",
+          "appearanceTitle": "Admin panel theme",
+          "appearanceHint": "Gantt colours and admin surfaces. Public site has its own theme.",
+          "appearanceEyebrow": "Active palette",
+          "themeModeDay": "Day mode",
+          "themeModeNight": "Night mode",
+          "publicBrandTitle": "Brand on public site",
+          "publicBrandHint": "Same colour family as Public site → Visual theme."
+        },
         "identity": {
           "sectionTitle": "Primary details",
           "sectionDesc": "Used on the public site, guest app, and emails unless a channel overrides them.",
           "displayName": "Display name",
+          "displayNamePlaceholder": "e.g. Casa Emil",
           "email": "Contact email",
           "phone": "Phone",
           "whatsapp": "WhatsApp",
@@ -1012,7 +1147,15 @@
           "channelsHint": "Public site and guest app can use these via “use primary identity”.",
           "save": "Save identity",
           "saving": "Saving…",
-          "saved": "Identity saved"
+          "saved": "Identity saved",
+          "saveError": "Could not save identity",
+          "cardBrandTitle": "Property brand",
+          "cardBrandDesc": "Name shown in the site header, guest app, and emails.",
+          "cardContactTitle": "Primary contact",
+          "cardContactDesc": "Channels used on the site and in communications unless overridden per channel.",
+          "displayNameHint": "Shown in the public site header and email subjects.",
+          "emailHint": "Reply-to address and footer contact.",
+          "phoneHint": "Shown in the contact bar and footer."
         },
         "checkin": {
           "title": "Check-in Rules",
@@ -1257,6 +1400,16 @@
         "bookingPosBoth": "Navigation + footer",
         "bookingPosHidden": "Hidden (page still accessible directly)",
         "published": "Site published",
+        "heroTitleHint": "Main hero headline — also used as meta title if SEO fields are empty.",
+        "heroImageHint": "Background image URL for the hero (JPG/PNG, HTTPS recommended).",
+        "usePrimaryContactHint": "When checked, Property identity contact fills empty fields below.",
+        "publishedHint": "Turn off to hide the public site while you finish setup.",
+        "seoTitle": "SEO & meta",
+        "seoSectionDesc": "Title and description for Google and social previews.",
+        "seoMetaTitle": "Meta title",
+        "seoMetaTitleHint": "Keep under ~60 characters. Leave empty to use the hero title.",
+        "seoMetaDescription": "Meta description",
+        "seoMetaDescriptionHint": "Aim for 120–160 characters. Briefly describe your property.",
         "templates": {
           "classic": {
             "title": "Classic",
@@ -1383,7 +1536,10 @@
         "searchLabel": "search \"{query}\"",
         "previous": "Previous page",
         "next": "Next page",
-        "genericError": "Error"
+        "genericError": "Error",
+        "highlightsEmptyTitle": "No guest profiles yet",
+        "highlightsEmptyDescription": "Profiles appear after the first confirmed stay or check-in.",
+        "highlightsEmptyCta": "View stays"
       },
       "calendar": {
         "genericError": "Error",
@@ -2707,6 +2863,7 @@
       "invalidUser": "Invalid user",
       "enterPassword": "Enter password",
       "invalidUserOrPassword": "Invalid user or password",
+      "rateLimited": "Too many attempts. Please wait a few minutes.",
       "notMemberOfPension": "This account does not have access to this property.",
       "noTenantLinked": "No property is linked to this account. Create one from Sign up or contact support.",
       "loginSummary": "Login {role}",
@@ -2862,6 +3019,8 @@
     },
     "checkIn": {
       "title": "Check-in",
+      "loadingStepper": "Loading check-in…",
+      "stepProgressAria": "Check-in steps",
       "editTitle": "Edit check-in",
       "startCheckin": "Check-in",
       "cancel": "Cancel",
@@ -2880,6 +3039,7 @@
       "noCheckinToEdit": "No saved check-in to edit.",
       "updatedSuccess": "Check-in updated",
       "migrationRequired": "The check-in system is not set up in the database. Run migration 048_checkin_system.sql in Supabase (SQL Editor), then try again.",
+      "unknownError": "Something went wrong while saving. Please try again or contact support.",
       "registeredGuests": {
         "onlyHint": "Registered guests with profile data only — updates sync to the client file on save.",
         "emptyTitle": "No registered guest with data",
@@ -2976,6 +3136,7 @@
       },
       "mrz": {
         "scanButton": "Scan MRZ",
+        "loading": "Loading scanner…",
         "title": "MRZ scan (passport / ID)",
         "intro": "Align the MRZ zone (bottom 2–3 lines on the back of the document) or paste the text manually.",
         "tabPaste": "Paste text",
@@ -2983,7 +3144,19 @@
         "pasteLabel": "MRZ lines",
         "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
         "parse": "Parse MRZ",
-        "cameraHint": "Hold the MRZ straight with good lighting, then capture.",
+        "loading": "Loading scanner…",
+        "cameraStarting": "Starting camera…",
+        "cameraStop": "Stop camera",
+        "cameraRetry": "Retry camera",
+        "cameraScanning": "Reading MRZ…",
+        "stabilizing": "Stabilizing read… {count}/{required}",
+        "scanSuccess": "MRZ detected — review details",
+        "scanRetry": "Scan again",
+        "torchOn": "Torch",
+        "torchOff": "Turn off torch",
+        "manualFallback": "Enter MRZ manually (paste text)",
+        "frameGuide": "Align the MRZ lines here",
+        "cameraHint": "Hold the document back in the frame. Scanning is automatic; tap Capture or use paste.",
         "capture": "Capture & read",
         "previewTitle": "Extracted data",
         "fieldName": "Name",
@@ -3001,9 +3174,13 @@
           "invalid_format": "Invalid format — TD1 is 3×30 chars, passport 2×44.",
           "unsupported": "Could not parse MRZ.",
           "camera": "Camera unavailable. Use paste or grant browser permission.",
+          "cameraDenied": "Camera access was denied. Allow camera in browser settings or use paste.",
+          "cameraUnsupported": "Camera is not available on this device or connection. Use paste.",
+          "cameraUnavailable": "Camera could not start. Check permissions or use paste.",
           "ocrNoMrz": "No MRZ detected in the image. Retry or paste manually.",
           "ocrFailed": "OCR failed. Please try again.",
-          "checksumInvalid": "Invalid checksum — the read data is likely wrong. Edit MRZ lines or retake the photo."
+          "checksumInvalid": "Invalid checksum — the read data is likely wrong. Edit MRZ lines or retake the photo.",
+          "checksum_failed": "Invalid checksum — OCR read is probably wrong. Reposition the document or paste manually."
         }
       },
       "fisa": {
@@ -3876,8 +4053,8 @@
     "genericError": "We could not create your account. Please try again.",
     "errorPlanConfig": "Database plan configuration issue. Contact your administrator.",
     "errorDatabase": "Could not create the guesthouse in the database. Try again or contact support.",
-    "errorCatalogMigration": "Run migration 034_catalog_slug_per_tenant.sql in Supabase staging (SQL Editor).",
-    "errorServerConfig": "Server misconfigured (missing SUPABASE_SERVICE_ROLE_KEY on Vercel).",
+    "errorCatalogMigration": "We couldn't finish setting up your property. Please contact Hospira support.",
+    "errorServerConfig": "The service is temporarily unavailable. Please try again or contact support.",
     "rateLimited": "Too many attempts. Please wait a few minutes.",
     "pensionNameRequired": "Guesthouse name is required (min 2 characters).",
     "pensionNameTooLong": "Guesthouse name is too long (max 100 characters).",
@@ -3889,55 +4066,104 @@
     "emailStaleOwnerRow": "A property exists for this email without a login account. Sign in or contact support."
   },
   "landing": {
-    "heroBadge": "Software for guesthouses",
-    "heroTitle": "Manage your pension from your phone",
-    "heroSubtitle": "Calendar, online bookings, check-in/out and notifications. Everything you need, in one place. No commissions, no complications.",
-    "heroCta": "Try for free",
-    "heroCtaSecondary": "See pricing",
-    "heroNote": "No credit card required. 3 rooms free, forever.",
+    "metaTitle": "Hospira — PMS software for guesthouses",
+    "metaDescription": "Gantt calendar, stays, check-in and public site for small guesthouses in Romania, Moldova and Bulgaria. Start free with zero commission on direct bookings.",
+    "heroBadge": "PMS for guesthouses · RO · MD · BG",
+    "heroTitle": "Run your guesthouse from your phone — no notebook, no Excel",
+    "heroSubtitle": "Hospira brings Gantt calendar, stays, check-in and availability into one platform. Built for guesthouse owners in Romania, Moldova and Bulgaria.",
+    "heroCta": "Start free",
+    "heroCtaDemo": "Book a demo",
+    "heroCtaLogin": "Log in",
+    "heroCtaSecondary": "See the tools",
+    "heroNote": "No credit card · 3 rooms free, forever.",
+    "demoEmailSubject": "Hospira demo — guesthouse",
+    "statsAria": "Hospira highlights",
+    "heroSocialQuote": "\"Replaces the notebook and Excel with a calendar that actually works.\"",
+    "heroSocialCaption": "Small guesthouses in Romania, Moldova and Bulgaria",
     "problemTitle": "Sound familiar?",
     "withoutHospira": "Without Hospira",
-    "problem1": "Bookings on paper or Excel",
-    "problem2": "Double bookings and confusion",
-    "problem3": "Guests call to ask about availability",
-    "problem4": "15-18% commission to Booking.com on every reservation",
+    "problem1": "Bookings on paper or in Excel",
+    "problem2": "Double bookings and channel confusion",
+    "problem3": "Guests call constantly to ask about availability",
+    "problem4": "15–18% commission to Booking.com on every reservation",
     "withHospira": "With Hospira",
-    "solution1": "Digital calendar with all reservations",
-    "solution2": "Impossible to double-book (database-level protection)",
-    "solution3": "Guests book directly on your website",
+    "solution1": "Digital calendar with every booking in view",
+    "solution2": "Impossible to double-book — database-level protection",
+    "solution3": "Guests book themselves on your guesthouse website",
     "solution4": "Direct bookings = 0% commission",
-    "featuresTitle": "Everything you need",
-    "featuresLead": "Built specifically for small guesthouses in Romania, Moldova and Bulgaria.",
-    "feature1Icon": "1",
-    "feature1Title": "Visual calendar",
-    "feature1Desc": "See all rooms and bookings on one page. Intuitive Gantt chart, drag & drop.",
-    "feature2Icon": "2",
-    "feature2Title": "Online bookings",
-    "feature2Desc": "Guests book directly on your site. You get instant email notification.",
-    "feature3Icon": "3",
-    "feature3Title": "Check-in / Check-out",
-    "feature3Desc": "Record arrivals and departures with one click. Complete guest history.",
-    "feature4Icon": "4",
-    "feature4Title": "Your team",
-    "feature4Desc": "Add receptionist, admin, operator. Each sees only what they need.",
-    "feature5Icon": "5",
-    "feature5Title": "Email notifications",
-    "feature5Desc": "Get email when a new booking arrives. Guest gets automatic confirmation.",
-    "feature6Icon": "6",
-    "feature6Title": "Your presentation page",
-    "feature6Desc": "Each pension gets its own site with availability and booking form.",
+    "toolsTitle": "Your daily operating tools",
+    "toolsLead": "Everything reception uses every day — calendar, stays, check-in and documents — in a clear, mobile-first interface.",
+    "toolsAria": "Hospira tools",
+    "tools": {
+      "gantt": {
+        "title": "Gantt calendar",
+        "desc": "See all rooms and stays on one page. Drag & drop, building colors, occupancy heatmap."
+      },
+      "cazari": {
+        "title": "Stays & requests",
+        "desc": "Manage bookings, new requests and stay status — from confirmation to check-out."
+      },
+      "checkin": {
+        "title": "Reception check-in",
+        "desc": "Record arrivals quickly, with MRZ document scan and complete guest profiles."
+      },
+      "guestApp": {
+        "title": "Guest app",
+        "desc": "Guests access Wi-Fi, property info and online check-in from their phone — no app install."
+      },
+      "disponibilitate": {
+        "title": "Availability",
+        "desc": "Rates, seasons and blocks — synced with the calendar and public site."
+      },
+      "fiscal": {
+        "title": "Fiscal documents",
+        "desc": "Issue informal invoices and guest documents, ready for local fiscal integrations."
+      },
+      "buildings": {
+        "title": "Multi-building",
+        "desc": "Multiple buildings, floors and rooms — each with its own color and Gantt config."
+      },
+      "publicSite": {
+        "title": "Public site",
+        "desc": "Each property gets a presentation page with availability and booking form."
+      }
+    },
     "howTitle": "How it works",
+    "howLead": "Three steps from account to daily operations — no consultants, no complex setup.",
     "step1Title": "Create account",
-    "step1Desc": "Pension name, email, password. 30 seconds, no credit card.",
-    "step2Title": "Add your rooms",
-    "step2Desc": "Configure buildings, floors and rooms. Get a presentation site automatically.",
-    "step3Title": "Receive bookings",
-    "step3Desc": "Guests book online, you confirm from calendar. Simple.",
+    "step1Desc": "Property name, email, password. 30 seconds, no credit card.",
+    "step2Title": "Set up your property",
+    "step2Desc": "Buildings, rooms, rates and public site — guided step by step, in minutes.",
+    "step3Title": "Operate daily",
+    "step3Desc": "Gantt calendar, stays, check-in and availability — from phone or desktop.",
     "statSetup": "Account setup",
-    "trustLead": "Built for small guesthouses that want control, not commissions.",
-    "trust1": "Zero commission on direct bookings",
+    "trustStripAria": "Key Hospira benefits",
+    "trustLead": "Small guesthouses in Romania, Moldova and Bulgaria — full control, zero commission on direct bookings.",
+    "trust1": "0% commission on direct bookings",
     "trust2": "EU data · GDPR-ready",
     "trust3": "Support in Romanian, English, Bulgarian",
+    "trustSectionTitle": "Security and trust",
+    "trustSectionLead": "Multi-tenant infrastructure, isolated data per property, GDPR compliance.",
+    "trustCards": {
+      "security": {
+        "glyph": "🔒",
+        "title": "Protected data",
+        "desc": "Encryption in transit, secure authentication and automatic data backups."
+      },
+      "multiTenant": {
+        "glyph": "🏠",
+        "title": "Isolated multi-tenant",
+        "desc": "Each property has its own separate space — no data mixing between clients."
+      },
+      "gdpr": {
+        "glyph": "🇪🇺",
+        "title": "GDPR-ready",
+        "desc": "Data stored in the EU, privacy policies and export on request."
+      }
+    },
+    "trustLegalPrefix": "Full details in our",
+    "trustLegalLink": "privacy policy",
+    "trustLegalSuffix": ".",
     "pricingCompareCta": "Compare all plans",
     "finalCtaTitle": "Ready to start?",
     "finalCtaText": "Create account in 30 seconds. No credit card, no obligations.",
@@ -4106,7 +4332,165 @@
       "menuClose": "Close menu",
       "dashboard": "Dashboard",
       "tenants": "Tenants",
-      "logs": "Logs"
+      "logs": "Logs",
+      "tools": "Tools"
+    },
+    "common": {
+      "copy": "Copy",
+      "copied": "Copied!"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "totalTenants": "Total tenants",
+      "activeTenants": "Active",
+      "trialTenants": "Trial",
+      "suspendedTenants": "Suspended",
+      "cancelledTenants": "Cancelled",
+      "totalRooms": "Total rooms",
+      "totalBookings": "Total bookings",
+      "bookingsToday": "New bookings today",
+      "activeStaysToday": "Active stays today",
+      "errors24h": "Errors (24h)",
+      "mrr": "MRR",
+      "planTypes": "Plans",
+      "planDistribution": "Plan distribution",
+      "viewAllTenants": "View all tenants",
+      "signupsLast7d": "Signups (7 days)",
+      "openTools": "Platform tools"
+    },
+    "tenants": {
+      "title": "Tenants ({count})",
+      "showing": "Showing {filtered} of {total}",
+      "searchPlaceholder": "Search by name, slug, domain or email…",
+      "statusFilter": "Filter by status",
+      "planFilter": "Filter by plan",
+      "statusAll": "All statuses",
+      "statusActive": "Active",
+      "statusTrial": "Trial",
+      "statusSuspended": "Suspended",
+      "statusCancelled": "Cancelled",
+      "planAll": "All plans",
+      "colName": "Property",
+      "colSlug": "Slug",
+      "colPlan": "Plan",
+      "colStatus": "Status",
+      "colRooms": "Rooms",
+      "colBookings": "Bookings",
+      "colMembers": "Members",
+      "colBilling": "Billing",
+      "colCreated": "Created",
+      "details": "Details",
+      "empty": "No tenants registered.",
+      "noMatches": "No tenants match the filters.",
+      "roomsShort": "rooms",
+      "bookingsShort": "bk.",
+      "membersShort": "members",
+      "created": "Created {date}",
+      "exportCsv": "Export CSV",
+      "exporting": "Exporting…",
+      "exportSuccess": "CSV downloaded.",
+      "exportFailed": "Export failed."
+    },
+    "tenantDetail": {
+      "backToTenants": "Tenants",
+      "info": "Information",
+      "stats": "Statistics",
+      "id": "ID",
+      "slug": "Slug",
+      "ownerEmail": "Owner email",
+      "country": "Country",
+      "locale": "Locale",
+      "timezone": "Timezone",
+      "created": "Created",
+      "rooms": "Rooms",
+      "bookings": "Bookings",
+      "teamMembers": "Team members",
+      "planPrice": "Plan price",
+      "month": "month",
+      "billing": "Billing",
+      "maxRoomsPlan": "Plan max rooms",
+      "unlimited": "Unlimited",
+      "plan": "Plan",
+      "status": "Status",
+      "modules": "Add-on modules",
+      "quickLinks": {
+        "title": "Quick actions",
+        "impersonateHint": "Open this tenant's admin panel. Sign in with your platform account.",
+        "openAdmin": "Open {slug}",
+        "viewLogs": "View tenant logs"
+      },
+      "health": {
+        "ok": "Health OK",
+        "issues": "Issues detected",
+        "viewLogs": "View logs"
+      },
+      "domains": {
+        "title": "Domains",
+        "empty": "No domains configured.",
+        "unverified": "unverified",
+        "sslPending": "SSL pending",
+        "copySlug": "Copy slug"
+      },
+      "activity": {
+        "title": "Last activity",
+        "empty": "No activity recorded.",
+        "lastAt": "Date",
+        "lastAction": "Action",
+        "lastActor": "Actor"
+      },
+      "siteLinks": {
+        "title": "Site links",
+        "admin": "Admin panel",
+        "publicCalendar": "Public calendar",
+        "publicSite": "Public site"
+      },
+      "support": {
+        "title": "Operator support",
+        "cacheHint": "Invalidate tenant cache (settings, rooms, bookings).",
+        "cacheButton": "Revalidate tenant cache",
+        "cachePending": "Revalidating…",
+        "cacheSuccess": "Tenant cache revalidated.",
+        "cacheFailed": "Revalidation failed.",
+        "magicHint": "Generate a one-time magic login link for the owner.",
+        "magicButton": "Generate magic link",
+        "magicPending": "Generating…",
+        "magicFailed": "Generation failed.",
+        "noOwnerEmail": "Tenant has no owner email.",
+        "copyMagicLink": "Copy link",
+        "magicWarning": "Sensitive link — send only to the owner, expires quickly."
+      }
+    },
+    "health": {
+      "emailTitle": "Transactional email",
+      "emailConfigured": "Resend active · domain {domain} ({provider})",
+      "emailNotConfigured": "RESEND_API_KEY missing — emails are noop",
+      "domainsTitle": "Custom domains",
+      "domainsSummary": "{custom} custom · {subdomains} Hospira subdomains · {unverified} unverified · {sslPending} SSL pending"
+    },
+    "devTools": {
+      "title": "Platform tools",
+      "lead": "Cache revalidation and critical migration checks.",
+      "revalidateCache": "Revalidate admin cache",
+      "revalidating": "Revalidating…",
+      "revalidateSuccess": "Cache revalidated.",
+      "revalidateFailed": "Revalidation failed.",
+      "migrationsTitle": "Critical migrations",
+      "migrationsOk": "All OK",
+      "migrationsMissing": "{count} missing"
+    },
+    "tools": {
+      "title": "Platform tools",
+      "lead": "System health, env checklist, cache and migrations.",
+      "env": {
+        "title": "Env checklist",
+        "summary": "{configured} of {total} variables configured",
+        "configured": "OK",
+        "missingRequired": "Missing (required)",
+        "missingOptional": "Missing (optional)",
+        "cronTitle": "Cron jobs",
+        "cronSecretOk": "CRON_SECRET set — Vercel Cron can call /api/cron/*",
+        "cronSecretMissing": "CRON_SECRET missing — crons cannot run securely"
+      }
     },
     "error": {
       "title": "Admin Panel Error",

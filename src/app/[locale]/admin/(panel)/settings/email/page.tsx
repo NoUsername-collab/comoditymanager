@@ -1,8 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { EmailSettingsPanel } from "@/components/admin/settings/EmailSettingsPanel";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import { getEmailDeliveryConfig } from "@/lib/email/provider";
 import { resolveTransactionalEmailIdentity } from "@/services/email-identity";
 import { getEmailSettings, DEFAULT_EMAIL_SETTINGS } from "@/services/email-settings";
@@ -32,9 +31,11 @@ export default async function SettingsEmailPage({
   if (error) alerts.push({ tone: "error", message: error });
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navEmail")} description={t("navEmailDesc")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navEmail")}
+      description={t("navEmailDesc")}
+    >
       <SettingsSection title={t("emailTitle")} description={t("emailSubtitle")}>
         {emailIdentity ? (
           <EmailSettingsPanel
@@ -46,6 +47,6 @@ export default async function SettingsEmailPage({
           <p className="settings-empty settings-empty--error">{t("genericError")}</p>
         )}
       </SettingsSection>
-    </>
+    </SettingsPageLayout>
   );
 }

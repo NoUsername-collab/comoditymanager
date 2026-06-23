@@ -1,33 +1,34 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  probeHospiraLogsErrorAction,
-  probeHospiraLogsPageThrow,
-} from "../logs-actions";
 
-const getPlatformAdminOrNull = vi.fn();
-const capturePlatformAdminError = vi.fn();
+const { getPlatformAdminWithMfaOrNull, capturePlatformAdminError } = vi.hoisted(
+  () => ({
+    getPlatformAdminWithMfaOrNull: vi.fn(),
+    capturePlatformAdminError: vi.fn(),
+  })
+);
 
 vi.mock("@/lib/auth/require-platform-admin", () => ({
-  getPlatformAdminOrNull: () => getPlatformAdminOrNull(),
+  getPlatformAdminWithMfaOrNull,
 }));
 
 vi.mock("@/services/dev-logs", () => ({
-  capturePlatformAdminError: (...args: unknown[]) =>
-    capturePlatformAdminError(...args),
+  capturePlatformAdminError,
 }));
 
 describe("hospira logs probe actions", () => {
   beforeEach(() => {
-    getPlatformAdminOrNull.mockReset();
+    getPlatformAdminWithMfaOrNull.mockReset();
     capturePlatformAdminError.mockReset();
     capturePlatformAdminError.mockResolvedValue(undefined);
   });
 
   it("probeHospiraLogsErrorAction writes dev_log then throws", async () => {
-    getPlatformAdminOrNull.mockResolvedValue({
+    getPlatformAdminWithMfaOrNull.mockResolvedValue({
       userId: "user-1",
       email: "admin@hospira.ro",
     });
+
+    const { probeHospiraLogsErrorAction } = await import("../logs-actions");
 
     await expect(probeHospiraLogsErrorAction()).rejects.toThrow(
       /\[hospira-admin\/logs:probe\]/
@@ -45,10 +46,12 @@ describe("hospira logs probe actions", () => {
   });
 
   it("probeHospiraLogsPageThrow uses ssr source and mode", async () => {
-    getPlatformAdminOrNull.mockResolvedValue({
+    getPlatformAdminWithMfaOrNull.mockResolvedValue({
       userId: "user-2",
       email: "ops@hospira.ro",
     });
+
+    const { probeHospiraLogsPageThrow } = await import("../logs-actions");
 
     await expect(probeHospiraLogsPageThrow()).rejects.toThrow(
       /\[hospira-admin\/logs:probe-ssr\]/
@@ -64,7 +67,9 @@ describe("hospira logs probe actions", () => {
   });
 
   it("rejects when platform admin session is missing", async () => {
-    getPlatformAdminOrNull.mockResolvedValue(null);
+    getPlatformAdminWithMfaOrNull.mockResolvedValue(null);
+
+    const { probeHospiraLogsErrorAction } = await import("../logs-actions");
 
     await expect(probeHospiraLogsErrorAction()).rejects.toThrow(/Neautorizat/);
     expect(capturePlatformAdminError).not.toHaveBeenCalled();

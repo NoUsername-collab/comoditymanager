@@ -32,7 +32,7 @@ export function InformalInvoiceView({ ctx }: { ctx: InvoiceContext }) {
       </div>
 
       <article className="informal-invoice-sheet overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg ring-1 ring-zinc-900/5 print:rounded-none print:border-0 print:shadow-none">
-        <header className="border-b border-zinc-100 bg-gradient-to-r from-zinc-900 to-zinc-800 px-5 py-5 text-white print:bg-zinc-900">
+        <header className="border-b border-zinc-100 bg-zinc-900 px-5 py-5 text-white print:bg-zinc-900">
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-amber-200/90">
             {tInvoice("documentInformative")}
           </p>

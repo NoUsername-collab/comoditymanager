@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   changeStaffRoleAction,
   deactivateStaffAction,
-} from "@/app/[locale]/admin/(panel)/settings/staff/actions";
+} from "@/features/settings/actions/staff";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import type { TenantMember } from "@/services/tenant-members";
 

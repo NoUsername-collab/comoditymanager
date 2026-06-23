@@ -14,8 +14,36 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BUILD_SHA:
       process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "dev",
   },
-  experimental: {
-    optimizePackageImports: ["date-fns", "@supabase/supabase-js"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.supabase.in",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
+    experimental: {
+    optimizePackageImports: [
+      "date-fns",
+      "@supabase/supabase-js",
+      "@supabase/ssr",
+      "next-intl",
+      "react-hook-form",
+      "zod",
+      "@hookform/resolvers",
+      "tesseract.js",
+      "mrz",
+      "qrcode",
+      "@sentry/nextjs",
+      "@dnd-kit/core",
+      "@dnd-kit/utilities",
+    ],
   },
   headers: async () => [
     {
@@ -31,7 +59,7 @@ const nextConfig: NextConfig = {
         { key: "X-DNS-Prefetch-Control", value: "on" },
         {
           key: "Permissions-Policy",
-          value: "camera=(), microphone=(), geolocation=()",
+          value: "camera=(self), microphone=(), geolocation=()",
         },
         {
           key: "Content-Security-Policy",

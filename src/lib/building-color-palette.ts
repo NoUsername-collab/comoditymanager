@@ -60,9 +60,17 @@ export function isAllowedBuildingColor(hex: string): boolean {
 }
 
 /** Display color in Gantt / availability from palette or AC fallback. */
+const ganttColorCache = new Map<string, string>();
+
 export function resolveGanttBuildingColor(
   colorHex: string | null | undefined,
   acMode: "all_rooms" | "none" | "per_room"
 ): string {
-  return normalizeBuildingColor(colorHex) ?? defaultColorForAcMode(acMode);
+  const key = `${colorHex ?? ""}|${acMode}`;
+  const cached = ganttColorCache.get(key);
+  if (cached) return cached;
+  const resolved =
+    normalizeBuildingColor(colorHex) ?? defaultColorForAcMode(acMode);
+  ganttColorCache.set(key, resolved);
+  return resolved;
 }

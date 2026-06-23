@@ -39,6 +39,11 @@
   font-size: 0.72rem;
 }
 
+.cazari-page .stay-list > li {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 5.5rem;
+}
+
 .cazari-filter-panel__stack {
   display: flex;
   flex-direction: column;
@@ -143,8 +148,20 @@
 }
 
 .cazari-view-filter--cereri-alert .cazari-view-filter__count {
-  background: #1c1917;
-  color: #fbbf24;
+  background: var(--text);
+  color: var(--pending-border);
+}
+
+.cazari-horizon__pill--active {
+  border-color: var(--admin-tint-success-border);
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+}
+
+.cazari-horizon__pill--idle {
+  border-color: var(--admin-surface-border);
+  background: var(--admin-surface-bg);
+  color: var(--text-muted);
 }
 
 /* Fereastră vizibilă — neschimbată ca spacing */
@@ -152,14 +169,12 @@
   padding-top: 0;
 }
 
-@media (max-width: 520px) {
-  .cazari-view-filters {
-    grid-template-columns: 1fr;
-  }
+html[data-layout-chrome="compact"] .cazari-view-filters {
+  grid-template-columns: 1fr;
+}
 
-  .cazari-view-filter {
-    justify-content: space-between;
-  }
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  justify-content: space-between;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,4 +1,4 @@
-import type { TenantMemberRole } from "@/services/tenant-members";
+import type { TenantMemberRole } from "@/domain/tenant/types";
 
 export type StatisticsVisibility = "owner" | "admin" | "all";
 

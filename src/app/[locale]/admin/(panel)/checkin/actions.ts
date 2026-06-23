@@ -32,6 +32,7 @@ import type {
   BookingForCheckin,
   CheckinSettings,
 } from "@/domain/checkin/types";
+import { parseCheckinGuestsJson } from "@/domain/checkin/guest-input-schema";
 import { getCheckinGuests } from "@/services/checkin/queries";
 import { listRegisteredGuestsForCheckin } from "@/services/checkin/booking-guests";
 import { syncBookingOperativeCheckInFromRecord } from "@/services/checkin/sync";
@@ -345,16 +346,11 @@ export async function createCheckinAction(
 
     // Parse guests from JSON
     const guestsJson = String(formData.get("guests") ?? "[]");
-    let guests: CheckinGuestInput[];
-    try {
-      guests = JSON.parse(guestsJson);
-    } catch {
+    const guestsParsed = parseCheckinGuestsJson(guestsJson);
+    if (!guestsParsed.ok) {
       return { ok: false, error: "Invalid guests data" };
     }
-
-    if (!Array.isArray(guests) || guests.length === 0) {
-      return { ok: false, error: "At least one room or guest required" };
-    }
+    const guests = guestsParsed.guests;
 
     const identityScopeRaw = String(formData.get("identity_scope") ?? "").trim();
     const identity_scope =
@@ -454,16 +450,11 @@ export async function updateCheckinAction(
     const notes = String(formData.get("notes") ?? "").trim() || undefined;
 
     const guestsJson = String(formData.get("guests") ?? "[]");
-    let guests: CheckinGuestInput[];
-    try {
-      guests = JSON.parse(guestsJson);
-    } catch {
+    const guestsParsed = parseCheckinGuestsJson(guestsJson);
+    if (!guestsParsed.ok) {
       return { ok: false, error: "Invalid guests data" };
     }
-
-    if (!Array.isArray(guests) || guests.length === 0) {
-      return { ok: false, error: "At least one guest required" };
-    }
+    const guests = guestsParsed.guests;
 
     const identityScopeRaw = String(formData.get("identity_scope") ?? "").trim();
     const identity_scope =

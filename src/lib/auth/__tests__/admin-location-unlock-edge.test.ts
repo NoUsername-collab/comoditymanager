@@ -41,4 +41,13 @@ describe("isAdminLocationUnlockTokenValidEdge", () => {
     await expect(isAdminLocationUnlockTokenValidEdge(null)).resolves.toBe(false);
     await expect(isAdminLocationUnlockTokenValidEdge("")).resolves.toBe(false);
   });
+
+  it("rejects tokens in production when unlock secret is unset", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("ADMIN_LOCATION_UNLOCK_SECRET", "");
+    const until = Date.now() + 60_000;
+    const token = encodeToken(until, secret);
+    await expect(isAdminLocationUnlockTokenValidEdge(token)).resolves.toBe(false);
+    vi.unstubAllEnvs();
+  });
 });

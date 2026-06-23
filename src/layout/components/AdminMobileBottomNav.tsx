@@ -13,13 +13,19 @@ import {
   isAdminTabActive,
 } from "@/layout/mobile";
 import { AdminMobileMoreDrawer } from "@/layout/components/AdminMobileMoreDrawer";
+import type { SetupIssue } from "@/domain/setup-issues/types";
+import { hapticTap } from "@/lib/haptic";
 
 export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   cereriCount,
+  setupIssuesCount = 0,
+  setupIssues = [],
   locationUnlocked = false,
   statisticsAccess = false,
 }: {
   cereriCount: number;
+  setupIssuesCount?: number;
+  setupIssues?: SetupIssue[];
   locationUnlocked?: boolean;
   statisticsAccess?: boolean;
 }) {
@@ -31,6 +37,12 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   const moreTriggerRef = useRef<HTMLButtonElement>(null);
   const prefetchHrefs = useMemo(() => tabs.map((tab) => tab.href), [tabs]);
   useAdminRoutePrefetch(prefetchHrefs);
+  const onSettings = pathname.startsWith("/admin/settings");
+  const setupAlert = setupIssuesCount > 0 && !onSettings;
+
+  function onNavTap() {
+    hapticTap(6);
+  }
 
   return (
     <>
@@ -44,6 +56,10 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
           const active = isAdminTabActive(pathname, tab.href);
           const isCazari = tab.href === "/admin/cazari";
           const badge = isCazari && cereriCount > 0 ? cereriCount : null;
+          const ariaLabel =
+            badge != null
+              ? t("staysPendingAria", { count: badge })
+              : undefined;
 
           return (
             <li key={tab.href} className="ml-bottom-nav__item">
@@ -56,6 +72,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
                 onMouseEnter={() => {
                   if (!active) router.prefetch(tab.href);
                 }}
+                onClick={onNavTap}
                 className={[
                   "ml-bottom-nav__link",
                   active && "ml-bottom-nav__link--active",
@@ -64,6 +81,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
                   .filter(Boolean)
                   .join(" ")}
                 aria-current={active ? "page" : undefined}
+                aria-label={ariaLabel}
               >
                 <span className="ml-bottom-nav__icon-wrap">
                   <AdminHudIcon name={tab.icon} className="ml-bottom-nav__icon" />
@@ -86,15 +104,27 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
               "ml-bottom-nav__link",
               "ml-bottom-nav__link--more",
               moreOpen && "ml-bottom-nav__link--active",
+              setupAlert && !moreOpen && "ml-bottom-nav__link--alert",
             ]
               .filter(Boolean)
               .join(" ")}
             aria-expanded={moreOpen}
             aria-haspopup="dialog"
-            onClick={() => setMoreOpen((open) => !open)}
+            aria-label={
+              setupAlert
+                ? t("setupIssuesAria", { count: setupIssuesCount })
+                : t("moreMenuAria")
+            }
+            onClick={() => {
+              hapticTap(6);
+              setMoreOpen((open) => !open);
+            }}
           >
             <span className="ml-bottom-nav__icon-wrap">
               <AdminHudIcon name="grid" className="ml-bottom-nav__icon" />
+              {setupAlert ? (
+                <span className="ml-bottom-nav__badge ml-bottom-nav__badge--dot" aria-hidden />
+              ) : null}
             </span>
             <span className="ml-bottom-nav__label">{t("more")}</span>
           </button>
@@ -106,6 +136,7 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
       onClose={() => setMoreOpen(false)}
       locationUnlocked={locationUnlocked}
       statisticsAccess={statisticsAccess}
+      setupIssues={setupIssues}
       triggerRef={moreTriggerRef}
     />
     </>

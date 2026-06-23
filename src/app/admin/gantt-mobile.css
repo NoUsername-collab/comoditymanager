@@ -11,7 +11,7 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin
 
 /* ── Page shell: reclaim horizontal + vertical space ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
-  padding: 0 0.12rem 0.08rem !important;
+  padding: 0 !important;
   max-width: 100%;
 }
 
@@ -21,9 +21,9 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .admin-panel .admin-pane
   margin: 0 !important;
 }
 
-/* Scoped touch targets — compact toolbar (−30% vs prior mobile pass) */
+/* Scoped touch targets — compact toolbar (44px min) */
 html[data-layout-chrome="compact"] .gantt-calendar-page {
-  --gantt-touch-min: 1.35rem;
+  --gantt-touch-min: 2.75rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
@@ -88,7 +88,6 @@ html[data-layout-chrome="compact"] .gantt-scroll {
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll {
   flex: 1;
   min-height: 0;
-  max-height: none !important;
   overflow-y: auto;
   overflow-x: auto;
 }
@@ -369,7 +368,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__select {
   font-size: 0.64rem;
-  min-height: var(--gantt-touch-min, 1.35rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
   padding-block: 0.1rem;
   padding-inline: 0.3rem 0.95rem;
 }
@@ -394,7 +393,7 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-co
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select {
-  min-height: var(--gantt-touch-min, 1.35rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
   font-size: 0.64rem;
   padding-block: 0.1rem;
 }
@@ -402,27 +401,27 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
-  min-width: var(--gantt-touch-min, 1.35rem);
-  min-height: var(--gantt-touch-min, 1.35rem);
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__nav-btn {
-  min-width: var(--gantt-touch-min, 1.35rem);
-  min-height: var(--gantt-touch-min, 1.35rem);
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--gantt-touch-min, 1.35rem);
-  height: var(--gantt-touch-min, 1.35rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
+  height: var(--gantt-touch-min, 2.75rem);
   max-width: min(9rem, 36vw);
   padding-inline: 0.28rem;
   font-size: 0.62rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn--edge {
-  height: var(--gantt-touch-min, 1.35rem);
+  height: var(--gantt-touch-min, 2.75rem);
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
@@ -432,8 +431,8 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn {
-  width: var(--gantt-touch-min, 1.35rem);
-  height: var(--gantt-touch-min, 1.35rem);
+  width: var(--gantt-touch-min, 2.75rem);
+  height: var(--gantt-touch-min, 2.75rem);
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--compact {
@@ -458,45 +457,63 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--active .ga
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
-  min-height: var(--gantt-touch-min, 1.35rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
   max-width: 7.5rem;
 }
 
-/* Action strip — in/out badges + quick ops (−30% with toolbar) */
+/* Action strip — touch-friendly badges + quick ops on compact */
 html[data-layout-chrome="compact"] .gantt-action-strip {
-  min-height: 0.98rem;
-  gap: 0.1rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
 }
 
 html[data-layout-chrome="compact"] .gantt-action-strip__toggle-slot {
-  width: 0.95rem;
-  height: 0.95rem;
+  width: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+  flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 html[data-layout-chrome="compact"] .gantt-action-strip__track {
-  min-width: 9rem;
+  min-width: min-content;
+  flex: 1 1 auto;
 }
 
 html[data-layout-chrome="compact"] .gantt-action-strip__badge {
-  padding: 0.08rem 0.28rem;
-  font-size: 0.46rem;
-  gap: 0.08rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.6875rem;
+  gap: 0.2rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  scroll-snap-align: start;
 }
 
 html[data-layout-chrome="compact"] .gantt-action-strip__badge strong {
-  font-size: 0.48rem;
+  font-size: 0.75rem;
 }
 
 html[data-layout-chrome="compact"] .gantt-action-strip__btn {
-  padding: 0.11rem 0.3rem;
-  font-size: 0.46rem;
-  border-radius: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.6875rem;
+  border-radius: 0.45rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
 }
 
 html[data-layout-chrome="compact"] .gantt-action-strip__reveal,
 html[data-layout-chrome="compact"] .gantt-action-strip__collapse {
-  width: 0.95rem;
-  height: 0.95rem;
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  flex-shrink: 0;
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__title {
@@ -558,7 +575,7 @@ html[data-layout-chrome="compact"] .gantt-cereri-card__main {
 
 /* ── Row heights: 20 camere vizibile fără scroll (calc din viewport) ── */
 html[data-layout-chrome="compact"] .gantt-calendar-page {
-  --gantt-visible-room-rows: 20;
+  --gantt-visible-room-rows: 14;
   --gantt-thead-stack-h: calc(
     var(--gantt-day-header-row-h, 0.87rem) + var(--gantt-summary-row-h, 0.38rem)
   );
@@ -586,16 +603,16 @@ html[data-layout-chrome="compact"] .gantt-shell--premium {
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell--premium {
   --gantt-row-h: clamp(
-    15px,
+    20px,
     (
       var(--ml-vvh, 100dvh)
-      - var(--ml-admin-nav-offset, 1.2rem)
-      - var(--ml-safe-bottom, 0px)
+      - var(--ml-admin-chrome-top, var(--ml-safe-top, 0px))
+      - var(--ml-admin-bottom-clearance, calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom)))
       - var(--gantt-mobile-chrome-h, 4rem)
       - var(--gantt-thead-stack-h)
       - 10px
-    ) / var(--gantt-visible-room-rows, 20),
-    22px
+    ) / var(--gantt-visible-room-rows, 14),
+    34px
   );
   --gantt-building-row-h: clamp(8px, calc(var(--gantt-row-h) * 0.62), 12px);
   --gantt-stay-h: calc(var(--gantt-row-h) - 2px);
@@ -766,7 +783,7 @@ html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-
 html[data-layout-chrome="compact"] .gantt-building-header-row > td.gantt-building-header,
 html[data-layout-chrome="compact"] td.gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-tbody--virtual .gantt-building-header-row .gantt-building-header {
-  padding: 0 0.12rem !important;
+  padding: 0 0.3rem !important;
   vertical-align: middle !important;
 }
 
@@ -1014,6 +1031,13 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__micro {
   display: none !important;
 }
 
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
+  display: inline-flex !important;
+  flex-shrink: 0;
+  gap: 0.08rem;
+  padding: 0 0.02rem;
+}
+
 html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__details {
   display: flex !important;
   position: static !important;
@@ -1092,10 +1116,20 @@ html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__end-tab-arrow 
   font-size: 0.4rem;
 }
 
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
+  width: 0.38rem;
+  height: 0.48rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__end-tab-mark {
+  font-size: 0.45rem;
+}
+
 /* Keep badges visible even in narrow container chips */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-stay--chip .gantt-stay__phase-badge,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-stay--chip .gantt-stay__alert,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-stay--chip .gantt-stay__badge,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-stay--chip .gantt-stay__cap-strip,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-stay--chip .gantt-stay__end-tab {
   display: inline-flex !important;
 }
@@ -1174,13 +1208,41 @@ html[data-layout-chrome="compact"] .gantt-cereri-queue--embedded .gantt-cereri-q
   overscroll-behavior-x: contain;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   Gantt day shell — mobile compact: no black chrome, soft accent flow
+/* ── Gantt scroll sync: pin room column while days pan ── */
+html[data-layout-chrome="compact"] .gantt-scroll .gantt-head-main-row__room,
+html[data-layout-chrome="compact"] .gantt-scroll .gantt-room-cell,
+html[data-layout-chrome="compact"] .gantt-scroll .gantt-summary-row__label,
+html[data-layout-chrome="compact"] .gantt-scroll td.gantt-building-header {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll .gantt-head-main-row__room {
+  z-index: 6;
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll .gantt-room-cell,
+html[data-layout-chrome="compact"] .gantt-scroll td.gantt-building-header {
+  background: var(--admin-surface-bg, var(--surface, #fff));
+}
+
+html[data-layout-chrome="compact"] .gantt-scroll .gantt-summary-row__label {
+  background: var(--admin-surface-bg, var(--surface, #fff));
+}
+
+/* Narrow stay chips: keep cap-strip badges visible (override container hide) */
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__phase-badge,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__today-icon {
+  display: inline-flex !important;
+}
+
+/* ── Gantt day shell — mobile compact: no black chrome, soft accent flow
    ═══════════════════════════════════════════════════════════════════ */
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
-  --ml-bottom-nav-height: 0.683rem;
-  --ml-admin-nav-offset: calc(var(--ml-bottom-nav-height) + var(--ml-safe-top));
   /* Light shell — never mix from dark admin-page-bg (noir stays readable) */
   --gantt-day-page-bg: color-mix(in srgb, #ffffff 90%, var(--admin-accent-muted, #ecfdf5));
   --gantt-day-nav-bg: color-mix(in srgb, #ffffff 90%, var(--admin-accent-muted, #ecfdf5));
@@ -1210,40 +1272,13 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) {
 }
 
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-shell:has(.gantt-calendar-page) {
-  --ml-bottom-nav-height: 0.525rem;
-}
-
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__list {
-  padding: 0.03rem 0.04rem 0.02rem;
-}
-
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__link {
-  min-height: calc(var(--ml-bottom-nav-height) - 0.05rem);
-  gap: 0.02rem;
-  padding: 0.02rem 0.04rem;
-  font-size: 0.4rem;
-  border-radius: 0.3rem;
-}
-
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__icon {
-  width: 0.48rem;
-  height: 0.48rem;
-}
-
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__label {
-  font-size: 0.38rem;
-  line-height: 1;
-}
-
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__link::before {
-  top: 0.04rem;
-  inset-inline: 0.28rem;
+  --ml-bottom-nav-height: var(--ml-bottom-nav-height-landscape);
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav--admin {
   background: var(--gantt-day-nav-bg) !important;
-  border-bottom: 1px solid var(--gantt-day-toolbar-border) !important;
-  border-top: none !important;
+  border-top: 1px solid var(--gantt-day-toolbar-border) !important;
+  border-bottom: none !important;
 }
 
 html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .ml-bottom-nav__link {
@@ -1402,42 +1437,43 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__col
 
 /* Action strip badges — solid pills (no transparent-on-dark) */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge {
-  padding: 0.1rem 0.32rem !important;
-  font-size: 0.52rem !important;
+  padding: 0.35rem 0.55rem !important;
+  font-size: 0.6875rem !important;
   font-weight: 800 !important;
-  gap: 0.1rem !important;
+  gap: 0.2rem !important;
   line-height: 1.15 !important;
+  min-height: var(--ml-touch-min, 2.75rem) !important;
   -webkit-font-smoothing: antialiased;
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge strong {
-  font-size: 0.54rem !important;
+  font-size: 0.75rem !important;
   font-weight: 900 !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge--new {
-  background: #fecaca !important;
-  color: #991b1b !important;
-  border: 1px solid #f87171 !important;
+  background: var(--admin-tint-warning-bg) !important;
+  color: var(--status-pending-text) !important;
+  border: 1px solid var(--admin-tint-warning-border) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge--in {
-  background: #a7f3d0 !important;
-  color: #065f46 !important;
-  border: 1px solid #34d399 !important;
+  background: var(--admin-tint-success-bg) !important;
+  color: var(--status-confirmed-text) !important;
+  border: 1px solid var(--admin-tint-success-border) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge--out {
-  background: #fde68a !important;
-  color: #92400e !important;
-  border: 1px solid #fbbf24 !important;
+  background: color-mix(in srgb, var(--admin-tint-warning-bg) 85%, var(--surface)) !important;
+  color: var(--status-pending-text) !important;
+  border: 1px solid var(--admin-tint-warning-border) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__badge--clean {
-  background: #c7d2fe !important;
-  color: #3730a3 !important;
-  border: 1px solid #818cf8 !important;
+  background: var(--admin-tint-violet-bg) !important;
+  color: var(--admin-tint-violet-text) !important;
+  border: 1px solid var(--admin-tint-violet-border) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__btn {
@@ -1576,7 +1612,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-building-header-row > td.gantt-building-header,
 html[data-layout-chrome="compact"] .gantt-calendar-page td.gantt-building-header {
-  padding: 0 0.12rem !important;
+  padding: 0 0.3rem !important;
   background: color-mix(in srgb, #ffffff 82%, var(--admin-accent-muted, #ecfdf5));
   border-color: color-mix(in srgb, var(--admin-accent, #059669) 20%, #e4e4e7);
 }
@@ -1658,4 +1694,36 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-room-row:first-of
   html[data-layout-chrome="compact"] .gantt-compact-toolbar__center {
     scroll-behavior: auto;
   }
+}
+
+/* ── Round 3: sticky day header + larger stay tap targets ── */
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll thead.gantt-thead-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll .gantt-thead-sticky .gantt-head-main-row > th {
+  position: sticky;
+  top: 0;
+  z-index: 7;
+  background: var(--admin-surface-bg, color-mix(in srgb, #ffffff 92%, var(--admin-accent-muted, #ecfdf5)));
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-scroll .gantt-thead-sticky .gantt-summary-row > td {
+  position: sticky;
+  top: var(--gantt-day-header-row-h, 0.87rem);
+  z-index: 6;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-draggable-stay {
+  touch-action: manipulation;
+  min-height: max(var(--gantt-stay-h, 14px), 1.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-draggable-stay::before {
+  content: "";
+  position: absolute;
+  inset: -0.35rem 0;
+  z-index: 0;
 }

@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useSettingsSaveFeedback } from "@/hooks/useSettingsSaveFeedback";
-import { updateTeamPermissionsAction } from "@/app/[locale]/admin/(panel)/settings/actions";
+import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
+import { updateTeamPermissionsAction } from "@/features/settings/actions";
 import {
   PERMISSION_GROUP_IDS,
   type PermissionGroupId,
@@ -107,7 +108,7 @@ export function TeamPermissionsPanel({ permissions: initial }: Props) {
         ))}
       </div>
 
-      <div className="team-permissions__actions settings-form-stack__submit">
+      <SettingsSaveBar status={pending ? "saving" : "idle"}>
         <button
           type="button"
           className="admin-btn admin-btn--primary admin-btn--lg"
@@ -116,7 +117,7 @@ export function TeamPermissionsPanel({ permissions: initial }: Props) {
         >
           {pending ? t("saving") : t("save")}
         </button>
-      </div>
+      </SettingsSaveBar>
     </div>
   );
 }

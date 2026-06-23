@@ -1,4 +1,5 @@
 import { HEALTH_ICON } from "@/lib/hospira-admin/log-styles";
+import { Link } from "@/i18n/navigation";
 import type { TenantHealthCheck } from "@/services/platform-debug";
 
 export function TenantHealthPanel({
@@ -18,7 +19,7 @@ export function TenantHealthPanel({
           </span>
         )}
         {unhealthy.length === 0 && (
-          <span className="ml-2 rounded-full bg-emerald-900 px-2 py-0.5 text-xs text-emerald-300">
+          <span className="ml-2 hospira-status-badge hospira-status-badge--active">
             Toți OK
           </span>
         )}
@@ -39,7 +40,12 @@ export function TenantHealthPanel({
             </span>
             <div className="hospira-health-row__body min-w-0 flex-1">
               <div className="hospira-health-row__title flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                <span className="font-medium text-white">{check.displayName}</span>
+                <Link
+                  href={`/hospira-admin/tenants/${check.tenantId}`}
+                  className="font-medium text-white hover:text-sky-300"
+                >
+                  {check.displayName}
+                </Link>
                 <span className="font-mono text-xs text-neutral-500">{check.slug}</span>
               </div>
               <div className="hospira-health-row__meta mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs">
@@ -49,6 +55,12 @@ export function TenantHealthPanel({
                 {check.issues.length > 0 && (
                   <span className="text-red-400">{check.issues.join(" · ")}</span>
                 )}
+                <Link
+                  href={`/hospira-admin/logs?tenant=${check.tenantId}`}
+                  className="text-sky-400 hover:text-sky-300"
+                >
+                  logs →
+                </Link>
               </div>
             </div>
           </div>

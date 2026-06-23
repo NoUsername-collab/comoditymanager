@@ -1,21 +1,11 @@
 import { Link } from "@/i18n/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { logoutAction } from "@/app/[locale]/admin/login/actions";
+import { getSessionUser } from "@/services/auth-session";
 
 /** Doar când ești logat — oaspeții nu văd niciun link Admin. */
 export async function AdminCorner() {
-  let isAdmin = false;
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    isAdmin = !!user;
-  } catch {
-    isAdmin = false;
-  }
-
-  if (!isAdmin) {
+  const user = await getSessionUser();
+  if (!user) {
     return null;
   }
 

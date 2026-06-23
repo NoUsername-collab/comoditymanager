@@ -160,6 +160,13 @@ html {
   --admin-tint-sky-bg: var(--hold-bg);
   --admin-tint-sky-border: color-mix(in srgb, var(--hold-border) 25%, var(--border));
 
+  --admin-tint-info-text: color-mix(in srgb, var(--info) 72%, var(--text));
+  --admin-tint-warning-text: var(--pending-text);
+  --admin-tint-success-text: var(--active-text);
+  --admin-tint-danger-text: var(--cancelled-text);
+  --admin-tint-violet-text: var(--blocked-text);
+  --admin-tint-sky-text: var(--hold-text);
+
   --gantt-zone-checkout: var(--weekend-bg);
   --gantt-zone-clean: var(--surface);
   --gantt-zone-checkin: var(--surface-2);

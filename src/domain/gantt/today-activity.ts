@@ -1,5 +1,5 @@
 import { nightOccupied, todayIso } from "@/lib/stay-dates";
-import type { BookingRow } from "@/services/bookings";
+import type { BookingRow } from "@/domain/booking/row";
 
 export type RoomTodayFlags = {
   arrival: boolean;

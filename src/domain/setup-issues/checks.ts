@@ -5,7 +5,7 @@ import {
 } from "@/lib/auth/mfa-policy";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
 import { normalizeBuildingColor } from "@/lib/building-color-palette";
-import type { TenantMemberRole } from "@/services/tenant-members";
+import type { TenantMemberRole } from "@/domain/tenant/types";
 import { SETUP_ISSUE_IDS, type SetupIssue } from "./types";
 
 export const APPEARANCE_SETTINGS_PATH = "/admin/settings/appearance";
@@ -23,6 +23,16 @@ export function canReceiveOnboardingSetupIssues(opts: {
 }): boolean {
   if (opts.email && isPlatformAdminEmail(opts.email)) return true;
   return opts.memberRole === "owner" || opts.memberRole === "admin";
+}
+
+/** Skip MFA/DB work on admin layout when no issue type applies to this user. */
+export function shouldResolveSetupIssues(opts: {
+  email?: string | null;
+  memberRole?: TenantMemberRole | null;
+}): boolean {
+  return (
+    isMfaRecommendedForUser(opts) || canReceiveOnboardingSetupIssues(opts)
+  );
 }
 
 function hasNonLegacyPaletteKey(raw: string | null | undefined): boolean {

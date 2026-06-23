@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
   getTenantContext,
   TenantContextMissingError,
@@ -18,8 +19,18 @@ export function isDevTenantBypass(): boolean {
 /**
  * Single source of truth for which tenant's data we read/write.
  * Production: MUST resolve from host / proxy headers — never "first tenant in DB".
+ *
+ * Cached per request — safe to call from layout, services, and actions in one render.
  */
-export async function requireTenantIdForData(): Promise<string> {
+const cachedRequireTenantIdForData = cache(async (): Promise<string> => {
+  try {
+    return getTenantContext().tenant.id;
+  } catch (error) {
+    if (!(error instanceof TenantContextMissingError)) {
+      throw error;
+    }
+  }
+
   const fromHost = await resolveRequestTenant();
   if (fromHost) return fromHost.id;
 
@@ -35,6 +46,10 @@ export async function requireTenantIdForData(): Promise<string> {
   }
 
   throw new TenantHostRequiredError();
+});
+
+export async function requireTenantIdForData(): Promise<string> {
+  return cachedRequireTenantIdForData();
 }
 
 export { TenantNotFoundError };

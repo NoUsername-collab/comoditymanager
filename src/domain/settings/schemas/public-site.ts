@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { isSafeHttpUrl } from "@/lib/security/html-escape";
 import {
   formatZodError,
   localizedTextSchema,
   optionalEmailSchema,
+  optionalSafeNavHrefSchema,
   optionalUrlSchema,
   type ParseResult,
 } from "./shared";
@@ -27,8 +29,8 @@ const publicHeroConfigSchema = z
     tagline: localizedTextSchema.optional(),
     ctaPrimary: localizedTextSchema.optional(),
     ctaSecondary: localizedTextSchema.optional(),
-    ctaPrimaryHref: z.string().max(2048).optional(),
-    ctaSecondaryHref: z.string().max(2048).optional(),
+    ctaPrimaryHref: optionalSafeNavHrefSchema.optional(),
+    ctaSecondaryHref: optionalSafeNavHrefSchema.optional(),
     imageUrl: optionalUrlSchema.optional(),
     showCheckTimes: z.boolean().optional(),
   })
@@ -63,7 +65,10 @@ const publicBenefitItemSchema = z
 const publicGalleryItemSchema = z
   .object({
     id: z.string().min(1).max(64),
-    url: z.string().url().max(2048),
+    url: z
+      .string()
+      .max(2048)
+      .refine((v) => isSafeHttpUrl(v), { message: "invalid_url" }),
     caption: localizedTextSchema.optional(),
     category: z.string().max(64).optional(),
   })
@@ -92,9 +97,9 @@ const publicSectionPayloadSchema = z
       .max(100)
       .optional(),
     ctaLabel: localizedTextSchema.optional(),
-    ctaHref: z.string().max(2048).optional(),
+    ctaHref: optionalSafeNavHrefSchema.optional(),
     ctaSecondaryLabel: localizedTextSchema.optional(),
-    ctaSecondaryHref: z.string().max(2048).optional(),
+    ctaSecondaryHref: optionalSafeNavHrefSchema.optional(),
   })
   .strict();
 

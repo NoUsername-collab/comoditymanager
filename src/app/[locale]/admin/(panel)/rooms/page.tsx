@@ -39,8 +39,7 @@ export default async function AdminRoomsPage({
     rooms = dataResult.rooms;
     buildings = dataResult.buildings;
   } else {
-    error =
-      dataResult.error instanceof Error ? dataResult.error.message : t("genericError");
+    error = t("genericError");
   }
 
   const buildingOrder = new Map(buildings.map((b, i) => [b.id, i]));

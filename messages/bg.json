@@ -42,12 +42,13 @@
       "description": "Wi-Fi, info and services for your stay at {name}."
     },
     "shell": {
-      "eyebrow": "Guest app",
+      "eyebrow": "Вашият престой",
       "back": "Back home",
       "navLabel": "Guest app navigation",
-      "offline": "You're offline — some information may be unavailable.",
-      "callReception": "Call reception",
-      "callReceptionShort": "Reception",
+      "offline": "Няма връзка — част от информацията може да е недостъпна.",
+      "loading": "Зареждане на престоя…",
+      "callReception": "Обадете се на рецепцията",
+      "callReceptionShort": "Рецепция",
       "featureTitles": {
         "hotel_info": "About the property",
         "gallery": "Photo gallery",
@@ -103,6 +104,8 @@
       "discoverPlaceDesc": "Полезна информация за обекта",
       "payNow": "Платете сега",
       "payNowDesc": "Финализирайте плащането за престоя",
+      "checkoutTomorrow": "Напускане утре",
+      "checkoutTomorrowDesc": "Подгответе заминаването — час, паркинг, плащане",
       "checkoutInfo": "Информация за напускане",
       "checkoutInfoDesc": "Детайли за заминаването ви",
       "exploreTips": "Разгледайте района",
@@ -189,17 +192,23 @@
         "beforeBody": "The app becomes available from {date}.",
         "afterBody": "Access was active until {date}.",
         "stayPeriod": "Stay:",
-        "beforeHint": "Come back after {date} or contact reception."
+        "beforeHint": "Come back after {date} or contact reception.",
+        "afterHint": "For questions or a new booking, contact reception."
       },
+      "callReception": "Обадете се на рецепцията",
       "errors": {
         "generic": "You cannot access this page.",
         "serviceUnavailable": "The service is temporarily unavailable. Please try again later.",
         "disabled": "The guest app is disabled. Please contact reception.",
         "setupIncomplete": "The guest app is not configured on this environment yet.",
         "notFound": "Invalid or unknown code.",
+        "notFoundHint": "If you received a new link, open that one. Otherwise ask reception for an updated link.",
         "wrongHost": "Open this link on the property's website. Ask reception for an updated link.",
+        "wrongHostHint": "Open the link from the property site (e.g. property.com/stay/…).",
         "revoked": "Access has been revoked.",
-        "notConfirmed": "The booking is not confirmed."
+        "revokedHint": "This link is no longer valid — ask reception for a new stay link.",
+        "notConfirmed": "The booking is not confirmed.",
+        "contactReception": "Contact reception for help."
       }
     },
     "feature": {
@@ -245,6 +254,10 @@
       "services": {
         "title": "Услугите не са конфигурирани",
         "description": "Наличните услуги ще се появят тук след настройка."
+      },
+      "features": {
+        "title": "Няма активни функции",
+        "description": "Рецепцията може да ви помогне с информация за престоя. Обадете се или посетете рецепцията."
       }
     },
     "precheckin": {
@@ -266,6 +279,9 @@
       "notes": "Бележки за рецепцията",
       "submit": "Изпрати данните",
       "submitting": "Изпращане…",
+      "submittedToast": "Данните са изпратени успешно",
+      "manualOrDivider": "или попълнете ръчно",
+      "manualTitle": "Лични данни",
       "successTitle": "Данните са изпратени",
       "successBody": "Рецепцията получи информацията. Настаняването ще завършите при пристигане.",
       "errors": {
@@ -276,6 +292,8 @@
       },
       "mrz": {
         "scanButton": "Сканирай MRZ",
+        "leadShort": "Сканирайте пасport или е-лична карта — или попълнете полетата по-долу.",
+        "appliedToast": "MRZ данните са приложени — проверете и коригирайте при нужда.",
         "title": "MRZ (пасport / лична карта)",
         "close": "Затвори",
         "intro": "Подредете MRZ зоната (долните 2–3 реда на гърба) или поставете текста ръчно.",
@@ -284,7 +302,19 @@
         "pasteLabel": "MRZ редове",
         "pastePlaceholder": "I<UTOD23145890<1233<<<<<<<<<<<\n7408122F1204159UTO<<<<<<<<<<<2\nERIKSSON<<ANNA<MARIA<<<<<<<<<<",
         "parse": "Прочети MRZ",
-        "cameraHint": "Дръжте MRZ право, с добра светлина, после заснемете.",
+        "loading": "Зареждане на скенера…",
+        "cameraStarting": "Стартиране на камера…",
+        "cameraStop": "Спри камерата",
+        "cameraRetry": "Опитай отново",
+        "cameraScanning": "Четене на MRZ…",
+        "stabilizing": "Стабилизиране… {count}/{required}",
+        "scanSuccess": "MRZ открит — проверете данните",
+        "scanRetry": "Сканирай отново",
+        "torchOn": "Светлина",
+        "torchOff": "Изключи светлината",
+        "manualFallback": "Въведи MRZ ръчно (paste)",
+        "frameGuide": "Подреди MRZ редовете тук",
+        "cameraHint": "Дръж гърба на документа в рамката. Сканирането е автоматично; натисни Засни или paste.",
         "capture": "Засни & прочети",
         "previewTitle": "Извлечени данни",
         "fieldName": "Име",
@@ -300,9 +330,13 @@
           "invalid_format": "Невалиден формат — TD1 е 3×30, пасport 2×44.",
           "unsupported": "MRZ не може да се прочете.",
           "camera": "Камерата не е налична. Използвайте paste или разрешения.",
+          "cameraDenied": "Достъпът до камерата е отказан. Разрешете камерата в браузъра или използвайте paste.",
+          "cameraUnsupported": "Камерата не е налична на това устройство или връзка. Използвайте paste.",
+          "cameraUnavailable": "Камерата не може да стартира. Проверете разрешенията или използвайте paste.",
           "ocrNoMrz": "MRZ не е открит. Опитайте отново или paste.",
           "ocrFailed": "OCR неуспешен. Опитайте отново.",
-          "checksumInvalid": "Невалиден checksum — данните вероятно са грешни."
+          "checksumInvalid": "Невалиден checksum — данните вероятно са грешни.",
+          "checksum_failed": "Невалиден checksum — OCR четенето вероятно е грешно. Позиционирайте документа или paste."
         }
       }
     },
@@ -334,6 +368,11 @@
       "body": "The guest app page could not load. Check the link from the property or contact reception.",
       "retry": "Try again",
       "code": "Code: {digest}"
+    },
+    "notFound": {
+      "title": "Страницата не е намерена",
+      "body": "Тази секция не съществува в приложението за гости или вече не е налична.",
+      "backHome": "Обратно към началото"
     },
     "feedback": {
       "sectionTitle": "Как беше престоят ви?",
@@ -391,6 +430,7 @@
       "privacy": "Поверителност (GDPR)",
       "contact": "Контакт",
       "contactNotConfigured": "Настройте контакт в админ панела",
+      "contactEmptyHint": "Добавете телефон или имейл в Настройки → Идентичност или Публичен сайт.",
       "contactEmail": "contact@hospira.ro",
       "copyright": "© {year} {name} · Таснад, Румъния"
     },
@@ -419,7 +459,9 @@
       "step3Text": "Свързваме се с вас с крайна цена и детайли за check-in / check-out.",
       "ctaBandTitle": "Готови да изпратите заявка?",
       "ctaBandText": "Отнема няколко минути. Ако няма свободни дати, ще ви кажем веднага — без акаунт и карта.",
-      "ctaBandButton": "Отвори календара"
+      "ctaBandButton": "Отвори календара",
+      "extrasAria": "Бърза информация",
+      "checkTimesLabel": "График на престоя"
     },
     "calendar": {
       "eyebrow": "Онлайн резервация",
@@ -613,7 +655,12 @@
       "disponibilitate": "Наличност",
       "buildings": "Сгради",
       "rooms": "Стаи",
-      "devlog": "Дневник"
+      "devlog": "Дневник",
+      "staysPendingAria": "{count, plural, one {Престои — # нова заявка} other {Престои — # нови заявки}}",
+      "setupIssuesAria": "{count, plural, one {Още — # проблем с настройката} other {Още — # проблеми с настройката}}",
+      "drawerGroupOperations": "Операции",
+      "drawerGroupConfig": "Настройки",
+      "drawerGroupOther": "Други"
     },
     "devlog": {
       "paginationPrev": "← Предишна",
@@ -632,7 +679,8 @@
       "themeNotConfigured": "Админ темата не е потвърдена в настройките",
       "buildingsNotColored": "Една или повече сгради имат нужда от цвят в Gantt",
       "contactEmailMissing": "Липсва имейл за контакт на обекта",
-      "gearAriaLabel": "Настройки — необходимо действие"
+      "gearAriaLabel": "Настройки — необходимо действие",
+      "menuHeading": "Непълна конфигурация"
     },
     "pwa": {
       "installApp": "Инсталирай приложението",
@@ -779,6 +827,68 @@
         "overviewTagline": "Конфигурирайте панела, операциите и каналите за гости",
         "overviewIntro": "Изберете секция от менюто или по-долу.",
         "overviewEmpty": "Няма секции за вашата роля.",
+        "completionTitle": "Прогрес на настройката",
+        "completionSummary": "{done} от {total} основни елемента са готови",
+        "completionAria": "Настройка {percent} процента — {done} от {total} готови",
+        "completionAllDone": "Всичко изглежда добре — можете да доразвиете детайлите по всяко време.",
+        "completionPublicLive": "Публичен сайт: публикуван",
+        "completionPublicDraft": "Публичен сайт: непубликуван (чернова)",
+        "completionContactEmail": "Имейл за контакт",
+        "completionTheme": "Персонализирана тема на админ",
+        "completionBuildingsColor": "Цветове на сгради в Gantt",
+        "completionMfa": "Двустепенна автентикация (2FA)",
+        "completionPublicPublished": "Публичен сайт публикуван",
+        "completionPublicContact": "Контакт видим на сайта",
+        "completionPublicBooking": "Онлайн резервация активна",
+        "identityPreviewLabel": "Как се показва идентичността",
+        "identityPreviewEmail": "Подател на имейл",
+        "identityPreviewEmailFallback": "contact@domain.bg",
+        "appearanceAdminHint": "Темата на админ се прилага в панела. Публичният сайт има собствена тема — виж Публичен сайт.",
+        "appearanceModeDay": "Ден",
+        "appearanceModeNight": "Нощ",
+        "appearancePublicLink": "Конфигурирай публичен сайт",
+        "appearancePreviewAdmin": "Админ панел",
+        "appearancePreviewPublic": "Фрагмент от публичния сайт",
+        "appearancePreviewPublicLead": "Настаняване",
+        "appearancePreviewPublicCta": "Примерен заглавие",
+        "appearancePreviewPublicButton": "Провери наличност",
+        "quickLinksTitle": "Бърз достъп",
+        "checklistTitle": "Прогрес на настройката",
+        "checklistProgress": "Готови секции",
+        "checklistProgressValue": "{done} от {total}",
+        "checklistContactHint": "Добавете имейл за контакт в Идентичност на обекта — използва се на сайта, guest app и имейли.",
+        "checklistIdentity": "Име на обекта",
+        "checklistContact": "Имейл за контакт",
+        "checklistTheme": "Тема на админ",
+        "checklistBuildings": "Цветове на сгради",
+        "checklistEmail": "Имейл канал",
+        "checklistMfa": "Двустепенна автентикация",
+        "checklistPublicTitle": "Публичен сайт",
+        "checklistPublicPublished": "Сайтът е публикуван",
+        "checklistPublicContact": "Контакт на сайта",
+        "checklistPublicBooking": "Онлайн резервация",
+        "checklistFix": "Попълни",
+        "viewOnSite": "Виж на сайта",
+        "navSearchLabel": "Търсене в настройките",
+        "navSearchPlaceholder": "Търси секции…",
+        "navSearchEmpty": "Няма съвпадащи секции.",
+        "quickJumpAria": "Бърз преход между секции",
+        "allSaved": "Всички промени са запазени.",
+        "saveBarAria": "Действия за запазване на настройки",
+        "livePreview": "Преглед на живо",
+        "livePreviewAria": "Преглед на публичния сайт",
+        "unsavedChanges": "Имате незапазени промени.",
+        "savedGeneric": "Настройките са запазени.",
+        "savedAppearance": "Темата на панела е запазена.",
+        "identityPreviewLabel": "Как изглежда на публичния сайт",
+        "asOnSite": "Така изглежда на сайта",
+        "seeEffectPreview": "Виж живия сайт",
+        "identityPreviewEmail": "Изпращач на имейл",
+        "identityPreviewEmailFallback": "contact@guesthouse.com",
+        "appearanceAdminHint": "Тази тема се прилага към админ панела (Gantt, рецепция). Посетителите виждат темата в Публичен сайт.",
+        "appearancePublicLink": "Тема публичен сайт",
+        "appearanceModeDay": "Ден",
+        "appearanceModeNight": "Нощ",
         "navAppearance": "Външен вид",
         "navAppearanceDesc": "Тема на админ и плътност на layout",
         "navPreferences": "Предпочитания",
@@ -931,10 +1041,35 @@
             }
           }
         },
+        "preview": {
+          "identityTitle": "Така изглежда на сайта",
+          "identityHint": "Име и контакт в header, footer и имейли.",
+          "identityEyebrow": "Идентичност на обекта",
+          "identityEmpty": "Добавете поне един канал за контакт.",
+          "channel_email": "Имейл",
+          "channel_phone": "Телефон",
+          "channel_whatsapp": "WhatsApp",
+          "channel_telegram": "Telegram",
+          "channel_facebook": "Facebook",
+          "channel_instagram": "Instagram",
+          "publicSiteTitle": "Така изглежда на сайта",
+          "publicSiteHint": "Статично резюме — редакторът вляво се обновява на живо.",
+          "publicSitePublished": "Публикуван",
+          "publicSiteDraft": "Чернова",
+          "publicSiteTemplate": "Шаблон {template}",
+          "appearanceTitle": "Тема на админ панела",
+          "appearanceHint": "Цветове на Gantt и админ повърхности. Публичният сайт има отделна тема.",
+          "appearanceEyebrow": "Активна палитра",
+          "themeModeDay": "Дневен режим",
+          "themeModeNight": "Нощен режим",
+          "publicBrandTitle": "Бранд на публичния сайт",
+          "publicBrandHint": "Същото семейство цветове като Публичен сайт → Визуална тема."
+        },
         "identity": {
           "sectionTitle": "Основни данни",
           "sectionDesc": "Използват се на публичния сайт, guest app и имейли, освен ако каналът ги замени.",
           "displayName": "Показвано име",
+          "displayNamePlaceholder": "напр. Casa Emil",
           "email": "Имейл за контакт",
           "phone": "Телефон",
           "whatsapp": "WhatsApp",
@@ -944,7 +1079,15 @@
           "channelsHint": "Публичният сайт и guest app могат да използват тези данни с „използвай основната идентичност“.",
           "save": "Запази идентичността",
           "saving": "Запазване…",
-          "saved": "Идентичността е запазена"
+          "saved": "Идентичността е запазена",
+          "saveError": "Идентичността не можа да бъде запазена",
+          "cardBrandTitle": "Бранд на обекта",
+          "cardBrandDesc": "Име в header на сайта, guest app и имейли.",
+          "cardContactTitle": "Основен контакт",
+          "cardContactDesc": "Канали за сайта и комуникации, освен ако каналът ги замени.",
+          "displayNameHint": "Показва се в header на публичния сайт и в темите на имейли.",
+          "emailHint": "Reply-to адрес и контакт във footer.",
+          "phoneHint": "Показва се в лентата за контакт и footer."
         },
         "checkin": {
           "title": "Правила за настаняване",
@@ -1184,6 +1327,16 @@
         "bookingPosBoth": "Меню + footer",
         "bookingPosHidden": "Скрит (страницата остава достъпна директно)",
         "published": "Сайтът е публикуван",
+        "heroTitleHint": "Основно заглавие в hero — използва се и като meta title, ако SEO полетата са празни.",
+        "heroImageHint": "URL на фоново изображение (JPG/PNG, препоръчително HTTPS).",
+        "usePrimaryContactHint": "Когато е отметнато, контактът от Идентичност попълва празните полета по-долу.",
+        "publishedHint": "Изключете, за да скриете публичния сайт по време на настройка.",
+        "seoTitle": "SEO и meta",
+        "seoSectionDesc": "Заглавие и описание за Google и социални мрежи.",
+        "seoMetaTitle": "Meta title",
+        "seoMetaTitleHint": "Под ~60 символа. Оставете празно за hero заглавието.",
+        "seoMetaDescription": "Meta description",
+        "seoMetaDescriptionHint": "120–160 символа. Кратко описание на обекта.",
         "templates": {
           "classic": {
             "title": "Classic",
@@ -1244,7 +1397,10 @@
         "searchLabel": "търсене \"{query}\"",
         "previous": "Предишна страница",
         "next": "Следваща страница",
-        "genericError": "Грешка"
+        "genericError": "Грешка",
+        "highlightsEmptyTitle": "Все още няма клиентски профили",
+        "highlightsEmptyDescription": "Профилите се появяват след първия потвърден престой или настаняване.",
+        "highlightsEmptyCta": "Виж престоите"
       },
       "calendar": {
         "genericError": "Грешка",
@@ -2560,6 +2716,7 @@
       "invalidUser": "Невалиден потребител",
       "enterPassword": "Въведи парола",
       "invalidUserOrPassword": "Грешен потребител или парола",
+      "rateLimited": "Твърде много опити. Изчакайте.",
       "loginSummary": "Вход {role}",
       "adminLogout": "Admin изход",
       "invalidGuest": "Невалиден клиент",
@@ -2716,6 +2873,8 @@
     },
     "checkIn": {
       "title": "Настаняване",
+      "loadingStepper": "Зареждане на настаняване…",
+      "stepProgressAria": "Стъпки на настаняване",
       "startCheckin": "Настаняване",
       "cancel": "Отказ",
       "back": "Назад",
@@ -3656,59 +3815,108 @@
     "emailStaleOwnerRow": "Съществува обект за този email без акаунт за вход. Влез или се свържи с поддръжката."
   },
   "landing": {
-    "heroBadge": "Softuer za pansioni",
-    "heroTitle": "Upravlyavajte pansiona si ot telefona",
-    "heroSubtitle": "Kalendar, onlajn rezervacii, check-in/out i uvedomleniya. Vsichko koeto vi tryabva, na edno myasto.",
-    "heroCta": "Probajtye bezplatno",
-    "heroCtaSecondary": "Vizhte cenite",
-    "heroNote": "Bez kreditna karta. 3 stai bezplatno, zavinagi.",
-    "problemTitle": "Zvuchi poznato?",
-    "withoutHospira": "Bez Hospira",
-    "problem1": "Rezervacii na hartiya ili Excel",
-    "problem2": "Dvojni rezervacii i obyrkvane",
-    "problem3": "Gostite se obazhdhat za nalichnost",
-    "problem4": "15-18% komisiona kym Booking.com",
-    "withHospira": "S Hospira",
-    "solution1": "Digitalen kalendar sys vsichki rezervacii",
-    "solution2": "Nevyzmozhno e da se rezervira dvoyno",
-    "solution3": "Gostite rezervirat direktno na vashiya sajt",
-    "solution4": "Direktni rezervacii = 0% komisiona",
-    "featuresTitle": "Vsichko koeto vi tryabva",
-    "featuresLead": "Syzdadeno specialno za malki pansioni v Rymaniya, Moldova i Bylgariya.",
-    "feature1Icon": "1",
-    "feature1Title": "Vizualen kalendar",
-    "feature1Desc": "Vizhte vsichki stai i rezervacii na edna stranica.",
-    "feature2Icon": "2",
-    "feature2Title": "Onlajn rezervacii",
-    "feature2Desc": "Gostite rezervirat direktno na vashiya sajt.",
-    "feature3Icon": "3",
-    "feature3Title": "Check-in / Check-out",
-    "feature3Desc": "Registrirajte pristiganiya i zaminavaniya s edin klik.",
-    "feature4Icon": "4",
-    "feature4Title": "Vashiyat ekip",
-    "feature4Desc": "Dobavete recepcionist, admin, operator.",
-    "feature5Icon": "5",
-    "feature5Title": "Email uvedomleniya",
-    "feature5Desc": "Poluchavate email kogato ima nova rezervaciya.",
-    "feature6Icon": "6",
-    "feature6Title": "Vashata stranica",
-    "feature6Desc": "Vseki pansion poluchava svoj sajt s nalichnost i forma za rezervaciya.",
-    "howTitle": "Kak raboti",
-    "step1Title": "Syzdajte akaunt",
-    "step1Desc": "Ime na pansiona, email, parola. 30 sekundi.",
-    "step2Title": "Dobavete staite",
-    "step2Desc": "Konfigurirajte sgradi, etazhi i stai.",
-    "step3Title": "Poluchavajte rezervacii",
-    "step3Desc": "Gostite rezervirat onlajn, vie potvyrzhdavate ot kalendara.",
-    "statSetup": "Setup na akaunt",
-    "trustLead": "Za malki pansioni, koito iskat kontrol, ne komisioni.",
-    "trust1": "0% komision za direktni rezervacii",
-    "trust2": "Danni v ES · GDPR",
-    "trust3": "Poddrzhka na rumansky, angliyski, balgarski",
-    "pricingCompareCta": "Sravenete vsichki planove",
-    "finalCtaTitle": "Gotovi li ste?",
-    "finalCtaText": "Syzdajte akaunt za 30 sekundi. Bez kreditna karta.",
-    "finalCtaButton": "Syzdajte bezplaten akaunt"
+    "metaTitle": "Hospira — PMS софтуер за пансион",
+    "metaDescription": "Gantt календар, настанявания, check-in и публичен сайт за малки пансион в Румъния, Молдова и България. Започнете безплатно, без комисионна за директни резервации.",
+    "heroBadge": "PMS за пансион · RO · MD · BG",
+    "heroTitle": "Управлявайте пансиона от телефона — без тетрадка, без Excel",
+    "heroSubtitle": "Hospira събира Gantt календар, настанявания, check-in и наличност в една платформа. Създаден за собственици на пансион в Румъния, Молдова и България.",
+    "heroCta": "Започнете безплатно",
+    "heroCtaDemo": "Заявете демо",
+    "heroCtaLogin": "Вход",
+    "heroCtaSecondary": "Вижте инструментите",
+    "heroNote": "Без кредитна карта · 3 стаи безплатно, завинаги.",
+    "demoEmailSubject": "Демо Hospira — пансион",
+    "statsAria": "Основни предимства на Hospira",
+    "heroSocialQuote": "„Заменя тетрадката и Excel с календар, който наистина работи.“",
+    "heroSocialCaption": "Малки пансион в Румъния, Молдова и България",
+    "problemTitle": "Звучи познато?",
+    "withoutHospira": "Без Hospira",
+    "problem1": "Резервации на хартия или в Excel",
+    "problem2": "Двойни резервации и объркване между канали",
+    "problem3": "Гостите постоянно звънят за наличност",
+    "problem4": "15–18% комисионна към Booking.com",
+    "withHospira": "С Hospira",
+    "solution1": "Дигитален календар с всички резервации",
+    "solution2": "Невъзможно е двойно резервиране — защита в базата данни",
+    "solution3": "Гостите резервират сами на сайта на пансиона",
+    "solution4": "Директни резервации = 0% комисионна",
+    "toolsTitle": "Вашите инструменти за ежедневна работа",
+    "toolsLead": "Всичко, което рецепцията използва всеки ден — календар, настанявания, check-in и документи — в ясен, мобилно оптимизиран интерфейс.",
+    "toolsAria": "Инструменти Hospira",
+    "tools": {
+      "gantt": {
+        "title": "Gantt kalendar",
+        "desc": "Vizhte vsichki stai i nastani na edna stranica. Drag & drop, cvetove po sgrada, heatmap na zaetost."
+      },
+      "cazari": {
+        "title": "Nastani i zaqvki",
+        "desc": "Upravlyavajte rezervacii, novi zaqvki i status na nastani — ot potvyrzhdenie do check-out."
+      },
+      "checkin": {
+        "title": "Check-in na recepciya",
+        "desc": "Registrirajte pristiganiya bъrzo, s MRZ skanirane na dokumenti i pъlni danni za gosti."
+      },
+      "guestApp": {
+        "title": "Guest app",
+        "desc": "Gostite dostъpvat Wi-Fi, informaciya za pansiona i onlajn check-in ot telefona — bez instalirane."
+      },
+      "disponibilitate": {
+        "title": "Nalichnost",
+        "desc": "Tarifi, sezoni i blokirani — sinhronizirani s kalendara i publichniya sajt."
+      },
+      "fiscal": {
+        "title": "Fiskalni dokumenti",
+        "desc": "Izdavate neformalni fakturi i dokumenti za gosti, gotovi za lokalni fiskalni integracii."
+      },
+      "buildings": {
+        "title": "Multi-sgrada",
+        "desc": "Nyakolko sgradi, etazhi i stai — vseki sъs sobstven cvyat i konfiguraciya v Gantt."
+      },
+      "publicSite": {
+        "title": "Publichen sajt",
+        "desc": "Vseki pansion poluchava stranica za predstaviane s nalichnost i forma za rezervaciya."
+      }
+    },
+    "howTitle": "Как работи",
+    "howLead": "Три стъпки от акаунт до ежедневна работа — без консултанти, без сложен setup.",
+    "step1Title": "Създайте акаунт",
+    "step1Desc": "Име на пансиона, имейл, парола. 30 секунди, без кредитна карта.",
+    "step2Title": "Конфигурирайте пансиона",
+    "step2Desc": "Сгради, стаи, тарифи и публичен сайт — водени стъпка по стъпка, за няколко минути.",
+    "step3Title": "Работете всеки ден",
+    "step3Desc": "Gantt календар, настанявания, check-in и наличност — от телефон или десктоп.",
+    "statSetup": "Регистрация",
+    "trustStripAria": "Ключови предимства на Hospira",
+    "trustLead": "Малки пансион в Румъния, Молдова и България — пълен контрол, без комисионна за директни резервации.",
+    "trust1": "0% комисионна за директни резервации",
+    "trust2": "Данни в ЕС · GDPR",
+    "trust3": "Поддръжка на румънски, английски, български",
+    "trustSectionTitle": "Сигурност и доверие",
+    "trustSectionLead": "Multi-tenant инфраструктура, изолирани данни по пансион, GDPR съответствие.",
+    "trustCards": {
+      "security": {
+        "glyph": "🔒",
+        "title": "Защитени данни",
+        "desc": "Криптиране при пренос, сигурна автентикация и автоматични бекъпи на данните."
+      },
+      "multiTenant": {
+        "glyph": "🏠",
+        "title": "Изолиран multi-tenant",
+        "desc": "Всеки пансион има отделно пространство — без смесване на данни между клиенти."
+      },
+      "gdpr": {
+        "glyph": "🇪🇺",
+        "title": "GDPR-ready",
+        "desc": "Данни, съхранени в ЕС, политики за поверителност и експорт по заявка."
+      }
+    },
+    "trustLegalPrefix": "Пълни детайли в",
+    "trustLegalLink": "политиката за поверителност",
+    "trustLegalSuffix": ".",
+    "pricingCompareCta": "Сравнете всички планове",
+    "finalCtaTitle": "Готови ли сте?",
+    "finalCtaText": "Създайте акаунт за 30 секунди. Без кредитна карта, без задължения.",
+    "finalCtaButton": "Създайте безплатен акаунт"
   },
   "pricing": {
     "heroBadge": "Prozrachni ceni",
@@ -3873,7 +4081,165 @@
       "menuClose": "Zatvori meniuto",
       "dashboard": "Tablo",
       "tenants": "Tenanti",
-      "logs": "Logove"
+      "logs": "Logove",
+      "tools": "Instrumenti"
+    },
+    "common": {
+      "copy": "Kopirai",
+      "copied": "Kopirano!"
+    },
+    "dashboard": {
+      "title": "Tablo",
+      "totalTenants": "Obshto tenanti",
+      "activeTenants": "Aktivni",
+      "trialTenants": "Probni",
+      "suspendedTenants": "Suspendirani",
+      "cancelledTenants": "Anulirani",
+      "totalRooms": "Obshto stai",
+      "totalBookings": "Obshto rezervatsii",
+      "bookingsToday": "Novi rezervatsii dnes",
+      "activeStaysToday": "Aktivni nastanqvaniq dnes",
+      "errors24h": "Greshki (24h)",
+      "mrr": "MRR",
+      "planTypes": "Planove",
+      "planDistribution": "Razpredelenie na planove",
+      "viewAllTenants": "Vizh vsichki tenanti",
+      "signupsLast7d": "Registratsii (7 dni)",
+      "openTools": "Platformenni instrumenti"
+    },
+    "tenants": {
+      "title": "Tenanti ({count})",
+      "showing": "{filtered} ot {total} pokazani",
+      "searchPlaceholder": "Tursi po ime, slug, domen ili email…",
+      "statusFilter": "Filtrirai po status",
+      "planFilter": "Filtrirai po plan",
+      "statusAll": "Vsichki statusi",
+      "statusActive": "Aktivni",
+      "statusTrial": "Probni",
+      "statusSuspended": "Suspendirani",
+      "statusCancelled": "Anulirani",
+      "planAll": "Vsichki planove",
+      "colName": "Pension",
+      "colSlug": "Slug",
+      "colPlan": "Plan",
+      "colStatus": "Status",
+      "colRooms": "Stai",
+      "colBookings": "Rezervatsii",
+      "colMembers": "Chlenove",
+      "colBilling": "Billing",
+      "colCreated": "Sazdadeno",
+      "details": "Detayli",
+      "empty": "Nyama registriran tenant.",
+      "noMatches": "Nyama tenant, koito otgovarya na filtrite.",
+      "roomsShort": "stai",
+      "bookingsShort": "rez.",
+      "membersShort": "chlen.",
+      "created": "Sazdadeno {date}",
+      "exportCsv": "Export CSV",
+      "exporting": "Exportira se…",
+      "exportSuccess": "CSV izteglen.",
+      "exportFailed": "Exportat ne uspya."
+    },
+    "tenantDetail": {
+      "backToTenants": "Tenanti",
+      "info": "Informatsiya",
+      "stats": "Statistika",
+      "id": "ID",
+      "slug": "Slug",
+      "ownerEmail": "Email na sobstvenik",
+      "country": "Darjava",
+      "locale": "Ezik",
+      "timezone": "Chasova zona",
+      "created": "Sazdadeno",
+      "rooms": "Stai",
+      "bookings": "Rezervatsii",
+      "teamMembers": "Chlenove na ekipa",
+      "planPrice": "Tsena na plan",
+      "month": "mesets",
+      "billing": "Billing",
+      "maxRoomsPlan": "Maks. stai po plan",
+      "unlimited": "Neogranicheno",
+      "plan": "Plan",
+      "status": "Status",
+      "modules": "Add-on moduli",
+      "quickLinks": {
+        "title": "Bъrzi deistviya",
+        "impersonateHint": "Otvori admin panela na tozi tenant. Vlezte s platformenniya si akaunt.",
+        "openAdmin": "Otvori {slug}",
+        "viewLogs": "Vizh logove na tenant"
+      },
+      "health": {
+        "ok": "Zdrave OK",
+        "issues": "Otkriti problemi",
+        "viewLogs": "Vizh logove"
+      },
+      "domains": {
+        "title": "Domeni",
+        "empty": "Nyama konfigurirani domeni.",
+        "unverified": "neverificiran",
+        "sslPending": "SSL pending",
+        "copySlug": "Kopirai slug"
+      },
+      "activity": {
+        "title": "Posledna aktivnost",
+        "empty": "Nyama registrirana aktivnost.",
+        "lastAt": "Data",
+        "lastAction": "Deistvie",
+        "lastActor": "Actor"
+      },
+      "siteLinks": {
+        "title": "Linkove kam saita",
+        "admin": "Admin panel",
+        "publicCalendar": "Publiken kalendar",
+        "publicSite": "Publiken sait"
+      },
+      "support": {
+        "title": "Operator poddrzhka",
+        "cacheHint": "Invalidira kesha na tenant (nastroyki, stai, rezervatsii).",
+        "cacheButton": "Revalidirai kesha na tenant",
+        "cachePending": "Revalidira se…",
+        "cacheSuccess": "Keshat na tenant e revalidiran.",
+        "cacheFailed": "Revalidatsiyata ne uspya.",
+        "magicHint": "Generirai ednokraten magic link za sobstvenika.",
+        "magicButton": "Generirai magic link",
+        "magicPending": "Generira se…",
+        "magicFailed": "Generiraneto ne uspya.",
+        "noOwnerEmail": "Tenant bez email na sobstvenik.",
+        "copyMagicLink": "Kopirai link",
+        "magicWarning": "Chuvstvitelen link — izprashtai samo na sobstvenika."
+      }
+    },
+    "health": {
+      "emailTitle": "Tranzaktsionen email",
+      "emailConfigured": "Resend aktiven · domen {domain} ({provider})",
+      "emailNotConfigured": "Lipsva RESEND_API_KEY — emailite sa noop",
+      "domainsTitle": "Custom domeni",
+      "domainsSummary": "{custom} custom · {subdomains} Hospira subdomeni · {unverified} neverificirani · {sslPending} SSL pending"
+    },
+    "devTools": {
+      "title": "Platformenni instrumenti",
+      "lead": "Revalidatsiya na kesha i proverka na kritichni migratsii.",
+      "revalidateCache": "Revalidirai admin kesha",
+      "revalidating": "Revalidira se…",
+      "revalidateSuccess": "Keshat e revalidiran.",
+      "revalidateFailed": "Revalidatsiyata ne uspya.",
+      "migrationsTitle": "Kritichni migratsii",
+      "migrationsOk": "Vsichki OK",
+      "migrationsMissing": "{count} lipsvat"
+    },
+    "tools": {
+      "title": "Platformenni instrumenti",
+      "lead": "Zdrave na sistemata, env checklist, kesh i migratsii.",
+      "env": {
+        "title": "Env checklist",
+        "summary": "{configured} ot {total} promenlivi konfigurirani",
+        "configured": "OK",
+        "missingRequired": "Lipsva (zadalzhitelno)",
+        "missingOptional": "Lipsva (optsionalno)",
+        "cronTitle": "Cron jobs",
+        "cronSecretOk": "CRON_SECRET e zadaden — Vercel Cron mozhe da vika /api/cron/*",
+        "cronSecretMissing": "CRON_SECRET lipsva — cron-ovete ne mogat da rabotiat sigurno"
+      }
     },
     "error": {
       "title": "Greshka v admin panela",

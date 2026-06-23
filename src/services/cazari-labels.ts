@@ -53,16 +53,28 @@ export function buildCazariLabels({
     cancelRequestMsg: (ref, name, period) =>
       tPages("cancelRequestMsg", { ref, name, period }),
     emptyConfirmed: {
-      title: tPages("emptyConfirmedFilter"),
-      description: tPages("emptyConfirmedFilterDesc"),
+      title: tPages("emptyConfirmedActive"),
+      description: tPages("emptyConfirmedActiveDesc"),
       href: "/admin/calendar",
       label: tPages("openCalendar"),
+    },
+    emptyConfirmedFilter: {
+      title: tPages("emptyConfirmedFilter"),
+      description: tPages("emptyConfirmedFilterDesc"),
+      href: "/admin/cazari?view=confirmate",
+      label: tCommon("reset"),
     },
     emptyRequest: {
       title: tPages("emptyRequestWaiting"),
       description: tPages("emptyRequestWaitingDesc"),
-      href: "/admin/cazari",
-      label: tPages("seeNewRequests"),
+      href: "/admin/calendar",
+      label: tPages("openCalendar"),
+    },
+    emptyRequestFilter: {
+      title: tPages("emptyRequestFilter"),
+      description: tPages("emptyRequestFilterDesc"),
+      href: "/admin/cazari?view=cereri",
+      label: tCommon("reset"),
     },
     historyFiltered: (count) => tPages("historyFiltered", { count }),
     historyRecent: (count) => tPages("historyRecent", { count }),

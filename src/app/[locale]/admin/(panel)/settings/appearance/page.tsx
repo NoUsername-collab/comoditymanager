@@ -1,13 +1,13 @@
 import { getTranslations } from "next-intl/server";
-import { requireStaff } from "@/lib/auth/require-staff";
 import { AdminPalettePicker } from "@/components/admin/settings/AdminPalettePicker";
 import { AdminDisplayLayoutPicker } from "@/components/admin/settings/AdminDisplayLayoutPicker";
 import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
+import { AppearanceSettingsAsideLazy } from "@/components/admin/settings/AppearanceSettingsAsideLazy";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import { SettingsPageHeader } from "@/components/admin/settings/SettingsPageHeader";
+import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
+import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { SettingsAlerts } from "@/components/admin/settings/SettingsAlerts";
 import {
   buildSettingsAlerts,
   canEditPensionSettingsUi,
@@ -28,7 +28,6 @@ export default async function SettingsAppearancePage({
     searchParams,
     loadSettingsStaffContext(),
   ]);
-  await requireStaff();
 
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);
@@ -37,19 +36,24 @@ export default async function SettingsAppearancePage({
   const settings = ctx.pensionResult.settings;
   if (!settings || !ctx.appearance) {
     return (
-      <>
-        <SettingsPageHeader title={t("navAppearance")} />
-        <SettingsAlerts alerts={alerts} />
-      </>
+      <SettingsPageLayout alerts={alerts} title={t("navAppearance")}>
+        <p className="settings-empty">{t("notConfigured")}</p>
+      </SettingsPageLayout>
     );
   }
 
   const canEditGlobalTheme = canEditPensionSettingsUi(ctx);
+  const displayName = settings.display_name?.trim() || "Hospira";
 
   return (
-    <>
-      <SettingsAlerts alerts={alerts} />
-      <SettingsPageHeader title={t("navAppearance")} description={t("visualsSubtitle")} />
+    <SettingsPageLayout
+      alerts={alerts}
+      title={t("navAppearance")}
+      description={t("visualsSubtitle")}
+      previewHref="/admin"
+      previewLabel={t("livePreview")}
+      previewPanel={<AppearanceSettingsAsideLazy displayName={displayName} />}
+    >
       <SettingsSection title={t("displayLayoutTitle")} description={t("displayLayoutHint")}>
         <AdminDisplayLayoutPicker />
       </SettingsSection>
@@ -59,16 +63,16 @@ export default async function SettingsAppearancePage({
           <SettingsSection title={t("visualsTitle")} description={t("visualsSubtitle")}>
             <AdminPalettePicker />
           </SettingsSection>
-          <SettingsSection title={t("fxTitle")} description={t("fxSubtitle")}>
+          <SettingsSection title={t("fxTitle")} description={t("fxSubtitle")} defaultOpen={false}>
             <AdminFxSettings />
           </SettingsSection>
-          <div className="settings-form-stack__submit">
+          <SettingsSaveBar>
             <AdminSubmitButton type="submit" variant="primary" size="lg">
               {t("saveTheme")}
             </AdminSubmitButton>
-          </div>
+          </SettingsSaveBar>
         </AdminPendingForm>
       ) : null}
-    </>
+    </SettingsPageLayout>
   );
 }

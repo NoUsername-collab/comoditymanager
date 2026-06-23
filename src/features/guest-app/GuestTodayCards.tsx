@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import type { GuestAppFeatureDef } from "@/domain/guest-app/types";
 import { guestAppFeatureHref } from "@/domain/guest-app/routes";
 import { resolveGuestStayPhase } from "@/domain/guest-app/stay-milestone";
+import { daysUntilDate } from "@/lib/guest-app/stay-dates";
 import { GuestFeatureIcon } from "@/features/guest-app/icons";
 
 type Props = {
@@ -68,6 +69,28 @@ function buildTodayCards(props: Props): TodayCard[] {
         descKey: "today.discoverPlaceDesc",
         href: guestAppFeatureHref(accessCode, "hotel_info"),
         accent: "blue",
+      });
+    }
+  } else if (
+    phase === "checked_in" &&
+    daysUntilDate(today, checkOut) === 1
+  ) {
+    if (featureVisible(features, "hotel_info")) {
+      cards.push({
+        featureId: "hotel_info",
+        labelKey: "today.checkoutTomorrow",
+        descKey: "today.checkoutTomorrowDesc",
+        href: guestAppFeatureHref(accessCode, "hotel_info"),
+        accent: "rose",
+      });
+    }
+    if (featureVisible(features, "online_payment")) {
+      cards.push({
+        featureId: "online_payment",
+        labelKey: "today.payNow",
+        descKey: "today.payNowDesc",
+        href: guestAppFeatureHref(accessCode, "online_payment"),
+        accent: "amber",
       });
     }
   } else if (phase === "checked_in" && today === checkOut) {

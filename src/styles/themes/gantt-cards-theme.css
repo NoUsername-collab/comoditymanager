@@ -60,6 +60,13 @@ html[data-theme] .gantt-stay-chrome.gantt-stay--cap-ok .gantt-stay__end-tab--ok 
   background-color: color-mix(in srgb, var(--booking-active-border) 88%, black) !important;
 }
 
+html[data-theme] .gantt-stay-chrome.gantt-stay--cap-ok .gantt-stay__end-tab-bulb {
+  filter:
+    drop-shadow(0 0 0.5px #052e16)
+    drop-shadow(0 0 2px #86efac)
+    drop-shadow(0 0 4px #4ade80) !important;
+}
+
 html[data-theme] .gantt-stay-chrome.gantt-stay--cap-problem .gantt-stay__end-tab--problem {
   background-color: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 92%, black) !important;
   border-left-color: color-mix(in srgb, var(--gantt-cap-problem, #dc2626) 75%, black) !important;

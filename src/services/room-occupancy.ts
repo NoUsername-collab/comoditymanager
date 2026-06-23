@@ -130,11 +130,11 @@ async function getRoomOccupancyImpl(
   };
 
   const shouldFetchHolds = kinds.includes("hold") && !options.forPublicCalendar;
-  const releaseHoldsPromise = shouldFetchHolds
-    ? releaseExpiredRoomHolds(ref).catch(() => {
-        /* non-fatal */
-      })
-    : Promise.resolve();
+  if (shouldFetchHolds) {
+    void releaseExpiredRoomHolds(ref).catch(() => {
+      /* non-fatal — do not block hold reads */
+    });
+  }
 
   const fetchHoldRows = async (): Promise<OccupancySegment[]> => {
     if (!shouldFetchHolds) return [];
@@ -206,7 +206,7 @@ async function getRoomOccupancyImpl(
 
   const [segmentRows, holdRows, blockRows] = await Promise.all([
     fetchSegments(),
-    releaseHoldsPromise.then(() => fetchHoldRows()),
+    fetchHoldRows(),
     fetchBlocks(),
   ]);
 

@@ -157,6 +157,13 @@ html[data-theme="default"][data-mode="night"] {
   --admin-tint-sky-bg: color-mix(in srgb, var(--hold-bg) 80%, var(--surface));
   --admin-tint-sky-border: color-mix(in srgb, var(--hold-border) 30%, var(--border));
 
+  --admin-tint-info-text: color-mix(in srgb, var(--info) 80%, var(--text));
+  --admin-tint-warning-text: var(--pending-text);
+  --admin-tint-success-text: var(--active-text);
+  --admin-tint-danger-text: var(--cancelled-text);
+  --admin-tint-violet-text: var(--blocked-text);
+  --admin-tint-sky-text: var(--hold-text);
+
   /* ── Gantt semantic fills — contrast AA pe fundal închis ── */
   --gantt-bar-fill-active: color-mix(
     in srgb,

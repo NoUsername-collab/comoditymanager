@@ -37,6 +37,7 @@ import { platformPensionNameFallback } from "@/lib/platform/branding";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantDisplayName } from "@/services/tenants";
 import { getLocale, getTranslations } from "next-intl/server";
+import { createServerTimer } from "@/lib/dev/server-timing";
 
 export type AdminDashboardStats = {
   buildingsCount: number;
@@ -97,6 +98,7 @@ async function loadTodayBoardForSettings(
 }
 
 async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
+  const timer = createServerTimer("admin-dashboard");
   const pensionPromise = getPensionSettings().catch(() => null);
 
   const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings, unpaidInHouseCount] =
@@ -188,6 +190,12 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
       weekOccupancyPct,
     };
 
+    timer.finish({
+      cereriCount,
+      buildings: buildings.length,
+      hasTodayBoard: todayBoard != null,
+    });
+
     return {
       pensionName,
       todayLabel: todayLabelForLocale(locale),
@@ -213,6 +221,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
       error: null,
     };
   } catch (e) {
+    timer.finish({ error: true });
     return {
       ...fallback,
       pensionMood,

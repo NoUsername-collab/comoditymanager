@@ -37,9 +37,6 @@ export default function AdminPanelError({
           Acasă admin
         </Link>
       </div>
-      {error.digest && (
-        <p className="mt-3 text-xs text-zinc-400">Cod: {error.digest}</p>
-      )}
     </div>
   );
 }

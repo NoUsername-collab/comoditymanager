@@ -7,7 +7,7 @@ import {
   loadActiveBookingInvoice,
   previewBookingInvoice,
 } from "@/services/issued-invoice";
-import { getBookingById } from "@/services/bookings";
+import { getBookingById } from "@/services/bookings/queries";
 import { getTranslations } from "next-intl/server";
 
 export default async function BookingInvoicePage({

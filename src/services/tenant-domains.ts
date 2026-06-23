@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { TenantDomainRoutingKind } from "@/lib/tenant/domain-routing";
 
@@ -13,20 +14,41 @@ export type TenantDomainRow = {
   created_at: string;
 };
 
-const loadTenantDomains = cache(async (
+const TENANT_DOMAIN_SELECT =
+  "id, tenant_id, domain, routing_kind, verified, verified_at, ssl_active, created_at";
+
+function tenantDomainsCacheTag(tenantId: string): string {
+  return `tenant-${tenantId}-domains`;
+}
+
+async function listTenantDomainsUncached(
   tenantId: string
-): Promise<TenantDomainRow[]> => {
+): Promise<TenantDomainRow[]> {
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("tenant_domains")
-    .select("*")
+    .select(TENANT_DOMAIN_SELECT)
     .eq("tenant_id", tenantId)
     .order("routing_kind", { ascending: true })
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
   return (data ?? []) as TenantDomainRow[];
-});
+}
+
+const getCachedTenantDomains = (tenantId: string) =>
+  unstable_cache(
+    () => listTenantDomainsUncached(tenantId),
+    ["tenant-domains", tenantId],
+    {
+      tags: [tenantDomainsCacheTag(tenantId)],
+      revalidate: 300,
+    }
+  );
+
+const loadTenantDomains = cache(async (tenantId: string): Promise<TenantDomainRow[]> =>
+  getCachedTenantDomains(tenantId)()
+);
 
 export async function listTenantDomains(
   tenantId: string

@@ -1,6 +1,6 @@
 import type { ConfirmedStayLike } from "@/domain/cazari/confirmed-buckets";
 import type { CazariView } from "@/domain/cazari/horizon";
-import type { CazariPageLists } from "@/services/cazari-page-data";
+import type { CazariPageLists } from "@/domain/cazari/page-lists";
 import { matchesStaySearchQuery } from "@/domain/cazari/stay-search";
 
 type OperationalStay = CazariPageLists["stays"][number];

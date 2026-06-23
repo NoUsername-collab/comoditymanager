@@ -36,7 +36,11 @@ export default async function PublicLayout({
         <AdminCorner />
         <PublicHeader config={config} />
         <div className="ml-main ml-content flex-1">{children}</div>
-        <PublicContactBar contact={config.contact} title={tFooter("contact")} />
+        <PublicContactBar
+          contact={config.contact}
+          title={tFooter("contact")}
+          emptyHint={tFooter("contactEmptyHint")}
+        />
         <PublicFooter config={config} />
       </MobileShell>
     </PublicSiteConfigProvider>
