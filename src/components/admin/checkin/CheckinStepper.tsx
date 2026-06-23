@@ -129,6 +129,15 @@ export function CheckinStepper({
     return needsRoomPickerStep ? ["rooms", ...core] : [...core];
   }, [isContinuation, needsRoomPickerStep, isEditMode, paymentSettled]);
 
+  // Compute idsPerRoomConfig before using in useState initializer
+  const idsPerRoomConfig = useMemo((): IdsPerRoomConfig | undefined => {
+    if (settings.checkin_ids_per_room === "one") return undefined;
+    return {
+      rule: settings.checkin_ids_per_room,
+      familyRooms: detectFamilyRooms(booking),
+    };
+  }, [settings.checkin_ids_per_room, booking]);
+
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -206,14 +215,6 @@ export function CheckinStepper({
       return [...prev, room];
     });
   }
-
-  const idsPerRoomConfig = useMemo((): IdsPerRoomConfig | undefined => {
-    if (settings.checkin_ids_per_room === "one") return undefined;
-    return {
-      rule: settings.checkin_ids_per_room,
-      familyRooms: detectFamilyRooms(booking),
-    };
-  }, [settings.checkin_ids_per_room, booking]);
 
   const registeredOnly = (booking.registered_guests?.length ?? 0) > 0;
   const maxSelectableRooms =

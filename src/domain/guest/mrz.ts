@@ -147,7 +147,7 @@ function sanitizeMrzPersonNames(
       .replace(/\s+/g, " ")
       .trim();
 
-  let last = clean(lastName);
+  const last = clean(lastName);
   let first = clean(firstName);
 
   if (last && first && last === first) {

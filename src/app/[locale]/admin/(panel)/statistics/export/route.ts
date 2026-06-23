@@ -37,12 +37,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "invalid_year" }, { status: 400 });
   }
 
-  let month: number | undefined;
   const parsedMonth = parseMonth(searchParams.get("month"));
   if (parsedMonth === null) {
     return NextResponse.json({ error: "invalid_month" }, { status: 400 });
   }
-  month = parsedMonth;
+  const month = parsedMonth;
 
   const formatParam = searchParams.get("format");
   const format: AccountingExportFormat =
