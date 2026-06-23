@@ -6,6 +6,7 @@ export const CACHE_TAGS = {
   roomOptionsByRoom: "room-options-by-room",
   bookingCounts: "booking-counts",
   checkins: "checkins",
+  bookingPayments: "booking-payments",
   publicSite: "public-site",
 } as const;
 

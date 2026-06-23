@@ -1311,7 +1311,25 @@
           "yes": "Yes",
           "no": "No",
           "invoiceNextHint": "Next invoice number is assigned when you issue.",
-          "readOnly": "Only the owner can edit fiscal settings. You can view the data below."
+          "readOnly": "Only the owner can edit fiscal settings. You can view the data below.",
+          "eFacturaTitle": "RO e-Factura (ANAF)",
+          "eFacturaDesc": "PDF stays available instantly; ANAF submission runs in the background.",
+          "fiscalProvider": "Fiscal provider",
+          "fiscalProviderDesc": "Local PDF or ANAF SPV submission",
+          "provider": {
+            "internal_pdf": "Local PDF (default)",
+            "anaf": "ANAF e-Factura"
+          },
+          "anafEnabled": "Enable ANAF e-Factura",
+          "anafEnabledDesc": "Issued fiscal invoices are queued for ANAF",
+          "anafEnvironment": "ANAF environment",
+          "anafEnvDesc": "SPV test or production",
+          "anafCif": "ANAF CIF (optional)",
+          "anafCifDesc": "Leave empty to use the tax ID from settings",
+          "anafEnv": {
+            "test": "Test",
+            "prod": "Production"
+          }
         },
         "bookingTitle": "Bookings & pricing",
         "bookingSubtitle": "Cancellation, pricing and country-specific tax & billing",
@@ -1696,6 +1714,11 @@
         "exportFormatContaplus": "ContaPlus",
         "exportIncludeUninvoiced": "Include confirmed stays without invoice",
         "exportIncludeUninvoicedHint": "NC rows — useful until all period invoices are issued.",
+        "exportSlice": "Export type",
+        "exportSliceFiscal": "Fiscal invoices",
+        "exportSliceProforma": "Proformas",
+        "exportSlicePayments": "Payments (ledger)",
+        "exportSliceUninvoiced": "Uninvoiced",
         "exportDownload": "Download CSV"
       },
       "location": {
@@ -2779,7 +2802,42 @@
       "issuing": "Issuing…",
       "issueSuccess": "Invoice issued",
       "issueError": "Could not issue invoice",
-      "poweredBy": "Issued with {brand}"
+      "issueNextInvoice": "Issue next invoice",
+      "invoiceList": "Issued invoices",
+      "nextInvoicePreview": "Next invoice",
+      "uninvoicedPaidHint": "Paid, not invoiced: {amount}",
+      "remainingToInvoiceHint": "Remaining to invoice: {amount}",
+      "kindAdvance": "Advance",
+      "kindPartial": "Partial",
+      "kindFinal": "Final",
+      "kindCreditNote": "Credit note",
+      "kindProforma": "Proforma",
+      "proformaList": "Proformas",
+      "nextProformaPreview": "Next proforma",
+      "issueProforma": "Issue proforma",
+      "proformaIssueSuccess": "Proforma issued",
+      "proformaIssueError": "Could not issue proforma",
+      "proformaHint": "Proforma has no fiscal value until converted to an invoice.",
+      "proformaConvertedHint": "This proforma was already converted to a fiscal invoice.",
+      "converted": "converted",
+      "proformaDocumentTitle": "PROFORMA",
+      "proformaWatermark": "PROFORMA",
+      "convertToAdvance": "Convert to advance invoice",
+      "converting": "Converting…",
+      "convertSuccess": "Proforma converted to invoice",
+      "convertError": "Could not convert proforma",
+      "poweredBy": "Issued with {brand}",
+      "anaf": {
+        "badgeLabel": "ANAF",
+        "badgeTitle": "e-Factura submission status",
+        "status": {
+          "pending": "Pending",
+          "submitted": "Submitted",
+          "accepted": "Accepted",
+          "rejected": "Rejected",
+          "failed": "Failed"
+        }
+      }
     },
     "informalInvoice": {
       "printPdf": "Print / PDF",
@@ -2840,6 +2898,17 @@
       "invoiceSellerDetailsMissing": "Set tax ID and property address under Settings → Check-in → Tourist sheet.",
       "invoiceBookingNotConfirmed": "Invoices can only be issued for confirmed bookings.",
       "invoiceMigrationRequired": "Run migration 065 for invoicing.",
+      "invoiceFullyInvoiced": "This booking is already fully invoiced.",
+      "invoiceAmountExceedsRemaining": "Amount exceeds remaining to invoice.",
+      "invoiceInvalidAmount": "Invalid invoice amount.",
+      "proformaMigrationRequired": "Run migration 088 for proforma support.",
+      "proformaFullyInvoiced": "Nothing left to invoice for proforma.",
+      "proformaAmountExceedsRemaining": "Proforma amount exceeds remaining to invoice.",
+      "proformaInvalidAmount": "Invalid proforma amount.",
+      "proformaNotFound": "Proforma not found.",
+      "proformaAlreadyConverted": "Proforma was already converted.",
+      "proformaPaymentInsufficient": "Payments do not cover the proforma amount.",
+      "proformaExceedsRemaining": "Proforma amount exceeds remaining fiscal amount.",
       "holdError": "Hold error",
       "blockError": "Block error",
       "releaseHoldError": "Release hold error",
@@ -3019,6 +3088,35 @@
       "childPlural": "children",
       "editCheckout": "Edit checkout",
       "checkedInHint": "Guest has checked in — only the checkout date can be changed."
+    },
+    "financial": {
+      "title": "Payments",
+      "totalDue": "Total due",
+      "totalPaid": "Paid",
+      "balanceDue": "Balance due",
+      "totalInvoiced": "Invoiced",
+      "uninvoicedPaid": "Paid, not invoiced",
+      "history": "Payment history",
+      "noPayments": "No payments recorded yet.",
+      "recordPayment": "+ Record payment",
+      "amount": "Amount (RON)",
+      "method": "Method",
+      "method_cash": "Cash",
+      "method_card": "Card",
+      "method_transfer": "Transfer",
+      "method_online": "Online",
+      "method_other": "Other",
+      "payerName": "Payer",
+      "payerNamePlaceholder": "Optional",
+      "notes": "Note",
+      "cancel": "Cancel",
+      "savePayment": "Save",
+      "saving": "Saving...",
+      "recordSuccess": "Payment recorded",
+      "recordError": "Could not save payment",
+      "invalidAmount": "Invalid amount",
+      "bookingNotConfirmed": "Booking must be confirmed",
+      "migrationRequired": "Run migration 086 (booking_payments) on the database"
     },
     "checkIn": {
       "title": "Check-in",
@@ -3576,6 +3674,11 @@
       },
       "invoice": {
         "issued": "Invoice issued"
+      },
+      "fiscal": {
+        "submitted": "ANAF: submitted",
+        "accepted": "ANAF: accepted",
+        "rejected": "ANAF: rejected"
       },
       "activity": {
         "undone": "Action undone"

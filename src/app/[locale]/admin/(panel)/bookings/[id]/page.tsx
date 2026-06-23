@@ -18,6 +18,8 @@ import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
 import { GuestAccessSharePanel } from "@/components/admin/bookings/GuestAccessSharePanel";
 import { GuestFeedbackBadge } from "@/components/admin/bookings/GuestFeedbackBadge";
 import { getGuestFeedbackByBookingId } from "@/services/guest-feedback";
+import { loadFinancialSnapshot } from "@/services/booking-financial";
+import { StayFinancialPanel } from "@/components/admin/payments/StayFinancialPanel";
 import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { getStayPricingRules } from "@/services/booking-rules-settings";
@@ -73,6 +75,9 @@ export default async function BookingDetailPage({
         guestFeedback: null as Awaited<
           ReturnType<typeof getGuestFeedbackByBookingId>
         >,
+        financialSnapshot: null as Awaited<
+          ReturnType<typeof loadFinancialSnapshot>
+        >,
       };
     }
     const { booking } = ctx;
@@ -88,10 +93,14 @@ export default async function BookingDetailPage({
       ).catch(() => []),
       getCheckinByBookingId(booking.id).catch(() => null),
       getGuestFeedbackByBookingId(booking.id).catch(() => null),
-    ]).then(([dedupCandidates, existingCheckin, guestFeedback]) => ({
+      booking.status === "confirmata"
+        ? loadFinancialSnapshot(booking.id).catch(() => null)
+        : Promise.resolve(null),
+    ]).then(([dedupCandidates, existingCheckin, guestFeedback, financialSnapshot]) => ({
       dedupCandidates,
       existingCheckin,
       guestFeedback,
+      financialSnapshot,
     }));
   });
 
@@ -121,7 +130,7 @@ export default async function BookingDetailPage({
     canFulfill,
   } = ctx;
 
-  const { dedupCandidates, existingCheckin, guestFeedback } = bookingExtras;
+  const { dedupCandidates, existingCheckin, guestFeedback, financialSnapshot } = bookingExtras;
   const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
 
   const [bookingWithCheckin] = await attachCheckinRecordState([booking], {
@@ -434,16 +443,25 @@ export default async function BookingDetailPage({
                 checkinId={existingCheckin?.id ?? null}
                 totalPrice={booking.total_price ?? 0}
                 checkinPaymentStatus={
+                  financialSnapshot?.derivedStatus ??
                   existingCheckin?.payment_status ??
                   operativeBooking.checkin_payment_status ??
                   null
                 }
                 checkinPaymentAmountPaid={
+                  financialSnapshot?.totalPaid ??
                   Number(existingCheckin?.payment_amount_paid ?? 0)
                 }
                 canEditAfterCheckout={canEditAfterCheckout}
               />
             </div>
+          )}
+
+          {booking.status === "confirmata" && financialSnapshot && (
+            <StayFinancialPanel
+              bookingId={booking.id}
+              snapshot={financialSnapshot}
+            />
           )}
         </div>
 

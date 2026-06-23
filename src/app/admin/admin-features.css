@@ -11,6 +11,7 @@
 @import "./admin-simulation.css";
 @import "./admin-cazari-toolbar.css";
 @import "./admin-cazari-cards.css";
+@import "./admin-payments.css";
 
 /* Panou admin — componente noi (istoric, rezumat, goluri) */
 
@@ -775,4 +776,60 @@
   .nestio-admin-main :where(.space-y-4) > :not([hidden]) ~ :not([hidden]) {
     margin-block-start: var(--ml-space-md, 0.75rem);
   }
+}
+
+.fiscal-anaf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.fiscal-anaf-badge__label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.fiscal-anaf-badge--pending {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.fiscal-anaf-badge--submitted {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.fiscal-anaf-badge--accepted {
+  border-color: #86efac;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.fiscal-anaf-badge--rejected,
+.fiscal-anaf-badge--failed {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.fiscal-settings__efactura {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--admin-surface-border, #e4e4e7);
+}
+
+.fiscal-settings__efactura-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
 }

@@ -1,7 +1,13 @@
 export type AccountingExportFormat = "saga" | "contaplus";
 
+export type AccountingExportSlice =
+  | "fiscal"
+  | "proforma"
+  | "payments"
+  | "uninvoiced";
+
 export type AccountingExportRow = {
-  source: "invoice" | "booking";
+  source: "invoice" | "booking" | "proforma" | "payment";
   display_number: string;
   series: string;
   invoice_number: number | null;
@@ -83,12 +89,36 @@ function contaplusHeaders(): string[] {
 }
 
 function rowToCells(row: AccountingExportRow, format: AccountingExportFormat): string[] {
-  const docType = row.source === "invoice" ? "FF" : "NC";
+  const docType =
+    row.source === "invoice"
+      ? "FF"
+      : row.source === "proforma"
+        ? "PF"
+        : row.source === "payment"
+          ? "IP"
+          : "NC";
   const date = formatRomanianDate(row.issued_at);
   const amount = formatAmount(row.subtotal);
   const total = formatAmount(row.total);
   const number =
     row.invoice_number != null ? String(row.invoice_number) : row.display_number;
+
+  const sourceLabel =
+    row.source === "invoice"
+      ? format === "contaplus"
+        ? "FACTURA"
+        : "Factura emisa"
+      : row.source === "proforma"
+        ? format === "contaplus"
+          ? "PROFORMA"
+          : "Proforma"
+        : row.source === "payment"
+          ? format === "contaplus"
+            ? "PLATA"
+            : "Incasare"
+          : format === "contaplus"
+            ? "REZERVARE"
+            : "Rezervare nefacturata";
 
   if (format === "contaplus") {
     return [
@@ -106,7 +136,7 @@ function rowToCells(row: AccountingExportRow, format: AccountingExportFormat): s
       amount,
       total,
       "RON",
-      row.source === "invoice" ? "FACTURA" : "REZERVARE",
+      sourceLabel,
       row.booking_id,
     ];
   }
@@ -126,7 +156,7 @@ function rowToCells(row: AccountingExportRow, format: AccountingExportFormat): s
     amount,
     total,
     "RON",
-    row.source === "invoice" ? "Factura emisa" : "Rezervare nefacturata",
+    sourceLabel,
     row.booking_id,
   ];
 }
@@ -148,11 +178,20 @@ export function buildAccountingCsv(
 export function accountingExportFilename(
   format: AccountingExportFormat,
   year: number,
-  month?: number
+  month?: number,
+  slice: AccountingExportSlice = "fiscal"
 ): string {
   const base = format === "contaplus" ? "contaplus" : "saga";
+  const sliceTag =
+    slice === "fiscal"
+      ? "iesiri"
+      : slice === "proforma"
+        ? "proforme"
+        : slice === "payments"
+          ? "plati"
+          : "nefacturat";
   if (month != null) {
-    return `${base}-iesiri-${year}-${String(month).padStart(2, "0")}.csv`;
+    return `${base}-${sliceTag}-${year}-${String(month).padStart(2, "0")}.csv`;
   }
-  return `${base}-iesiri-${year}.csv`;
+  return `${base}-${sliceTag}-${year}.csv`;
 }

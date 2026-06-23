@@ -21,6 +21,8 @@ const BOOKING_RULES_SELECT = [
   "pricing_seasons",
   "invoice_series",
   "invoice_next_number",
+  "proforma_series",
+  "proforma_next_number",
   "invoice_seller_reg_com",
   "invoice_vat_enabled",
   "invoice_vat_rate",
@@ -32,6 +34,7 @@ function isBookingRulesMigrationMissing(message: string): boolean {
     message.includes("cancellation_policy_type") ||
     message.includes("pricing_weekend_enabled") ||
     message.includes("invoice_series") ||
+    message.includes("proforma_series") ||
     message.includes("invoice_vat_enabled")
   );
 }

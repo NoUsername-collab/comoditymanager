@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  accountingExportFilename,
   buildAccountingCsv,
   escapeCsvField,
   formatRomanianDate,
@@ -36,6 +37,17 @@ describe("escapeCsvField", () => {
   });
 });
 
+describe("accountingExportFilename", () => {
+  it("includes slice in filename", () => {
+    expect(accountingExportFilename("saga", 2026, 3, "proforma")).toBe(
+      "saga-proforme-2026-03.csv"
+    );
+    expect(accountingExportFilename("saga", 2026, undefined, "payments")).toBe(
+      "saga-plati-2026.csv"
+    );
+  });
+});
+
 describe("buildAccountingCsv", () => {
   it("builds Saga CSV with BOM and semicolon separator", () => {
     const csv = buildAccountingCsv([sampleRow], "saga");
@@ -49,5 +61,32 @@ describe("buildAccountingCsv", () => {
     const csv = buildAccountingCsv([sampleRow], "contaplus");
     expect(csv).toContain("TIP_DOC;SERIE;NR_DOC");
     expect(csv).toContain("FACTURA");
+  });
+
+  it("marks proforma rows as PF", () => {
+    const csv = buildAccountingCsv(
+      [{ ...sampleRow, source: "proforma", series: "PF", display_number: "PF-0001" }],
+      "saga"
+    );
+    expect(csv).toContain("PF;");
+    expect(csv).toContain("Proforma");
+  });
+
+  it("marks payment rows as IP", () => {
+    const csv = buildAccountingCsv(
+      [
+        {
+          ...sampleRow,
+          source: "payment",
+          series: "PL",
+          display_number: "PL-ABC",
+          invoice_number: null,
+          description: "Incasare (cash)",
+        },
+      ],
+      "saga"
+    );
+    expect(csv).toContain("IP;");
+    expect(csv).toContain("Incasare");
   });
 });

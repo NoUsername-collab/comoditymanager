@@ -1,12 +1,28 @@
 import { notFound } from "next/navigation";
-import { BookingInvoicePanel } from "@/components/admin/invoice/BookingInvoicePanel";
+import {
+  BookingInvoicePanel,
+  type BookingInvoiceListItem,
+  type BookingProformaListItem,
+} from "@/components/admin/invoice/BookingInvoicePanel";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
+import {
+  resolveDefaultInvoiceAmount,
+} from "@/domain/invoice/invoice-allocation";
+import { resolveDefaultProformaAmount } from "@/domain/invoice/proforma";
 import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
 import { resolveShowBrandingForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
+import { loadFinancialSnapshot } from "@/services/booking-financial";
 import {
-  loadActiveBookingInvoice,
+  listBookingProformas,
+  previewBookingProforma,
+  proformaCanConvert,
+} from "@/services/booking-proforma";
+import { getFiscalStatusMapForInvoices } from "@/services/fiscal-submission";
+import {
+  listBookingInvoices,
   previewBookingInvoice,
 } from "@/services/issued-invoice";
+import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 import { getBookingById } from "@/services/bookings/queries";
 import { getTranslations } from "next-intl/server";
 
@@ -25,14 +41,57 @@ export default async function BookingInvoicePage({
 
   if (!booking || booking.status !== "confirmata") notFound();
 
-  const [active, preview] = await Promise.all([
-    loadActiveBookingInvoice(id),
-    previewBookingInvoice(id),
-  ]);
+  const [invoices, proformas, financial, preview, proformaPreview, fiscalSettings] =
+    await Promise.all([
+      listBookingInvoices(id),
+      listBookingProformas(id),
+      loadFinancialSnapshot(id),
+      previewBookingInvoice(id),
+      previewBookingProforma(id),
+      getTenantFiscalSettings(),
+    ]);
 
-  if (!preview) notFound();
+  if (!preview || !financial) notFound();
 
-  const document = active?.document ?? preview;
+  const fiscalStatusByInvoiceId = await getFiscalStatusMapForInvoices(
+    invoices.map((inv) => inv.id)
+  );
+
+  const invoiceList: BookingInvoiceListItem[] = invoices.map((inv) => ({
+    id: inv.id,
+    display_number: inv.document.display_number,
+    total: inv.document.total,
+    issued_at: inv.document.issued_at,
+    invoice_kind: inv.invoice_kind,
+    invoice_sequence: inv.invoice_sequence,
+    document: inv.document,
+  }));
+
+  const proformaList: BookingProformaListItem[] = proformas.map((pf) => ({
+    id: pf.id,
+    display_number: pf.document.display_number,
+    total: pf.document.total,
+    issued_at: pf.document.issued_at,
+    invoice_sequence: pf.invoice_sequence,
+    converted_to_invoice_id: pf.converted_to_invoice_id,
+    document: pf.document,
+    canConvert: proformaCanConvert(
+      pf,
+      financial.totalPaid,
+      financial.remainingToInvoice
+    ),
+  }));
+
+  const canIssueNext = financial.remainingToInvoice > 0;
+  const canIssueProforma = financial.remainingToInvoice > 0;
+  const nextInvoiceAmount = resolveDefaultInvoiceAmount({
+    remainingToInvoice: financial.remainingToInvoice,
+    uninvoicedPaid: financial.uninvoicedPaid,
+  });
+  const nextProformaAmount = resolveDefaultProformaAmount({
+    remainingToInvoice: financial.remainingToInvoice,
+    uninvoicedPaid: financial.uninvoicedPaid,
+  });
   const showPlatformBranding = await resolveShowBrandingForRequest();
 
   return (
@@ -47,9 +106,19 @@ export default async function BookingInvoicePage({
       <div className="print:border-0 print:bg-white">
         <BookingInvoicePanel
           bookingId={id}
-          document={document}
-          issued={Boolean(active)}
+          document={preview}
+          proformaPreview={proformaPreview}
+          invoices={invoiceList}
+          proformas={proformaList}
+          canIssueNext={canIssueNext}
+          canIssueProforma={canIssueProforma}
+          nextInvoiceAmount={nextInvoiceAmount}
+          nextProformaAmount={nextProformaAmount}
+          uninvoicedPaid={financial.uninvoicedPaid}
+          remainingToInvoice={financial.remainingToInvoice}
           showPlatformBranding={showPlatformBranding}
+          fiscalProvider={fiscalSettings.provider}
+          fiscalStatusByInvoiceId={fiscalStatusByInvoiceId}
         />
       </div>
     </AdminPageFrame>

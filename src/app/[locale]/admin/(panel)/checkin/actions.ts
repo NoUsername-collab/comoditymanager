@@ -14,6 +14,9 @@ import { createCheckin } from "@/services/checkin/create";
 import { updateCheckin } from "@/services/checkin/update";
 import { getCheckinSettings, updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
+import { listBookingPayments } from "@/services/booking-payments";
+import { computePaymentTotals } from "@/domain/payments/ledger";
+import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-checkout-guard";
 import {
   getCheckinByBookingId,
@@ -227,6 +230,18 @@ export async function loadBookingCheckinPaymentPanelAction(
       registered_guests: registeredGuests,
     });
 
+    const ledgerPayments = await listBookingPayments(id);
+    let paymentAmountPaid = Number(checkin.payment_amount_paid ?? 0);
+    let paymentStatus: StoredPaymentStatus = checkin.payment_status;
+    if (ledgerPayments.length > 0) {
+      const totals = computePaymentTotals(
+        booking.total_price ?? 0,
+        ledgerPayments
+      );
+      paymentAmountPaid = totals.totalPaid;
+      paymentStatus = totals.derivedStatus;
+    }
+
     return {
       ok: true,
       data: {
@@ -236,8 +251,8 @@ export async function loadBookingCheckinPaymentPanelAction(
         plannedCheckIn: booking.check_in,
         plannedCheckOut: booking.check_out,
         totalPrice: booking.total_price ?? 0,
-        paymentStatus: checkin.payment_status,
-        paymentAmountPaid: Number(checkin.payment_amount_paid ?? 0),
+        paymentStatus,
+        paymentAmountPaid,
         depositAmount: Number(checkin.deposit_amount ?? 0),
         settings,
         bookingForCheckin,

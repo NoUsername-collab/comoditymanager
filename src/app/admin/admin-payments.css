@@ -1,0 +1,135 @@
+.stay-financial {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+}
+
+.stay-financial__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.stay-financial__grid {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.stay-financial__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+}
+
+.stay-financial__row dt {
+  margin: 0;
+  color: var(--admin-text-muted, #8b93a7);
+}
+
+.stay-financial__row dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.stay-financial__row--due dd {
+  color: var(--admin-danger, #c45c5c);
+}
+
+.stay-financial__history-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--admin-text-muted, #8b93a7);
+}
+
+.stay-financial__history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+
+.stay-financial__history-item {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.1rem 0.5rem;
+  font-size: 0.82rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--admin-border-subtle, rgba(255, 255, 255, 0.06));
+}
+
+.stay-financial__history-date {
+  grid-row: 1 / span 2;
+  color: var(--admin-text-muted, #8b93a7);
+}
+
+.stay-financial__history-amount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.stay-financial__history-meta {
+  color: var(--admin-text-muted, #8b93a7);
+  font-size: 0.78rem;
+}
+
+.stay-financial__empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--admin-text-muted, #8b93a7);
+}
+
+.stay-financial__record-btn {
+  align-self: flex-start;
+  min-height: 2.75rem;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border, #2e3344);
+  background: var(--admin-surface-raised, #232735);
+  color: var(--admin-text, #e8eaef);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stay-financial__record-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem;
+}
+
+.stay-financial__record-title {
+  margin: 0;
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+
+.stay-financial__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+}
+
+.stay-financial__record-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+html[data-layout-chrome="compact"] .stay-financial__record-btn,
+html[data-layout-chrome="compact"] .stay-financial__record-actions .admin-btn {
+  min-height: 2.75rem;
+}

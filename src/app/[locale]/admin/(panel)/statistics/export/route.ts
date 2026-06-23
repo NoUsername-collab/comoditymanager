@@ -46,6 +46,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const formatParam = searchParams.get("format");
   const format: AccountingExportFormat =
     formatParam === "contaplus" ? "contaplus" : "saga";
+  const sliceParam = searchParams.get("slice");
+  const slice =
+    sliceParam === "proforma" ||
+    sliceParam === "payments" ||
+    sliceParam === "uninvoiced" ||
+    sliceParam === "fiscal"
+      ? sliceParam
+      : undefined;
   const includeUninvoiced = searchParams.get("includeUninvoiced") === "1";
 
   try {
@@ -53,6 +61,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       year,
       month,
       format,
+      slice,
       includeUninvoiced,
     });
 

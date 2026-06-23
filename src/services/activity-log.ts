@@ -5,6 +5,7 @@ import type {
   ActivityLogEntry,
 } from "@/domain/activity/types";
 import { getAdminUser } from "@/lib/auth/require-admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 
 export type LogInput = {
@@ -98,6 +99,41 @@ export async function logAdminActivityFromSession(
     ...input,
     actor: user ? { id: user.id, email: user.email } : null,
   });
+}
+
+/** Cron / background jobs — no request tenant scope. */
+export async function logTenantActivity(
+  tenantId: string,
+  input: Omit<LogInput, "actor">
+): Promise<string | null> {
+  try {
+    const supabase = createPublicAdminClient();
+    const { data, error } = await supabase
+      .from("admin_activity_log")
+      .insert({
+        tenant_id: tenantId,
+        actor_id: null,
+        actor_email: null,
+        action: input.action,
+        entity_type: input.entityType,
+        entity_id: input.entityId ?? null,
+        summary: input.summary.slice(0, 500),
+        metadata: input.metadata ?? {},
+        undoable: input.undoable ?? false,
+        reverts_log_id: input.revertsLogId ?? null,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      console.error("[activity-log]", error.message);
+      return null;
+    }
+    return data?.id ?? null;
+  } catch (e) {
+    console.error("[activity-log]", e);
+    return null;
+  }
 }
 
 const loadActivityLogEntryById = cache(async (

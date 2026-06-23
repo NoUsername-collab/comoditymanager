@@ -1296,7 +1296,25 @@
           "yes": "Da",
           "no": "Nu",
           "invoiceNextHint": "Următorul număr de factură se alocă automat la emitere.",
-          "readOnly": "Doar proprietarul poate edita setările fiscale. Poți vizualiza datele mai jos."
+          "readOnly": "Doar proprietarul poate edita setările fiscale. Poți vizualiza datele mai jos.",
+          "eFacturaTitle": "RO e-Factura (ANAF)",
+          "eFacturaDesc": "PDF-ul rămâne disponibil imediat; transmiterea ANAF rulează în fundal.",
+          "fiscalProvider": "Furnizor fiscal",
+          "fiscalProviderDesc": "PDF local sau transmitere ANAF SPV",
+          "provider": {
+            "internal_pdf": "PDF local (implicit)",
+            "anaf": "ANAF e-Factura"
+          },
+          "anafEnabled": "Activează e-Factura ANAF",
+          "anafEnabledDesc": "La emitere, factura fiscală se pune în coadă pentru ANAF",
+          "anafEnvironment": "Mediu ANAF",
+          "anafEnvDesc": "Test sau producție SPV",
+          "anafCif": "CIF ANAF (opțional)",
+          "anafCifDesc": "Lăsați gol pentru a folosi CUI-ul din setări",
+          "anafEnv": {
+            "test": "Test",
+            "prod": "Producție"
+          }
         },
         "bookingTitle": "Rezervări & prețuri",
         "bookingSubtitle": "Politici anulare, prețuri și fiscal pe țara pensiunii",
@@ -1680,6 +1698,11 @@
         "exportFormatContaplus": "ContaPlus",
         "exportIncludeUninvoiced": "Include rezervări confirmate nefacturate",
         "exportIncludeUninvoicedHint": "Rânduri NC — util până emiți toate facturile din perioadă.",
+        "exportSlice": "Tip export",
+        "exportSliceFiscal": "Facturi fiscale",
+        "exportSliceProforma": "Proforme",
+        "exportSlicePayments": "Plăți (ledger)",
+        "exportSliceUninvoiced": "Nefacturat",
         "exportDownload": "Descarcă CSV"
       },
       "location": {
@@ -2763,7 +2786,42 @@
       "issuing": "Se emite…",
       "issueSuccess": "Factură emisă",
       "issueError": "Nu s-a putut emite factura",
-      "poweredBy": "Emis cu {brand}"
+      "issueNextInvoice": "Emite următoarea factură",
+      "invoiceList": "Facturi emise",
+      "nextInvoicePreview": "Următoarea factură",
+      "uninvoicedPaidHint": "Încasat nefacturat: {amount}",
+      "remainingToInvoiceHint": "Rămas de facturat: {amount}",
+      "kindAdvance": "Avans",
+      "kindPartial": "Parțială",
+      "kindFinal": "Finală",
+      "kindCreditNote": "Notă credit",
+      "kindProforma": "Proformă",
+      "proformaList": "Proforme",
+      "nextProformaPreview": "Următoarea proformă",
+      "issueProforma": "Emite proformă",
+      "proformaIssueSuccess": "Proformă emisă",
+      "proformaIssueError": "Nu s-a putut emite proforma",
+      "proformaHint": "Proforma nu are valoare fiscală până la conversie în factură.",
+      "proformaConvertedHint": "Această proformă a fost deja convertită în factură fiscală.",
+      "converted": "convertită",
+      "proformaDocumentTitle": "PROFORMĂ",
+      "proformaWatermark": "PROFORMA",
+      "convertToAdvance": "Convertește la factură avans",
+      "converting": "Se convertește…",
+      "convertSuccess": "Proformă convertită în factură",
+      "convertError": "Nu s-a putut converti proforma",
+      "poweredBy": "Emis cu {brand}",
+      "anaf": {
+        "badgeLabel": "ANAF",
+        "badgeTitle": "Stare transmitere e-Factura",
+        "status": {
+          "pending": "În așteptare",
+          "submitted": "Transmis",
+          "accepted": "Acceptat",
+          "rejected": "Respins",
+          "failed": "Eșuat"
+        }
+      }
     },
     "informalInvoice": {
       "printPdf": "Printează / PDF",
@@ -2824,6 +2882,17 @@
       "invoiceSellerDetailsMissing": "Completează CUI și adresa imobilului în Setări → Check-in → Fișă turist.",
       "invoiceBookingNotConfirmed": "Factura poate fi emisă doar pentru rezervări confirmate.",
       "invoiceMigrationRequired": "Rulează migrarea 065 pentru facturare.",
+      "invoiceFullyInvoiced": "Rezervarea este deja facturată integral.",
+      "invoiceAmountExceedsRemaining": "Suma depășește restul de facturat.",
+      "invoiceInvalidAmount": "Sumă de facturare invalidă.",
+      "proformaMigrationRequired": "Rulează migrarea 088 pentru proforme.",
+      "proformaFullyInvoiced": "Nu mai rămâne nimic de facturat pentru proformă.",
+      "proformaAmountExceedsRemaining": "Suma proformei depășește restul de facturat.",
+      "proformaInvalidAmount": "Sumă proformă invalidă.",
+      "proformaNotFound": "Proforma nu a fost găsită.",
+      "proformaAlreadyConverted": "Proforma a fost deja convertită.",
+      "proformaPaymentInsufficient": "Încasările nu acoperă suma proformei.",
+      "proformaExceedsRemaining": "Suma proformei depășește restul fiscal de facturat.",
       "holdError": "Eroare la hold",
       "blockError": "Eroare la blocare",
       "releaseHoldError": "Eroare la eliberare hold",
@@ -3003,6 +3072,35 @@
       "childPlural": "copii",
       "editCheckout": "Editează checkout",
       "checkedInHint": "Oaspetele a făcut check-in — poți modifica doar data de checkout."
+    },
+    "financial": {
+      "title": "Plăți",
+      "totalDue": "Total de plată",
+      "totalPaid": "Încasat",
+      "balanceDue": "Rest de plată",
+      "totalInvoiced": "Facturat",
+      "uninvoicedPaid": "Încasat nefacturat",
+      "history": "Istoric încasări",
+      "noPayments": "Nicio încasare înregistrată încă.",
+      "recordPayment": "+ Încasare",
+      "amount": "Sumă (RON)",
+      "method": "Metodă",
+      "method_cash": "Numerar",
+      "method_card": "Card",
+      "method_transfer": "Transfer",
+      "method_online": "Online",
+      "method_other": "Altele",
+      "payerName": "Plătitor",
+      "payerNamePlaceholder": "Opțional",
+      "notes": "Notă",
+      "cancel": "Anulează",
+      "savePayment": "Înregistrează",
+      "saving": "Se salvează...",
+      "recordSuccess": "Încasare înregistrată",
+      "recordError": "Încasarea nu a putut fi salvată",
+      "invalidAmount": "Sumă invalidă",
+      "bookingNotConfirmed": "Rezervarea trebuie confirmată",
+      "migrationRequired": "Rulează migrarea 086 (booking_payments) pe baza de date"
     },
     "checkIn": {
       "title": "Check-in",
@@ -3559,6 +3657,11 @@
       },
       "invoice": {
         "issued": "Factură emisă"
+      },
+      "fiscal": {
+        "submitted": "ANAF: transmis",
+        "accepted": "ANAF: acceptat",
+        "rejected": "ANAF: respins"
       },
       "activity": {
         "undone": "Acțiune anulată (undo)"

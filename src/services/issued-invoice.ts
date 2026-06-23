@@ -4,8 +4,24 @@ import { CACHE_TAGS } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { stayNightCount } from "@/lib/stay-dates";
-import { buildIssuedInvoiceDocument, type IssuedInvoiceDocument } from "@/domain/invoice/issued-invoice";
+import {
+  buildAllocatedInvoiceDocument,
+  buildIssuedInvoiceDocument,
+  type IssuedInvoiceDocument,
+} from "@/domain/invoice/issued-invoice";
+import {
+  computeInvoiceFinancials,
+  nextInvoiceSequence,
+  paymentsToLinkForInvoice,
+  resolveDefaultInvoiceAmount,
+  resolveNextInvoiceKind,
+  sumIssuedInvoiceTotals,
+  validateInvoiceAmount,
+  type InvoiceKind,
+} from "@/domain/invoice/invoice-allocation";
+import { sumLedgerPayments } from "@/domain/payments/ledger";
 import { getBookingById } from "@/services/bookings";
+import { listBookingPayments } from "@/services/booking-payments";
 import { getCheckinSettings } from "@/services/checkin";
 import {
   getBookingRulesSettings,
@@ -14,18 +30,30 @@ import {
 import { getPensionSettings } from "@/services/pension-settings";
 import { getRoomsByIds } from "@/services/rooms-admin";
 import { getTenantDisplayName } from "@/services/tenants";
+import { enqueueFiscalSubmission } from "@/services/fiscal-submission";
 import { getLocale } from "next-intl/server";
-import {
-  resolveShowBrandingForRequest,
-  resolveTenantCountryForRequest,
-} from "@/lib/tenant/resolve-fiscal-tenant";
-import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
+import { resolveTenantCountryForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
 
 export type IssuedInvoiceRecord = {
   id: string;
   booking_id: string;
+  invoice_kind: InvoiceKind;
+  invoice_sequence: number;
+  status: "issued" | "void";
   document: IssuedInvoiceDocument;
 };
+
+function parseInvoiceKind(value: unknown): InvoiceKind {
+  if (
+    value === "advance" ||
+    value === "partial" ||
+    value === "final" ||
+    value === "credit_note"
+  ) {
+    return value;
+  }
+  return "final";
+}
 
 function mapInvoiceRow(row: Record<string, unknown>): IssuedInvoiceRecord {
   const lines = Array.isArray(row.lines) ? row.lines : [];
@@ -66,13 +94,21 @@ function mapInvoiceRow(row: Record<string, unknown>): IssuedInvoiceRecord {
   return {
     id: String(row.id),
     booking_id: String(row.booking_id),
+    invoice_kind: parseInvoiceKind(row.invoice_kind),
+    invoice_sequence:
+      row.invoice_sequence != null ? Number(row.invoice_sequence) : 1,
+    status: row.status === "void" ? "void" : "issued",
     document,
   };
 }
 
-export const loadActiveBookingInvoice = cache(async (
+function isBookingInvoicesTableMissing(message: string): boolean {
+  return message.includes("booking_invoices");
+}
+
+export const listBookingInvoices = cache(async (
   bookingId: string
-): Promise<IssuedInvoiceRecord | null> => {
+): Promise<IssuedInvoiceRecord[]> => {
   const tenantId = await resolveTenantIdForData();
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
@@ -81,24 +117,43 @@ export const loadActiveBookingInvoice = cache(async (
     .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId)
     .eq("status", "issued")
-    .maybeSingle();
+    .neq("invoice_kind", "proforma")
+    .order("invoice_sequence", { ascending: true });
 
   if (error) {
-    if (error.message.includes("booking_invoices")) return null;
+    if (isBookingInvoicesTableMissing(error.message)) return [];
     throw new Error(error.message);
   }
-  if (!data) return null;
-  return mapInvoiceRow(data as Record<string, unknown>);
+
+  return (data ?? []).map((row) =>
+    mapInvoiceRow(row as Record<string, unknown>)
+  );
 });
 
-export async function issueBookingInvoice(
+/** Ultima factură emisă (compatibilitate P1). */
+export const loadActiveBookingInvoice = cache(async (
   bookingId: string
-): Promise<{ ok: true; invoice: IssuedInvoiceRecord } | { ok: false; error: string }> {
-  const existing = await loadActiveBookingInvoice(bookingId);
-  if (existing) {
-    return { ok: true, invoice: existing };
-  }
+): Promise<IssuedInvoiceRecord | null> => {
+  const invoices = await listBookingInvoices(bookingId);
+  if (invoices.length === 0) return null;
+  return invoices[invoices.length - 1] ?? null;
+});
 
+export async function sumBookingInvoicedTotal(
+  bookingId: string
+): Promise<number> {
+  const invoices = await listBookingInvoices(bookingId);
+  return sumIssuedInvoiceTotals(invoices);
+}
+
+export type IssueBookingInvoiceOptions = {
+  amount?: number;
+};
+
+export async function issueBookingInvoice(
+  bookingId: string,
+  options?: IssueBookingInvoiceOptions
+): Promise<{ ok: true; invoice: IssuedInvoiceRecord } | { ok: false; error: string }> {
   const [
     booking,
     pension,
@@ -108,6 +163,8 @@ export async function issueBookingInvoice(
     locale,
     tenantId,
     tenantCountry,
+    existingInvoices,
+    payments,
   ] = await Promise.all([
     getBookingById(bookingId),
     getPensionSettings(),
@@ -117,6 +174,8 @@ export async function issueBookingInvoice(
     getLocale(),
     resolveTenantIdForData(),
     resolveTenantCountryForRequest(),
+    listBookingInvoices(bookingId),
+    listBookingPayments(bookingId),
   ]);
 
   if (!booking) return { ok: false, error: "booking.not_found" };
@@ -126,6 +185,33 @@ export async function issueBookingInvoice(
   if (booking.room_ids.length === 0) {
     return { ok: false, error: "invoice.no_rooms" };
   }
+
+  const totalDue = Math.max(0, Number(booking.total_price ?? 0));
+  const totalPaid = sumLedgerPayments(payments);
+  const totalInvoiced = sumIssuedInvoiceTotals(existingInvoices);
+  const financials = computeInvoiceFinancials(totalDue, totalPaid, totalInvoiced);
+
+  if (financials.remainingToInvoice <= 0) {
+    return { ok: false, error: "invoice.fully_invoiced" };
+  }
+
+  const defaultAmount = resolveDefaultInvoiceAmount(financials);
+  const requestedAmount = options?.amount ?? defaultAmount;
+  const amountCheck = validateInvoiceAmount(
+    requestedAmount,
+    financials.remainingToInvoice
+  );
+  if (!amountCheck.ok) return amountCheck;
+
+  const invoiceAmount = amountCheck.amount;
+  const issuedCount = existingInvoices.length;
+  const invoiceKind = resolveNextInvoiceKind({
+    totalDue,
+    totalInvoiced,
+    invoiceAmount,
+    issuedCount,
+  });
+  const invoiceSequence = nextInvoiceSequence(existingInvoices);
 
   const sellerAddress = checkinSettings.fisa_property_address?.trim();
   const sellerCui = checkinSettings.fisa_owner_cui?.trim();
@@ -165,7 +251,9 @@ export async function issueBookingInvoice(
     display: string;
   };
 
-  const document = buildIssuedInvoiceDocument({
+  const localeTag: "ro" | "en" | "bg" =
+    locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
+  const documentBase = {
     series: numberData.series,
     invoice_number: numberData.number,
     display_number: numberData.display,
@@ -178,15 +266,28 @@ export async function issueBookingInvoice(
     buyer_phone: booking.guest_phone,
     check_in: booking.check_in,
     check_out: booking.check_out,
-    total_price: booking.total_price,
-    rooms: roomsForInvoice,
-    pricing_rules: pricingRules,
-    locale: locale === "bg" ? "bg" : locale === "en" ? "en" : "ro",
+    locale: localeTag,
     country: tenantCountry,
     vat_enabled: bookingRules.invoiceVatEnabled,
     vat_rate: bookingRules.invoiceVatRate,
     prices_include_vat: bookingRules.invoicePricesIncludeVat,
-  });
+  };
+
+  const document =
+    issuedCount === 0 &&
+    invoiceAmount + 0.005 >= totalDue &&
+    options?.amount == null
+      ? buildIssuedInvoiceDocument({
+          ...documentBase,
+          total_price: booking.total_price,
+          rooms: roomsForInvoice,
+          pricing_rules: pricingRules,
+        })
+      : buildAllocatedInvoiceDocument({
+          ...documentBase,
+          target_amount: invoiceAmount,
+          invoice_kind: invoiceKind,
+        });
 
   const { data: inserted, error: insertError } = await supabase
     .from("booking_invoices")
@@ -196,6 +297,8 @@ export async function issueBookingInvoice(
       series: document.series,
       invoice_number: document.invoice_number,
       display_number: document.display_number,
+      invoice_kind: invoiceKind,
+      invoice_sequence: invoiceSequence,
       seller_name: document.seller_name,
       seller_cui: document.seller_cui,
       seller_reg_com: document.seller_reg_com,
@@ -221,13 +324,36 @@ export async function issueBookingInvoice(
     return { ok: false, error: insertError.message };
   }
 
+  const invoiceId = String(inserted.id);
+  const paymentIds = paymentsToLinkForInvoice(payments, invoiceAmount);
+  if (paymentIds.length > 0) {
+    const { error: linkError } = await supabase
+      .from("booking_payments")
+      .update({ invoice_id: invoiceId })
+      .eq("tenant_id", tenantId)
+      .eq("booking_id", bookingId)
+      .in("id", paymentIds);
+
+    if (linkError && !linkError.message.includes("booking_payments")) {
+      return { ok: false, error: linkError.message };
+    }
+  }
+
   revalidateTag(CACHE_TAGS.pensionSettings, "max");
+  revalidateTag(CACHE_TAGS.bookingPayments, "max");
+
+  void enqueueFiscalSubmission(invoiceId, tenantId).catch((error) => {
+    console.error("[issued-invoice] fiscal enqueue", error);
+  });
 
   return {
     ok: true,
     invoice: {
-      id: String(inserted.id),
+      id: invoiceId,
       booking_id: bookingId,
+      invoice_kind: invoiceKind,
+      invoice_sequence: invoiceSequence,
+      status: "issued",
       document: {
         ...document,
         legal_note: document.legal_note,
@@ -237,24 +363,61 @@ export async function issueBookingInvoice(
 }
 
 export async function previewBookingInvoice(
-  bookingId: string
+  bookingId: string,
+  options?: IssueBookingInvoiceOptions
 ): Promise<IssuedInvoiceDocument | null> {
-  const active = await loadActiveBookingInvoice(bookingId);
-  if (active) return active.document;
-
-  const [booking, pension, checkinSettings, bookingRules, pricingRules, locale, tenantId, tenantCountry] =
-    await Promise.all([
-      getBookingById(bookingId),
-      getPensionSettings(),
-      getCheckinSettings(),
-      getBookingRulesSettings(),
-      getStayPricingRules(),
-      getLocale(),
-      resolveTenantIdForData(),
-      resolveTenantCountryForRequest(),
-    ]);
+  const [
+    booking,
+    pension,
+    checkinSettings,
+    bookingRules,
+    pricingRules,
+    locale,
+    tenantId,
+    tenantCountry,
+    existingInvoices,
+    payments,
+  ] = await Promise.all([
+    getBookingById(bookingId),
+    getPensionSettings(),
+    getCheckinSettings(),
+    getBookingRulesSettings(),
+    getStayPricingRules(),
+    getLocale(),
+    resolveTenantIdForData(),
+    resolveTenantCountryForRequest(),
+    listBookingInvoices(bookingId),
+    listBookingPayments(bookingId),
+  ]);
 
   if (!booking || booking.room_ids.length === 0) return null;
+
+  const totalDue = Math.max(0, Number(booking.total_price ?? 0));
+  const totalPaid = sumLedgerPayments(payments);
+  const totalInvoiced = sumIssuedInvoiceTotals(existingInvoices);
+  const financials = computeInvoiceFinancials(totalDue, totalPaid, totalInvoiced);
+
+  if (financials.remainingToInvoice <= 0) {
+    const latest = existingInvoices[existingInvoices.length - 1];
+    return latest?.document ?? null;
+  }
+
+  const defaultAmount = resolveDefaultInvoiceAmount(financials);
+  const requestedAmount = options?.amount ?? defaultAmount;
+  const amountCheck = validateInvoiceAmount(
+    requestedAmount,
+    financials.remainingToInvoice
+  );
+  if (!amountCheck.ok) return null;
+
+  const invoiceAmount = amountCheck.amount;
+  const issuedCount = existingInvoices.length;
+  const invoiceKind = resolveNextInvoiceKind({
+    totalDue,
+    totalInvoiced,
+    invoiceAmount,
+    issuedCount,
+  });
 
   const rooms = await getRoomsByIds(booking.room_ids);
   const pensionName =
@@ -262,7 +425,9 @@ export async function previewBookingInvoice(
     checkinSettings.pension_display_name ||
     (await getTenantDisplayName(tenantId));
 
-  return buildIssuedInvoiceDocument({
+  const localeTag: "ro" | "en" | "bg" =
+    locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";
+  const documentBase = {
     series: bookingRules.invoiceSeries,
     invoice_number: bookingRules.invoiceNextNumber,
     display_number: `${bookingRules.invoiceSeries}-${String(bookingRules.invoiceNextNumber).padStart(4, "0")}`,
@@ -275,18 +440,34 @@ export async function previewBookingInvoice(
     buyer_phone: booking.guest_phone,
     check_in: booking.check_in,
     check_out: booking.check_out,
-    total_price: booking.total_price,
-    rooms: rooms.map((r) => ({
-      room_id: r.id,
-      room_name: r.name,
-      building_name: r.building_name,
-      price_per_night: Number(r.price_per_night),
-    })),
-    pricing_rules: pricingRules,
-    locale: locale === "bg" ? "bg" : locale === "en" ? "en" : "ro",
+    locale: localeTag,
     country: tenantCountry,
     vat_enabled: bookingRules.invoiceVatEnabled,
     vat_rate: bookingRules.invoiceVatRate,
     prices_include_vat: bookingRules.invoicePricesIncludeVat,
+  };
+
+  if (
+    issuedCount === 0 &&
+    invoiceAmount + 0.005 >= totalDue &&
+    options?.amount == null
+  ) {
+    return buildIssuedInvoiceDocument({
+      ...documentBase,
+      total_price: booking.total_price,
+      rooms: rooms.map((r) => ({
+        room_id: r.id,
+        room_name: r.name,
+        building_name: r.building_name,
+        price_per_night: Number(r.price_per_night),
+      })),
+      pricing_rules: pricingRules,
+    });
+  }
+
+  return buildAllocatedInvoiceDocument({
+    ...documentBase,
+    target_amount: invoiceAmount,
+    invoice_kind: invoiceKind,
   });
 }

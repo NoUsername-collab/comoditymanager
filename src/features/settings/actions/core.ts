@@ -25,6 +25,7 @@ import {
   STATISTICS_VISIBILITY_MIGRATION_ERROR,
   TEAM_PERMISSIONS_MIGRATION_ERROR,
 } from "@/services/pension-settings";
+import { updateTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 import { parseStatisticsVisibility } from "@/domain/settings/statistics-visibility";
 import {
   parseTeamPermissions,
@@ -523,6 +524,34 @@ export async function updateFiscalBillingSettingsAction(
     if (Object.keys(atomicUpdate).length > 0) {
       await updatePensionSettingsPartial(atomicUpdate);
     }
+
+    const fiscalUpdate: {
+      provider?: "internal_pdf" | "anaf";
+      anafEnabled?: boolean;
+      anafCif?: string | null;
+      anafEnv?: "test" | "prod";
+    } = {};
+
+    if (formData.has("fiscal_provider")) {
+      const raw = String(formData.get("fiscal_provider") ?? "internal_pdf");
+      fiscalUpdate.provider = raw === "anaf" ? "anaf" : "internal_pdf";
+    }
+    if (formData.has("anaf_enabled")) {
+      fiscalUpdate.anafEnabled = String(formData.get("anaf_enabled")) === "true";
+    }
+    if (formData.has("anaf_env")) {
+      const raw = String(formData.get("anaf_env") ?? "test");
+      fiscalUpdate.anafEnv = raw === "prod" ? "prod" : "test";
+    }
+    if (formData.has("anaf_cif")) {
+      const raw = String(formData.get("anaf_cif") ?? "").trim();
+      fiscalUpdate.anafCif = raw || null;
+    }
+
+    if (Object.keys(fiscalUpdate).length > 0) {
+      await updateTenantFiscalSettings(fiscalUpdate);
+    }
+
     await logAdminActivityFromSession({
       action: "settings.updated",
       entityType: "settings",
@@ -535,6 +564,9 @@ export async function updateFiscalBillingSettingsAction(
     revalidateTag(checkinSettingsCacheTag(tenantId), "max");
     return { ok: true };
   } catch (e) {
+    if (e instanceof Error && e.message === "fiscal.settings_migration_required") {
+      return { ok: false, error: t("bookingRulesMigrationRequired") };
+    }
     if (
       e instanceof Error &&
       (e.message === "settings.booking_rules_migration_required" ||

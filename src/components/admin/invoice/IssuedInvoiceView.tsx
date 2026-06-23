@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { IssuedInvoiceDocument } from "@/domain/invoice/issued-invoice";
+import type { FiscalSubmissionStatus } from "@/domain/fiscal/fiscal-provider";
+import { FiscalAnafBadge } from "@/components/admin/invoice/FiscalAnafBadge";
 import { formatInvoiceMoney } from "@/domain/invoice/issued-invoice";
 import { getCountryFiscalProfile } from "@/domain/fiscal/country-fiscal-profile";
 import { formatStayPeriod } from "@/lib/ro-calendar";
@@ -15,16 +17,32 @@ type Props = {
   document: IssuedInvoiceDocument;
   showPlatformBranding: boolean;
   issued?: boolean;
+  variant?: "fiscal" | "proforma";
   onIssue?: () => Promise<void>;
   issuing?: boolean;
+  issueLabel?: string;
+  onConvert?: () => Promise<void>;
+  converting?: boolean;
+  convertLabel?: string;
+  canConvert?: boolean;
+  anafStatus?: FiscalSubmissionStatus | null;
+  showAnafBadge?: boolean;
 };
 
 export function IssuedInvoiceView({
   document,
   showPlatformBranding,
   issued = true,
+  variant = "fiscal",
   onIssue,
   issuing = false,
+  issueLabel,
+  onConvert,
+  converting = false,
+  convertLabel,
+  canConvert = false,
+  anafStatus = null,
+  showAnafBadge = false,
 }: Props) {
   const t = useTranslations("admin.issuedInvoice");
   const locale = useLocale();
@@ -41,8 +59,12 @@ export function IssuedInvoiceView({
   const formatMoney = (amount: number) =>
     formatInvoiceMoney(amount, document.currency, dateTag);
   const [localIssuing, setLocalIssuing] = useState(false);
+  const [localConverting, setLocalConverting] = useState(false);
   const sheetRef = useRef<HTMLElement>(null);
   const season = resolveInvoiceSeason(document.check_in);
+  const isProforma = variant === "proforma";
+  const documentTitle = isProforma ? t("proformaDocumentTitle") : t("documentTitle");
+  const watermarkLabel = t("proformaWatermark");
 
   const issuedLabel = new Date(document.issued_at).toLocaleDateString(dateTag, {
     day: "numeric",
@@ -69,10 +91,23 @@ export function IssuedInvoiceView({
     }
   }
 
+  async function handleConvert() {
+    if (!onConvert || localConverting || converting) return;
+    setLocalConverting(true);
+    try {
+      await onConvert();
+    } finally {
+      setLocalConverting(false);
+    }
+  }
+
   return (
     <div className="issued-invoice-root">
       <style dangerouslySetInnerHTML={{ __html: INVOICE_SEASON_CSS }} />
       <div className="issued-invoice-actions no-print">
+        {showAnafBadge && anafStatus ? (
+          <FiscalAnafBadge status={anafStatus} />
+        ) : null}
         {!issued && onIssue ? (
           <button
             type="button"
@@ -80,7 +115,19 @@ export function IssuedInvoiceView({
             disabled={localIssuing || issuing}
             onClick={() => void handleIssue()}
           >
-            {localIssuing || issuing ? t("issuing") : t("issueInvoice")}
+            {localIssuing || issuing ? t("issuing") : issueLabel ?? t("issueInvoice")}
+          </button>
+        ) : null}
+        {isProforma && issued && canConvert && onConvert ? (
+          <button
+            type="button"
+            className="checkin-stepper__btn checkin-stepper__btn--primary"
+            disabled={localConverting || converting}
+            onClick={() => void handleConvert()}
+          >
+            {localConverting || converting
+              ? t("converting")
+              : convertLabel ?? t("convertToAdvance")}
           </button>
         ) : null}
         <button
@@ -95,13 +142,18 @@ export function IssuedInvoiceView({
 
       <article
         ref={sheetRef}
-        className="issued-invoice-sheet"
+        className={`issued-invoice-sheet${isProforma ? " issued-invoice-sheet--proforma" : ""}`}
         data-invoice-season={season}
         aria-label={t("title")}
       >
+        {isProforma ? (
+          <div className="issued-invoice-sheet__watermark" aria-hidden="true">
+            {watermarkLabel}
+          </div>
+        ) : null}
         <header className="issued-invoice-sheet__header">
           <div>
-            <p className="issued-invoice-sheet__eyebrow">{t("documentTitle")}</p>
+            <p className="issued-invoice-sheet__eyebrow">{documentTitle}</p>
             <h1 className="issued-invoice-sheet__seller">{document.seller_name}</h1>
             {document.seller_address ? (
               <p className="issued-invoice-sheet__meta">{document.seller_address}</p>

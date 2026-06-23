@@ -1,9 +1,16 @@
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
+import type { AccountingExportSlice } from "@/domain/accounting/saga-export";
 
 type MonthOption = {
   value: string;
   label: string;
+};
+
+type SliceOption = {
+  value: AccountingExportSlice;
+  label: string;
+  hint?: string;
 };
 
 type Labels = {
@@ -15,8 +22,7 @@ type Labels = {
   format: string;
   formatSaga: string;
   formatContaplus: string;
-  includeUninvoiced: string;
-  includeUninvoicedHint: string;
+  slice: string;
   download: string;
 };
 
@@ -25,12 +31,14 @@ export function StatisticsExportPanel({
   focusYear,
   years,
   months,
+  slices,
   labels,
 }: {
   exportPath: string;
   focusYear: number;
   years: number[];
   months: MonthOption[];
+  slices: SliceOption[];
   labels: Labels;
 }) {
   return (
@@ -74,6 +82,17 @@ export function StatisticsExportPanel({
           </AdminSelect>
         </label>
 
+        <label className="flex min-w-[12rem] flex-col gap-1 text-xs font-medium text-zinc-600">
+          {labels.slice}
+          <AdminSelect name="slice" defaultValue="fiscal">
+            {slices.map((slice) => (
+              <option key={slice.value} value={slice.value}>
+                {slice.label}
+              </option>
+            ))}
+          </AdminSelect>
+        </label>
+
         <fieldset className="flex min-w-[12rem] flex-col gap-2">
           <legend className="text-xs font-medium text-zinc-600">{labels.format}</legend>
           <label className="flex items-center gap-2 text-sm text-zinc-800">
@@ -85,21 +104,6 @@ export function StatisticsExportPanel({
             {labels.formatContaplus}
           </label>
         </fieldset>
-
-        <label className="flex max-w-sm items-start gap-2 text-sm text-zinc-800">
-          <input
-            type="checkbox"
-            name="includeUninvoiced"
-            value="1"
-            className="mt-1"
-          />
-          <span>
-            {labels.includeUninvoiced}
-            <span className="mt-0.5 block text-xs text-zinc-500">
-              {labels.includeUninvoicedHint}
-            </span>
-          </span>
-        </label>
 
         <AdminButton type="submit" variant="primary">
           {labels.download}

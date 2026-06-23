@@ -282,10 +282,18 @@ export default async function AdminStatisticsPage({
                   format: tPages("exportFormat"),
                   formatSaga: tPages("exportFormatSaga"),
                   formatContaplus: tPages("exportFormatContaplus"),
-                  includeUninvoiced: tPages("exportIncludeUninvoiced"),
-                  includeUninvoicedHint: tPages("exportIncludeUninvoicedHint"),
+                  slice: tPages("exportSlice"),
                   download: tPages("exportDownload"),
                 }}
+                slices={[
+                  { value: "fiscal", label: tPages("exportSliceFiscal") },
+                  { value: "proforma", label: tPages("exportSliceProforma") },
+                  { value: "payments", label: tPages("exportSlicePayments") },
+                  {
+                    value: "uninvoiced",
+                    label: tPages("exportSliceUninvoiced"),
+                  },
+                ]}
               />
 
               <StatisticsPerBuildingSection

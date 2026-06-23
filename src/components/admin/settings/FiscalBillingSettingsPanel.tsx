@@ -16,6 +16,7 @@ import {
   type TenantCountry,
 } from "@/domain/fiscal/country-fiscal-profile";
 import type { BookingRulesSettings } from "@/domain/settings/booking-rules";
+import type { TenantFiscalSettingsRecord } from "@/lib/fiscal/anaf-config";
 import {
   settingsPartialChanged,
   useSettingsSaveFeedback,
@@ -26,6 +27,7 @@ type Props = {
   propertyName: string;
   bookingRules: BookingRulesSettings;
   checkinSettings: CheckinSettings;
+  tenantFiscalSettings: TenantFiscalSettingsRecord;
   locale: "ro" | "en" | "bg";
   readOnly?: boolean;
 };
@@ -39,6 +41,10 @@ type FiscalDraft = {
   vatEnabled: boolean;
   vatRate: string;
   pricesIncludeVat: boolean;
+  fiscalProvider: "internal_pdf" | "anaf";
+  anafEnabled: boolean;
+  anafEnv: "test" | "prod";
+  anafCif: string;
 };
 
 function SettingRow({
@@ -66,7 +72,8 @@ function SettingRow({
 function buildDraft(
   bookingRules: BookingRulesSettings,
   checkinSettings: CheckinSettings,
-  country: TenantCountry
+  country: TenantCountry,
+  tenantFiscalSettings: TenantFiscalSettingsRecord
 ): FiscalDraft {
   const profile = getCountryFiscalProfile(country);
   const effectiveRate = resolveInvoiceVatRate(
@@ -84,6 +91,10 @@ function buildDraft(
       bookingRules.invoiceVatRate ?? profile.defaultAccommodationVatRate
     ),
     pricesIncludeVat: bookingRules.invoicePricesIncludeVat,
+    fiscalProvider: tenantFiscalSettings.provider,
+    anafEnabled: tenantFiscalSettings.anafEnabled,
+    anafEnv: tenantFiscalSettings.anafEnv,
+    anafCif: tenantFiscalSettings.anafCif ?? "",
   };
 }
 
@@ -92,6 +103,7 @@ export function FiscalBillingSettingsPanel({
   propertyName,
   bookingRules: initialBooking,
   checkinSettings: initialCheckin,
+  tenantFiscalSettings: initialTenantFiscal,
   locale,
   readOnly = false,
 }: Props) {
@@ -103,8 +115,10 @@ export function FiscalBillingSettingsPanel({
   const [editing, setEditing] = useState(false);
   const [bookingRules, setBookingRules] = useState(initialBooking);
   const [checkinSettings, setCheckinSettings] = useState(initialCheckin);
+  const [tenantFiscalSettings, setTenantFiscalSettings] =
+    useState(initialTenantFiscal);
   const [draft, setDraft] = useState(() =>
-    buildDraft(initialBooking, initialCheckin, country)
+    buildDraft(initialBooking, initialCheckin, country, initialTenantFiscal)
   );
 
   const profile = useMemo(() => getCountryFiscalProfile(country), [country]);
@@ -123,14 +137,14 @@ export function FiscalBillingSettingsPanel({
   );
 
   function startEdit() {
-    setDraft(buildDraft(bookingRules, checkinSettings, country));
+    setDraft(buildDraft(bookingRules, checkinSettings, country, tenantFiscalSettings));
     setEditing(true);
   }
 
   function cancelEdit() {
     setSaveError(null);
     setIsSaving(false);
-    setDraft(buildDraft(bookingRules, checkinSettings, country));
+    setDraft(buildDraft(bookingRules, checkinSettings, country, tenantFiscalSettings));
     setEditing(false);
   }
 
@@ -174,9 +188,31 @@ export function FiscalBillingSettingsPanel({
       nextCheckin.fisa_property_address = address || null;
     }
 
+    const nextFiscal: Partial<TenantFiscalSettingsRecord> = {};
+    if (country === "RO") {
+      if (draft.fiscalProvider !== tenantFiscalSettings.provider) {
+        nextFiscal.provider = draft.fiscalProvider;
+      }
+      if (draft.anafEnabled !== tenantFiscalSettings.anafEnabled) {
+        nextFiscal.anafEnabled = draft.anafEnabled;
+      }
+      if (draft.anafEnv !== tenantFiscalSettings.anafEnv) {
+        nextFiscal.anafEnv = draft.anafEnv;
+      }
+      if (draft.anafCif.trim() !== (tenantFiscalSettings.anafCif ?? "")) {
+        nextFiscal.anafCif = draft.anafCif.trim() || null;
+      }
+    }
+
     const bookingChanged = settingsPartialChanged(bookingRules, nextBooking);
     const checkinChanged = settingsPartialChanged(checkinSettings, nextCheckin);
-    if (!bookingChanged && !checkinChanged) {
+    const fiscalChanged =
+      country === "RO" &&
+      (nextFiscal.provider !== undefined ||
+        nextFiscal.anafEnabled !== undefined ||
+        nextFiscal.anafEnv !== undefined ||
+        nextFiscal.anafCif !== undefined);
+    if (!bookingChanged && !checkinChanged && !fiscalChanged) {
       setEditing(false);
       return;
     }
@@ -215,6 +251,12 @@ export function FiscalBillingSettingsPanel({
         if (nextCheckin.fisa_property_address !== undefined) {
           fd.set("fisa_property_address", nextCheckin.fisa_property_address ?? "");
         }
+        if (fiscalChanged) {
+          fd.set("fiscal_provider", draft.fiscalProvider);
+          fd.set("anaf_enabled", draft.anafEnabled ? "true" : "false");
+          fd.set("anaf_env", draft.anafEnv);
+          fd.set("anaf_cif", draft.anafCif);
+        }
 
         const result = await updateFiscalBillingSettingsAction(fd);
         if (!result.ok) {
@@ -225,9 +267,13 @@ export function FiscalBillingSettingsPanel({
 
         const updatedBooking = { ...bookingRules, ...nextBooking };
         const updatedCheckin = { ...checkinSettings, ...nextCheckin };
+        const updatedFiscal = { ...tenantFiscalSettings, ...nextFiscal };
         setBookingRules(updatedBooking);
         setCheckinSettings(updatedCheckin);
-        setDraft(buildDraft(updatedBooking, updatedCheckin, country));
+        setTenantFiscalSettings(updatedFiscal);
+        setDraft(
+          buildDraft(updatedBooking, updatedCheckin, country, updatedFiscal)
+        );
         setEditing(false);
         notifySuccess(t("saved"));
       } catch (e) {
@@ -356,6 +402,30 @@ export function FiscalBillingSettingsPanel({
               {bookingRules.invoicePricesIncludeVat ? t("yes") : t("no")}
             </dd>
           </div>
+          {country === "RO" ? (
+            <>
+              <div className="fiscal-settings__summary-row fiscal-settings__summary-row--wide">
+                <dt>{t("eFacturaTitle")}</dt>
+                <dd>{t(`provider.${tenantFiscalSettings.provider}`)}</dd>
+              </div>
+              {tenantFiscalSettings.provider === "anaf" ? (
+                <>
+                  <div className="fiscal-settings__summary-row">
+                    <dt>{t("anafEnabled")}</dt>
+                    <dd>{tenantFiscalSettings.anafEnabled ? t("yes") : t("no")}</dd>
+                  </div>
+                  <div className="fiscal-settings__summary-row">
+                    <dt>{t("anafEnvironment")}</dt>
+                    <dd>{t(`anafEnv.${tenantFiscalSettings.anafEnv}`)}</dd>
+                  </div>
+                  <div className="fiscal-settings__summary-row">
+                    <dt>{t("anafCif")}</dt>
+                    <dd>{tenantFiscalSettings.anafCif || checkinSettings.fisa_owner_cui || "—"}</dd>
+                  </div>
+                </>
+              ) : null}
+            </>
+          ) : null}
         </dl>
       ) : (
         <>
@@ -524,6 +594,68 @@ export function FiscalBillingSettingsPanel({
           ) : null}
         </>
       )}
+
+      {country === "RO" && editing ? (
+        <section className="fiscal-settings__efactura">
+          <h4 className="fiscal-settings__efactura-title">{t("eFacturaTitle")}</h4>
+          <p className="checkin-settings__note">{t("eFacturaDesc")}</p>
+          <SettingRow label={t("fiscalProvider")} description={t("fiscalProviderDesc")}>
+            <select
+              className="checkin-field__input"
+              value={draft.fiscalProvider}
+              onChange={(e) =>
+                setDraft({
+                  ...draft,
+                  fiscalProvider:
+                    e.target.value === "anaf" ? "anaf" : "internal_pdf",
+                })
+              }
+            >
+              <option value="internal_pdf">{t("provider.internal_pdf")}</option>
+              <option value="anaf">{t("provider.anaf")}</option>
+            </select>
+          </SettingRow>
+          {draft.fiscalProvider === "anaf" ? (
+            <>
+              <SettingRow label={t("anafEnabled")} description={t("anafEnabledDesc")}>
+                <label className="checkin-toggle">
+                  <input
+                    type="checkbox"
+                    checked={draft.anafEnabled}
+                    onChange={(e) =>
+                      setDraft({ ...draft, anafEnabled: e.target.checked })
+                    }
+                  />
+                  <span className="checkin-toggle__slider" />
+                </label>
+              </SettingRow>
+              <SettingRow label={t("anafEnvironment")} description={t("anafEnvDesc")}>
+                <select
+                  className="checkin-field__input checkin-field__input--narrow"
+                  value={draft.anafEnv}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      anafEnv: e.target.value === "prod" ? "prod" : "test",
+                    })
+                  }
+                >
+                  <option value="test">{t("anafEnv.test")}</option>
+                  <option value="prod">{t("anafEnv.prod")}</option>
+                </select>
+              </SettingRow>
+              <SettingRow label={t("anafCif")} description={t("anafCifDesc")}>
+                <input
+                  className="checkin-field__input"
+                  value={draft.anafCif}
+                  placeholder={checkinSettings.fisa_owner_cui ?? ""}
+                  onChange={(e) => setDraft({ ...draft, anafCif: e.target.value })}
+                />
+              </SettingRow>
+            </>
+          ) : null}
+        </section>
+      ) : null}
 
       <p className="checkin-settings__note">{t("invoiceNextHint")}</p>
     </div>

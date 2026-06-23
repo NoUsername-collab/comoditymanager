@@ -6,6 +6,8 @@ export function activityTone(action: ActivityAction): ActivityTone {
   if (action.startsWith("booking.")) return "booking";
   if (action.startsWith("checkin.")) return "booking";
   if (action.startsWith("invoice.")) return "booking";
+  if (action.startsWith("fiscal.")) return "booking";
+  if (action.startsWith("proforma.")) return "booking";
   if (action.startsWith("guest.")) return "booking";
   if (action.startsWith("auth.")) return "auth";
   if (action === "settings.updated") return "settings";
@@ -27,6 +29,13 @@ export function activityIcon(action: ActivityAction): string {
     "booking.checkout.undo": "↩",
     "booking.dates_edited": "✎",
     "invoice.issued": "🧾",
+    "fiscal.submitted": "📤",
+    "fiscal.accepted": "✅",
+    "fiscal.rejected": "⛔",
+    "proforma.issued": "📄",
+    "proforma.converted": "🧾",
+    "payment.recorded": "💰",
+    "payment.refunded": "↩",
     "checkin.created": "🔑",
     "checkin.updated": "🔑",
     "occupancy.hold_created": "⏸",

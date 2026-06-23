@@ -9,7 +9,10 @@ export function activityJournalCategory(
   if (
     action.startsWith("booking.") ||
     action.startsWith("checkin.") ||
-    action.startsWith("invoice.")
+    action.startsWith("invoice.") ||
+    action.startsWith("fiscal.") ||
+    action.startsWith("proforma.") ||
+    action.startsWith("payment.")
   ) {
     return "rezervari";
   }

@@ -34,6 +34,8 @@ export type BookingRulesSettings = {
   pricingSeasons: PricingSeason[];
   invoiceSeries: string;
   invoiceNextNumber: number;
+  proformaSeries: string;
+  proformaNextNumber: number;
   invoiceSellerRegCom: string | null;
   invoiceVatEnabled: boolean;
   invoiceVatRate: number | null;
@@ -50,6 +52,8 @@ export const DEFAULT_BOOKING_RULES: BookingRulesSettings = {
   pricingSeasons: [],
   invoiceSeries: "HSP",
   invoiceNextNumber: 1,
+  proformaSeries: "PF",
+  proformaNextNumber: 1,
   invoiceSellerRegCom: null,
   invoiceVatEnabled: true,
   invoiceVatRate: null,
@@ -158,6 +162,15 @@ export function parseBookingRulesRow(
     invoiceNextNumber: Math.max(
       1,
       Number(row.invoice_next_number) || DEFAULT_BOOKING_RULES.invoiceNextNumber
+    ),
+    proformaSeries:
+      String(row.proforma_series ?? DEFAULT_BOOKING_RULES.proformaSeries)
+        .trim()
+        .slice(0, 12) || DEFAULT_BOOKING_RULES.proformaSeries,
+    proformaNextNumber: Math.max(
+      1,
+      Number(row.proforma_next_number) ||
+        DEFAULT_BOOKING_RULES.proformaNextNumber
     ),
     invoiceSellerRegCom:
       row.invoice_seller_reg_com != null

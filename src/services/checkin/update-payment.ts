@@ -13,6 +13,7 @@ import {
 } from "@/domain/checkin/types";
 import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
 import { getCheckinGuests } from "@/services/checkin/queries";
+import { applyBookingPaymentTarget } from "@/services/booking-payments";
 
 /** Actualizează doar plata pe un check-in existent. */
 export async function updateCheckinPayment(
@@ -59,15 +60,28 @@ export async function updateCheckinPayment(
     input.payment_amount_paid,
   );
 
+  const ledgerResult = await applyBookingPaymentTarget(booking.id, amountPaid, {
+    method: "cash",
+  });
+
+  const checkinPatch: Record<string, unknown> = {
+    deposit_amount: input.deposit_amount ?? 0,
+    flags: validation.flags,
+    status: validation.status === "warning" ? "incomplete" : "complete",
+  };
+
+  if (!ledgerResult.ok) {
+    if (ledgerResult.error === "payment.migration_required") {
+      checkinPatch.payment_status = storedStatus;
+      checkinPatch.payment_amount_paid = amountPaid;
+    } else {
+      throw new Error(ledgerResult.error);
+    }
+  }
+
   const { error } = await supabase
     .from("checkins")
-    .update({
-      payment_status: storedStatus,
-      payment_amount_paid: amountPaid,
-      deposit_amount: input.deposit_amount ?? 0,
-      flags: validation.flags,
-      status: validation.status === "warning" ? "incomplete" : "complete",
-    })
+    .update(checkinPatch)
     .eq("tenant_id", tenantId)
     .eq("id", checkinId)
     .eq("booking_id", booking.id);

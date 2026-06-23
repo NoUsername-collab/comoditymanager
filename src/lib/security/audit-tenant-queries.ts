@@ -40,6 +40,7 @@ const TENANT_GUARD_PATTERNS = [
   /resolveTenantIdFromHost\s*\(/,
   /getGuestAppPublicDb\s*\(/,
   /tenant_id\s*:/,
+  /cross-tenant cron/,
 ];
 
 function listServiceFiles(root: string): string[] {
