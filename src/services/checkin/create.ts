@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { validateCheckin } from "@/domain/checkin/validate";
@@ -19,7 +20,10 @@ import { encodeCheckinTransferRequired } from "@/domain/checkin/identity-result"
 import { assertCheckinIdentityIntegrity } from "@/services/checkin/assert-checkin-identity";
 import { reassignBookingHolder } from "@/services/bookings/reassign-holder";
 import { getBookingById } from "@/services/bookings";
-import { syncCheckinGuestsToClientProfiles } from "@/services/checkin/sync-guest-from-checkin";
+import {
+  enrichCheckinGuestProfiles,
+  resolveCheckinGuestIds,
+} from "@/services/checkin/sync-guest-from-checkin";
 import {
   normalizePaymentStatusForDb,
   optionalDateForDb,
@@ -120,14 +124,14 @@ export async function createCheckin(
     receptionRooms,
   );
   const identityGuests = expandedGuests.filter((g) => !g.keys_only);
-  const syncedIdentity = await syncCheckinGuestsToClientProfiles(
+  const resolvedIdentity = await resolveCheckinGuestIds(
     identityGuests,
     activeBooking,
   );
   let syncIdx = 0;
   const mergedGuests = expandedGuests.map((g) => {
     if (g.keys_only) return g;
-    return syncedIdentity[syncIdx++] ?? g;
+    return resolvedIdentity[syncIdx++] ?? g;
   });
   const guestsForDb = guestsToPersist(mergedGuests);
   if (guestsForDb.length > 0) {
@@ -177,22 +181,25 @@ export async function createCheckin(
       ? ` [${validation.flags.join(", ")}]`
       : "";
 
-  await logAdminActivityFromSession({
-    action: "checkin.created",
-    entityType: "checkin",
-    entityId: checkinId,
-    summary: `Check-in: ${booking.guest_name}${flagSummary}`,
-    undoable: true,
-    metadata: {
-      booking_id: data.booking_id,
-      type: data.type,
-      status: checkinStatus,
-      flags: validation.flags,
-      payment_status: normalizePaymentStatusForDb(data.payment_status),
-      payment_channel:
-        data.payment_status === "online" ? "online_mock" : "manual",
-      guest_count: guestsForDb.length,
-    },
+  after(async () => {
+    await enrichCheckinGuestProfiles(resolvedIdentity, activeBooking);
+    await logAdminActivityFromSession({
+      action: "checkin.created",
+      entityType: "checkin",
+      entityId: checkinId,
+      summary: `Check-in: ${booking.guest_name}${flagSummary}`,
+      undoable: true,
+      metadata: {
+        booking_id: data.booking_id,
+        type: data.type,
+        status: checkinStatus,
+        flags: validation.flags,
+        payment_status: normalizePaymentStatusForDb(data.payment_status),
+        payment_channel:
+          data.payment_status === "online" ? "online_mock" : "manual",
+        guest_count: guestsForDb.length,
+      },
+    });
   });
 
   return checkinId;

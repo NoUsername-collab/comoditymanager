@@ -29,6 +29,10 @@ import {
   type BlockReasonPresetId,
 } from "@/domain/gantt/block-reasons";
 import { showGanttCreateUndoToast } from "@/components/admin/gantt/gantt-create-undo";
+import {
+  deferGanttBackgroundRefresh,
+  publishGanttLiveBooking,
+} from "@/lib/gantt/live-bookings";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
@@ -682,12 +686,14 @@ export function GanttQuickActionPanel({
     void runAdminAction(async () => {
       const payload = {
         roomId: activeRoomId,
+        roomName: activeRoom?.name ?? draft?.roomName,
         checkIn: activeCheckIn,
         checkOut: activeCheckOut,
         guestLastName,
         guestFirstName,
         guestEmail,
         guestPhone,
+        skipAvailabilityCheck: true,
       };
       const res =
         kind === "cerere"
@@ -696,6 +702,9 @@ export function GanttQuickActionPanel({
       if (!res.ok) {
         setError(res.error);
         return;
+      }
+      if (res.booking) {
+        publishGanttLiveBooking(res.booking);
       }
       showToast({
         kind: "success",
@@ -706,7 +715,7 @@ export function GanttQuickActionPanel({
             : tGantt("quick.bookingAppears"),
       });
       onClose();
-      router.refresh();
+      deferGanttBackgroundRefresh(router);
     });
   }
 

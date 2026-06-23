@@ -53,7 +53,10 @@
   overflow: hidden;
 }
 
+/* Building headers have no absolute stay bars — safe for content-visibility skip */
 .gantt-tbody--virtual .gantt-building-header-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32px;
   height: 1.35rem;
   max-height: 1.35rem;
 }

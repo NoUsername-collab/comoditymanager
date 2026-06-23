@@ -1,11 +1,12 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
-  revalidateBookingDetailSurfaces,
+  revalidateBookingOperativeSurfaces,
 } from "@/lib/cache/revalidate-admin";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
@@ -14,6 +15,11 @@ import { createCheckin } from "@/services/checkin/create";
 import { updateCheckin } from "@/services/checkin/update";
 import { getCheckinSettings, updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
+import {
+  patchBookingRowForCheckin,
+} from "@/services/bookings/synthetic-gantt-row";
+import type { BookingRow } from "@/services/bookings/types";
+import { createServerTimer } from "@/lib/dev/server-timing";
 import { listBookingPayments } from "@/services/booking-payments";
 import { computePaymentTotals } from "@/domain/payments/ledger";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
@@ -75,6 +81,7 @@ export type CreateCheckinResult = {
   ok: boolean;
   error?: string;
   checkinId?: string;
+  ganttBooking?: BookingRow;
   needsTransfer?: boolean;
   transferOffer?: CheckinTransferOffer;
 };
@@ -305,7 +312,7 @@ export async function updateCheckinPaymentAction(
     const tenantId = await resolveTenantIdForData();
     revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
     revalidateTag(CACHE_TAGS.checkins, "max");
-    revalidateBookingDetailSurfaces(bookingId, tenantId);
+    revalidateBookingOperativeSurfaces(bookingId, tenantId);
 
     return { ok: true };
   } catch (err) {
@@ -345,7 +352,9 @@ function mapCreateCheckinError(
 export async function createCheckinAction(
   formData: FormData,
 ): Promise<CreateCheckinResult> {
+  const timer = createServerTimer("createCheckin");
   await requireAnyStaff();
+  timer.mark("auth");
 
   try {
     const bookingId = String(formData.get("booking_id") ?? "");
@@ -401,14 +410,15 @@ export async function createCheckinAction(
       String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
       undefined;
 
-    // Load booking data
-    const booking = await getBookingById(bookingId);
+    // Load booking + settings in parallel
+    const [booking, settings] = await Promise.all([
+      getBookingById(bookingId),
+      getCheckinSettings(),
+    ]);
+    timer.mark("loadContext");
     if (!booking) return { ok: false, error: "Booking not found" };
 
     const bookingForCheckin = mapBookingToForCheckin(booking);
-
-    // Load settings
-    const settings = await getCheckinSettings();
 
     // Build form data
     const checkinData: CheckinFormData = {
@@ -427,14 +437,23 @@ export async function createCheckinAction(
     };
 
     const checkinId = await createCheckin(checkinData, settings, bookingForCheckin);
+    timer.mark("createCheckin");
 
-    // Revalidate
-    const tenantId = await resolveTenantIdForData();
-    revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
-    revalidateTag(CACHE_TAGS.checkins, "max");
-    revalidateBookingDetailSurfaces(bookingId, tenantId);
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
+      revalidateTag(CACHE_TAGS.checkins, "max");
+      revalidateBookingOperativeSurfaces(bookingId, tenantId);
+    });
 
-    return { ok: true, checkinId };
+    const ganttBooking = patchBookingRowForCheckin(booking, {
+      checkedInAt: new Date().toISOString(),
+      checkedInRooms: reception_rooms,
+      keysHandedRooms: keys_handed_rooms,
+      paymentStatus: paymentStatus as StoredPaymentStatus,
+    });
+    timer.finish({ bookingId, checkinId });
+    return { ok: true, checkinId, ganttBooking };
   } catch (err) {
     const t = await getTranslations("admin.checkIn");
     return mapCreateCheckinError(err, t);
@@ -539,12 +558,20 @@ export async function updateCheckinAction(
 
     await updateCheckin(checkinId, checkinData, settings, bookingForCheckin);
 
-    const tenantId = await resolveTenantIdForData();
-    revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
-    revalidateTag(CACHE_TAGS.checkins, "max");
-    revalidateBookingDetailSurfaces(bookingId, tenantId);
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
+      revalidateTag(CACHE_TAGS.checkins, "max");
+      revalidateBookingOperativeSurfaces(bookingId, tenantId);
+    });
 
-    return { ok: true, checkinId };
+    const ganttBooking = patchBookingRowForCheckin(booking, {
+      checkedInAt: booking.actual_check_in_at ?? new Date().toISOString(),
+      checkedInRooms: reception_rooms,
+      keysHandedRooms: keys_handed_rooms,
+      paymentStatus: paymentStatus as StoredPaymentStatus,
+    });
+    return { ok: true, checkinId, ganttBooking };
   } catch (err) {
     const t = await getTranslations("admin.checkIn");
     return mapCreateCheckinError(err, t);

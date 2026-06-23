@@ -1,7 +1,7 @@
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
-import { StayQuickOps } from "@/components/admin/cazari/StayQuickOps";
+import { StayQuickOpsLazy } from "@/components/admin/cazari/StayQuickOpsLazy";
 import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import type { CazariLabels, OperationalStay } from "@/components/admin/cazari/types";
 
@@ -23,7 +23,7 @@ export function StayActions({
 
   return (
     <div className="stay-card__actions">
-      <StayQuickOps
+      <StayQuickOpsLazy
         bookingId={stay.id}
         bookingStatus={stay.status}
         guestName={stay.guest_name}

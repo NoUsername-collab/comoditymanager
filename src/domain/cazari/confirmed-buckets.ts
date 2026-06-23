@@ -18,6 +18,21 @@ export type ConfirmedBucketGroup<T extends ConfirmedStayLike> = {
   stays: T[];
 };
 
+/** Stay cards below this count render fully; above uses window virtualization. */
+export const STAY_LIST_VIRTUAL_MIN_ITEMS = 18;
+
+/** Estimated stacked stay-card height for window virtualizer (px, incl. gap). */
+export const STAY_CARD_VIRTUAL_ROW_H = 148;
+
+/** Non-today buckets start collapsed unless the user is searching. */
+export function isConfirmedBucketExpandedByDefault(
+  key: ConfirmedBucketKey,
+  hasQuery: boolean
+): boolean {
+  if (hasQuery) return true;
+  return key === "today";
+}
+
 export function groupConfirmedStays<T extends ConfirmedStayLike>(
   items: T[],
   today = todayIso()

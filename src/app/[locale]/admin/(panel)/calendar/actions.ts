@@ -3,6 +3,7 @@
 import { after } from "next/server";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { requireAnyStaff, requireStaffPermission, getStaffUser } from "@/lib/auth/require-admin";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
   revalidateAdminCalendar,
   revalidateBookingSurfaces,
@@ -33,12 +34,16 @@ import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
+import { createServerTimer } from "@/lib/dev/server-timing";
+import { buildSyntheticGanttBookingRow } from "@/services/bookings/synthetic-gantt-row";
+import type { BookingRow } from "@/services/bookings/types";
 
 const getT = () => getTranslations("admin.serverActions");
 
 type ActionOk = {
   ok: true;
   id: string;
+  booking?: BookingRow;
   undo?: { kind: "hold" | "block"; id: string; logId?: string };
 };
 type ActionErr = { ok: false; error: string };
@@ -304,15 +309,20 @@ export async function undoGanttCreateAction(input: {
 
 export async function createCerereFromGanttAction(input: {
   roomId: string;
+  roomName?: string;
   checkIn: string;
   checkOut: string;
   guestLastName: string;
   guestFirstName: string;
   guestEmail: string;
   guestPhone?: string;
+  /** UI a verificat deja conflictul pe interval — evită al 2-lea query ocupare. */
+  skipAvailabilityCheck?: boolean;
 }): Promise<ActionOk | ActionErr> {
   const t = await getT();
+  const timer = createServerTimer("createCerereFromGantt");
   await requireAnyStaff();
+  timer.mark("auth");
   try {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
@@ -340,12 +350,31 @@ export async function createCerereFromGanttAction(input: {
       minor_age: "",
       notes: t("createdFromGanttNote"),
       room_ids: [input.roomId],
+      skipAvailabilityCheck: input.skipAvailabilityCheck === true,
     });
-    after(() => {
-      revalidateBookingSurfaces();
+    timer.mark("createBookingRequest");
+
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingSurfaces(tenantId);
     });
-    return { ok: true, id };
+
+    const booking = buildSyntheticGanttBookingRow({
+      id,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      status: "cerere_noua",
+      guestLastName: last,
+      guestFirstName: first,
+      guestEmail: email,
+      guestPhone: input.guestPhone.trim(),
+      roomId: input.roomId,
+      roomName: input.roomName,
+    });
+    timer.finish({ bookingId: id });
+    return { ok: true, id, booking };
   } catch (e) {
+    timer.finish({ error: true });
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("requestError"),
@@ -355,15 +384,19 @@ export async function createCerereFromGanttAction(input: {
 
 export async function createDirectStayFromGanttAction(input: {
   roomId: string;
+  roomName?: string;
   checkIn: string;
   checkOut: string;
   guestLastName: string;
   guestFirstName: string;
   guestEmail: string;
   guestPhone?: string;
+  skipAvailabilityCheck?: boolean;
 }): Promise<ActionOk | ActionErr> {
+  const timer = createServerTimer("gantt-create-direct");
   const t = await getT();
   await requireStaffPermission("booking_management");
+  timer.mark("auth");
   try {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
@@ -377,37 +410,58 @@ export async function createDirectStayFromGanttAction(input: {
       return { ok: false, error: t("invalidPhone") };
     }
 
-    const bookingId = await createBookingRequest({
-      check_in: input.checkIn,
-      check_out: input.checkOut,
-      guest_name: `${last} ${first}`.trim(),
-      guest_last_name: last,
-      guest_first_name: first,
-      guest_email: email,
-      guest_phone: input.guestPhone.trim(),
-      num_adults: 1,
-      num_children: 0,
-      has_minor: false,
-      minor_age: "",
-      notes: t("directStayFromGanttNote"),
-      room_ids: [input.roomId],
-    });
-
-    const room = await getRoomById(input.roomId);
+    const [bookingId, room] = await Promise.all([
+      createBookingRequest({
+        check_in: input.checkIn,
+        check_out: input.checkOut,
+        guest_name: `${last} ${first}`.trim(),
+        guest_last_name: last,
+        guest_first_name: first,
+        guest_email: email,
+        guest_phone: input.guestPhone.trim(),
+        num_adults: 1,
+        num_children: 0,
+        has_minor: false,
+        minor_age: "",
+        notes: t("directStayFromGanttNote"),
+        room_ids: [input.roomId],
+        skipAvailabilityCheck: input.skipAvailabilityCheck === true,
+      }),
+      getRoomById(input.roomId),
+    ]);
+    timer.mark("create");
 
     const total = computeStandardStayTotal(
       [{ price_per_night: Number(room.price_per_night) }],
       input.checkIn,
-      input.checkOut
+      input.checkOut,
     );
 
     await confirmBookingWithRooms(bookingId, [input.roomId], total);
+    timer.mark("confirm");
 
-    after(() => {
-      revalidateBookingSurfaces();
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingSurfaces(tenantId);
     });
-    return { ok: true, id: bookingId };
+
+    const booking = buildSyntheticGanttBookingRow({
+      id: bookingId,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      status: "confirmata",
+      guestLastName: last,
+      guestFirstName: first,
+      guestEmail: email,
+      guestPhone: input.guestPhone.trim(),
+      roomId: input.roomId,
+      roomName: input.roomName ?? room.name,
+      totalPrice: total,
+    });
+    timer.finish({ id: bookingId });
+    return { ok: true, id: bookingId, booking };
   } catch (e) {
+    timer.finish({ error: true });
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("directStayError"),

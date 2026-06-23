@@ -89,6 +89,15 @@ export function revalidateBookingSurfacesExtended(options?: {
   }
 }
 
+/** Check-in / payment on booking — calendar + cazări + detail (fără statistici/istoric). */
+export function revalidateBookingOperativeSurfaces(
+  bookingId: string,
+  tenantId?: string,
+) {
+  revalidateBookingSurfaces(tenantId);
+  revalidatePath(`/admin/bookings/${bookingId}`);
+}
+
 /** Confirm/cancel/check-in ops on one booking — admin, public calendar, invoice. */
 export function revalidateBookingDetailSurfaces(bookingId: string, tenantId?: string) {
   revalidateBookingSurfacesExtended({

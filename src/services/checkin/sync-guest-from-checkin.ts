@@ -107,49 +107,86 @@ async function resolveOrCreateGuestId(
  * Scrie datele din check-in în profilul clientului (`guests`).
  * Returnează oaspeții cu `guest_id` rezolvat pentru persistență.
  */
+async function enrichOneCheckinGuestProfile(
+  guest: CheckinGuestInput,
+  booking: BookingForCheckin,
+): Promise<void> {
+  const guestId = guest.guest_id;
+  if (!guestId) return;
+
+  const current = await getGuestBaseById(guestId);
+  const patch = mapCheckinGuestToIdentityPatch(guest);
+  const identity = current ? mergeGuestIdentityPatch(current, patch) : patch;
+
+  await updateGuestIdentity(guestId, identity);
+
+  await touchGuestContactFields(guestId, {
+    lastName: guest.last_name,
+    firstName: guest.first_name,
+    phone: guest.phone,
+    email: contactEmailForGuest(guest, booking),
+  });
+
+  if (guest.phone?.trim()) {
+    try {
+      await updateGuestPhone(guestId, guest.phone.trim());
+    } catch {
+      // Telefon invalid — restul identității e salvat
+    }
+  }
+}
+
+/**
+ * Rezolvă guest_id pentru persistență — fără scriere profil (rapid).
+ */
+export async function resolveCheckinGuestIds(
+  guests: CheckinGuestInput[],
+  booking: BookingForCheckin,
+): Promise<CheckinGuestInput[]> {
+  return Promise.all(
+    guests.map(async (guest) => {
+      const guestId = await resolveOrCreateGuestId(guest, booking);
+      if (!guestId) return guest;
+      return {
+        ...guest,
+        guest_id: guestId,
+        full_name: guestFullName(guest) || guest.full_name,
+      };
+    }),
+  );
+}
+
+/** Scrie identitatea completă în profil — rulează în after() pe path-ul cald. */
+export async function enrichCheckinGuestProfiles(
+  guests: CheckinGuestInput[],
+  booking: BookingForCheckin,
+): Promise<void> {
+  await Promise.all(
+    guests.map((guest) => enrichOneCheckinGuestProfile(guest, booking)),
+  );
+}
+
+async function syncOneCheckinGuest(
+  guest: CheckinGuestInput,
+  booking: BookingForCheckin,
+): Promise<CheckinGuestInput> {
+  const guestId = await resolveOrCreateGuestId(guest, booking);
+  if (!guestId) {
+    return guest;
+  }
+
+  await enrichOneCheckinGuestProfile({ ...guest, guest_id: guestId }, booking);
+
+  return {
+    ...guest,
+    guest_id: guestId,
+    full_name: guestFullName(guest) || guest.full_name,
+  };
+}
+
 export async function syncCheckinGuestsToClientProfiles(
   guests: CheckinGuestInput[],
   booking: BookingForCheckin,
 ): Promise<CheckinGuestInput[]> {
-  const synced: CheckinGuestInput[] = [];
-
-  for (const guest of guests) {
-    const guestId = await resolveOrCreateGuestId(guest, booking);
-    if (!guestId) {
-      synced.push(guest);
-      continue;
-    }
-
-    const current = await getGuestBaseById(guestId);
-    const patch = mapCheckinGuestToIdentityPatch(guest);
-    const identity = current
-      ? mergeGuestIdentityPatch(current, patch)
-      : patch;
-
-    const { identityStatus } = await updateGuestIdentity(guestId, identity);
-
-    await touchGuestContactFields(guestId, {
-      lastName: guest.last_name,
-      firstName: guest.first_name,
-      phone: guest.phone,
-      email: contactEmailForGuest(guest, booking),
-    });
-
-    if (guest.phone?.trim()) {
-      try {
-        await updateGuestPhone(guestId, guest.phone.trim());
-      } catch {
-        // Telefon invalid — restul identității e salvat
-      }
-    }
-
-    synced.push({
-      ...guest,
-      guest_id: guestId,
-      identity_status: identityStatus,
-      full_name: guestFullName(guest) || guest.full_name,
-    });
-  }
-
-  return synced;
+  return Promise.all(guests.map((guest) => syncOneCheckinGuest(guest, booking)));
 }

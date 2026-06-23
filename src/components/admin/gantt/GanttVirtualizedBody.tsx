@@ -29,7 +29,7 @@ import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
 import type { AcMode } from "@/types/database";
 
 const GANTT_BUILDING_HEADER_H = 32;
-const VIRTUALIZE_MIN_ITEMS = 16;
+const VIRTUALIZE_MIN_ITEMS = 10;
 const EMPTY_OCCUPANCY_SEGMENTS: OccupancySegment[] = [];
 const EMPTY_ROOM_TODAY_FLAGS: RoomTodayFlags = {
   arrival: false,
@@ -349,7 +349,7 @@ function GanttWindowVirtualBody(
     estimateSize,
     shellRef,
     theadRef,
-    overscan: 5,
+    overscan: 6,
     enabled: true,
   });
 

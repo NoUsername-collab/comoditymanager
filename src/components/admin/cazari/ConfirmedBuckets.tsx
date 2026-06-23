@@ -1,4 +1,6 @@
-import { groupConfirmedStays } from "@/domain/cazari/confirmed-buckets";
+"use client";
+
+import { groupConfirmedStays, isConfirmedBucketExpandedByDefault } from "@/domain/cazari/confirmed-buckets";
 import { todayIso } from "@/lib/stay-dates";
 import { StayList } from "@/components/admin/cazari/StayList";
 import type { CazariLabels, OperationalStay } from "@/components/admin/cazari/types";
@@ -59,6 +61,11 @@ export function ConfirmedBuckets({
             hasQuery={hasQuery}
             labels={labels}
             operativeToday={today}
+            collapsible
+            defaultExpanded={isConfirmedBucketExpandedByDefault(
+              bucket.key,
+              hasQuery
+            )}
           />
         );
       })}

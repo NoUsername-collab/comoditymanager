@@ -1,0 +1,73 @@
+"use client";
+
+import { memo } from "react";
+import { formatStayPeriod } from "@/lib/ro-calendar";
+import { formatBookingRef } from "@/lib/booking-admin-links";
+import { RefusedStayActions } from "@/components/admin/cazari/RefusedStayActions";
+import { StayActions } from "@/components/admin/cazari/StayActions";
+import { StayRequestActions } from "@/components/admin/cazari/StayRequestActions";
+import { StayInfo } from "@/components/admin/cazari/StayInfo";
+import type {
+  CancelledStay,
+  CazariLabels,
+  OperationalStay,
+  StayCardRow,
+} from "@/components/admin/cazari/types";
+
+type Props = {
+  stay: StayCardRow;
+  rowClass: string;
+  variant: "cereri" | "confirmate" | "refuzate";
+  returnTo: string;
+  labels: CazariLabels;
+  operativeToday?: string;
+};
+
+export const StayListItem = memo(function StayListItem({
+  stay,
+  rowClass,
+  variant,
+  returnTo,
+  labels,
+  operativeToday,
+}: Props) {
+  return (
+    <li className={rowClass}>
+      <StayInfo
+        stay={stay}
+        labels={labels}
+        variant={variant === "refuzate" ? "refuzate" : "operational"}
+        operativeToday={operativeToday}
+      />
+      {variant === "refuzate" ? (
+        <RefusedStayActions
+          stay={stay as CancelledStay}
+          labels={labels}
+          returnTo={returnTo}
+        />
+      ) : variant === "cereri" ? (
+        <StayRequestActions
+          stay={stay as OperationalStay}
+          returnTo={returnTo}
+          labels={{
+            quickAccept: labels.quickAccept,
+            quickAcceptSuccess: labels.quickAcceptSuccess,
+            openBooking: labels.openBooking,
+            cancelRequest: labels.cancelRequest,
+            cancelMessage: labels.cancelRequestMsg(
+              formatBookingRef(stay.id),
+              stay.guest_name,
+              formatStayPeriod(stay.check_in, stay.check_out, true)
+            ),
+          }}
+        />
+      ) : (
+        <StayActions
+          stay={stay as OperationalStay}
+          returnTo={returnTo}
+          labels={labels}
+        />
+      )}
+    </li>
+  );
+});

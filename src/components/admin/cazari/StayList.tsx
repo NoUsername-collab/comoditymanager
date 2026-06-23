@@ -1,17 +1,68 @@
+"use client";
+
+import { useEffect, useState, type ReactNode } from "react";
+import { STAY_LIST_VIRTUAL_MIN_ITEMS } from "@/domain/cazari/confirmed-buckets";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import { formatStayPeriod } from "@/lib/ro-calendar";
-import { formatBookingRef } from "@/lib/booking-admin-links";
-import { RefusedStayActions } from "@/components/admin/cazari/RefusedStayActions";
-import { StayActions } from "@/components/admin/cazari/StayActions";
-import { StayRequestActions } from "@/components/admin/cazari/StayRequestActions";
-import { StayInfo } from "@/components/admin/cazari/StayInfo";
+import { StayListItem } from "@/components/admin/cazari/StayListItem";
+import { StayListVirtualized } from "@/components/admin/cazari/StayListVirtualized";
 import type {
-  CancelledStay,
   CazariLabels,
-  OperationalStay,
   StayCardRow,
 } from "@/components/admin/cazari/types";
+
+function StayListCollapsible({
+  title,
+  subtitle,
+  defaultExpanded,
+  hasQuery,
+  className,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  defaultExpanded: boolean;
+  hasQuery: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  useEffect(() => {
+    setExpanded(hasQuery ? true : defaultExpanded);
+  }, [hasQuery, defaultExpanded]);
+
+  return (
+    <AdminPanel
+      title={title}
+      className={[
+        "mb-3 cazari-bucket-panel",
+        !expanded && "cazari-bucket-panel--collapsed",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <button
+        type="button"
+        className="cazari-bucket-panel__toggle"
+        aria-expanded={expanded}
+        onClick={() => setExpanded((prev) => !prev)}
+      >
+        <span className="cazari-bucket-panel__toggle-text">
+          <span className="cazari-bucket-panel__title">{title}</span>
+          {subtitle ? (
+            <span className="cazari-bucket-panel__subtitle">{subtitle}</span>
+          ) : null}
+        </span>
+        <span className="cazari-bucket-panel__chevron" aria-hidden>
+          {expanded ? "\u25BE" : "\u25B8"}
+        </span>
+      </button>
+      {expanded ? children : null}
+    </AdminPanel>
+  );
+}
 
 export function StayList({
   title,
@@ -23,6 +74,8 @@ export function StayList({
   labels,
   operativeToday,
   className,
+  collapsible = false,
+  defaultExpanded = true,
 }: {
   title: string;
   subtitle?: string;
@@ -33,6 +86,8 @@ export function StayList({
   labels: CazariLabels;
   operativeToday?: string;
   className?: string;
+  collapsible?: boolean;
+  defaultExpanded?: boolean;
 }) {
   const emptyState =
     variant === "confirmate"
@@ -76,12 +131,43 @@ export function StayList({
         ? "stay-card stay-card--yellow stay-card--stacked"
         : "stay-card stay-card--green stay-card--stacked";
 
-  return (
-    <AdminPanel
-      title={title}
-      className={["mb-3", className].filter(Boolean).join(" ")}
-    >
-      {subtitle ? (
+  const listBody =
+    items.length === 0 ? (
+      <AdminEmptyState
+        emoji={emptyState.emoji}
+        title={emptyState.title}
+        description={emptyState.description}
+        actionHref={"href" in emptyState ? emptyState.href : undefined}
+        actionLabel={"label" in emptyState ? emptyState.label : undefined}
+      />
+    ) : items.length >= STAY_LIST_VIRTUAL_MIN_ITEMS ? (
+      <StayListVirtualized
+        items={items}
+        rowClass={rowClass}
+        variant={variant}
+        returnTo={returnTo}
+        labels={labels}
+        operativeToday={operativeToday}
+      />
+    ) : (
+      <ul className="stay-list space-y-2">
+        {items.map((stay) => (
+          <StayListItem
+            key={stay.id}
+            stay={stay}
+            rowClass={rowClass}
+            variant={variant}
+            returnTo={returnTo}
+            labels={labels}
+            operativeToday={operativeToday}
+          />
+        ))}
+      </ul>
+    );
+
+  const panelContent = (
+    <>
+      {!collapsible && subtitle ? (
         <p className="mb-2 text-[11px] text-zinc-500">{subtitle}</p>
       ) : null}
       {variant === "refuzate" ? (
@@ -89,57 +175,30 @@ export function StayList({
           {labels.refusedHint}
         </p>
       ) : null}
-      {items.length === 0 ? (
-        <AdminEmptyState
-          emoji={emptyState.emoji}
-          title={emptyState.title}
-          description={emptyState.description}
-          actionHref={"href" in emptyState ? emptyState.href : undefined}
-          actionLabel={"label" in emptyState ? emptyState.label : undefined}
-        />
-      ) : (
-        <ul className="stay-list space-y-2">
-          {items.map((stay) => (
-            <li key={stay.id} className={rowClass}>
-              <StayInfo
-                stay={stay}
-                labels={labels}
-                variant={variant === "refuzate" ? "refuzate" : "operational"}
-                operativeToday={operativeToday}
-              />
-              {variant === "refuzate" ? (
-                <RefusedStayActions
-                  stay={stay as CancelledStay}
-                  labels={labels}
-                  returnTo={returnTo}
-                />
-              ) : variant === "cereri" ? (
-                <StayRequestActions
-                  stay={stay as OperationalStay}
-                  returnTo={returnTo}
-                  labels={{
-                    quickAccept: labels.quickAccept,
-                    quickAcceptSuccess: labels.quickAcceptSuccess,
-                    openBooking: labels.openBooking,
-                    cancelRequest: labels.cancelRequest,
-                    cancelMessage: labels.cancelRequestMsg(
-                      formatBookingRef(stay.id),
-                      stay.guest_name,
-                      formatStayPeriod(stay.check_in, stay.check_out, true),
-                    ),
-                  }}
-                />
-              ) : (
-                <StayActions
-                  stay={stay as OperationalStay}
-                  returnTo={returnTo}
-                  labels={labels}
-                />
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      {listBody}
+    </>
+  );
+
+  if (collapsible) {
+    return (
+      <StayListCollapsible
+        title={title}
+        subtitle={subtitle}
+        defaultExpanded={defaultExpanded}
+        hasQuery={hasQuery}
+        className={className}
+      >
+        {panelContent}
+      </StayListCollapsible>
+    );
+  }
+
+  return (
+    <AdminPanel
+      title={title}
+      className={["mb-3", className].filter(Boolean).join(" ")}
+    >
+      {panelContent}
     </AdminPanel>
   );
 }

@@ -49,6 +49,7 @@ import {
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { useGanttCalendarNavigation } from "@/hooks/useGanttCalendarNavigation";
+import { useGanttLiveBookings } from "@/lib/gantt/live-bookings";
 import { GanttCompactToolbar } from "@/components/admin/gantt/GanttCompactToolbar";
 import { GanttFiltersPanel } from "@/components/admin/gantt/GanttFiltersPanel";
 import { GanttOperativeSurfaces } from "@/components/admin/gantt/GanttOperativeSurfaces";
@@ -108,7 +109,7 @@ const GANTT_TOUCH_PAN_ARM_MS = 2500;
 export function GanttCalendar({
   viewRange,
   rooms,
-  bookings,
+  bookings: serverBookings,
   occupancy = [],
   groupByBuilding = false,
   buildings = [],
@@ -149,6 +150,7 @@ export function GanttCalendar({
   cleanCount?: number;
   departurePolicy?: GanttDeparturePolicy;
 }) {
+  const bookings = useGanttLiveBookings(serverBookings);
   const effectiveToday = todayProp ?? todayIso();
   const tCommon = useTranslations("admin.common");
   const buildingFallbackLabel = tCommon("building");

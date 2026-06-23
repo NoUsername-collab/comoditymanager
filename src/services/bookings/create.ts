@@ -168,13 +168,14 @@ export async function createBookingRequest(input: {
     }),
   ]);
 
-  await availabilityPromise;
-
-  const guestAlert = await resolveGuestAlertSnapshot({
-    guestId,
-    guestLastName: input.guest_last_name,
-    guestFirstName: input.guest_first_name,
-  });
+  const [, guestAlert] = await Promise.all([
+    availabilityPromise,
+    resolveGuestAlertSnapshot({
+      guestId,
+      guestLastName: input.guest_last_name,
+      guestFirstName: input.guest_first_name,
+    }),
+  ]);
 
   const { data, error } = await supabase
     .from("bookings")

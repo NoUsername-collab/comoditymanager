@@ -17,6 +17,7 @@ import {
   type CheckinWizardMode,
 } from "@/components/admin/checkin/CheckinWizardLauncher";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
 
 const BookingCheckoutPanel = dynamic(
   () =>
@@ -121,7 +122,10 @@ export function OperativeCheckProvider({
     setCheckinBookingId(null);
     setCheckinWizardMode("create");
   }, []);
-  const refreshAfterCheckin = useCallback(() => router.refresh(), [router]);
+  const refreshAfterCheckin = useCallback(
+    () => deferGanttBackgroundRefresh(router),
+    [router],
+  );
 
   const value = useMemo(
     () => ({ today, canEditAfterCheckout, openCheckInWizard, openCheckOut }),
@@ -148,7 +152,7 @@ export function OperativeCheckProvider({
           plannedCheckIn={checkoutDialog.plannedCheckIn}
           plannedCheckOut={checkoutDialog.plannedCheckOut}
           onClose={() => setCheckoutDialog(null)}
-          onSuccess={() => router.refresh()}
+          onSuccess={() => deferGanttBackgroundRefresh(router)}
         />
       ) : null}
     </Ctx.Provider>

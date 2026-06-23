@@ -22,6 +22,7 @@ import {
 } from "@/domain/guest/national-id";
 import { NationalIdTypePicker } from "@/components/admin/guests/NationalIdTypePicker";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import {
   createCheckinAction,
   updateCheckinAction,
@@ -345,6 +346,9 @@ export function CheckinStepper({
 
   function handleCheckinResult(result: CreateCheckinResult) {
     if (result.ok) {
+      if (result.ganttBooking) {
+        publishGanttLiveBooking(result.ganttBooking);
+      }
       setTransferOffer(null);
       showToast({
         kind: "success",

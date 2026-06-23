@@ -100,134 +100,111 @@ export async function getCheckinGuests(
   return loadCheckinGuests(checkinId);
 }
 
-/** Camere distincte deja recepționate per rezervare (toate sesiunile de check-in). */
-export async function getCheckedInRoomsByBookingIds(
+import type { StoredPaymentStatus } from "@/domain/checkin/types";
+
+function mergeRoomLabel(
+  map: Map<string, string[]>,
+  bookingId: string,
+  label: string,
+): void {
+  const list = map.get(bookingId) ?? [];
+  if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
+    list.push(label);
+    map.set(bookingId, list);
+  }
+}
+
+export type CheckinBookingEnrichment = {
+  latestByBooking: Map<string, CheckinLiteRow>;
+  checkedRoomsByBooking: Map<string, string[]>;
+  keysHandedByBooking: Map<string, string[]>;
+  roomIdVerifiedByBooking: Map<string, string[]>;
+};
+
+type CheckinLiteRow = {
+  booking_id: string;
+  checked_in_at: string;
+  checked_in_by: string | null;
+  payment_status: StoredPaymentStatus | null;
+};
+
+const EMPTY_ENRICHMENT: CheckinBookingEnrichment = {
+  latestByBooking: new Map(),
+  checkedRoomsByBooking: new Map(),
+  keysHandedByBooking: new Map(),
+  roomIdVerifiedByBooking: new Map(),
+};
+
+/** Un singur round-trip checkins + checkin_guests pentru N rezervări (Gantt refresh). */
+export async function loadCheckinEnrichmentByBookingIds(
   bookingIds: string[],
-): Promise<Map<string, string[]>> {
-  const result = new Map<string, string[]>();
-  if (!bookingIds.length) return result;
+): Promise<CheckinBookingEnrichment> {
+  if (!bookingIds.length) return EMPTY_ENRICHMENT;
 
   const { tenantId, supabase } = await getTenantScope();
 
   const { data: checkins, error: checkinErr } = await supabase
     .from("checkins")
-    .select("id, booking_id")
+    .select(
+      "id, booking_id, checked_in_at, checked_in_by, payment_status, keys_handed_rooms, created_at",
+    )
     .eq("tenant_id", tenantId)
-    .in("booking_id", bookingIds);
+    .in("booking_id", bookingIds)
+    .order("created_at", { ascending: false });
 
   if (checkinErr) {
-    if (isCheckinMigrationMissing(checkinErr.message)) return result;
+    if (isCheckinMigrationMissing(checkinErr.message)) return EMPTY_ENRICHMENT;
     throw new Error(checkinErr.message);
   }
-  if (!checkins?.length) return result;
+  if (!checkins?.length) return EMPTY_ENRICHMENT;
 
+  const latestByBooking = new Map<string, CheckinLiteRow>();
+  const keysHandedByBooking = new Map<string, string[]>();
   const checkinToBooking = new Map<string, string>();
+  const checkinIds: string[] = [];
+
   for (const row of checkins) {
-    checkinToBooking.set(row.id as string, row.booking_id as string);
-  }
-
-  const checkinIds = [...checkinToBooking.keys()];
-  let guests: { checkin_id: string; room_label: string | null }[] | null = null;
-  let guestErr: { message: string } | null = null;
-
-  ({ data: guests, error: guestErr } = await supabase
-    .from("checkin_guests")
-    .select("checkin_id, room_label")
-    .eq("tenant_id", tenantId)
-    .in("checkin_id", checkinIds));
-
-  if (guestErr?.message && isCheckinMigrationMissing(guestErr.message)) {
-    return result;
-  }
-  if (guestErr) throw new Error(guestErr.message);
-
-  for (const guest of guests ?? []) {
-    const bookingId = checkinToBooking.get(guest.checkin_id as string);
-    const label = (guest.room_label as string | null)?.trim();
-    if (!bookingId || !label) continue;
-    const list = result.get(bookingId) ?? [];
-    if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
-      list.push(label);
-      result.set(bookingId, list);
-    }
-  }
-
-  return result;
-}
-
-/** Camere cu cheie înmânată per rezervare (uniune din toate sesiunile). */
-export async function getKeysHandedRoomsByBookingIds(
-  bookingIds: string[],
-): Promise<Map<string, string[]>> {
-  const result = new Map<string, string[]>();
-  if (!bookingIds.length) return result;
-
-  const { tenantId, supabase } = await getTenantScope();
-
-  const { data, error } = await supabase
-    .from("checkins")
-    .select("booking_id, keys_handed_rooms")
-    .eq("tenant_id", tenantId)
-    .in("booking_id", bookingIds);
-
-  if (error) {
-    if (isCheckinMigrationMissing(error.message)) return result;
-    throw new Error(error.message);
-  }
-
-  for (const row of data ?? []) {
     const bookingId = row.booking_id as string;
-    const rooms = (row.keys_handed_rooms as string[] | null) ?? [];
-    if (!rooms.length) continue;
-    const list = result.get(bookingId) ?? [];
-    for (const room of rooms) {
-      const label = room?.trim();
-      if (!label) continue;
-      if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
-        list.push(label);
-      }
+    const checkinId = row.id as string;
+    checkinToBooking.set(checkinId, bookingId);
+    checkinIds.push(checkinId);
+
+    if (!latestByBooking.has(bookingId)) {
+      latestByBooking.set(bookingId, {
+        booking_id: bookingId,
+        checked_in_at: row.checked_in_at as string,
+        checked_in_by: (row.checked_in_by as string | null) ?? null,
+        payment_status:
+          (row.payment_status as StoredPaymentStatus | null) ?? null,
+      });
     }
-    if (list.length) result.set(bookingId, list);
+
+    for (const room of (row.keys_handed_rooms as string[] | null) ?? []) {
+      const label = room?.trim();
+      if (label) mergeRoomLabel(keysHandedByBooking, bookingId, label);
+    }
   }
 
-  return result;
-}
+  const checkedRoomsByBooking = new Map<string, string[]>();
+  const roomIdVerifiedByBooking = new Map<string, string[]>();
 
-/** Camere cu cel puțin un oaspete identificat (CNP valid sau document) per rezervare. */
-export async function getRoomIdentityStatusByBookingIds(
-  bookingIds: string[],
-): Promise<Map<string, string[]>> {
-  const result = new Map<string, string[]>();
-  if (!bookingIds.length) return result;
-
-  const { tenantId, supabase } = await getTenantScope();
-
-  const { data: checkins, error: checkinErr } = await supabase
-    .from("checkins")
-    .select("id, booking_id")
-    .eq("tenant_id", tenantId)
-    .in("booking_id", bookingIds);
-
-  if (checkinErr) {
-    if (isCheckinMigrationMissing(checkinErr.message)) return result;
-    throw new Error(checkinErr.message);
-  }
-  if (!checkins?.length) return result;
-
-  const checkinToBooking = new Map<string, string>();
-  for (const row of checkins) {
-    checkinToBooking.set(row.id as string, row.booking_id as string);
-  }
-
-  const checkinIds = [...checkinToBooking.keys()];
   const { data: guests, error: guestErr } = await supabase
     .from("checkin_guests")
-    .select("checkin_id, room_label, national_id, document_number, document_series")
+    .select(
+      "checkin_id, room_label, national_id, document_number, document_series",
+    )
     .eq("tenant_id", tenantId)
     .in("checkin_id", checkinIds);
 
   if (guestErr) {
-    if (isCheckinMigrationMissing(guestErr.message)) return result;
+    if (isCheckinMigrationMissing(guestErr.message)) {
+      return {
+        latestByBooking,
+        checkedRoomsByBooking,
+        keysHandedByBooking,
+        roomIdVerifiedByBooking,
+      };
+    }
     throw new Error(guestErr.message);
   }
 
@@ -236,21 +213,46 @@ export async function getRoomIdentityStatusByBookingIds(
     const label = (guest.room_label as string | null)?.trim();
     if (!bookingId || !label) continue;
 
+    mergeRoomLabel(checkedRoomsByBooking, bookingId, label);
+
     const hasId = Boolean(
       (guest.national_id as string | null)?.trim() ||
-      (guest.document_number as string | null)?.trim() ||
-      (guest.document_series as string | null)?.trim(),
+        (guest.document_number as string | null)?.trim() ||
+        (guest.document_series as string | null)?.trim(),
     );
-    if (!hasId) continue;
-
-    const list = result.get(bookingId) ?? [];
-    if (!list.some((r) => r.toLowerCase() === label.toLowerCase())) {
-      list.push(label);
-      result.set(bookingId, list);
-    }
+    if (hasId) mergeRoomLabel(roomIdVerifiedByBooking, bookingId, label);
   }
 
-  return result;
+  return {
+    latestByBooking,
+    checkedRoomsByBooking,
+    keysHandedByBooking,
+    roomIdVerifiedByBooking,
+  };
+}
+
+/** Camere distincte deja recepționate per rezervare (toate sesiunile de check-in). */
+export async function getCheckedInRoomsByBookingIds(
+  bookingIds: string[],
+): Promise<Map<string, string[]>> {
+  const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
+  return batch.checkedRoomsByBooking;
+}
+
+/** Camere cu cheie înmânată per rezervare (uniune din toate sesiunile). */
+export async function getKeysHandedRoomsByBookingIds(
+  bookingIds: string[],
+): Promise<Map<string, string[]>> {
+  const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
+  return batch.keysHandedByBooking;
+}
+
+/** Camere cu cel puțin un oaspete identificat (CNP valid sau document) per rezervare. */
+export async function getRoomIdentityStatusByBookingIds(
+  bookingIds: string[],
+): Promise<Map<string, string[]>> {
+  const batch = await loadCheckinEnrichmentByBookingIds(bookingIds);
+  return batch.roomIdVerifiedByBooking;
 }
 
 export async function getCheckedInRoomsForBooking(

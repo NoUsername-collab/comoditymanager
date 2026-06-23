@@ -155,6 +155,16 @@
   contain-intrinsic-size: auto 5.5rem;
 }
 
+.cazari-page .stay-list > li.stay-list__virtual-spacer {
+  content-visibility: visible;
+  contain-intrinsic-size: auto 0;
+  pointer-events: none;
+}
+
+.cazari-page .stay-list--virtual {
+  position: relative;
+}
+
 .cazari-filter-panel__stack {
   display: flex;
   flex-direction: column;

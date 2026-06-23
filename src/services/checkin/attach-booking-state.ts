@@ -4,7 +4,7 @@ import type { GuestIdentityStatus } from "@/domain/guest/types";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { BookingRow } from "@/services/bookings/types";
-import { getCheckedInRoomsByBookingIds, getKeysHandedRoomsByBookingIds, getRoomIdentityStatusByBookingIds } from "./queries";
+import { loadCheckinEnrichmentByBookingIds } from "./queries";
 import { syncBookingOperativeCheckInFromRecord } from "./sync";
 
 export type AttachCheckinRecordOptions = {
@@ -96,7 +96,6 @@ export async function attachCheckinRecordState(
   if (!stays.length) return stays;
 
   try {
-    const { tenantId, supabase } = await getTenantScope();
     const bookingIds = stays.map((s) => s.id);
 
     const guestIds = [
@@ -105,52 +104,13 @@ export async function attachCheckinRecordState(
       ),
     ];
 
-    const [{ data, error }, checkedRoomsByBooking, keysHandedByBooking, identityByGuest, roomIdVerifiedByBooking] =
+    const [{ latestByBooking, checkedRoomsByBooking, keysHandedByBooking, roomIdVerifiedByBooking }, identityByGuest] =
       await Promise.all([
-        supabase
-          .from("checkins")
-          .select("booking_id, checked_in_at, checked_in_by, payment_status")
-          .eq("tenant_id", tenantId)
-          .in("booking_id", bookingIds)
-          .order("created_at", { ascending: false }),
-        getCheckedInRoomsByBookingIds(bookingIds).catch(
-          () => new Map<string, string[]>(),
-        ),
-        getKeysHandedRoomsByBookingIds(bookingIds).catch(
-          () => new Map<string, string[]>(),
-        ),
+        loadCheckinEnrichmentByBookingIds(bookingIds),
         loadGuestIdentityStatuses(guestIds).catch(
           () => new Map<string, GuestIdentityStatus>(),
         ),
-        getRoomIdentityStatusByBookingIds(bookingIds).catch(
-          () => new Map<string, string[]>(),
-        ),
       ]);
-
-    if (error) {
-      if (isCheckinMigrationMissing(error.message)) {
-        return stays.map((stay) => ({
-          ...stay,
-          has_checkin_record: false,
-          checked_in_rooms: [],
-        }));
-      }
-      throw new Error(error.message);
-    }
-
-    const latestByBooking = new Map<string, CheckinLite>();
-    for (const row of data ?? []) {
-      const bookingId = row.booking_id as string;
-      if (!latestByBooking.has(bookingId)) {
-        latestByBooking.set(bookingId, {
-          booking_id: bookingId,
-          checked_in_at: row.checked_in_at as string,
-          checked_in_by: (row.checked_in_by as string | null) ?? null,
-          payment_status:
-            (row.payment_status as StoredPaymentStatus | null) ?? null,
-        });
-      }
-    }
 
     const orphans = stays.filter(
       (stay) => latestByBooking.has(stay.id) && !stay.actual_check_in_at,
