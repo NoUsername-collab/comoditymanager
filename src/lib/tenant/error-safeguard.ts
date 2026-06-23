@@ -48,17 +48,22 @@ let processHandlersRegistered = false;
 
 export function registerTenantProcessErrorHandlers(): void {
   if (processHandlersRegistered) return;
-  if (typeof process === "undefined") return;
+
+  // Only run on Node.js server
+  if (typeof window !== "undefined") return;
 
   processHandlersRegistered = true;
 
-  process.on("unhandledRejection", (reason) => {
+  // @ts-ignore - process is only available on Node.js
+  const nodeProcess = process as NodeJS.Process;
+
+  nodeProcess.on("unhandledRejection", (reason) => {
     void import("@/services/dev-logs").then(({ captureTenantError }) =>
       captureTenantError(reason, { source: "unhandledRejection" })
     );
   });
 
-  process.on("uncaughtException", (error) => {
+  nodeProcess.on("uncaughtException", (error) => {
     void import("@/services/dev-logs").then(({ captureTenantError }) =>
       captureTenantError(error, { source: "uncaughtException" })
     );
