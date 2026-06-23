@@ -3,9 +3,9 @@
  * Portrait + landscape; loaded only on /admin/calendar.
  */
 
-/* ── Gantt-only: hide top HUD (Nestio/FREE) — stays on Home tab ── */
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-hud,
-html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-hud-alert {
+/* ── Gantt-only: hide global HUD + cereri stripe (all viewports) ── */
+.admin-shell:has(.gantt-calendar-page) > .admin-hud,
+.admin-shell:has(.gantt-calendar-page) > .admin-hud-alert {
   display: none !important;
 }
 
@@ -400,7 +400,8 @@ html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-c
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-btn {
   min-width: var(--gantt-touch-min, 2.75rem);
   min-height: var(--gantt-touch-min, 2.75rem);
 }
@@ -433,6 +434,16 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn {
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn {
   width: var(--gantt-touch-min, 2.75rem);
   height: var(--gantt-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-btn {
+  width: var(--gantt-touch-min, 2.75rem);
+  height: var(--gantt-touch-min, 2.75rem);
+  padding: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-label {
+  display: none;
 }
 
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--compact {
@@ -1374,7 +1385,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn--edge,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn {
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__home-btn {
   border-color: var(--gantt-day-control-border) !important;
   background: var(--gantt-day-control-bg) !important;
   color: #134e4a !important;
@@ -1389,7 +1401,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__select:hover,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump:hover,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn:hover,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn:hover {
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn:hover,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__home-btn:hover {
   border-color: color-mix(in srgb, var(--admin-accent) 28%, var(--gantt-day-control-border)) !important;
   background: color-mix(in srgb, var(--admin-accent-muted) 28%, var(--gantt-day-control-bg)) !important;
 }
@@ -1398,7 +1411,8 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__select:active,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump:active,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn:active,
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn:active {
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn:active,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__home-btn:active {
   background: var(--gantt-day-control-active-bg) !important;
   filter: none !important;
   transform: scale(0.97);

@@ -1,8 +1,9 @@
 "use client";
 
+import { Link } from "@/i18n/navigation";
 import { GanttPeriodJumpControl } from "@/components/admin/gantt/GanttPeriodJumpControl";
 import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
-import { HudIconGrid } from "@/components/admin/AdminHudIcons";
+import { HudIconGrid, HudIconHome } from "@/components/admin/AdminHudIcons";
 import {
   ToolbarFilterIcon,
   type InlineZoomChoice,
@@ -81,12 +82,23 @@ export function GanttCompactToolbar({
   onDensityToggle: () => void;
 }) {
   const tCommon = useTranslations("admin.common");
+  const tShell = useTranslations("admin.shell");
   const tLayers = useTranslations("admin.gantt.layers");
   const { compactChrome } = useCompactLayoutHints();
 
   return (
     <div className="gantt-compact-toolbar">
       <div className="gantt-compact-toolbar__left">
+        <Link
+          href="/admin"
+          className="gantt-compact-toolbar__home-btn"
+          aria-label={tShell("home")}
+          title={tShell("home")}
+        >
+          <HudIconHome className="gantt-compact-toolbar__home-icon" />
+          <span className="gantt-compact-toolbar__home-label">{tShell("home")}</span>
+        </Link>
+
         <GanttRadialController
           onOpenRequest={onOpenRequest}
           onOpenHold={onOpenHold}

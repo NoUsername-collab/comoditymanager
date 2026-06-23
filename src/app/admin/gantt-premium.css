@@ -669,6 +669,55 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
+  gap: 0.28rem;
+}
+
+.gantt-compact-toolbar__home-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28rem;
+  min-height: 1.88rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 0.52rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--surface, #fff);
+  color: var(--admin-text, #18181b);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease,
+    transform 0.12s ease;
+}
+
+.gantt-compact-toolbar__home-btn:hover {
+  border-color: color-mix(in srgb, var(--border-strong, #a1a1aa) 88%, transparent);
+  background: var(--surface-2, #f4f4f5);
+  color: var(--admin-text, #18181b);
+}
+
+.gantt-compact-toolbar__home-btn:active {
+  background: color-mix(in srgb, var(--surface-2, #f4f4f5) 88%, black);
+  filter: brightness(0.92);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
+
+.gantt-compact-toolbar__home-btn:focus-visible {
+  outline: 2px solid var(--accent, #059669);
+  outline-offset: 1px;
+}
+
+.gantt-compact-toolbar__home-icon {
+  width: 0.88rem;
+  height: 0.88rem;
+  flex-shrink: 0;
 }
 
 /* ── CENTER: interval + period + today ── */
@@ -3630,7 +3679,16 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-action-stri
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Calendar — fixed top chrome (HUD + toolbar symmetry, desktop)
+   Calendar — Gantt fullscreen chrome (hide global HUD, all viewports)
+   ═══════════════════════════════════════════════════════════════ */
+
+.admin-shell:has(.gantt-calendar-page) > .admin-hud,
+.admin-shell:has(.gantt-calendar-page) > .admin-hud-alert {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Calendar — toolbar layout symmetry (desktop)
    ═══════════════════════════════════════════════════════════════ */
 
 html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) {
@@ -3638,38 +3696,15 @@ html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) 
   --gantt-top-chrome-side-w: minmax(4.75rem, auto);
 }
 
-html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) > .admin-hud {
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar {
   position: sticky;
   top: 0;
-  z-index: 85;
-  flex-shrink: 0;
-}
-
-html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) .admin-hud__header,
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar {
+  z-index: 25;
   display: grid;
   grid-template-columns: var(--gantt-top-chrome-side-w) minmax(0, 1fr) var(--gantt-top-chrome-side-w);
   align-items: center;
   column-gap: 0.32rem;
   padding-inline: var(--gantt-top-chrome-pad-x);
-}
-
-html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) .admin-hud__brand {
-  justify-self: start;
-  min-width: 0;
-}
-
-html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) .admin-hud__center {
-  justify-self: center;
-  justify-content: center;
-  width: auto;
-  max-width: 100%;
-  min-width: 0;
-}
-
-html:not([data-layout-chrome="compact"]) .admin-shell:has(.gantt-calendar-page) .admin-hud__right {
-  justify-self: end;
-  min-width: 0;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__left {
@@ -4162,6 +4197,13 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
   width: 1.88rem;
   height: 1.88rem;
   border-radius: 0.52rem;
+}
+
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__home-btn {
+  min-height: 1.88rem;
+  padding: 0.34rem 0.55rem;
+  border-radius: 0.52rem;
+  font-size: 0.7rem;
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__icon-btn svg {
