@@ -23,7 +23,9 @@ import { syncCheckinGuestsToClientProfiles } from "@/services/checkin/sync-guest
 import {
   normalizePaymentStatusForDb,
   optionalDateForDb,
+  paymentAmountForStatus,
 } from "@/domain/checkin/types";
+import { bridgeCheckinPaymentToLedger } from "@/services/booking-payments";
 
 /** Actualizează un check-in existent (identitate, plată, chei). */
 export async function updateCheckin(
@@ -83,19 +85,41 @@ export async function updateCheckin(
   if (!existing) throw new Error("checkin.not_found");
 
   const checkedInAt = String(existing.checked_in_at ?? now.toISOString());
+  const storedPaymentStatus = normalizePaymentStatusForDb(data.payment_status);
+  const paymentAmountPaid = paymentAmountForStatus(
+    data.payment_status,
+    activeBooking.total_price,
+    data.payment_amount_paid ?? 0,
+  );
+
+  const { checkinPatch: ledgerPaymentPatch } = await bridgeCheckinPaymentToLedger(
+    activeBooking.id,
+    activeBooking.total_price,
+    {
+      payment_status: data.payment_status,
+      payment_amount_paid: data.payment_amount_paid ?? 0,
+    },
+  );
+
+  const checkinUpdate: Record<string, unknown> = {
+    status: checkinStatus,
+    deposit_amount: data.deposit_amount ?? 0,
+    key_handed: data.key_handed ?? false,
+    keys_handed_rooms: data.keys_handed_rooms ?? [],
+    flags: validation.flags,
+    notes: data.notes ?? null,
+  };
+
+  if (ledgerPaymentPatch.payment_status != null) {
+    Object.assign(checkinUpdate, ledgerPaymentPatch);
+  } else {
+    checkinUpdate.payment_status = storedPaymentStatus;
+    checkinUpdate.payment_amount_paid = paymentAmountPaid;
+  }
 
   const { error: updateErr } = await supabase
     .from("checkins")
-    .update({
-      status: checkinStatus,
-      payment_status: normalizePaymentStatusForDb(data.payment_status),
-      payment_amount_paid: data.payment_amount_paid ?? 0,
-      deposit_amount: data.deposit_amount ?? 0,
-      key_handed: data.key_handed ?? false,
-      keys_handed_rooms: data.keys_handed_rooms ?? [],
-      flags: validation.flags,
-      notes: data.notes ?? null,
-    })
+    .update(checkinUpdate)
     .eq("tenant_id", tenantId)
     .eq("id", checkinId);
 

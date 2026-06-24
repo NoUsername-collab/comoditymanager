@@ -74,6 +74,7 @@ type Props = {
   initialPaymentStatus?: PaymentStatus;
   initialPaymentAmountPaid?: number;
   initialDepositAmount?: number;
+  ledgerCollectedHint?: string;
   initialKeysHandedRooms?: string[];
   initialNotes?: string;
   onComplete: () => void;
@@ -94,6 +95,7 @@ export function CheckinStepper({
   initialPaymentStatus,
   initialPaymentAmountPaid,
   initialDepositAmount,
+  ledgerCollectedHint,
   initialKeysHandedRooms,
   initialNotes,
   onComplete,
@@ -234,9 +236,11 @@ export function CheckinStepper({
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(
     initialPaymentStatus ?? "unpaid",
   );
-  const [paymentAmount, setPaymentAmount] = useState(
-    initialPaymentAmountPaid ?? booking.total_price,
-  );
+  const [paymentAmount, setPaymentAmount] = useState(() => {
+    if (initialPaymentAmountPaid != null) return initialPaymentAmountPaid;
+    if (initialPaymentStatus === "partial") return 0;
+    return booking.total_price;
+  });
   const [depositAmount, setDepositAmount] = useState(
     initialDepositAmount ??
       (settings.checkin_deposit ? settings.checkin_deposit_amount : 0),
@@ -593,6 +597,7 @@ export function CheckinStepper({
             paymentStatus={paymentStatus}
             paymentAmount={paymentAmount}
             depositAmount={depositAmount}
+            ledgerCollectedHint={ledgerCollectedHint}
             onPaymentStatusChange={setPaymentStatus}
             onPaymentAmountChange={setPaymentAmount}
             onDepositAmountChange={setDepositAmount}

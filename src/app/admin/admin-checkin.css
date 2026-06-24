@@ -361,6 +361,16 @@
   color: #18181b;
 }
 
+.checkin-payment__ledger-hint {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  font-size: 0.8125rem;
+  color: #065f46;
+}
+
 .checkin-payment__options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

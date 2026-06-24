@@ -90,6 +90,12 @@
   color: var(--admin-text-muted, #8b93a7);
 }
 
+.stay-financial__settled {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--admin-success, #5a9a6e);
+}
+
 .stay-financial__record-btn {
   align-self: flex-start;
 }

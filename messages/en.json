@@ -3100,6 +3100,7 @@
       "history": "Payment history",
       "noPayments": "No payments recorded yet.",
       "recordPayment": "+ Record payment",
+      "fullyPaid": "Stay fully paid",
       "recordPaymentHint": "Record payments in the Payments panel below.",
       "amount": "Amount (RON)",
       "method": "Method",
@@ -3221,7 +3222,9 @@
         "onlineMockTitle": "Online payment (simulation)",
         "onlineMockHint": "Mock only — no real charge. Saved as paid in full.",
         "amountPaid": "Amount paid",
-        "deposit": "Security deposit"
+        "deposit": "Security deposit",
+        "ledgerCollectedHint": "Already collected {amount} RON ({method}) in the payments ledger",
+        "ledgerCollectedHintMultiple": "Already collected {amount} RON ({count} entries) in the payments ledger"
       },
       "keyHanded": "Key / code handed over",
       "keysHandoff": {

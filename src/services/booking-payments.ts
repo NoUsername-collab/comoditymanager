@@ -17,6 +17,11 @@ import type {
   PaymentTotals,
 } from "@/domain/payments/types";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
+import {
+  normalizePaymentStatusForDb,
+  paymentAmountForStatus,
+  type PaymentStatus,
+} from "@/domain/checkin/types";
 import { getBookingById } from "@/services/bookings";
 
 function isBookingPaymentsTableMissing(message: string): boolean {
@@ -213,4 +218,46 @@ export async function syncCheckinPaymentSnapshot(
 
 export function ledgerTotalPaid(entries: PaymentEntry[]): number {
   return sumLedgerPayments(entries);
+}
+
+export type CheckinPaymentLedgerPatch = {
+  payment_status?: StoredPaymentStatus;
+  payment_amount_paid?: number;
+};
+
+/** Sync check-in payment fields with booking_payments ledger (idempotent). */
+export async function bridgeCheckinPaymentToLedger(
+  bookingId: string,
+  totalDue: number,
+  input: {
+    payment_status: PaymentStatus;
+    payment_amount_paid: number;
+  },
+): Promise<{
+  storedStatus: StoredPaymentStatus;
+  amountPaid: number;
+  checkinPatch: CheckinPaymentLedgerPatch;
+}> {
+  const storedStatus = normalizePaymentStatusForDb(input.payment_status);
+  const amountPaid = paymentAmountForStatus(
+    input.payment_status,
+    totalDue,
+    input.payment_amount_paid,
+  );
+
+  const ledgerResult = await applyBookingPaymentTarget(bookingId, amountPaid, {
+    method: "cash",
+  });
+
+  const checkinPatch: CheckinPaymentLedgerPatch = {};
+  if (!ledgerResult.ok) {
+    if (ledgerResult.error === "payment.migration_required") {
+      checkinPatch.payment_status = storedStatus;
+      checkinPatch.payment_amount_paid = amountPaid;
+    } else {
+      throw new Error(ledgerResult.error);
+    }
+  }
+
+  return { storedStatus, amountPaid, checkinPatch };
 }

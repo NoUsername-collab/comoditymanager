@@ -21,7 +21,9 @@ import {
 import type { BookingRow } from "@/services/bookings/types";
 import { createServerTimer } from "@/lib/dev/server-timing";
 import { listBookingPayments } from "@/services/booking-payments";
-import { computePaymentTotals } from "@/domain/payments/ledger";
+import { resolveCheckinPaymentFromLedger } from "@/domain/checkin/payment-panel";
+import { signedLedgerAmount } from "@/domain/payments/ledger";
+import type { PaymentEntry } from "@/domain/payments/types";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-checkout-guard";
 import {
@@ -69,11 +71,12 @@ export type CheckinWizardContextResult = {
     keysHandedRooms: string[];
     notes: string;
   };
-  /** Plată existentă la continuare camere (create mode). */
+  /** Plată inițială la deschiderea wizard-ului (create sau continuare camere). */
   partialPayment?: {
     paymentStatus: PaymentStatus;
     paymentAmountPaid: number;
     depositAmount: number;
+    ledgerCollectedHint?: string;
   };
 };
 
@@ -91,6 +94,64 @@ export type LoadTouristSheetResult = {
   error?: string;
   data?: TouristSheetData;
 };
+
+async function buildLedgerCollectedHint(
+  payments: PaymentEntry[],
+  totalPaid: number,
+): Promise<string | undefined> {
+  if (payments.length === 0 || totalPaid <= 0) return undefined;
+
+  const positive = payments.filter((entry) => signedLedgerAmount(entry) > 0);
+  if (positive.length === 0) return undefined;
+
+  const t = await getTranslations("admin.checkIn");
+  const tFinancial = await getTranslations("admin.financial");
+
+  if (positive.length === 1) {
+    const method = positive[0].method;
+    return t("payment.ledgerCollectedHint", {
+      amount: totalPaid,
+      method: tFinancial(`method_${method}`),
+    });
+  }
+
+  return t("payment.ledgerCollectedHintMultiple", {
+    amount: totalPaid,
+    count: positive.length,
+  });
+}
+
+async function loadWizardPaymentDefaults(
+  bookingId: string,
+  totalDue: number,
+  existingCheckin: {
+    payment_status: StoredPaymentStatus;
+    payment_amount_paid: number | null;
+    deposit_amount: number | null;
+  } | null,
+) {
+  const ledgerPayments = await listBookingPayments(bookingId);
+  const resolved = resolveCheckinPaymentFromLedger(
+    totalDue,
+    existingCheckin
+      ? {
+          paymentStatus: existingCheckin.payment_status,
+          paymentAmountPaid: Number(existingCheckin.payment_amount_paid ?? 0),
+        }
+      : null,
+    ledgerPayments,
+  );
+  const ledgerCollectedHint = resolved.fromLedger
+    ? await buildLedgerCollectedHint(ledgerPayments, resolved.paymentAmountPaid)
+    : undefined;
+
+  return {
+    paymentStatus: resolved.paymentStatus as PaymentStatus,
+    paymentAmountPaid: resolved.paymentAmountPaid,
+    depositAmount: Number(existingCheckin?.deposit_amount ?? 0),
+    ledgerCollectedHint,
+  };
+}
 
 /**
  * Server action: load booking + settings for the full check-in wizard.
@@ -155,6 +216,12 @@ export async function loadCheckinWizardContextAction(
         return { ok: false, error: t("emitFisaNoGuests") };
       }
 
+      const paymentDefaults = await loadWizardPaymentDefaults(
+        bookingId,
+        booking.total_price ?? 0,
+        existingCheckin,
+      );
+
       return {
         ok: true,
         booking: mappedBooking,
@@ -165,14 +232,28 @@ export async function loadCheckinWizardContextAction(
         editContext: {
           checkinId: existingCheckin.id,
           guests: mapPersistedCheckinGuestsToInput(guestRows),
-          paymentStatus: existingCheckin.payment_status,
-          paymentAmountPaid: Number(existingCheckin.payment_amount_paid ?? 0),
-          depositAmount: Number(existingCheckin.deposit_amount ?? 0),
+          paymentStatus: paymentDefaults.paymentStatus,
+          paymentAmountPaid: paymentDefaults.paymentAmountPaid,
+          depositAmount: paymentDefaults.depositAmount,
           keysHandedRooms: existingCheckin.keys_handed_rooms ?? [],
           notes: existingCheckin.notes ?? "",
         },
+        partialPayment: paymentDefaults.ledgerCollectedHint
+          ? {
+              paymentStatus: paymentDefaults.paymentStatus,
+              paymentAmountPaid: paymentDefaults.paymentAmountPaid,
+              depositAmount: paymentDefaults.depositAmount,
+              ledgerCollectedHint: paymentDefaults.ledgerCollectedHint,
+            }
+          : undefined,
       };
     }
+
+    const paymentDefaults = await loadWizardPaymentDefaults(
+      bookingId,
+      booking.total_price ?? 0,
+      existingCheckin,
+    );
 
     return {
       ok: true,
@@ -181,13 +262,12 @@ export async function loadCheckinWizardContextAction(
       hasExistingCheckin: progress.isComplete,
       checkedInRooms,
       roomCheckinComplete: progress.isComplete,
-      partialPayment: existingCheckin
-        ? {
-            paymentStatus: existingCheckin.payment_status as PaymentStatus,
-            paymentAmountPaid: Number(existingCheckin.payment_amount_paid ?? 0),
-            depositAmount: Number(existingCheckin.deposit_amount ?? 0),
-          }
-        : undefined,
+      partialPayment:
+        paymentDefaults.paymentAmountPaid > 0 ||
+        paymentDefaults.paymentStatus !== "unpaid" ||
+        paymentDefaults.ledgerCollectedHint
+          ? paymentDefaults
+          : undefined,
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
@@ -243,16 +323,14 @@ export async function loadBookingCheckinPaymentPanelAction(
     });
 
     const ledgerPayments = await listBookingPayments(id);
-    let paymentAmountPaid = Number(checkin.payment_amount_paid ?? 0);
-    let paymentStatus: StoredPaymentStatus = checkin.payment_status;
-    if (ledgerPayments.length > 0) {
-      const totals = computePaymentTotals(
-        booking.total_price ?? 0,
-        ledgerPayments
-      );
-      paymentAmountPaid = totals.totalPaid;
-      paymentStatus = totals.derivedStatus;
-    }
+    const resolved = resolveCheckinPaymentFromLedger(
+      booking.total_price ?? 0,
+      {
+        paymentStatus: checkin.payment_status,
+        paymentAmountPaid: Number(checkin.payment_amount_paid ?? 0),
+      },
+      ledgerPayments,
+    );
 
     return {
       ok: true,
@@ -263,8 +341,8 @@ export async function loadBookingCheckinPaymentPanelAction(
         plannedCheckIn: booking.check_in,
         plannedCheckOut: booking.check_out,
         totalPrice: booking.total_price ?? 0,
-        paymentStatus,
-        paymentAmountPaid,
+        paymentStatus: resolved.paymentStatus,
+        paymentAmountPaid: resolved.paymentAmountPaid,
         depositAmount: Number(checkin.deposit_amount ?? 0),
         settings,
         bookingForCheckin,

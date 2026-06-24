@@ -49,6 +49,14 @@ export function RecordPaymentForm({ bookingId, balanceDue }: Props) {
   }
 
   if (!open) {
+    if (balanceDue <= 0) {
+      return (
+        <p className="stay-financial__settled" role="status">
+          {t("fullyPaid")}
+        </p>
+      );
+    }
+
     return (
       <AdminButton
         type="button"

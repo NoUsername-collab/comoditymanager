@@ -15,6 +15,7 @@ type Props = {
   paymentStatus: PaymentStatus;
   paymentAmount: number;
   depositAmount: number;
+  ledgerCollectedHint?: string;
   onPaymentStatusChange: (v: PaymentStatus) => void;
   onPaymentAmountChange: (v: number) => void;
   onDepositAmountChange: (v: number) => void;
@@ -27,6 +28,7 @@ export function CheckinPaymentStep({
   paymentStatus,
   paymentAmount,
   depositAmount,
+  ledgerCollectedHint,
   onPaymentStatusChange,
   onPaymentAmountChange,
   onDepositAmountChange,
@@ -38,6 +40,12 @@ export function CheckinPaymentStep({
         <span className="checkin-payment__total-label">{t("payment.totalDue")}</span>
         <span className="checkin-payment__total-value">{booking.total_price}</span>
       </div>
+
+      {ledgerCollectedHint ? (
+        <p className="checkin-payment__ledger-hint" role="status">
+          {ledgerCollectedHint}
+        </p>
+      ) : null}
 
       <div className="checkin-payment__options">
         {CHECKIN_PAYMENT_OPTIONS.map((s) => (

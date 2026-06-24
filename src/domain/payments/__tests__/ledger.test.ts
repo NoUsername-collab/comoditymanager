@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { resolveCheckinPaymentFromLedger } from "@/domain/checkin/payment-panel";
 import {
   computePaymentTotals,
   paymentDeltaToTarget,
@@ -63,5 +64,20 @@ describe("paymentDeltaToTarget", () => {
       amount: 100,
     });
     expect(paymentDeltaToTarget(entries, 400)).toBeNull();
+  });
+});
+
+describe("resolveCheckinPaymentFromLedger", () => {
+  it("prefers ledger totals over stale check-in snapshot", () => {
+    const resolved = resolveCheckinPaymentFromLedger(
+      600,
+      { paymentStatus: "unpaid", paymentAmountPaid: 0 },
+      [entry({ amount: 600, kind: "payment" })],
+    );
+    expect(resolved).toEqual({
+      paymentStatus: "paid",
+      paymentAmountPaid: 600,
+      fromLedger: true,
+    });
   });
 });

@@ -13,7 +13,7 @@ import {
 } from "@/domain/checkin/types";
 import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
 import { getCheckinGuests } from "@/services/checkin/queries";
-import { applyBookingPaymentTarget } from "@/services/booking-payments";
+import { bridgeCheckinPaymentToLedger } from "@/services/booking-payments";
 
 /** Actualizează doar plata pe un check-in existent. */
 export async function updateCheckinPayment(
@@ -60,9 +60,11 @@ export async function updateCheckinPayment(
     input.payment_amount_paid,
   );
 
-  const ledgerResult = await applyBookingPaymentTarget(booking.id, amountPaid, {
-    method: "cash",
-  });
+  const { checkinPatch: ledgerPaymentPatch } = await bridgeCheckinPaymentToLedger(
+    booking.id,
+    booking.total_price,
+    input,
+  );
 
   const checkinPatch: Record<string, unknown> = {
     deposit_amount: input.deposit_amount ?? 0,
@@ -70,13 +72,8 @@ export async function updateCheckinPayment(
     status: validation.status === "warning" ? "incomplete" : "complete",
   };
 
-  if (!ledgerResult.ok) {
-    if (ledgerResult.error === "payment.migration_required") {
-      checkinPatch.payment_status = storedStatus;
-      checkinPatch.payment_amount_paid = amountPaid;
-    } else {
-      throw new Error(ledgerResult.error);
-    }
+  if (ledgerPaymentPatch.payment_status != null) {
+    Object.assign(checkinPatch, ledgerPaymentPatch);
   }
 
   const { error } = await supabase

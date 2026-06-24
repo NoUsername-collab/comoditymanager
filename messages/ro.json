@@ -3084,6 +3084,7 @@
       "history": "Istoric încasări",
       "noPayments": "Nicio încasare înregistrată încă.",
       "recordPayment": "+ Încasare",
+      "fullyPaid": "Sejur achitat integral",
       "recordPaymentHint": "Încasările se înregistrează în panoul Plăți de mai jos.",
       "amount": "Sumă (RON)",
       "method": "Metodă",
@@ -3205,7 +3206,9 @@
         "onlineMockTitle": "Plată online (simulare)",
         "onlineMockHint": "Mock — fără încasare reală. La salvare se marchează ca plătit integral.",
         "amountPaid": "Suma achitată",
-        "deposit": "Garanție / Depozit"
+        "deposit": "Garanție / Depozit",
+        "ledgerCollectedHint": "Deja încasat {amount} RON ({method}) în registrul de plăți",
+        "ledgerCollectedHintMultiple": "Deja încasat {amount} RON ({count} înregistrări) în registrul de plăți"
       },
       "keyHanded": "Cheie / cod înmânat",
       "keysHandoff": {

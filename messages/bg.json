@@ -2953,6 +2953,7 @@
       "history": "История на плащанията",
       "noPayments": "Все още няма записани плащания.",
       "recordPayment": "+ Плащане",
+      "fullyPaid": "Престоят е напълно платен",
       "recordPaymentHint": "Плащанията се записват в панела Плащания по-долу.",
       "amount": "Сума (RON)",
       "method": "Метод",
@@ -3040,7 +3041,9 @@
         "onlineMockTitle": "Онлайн плащане (симулация)",
         "onlineMockHint": "Mock — без реално таксуване. Записва се като платено изцяло.",
         "amountPaid": "Платена сума",
-        "deposit": "Депозит"
+        "deposit": "Депозит",
+        "ledgerCollectedHint": "Вече събрани {amount} RON ({method}) в регистъра на плащанията",
+        "ledgerCollectedHintMultiple": "Вече събрани {amount} RON ({count} записа) в регистъра на плащанията"
       },
       "keyHanded": "Ключ / код предаден",
       "fisa": {

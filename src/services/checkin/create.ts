@@ -28,7 +28,9 @@ import {
 import {
   normalizePaymentStatusForDb,
   optionalDateForDb,
+  paymentAmountForStatus,
 } from "@/domain/checkin/types";
+import { bridgeCheckinPaymentToLedger } from "@/services/booking-payments";
 
 /**
  * Create a check-in record for a booking.
@@ -92,6 +94,12 @@ export async function createCheckin(
 
   const { tenantId, supabase } = await getTenantScope();
   const checkedInAt = now.toISOString();
+  const storedPaymentStatus = normalizePaymentStatusForDb(data.payment_status);
+  const paymentAmountPaid = paymentAmountForStatus(
+    data.payment_status,
+    activeBooking.total_price,
+    data.payment_amount_paid ?? 0,
+  );
 
   // ── Insert checkin ────────────────────────────────────────
   const { data: checkinRow, error: checkinErr } = await supabase
@@ -102,8 +110,8 @@ export async function createCheckin(
         type: data.type,
         status: checkinStatus,
         checked_in_at: checkedInAt,
-        payment_status: normalizePaymentStatusForDb(data.payment_status),
-        payment_amount_paid: data.payment_amount_paid ?? 0,
+        payment_status: storedPaymentStatus,
+        payment_amount_paid: paymentAmountPaid,
         deposit_amount: data.deposit_amount ?? 0,
         key_handed: data.key_handed ?? false,
         keys_handed_rooms: data.keys_handed_rooms ?? [],
@@ -117,6 +125,23 @@ export async function createCheckin(
   if (checkinErr) throw new Error(checkinErr.message);
   const checkinId = checkinRow.id;
   timer.mark("insertCheckin");
+
+  const { checkinPatch } = await bridgeCheckinPaymentToLedger(
+    activeBooking.id,
+    activeBooking.total_price,
+    {
+      payment_status: data.payment_status,
+      payment_amount_paid: data.payment_amount_paid ?? 0,
+    },
+  );
+  if (Object.keys(checkinPatch).length > 0) {
+    const { error: paymentPatchErr } = await supabase
+      .from("checkins")
+      .update(checkinPatch)
+      .eq("tenant_id", tenantId)
+      .eq("id", checkinId);
+    if (paymentPatchErr) throw new Error(paymentPatchErr.message);
+  }
 
   // ── Sync identity → profil client (`guests`) ───────────────
   const scope: CheckinIdentityScope = data.identity_scope ?? "per_room";

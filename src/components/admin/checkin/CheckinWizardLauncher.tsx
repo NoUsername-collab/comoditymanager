@@ -103,6 +103,7 @@ export function CheckinWizardLauncher({
     settings: CheckinSettings;
     editState?: CheckinWizardEditState;
     partialPayment?: CheckinWizardContextResult["partialPayment"];
+    ledgerCollectedHint?: string;
   } | null>(
     hasPrefetch
       ? {
@@ -144,13 +145,12 @@ export function CheckinWizardLauncher({
         settings: prefetchSettings,
         editState,
       });
-      setLoading(false);
-      return;
+    } else {
+      setContext(null);
     }
 
     let cancelled = false;
     setLoading(true);
-    setContext(null);
 
     void loadCheckinWizardContextAction(bookingId, {
       edit: mode === "edit",
@@ -193,12 +193,13 @@ export function CheckinWizardLauncher({
       }
 
       if (res.booking && res.settings) {
-        setContext({
-          booking: res.booking,
-          settings: res.settings,
-          editState: res.editContext,
-          partialPayment: res.partialPayment,
-        });
+        setContext((prev) => ({
+          booking: res.booking!,
+          settings: res.settings!,
+          editState: res.editContext ?? prev?.editState,
+          partialPayment: res.partialPayment ?? prev?.partialPayment,
+          ledgerCollectedHint: res.partialPayment?.ledgerCollectedHint,
+        }));
         return;
       }
 
@@ -213,7 +214,7 @@ export function CheckinWizardLauncher({
     return () => {
       cancelled = true;
     };
-  }, [open, bookingId, mode, hasPrefetch]);
+  }, [open, bookingId, mode]);
 
   if (!open) return null;
 
@@ -231,6 +232,7 @@ export function CheckinWizardLauncher({
     >
       {ready ? (
         <CheckinStepper
+          key={`${bookingId}:${context.editState?.paymentStatus ?? context.partialPayment?.paymentStatus ?? "new"}:${context.editState?.paymentAmountPaid ?? context.partialPayment?.paymentAmountPaid ?? 0}`}
           booking={context.booking}
           settings={context.settings}
           mode={mode}
@@ -248,6 +250,7 @@ export function CheckinWizardLauncher({
             context.editState?.depositAmount ??
             context.partialPayment?.depositAmount
           }
+          ledgerCollectedHint={context.ledgerCollectedHint}
           initialKeysHandedRooms={context.editState?.keysHandedRooms}
           initialNotes={context.editState?.notes}
           onComplete={() => {
