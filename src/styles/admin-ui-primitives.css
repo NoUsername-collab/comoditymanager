@@ -76,10 +76,12 @@
 
 .admin-btn--primary:hover:not(:disabled) {
   background: color-mix(in srgb, var(--admin-btn-primary-bg) 88%, black);
+  color: var(--admin-btn-primary-text);
 }
 
 .admin-btn--primary:active:not(:disabled) {
   background: color-mix(in srgb, var(--admin-btn-primary-bg) 78%, black);
+  color: var(--admin-btn-primary-text);
   transform: translateY(1px);
 }
 

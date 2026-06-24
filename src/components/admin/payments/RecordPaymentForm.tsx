@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { recordPaymentAction } from "@/app/[locale]/admin/(panel)/bookings/payment-actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import type { PaymentMethod } from "@/domain/payments/types";
 
 type Props = {
@@ -49,13 +50,14 @@ export function RecordPaymentForm({ bookingId, balanceDue }: Props) {
 
   if (!open) {
     return (
-      <button
+      <AdminButton
         type="button"
+        variant="primary"
         className="stay-financial__record-btn"
         onClick={() => setOpen(true)}
       >
         {t("recordPayment")}
-      </button>
+      </AdminButton>
     );
   }
 

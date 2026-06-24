@@ -574,9 +574,21 @@
 
 .bd-ops__btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.bd-ops__btn--primary { background: var(--admin-accent, #059669); color: #fff; }
-.bd-ops__btn--primary:hover:not(:disabled) { filter: brightness(1.1); }
-.bd-ops__btn--primary:active:not(:disabled) { filter: brightness(0.9); transform: scale(0.97); transition-duration: 0.06s; }
+.bd-ops__btn--primary {
+  border: 1px solid transparent;
+  background: var(--admin-btn-primary-bg, var(--admin-accent, #059669));
+  color: var(--admin-btn-primary-text, #fff);
+}
+.bd-ops__btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--admin-btn-primary-bg, var(--admin-accent, #059669)) 88%, black);
+  color: var(--admin-btn-primary-text, #fff);
+}
+.bd-ops__btn--primary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--admin-btn-primary-bg, var(--admin-accent, #059669)) 78%, black);
+  color: var(--admin-btn-primary-text, #fff);
+  transform: scale(0.97);
+  transition-duration: 0.06s;
+}
 
 .bd-ops__btn--ghost {
   background: transparent;
@@ -698,13 +710,21 @@
 }
 
 .bd-ops__payment-balance {
-  margin: 0.2rem 0 0.45rem;
+  margin: 0.2rem 0 0.25rem;
   font-size: 0.8125rem;
   color: #78350f;
 }
 
+.bd-ops__payment-hint {
+  margin: 0 0 0.45rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: #92400e;
+}
+
 .bd-ops__payment-alert .bd-ops__btn {
   width: 100%;
+  text-decoration: none;
 }
 
 .bd-ops__lane-actions {

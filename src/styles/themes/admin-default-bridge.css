@@ -111,6 +111,16 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   color: var(--admin-btn-primary-text) !important;
 }
 
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .admin-btn--primary {
+  background: var(--admin-btn-primary-bg) !important;
+  color: var(--admin-btn-primary-text) !important;
+}
+
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .admin-btn--primary:hover:not(:disabled),
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .admin-btn--primary:active:not(:disabled) {
+  color: var(--admin-btn-primary-text) !important;
+}
+
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .hover\:bg-zinc-50:hover,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"]) .admin-shell .hover\:bg-zinc-50\/80:hover {
   background: color-mix(in srgb, var(--admin-page-bg) 75%, var(--admin-panel-bg)) !important;

@@ -309,12 +309,13 @@ html[data-admin-palette] textarea {
 
 html[data-admin-palette] button.rounded-lg.bg-zinc-900,
 html[data-admin-palette] .bg-zinc-900 {
-  background: var(--admin-text) !important;
-  color: var(--admin-panel-bg) !important;
+  background: var(--admin-btn-primary-bg) !important;
+  color: var(--admin-btn-primary-text) !important;
 }
 
 html[data-admin-palette] button[type="submit"].bg-zinc-900:hover {
-  background: color-mix(in srgb, var(--admin-text) 88%, var(--admin-accent)) !important;
+  background: color-mix(in srgb, var(--admin-btn-primary-bg) 88%, black) !important;
+  color: var(--admin-btn-primary-text) !important;
 }
 
 html[data-admin-palette] .rounded-lg.border.border-zinc-300,

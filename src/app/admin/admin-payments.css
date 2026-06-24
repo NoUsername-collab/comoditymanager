@@ -92,14 +92,6 @@
 
 .stay-financial__record-btn {
   align-self: flex-start;
-  min-height: 2.75rem;
-  padding: 0.45rem 1rem;
-  border-radius: 8px;
-  border: 1px solid var(--admin-border, #2e3344);
-  background: var(--admin-surface-raised, #232735);
-  color: var(--admin-text, #e8eaef);
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .stay-financial__record-form {

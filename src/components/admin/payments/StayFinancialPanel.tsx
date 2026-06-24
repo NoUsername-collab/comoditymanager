@@ -21,7 +21,11 @@ export async function StayFinancialPanel({ bookingId, snapshot }: Props) {
   const locale = await getLocale();
 
   return (
-    <section className="stay-financial admin-surface-card" aria-label={t("title")}>
+    <section
+      id="stay-financial"
+      className="stay-financial admin-surface-card"
+      aria-label={t("title")}
+    >
       <h3 className="stay-financial__title">{t("title")}</h3>
 
       <dl className="stay-financial__grid">

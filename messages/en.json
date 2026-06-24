@@ -3099,6 +3099,7 @@
       "history": "Payment history",
       "noPayments": "No payments recorded yet.",
       "recordPayment": "+ Record payment",
+      "recordPaymentHint": "Record payments in the Payments panel below.",
       "amount": "Amount (RON)",
       "method": "Method",
       "method_cash": "Cash",

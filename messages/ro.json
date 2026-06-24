@@ -3083,6 +3083,7 @@
       "history": "Istoric încasări",
       "noPayments": "Nicio încasare înregistrată încă.",
       "recordPayment": "+ Încasare",
+      "recordPaymentHint": "Încasările se înregistrează în panoul Plăți de mai jos.",
       "amount": "Sumă (RON)",
       "method": "Metodă",
       "method_cash": "Numerar",

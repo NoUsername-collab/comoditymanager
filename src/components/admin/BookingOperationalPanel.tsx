@@ -9,7 +9,6 @@ import {
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
 import { BookingCheckoutPanel } from "@/components/admin/checkout/BookingCheckoutPanel";
-import { BookingCheckinPaymentPanel } from "@/components/admin/checkin/BookingCheckinPaymentPanel";
 import {
   checkinPaymentBalance,
   isCheckinPaymentSettled,
@@ -85,6 +84,7 @@ export function BookingOperationalPanel({
   const tCazari = useTranslations("admin.pages.cazari");
   const tCommon = useTranslations("common");
   const tPayment = useTranslations("admin.checkinPayment");
+  const tFinancial = useTranslations("admin.financial");
   const tServer = useTranslations("admin.serverActions");
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -97,7 +97,6 @@ export function BookingOperationalPanel({
     intent: "set" | "edit";
   } | null>(null);
   const [editCheckInTimeOpen, setEditCheckInTimeOpen] = useState(false);
-  const [paymentPanelOpen, setPaymentPanelOpen] = useState(false);
 
   const paymentDue =
     hasCheckinRecord &&
@@ -317,14 +316,10 @@ export function BookingOperationalPanel({
               <p className="bd-ops__payment-balance">
                 {tPayment("balanceDue", { amount: paymentBalance })}
               </p>
-              <button
-                type="button"
-                className="bd-ops__btn bd-ops__btn--primary"
-                disabled={pending || !checkinId}
-                onClick={() => setPaymentPanelOpen(true)}
-              >
-                {tPayment("recordPayment")}
-              </button>
+              <p className="bd-ops__payment-hint">{tFinancial("recordPaymentHint")}</p>
+              <a href="#stay-financial" className="bd-ops__btn bd-ops__btn--primary">
+                {tFinancial("recordPayment")}
+              </a>
             </div>
           ) : null}
 
@@ -490,21 +485,6 @@ export function BookingOperationalPanel({
           onClose={() => setEditCheckInTimeOpen(false)}
           onSuccess={() => {
             setEditCheckInTimeOpen(false);
-            router.refresh();
-          }}
-        />
-      ) : null}
-
-      {paymentPanelOpen && checkinId ? (
-        <BookingCheckinPaymentPanel
-          open
-          bookingId={bookingId}
-          guestName={guestName}
-          plannedCheckIn={plannedCheckIn}
-          plannedCheckOut={plannedCheckOut}
-          onClose={() => setPaymentPanelOpen(false)}
-          onSuccess={() => {
-            setPaymentPanelOpen(false);
             router.refresh();
           }}
         />
