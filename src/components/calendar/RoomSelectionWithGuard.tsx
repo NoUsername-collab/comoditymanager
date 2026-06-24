@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useLocale } from "next-intl";
 import type { GuestStayPreview } from "@/domain/availability/guest-stay-options";
+import "./room-card-compact.css";
 import {
   canSelectRoom,
   validateRoomSelection,
