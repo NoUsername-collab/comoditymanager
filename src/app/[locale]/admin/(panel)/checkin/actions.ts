@@ -455,6 +455,7 @@ export async function createCheckinAction(
     timer.finish({ bookingId, checkinId });
     return { ok: true, checkinId, ganttBooking };
   } catch (err) {
+    timer.finish({ error: true });
     const t = await getTranslations("admin.checkIn");
     return mapCreateCheckinError(err, t);
   }
