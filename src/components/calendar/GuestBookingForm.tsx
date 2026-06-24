@@ -8,8 +8,9 @@ import {
   submitGuestRequestAction,
 } from "@/app/[locale]/(public)/calendar/actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
-import { RoomSelectionWithGuard } from "@/components/calendar/RoomSelectionWithGuard";
+import { GuestStayOptionsPickerCompact } from "@/components/calendar/GuestStayOptionsPickerCompact";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
+import "./option-card-compact.css";
 import type {
   GuestStayOption,
   GuestStayPreview,
@@ -26,7 +27,7 @@ type Props = {
   checkOutTime: string;
 };
 
-type Step = "dates" | "rooms" | "contact";
+type Step = "dates" | "preview" | "contact";
 
 export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const t = useTranslations("public.form");
@@ -44,7 +45,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [numChildren, setNumChildren] = useState(0);
   const [preview, setPreview] = useState<GuestStayPreview | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const [selected, setSelected] = useState<GuestStayOption | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [previewPending, startPreviewTransition] = useTransition();
@@ -59,7 +60,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
     const nextCheckIn = clampCheckInDate(value, today);
     setCheckIn(nextCheckIn);
     setPreview(null);
-    setSelectedRoomIds([]);
+    setSelected(null);
     if (!nextCheckIn) {
       setCheckOut("");
       return;
@@ -73,7 +74,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   function loadPreview() {
     setPreviewError(null);
     setPreview(null);
-    setSelectedRoomIds([]);
+    setSelected(null);
     if (!checkIn || !checkOut) {
       setPreviewError(tErrors("pickDates"));
       return;
@@ -90,7 +91,10 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
         return;
       }
       setPreview(res.preview);
-      setStep("rooms");
+      setStep("preview");
+      if (res.preview.options.length === 1) {
+        setSelected(res.preview.options[0]);
+      }
     });
   }
 
@@ -136,24 +140,27 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       <div className="public-notice public-notice--success p-4 text-center">
         <p className="text-lg font-semibold">{t("successTitle")}</p>
         <p className="mt-2 text-sm opacity-90">{t("successBody")}</p>
-        {selectedRoomIds.length > 0 && (
+        {selected && (
           <p className="mt-3 text-xs opacity-80">
-            {t("successRooms", { count: selectedRoomIds.length, defaultValue: `Rooms selected: ${selectedRoomIds.length}` })}
+            {t.rich("successVariant", {
+              title: selected.title,
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </p>
         )}
       </div>
     );
   }
 
-  const stepOrder: Step[] = ["dates", "rooms", "contact"];
+  const stepOrder: Step[] = ["dates", "preview", "contact"];
   const stepIndex = stepOrder.indexOf(step);
 
   const canSubmitContact =
-    acceptTerms && acceptGdpr && selectedRoomIds.length > 0 && step === "contact";
+    acceptTerms && acceptGdpr && selected && step === "contact";
 
   const steps: { key: Step; label: string }[] = [
     { key: "dates", label: t("stepDates") },
-    { key: "rooms", label: t("stepRooms", { defaultValue: "Select Rooms" }) },
+    { key: "preview", label: t("stepPreview") },
     { key: "contact", label: t("stepContact") },
   ];
 
@@ -211,7 +218,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
                 onChange={(e) => {
                   setCheckOut(e.target.value);
                   setPreview(null);
-                  setSelectedRoomIds([]);
+                  setSelected(null);
                 }}
                 className="mt-1 w-full"
               />
@@ -230,7 +237,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
                 onChange={(e) => {
                   setNumAdults(Number(e.target.value) || 1);
                   setPreview(null);
-                  setSelectedRoomIds([]);
+                  setSelected(null);
                 }}
                 className="mt-1 w-full"
               />
@@ -244,7 +251,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
                 onChange={(e) => {
                   setNumChildren(Number(e.target.value) || 0);
                   setPreview(null);
-                  setSelectedRoomIds([]);
+                  setSelected(null);
                 }}
                 className="mt-1 w-full"
               />
@@ -266,18 +273,35 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
         </div>
       )}
 
-      {step === "rooms" && preview && (
-        <RoomSelectionWithGuard
-          preview={preview}
-          onComplete={(selectedIds) => {
-            setSelectedRoomIds(selectedIds);
-            setStep("contact");
-          }}
-          onCancel={() => setStep("dates")}
-        />
+      {step === "preview" && preview && (
+        <div className="space-y-4">
+          <GuestStayOptionsPickerCompact
+            preview={preview}
+            selectedId={selected?.option_id ?? null}
+            onSelect={(opt) => setSelected(opt)}
+          />
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setStep("dates")}
+              className="site-btn-secondary"
+            >
+              {t("changeDates")}
+            </button>
+            <button
+              type="button"
+              disabled={!selected}
+              onClick={() => setStep("contact")}
+              className="site-cta flex-1 justify-center py-2.5 disabled:opacity-50"
+            >
+              {t("continue")}
+            </button>
+          </div>
+        </div>
       )}
 
-      {step === "contact" && selectedRoomIds.length > 0 && preview && (
+      {step === "contact" && selected && preview && (
         <form action={formAction} className="space-y-4">
           <input type="hidden" name="check_in" value={checkIn} />
           <input type="hidden" name="check_out" value={checkOut} />
@@ -285,24 +309,31 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
           <input type="hidden" name="num_children" value={numChildren} />
           <input
             type="hidden"
-            name="selected_room_ids"
-            value={selectedRoomIds.join(",")}
+            name="selected_option_id"
+            value={selected.option_id}
+          />
+          <input type="hidden" name="selected_title" value={selected.title} />
+          <input
+            type="hidden"
+            name="selected_total_estimate"
+            value={selected.total_estimate_ron}
           />
 
           <div className="public-summary-box">
             <p className="public-summary-box__title">{t("summaryTitle")}</p>
+            <p className="public-summary-box__meta">{selected.title}</p>
             <p className="public-summary-box__meta">
-              {selectedRoomIds.length} room{selectedRoomIds.length !== 1 ? "s" : ""} selected
-            </p>
-            <p className="public-summary-box__meta">
-              {checkIn} → {checkOut} ({preview?.nights || 0} nights)
+              {t("estimate", {
+                total: selected.total_estimate_ron,
+                nights: selected.nights,
+              })}
             </p>
             <button
               type="button"
               className="mt-2 text-xs font-semibold text-[var(--site-accent)] underline"
-              onClick={() => setStep("rooms")}
+              onClick={() => setStep("preview")}
             >
-              {t("changeRooms", { defaultValue: "Change rooms" })}
+              {t("changeVariant")}
             </button>
           </div>
 
@@ -395,7 +426,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setStep("rooms")}
+              onClick={() => setStep("preview")}
               className="site-btn-secondary"
             >
               {t("back")}
