@@ -1,5 +1,6 @@
 import { after } from "next/server";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { createServerTimer } from "@/lib/dev/server-timing";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { validateCheckin } from "@/domain/checkin/validate";
 import type {
@@ -45,6 +46,7 @@ export async function createCheckin(
   settings: CheckinSettings,
   booking: BookingForCheckin,
 ): Promise<string> {
+  const timer = createServerTimer("createCheckinService");
   // ── Validate ──────────────────────────────────────────────
   const now = new Date();
   const currentHour = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -114,6 +116,7 @@ export async function createCheckin(
 
   if (checkinErr) throw new Error(checkinErr.message);
   const checkinId = checkinRow.id;
+  timer.mark("insertCheckin");
 
   // ── Sync identity → profil client (`guests`) ───────────────
   const scope: CheckinIdentityScope = data.identity_scope ?? "per_room";
@@ -128,6 +131,7 @@ export async function createCheckin(
     identityGuests,
     activeBooking,
   );
+  timer.mark("resolveGuestIds");
   let syncIdx = 0;
   const mergedGuests = expandedGuests.map((g) => {
     if (g.keys_only) return g;
@@ -202,5 +206,6 @@ export async function createCheckin(
     });
   });
 
+  timer.finish({ checkinId, bookingId: data.booking_id });
   return checkinId;
 }

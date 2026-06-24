@@ -199,7 +199,10 @@ export async function quickConfirmCerereFromGanttAction(
       new FormData()
     );
     await confirmBookingWithRooms(bookingId, roomIds, total);
-    revalidateBookingSurfacesExtended({ bookingId, includeHistoric: true });
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingSurfacesExtended({ bookingId, tenantId, includeHistoric: true });
+    });
     return { ok: true };
   } catch (e) {
     return {
@@ -498,10 +501,14 @@ export async function shiftBookingOnGanttAction(
       return { ok: false, error: t("invalidMove") };
     }
     const result = await shiftBookingByDays(bookingId, dayDelta);
-    revalidateBookingSurfacesExtended({
-      bookingId,
-      includeHistoric: true,
-      includeStatistics: true,
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingSurfacesExtended({
+        bookingId,
+        tenantId,
+        includeHistoric: true,
+        includeStatistics: true,
+      });
     });
     return { ok: true, ...result };
   } catch (e) {

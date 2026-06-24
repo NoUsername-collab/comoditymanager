@@ -23,6 +23,7 @@ import {
 import { NationalIdTypePicker } from "@/components/admin/guests/NationalIdTypePicker";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
+import { publishCazariStayPatch } from "@/lib/cazari/live-stays";
 import {
   createCheckinAction,
   updateCheckinAction,
@@ -348,6 +349,14 @@ export function CheckinStepper({
     if (result.ok) {
       if (result.ganttBooking) {
         publishGanttLiveBooking(result.ganttBooking);
+        publishCazariStayPatch({
+          id: result.ganttBooking.id,
+          actual_check_in_at: result.ganttBooking.actual_check_in_at,
+          checked_in_rooms: result.ganttBooking.checked_in_rooms,
+          has_checkin_record: result.ganttBooking.has_checkin_record,
+          checkin_payment_status: result.ganttBooking.checkin_payment_status,
+          keys_handed_rooms: result.ganttBooking.keys_handed_rooms,
+        });
       }
       setTransferOffer(null);
       showToast({

@@ -35,6 +35,12 @@ const CHECKIN_SETTINGS_BASE_COLUMNS = [
   "fisa_tourism_license",
 ] as const;
 
+const CHECKIN_SETTINGS_BASE_COLUMNS_WITHOUT_EARLY_CHECKOUT =
+  CHECKIN_SETTINGS_BASE_COLUMNS.filter(
+    (column) =>
+      column !== "early_checkout_allowed" && column !== "early_checkout_fee",
+  );
+
 const CHECKIN_SETTINGS_EXTENDED_COLUMNS = [
   "checkin_key_rule",
   "checkin_ids_per_room",
@@ -56,6 +62,13 @@ const CHECKIN_SETTINGS_SELECT_WITHOUT_EXTENDED = [
 const CHECKIN_SETTINGS_SELECT_WITHOUT_CHECKOUT_BLOCK =
   CHECKIN_SETTINGS_BASE_COLUMNS.join(", ");
 
+const CHECKIN_SETTINGS_SELECT_WITHOUT_EARLY_CHECKOUT = [
+  ...CHECKIN_SETTINGS_BASE_COLUMNS_WITHOUT_EARLY_CHECKOUT,
+  "checkout_block_unpaid",
+  "allow_post_checkout_edits",
+  ...CHECKIN_SETTINGS_EXTENDED_COLUMNS,
+].join(", ");
+
 const CHECKIN_SETTINGS_FISA_READ = [
   "display_name",
   "checkin_cnp_rule",
@@ -66,6 +79,7 @@ const CHECKIN_SETTINGS_FISA_READ = [
 
 const CHECKIN_SETTINGS_SELECT_VARIANTS = [
   CHECKIN_SETTINGS_SELECT,
+  CHECKIN_SETTINGS_SELECT_WITHOUT_EARLY_CHECKOUT,
   CHECKIN_SETTINGS_SELECT_WITHOUT_EXTENDED,
   CHECKIN_SETTINGS_SELECT_WITHOUT_CHECKOUT_BLOCK,
   CHECKIN_SETTINGS_FISA_READ,
@@ -263,25 +277,17 @@ export type CheckinDeparturePolicy = {
 const DEPARTURE_POLICY_SELECT =
   "default_check_out_time, early_checkout_allowed, early_checkout_fee, checkout_time_until";
 
-async function getCheckinDeparturePolicyUncached(
-  tenantId: string,
-): Promise<CheckinDeparturePolicy> {
-  const supabase = createPublicAdminClient();
-  const { data, error } = await supabase
-    .from("pension_settings")
-    .select(DEPARTURE_POLICY_SELECT)
-    .eq("tenant_id", tenantId)
-    .maybeSingle();
+const DEPARTURE_POLICY_SELECT_WITHOUT_EARLY_CHECKOUT =
+  "default_check_out_time, checkout_time_until";
 
-  if (error || !data) {
-    return {
-      earlyCheckoutAllowed: DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
-      earlyCheckoutFee: DEFAULT_CHECKIN_SETTINGS.early_checkout_fee,
-      checkoutTimeUntil: DEFAULT_CHECKIN_SETTINGS.checkout_time_until,
-    };
-  }
+const DEPARTURE_POLICY_SELECT_VARIANTS = [
+  DEPARTURE_POLICY_SELECT,
+  DEPARTURE_POLICY_SELECT_WITHOUT_EARLY_CHECKOUT,
+] as const;
 
-  const row = data as Record<string, unknown>;
+function mapDeparturePolicyRow(
+  row: Record<string, unknown>,
+): CheckinDeparturePolicy {
   return {
     earlyCheckoutAllowed:
       row.early_checkout_allowed != null
@@ -291,6 +297,40 @@ async function getCheckinDeparturePolicyUncached(
     checkoutTimeUntil: parseTimeField(
       row.checkout_time_until ?? row.default_check_out_time,
     ),
+  };
+}
+
+async function getCheckinDeparturePolicyUncached(
+  tenantId: string,
+): Promise<CheckinDeparturePolicy> {
+  const supabase = createPublicAdminClient();
+
+  for (const select of DEPARTURE_POLICY_SELECT_VARIANTS) {
+    const { data, error } = await supabase
+      .from("pension_settings")
+      .select(select)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+
+    if (!error) {
+      if (!data) {
+        return {
+          earlyCheckoutAllowed: DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
+          earlyCheckoutFee: DEFAULT_CHECKIN_SETTINGS.early_checkout_fee,
+          checkoutTimeUntil: DEFAULT_CHECKIN_SETTINGS.checkout_time_until,
+        };
+      }
+      return mapDeparturePolicyRow(data as unknown as Record<string, unknown>);
+    }
+    if (!isCheckinMigrationMissing(error.message)) {
+      throw new Error(error.message);
+    }
+  }
+
+  return {
+    earlyCheckoutAllowed: DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
+    earlyCheckoutFee: DEFAULT_CHECKIN_SETTINGS.early_checkout_fee,
+    checkoutTimeUntil: DEFAULT_CHECKIN_SETTINGS.checkout_time_until,
   };
 }
 

@@ -14,6 +14,7 @@ import {
 } from "@/domain/booking/operative-checkin";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
+import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -174,7 +175,7 @@ export function StayQuickOps({
         title: dayDelta > 0 ? labels.moveNextDay : labels.movePrevDay,
         message: guestName,
       });
-      router.refresh();
+      deferGanttBackgroundRefresh(router);
     });
   }
 
@@ -286,7 +287,7 @@ export function StayQuickOps({
           onClose={() => setEditCheckOutOpen(false)}
           onSuccess={() => {
             setEditCheckOutOpen(false);
-            router.refresh();
+            deferGanttBackgroundRefresh(router);
           }}
         />
       ) : null}

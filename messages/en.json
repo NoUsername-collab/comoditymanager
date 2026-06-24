@@ -839,6 +839,7 @@
       "earlyNote": "Early departure — before standard time ({until}). Reception note.",
       "earlyNoteFee": "Early departure — indicative fee {fee} RON (check-in settings). Standard time: {until}.",
       "earlyNotAllowed": "Early departure — property policy does not allow leaving before {until}.",
+      "overdueBanner": "Unclosed stay — planned departure was {days, plural, one {# day} other {# days}} ago. Retroactive checkout at the planned departure time is suggested; adjust the time if needed.",
       "addReview": "Add quick review",
       "reviewIntro": "Choose positive or negative, set intensity 1–5, then add a note.",
       "positiveNote": "Positive note",
@@ -3355,6 +3356,7 @@
       }
     },
     "gantt": {
+      "now": "Now",
       "hudHide": "Hide menu",
       "hudShow": "Show menu",
       "legend": "Timeline legend",

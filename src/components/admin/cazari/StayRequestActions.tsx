@@ -8,6 +8,7 @@ import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actio
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
 import type { OperationalStay } from "@/components/admin/cazari/types";
 
 export type StayRequestActionLabels = {
@@ -47,7 +48,7 @@ export function StayRequestActions({
         return;
       }
       celebrateConfirm(labels.quickAcceptSuccess, stay.guest_name);
-      router.refresh();
+      deferGanttBackgroundRefresh(router);
     });
   }
 
@@ -81,6 +82,7 @@ export function StayRequestActions({
           bookingId={stay.id}
           returnTo={returnTo}
           variant="compact"
+          operative
         />
       </div>
     </div>

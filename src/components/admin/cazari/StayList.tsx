@@ -6,6 +6,7 @@ import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { StayListItem } from "@/components/admin/cazari/StayListItem";
 import { StayListVirtualized } from "@/components/admin/cazari/StayListVirtualized";
+import { useCazariLiveStays } from "@/lib/cazari/live-stays";
 import type {
   CazariLabels,
   StayCardRow,
@@ -89,6 +90,8 @@ export function StayList({
   collapsible?: boolean;
   defaultExpanded?: boolean;
 }) {
+  const liveItems = useCazariLiveStays(items);
+
   const emptyState =
     variant === "confirmate"
       ? {
@@ -132,7 +135,7 @@ export function StayList({
         : "stay-card stay-card--green stay-card--stacked";
 
   const listBody =
-    items.length === 0 ? (
+    liveItems.length === 0 ? (
       <AdminEmptyState
         emoji={emptyState.emoji}
         title={emptyState.title}
@@ -140,9 +143,9 @@ export function StayList({
         actionHref={"href" in emptyState ? emptyState.href : undefined}
         actionLabel={"label" in emptyState ? emptyState.label : undefined}
       />
-    ) : items.length >= STAY_LIST_VIRTUAL_MIN_ITEMS ? (
+    ) : liveItems.length >= STAY_LIST_VIRTUAL_MIN_ITEMS ? (
       <StayListVirtualized
-        items={items}
+        items={liveItems}
         rowClass={rowClass}
         variant={variant}
         returnTo={returnTo}
@@ -151,7 +154,7 @@ export function StayList({
       />
     ) : (
       <ul className="stay-list space-y-2">
-        {items.map((stay) => (
+        {liveItems.map((stay) => (
           <StayListItem
             key={stay.id}
             stay={stay}

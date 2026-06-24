@@ -14,7 +14,7 @@ import {
   quickConfirmCerereFromGanttAction,
   releaseRoomHoldAction,
 } from "@/app/[locale]/admin/(panel)/calendar/actions";
-import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
+import { cancelBookingOperativeAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
@@ -22,6 +22,8 @@ import { useGanttOperativeCheck } from "@/components/admin/gantt/GanttOperativeC
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { computeFixedPointerMenuPosition } from "@/lib/ui/viewport-position";
+import { deferGanttBackgroundRefresh, removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
+import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 
 const GANTT_CTX_MENU_BOUNDS = { width: 260, height: 320 };
@@ -147,15 +149,18 @@ export function GanttContextMenuPanel() {
     guestName: string,
     isCerere: boolean
   ) {
-    const fd = new FormData();
-    fd.set("id", bookingId);
-    fd.set("return_to", "/admin/calendar");
     void runAdminAction(async () => {
-      await cancelBookingAction(fd);
+      const res = await cancelBookingOperativeAction(bookingId);
+      if (!res.ok) {
+        showToast({ kind: "error", title: t("error"), message: res.error });
+        return;
+      }
+      publishCazariStayCancelled(bookingId);
+      removeGanttLiveBooking(bookingId);
       notifyCancel(isCerere ? t("requestCancelled") : t("stayCancelled"), guestName);
       setCancelConfirm(null);
       closeMenu();
-      router.refresh();
+      deferGanttBackgroundRefresh(router);
     });
   }
 
@@ -175,7 +180,7 @@ export function GanttContextMenuPanel() {
         message: guestName,
       });
       closeMenu();
-      router.refresh();
+      deferGanttBackgroundRefresh(router);
     });
   }
 

@@ -19,10 +19,16 @@ import {
   isLateCheckout,
   shouldBlockCheckoutForUnpaid,
 } from "@/domain/booking/checkout-readiness";
+import {
+  daysSincePlannedCheckout,
+  defaultOperativeCheckoutDatetime,
+  isOverdueUnclosedStay,
+  shouldApplyEarlyDeparturePolicy,
+} from "@/domain/booking/operative-checkout";
 import type { BookingCheckoutPanelData } from "@/domain/booking/checkout-panel";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { datetimeLocalNow, isoToDatetimeLocal } from "@/lib/operational-check";
-import { stayNightCount } from "@/lib/stay-dates";
+import { stayNightCount, todayIso } from "@/lib/stay-dates";
 import {
   GuestStayRatingFields,
   type GuestStayRatingValue,
@@ -55,7 +61,6 @@ export function BookingCheckoutPanel({
   const t = useTranslations("admin.checkout");
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt.checkTime");
-  const tGanttCommon = useTranslations("admin.gantt");
   const locale = useLocale();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -73,6 +78,28 @@ export function BookingCheckoutPanel({
   });
 
   const isEdit = intent === "edit";
+  const effectiveToday = todayIso();
+
+  function resolveDefaultCheckoutAt(
+    panel: BookingCheckoutPanelData | null
+  ): string {
+    const plannedOut = panel?.plannedCheckOut ?? plannedCheckOutProp ?? "";
+    const recordedOut = panel?.actualCheckOutAt ?? actualCheckOutAt;
+    if (
+      plannedOut &&
+      isOverdueUnclosedStay({
+        plannedCheckOut: plannedOut,
+        today: effectiveToday,
+        actualCheckOutAt: recordedOut,
+      })
+    ) {
+      return defaultOperativeCheckoutDatetime(
+        plannedOut,
+        panel?.checkoutTimeUntil ?? null
+      );
+    }
+    return datetimeLocalNow();
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -86,7 +113,7 @@ export function BookingCheckoutPanel({
       setReviewRating({ polarity: null, intensity: 3, note: "" });
       return;
     }
-    setAtLocal(datetimeLocalNow());
+    setAtLocal(resolveDefaultCheckoutAt(null));
 
     let cancelled = false;
     setLoading(true);
@@ -100,6 +127,7 @@ export function BookingCheckoutPanel({
         return;
       }
       setData(res.data);
+      setAtLocal(resolveDefaultCheckoutAt(res.data));
       if (res.data.existingReviewStars != null) {
         setAddReview(true);
       }
@@ -115,7 +143,14 @@ export function BookingCheckoutPanel({
     return () => {
       cancelled = true;
     };
-  }, [open, bookingId, isEdit, actualCheckOutAt]);
+  }, [
+    open,
+    bookingId,
+    isEdit,
+    actualCheckOutAt,
+    plannedCheckOutProp,
+    effectiveToday,
+  ]);
 
   const displayName = data?.guestName ?? guestNameProp ?? "";
   const plannedCheckIn = data?.plannedCheckIn ?? plannedCheckInProp ?? "";
@@ -133,19 +168,49 @@ export function BookingCheckoutPanel({
     );
   }, [data, isEdit]);
 
+  const overdueStay = useMemo(() => {
+    if (!plannedCheckOut || isEdit) return false;
+    return isOverdueUnclosedStay({
+      plannedCheckOut,
+      today: effectiveToday,
+      actualCheckOutAt: data?.actualCheckOutAt ?? actualCheckOutAt,
+    });
+  }, [
+    plannedCheckOut,
+    isEdit,
+    effectiveToday,
+    data?.actualCheckOutAt,
+    actualCheckOutAt,
+  ]);
+
+  const overdueDays = useMemo(
+    () =>
+      overdueStay ? daysSincePlannedCheckout(plannedCheckOut, effectiveToday) : 0,
+    [overdueStay, plannedCheckOut, effectiveToday]
+  );
+
   const lateNote = useMemo(() => {
-    if (!data?.checkoutTimeUntil || isEdit) return false;
+    if (!data?.checkoutTimeUntil || isEdit || overdueStay) return false;
     return isLateCheckout(atLocal, {
       checkout_time_until: data.checkoutTimeUntil,
     });
-  }, [atLocal, data, isEdit]);
+  }, [atLocal, data, isEdit, overdueStay]);
 
   const earlyNote = useMemo(() => {
-    if (!data?.plannedCheckOut || isEdit) return false;
+    if (!data?.plannedCheckOut || isEdit || overdueStay) return false;
+    if (
+      !shouldApplyEarlyDeparturePolicy(
+        data.plannedCheckOut,
+        effectiveToday,
+        data.actualCheckOutAt
+      )
+    ) {
+      return false;
+    }
     return isEarlyDeparture(atLocal, data.plannedCheckOut, {
       checkout_time_until: data.checkoutTimeUntil,
     });
-  }, [atLocal, data, isEdit]);
+  }, [atLocal, data, isEdit, overdueStay, effectiveToday]);
 
   const paymentLabel = useMemo(() => {
     if (!data?.paymentStatus) return t("paymentUnknown");
@@ -239,6 +304,15 @@ export function BookingCheckoutPanel({
           </p>
         ) : null}
 
+        {!isEdit && overdueStay ? (
+          <p
+            className="booking-checkout-panel__alert booking-checkout-panel__alert--overdue"
+            role="alert"
+          >
+            {t("overdueBanner", { days: overdueDays })}
+          </p>
+        ) : null}
+
         {!isEdit && data && paymentBlocked ? (
           <p className="booking-checkout-panel__alert booking-checkout-panel__alert--block">
             {t("unpaidBlock")}
@@ -320,7 +394,7 @@ export function BookingCheckoutPanel({
         <div className="booking-checkout-panel__actions">
           <button
             type="button"
-            className="booking-checkout-panel__btn booking-checkout-panel__btn--primary"
+            className="admin-btn admin-btn--primary booking-checkout-panel__btn"
             disabled={submitDisabled}
             onClick={() => submit(atLocal)}
           >
@@ -329,16 +403,16 @@ export function BookingCheckoutPanel({
           {!isEdit ? (
             <button
               type="button"
-              className="booking-checkout-panel__btn booking-checkout-panel__btn--secondary"
+              className="admin-btn admin-btn--secondary booking-checkout-panel__btn"
               disabled={submitDisabled}
               onClick={() => submit()}
             >
-              {tGanttCommon("now")}
+              {tCommon("now")}
             </button>
           ) : null}
           <button
             type="button"
-            className="booking-checkout-panel__btn booking-checkout-panel__btn--ghost"
+            className="admin-btn admin-btn--ghost booking-checkout-panel__btn"
             disabled={pending}
             onClick={onClose}
           >

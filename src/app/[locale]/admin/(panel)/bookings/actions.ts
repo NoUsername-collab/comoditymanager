@@ -1,8 +1,11 @@
 "use server";
 
+import { after } from "next/server";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { revalidateBookingDetailSurfaces } from "@/lib/cache/revalidate-admin";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
+import { createServerTimer } from "@/lib/dev/server-timing";
 import {
   cancelBooking,
   confirmBookingWithRooms,
@@ -138,9 +141,68 @@ export async function cancelBookingAction(formData: FormData) {
     })();
   }
 
-  revalidateBookingDetailSurfaces(id);
+  after(async () => {
+    const tenantId = await resolveTenantIdForData();
+    revalidateBookingDetailSurfaces(id, tenantId);
+  });
   const base = safeAdminReturnPath(returnTo, "/admin/bookings");
   await redirect(appendQueryParam(base, "toast", "cancelled"));
+}
+
+/** Fast cancel for Cazări/Gantt — no redirect, revalidation deferred. */
+export async function cancelBookingOperativeAction(
+  bookingId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const timer = createServerTimer("cancelBookingOperative");
+  const t = await getTranslations("admin.serverActions");
+  try {
+    await requireStaffPermission("booking_management");
+    timer.mark("auth");
+    const id = bookingId.trim();
+    if (!id) return { ok: false, error: t("bookingIdMissing") };
+
+    const { getBookingById } = await import("@/services/bookings");
+    const bookingBefore = await getBookingById(id).catch(() => null);
+
+    await cancelBooking(id);
+    timer.mark("cancel");
+
+    if (bookingBefore?.guest_email) {
+      (async () => {
+        try {
+          const { getTenantDisplayName } = await import("@/services/tenants");
+          const { getEmailSettings } = await import("@/services/email-settings");
+          const [pensionName, emailSettings] = await Promise.all([
+            getTenantDisplayName(await resolveTenantIdForData()),
+            getEmailSettings().catch(() => null),
+          ]);
+          const { notifyGuestCancelled } = await import("@/lib/email/notify");
+          await notifyGuestCancelled({
+            guestEmail: bookingBefore.guest_email,
+            pensionName,
+            guestName: bookingBefore.guest_name,
+            checkIn: bookingBefore.check_in,
+            checkOut: bookingBefore.check_out,
+            emailSettings: emailSettings ?? undefined,
+          });
+        } catch { /* email failure must never crash */ }
+      })();
+    }
+
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingDetailSurfaces(id, tenantId);
+    });
+
+    timer.finish({ bookingId: id });
+    return { ok: true };
+  } catch (e) {
+    timer.finish({ error: true });
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : t("checkInError"),
+    };
+  }
 }
 
 type OpsActionResult = { ok: true } | { ok: false; error: string };

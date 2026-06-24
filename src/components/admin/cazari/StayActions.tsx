@@ -75,6 +75,7 @@ export function StayActions({
         bookingId={stay.id}
         returnTo={returnTo}
         variant="compact"
+        operative
         />
       </div>
     </div>

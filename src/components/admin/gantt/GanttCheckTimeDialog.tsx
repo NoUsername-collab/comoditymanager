@@ -22,6 +22,10 @@ import {
   isOperativeCheckInTimestampValid,
   operativeCheckInDatetimeBounds,
 } from "@/domain/booking/operative-checkin";
+import {
+  defaultOperativeCheckoutDatetime,
+  isOverdueUnclosedStay,
+} from "@/domain/booking/operative-checkout";
 import { datetimeLocalNow } from "@/lib/operational-check";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { todayIso } from "@/lib/stay-dates";
@@ -38,6 +42,7 @@ export type GanttCheckTimeDialogProps = {
   status?: string;
   actualCheckInAt?: string | null;
   actualCheckOutAt?: string | null;
+  checkoutTimeUntil?: string | null;
   onClose: () => void;
   onSuccess?: () => void;
 };
@@ -54,6 +59,7 @@ export function GanttCheckTimeDialog({
   status = "confirmata",
   actualCheckInAt = null,
   actualCheckOutAt = null,
+  checkoutTimeUntil = null,
   onClose,
   onSuccess,
 }: GanttCheckTimeDialogProps) {
@@ -109,8 +115,33 @@ export function GanttCheckTimeDialog({
       setAtLocal(inBounds ? now : `${plannedCheckIn}T12:00`);
       return;
     }
+    if (
+      mode === "checkout" &&
+      intent === "set" &&
+      isOverdueUnclosedStay({
+        plannedCheckOut,
+        today: effectiveToday,
+        actualCheckOutAt,
+      })
+    ) {
+      setAtLocal(
+        defaultOperativeCheckoutDatetime(plannedCheckOut, checkoutTimeUntil)
+      );
+      return;
+    }
     setAtLocal(datetimeLocalNow());
-  }, [open, bookingId, mode, intent, plannedCheckIn, datetimeBounds]);
+  }, [
+    open,
+    bookingId,
+    mode,
+    intent,
+    plannedCheckIn,
+    plannedCheckOut,
+    datetimeBounds,
+    effectiveToday,
+    actualCheckOutAt,
+    checkoutTimeUntil,
+  ]);
 
   useEffect(() => {
     if (!open) return;

@@ -128,37 +128,15 @@
   padding-top: 0.2rem;
 }
 
+.booking-checkout-panel__alert--overdue {
+  border: 1px solid #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+}
+
 .booking-checkout-panel__btn {
   border-radius: 0.55rem;
   padding: 0.42rem 0.75rem;
   font-size: 0.72rem;
   font-weight: 800;
-}
-
-.booking-checkout-panel__btn--primary {
-  border: 1px solid transparent;
-  background: var(--admin-btn-primary-bg, #ea580c);
-  color: var(--admin-btn-primary-text, #fff7ed);
-}
-
-.booking-checkout-panel__btn--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--admin-btn-primary-bg, #ea580c) 88%, black);
-  color: var(--admin-btn-primary-text, #fff7ed);
-}
-
-.booking-checkout-panel__btn--secondary {
-  border: 1px solid var(--border, #e4e4e7);
-  background: var(--surface-2, #f4f4f5);
-  color: var(--admin-text, #18181b);
-}
-
-.booking-checkout-panel__btn--ghost {
-  border: none;
-  background: transparent;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.booking-checkout-panel__btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }

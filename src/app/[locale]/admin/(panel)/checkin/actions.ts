@@ -114,9 +114,14 @@ export async function loadCheckinWizardContextAction(
 
     if (existingCheckin && !booking.actual_check_in_at) {
       await syncBookingOperativeCheckInFromRecord(bookingId, existingCheckin);
-      const tenantId = await resolveTenantIdForData();
-      revalidateBookingSurfacesExtended({ bookingId, includeHistoric: true });
-      booking = (await getBookingById(bookingId)) ?? booking;
+      after(async () => {
+        const tenantId = await resolveTenantIdForData();
+        revalidateBookingSurfacesExtended({ bookingId, tenantId, includeHistoric: true });
+      });
+      booking = {
+        ...booking,
+        actual_check_in_at: existingCheckin.checked_in_at,
+      };
     }
 
     const [checkedInRooms, registeredGuests] = await Promise.all([
@@ -309,10 +314,12 @@ export async function updateCheckinPaymentAction(
       bookingForCheckin,
     );
 
-    const tenantId = await resolveTenantIdForData();
-    revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
-    revalidateTag(CACHE_TAGS.checkins, "max");
-    revalidateBookingOperativeSurfaces(bookingId, tenantId);
+    after(async () => {
+      const tenantId = await resolveTenantIdForData();
+      revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
+      revalidateTag(CACHE_TAGS.checkins, "max");
+      revalidateBookingOperativeSurfaces(bookingId, tenantId);
+    });
 
     return { ok: true };
   } catch (err) {

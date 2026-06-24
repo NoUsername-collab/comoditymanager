@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { unstable_cache } from "next/cache";
 import type { GuestFlagLevel } from "@/domain/guest/types";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
@@ -34,6 +35,7 @@ import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 
+import { createServerTimer } from "@/lib/dev/server-timing";
 import { getBookingById } from "./queries";
 import { assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
 import { createBookingRequest } from "./create";
@@ -303,10 +305,12 @@ export async function shiftBookingByDays(
 }
 
 export async function cancelBooking(bookingId: string): Promise<void> {
+  const timer = createServerTimer("cancelBooking");
   const [booking, { tenantId, supabase }] = await Promise.all([
     getBookingById(bookingId),
     getTenantScope(),
   ]);
+  timer.mark("load");
   if (!booking) throw new Error("booking.not_found");
   if (booking.status === "anulata") {
     throw new Error("booking.already_cancelled");
@@ -317,27 +321,33 @@ export async function cancelBooking(bookingId: string): Promise<void> {
     .eq("tenant_id", tenantId)
     .eq("id", bookingId);
   if (error) throw new Error(error.message);
+  timer.mark("update");
 
-  await syncBookingRoomSegments(bookingId);
+  const snapshot = {
+    guest_name: booking.guest_name,
+    previous_status: booking.status,
+    check_in: booking.check_in,
+    check_out: booking.check_out,
+    room_ids: booking.room_ids,
+    total_price: booking.total_price,
+  };
 
-  const { revokeGuestAccessForBooking } = await import(
-    "@/services/guest-app/access"
-  );
-  await revokeGuestAccessForBooking(bookingId).catch(() => null);
-
-  await logAdminActivityFromSession({
-    action: "booking.cancelled",
-    entityType: "booking",
-    entityId: bookingId,
-    summary: `Anulată: ${booking.guest_name}`,
-    undoable: true,
-    metadata: {
-      previous_status: booking.status,
-      check_in: booking.check_in,
-      check_out: booking.check_out,
-      room_ids: booking.room_ids,
-      total_price: booking.total_price,
-    },
+  after(async () => {
+    await syncBookingRoomSegments(bookingId).catch(() => null);
+    const { revokeGuestAccessForBooking } = await import(
+      "@/services/guest-app/access"
+    );
+    await revokeGuestAccessForBooking(bookingId).catch(() => null);
+    await logAdminActivityFromSession({
+      action: "booking.cancelled",
+      entityType: "booking",
+      entityId: bookingId,
+      summary: `Anulată: ${snapshot.guest_name}`,
+      undoable: true,
+      metadata: snapshot,
+    });
   });
+
+  timer.finish({ bookingId });
 }
 

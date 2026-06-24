@@ -37,6 +37,7 @@ import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 
+import { createServerTimer } from "@/lib/dev/server-timing";
 import { getBookingById } from "./queries";
 import { assertRoomsAvailableForStay } from "./availability";
 
@@ -142,6 +143,7 @@ export async function createBookingRequest(input: {
   /** Caller a verificat deja disponibilitatea (evită query duplicat). */
   skipAvailabilityCheck?: boolean;
 }): Promise<string> {
+  const timer = createServerTimer("createBookingRequest");
   assertValidGuestPhone(input.guest_phone);
 
   const holdRooms = input.room_ids?.length
@@ -176,6 +178,7 @@ export async function createBookingRequest(input: {
       guestFirstName: input.guest_first_name,
     }),
   ]);
+  timer.mark("resolveGuest");
 
   const { data, error } = await supabase
     .from("bookings")
@@ -204,6 +207,7 @@ export async function createBookingRequest(input: {
     .single();
 
   if (error) throw new Error(error.message);
+  timer.mark("insert");
 
   if (holdRooms.length > 0) {
     try {
@@ -259,6 +263,7 @@ export async function createBookingRequest(input: {
     }
   });
 
+  timer.finish({ bookingId });
   return bookingId;
 }
 

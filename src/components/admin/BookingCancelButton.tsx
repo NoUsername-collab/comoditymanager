@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { cancelBookingOperativeAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
+import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
+import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
+import { deferGanttBackgroundRefresh, removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
 
 export function BookingCancelButton({
   label,
@@ -12,6 +17,9 @@ export function BookingCancelButton({
   bookingId,
   returnTo = "/admin/bookings",
   variant = "default",
+  /** Fast path: JSON action + live UI patch, no redirect/RSC reload. */
+  operative = false,
+  onOperativeSuccess,
 }: {
   label: string;
   confirmMessage: string;
@@ -19,8 +27,12 @@ export function BookingCancelButton({
   bookingId: string;
   returnTo?: string;
   variant?: "default" | "compact";
+  operative?: boolean;
+  onOperativeSuccess?: () => void;
 }) {
   const tCommon = useTranslations("admin.common");
+  const router = useRouter();
+  const { showToast } = useAdminFx();
   const [open, setOpen] = useState(false);
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -37,6 +49,21 @@ export function BookingCancelButton({
     variant === "compact"
       ? "rounded px-2 py-1 text-[10px] font-medium"
       : "rounded-md px-3 py-1 text-xs font-medium";
+
+  function confirmOperativeCancel() {
+    void runAdminAction(async () => {
+      const res = await cancelBookingOperativeAction(bookingId);
+      if (!res.ok) {
+        showToast({ kind: "error", title: tCommon("error"), message: res.error });
+        return;
+      }
+      publishCazariStayCancelled(bookingId);
+      removeGanttLiveBooking(bookingId);
+      deferGanttBackgroundRefresh(router);
+      onOperativeSuccess?.();
+      setOpen(false);
+    });
+  }
 
   if (!open) {
     if (variant === "compact") {
@@ -61,6 +88,29 @@ export function BookingCancelButton({
       >
         {label}
       </AdminTextActionButton>
+    );
+  }
+
+  if (operative) {
+    return (
+      <div
+        className={`booking-cancel-form ${panelClass}`}
+        aria-live="polite"
+        data-admin-pending={pending ? "true" : undefined}
+      >
+        <p className="text-red-900">{confirmMessage}</p>
+        <ConfirmButtons
+          btnClass={btnClass}
+          pending={pending}
+          onCancel={() => setOpen(false)}
+          onConfirm={confirmOperativeCancel}
+          labels={{
+            cancelling: tCommon("cancelling"),
+            confirmCancel: tCommon("confirmCancel"),
+            dismiss: tCommon("dismiss"),
+          }}
+        />
+      </div>
     );
   }
 
@@ -97,11 +147,13 @@ function ConfirmButtons({
   btnClass,
   pending,
   onCancel,
+  onConfirm,
   labels,
 }: {
   btnClass: string;
   pending: boolean;
   onCancel: () => void;
+  onConfirm?: () => void;
   labels: { cancelling: string; confirmCancel: string; dismiss: string };
 }) {
   return (
@@ -115,8 +167,9 @@ function ConfirmButtons({
         {labels.dismiss}
       </button>
       <button
-        type="submit"
+        type={onConfirm ? "button" : "submit"}
         disabled={pending}
+        onClick={onConfirm}
         className={`booking-cancel-form__confirm ${btnClass} bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 min-h-[var(--ml-touch-min,2.75rem)] sm:min-h-0`}
       >
         {pending ? labels.cancelling : labels.confirmCancel}

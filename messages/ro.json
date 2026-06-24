@@ -838,6 +838,7 @@
       "earlyNote": "Plecare devreme — înainte de ora standard ({until}). Notă recepție.",
       "earlyNoteFee": "Plecare devreme — taxă orientativă {fee} RON (setări check-in). Ora standard: {until}.",
       "earlyNotAllowed": "Plecare devreme — politica pensiunii nu permite plecarea înainte de {until}.",
+      "overdueBanner": "Sejur neînchis — plecare planificată acum {days, plural, one {# zi} few {# zile} other {# zile}}. Se propune check-out retroactiv la data plecării; poți ajusta ora dacă e nevoie.",
       "addReview": "Adaugă evaluare rapidă",
       "reviewIntro": "Alege pozitiv sau negativ, setează intensitatea 1–5, apoi adaugă nota.",
       "positiveNote": "Notă pozitivă",
@@ -3338,6 +3339,7 @@
       }
     },
     "gantt": {
+      "now": "Acum",
       "hudHide": "Ascunde meniul",
       "hudShow": "Arată meniul",
       "legend": "Legendă timeline",
