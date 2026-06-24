@@ -2,6 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
 import { formatRoDate } from "@/lib/stay-dates";
+import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { CancelledStayUndoButton } from "@/components/admin/cazari/CancelledStayUndoButton";
@@ -37,8 +38,8 @@ export function StayHistoryPanel({
     <AdminPanel
       title={
         query
-          ? labels.historyFiltered(totalCount)
-          : labels.historyRecent(totalCount)
+          ? formatCazariLabel(labels.historyFiltered, { count: totalCount })
+          : formatCazariLabel(labels.historyRecent, { count: totalCount })
       }
     >
       <div className="space-y-3">
@@ -56,7 +57,9 @@ export function StayHistoryPanel({
           <section className="space-y-1.5">
             <div className="rounded-md border border-sky-200 bg-sky-50 px-2.5 py-1.5">
               <p className="text-[11px] font-bold text-sky-950">
-                {labels.historyConfirmedRecentSection(confirmedRecentItems.length)}
+                {formatCazariLabel(labels.historyConfirmedRecentSection, {
+                  count: confirmedRecentItems.length,
+                })}
               </p>
               <p className="text-[10px] leading-tight text-sky-900/90">
                 {labels.historyConfirmedRecentHint}
@@ -70,7 +73,9 @@ export function StayHistoryPanel({
                       {stay.guest_name}
                     </p>
                     <span className="shrink-0 rounded-full border border-sky-200 bg-sky-100 px-1.5 py-0.5 text-[9px] font-bold leading-none text-sky-900">
-                      {labels.historyConfirmedRecentBadge(formatRoDate(stay.check_in))}
+                      {formatCazariLabel(labels.historyConfirmedRecentBadge, {
+                        date: formatRoDate(stay.check_in),
+                      })}
                     </span>
                   </div>
                   <p className="truncate text-[10px] leading-tight text-zinc-500">
@@ -84,7 +89,10 @@ export function StayHistoryPanel({
                     </span>
                     <span aria-hidden>·</span>
                     <span>
-                      {labels.guestsShort(stay.num_adults, stay.num_children)}
+                      {formatCazariLabel(labels.guestsShort, {
+                        adults: stay.num_adults,
+                        children: stay.num_children,
+                      })}
                     </span>
                     <span className="font-mono text-[9px] text-zinc-400">
                       {formatBookingRef(stay.id)}
@@ -109,7 +117,9 @@ export function StayHistoryPanel({
           <section className="space-y-1.5">
             <div className="rounded-md border border-red-200 bg-red-50 px-2.5 py-1.5">
               <p className="text-[11px] font-bold text-red-900">
-                {labels.historyCancelledSection(cancelledItems.length)}
+                {formatCazariLabel(labels.historyCancelledSection, {
+                  count: cancelledItems.length,
+                })}
               </p>
               <p className="text-[10px] leading-tight text-red-800/90">
                 {labels.historyCancelledHint}
@@ -137,7 +147,10 @@ export function StayHistoryPanel({
                     </span>
                     <span aria-hidden>·</span>
                     <span>
-                      {labels.guestsShort(stay.num_adults, stay.num_children)}
+                      {formatCazariLabel(labels.guestsShort, {
+                        adults: stay.num_adults,
+                        children: stay.num_children,
+                      })}
                     </span>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-1 text-[9px] text-red-800/60">
@@ -145,9 +158,9 @@ export function StayHistoryPanel({
                     <span className="font-mono">{formatBookingRef(stay.id)}</span>
                     <span aria-hidden>·</span>
                     <span>
-                      {labels.historyCancelledAt(
-                        formatRoDate(stay.updated_at.slice(0, 10))
-                      )}
+                      {formatCazariLabel(labels.historyCancelledAt, {
+                        date: formatRoDate(stay.updated_at.slice(0, 10)),
+                      })}
                     </span>
                   </div>
                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -198,7 +211,10 @@ export function StayHistoryPanel({
                     </span>
                     <span aria-hidden>·</span>
                     <span>
-                      {labels.guestsShort(stay.num_adults, stay.num_children)}
+                      {formatCazariLabel(labels.guestsShort, {
+                        adults: stay.num_adults,
+                        children: stay.num_children,
+                      })}
                     </span>
                     {stay.total_price != null ? (
                       <>

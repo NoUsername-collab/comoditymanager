@@ -2,31 +2,41 @@
 
 import { groupConfirmedStays, isConfirmedBucketExpandedByDefault } from "@/domain/cazari/confirmed-buckets";
 import { todayIso } from "@/lib/stay-dates";
+import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { StayList } from "@/components/admin/cazari/StayList";
 import type { CazariLabels, OperationalStay } from "@/components/admin/cazari/types";
 
 const BUCKET_META: Record<
   "today" | "week" | "month" | "upcoming",
   {
-    title: (labels: CazariLabels, count: number) => string;
-    subtitle: (labels: CazariLabels) => string;
+    titleKey: keyof Pick<
+      CazariLabels,
+      "groupedToday" | "groupedThisWeek" | "groupedThisMonth" | "groupedUpcoming"
+    >;
+    subtitleKey: keyof Pick<
+      CazariLabels,
+      | "groupedTodayHint"
+      | "groupedThisWeekHint"
+      | "groupedThisMonthHint"
+      | "groupedUpcomingHint"
+    >;
   }
 > = {
   today: {
-    title: (labels, count) => labels.groupedToday(count),
-    subtitle: (labels) => labels.groupedTodayHint,
+    titleKey: "groupedToday",
+    subtitleKey: "groupedTodayHint",
   },
   week: {
-    title: (labels, count) => labels.groupedThisWeek(count),
-    subtitle: (labels) => labels.groupedThisWeekHint,
+    titleKey: "groupedThisWeek",
+    subtitleKey: "groupedThisWeekHint",
   },
   month: {
-    title: (labels, count) => labels.groupedThisMonth(count),
-    subtitle: (labels) => labels.groupedThisMonthHint,
+    titleKey: "groupedThisMonth",
+    subtitleKey: "groupedThisMonthHint",
   },
   upcoming: {
-    title: (labels, count) => labels.groupedUpcoming(count),
-    subtitle: (labels) => labels.groupedUpcomingHint,
+    titleKey: "groupedUpcoming",
+    subtitleKey: "groupedUpcomingHint",
   },
 };
 
@@ -53,8 +63,10 @@ export function ConfirmedBuckets({
         return (
           <StayList
             key={bucket.key}
-            title={meta.title(labels, bucket.stays.length)}
-            subtitle={meta.subtitle(labels)}
+            title={formatCazariLabel(labels[meta.titleKey], {
+              count: bucket.stays.length,
+            })}
+            subtitle={labels[meta.subtitleKey]}
             items={bucket.stays}
             variant="confirmate"
             returnTo={returnTo}

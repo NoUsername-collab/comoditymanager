@@ -18,6 +18,7 @@ import {
 } from "@/domain/cazari/page-splits";
 import { loadCazariPrimaryData } from "@/services/cazari-page-data";
 import { buildCazariLabels } from "@/services/cazari-labels";
+import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { AdminStaySearchForm } from "@/components/admin/AdminStaySearchForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
@@ -193,7 +194,9 @@ export default async function AdminCazariPage({
             >
               {hiddenConfirmateCount > 0 && (
                 <p className="mb-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
-                  {labels.groupedOutsideWindow(hiddenConfirmateCount)}
+                  {formatCazariLabel(labels.groupedOutsideWindow, {
+                    count: hiddenConfirmateCount,
+                  })}
                 </p>
               )}
               <ConfirmedBuckets

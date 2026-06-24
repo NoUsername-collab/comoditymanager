@@ -1,6 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
+import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
 import { GuestScoreHint } from "@/components/admin/guests/GuestScoreHint";
 import { StayCheckinProgress } from "@/components/admin/cazari/StayCheckinProgress";
@@ -77,7 +78,12 @@ export function StayInfo({
           {formatStayPeriod(stay.check_in, stay.check_out)}
         </span>
         <span aria-hidden>·</span>
-        <span>{labels.guestsShort(stay.num_adults, stay.num_children)}</span>
+        <span>
+          {formatCazariLabel(labels.guestsShort, {
+            adults: stay.num_adults,
+            children: stay.num_children,
+          })}
+        </span>
         {(stay.room_names?.length ?? 0) > 0 ? (
           <span className="admin-semantic-pill admin-semantic-pill--muted">
             {(stay.room_names ?? []).join(", ")}
@@ -134,10 +140,10 @@ export function StayInfo({
           keysHandedRooms={keysHandedRooms}
           roomIdVerified={roomIdVerified}
           isConfirmed={isConfirmed}
-          progressTitle={labels.checkinRoomsProgress(
-            roomProgress.checked,
-            roomProgress.total,
-          )}
+          progressTitle={formatCazariLabel(labels.checkinRoomsProgress, {
+            checked: roomProgress.checked,
+            total: roomProgress.total,
+          })}
           labels={{
             roomChecked: labels.checkinRoomChecked,
             roomPending: labels.checkinRoomPending,

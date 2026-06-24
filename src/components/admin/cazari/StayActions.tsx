@@ -1,5 +1,6 @@
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
+import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { StayQuickOpsLazy } from "@/components/admin/cazari/StayQuickOpsLazy";
 import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
@@ -18,8 +19,16 @@ export function StayActions({
   const ref = formatBookingRef(stay.id);
   const cancelMessage =
     stay.status === "confirmata"
-      ? labels.cancelConfirmedMsg(ref, stay.guest_name, period)
-      : labels.cancelRequestMsg(ref, stay.guest_name, period);
+      ? formatCazariLabel(labels.cancelConfirmedMsg, {
+          ref,
+          name: stay.guest_name,
+          period,
+        })
+      : formatCazariLabel(labels.cancelRequestMsg, {
+          ref,
+          name: stay.guest_name,
+          period,
+        });
 
   return (
     <div className="stay-card__actions">
@@ -48,7 +57,10 @@ export function StayActions({
           moveOnlyConfirmed: labels.moveOnlyConfirmed,
           phoneRequiredForCheckIn: labels.phoneRequiredForCheckIn,
           completeCheckinForFisa: labels.completeCheckinForFisa,
-          checkInArrivalDayHint: labels.checkInOnlyOnArrivalDay(stay.check_in),
+          checkInArrivalDayHint: formatCazariLabel(
+            labels.checkInOnlyOnArrivalDay,
+            { date: stay.check_in },
+          ),
         }}
         hasCheckinRecord={!!stay.has_checkin_record}
         emitFisaLabel={labels.emitFisa}

@@ -3,6 +3,7 @@
 import { memo } from "react";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
+import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { RefusedStayActions } from "@/components/admin/cazari/RefusedStayActions";
 import { StayActions } from "@/components/admin/cazari/StayActions";
 import { StayRequestActions } from "@/components/admin/cazari/StayRequestActions";
@@ -54,11 +55,11 @@ export const StayListItem = memo(function StayListItem({
             quickAcceptSuccess: labels.quickAcceptSuccess,
             openBooking: labels.openBooking,
             cancelRequest: labels.cancelRequest,
-            cancelMessage: labels.cancelRequestMsg(
-              formatBookingRef(stay.id),
-              stay.guest_name,
-              formatStayPeriod(stay.check_in, stay.check_out, true)
-            ),
+            cancelMessage: formatCazariLabel(labels.cancelRequestMsg, {
+              ref: formatBookingRef(stay.id),
+              name: stay.guest_name,
+              period: formatStayPeriod(stay.check_in, stay.check_out, true),
+            }),
           }}
         />
       ) : (

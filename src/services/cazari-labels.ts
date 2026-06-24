@@ -6,7 +6,7 @@ type CazariLabelSources = {
   tFlow: (key: string) => string;
 };
 
-/** Presentation layer — maps i18n keys to CazariLabels contract. */
+/** Presentation layer — maps i18n keys to serializable CazariLabels patterns. */
 export function buildCazariLabels({
   tPages,
   tCommon,
@@ -24,34 +24,46 @@ export function buildCazariLabels({
     refusedEmptyDesc: tPages("refusedEmptyDesc"),
     refusedEmptyFilter: tPages("refusedEmptyFilter"),
     refusedEmptyFilterDesc: tPages("refusedEmptyFilterDesc"),
-    historyCancelledSection: (count) =>
-      tPages("historyCancelledSection", { count }),
+    historyCancelledSection: tPages("historyCancelledSection", {
+      count: "{count}",
+    }),
     historyCancelledHint: tPages("historyCancelledHint"),
     historyCancelledBadge: tPages("historyCancelledBadge"),
-    historyCancelledAt: (date) => tPages("historyCancelledAt", { date }),
+    historyCancelledAt: tPages("historyCancelledAt", { date: "{date}" }),
     tabOperational: tPages("tabOperational"),
     tabRefused: tPages("tabRefused"),
     refusedBrowseBookings: tPages("refusedBrowseBookings"),
     historyCompletedSection: tPages("historyCompletedSection"),
-    historyConfirmedRecentSection: (count) =>
-      tPages("historyConfirmedRecentSection", { count }),
+    historyConfirmedRecentSection: tPages("historyConfirmedRecentSection", {
+      count: "{count}",
+    }),
     historyConfirmedRecentHint: tPages("historyConfirmedRecentHint"),
-    historyConfirmedRecentBadge: (date) =>
-      tPages("historyConfirmedRecentBadge", { date }),
+    historyConfirmedRecentBadge: tPages("historyConfirmedRecentBadge", {
+      date: "{date}",
+    }),
     cancelStay: tPages("cancelStay"),
     cancelRequest: tPages("cancelRequest"),
     quickAccept: tPages("quickAccept"),
     quickAcceptSuccess: tPages("quickAcceptSuccess"),
     emitFisa: tPages("emitFisa"),
     completeCheckinForFisa: tPages("completeCheckinForFisa"),
-    checkInOnlyOnArrivalDay: (date) =>
-      tPages("checkInOnlyOnArrivalDay", { date }),
-    guestsShort: (adults, children) =>
-      tCommon("guestsShort", { adults, children }),
-    cancelConfirmedMsg: (ref, name, period) =>
-      tPages("cancelConfirmedMsg", { ref, name, period }),
-    cancelRequestMsg: (ref, name, period) =>
-      tPages("cancelRequestMsg", { ref, name, period }),
+    checkInOnlyOnArrivalDay: tPages("checkInOnlyOnArrivalDay", {
+      date: "{date}",
+    }),
+    guestsShort: tCommon("guestsShort", {
+      adults: "{adults}",
+      children: "{children}",
+    }),
+    cancelConfirmedMsg: tPages("cancelConfirmedMsg", {
+      ref: "{ref}",
+      name: "{name}",
+      period: "{period}",
+    }),
+    cancelRequestMsg: tPages("cancelRequestMsg", {
+      ref: "{ref}",
+      name: "{name}",
+      period: "{period}",
+    }),
     emptyConfirmed: {
       title: tPages("emptyConfirmedActive"),
       description: tPages("emptyConfirmedActiveDesc"),
@@ -76,8 +88,8 @@ export function buildCazariLabels({
       href: "/admin/cazari?view=cereri",
       label: tCommon("reset"),
     },
-    historyFiltered: (count) => tPages("historyFiltered", { count }),
-    historyRecent: (count) => tPages("historyRecent", { count }),
+    historyFiltered: tPages("historyFiltered", { count: "{count}" }),
+    historyRecent: tPages("historyRecent", { count: "{count}" }),
     historyFilteredHint: tPages("historyFilteredHint"),
     historyRecentHint: tPages("historyRecentHint"),
     tryOtherCriteria: tPages("tryOtherCriteria"),
@@ -93,8 +105,10 @@ export function buildCazariLabels({
     checkIn: tCommon("checkIn"),
     checkInContinue: tPages("checkInContinue"),
     checkInNextRoom: tPages("checkInNextRoom"),
-    checkinRoomsProgress: (checked, total) =>
-      tPages("checkinRoomsProgress", { checked, total }),
+    checkinRoomsProgress: tPages("checkinRoomsProgress", {
+      checked: "{checked}",
+      total: "{total}",
+    }),
     checkinRoomChecked: tPages("checkinRoomChecked"),
     checkinRoomPending: tPages("checkinRoomPending"),
     checkinRoomKeyHanded: tPages("checkinRoomKeyHanded"),
@@ -111,15 +125,15 @@ export function buildCazariLabels({
     moveOnlyConfirmed: tPages("moveOnlyConfirmed"),
     phoneRequiredForCheckIn: tPages("phoneRequiredForCheckIn"),
     starsShort: tPages("starsShort"),
-    groupedToday: (count) => tPages("groupedToday", { count }),
-    groupedThisWeek: (count) => tPages("groupedThisWeek", { count }),
-    groupedThisMonth: (count) => tPages("groupedThisMonth", { count }),
-    groupedUpcoming: (count) => tPages("groupedUpcoming", { count }),
+    groupedToday: tPages("groupedToday", { count: "{count}" }),
+    groupedThisWeek: tPages("groupedThisWeek", { count: "{count}" }),
+    groupedThisMonth: tPages("groupedThisMonth", { count: "{count}" }),
+    groupedUpcoming: tPages("groupedUpcoming", { count: "{count}" }),
     groupedTodayHint: tPages("groupedTodayHint"),
     groupedThisWeekHint: tPages("groupedThisWeekHint"),
     groupedThisMonthHint: tPages("groupedThisMonthHint"),
     groupedUpcomingHint: tPages("groupedUpcomingHint"),
-    groupedOutsideWindow: (count) => tPages("groupedOutsideWindow", { count }),
+    groupedOutsideWindow: tPages("groupedOutsideWindow", { count: "{count}" }),
     horizonToday: tPages("horizonToday"),
     horizonWeek: tPages("horizonWeek"),
     horizon30d: tPages("horizon30d"),
