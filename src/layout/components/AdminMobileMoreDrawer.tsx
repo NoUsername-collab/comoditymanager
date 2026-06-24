@@ -138,7 +138,9 @@ export function AdminMobileMoreDrawer({
           ))}
           <div className="ml-drawer__locale">
             <span className="ml-drawer__locale-label">{tCommon("language")}</span>
-            <LanguageSwitcher variant="inline" />
+            <div className="ml-drawer__locale-flags">
+              <LanguageSwitcher variant="inline" />
+            </div>
           </div>
         </nav>
       </div>

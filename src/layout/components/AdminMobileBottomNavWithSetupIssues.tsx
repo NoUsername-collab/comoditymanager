@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
 import { Suspense } from "react";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
+import { filterShellMenuSetupIssues } from "@/domain/setup-issues/checks";
 import { resolveSetupIssues } from "@/services/setup-issues";
 import type { TenantMemberRole } from "@/services/tenant-members";
 
@@ -16,10 +17,12 @@ async function AdminMobileBottomNavResolved({
   memberRole,
   ...rest
 }: Props) {
-  const setupIssues = await resolveSetupIssues({
-    email: staffEmail,
-    memberRole: memberRole ?? null,
-  });
+  const setupIssues = filterShellMenuSetupIssues(
+    await resolveSetupIssues({
+      email: staffEmail,
+      memberRole: memberRole ?? null,
+    }),
+  );
   return (
     <AdminMobileBottomNav
       {...rest}

@@ -31,7 +31,9 @@
 }
 
 .admin-gear__footer .language-switcher--inline .language-switcher__inline-options {
-  justify-content: flex-end;
+  justify-content: center;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
 }
 
 .admin-gear__footer .language-switcher__option--inline {
@@ -49,7 +51,20 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  text-align: center;
   color: color-mix(in srgb, var(--site-fg, #18181b) 58%, transparent);
+}
+
+.ml-drawer__locale-flags {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.ml-drawer__locale-flags .language-switcher--inline .language-switcher__inline-options {
+  justify-content: center;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
 }
 
 html.ml-drawer-open .language-switcher__menu--portal {

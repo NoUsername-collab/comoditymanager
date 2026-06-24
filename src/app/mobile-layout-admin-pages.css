@@ -242,19 +242,32 @@ html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link-icon {
 html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale {
   grid-column: 1 / -1;
   margin-top: 0.15rem;
-  padding-top: 0.45rem;
+  padding-top: 0.55rem;
   border-top: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-label {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.4rem;
   font-size: 0.62rem;
   color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 58%, transparent);
+  width: 100%;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-flags {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher--inline .language-switcher__inline-options {
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
 }
 
 html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline {

@@ -83,6 +83,8 @@ type Props = {
 const labelClass =
   "admin-field__label block uppercase tracking-[0.08em]";
 
+const LIST_SEPARATOR = "\u00B7";
+
 function SummaryCard({
   title,
   body,
@@ -135,6 +137,7 @@ function IntervalPlanner({
   invalidMessage,
   nightLabel,
   locale,
+  tGantt,
 }: {
   title: string;
   subtitle: ReactNode;
@@ -151,6 +154,7 @@ function IntervalPlanner({
   invalidMessage: string;
   nightLabel: (count: number) => string;
   locale: string;
+  tGantt: (key: string) => string;
 }) {
   const nights =
     checkIn && checkOut && !invalidInterval ? nightsBetween(checkIn, checkOut) : 0;
@@ -179,16 +183,16 @@ function IntervalPlanner({
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-700">
-            {nights > 0 ? `${nights} nop╚øi` : "Interval"}
+            {nights > 0 ? nightLabel(nights) : tGantt("quick.intervalBadge")}
           </span>
           {hasConflict ? (
             <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-amber-700">
-              Conflict
+              {tGantt("quick.conflict")}
             </span>
           ) : null}
           {invalidInterval ? (
             <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-red-700">
-              Date invalide
+              {tGantt("quick.invalidDates")}
             </span>
           ) : null}
         </div>
@@ -196,7 +200,7 @@ function IntervalPlanner({
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <label className={labelClass}>
-          Check-in
+          {tGantt("quick.checkInLabel")}
           <AdminInput
             type="date"
             className="mt-1"
@@ -206,7 +210,7 @@ function IntervalPlanner({
           />
         </label>
         <label className={labelClass}>
-          Check-out
+          {tGantt("quick.checkOutLabel")}
           <AdminInput
             type="date"
             className="mt-1"
@@ -219,19 +223,19 @@ function IntervalPlanner({
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <AdminButton variant="soft" size="sm" onClick={() => onShift(-7)}>
-          -7 zile
+          {tGantt("quick.shiftMinus7")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={() => onShift(-1)}>
-          -1 zi
+          {tGantt("quick.shiftMinus1")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={() => onShift(1)}>
-          +1 zi
+          {tGantt("quick.shiftPlus1")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={() => onShift(7)}>
-          +7 zile
+          {tGantt("quick.shiftPlus7")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={onToday}>
-          Azi
+          {tGantt("quick.todayButton")}
         </AdminButton>
       </div>
 
@@ -308,7 +312,7 @@ function ActionRadial({
       <div className="absolute left-1/2 top-1/2 z-20 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border border-emerald-200 bg-white px-3 text-center shadow-none">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-            Release
+            {tGantt("quick.radial.release")}
           </div>
           <div className="mt-1 text-base font-extrabold text-zinc-800">{tGantt("quick.radial.choose")}</div>
         </div>
@@ -503,18 +507,43 @@ export function GanttQuickActionPanel({
         key: `${selectedBooking.id}:${moveSourceRoomId}:${moveTargetRoomId}`,
         text:
           res.preview.mode === "full"
-            ? `${sourceRoomName} ÔåÆ ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, locale, true)} ┬À ` +
-              `Total: ${res.preview.oldTotal} ÔåÆ ${res.preview.newTotal} RON`
-            : `${sourceRoomName}: ${formatStayPeriod(res.preview.sourceSegment?.start ?? "", res.preview.sourceSegment?.end ?? "", locale, true)} ┬À ` +
-              `ÔåÆ ${targetRoomName}: ${formatStayPeriod(res.preview.targetSegment.start, res.preview.targetSegment.end, locale, true)} ┬À ` +
-              `Total: ${res.preview.oldTotal} ÔåÆ ${res.preview.newTotal} RON`,
+            ? tGantt("quick.movePreviewFull", {
+                source: sourceRoomName,
+                target: targetRoomName,
+                period: formatStayPeriod(
+                  res.preview.targetSegment.start,
+                  res.preview.targetSegment.end,
+                  locale,
+                  true
+                ),
+                oldTotal: res.preview.oldTotal,
+                newTotal: res.preview.newTotal,
+              })
+            : tGantt("quick.movePreviewSplit", {
+                source: sourceRoomName,
+                sourcePeriod: formatStayPeriod(
+                  res.preview.sourceSegment?.start ?? "",
+                  res.preview.sourceSegment?.end ?? "",
+                  locale,
+                  true
+                ),
+                target: targetRoomName,
+                targetPeriod: formatStayPeriod(
+                  res.preview.targetSegment.start,
+                  res.preview.targetSegment.end,
+                  locale,
+                  true
+                ),
+                oldTotal: res.preview.oldTotal,
+                newTotal: res.preview.newTotal,
+              }),
       });
     });
 
     return () => {
       cancelled = true;
     };
-  }, [selectedBooking, moveSourceRoomId, moveTargetRoomId, rooms]);
+  }, [selectedBooking, moveSourceRoomId, moveTargetRoomId, rooms, locale, tGantt]);
 
   if (!mode) return null;
 
@@ -758,18 +787,24 @@ export function GanttQuickActionPanel({
     <>
       <strong className="font-semibold text-zinc-900">
         {hasMultiRoomDraft
-          ? `${multiRoomCount} camere selectate`
+          ? tGantt("quick.multiRoomSelected", { count: multiRoomCount })
           : activeRoom?.name ?? draft.roomName}
       </strong>
       {!hasMultiRoomDraft && activeRoom?.building_name ? (
-        <span className="text-zinc-500"> ┬À {activeRoom.building_name}</span>
+        <span className="text-zinc-500">
+          {" "}
+          {LIST_SEPARATOR} {activeRoom.building_name}
+        </span>
       ) : null}
     </>
   ) : (
     <>
         <strong className="font-semibold text-zinc-900">{activeRoom?.name ?? tGantt("quick.chooseRoom")}</strong>
       {activeRoom?.building_name ? (
-        <span className="text-zinc-500"> ┬À {activeRoom.building_name}</span>
+        <span className="text-zinc-500">
+          {" "}
+          {LIST_SEPARATOR} {activeRoom.building_name}
+        </span>
       ) : null}
     </>
   );
@@ -791,7 +826,7 @@ export function GanttQuickActionPanel({
           <>
             {!draft ? (
               <label className={labelClass}>
-                Camer─â
+                {tCommon("room")}
                 <AdminSelect
                   className="mt-1"
                   value={roomId}
@@ -802,7 +837,7 @@ export function GanttQuickActionPanel({
                 >
                   {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
-                      {room.name} ┬À {room.building_name}
+                      {room.name} {LIST_SEPARATOR} {room.building_name}
                     </option>
                   ))}
                 </AdminSelect>
@@ -825,6 +860,7 @@ export function GanttQuickActionPanel({
               invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
               nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
               locale={locale}
+              tGantt={tGantt}
             />
 
             {hasConflict ? (
@@ -862,7 +898,7 @@ export function GanttQuickActionPanel({
           <>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className={labelClass}>
-                Motiv
+                {tGantt("quick.reasonLabel")}
                 <AdminInput
                   className="mt-1"
                   value={reason}
@@ -871,7 +907,7 @@ export function GanttQuickActionPanel({
                 />
               </label>
               <label className={labelClass}>
-                Expir─â dup─â
+                {tGantt("quick.expiresAfterLabel")}
                 <AdminInput
                   type="number"
                   min={1}
@@ -890,7 +926,7 @@ export function GanttQuickActionPanel({
                   className="gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
-                  ├Änapoi la radial
+                  {tGantt("quick.backToRadial")}
                 </AdminButton>
               ) : null}
               <AdminButton
@@ -900,7 +936,7 @@ export function GanttQuickActionPanel({
                 disabled={pending || !activeRoomId || hasConflict || intervalInvalid}
                 onClick={submitHold}
               >
-                {pending ? tCommon("saving") : "Creeaz─â hold"}
+                {pending ? tCommon("saving") : tGantt("quick.createHold")}
               </AdminButton>
             </div>
           </>
@@ -909,7 +945,7 @@ export function GanttQuickActionPanel({
         {mode === "block" ? (
           <>
             <label className={labelClass}>
-              Motiv blocare
+              {tGantt("quick.blockReasonLabel")}
               <AdminSelect
                 className="mt-1"
                 value={blockPreset}
@@ -926,7 +962,7 @@ export function GanttQuickActionPanel({
             </label>
             {blockPreset === "other" || blockCustom ? (
               <label className={labelClass}>
-                Detalii
+                {tGantt("quick.detailsLabel")}
                 <AdminInput
                   className="mt-1"
                   value={blockCustom}
@@ -943,7 +979,7 @@ export function GanttQuickActionPanel({
                   className="gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
-                  ├Änapoi la radial
+                  {tGantt("quick.backToRadial")}
                 </AdminButton>
               ) : null}
               <AdminButton
@@ -959,7 +995,7 @@ export function GanttQuickActionPanel({
                 }
                 onClick={submitBlock}
               >
-                {pending ? tCommon("saving") : "Creeaz─â blocarea"}
+                {pending ? tCommon("saving") : tGantt("quick.createBlock")}
               </AdminButton>
             </div>
           </>
@@ -969,7 +1005,7 @@ export function GanttQuickActionPanel({
           <>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className={labelClass}>
-                Nume
+                {tGantt("quick.lastNameLabel")}
                 <AdminInput
                   className="mt-1"
                   value={guestLastName}
@@ -978,7 +1014,7 @@ export function GanttQuickActionPanel({
                 />
               </label>
               <label className={labelClass}>
-                Prenume
+                {tGantt("quick.firstNameLabel")}
                 <AdminInput
                   className="mt-1"
                   value={guestFirstName}
@@ -1000,7 +1036,7 @@ export function GanttQuickActionPanel({
               </p>
             )}
             <label className={labelClass}>
-              Email
+              {tGantt("quick.emailLabel")}
               <AdminInput
                 type="email"
                 className="mt-1"
@@ -1010,7 +1046,7 @@ export function GanttQuickActionPanel({
               />
             </label>
             <label className={labelClass}>
-              Telefon *
+              {tGantt("quick.phoneRequiredLabel")}
               <AdminInput
                 className="mt-1"
                 type="tel"
@@ -1028,7 +1064,7 @@ export function GanttQuickActionPanel({
                   className="gantt-quick-panel__action flex-1"
                   onClick={handleBack}
                 >
-                  ├Änapoi la radial
+                  {tGantt("quick.backToRadial")}
                 </AdminButton>
               ) : null}
               <AdminButton
@@ -1057,7 +1093,7 @@ export function GanttQuickActionPanel({
         {mode === "move" ? (
           <>
             <label className={labelClass}>
-              Rezervare confirmat─â
+              {tGantt("quick.confirmedBookingLabel")}
               <AdminSelect
                 className="mt-1"
                 value={moveBookingId}
@@ -1075,7 +1111,7 @@ export function GanttQuickActionPanel({
                 <option value="">{tCommon("selectPlaceholder")}</option>
                 {confirmedBookings.map((booking) => (
                   <option key={booking.id} value={booking.id}>
-                    {booking.guest_name} ┬À {booking.room_names.join(", ")}
+                    {booking.guest_name} {LIST_SEPARATOR} {booking.room_names.join(", ")}
                   </option>
                 ))}
               </AdminSelect>
@@ -1109,7 +1145,7 @@ export function GanttQuickActionPanel({
                 />
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className={labelClass}>
-                    Din camera
+                    {tGantt("quick.fromRoomLabel")}
                     <AdminSelect
                       className="mt-1"
                       value={moveSourceRoomId}
@@ -1126,7 +1162,7 @@ export function GanttQuickActionPanel({
                     </AdminSelect>
                   </label>
                   <label className={labelClass}>
-                    ├Än camera
+                    {tGantt("quick.toRoomLabel")}
                     <AdminSelect
                       className="mt-1"
                       value={moveTargetRoomId}
@@ -1138,14 +1174,18 @@ export function GanttQuickActionPanel({
                       <option value="">{tCommon("selectPlaceholder")}</option>
                       {moveTargetOptions.map((option) => (
                         <option key={option.id} value={option.id}>
-                          {option.name} ┬À {option.building_name}
+                          {option.name} {LIST_SEPARATOR} {option.building_name}
                         </option>
                       ))}
                     </AdminSelect>
                   </label>
                 </div>
                 {movePreview ? (
-                  <SummaryCard title="Preview mutare" tone="info" body={movePreview} />
+                  <SummaryCard
+                    title={tGantt("quick.movePreviewTitle")}
+                    tone="info"
+                    body={movePreview}
+                  />
                 ) : null}
                 <AdminButton
                   variant="primary"
@@ -1154,7 +1194,7 @@ export function GanttQuickActionPanel({
                   disabled={pending || !moveTargetRoomId}
                   onClick={submitMove}
                 >
-                  {pending ? tCommon("saving") : "Confirm─â mutarea"}
+                  {pending ? tCommon("saving") : tGantt("quick.confirmMove")}
                 </AdminButton>
               </>
             ) : null}
@@ -1178,7 +1218,7 @@ export function GanttQuickActionPanel({
           className="gantt-quick-panel__cancel"
           onClick={onClose}
         >
-          Anuleaz─â
+          {tCommon("cancel")}
         </AdminButton>
       </div>
     </AdminFloatingPanel>

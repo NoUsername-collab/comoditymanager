@@ -49,3 +49,14 @@ export function checkinUiDocTypeValue(
   if (isCheckinUiDocType(stored)) return stored;
   return mapCheckinDocTypeFromDb(stored as DocumentType) ?? "";
 }
+
+/**
+ * CNP și selector tip cod național (RO/MD/BG…) — exclusiv pentru carte de
+ * identitate românească (`ci`). Pașaport, act străin și alte documente folosesc
+ * doar serie/număr + expirare.
+ */
+export function docTypeUsesRomanianNationalId(
+  stored: CheckinUiDocType | DocumentType | "" | null | undefined,
+): boolean {
+  return checkinUiDocTypeValue(stored || null) === "ci";
+}

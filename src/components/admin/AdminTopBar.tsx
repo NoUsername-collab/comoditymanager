@@ -88,15 +88,19 @@ export async function AdminTopBar({
             <div className="admin-gear__footer">
               <div className="admin-gear__footer-lang">
                 <span className="admin-gear__footer-label">{tCommon("language")}</span>
-                <LanguageSwitcher compact variant="inline" />
+                <div className="admin-gear__footer-flags">
+                  <LanguageSwitcher compact variant="inline" />
+                </div>
               </div>
               {isAdmin ? (
-                <SimTriggerChip
-                  compact
-                  simActive={simActive}
-                  simDate={simDate}
-                  simDays={simDays}
-                />
+                <div className="admin-gear__footer-sim">
+                  <SimTriggerChip
+                    compact
+                    simActive={simActive}
+                    simDate={simDate}
+                    simDays={simDays}
+                  />
+                </div>
               ) : null}
             </div>
           </AdminGearMenu>

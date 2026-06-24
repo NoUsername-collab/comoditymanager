@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import "@/app/admin/guest-stay-rating.css";
 import { AdminTextarea } from "@/components/admin/ui/AdminInput";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 
@@ -82,12 +83,13 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
     patch({ polarity, intensity: 3, note: "" });
   }
 
-  const levelKey =
-    state.polarity === "positive"
-      ? (`positiveLevel.${state.intensity}` as const)
-      : state.polarity === "negative"
-        ? (`negativeLevel.${state.intensity}` as const)
-        : null;
+  function intensityLevelKey(level: number) {
+    if (state.polarity === "positive") return `positiveLevel.${level}` as const;
+    if (state.polarity === "negative") return `negativeLevel.${level}` as const;
+    return null;
+  }
+
+  const levelKey = intensityLevelKey(state.intensity);
 
   const textareaTone =
     state.polarity === "positive"
@@ -161,6 +163,8 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
               {Array.from({ length: 5 }, (_, index) => {
                 const level = index + 1;
                 const active = level === state.intensity;
+                const captionKey = intensityLevelKey(level);
+                const caption = captionKey ? tGuests(captionKey) : String(level);
                 return (
                   <button
                     key={level}
@@ -175,10 +179,14 @@ export function GuestStayRatingFields(props: FormProps | ControlledProps) {
                     ]
                       .filter(Boolean)
                       .join(" ")}
+                    aria-label={`${level} — ${caption}`}
                     aria-pressed={active}
                     onClick={() => patch({ intensity: level })}
                   >
-                    {level}
+                    <span className="guest-stay-rating__scale-num">{level}</span>
+                    <span className="guest-stay-rating__scale-caption" aria-hidden="true">
+                      {caption}
+                    </span>
                   </button>
                 );
               })}

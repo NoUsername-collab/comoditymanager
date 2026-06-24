@@ -12,7 +12,10 @@ import {
 import { validateCheckin } from "@/domain/checkin/validate";
 import { computeKeyEligibilityByRoom } from "@/domain/checkin/key-rules";
 import { detectFamilyRooms, type IdsPerRoomConfig } from "@/domain/checkin/guest-layout";
-import { checkinUiDocTypeValue } from "@/domain/checkin/doc-type";
+import {
+  checkinUiDocTypeValue,
+  docTypeUsesRomanianNationalId,
+} from "@/domain/checkin/doc-type";
 import {
   cleanNationalId,
   extractIdentityFromNationalId,
@@ -900,7 +903,9 @@ function GuestIdentityCard({
   const uiDocType = checkinUiDocTypeValue(guest.document_type);
   const showDocFields = uiDocType !== "";
   const showCiFields = uiDocType === "ci";
+  const showNationalIdFields = docTypeUsesRomanianNationalId(uiDocType);
   const cnpInCiSection = showCiFields && roGuest;
+  const showNationalIdPickerSection = showNationalIdFields && !cnpInCiSection;
   const expectedIdLength = NATIONAL_ID_LENGTH[idType];
   const idState = guest.national_id?.trim()
     ? validateNationalId(idType, cleanNationalId(guest.national_id))
@@ -1201,7 +1206,7 @@ function GuestIdentityCard({
               </label>
             )}
 
-            {showDocFields && !cnpInCiSection && (
+            {showDocFields && showNationalIdPickerSection && (
               <>
                 <label className="checkin-field">
                   <span className="checkin-field__label">{tIdentity("nationalIdType")}</span>

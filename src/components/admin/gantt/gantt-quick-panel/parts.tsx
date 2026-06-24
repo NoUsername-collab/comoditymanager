@@ -53,6 +53,7 @@ export function GanttQuickIntervalPlanner({
   invalidMessage,
   nightLabel,
   locale,
+  tGantt,
 }: {
   title: string;
   subtitle: ReactNode;
@@ -69,6 +70,7 @@ export function GanttQuickIntervalPlanner({
   invalidMessage: string;
   nightLabel: (count: number) => string;
   locale: string;
+  tGantt: (key: string) => string;
 }) {
   const nights =
     checkIn && checkOut && !invalidInterval
@@ -99,16 +101,16 @@ export function GanttQuickIntervalPlanner({
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="admin-status-badge admin-status-badge--confirmed px-3 py-1 text-[11px]">
-            {nights > 0 ? `${nights} nopți` : "Interval"}
+            {nights > 0 ? nightLabel(nights) : tGantt("quick.intervalBadge")}
           </span>
           {hasConflict ? (
             <span className="admin-status-badge admin-status-badge--pending px-3 py-1 text-[11px]">
-              Conflict
+              {tGantt("quick.conflict")}
             </span>
           ) : null}
           {invalidInterval ? (
             <span className="admin-status-badge admin-status-badge--cancelled px-3 py-1 text-[11px]">
-              Date invalide
+              {tGantt("quick.invalidDates")}
             </span>
           ) : null}
         </div>
@@ -116,7 +118,7 @@ export function GanttQuickIntervalPlanner({
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <label className={GANTT_QUICK_LABEL_CLASS}>
-          Check-in
+          {tGantt("quick.checkInLabel")}
           <AdminInput
             type="date"
             className="mt-1"
@@ -126,7 +128,7 @@ export function GanttQuickIntervalPlanner({
           />
         </label>
         <label className={GANTT_QUICK_LABEL_CLASS}>
-          Check-out
+          {tGantt("quick.checkOutLabel")}
           <AdminInput
             type="date"
             className="mt-1"
@@ -139,19 +141,19 @@ export function GanttQuickIntervalPlanner({
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <AdminButton variant="soft" size="sm" onClick={() => onShift(-7)}>
-          -7 zile
+          {tGantt("quick.shiftMinus7")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={() => onShift(-1)}>
-          -1 zi
+          {tGantt("quick.shiftMinus1")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={() => onShift(1)}>
-          +1 zi
+          {tGantt("quick.shiftPlus1")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={() => onShift(7)}>
-          +7 zile
+          {tGantt("quick.shiftPlus7")}
         </AdminButton>
         <AdminButton variant="soft" size="sm" onClick={onToday}>
-          Azi
+          {tGantt("quick.todayButton")}
         </AdminButton>
       </div>
 
@@ -227,7 +229,7 @@ export function GanttQuickActionRadial({
       <div className="gantt-radial-hub absolute left-1/2 top-1/2 z-20 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border bg-white px-3 text-center shadow-none">
         <div>
           <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-            Release
+            {tGantt("quick.radial.release")}
           </div>
           <div className="mt-1 text-base font-extrabold text-zinc-800">{tGantt("quick.radial.choose")}</div>
         </div>

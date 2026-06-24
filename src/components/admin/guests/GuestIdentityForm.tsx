@@ -25,6 +25,7 @@ import {
   type MrzMappedIdentity,
 } from "@/domain/guest/mrz";
 import { normalizeIsoDateInput } from "@/lib/iso-date-input";
+import { docTypeUsesRomanianNationalId } from "@/domain/checkin/doc-type";
 
 type DocType = "ci" | "passport" | "foreign_id" | "other" | "";
 
@@ -244,7 +245,9 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
   const roIdentity =
     /^(ro|românia|romania)$/i.test(country.trim()) ||
     /^(ro|românia|romania)$/i.test(nationality.trim());
+  const showNationalIdFields = docTypeUsesRomanianNationalId(docType);
   const cnpInCiSection = showCiFields && roIdentity;
+  const showNationalIdPickerSection = showNationalIdFields && !cnpInCiSection;
   const idTypeLabel = t(`nationalIdTypes.${nationalIdType}`);
 
   return (
@@ -395,7 +398,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
             </label>
           </div>
 
-          {!cnpInCiSection ? (
+          {showNationalIdPickerSection ? (
           <div className="guest-identity-form__row guest-identity-form__row--multi">
             <label className="guest-identity-form__field guest-identity-form__field--small">
               <span className="guest-identity-form__label">{t("nationalIdType")}</span>
