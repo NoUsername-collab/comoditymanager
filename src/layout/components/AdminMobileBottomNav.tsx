@@ -13,19 +13,14 @@ import {
   isAdminTabActive,
 } from "@/layout/mobile";
 import { AdminMobileMoreDrawer } from "@/layout/components/AdminMobileMoreDrawer";
-import type { SetupIssue } from "@/domain/setup-issues/types";
 import { hapticTap } from "@/lib/haptic";
 
 export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   cereriCount,
-  setupIssuesCount = 0,
-  setupIssues = [],
   locationUnlocked = false,
   statisticsAccess = false,
 }: {
   cereriCount: number;
-  setupIssuesCount?: number;
-  setupIssues?: SetupIssue[];
   locationUnlocked?: boolean;
   statisticsAccess?: boolean;
 }) {
@@ -37,9 +32,6 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
   const moreTriggerRef = useRef<HTMLButtonElement>(null);
   const prefetchHrefs = useMemo(() => tabs.map((tab) => tab.href), [tabs]);
   useAdminRoutePrefetch(prefetchHrefs);
-  const onSettings = pathname.startsWith("/admin/settings");
-  const setupAlert = setupIssuesCount > 0 && !onSettings;
-
   function onNavTap() {
     hapticTap(6);
   }
@@ -104,17 +96,12 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
               "ml-bottom-nav__link",
               "ml-bottom-nav__link--more",
               moreOpen && "ml-bottom-nav__link--active",
-              setupAlert && !moreOpen && "ml-bottom-nav__link--alert",
             ]
               .filter(Boolean)
               .join(" ")}
             aria-expanded={moreOpen}
             aria-haspopup="dialog"
-            aria-label={
-              setupAlert
-                ? t("setupIssuesAria", { count: setupIssuesCount })
-                : t("moreMenuAria")
-            }
+            aria-label={t("moreMenuAria")}
             onClick={() => {
               hapticTap(6);
               setMoreOpen((open) => !open);
@@ -122,9 +109,6 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
           >
             <span className="ml-bottom-nav__icon-wrap">
               <AdminHudIcon name="grid" className="ml-bottom-nav__icon" />
-              {setupAlert ? (
-                <span className="ml-bottom-nav__badge ml-bottom-nav__badge--dot" aria-hidden />
-              ) : null}
             </span>
             <span className="ml-bottom-nav__label">{t("more")}</span>
           </button>
@@ -136,7 +120,6 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
       onClose={() => setMoreOpen(false)}
       locationUnlocked={locationUnlocked}
       statisticsAccess={statisticsAccess}
-      setupIssues={setupIssues}
       triggerRef={moreTriggerRef}
     />
     </>

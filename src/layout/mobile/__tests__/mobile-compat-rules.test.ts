@@ -82,9 +82,8 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".gantt-ctx-menu--sheet");
   });
 
-  it("more drawer surfaces setup issues on compact", () => {
+  it("more drawer has section labels on compact", () => {
     const adminPages = readCss("mobile-layout-admin-pages.css");
-    expect(adminPages).toContain(".ml-drawer__issues");
     expect(adminPages).toContain(".ml-drawer__section-label");
   });
 
@@ -448,7 +447,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(stayList).toContain("stay-list");
   });
 
-  it("pass 32 setup issues nav, media migration, gantt scroll sync", () => {
+  it("pass 32 mobile nav, media migration, gantt scroll sync", () => {
     const cazariToolbar = readFileSync(
       join(process.cwd(), "src/app/admin/admin-cazari-toolbar.css"),
       "utf8"
@@ -482,19 +481,12 @@ describe("mobile compatibility CSS rules", () => {
     expect(alignment).toContain(".hospira-tenant-toolbar");
     expect(alignment).toContain("overflow-x: clip");
 
-    const bottomNavSetup = readFileSync(
-      join(process.cwd(), "src/layout/components/AdminMobileBottomNavWithSetupIssues.tsx"),
-      "utf8"
-    );
-    expect(bottomNavSetup).toContain("setupIssuesCount");
-    expect(bottomNavSetup).toContain("resolveSetupIssues");
-
     const bottomNav = readFileSync(
       join(process.cwd(), "src/layout/components/AdminMobileBottomNav.tsx"),
       "utf8"
     );
     expect(bottomNav).toContain("ml-bottom-nav__link--alert");
-    expect(bottomNav).toContain("setupIssuesCount");
+    expect(bottomNav).not.toContain("setupIssuesCount");
   });
 
   it("pass 32 compact fixes, skeletons, cazÄƒri ops grid, MRZ camera", () => {

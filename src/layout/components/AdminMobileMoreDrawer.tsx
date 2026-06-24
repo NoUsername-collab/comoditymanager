@@ -15,22 +15,18 @@ import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
 import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
 import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
-import { AdminMobileSetupIssues } from "@/components/admin/setup-issues/AdminMobileSetupIssues";
-import type { SetupIssue } from "@/domain/setup-issues/types";
 
 export function AdminMobileMoreDrawer({
   open,
   onClose,
   locationUnlocked = false,
   statisticsAccess = false,
-  setupIssues = [],
   triggerRef,
 }: {
   open: boolean;
   onClose: () => void;
   locationUnlocked?: boolean;
   statisticsAccess?: boolean;
-  setupIssues?: SetupIssue[];
   triggerRef?: RefObject<HTMLElement | null>;
 }) {
   const pathname = usePathname();
@@ -42,11 +38,7 @@ export function AdminMobileMoreDrawer({
     locationUnlocked,
     statisticsAccess,
   });
-  const sections = useMemo(() => groupAdminMoreLinks(links), [links]);
-  const setupIssuePaths = useMemo(
-    () => new Set(setupIssues.map((issue) => issue.settingsPath ?? "/admin/settings")),
-    [setupIssues],
-  );
+  const sections = groupAdminMoreLinks(links);
   const router = useRouter();
   const prefetchHrefs = useMemo(() => links.map((link) => link.href), [links]);
   useAdminRoutePrefetch(prefetchHrefs);
@@ -98,14 +90,12 @@ export function AdminMobileMoreDrawer({
           </button>
         </div>
         <nav className="ml-drawer__nav">
-          <AdminMobileSetupIssues issues={setupIssues} onNavigate={onClose} />
           <PwaInstallAction variant="drawer" onAfterClick={onClose} />
           {sections.map((section) => (
             <div key={section.id} className="ml-drawer__section">
               <p className="ml-drawer__section-label">{t(section.labelKey)}</p>
               {section.links.map((link) => {
                 const active = isAdminTabActive(pathname, link.href);
-                const hasIssue = setupIssuePaths.has(link.href);
                 return (
                   <Link
                     key={link.href}
@@ -120,7 +110,6 @@ export function AdminMobileMoreDrawer({
                     className={[
                       "ml-drawer__link",
                       active && "ml-drawer__link--active",
-                      hasIssue && "ml-drawer__link--alert",
                     ]
                       .filter(Boolean)
                       .join(" ")}
@@ -128,9 +117,6 @@ export function AdminMobileMoreDrawer({
                   >
                     <AdminHudIcon name={link.icon} className="ml-drawer__link-icon" />
                     <span>{t(link.labelKey)}</span>
-                    {hasIssue ? (
-                      <span className="ml-drawer__link-badge" aria-hidden />
-                    ) : null}
                   </Link>
                 );
               })}

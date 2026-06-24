@@ -8,11 +8,9 @@ import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { SimTriggerChip } from "@/components/admin/SimTriggerChip";
 import { AdminGearMenu } from "@/components/admin/AdminGearMenu";
-import { AdminGearSetupIssues } from "@/components/admin/setup-issues/AdminGearSetupIssues";
 import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
 import { getTranslations } from "next-intl/server";
 import { getTenantContext } from "@/core/tenant/context";
-import type { SetupIssue } from "@/domain/setup-issues/types";
 
 export async function AdminTopBar({
   cereriCount,
@@ -21,7 +19,6 @@ export async function AdminTopBar({
   simActive = false,
   simDate,
   simDays,
-  setupIssues = [],
 }: {
   cereriCount: number;
   locationUnlocked?: boolean;
@@ -29,7 +26,6 @@ export async function AdminTopBar({
   simActive?: boolean;
   simDate?: string | null;
   simDays?: number;
-  setupIssues?: SetupIssue[];
 }) {
   const t = await getTranslations("admin.shell");
   const tCommon = await getTranslations("common");
@@ -62,8 +58,7 @@ export async function AdminTopBar({
         <div className="admin-hud__tools">
           <AdminDayNightSwitch />
           <AdminVersionBadge />
-          <AdminGearMenu hasUnresolvedIssues={setupIssues.length > 0}>
-            <AdminGearSetupIssues issues={setupIssues} />
+          <AdminGearMenu>
             <Link
               href="/admin/settings"
               className="admin-gear__item admin-gear__item--link"

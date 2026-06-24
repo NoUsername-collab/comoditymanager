@@ -154,8 +154,3 @@ export function resolveContactEmailSetupIssue(opts: {
     labelKey: "contactEmailMissing",
   };
 }
-
-/** Setup issues shown in gear dropdown / mobile more drawer (excludes optional MFA nudge). */
-export function filterShellMenuSetupIssues(issues: SetupIssue[]): SetupIssue[] {
-  return issues.filter((issue) => issue.id !== SETUP_ISSUE_IDS.MFA_NOT_ENABLED);
-}

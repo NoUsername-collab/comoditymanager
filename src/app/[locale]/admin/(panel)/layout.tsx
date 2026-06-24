@@ -5,14 +5,14 @@ import "@/app/admin/admin-features.css";
 import { AdminShellClient } from "@/components/admin/AdminShellClient";
 
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";
-import { AdminTopBarWithSetupIssues } from "@/components/admin/AdminTopBarWithSetupIssues";
+import { AdminTopBar } from "@/components/admin/AdminTopBar";
 import { SimOverlay } from "@/components/admin/SimOverlay";
 import { loadAdminShellContext } from "@/lib/admin/shell-context";
 import { getSimStatus } from "@/domain/simulation/sim-cookie";
 import { todayReal } from "@/domain/simulation/sim-clock";
 import { isSimBackupPresent } from "@/services/simulation";
 import { OnboardingBarLazy } from "@/components/admin/onboarding/OnboardingBarLazy";
-import { AdminMobileBottomNavWithSetupIssues } from "@/layout/components/AdminMobileBottomNavWithSetupIssues";
+import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
 
 export default async function AdminLayout({
@@ -47,15 +47,13 @@ export default async function AdminLayout({
       <MobileShell surface="admin" className="admin-shell flex min-h-full flex-1 flex-col">
         <div className="admin-hud">
           <div className="admin-hud__surface">
-            <AdminTopBarWithSetupIssues
+            <AdminTopBar
               cereriCount={cereriCount}
               locationUnlocked={locationUnlocked}
               isAdmin={isAdmin}
               simActive={simStatus.active}
               simDate={simStatus.active ? simStatus.currentDate : null}
               simDays={simStatus.active ? simStatus.daysAdvanced : 0}
-              staffEmail={staff.user.email}
-              memberRole={staff.memberRole}
             />
           </div>
         </div>
@@ -77,12 +75,10 @@ export default async function AdminLayout({
           <div className="admin-page-main ml-main flex-1">{children}</div>
         </AdminShellClient>
 
-        <AdminMobileBottomNavWithSetupIssues
+        <AdminMobileBottomNav
           cereriCount={cereriCount}
           locationUnlocked={locationUnlocked}
           statisticsAccess={statisticsAccess}
-          staffEmail={staff.user.email}
-          memberRole={staff.memberRole}
         />
 
         <SimOverlay
