@@ -177,7 +177,6 @@ export default async function AdminCazariPage({
                 <StayList
                   className="cazari-pinned-cereri"
                   title={`${tCommon("newRequestsLabel")} (${cereri.length})`}
-                  subtitle={tPages("pendingPinnedHint")}
                   items={cereri}
                   variant="cereri"
                   returnTo={buildCazariPageHref({
