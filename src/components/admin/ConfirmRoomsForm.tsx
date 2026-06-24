@@ -109,8 +109,19 @@ export function ConfirmRoomsForm({
   function toggle(id: string) {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const isCurrentlySelected = next.has(id);
+
+      // Guard: prevent selecting more rooms than minRoomsNeeded
+      if (!isCurrentlySelected && next.size >= minRoomsNeeded) {
+        // Already have enough rooms - don't allow more selections
+        return prev;
+      }
+
+      if (isCurrentlySelected) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   }
