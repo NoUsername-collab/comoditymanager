@@ -3358,6 +3358,8 @@
       "hudShow": "Show menu",
       "legend": "Timeline legend",
       "rooms": "Rooms",
+      "previous": "Previous month",
+      "next": "Next month",
       "range": {
         "q1": "Jan–Mar",
         "q2": "Apr–Jun",

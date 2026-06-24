@@ -3341,6 +3341,8 @@
       "hudShow": "Arată meniul",
       "legend": "Legendă timeline",
       "rooms": "Camere",
+      "previous": "Luna anterioară",
+      "next": "Luna următoare",
       "range": {
         "q1": "Ian–Mar",
         "q2": "Apr–Iun",
