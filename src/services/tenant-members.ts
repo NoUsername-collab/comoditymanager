@@ -9,7 +9,7 @@
 
 import { cache } from "react";
 import { unstable_cache, revalidateTag } from "next/cache";
-import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin-public";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // ─── Types ─────────────────────────────────────────────────────────

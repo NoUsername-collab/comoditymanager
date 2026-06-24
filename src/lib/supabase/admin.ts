@@ -3,7 +3,6 @@ import {
   getSupabasePublicConfig,
   getSupabaseServiceRoleKey,
 } from "@/lib/env/server";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
 
 /**
  * Admin client that is simulation-aware.
@@ -17,6 +16,7 @@ import { isSimActive } from "@/domain/simulation/sim-cookie";
 export async function createAdminClient() {
   const { url } = getSupabasePublicConfig();
   const key = getSupabaseServiceRoleKey();
+  const { isSimActive } = await import("@/domain/simulation/sim-cookie");
   const simActive = await isSimActive();
 
   if (simActive) {
@@ -47,20 +47,4 @@ export async function createAdminClient() {
   });
 }
 
-/**
- * Admin client that ALWAYS targets 'public' schema.
- *
- * Use this for:
- * - Calling RPC functions (they live in public)
- * - Simulation lifecycle operations (start/stop)
- * - Operations that must never touch sim_sandbox
- * - unstable_cache() callbacks (no cookies/headers — Next.js requirement)
- */
-export function createPublicAdminClient() {
-  const { url } = getSupabasePublicConfig();
-  const key = getSupabaseServiceRoleKey();
-
-  return createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-}
+export { createPublicAdminClient } from "@/lib/supabase/admin-public";

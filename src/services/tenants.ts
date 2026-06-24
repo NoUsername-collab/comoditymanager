@@ -10,7 +10,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { platformPensionNameFallback } from "@/lib/platform/branding";
-import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin-public";
 
 const TENANT_ROW_SELECT =
   "id, slug, display_name, plan_id, active_modules, locale, country, timezone, status, trial_ends_at, owner_id, owner_email, is_paying, stripe_customer_id, stripe_subscription_id, created_at, updated_at";

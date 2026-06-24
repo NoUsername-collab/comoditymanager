@@ -1,6 +1,5 @@
 import { cache } from "react";
-import { getStaffUser } from "@/lib/auth/require-staff";
-import { createPublicAdminClient } from "@/lib/supabase/admin";
+import { createPublicAdminClient } from "@/lib/supabase/admin-public";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
   isTenantRequestHost,
@@ -54,6 +53,7 @@ async function resolveTenantIdForLog(
   if (tenant?.id) return tenant.id;
 
   try {
+    const { getTenantScope } = await import("@/lib/tenant/scope");
     const { tenantId } = await getTenantScope();
     return tenantId;
   } catch {
@@ -103,6 +103,7 @@ async function insertDevLogRow(
   let userId = input.userId ?? null;
   let userEmail = input.userEmail ?? null;
   if (!userId && !userEmail) {
+    const { getStaffUser } = await import("@/lib/auth/require-staff");
     const user = await getStaffUser();
     userId = user?.id ?? null;
     userEmail = user?.email ?? null;

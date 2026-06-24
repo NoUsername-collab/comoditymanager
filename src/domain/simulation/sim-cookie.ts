@@ -7,8 +7,8 @@
  */
 
 import { cache } from "react";
-import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
+import { hmacSha256Hex, timingSafeEqualHex } from "@/lib/auth/web-hmac";
 import type { SimState, SimStatus } from "./sim-types";
 import { SIM_COOKIE } from "./sim-types";
 import { todayReal } from "./sim-clock";
@@ -29,17 +29,17 @@ function getSimSecret(): string {
   return secret ?? "sim-dev-fallback-secret";
 }
 
-function signPayload(payload: string): string {
-  return createHmac("sha256", getSimSecret()).update(payload).digest("hex");
+async function signPayload(payload: string): Promise<string> {
+  return hmacSha256Hex(getSimSecret(), payload);
 }
 
-function encodeSimCookie(state: SimState): string {
+async function encodeSimCookie(state: SimState): Promise<string> {
   const payload = JSON.stringify(state);
-  const sig = signPayload(payload);
+  const sig = await signPayload(payload);
   return `${Buffer.from(payload).toString("base64")}.${sig}`;
 }
 
-function decodeSimCookie(raw: string): SimState | null {
+async function decodeSimCookie(raw: string): Promise<SimState | null> {
   const dotIdx = raw.lastIndexOf(".");
   if (dotIdx === -1) return null;
 
@@ -53,15 +53,8 @@ function decodeSimCookie(raw: string): SimState | null {
     return null;
   }
 
-  // Verify HMAC
-  const expected = signPayload(payload);
-  try {
-    const a = Buffer.from(sig, "hex");
-    const b = Buffer.from(expected, "hex");
-    if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
-  } catch {
-    return null;
-  }
+  const expected = await signPayload(payload);
+  if (!timingSafeEqualHex(sig, expected)) return null;
 
   try {
     const parsed = JSON.parse(payload) as SimState;
@@ -82,7 +75,7 @@ export const getSimStatus = cache(async (): Promise<SimStatus> => {
     const raw = jar.get(SIM_COOKIE)?.value;
     if (!raw) return { active: false };
 
-    const state = decodeSimCookie(raw);
+    const state = await decodeSimCookie(raw);
     if (!state) return { active: false };
     return state;
   } catch {
@@ -111,7 +104,7 @@ export async function getSimDate(): Promise<string | null> {
  */
 export async function setSimCookie(state: SimState): Promise<void> {
   const jar = await cookies();
-  jar.set(SIM_COOKIE, encodeSimCookie(state), {
+  jar.set(SIM_COOKIE, await encodeSimCookie(state), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

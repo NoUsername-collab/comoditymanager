@@ -4,6 +4,7 @@
  */
 
 import { isAdminLocationUnlockCookieFresh } from "@/lib/auth/admin-location-unlock-cookie";
+import { hmacSha256Hex, timingSafeEqualHex } from "@/lib/auth/web-hmac";
 import { isProductionRuntime } from "@/lib/security/production-runtime";
 
 function getEdgeLocationUnlockSecret(): string | null {
@@ -11,30 +12,6 @@ function getEdgeLocationUnlockSecret(): string | null {
   if (secret && secret.length >= 32) return secret;
   if (isProductionRuntime()) return null;
   return "dev-insecure-unlock-secret";
-}
-
-function timingSafeEqualHex(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) {
-    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return diff === 0;
-}
-
-async function signPayloadEdge(payload: string, secret: string): Promise<string> {
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(payload));
-  return Array.from(new Uint8Array(sig))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
 }
 
 /** Full token validation for Edge Middleware — expiry + HMAC. */
@@ -50,7 +27,7 @@ export async function isAdminLocationUnlockTokenValidEdge(
   const secret = getEdgeLocationUnlockSecret();
   if (!secret) return false;
 
-  const expected = await signPayloadEdge(payload, secret);
+  const expected = await hmacSha256Hex(secret, payload);
   if (!timingSafeEqualHex(sig, expected)) return false;
 
   const until = Number(payload);
