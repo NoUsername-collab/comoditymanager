@@ -8,6 +8,7 @@
 @import "./default-night.css";
 @import "./default-day.css";
 @import "./design-families.css";
+@import "./admin-color-map.css";
 
 html {
   font-size: 16px;

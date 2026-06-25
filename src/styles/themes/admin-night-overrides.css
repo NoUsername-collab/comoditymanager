@@ -1,6 +1,9 @@
 /**
- * Night mode — corectează CSS admin cu hex hardcodat (light-only).
- * Rulează după admin-default-bridge.css.
+ * Night mode — corectează CSS admin cu structură complexă (non-color).
+ * Rulează după admin-default-bridge.css și admin-color-map.css.
+ *
+ * Notă: Color-only overrides sunt acum în admin-color-map.css
+ * Acest fișier se ocupă de: shadows, gradients, complex color-mix(), și layout.
  */
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell,
@@ -367,152 +370,54 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   color: var(--admin-panel-bg) !important;
 }
 
-/* ── Tailwind utilitare extra în shell ── */
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .text-zinc-300,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .text-zinc-200 {
-  color: var(--admin-text-muted) !important;
+/* ── Admin flat surfaces (night) ── */
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-surface-bg {
+  background: var(--surface);
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .bg-zinc-800,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .bg-zinc-950 {
-  background: var(--surface-2) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-tint-info-bg {
+  background: color-mix(in srgb, var(--info) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--info) 28%, var(--border));
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .divide-zinc-200 > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--admin-panel-border) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-tint-warning-bg {
+  background: color-mix(in srgb, var(--pending-bg) 85%, var(--surface));
+  border-color: color-mix(in srgb, var(--pending-border) 35%, var(--border));
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-shell .ring-zinc-200 {
-  --tw-ring-color: color-mix(in srgb, var(--admin-panel-border) 80%, transparent) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-tint-success-bg {
+  background: color-mix(in srgb, var(--active-bg) 80%, var(--surface));
+  border-color: color-mix(in srgb, var(--active-border) 35%, var(--border));
 }
 
-/* ── Gantt Quick Action Panel — Tailwind overrides ── */
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-zinc-500 {
-  color: var(--text-muted) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-tint-danger-bg {
+  background: color-mix(in srgb, var(--cancelled-bg) 75%, var(--surface));
+  border-color: color-mix(in srgb, var(--cancelled-border) 35%, var(--border));
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-zinc-900 {
-  color: var(--text) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-tint-violet-bg {
+  background: color-mix(in srgb, var(--blocked-bg) 80%, var(--surface));
+  border-color: color-mix(in srgb, var(--blocked-border) 30%, var(--border));
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-zinc-700 {
-  color: var(--text-muted) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .admin-tint-sky-bg {
+  background: color-mix(in srgb, var(--hold-bg) 80%, var(--surface));
+  border-color: color-mix(in srgb, var(--hold-border) 30%, var(--border));
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-zinc-600 {
-  color: var(--text-muted) !important;
+/* ── Gantt semantic fills — contrast AA pe fundal închis ── */
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-bar-fill-active {
+  background: color-mix(
+    in srgb,
+    var(--active-bg) 42%,
+    var(--active-border) 58%
+  );
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-zinc-400 {
-  color: var(--text-faint) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-bar-fill-pending {
+  background: var(--pending-bg);
 }
 
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-zinc-800 {
-  color: var(--text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-white {
-  background: var(--surface) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-zinc-200,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-zinc-300 {
-  border-color: var(--border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel input,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel select {
-  background: var(--admin-input-bg) !important;
-  border-color: var(--admin-input-border) !important;
-  color: var(--admin-text) !important;
-  color-scheme: dark;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-zinc-50 {
-  background: var(--surface-2) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .shadow-sm {
-  box-shadow: var(--shadow) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-emerald-200 {
-  border-color: var(--active-border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-emerald-50 {
-  background: var(--active-bg) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-emerald-700,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-emerald-800 {
-  color: var(--active-text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-amber-200,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-amber-300 {
-  border-color: var(--pending-border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-amber-50 {
-  background: var(--pending-bg) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-amber-700,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-amber-900,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-amber-800 {
-  color: var(--pending-text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-red-200 {
-  border-color: var(--cancelled-border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-red-50 {
-  background: var(--cancelled-bg) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-red-600,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-red-700 {
-  color: var(--cancelled-text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-sky-200,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-sky-300 {
-  border-color: var(--hold-border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-sky-50 {
-  background: var(--hold-bg) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-sky-700,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-sky-900 {
-  color: var(--hold-text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .border-violet-300 {
-  border-color: var(--blocked-border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .bg-violet-50 {
-  background: var(--blocked-bg) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .text-violet-700 {
-  color: var(--blocked-text) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .focus\:border-emerald-400:focus {
-  border-color: var(--active-border) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel .focus\:ring-emerald-100:focus {
-  --tw-ring-color: color-mix(in srgb, var(--active-border) 25%, transparent) !important;
-}
-
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-quick-panel > section {
-  background: var(--surface-2) !important;
-  border-color: var(--border) !important;
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-bar-fill-past {
+  background: var(--past-bg);
 }

@@ -1,0 +1,252 @@
+/**
+ * admin-color-map.css
+ *
+ * Maps hardcoded Tailwind color utilities to CSS theme variables.
+ * Applied AFTER component CSS to override hardcoded colors without !important abuse.
+ *
+ * This layer ensures day/night mode consistency across admin components
+ * without requiring refactoring of hundreds of component files.
+ */
+
+/* ════════════════════════════════════════════════════════════════
+   TEXT COLOR MAPPINGS — Tailwind → Theme variables
+   ════════════════════════════════════════════════════════════════ */
+
+/* Dark text (zinc-900, zinc-800, slate-900, etc.) → primary text */
+.text-zinc-900,
+.text-slate-900,
+.text-gray-900 {
+  color: var(--admin-text) !important;
+}
+
+/* Muted text (zinc-600, zinc-500, slate-600, etc.) → secondary text */
+.text-zinc-600,
+.text-zinc-500,
+.text-slate-600,
+.text-slate-500,
+.text-gray-600,
+.text-gray-500 {
+  color: var(--admin-text-muted) !important;
+}
+
+/* Light text (zinc-300, zinc-200, slate-300, etc.) → muted text */
+.text-zinc-300,
+.text-zinc-200,
+.text-slate-300,
+.text-slate-200,
+.text-gray-300,
+.text-gray-200 {
+  color: var(--text-faint) !important;
+}
+
+/* White text → primary text on dark backgrounds */
+.text-white {
+  color: var(--admin-text) !important;
+}
+
+/* Blue accent text */
+.text-blue-700,
+.text-blue-600,
+.text-blue-500 {
+  color: var(--admin-link) !important;
+}
+
+/* Status colors */
+.text-green-700,
+.text-emerald-700,
+.text-emerald-800 {
+  color: var(--active-text) !important;
+}
+
+.text-amber-900,
+.text-amber-800 {
+  color: var(--pending-text) !important;
+}
+
+.text-red-600,
+.text-red-700,
+.text-red-800 {
+  color: var(--cancelled-text) !important;
+}
+
+.text-purple-700,
+.text-violet-700 {
+  color: var(--blocked-text) !important;
+}
+
+.text-sky-700,
+.text-cyan-700 {
+  color: var(--hold-text) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BACKGROUND COLOR MAPPINGS — Tailwind → Theme variables
+   ════════════════════════════════════════════════════════════════ */
+
+/* White background → primary surface */
+.bg-white {
+  background: var(--admin-panel-bg) !important;
+}
+
+/* Light gray background → secondary surface */
+.bg-gray-50,
+.bg-slate-50,
+.bg-zinc-50 {
+  background: var(--surface-2) !important;
+}
+
+.bg-gray-100,
+.bg-slate-100,
+.bg-zinc-100 {
+  background: var(--surface-3) !important;
+}
+
+/* Dark gray background → primary surface (in night mode) */
+.bg-zinc-800,
+.bg-zinc-900,
+.bg-slate-800,
+.bg-gray-800 {
+  background: var(--surface-2) !important;
+}
+
+/* Status backgrounds */
+.bg-green-50,
+.bg-emerald-50 {
+  background: var(--admin-tint-success-bg) !important;
+}
+
+.bg-amber-50 {
+  background: var(--admin-tint-warning-bg) !important;
+}
+
+.bg-red-50 {
+  background: var(--admin-tint-danger-bg) !important;
+}
+
+.bg-purple-50,
+.bg-violet-50 {
+  background: var(--admin-tint-violet-bg) !important;
+}
+
+.bg-sky-50,
+.bg-cyan-50 {
+  background: var(--admin-tint-sky-bg) !important;
+}
+
+.bg-blue-50 {
+  background: var(--admin-tint-info-bg) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BORDER COLOR MAPPINGS — Tailwind → Theme variables
+   ════════════════════════════════════════════════════════════════ */
+
+/* Neutral borders */
+.border-zinc-200,
+.border-slate-200,
+.border-gray-200 {
+  border-color: var(--admin-panel-border) !important;
+}
+
+.border-zinc-300,
+.border-slate-300,
+.border-gray-300 {
+  border-color: var(--border-strong) !important;
+}
+
+/* Status borders */
+.border-green-200,
+.border-emerald-200 {
+  border-color: var(--active-border) !important;
+}
+
+.border-amber-200 {
+  border-color: var(--pending-border) !important;
+}
+
+.border-red-200 {
+  border-color: var(--cancelled-border) !important;
+}
+
+.border-purple-200,
+.border-violet-200,
+.border-violet-300 {
+  border-color: var(--blocked-border) !important;
+}
+
+.border-sky-200,
+.border-sky-300,
+.border-cyan-200,
+.border-cyan-300 {
+  border-color: var(--hold-border) !important;
+}
+
+.border-blue-200 {
+  border-color: var(--accent) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FILL & STROKE MAPPINGS — SVG & icon colors
+   ════════════════════════════════════════════════════════════════ */
+
+.fill-white {
+  fill: var(--admin-panel-bg) !important;
+}
+
+.fill-zinc-900,
+.fill-slate-900,
+.fill-gray-900 {
+  fill: var(--admin-text) !important;
+}
+
+.stroke-white {
+  stroke: var(--admin-panel-bg) !important;
+}
+
+.stroke-zinc-900 {
+  stroke: var(--admin-text) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   SPECIFIC COMPONENT PATTERNS from globals.css overrides
+   ════════════════════════════════════════════════════════════════ */
+
+/* Tailwind form utilities */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+select,
+textarea {
+  background-color: var(--admin-input-bg);
+  border-color: var(--admin-input-border);
+  color: var(--admin-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-faint);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RING/FOCUS COLORS — keyboard navigation
+   ════════════════════════════════════════════════════════════════ */
+
+.ring-zinc-200,
+.ring-slate-200,
+.ring-gray-200 {
+  --tw-ring-color: color-mix(in srgb, var(--admin-panel-border) 80%, transparent) !important;
+}
+
+.ring-blue-500,
+.ring-indigo-500 {
+  --tw-ring-color: var(--admin-focus-ring) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DISABLED STATE COLORS
+   ════════════════════════════════════════════════════════════════ */
+
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled {
+  opacity: 0.6;
+}
