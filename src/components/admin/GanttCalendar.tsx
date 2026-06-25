@@ -95,11 +95,13 @@ import {
   resolveGanttColumnMetrics,
   resolveGanttDayGridOptions,
   resolveGanttTableLayout,
+  resolveGanttShellZoom,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
 import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
 import { GanttFooterLegend } from "@/components/admin/gantt/GanttFooterLegend";
 import { GanttVirtualizedBody } from "@/components/admin/gantt/GanttVirtualizedBody";
+import { GanttZoneRibbon } from "@/components/admin/gantt/GanttZoneRibbon";
 
 export type { GanttRoom };
 
@@ -161,8 +163,9 @@ export function GanttCalendar({
     : tCommon("scrollDrag");
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
   const { density, toggleDensity } = useGanttDensity();
-  const compact =
-    viewRange.zoom === "quarter" || density === "compact";
+  const compact = density === "compact";
+  const shellZoom = resolveGanttShellZoom(viewRange.zoom);
+  const showZoneRibbon = shellZoom === "7z";
   const ganttRowHeight = density === "compact" ? GANTT_ROW_H_COMPACT : GANTT_ROW_H;
   const summaryFilterActive = filter !== "all";
   const columnMetrics = useMemo(
@@ -208,6 +211,9 @@ export function GanttCalendar({
         bookings,
         occupancy,
         dayIsos,
+        rangeStart: viewRange.rangeStart,
+        rangeEnd: viewRange.rangeEnd,
+        columnGranularity: viewRange.columnGranularity,
         effectiveToday,
         filter,
         layerFilter,
@@ -228,6 +234,9 @@ export function GanttCalendar({
       groupByBuilding,
       buildingFallbackLabel,
       buildings,
+      viewRange.rangeStart,
+      viewRange.rangeEnd,
+      viewRange.columnGranularity,
     ]
   );
 
@@ -546,6 +555,7 @@ export function GanttCalendar({
     toggleTodayStartMode,
     navigatePeriod,
     jumpToDate,
+    handleHeaderDayDrillDown,
     toggleAvailabilityPanel,
     activePeriodStep,
     selectedFeature,
@@ -603,6 +613,7 @@ export function GanttCalendar({
         activeFocusIso={summaryFilterActive ? focusIso : null}
         filterActive={summaryFilterActive}
         onSummaryDayClick={handleSummaryDayClick}
+        onDayDrillDown={handleHeaderDayDrillDown}
       />
     <div
       key={viewRange.periodKey}
@@ -615,6 +626,7 @@ export function GanttCalendar({
           "gantt-shell gantt-shell--premium relative min-w-full overflow-visible",
           `gantt-shell--density-${density}`,
         ].join(" ")}
+        data-gantt-zoom={shellZoom}
       >
         <GanttCompactToolbar
           onOpenRequest={() => setOccFormMode("cerere")}
@@ -654,6 +666,13 @@ export function GanttCalendar({
           density={density}
           onDensityToggle={toggleDensity}
         />
+
+        {showZoneRibbon && (
+          <GanttZoneRibbon
+            checkInTime={checkInTime}
+            checkOutTime={checkOutTime}
+          />
+        )}
 
         <GanttFiltersPanel
           open={isFiltersOpen}
@@ -708,6 +727,8 @@ export function GanttCalendar({
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
                   dayGridOptions={dayGridOptions}
+                  columnGranularity={viewRange.columnGranularity}
+                  onDayDrillDown={handleHeaderDayDrillDown}
                 />
               </th>
             </tr>
@@ -751,6 +772,7 @@ export function GanttCalendar({
             onCtrlDragEnd={handleCtrlDragEnd}
             today={effectiveToday}
             dayGridOptions={dayGridOptions}
+            shellZoom={shellZoom}
             departurePolicy={departurePolicy}
             disableVirtualization={compactChrome}
             emptyMessage={

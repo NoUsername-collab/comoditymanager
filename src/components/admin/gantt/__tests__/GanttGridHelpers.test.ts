@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   DAY_COL_MIN_W,
   ROOM_COL_W,
+  drillDownZoomFrom,
   ganttDayGridStyle,
   resolveGanttColumnMetrics,
   resolveGanttDayGridOptions,
+  resolveGanttShellZoom,
   resolveGanttTableLayout,
 } from "../GanttGridHelpers";
 
@@ -96,5 +98,25 @@ describe("ganttDayGridStyle", () => {
     expect(ganttDayGridStyle(14)).toEqual({
       gridTemplateColumns: "repeat(14, minmax(0, 1fr))",
     });
+  });
+});
+
+describe("resolveGanttShellZoom", () => {
+  it("maps rolling zooms to shell tokens", () => {
+    expect(resolveGanttShellZoom("today")).toBe("7z");
+    expect(resolveGanttShellZoom("days7")).toBe("7z");
+    expect(resolveGanttShellZoom("days15")).toBe("15z");
+    expect(resolveGanttShellZoom("days30")).toBe("30z");
+    expect(resolveGanttShellZoom("quarter")).toBe("quarter");
+  });
+});
+
+describe("drillDownZoomFrom", () => {
+  it("steps down zoom levels", () => {
+    expect(drillDownZoomFrom("quarter")).toBe("days30");
+    expect(drillDownZoomFrom("days30")).toBe("days7");
+    expect(drillDownZoomFrom("days15")).toBe("days7");
+    expect(drillDownZoomFrom("days7")).toBe("today");
+    expect(drillDownZoomFrom("today")).toBeNull();
   });
 });

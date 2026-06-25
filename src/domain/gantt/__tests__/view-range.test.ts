@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   buildMonthRange,
+  buildQuarterRange,
   buildRollingRange,
   buildWeekRange,
   mondayOfWeekContaining,
@@ -123,6 +124,18 @@ describe("buildRollingRange", () => {
     expect(range.days).toHaveLength(1);
     expect(range.days[0].iso).toBe("2025-06-15");
     expect(range.days[0].isToday).toBe(true);
+  });
+});
+
+describe("buildQuarterRange", () => {
+  it("uses week columns (~13) instead of daily columns", () => {
+    const range = buildQuarterRange(2025, 1, "en", undefined, "2025-04-15");
+    expect(range.columnGranularity).toBe("week");
+    expect(range.days.length).toBeGreaterThanOrEqual(12);
+    expect(range.days.length).toBeLessThanOrEqual(14);
+    expect(range.days[0].weekEndIso).toBeDefined();
+    expect(range.rangeStart).toBe("2025-04-01");
+    expect(range.rangeEnd).toBe("2025-07-01");
   });
 });
 

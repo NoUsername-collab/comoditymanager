@@ -52,6 +52,24 @@ export function roomTodayFlags(
   };
 }
 
+/** Zile cu plecare + sosire în aceeași cameră (turnover). */
+export function roomTurnoverDays(
+  roomId: string,
+  bookings: BookingRow[],
+  dayIsos: string[]
+): Set<string> {
+  const relevant = bookings.filter(
+    (b) => b.status !== "anulata" && b.room_ids.includes(roomId)
+  );
+  const turnover = new Set<string>();
+  for (const iso of dayIsos) {
+    const hasArrival = relevant.some((b) => b.check_in === iso);
+    const hasDeparture = relevant.some((b) => b.check_out === iso);
+    if (hasArrival && hasDeparture) turnover.add(iso);
+  }
+  return turnover;
+}
+
 export function stayTodayHighlight(
   booking: BookingRow,
   today: string = todayIso()

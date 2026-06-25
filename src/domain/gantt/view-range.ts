@@ -20,7 +20,11 @@ export type GanttDayColumn = {
   isWeekend: boolean;
   isToday: boolean;
   isPast: boolean;
+  /** Set when columnGranularity is week — last day of the week column. */
+  weekEndIso?: string;
 };
+
+export type GanttColumnGranularity = "day" | "week";
 
 export type GanttViewRange = {
   zoom: GanttZoom;
@@ -29,6 +33,7 @@ export type GanttViewRange = {
   days: GanttDayColumn[];
   rangeStart: string;
   rangeEnd: string;
+  columnGranularity?: GanttColumnGranularity;
 };
 
 export type GanttRangeLabels = {
@@ -53,6 +58,49 @@ export function mondayOfWeekContaining(iso: string): string {
   const diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function buildWeekColumns(
+  weekStartIsos: string[],
+  locale: string,
+  today?: string
+): GanttDayColumn[] {
+  const ref = today ?? todayIso();
+  return weekStartIsos.map((iso) => {
+    const weekEnd = addDays(iso, 6);
+    const d = parseIso(iso);
+    return {
+      iso,
+      weekday: dayInitialFromIso(iso, locale),
+      dayNum: d.getDate(),
+      isWeekend: false,
+      isToday: ref >= iso && ref <= weekEnd,
+      isPast: weekEnd < ref,
+      weekEndIso: weekEnd,
+    };
+  });
+}
+
+function weekStartsInRange(rangeStartIso: string, rangeEndExclusive: string): string[] {
+  const weeks: string[] = [];
+  let cur = mondayOfWeekContaining(rangeStartIso);
+  const lastDay = addDays(rangeEndExclusive, -1);
+  while (cur <= lastDay) {
+    weeks.push(cur);
+    cur = addDays(cur, 7);
+  }
+  return weeks;
+}
+
+/** All calendar days in [rangeStart, rangeEnd). */
+export function expandRangeDayIsos(rangeStart: string, rangeEnd: string): string[] {
+  const days: string[] = [];
+  let cur = rangeStart;
+  while (cur < rangeEnd) {
+    days.push(cur);
+    cur = addDays(cur, 1);
+  }
+  return days;
 }
 
 function buildDayColumns(isoDates: string[], locale: string, today?: string): GanttDayColumn[] {
@@ -253,14 +301,17 @@ export function buildQuarterRange(
       );
     }
   }
-  const cols = buildDayColumns(days, locale, today);
+  const rangeStart = days[0];
+  const rangeEnd = addDays(days[days.length - 1], 1);
+  const weekStarts = weekStartsInRange(rangeStart, rangeEnd);
   return {
     zoom: "quarter",
     periodKey: `q-${year}-${quarter}`,
     title: `${labels.quarters[quarter]} ${year}`,
-    days: cols,
-    rangeStart: days[0],
-    rangeEnd: addDays(days[days.length - 1], 1),
+    days: buildWeekColumns(weekStarts, locale, today),
+    rangeStart,
+    rangeEnd,
+    columnGranularity: "week",
   };
 }
 
@@ -278,21 +329,24 @@ export function buildAnchoredQuarterRange(
   for (let month = quarterStartMonth; month < quarterStartMonth + 3; month += 1) {
     length += daysInMonth(anchor.getFullYear(), month);
   }
+  const rangeStart = startIso;
+  const rangeEnd = addDays(startIso, length);
   const endIso = addDays(startIso, length - 1);
   const title =
     startIso === canonicalStart
       ? `${labels.quarters[quarter]} ${anchor.getFullYear()}`
       : `${formatDateWithDay(startIso, locale, true)} – ${formatDateWithDay(endIso, locale, true)}`;
+  const weekStarts = weekStartsInRange(rangeStart, rangeEnd);
 
-  return buildFixedLengthRange(
-    startIso,
-    length,
-    "quarter",
-    `quarter-${startIso}`,
+  return {
+    zoom: "quarter",
+    periodKey: `quarter-${startIso}`,
     title,
-    locale,
-    today
-  );
+    days: buildWeekColumns(weekStarts, locale, today),
+    rangeStart,
+    rangeEnd,
+    columnGranularity: "week",
+  };
 }
 
 export function resolveGanttRange(params: {

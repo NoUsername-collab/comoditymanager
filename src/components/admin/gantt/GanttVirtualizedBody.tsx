@@ -18,7 +18,7 @@ import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
 import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
-import type { GanttDayGridOptions } from "@/components/admin/gantt/GanttGridHelpers";
+import type { GanttDayGridOptions, GanttShellZoom } from "@/components/admin/gantt/GanttGridHelpers";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarker";
 import { DayGrid } from "@/components/admin/gantt/GanttGridHelpers";
@@ -183,6 +183,7 @@ type GanttBodyProps = {
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
   dayGridOptions?: GanttDayGridOptions;
+  shellZoom?: GanttShellZoom;
   departurePolicy?: GanttDeparturePolicy;
   emptyMessage?: string;
   /** Inner .gantt-scroll scroll — window virtualizer mis-measures on compact mobile */
@@ -248,6 +249,7 @@ function GanttTbodyRows({
   onCtrlDragEnd,
   today,
   dayGridOptions,
+  shellZoom,
   emptyMessage,
   departurePolicy,
 }: GanttTbodyRowsProps) {
@@ -306,6 +308,7 @@ function GanttTbodyRows({
               onCtrlDragEnd={onCtrlDragEnd}
               today={today}
               dayGridOptions={dayGridOptions}
+              shellZoom={shellZoom}
               departurePolicy={departurePolicy}
             />
           </Fragment>

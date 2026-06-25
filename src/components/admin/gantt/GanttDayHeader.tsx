@@ -1,6 +1,7 @@
 "use client";
 
 import { memo, type PointerEvent as ReactPointerEvent } from "react";
+import { useTranslations } from "next-intl";
 import {
   formatWeekdayNarrow,
   formatWeekdayShort,
@@ -12,6 +13,10 @@ import {
   type GanttDayGridOptions,
 } from "./GanttGridHelpers";
 
+function parseIsoDay(iso: string): number {
+  return Number.parseInt(iso.slice(8, 10), 10);
+}
+
 export const GanttDayHeader = memo(function GanttDayHeader({
   columns,
   compact,
@@ -21,6 +26,8 @@ export const GanttDayHeader = memo(function GanttDayHeader({
   todayLabel,
   locale,
   dayGridOptions,
+  columnGranularity,
+  onDayDrillDown,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
@@ -30,7 +37,16 @@ export const GanttDayHeader = memo(function GanttDayHeader({
   todayLabel: string;
   locale: string;
   dayGridOptions?: GanttDayGridOptions;
+  columnGranularity?: GanttViewRange["columnGranularity"];
+  onDayDrillDown?: (iso: string) => void;
 }) {
+  const tCommon = useTranslations("admin.common");
+
+  const handleDayClick = (iso: string) => {
+    if (!onDayDrillDown) return;
+    onDayDrillDown(iso);
+  };
+
   return (
     <div
       className={[
@@ -58,23 +74,34 @@ export const GanttDayHeader = memo(function GanttDayHeader({
           >
             {todayLabel}
           </span>
-          <div
+          <button
+            type="button"
             className={[
               dayHeaderCellClass(col, compact),
               "gantt-day-header-cell__body flex flex-1 flex-col items-center justify-center text-center leading-tight",
+              onDayDrillDown && "gantt-day-header-cell--drillable",
             ]
               .filter(Boolean)
               .join(" ")}
+            onClick={() => handleDayClick(col.iso)}
+            aria-label={
+              onDayDrillDown
+                ? tCommon("ganttDrillDownAria", { date: col.iso })
+                : undefined
+            }
+            disabled={!onDayDrillDown}
           >
             <span className="gantt-day-header-cell__date tabular-nums">
-              {col.dayNum}
+              {columnGranularity === "week" && col.weekEndIso
+                ? `${col.dayNum}–${parseIsoDay(col.weekEndIso)}`
+                : col.dayNum}
             </span>
             <span className="gantt-day-header-cell__weekday">
               {compact
                 ? formatWeekdayNarrow(col.iso, locale)
                 : formatWeekdayShort(col.iso, locale)}
             </span>
-          </div>
+          </button>
         </div>
       ))}
     </div>

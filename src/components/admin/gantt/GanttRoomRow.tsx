@@ -14,8 +14,9 @@ import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
+import { expandRangeDayIsos } from "@/domain/gantt/view-range";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
-import { stayTodayHighlight } from "@/domain/gantt/today-activity";
+import { roomTurnoverDays, stayTodayHighlight } from "@/domain/gantt/today-activity";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { guestPartyTotal } from "@/lib/guest-party";
 import { nightOccupied } from "@/lib/stay-dates";
@@ -26,7 +27,7 @@ import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialo
 import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
 import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
 import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
-import { DayGrid, type GanttDayGridOptions } from "./GanttGridHelpers";
+import { DayGrid, type GanttDayGridOptions, type GanttShellZoom } from "./GanttGridHelpers";
 
 /* ── Compact status LED ───────────────────────────────────────── */
 type RoomLedStatus = "checked-in" | "booked" | "free";
@@ -68,6 +69,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onCtrlDragEnd,
   today,
   dayGridOptions,
+  shellZoom,
   departurePolicy,
 }: {
   room: GanttRoom;
@@ -89,11 +91,25 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
   dayGridOptions?: GanttDayGridOptions;
+  shellZoom?: GanttShellZoom;
   departurePolicy?: GanttDeparturePolicy;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
   const dayCount = viewRange.days.length;
+  const dayIsos = useMemo(
+    () => viewRange.days.map((d) => d.iso),
+    [viewRange.days]
+  );
+
+  const turnoverIsos = useMemo(() => {
+    const active = [...bookingById.values()].filter((b) => b.status !== "anulata");
+    const turnoverDayIsos =
+      viewRange.columnGranularity === "week"
+        ? expandRangeDayIsos(viewRange.rangeStart, viewRange.rangeEnd)
+        : dayIsos;
+    return roomTurnoverDays(room.id, active, turnoverDayIsos);
+  }, [bookingById, room.id, dayIsos, viewRange.columnGranularity, viewRange.rangeEnd, viewRange.rangeStart]);
 
   const roomColor = resolveGanttBuildingColor(
     room.building_color,
@@ -171,6 +187,9 @@ export const GanttRoomRow = memo(function GanttRoomRow({
               checkInTime={checkInTime}
               checkOutTime={checkOutTime}
               dayGridOptions={dayGridOptions}
+              turnoverIsos={turnoverIsos}
+              shellZoom={shellZoom}
+              effectiveToday={today}
             />
           }
         >

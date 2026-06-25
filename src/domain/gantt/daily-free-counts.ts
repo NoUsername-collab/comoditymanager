@@ -1,6 +1,6 @@
-import { nightOccupied } from "@/lib/stay-dates";
-import type { OccupancySegment } from "@/domain/occupancy/types";
+import { addDays, nightOccupied } from "@/lib/stay-dates";
 import type { BookingRow } from "@/domain/booking/row";
+import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttRoom } from "@/domain/gantt/types";
 
 export type DailyFreeCount = {
@@ -65,4 +65,28 @@ export function dailyFreeHeatLevel(
   if (free >= 3 && ratio >= 0.35) return "high";
   if (ratio >= 0.15 || free >= 2) return "mid";
   return "low";
+}
+
+/** Aggregate daily free counts into week columns (min free = busiest day in week). */
+export function aggregateWeeklyFreeCounts(
+  dailyCounts: DailyFreeCount[],
+  weekStartIsos: string[]
+): DailyFreeCount[] {
+  return weekStartIsos.map((weekStart) => {
+    const weekEnd = addDays(weekStart, 6);
+    const inWeek = dailyCounts.filter(
+      (c) => c.iso >= weekStart && c.iso <= weekEnd
+    );
+    if (inWeek.length === 0) {
+      return { iso: weekStart, free: 0, total: 0, occupied: 0 };
+    }
+    const minFree = Math.min(...inWeek.map((c) => c.free));
+    const total = inWeek[0]?.total ?? 0;
+    return {
+      iso: weekStart,
+      free: minFree,
+      total,
+      occupied: total - minFree,
+    };
+  });
 }

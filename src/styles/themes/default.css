@@ -123,8 +123,9 @@ html[data-theme="default"] .admin-daynight-hero__title {
 }
 
 html[data-theme="default"]
+  .gantt-shell[data-gantt-zoom="7z"]
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell {
+  .gantt-day-cell:not(.gantt-day-cell--past) {
   background-image: linear-gradient(
     90deg,
     var(--gantt-zone-checkout) 0,
@@ -137,10 +138,10 @@ html[data-theme="default"]
 }
 
 html[data-theme="default"]
+  .gantt-shell[data-gantt-zoom="7z"]
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell::after {
-  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, var(--admin-panel-border))
-    !important;
+  .gantt-day-cell:not(.gantt-day-cell--past)::after {
+  background: color-mix(in srgb, var(--gantt-zone-clean) 96%, var(--admin-panel-border)) !important;
   opacity: 0.4;
 }
 

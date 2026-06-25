@@ -1,10 +1,40 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import type { GanttViewRange } from "@/domain/gantt/view-range";
+import type { GanttViewRange, GanttZoom } from "@/domain/gantt/view-range";
 import { ganttDayTimeStyle } from "@/lib/gantt-time";
+import { addDays } from "@/lib/stay-dates";
 
 import type { GanttDensity } from "@/hooks/useGanttDensity";
+
+/** Shell `data-gantt-zoom` token for CSS zoom grammar. */
+export type GanttShellZoom = "7z" | "15z" | "30z" | "quarter";
+
+export function resolveGanttShellZoom(zoom: GanttZoom): GanttShellZoom {
+  if (zoom === "today" || zoom === "days7" || zoom === "week") return "7z";
+  if (zoom === "days15") return "15z";
+  if (zoom === "days30" || zoom === "month") return "30z";
+  return "quarter";
+}
+
+export function drillDownZoomFrom(current: InlineZoomChoice): InlineZoomChoice | null {
+  switch (current) {
+    case "quarter":
+      return "days30";
+    case "days30":
+      return "days7";
+    case "days15":
+      return "days7";
+    case "days7":
+      return "today";
+    default:
+      return null;
+  }
+}
+
+function isInOperationalWindow(iso: string, today: string): boolean {
+  return iso >= today && iso < addDays(today, 7);
+}
 
 export const ROOM_COL_W = "7.7rem";
 export const DAY_COL_MIN_W = "2.25rem";
@@ -173,9 +203,13 @@ export function resolveGanttTableLayout(
 }
 
 export function dayCellClass(
-  col: { isWeekend: boolean; isToday: boolean; isPast: boolean },
+  col: { isWeekend: boolean; isToday: boolean; isPast: boolean; iso: string },
   compact: boolean,
-  touch: boolean
+  touch: boolean,
+  options?: {
+    turnover?: boolean;
+    operationalWindow?: boolean;
+  }
 ) {
   return [
     GANTT_DAY_CELL,
@@ -184,6 +218,8 @@ export function dayCellClass(
     col.isWeekend && "gantt-day-cell--weekend",
     col.isToday && "gantt-day-cell--today",
     col.isPast && "gantt-day-cell--past",
+    options?.turnover && "gantt-day-cell--turnover",
+    options?.operationalWindow && "gantt-day-cell--operational-window",
   ]
     .filter(Boolean)
     .join(" ");
@@ -212,6 +248,9 @@ export function DayGrid({
   checkInTime,
   checkOutTime,
   dayGridOptions,
+  turnoverIsos,
+  shellZoom,
+  effectiveToday,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
@@ -219,7 +258,12 @@ export function DayGrid({
   checkInTime: string;
   checkOutTime: string;
   dayGridOptions?: GanttDayGridOptions;
+  turnoverIsos?: Set<string>;
+  shellZoom?: GanttShellZoom;
+  effectiveToday?: string;
 }) {
+  const showOperationalWindow =
+    shellZoom === "15z" || shellZoom === "30z";
   return (
     <div
       className={[
@@ -233,9 +277,26 @@ export function DayGrid({
         ...ganttDayTimeStyle(checkInTime, checkOutTime),
       }}
     >
-      {columns.map((col) => (
-        <div key={col.iso} className={dayCellClass(col, compact, touch)} />
-      ))}
+      {columns.map((col) => {
+        const hasTurnover =
+          turnoverIsos?.has(col.iso) ||
+          (col.weekEndIso != null &&
+            [...(turnoverIsos ?? [])].some(
+              (iso) => iso >= col.iso && iso <= col.weekEndIso
+            ));
+        return (
+        <div
+          key={col.iso}
+          className={dayCellClass(col, compact, touch, {
+            turnover: hasTurnover,
+            operationalWindow:
+              showOperationalWindow &&
+              effectiveToday != null &&
+              isInOperationalWindow(col.iso, effectiveToday),
+          })}
+        />
+      );
+      })}
     </div>
   );
 }

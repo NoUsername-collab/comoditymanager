@@ -13,6 +13,7 @@ import type { GanttViewRange, GanttZoom } from "@/domain/gantt/view-range";
 import {
   normalizeZoomChoice,
   periodStepMeta,
+  drillDownZoomFrom,
   type InlineZoomChoice,
 } from "@/components/admin/gantt/GanttGridHelpers";
 import { useTranslations } from "next-intl";
@@ -249,6 +250,19 @@ export function useGanttCalendarNavigation({
     [pushCalendarPatch, viewRange.zoom]
   );
 
+  const handleHeaderDayDrillDown = useCallback(
+    (iso: string) => {
+      if (Date.now() < suppressHeaderClickUntilRef.current) return;
+      const nextZoom = drillDownZoomFrom(zoomChoice);
+      if (!nextZoom) return;
+      pushCalendarPatch({
+        zoom: nextZoom,
+        ws: iso,
+      });
+    },
+    [pushCalendarPatch, suppressHeaderClickUntilRef, zoomChoice]
+  );
+
   const toggleAvailabilityPanel = useCallback(() => {
     const next = mergeAvailabilityPanelSearch(new URLSearchParams(searchParams.toString()), {
       open: !isAvailabilityPanelOpen ? true : false,
@@ -287,6 +301,7 @@ export function useGanttCalendarNavigation({
     toggleTodayStartMode,
     navigatePeriod,
     jumpToDate,
+    handleHeaderDayDrillDown,
     toggleAvailabilityPanel,
     activePeriodStep,
     selectedFeature,

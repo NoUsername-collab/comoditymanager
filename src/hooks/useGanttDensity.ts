@@ -7,18 +7,18 @@ export type GanttDensity = "comfortable" | "compact";
 const STORAGE_KEY = "casaemil-gantt-density";
 
 function readStoredDensity(): GanttDensity {
-  if (typeof window === "undefined") return "comfortable";
+  if (typeof window === "undefined") return "compact";
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw === "compact" ? "compact" : "comfortable";
+    return raw === "comfortable" ? "comfortable" : "compact";
   } catch {
-    return "comfortable";
+    return "compact";
   }
 }
 
-/** Desktop calendar density — comfortable = wide cols + scroll; compact = overview în viewport. */
+/** Desktop calendar density — comfortable = operațional (wide cols); compact = panoramă (fit viewport). */
 export function useGanttDensity() {
-  const [density, setDensityState] = useState<GanttDensity>("comfortable");
+  const [density, setDensityState] = useState<GanttDensity>("compact");
 
   useEffect(() => {
     setDensityState(readStoredDensity());

@@ -32,6 +32,7 @@ export function GanttStickyViewportHeader({
   activeFocusIso,
   filterActive,
   onSummaryDayClick,
+  onDayDrillDown,
 }: {
   scrollRef: RefObject<HTMLDivElement | null>;
   shellRef: RefObject<HTMLElement | null>;
@@ -46,6 +47,7 @@ export function GanttStickyViewportHeader({
   activeFocusIso: string | null;
   filterActive: boolean;
   onSummaryDayClick: (iso: string) => void;
+  onDayDrillDown?: (iso: string) => void;
 }) {
   const tCommon = useTranslations("admin.common");
   const locale = useLocale();
@@ -184,6 +186,8 @@ export function GanttStickyViewportHeader({
                   todayLabel={tCommon("todayPanel")}
                   locale={locale}
                   dayGridOptions={dayGridOptions}
+                  columnGranularity={viewRange.columnGranularity}
+                  onDayDrillDown={onDayDrillDown}
                 />
               </div>
             </div>

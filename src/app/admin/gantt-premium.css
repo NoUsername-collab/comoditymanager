@@ -4383,3 +4383,194 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact .gantt-da
 html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact .gantt-stay-chrome__label {
   font-size: 0.62rem;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Direction 3 — Gantt zoom grammar (data-gantt-zoom on .gantt-shell)
+   ═══════════════════════════════════════════════════════════════ */
+
+.gantt-day-header-cell--drillable {
+  cursor: zoom-in;
+  border: none;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+.gantt-day-header-cell--drillable:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.gantt-day-header-cell--drillable:disabled {
+  cursor: default;
+}
+
+/* 7z — today / 7 days: full 3-zone bands + voal clean zone */
+.gantt-shell[data-gantt-zoom="7z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past) {
+  background-image: linear-gradient(
+    90deg,
+    var(--gantt-zone-checkout) 0,
+    var(--gantt-zone-checkout) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) 100%
+  );
+}
+
+.gantt-shell[data-gantt-zoom="7z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: var(--gantt-check-out-pct, 45.83%);
+  width: calc(
+    var(--gantt-check-in-pct, 58.33%) - var(--gantt-check-out-pct, 45.83%)
+  );
+  background: color-mix(in srgb, var(--gantt-zone-clean) 72%, var(--surface-2));
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gantt-shell[data-gantt-zoom="7z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 1px) 0 0 0 var(--gantt-line-checkout),
+    calc(var(--gantt-check-in-pct, 58.33%) - 1px) 0 0 0 var(--gantt-line-checkin);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 15z — thinner zone bands, lines only on clean */
+.gantt-shell[data-gantt-zoom="15z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past) {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gantt-zone-checkout) 55%, var(--gantt-zone-clean)) 0,
+    color-mix(in srgb, var(--gantt-zone-checkout) 55%, var(--gantt-zone-clean))
+      var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    color-mix(in srgb, var(--gantt-zone-checkin) 55%, var(--gantt-zone-clean))
+      var(--gantt-check-in-pct, 58.33%),
+    color-mix(in srgb, var(--gantt-zone-checkin) 55%, var(--gantt-zone-clean)) 100%
+  );
+}
+
+.gantt-shell[data-gantt-zoom="15z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkout) 70%, transparent),
+    calc(var(--gantt-check-in-pct, 58.33%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkin) 70%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* 30z — uniform cells + checkout/checkin hour lines */
+.gantt-shell[data-gantt-zoom="30z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past) {
+  background-image: none;
+  background-color: var(--gantt-zone-clean);
+}
+
+.gantt-shell[data-gantt-zoom="30z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkout) 55%, transparent),
+    calc(var(--gantt-check-in-pct, 58.33%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkin) 55%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Quarter — aggregated week columns, no per-cell zone hatching */
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past) {
+  background-image: none;
+  background-color: color-mix(in srgb, var(--gantt-zone-clean) 96%, var(--surface-2));
+}
+
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past)::after,
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell:not(.gantt-day-cell--past)::before {
+  content: none;
+}
+
+/* Operational window — first 7 days at 7z resolution inside 15z/30z */
+.gantt-shell[data-gantt-zoom="15z"]
+  .gantt-day-cell--operational-window:not(.gantt-day-cell--past),
+.gantt-shell[data-gantt-zoom="30z"]
+  .gantt-day-cell--operational-window:not(.gantt-day-cell--past) {
+  background-image: linear-gradient(
+    90deg,
+    var(--gantt-zone-checkout) 0,
+    var(--gantt-zone-checkout) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) var(--gantt-check-in-pct, 58.33%),
+    var(--gantt-zone-checkin) 100%
+  );
+}
+
+.gantt-shell[data-gantt-zoom="15z"]
+  .gantt-day-cell--operational-window:not(.gantt-day-cell--past)::after,
+.gantt-shell[data-gantt-zoom="30z"]
+  .gantt-day-cell--operational-window:not(.gantt-day-cell--past)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: var(--gantt-check-out-pct, 45.83%);
+  width: calc(
+    var(--gantt-check-in-pct, 58.33%) - var(--gantt-check-out-pct, 45.83%)
+  );
+  background: color-mix(in srgb, var(--gantt-zone-clean) 72%, var(--surface-2));
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gantt-shell[data-gantt-zoom="30z"]
+  .gantt-day-cell--operational-window:not(.gantt-day-cell--past)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 1px) 0 0 0 var(--gantt-line-checkout),
+    calc(var(--gantt-check-in-pct, 58.33%) - 1px) 0 0 0 var(--gantt-line-checkin);
+  pointer-events: none;
+  z-index: 2;
+}

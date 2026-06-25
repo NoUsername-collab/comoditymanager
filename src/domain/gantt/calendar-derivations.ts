@@ -8,10 +8,12 @@ import {
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
-import { computeDailyFreeCounts } from "@/domain/gantt/daily-free-counts";
+import { computeDailyFreeCounts, aggregateWeeklyFreeCounts } from "@/domain/gantt/daily-free-counts";
 import { filterBookingsForOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { summarizeGanttToday } from "@/domain/gantt/today-activity";
 import { nightOccupied } from "@/lib/stay-dates";
+import { expandRangeDayIsos } from "@/domain/gantt/view-range";
+import type { GanttColumnGranularity } from "@/domain/gantt/view-range";
 import type { AcMode } from "@/types/database";
 
 export type GanttBuildingGroup = {
@@ -190,6 +192,9 @@ export function deriveGanttCalendarData(input: {
   bookings: BookingRow[];
   occupancy: OccupancySegment[];
   dayIsos: string[];
+  rangeStart?: string;
+  rangeEnd?: string;
+  columnGranularity?: GanttColumnGranularity;
   effectiveToday: string;
   filter: GanttFilter;
   layerFilter: GanttLayerFilter;
@@ -198,6 +203,11 @@ export function deriveGanttCalendarData(input: {
   buildingFallbackLabel: string;
   buildings?: { id: string; sort_order: number }[];
 }) {
+  const rangeDayIsos =
+    input.columnGranularity === "week" && input.rangeStart && input.rangeEnd
+      ? expandRangeDayIsos(input.rangeStart, input.rangeEnd)
+      : input.dayIsos;
+  const focusDayIsos = rangeDayIsos;
   const activeBookings = deriveActiveBookings(input.bookings);
   const bookingsByRoom = deriveBookingsByRoom(activeBookings);
   const occupancyByRoom = deriveOccupancyByRoom(input.occupancy);
@@ -207,7 +217,7 @@ export function deriveGanttCalendarData(input: {
     input.effectiveToday
   );
   const focusIso = deriveGanttFocusIso(
-    input.dayIsos,
+    focusDayIsos,
     input.effectiveToday,
     input.filter,
     input.focusDay
@@ -222,15 +232,19 @@ export function deriveGanttCalendarData(input: {
     input.filter,
     occupiedRoomIdsOnFocus
   );
-  const dailyFreeCounts = computeDailyFreeCounts(
+  const dailyCountsRaw = computeDailyFreeCounts(
     input.rooms,
     activeBookings,
     input.occupancy,
-    input.dayIsos
+    rangeDayIsos
   );
+  const dailyFreeCounts =
+    input.columnGranularity === "week"
+      ? aggregateWeeklyFreeCounts(dailyCountsRaw, input.dayIsos)
+      : dailyCountsRaw;
   const todaySummary = summarizeGanttToday(
     activeBookings,
-    input.dayIsos,
+    rangeDayIsos,
     input.effectiveToday
   );
   const operativeCheckInEligible = filterBookingsForOperativeCheckIn(
