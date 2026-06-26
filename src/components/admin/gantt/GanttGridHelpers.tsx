@@ -278,11 +278,12 @@ export function DayGrid({
       }}
     >
       {columns.map((col) => {
+        const weekEndIso = col.weekEndIso;
         const hasTurnover =
           turnoverIsos?.has(col.iso) ||
-          (col.weekEndIso != null &&
+          (weekEndIso != null &&
             [...(turnoverIsos ?? [])].some(
-              (iso) => iso >= col.iso && iso <= col.weekEndIso
+              (iso) => iso >= col.iso && iso <= weekEndIso
             ));
         return (
         <div
