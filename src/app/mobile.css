@@ -1,0 +1,6008 @@
+﻿/* mobile.css — toate fișierele mobile-layout-*.css consolidate
+ * Ordinea de cascadă e păstrată identic cu mobile-layout.css.
+ * Nu edita manual — secțiunile sunt marcate cu === SECTION === */
+
+/* ═══ mobile-layout-pages.css ═══ */
+/**
+ * Mobile layout — page-level rules (admin, public, platform).
+ * Scoped by data-layout-mode / data-layout-orientation.
+ */
+
+/* ── Global mobile perf & scroll ── */
+html[data-layout-chrome="compact"],
+html[data-layout-mode="tablet"] {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html[data-layout-chrome="compact"] body,
+html[data-layout-mode="tablet"] body {
+  overscroll-behavior-y: none;
+}
+
+html[data-layout-chrome="compact"] .ml-shell,
+html[data-layout-mode="tablet"] .ml-shell {
+  touch-action: manipulation;
+}
+
+/* ── Admin HUD compact ── */
+html[data-layout-chrome="compact"] .admin-hud__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  gap: 0.35rem 0.5rem;
+  padding: 0.5rem 0.85rem 0.45rem;
+  padding-top: max(0.45rem, var(--ml-safe-top));
+}
+
+html[data-layout-chrome="compact"] .admin-hud__brand {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__right {
+  grid-column: 2;
+  grid-row: 1;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  margin-left: 0;
+  max-width: none;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__center {
+  display: flex;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  order: unset;
+  flex: unset;
+  min-width: 0;
+  justify-content: flex-start;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: 0 -0.15rem;
+  padding: 0 0.15rem 0.1rem;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__center::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__nav {
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  width: max-content;
+  min-width: min(100%, max-content);
+}
+
+html[data-layout-chrome="compact"] .admin-nav-tab {
+  min-height: var(--ml-touch-min, 2.75rem);
+  flex-shrink: 0;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.72rem;
+}
+
+html[data-layout-chrome="compact"] .admin-nav-tab__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__title {
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__header {
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__tools .admin-version-badge,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__tools .admin-plan-badge {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  padding-inline: 0.85rem;
+  font-size: 0.68rem;
+}
+
+/* Page gutter: mobile-layout-alignment.css (--ml-page-inline-*) */
+
+/* ── Admin grids stack on mobile ── */
+html[data-layout-chrome="compact"] .admin-page-main .grid.xl\:grid-cols-\[minmax\(0\,1fr\)_minmax\(18rem\,30\%\)\],
+html[data-layout-chrome="compact"] .admin-page-main [class*="xl:grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main aside {
+  position: static;
+  max-height: none;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main .sm\:grid-cols-2,
+html[data-layout-chrome="compact"] .admin-page-main .xl\:grid-cols-5 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card--stacked {
+  display: flex;
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[140px\],
+html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[270px\] {
+  min-width: 0 !important;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .gantt-stay-hint {
+  display: none;
+}
+
+/* ── Availability ── */
+html[data-layout-chrome="compact"] .availability-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* availability detail: mobile-layout-flawless.css */
+
+/* ── Booking detail (.bd-grid3) ── */
+html[data-layout-chrome="compact"] .bd-grid3 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .bd-grid3 > .bd-col:nth-child(3) {
+  grid-column: auto;
+}
+
+html[data-layout-chrome="compact"] .bd-card--history {
+  position: static;
+}
+
+html[data-layout-chrome="compact"] .bd-room-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── Guests ── */
+html[data-layout-chrome="compact"] .guest-hero__stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+html[data-layout-mode="mobile"] .guest-hero__stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+html[data-layout-chrome="compact"] .guest-profile-page__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .guest-grid--hero {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ── Admin home ── */
+html[data-layout-chrome="compact"] .admin-home {
+  max-width: 100%;
+  padding: 0.65rem 0.85rem 2rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-hero__strip {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .admin-home-hero__actions {
+  margin-left: 0;
+  flex-wrap: wrap;
+}
+
+html[data-layout-chrome="compact"] .admin-home-hero__title,
+html[data-layout-chrome="compact"] .admin-home-hero__meta {
+  white-space: normal;
+}
+
+html[data-layout-chrome="compact"] .admin-home-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  width: 100%;
+  justify-content: stretch;
+}
+
+html[data-layout-chrome="compact"] .admin-home-kpi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.35rem 0.5rem;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-home-kpi strong {
+  font-size: 0.85rem;
+}
+
+/* ── Devlog ── */
+html[data-layout-chrome="compact"] .devlog-page {
+  padding: 0.85rem 1rem 1.5rem;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .devlog-entry__summary {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .devlog-filters {
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .devlog-filters__group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .devlog-filters__label {
+  flex: 0 0 100%;
+  margin-right: 0;
+  margin-bottom: 0.1rem;
+}
+
+/* devlog pill scroll: mobile-layout-flawless.css Pass 7 */
+
+html[data-layout-chrome="compact"] .activity-journal__tabs {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── Tables & wide content ── */
+html[data-layout-chrome="compact"] .admin-page-main table,
+html[data-layout-chrome="compact"] .admin-page-main .overflow-x-auto {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* ── Public site ── */
+html[data-layout-chrome="compact"] .public-header__inner {
+  padding-inline: 0.85rem;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .public-header__inner > .flex .language-switcher {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .public-header__inner .ml-mobile-menu {
+  display: block;
+}
+
+html[data-layout-chrome="compact"] .public-header__name {
+  font-size: 0.95rem;
+}
+
+html[data-layout-chrome="compact"] .public-page {
+  padding-inline: 1rem;
+}
+
+html[data-layout-chrome="compact"] .public-booking-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form {
+  padding: 1rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form input,
+html[data-layout-chrome="compact"] .guest-booking-form select,
+html[data-layout-chrome="compact"] .guest-booking-form textarea {
+  font-size: 16px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form .guest-form-grid-2 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .public-footer__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ── Platform ── */
+html[data-layout-chrome="compact"] .platform-header__inner {
+  padding-inline: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .platform-header__nav {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .platform-header__nav .platform-header__link,
+html[data-layout-chrome="compact"] .platform-header__nav .language-switcher {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .ml-mobile-menu--platform {
+  display: block;
+}
+
+html[data-layout-chrome="wide"] .ml-drawer__locale,
+html[data-layout-chrome="wide"] .header-locale-switch--drawer {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .header-locale-switch--nav {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .pricing-table-wrap {
+  margin-top: 2rem;
+  margin-inline: 0;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .pricing-table {
+  min-width: 0;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+}
+
+html[data-layout-chrome="compact"] .pricing-table th,
+html[data-layout-chrome="compact"] .pricing-table td {
+  padding: 0.6rem 0.45rem;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .signup-page {
+  align-items: flex-start;
+  padding: max(1rem, var(--ml-safe-top, 0px)) 0.85rem max(1rem, var(--ml-safe-bottom, 0px));
+  min-height: 100dvh;
+  min-height: var(--ml-vvh, 100dvh);
+}
+
+html[data-layout-chrome="compact"] .signup-benefits {
+  padding: 1rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .signup-benefits__title {
+  font-size: 1.5rem;
+}
+
+html[data-layout-chrome="compact"] .signup-form-wrapper {
+  padding: 1rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .landing-hero {
+  padding-inline: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .landing-section {
+  padding-inline: 0.85rem;
+}
+
+/* ── Tablet refinements ── */
+html[data-layout-mode="tablet"] .admin-hud__center {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Tablet portrait gutter: mobile-layout-alignment.css */
+
+/* ── Long admin lists: skip off-screen paint on mobile ── */
+html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .stay-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 4.5rem;
+}
+
+/* ═══ mobile-layout-premium.css ═══ */
+/**
+ * Layout-chrome overrides for admin premium CSS (replaces legacy @media).
+ * Compact = phone / tablet-portrait; wide + bp = laptop / narrow desktop.
+ */
+
+/* ── HUD (was globals.css @media 1400 / 900) ── */
+html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__center {
+  order: 3;
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__nav {
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: min(100%, max-content);
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .admin-hud__brand {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__right {
+  margin-left: auto;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__tools {
+  justify-content: flex-end;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__brand-text {
+  min-width: 0;
+}
+
+/* Gantt compact toolbar portrait grid: admin/gantt-mobile.css */
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__left {
+  order: 1;
+  flex: 0 0 auto;
+}
+
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__center {
+  order: 3;
+  flex: 1 0 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__right {
+  order: 2;
+  margin-left: auto;
+}
+
+html[data-layout-chrome="compact"] .gantt-shell table {
+  min-width: min(720px, 100%);
+}
+
+/* Wide chrome, narrow viewport (was gantt-premium.css @media 1180 / 860) */
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__row--primary {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__primary-section--rooms {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__row--navigator {
+  align-items: stretch;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-band {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__side-dock--left,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__side-dock--right,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-main {
+  justify-content: center;
+  justify-self: stretch;
+  grid-row: auto;
+  grid-column: 1;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-main {
+  pointer-events: auto;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__row--primary {
+  justify-content: center;
+  min-height: auto;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__center,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__primary-section--rooms {
+  justify-content: flex-start;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__center {
+  flex: 0 0 auto;
+  position: static;
+  transform: none;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__room-picker-shell,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__period-main .gantt-toolbar__period-shell {
+  min-width: 0;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__side-dock > * {
+  width: 100%;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-toolbar__period--hero,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-toolbar__quick-jumps {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Availability (availability-premium.css) ── */
+html[data-layout-chrome="compact"] .avail-weekends-panel__grid,
+html[data-layout-chrome="compact"] .availability-home-preview__weekends .avail-weekends-panel__grid,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .avail-weekends-panel__grid,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .availability-home-preview__weekends .avail-weekends-panel__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+html[data-layout-mode="mobile"] .avail-weekends-panel__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── Guests (admin-guests.css @media) ── */
+html[data-layout-chrome="compact"] .guest-page {
+  padding: 0.85rem 1rem 1.5rem;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-page__header,
+html[data-layout-chrome="compact"] .guest-page__search-area {
+  padding: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-search__bar {
+  min-width: 0;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  border-left: none;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-search__submit,
+html[data-layout-chrome="compact"] .guest-search__reset {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .guest-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-page {
+  padding: 0.85rem 1rem 1.5rem;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-page__profile,
+html[data-layout-chrome="wide"][data-layout-mode="tablet"] .guest-profile-page__profile {
+  order: -1;
+}
+
+html[data-layout-chrome="wide"][data-layout-mode="tablet"] .guest-profile-page__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"] .guest-notes-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"] .guest-hero {
+  padding: 1rem;
+}
+
+/* ── Admin home (admin-home.css) ── */
+html[data-layout-chrome="compact"] .admin-home-buildings-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"] .admin-home-actions {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"] .admin-today-board--compact .admin-today-board__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__head {
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__progress-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__meter {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__card {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__card-actions {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .checkin-quest__cta {
+  flex: 1;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-home-panel__head {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Statistics & charts ── */
+html[data-layout-chrome="compact"] .admin-page-main .lg\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* statistics charts in XP windows: mobile-layout-flawless.css */
+
+/* ── Rebook / receptie / confirm ── */
+html[data-layout-chrome="compact"] .guest-rebook-page {
+  padding: 0.85rem 1rem 1.5rem !important;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .site-themed main.mx-auto.max-w-2xl,
+html[data-layout-chrome="compact"] .site-themed main.max-w-lg {
+  padding-inline: 1rem !important;
+  padding-block: 1.25rem !important;
+}
+
+/* ── Misc admin inputs ── */
+html[data-layout-chrome="compact"] .admin-page-main .min-w-\[260px\] {
+  min-width: 0 !important;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  padding-inline: 0.85rem;
+}
+
+/* ── Booking detail (was admin-booking-detail.css @media 1100 / 768) ── */
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-grid3 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-grid3 > .bd-col:nth-child(3) {
+  grid-column: 2;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-card--history {
+  position: static;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .bd-grid3 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .bd-grid3 > .bd-col:nth-child(3) {
+  grid-column: auto;
+}
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-room-grid,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .bd-room-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── History journal (was admin-history.css @media 520) ── */
+html[data-layout-chrome="compact"] .activity-journal__tabs {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ═══ mobile-layout-admin-pages.css ═══ */
+/**
+ * Admin page compact rules — settings, cazări, statistics, receptie, buildings.
+ */
+
+/* ── Settings: gutter owned by admin-page-main (mobile-layout-alignment.css) ── */
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  padding: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-palette-tokens,
+html[data-layout-chrome="compact"] .admin-palette-zones,
+html[data-layout-chrome="compact"] .admin-palette-extend__modes {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+/* ── Statistics ── */
+html[data-layout-chrome="compact"] .statistics-year-nav {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* statistics touch + bar chart: mobile-layout-flawless.css */
+
+/* ── Cazări ── */
+html[data-layout-chrome="compact"] .stay-card .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card .stay-card__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem;
+}
+
+/* ── Disponibilitate ── */
+html[data-layout-chrome="compact"] .availability-week-nav button,
+html[data-layout-chrome="compact"] .avail-weekend-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* availability detail: mobile-layout-flawless.css */
+
+html[data-layout-chrome="compact"] .availability-month-matrix {
+  font-size: 0.68rem;
+}
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card__actions button,
+html[data-layout-chrome="compact"] .building-dashboard-card__actions a,
+html[data-layout-chrome="compact"] .rooms-building-section button,
+html[data-layout-chrome="compact"] .rooms-building-section a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Guests search ── */
+html[data-layout-chrome="compact"] .guest-search__bar {
+  flex-wrap: wrap;
+  min-width: 0 !important;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-search__input {
+  min-width: 0 !important;
+  width: 100%;
+  flex: 1 1 calc(100% - 2.5rem);
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  flex: 1 1 100%;
+  border-left: none;
+  border-top: 1px solid var(--border, #e4e4e7);
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+  padding-inline: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search__submit {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.875rem;
+}
+
+/* ── Receptie / phone booking ── */
+html[data-layout-chrome="compact"] .phone-booking-form input,
+html[data-layout-chrome="compact"] .phone-booking-form select,
+html[data-layout-chrome="compact"] .phone-booking-form textarea,
+html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ── HUD touch targets ── */
+html[data-layout-chrome="compact"] .admin-gear__trigger {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-gear__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: 2.5rem;
+  padding-inline: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .language-switcher__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+}
+
+/* ── Admin more menu — top sheet below black nav (not left drawer) ── */
+html[data-layout-chrome="compact"] .ml-drawer__backdrop--admin.ml-drawer__backdrop--visible {
+  z-index: 85;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin {
+  z-index: 90;
+  inset: max(0.35rem, var(--ml-safe-top, 0px)) 0 auto 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.35rem max(0.65rem, var(--ml-safe-left, 0px))
+    calc(0.55rem + var(--ml-safe-bottom, 0px)) max(0.65rem, var(--ml-safe-right, 0px));
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 82%, transparent);
+  border-radius: 0 0 0.85rem 0.85rem;
+  background: var(--admin-hud-bg, #0f0e14);
+  color: var(--admin-fg, #e8e4dc);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.42),
+    inset 0 -1px 0 color-mix(in srgb, var(--admin-fg, #e8e4dc) 6%, transparent);
+  transform: translate3d(0, calc(-100% - 0.35rem), 0);
+  transition: transform var(--ml-duration-drawer) var(--ml-ease-out);
+  display: flex;
+  flex-direction: column;
+  max-height: min(
+    72dvh,
+    calc(
+      var(--ml-vvh, 100dvh)
+        - max(0.35rem, var(--ml-safe-top, 0px))
+        - var(--ml-admin-bottom-clearance, calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom)))
+        - 0.35rem
+    )
+  );
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin.ml-drawer--open {
+  transform: translate3d(0, 0, 0);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 78%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__close {
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  color: var(--admin-fg, #e8e4dc);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.32rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 65%, transparent);
+  background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 5%, transparent);
+  color: var(--admin-fg, #e8e4dc);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link--active {
+  border-color: color-mix(in srgb, var(--admin-accent, #d6b55a) 55%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #d6b55a) 14%, transparent);
+  color: var(--admin-accent, #d6b55a);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+  opacity: 0.92;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale {
+  grid-column: 1 / -1;
+  margin-top: 0.15rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-label {
+  margin-bottom: 0.4rem;
+  font-size: 0.62rem;
+  color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 58%, transparent);
+  width: 100%;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-flags {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher--inline .language-switcher__inline-options {
+  justify-content: center;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline {
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: 0.18rem 0.32rem;
+  border-radius: 0.5rem;
+  border-color: color-mix(in srgb, var(--admin-border, #2a2838) 75%, transparent);
+  background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 6%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline.language-switcher__option--active {
+  border-color: color-mix(in srgb, var(--admin-accent, #d6b55a) 60%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #d6b55a) 16%, transparent);
+}
+
+.ml-drawer--admin {
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  border-right-color: var(--admin-panel-border, #e4e4e7);
+}
+
+.ml-drawer--admin .ml-drawer__link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--admin-text, #18181b);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+.ml-drawer--admin .ml-drawer__link-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+.ml-drawer--admin .ml-drawer__section {
+  margin-top: 0.35rem;
+}
+
+.ml-drawer--admin .ml-drawer__section-label {
+  margin: 0.35rem 0.75rem 0.15rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.ml-drawer--admin .ml-drawer__link--alert {
+  position: relative;
+}
+
+.ml-drawer--admin .ml-drawer__link-badge {
+  margin-left: auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--admin-danger, #dc2626);
+  flex-shrink: 0;
+}
+
+.ml-drawer__issues {
+  margin: 0 0.5rem 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-danger, #dc2626) 35%, transparent);
+  background: color-mix(in srgb, var(--admin-danger, #dc2626) 8%, transparent);
+}
+
+.ml-drawer__issues-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ml-drawer__issues-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.ml-drawer__issue-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ml-drawer__issue-link:active {
+  background: color-mix(in srgb, var(--admin-danger, #dc2626) 12%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ml-drawer--admin .ml-drawer__link-badge {
+    animation: none;
+  }
+}
+
+.ml-bottom-nav__link--more {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  width: 100%;
+}
+
+/* ── Gantt panels on compact ── */
+html[data-layout-chrome="compact"] .gantt-filters-panel,
+html[data-layout-chrome="compact"] .admin-floating-panel {
+  max-width: min(360px, calc(100vw - 1rem));
+  margin-inline: auto;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel--gantt {
+  max-width: min(340px, calc(100vw - 1rem));
+}
+
+html[data-layout-chrome="compact"] .gantt-inline-controls__period-main {
+  min-width: 0;
+}
+
+/* ── Nestio admin tables ── */
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* simulation: mobile-layout-flawless.css */
+
+/* ═══ mobile-layout-remaining.css ═══ */
+/**
+ * Mobile layout — pages not yet covered elsewhere.
+ * Public home/legal, receptie, admin page padding, bookings, cazări, hospira.
+ */
+
+/* Below-fold public sections — skip paint until near viewport */
+html[data-layout-chrome="compact"] .public-section,
+html[data-layout-chrome="compact"] .public-cta-band,
+html[data-layout-chrome="compact"] .public-staff-preview-skeleton {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 14rem;
+}
+
+html[data-layout-chrome="compact"] .availability-month-matrix tbody {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 10rem;
+}
+
+/* ── Admin page frame (all AdminPageFrame pages) ── */
+html[data-layout-chrome="compact"] .admin-page {
+  padding: var(--ml-page-gutter-block, 0.65rem) 0 0.5rem !important;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-page.admin-settings-page,
+html[data-layout-chrome="compact"] .admin-page.gantt-calendar-page {
+  padding-inline: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .admin-page-desc {
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-page-toolbar .admin-page-desc + a,
+html[data-layout-chrome="compact"] .admin-page-toolbar a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ── Settings panels ── */
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea,
+html[data-layout-chrome="compact"] .admin-settings-form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Bookings / cereri ── */
+html[data-layout-chrome="compact"] .cerere-list {
+  gap: 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__head {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
+  padding: 0.6rem 0.65rem 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__dates {
+  overflow-wrap: anywhere;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: stretch;
+  width: 100%;
+  padding-inline: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__body {
+  padding: 0.45rem 0.65rem 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__profile-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .cerere-item__email {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .guest-badges--cerere {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+  padding: 0.45rem 0.65rem 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .guest-badges--cerere__stat {
+  padding: 0.4rem 0.45rem;
+}
+
+/* ── Admin home cereri preview ── */
+html[data-layout-chrome="compact"] .admin-home-cereri-list {
+  gap: 0.4rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.55rem 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item__guest {
+  font-size: 0.78rem;
+}
+
+/* ── Cazări ── */
+html[data-layout-chrome="compact"] .cazari-page > .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card {
+  gap: 0.65rem !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card a,
+html[data-layout-chrome="compact"] .stay-card button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem !important;
+  padding-block: 0.5rem !important;
+}
+
+html[data-layout-chrome="compact"] .cazari-view-filters {
+  gap: 0.3rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.72rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  gap: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .cazari-filters {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-tabs a,
+html[data-layout-chrome="compact"] .cazari-tabs button {
+  flex-shrink: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .cazari-filters a,
+html[data-layout-chrome="compact"] .cazari-filters button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card header,
+html[data-layout-chrome="compact"] .building-dashboard-card .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .building-dashboard-card a,
+html[data-layout-chrome="compact"] .building-dashboard-card button,
+html[data-layout-chrome="compact"] .rooms-building-section a,
+html[data-layout-chrome="compact"] .rooms-building-section button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .rooms-building-section > div:first-child {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Statistics ── */
+/* statistics: mobile-layout-flawless.css */
+
+/* ── Public home ── */
+html[data-layout-chrome="compact"] .public-hero {
+  padding-block: 2rem 2.5rem;
+}
+
+html[data-layout-chrome="compact"] .public-hero__title {
+  font-size: clamp(1.65rem, 7vw, 2.25rem);
+  line-height: 1.15;
+}
+
+html[data-layout-chrome="compact"] .public-hero__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .public-hero__actions .site-cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .public-features {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .public-steps {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .public-section {
+  padding-inline: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .public-cta-band {
+  padding-inline: 0.85rem;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .public-cta-band .site-cta {
+  width: 100%;
+  max-width: 20rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Public staff preview (logged-in home) ── */
+html[data-layout-chrome="compact"] .public-staff-preview .grid,
+html[data-layout-chrome="compact"] .public-staff-preview [class*="grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .public-staff-preview a,
+html[data-layout-chrome="compact"] .public-staff-preview button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Public pages (termeni, GDPR, calendar) ── */
+html[data-layout-chrome="compact"] .public-page__inner {
+  padding-inline: 0;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .public-page__title {
+  font-size: clamp(1.35rem, 5.5vw, 1.75rem);
+}
+
+html[data-layout-chrome="compact"] .public-page__lead,
+html[data-layout-chrome="compact"] .public-page .prose {
+  font-size: 0.9375rem;
+}
+
+/* ── Receptie + confirm ── */
+html[data-layout-chrome="compact"] .receptie-page,
+html[data-layout-chrome="compact"] .public-confirm-page {
+  padding: 0.85rem 0.85rem 1.5rem !important;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .public-confirm-page .bd-confirm__submit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-grid,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .public-confirm-page .bd-room-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__name,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__building,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__details {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ── Admin corner (staff on public site) ── */
+html[data-layout-chrome="compact"] .admin-corner {
+  right: max(0.5rem, var(--ml-safe-right));
+  top: max(0.35rem, var(--ml-safe-top));
+  max-width: calc(100vw - 1rem);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+html[data-layout-chrome="compact"] .admin-corner a,
+html[data-layout-chrome="compact"] .admin-corner button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  font-size: 0.75rem;
+  padding-inline: 0.65rem;
+}
+
+/* ── Platform landing extras ── */
+html[data-layout-chrome="compact"] .landing-showcase {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .landing-showcase__main,
+html[data-layout-chrome="compact"] .landing-showcase__aside {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .landing-stats,
+html[data-layout-chrome="compact"] .landing-stats--inline {
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .landing-stat {
+  min-width: 0;
+  flex: 1 1 calc(50% - 0.35rem);
+  max-width: 100%;
+  padding: 0.75rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .landing-stat__label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__title,
+html[data-layout-chrome="compact"] .landing-hero__subtitle,
+html[data-layout-chrome="compact"] .landing-hero__badge {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__badge {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__actions--multi .landing-cta:not(.landing-cta--link) {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .landing-hero__actions--multi .landing-cta--link {
+  align-self: center;
+}
+
+html[data-layout-chrome="compact"] .landing-final-cta__secondary {
+  flex-direction: column;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .landing-final-cta__secondary .landing-cta:not(.landing-cta--link) {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .layout-debug-overlay {
+  width: min(18rem, calc(100vw - 1rem));
+  max-width: calc(100vw - 1rem);
+}
+
+html[data-layout-chrome="compact"] .layout-debug-overlay__body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .platform-header--split .platform-header__inner {
+  padding-inline: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .platform-header--split .platform-header__cta,
+html[data-layout-chrome="compact"] .platform-header--split .platform-header__link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Platform footer wrap ── */
+html[data-layout-chrome="compact"] .platform-footer {
+  padding: 2rem 1rem calc(1.5rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .platform-footer__inner {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 1.5rem;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__desc {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__links a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.2rem;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__contact a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__bottom {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  text-align: left;
+}
+
+html[data-layout-chrome="compact"] .platform-footer__bottom p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
+/* ── Nestio admin ── */
+.hospira-tenant-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 2.75rem;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-header__inner {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-main {
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-main .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-main h1 {
+  font-size: 1.35rem;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-main table {
+  font-size: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-main th,
+html[data-layout-chrome="compact"] .nestio-admin-main td {
+  padding: 0.5rem 0.4rem;
+  white-space: nowrap;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-main .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* ── Invoice / factura ── */
+html[data-layout-chrome="compact"] .admin-invoice-page .issued-invoice-sheet__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Location structure ── */
+html[data-layout-chrome="compact"] .location-structure-grid,
+html[data-layout-chrome="compact"] .location-structure-page .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ═══ mobile-layout-flawless.css ═══ */
+/**
+ * Mobile flawless pass — fixes dead selectors, grids, touch, overlays.
+ */
+
+/* ── Sim strip above safe area (top nav no longer at bottom) ── */
+html[data-layout-chrome="compact"] .sim-bottom-strip {
+  bottom: var(--ml-safe-bottom, 0px);
+  z-index: 55;
+  padding-block: 0.45rem;
+  font-size: 0.62rem;
+}
+
+html[data-layout-chrome="compact"] .admin-shell:has(.sim-bottom-strip) {
+  padding-bottom: calc(var(--ml-safe-bottom, 0px) + 1.75rem);
+}
+
+/* ── Universal grid stack (Tailwind sm/md/lg breakpoints still fire on tablet) ── */
+html[data-layout-chrome="compact"] .admin-page-main [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page-main [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page-main [class*="lg:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="lg:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="lg:grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* KPI chips: 2 cols max on compact */
+html[data-layout-chrome="compact"] .public-staff-preview .sm\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-4,
+html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ── Admin panels (real class names) ── */
+html[data-layout-chrome="compact"] .admin-panel {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-panel__body {
+  max-height: min(
+    62dvh,
+    calc(
+      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - 7rem
+    )
+  );
+  overflow-y: auto;
+}
+
+html[data-layout-chrome="compact"] .admin-panel-body {
+  padding: 0.65rem !important;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-panel .flex.items-end.justify-between {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.25rem;
+  gap: 0.35rem;
+}
+
+/* ── Statistics bar chart scroll ── */
+html[data-layout-chrome="compact"] .statistics-bar-chart {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 10rem;
+}
+
+html[data-layout-chrome="compact"] .statistics-bar-chart .flex.items-end {
+  min-width: min-content;
+}
+
+html[data-layout-chrome="compact"] .statistics-year-nav a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Pass 25: availability day detail skeleton (shell layout: pass 26) ── */
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton > div:first-child {
+  padding: 0.65rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton__rows {
+  padding: 0.65rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton .admin-route-skeleton__card {
+  min-height: var(--ml-touch-min, 2.75rem);
+  height: auto;
+}
+
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton > div:last-child {
+  padding: 0.65rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: white;
+  backdrop-filter: none;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__footer .admin-text-action {
+  width: 100%;
+  justify-content: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Staff settings rows ── */
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions button,
+html[data-layout-chrome="compact"] .admin-staff-row__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Cazări touch ── */
+html[data-layout-chrome="compact"] .cazari-horizon a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card__actions a,
+html[data-layout-chrome="compact"] .stay-card__actions form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem !important;
+}
+
+/* ── Check-in ── */
+html[data-layout-chrome="compact"] .checkin-start-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicators {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicator {
+  flex: 1 1 calc(50% - 0.2rem);
+  min-width: 0;
+  font-size: 0.625rem;
+  padding: 0.45rem 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicator-label {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+html[data-layout-chrome="compact"] .checkin-guest-form__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__input,
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__select,
+html[data-layout-chrome="compact"] .checkin-modal button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+}
+
+/* ── Devlog ── */
+html[data-layout-chrome="compact"] .devlog-filters__pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .devlog-pagination__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem !important;
+}
+
+/* ── Gantt cereri cards + context menu ── */
+html[data-layout-chrome="compact"] .gantt-cereri-card__guest,
+html[data-layout-chrome="compact"] .gantt-cereri-card__dates {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html[data-layout-chrome="compact"] .gantt-cereri-card__party {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu {
+  max-width: min(18rem, calc(100vw - 1rem));
+  min-width: min(12rem, calc(100vw - 2rem));
+  padding: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu__head {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  padding: 0.55rem 0.65rem 0.65rem;
+  font-size: 0.72rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Receptie quick panel ── */
+html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
+  min-height: var(--ml-touch-min, 2.75rem) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.5rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel li {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 0.5rem;
+}
+
+/* ── Public booking options ── */
+html[data-layout-chrome="compact"] .public-option-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .public-step-track {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Invoice ── */
+html[data-layout-chrome="compact"] .informal-invoice-root table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-layout-chrome="compact"] .informal-invoice-sheet header {
+  padding: var(--ml-space-lg, 1rem) 0.85rem !important;
+}
+
+html[data-layout-chrome="compact"] .informal-invoice-sheet > div {
+  padding-inline: 1rem !important;
+}
+
+/* ── Nestio logs tables ── */
+html[data-layout-chrome="compact"] .nestio-logs-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .nestio-logs-table-wrap table {
+  min-width: 36rem;
+}
+
+/* ── Gantt landscape: compact toolbar touch targets ── */
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
+  min-height: var(--gantt-touch-min, 2.75rem) !important;
+}
+
+/* ── Gantt portrait toolbar: gantt-scoped touch min ── */
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-jump {
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
+}
+
+/* ── HUD tools: no wrap in 2-row grid header ── */
+html[data-layout-chrome="compact"] .admin-hud__right {
+  flex-wrap: nowrap !important;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__tools {
+  flex-wrap: nowrap;
+}
+
+/* ── Availability KPI: 2-up on compact (ignore min-width 768 4-col) ── */
+html[data-layout-chrome="compact"] .avail-kpi-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .avail-kpi-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+  box-shadow: none;
+}
+
+html[data-layout-chrome="compact"] .availability-month-matrix,
+html[data-layout-chrome="compact"] .availability-week-matrix {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-page-bg, #0f172a) 4%, transparent);
+}
+
+/* ── Gantt segment labels: short text on compact ── */
+html[data-layout-chrome="compact"] .gantt-seg__btn-text--long {
+  display: none !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-seg__btn-text--short {
+  display: inline !important;
+}
+
+/* ── Single-row HUD: bottom nav is canonical on compact ── */
+html[data-layout-chrome="compact"] .admin-hud__header {
+  grid-template-rows: auto;
+}
+
+html[data-layout-chrome="compact"] .admin-hud__center {
+  display: none !important;
+}
+
+/* admin-toast-stack: Pass 6 below */
+
+/* ── Bottom nav: cereri alert pulse on inactive tab ── */
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--alert:not(.ml-bottom-nav__link--active) {
+  color: color-mix(in srgb, #fca5a5 88%, var(--admin-fg, #e8e4dc));
+}
+
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--alert:not(.ml-bottom-nav__link--active) .ml-bottom-nav__icon {
+  animation: ml-nav-alert-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ml-nav-alert-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+/* ── Guests: filter pills + pagination touch ── */
+html[data-layout-chrome="compact"] .guest-filter-pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+html[data-layout-chrome="compact"] .guest-pagination__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem;
+}
+
+/* ── Check-in stepper nav ── */
+html[data-layout-chrome="compact"] .checkin-stepper__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 1rem;
+}
+
+/* ── Floating panels + HUD controls ── */
+html[data-layout-chrome="compact"] .admin-floating-panel__close {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+  font-size: 1rem;
+}
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .sim-trigger-chip {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-seg__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Onboarding bar: compact ── */
+html[data-layout-chrome="compact"] .onboarding-bar {
+  padding-block: 0;
+}
+
+html[data-layout-chrome="compact"] .onboarding-bar > div {
+  padding: 0.5rem 0.75rem !important;
+}
+
+html[data-layout-chrome="compact"] .onboarding-bar button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .onboarding-bar a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Recepție page ── */
+html[data-layout-chrome="compact"] .receptie-page {
+  padding: 0.85rem max(0.85rem, var(--ml-safe-left, 0px))
+    calc(1.5rem + var(--ml-safe-bottom, 0px)) !important;
+}
+
+html[data-layout-chrome="compact"] .receptie-page__back-admin {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Availability month matrix: taller day cells ── */
+html[data-layout-chrome="compact"] .availability-day-cell-slot {
+  min-height: 2.85rem;
+}
+
+html[data-layout-chrome="compact"] .availability-day-cell.avail-heat-cell {
+  min-height: 2.75rem;
+}
+
+html[data-layout-chrome="compact"] .avail-building-chip {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Admin shell links (not only buttons) ── */
+html[data-layout-chrome="compact"] .admin-shell a.admin-nav-tab,
+html[data-layout-chrome="compact"] .admin-page-main a.text-sm {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Pass 3: guest profile, booking detail, HUD, tiles ── */
+html[data-layout-chrome="compact"] .guest-profile-tabs {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-tabs__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-page__back {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .guest-history__detail-link,
+html[data-layout-chrome="compact"] .guest-history-compact__link,
+html[data-layout-chrome="compact"] .guest-rebook-collapse__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .room-grid-tile {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  font-size: 0.72rem !important;
+}
+
+html[data-layout-chrome="compact"] .room-availability-grid {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-layout-chrome="compact"] .room-availability-grid__inner {
+  width: max-content;
+  min-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .bd-ops__btn,
+html[data-layout-chrome="compact"] .bd-stay__edit-btn,
+html[data-layout-chrome="compact"] .bd-phone-warn__save,
+html[data-layout-chrome="compact"] .bd-banner__cal-link,
+html[data-layout-chrome="compact"] .bd-confirm__submit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+html[data-layout-chrome="compact"] .admin-today-bar__toggle {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-today-action,
+html[data-layout-chrome="compact"] .admin-today-badge {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .admin-today-bar__badges {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .activity-undo-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .admin-display-layout__option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-popover-premium__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .admin-toast__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .receptie-page__nav a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .admin-login-back {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .activity-journal__tab {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .avail-interval-bar button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.85rem;
+  font-size: 0.8125rem;
+}
+
+html[data-layout-chrome="compact"] .admin-history-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-factory-reset__trigger,
+html[data-layout-chrome="compact"] .admin-factory-reset__submit,
+html[data-layout-chrome="compact"] .admin-factory-reset__cancel {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__close {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  min-width: var(--ml-touch-min, 2.75rem) !important;
+  min-height: var(--ml-touch-min, 2.75rem) !important;
+  font-size: 1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Nestio admin tenant header */
+html[data-layout-chrome="compact"] .nestio-admin-header,
+html[data-layout-chrome="compact"] .hospira-tenant-detail__head {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail__head h1 {
+  font-size: 1.1rem;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* ── Pass 4: check-in modal scroll, settings, payment, booking detail ── */
+html[data-layout-chrome="compact"] .checkin-modal.admin-floating-panel--modal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: min(92dvh, var(--ml-vvh, 100dvh));
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  gap: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper__content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper__nav {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: var(--admin-panel-bg, #fff);
+  padding-top: 0.65rem;
+  padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .checkin-payment__options {
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .checkin-payment__option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.8125rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-checkbox {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-setting-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right {
+  align-self: flex-start;
+}
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right .checkin-field__input {
+  width: 100%;
+  max-width: 12rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-toggle {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+  padding-inline: 0.25rem;
+}
+
+html[data-layout-chrome="compact"] .bd-banner {
+  padding: 0.6rem 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__name {
+  font-size: 1rem;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__dates {
+  flex-wrap: wrap;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__date-val {
+  white-space: normal;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__meta {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .bd-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .bd-room-tile {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .bd-cancel-zone .admin-text-action,
+html[data-layout-chrome="compact"] .bd-cancel-zone button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .admin-text-action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.5rem 0.85rem;
+  margin: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-panel table tbody a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+}
+
+/* ── Pass 5: floating panels / XP windows / check-in modal alignment ── */
+html[data-layout-chrome="compact"] .admin-floating-panel,
+html[data-layout-chrome="compact"] .admin-floating-panel--modal {
+  min-width: 0;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__header {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__title {
+  min-width: 0;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__body {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel table,
+html[data-layout-chrome="compact"] .checkin-modal table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .admin-panel {
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-panel table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal {
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* ── Pass 5: panel text/content alignment on compact ── */
+html[data-layout-chrome="compact"] :is(
+  .admin-floating-panel,
+  .admin-floating-panel__body,
+  .admin-panel-section,
+  .admin-panel,
+  .admin-panel-body,
+  .bd-card,
+  .availability-detail-panel,
+  .admin-quick-panel,
+  .ml-drawer,
+  .gantt-popover-premium,
+  .gantt-filters-panel
+) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] :is(
+  .admin-floating-panel__title,
+  .bd-card__title,
+  .bd-info-value,
+  .ml-drawer__link,
+  .gantt-popover-premium__body p,
+  .gantt-popover-premium__body span
+) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__header {
+  padding: 0.65rem 0.85rem;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__title {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.35;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) .admin-floating-panel__body {
+  padding: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .admin-floating-panel__header {
+  padding-inline: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper {
+  padding-inline: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .admin-floating-panel__body {
+  padding: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-popover-premium__actions {
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .gantt-popover-premium__btn {
+  width: 100%;
+  flex: none;
+}
+
+html[data-layout-chrome="compact"] .admin-panel .admin-panel-section {
+  padding: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .admin-panel table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .bd-card {
+  padding: 0.85rem;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .bd-card--tight {
+  padding: 0.65rem 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel > div {
+  padding-inline: 0.85rem !important;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel .avail-room-tile {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel .avail-room-tile span:last-child {
+  margin-left: auto;
+  text-align: right;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  padding: 0.85rem !important;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel li > div:first-child {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
+  width: 100%;
+  justify-content: center !important;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer {
+  padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
+    max(0.85rem, var(--ml-safe-right, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  contain: layout style paint;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  white-space: normal;
+  line-height: 1.35;
+}
+
+html[data-layout-chrome="compact"] .admin-panel-section input,
+html[data-layout-chrome="compact"] .admin-panel-section select,
+html[data-layout-chrome="compact"] .admin-panel-section textarea {
+  font-size: 16px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail__head + *,
+html[data-layout-chrome="compact"] .nestio-admin-main .rounded-lg,
+html[data-layout-chrome="compact"] .nestio-admin-main .rounded-xl {
+  min-width: 0;
+}
+
+/* ── Pass 6: second mobile-more pass ── */
+
+/* Statistics KPI cards: 2-up (override universal 1-col stack) */
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.sm\:grid-cols-2,
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.lg\:grid-cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.sm\:grid-cols-3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid > .rounded-2xl {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid > .rounded-2xl p {
+  overflow-wrap: anywhere;
+}
+
+/* Settings accordion triggers: full width on compact */
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger-main {
+  min-width: 0;
+  flex: 1;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__title,
+html[data-layout-chrome="compact"] .admin-settings-panel__subtitle {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Gantt filters panel: segment labels wrap inside narrow panel */
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg,
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__track {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__track {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__btn {
+  min-width: 0;
+  flex: 1 1 calc(50% - 0.15rem);
+  white-space: normal;
+  line-height: 1.25;
+  text-align: center;
+  padding-inline: 0.35rem;
+  font-size: 0.72rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__label {
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+
+/* Recepție phone booking: stack fields, aligned labels */
+html[data-layout-chrome="compact"] .phone-booking-form .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .phone-booking-form label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .phone-booking-form input,
+html[data-layout-chrome="compact"] .phone-booking-form select,
+html[data-layout-chrome="compact"] .phone-booking-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
+  width: 100%;
+}
+
+/* Drawer links: icon + long labels without clip */
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link > span:last-child {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__locale {
+  padding-inline: 0.1rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__locale .language-switcher {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__locale .language-switcher__trigger {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Toast clears top nav chrome */
+html[data-layout-chrome="compact"] .admin-toast-stack {
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem);
+  right: max(0.65rem, var(--ml-safe-right, 0px));
+  width: min(22rem, calc(100vw - 1.25rem));
+}
+
+html[data-layout-chrome="compact"] .admin-shell:has(.admin-hud-alert) .admin-toast-stack {
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 2rem);
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-toast-stack {
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.35rem);
+}
+
+/* Booking banner: dates stack cleanly on narrow */
+html[data-layout-chrome="compact"] .bd-banner__stay-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__date-pair {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__date-sep {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__meta {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* Public hero / landing: no horizontal bleed */
+html[data-layout-chrome="compact"] .public-hero,
+html[data-layout-chrome="compact"] .public-hero__inner {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .public-hero__title,
+html[data-layout-chrome="compact"] .public-hero__subtitle,
+html[data-layout-chrome="compact"] .public-hero__tagline,
+html[data-layout-chrome="compact"] .public-hero__meta {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .public-hero__badge {
+  max-width: 100%;
+  text-align: center;
+  white-space: normal;
+}
+
+/* Nestio admin tables: scroll + sane cell widths */
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin table {
+  min-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin th,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin td {
+  min-width: 3.25rem;
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin td:first-child,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin th:first-child {
+  min-width: 4.5rem;
+  max-width: 9rem;
+}
+
+/* ── Pass 7: gear portal, safe areas, iOS, page polish ── */
+
+/* Gear portaled menu: above HUD / Gantt chrome, below modals (100000) */
+html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
+  z-index: var(--z-overlay, 200);
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: auto;
+  overflow: visible;
+  contain: none;
+  box-shadow:
+    0 8px 28px rgba(15, 23, 42, 0.18),
+    0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+html[data-layout-chrome="compact"] .admin-gear__footer {
+  overflow: visible;
+}
+
+html[data-layout-chrome="compact"] .admin-gear__item {
+  font-size: 0.8125rem;
+}
+
+html[data-layout-chrome="compact"] .admin-hud,
+html[data-layout-chrome="compact"] .admin-hud__surface,
+html[data-layout-chrome="compact"] .admin-hud__header,
+html[data-layout-chrome="compact"] .admin-hud__tools {
+  overflow: visible;
+}
+
+/* Gantt footer legend: clear home indicator (no bottom nav) */
+html[data-layout-chrome="compact"] .gantt-footer-legend--compact {
+  margin-bottom: 0.15rem;
+  padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-footer-legend__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-footer-legend__body .gantt-legend-swatch {
+  flex-shrink: 0;
+}
+
+/* Devlog filters: horizontal pill scroll when crowded */
+html[data-layout-chrome="compact"] .devlog-filters__group {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-bottom: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .devlog-filters__group::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .devlog-filters__pill {
+  flex-shrink: 0;
+}
+
+/* Signup / platform: iOS viewport + input zoom guard */
+html[data-layout-chrome="compact"] .signup-page {
+  min-height: 100dvh;
+  min-height: var(--ml-vvh, 100dvh);
+  padding-bottom: max(1rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .signup-form__input,
+html[data-layout-chrome="compact"] .signup-form__submit {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .signup-form-wrapper,
+html[data-layout-chrome="compact"] .signup-benefits {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .landing-cta {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Location structure: stack cards, touch actions */
+html[data-layout-chrome="compact"] .location-structure-page {
+  padding-inline: 0.85rem !important;
+}
+
+html[data-layout-chrome="compact"] .location-structure-page article button,
+html[data-layout-chrome="compact"] .location-structure-page article a,
+html[data-layout-chrome="compact"] .location-structure-page article input,
+html[data-layout-chrome="compact"] .location-structure-page article select {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+}
+
+html[data-layout-chrome="compact"] .location-structure-page article header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Nestio tenant detail: back link + form controls */
+html[data-layout-chrome="compact"] .hospira-tenant-detail__head a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin select,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin input[type="text"],
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin button {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* Booking detail: ops actions wrap on narrow */
+html[data-layout-chrome="compact"] .bd-ops__actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .bd-ops__btn {
+  flex: 1 1 calc(50% - 0.2rem);
+  min-width: 0;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .bd-ops__steps {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* Recepție quick panel: full-width on phone */
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel li > div:first-child span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Landscape tablet: HUD density + Gantt bottom clearance */
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__header {
+  padding-top: max(0.25rem, var(--ml-safe-top, 0px));
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__title {
+  font-size: 0.85rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-calendar-page {
+  padding-bottom: 0.25rem !important;
+}
+
+/* gantt-scroll viewport bounds: mobile-layout-compact-fixes.css + admin/gantt-mobile.css */
+
+/* Cazări stay cards: action row stacks */
+html[data-layout-chrome="compact"] .stay-card__actions {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions > * {
+  width: 100%;
+}
+
+/* Check-in stepper: number badges don't shrink */
+html[data-layout-chrome="compact"] .checkin-stepper__indicator-num {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .checkin-modal {
+  width: min(calc(var(--ml-vvw, 100vw) - 0.5rem), 28rem);
+  max-width: calc(var(--ml-vvw, 100vw) - 0.5rem);
+}
+
+/* Gantt context menu: stay on-screen */
+html[data-layout-chrome="compact"] .gantt-ctx-menu {
+  z-index: var(--z-overlay, 200);
+  max-height: min(70dvh, var(--ml-vvh, 100dvh));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Admin more menu scroll area — layout in mobile-layout-admin-pages.css */
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__nav {
+  padding-bottom: 0.15rem;
+}
+
+/* ── Pass 8: unverified panels / dialogs audit ── */
+
+/* All modals (except check-in which has its own stack): scroll body + safe viewport */
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0;
+  border-radius: 1rem 1rem 0 0;
+  max-height: min(
+    92dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-safe-top, 0px) - var(--ml-safe-bottom, 0px) - 1.5rem)
+  );
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Popover panels (filters, stay chip): bounded viewport + scrollable body */
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) {
+  display: flex;
+  flex-direction: column;
+  max-height: min(
+    70dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-safe-top, 0px) - var(--ml-safe-bottom, 0px) - 2rem)
+  );
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) .admin-floating-panel__header {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Gantt filters: dock below top nav instead of floating off-toolbar */
+html[data-layout-chrome="compact"] .gantt-filters-panel.admin-floating-panel:not(.admin-floating-panel--modal) {
+  left: 50% !important;
+  right: auto !important;
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem) !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  max-width: min(360px, calc(100vw - 1rem));
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Alert / confirm dialogs */
+html[data-layout-chrome="compact"] .admin-alert-dialog__actions {
+  flex-direction: column;
+  align-items: stretch;
+  padding-inline: 0.85rem;
+  padding-bottom: max(0.85rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .admin-alert-dialog__actions .admin-floating-panel__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .admin-alert-dialog__message {
+  padding-inline: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+html[data-layout-chrome="compact"] .guest-preview-panel a.rounded {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+html[data-layout-chrome="compact"] .guest-preview-panel .admin-floating-panel__body > .space-y-4 {
+  padding-inline: 0;
+}
+
+/* Gantt create / move / occupancy modals */
+html[data-layout-chrome="compact"] .gantt-quick-panel.admin-floating-panel--modal,
+html[data-layout-chrome="compact"] .gantt-move-room,
+html[data-layout-chrome="compact"] .gantt-occ-detail {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form input,
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form select,
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form textarea,
+html[data-layout-chrome="compact"] .gantt-move-room input,
+html[data-layout-chrome="compact"] .gantt-move-room select,
+html[data-layout-chrome="compact"] .gantt-occ-detail input,
+html[data-layout-chrome="compact"] .gantt-occ-detail select {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form button,
+html[data-layout-chrome="compact"] .gantt-move-room button,
+html[data-layout-chrome="compact"] .gantt-occ-detail button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .grid.sm\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .flex.flex-wrap.items-center.gap-2 button {
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+  font-size: 0.8125rem;
+}
+
+/* Operative check-in/out dialog (custom portal, not AdminFloatingPanel) */
+html[data-layout-chrome="compact"] .gantt-check-time-dialog__backdrop {
+  z-index: var(--z-overlay, 200);
+}
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog {
+  z-index: calc(var(--z-overlay, 200) + 1);
+  max-width: min(22rem, calc(100vw - 1rem));
+  max-height: min(
+    92dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-safe-top, 0px) - var(--ml-safe-bottom, 0px) - 2rem)
+  );
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(1rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog input[type="datetime-local"] {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog .mt-4.flex {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog .mt-4.flex button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.875rem;
+  padding-block: 0.55rem;
+}
+
+/* Context menu backdrop aligned with menu stack */
+html[data-layout-chrome="compact"] .gantt-ctx-menu-backdrop {
+  z-index: calc(var(--z-overlay, 200) - 1);
+}
+
+/* Gantt mobile bottom sheets */
+html[data-layout-chrome="compact"] .gantt-ctx-menu--sheet {
+  top: auto !important;
+  bottom: 0;
+  left: 0 !important;
+  right: 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 1rem 1rem 0 0;
+  padding-bottom: calc(0.35rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu--sheet .gantt-ctx-menu__confirm-msg {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog--sheet {
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  transform: none;
+  border-radius: 1rem 1rem 0 0;
+  padding-bottom: calc(1rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-actions,
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-actions button,
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-actions button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+/* Settings location unlock */
+html[data-layout-chrome="compact"] .admin-location-unlock input {
+  font-size: 16px;
+  max-width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-location-unlock button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+/* SIM chip error toast inside gear dropdown */
+html[data-layout-chrome="compact"] .admin-gear__footer .sim-error-toast {
+  max-width: min(16rem, calc(100vw - 2rem));
+  right: 0;
+  left: auto;
+  font-size: 0.72rem;
+}
+
+html[data-layout-chrome="compact"] .admin-gear__footer .sim-trigger-chip--compact {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Layout debug: above bottom nav on compact */
+html[data-layout-chrome="compact"] .layout-debug-overlay {
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.5rem);
+  max-height: min(40dvh, 16rem);
+}
+
+html[data-layout-chrome="compact"] .layout-debug-overlay__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* Admin panel error boundary */
+html[data-layout-chrome="compact"] .ml-content.flex.min-h-\[40dvh\] {
+  padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+/* Blacklist modal touch */
+html[data-layout-chrome="compact"] .guest-blacklist-modal .admin-floating-panel__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* Availability KPI help popover */
+html[data-layout-chrome="compact"] .avail-kpi-card + .admin-overlay-stack .admin-floating-panel {
+  max-width: min(calc(100vw - 1rem), 20rem);
+}
+
+/* ── Pass 9: best mobile UX — focus, errors, sticky scroll targets ── */
+
+html[data-layout-chrome="compact"] button:focus-visible,
+html[data-layout-chrome="compact"] a:focus-visible,
+html[data-layout-chrome="compact"] .ml-drawer__link:focus-visible,
+html[data-layout-chrome="compact"] .ml-bottom-nav__link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--admin-accent, #38bdf8) 70%, white);
+  outline-offset: 2px;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-error {
+  padding-bottom: max(1.5rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-error__card {
+  width: min(100%, 24rem);
+  margin-inline: auto;
+}
+
+html[data-layout-chrome="compact"] .nestio-admin-error__card button,
+html[data-layout-chrome="compact"] .nestio-admin-error__card a {
+  width: 100%;
+}
+
+/* Anchor scroll: section headings clear top nav */
+html[data-layout-chrome="compact"] .admin-page-main :target,
+html[data-layout-chrome="compact"] .ml-main :target {
+  scroll-margin-top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.75rem);
+  scroll-margin-bottom: calc(var(--ml-safe-bottom, 0px) + 1rem);
+}
+
+/* Long-press context menus: avoid accidental selection on Gantt bars */
+html[data-layout-chrome="compact"] .gantt-seg__btn,
+html[data-layout-chrome="compact"] .gantt-room-label {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ── Pass 10: polish + perf paint on remaining surfaces ── */
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+html[data-layout-chrome="compact"] .admin-hud-alert__link {
+  display: inline-flex;
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+  padding-inline: 0.35rem;
+  margin-inline: -0.35rem;
+}
+
+html[data-layout-chrome="compact"] .platform-header,
+html[data-layout-chrome="compact"] .public-header {
+  padding-top: max(0.5rem, var(--ml-safe-top, 0px));
+}
+
+html[data-layout-chrome="compact"] .platform-header__brand {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .admin-page-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  padding-block: 0.35rem 0.5rem;
+  margin-bottom: 0.5rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+html[data-layout-chrome="compact"] .onboarding-checklist,
+html[data-layout-chrome="compact"] .admin-home-section,
+html[data-layout-chrome="compact"] .booking-ops-actions {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 8rem;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header {
+  padding-top: max(0.25rem, var(--ml-safe-top, 0px));
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
+  flex-wrap: wrap;
+  row-gap: 0.35rem;
+}
+
+/* Pull-to-refresh containment on admin scroll roots */
+html[data-layout-chrome="compact"] .admin-page-main,
+html[data-layout-chrome="compact"] .gantt-scroll,
+html[data-layout-chrome="compact"] .nestio-admin-main .overflow-x-auto {
+  overscroll-behavior: contain;
+}
+
+/* ── Pass 11: Nestio + Cazări mobile best UX (390×844) ── */
+
+html[data-layout-chrome="compact"] .hospira-health-row {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+html[data-layout-chrome="compact"] .hospira-health-row__body {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .hospira-log-section__head {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .hospira-log-section__head .rounded-md,
+html[data-layout-chrome="compact"] .hospira-log-section__head select {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 1rem);
+}
+
+html[data-layout-chrome="compact"] .hospira-log-cards {
+  display: block;
+}
+
+html[data-layout-chrome="compact"] .hospira-log-table-desktop {
+  display: none;
+}
+
+html:not([data-layout-chrome="compact"]) .hospira-log-cards {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-cards {
+  display: block;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-table-desktop {
+  display: none;
+}
+
+html:not([data-layout-chrome="compact"]) .hospira-tenant-cards {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-card__detail,
+html[data-layout-chrome="compact"] .hospira-tenant-row a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .cazari-search-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .cazari-search-form input[type="search"] {
+  width: 100%;
+  min-width: 0 !important;
+  font-size: max(16px, 1rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .cazari-search-form button {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: stretch;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops button,
+html[data-layout-chrome="compact"] .stay-quick-ops a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+  font-size: max(12px, 0.75rem);
+  padding-inline: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .stay-history-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.25rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-load-more,
+html[data-layout-chrome="compact"] .cereri-load-more {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Cazări / cereri long lists: skip off-screen paint on compact */
+html[data-layout-chrome="compact"] .cazari-page .stay-card,
+html[data-layout-chrome="compact"] .cerere-item {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 4.5rem;
+}
+
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  backdrop-filter: none;
+  padding-block: 0.15rem;
+  margin-bottom: 0.12rem;
+}
+
+/* ── Pass 12: drawer a11y sweep + public touch/safe-area ── */
+
+html[data-layout-chrome="compact"] .public-header__cta {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .public-header__inner {
+  padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
+    max(0.85rem, var(--ml-safe-right, 0px));
+}
+
+html[data-layout-chrome="compact"] .public-footer__inner {
+  padding-bottom: calc(2.5rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .public-back-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.25rem;
+}
+
+html[data-layout-chrome="compact"] .devlog-entry__summary {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .devlog-entry__message {
+  flex: 1 1 100%;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.35;
+}
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-toast__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form input[type="checkbox"],
+html[data-layout-chrome="compact"] .guest-booking-form input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  margin-top: 0;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form label:has(input[type="checkbox"]),
+html[data-layout-chrome="compact"] .guest-booking-form label:has(input[type="radio"]) {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+}
+
+/* ── Pass 13: statistics cards + year nav polish ── */
+
+html[data-layout-chrome="compact"] .statistics-cards {
+  display: block;
+}
+
+html[data-layout-chrome="compact"] .statistics-table-desktop {
+  display: none;
+}
+
+html:not([data-layout-chrome="compact"]) .statistics-cards {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .statistics-page .statistics-year-nav {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.25rem;
+  margin-inline: -0.15rem;
+  padding-inline: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .statistics-page .statistics-year-nav a {
+  flex-shrink: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+html[data-layout-chrome="compact"] .statistics-page .statistics-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 6rem;
+}
+
+html[data-layout-chrome="compact"] .statistics-page .grid.gap-6 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── Pass 15: invoice line cards + print CTA ── */
+
+html[data-layout-chrome="compact"] .invoice-line-cards {
+  display: block;
+}
+
+html[data-layout-chrome="compact"] .invoice-table-desktop {
+  display: none;
+}
+
+html:not([data-layout-chrome="compact"]) .invoice-line-cards {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .informal-invoice-print {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .informal-invoice-actions {
+  flex-direction: column;
+}
+
+/* ── Pass 16: pricing comparison cards + tenant detail + booking CTAs ── */
+
+html[data-layout-chrome="compact"] .pricing-comparison-cards {
+  display: block;
+  margin-top: 2rem;
+}
+
+html[data-layout-chrome="compact"] .pricing-table-desktop {
+  display: none;
+}
+
+html:not([data-layout-chrome="compact"]) .pricing-comparison-cards {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .pricing-comparison-card__row {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail__info-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail__info-row > span:last-child {
+  text-align: left;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail .tenant-billing-toggle {
+  align-items: stretch;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .tenant-billing-toggle {
+  width: 100%;
+  justify-content: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail label.flex.cursor-pointer {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form .flex.flex-wrap.gap-2 {
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .guest-booking-form .site-cta,
+html[data-layout-chrome="compact"] .guest-booking-form .site-btn-secondary {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── Pass 16: Nestio forms, receptie checkbox, FAQ, drawer safe-area ── */
+
+html[data-layout-chrome="compact"] .tenant-billing-toggle,
+html[data-layout-chrome="compact"] .hospira-impersonate-link,
+html[data-layout-chrome="compact"] .hospira-dashboard__cta,
+html[data-layout-chrome="compact"] .nestio-tenant-option,
+html[data-layout-chrome="compact"] .nestio-log-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .hospira-dashboard__cta {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .nestio-tenant-option input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .phone-booking-form__checkbox,
+html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="checkbox"]) {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .phone-booking-form__checkbox input[type="checkbox"],
+html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="checkbox"]) input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .landing-faq__q {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding-block: 0.75rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--hospira {
+  padding-bottom: calc(1.5rem + var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .hospira-health-row {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .hospira-health-row__title,
+html[data-layout-chrome="compact"] .hospira-health-row__meta {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .pricing-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* ── Pass 18: availability nav + hospira form CTAs ── */
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav__btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav__title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+html[data-layout-chrome="compact"] .hospira-tenant-detail button.rounded-md {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .statistics-years-section .statistics-year-card__link {
+  width: 100%;
+  justify-content: flex-start;
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .hospira-health-list {
+  max-height: min(
+    55dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 12rem)
+  );
+}
+
+/* ── Pass 19: date picker, language menu, staff role menu, legends ── */
+
+html[data-layout-chrome="compact"] .availability-date-picker {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .availability-date-picker label {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .availability-date-picker input[type="date"] {
+  width: 100%;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .availability-date-picker button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .language-switcher__option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__role-menu {
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__role-option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  font-size: max(16px, 0.875rem);
+  padding-block: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .building-climate-legend {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+html[data-layout-chrome="compact"] .avail-heat-legend {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+html[data-layout-chrome="compact"] .avail-heat-legend__items {
+  flex-wrap: wrap;
+  gap: 0.35rem 0.65rem;
+}
+
+/* ── Pass 20: domains, structure, staff invite, guest rebook ── */
+
+html[data-layout-chrome="compact"] .tenant-domains-panel input,
+html[data-layout-chrome="compact"] .tenant-domains-panel select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .tenant-domains-panel button,
+html[data-layout-chrome="compact"] .tenant-domains-panel a[href] {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .tenant-domain-card .flex.flex-wrap {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .tenant-domain-card button {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-invite__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-invite input,
+html[data-layout-chrome="compact"] .admin-staff-invite select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-invite__submit button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .building-structure-card > header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .building-structure-card > header > div:last-child {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .building-structure-card > header a {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .guest-rebook-page__back {
+  padding-inline: 0.15rem;
+}
+
+html[data-layout-chrome="compact"] .guest-rebook-form input,
+html[data-layout-chrome="compact"] .guest-rebook-form select,
+html[data-layout-chrome="compact"] .guest-rebook-form textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-rebook-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-rebook-form__actions button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+}
+
+/* ── Pass 21: admin home availability preview, room cards, invoice page ── */
+
+html[data-layout-chrome="compact"] .availability-home-preview__toolbar {
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .availability-home-preview__period {
+  flex: 1;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .availability-home-preview__arrow {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .availability-home-preview__month {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .availability-home-preview__calendar {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+html[data-layout-chrome="compact"] .availability-home-preview__body {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .room-dashboard-card header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .room-manage-actions {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .room-manage-actions a,
+html[data-layout-chrome="compact"] .room-manage-actions button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .admin-invoice-page {
+  padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+/* ── Pass 22: room/building forms + gantt view switcher ── */
+
+html[data-layout-chrome="compact"] .admin-room-form__mode {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .admin-room-form__mode button {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-room-form__fields input,
+html[data-layout-chrome="compact"] .admin-room-form__fields select,
+html[data-layout-chrome="compact"] .admin-room-form__fields textarea,
+html[data-layout-chrome="compact"] .admin-building-form input,
+html[data-layout-chrome="compact"] .admin-building-form select,
+html[data-layout-chrome="compact"] .admin-building-form textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-room-form__fields button[type="submit"],
+html[data-layout-chrome="compact"] .admin-building-form button[type="submit"] {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-view-switcher {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-view-switcher__tabs {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-view-switcher__tabs button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+  white-space: normal;
+  line-height: 1.2;
+  text-align: center;
+  padding-inline: 0.35rem;
+  font-size: max(12px, 0.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-view-switcher__select {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-view-switcher > span.ml-auto {
+  margin-left: 0 !important;
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Pass 23: color picker, add floor, building rooms, guest merge ── */
+
+html[data-layout-chrome="compact"] .color-palette-picker__swatch {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .add-floor-form__trigger,
+html[data-layout-chrome="compact"] .building-rooms-collapsible__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .add-floor-form__fields {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .add-floor-form__fields label {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .add-floor-form__fields input {
+  width: 100% !important;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .add-floor-form__fields button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-disclosure-summary {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding-block: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .guest-merge-form select,
+html[data-layout-chrome="compact"] .guest-merge-form button {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-back {
+  padding-inline: 0.15rem;
+}
+
+/* ── Pass 24: structure, location lock, delete confirm, guest notes, settings CTAs ── */
+
+html[data-layout-chrome="compact"] .floor-structure-section__head {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form label {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form input {
+  width: 100% !important;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .room-structure-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .room-structure-row__controls {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .room-structure-row__floor-select {
+  max-width: none !important;
+  width: 100%;
+  font-size: max(16px, 0.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .admin-location-lock-bar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-location-lock-bar__badge {
+  text-align: center;
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-location-lock-btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .delete-confirm-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .delete-confirm-form__confirm,
+html[data-layout-chrome="compact"] .delete-confirm-form__cancel {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .guest-notes-form__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .guest-notes-form__textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 8rem;
+}
+
+html[data-layout-chrome="compact"] .guest-notes-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-notes-form__cancel,
+html[data-layout-chrome="compact"] .guest-notes-form__save {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-submit__btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .activity-timeline__card a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.25rem;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-controls-form__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .guest-profile-controls-form__field input,
+html[data-layout-chrome="compact"] .guest-profile-controls-form__field select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .guest-profile-controls-form button,
+html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-cereri-fill {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+html[data-layout-chrome="compact"] .admin-settings-location-nav {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-location-nav__card,
+html[data-layout-chrome="compact"] .admin-settings-location-nav__rooms-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-password-panel select,
+html[data-layout-chrome="compact"] .admin-staff-password-panel input {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-password-panel__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+html[data-layout-chrome="compact"] .public-confirm-page__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.15rem;
+  touch-action: manipulation;
+}
+
+/* ── Pass 26: availability day sheet, guest rebook, identity, booking cancel ── */
+
+html[data-layout-chrome="compact"] .availability-detail-panel.availability-detail-panel--overlay,
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(
+    72dvh,
+    calc(
+      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 1.5rem
+    )
+  );
+  overflow: hidden;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__header {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__body,
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton__rows {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+  background: var(--color-surface, #fff);
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .availability-detail-panel__retry {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-rebook-buttons {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-rebook-buttons__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-blacklist-panel__trigger {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-blacklist-modal__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-blacklist-modal__btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-identity-form__row--multi {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-identity-form__row--multi > .guest-identity-form__field {
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .guest-identity-form__input,
+html[data-layout-chrome="compact"] .guest-identity-form__select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-identity-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .guest-identity-form__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .booking-cancel-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .booking-cancel-form__confirm,
+html[data-layout-chrome="compact"] .booking-cancel-form__dismiss {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__top {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .bd-banner__identity {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-stay-editor__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .admin-stay-editor__cancel,
+html[data-layout-chrome="compact"] .admin-stay-editor__save {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .receptie-page__back-site {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+  touch-action: manipulation;
+}
+
+/* pass 27 — admin empty states + home availability skeleton */
+html[data-layout-chrome="compact"] .admin-empty-state {
+  padding-inline: max(0.5rem, var(--ml-safe-left, 0px))
+    max(0.5rem, var(--ml-safe-right, 0px));
+}
+
+html[data-layout-chrome="compact"] .admin-empty-state__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.65rem 1.25rem;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-home-avail-skeleton .admin-route-skeleton__card {
+  min-height: 2rem;
+}
+
+/* ── Pass 27: empty states, drawer close, sticky CTAs, reduced motion ── */
+
+html[data-layout-chrome="compact"] .admin-empty-state {
+  padding: var(--ml-space-lg, 1rem) 0.85rem;
+  min-width: 0;
+  text-align: center;
+}
+
+html[data-layout-chrome="compact"] .admin-empty-state__title,
+html[data-layout-chrome="compact"] .admin-empty-state__desc,
+html[data-layout-chrome="compact"] .admin-empty-state__text {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  line-height: 1.4;
+}
+
+html[data-layout-chrome="compact"] .admin-empty-state__action {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.65rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-page-back {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+  margin-bottom: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__head {
+  justify-content: space-between;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--hospira .ml-drawer__close {
+  color: #fafafa;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__close:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+html[data-layout-chrome="compact"] .avail-kpi-card__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  line-height: 1.3;
+}
+
+html[data-layout-chrome="compact"] .phone-booking-form__submit {
+  position: sticky;
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.35rem);
+  z-index: 2;
+  margin-top: 0.5rem;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel.admin-floating-panel--modal .admin-floating-panel__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__footer {
+  flex-shrink: 0;
+  padding: 0.65rem 0.85rem;
+  padding-bottom: max(0.85rem, var(--ml-safe-bottom, 0px));
+  border-top: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 80%, transparent);
+  background: var(--admin-panel-bg, #fff);
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__cancel {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) .admin-floating-panel__header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--admin-panel-bg, #fff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .admin-route-skeleton__toolbar,
+  html[data-layout-chrome="compact"] .admin-route-skeleton__row,
+  html[data-layout-chrome="compact"] .admin-route-skeleton__card {
+    animation: none;
+    opacity: 0.65;
+  }
+
+  html[data-layout-chrome="compact"] .ml-bottom-nav__link--alert:not(.ml-bottom-nav__link--active) .ml-bottom-nav__icon {
+    animation: none;
+  }
+}
+
+/* ── Pass 27 (cont.): settings panels, confirm header, phone form ── */
+
+html[data-layout-chrome="compact"] .statistics-settings__link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .statistics-settings__select {
+  width: 100%;
+  max-width: 100%;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .admin-fx-settings__row {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-fx-settings__row input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right {
+  align-self: stretch;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right .checkin-field__input {
+  max-width: none;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .bd-confirm__header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .bd-confirm__times {
+  margin-left: 0 !important;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .bd-confirm__submit {
+  width: 100%;
+  position: sticky;
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.35rem);
+  z-index: 2;
+  margin-top: 0.85rem;
+  padding-bottom: max(0.5rem, var(--ml-safe-bottom, 0px));
+  box-shadow: 0 -4px 12px color-mix(in srgb, #000 8%, transparent);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .bd-phone-warn__form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .bd-phone-warn__label {
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .bd-phone-warn__input {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .bd-phone-warn__save {
+  width: 100%;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .public-confirm-page__admin-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.5rem;
+  touch-action: manipulation;
+}
+
+/* ── Pass 28: gantt quick actions, stay review, receptie rows, adjust toggle ── */
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__actions {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__action {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel--busy .gantt-quick-panel__body {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel--busy .gantt-quick-panel__footer {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__summary {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__metrics {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__metrics select,
+html[data-layout-chrome="compact"] .guest-stay-review-form__metrics input {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__note textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 5.5rem;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .bd-confirm__adjust-toggle {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .bd-confirm__adjust-toggle input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel__row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel__row > div {
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-quick-panel__row .admin-quick-panel__confirm-link {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0.45rem;
+  font-size: max(16px, 0.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .language-switcher__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.65rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .language-switcher__menu--portal {
+  max-width: min(12rem, calc(100vw - 1rem));
+}
+
+/* ── Pass 29: availability toolbar stack, drawer scroll, guest cards, perf ── */
+
+html[data-layout-chrome="compact"] .avail-dashboard-toolbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .avail-display-mode {
+  display: flex;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  padding: 0.2rem;
+  gap: 0.2rem;
+}
+
+html[data-layout-chrome="compact"] .avail-display-mode button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.35rem;
+  font-size: max(11px, 0.68rem);
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .avail-view-tabs {
+  width: 100%;
+  justify-content: stretch;
+}
+
+html[data-layout-chrome="compact"] .avail-view-tab {
+  flex: 1 1 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: max(12px, 0.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .availability-week-nav {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .availability-week-nav__prev,
+html[data-layout-chrome="compact"] .availability-week-nav__next {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  background: var(--admin-panel-bg, #fff);
+  font-size: max(13px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .avail-interval-bar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .avail-interval-bar__actions {
+  flex-direction: column;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .avail-interval-bar__copy,
+html[data-layout-chrome="compact"] .avail-interval-bar__clear {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(13px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-card__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .availability-month-matrix {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 22rem;
+  contain: layout style;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--admin-page-bg, #0f172a) 4%, transparent),
+    0 4px 14px color-mix(in srgb, var(--admin-accent, #059669) 5%, transparent);
+}
+
+/* ── Pass 31: MRZ fullscreen camera, settings accordion, gantt cap touch ── */
+
+html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: var(--ml-vvh, 100dvh) !important;
+  height: var(--ml-vvh, 100dvh) !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__tab,
+html[data-layout-chrome="compact"] .mrz-scan__parse-btn,
+html[data-layout-chrome="compact"] .mrz-scan__actions .checkin-stepper__btn,
+html[data-layout-chrome="compact"] .checkin-guest-form__mrz-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 6rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-wrap {
+  aspect-ratio: 3 / 4;
+  max-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 14rem));
+  border-radius: 0.85rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__torch-btn,
+html[data-layout-chrome="compact"] .mrz-scan__manual-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-wrap {
+  aspect-ratio: 3 / 4;
+  max-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 14rem));
+}
+
+html[data-layout-chrome="compact"] .guest-app__mrz__torch-btn,
+html[data-layout-chrome="compact"] .guest-app__mrz__manual-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.65rem;
+  background: var(--admin-panel-bg, #fff);
+}
+
+html[data-layout-chrome="compact"] .mrz-scan__actions .checkin-stepper__btn {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 96%, transparent);
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__body {
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea {
+  font-size: max(16px, 1rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge {
+  min-width: 0.62rem;
+  min-height: 0.62rem;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn--edge,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  /* Grid + display:contents groups — admin-cazari-cards.css */
+  gap: 0.4rem;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops button,
+html[data-layout-chrome="compact"] .stay-quick-ops a {
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip,
+  html[data-layout-chrome="compact"] .gantt-cap-bulb-glow {
+    animation: none !important;
+  }
+}
+
+@media (display-mode: standalone) {
+  html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+    padding-top: max(0.45rem, var(--ml-safe-top, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
+    padding-top: var(--ml-safe-top, 0px);
+    padding-bottom: var(--ml-safe-bottom, 0px);
+  }
+}
+
+/* ═══ mobile-layout-guards.css ═══ */
+/**
+ * Mobile layout guards — overflow, touch, compact chrome across all surfaces.
+ */
+
+/* Prevent horizontal scroll bleed on compact chrome */
+html.layout-chrome-compact,
+html.layout-chrome-compact body.ml-overflow-guard {
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
+.ml-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .ml-content {
+  /* overflow-x: clip — mobile-layout-compact-fixes.css */
+  scroll-padding-top: calc(var(--ml-admin-chrome-top, var(--ml-safe-top, 0px)) + 0.5rem);
+  scroll-padding-bottom: var(
+    --ml-page-scroll-bottom,
+    calc(var(--ml-safe-bottom, 0px) + 0.35rem)
+  );
+}
+
+/* iOS: prevent focus zoom on inputs (16px minimum) */
+html[data-layout-chrome="compact"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html[data-layout-chrome="compact"] select,
+html[data-layout-chrome="compact"] textarea {
+  font-size: max(16px, 1rem);
+}
+
+/* Crisp taps — no 300ms delay, no grey flash */
+html[data-layout-chrome="compact"] button,
+html[data-layout-chrome="compact"] a,
+html[data-layout-chrome="compact"] [role="button"],
+html[data-layout-chrome="compact"] .ml-drawer__link,
+html[data-layout-chrome="compact"] .ml-bottom-nav__link {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ── Admin page frames ── */
+html[data-layout-chrome="compact"] .admin-page-main > main,
+html[data-layout-mode="mobile"] .admin-page-main > main {
+  padding-block: var(--ml-page-gutter-block, 0.65rem) 0;
+  padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-page-toolbar {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Paint isolation: off-screen sections skip layout on compact ── */
+html[data-layout-chrome="compact"] .bd-col,
+html[data-layout-chrome="compact"] .bd-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 12rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-kpi,
+html[data-layout-chrome="compact"] .admin-home-panel,
+html[data-layout-chrome="compact"] .admin-home-section {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 6rem;
+}
+
+html[data-layout-chrome="compact"] .admin-page .rounded-2xl.border {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 5rem;
+}
+
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-page-main,
+html[data-layout-chrome="compact"] .ml-main,
+html[data-layout-chrome="compact"] .admin-panel__body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-padding-bottom: var(--ml-page-scroll-bottom, calc(var(--ml-safe-bottom, 0px) + 0.35rem));
+}
+
+/* admin panels: see mobile-layout-flawless.css (.admin-panel) */
+
+html[data-layout-chrome="compact"] .admin-page-back {
+  font-size: 0.8125rem;
+}
+
+/* ── Admin settings / forms (see mobile-layout-admin-pages.css) ── */
+
+html[data-layout-chrome="compact"] .admin-panel-section {
+  padding: 1rem 0.85rem;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-panel-section__title,
+html[data-layout-chrome="compact"] .admin-panel-section__desc {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+html[data-layout-chrome="compact"] .admin-gear__dropdown:not(.admin-gear__dropdown--portal) {
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: 0;
+  left: auto;
+}
+
+html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: auto;
+  overflow: visible;
+  contain: none;
+}
+
+/* ── Booking detail & modals ── */
+html[data-layout-chrome="compact"] .admin-modal,
+html[data-layout-chrome="compact"] .checkin-modal {
+  width: min(calc(var(--ml-vvw, 100vw) - 1rem), 28rem);
+  max-height: min(92dvh, var(--ml-vvh, 100dvh));
+  margin-inline: auto;
+}
+
+/* sim strip: see mobile-layout-flawless.css */
+
+/* ── Nestio admin ── */
+.ml-shell--nestio-admin .nestio-admin-header__nav--wide {
+  display: flex;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__nav--wide {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .ml-mobile-menu--hospira {
+  display: block;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__email {
+  display: none;
+}
+
+.ml-drawer--hospira {
+  background: #171717;
+  border-right-color: #404040;
+  color: #f5f5f5;
+}
+
+.ml-drawer--hospira .ml-drawer__link {
+  color: #e5e5e5;
+}
+
+.ml-drawer--hospira .ml-drawer__link--active {
+  background: color-mix(in srgb, #fff 12%, transparent);
+}
+
+.ml-mobile-menu__trigger--dark {
+  border-color: #525252;
+  background: #262626;
+  color: #fafafa;
+}
+
+/* ── Auth / login ── */
+html[data-layout-chrome="compact"] .admin-login-page {
+  padding: max(1rem, var(--ml-safe-top)) 1rem max(1rem, var(--ml-safe-bottom));
+  align-items: flex-start;
+  padding-top: max(2rem, var(--ml-safe-top));
+}
+
+html[data-layout-chrome="compact"] .admin-login-card {
+  padding: 1rem !important;
+  border-radius: 0.75rem;
+}
+
+/* ── Public staff preview ── */
+html[data-layout-chrome="compact"] .public-section .lg\:flex-row {
+  flex-direction: column;
+}
+
+html[data-layout-chrome="compact"] .public-section .xl\:grid-cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-layout-chrome="compact"] .public-section .xl\:grid-cols-\[minmax\(0\,0\.9fr\)_minmax\(0\,1\.1fr\)\] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+/* ── Platform / public main ── */
+html[data-layout-chrome="compact"] .platform-shell .ml-main,
+html[data-layout-chrome="compact"] .ml-shell--public .ml-main {
+  padding-inline: 0;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase,
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase__main,
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase__aside {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .landing-showcase--pro {
+  aspect-ratio: 4 / 3;
+  contain: layout style;
+  min-height: 12rem;
+}
+
+html[data-layout-chrome="compact"] .landing img,
+html[data-layout-chrome="compact"] .signup-page img {
+  max-width: 100%;
+  height: auto;
+}
+
+html[data-layout-chrome="compact"] .landing img:not([fetchpriority="high"]),
+html[data-layout-chrome="compact"] .signup-page img:not([fetchpriority="high"]) {
+  content-visibility: auto;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--auth {
+  min-height: 100dvh;
+  padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .alpha-gate-page {
+  min-height: 100dvh;
+  padding: max(1rem, var(--ml-safe-top)) 1rem max(1rem, var(--ml-safe-bottom));
+  align-items: flex-start;
+  padding-top: max(2rem, var(--ml-safe-top));
+}
+
+html[data-layout-chrome="compact"] .alpha-gate-card {
+  padding: 1rem !important;
+  border-radius: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .alpha-gate-form button[type="submit"] {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-corner {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+}
+
+/* ── Tablet portrait uses compact chrome too ── */
+html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
+  padding-bottom: 0;
+}
+
+/* PWA install sheet (manual / iOS instructions) */
+.pwa-install-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay, 200);
+  border: none;
+  background: rgb(0 0 0 / 0.45);
+  cursor: pointer;
+}
+
+.pwa-install-sheet {
+  position: fixed;
+  z-index: calc(var(--z-overlay, 200) + 1);
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: 1rem;
+  background: var(--surface-1, #fff);
+  color: var(--admin-text, #18181b);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.22);
+}
+
+.pwa-install-sheet__title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.pwa-install-sheet__hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: var(--admin-muted, #71717a);
+  line-height: 1.4;
+}
+
+.pwa-install-sheet__steps {
+  margin: 0 0 1rem;
+  padding-left: 1.15rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.pwa-install-sheet__steps li + li {
+  margin-top: 0.35rem;
+}
+
+.pwa-install-sheet__close {
+  width: 100%;
+  min-height: 2.75rem;
+  border: none;
+  border-radius: 0.65rem;
+  background: var(--admin-accent, #059669);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ml-drawer__link--button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* PWA standalone (Add to Home Screen) — full safe-area on notched phones */
+@media (display-mode: standalone) {
+  html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+    padding-bottom: max(0.15rem, var(--ml-safe-bottom, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  html[data-layout-chrome="compact"] .public-header,
+  html[data-layout-chrome="compact"] .nestio-admin-header,
+  html[data-layout-chrome="compact"] .admin-hud__header {
+    padding-top: max(0.5rem, var(--ml-safe-top, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .ml-drawer--admin {
+    padding-top: max(0.75rem, var(--ml-safe-top, 0px));
+  }
+}
+
+/* ═══ mobile-layout-alignment.css ═══ */
+/**
+ * Mobile alignment — single gutter contract for compact chrome.
+ * Parent: .admin-page-main owns horizontal inset; children stay flush.
+ */
+
+html[data-layout-chrome="compact"] {
+  --ml-page-gutter: 0.85rem;
+  --ml-page-gutter-tight: 0.35rem;
+  --ml-page-gutter-block: 0.65rem;
+  --ml-page-inline-start: max(var(--ml-page-gutter), var(--ml-safe-left, 0px));
+  --ml-page-inline-end: max(var(--ml-page-gutter), var(--ml-safe-right, 0px));
+}
+
+/* ── Admin shell: one gutter source ── */
+html[data-layout-chrome="compact"] .admin-shell .admin-page-main {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+  padding-block-start: 0;
+  /* padding-bottom: mobile-layout-compact-fixes.css (--ml-content-pad-bottom) */
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main > main,
+html[data-layout-chrome="compact"] .admin-page-main > .ml-content,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page,
+html[data-layout-chrome="compact"] .admin-page-main .ml-content.admin-page {
+  padding-inline: 0 !important;
+  margin-inline: 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main > main.admin-page,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.p-3,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.sm\:p-4 {
+  padding: 0 !important;
+}
+
+/* HUD + alerts align with page gutter */
+html[data-layout-chrome="compact"] .admin-hud__header {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+}
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+}
+
+html[data-layout-chrome="compact"] .admin-hud__center {
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
+/* Settings / nested pages — no second gutter */
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  padding-inline: 0 !important;
+  padding-block: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-shell {
+  padding-inline: 0;
+}
+
+/* Gantt: tight but symmetric gutter */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
+  padding-inline: max(var(--ml-page-gutter-tight), var(--ml-safe-left, 0px))
+    max(var(--ml-page-gutter-tight), var(--ml-safe-right, 0px));
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
+  padding: 0 !important;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
+  margin-inline: 0 !important;
+}
+
+/* Platform / hospira admin — single gutter (no Tailwind px-* stacking) */
+html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-main,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+  padding-block: var(--ml-page-gutter-block)
+    max(var(--ml-page-gutter-block), var(--ml-safe-bottom, 0px));
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--hospira-admin .hospira-admin-header__inner,
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-header__inner {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .nestio-admin-main .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+html[data-layout-chrome="compact"] .ml-shell--nestio-admin .hospira-tenant-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.5rem;
+  background: color-mix(in srgb, #0a0a0a 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/* Tablet portrait — same gutter token (no 1.1rem drift) */
+html[data-layout-chrome="compact"][data-layout-mode="tablet"][data-layout-orientation="portrait"]
+  .admin-page-main {
+  padding-inline: var(--ml-page-inline-start) var(--ml-page-inline-end);
+}
+
+/* UX: sticky cazări filters + horizon on compact */
+html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.28rem 0.18rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 92%, transparent);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.45rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon__pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+/* UX: pinned cereri section — clear separation */
+html[data-layout-chrome="compact"] .cazari-pinned-cereri {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--admin-surface-border, #e4e4e7);
+  border-left: 3px solid var(--pending-border, #f59e0b);
+  padding-left: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .cazari-pinned-cereri .admin-panel__titlebar {
+  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, transparent);
+}
+
+/* Pass 31: zero double gutter on all admin pages */
+html[data-layout-chrome="compact"] .admin-page-main .admin-page {
+  padding-inline: 0 !important;
+  padding-block: var(--ml-page-gutter-block) 0.5rem !important;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.gantt-calendar-page,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.admin-settings-page {
+  padding-block: 0 !important;
+}
+
+/* Pass 31: sticky page context (guests, settings, home) */
+html[data-layout-chrome="compact"] .admin-page-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.5rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+html[data-layout-chrome="compact"] .guest-search {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.45rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+/* Pass 31: cazări horizon — horizontal pill scroll, no wrap overflow */
+html[data-layout-chrome="compact"] .cazari-horizon {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 0.15rem;
+  margin-inline: 0;
+  scrollbar-width: none;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon__label {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .cazari-horizon a,
+html[data-layout-chrome="compact"] .cazari-horizon__pill {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+  margin-inline: 0;
+  padding-inline: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Pass 31: list paint isolation */
+html[data-layout-chrome="compact"] .stay-list > li,
+html[data-layout-chrome="compact"] .stay-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 7rem;
+}
+
+html[data-layout-chrome="compact"] .guest-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 9rem;
+}
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 4.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .admin-page-toolbar,
+  html[data-layout-chrome="compact"] .guest-search {
+    backdrop-filter: none;
+  }
+}
+
+/* ── Pass 32: gutter safe-area, overflow, skeletons, cazări ops, MRZ camera ── */
+
+html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+  overflow-x: clip;
+  max-width: 100%;
+  padding-top: var(--ml-admin-chrome-top, var(--ml-safe-top, 0px));
+}
+
+html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+  padding-bottom: max(0.15rem, var(--ml-safe-bottom, 0px));
+}
+
+html[data-layout-chrome="compact"] .admin-route-skeleton--list,
+html[data-layout-chrome="compact"] .admin-route-skeleton--gantt,
+html[data-layout-chrome="compact"] .admin-route-skeleton--availability,
+html[data-layout-chrome="compact"] .admin-route-skeleton--panel-home {
+  min-height: min(70dvh, calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, 3.25rem) - 2rem));
+  contain: layout style;
+}
+
+html[data-layout-chrome="compact"] .admin-route-skeleton--gantt {
+  display: flex;
+  flex-direction: column;
+  min-height: min(
+    75dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, 3.25rem) - var(--ml-safe-bottom, 0px) - 1rem)
+  );
+}
+
+html[data-layout-chrome="compact"] .admin-route-skeleton--gantt .admin-route-skeleton__grid {
+  flex: 1;
+  min-height: 12rem;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions .stay-quick-ops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops__primary,
+html[data-layout-chrome="compact"] .stay-quick-ops__shift-pair,
+html[data-layout-chrome="compact"] .stay-quick-ops__tertiary {
+  display: contents;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops__btn,
+html[data-layout-chrome="compact"] .stay-quick-ops__checkin,
+html[data-layout-chrome="compact"] .stay-quick-ops__checkout,
+html[data-layout-chrome="compact"] .stay-quick-ops__shift,
+html[data-layout-chrome="compact"] .stay-quick-ops__edit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.55rem;
+  font-size: max(12px, 0.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions > button,
+html[data-layout-chrome="compact"] .stay-card__actions .stay-card__cancel-trigger {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  font-size: max(12px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
+  aspect-ratio: auto;
+  width: 100%;
+  max-height: min(68dvh, calc(var(--ml-vvh, 100dvh) - 10rem));
+  min-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 12rem));
+  border-radius: 0;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+html[data-layout-chrome="compact"] .settings-loading {
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .hospira-tenant-card,
+html[data-layout-chrome="compact"] .statistics-page .statistics-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 5rem;
+}
+
+/* ═══ mobile-layout-compact-fixes.css ═══ */
+/**
+ * Compact chrome — scroll padding, overflow clip, Gantt/Cazări/Settings fixes.
+ * Loaded last in mobile-layout.css (pass 33).
+ */
+
+html[data-layout-chrome="compact"] {
+  --ml-content-pad-bottom: var(
+    --ml-page-main-pad-bottom,
+    max(0.65rem, var(--ml-safe-bottom, 0px))
+  );
+}
+
+/* Scroll root: safe-area tail only — bottom nav is outside this flex scroll child */
+html[data-layout-chrome="compact"] .admin-shell .admin-page-main {
+  padding-bottom: var(--ml-content-pad-bottom);
+  scroll-padding-bottom: var(
+    --ml-page-scroll-bottom,
+    calc(var(--ml-safe-bottom, 0px) + 0.35rem)
+  );
+}
+
+/* Gantt owns the viewport — no double pad on the scroll shell */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
+  padding-bottom: 0;
+  scroll-padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+/* Zero horizontal bleed on 390px — clip page columns */
+html[data-layout-chrome="compact"] .admin-shell,
+html[data-layout-chrome="compact"] .admin-page,
+html[data-layout-chrome="compact"] .cazari-page,
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-shell,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  overflow-x: clip;
+  max-width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .ml-content {
+  overflow-x: clip;
+}
+
+/* Settings: sticky save bar clearance + accordion touch */
+html[data-layout-chrome="compact"] .admin-settings-page .settings-form-stack,
+html[data-layout-chrome="compact"] .admin-settings-page .admin-settings-panel__inner {
+  padding-bottom: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.65rem;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__body--open .admin-settings-panel__inner {
+  padding-block: 0.5rem 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .settings-save-bar__actions button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+/* Cazări: shorter cards, actions contained */
+html[data-layout-chrome="compact"] .stay-card {
+  contain-intrinsic-size: auto 4rem;
+  overflow-x: clip;
+  gap: 0.45rem !important;
+  padding-block: 0.5rem !important;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+/* Gantt portrait: bounded flex scroll (nav already excluded by shell flex) */
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll {
+  min-height: 10rem;
+  max-height: calc(
+    var(--ml-vvh, 100dvh)
+      - var(--ml-admin-bottom-clearance, calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom)))
+      - var(--ml-admin-chrome-top, var(--ml-safe-top, 0px))
+      - 5.75rem
+  );
+  scroll-padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+/* Gantt: cap strip + stay tap targets */
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay-chrome {
+  overflow-x: clip;
+  min-width: 0;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
+  max-width: 100%;
+  overflow: hidden;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
+}
+
+/* Check-in: keyboard scroll clearance */
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper__content {
+  scroll-padding-bottom: calc(var(--ml-safe-bottom, 0px) + 4.5rem);
+}
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__input:focus,
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__select:focus,
+html[data-layout-chrome="compact"] .checkin-modal textarea:focus {
+  scroll-margin-bottom: calc(var(--ml-safe-bottom, 0px) + 3.5rem);
+}
+
+/* MRZ: camera fills modal body */
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+  width: 100%;
+  min-height: min(62dvh, calc(var(--ml-vvh, 100dvh) - 9rem));
+  max-height: none;
+  border-radius: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bottom nav: stronger active affordance */
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--active {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--admin-accent, #d6b55a) 38%, transparent);
+}
+
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--active::before {
+  height: 3px;
+  opacity: 1;
+  transform: scaleX(1);
+}

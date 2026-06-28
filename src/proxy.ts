@@ -1,4 +1,4 @@
-import createIntlMiddleware from "next-intl/middleware";
+﻿import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse, NextRequest } from "next/server";
@@ -421,7 +421,7 @@ export async function proxy(request: NextRequest) {
   const alphaRedirect = alphaGateRedirectIfNeeded(request, path);
   if (alphaRedirect) return alphaRedirect;
 
-  // ── PLATFORM (hospira.ro / test.hospira.ro) ──────────────────
+  // ── PLATFORM (Zalmox.ro / test.Zalmox.ro) ──────────────────
   if (domain.type === "platform") {
     const requestHost = requestHostFrom(request);
 
@@ -431,7 +431,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Legacy route — redirect during Nestio → Hospira transition
+    // Legacy route — redirect during Nestio → Zalmox transition
     if (path.startsWith("/nestio-admin")) {
       const legacy = request.nextUrl.clone();
       legacy.pathname = request.nextUrl.pathname.replace(
@@ -441,7 +441,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(legacy, 308);
     }
 
-    // Hospira internal admin — platform domain only, email-gated
+    // Zalmox internal admin — platform domain only, email-gated
     if (path.startsWith("/hospira-admin")) {
       const { configured, url, key } = getEdgeSupabaseConfig();
       if (!configured || !url || !key) {
@@ -586,7 +586,7 @@ export async function proxy(request: NextRequest) {
     return intlMiddleware(request);
   }
 
-  // ── TENANT (slug.hospira.ro or custom domain) ────────────────
+  // ── TENANT (slug.Zalmox.ro or custom domain) ────────────────
   const requestHost = requestHostFrom(request);
 
   if (domain.type === "custom") {

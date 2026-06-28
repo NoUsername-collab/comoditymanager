@@ -6,8 +6,8 @@ Sentry.init({
   // Only enable in production
   enabled: process.env.NODE_ENV === "production",
 
-  // Performance: sample 20% of transactions
-  tracesSampleRate: 0.2,
+  // Performance: sample 80% of transactions
+  tracesSampleRate: 0.8,
 
   // Don't send PII
   sendDefaultPii: false,

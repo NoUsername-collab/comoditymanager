@@ -1,4 +1,4 @@
-﻿# Production Readiness — CasaEmil / Hospira
+﻿# Production Readiness — Zalmox / Zalmox
 
 Jurnal de verificări înainte de deploy. Fiecare **Pass** rulează `tsc`, `npm test` și `npm run build`, remediază regresiile și notează verdictul.
 

@@ -21,9 +21,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hospira",
+  title: "Zalmox",
   description: "Software modern pentru pensiuni si hoteluri mici",
-  applicationName: "Hospira",
+  applicationName: "Zalmox",
   icons: {
     icon: [
       { url: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -34,11 +34,23 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "Hospira",
+    title: "Zalmox",
     statusBarStyle: "black-translucent",
   },
   formatDetection: {
     telephone: false,
+  },
+  openGraph: {
+    title: "Zalmox — Software pentru pensiuni",
+    description: "Gestionează rezervări, check-in oaspeți și facturare. Software modern pentru pensiuni și hoteluri mici.",
+    siteName: "Zalmox",
+    locale: "ro_RO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zalmox — Software pentru pensiuni",
+    description: "Gestionează rezervări, check-in oaspeți și facturare.",
   },
 };
 

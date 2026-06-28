@@ -43,7 +43,7 @@ export default async function SettingsAppearancePage({
   }
 
   const canEditGlobalTheme = canEditPensionSettingsUi(ctx);
-  const displayName = settings.display_name?.trim() || "Hospira";
+  const displayName = settings.display_name?.trim() || "Zalmox";
 
   return (
     <SettingsPageLayout

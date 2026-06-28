@@ -1,4 +1,4 @@
-import { cache } from "react";
+﻿import { cache } from "react";
 import { createPublicAdminClient } from "@/lib/supabase/admin-public";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import {
@@ -71,7 +71,7 @@ async function resolveTenantIdForLog(
   return null;
 }
 
-/** Tenant anchor for Hospira platform admin (hospira.ro — fără host tenant). */
+/** Tenant anchor for Zalmox platform admin (Zalmox.ro — fără host tenant). */
 async function resolvePlatformLogTenantId(): Promise<string> {
   const devSlug = process.env.DEV_TENANT_SLUG?.trim();
   if (devSlug) {

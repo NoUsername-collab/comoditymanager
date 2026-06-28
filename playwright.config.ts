@@ -1,7 +1,7 @@
-import { defineConfig, devices } from "@playwright/test";
+﻿import { defineConfig, devices } from "@playwright/test";
 
 /**
- * Playwright E2E configuration for CasaEmil.
+ * Playwright E2E configuration for Zalmox.
  *
  * Env vars used by auth setup:
  *   E2E_ADMIN_EMAIL     – Supabase admin email

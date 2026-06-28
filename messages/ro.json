@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "save": "Salvează",
     "cancel": "Anulează",
@@ -406,7 +406,7 @@
     "shell": {
       "backHome": "Acasă",
       "legalEyebrow": "Legal",
-      "brandFallback": "Hospira"
+      "brandFallback": "Zalmox"
     },
     "header": {
       "subtitle": "Pensiune"
@@ -430,7 +430,7 @@
       "contact": "Contact",
       "contactNotConfigured": "Configurează contactul în admin",
       "contactEmptyHint": "Adaugă telefon sau email în Setări → Identitate sau Site public.",
-      "contactEmail": "contact@hospira.ro",
+      "contactEmail": "contact@zalmox.app",
       "copyright": "© {year} {name}"
     },
     "home": {
@@ -607,7 +607,7 @@
       "s3Title": "3. Anulare",
       "s3Body": "Condițiile de anulare sau modificare a sejurului sunt comunicate de pensiune odată cu confirmarea rezervării.",
       "s4Title": "4. Contact",
-      "s4Body": "Hospira — <email>contact@hospira.ro</email>"
+      "s4Body": "Zalmox — <email>contact@zalmox.app</email>"
     },
     "privacy": {
       "title": "Politica de confidențialitate",
@@ -624,7 +624,7 @@
       "retentionTitle": "Durata păstrării",
       "retentionBody": "Păstrăm datele pe durata necesară pentru gestionarea rezervării și îndeplinirea obligațiilor legale (contabilitate, fiscalitate).",
       "rightsTitle": "Drepturile tale",
-      "rightsBody": "Aveți dreptul de acces, rectificare, ștergere, restricționare, opoziție și portabilitate. Pentru exercitarea drepturilor, scrieți la <email>contact@hospira.ro</email>."
+      "rightsBody": "Aveți dreptul de acces, rectificare, ștergere, restricționare, opoziție și portabilitate. Pentru exercitarea drepturilor, scrieți la <email>contact@zalmox.app</email>."
     },
     "staffPanel": {
       "badge": "Staff",
@@ -667,11 +667,11 @@
       "paginationPage": "Pagina {page} / {total}"
     },
     "shell": {
-      "eyebrow": "Hospira · Control",
+      "eyebrow": "Zalmox · Control",
       "title": "Panou administrare",
       "publicSite": "Site public",
       "settings": "Setări",
-      "brandFallback": "Hospira"
+      "brandFallback": "Zalmox"
     },
     "setupIssues": {
       "mfaNotEnabled": "Autentificarea în doi pași nu e activă pe cont",
@@ -687,17 +687,17 @@
       "iosTitle": "Adaugă pe ecranul de pornire",
       "iosStep1": "Apasă Share în partea de jos în Safari",
       "iosStep2": "Alege „Adaugă pe ecranul de pornire”",
-      "iosStep3": "Apasă Adaugă — Hospira se deschide fără bara browserului",
+      "iosStep3": "Apasă Adaugă — Zalmox se deschide fără bara browserului",
       "androidManualTitle": "Instalează din Chrome",
       "androidManualStep": "Meniu ⋮ → Instalează aplicația sau Adaugă pe ecranul de pornire",
-      "desktopManualTitle": "Instalează Hospira în Chrome",
+      "desktopManualTitle": "Instalează Zalmox în Chrome",
       "desktopStep1": "Deschide meniul Chrome (⋮) din dreapta barei de adrese",
-      "desktopStep2": "Alege „Instalează Hospira…” sau „Save and share” → „Install”",
+      "desktopStep2": "Alege „Instalează Zalmox…” sau „Save and share” → „Install”",
       "desktopStep3": "Confirmă — aplicația apare ca fereastră separată, fără tab-uri",
       "close": "Am înțeles"
     },
     "login": {
-      "eyebrow": "Hospira",
+      "eyebrow": "Zalmox",
       "title": "Admin",
       "lead": "Acces doar pentru administrator.",
       "backToSite": "← Înapoi la site",
@@ -724,8 +724,8 @@
       "backToPassword": "← Înapoi la parolă",
       "securityEyebrow": "Securitate",
       "securityTitle": "Configurează autentificarea în doi pași",
-      "securityLead": "Hospira rămâne aplicația web/PWA. Autentificatorul (Google Authenticator, Authy etc.) generează doar codul de 6 cifre la login — pe telefon sau PC.",
-      "webPwaExplain": "Nu instalezi o aplicație Hospira separată: lucrezi în browser sau PWA. Aplicația de autentificare e doar pentru coduri, nu înlocuiește panoul.",
+      "securityLead": "Zalmox rămâne aplicația web/PWA. Autentificatorul (Google Authenticator, Authy etc.) generează doar codul de 6 cifre la login — pe telefon sau PC.",
+      "webPwaExplain": "Nu instalezi o aplicație Zalmox separată: lucrezi în browser sau PWA. Aplicația de autentificare e doar pentru coduri, nu înlocuiește panoul.",
       "mobileSetupTitle": "Pe telefon sau PWA instalat",
       "mobileSetupStep1": "Instalează Google Authenticator, Authy sau Microsoft Authenticator.",
       "mobileSetupStep2": "Alege „Introdu cheia manuală” — nu scana QR de pe același telefon.",
@@ -735,7 +735,7 @@
       "copySecret": "Copiază cheia",
       "copySecretDone": "Copiat!",
       "copySecretFailed": "Nu s-a putut copia cheia. Selecteaz-o manual.",
-      "challengePwaLead": "Deschide aplicația de autentificare, copiază codul de 6 cifre și revino în Hospira (web sau PWA).",
+      "challengePwaLead": "Deschide aplicația de autentificare, copiază codul de 6 cifre și revino în Zalmox (web sau PWA).",
       "mandatoryLead": "Autentificarea în doi pași este obligatorie pentru contul tău înainte de accesul în panou.",
       "optionalLead": "Poți activa opțional autentificarea în doi pași pentru securitate suplimentară.",
       "securityReminder": "Securitate: autentificarea în doi pași nu e activă pe cont.",
@@ -765,10 +765,10 @@
     "logout": "Deconectare",
     "domains": {
       "pageTitle": "Domenii",
-      "pageDescription": "Subdomeniu Hospira si domenii proprii (toate variantele).",
+      "pageDescription": "Subdomeniu Zalmox si domenii proprii (toate variantele).",
       "backToSettings": "← Inapoi la setari",
-      "hospiraSubdomain": "Subdomeniu Hospira (implicit, intotdeauna activ)",
-      "hospiraSubdomainHint": "Admin, calendar si site public — totul merge aici.",
+      "ZalmoxSubdomain": "Subdomeniu Zalmox (implicit, intotdeauna activ)",
+      "ZalmoxSubdomainHint": "Admin, calendar si site public — totul merge aici.",
       "openSite": "Deschide site-ul",
       "upgradeForCustom": "Domeniu propriu: disponibil de la planul Professional.",
       "addCustomTitle": "Adauga domeniu propriu",
@@ -781,16 +781,16 @@
       "markVerified": "Marcheaza verificat (dupa DNS + Vercel)",
       "remove": "Sterge",
       "kinds": {
-        "hospira_subdomain": "Subdomeniu Hospira (complet)",
+        "Zalmox_subdomain": "Subdomeniu Zalmox (complet)",
         "custom_full": "Domeniu propriu — site + admin + rezervari",
-        "custom_public": "Domeniu propriu — site + rezervari; admin pe Hospira",
+        "custom_public": "Domeniu propriu — site + rezervari; admin pe Zalmox",
         "custom_brand": "Domeniu propriu — doar homepage; restul pe subdomeniu"
       },
       "errors": {
         "admin_only": "Doar administratorul poate gestiona domeniile.",
         "invalid_domain": "Domeniu invalid.",
         "plan_not_allowed": "Planul tau nu include acest mod.",
-        "reserved_domain": "Nu poti folosi domeniul platformei Hospira.",
+        "reserved_domain": "Nu poti folosi domeniul platformei Zalmox.",
         "domain_taken": "Domeniul e deja folosit.",
         "error": "Eroare. Incearca din nou."
       }
@@ -853,7 +853,7 @@
     },
     "pages": {
       "bookings": {
-        "title": "Cereri noi — Hospira",
+        "title": "Cereri noi — Zalmox",
         "description": "Confirmă disponibilitatea și alocă camere.",
         "windowTitle": "Cereri noi ({count})",
         "showingPartial": "Afișate {shown} din {total} cereri",
@@ -868,7 +868,7 @@
         "emptyAction": "Deschide calendarul public"
       },
       "rooms": {
-        "title": "Camere — Hospira",
+        "title": "Camere — Zalmox",
         "description": "Grilă zilnică compactă pentru status camere.",
         "addRoom": "+ Adaugă cameră",
         "inactiveRooms": "Camere inactive",
@@ -876,7 +876,7 @@
         "genericError": "Nu am putut încărca camerele. Reîncearcă."
       },
       "settings": {
-        "title": "Setări — Hospira",
+        "title": "Setări — Zalmox",
         "navAria": "Navigare setări",
         "navTitle": "Setări",
         "navGroupIdentity": "Identitate",
@@ -980,7 +980,7 @@
         "navEmail": "Email",
         "navEmailDesc": "Notificări email, Reply-to, footer",
         "navDomains": "Domenii",
-        "navDomainsDesc": "Subdomeniu Hospira și domenii proprii",
+        "navDomainsDesc": "Subdomeniu Zalmox și domenii proprii",
         "navTeam": "Echipă",
         "navTeamDesc": "Membri, roluri, invitații",
         "navTeamPermissions": "Permisiuni echipă",
@@ -1331,7 +1331,7 @@
         "staffPanelInfo": "Invita operatori si admini, schimba roluri, dezactiveaza conturi.",
         "openStaffManagement": "Gestioneaza echipa",
         "domainsTitle": "Domenii & site",
-        "domainsSubtitle": "Subdomeniu Hospira si domeniu propriu",
+        "domainsSubtitle": "Subdomeniu Zalmox si domeniu propriu",
         "domainsPanelInfo": "Alege cum vede clientii pensiunea: site complet, doar public, sau doar homepage.",
         "openDomainsManagement": "Gestioneaza domeniile",
         "publicSiteTitle": "Site public",
@@ -1359,7 +1359,7 @@
         }
       },
       "publicSite": {
-        "title": "Site public — Hospira",
+        "title": "Site public — Zalmox",
         "description": "Template, temă, conținut hero, secțiuni și contact pentru vizitatori.",
         "backSettings": "Înapoi la setări",
         "previewSite": "Previzualizare site",
@@ -1509,7 +1509,7 @@
         }
       },
       "guests": {
-        "title": "Clienți — Hospira",
+        "title": "Clienți — Zalmox",
         "description": "Profiluri clienți și istoric sejururi.",
         "searchTitle": "Caută client",
         "searchHint": "Căutarea prioritizează profilele cu risc și cele actualizate recent.",
@@ -1546,8 +1546,8 @@
       },
       "calendar": {
         "genericError": "Eroare",
-        "title": "Calendar — Hospira",
-        "ganttTitle": "Calendar Gantt — Hospira",
+        "title": "Calendar — Zalmox",
+        "ganttTitle": "Calendar Gantt — Zalmox",
         "windowGantt": "Gantt",
         "unassignedTitle": "Cereri neconfirmate",
         "unassignedSubtitle": "Fără cameră în perioada afișată",
@@ -1558,7 +1558,7 @@
         "buildingFilterSuffix": " · filtru clădire"
       },
       "cazari": {
-        "title": "Cazări — Hospira",
+        "title": "Cazări — Zalmox",
         "searchFilter": "Caută și filtrează",
         "viewFiltersAria": "Filtru listă cazări",
         "filterAnulate": "Anulate",
@@ -1659,7 +1659,7 @@
         "reacceptedBanner": "Cazarea a fost acceptată din nou și apare la cazări confirmate."
       },
       "statistics": {
-        "title": "Statistici — Hospira",
+        "title": "Statistici — Zalmox",
         "monthCompare": "Comparativ lună",
         "continuous": "Înregistrare continuă",
         "guestNights": "Nopți oaspeți",
@@ -1691,7 +1691,7 @@
         "monthCol": "Lună",
         "monthlyKpis": "ADR / RevPAR lunar — {year}",
         "exportTitle": "Export contabilitate",
-        "exportDescription": "CSV pentru import în Saga C sau ContaPlus (mapare coloane la import). Include facturile emise din Hospira.",
+        "exportDescription": "CSV pentru import în Saga C sau ContaPlus (mapare coloane la import). Include facturile emise din Zalmox.",
         "exportMonth": "Luna",
         "exportMonthAll": "Tot anul",
         "exportFormat": "Format",
@@ -1707,7 +1707,7 @@
         "exportDownload": "Descarcă CSV"
       },
       "location": {
-        "title": "Administrare locație — Hospira",
+        "title": "Administrare locație — Zalmox",
         "operational": "Operațional",
         "operationalSubtitle": "{name} · ore și paturi extra",
         "displayName": "Nume afișat",
@@ -1793,7 +1793,7 @@
         "reacceptTitle": "Acceptă din nou (cameră eliberată)",
         "reacceptHint": "Rezervarea era anulată. Verifică disponibilitatea și alocă camerele — dacă intervalul e ocupat, alege alte camere sau mută datele.",
         "reacceptSubmit": "Confirmă cazarea",
-        "title": "Rezervare — Hospira",
+        "title": "Rezervare — Zalmox",
         "guestProfile": "Profil client",
         "persons": "Persoane",
         "contact": "Contact",
@@ -1822,7 +1822,7 @@
         "guestFeedback": "Feedback oaspete"
       },
       "roomsNew": {
-        "title": "Cameră nouă — Hospira",
+        "title": "Cameră nouă — Zalmox",
         "migrationHint": "pentru tipuri și",
         "catalogHint": "Rulează <code>015_room_catalog.sql</code> în Supabase SQL Editor pentru tipuri și",
         "bulkCountError": "Poți crea între 1 și 50 de camere dintr-o dată.",
@@ -1833,9 +1833,9 @@
         "loadError": "Nu s-au putut încărca datele"
       },
       "buildings": {
-        "newTitle": "Clădire nouă — Hospira",
+        "newTitle": "Clădire nouă — Zalmox",
         "newHint": "Poți adăuga <strong>camere noi</strong> după creare. Culoarea apare în calendar.",
-        "listTitle": "Clădiri — Hospira",
+        "listTitle": "Clădiri — Zalmox",
         "listDescription": "Alege o dată — vezi camere libere / ocupate pe clădire și în grid.",
         "addBuilding": "+ Adaugă clădire",
         "unknownError": "Eroare necunoscută",
@@ -1843,7 +1843,7 @@
         "noBuildings": "Nicio clădire — adaugă prima din butonul de sus."
       },
       "disponibilitate": {
-        "title": "Disponibilitate — Hospira",
+        "title": "Disponibilitate — Zalmox",
         "description": "Heat map, KPI, filtre clădire și interval."
       },
       "invoice": {
@@ -1864,7 +1864,7 @@
         "descriptionSuffix": "Culoarea apare în calendar."
       },
       "settingsLocation": {
-        "title": "Administrare locație — Hospira",
+        "title": "Administrare locație — Zalmox",
         "description": "Structură locație, camere, catalog și conturi staff.",
         "backToSettings": "← Înapoi la setări",
         "unlockedForTwoHours": "Administrare locație deblocată pentru 2 ore.",
@@ -2216,7 +2216,7 @@
       "reputationExcellent": "Excelent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklist",
-      "welcomeHome": "Bun venit la Hospira!",
+      "welcomeHome": "Bun venit la Zalmox!",
       "loadDataError": "Nu s-au putut încărca datele",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -2283,7 +2283,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Hospira",
+      "locationAdminTitle": "Location administration — Zalmox",
       "noRoomsConfigured": "Încă nu ai camere configurate",
       "achievements": "Realizări",
       "homeEyebrow": "Acasă · panou recepție",
@@ -2340,9 +2340,9 @@
       "addFloor": "Adaugă etaj",
       "floorPlaceholder": "Parter / Etaj 1",
       "newBuildingHint": "După creare poți adăuga camere noi. Culoarea apare în calendar.",
-      "buildingsTitle": "Clădiri — Hospira",
-      "availabilityTitle": "Disponibilitate — Hospira",
-      "newRoomTitle": "Cameră nouă — Hospira",
+      "buildingsTitle": "Clădiri — Zalmox",
+      "availabilityTitle": "Disponibilitate — Zalmox",
+      "newRoomTitle": "Cameră nouă — Zalmox",
       "catalogSqlHint": "pentru tipuri și opțiuni în Supabase SQL Editor",
       "checkInHour": "Check-in (ora)",
       "checkOutHour": "Check-out (ora)",
@@ -2445,7 +2445,7 @@
       "floors": "Etaje",
       "tenantMemberRequired": "Contul nu este membru al acestei pensiuni. Folosește subdomeniul corect sau cere acces de la owner.",
       "tenantScopeMismatch": "Tenantul din URL nu coincide cu datele încărcate. Reîncarcă pagina sau autentifică-te pe subdomeniul pensiunii.",
-      "tenantHostRequired": "Deschide aplicația pe subdomeniul pensiunii (ex. pensiunea.hospira.ro), nu pe domeniul generic.",
+      "tenantHostRequired": "Deschide aplicația pe subdomeniul pensiunii (ex. pensiunea.Zalmox.ro), nu pe domeniul generic.",
       "loginRequired": "Trebuie să te autentifici.",
       "roleForbidden": "Nu ai permisiunea pentru această acțiune.",
       "attention": "Atenție",
@@ -2556,7 +2556,7 @@
       "tight": "Strâns",
       "freeRooms": "Camere libere",
       "clickForDayCard": "Click = carte de zi completă",
-      "clipboardPrefix": "Hospira",
+      "clipboardPrefix": "Zalmox",
       "kpiRelaxedLabel": "Zile cu ≥3 camere libere",
       "kpiFullLabel": "Zile pline",
       "kpiMinLabel": "Minim libere",
@@ -3013,7 +3013,7 @@
       "moodFullWeek": "Săptămână plină — camerele se mișcă bine. Continuă tot așa!",
       "moodQuietEvening": "Seară liniștită — toate camerele sunt libere diseară. Poți respira.",
       "moodAllFree": "Nicio cameră ocupată diseară — perfect pentru pregătiri sau odihnă.",
-      "moodDefault": "Totul arată bine la recepție. O zi bună la Hospira!",
+      "moodDefault": "Totul arată bine la recepție. O zi bună la Zalmox!",
       "briefingArrivals": "{count, plural, one {# sosire} few {# sosiri} other {# sosiri}}",
       "briefingDepartures": "{count, plural, one {# plecare} few {# plecări} other {# plecări}}",
       "briefingClean": "{count} de curățat",
@@ -4188,7 +4188,7 @@
     "genericError": "Nu am putut crea contul. Încearcă din nou.",
     "errorPlanConfig": "Configurație planuri în baza de date. Contactează suportul sau administratorul.",
     "errorDatabase": "Eroare la crearea pensiunii în baza de date. Contactează suportul sau reîncearcă.",
-    "errorCatalogMigration": "Nu am putut finaliza configurarea pensiunii. Contactează suportul Hospira.",
+    "errorCatalogMigration": "Nu am putut finaliza configurarea pensiunii. Contactează suportul Zalmox.",
     "errorServerConfig": "Serviciul nu este disponibil momentan. Încearcă din nou sau contactează suportul.",
     "rateLimited": "Prea multe încercări. Așteaptă câteva minute.",
     "pensionNameRequired": "Numele pensiunii e obligatoriu (minim 2 caractere).",
@@ -4201,34 +4201,34 @@
     "emailStaleOwnerRow": "Există o pensiune pe acest email fără cont de autentificare. Autentifică-te sau contactează suportul."
   },
   "landing": {
-    "metaTitle": "Hospira — software PMS pentru pensiuni",
+    "metaTitle": "Zalmox — software PMS pentru pensiuni",
     "metaDescription": "Calendar Gantt, cazări, check-in și site public pentru pensiuni mici din România, Moldova și Bulgaria. Începe gratuit, fără comision pe rezervările directe.",
     "heroBadge": "PMS pentru pensiuni · RO · MD · BG",
     "heroTitle": "Gestionează pensiunea din telefon — fără caiet, fără Excel",
-    "heroSubtitle": "Hospira adună calendar Gantt, cazări, check-in și disponibilitate într-o singură platformă. Construit pentru proprietari de pensiuni din România, Moldova și Bulgaria.",
+    "heroSubtitle": "Zalmox adună calendar Gantt, cazări, check-in și disponibilitate într-o singură platformă. Construit pentru proprietari de pensiuni din România, Moldova și Bulgaria.",
     "heroCta": "Începe gratuit",
     "heroCtaDemo": "Solicită demo",
     "heroCtaLogin": "Autentificare",
     "heroCtaSecondary": "Vezi instrumentele",
     "heroNote": "Fără card de credit · 3 camere gratuit, permanent.",
-    "demoEmailSubject": "Demo Hospira — pensiune",
-    "statsAria": "Rezumat avantaje Hospira",
+    "demoEmailSubject": "Demo Zalmox — pensiune",
+    "statsAria": "Rezumat avantaje Zalmox",
     "heroSocialQuote": "„Înlocuiește caietul și Excel-ul cu un calendar care chiar funcționează.”",
     "heroSocialCaption": "Pensiuni mici din România, Moldova și Bulgaria",
     "problemTitle": "Sună cunoscut?",
-    "withoutHospira": "Fără Hospira",
+    "withoutZalmox": "Fără Zalmox",
     "problem1": "Rezervări pe caiet sau în Excel",
     "problem2": "Dublă rezervare și confuzii între canale",
     "problem3": "Oaspeții sună constant pentru disponibilitate",
     "problem4": "15–18% comision la Booking.com pe fiecare rezervare",
-    "withHospira": "Cu Hospira",
+    "withZalmox": "Cu Zalmox",
     "solution1": "Calendar digital cu toate rezervările la vedere",
     "solution2": "Imposibil de rezervat dublu — protecție la nivel de bază de date",
     "solution3": "Oaspeții rezervă singuri pe site-ul pensiunii tale",
     "solution4": "Rezervările directe = 0% comision",
     "toolsTitle": "Instrumentele tale de operare",
     "toolsLead": "Tot ce folosești zilnic la recepție — calendar, cazări, check-in și documente — într-o interfață clară, optimizată pentru mobil.",
-    "toolsAria": "Instrumente Hospira",
+    "toolsAria": "Instrumente Zalmox",
     "tools": {
       "gantt": {
         "title": "Calendar Gantt",
@@ -4272,7 +4272,7 @@
     "step3Title": "Operează zilnic",
     "step3Desc": "Calendar Gantt, cazări, check-in și disponibilitate — din telefon sau desktop.",
     "statSetup": "Setup cont",
-    "trustStripAria": "Beneficii cheie Hospira",
+    "trustStripAria": "Beneficii cheie Zalmox",
     "trustLead": "Pensii mici din România, Moldova și Bulgaria — control total, fără comision pe rezervările directe.",
     "trust1": "0% comision pe rezervările directe",
     "trust2": "Date în UE · GDPR-ready",
@@ -4328,7 +4328,7 @@
     "faq2Q": "Cand trec la Essential (19 EUR)?",
     "faq2A": "Cand ai nevoie de Gantt, notificari email, teme vizuale sau pana la 10 camere si 3 membri in echipa.",
     "faq3Q": "Ce aduce Professional (49 EUR)?",
-    "faq3A": "Pana la 30 camere, echipa nelimitata, domeniu custom, fara branding Hospira, plus iCal si rapoarte avansate.",
+    "faq3A": "Pana la 30 camere, echipa nelimitata, domeniu custom, fara branding Zalmox, plus iCal si rapoarte avansate.",
     "faq4Q": "Pentru cine e Business (99 EUR)?",
     "faq4A": "Pensiuni mai mari sau lanturi mici: camere nelimitate, pana la 5 proprietati, facturare, WhatsApp, API si manager dedicat.",
     "finalTitle": "Incepe gratuit azi",
@@ -4365,7 +4365,7 @@
         "roomLine": "Pana la {count} camere",
         "f1": "Tot ce include Essential",
         "f2": "Echipa nelimitata",
-        "f3": "Domeniu custom + fara branding Hospira",
+        "f3": "Domeniu custom + fara branding Zalmox",
         "f4": "Sync iCal (Booking, Airbnb)",
         "f5": "Rapoarte avansate",
         "f6": "Suport prioritar",
@@ -4396,7 +4396,7 @@
         "rooms": "Camere",
         "team": "Echipa",
         "gantt": "Gantt & heatmap",
-        "branding": "Branding Hospira",
+        "branding": "Branding Zalmox",
         "modules": "Module incluse"
       },
       "rooms": {
@@ -4460,9 +4460,9 @@
       "rights": "Toate drepturile rezervate."
     }
   },
-  "hospiraAdmin": {
+  "ZalmoxAdmin": {
     "nav": {
-      "menuAria": "Meniu Hospira admin",
+      "menuAria": "Meniu Zalmox admin",
       "menuOpen": "Deschide meniul",
       "menuClose": "Închide meniul",
       "dashboard": "Dashboard",
@@ -4600,7 +4600,7 @@
       "emailConfigured": "Resend activ · domeniu {domain} ({provider})",
       "emailNotConfigured": "RESEND_API_KEY lipsește — emailurile sunt noop",
       "domainsTitle": "Domenii custom",
-      "domainsSummary": "{custom} custom · {subdomains} subdomenii Hospira · {unverified} neverificate · {sslPending} SSL pending"
+      "domainsSummary": "{custom} custom · {subdomains} subdomenii Zalmox · {unverified} neverificate · {sslPending} SSL pending"
     },
     "devTools": {
       "title": "Instrumente platformă",
@@ -4650,7 +4650,7 @@
   "alphaGate": {
     "eyebrow": "Alpha · acces restricționat",
     "title": "Introdu parola de acces",
-    "lead": "Hospira este în testare privată. Dacă ai primit parola de la echipă, o poți introduce mai jos.",
+    "lead": "Zalmox este în testare privată. Dacă ai primit parola de la echipă, o poți introduce mai jos.",
     "passwordLabel": "Parolă alpha",
     "submit": "Intră",
     "checking": "Se verifică…",

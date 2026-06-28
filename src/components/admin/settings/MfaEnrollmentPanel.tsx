@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -78,7 +78,7 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
-        friendlyName: "Hospira Admin",
+        friendlyName: "Zalmox Admin",
       });
 
       if (enrollError || !data?.totp) {

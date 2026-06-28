@@ -3,14 +3,7 @@
  * Driven by html[data-layout-mode] + data-layout-orientation (boot script).
  */
 
-@import "./mobile-layout-pages.css";
-@import "./mobile-layout-premium.css";
-@import "./mobile-layout-admin-pages.css";
-@import "./mobile-layout-remaining.css";
-@import "./mobile-layout-flawless.css";
-@import "./mobile-layout-guards.css";
-@import "./mobile-layout-alignment.css";
-@import "./mobile-layout-compact-fixes.css";
+@import "./mobile.css";
 
 :root {
   --ml-bp-sm: 640px;

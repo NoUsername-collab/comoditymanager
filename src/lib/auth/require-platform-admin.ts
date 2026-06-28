@@ -1,7 +1,7 @@
-/**
- * Platform admin guard — gates Hospira internal panel.
+﻿/**
+ * Platform admin guard — gates Zalmox internal panel.
  *
- * Checks the authenticated user's email against HOSPIRA_ADMIN_EMAILS env var
+ * Checks the authenticated user's email against Zalmox_ADMIN_EMAILS env var
  * (legacy NESTIO_ADMIN_EMAILS still accepted during transition).
  * Requires both valid Supabase auth AND email match.
  */
@@ -12,12 +12,12 @@ import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { isProductionRuntime } from "@/lib/security/production-runtime";
 
-/** Dev fallback when HOSPIRA_ADMIN_EMAILS is unset (never used in production). */
-const FALLBACK_EMAILS = `admin@hospira.ro,${PLATFORM_CONTACT_EMAIL}`;
+/** Dev fallback when Zalmox_ADMIN_EMAILS is unset (never used in production). */
+const FALLBACK_EMAILS = `admin@Zalmox.ro,${PLATFORM_CONTACT_EMAIL}`;
 
 function getPlatformAdminEmails(): string[] {
   const raw =
-    process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
+    process.env.Zalmox_ADMIN_EMAILS?.trim() ||
     process.env.NESTIO_ADMIN_EMAILS?.trim();
 
   if (!raw) {
@@ -82,7 +82,7 @@ export async function getPlatformAdminWithMfaOrNull(): Promise<PlatformAdminSess
   const mfaRedirect = await resolveMfaRedirectPath(supabase, {
     email: session.email,
     memberRole: null,
-    next: "/hospira-admin",
+    next: "/Zalmox-admin",
   });
   if (mfaRedirect) return null;
 
@@ -103,7 +103,7 @@ export async function requirePlatformAdmin(): Promise<PlatformAdminSession> {
   const mfaRedirect = await resolveMfaRedirectPath(supabase, {
     email: session.email,
     memberRole: null,
-    next: "/hospira-admin",
+    next: "/Zalmox-admin",
   });
   if (mfaRedirect) {
     redirect(mfaRedirect);

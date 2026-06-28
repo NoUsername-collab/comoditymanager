@@ -1,4 +1,4 @@
-{
+﻿{
   "admin": {
     "common": {
       "error": "Грешка",
@@ -48,7 +48,7 @@
       "copyAdminLink": "Копирай admin линк",
       "cancelStay": "Отмени престоя",
       "cancelRequest": "Отмени заявката",
-      "welcomeHome": "Добре дошли в Hospira!",
+      "welcomeHome": "Добре дошли в Zalmox!",
       "loadDataError": "Данните не могат да се заредят",
       "homeEyebrow": "Начало · панел рецепция",
       "currentMonthCalendar": "Календар текущ месец →",
@@ -112,8 +112,8 @@
     },
     "pages": {
       "calendar": {
-        "title": "Календар — Hospira",
-        "ganttTitle": "Gantt календар — Hospira",
+        "title": "Календар — Zalmox",
+        "ganttTitle": "Gantt календар — Zalmox",
         "windowGantt": "Gantt",
         "unassignedTitle": "Непотвърдени заявки",
         "unassignedSubtitle": "Без стая в показания период",
@@ -123,15 +123,15 @@
         "heatmapError": "Грешка при зареждане на heatmap."
       },
       "cazari": {
-        "title": "Престои — Hospira",
+        "title": "Престои — Zalmox",
         "confirmedTitle": "Потвърдени престои ({count})",
         "noRoomBadge": "Без стая"
       },
       "statistics": {
-        "title": "Статистика — Hospira"
+        "title": "Статистика — Zalmox"
       },
       "location": {
-        "title": "Администрация локация — Hospira"
+        "title": "Администрация локация — Zalmox"
       }
     }
   },

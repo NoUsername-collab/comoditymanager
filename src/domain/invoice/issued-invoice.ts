@@ -57,20 +57,20 @@ export type IssuedInvoiceDocument = {
 };
 
 const LEGAL_NOTE_RO =
-  "Document fiscal emis din Hospira. Nu înlocuiește integrarea e-Factura ANAF până la activarea modulului dedicat.";
+  "Document fiscal emis din Zalmox. Nu înlocuiește integrarea e-Factura ANAF până la activarea modulului dedicat.";
 const LEGAL_NOTE_EN =
-  "Fiscal document issued from Hospira. Does not replace official fiscal integration until enabled.";
+  "Fiscal document issued from Zalmox. Does not replace official fiscal integration until enabled.";
 const LEGAL_NOTE_BG =
-  "Fiscal document issued from Hospira. Does not replace official fiscal integration for Bulgaria.";
+  "Fiscal document issued from Zalmox. Does not replace official fiscal integration for Bulgaria.";
 
 function buildLegalNote(locale: "ro" | "en" | "bg", country: TenantCountry): string {
   if (locale === "en") return LEGAL_NOTE_EN;
   if (locale === "bg") return LEGAL_NOTE_BG;
   if (country === "MD") {
-    return "Document fiscal emis din Hospira. Nu înlocuiește integrarea cu SFS / casa de marcat.";
+    return "Document fiscal emis din Zalmox. Nu înlocuiește integrarea cu SFS / casa de marcat.";
   }
   if (country === "BG") {
-    return "Document fiscal emis din Hospira. Nu înlocuiește integrarea NRA / e-facturare.";
+    return "Document fiscal emis din Zalmox. Nu înlocuiește integrarea NRA / e-facturare.";
   }
   return LEGAL_NOTE_RO;
 }
@@ -130,11 +130,11 @@ function invoiceKindLineDescription(
 }
 
 const LEGAL_NOTE_PROFORMA_RO =
-  "Document proformă — nu are valoare fiscală până la conversia în factură. Emis din Hospira.";
+  "Document proformă — nu are valoare fiscală până la conversia în factură. Emis din Zalmox.";
 const LEGAL_NOTE_PROFORMA_EN =
-  "Proforma document — not a fiscal invoice until converted. Issued from Hospira.";
+  "Proforma document — not a fiscal invoice until converted. Issued from Zalmox.";
 const LEGAL_NOTE_PROFORMA_BG =
-  "Proforma document — not a fiscal invoice until converted. Issued from Hospira.";
+  "Proforma document — not a fiscal invoice until converted. Issued from Zalmox.";
 
 function buildProformaLegalNote(locale: "ro" | "en" | "bg"): string {
   if (locale === "en") return LEGAL_NOTE_PROFORMA_EN;

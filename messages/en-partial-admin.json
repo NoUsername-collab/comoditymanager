@@ -1,4 +1,4 @@
-{
+﻿{
   "admin": {
     "common": {
       "error": "Error",
@@ -216,7 +216,7 @@
       "reputationExcellent": "Excellent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklisted",
-      "welcomeHome": "Welcome to Hospira!",
+      "welcomeHome": "Welcome to Zalmox!",
       "loadDataError": "Could not load data",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -269,7 +269,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Hospira",
+      "locationAdminTitle": "Location administration — Zalmox",
       "noRoomsConfigured": "No rooms configured yet",
       "achievements": "Achievements",
       "homeEyebrow": "Home · reception panel",
@@ -314,7 +314,7 @@
       "moodFullWeek": "Full week — rooms are moving well. Keep it up!",
       "moodQuietEvening": "Quiet evening — all rooms are free tonight. Take a breath.",
       "moodAllFree": "No rooms occupied tonight — perfect for prep or rest.",
-      "moodDefault": "Everything looks good at reception. Have a great day at Hospira!",
+      "moodDefault": "Everything looks good at reception. Have a great day at Zalmox!",
       "briefingArrivals": "{count, plural, one {# arrival} other {# arrivals}}",
       "briefingDepartures": "{count, plural, one {# departure} other {# departures}}",
       "briefingClean": "{count} to clean",
@@ -420,8 +420,8 @@
     },
     "pages": {
       "calendar": {
-        "title": "Calendar — Hospira",
-        "ganttTitle": "Gantt calendar — Hospira",
+        "title": "Calendar — Zalmox",
+        "ganttTitle": "Gantt calendar — Zalmox",
         "windowGantt": "Gantt",
         "unassignedTitle": "Unconfirmed requests",
         "unassignedSubtitle": "No room in displayed period",
@@ -431,7 +431,7 @@
         "heatmapError": "Error loading heatmap."
       },
       "cazari": {
-        "title": "Stays — Hospira",
+        "title": "Stays — Zalmox",
         "searchFilter": "Search and filter",
         "results": "Results",
         "operational": "Operational",
@@ -443,7 +443,7 @@
         "historyEmpty": "History is empty"
       },
       "statistics": {
-        "title": "Statistics — Hospira",
+        "title": "Statistics — Zalmox",
         "monthCompare": "Month comparison",
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
@@ -456,7 +456,7 @@
         "nights": "Nights"
       },
       "location": {
-        "title": "Location administration — Hospira",
+        "title": "Location administration — Zalmox",
         "operational": "Operational",
         "operationalSubtitle": "{name} · hours and extra beds",
         "displayName": "Display name",
@@ -479,7 +479,7 @@
         "confirmAllocate": "Confirm and assign rooms"
       },
       "roomsNew": {
-        "title": "New room — Hospira",
+        "title": "New room — Zalmox",
         "migrationHint": "for types and"
       },
       "home": {

@@ -1,0 +1,14 @@
+﻿/* Invoice + print — extras din globals.css */
+/* Factură informativă + fallback print din pagina admin */
+@media print {
+  body {
+    background: white;
+  }
+  .admin-hud,
+  .admin-hud-alert,
+  .ml-bottom-nav,
+  .onboarding-bar,
+  .no-print {
+    display: none !important;
+  }
+}

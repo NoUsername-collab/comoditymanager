@@ -9,12 +9,12 @@ export type StaffLoginUsername =
   | typeof ADMIN_LOGIN_USERNAME;
 
 export function getAdminEmail(): string {
-  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@hospira.ro";
+  return process.env.ADMIN_EMAIL?.trim().toLowerCase() ?? "admin@zalmox.app";
 }
 
 export function getOperatorEmail(): string {
   return (
-    process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@hospira.ro"
+    process.env.OPERATOR_EMAIL?.trim().toLowerCase() ?? "operator@zalmox.app"
   );
 }
 

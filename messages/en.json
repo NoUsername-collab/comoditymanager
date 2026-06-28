@@ -1,4 +1,4 @@
-{
+﻿{
   "common": {
     "save": "Save",
     "cancel": "Cancel",
@@ -407,7 +407,7 @@
     "shell": {
       "backHome": "Home",
       "legalEyebrow": "Legal",
-      "brandFallback": "Hospira"
+      "brandFallback": "Zalmox"
     },
     "header": {
       "subtitle": "Guesthouse"
@@ -431,7 +431,7 @@
       "contact": "Contact",
       "contactNotConfigured": "Set up contact in admin",
       "contactEmptyHint": "Add phone or email under Settings → Property identity or Public site.",
-      "contactEmail": "contact@hospira.ro",
+      "contactEmail": "contact@zalmox.app",
       "copyright": "© {year} {name}"
     },
     "home": {
@@ -608,7 +608,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Hospira — <email>contact@hospira.ro</email>"
+      "s4Body": "Zalmox — <email>contact@zalmox.app</email>"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -625,7 +625,7 @@
       "retentionTitle": "Retention",
       "retentionBody": "We keep data as long as needed to manage the booking and meet legal obligations (accounting, tax).",
       "rightsTitle": "Your rights",
-      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@hospira.ro</email>."
+      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@zalmox.app</email>."
     },
     "staffPanel": {
       "badge": "Staff",
@@ -668,11 +668,11 @@
       "paginationPage": "Page {page} / {total}"
     },
     "shell": {
-      "eyebrow": "Hospira · Control",
+      "eyebrow": "Zalmox · Control",
       "title": "Admin dashboard",
       "publicSite": "Public site",
       "settings": "Settings",
-      "brandFallback": "Hospira"
+      "brandFallback": "Zalmox"
     },
     "setupIssues": {
       "mfaNotEnabled": "Two-factor authentication is not active on this account",
@@ -688,17 +688,17 @@
       "iosTitle": "Add to Home Screen",
       "iosStep1": "Tap Share at the bottom of Safari",
       "iosStep2": "Choose \"Add to Home Screen\"",
-      "iosStep3": "Tap Add — Hospira opens without the browser bar",
+      "iosStep3": "Tap Add — Zalmox opens without the browser bar",
       "androidManualTitle": "Install from Chrome",
       "androidManualStep": "Menu ⋮ → Install app or Add to Home Screen",
-      "desktopManualTitle": "Install Hospira in Chrome",
+      "desktopManualTitle": "Install Zalmox in Chrome",
       "desktopStep1": "Open the Chrome menu (⋮) on the right of the address bar",
-      "desktopStep2": "Choose \"Install Hospira…\" or \"Save and share\" → \"Install\"",
+      "desktopStep2": "Choose \"Install Zalmox…\" or \"Save and share\" → \"Install\"",
       "desktopStep3": "Confirm — the app opens in its own window without browser tabs",
       "close": "Got it"
     },
     "login": {
-      "eyebrow": "Hospira",
+      "eyebrow": "Zalmox",
       "title": "Admin",
       "lead": "Staff access only.",
       "backToSite": "← Back to site",
@@ -725,8 +725,8 @@
       "backToPassword": "← Back to password",
       "securityEyebrow": "Security",
       "securityTitle": "Set up two-factor authentication",
-      "securityLead": "Hospira stays your web/PWA app. The authenticator (Google Authenticator, Authy, etc.) only generates the 6-digit login code — on phone or PC.",
-      "webPwaExplain": "You do not install a separate Hospira app: you work in the browser or PWA. The authenticator app is only for codes; it does not replace the admin panel.",
+      "securityLead": "Zalmox stays your web/PWA app. The authenticator (Google Authenticator, Authy, etc.) only generates the 6-digit login code — on phone or PC.",
+      "webPwaExplain": "You do not install a separate Zalmox app: you work in the browser or PWA. The authenticator app is only for codes; it does not replace the admin panel.",
       "mobileSetupTitle": "On phone or installed PWA",
       "mobileSetupStep1": "Install Google Authenticator, Authy, or Microsoft Authenticator.",
       "mobileSetupStep2": "Choose “Enter setup key” — do not scan the QR on the same phone.",
@@ -736,7 +736,7 @@
       "copySecret": "Copy key",
       "copySecretDone": "Copied!",
       "copySecretFailed": "Could not copy the key. Select it manually.",
-      "challengePwaLead": "Open your authenticator app, copy the 6-digit code, and return to Hospira (web or PWA).",
+      "challengePwaLead": "Open your authenticator app, copy the 6-digit code, and return to Zalmox (web or PWA).",
       "mandatoryLead": "Two-factor authentication is required for your account before you can access the admin panel.",
       "optionalLead": "You can optionally enable two-factor authentication for extra security.",
       "securityReminder": "Security: two-factor authentication is not active on this account.",
@@ -766,10 +766,10 @@
     "logout": "Sign out",
     "domains": {
       "pageTitle": "Domains",
-      "pageDescription": "Hospira subdomain and custom domains (all modes).",
+      "pageDescription": "Zalmox subdomain and custom domains (all modes).",
       "backToSettings": "← Back to settings",
-      "hospiraSubdomain": "Hospira subdomain (default, always on)",
-      "hospiraSubdomainHint": "Public site, booking calendar, and admin.",
+      "ZalmoxSubdomain": "Zalmox subdomain (default, always on)",
+      "ZalmoxSubdomainHint": "Public site, booking calendar, and admin.",
       "openSite": "Open site",
       "upgradeForCustom": "Custom domain: available from Professional plan.",
       "addCustomTitle": "Add custom domain",
@@ -782,16 +782,16 @@
       "markVerified": "Mark verified (after DNS + Vercel)",
       "remove": "Remove",
       "kinds": {
-        "hospira_subdomain": "Hospira subdomain (full app)",
+        "Zalmox_subdomain": "Zalmox subdomain (full app)",
         "custom_full": "Custom — site + admin + bookings",
-        "custom_public": "Custom — site + bookings; admin on Hospira",
+        "custom_public": "Custom — site + bookings; admin on Zalmox",
         "custom_brand": "Custom — homepage only; rest on subdomain"
       },
       "errors": {
         "admin_only": "Only admins can manage domains.",
         "invalid_domain": "Invalid domain.",
         "plan_not_allowed": "Your plan does not include this mode.",
-        "reserved_domain": "You cannot use the Hospira platform domain.",
+        "reserved_domain": "You cannot use the Zalmox platform domain.",
         "domain_taken": "Domain already in use.",
         "error": "Error. Try again."
       }
@@ -854,7 +854,7 @@
     },
     "pages": {
       "bookings": {
-        "title": "New requests — Hospira",
+        "title": "New requests — Zalmox",
         "description": "Confirm availability and assign rooms.",
         "windowTitle": "New requests ({count})",
         "showingPartial": "Showing {shown} of {total} requests",
@@ -869,7 +869,7 @@
         "emptyAction": "Open public calendar"
       },
       "rooms": {
-        "title": "Rooms — Hospira",
+        "title": "Rooms — Zalmox",
         "description": "Compact day grid for room status.",
         "addRoom": "+ Add room",
         "inactiveRooms": "Inactive rooms",
@@ -877,7 +877,7 @@
         "genericError": "Error"
       },
       "settings": {
-        "title": "Settings — Hospira",
+        "title": "Settings — Zalmox",
         "navAria": "Settings navigation",
         "navTitle": "Settings",
         "navGroupIdentity": "Identity",
@@ -978,7 +978,7 @@
         "navEmail": "Email",
         "navEmailDesc": "Email notifications, Reply-to, footer",
         "navDomains": "Domains",
-        "navDomainsDesc": "Hospira subdomain and custom domains",
+        "navDomainsDesc": "Zalmox subdomain and custom domains",
         "navTeam": "Team",
         "navTeamDesc": "Members, roles, invitations",
         "navTeamPermissions": "Team permissions",
@@ -1347,7 +1347,7 @@
         "staffPanelInfo": "Invite operators and admins, change roles, deactivate accounts.",
         "openStaffManagement": "Manage team",
         "domainsTitle": "Domains & site",
-        "domainsSubtitle": "Hospira subdomain and custom domain",
+        "domainsSubtitle": "Zalmox subdomain and custom domain",
         "domainsPanelInfo": "Choose how guests see your property online.",
         "openDomainsManagement": "Manage domains",
         "publicSiteTitle": "Public site",
@@ -1375,7 +1375,7 @@
         }
       },
       "publicSite": {
-        "title": "Public site — Hospira",
+        "title": "Public site — Zalmox",
         "description": "Template, theme, hero content, sections and contact for visitors.",
         "backSettings": "Back to settings",
         "previewSite": "Preview site",
@@ -1525,7 +1525,7 @@
         }
       },
       "guests": {
-        "title": "Guests — Hospira",
+        "title": "Guests — Zalmox",
         "description": "Guest profiles and stay history.",
         "searchTitle": "Find guest",
         "searchHint": "List is optimized for quick search.",
@@ -1562,8 +1562,8 @@
       },
       "calendar": {
         "genericError": "Error",
-        "title": "Calendar — Hospira",
-        "ganttTitle": "Gantt calendar — Hospira",
+        "title": "Calendar — Zalmox",
+        "ganttTitle": "Gantt calendar — Zalmox",
         "windowGantt": "Gantt",
         "unassignedTitle": "Unconfirmed requests",
         "unassignedSubtitle": "No room in displayed period",
@@ -1574,7 +1574,7 @@
         "buildingFilterSuffix": " · building filter"
       },
       "cazari": {
-        "title": "Stays — Hospira",
+        "title": "Stays — Zalmox",
         "searchFilter": "Search and filter",
         "viewFiltersAria": "Stay list filter",
         "filterAnulate": "Cancelled",
@@ -1675,7 +1675,7 @@
         "reacceptedBanner": "Stay accepted again — it now appears under confirmed stays."
       },
       "statistics": {
-        "title": "Statistics — Hospira",
+        "title": "Statistics — Zalmox",
         "monthCompare": "Month comparison",
         "continuous": "Continuous registration",
         "guestNights": "Guest nights",
@@ -1707,7 +1707,7 @@
         "monthCol": "Month",
         "monthlyKpis": "Monthly ADR / RevPAR — {year}",
         "exportTitle": "Accounting export",
-        "exportDescription": "CSV for Saga C or ContaPlus import (map columns on import). Includes invoices issued from Hospira.",
+        "exportDescription": "CSV for Saga C or ContaPlus import (map columns on import). Includes invoices issued from Zalmox.",
         "exportMonth": "Month",
         "exportMonthAll": "Full year",
         "exportFormat": "Format",
@@ -1723,7 +1723,7 @@
         "exportDownload": "Download CSV"
       },
       "location": {
-        "title": "Location administration — Hospira",
+        "title": "Location administration — Zalmox",
         "operational": "Operational",
         "operationalSubtitle": "{name} · hours and extra beds",
         "displayName": "Display name",
@@ -1809,7 +1809,7 @@
         "reacceptTitle": "Accept again (room available)",
         "reacceptHint": "This booking was cancelled. Check availability and assign rooms — if dates are taken, pick other rooms or change dates.",
         "reacceptSubmit": "Confirm stay",
-        "title": "Booking — Hospira",
+        "title": "Booking — Zalmox",
         "guestProfile": "Guest profile",
         "persons": "Guests",
         "contact": "Contact",
@@ -1838,7 +1838,7 @@
         "guestFeedback": "Guest feedback"
       },
       "roomsNew": {
-        "title": "New room — Hospira",
+        "title": "New room — Zalmox",
         "migrationHint": "for types and",
         "catalogHint": "Run <code>015_room_catalog.sql</code> in Supabase SQL Editor for types and",
         "bulkCountError": "You can create between 1 and 50 rooms at once.",
@@ -1849,9 +1849,9 @@
         "loadError": "Could not load dashboard data"
       },
       "buildings": {
-        "newTitle": "New building — Hospira",
+        "newTitle": "New building — Zalmox",
         "newHint": "You can add <strong>new rooms</strong> after creation. Color appears on the calendar.",
-        "listTitle": "Buildings — Hospira",
+        "listTitle": "Buildings — Zalmox",
         "listDescription": "Pick a date — see free / occupied rooms per building and in the grid.",
         "addBuilding": "+ Add building",
         "unknownError": "Unknown error",
@@ -1859,7 +1859,7 @@
         "noBuildings": "No buildings yet — add the first one with the button above."
       },
       "disponibilitate": {
-        "title": "Availability — Hospira",
+        "title": "Availability — Zalmox",
         "description": "Heat map, KPIs, free weekends, building filter, Shift+click range, live updates."
       },
       "invoice": {
@@ -1880,7 +1880,7 @@
         "descriptionSuffix": "Color appears in calendar."
       },
       "settingsLocation": {
-        "title": "Location administration — Hospira",
+        "title": "Location administration — Zalmox",
         "description": "Admin hub for full setup: location structure, rooms, modular catalog and staff accounts.",
         "backToSettings": "← Back to settings",
         "unlockedForTwoHours": "Location administration unlocked for 2 hours.",
@@ -2232,7 +2232,7 @@
       "reputationExcellent": "Excellent",
       "reputationWatch": "Watchlist",
       "reputationBlacklist": "Blacklisted",
-      "welcomeHome": "Welcome to Hospira!",
+      "welcomeHome": "Welcome to Zalmox!",
       "loadDataError": "Could not load data",
       "invoice": "Invoice",
       "informalInvoice": "Informal invoice",
@@ -2299,7 +2299,7 @@
       "catalogTitle": "Room catalog",
       "catalogSubtitle": "Room types, options (AC, fridge…) — policies per building",
       "staffPasswordSubtitle": "Change Admin or Operator password",
-      "locationAdminTitle": "Location administration — Hospira",
+      "locationAdminTitle": "Location administration — Zalmox",
       "noRoomsConfigured": "No rooms configured yet",
       "achievements": "Achievements",
       "homeEyebrow": "Home · reception panel",
@@ -2356,9 +2356,9 @@
       "addFloor": "Add floor",
       "floorPlaceholder": "Ground floor / Floor 1",
       "newBuildingHint": "New rooms can be added after creation. Color appears on the calendar.",
-      "buildingsTitle": "Buildings — Hospira",
-      "availabilityTitle": "Availability — Hospira",
-      "newRoomTitle": "New room — Hospira",
+      "buildingsTitle": "Buildings — Zalmox",
+      "availabilityTitle": "Availability — Zalmox",
+      "newRoomTitle": "New room — Zalmox",
       "catalogSqlHint": "for types and options in Supabase SQL Editor",
       "checkInHour": "Check-in (time)",
       "checkOutHour": "Check-out (time)",
@@ -2462,7 +2462,7 @@
       "floors": "Floors",
       "tenantMemberRequired": "This account is not a member of this property. Use the correct subdomain or ask the owner for access.",
       "tenantScopeMismatch": "The tenant in the URL does not match loaded data. Reload the page or sign in on the property subdomain.",
-      "tenantHostRequired": "Open the app on your property subdomain (e.g. property.hospira.ro), not the generic site URL.",
+      "tenantHostRequired": "Open the app on your property subdomain (e.g. property.Zalmox.ro), not the generic site URL.",
       "loginRequired": "You need to sign in.",
       "roleForbidden": "You do not have permission for this action.",
       "attention": "Attention",
@@ -2572,7 +2572,7 @@
       "tight": "Tight",
       "freeRooms": "Free rooms",
       "clickForDayCard": "Click = full day card",
-      "clipboardPrefix": "Hospira",
+      "clipboardPrefix": "Zalmox",
       "kpiRelaxedLabel": "Days with >=3 free rooms",
       "kpiFullLabel": "Full days",
       "kpiMinLabel": "Minimum free",
@@ -3029,7 +3029,7 @@
       "moodFullWeek": "Full week — rooms are moving well. Keep it up!",
       "moodQuietEvening": "Quiet evening — all rooms are free tonight. Take a breath.",
       "moodAllFree": "No rooms occupied tonight — perfect for prep or rest.",
-      "moodDefault": "Everything looks good at reception. Have a great day at Hospira!",
+      "moodDefault": "Everything looks good at reception. Have a great day at Zalmox!",
       "briefingArrivals": "{count, plural, one {# arrival} other {# arrivals}}",
       "briefingDepartures": "{count, plural, one {# departure} other {# departures}}",
       "briefingClean": "{count} to clean",
@@ -4205,7 +4205,7 @@
     "genericError": "We could not create your account. Please try again.",
     "errorPlanConfig": "Database plan configuration issue. Contact your administrator.",
     "errorDatabase": "Could not create the guesthouse in the database. Try again or contact support.",
-    "errorCatalogMigration": "We couldn't finish setting up your property. Please contact Hospira support.",
+    "errorCatalogMigration": "We couldn't finish setting up your property. Please contact Zalmox support.",
     "errorServerConfig": "The service is temporarily unavailable. Please try again or contact support.",
     "rateLimited": "Too many attempts. Please wait a few minutes.",
     "pensionNameRequired": "Guesthouse name is required (min 2 characters).",
@@ -4218,34 +4218,34 @@
     "emailStaleOwnerRow": "A property exists for this email without a login account. Sign in or contact support."
   },
   "landing": {
-    "metaTitle": "Hospira — PMS software for guesthouses",
+    "metaTitle": "Zalmox — PMS software for guesthouses",
     "metaDescription": "Gantt calendar, stays, check-in and public site for small guesthouses in Romania, Moldova and Bulgaria. Start free with zero commission on direct bookings.",
     "heroBadge": "PMS for guesthouses · RO · MD · BG",
     "heroTitle": "Run your guesthouse from your phone — no notebook, no Excel",
-    "heroSubtitle": "Hospira brings Gantt calendar, stays, check-in and availability into one platform. Built for guesthouse owners in Romania, Moldova and Bulgaria.",
+    "heroSubtitle": "Zalmox brings Gantt calendar, stays, check-in and availability into one platform. Built for guesthouse owners in Romania, Moldova and Bulgaria.",
     "heroCta": "Start free",
     "heroCtaDemo": "Book a demo",
     "heroCtaLogin": "Log in",
     "heroCtaSecondary": "See the tools",
     "heroNote": "No credit card · 3 rooms free, forever.",
-    "demoEmailSubject": "Hospira demo — guesthouse",
-    "statsAria": "Hospira highlights",
+    "demoEmailSubject": "Zalmox demo — guesthouse",
+    "statsAria": "Zalmox highlights",
     "heroSocialQuote": "\"Replaces the notebook and Excel with a calendar that actually works.\"",
     "heroSocialCaption": "Small guesthouses in Romania, Moldova and Bulgaria",
     "problemTitle": "Sound familiar?",
-    "withoutHospira": "Without Hospira",
+    "withoutZalmox": "Without Zalmox",
     "problem1": "Bookings on paper or in Excel",
     "problem2": "Double bookings and channel confusion",
     "problem3": "Guests call constantly to ask about availability",
     "problem4": "15–18% commission to Booking.com on every reservation",
-    "withHospira": "With Hospira",
+    "withZalmox": "With Zalmox",
     "solution1": "Digital calendar with every booking in view",
     "solution2": "Impossible to double-book — database-level protection",
     "solution3": "Guests book themselves on your guesthouse website",
     "solution4": "Direct bookings = 0% commission",
     "toolsTitle": "Your daily operating tools",
     "toolsLead": "Everything reception uses every day — calendar, stays, check-in and documents — in a clear, mobile-first interface.",
-    "toolsAria": "Hospira tools",
+    "toolsAria": "Zalmox tools",
     "tools": {
       "gantt": {
         "title": "Gantt calendar",
@@ -4289,7 +4289,7 @@
     "step3Title": "Operate daily",
     "step3Desc": "Gantt calendar, stays, check-in and availability — from phone or desktop.",
     "statSetup": "Account setup",
-    "trustStripAria": "Key Hospira benefits",
+    "trustStripAria": "Key Zalmox benefits",
     "trustLead": "Small guesthouses in Romania, Moldova and Bulgaria — full control, zero commission on direct bookings.",
     "trust1": "0% commission on direct bookings",
     "trust2": "EU data · GDPR-ready",
@@ -4345,7 +4345,7 @@
     "faq2Q": "When should I move to Essential (19 EUR)?",
     "faq2A": "When you need Gantt, email notifications, visual themes, or up to 10 rooms and 3 team members.",
     "faq3Q": "What does Professional (49 EUR) add?",
-    "faq3A": "Up to 30 rooms, unlimited team, custom domain, no Hospira branding, plus iCal and advanced reports.",
+    "faq3A": "Up to 30 rooms, unlimited team, custom domain, no Zalmox branding, plus iCal and advanced reports.",
     "faq4Q": "Who is Business (99 EUR) for?",
     "faq4A": "Larger properties or small chains: unlimited rooms, up to 5 properties, invoicing, WhatsApp, API and dedicated onboarding.",
     "finalTitle": "Start free today",
@@ -4382,7 +4382,7 @@
         "roomLine": "Up to {count} rooms",
         "f1": "Everything in Essential",
         "f2": "Unlimited team",
-        "f3": "Custom domain + no Hospira branding",
+        "f3": "Custom domain + no Zalmox branding",
         "f4": "iCal sync (Booking, Airbnb)",
         "f5": "Advanced reports",
         "f6": "Priority support",
@@ -4413,7 +4413,7 @@
         "rooms": "Rooms",
         "team": "Team",
         "gantt": "Gantt & heatmap",
-        "branding": "Hospira branding",
+        "branding": "Zalmox branding",
         "modules": "Included modules"
       },
       "rooms": {
@@ -4477,9 +4477,9 @@
       "rights": "All rights reserved."
     }
   },
-  "hospiraAdmin": {
+  "ZalmoxAdmin": {
     "nav": {
-      "menuAria": "Hospira admin menu",
+      "menuAria": "Zalmox admin menu",
       "menuOpen": "Open menu",
       "menuClose": "Close menu",
       "dashboard": "Dashboard",
@@ -4617,7 +4617,7 @@
       "emailConfigured": "Resend active · domain {domain} ({provider})",
       "emailNotConfigured": "RESEND_API_KEY missing — emails are noop",
       "domainsTitle": "Custom domains",
-      "domainsSummary": "{custom} custom · {subdomains} Hospira subdomains · {unverified} unverified · {sslPending} SSL pending"
+      "domainsSummary": "{custom} custom · {subdomains} Zalmox subdomains · {unverified} unverified · {sslPending} SSL pending"
     },
     "devTools": {
       "title": "Platform tools",
@@ -4667,7 +4667,7 @@
   "alphaGate": {
     "eyebrow": "Alpha · restricted access",
     "title": "Enter access password",
-    "lead": "Hospira is in private testing. If you received the password from the team, enter it below.",
+    "lead": "Zalmox is in private testing. If you received the password from the team, enter it below.",
     "passwordLabel": "Alpha password",
     "submit": "Enter",
     "checking": "Checking…",

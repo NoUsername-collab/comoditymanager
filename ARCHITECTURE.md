@@ -1,4 +1,4 @@
-# CasaEmil / Hospira — Architecture & Module Boundaries
+﻿# Zalmox / Zalmox — Architecture & Module Boundaries
 
 This document defines **allowed import directions** and where new code should live.
 Goal: thin routes, testable domain logic, no UI↔route spaghetti.
@@ -8,7 +8,7 @@ Goal: thin routes, testable domain logic, no UI↔route spaghetti.
 ```
 app/          → routes, layouts, thin re-exports only
 features/     → vertical slices (guest-app, public-site, settings, …)
-components/   → shared UI (admin, hospira-admin, public, …)
+components/   → shared UI (admin, Zalmox-admin, public, …)
 services/     → data access, Supabase, caching, orchestration
 domain/       → pure types, validation, business rules (no I/O)
 lib/          → cross-cutting utilities (auth, env, tenant, security)
@@ -33,12 +33,12 @@ Route files under `app/` re-export them for Next.js colocation — components im
 | Area | Route prefix | Code home |
 |------|--------------|-----------|
 | Tenant admin | `/admin/*` | `components/admin/`, `features/settings/` |
-| Platform admin | `/hospira-admin/*` | `components/hospira-admin/`, `lib/hospira-admin/` |
+| Platform admin | `/Zalmox-admin/*` | `components/Zalmox-admin/`, `lib/Zalmox-admin/` |
 | Guest app | `/stay/[code]/*` | `features/guest-app/`, `services/guest-app/` |
 | Public site | `/`, `/calendar`, … | `features/public-site/`, `services/public-site/` |
 | Platform landing | `/landing`, signup | `components/platform/`, `(platform)/` routes |
 
-Do not mix tenant UI into `hospira-admin/` or platform-only logic into tenant `admin/`.
+Do not mix tenant UI into `Zalmox-admin/` or platform-only logic into tenant `admin/`.
 
 ## Shared types (decoupling pattern)
 
@@ -65,7 +65,7 @@ When adding a new vertical, prefer `features/<name>/` over growing `components/`
 
 - **Secrets / env vars**: only `lib/env/` (server, edge, client split)
 - **Branding / platform domain**: env + `lib/tenant/host.ts` — not hardcoded in components
-- **Legacy `nestio.ro`**: parsed in `lib/tenant/host.ts` for backward compatibility; product name is Hospira
+- **Legacy `nestio.ro`**: parsed in `lib/tenant/host.ts` for backward compatibility; product name is Zalmox
 
 ## Barrels (`index.ts`)
 

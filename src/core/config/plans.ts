@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ╔══════════════════════════════════════════════════════════════════╗
  * ║  NESTIO — Plan & Feature Gating                               ║
  * ║                                                                ║
@@ -310,7 +310,7 @@ export const MODULE_CATALOG: Record<ModuleId, ModuleInfo> = {
     label: "White Label",
     icon: "palette",
     pricePerMonth: 15,
-    description: "Elimina branding-ul Hospira",
+    description: "Elimina branding-ul Zalmox",
   },
   api_access: {
     id: "api_access",
