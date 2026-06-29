@@ -179,7 +179,7 @@ export default async function LandingPage() {
               <li>Check-in online înainte de sosire</li>
               <li>Parolă Wi-Fi cu un tap</li>
               <li>Ghid local și facilități</li>
-              <li>Notificări automate (WhatsApp, Email)</li>
+              <li>Notificări email automate incluse</li>
             </ul>
             <Link href="/signup" className="lp-btn lp-btn--primary">
               Încearcă gratuit

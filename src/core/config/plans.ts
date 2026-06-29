@@ -134,8 +134,8 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
       "guest_app",
       "ical_sync",
       "invoicing",
-      "whatsapp",
       "advanced_reports",
+      // whatsapp = add-on only (Meta API has per-message cost passed to client)
     ],
     showBranding: false,
     maxProperties: 3,
@@ -153,11 +153,11 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
       "guest_app",
       "ical_sync",
       "invoicing",
-      "whatsapp",
       "advanced_reports",
       "multi_property",
       "white_label",
       "api_access",
+      // whatsapp = add-on only (Meta API has per-message cost passed to client)
     ],
     showBranding: false,
     maxProperties: 10,
