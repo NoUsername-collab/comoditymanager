@@ -24,7 +24,7 @@ export default async function PreturiPage() {
                   <span className="landing-stat__label">{t("statFree")}</span>
                 </div>
                 <div className="landing-stat">
-                  <span className="landing-stat__value">3</span>
+                  <span className="landing-stat__value">5</span>
                   <span className="landing-stat__label">{t("statRooms")}</span>
                 </div>
                 <div className="landing-stat">

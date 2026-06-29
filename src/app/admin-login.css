@@ -3,7 +3,68 @@
 .admin-login-page {
   color: #18181b;
   color-scheme: light;
-  background: #f4f4f5;
+  background: linear-gradient(135deg, #f0f0ff 0%, #f4f4f5 50%, #eff6ff 100%);
+  min-height: 100dvh;
+}
+
+.admin-login-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.admin-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-login-brand__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.admin-login-brand__name {
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #18181b;
+}
+
+.admin-login-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4f46e5;
+  margin: 0 0 0.35rem;
+}
+
+.admin-login-title {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #09090b;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.admin-login-lead {
+  font-size: 0.875rem;
+  color: #52525b;
+  margin: 0;
+}
+
+.admin-login-success-banner {
+  margin-top: 1rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 1px solid #a7f3d0;
+  background: #ecfdf5;
+  font-size: 0.875rem;
+  color: #065f46;
 }
 
 /* Full-viewport loading — transparent, spinner only (no white flash) */
@@ -48,14 +109,7 @@
 
 .admin-login-card {
   color: #18181b;
-}
-
-.admin-login-card h1 {
-  color: #09090b;
-}
-
-.admin-login-card .admin-login-lead {
-  color: #52525b;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 10px 30px -5px rgba(0,0,0,0.1);
 }
 
 .admin-login-form label {
@@ -108,7 +162,7 @@
   letter-spacing: 0.02em;
   color: #ffffff;
   cursor: pointer;
-  background: #2563eb;
+  background: #4f46e5;
   box-shadow: none;
   transition:
     background-color 0.16s ease,
@@ -117,7 +171,7 @@
 
 .admin-login-submit:hover:not(:disabled) {
   filter: brightness(1.06);
-  background: #1d4ed8;
+  background: #4338ca;
 }
 
 .admin-login-submit:active:not(:disabled) {
@@ -153,27 +207,27 @@
   animation-duration: 0.75s;
 }
 
-.admin-login-card .admin-login-back {
+.admin-login-back {
   display: block;
-  margin-top: 1.5rem;
   text-align: center;
-  font-size: 0.75rem;
-  color: #52525b;
+  font-size: 0.8125rem;
+  color: #71717a;
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
-.admin-login-card .admin-login-back:hover {
+.admin-login-back:hover {
   color: #18181b;
   text-decoration: underline;
 }
 
-.admin-login-card .admin-login-back:active {
+.admin-login-back:active {
   color: #18181b;
   transform: scale(0.97);
   filter: brightness(0.92);
   transition-duration: 0.06s;
 }
+
 
 @media (prefers-reduced-motion: reduce) {
   .admin-login-submit {

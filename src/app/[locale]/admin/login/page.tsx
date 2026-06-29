@@ -32,24 +32,28 @@ export default async function AdminLoginPage({
 
   return (
     <main className="admin-login-page ml-content flex min-h-dvh items-center justify-center p-4">
-      <div className="admin-login-card w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-blue-700">
-          {t("eyebrow")}
-        </p>
-        <h1 className="mt-1 text-xl font-semibold text-zinc-900">{t("title")}</h1>
-        <p className="admin-login-lead mt-2 text-sm">{t("lead")}</p>
-        {signupSuccess && (
-          <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-            {signupSuccess}
-          </p>
-        )}
-        <AdminLoginForm
-          next={next}
-          initialError={authError}
-          initialUsername={initialUsername}
-        />
+      <div className="admin-login-wrap">
+        <div className="admin-login-brand">
+          <span className="admin-login-brand__icon" aria-hidden>⚡</span>
+          <span className="admin-login-brand__name">Zalmox</span>
+        </div>
+        <div className="admin-login-card w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-6 shadow-lg">
+          <p className="admin-login-eyebrow">{t("eyebrow")}</p>
+          <h1 className="admin-login-title">{t("title")}</h1>
+          <p className="admin-login-lead">{t("lead")}</p>
+          {signupSuccess && (
+            <p className="admin-login-success-banner">
+              {signupSuccess}
+            </p>
+          )}
+          <AdminLoginForm
+            next={next}
+            initialError={authError}
+            initialUsername={initialUsername}
+          />
+        </div>
         <Link href="/" className="admin-login-back">
-          {t("backToSite")}
+          ← {t("backToSite")}
         </Link>
       </div>
     </main>

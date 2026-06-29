@@ -1162,3 +1162,191 @@
   line-height: 1.65;
   color: var(--site-muted, #b7af9a);
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   🌈  CURCUBEU — Rainbow Theme
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Hero — rainbow multi-color glow */
+.landing-hero__glow {
+  background: conic-gradient(
+    from 180deg at 50% 60%,
+    rgba(255, 80, 160, 0.22) 0deg,
+    rgba(255, 160, 60, 0.18) 60deg,
+    rgba(80, 220, 140, 0.16) 120deg,
+    rgba(60, 160, 255, 0.20) 180deg,
+    rgba(160, 80, 255, 0.22) 240deg,
+    rgba(255, 80, 200, 0.20) 300deg,
+    rgba(255, 80, 160, 0.22) 360deg
+  );
+  filter: blur(72px);
+  opacity: 0.9;
+  width: 100vw;
+  max-width: 800px;
+  height: 60vw;
+  max-height: 520px;
+}
+
+/* Hero title — gradient rainbow text */
+.landing-hero__title {
+  background: linear-gradient(
+    120deg,
+    #ff6ee7 0%,
+    #ff9b5e 22%,
+    #ffe566 40%,
+    #5effa0 55%,
+    #5eb8ff 72%,
+    #b86eff 88%,
+    #ff6ee7 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background-size: 200% auto;
+  animation: rainbow-flow 6s linear infinite;
+}
+
+@keyframes rainbow-flow {
+  0%   { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Hero badge — gradient border + text */
+.landing-hero__badge {
+  background: linear-gradient(120deg, #ff6ee7, #ff9b5e, #ffe566, #5effa0, #5eb8ff, #b86eff) border-box;
+  border: 1.5px solid transparent;
+  color: #f0d0ff;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.landing-hero__badge::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 9999px;
+  background: linear-gradient(120deg, #ff6ee7, #ff9b5e, #ffe566, #5effa0, #5eb8ff, #b86eff);
+  z-index: -1;
+}
+
+/* Primary CTA — gradient button */
+.landing-cta--primary {
+  background: linear-gradient(135deg, #b86eff 0%, #7c5cfc 40%, #5eb8ff 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 20px rgba(124, 92, 252, 0.4);
+}
+
+.landing-cta--primary:hover {
+  opacity: 1;
+  filter: brightness(1.12);
+  box-shadow: 0 6px 28px rgba(124, 92, 252, 0.55);
+  transform: translateY(-2px);
+}
+
+/* Section titles — subtle gradient */
+.landing-section__title {
+  background: linear-gradient(120deg, #e8c0ff 0%, #a8d8ff 50%, #c0ffe8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Pricing cards — each plan gets its own rainbow color */
+
+/* Free — emerald */
+.landing-pricing .landing-price-card:nth-child(1) .landing-price-card__tier {
+  color: #4ade80;
+}
+.landing-pricing .landing-price-card:nth-child(1) .landing-price-card__period {
+  color: #4ade80;
+}
+.landing-pricing .landing-price-card:nth-child(1) .landing-price-card__features li::before {
+  color: #4ade80;
+}
+
+/* Essential — sky */
+.landing-pricing .landing-price-card:nth-child(2) .landing-price-card__tier {
+  color: #38bdf8;
+}
+.landing-pricing .landing-price-card:nth-child(2) .landing-price-card__period {
+  color: #38bdf8;
+}
+
+/* Professional (featured) — violet gradient border */
+.landing-price-card--featured {
+  border-image: linear-gradient(135deg, #b86eff, #7c5cfc, #5eb8ff) 1;
+  border-image-slice: 1;
+  box-shadow: 0 0 0 1px rgba(124, 92, 252, 0.3),
+              0 16px 48px rgba(124, 92, 252, 0.18),
+              0 0 60px rgba(94, 184, 255, 0.08);
+}
+
+.landing-price-card--featured .landing-price-card__tier {
+  background: linear-gradient(120deg, #b86eff, #5eb8ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.landing-price-card__badge {
+  background: linear-gradient(135deg, #b86eff, #7c5cfc, #5eb8ff);
+  color: #ffffff;
+  border: none;
+}
+
+/* Business — amber/orange */
+.landing-pricing .landing-price-card:nth-child(4) .landing-price-card__tier {
+  color: #fb923c;
+}
+.landing-pricing .landing-price-card:nth-child(4) .landing-price-card__period {
+  color: #fb923c;
+}
+
+/* Stats — colorful values */
+.landing-stat__value {
+  background: linear-gradient(120deg, #ff6ee7, #b86eff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Features checkmark bullets — colorful */
+.landing-price-card__features li::before {
+  content: '✦';
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 0.65rem;
+  vertical-align: middle;
+  color: var(--site-accent, #d6b55a);
+}
+
+/* FAQ hover glow */
+.landing-faq__item:hover {
+  border-color: rgba(124, 92, 252, 0.4);
+  box-shadow: 0 0 16px rgba(124, 92, 252, 0.08);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Final CTA section — rainbow gradient background */
+.landing-final-cta {
+  background: linear-gradient(
+    135deg,
+    rgba(180, 80, 255, 0.12) 0%,
+    rgba(80, 120, 255, 0.10) 40%,
+    rgba(80, 220, 180, 0.10) 100%
+  );
+  border: 1px solid rgba(124, 92, 252, 0.2);
+}
+
+/* Reduced motion — disable animation */
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero__title {
+    animation: none;
+    background-position: 0% center;
+  }
+}

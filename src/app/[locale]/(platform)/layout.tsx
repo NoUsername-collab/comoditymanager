@@ -4,6 +4,7 @@ import { MobileShell } from "@/layout/components/MobileShell";
 import type { CSSProperties } from "react";
 import "@/app/signup.css";
 import "@/app/landing.css";
+import "@/app/landing-premium.css";
 import "@/app/platform.css";
 import "@/app/platform-split.css";
 

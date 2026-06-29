@@ -21,6 +21,7 @@ export function SignupForm() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState<SignupSuccess | null>(null);
   const redirectTimer = useRef<number | null>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   function validateField(name: string, value: string): string | null {
     switch (name) {
@@ -35,6 +36,11 @@ export function SignupForm() {
       case "password":
         if (value.length < 8) return t("passwordMinLength");
         return null;
+      case "confirm_password": {
+        const pw = passwordRef.current?.value ?? "";
+        if (value !== pw) return t("passwordMismatch");
+        return null;
+      }
       default:
         return null;
     }
@@ -90,6 +96,14 @@ export function SignupForm() {
         formData.set("locale", locale);
 
         try {
+          const pw = formData.get("password") as string;
+          const cpw = formData.get("confirm_password") as string;
+          if (pw !== cpw) {
+            setFieldErrors({ confirm_password: t("passwordMismatch") });
+            setPending(false);
+            return;
+          }
+
           const result = await signupAction(formData);
           if (result.ok) {
             setSuccess({
@@ -167,6 +181,7 @@ export function SignupForm() {
           minLength={8}
           placeholder={t("passwordPlaceholder")}
           autoComplete="new-password"
+          ref={passwordRef}
           onBlur={handleBlur}
           className={`signup-form__input ${errorField === "password" || fieldErrors.password ? "signup-form__input--error" : ""}`}
         />
@@ -174,6 +189,26 @@ export function SignupForm() {
           <p className="signup-form__field-error">{fieldErrors.password}</p>
         ) : (
           <p className="signup-form__hint">{t("passwordHint")}</p>
+        )}
+      </div>
+
+      <div className="signup-form__field">
+        <label htmlFor="signup-confirm-password" className="signup-form__label">
+          {t("confirmPasswordLabel")}
+        </label>
+        <input
+          id="signup-confirm-password"
+          name="confirm_password"
+          type="password"
+          required
+          minLength={8}
+          placeholder={t("confirmPasswordPlaceholder")}
+          autoComplete="new-password"
+          onBlur={handleBlur}
+          className={`signup-form__input ${fieldErrors.confirm_password ? "signup-form__input--error" : ""}`}
+        />
+        {fieldErrors.confirm_password && (
+          <p className="signup-form__field-error">{fieldErrors.confirm_password}</p>
         )}
       </div>
 
