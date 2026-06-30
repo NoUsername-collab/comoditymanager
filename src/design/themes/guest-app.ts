@@ -19,8 +19,9 @@ export function parseGuestAppThemeSource(
   if (typeof raw !== "string" || !raw.trim()) return undefined;
   const migrated = migrateDesignThemeId(raw);
   if (migrated === raw || raw === "default") return migrated;
-  if (raw === "noir" || raw === "alpine" || raw === "mediterranean") {
-    return raw;
+  if (raw === "noir" || raw === "alpine" || raw === "mediterranean" ||
+      raw === "pearl" || raw === "slate" || raw === "forest") {
+    return raw as DesignThemeId;
   }
   return undefined;
 }

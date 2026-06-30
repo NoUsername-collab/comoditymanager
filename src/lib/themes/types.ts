@@ -21,4 +21,7 @@ export const ALL_THEME_IDS = [
   "noir",
   "alpine",
   "mediterranean",
+  "pearl",
+  "slate",
+  "forest",
 ] as const satisfies readonly ThemeId[];

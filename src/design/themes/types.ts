@@ -1,5 +1,5 @@
 /** Canonical design families — public site + admin derive from these. */
-export type DesignThemeId = "noir" | "alpine" | "mediterranean";
+export type DesignThemeId = "noir" | "alpine" | "mediterranean" | "pearl" | "slate" | "forest";
 
 export type DesignThemeMode = "day" | "night";
 

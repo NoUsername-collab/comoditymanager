@@ -28,7 +28,7 @@ function fromAdminPrimitives(
 
 /** Admin palettes derived from the same 3 design families as the public site. */
 export const CATALOG_PALETTES: AdminPaletteDefinition[] = (
-  ["noir", "alpine", "mediterranean"] as const
+  ["noir", "alpine", "mediterranean", "pearl", "slate", "forest"] as const
 ).map((id) => {
   const def = getDesignTheme(id);
   return {

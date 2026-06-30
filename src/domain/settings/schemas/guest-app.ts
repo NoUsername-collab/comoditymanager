@@ -28,6 +28,9 @@ const guestAppThemeSourceSchema = z.enum([
   "noir",
   "alpine",
   "mediterranean",
+  "pearl",
+  "slate",
+  "forest",
 ]);
 
 const guestAppFeatureDefSchema = z

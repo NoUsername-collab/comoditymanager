@@ -1439,6 +1439,18 @@
           "mediterranean": {
             "title": "Mediterranean",
             "desc": "Albastru adânc, accente calde — costier."
+          },
+          "pearl": {
+            "title": "Pearl",
+            "desc": "Cald și boutique — fundal ivory, accent rose-brown."
+          },
+          "slate": {
+            "title": "Slate",
+            "desc": "Modern profesional — gri-albastru, accent cobalt."
+          },
+          "forest": {
+            "title": "Forest",
+            "desc": "Eco lodge — verde adânc de zi, chihlimbar noaptea."
           }
         }
       },

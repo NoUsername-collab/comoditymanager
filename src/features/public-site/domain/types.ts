@@ -3,7 +3,7 @@ export type PublicLocale = "ro" | "en" | "bg";
 export type LocalizedText = Partial<Record<PublicLocale, string>>;
 
 export type PublicTemplateId = "classic" | "editorial" | "immersive";
-export type PublicThemeId = "noir" | "alpine" | "mediterranean";
+export type PublicThemeId = "noir" | "alpine" | "mediterranean" | "pearl" | "slate" | "forest";
 export type PublicBookingNavPosition = "nav" | "footer" | "both" | "hidden";
 
 export type PublicSectionType =

@@ -10,7 +10,7 @@ import {
 } from "./shared";
 
 const publicTemplateIdSchema = z.enum(["classic", "editorial", "immersive"]);
-const publicThemeIdSchema = z.enum(["noir", "alpine", "mediterranean"]);
+const publicThemeIdSchema = z.enum(["noir", "alpine", "mediterranean", "pearl", "slate", "forest"]);
 const publicBookingNavPositionSchema = z.enum(["nav", "footer", "both", "hidden"]);
 const publicSectionTypeSchema = z.enum([
   "intro",

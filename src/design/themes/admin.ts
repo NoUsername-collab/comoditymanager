@@ -56,7 +56,8 @@ export function adminThemeBootSnippet(): string {
       var themeRaw=localStorage.getItem("casaemil-theme-id")||localStorage.getItem("casaemil-admin-palette-key")||"noir";
       var modeRaw=localStorage.getItem("casaemil-theme-mode")||localStorage.getItem("casaemil-admin-theme")||"night";
       if(themeRaw==="default") themeRaw="noir";
-      if(themeRaw!=="noir"&&themeRaw!=="alpine"&&themeRaw!=="mediterranean") themeRaw="noir";
+      var validThemes=["noir","alpine","mediterranean","pearl","slate","forest"];
+      if(!validThemes.includes(themeRaw)) themeRaw="noir";
       if(modeRaw!=="day"&&modeRaw!=="night") modeRaw="night";
       var h=document.documentElement;
       h.setAttribute("data-theme",themeRaw);

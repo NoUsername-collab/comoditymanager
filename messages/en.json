@@ -1455,6 +1455,18 @@
           "mediterranean": {
             "title": "Mediterranean",
             "desc": "Deep blue, warm accents — coastal mood."
+          },
+          "pearl": {
+            "title": "Pearl",
+            "desc": "Warm boutique — ivory base, rose-brown accent."
+          },
+          "slate": {
+            "title": "Slate",
+            "desc": "Modern professional — blue-gray, cobalt accent."
+          },
+          "forest": {
+            "title": "Forest",
+            "desc": "Eco lodge — deep forest green by day, amber at night."
           }
         }
       },

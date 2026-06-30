@@ -19,7 +19,8 @@ function parseTemplateId(raw: unknown): PublicTemplateId {
 }
 
 function parseThemeId(raw: unknown): PublicThemeId {
-  if (raw === "alpine" || raw === "mediterranean" || raw === "noir") {
+  if (raw === "alpine" || raw === "mediterranean" || raw === "noir" ||
+      raw === "pearl" || raw === "slate" || raw === "forest") {
     return raw;
   }
   return "noir";
