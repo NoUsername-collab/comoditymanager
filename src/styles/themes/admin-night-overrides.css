@@ -12,6 +12,13 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   color: var(--admin-text);
 }
 
+/* ── Surface elevation fix (night) — surface bg e prea aproape de page bg ── */
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"])[data-mode="night"] {
+  --admin-surface-bg: var(--surface-2);
+  --admin-surface-border: var(--border-strong);
+  --admin-surface-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
 /* ── Gantt radial home (default.css amestecă white în night) ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="default"])[data-mode="night"] .gantt-radial {
   --gantt-home-surface-top: color-mix(in srgb, var(--admin-panel-bg) 94%, var(--surface-3));

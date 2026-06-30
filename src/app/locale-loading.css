@@ -86,111 +86,50 @@ html.ml-drawer-open .language-switcher__menu--portal {
   content: "";
 }
 
-/* Locale-aware loading — flag ring only, transparent route overlay */
+/* Locale-aware loading — bouncing dots in flag colors */
 
-.locale-flag-spinner {
-  --spinner-ring: 0.38em;
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  filter: drop-shadow(0 4px 18px var(--flag-glow))
-    drop-shadow(0 0 28px color-mix(in srgb, var(--flag-c2) 35%, transparent));
+.locale-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.locale-flag-spinner--lg {
-  --spinner-ring: 0.44em;
-  width: 4.25rem;
-  height: 4.25rem;
+.locale-dots--lg {
+  gap: 0.55rem;
 }
 
-.locale-flag-spinner--md {
-  --spinner-ring: 0.34em;
-  width: 3rem;
-  height: 3rem;
+.locale-dots--md {
+  gap: 0.4rem;
 }
 
-.locale-flag-spinner__halo {
-  position: absolute;
-  inset: -18%;
+.locale-dots__dot {
   border-radius: 9999px;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--flag-c2) 22%, transparent) 0%,
-    transparent 68%
-  );
-  animation: locale-flag-halo 2.2s ease-in-out infinite;
+  animation: locale-dot-bounce 1.2s ease-in-out infinite;
 }
 
-.locale-flag-spinner__track {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  border: 2px solid var(--flag-track);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--flag-c3) 12%, transparent);
+.locale-dots--lg .locale-dots__dot {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
-.locale-flag-spinner__ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: conic-gradient(
-    from -20deg,
-    var(--flag-c1) 0deg 108deg,
-    var(--flag-c2) 108deg 228deg,
-    var(--flag-c3) 228deg 360deg
-  );
-  -webkit-mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - var(--spinner-ring)),
-    #000 calc(100% - var(--spinner-ring) + 0.04em)
-  );
-  mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - var(--spinner-ring)),
-    #000 calc(100% - var(--spinner-ring) + 0.04em)
-  );
-  animation: locale-flag-spin 0.85s cubic-bezier(0.42, 0.08, 0.2, 1) infinite;
+.locale-dots--md .locale-dots__dot {
+  width: 0.55rem;
+  height: 0.55rem;
 }
 
-.locale-flag-spinner__sheen {
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  background: conic-gradient(
-    from 40deg,
-    transparent 0deg 250deg,
-    color-mix(in srgb, #fff 70%, var(--flag-c2)) 250deg 290deg,
-    transparent 290deg 360deg
-  );
-  -webkit-mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - var(--spinner-ring) - 0.06em),
-    #000 calc(100% - var(--spinner-ring))
-  );
-  mask: radial-gradient(
-    farthest-side,
-    transparent calc(100% - var(--spinner-ring) - 0.06em),
-    #000 calc(100% - var(--spinner-ring))
-  );
-  opacity: 0.85;
-  animation: locale-flag-spin 1.35s linear infinite reverse;
+.locale-dots__dot--1 {
+  background: var(--dot-c1);
+  animation-delay: 0s;
 }
 
-.locale-flag-spinner__core {
-  width: 30%;
-  height: 30%;
-  border-radius: 9999px;
-  background: radial-gradient(
-    circle at 35% 30%,
-    color-mix(in srgb, #fff 55%, var(--flag-c2)) 0%,
-    color-mix(in srgb, var(--flag-c1) 40%, transparent) 100%
-  );
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--flag-c3) 18%, transparent),
-    0 0 12px color-mix(in srgb, var(--flag-c1) 30%, transparent);
-  animation: locale-flag-pulse 1.5s ease-in-out infinite;
+.locale-dots__dot--2 {
+  background: var(--dot-c2);
+  animation-delay: 0.18s;
+}
+
+.locale-dots__dot--3 {
+  background: var(--dot-c3);
+  animation-delay: 0.36s;
 }
 
 .admin-theme-loading {
@@ -211,44 +150,21 @@ html.ml-drawer-open .language-switcher__menu--portal {
   background: transparent;
 }
 
-@keyframes locale-flag-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes locale-flag-pulse {
+@keyframes locale-dot-bounce {
   0%,
+  80%,
   100% {
-    transform: scale(0.9);
-    opacity: 0.55;
+    transform: translateY(0);
+    opacity: 0.5;
   }
-  50% {
-    transform: scale(1.06);
+  40% {
+    transform: translateY(-0.6rem);
     opacity: 1;
   }
 }
 
-@keyframes locale-flag-halo {
-  0%,
-  100% {
-    transform: scale(0.94);
-    opacity: 0.45;
-  }
-  50% {
-    transform: scale(1.06);
-    opacity: 0.9;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .locale-flag-spinner__ring,
-  .locale-flag-spinner__sheen {
-    animation-duration: 1.6s;
-  }
-
-  .locale-flag-spinner__core,
-  .locale-flag-spinner__halo {
-    animation: none;
+  .locale-dots__dot {
+    animation-duration: 2.4s;
   }
 }

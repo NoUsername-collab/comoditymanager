@@ -140,9 +140,9 @@ html[data-theme="default"][data-mode="night"] {
   --gantt-zone-checkin-text: var(--text-muted);
 
   /* ── Admin flat surfaces (night) ── */
-  --admin-surface-bg: var(--surface);
-  --admin-surface-border: var(--border);
-  --admin-surface-shadow: none;
+  --admin-surface-bg: var(--surface-2);
+  --admin-surface-border: var(--border-strong);
+  --admin-surface-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 
   --admin-tint-info-bg: color-mix(in srgb, var(--info) 10%, var(--surface));
   --admin-tint-info-border: color-mix(in srgb, var(--info) 28%, var(--border));

@@ -57,12 +57,6 @@ export function SettingsOverview({
     .flatMap((g) => g.items)
     .filter((item) => item.id !== "overview");
 
-  const quickPreviewLinks = [
-    { id: "public-site", href: "/", labelKey: "navPublicSite" as const, external: true },
-    { id: "guest-app", href: "/admin/settings/guest-app", labelKey: "navGuestApp" as const, external: false },
-    { id: "appearance", href: "/admin/settings/appearance", labelKey: "navAppearance" as const, external: false },
-  ].filter((link) => quickItems.some((item) => item.id === link.id));
-
   const coreCompletion = useMemo(() => {
     if (!completion) return null;
     const coreIds = new Set([
@@ -154,9 +148,18 @@ export function SettingsOverview({
                     "settings-checklist__mark",
                     item.done ? "settings-checklist__mark--done" : "settings-checklist__mark--issue",
                   ].join(" ")}
-                  aria-hidden
+                  aria-hidden="true"
                 >
-                  {item.done ? "✓" : "○"}
+                  {item.done ? (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="7" cy="7" r="6.5" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1"/>
+                      <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                    </svg>
+                  )}
                 </span>
                 <Link href={item.href} className="settings-checklist__link">
                   {t(item.labelKey)}
@@ -164,28 +167,6 @@ export function SettingsOverview({
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
-
-      {quickPreviewLinks.length > 0 ? (
-        <section className="settings-overview__quick">
-          <h3 className="settings-overview__group-title">{t("quickLinksTitle")}</h3>
-          <div className="settings-overview__quick-grid">
-            {quickPreviewLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
-                className="settings-overview-quick"
-              >
-                <span className="settings-overview-quick__title">{t(link.labelKey)}</span>
-                <span className="settings-overview-quick__desc">
-                  {link.external ? t("viewOnSite") : t("navOverviewDesc")}
-                </span>
-              </Link>
-            ))}
-          </div>
         </section>
       ) : null}
 
@@ -215,8 +196,11 @@ export function SettingsOverview({
                       {hasIssue ? (
                         <SetupIssueBadge className="settings-overview-card__issue-badge" />
                       ) : status === "complete" ? (
-                        <span className="settings-overview-card__status settings-overview-card__status--complete">
-                          ✓
+                        <span className="settings-overview-card__status settings-overview-card__status--complete" aria-hidden="true">
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <circle cx="7" cy="7" r="6.5" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1"/>
+                            <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
                         </span>
                       ) : null}
                     </span>

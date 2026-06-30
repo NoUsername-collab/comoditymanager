@@ -8,7 +8,7 @@ import {
 } from "@/lib/i18n/locale-flag-colors";
 
 type Props = {
-  /** Accessible label (e.g. “Se încarcă…”) */
+  /** Accessible label (e.g. "Se încarcă…") */
   label: string;
   size?: "md" | "lg";
 };
@@ -20,8 +20,8 @@ export function LocaleFlagSpinner({ label, size = "lg" }: Props) {
   return (
     <div
       className={[
-        "locale-flag-spinner",
-        size === "lg" ? "locale-flag-spinner--lg" : "locale-flag-spinner--md",
+        "locale-dots",
+        size === "lg" ? "locale-dots--lg" : "locale-dots--md",
       ].join(" ")}
       role="status"
       aria-live="polite"
@@ -30,19 +30,16 @@ export function LocaleFlagSpinner({ label, size = "lg" }: Props) {
       data-locale={locale}
       style={
         {
-          "--flag-c1": colors.c1,
-          "--flag-c2": colors.c2,
-          "--flag-c3": colors.c3,
-          "--flag-track": colors.track,
-          "--flag-glow": colors.glow,
+          "--dot-c1": colors.c1,
+          "--dot-c2": colors.c2,
+          "--dot-c3": colors.c3,
         } as CSSProperties
       }
     >
-      <span className="locale-flag-spinner__halo" aria-hidden />
-      <span className="locale-flag-spinner__track" aria-hidden />
-      <span className="locale-flag-spinner__ring" aria-hidden />
-      <span className="locale-flag-spinner__sheen" aria-hidden />
-      <span className="locale-flag-spinner__core" aria-hidden />
+      <span className="locale-dots__dot locale-dots__dot--1" aria-hidden />
+      <span className="locale-dots__dot locale-dots__dot--2" aria-hidden />
+      <span className="locale-dots__dot locale-dots__dot--3" aria-hidden />
+      <span className="sr-only">{label}</span>
     </div>
   );
 }

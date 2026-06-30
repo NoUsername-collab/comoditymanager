@@ -79,11 +79,17 @@ export function SettingsSetupProgress({ summary }: Props) {
                 .filter(Boolean)
                 .join(" ")}
             >
-              <span
-                className="settings-setup-progress__check"
-                aria-hidden={item.done}
-              >
-                {item.done ? "✓" : "○"}
+              <span className="settings-setup-progress__check" aria-hidden="true">
+                {item.done ? (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <circle cx="7" cy="7" r="6.5" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1"/>
+                    <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                  </svg>
+                )}
               </span>
               <span className="settings-setup-progress__label">{t(item.labelKey)}</span>
               {!item.done ? (
