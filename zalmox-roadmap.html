@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zalmox — Roadmap 2025–2026</title>
+<style>
+  :root {
+    --bg: #0a0a14;
+    --bg2: #0f0f1e;
+    --bg3: #141428;
+    --card: #1a1a2e;
+    --card2: #1e1e35;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e8f0;
+    --muted: #8888aa;
+    --accent: #7c3aed;
+    --accent2: #4f46e5;
+    --teal: #0d9488;
+    --green: #16a34a;
+    --amber: #d97706;
+    --red: #dc2626;
+    --pink: #db2777;
+    --rb1: #8b5cf6;
+    --rb2: #3b82f6;
+    --rb3: #06b6d4;
+    --rb4: #10b981;
+    --rb5: #f59e0b;
+    --rb6: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0f0f1e 0%, #1a0a2e 50%, #0a1428 100%);
+    border-bottom: 1px solid var(--border2);
+    padding: 60px 40px 50px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: conic-gradient(from 0deg, #7c3aed33, #3b82f633, #06b6d433, #10b98133, #f59e0b33, #ef444433, #7c3aed33);
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+  }
+  .logo {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--rb1), var(--rb2), var(--rb3), var(--rb4));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--muted);
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+  .header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .meta-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .meta-pill strong { color: var(--text); }
+
+  /* ── RATING ── */
+  .rating-section {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 40px;
+  }
+  .section-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 32px;
+  }
+  .rating-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .rating-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .rating-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--bar-color, var(--accent));
+    border-radius: 14px 14px 0 0;
+  }
+  .rating-icon { font-size: 22px; margin-bottom: 8px; }
+  .rating-label { font-size: 12px; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+  .rating-bar-bg {
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    height: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .rating-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: var(--bar-color, var(--accent));
+  }
+  .rating-score {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .rating-score span { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+  .overall-rating {
+    text-align: center;
+    margin-top: 36px;
+    padding: 28px;
+    background: var(--card);
+    border: 1px solid var(--border2);
+    border-radius: 18px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .overall-number {
+    font-size: 64px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--rb1), var(--rb2), var(--rb3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .overall-label { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+  .stars { font-size: 22px; letter-spacing: 2px; }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 56px 32px; }
+
+  .phase-block {
+    margin-bottom: 52px;
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  .phase-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .phase-badge--done { background: rgba(22,163,74,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+  .phase-badge--progress { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .phase-badge--next { background: rgba(124,58,237,0.12); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+  .phase-badge--future { background: rgba(99,102,241,0.08); color: #818cf8; border: 1px solid rgba(129,140,248,0.15); }
+
+  .phase-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .phase-desc { font-size: 13px; color: var(--muted); margin-left: auto; white-space: nowrap; }
+
+  .tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px;
+  }
+
+  .task {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .task:hover { border-color: var(--border2); }
+
+  .task-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .task-icon--done { background: rgba(22,163,74,0.15); }
+  .task-icon--progress { background: rgba(245,158,11,0.12); }
+  .task-icon--todo { background: rgba(99,102,241,0.1); }
+  .task-icon--blocked { background: rgba(220,38,38,0.1); }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+  .task-name--done { color: var(--muted); text-decoration: line-through; text-decoration-color: rgba(136,136,170,0.4); }
+  .task-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  .task-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .task-tag--critical { background: rgba(220,38,38,0.12); color: #f87171; }
+  .task-tag--high { background: rgba(245,158,11,0.1); color: #fbbf24; }
+  .task-tag--medium { background: rgba(99,102,241,0.1); color: #818cf8; }
+  .task-tag--low { background: rgba(100,100,120,0.1); color: #666688; }
+  .task-tag--done { background: rgba(22,163,74,0.1); color: #4ade80; }
+
+  /* ── TIMELINE ── */
+  .timeline-section {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 56px 32px;
+  }
+  .timeline-inner { max-width: 760px; margin: 0 auto; }
+  .timeline-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 40px;
+  }
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px; top: 8px; bottom: 0;
+    width: 2px;
+    background: var(--border2);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 36px;
+  }
+  .tl-dot {
+    position: absolute;
+    left: -28px;
+    top: 6px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tl-dot--done { border-color: #4ade80; background: rgba(74,222,128,0.15); }
+  .tl-dot--now { border-color: var(--rb2); background: rgba(59,130,246,0.2); box-shadow: 0 0 8px rgba(59,130,246,0.4); }
+  .tl-dot--next { border-color: var(--rb1); background: rgba(124,58,237,0.1); }
+  .tl-dot--future { border-color: var(--border2); }
+  .tl-dot-inner {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .tl-dot--done .tl-dot-inner { background: #4ade80; }
+  .tl-dot--now .tl-dot-inner { background: var(--rb2); }
+  .tl-date {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .tl-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .tl-items {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .tl-items li { list-style: none; padding-left: 16px; position: relative; }
+  .tl-items li::before { content: '–'; position: absolute; left: 0; color: var(--border2); }
+  .tl-now-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--rb2);
+    background: rgba(59,130,246,0.12);
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 100px;
+    padding: 2px 8px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── TECH STACK ── */
+  .stack-section { padding: 48px 32px; max-width: 1100px; margin: 0 auto; }
+  .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .stack-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .stack-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .stack-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .stack-ver { font-size: 11px; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    text-align: center;
+  }
+  .footer p { font-size: 13px; color: var(--muted); }
+  .footer strong { color: var(--text); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-banner {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 100%;
+  }
+  .progress-label { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rb1), var(--rb2), var(--rb3), var(--rb4));
+    border-radius: 100px;
+    width: 38%;
+  }
+  .progress-pct { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; color: #111; }
+    .header { background: #f8f8ff; border-bottom: 1px solid #ddd; }
+    .header::before { display: none; }
+    .header h1, .phase-title, .tl-name { color: #111; }
+    .overall-number { color: var(--accent); -webkit-text-fill-color: unset; }
+    .card, .task, .stack-item { border-color: #e0e0e0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="logo">Zalmox Platform</div>
+  <h1>Roadmap Complet</h1>
+  <p>Status la 1 Iulie 2025 · Pension &amp; Hotel Management SaaS</p>
+  <div class="header-meta">
+    <div class="meta-pill">Stack <strong>Next.js 16 · React 19 · Supabase</strong></div>
+    <div class="meta-pill">Locales <strong>RO · EN · BG</strong></div>
+    <div class="meta-pill">Target <strong>zalmox.app</strong></div>
+    <div class="meta-pill">Piețe <strong>🇷🇴 🇲🇩 🇧🇬</strong></div>
+  </div>
+</div>
+
+<!-- ── OVERALL PROGRESS ── -->
+<div class="progress-banner">
+  <span class="progress-label">Progres general</span>
+  <div class="progress-track"><div class="progress-fill"></div></div>
+  <span class="progress-pct">38% completat</span>
+</div>
+
+<!-- ── RATING ── -->
+<div class="rating-section">
+  <div class="section-label">Evaluare Proiect</div>
+  <div class="rating-grid">
+    <div class="rating-card" style="--bar-color: #7c3aed">
+      <div class="rating-icon">🏗️</div>
+      <div class="rating-label">Arhitectură cod</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:85%"></div></div>
+      <div class="rating-score">8.5<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #0d9488">
+      <div class="rating-icon">🔒</div>
+      <div class="rating-label">Securitate</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:80%"></div></div>
+      <div class="rating-score">8.0<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #3b82f6">
+      <div class="rating-icon">⚡</div>
+      <div class="rating-label">Performanță</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:70%"></div></div>
+      <div class="rating-score">7.0<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #f59e0b">
+      <div class="rating-icon">🎨</div>
+      <div class="rating-label">UI / UX</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:72%"></div></div>
+      <div class="rating-score">7.2<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #10b981">
+      <div class="rating-icon">💰</div>
+      <div class="rating-label">Viabilitate business</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:60%"></div></div>
+      <div class="rating-score">6.0<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #ef4444">
+      <div class="rating-icon">🚀</div>
+      <div class="rating-label">Pregătit de lansare</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:42%"></div></div>
+      <div class="rating-score">4.2<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #db2777">
+      <div class="rating-icon">📱</div>
+      <div class="rating-label">Mobile ready</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:65%"></div></div>
+      <div class="rating-score">6.5<span>/10</span></div>
+    </div>
+    <div class="rating-card" style="--bar-color: #06b6d4">
+      <div class="rating-icon">🌐</div>
+      <div class="rating-label">Marketing / Landing</div>
+      <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:78%"></div></div>
+      <div class="rating-score">7.8<span>/10</span></div>
+    </div>
+  </div>
+  <div class="overall-rating">
+    <div class="overall-number">6.9</div>
+    <div class="overall-label">Scor general din 10</div>
+    <div class="stars">⭐⭐⭐⭐</div>
+    <p style="font-size:13px; color:#8888aa; margin-top:10px; line-height:1.5">
+      Fundație solidă, arhitectură corectă, securitate bună.<br>
+      <strong style="color:#e8e8f0">Rămâne: lansare, companie, domeniu, conținut real.</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ── PHASES ── -->
+<div class="main">
+
+  <!-- PHASE 1 — DONE -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--done">✓ Finalizat</div>
+      <div class="phase-title">Faza 1 — Fundație &amp; Rebrand</div>
+      <div class="phase-desc">Hospira → Zalmox · Dec 2024 – Iun 2025</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Rebrand complet Hospira → Zalmox</div>
+          <div class="task-note">Toate paginile publice, header, footer, meta tags, OG image</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Supabase multi-tenant cu RLS</div>
+          <div class="task-note">Row Level Security, izolare date per pensiune</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Next.js 16 App Router + Turbopack</div>
+          <div class="task-note">Build rapid, React 19, TypeScript strict</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Routing multi-locale (ro/en/bg)</div>
+          <div class="task-note">next-intl 4.12, toate mesajele traduse structural</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Pagina 404 custom Zalmox</div>
+          <div class="task-note">Branded, cu animație, linkuri utile</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Architecture layers + test granițe</div>
+          <div class="task-note">import-boundaries.test.ts previne import-uri ilegale</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Deploy pe Vercel + domeniu test.hospira.ro</div>
+          <div class="task-note">CI/CD activ, preview deployments pe branch</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Fix BOM în fișiere JSON</div>
+          <div class="task-note">Turbopack rejecta mesajele — Byte Order Mark eliminat</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 — DONE -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--done">✓ Finalizat</div>
+      <div class="phase-title">Faza 2 — CSS &amp; Performanță</div>
+      <div class="phase-desc">Mai – Iun 2025</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">CSS refactoring major</div>
+          <div class="task-note">globals.css redus 40%, Gantt CSS extras în modul propriu</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Teme vizuale (--site-* CSS vars)</div>
+          <div class="task-note">Fiecare pensiune își poate seta culorile proprii</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Mobile CSS consolidat</div>
+          <div class="task-note">Responsive breakpoints unificate, MobileShell component</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">PublicPageSkeleton loading states</div>
+          <div class="task-note">Skeleton animat pentru paginile publice ale pensiunilor</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">CSP fix (removed unsafe-eval)</div>
+          <div class="task-note">Content Security Policy hardened, XSS protection îmbunătățit</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Admin password eliminat din .env</div>
+          <div class="task-note">Secret mutat în Supabase, fără credențiale hardcodate</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 — DONE -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--done">✓ Finalizat</div>
+      <div class="phase-title">Faza 3 — Landing Page Premium &amp; Pricing</div>
+      <div class="phase-desc">Iun 2025</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Landing page restructurat complet</div>
+          <div class="task-note">15 secțiuni: hero dark, showcase, stats, testimonials, CTA</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Mockup browser CSS-only (Gantt)</div>
+          <div class="task-note">LandingHeroShowcase — browser macOS cu bare rainbow</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Mockup phone (Guest App)</div>
+          <div class="task-note">LandingMockups — cadru telefon, tiles, check-in card</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Mockup dashboard (stats + chart)</div>
+          <div class="task-note">Ocupare, venituri, grafic bare cu 7 coloane</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Planuri de prețuri redesigned</div>
+          <div class="task-note">Free €0 / Essential €15 / Pro €35 / Business €69</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">WhatsApp scos din planuri (add-on)</div>
+          <div class="task-note">Cost Meta API nu e absorbit de platformă — e pass-through</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Animații rainbow (CSS only)</div>
+          <div class="task-note">Hero gradient titlu, glow CTA, reduced-motion fallback</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--done">✅</div>
+        <div class="task-body">
+          <div class="task-name task-name--done">Trust badges (GDPR, ANAF, SSL, RO/MD/BG)</div>
+          <div class="task-note">Strip de credibilitate sub hero</div>
+        </div>
+        <div class="task-tag task-tag--done">done</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 — IN PROGRESS -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--progress">⟳ În desfășurare</div>
+      <div class="phase-title">Faza 4 — UX Critice &amp; Auth</div>
+      <div class="phase-desc">Iun – Aug 2025</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--progress">🔄</div>
+        <div class="task-body">
+          <div class="task-name">Câmp confirmare parolă la signup</div>
+          <div class="task-note">Mesajele ro.json actualizate, SignupForm.tsx necesită completare</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Redesign pagina de login</div>
+          <div class="task-note">Actualul design e minimal, trebuie premium + branded</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Loading spinner nou (bazat pe limbă)</div>
+          <div class="task-note">Înlocuire spinner urât cu animație branded, text localizat</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Traduceri en.json &amp; bg.json (prețuri)</div>
+          <div class="task-note">Modificările din ro.json pentru planuri nu s-au propagat</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Reset parolă flow complet</div>
+          <div class="task-note">Email de reset, pagina de new-password, validare token</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Onboarding wizard pentru pensiuni noi</div>
+          <div class="task-note">3 pași: crează proprietate → adaugă camere → personalizează</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 — NEXT -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--next">→ Următor</div>
+      <div class="phase-title">Faza 5 — Domeniu &amp; Go-Live</div>
+      <div class="phase-desc">Aug – Sep 2025</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Migrare domeniu → zalmox.app</div>
+          <div class="task-note">A record + CNAME la Vercel; RESEND_MAIL_DOMAIN=zalmox.app</div>
+        </div>
+        <div class="task-tag task-tag--critical">critic</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Înregistrare firmă (SRL)</div>
+          <div class="task-note">~3 săptămâni; necesară pentru contracte și facturare</div>
+        </div>
+        <div class="task-tag task-tag--critical">critic</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Termeni și condiții + GDPR policy</div>
+          <div class="task-note">Obligatoriu legal; include clauza ANAF e-Factura</div>
+        </div>
+        <div class="task-tag task-tag--critical">critic</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Plăți integrate (Stripe)</div>
+          <div class="task-note">Abonament lunar, upgrade/downgrade plan, trial 14 zile</div>
+        </div>
+        <div class="task-tag task-tag--critical">critic</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Email transacțional (Resend)</div>
+          <div class="task-note">Confirmare rezervare, factură, reset parolă — template branded</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Logo final + brand identity</div>
+          <div class="task-note">Favicon, OG image real, logo SVG scalabil</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Landing page — conținut real</div>
+          <div class="task-note">Înlocuire mockup CSS cu screenshots reale, video demo</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Testimoniale reale de la beta useri</div>
+          <div class="task-note">Recrutează 3-5 pensiuni pilot din România/MD</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 6 — FUTURE -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--future">◌ Planificat</div>
+      <div class="phase-title">Faza 6 — Funcționalități Avansate</div>
+      <div class="phase-desc">Oct 2025 – Mar 2026</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">iCal sync bidirectional</div>
+          <div class="task-note">Booking.com, Airbnb, Google Calendar — import &amp; export</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Facturare + e-Factura ANAF</div>
+          <div class="task-note">Generare PDF, trimitere API ANAF, arhivare</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Notificări Telegram Bot</div>
+          <div class="task-note">Alternativă gratuită la WhatsApp — API fără cost per mesaj</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">WhatsApp add-on (pass-through Meta API)</div>
+          <div class="task-note">Client plătește direct Meta; noi doar facilitam conexiunea</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Guest App completă</div>
+          <div class="task-note">Check-in digital, WiFi, restaurant, activități, feedback</div>
+        </div>
+        <div class="task-tag task-tag--high">high</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Multi-proprietate panel</div>
+          <div class="task-note">Business plan — gestionare 2-10 locații din un cont</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Rapoarte avansate &amp; export Excel</div>
+          <div class="task-note">Venituri, ocupare, previziuni, export CSV/XLSX</div>
+        </div>
+        <div class="task-tag task-tag--medium">medium</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">REST API public (Business plan)</div>
+          <div class="task-note">Documentație OpenAPI, rate limiting, API keys per tenant</div>
+        </div>
+        <div class="task-tag task-tag--low">low</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">White label (Business plan)</div>
+          <div class="task-note">Custom domain per pensiune, branding complet eliminat</div>
+        </div>
+        <div class="task-tag task-tag--low">low</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Mobile app nativă (PWA first)</div>
+          <div class="task-note">PWA cu offline support → React Native dacă e cerere</div>
+        </div>
+        <div class="task-tag task-tag--low">low</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 7 — GROWTH -->
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-badge phase-badge--future">◌ Creștere</div>
+      <div class="phase-title">Faza 7 — Expansiune &amp; Scalare</div>
+      <div class="phase-desc">2026+</div>
+    </div>
+    <div class="tasks-grid">
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Parteneriate OTA (Booking, Airbnb, Expedia)</div>
+          <div class="task-note">Channel manager integrat cu sincronizare automată</div>
+        </div>
+        <div class="task-tag task-tag--low">viziune</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">AI pricing suggestions</div>
+          <div class="task-note">Recomandări preț în funcție de cerere și sezon</div>
+        </div>
+        <div class="task-tag task-tag--low">viziune</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Expansiune 🇲🇩 Moldova + 🇧🇬 Bulgaria</div>
+          <div class="task-note">Traduceri complete bg.json, suport TVA local, fiscalitate</div>
+        </div>
+        <div class="task-tag task-tag--low">viziune</div>
+      </div>
+      <div class="task">
+        <div class="task-icon task-icon--todo">⬜</div>
+        <div class="task-body">
+          <div class="task-name">Marketplace servicii (spa, restaurant, transfer)</div>
+          <div class="task-note">Guest poate rezerva servicii adiacente din Guest App</div>
+        </div>
+        <div class="task-tag task-tag--low">viziune</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── TIMELINE ── -->
+<div class="timeline-section">
+  <div class="timeline-inner">
+    <div class="timeline-title">Cronologie estimativă</div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot tl-dot--done"><div class="tl-dot-inner"></div></div>
+        <div class="tl-date">Dec 2024 – Mai 2025</div>
+        <div class="tl-name">Fundație tehnică</div>
+        <ul class="tl-items">
+          <li>Arhitectură multi-tenant cu Supabase RLS</li>
+          <li>App Router Next.js 16, Turbopack, TypeScript strict</li>
+          <li>Routing multi-locale (ro/en/bg)</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-dot--done"><div class="tl-dot-inner"></div></div>
+        <div class="tl-date">Mai – Iun 2025</div>
+        <div class="tl-name">Rebrand Hospira → Zalmox + Landing Premium</div>
+        <ul class="tl-items">
+          <li>Rebrand complet toate paginile publice</li>
+          <li>Landing page 15 secțiuni cu mockupuri CSS-only</li>
+          <li>Prețuri redesigned, WhatsApp ca add-on separat</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-dot--now"><div class="tl-dot-inner"></div></div>
+        <div class="tl-date">Iul – Aug 2025 <span class="tl-now-badge">acum</span></div>
+        <div class="tl-name">UX critice + pregătire lansare</div>
+        <ul class="tl-items">
+          <li>Confirmare parolă signup, redesign login, loading spinner</li>
+          <li>Traduceri complete en/bg pentru secțiunea prețuri</li>
+          <li>Reset parolă flow, onboarding wizard</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-dot--next"><div class="tl-dot-inner"></div></div>
+        <div class="tl-date">Aug – Sep 2025</div>
+        <div class="tl-name">Go-Live pe zalmox.app</div>
+        <ul class="tl-items">
+          <li>Migrare DNS zalmox.app + configurare Vercel</li>
+          <li>Înregistrare SRL, T&amp;C, GDPR policy</li>
+          <li>Stripe plăți, email transacțional Resend</li>
+          <li>Logo final, testimoniale beta reale</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-dot--next"><div class="tl-dot-inner"></div></div>
+        <div class="tl-date">Oct 2025 – Feb 2026</div>
+        <div class="tl-name">Funcționalități Plan Essential &amp; Professional</div>
+        <ul class="tl-items">
+          <li>iCal sync Booking/Airbnb, e-Factura ANAF</li>
+          <li>Guest App completă, Telegram bot</li>
+          <li>Rapoarte avansate + export Excel</li>
+        </ul>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot tl-dot--future"><div class="tl-dot-inner"></div></div>
+        <div class="tl-date">2026</div>
+        <div class="tl-name">Business Plan + Scalare</div>
+        <ul class="tl-items">
+          <li>Multi-proprietate, White Label, REST API</li>
+          <li>Expansiune Moldova &amp; Bulgaria</li>
+          <li>Parteneriate OTA, AI pricing</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TECH STACK ── -->
+<div class="stack-section">
+  <div class="section-label" style="text-align:center; margin-bottom:24px">Stack tehnologic</div>
+  <div class="stack-grid">
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#000"></div>
+      <div><div class="stack-name">Next.js</div><div class="stack-ver">16.2.6 · App Router</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#61dafb"></div>
+      <div><div class="stack-name">React</div><div class="stack-ver">19 · Server Components</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#3178c6"></div>
+      <div><div class="stack-name">TypeScript</div><div class="stack-ver">5 · strict mode</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#38bdf8"></div>
+      <div><div class="stack-name">Tailwind CSS</div><div class="stack-ver">4 · CSS vars</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#3ecf8e"></div>
+      <div><div class="stack-name">Supabase</div><div class="stack-ver">PostgreSQL + Auth + RLS</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#000"></div>
+      <div><div class="stack-name">Vercel</div><div class="stack-ver">Deploy + Edge Functions</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#7c3aed"></div>
+      <div><div class="stack-name">next-intl</div><div class="stack-ver">4.12 · ro/en/bg</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#f97316"></div>
+      <div><div class="stack-name">Turbopack</div><div class="stack-ver">Build rapid dev</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#0ea5e9"></div>
+      <div><div class="stack-name">Resend</div><div class="stack-ver">Email transacțional</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#635bff"></div>
+      <div><div class="stack-name">Stripe</div><div class="stack-ver">Plăți SaaS (planificat)</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#362d59"></div>
+      <div><div class="stack-name">Sentry</div><div class="stack-ver">Error tracking · 0.8 rate</div></div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-dot" style="background:#25d366"></div>
+      <div><div class="stack-name">Meta WhatsApp API</div><div class="stack-ver">Add-on, cost client</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <p>
+    <strong>Zalmox Platform</strong> · Roadmap generat 1 Iulie 2025 ·
+    Versiune internă, uz privat
+  </p>
+  <p style="margin-top:6px">
+    Stack: Next.js 16 · React 19 · TypeScript 5 · Supabase · Vercel · next-intl ·
+    Target domain: <strong>zalmox.app</strong>
+  </p>
+</div>
+
+</body>
+</html>
