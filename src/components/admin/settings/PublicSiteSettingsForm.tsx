@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useMemo, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   PUBLIC_TEMPLATE_OPTIONS,
@@ -79,6 +80,7 @@ export function PublicSiteSettingsForm({
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const tSettings = useTranslations("admin.pages.settings");
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -246,6 +248,8 @@ export function PublicSiteSettingsForm({
       const result = await savePublicSiteSettingsAction(buildInput());
       if (!result.ok) {
         setError(result.error);
+      } else {
+        router.push(result.redirectTo);
       }
     });
   }

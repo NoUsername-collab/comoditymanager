@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath, revalidateTag } from "next/cache";
-import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
 import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
@@ -12,8 +11,7 @@ import { getTranslations } from "next-intl/server";
 
 export async function savePublicSiteSettingsAction(
   input: unknown,
-): Promise<{ ok: true } | { ok: false; error: string }> {
-  let redirectPath: string | null = null;
+): Promise<{ ok: true; redirectTo: string } | { ok: false; error: string }> {
   try {
     const [t, staff] = await Promise.all([
       getTranslations("admin.serverActions"),
@@ -53,12 +51,9 @@ export async function savePublicSiteSettingsAction(
       },
     });
 
-    redirectPath = "/admin/settings/public-site?saved=1";
+    return { ok: true, redirectTo: "/admin/settings/public-site?saved=1" };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return { ok: false, error: message };
   }
-
-  await redirect(redirectPath!);
-  return { ok: true };
 }
