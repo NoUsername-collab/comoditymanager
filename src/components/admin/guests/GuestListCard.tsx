@@ -4,8 +4,14 @@ import type { GuestListItem } from "@/domain/guest/types";
 import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { formatRoDate } from "@/lib/stay-dates";
 import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
-import { GuestIdentityStatusPill } from "@/components/admin/guests/GuestIdentityForm";
 import { GuestStarsCompact } from "@/components/admin/guests/GuestStarsCompact";
+
+function IdentityDot({ status }: { status: string }) {
+  if (status === "complete") {
+    return <span className="guest-card__id-dot guest-card__id-dot--ok" title="Profil complet">✓</span>;
+  }
+  return <span className="guest-card__id-dot guest-card__id-dot--no" title="Profil necompletat">−</span>;
+}
 
 export function GuestListCard({
   guest,
@@ -33,7 +39,7 @@ export function GuestListCard({
             <span className="guest-card__name">{guest.display_name}</span>
             <div className="guest-card__badges">
               <GuestFlagPill flagLevel={guest.profile?.flag_level} variant="edge" />
-              <GuestIdentityStatusPill status={guest.identity_status} compact />
+              <IdentityDot status={guest.identity_status} />
             </div>
           </div>
 

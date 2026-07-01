@@ -397,7 +397,7 @@
 /* Main clickable body → goes to profile */
 .guest-card__link {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.55rem;
   flex: 1;
   min-width: 0;
@@ -405,16 +405,17 @@
 }
 
 .guest-card__avatar {
-  width: 2rem;
-  height: 2rem;
+  width: 1.85rem;
+  height: 1.85rem;
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   display: grid;
   place-items: center;
   flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 /* Info column: two rows */
@@ -437,11 +438,26 @@
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
   flex-shrink: 1;
   min-width: 0;
+}
+
+.guest-card__id-dot {
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.guest-card__id-dot--ok {
+  color: var(--active-border, #22c55e);
+}
+
+.guest-card__id-dot--no {
+  color: #ef4444;
 }
 
 .guest-card__badges {
@@ -477,13 +493,14 @@
 /* Icon-only button → goes to preview */
 .guest-card__preview-btn {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  width: 2.25rem;
+  padding-top: 0.55rem;
+  width: 2rem;
   flex-shrink: 0;
   border-left: 1px solid var(--border);
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   transition: background 0.15s, color 0.15s;
 }
 
