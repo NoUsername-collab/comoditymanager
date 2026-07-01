@@ -480,7 +480,7 @@
       "title": "Cerere de cazare",
       "checkTimes": "Check-in {checkIn} · Check-out {checkOut}",
       "stepDates": "1. Perioadă",
-      "stepPreview": "2. Variante",
+      "stepRooms": "2. Camere",
       "stepContact": "3. Trimite",
       "checkIn": "Check-in *",
       "checkOut": "Check-out *",

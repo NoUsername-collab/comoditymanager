@@ -481,7 +481,7 @@
       "title": "Stay request",
       "checkTimes": "Check-in {checkIn} · Check-out {checkOut}",
       "stepDates": "1. Dates",
-      "stepPreview": "2. Options",
+      "stepRooms": "2. Rooms",
       "stepContact": "3. Submit",
       "checkIn": "Check-in *",
       "checkOut": "Check-out *",
