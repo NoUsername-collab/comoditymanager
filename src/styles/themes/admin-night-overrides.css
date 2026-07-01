@@ -47,6 +47,10 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
   --admin-chip-text: var(--text-muted);
   --admin-chip-border: var(--border);
 
+  /* Gantt shell */
+  --admin-gantt-shell-bg: var(--surface);
+  --admin-gantt-unassigned: color-mix(in srgb, var(--pending-bg) 55%, var(--surface));
+
   /* Overlay */
   --admin-overlay: rgba(0, 0, 0, 0.72);
 

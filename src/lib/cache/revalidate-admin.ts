@@ -62,6 +62,7 @@ export function revalidateBookingSurfaces(tenantId?: string) {
   } else {
     revalidateTag(CACHE_TAGS.bookingCounts, "max");
   }
+  revalidatePath("/admin", "layout");
   revalidatePath("/admin/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/cazari");

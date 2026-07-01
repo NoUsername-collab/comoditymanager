@@ -230,7 +230,8 @@
 }
 
 .cazari-view-filter--active .cazari-view-filter__count {
-  background: color-mix(in srgb, currentColor 18%, white);
+  background: color-mix(in srgb, currentColor 22%, transparent);
+  color: currentColor;
 }
 
 .cazari-view-filter--confirm-active {

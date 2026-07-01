@@ -13,13 +13,14 @@ import { getTranslations } from "next-intl/server";
 export async function savePublicSiteSettingsAction(
   input: unknown,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  let redirectPath: string | null = null;
   try {
     const [t, staff] = await Promise.all([
       getTranslations("admin.serverActions"),
       requireStaffPermission("pension_settings"),
     ]);
 
-    if (staff.role !== "admin") {
+    if (staff.memberRole !== "owner" && staff.memberRole !== "admin") {
       return { ok: false, error: t("forbidden") };
     }
 
@@ -52,10 +53,12 @@ export async function savePublicSiteSettingsAction(
       },
     });
 
-    await redirect("/admin/settings/public-site?saved=1");
-    return { ok: true };
+    redirectPath = "/admin/settings/public-site?saved=1";
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return { ok: false, error: message };
   }
+
+  await redirect(redirectPath!);
+  return { ok: true };
 }

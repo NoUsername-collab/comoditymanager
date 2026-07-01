@@ -3704,6 +3704,8 @@ html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-too
   align-items: center;
   column-gap: 0.32rem;
   padding-inline: var(--gantt-top-chrome-pad-x);
+  background: var(--admin-gantt-shell-bg, var(--admin-panel-bg, var(--surface)));
+  border-bottom: 1px solid var(--admin-panel-border, var(--border));
 }
 
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-compact-toolbar__left {
