@@ -206,3 +206,39 @@
   font-size: 0.75rem;
   color: color-mix(in srgb, var(--site-muted, #b7af9a) 60%, transparent);
 }
+
+/* ── Mobile footer compact ───────────────────────────────────────────── */
+@media (max-width: 639px) {
+  .platform-footer {
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .platform-footer__grid {
+    gap: 1.5rem;
+  }
+
+  .platform-footer__links {
+    gap: 0.35rem;
+  }
+
+  .platform-footer__links a {
+    padding: 0.25rem 0;
+    display: inline-block;
+  }
+
+  .platform-footer__bottom {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+  }
+}
+
+/* ── Tablet (768px+): show desktop nav, hide hamburger ──────────────── */
+@media (min-width: 768px) {
+  .ml-mobile-menu--platform {
+    display: none !important;
+  }
+
+  .platform-header__nav {
+    display: flex !important;
+  }
+}

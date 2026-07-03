@@ -210,6 +210,8 @@
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.035em;
+  overflow-wrap: break-word;
+  word-break: break-word;
   background: linear-gradient(120deg, #ff6ee7 0%, #ff9b5e 22%, #ffe566 40%, #5effa0 55%, #5eb8ff 72%, #b86eff 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -1738,4 +1740,53 @@
   .lp-final-cta__title { animation: none; background-position: 0; }
   .lp-btn--glow         { animation: none; }
   .lp-final-cta__glow   { animation: none; }
+}
+
+/* ── Mobile fixes (≤ 400px) ─────────────────────────────────────────── */
+
+@media (max-width: 400px) {
+  /* Prevent h1 overflow at 320px — reduce font floor */
+  .lp-hero__title {
+    font-size: clamp(1.875rem, 8.5vw, 2.25rem);
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Stats strip label: prevent "PENTRU\nSTART" wrap */
+  .lp-stat-inline__label {
+    font-size: 0.5625rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .lp-stat-inline {
+    padding: 0.65rem 0.65rem;
+  }
+
+  /* Quote card font size */
+  .lp-quote {
+    font-size: 0.9rem;
+  }
+
+  /* CTA buttons stack neatly */
+  .lp-hero__actions {
+    flex-direction: column;
+  }
+
+  .lp-btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+/* ── Tablet: show desktop nav at 768px+ ─────────────────────────────── */
+@media (min-width: 768px) {
+  .ml-mobile-menu--platform {
+    display: none !important;
+  }
+
+  .platform-header__nav {
+    display: flex !important;
+  }
 }

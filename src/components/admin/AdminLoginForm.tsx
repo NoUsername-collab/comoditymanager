@@ -10,6 +10,7 @@ import { useState } from "react";
 import { MfaChallengeForm } from "@/components/admin/auth/MfaChallengeForm";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
+import { Link } from "@/i18n/navigation";
 
 export function AdminLoginForm({
   next,
@@ -92,6 +93,9 @@ export function AdminLoginForm({
               required
             />
           </label>
+          <Link href="/admin/forgot-password" className="admin-login-forgot">
+            {t("forgotPassword")}
+          </Link>
           {error ? (
             <p
               className="admin-login-form__error text-sm text-red-600"

@@ -5394,6 +5394,94 @@ html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
   padding-bottom: 0;
 }
 
+/* PWA install banner — apare la prima vizită mobilă */
+.pwa-install-banner {
+  position: fixed;
+  bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: calc(var(--z-overlay, 200) - 1);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 1rem;
+  background: var(--admin-card, #1a1a2e);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.3);
+  color: var(--admin-text, #e8e8f0);
+  animation: pwa-banner-slide-up 0.3s ease;
+}
+
+@keyframes pwa-banner-slide-up {
+  from { transform: translateY(110%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.pwa-install-banner__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pwa-install-banner__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.pwa-install-banner__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--admin-text, #e8e8f0);
+}
+
+.pwa-install-banner__sub {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted, #8888aa);
+}
+
+.pwa-install-banner__btn {
+  flex-shrink: 0;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #7c3aed;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.pwa-install-banner__btn:active {
+  background: #6d28d9;
+}
+
+.pwa-install-banner__close {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  min-height: 44px;
+  min-width: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--admin-text-muted, #8888aa);
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 0.4rem;
+  padding: 0;
+}
+
+.pwa-install-banner__close:active {
+  color: var(--admin-text, #e8e8f0);
+}
+
 /* PWA install sheet (manual / iOS instructions) */
 .pwa-install-backdrop {
   position: fixed;
@@ -6005,4 +6093,124 @@ html[data-layout-chrome="compact"] .ml-bottom-nav__link--active::before {
   height: 3px;
   opacity: 1;
   transform: scaleX(1);
+}
+
+/* ═══ Touch targets — minimum 44px pe dispozitive touch ═══ */
+/*
+ * iOS HIG și WCAG 2.5.8 cer min 44×44px pentru orice element interactiv.
+ * Scoped strict pe pointer: coarse (touch) ca să nu afecteze desktop.
+ */
+@media (pointer: coarse) {
+  button:not([data-touch-unconstrained]),
+  [role="button"]:not([data-touch-unconstrained]),
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  summary {
+    min-height: 44px;
+  }
+
+  /* Link-uri de navigare admin */
+  .ml-bottom-nav__link,
+  .ml-drawer__link,
+  .admin-gear__item {
+    min-height: 44px;
+  }
+
+  /* Butoane mici cu icon (stepper +/−, toggle, preview ↗) */
+  .checkin-stepper__btn,
+  .guest-card__preview-btn,
+  .checkin-toggle,
+  .admin-hud__btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Dropdown-uri și select-uri native */
+  select {
+    min-height: 44px;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE GPU & ANIMATION BUDGET
+   ═══════════════════════════════════════════════════════════ */
+
+@media (pointer: coarse) {
+  /*
+   * Blob-urile liquid background (admin-dn-drift-*) rulează
+   * filter:blur(42px) + transform infinit — cel mai scump lucru
+   * pe mobile GPU. Le oprim animațiile și reducem blur-ul.
+   */
+  .admin-dn-liquid__blob {
+    animation-play-state: paused !important;
+    filter: blur(18px); /* 42px → 18px: blur cost ∝ radius², 5× mai ieftin */
+    will-change: auto; /* eliberăm GPU layer-ul rezervat inutil */
+  }
+
+  /* Logo float e decorativ — oprim pe mobile */
+  .brand-logo-shell,
+  .group:hover .brand-logo-shell {
+    animation: none;
+  }
+
+  /* HUD sync dot pulse — OK dacă e doar opacity, fără transform scale */
+  .admin-hud__sync-dot--live {
+    animation: none;
+    opacity: 0.9;
+  }
+
+  /* Bottom nav active indicator — GPU layer explicit pentru scaleX */
+  .ml-bottom-nav__link::before {
+    will-change: transform;
+  }
+
+  /* Dezactivăm hover transforms pe mobile — nu există hover real */
+  .admin-hud__chip--ghost:hover {
+    transform: none;
+    background: var(--admin-chip-bg, var(--admin-surface-bg, #ffffff));
+    border-color: var(--admin-chip-border, #e4e4e7);
+    box-shadow: none;
+  }
+}
+
+/* prefers-reduced-motion: oprește absolut totul continuu */
+@media (prefers-reduced-motion: reduce) {
+  .admin-dn-liquid__blob {
+    animation: none !important;
+    filter: none;
+    opacity: 0.3;
+  }
+
+  .admin-hud__sync-dot--live,
+  .admin-cereri-glow-pulse,
+  .setup-issue-badge {
+    animation: none !important;
+  }
+}
+
+@media (pointer: coarse) {
+  /*
+   * backdrop-filter pe sticky toolbars cauzează re-compositare la fiecare
+   * frame de scroll pe Android mid-range. Înlocuim cu background opac.
+   */
+  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .admin-page-toolbar,
+  html[data-layout-chrome="compact"] .guest-search {
+    backdrop-filter: none;
+    background: var(--admin-surface-bg, #fff);
+  }
+
+  html[data-layout-chrome="compact"] .admin-page-main > .admin-page-toolbar--dark {
+    backdrop-filter: none;
+    background: color-mix(in srgb, #0a0a0a 98%, transparent);
+  }
+
+  /* Admin gear trigger — backdrop-filter: blur(10px) inutilă pe mobile */
+  .admin-gear__trigger {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.12);
+  }
 }

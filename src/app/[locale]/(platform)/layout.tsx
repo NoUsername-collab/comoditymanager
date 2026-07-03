@@ -6,7 +6,6 @@ import "@/app/signup.css";
 import "@/app/landing.css";
 import "@/app/landing-premium.css";
 import "@/app/platform.css";
-import "@/app/platform-split.css";
 
 const platformVars = {
   "--site-bg": "#f8fafc",

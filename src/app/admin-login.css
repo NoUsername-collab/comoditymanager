@@ -3,10 +3,119 @@
 .admin-login-page {
   color: #18181b;
   color-scheme: light;
-  background: linear-gradient(135deg, #f0f0ff 0%, #f4f4f5 50%, #eff6ff 100%);
+  background: linear-gradient(135deg, #eef2ff 0%, #f4f4f5 60%, #eff6ff 100%);
   min-height: 100dvh;
 }
 
+/* ── Split shell ── */
+.admin-login-shell {
+  display: flex;
+  width: 100%;
+  max-width: 820px;
+  min-height: min(600px, 90dvh);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow:
+    0 4px 6px -1px rgba(0,0,0,0.06),
+    0 20px 50px -10px rgba(79,70,229,0.18);
+}
+
+/* Left decorative panel */
+.admin-login-panel--left {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2.5rem 2rem 2.5rem 2.5rem;
+  background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 100%);
+  color: #ffffff;
+  flex: 0 0 320px;
+}
+
+@media (min-width: 680px) {
+  .admin-login-panel--left {
+    display: flex;
+  }
+}
+
+.admin-login-panel__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-login-panel__icon {
+  font-size: 1.75rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+}
+
+.admin-login-panel__name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.admin-login-panel__tagline {
+  font-size: 0.9375rem;
+  opacity: 0.82;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-login-panel__features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.admin-login-panel__feature {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.admin-login-panel__feature-check {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Right form panel */
+.admin-login-panel--right {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 2rem 1.5rem;
+  background: #ffffff;
+  flex: 1;
+}
+
+/* Mobile brand (hidden on wide) */
+.admin-login-brand--mobile {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (min-width: 680px) {
+  .admin-login-brand--mobile {
+    display: none;
+  }
+}
+
+/* Legacy wrap (used by forgot-password / reset-password pages) */
 .admin-login-wrap {
   display: flex;
   flex-direction: column;
@@ -44,11 +153,11 @@
 }
 
 .admin-login-title {
-  font-size: 1.375rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
   color: #09090b;
-  margin: 0 0 0.35rem;
-  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.025em;
 }
 
 .admin-login-lead {
@@ -58,13 +167,31 @@
 }
 
 .admin-login-success-banner {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   padding: 0.6rem 0.85rem;
   border-radius: 0.6rem;
   border: 1px solid #a7f3d0;
   background: #ecfdf5;
   font-size: 0.875rem;
   color: #065f46;
+}
+
+.admin-login-signup-cta {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: #71717a;
+  text-align: center;
+}
+
+.admin-login-signup-link {
+  color: #4f46e5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-login-signup-link:hover {
+  text-decoration: underline;
 }
 
 /* Full-viewport loading — transparent, spinner only (no white flash) */
@@ -228,6 +355,40 @@
   transition-duration: 0.06s;
 }
 
+
+.admin-login-forgot {
+  display: block;
+  text-align: right;
+  font-size: 0.8125rem;
+  color: #4f46e5;
+  text-decoration: none;
+  margin-top: 0.25rem;
+}
+
+.admin-login-forgot:hover {
+  text-decoration: underline;
+  color: #4338ca;
+}
+
+.admin-auth-success {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #a7f3d0;
+  background: #ecfdf5;
+}
+
+.admin-auth-success__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0 0 0.35rem;
+}
+
+.admin-auth-success__text {
+  font-size: 0.875rem;
+  color: #047857;
+  margin: 0;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .admin-login-submit {

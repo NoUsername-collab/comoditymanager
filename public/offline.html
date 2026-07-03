@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Offline — Zalmox</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0e14;
+      color: #e8e8f0;
+    }
+    body {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      gap: 0.85rem;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .icon { font-size: 3rem; line-height: 1; }
+    h1 {
+      font-size: 1.375rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+    p {
+      font-size: 0.9375rem;
+      color: #8888aa;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    button {
+      margin-top: 0.25rem;
+      padding: 0.65rem 1.75rem;
+      border-radius: 0.65rem;
+      border: none;
+      background: #7c3aed;
+      color: #fff;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: #6d28d9; }
+    button:active { background: #5b21b6; }
+    .brand {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: #44445a;
+    }
+  </style>
+</head>
+<body>
+  <span class="icon">📡</span>
+  <h1>Fără conexiune</h1>
+  <p>Verifică conexiunea la internet și încearcă din nou.</p>
+  <button onclick="window.location.reload()">Reîncearcă</button>
+  <p class="brand">Zalmox — Software pentru pensiuni</p>
+</body>
+</html>

@@ -1,0 +1,343 @@
+/* Onboarding wizard — always light, independent of theme */
+
+.onboarding-page {
+  color-scheme: light;
+  color: #18181b;
+  background: linear-gradient(135deg, #eef2ff 0%, #f4f4f5 60%, #eff6ff 100%);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 3rem;
+  gap: 1.25rem;
+}
+
+.onboarding-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.onboarding-brand__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.onboarding-brand__name {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #18181b;
+}
+
+.onboarding-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #09090b;
+  margin: 0;
+  text-align: center;
+}
+
+.onboarding-lead {
+  font-size: 0.9375rem;
+  color: #52525b;
+  margin: 0;
+  text-align: center;
+}
+
+.onboarding-wizard {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Stepper ── */
+.onboarding-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.onboarding-stepper__step {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  position: relative;
+}
+
+.onboarding-stepper__num {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: #e4e4e7;
+  color: #71717a;
+  flex-shrink: 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.onboarding-stepper__step--active .onboarding-stepper__num {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.onboarding-stepper__step--done .onboarding-stepper__num {
+  background: #22c55e;
+  color: #fff;
+}
+
+.onboarding-stepper__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #a1a1aa;
+}
+
+.onboarding-stepper__step--active .onboarding-stepper__label,
+.onboarding-stepper__step--done .onboarding-stepper__label {
+  color: #3f3f46;
+}
+
+.onboarding-stepper__line {
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  background: #e4e4e7;
+  margin: 0 0.35rem;
+  flex-shrink: 0;
+}
+
+/* ── Card ── */
+.onboarding-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  border: 1px solid #e4e4e7;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 30px -5px rgba(79,70,229,0.1);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.onboarding-card__title {
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: #09090b;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.onboarding-card__lead {
+  font-size: 0.875rem;
+  color: #52525b;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.onboarding-card__form {
+  display: contents;
+}
+
+.onboarding-card__fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ── Fields ── */
+.onboarding-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.onboarding-field__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #3f3f46;
+}
+
+.onboarding-field__input {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #d4d4d8;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  color: #18181b;
+  background: #fff;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.onboarding-field__input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+}
+
+.onboarding-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ── Buttons ── */
+.onboarding-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: 0.65rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, filter 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.onboarding-btn--primary {
+  background: #4f46e5;
+  color: #fff;
+  width: 100%;
+  min-height: 2.75rem;
+}
+
+.onboarding-btn--primary:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.onboarding-btn--primary:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.onboarding-btn--outline {
+  background: transparent;
+  color: #4f46e5;
+  border: 1.5px solid #4f46e5;
+  flex: 1;
+}
+
+.onboarding-btn--outline:hover {
+  background: #eef2ff;
+}
+
+.onboarding-btn--ghost {
+  background: transparent;
+  color: #71717a;
+  flex: 1;
+}
+
+.onboarding-btn--ghost:hover {
+  color: #3f3f46;
+  text-decoration: underline;
+}
+
+.onboarding-rooms-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* ── Themes ── */
+.onboarding-themes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+}
+
+.onboarding-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid #e4e4e7;
+  border-radius: 0.65rem;
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #3f3f46;
+}
+
+.onboarding-theme-btn:hover {
+  border-color: #a5b4fc;
+  background: #f5f3ff;
+}
+
+.onboarding-theme-btn--selected {
+  border-color: #4f46e5;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.onboarding-theme-btn__swatch {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1.5px rgba(0,0,0,0.1);
+}
+
+/* ── Mode toggle ── */
+.onboarding-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.onboarding-mode-btn {
+  flex: 1;
+  padding: 0.55rem 1rem;
+  border: 1.5px solid #e4e4e7;
+  border-radius: 0.6rem;
+  background: #fafafa;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #52525b;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.onboarding-mode-btn--selected {
+  border-color: #4f46e5;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+/* ── Error ── */
+.onboarding-error {
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .onboarding-themes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .onboarding-stepper__label {
+    display: none;
+  }
+
+  .onboarding-card {
+    padding: 1.25rem;
+  }
+}

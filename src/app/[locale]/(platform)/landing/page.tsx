@@ -12,6 +12,9 @@ import {
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { getTranslations } from "next-intl/server";
 
+export const dynamic = "force-static";
+export const revalidate = false;
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("landing");
   return {
@@ -320,7 +323,7 @@ export default async function LandingPage() {
           <div className="lp-compare__col lp-compare__col--bad">
             <div className="lp-compare__col-header">
               <span className="lp-compare__icon">😓</span>
-              <h3>{t("withoutHospira")}</h3>
+              <h3>{t("withoutZalmox")}</h3>
             </div>
             <ul>
               <li>{t("problem1")}</li>

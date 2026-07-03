@@ -14,6 +14,7 @@ import { isSimBackupPresent } from "@/services/simulation";
 import { OnboardingBarLazy } from "@/components/admin/onboarding/OnboardingBarLazy";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
+import { PwaInstallBanner } from "@/components/pwa/PwaInstallBanner";
 
 export default async function AdminLayout({
   children,
@@ -80,6 +81,8 @@ export default async function AdminLayout({
           locationUnlocked={locationUnlocked}
           statisticsAccess={statisticsAccess}
         />
+
+        <PwaInstallBanner />
 
         <SimOverlay
           active={simStatus.active}
