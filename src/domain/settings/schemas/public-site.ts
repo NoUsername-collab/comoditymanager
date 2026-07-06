@@ -2,7 +2,9 @@ import { z } from "zod";
 import { isSafeHttpUrl } from "@/lib/security/html-escape";
 import {
   formatZodError,
+  formatZodFieldErrors,
   localizedTextSchema,
+  optionalContactTextSchema,
   optionalEmailSchema,
   optionalSafeNavHrefSchema,
   optionalUrlSchema,
@@ -39,9 +41,9 @@ const publicHeroConfigSchema = z
 const publicContactConfigSchema = z
   .object({
     email: optionalEmailSchema.optional(),
-    phone: z.string().max(64).optional(),
-    whatsapp: z.string().max(64).optional(),
-    telegram: z.string().max(64).optional(),
+    phone: optionalContactTextSchema.optional(),
+    whatsapp: optionalContactTextSchema.optional(),
+    telegram: optionalContactTextSchema.optional(),
     facebook: optionalUrlSchema.optional(),
     instagram: optionalUrlSchema.optional(),
   })
@@ -136,7 +138,11 @@ export function parsePublicSiteSettingsInput(
 ): ParseResult<PublicSiteSettingsInputParsed> {
   const result = publicSiteSettingsInputSchema.safeParse(input);
   if (!result.success) {
-    return { ok: false, error: formatZodError(result.error) };
+    return {
+      ok: false,
+      error: formatZodError(result.error),
+      fieldErrors: formatZodFieldErrors(result.error),
+    };
   }
   return { ok: true, data: result.data };
 }

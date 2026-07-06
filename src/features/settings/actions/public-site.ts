@@ -11,7 +11,10 @@ import { getTranslations } from "next-intl/server";
 
 export async function savePublicSiteSettingsAction(
   input: unknown,
-): Promise<{ ok: true; redirectTo: string } | { ok: false; error: string }> {
+): Promise<
+  | { ok: true; redirectTo: string }
+  | { ok: false; error: string; fieldErrors?: Record<string, string> }
+> {
   try {
     const [t, staff] = await Promise.all([
       getTranslations("admin.serverActions"),
@@ -29,7 +32,7 @@ export async function savePublicSiteSettingsAction(
 
     const parsed = parsePublicSiteSettingsInput(input);
     if (!parsed.ok) {
-      return { ok: false, error: parsed.error };
+      return { ok: false, error: parsed.error, fieldErrors: parsed.fieldErrors };
     }
 
     await upsertPublicSiteSettingsImpl(tenant.id, parsed.data);

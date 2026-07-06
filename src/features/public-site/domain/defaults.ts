@@ -176,4 +176,7 @@ export const PUBLIC_THEME_OPTIONS: PublicThemeId[] = [
   "noir",
   "alpine",
   "mediterranean",
+  "pearl",
+  "slate",
+  "forest",
 ];

@@ -33,6 +33,10 @@ export const optionalSafeNavHrefSchema = z
   .union([z.literal(""), z.null(), safeNavHrefSchema])
   .transform((v) => (v === "" || v === null ? null : v));
 
+export const optionalContactTextSchema = z
+  .union([z.literal(""), z.null(), z.string().max(64)])
+  .transform((v) => (v === "" || v === null ? null : v));
+
 export const hexColorSchema = z
   .union([
     z.literal(""),
@@ -43,8 +47,18 @@ export const hexColorSchema = z
 
 export type ParseResult<T> =
   | { ok: true; data: T }
-  | { ok: false; error: string };
+  | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 export function formatZodError(error: z.ZodError): string {
   return error.issues.map((issue) => issue.message).join("; ");
+}
+
+/** Per-field messages keyed by dot-joined path (e.g. "contact.phone", "hero.title.ro"). */
+export function formatZodFieldErrors(error: z.ZodError): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const key = issue.path.join(".");
+    if (!map[key]) map[key] = issue.message;
+  }
+  return map;
 }

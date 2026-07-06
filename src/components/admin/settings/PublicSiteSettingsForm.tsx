@@ -18,32 +18,42 @@ import type { PensionContact } from "@/domain/settings/pension-identity";
 import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
 import { savePublicSiteSettingsAction } from "@/features/settings/actions/public-site";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { PublicSitePreview } from "@/components/admin/settings/PublicSitePreview";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
+import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldError";
 import { SettingsPreviewLayout } from "@/components/admin/settings/SettingsPreviewLayout";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 
-function galleryToText(items: PublicGalleryItem[] | undefined): string {
-  return (items ?? [])
-    .map((item) => {
-      const caption = item.caption?.ro ?? item.caption?.en ?? "";
-      return caption ? `${item.url} | ${caption}` : item.url;
-    })
-    .join("\n");
+type GalleryDraftItem = { id: string; url: string; caption: string };
+
+let galleryDraftSeq = 0;
+function nextGalleryDraftId(): string {
+  galleryDraftSeq += 1;
+  return `gallery-draft-${galleryDraftSeq}`;
 }
 
-function textToGallery(raw: string): PublicGalleryItem[] {
-  return raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, index) => {
-      const [url, caption] = line.split("|").map((part) => part.trim());
+function galleryItemsToDraft(
+  items: PublicGalleryItem[] | undefined,
+  locale: string,
+): GalleryDraftItem[] {
+  return (items ?? []).map((item, index) => ({
+    id: item.id || `gallery-${index}`,
+    url: item.url,
+    caption: pickLocalized(item.caption, locale),
+  }));
+}
+
+function galleryDraftToItems(items: GalleryDraftItem[]): PublicGalleryItem[] {
+  return items
+    .filter((item) => item.url.trim().length > 0)
+    .map((item, index) => {
+      const caption = item.caption.trim();
       return {
-        id: `gallery-${index}`,
-        url: url ?? line,
+        id: item.id || `gallery-${index}`,
+        url: item.url.trim(),
         caption: caption ? { ro: caption, en: caption, bg: caption } : undefined,
       };
     });
@@ -83,6 +93,17 @@ export function PublicSiteSettingsForm({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  function fieldError(...paths: string[]): string | undefined {
+    for (const path of paths) {
+      if (fieldErrors[path]) return fieldErrors[path];
+    }
+    const key = Object.keys(fieldErrors).find((candidate) =>
+      paths.some((path) => candidate === path || candidate.startsWith(`${path}.`)),
+    );
+    return key ? fieldErrors[key] : undefined;
+  }
 
   const [templateId, setTemplateId] = useState(config.templateId);
   const [themeId, setThemeId] = useState(config.themeId);
@@ -142,12 +163,44 @@ export function PublicSiteSettingsForm({
     () => config.sections.find((section) => section.sectionType === "gallery"),
     [config.sections]
   );
-  const [galleryText, setGalleryText] = useState(
-    galleryToText(gallerySection?.payload.items as PublicGalleryItem[] | undefined)
+  const [galleryItems, setGalleryItems] = useState<GalleryDraftItem[]>(() =>
+    galleryItemsToDraft(
+      gallerySection?.payload.items as PublicGalleryItem[] | undefined,
+      locale,
+    ),
   );
   const [galleryVisible, setGalleryVisible] = useState(
     gallerySection?.visible ?? false
   );
+
+  function addGalleryItem() {
+    setGalleryItems((items) => [
+      ...items,
+      { id: nextGalleryDraftId(), url: "", caption: "" },
+    ]);
+  }
+
+  function removeGalleryItem(id: string) {
+    setGalleryItems((items) => items.filter((item) => item.id !== id));
+  }
+
+  function moveGalleryItem(id: string, direction: -1 | 1) {
+    setGalleryItems((items) => {
+      const index = items.findIndex((item) => item.id === id);
+      const target = index + direction;
+      if (index === -1 || target < 0 || target >= items.length) return items;
+      const next = [...items];
+      const [moved] = next.splice(index, 1);
+      next.splice(target, 0, moved!);
+      return next;
+    });
+  }
+
+  function updateGalleryItem(id: string, patch: Partial<GalleryDraftItem>) {
+    setGalleryItems((items) =>
+      items.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+    );
+  }
 
   const sectionVisibility = useMemo(() => {
     const map = new Map(config.sections.map((s) => [s.sectionType, s.visible]));
@@ -189,7 +242,7 @@ export function PublicSiteSettingsForm({
         contactTelegram,
         contactFacebook,
         contactInstagram,
-        galleryText,
+        galleryItems,
         galleryVisible,
         introVisible,
         benefitsVisible,
@@ -219,7 +272,7 @@ export function PublicSiteSettingsForm({
       contactTelegram,
       contactFacebook,
       contactInstagram,
-      galleryText,
+      galleryItems,
       galleryVisible,
       introVisible,
       benefitsVisible,
@@ -244,10 +297,12 @@ export function PublicSiteSettingsForm({
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
+    setFieldErrors({});
     startTransition(async () => {
       const result = await savePublicSiteSettingsAction(buildInput());
       if (!result.ok) {
         setError(result.error);
+        setFieldErrors(result.fieldErrors ?? {});
       } else {
         router.push(result.redirectTo);
       }
@@ -272,6 +327,17 @@ export function PublicSiteSettingsForm({
                 </p>
               </div>
             ) : null}
+
+      <FormSection title={t("publishTitle")} description={t("publishedHint")}>
+        <label className="pub-settings-section-toggle">
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+          />
+          {t("published")}
+        </label>
+      </FormSection>
 
       <FormSection title={t("templateTitle")} description={t("templateSectionDesc")}>
         <div className="pub-settings-grid pub-settings-grid--3" role="radiogroup" aria-label={t("templateTitle")}>
@@ -323,8 +389,16 @@ export function PublicSiteSettingsForm({
         <div className="admin-settings-fields admin-settings-fields--2col">
           <label>
             <span>{t("heroTitle")}</span>
-            <input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} />
-            <SettingsFieldHint>{t("heroTitleHint")}</SettingsFieldHint>
+            <input
+              value={heroTitle}
+              aria-invalid={!!fieldError("hero.title")}
+              onChange={(e) => setHeroTitle(e.target.value)}
+            />
+            {fieldError("hero.title") ? (
+              <SettingsFieldError>{fieldError("hero.title")}</SettingsFieldError>
+            ) : (
+              <SettingsFieldHint>{t("heroTitleHint")}</SettingsFieldHint>
+            )}
           </label>
           <label>
             <span>{t("heroBadge")}</span>
@@ -364,10 +438,15 @@ export function PublicSiteSettingsForm({
             <span>{t("heroImageUrl")}</span>
             <input
               value={heroImageUrl}
+              aria-invalid={!!fieldError("hero.imageUrl")}
               onChange={(e) => setHeroImageUrl(e.target.value)}
               placeholder="https://..."
             />
-            <SettingsFieldHint>{t("heroImageHint")}</SettingsFieldHint>
+            {fieldError("hero.imageUrl") ? (
+              <SettingsFieldError>{fieldError("hero.imageUrl")}</SettingsFieldError>
+            ) : (
+              <SettingsFieldHint>{t("heroImageHint")}</SettingsFieldHint>
+            )}
           </label>
         </div>
       </FormSection>
@@ -407,42 +486,69 @@ export function PublicSiteSettingsForm({
             <input
               type="email"
               value={contactEmail}
+              aria-invalid={!!fieldError("contact.email")}
               onChange={(e) => setContactEmail(e.target.value)}
             />
+            {fieldError("contact.email") ? (
+              <SettingsFieldError>{fieldError("contact.email")}</SettingsFieldError>
+            ) : null}
           </label>
           <label>
             <span>{t("phone")}</span>
-            <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
+            <input
+              value={contactPhone}
+              aria-invalid={!!fieldError("contact.phone")}
+              onChange={(e) => setContactPhone(e.target.value)}
+            />
+            {fieldError("contact.phone") ? (
+              <SettingsFieldError>{fieldError("contact.phone")}</SettingsFieldError>
+            ) : null}
           </label>
           <label>
             <span>WhatsApp</span>
             <input
               value={contactWhatsapp}
+              aria-invalid={!!fieldError("contact.whatsapp")}
               onChange={(e) => setContactWhatsapp(e.target.value)}
               placeholder="+40..."
             />
+            {fieldError("contact.whatsapp") ? (
+              <SettingsFieldError>{fieldError("contact.whatsapp")}</SettingsFieldError>
+            ) : null}
           </label>
           <label>
             <span>Telegram</span>
             <input
               value={contactTelegram}
+              aria-invalid={!!fieldError("contact.telegram")}
               onChange={(e) => setContactTelegram(e.target.value)}
               placeholder="@username"
             />
+            {fieldError("contact.telegram") ? (
+              <SettingsFieldError>{fieldError("contact.telegram")}</SettingsFieldError>
+            ) : null}
           </label>
           <label>
             <span>Facebook</span>
             <input
               value={contactFacebook}
+              aria-invalid={!!fieldError("contact.facebook")}
               onChange={(e) => setContactFacebook(e.target.value)}
             />
+            {fieldError("contact.facebook") ? (
+              <SettingsFieldError>{fieldError("contact.facebook")}</SettingsFieldError>
+            ) : null}
           </label>
           <label>
             <span>Instagram</span>
             <input
               value={contactInstagram}
+              aria-invalid={!!fieldError("contact.instagram")}
               onChange={(e) => setContactInstagram(e.target.value)}
             />
+            {fieldError("contact.instagram") ? (
+              <SettingsFieldError>{fieldError("contact.instagram")}</SettingsFieldError>
+            ) : null}
           </label>
         </div>
       </FormSection>
@@ -481,29 +587,91 @@ export function PublicSiteSettingsForm({
             />
             {t("sectionCta")}
           </label>
-          <label className="pub-settings-section-toggle">
-            <input
-              type="checkbox"
-              checked={galleryVisible}
-              onChange={(e) => setGalleryVisible(e.target.checked)}
-            />
-            {t("sectionGallery")}
-          </label>
-        </div>
-        <div className="admin-settings-fields">
-          <label>
-            <span>{t("galleryHelp")}</span>
-            <textarea
-              rows={5}
-              value={galleryText}
-              onChange={(e) => setGalleryText(e.target.value)}
-              placeholder="https://example.com/photo.jpg | Cameră dublă"
-            />
-          </label>
         </div>
       </FormSection>
 
-      <FormSection title={t("bookingTitle")} description={t("bookingSectionDesc")}>
+      <FormSection title={t("sectionGallery")} description={t("gallerySectionDesc")}>
+        <label className="pub-settings-section-toggle mb-4">
+          <input
+            type="checkbox"
+            checked={galleryVisible}
+            onChange={(e) => setGalleryVisible(e.target.checked)}
+          />
+          {t("sectionGallery")}
+        </label>
+
+        <div className="pub-gallery-editor">
+          {galleryItems.length === 0 ? (
+            <p className="pub-gallery-editor__empty">{t("galleryEmpty")}</p>
+          ) : (
+            galleryItems.map((item, index) => (
+              <div key={item.id} className="pub-gallery-editor__item">
+                {item.url.trim() ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.url} alt="" className="pub-gallery-editor__thumb" />
+                ) : (
+                  <div className="pub-gallery-editor__thumb" aria-hidden="true" />
+                )}
+                <div className="pub-gallery-editor__fields">
+                  <input
+                    value={item.url}
+                    placeholder={t("galleryUrlLabel")}
+                    aria-label={t("galleryUrlLabel")}
+                    onChange={(e) => updateGalleryItem(item.id, { url: e.target.value })}
+                  />
+                  <input
+                    value={item.caption}
+                    placeholder={t("galleryCaptionLabel")}
+                    aria-label={t("galleryCaptionLabel")}
+                    onChange={(e) =>
+                      updateGalleryItem(item.id, { caption: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="pub-gallery-editor__actions">
+                  <button
+                    type="button"
+                    className="pub-gallery-editor__icon-btn"
+                    aria-label={t("galleryMoveUp")}
+                    disabled={index === 0}
+                    onClick={() => moveGalleryItem(item.id, -1)}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    className="pub-gallery-editor__icon-btn"
+                    aria-label={t("galleryMoveDown")}
+                    disabled={index === galleryItems.length - 1}
+                    onClick={() => moveGalleryItem(item.id, 1)}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    className="pub-gallery-editor__icon-btn pub-gallery-editor__icon-btn--danger"
+                    aria-label={t("galleryRemove")}
+                    onClick={() => removeGalleryItem(item.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+          <AdminButton
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="pub-gallery-editor__add"
+            onClick={addGalleryItem}
+          >
+            {t("galleryAddPhoto")}
+          </AdminButton>
+        </div>
+      </FormSection>
+
+      <FormSection title={t("bookingTitle")} description={t("bookingSectionDescOnly")}>
         <div className="admin-settings-fields admin-settings-fields--2col">
           <label className="pub-settings-section-toggle">
             <input
@@ -529,15 +697,6 @@ export function PublicSiteSettingsForm({
               <option value="hidden">{t("bookingPosHidden")}</option>
             </select>
           </label>
-          <label className="pub-settings-section-toggle admin-settings-fields__full">
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(e) => setPublished(e.target.checked)}
-            />
-            {t("published")}
-          </label>
-          <SettingsFieldHint className="admin-settings-fields__full">{t("publishedHint")}</SettingsFieldHint>
         </div>
       </FormSection>
 
@@ -578,7 +737,7 @@ function buildInputFromState(args: {
   contactTelegram: string;
   contactFacebook: string;
   contactInstagram: string;
-  galleryText: string;
+  galleryItems: GalleryDraftItem[];
   galleryVisible: boolean;
   introVisible: boolean;
   benefitsVisible: boolean;
@@ -589,7 +748,7 @@ function buildInputFromState(args: {
   const { config } = args;
 
   const baseSections = config.sections.filter((section) => section.sectionType !== "gallery");
-  const galleryItems = textToGallery(args.galleryText);
+  const galleryItems = galleryDraftToItems(args.galleryItems);
   const galleryFromConfig = config.sections.find((s) => s.sectionType === "gallery");
 
   const sections = [

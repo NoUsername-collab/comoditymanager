@@ -23,7 +23,7 @@ with checks as (
     ('015', 'room_catalog',            'table',              'room_type_definitions',                    ''),
     ('016', 'guest_profiles',          'table',              'guest_profiles',                           ''),
     ('017', 'guest_profiles_stars',      'seed',               '',                                         'default stars_avg=1 — verifică guest_profiles'),
-    ('018', 'guest_manual_traits',     'column',             'guest_profiles',                           'manual_positive_traits'),
+    ('018', 'guest_manual_traits',       'seed',               '',                                         'SUPERSEDED by 057 (traits → free-text notes) — column dropped on purpose, do not re-add'),
     ('019', 'booking_checkin_out',     'column',             'bookings',                                 'actual_check_in_at'),
     ('020', 'dev_logs',                'table',              'dev_logs',                                 ''),
     ('021', 'guest_identity',          'column',             'guests',                                   'identity_status'),
@@ -62,10 +62,10 @@ with checks as (
     ('054', 'public_site',             'table',              'public_site_settings',                     ''),
     ('055', 'checkout_block_unpaid',   'column',             'pension_settings',                         'checkout_block_unpaid'),
     ('056', 'guest_app',               'table',              'guest_app_settings',                       ''),
-    ('057', 'guest_review_notes',      'column',             'guest_stay_reviews',                       'positive_note'),
+    ('057', 'guest_review_notes',        'seed',               '',                                         'SUPERSEDED by 070 (unified polarity/intensity/note) — column dropped on purpose, do not re-add'),
     ('058', 'guest_national_id_tenant_unique', 'index',      'guests_tenant_national_id_uidx',           ''),
     ('059', 'guest_score_simplify',      'seed',               '',                                         'comment-only, no schema change'),
-    ('060', 'guest_review_note_stars', 'column',             'guest_stay_reviews',                       'positive_stars'),
+    ('060', 'guest_review_note_stars',   'seed',               '',                                         'SUPERSEDED by 070 (unified polarity/intensity/note) — column dropped on purpose, do not re-add'),
     ('061', 'checkin_keys_handed_rooms', 'column',           'checkins',                                 'keys_handed_rooms'),
     ('062', 'drop_trust_loyalty',      'column_dropped',    'guest_profiles',                           'trust_score'),
     ('063', 'guest_app_live',          'table',              'guest_precheckin_submissions',             ''),
@@ -96,7 +96,8 @@ with checks as (
     ('088', 'proforma_documents',      'column',             'pension_settings',                         'proforma_series'),
     ('089', 'fiscal_submission',       'table',              'tenant_fiscal_settings',                   ''),
     ('090', 'early_checkout_policy_repair', 'column',        'pension_settings',                         'early_checkout_allowed'),
-    ('091', 'expand_admin_palette_themes', 'constraint_contains', 'pension_settings_admin_palette_key_check', 'pearl')
+    ('091', 'expand_admin_palette_themes', 'constraint_contains', 'pension_settings_admin_palette_key_check', 'pearl'),
+    ('092', 'expand_public_site_theme_ids', 'constraint_contains', 'public_site_settings_theme_id_check', 'pearl')
   ) as t(migration_id, slug, kind, obj1, obj2)
 ),
 table_exists as (
