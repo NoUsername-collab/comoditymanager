@@ -96,13 +96,13 @@ function SummaryCard({
 }) {
   const toneClass =
     tone === "warn"
-      ? "border-amber-200 bg-amber-50 text-amber-900"
+      ? "admin-banner--warning"
       : tone === "info"
-        ? "border-sky-200 bg-sky-50 text-sky-900"
-        : "border-zinc-200 bg-zinc-50 text-zinc-700";
+        ? "admin-banner--info"
+        : "admin-banner--muted";
 
   return (
-    <div className={["rounded-xl border px-3 py-2.5", toneClass].join(" ")}>
+    <div className={["admin-banner", toneClass].join(" ")}>
       <div className="text-[11px] font-semibold uppercase tracking-[0.08em] opacity-70">
         {title}
       </div>
@@ -164,17 +164,17 @@ function IntervalPlanner({
       : invalidMessage;
 
   return (
-    <section className="admin-surface-card rounded-[1.65rem] p-4">
+    <section className="admin-surface-card gantt-quick-panel__planner p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-500">
+          <p className="gantt-quick-panel__eyebrow text-[11px] font-semibold uppercase tracking-[0.14em]">
             {title}
           </p>
-          <div className="mt-1 text-base font-bold text-zinc-900">{subtitle}</div>
+          <div className="gantt-quick-panel__value mt-1 text-base font-bold">{subtitle}</div>
           <p
             className={[
               "mt-1 text-sm",
-              invalidInterval ? "text-red-600" : "text-zinc-600",
+              invalidInterval ? "admin-text--danger" : "gantt-quick-panel__muted",
             ].join(" ")}
           >
             {period}
@@ -182,16 +182,16 @@ function IntervalPlanner({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-700">
+          <span className="admin-status-badge admin-status-badge--confirmed px-3 py-1 text-[11px]">
             {nights > 0 ? nightLabel(nights) : tGantt("quick.intervalBadge")}
           </span>
           {hasConflict ? (
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-amber-700">
+            <span className="admin-status-badge admin-status-badge--pending px-3 py-1 text-[11px]">
               {tGantt("quick.conflict")}
             </span>
           ) : null}
           {invalidInterval ? (
-            <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-red-700">
+            <span className="admin-status-badge admin-status-badge--cancelled px-3 py-1 text-[11px]">
               {tGantt("quick.invalidDates")}
             </span>
           ) : null}
@@ -255,7 +255,7 @@ function IntervalPlanner({
   );
 }
 
-function ActionRadial({
+function ActionGrid({
   disabled,
   onSelect,
   tGantt,
@@ -274,80 +274,68 @@ function ActionRadial({
       id: "cerere",
       label: tGantt("quick.radial.request"),
       hint: tGantt("quick.radial.unconfirmed"),
-      offsetX: -126,
-      offsetY: -82,
-      tone:
-        "border-violet-300 bg-violet-50 text-violet-700 shadow-violet-100/80",
+      tone: "cerere",
     },
     {
       id: "direct",
       label: tGantt("quick.radial.direct"),
       hint: tGantt("quick.radial.confirmed"),
-      offsetX: 126,
-      offsetY: -82,
-      tone: "border-sky-300 bg-sky-50 text-sky-700 shadow-sky-100/80",
+      tone: "direct",
     },
     {
       id: "hold",
       label: tGantt("quick.radial.hold"),
       hint: tGantt("quick.radial.temporary"),
-      offsetX: -126,
-      offsetY: 82,
-      tone: "border-amber-300 bg-amber-50 text-amber-700 shadow-amber-100/80",
+      tone: "hold",
     },
     {
       id: "block",
       label: tGantt("quick.radial.block"),
       hint: tGantt("quick.radial.unavailable"),
-      offsetX: 126,
-      offsetY: 82,
-      tone: "border-zinc-300 bg-zinc-50 text-zinc-700 shadow-zinc-100/80",
+      tone: "block",
     },
   ] as const;
 
   return (
-    <div className="relative mx-auto h-[20rem] max-w-[30rem] overflow-visible">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-emerald-200/70 bg-emerald-50/40" />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-zinc-200/80" />
-      <div className="absolute left-1/2 top-1/2 z-20 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border border-emerald-200 bg-white px-3 text-center shadow-none">
-        <div>
-          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
-            {tGantt("quick.radial.release")}
-          </div>
-          <div className="mt-1 text-base font-extrabold text-zinc-800">{tGantt("quick.radial.choose")}</div>
-        </div>
+    <div>
+      <div className="gantt-quick-panel__pick-heading">
+        <p className="gantt-quick-panel__eyebrow text-[11px] font-semibold uppercase tracking-[0.18em]">
+          {tGantt("quick.radial.release")}
+        </p>
+        <p className="gantt-quick-panel__pick-title text-base font-extrabold">
+          {tGantt("quick.radial.choose")}
+        </p>
       </div>
 
-      {actions.map((action) => {
-        const isDisabled = disabled[action.id];
-        return (
-          <button
-            key={action.id}
-            type="button"
-            disabled={isDisabled}
-            onClick={() => onSelect(action.id)}
-            style={{
-              left: "50%",
-              top: "50%",
-              transform: `translate(calc(-50% + ${action.offsetX}px), calc(-50% + ${action.offsetY}px))`,
-            }}
-            className={[
-              "absolute z-10 flex min-h-[5.3rem] w-[10.5rem] flex-col items-center justify-center rounded-[1.55rem] border px-4 text-center shadow-[0_18px_45px_-24px_rgba(15,23,42,0.5)] transition",
-              action.tone,
-              isDisabled
-                ? "cursor-not-allowed opacity-45 shadow-none"
-                : "hover:scale-[1.02] hover:shadow-[0_24px_55px_-24px_rgba(15,23,42,0.5)]",
-            ].join(" ")}
-          >
-            <span className="text-[1.03rem] font-extrabold leading-none">
-              {action.label}
-            </span>
-            <span className="mt-1 text-[11px] font-bold uppercase tracking-[0.08em] opacity-75">
-              {action.hint}
-            </span>
-          </button>
-        );
-      })}
+      <div className="gantt-quick-panel__action-grid">
+        {actions.map((action) => {
+          const isDisabled = disabled[action.id];
+          return (
+            <button
+              key={action.id}
+              type="button"
+              disabled={isDisabled}
+              aria-disabled={isDisabled}
+              onClick={() => onSelect(action.id)}
+              className={[
+                "admin-surface-card admin-surface-card--interactive admin-booking-tone",
+                `admin-booking-tone--${action.tone}`,
+                "gantt-quick-panel__action-card",
+                isDisabled && "gantt-quick-panel__action-card--disabled",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <span className="gantt-quick-panel__action-card-label">
+                {action.label}
+              </span>
+              <span className="gantt-quick-panel__action-card-hint">
+                {action.hint}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -882,7 +870,7 @@ export function GanttQuickActionPanel({
         ) : null}
 
         {mode === "pick" ? (
-          <ActionRadial
+          <ActionGrid
             disabled={{
               hold: hasConflict || intervalInvalid,
               block: hasConflict || hasMultiRoomDraft || intervalInvalid,
@@ -1202,10 +1190,7 @@ export function GanttQuickActionPanel({
         ) : null}
 
         {error ? (
-          <p
-            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-            role="alert"
-          >
+          <p className="admin-banner admin-banner--danger" role="alert">
             {error}
           </p>
         ) : null}

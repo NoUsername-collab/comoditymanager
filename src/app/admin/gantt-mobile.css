@@ -1185,19 +1185,23 @@ html[data-layout-chrome="compact"] .gantt-quick-panel.admin-floating-panel--moda
   max-width: min(calc(100vw - 1rem), 22rem);
 }
 
-html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.rounded-\[1\.65rem\] {
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.gantt-quick-panel__planner {
   border-radius: 1rem;
   padding: 0.65rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.rounded-\[1\.65rem\] .text-base {
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form section.gantt-quick-panel__planner .text-base {
   font-size: 0.9375rem;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .rounded-\[1\.65rem\].border {
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .gantt-quick-panel__planner {
   min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__action-grid {
+  grid-template-columns: 1fr;
 }
 
 html[data-layout-chrome="compact"] .gantt-ctx-menu {

@@ -4576,3 +4576,78 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact .gantt-st
   pointer-events: none;
   z-index: 2;
 }
+
+/* ── Gantt quick action panel: drag-release create/hold/block/request/direct ── */
+.gantt-quick-panel__planner {
+  border-radius: 1.1rem;
+}
+
+.gantt-quick-panel__eyebrow {
+  color: var(--admin-text-muted);
+}
+
+.gantt-quick-panel__value {
+  color: var(--admin-text);
+}
+
+.gantt-quick-panel__muted {
+  color: var(--admin-text-muted);
+}
+
+.gantt-quick-panel__pick-heading {
+  margin-bottom: 0.85rem;
+  text-align: center;
+}
+
+.gantt-quick-panel__pick-heading .gantt-quick-panel__eyebrow {
+  margin-bottom: 0.15rem;
+}
+
+.gantt-quick-panel__pick-title {
+  color: var(--admin-text);
+}
+
+.gantt-quick-panel__action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.gantt-quick-panel__action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gantt-quick-panel__action-card-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.gantt-quick-panel__action-card-hint {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.75;
+}
+
+.gantt-quick-panel__action-card--disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.gantt-quick-panel__action-card--disabled:hover {
+  border-color: inherit;
+}
+
+@media (max-width: 420px) {
+  .gantt-quick-panel__action-grid {
+    grid-template-columns: 1fr;
+  }
+}
