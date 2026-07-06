@@ -57,7 +57,46 @@ with checks as (
     ('049', 'statistics_visibility',   'column',             'pension_settings',                         'statistics_visibility'),
     ('050', 'rooms_room_type_slug',    'constraint_dropped', 'rooms',                                    'rooms_room_type_check'),
     ('051', 'platform_resource_counts',  'function',           'platform_tenant_resource_counts',          ''),
-    ('052', 'checkin_fisa_turist',     'column',             'pension_settings',                         'checkin_cnp_rule')
+    ('052', 'checkin_fisa_turist',     'column',             'pension_settings',                         'checkin_cnp_rule'),
+    ('053', 'checkin_per_room_mode',   'constraint',         'pension_settings',                         'pension_settings_group_checkin_mode_check'),
+    ('054', 'public_site',             'table',              'public_site_settings',                     ''),
+    ('055', 'checkout_block_unpaid',   'column',             'pension_settings',                         'checkout_block_unpaid'),
+    ('056', 'guest_app',               'table',              'guest_app_settings',                       ''),
+    ('057', 'guest_review_notes',      'column',             'guest_stay_reviews',                       'positive_note'),
+    ('058', 'guest_national_id_tenant_unique', 'index',      'guests_tenant_national_id_uidx',           ''),
+    ('059', 'guest_score_simplify',      'seed',               '',                                         'comment-only, no schema change'),
+    ('060', 'guest_review_note_stars', 'column',             'guest_stay_reviews',                       'positive_stars'),
+    ('061', 'checkin_keys_handed_rooms', 'column',           'checkins',                                 'keys_handed_rooms'),
+    ('062', 'drop_trust_loyalty',      'column_dropped',    'guest_profiles',                           'trust_score'),
+    ('063', 'guest_app_live',          'table',              'guest_precheckin_submissions',             ''),
+    ('064', 'guest_precheckin_identity', 'column',           'guest_precheckin_submissions',             'guest_last_name'),
+    ('065', 'booking_policies_pricing_invoices', 'column',   'pension_settings',                         'cancellation_policy_type'),
+    ('066', 'fiscal_vat_settings',     'column',             'pension_settings',                         'invoice_vat_enabled'),
+    ('067', 'checkin_key_rule_ids_per_room', 'column',       'pension_settings',                         'checkin_key_rule'),
+    ('068', 'fix_onboard_tenant_palette', 'constraint',      'pension_settings',                         'pension_settings_admin_palette_key_check'),
+    ('069', 'email_settings',           'column',             'pension_settings',                         'email_enabled'),
+    ('070', 'guest_stay_review_unified', 'column',           'guest_stay_reviews',                       'polarity'),
+    ('071', 'allow_post_checkout_edits', 'column',           'pension_settings',                         'allow_post_checkout_edits'),
+    ('072', 'guest_feedback',          'table',              'guest_feedback',                           ''),
+    ('073', 'weather_coordinates',     'column',             'pension_settings',                         'weather_lat'),
+    ('074', 'email_from_address',      'column',             'pension_settings',                         'email_from_name'),
+    ('075', 'pension_settings_unique_tenant', 'index',       'pension_settings_tenant_id_unique_idx',    ''),
+    ('076', 'settings_rls_bulletproof', 'policy',            'public_site_settings',                     'tenant_isolation_public_site_settings'),
+    ('077', 'atomic_public_site_save', 'function',           'upsert_public_site_settings_atomic',       ''),
+    ('078', 'unify_check_times',         'seed',               '',                                         'data backfill only (check-in/out time mirrors)'),
+    ('079', 'pension_identity',        'column',             'pension_settings',                         'contact_email'),
+    ('080', 'public_site_primary_contact', 'function_contains', 'upsert_public_site_settings_atomic',    'p_use_primary_contact'),
+    ('081', 'guest_feedback_rls',      'policy',             'guest_feedback',                           'tenant_isolation_guest_feedback'),
+    ('082', 'early_checkout_policy',   'column',             'pension_settings',                         'early_checkout_allowed'),
+    ('083', 'team_permissions',        'column',             'pension_settings',                         'team_permissions'),
+    ('084', 'rebrand_nestio_tenant_domains', 'seed',           '',                                         'platform_settings value update (hospira -> nestio)'),
+    ('085', 'revert_platform_domains_to_hospira', 'seed',      '',                                         'platform_settings value update (nestio -> hospira)'),
+    ('086', 'booking_payments_ledger', 'table',              'booking_payments',                         ''),
+    ('087', 'multi_invoice_per_booking', 'column',           'booking_invoices',                         'invoice_kind'),
+    ('088', 'proforma_documents',      'column',             'pension_settings',                         'proforma_series'),
+    ('089', 'fiscal_submission',       'table',              'tenant_fiscal_settings',                   ''),
+    ('090', 'early_checkout_policy_repair', 'column',        'pension_settings',                         'early_checkout_allowed'),
+    ('091', 'expand_admin_palette_themes', 'constraint_contains', 'pension_settings_admin_palette_key_check', 'pearl')
   ) as t(migration_id, slug, kind, obj1, obj2)
 ),
 table_exists as (
@@ -94,6 +133,24 @@ index_exists as (
   select indexname
   from pg_indexes
   where schemaname = 'public'
+),
+constraint_defs as (
+  select
+    rel.relname as table_name,
+    con.conname as constraint_name,
+    pg_get_constraintdef(con.oid) as def
+  from pg_constraint con
+  join pg_class rel on rel.oid = con.conrelid
+  join pg_namespace nsp on nsp.oid = rel.relnamespace
+  where nsp.nspname = 'public'
+),
+function_args as (
+  select
+    p.proname as function_name,
+    pg_get_function_arguments(p.oid) as args
+  from pg_proc p
+  join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname = 'public'
 )
 select
   c.migration_id,
@@ -105,17 +162,29 @@ select
     when c.kind = 'seed' then 'MANUAL'
     when c.kind = 'table' and te.table_name is not null then 'OK'
     when c.kind = 'column' and ce.column_name is not null then 'OK'
+    when c.kind = 'column_dropped' and ce.column_name is null then 'OK'
+    when c.kind = 'column_dropped' and ce.column_name is not null then 'MISSING'
     when c.kind = 'function' and fe.function_name is not null then 'OK'
     when c.kind = 'policy' and pe.policyname is not null then 'OK'
     when c.kind = 'constraint' and ce2.constraint_name is not null then 'OK'
     when c.kind = 'index' and ie.indexname is not null then 'OK'
     when c.kind = 'constraint_dropped' and ce2.constraint_name is null then 'OK'
     when c.kind = 'constraint_dropped' and ce2.constraint_name is not null then 'MISSING'
+    -- Content-aware checks: object exists, but may still carry a STALE definition
+    -- (this is exactly the class of bug that plain existence checks miss — the
+    -- constraint/function name survives across migrations while its body changes).
+    when c.kind = 'constraint_contains' and cd.def ilike '%' || c.obj2 || '%' then 'OK'
+    when c.kind = 'constraint_contains' and cd.def is not null then 'STALE'
+    when c.kind = 'function_contains' and fa.args ilike '%' || c.obj2 || '%' then 'OK'
+    when c.kind = 'function_contains' and fa.args is not null then 'STALE'
     else 'MISSING'
   end as status
 from checks c
 left join table_exists te on c.kind = 'table' and te.table_name = c.obj1
-left join column_exists ce on c.kind = 'column' and ce.table_name = c.obj1 and ce.column_name = c.obj2
+left join column_exists ce
+  on c.kind in ('column', 'column_dropped')
+ and ce.table_name = c.obj1
+ and ce.column_name = c.obj2
 left join function_exists fe on c.kind = 'function' and fe.function_name = c.obj1
 left join policy_exists pe on c.kind = 'policy' and pe.tablename = c.obj1 and pe.policyname = c.obj2
 left join constraint_exists ce2
@@ -123,7 +192,13 @@ left join constraint_exists ce2
  and ce2.table_name = c.obj1
  and ce2.constraint_name = c.obj2
 left join index_exists ie on c.kind = 'index' and ie.indexname = c.obj1
-order by c.migration_id;
+left join constraint_defs cd
+  on c.kind = 'constraint_contains'
+ and cd.constraint_name = c.obj1
+left join function_args fa
+  on c.kind = 'function_contains'
+ and fa.function_name = c.obj1
+order by c.migration_id::int;
 
--- Rezumat rapid: doar ce lipsește
--- select * from (<query de mai sus>) q where status = 'MISSING';
+-- Rezumat rapid: doar ce lipsește sau e vechi
+-- select * from (<query de mai sus>) q where status in ('MISSING', 'STALE');

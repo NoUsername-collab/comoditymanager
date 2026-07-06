@@ -1,4 +1,4 @@
-# Architecture — Hospira / Casa Emil
+# Architecture — Zalmox
 
 Actualizat 2026-06-22. Ghid pentru **decuplare straturi** și **performanță** — cele două se susțin reciproc.
 
