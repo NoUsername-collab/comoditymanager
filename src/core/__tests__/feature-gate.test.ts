@@ -35,17 +35,17 @@ describe("Feature Gates", () => {
 
     it("throws FeatureGateError for missing features", () => {
       setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
-      expect(() => assertFeature("gantt")).toThrow(FeatureGateError);
+      expect(() => assertFeature("priority_support")).toThrow(FeatureGateError);
     });
 
     it("error includes plan info", () => {
       setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
       try {
-        assertFeature("gantt");
+        assertFeature("priority_support");
       } catch (e) {
         expect(e).toBeInstanceOf(FeatureGateError);
         const err = e as FeatureGateError;
-        expect(err.feature).toBe("gantt");
+        expect(err.feature).toBe("priority_support");
         expect(err.currentPlan).toBe("free");
         expect(err.code).toBe("FEATURE_GATE");
       }
@@ -82,13 +82,13 @@ describe("Feature Gates", () => {
 
     it("blocks rooms at limit", () => {
       setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
-      expect(() => assertCanAddRoom(3)).toThrow(LimitGateError);
+      expect(() => assertCanAddRoom(5)).toThrow(LimitGateError);
     });
 
-    it("allows rooms up to Professional limit", () => {
-      setTenantContext(DEFAULT_TENANT); // Professional, max 30
+    it("allows unlimited rooms on Professional", () => {
+      setTenantContext(DEFAULT_TENANT); // Professional, unlimited
       expect(() => assertCanAddRoom(29)).not.toThrow();
-      expect(() => assertCanAddRoom(30)).toThrow(LimitGateError);
+      expect(() => assertCanAddRoom(9999)).not.toThrow();
     });
   });
 
@@ -98,17 +98,17 @@ describe("Feature Gates", () => {
       expect(() => assertCanAddProperty(1)).toThrow(LimitGateError);
     });
 
-    it("allows up to 5 properties for Business", () => {
+    it("allows up to 10 properties for Business", () => {
       setTenantContext({ ...DEFAULT_TENANT, planId: "business" });
-      expect(() => assertCanAddProperty(4)).not.toThrow();
-      expect(() => assertCanAddProperty(5)).toThrow(LimitGateError);
+      expect(() => assertCanAddProperty(9)).not.toThrow();
+      expect(() => assertCanAddProperty(10)).toThrow(LimitGateError);
     });
   });
 
   describe("checkFeature / checkModule (non-throwing)", () => {
     it("returns boolean without throwing", () => {
       setTenantContext({ ...DEFAULT_TENANT, planId: "free" });
-      expect(checkFeature("gantt")).toBe(false);
+      expect(checkFeature("priority_support")).toBe(false);
       expect(checkFeature("calendar")).toBe(true);
       expect(checkModule("invoicing")).toBe(false);
     });
@@ -119,8 +119,8 @@ describe("Feature Gates", () => {
       expect(getMinimumPlanForFeature("calendar")).toBe("free");
     });
 
-    it("returns essential for gantt", () => {
-      expect(getMinimumPlanForFeature("gantt")).toBe("essential");
+    it("returns essential for heatmap", () => {
+      expect(getMinimumPlanForFeature("heatmap")).toBe("essential");
     });
 
     it("returns professional for priority_support", () => {
@@ -137,8 +137,8 @@ describe("Feature Gates", () => {
       expect(getMinimumPlanForModule("public_page")).toBe("free");
     });
 
-    it("returns professional for ical_sync", () => {
-      expect(getMinimumPlanForModule("ical_sync")).toBe("professional");
+    it("returns essential for ical_sync", () => {
+      expect(getMinimumPlanForModule("ical_sync")).toBe("essential");
     });
 
     it("returns business for api_access", () => {
@@ -160,7 +160,7 @@ describe("Feature Gates", () => {
       expect(map.planLabel).toBe("Professional");
       expect(map.mode).toBe("cloud");
       expect(map.showBranding).toBe(false);
-      expect(map.maxRooms).toBe(30);
+      expect(map.maxRooms).toBe(Infinity);
 
       // Features
       expect(map.features.gantt).toBe(true);
@@ -177,8 +177,8 @@ describe("Feature Gates", () => {
       const map = buildFeatureMap();
 
       expect(map.showBranding).toBe(true);
-      expect(map.maxRooms).toBe(3);
-      expect(map.features.gantt).toBe(false);
+      expect(map.maxRooms).toBe(5);
+      expect(map.features.gantt).toBe(true);
       expect(map.modules.invoicing).toBe(false);
     });
   });

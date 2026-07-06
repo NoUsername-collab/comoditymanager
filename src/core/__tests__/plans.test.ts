@@ -36,19 +36,19 @@ describe("PLAN_CONFIGS", () => {
   describe("Free plan", () => {
     const free = PLAN_CONFIGS.free;
 
-    it("limits rooms to 3", () => {
-      expect(free.maxRooms).toBe(3);
+    it("limits rooms to 5", () => {
+      expect(free.maxRooms).toBe(5);
     });
 
     it("shows platform branding", () => {
       expect(free.showBranding).toBe(true);
     });
 
-    it("has basic features only", () => {
+    it("includes Gantt and the basics", () => {
       expect(free.coreFeatures).toContain("calendar");
       expect(free.coreFeatures).toContain("guest_files");
       expect(free.coreFeatures).toContain("bookings");
-      expect(free.coreFeatures).not.toContain("gantt");
+      expect(free.coreFeatures).toContain("gantt");
     });
 
     it("includes public_page module", () => {
@@ -63,12 +63,12 @@ describe("PLAN_CONFIGS", () => {
   describe("Essential plan", () => {
     const essential = PLAN_CONFIGS.essential;
 
-    it("limits rooms to 10", () => {
-      expect(essential.maxRooms).toBe(10);
+    it("limits rooms to 20", () => {
+      expect(essential.maxRooms).toBe(20);
     });
 
-    it("shows platform branding", () => {
-      expect(essential.showBranding).toBe(true);
+    it("hides platform branding", () => {
+      expect(essential.showBranding).toBe(false);
     });
 
     it("includes Gantt", () => {
@@ -79,8 +79,8 @@ describe("PLAN_CONFIGS", () => {
       expect(essential.includedModules).toContain("public_page");
     });
 
-    it("does NOT include iCal or invoicing", () => {
-      expect(essential.includedModules).not.toContain("ical_sync");
+    it("includes iCal sync but NOT invoicing", () => {
+      expect(essential.includedModules).toContain("ical_sync");
       expect(essential.includedModules).not.toContain("invoicing");
     });
   });
@@ -88,8 +88,8 @@ describe("PLAN_CONFIGS", () => {
   describe("Professional plan", () => {
     const professional = PLAN_CONFIGS.professional;
 
-    it("limits rooms to 30", () => {
-      expect(professional.maxRooms).toBe(30);
+    it("has unlimited rooms", () => {
+      expect(professional.maxRooms).toBe(Infinity);
     });
 
     it("hides platform branding", () => {
@@ -104,8 +104,8 @@ describe("PLAN_CONFIGS", () => {
       expect(professional.includedModules).toContain("advanced_reports");
     });
 
-    it("does NOT include invoicing or whatsapp", () => {
-      expect(professional.includedModules).not.toContain("invoicing");
+    it("includes invoicing but NOT whatsapp (add-on only)", () => {
+      expect(professional.includedModules).toContain("invoicing");
       expect(professional.includedModules).not.toContain("whatsapp");
     });
 
@@ -121,18 +121,19 @@ describe("PLAN_CONFIGS", () => {
   describe("Business plan", () => {
     const business = PLAN_CONFIGS.business;
 
-    it("includes ALL modules", () => {
+    it("includes all bundled modules (whatsapp stays add-on only)", () => {
       const allModules: ModuleId[] = [
         "public_page", "ical_sync", "invoicing", "advanced_reports",
-        "whatsapp", "multi_property", "white_label", "api_access",
+        "multi_property", "white_label", "api_access",
       ];
       for (const m of allModules) {
         expect(business.includedModules).toContain(m);
       }
+      expect(business.includedModules).not.toContain("whatsapp");
     });
 
-    it("supports 5 properties", () => {
-      expect(business.maxProperties).toBe(5);
+    it("supports 10 properties", () => {
+      expect(business.maxProperties).toBe(10);
     });
 
     it("has SLA guarantee", () => {

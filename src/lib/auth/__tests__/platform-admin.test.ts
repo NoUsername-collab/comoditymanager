@@ -37,7 +37,7 @@ describe("isPlatformAdminEmail", () => {
   it("returns true for the default admin email when env is not set", () => {
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     delete process.env.NESTIO_ADMIN_EMAILS;
-    expect(isPlatformAdminEmail("admin@hospira.ro")).toBe(true);
+    expect(isPlatformAdminEmail("admin@zalmox.app")).toBe(true);
   });
 
   it("returns false for a random email when env is not set", () => {
@@ -50,22 +50,22 @@ describe("isPlatformAdminEmail", () => {
     vi.stubEnv("NODE_ENV", "production");
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     delete process.env.NESTIO_ADMIN_EMAILS;
-    expect(isPlatformAdminEmail("admin@hospira.ro")).toBe(false);
+    expect(isPlatformAdminEmail("admin@zalmox.app")).toBe(false);
     vi.unstubAllEnvs();
   });
 
   it("is case insensitive", () => {
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     delete process.env.NESTIO_ADMIN_EMAILS;
-    expect(isPlatformAdminEmail("ADMIN@hospira.ro")).toBe(true);
-    expect(isPlatformAdminEmail("Admin@Hospira.Ro")).toBe(true);
+    expect(isPlatformAdminEmail("ADMIN@zalmox.app")).toBe(true);
+    expect(isPlatformAdminEmail("Admin@Zalmox.App")).toBe(true);
   });
 
   it("recognises emails from HOSPIRA_ADMIN_EMAILS", () => {
     process.env.HOSPIRA_ADMIN_EMAILS = "a@b.com, c@d.com";
     expect(isPlatformAdminEmail("a@b.com")).toBe(true);
     expect(isPlatformAdminEmail("c@d.com")).toBe(true);
-    expect(isPlatformAdminEmail("admin@hospira.ro")).toBe(false);
+    expect(isPlatformAdminEmail("admin@zalmox.app")).toBe(false);
   });
 
   it("falls back to legacy NESTIO_ADMIN_EMAILS", () => {
@@ -86,7 +86,7 @@ describe("isPlatformAdminEmailEdge", () => {
   it("returns true for a valid admin email", () => {
     delete process.env.HOSPIRA_ADMIN_EMAILS;
     delete process.env.NESTIO_ADMIN_EMAILS;
-    expect(isPlatformAdminEmailEdge("admin@hospira.ro")).toBe(true);
+    expect(isPlatformAdminEmailEdge("admin@zalmox.app")).toBe(true);
   });
 
   it("returns false for an invalid email", () => {

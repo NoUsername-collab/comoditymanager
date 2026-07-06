@@ -33,16 +33,16 @@ describe("TenantContext", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
       expect(ctx.hasModule("ical_sync")).toBe(true);
       expect(ctx.hasModule("advanced_reports")).toBe(true);
-      // invoicing and whatsapp are Business-only
-      expect(ctx.hasModule("invoicing")).toBe(false);
+      expect(ctx.hasModule("invoicing")).toBe(true);
+      // whatsapp and multi_property/white_label/api_access are Business-only
       expect(ctx.hasModule("whatsapp")).toBe(false);
       expect(ctx.hasModule("api_access")).toBe(false);
     });
 
-    it("allows rooms up to Professional limit (30)", () => {
+    it("allows unlimited rooms on Professional", () => {
       const ctx = buildTenantContext(DEFAULT_TENANT);
       expect(ctx.canAddRoom(29)).toBe(true);
-      expect(ctx.canAddRoom(30)).toBe(false);
+      expect(ctx.canAddRoom(9999)).toBe(true);
     });
 
     it("does not show branding on Professional", () => {
@@ -68,16 +68,17 @@ describe("TenantContext", () => {
       createdAt: "2025-07-01T00:00:00.000Z",
     };
 
-    it("limits rooms to 3", () => {
+    it("limits rooms to 5", () => {
       const ctx = buildTenantContext(freeTenant);
-      expect(ctx.canAddRoom(2)).toBe(true);
-      expect(ctx.canAddRoom(3)).toBe(false);
+      expect(ctx.canAddRoom(4)).toBe(true);
+      expect(ctx.canAddRoom(5)).toBe(false);
       expect(ctx.canAddRoom(10)).toBe(false);
     });
 
-    it("does not have Gantt", () => {
+    it("has Gantt but not Professional-only features", () => {
       const ctx = buildTenantContext(freeTenant);
-      expect(ctx.hasFeature("gantt")).toBe(false);
+      expect(ctx.hasFeature("gantt")).toBe(true);
+      expect(ctx.hasFeature("priority_support")).toBe(false);
     });
 
     it("shows platform branding", () => {

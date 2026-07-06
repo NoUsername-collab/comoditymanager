@@ -1,8 +1,9 @@
 ﻿/**
  * Platform admin guard — gates Zalmox internal panel.
  *
- * Checks the authenticated user's email against Zalmox_ADMIN_EMAILS env var
- * (legacy NESTIO_ADMIN_EMAILS still accepted during transition).
+ * Checks the authenticated user's email against ZALMOX_ADMIN_EMAILS env var
+ * (legacy NESTIO_ADMIN_EMAILS and HOSPIRA_ADMIN_EMAILS still accepted
+ * during transition — earlier rebrands read these directly).
  * Requires both valid Supabase auth AND email match.
  */
 
@@ -12,13 +13,14 @@ import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { isProductionRuntime } from "@/lib/security/production-runtime";
 
-/** Dev fallback when Zalmox_ADMIN_EMAILS is unset (never used in production). */
-const FALLBACK_EMAILS = `admin@Zalmox.ro,${PLATFORM_CONTACT_EMAIL}`;
+/** Dev fallback when ZALMOX_ADMIN_EMAILS is unset (never used in production). */
+const FALLBACK_EMAILS = `admin@zalmox.app,${PLATFORM_CONTACT_EMAIL}`;
 
 function getPlatformAdminEmails(): string[] {
   const raw =
-    process.env.Zalmox_ADMIN_EMAILS?.trim() ||
-    process.env.NESTIO_ADMIN_EMAILS?.trim();
+    process.env.ZALMOX_ADMIN_EMAILS?.trim() ||
+    process.env.NESTIO_ADMIN_EMAILS?.trim() ||
+    process.env.HOSPIRA_ADMIN_EMAILS?.trim();
 
   if (!raw) {
     if (isProductionRuntime()) return [];
