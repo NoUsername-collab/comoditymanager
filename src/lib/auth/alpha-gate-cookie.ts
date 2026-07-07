@@ -9,4 +9,4 @@ export function isAlphaGateCookieFresh(
   return Number.isFinite(until) && until > Date.now();
 }
 
-export const ALPHA_GATE_COOKIE = "hospira_alpha_gate";
+export const ALPHA_GATE_COOKIE = "zalmox_alpha_gate";

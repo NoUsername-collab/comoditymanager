@@ -32,15 +32,15 @@ export function AdminTenantDomainsPanel({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const hospiraDomain = domains.find((d) => d.routing_kind === "hospira_subdomain");
+  const platformSubdomainRow = domains.find((d) => d.routing_kind === "hospira_subdomain");
   const customDomains = domains.filter((d) => d.routing_kind !== "hospira_subdomain");
 
   const defaultUrl = buildTenantAdminUrl(tenantSlug, "/", platformDomain);
 
   return (
     <div className="settings-form-stack tenant-domains-panel">
-      <SettingsSection title={t("hospiraSubdomain")} description={t("hospiraSubdomainHint")}>
-        <p className="font-mono text-sm font-semibold">{hospiraDomain?.domain ?? `${tenantSlug}.${platformDomain}`}</p>
+      <SettingsSection title={t("platformSubdomain")} description={t("platformSubdomainHint")}>
+        <p className="font-mono text-sm font-semibold">{platformSubdomainRow?.domain ?? `${tenantSlug}.${platformDomain}`}</p>
         <a
           href={defaultUrl}
           className="settings-primary-link settings-primary-link--ghost mt-3"

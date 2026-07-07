@@ -5,8 +5,24 @@ import { describe, expect, it } from "vitest";
 const ROOT = join(process.cwd(), "src/app");
 const PROJECT_ROOT = process.cwd();
 
+/**
+ * These per-pass mobile CSS files (guards/flawless/compact-fixes/admin-pages/
+ * alignment) were consolidated into mobile.css at some point; the individual
+ * files no longer exist on disk. Alias them so the ~300 granular assertions
+ * below (each testing a specific selector, not a specific file) keep working
+ * against the real, current location of that content.
+ */
+const CONSOLIDATED_CSS_ALIASES: Record<string, string> = {
+  "mobile-layout-guards.css": "mobile.css",
+  "mobile-layout-flawless.css": "mobile.css",
+  "mobile-layout-compact-fixes.css": "mobile.css",
+  "mobile-layout-admin-pages.css": "mobile.css",
+  "mobile-layout-alignment.css": "mobile.css",
+};
+
 function readCss(name: string): string {
-  return readFileSync(join(ROOT, name), "utf8");
+  const resolved = CONSOLIDATED_CSS_ALIASES[name] ?? name;
+  return readFileSync(join(ROOT, resolved), "utf8");
 }
 
 /**
@@ -44,7 +60,9 @@ describe("mobile compatibility CSS rules", () => {
     expect(compactFixes).toMatch(
       /\[data-layout-orientation="portrait"\] \.gantt-calendar-page \.gantt-scroll[\s\S]*max-height:\s*calc/
     );
-    expect(shell).toContain("mobile-layout-compact-fixes.css");
+    // compact-fixes rules were consolidated into mobile.css; the shell pulls
+    // them in via that import instead of a dedicated compact-fixes file now.
+    expect(shell).toContain('@import "./mobile.css"');
   });
 
   it("prevents iOS input zoom (16px minimum)", () => {
@@ -93,17 +111,17 @@ describe("mobile compatibility CSS rules", () => {
     expect(shell).toContain("ml-bottom-nav__link--alert");
   });
 
-  it("hospira admin has compact table and input rules", () => {
+  it("platform admin has compact table and input rules", () => {
     expect(flawless).toContain(".ml-shell--nestio-admin");
     expect(flawless).toContain(".nestio-admin-error");
   });
 
-  it("compact chrome uses card layouts for hospira logs and tenants", () => {
-    expect(flawless).toContain(".hospira-log-cards");
-    expect(flawless).toContain(".hospira-log-table-desktop");
-    expect(flawless).toContain(".hospira-tenant-cards");
-    expect(flawless).toContain(".hospira-tenant-table-desktop");
-    expect(flawless).toContain(".hospira-log-section__head");
+  it("compact chrome uses card layouts for platform logs and tenants", () => {
+    expect(flawless).toContain(".platform-log-cards");
+    expect(flawless).toContain(".platform-log-table-desktop");
+    expect(flawless).toContain(".platform-tenant-cards");
+    expect(flawless).toContain(".platform-tenant-table-desktop");
+    expect(flawless).toContain(".platform-log-section__head");
   });
 
   it("cazÄƒri compact touch targets for search, ops, and load-more", () => {
@@ -149,7 +167,7 @@ describe("mobile compatibility CSS rules", () => {
   it("pass 16 pricing comparison cards and tenant detail compact", () => {
     expect(flawless).toContain(".pricing-comparison-cards");
     expect(flawless).toContain(".pricing-table-desktop");
-    expect(flawless).toContain(".hospira-tenant-detail__info-row");
+    expect(flawless).toContain(".platform-tenant-detail__info-row");
     expect(flawless).toContain(".tenant-billing-toggle");
     expect(flawless).toContain(".devlog-entry__message");
   });
@@ -175,17 +193,17 @@ describe("mobile compatibility CSS rules", () => {
   it("pass 17 modal scroll lock and compact form targets", () => {
     expect(shell).toContain("admin-modal-open");
     expect(flawless).toContain(".admin-floating-panel--modal:not(.checkin-modal)");
-    expect(flawless).toContain(".hospira-tenant-detail button.rounded-md");
+    expect(flawless).toContain(".platform-tenant-detail button.rounded-md");
     expect(flawless).toContain(".statistics-years-section");
   });
 
-  it("pass 16 hospira forms, receptie checkbox, FAQ, drawer safe-area", () => {
+  it("pass 16 platform forms, receptie checkbox, FAQ, drawer safe-area", () => {
     expect(flawless).toContain(".tenant-billing-toggle");
     expect(flawless).toContain(".nestio-tenant-option");
-    expect(flawless).toContain(".hospira-dashboard__cta");
+    expect(flawless).toContain(".platform-dashboard__cta");
     expect(flawless).toContain(".phone-booking-form__checkbox");
     expect(flawless).toContain(".landing-faq__q");
-    expect(flawless).toContain(".ml-drawer--hospira");
+    expect(flawless).toContain(".ml-drawer--platform");
     expect(flawless).toContain("var(--ml-safe-bottom");
   });
 
@@ -198,7 +216,7 @@ describe("mobile compatibility CSS rules", () => {
     );
     expect(flawless).toContain(".gantt-filters-panel.admin-floating-panel");
     expect(flawless).toContain(".admin-panel__body");
-    expect(flawless).toContain(".hospira-health-row");
+    expect(flawless).toContain(".platform-health-row");
 
     const checkTime = readFileSync(
       join(process.cwd(), "src/components/admin/gantt/GanttCheckTimeDialog.tsx"),
@@ -478,7 +496,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(shell).toMatch(/\.ml-bottom-nav__link--active[\s\S]*font-weight:\s*700/);
 
     const alignment = readCss("mobile-layout-alignment.css");
-    expect(alignment).toContain(".hospira-tenant-toolbar");
+    expect(alignment).toContain(".platform-tenant-toolbar");
     expect(alignment).toContain("overflow-x: clip");
 
     const bottomNav = readFileSync(

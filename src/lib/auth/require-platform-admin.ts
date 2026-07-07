@@ -84,7 +84,7 @@ export async function getPlatformAdminWithMfaOrNull(): Promise<PlatformAdminSess
   const mfaRedirect = await resolveMfaRedirectPath(supabase, {
     email: session.email,
     memberRole: null,
-    next: "/Zalmox-admin",
+    next: "/platform-admin",
   });
   if (mfaRedirect) return null;
 
@@ -105,7 +105,7 @@ export async function requirePlatformAdmin(): Promise<PlatformAdminSession> {
   const mfaRedirect = await resolveMfaRedirectPath(supabase, {
     email: session.email,
     memberRole: null,
-    next: "/Zalmox-admin",
+    next: "/platform-admin",
   });
   if (mfaRedirect) {
     redirect(mfaRedirect);

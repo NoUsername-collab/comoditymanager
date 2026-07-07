@@ -14,6 +14,7 @@ import {
   loadSettingsStaffContext,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
+import { getPublicSiteConfigForAdmin } from "@/services/public-site/queries";
 import { updateAppearanceSettingsAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -43,7 +44,7 @@ export default async function SettingsAppearancePage({
   }
 
   const canEditGlobalTheme = canEditPensionSettingsUi(ctx);
-  const displayName = settings.display_name?.trim() || "Zalmox";
+  const publicSiteConfig = await getPublicSiteConfigForAdmin();
 
   return (
     <SettingsPageLayout
@@ -52,7 +53,9 @@ export default async function SettingsAppearancePage({
       description={t("visualsSubtitle")}
       previewHref="/admin"
       previewLabel={t("livePreview")}
-      previewPanel={<AppearanceSettingsAsideLazy displayName={displayName} />}
+      previewPanel={
+        <AppearanceSettingsAsideLazy publicThemeId={publicSiteConfig.themeId} />
+      }
     >
       <SettingsSection title={t("displayLayoutTitle")} description={t("displayLayoutHint")}>
         <AdminDisplayLayoutPicker />

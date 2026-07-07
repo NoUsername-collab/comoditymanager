@@ -51,46 +51,64 @@ beforeEach(() => {
   intlMiddleware.mockImplementation(() => NextResponse.next());
 });
 
-describe("proxy platform hospira-admin", () => {
-  it("does not redirect /hospira-admin to itself", async () => {
-    const response = await proxy(platformRequest("/hospira-admin"));
+describe("proxy platform platform-admin", () => {
+  it("does not redirect /platform-admin to itself", async () => {
+    const response = await proxy(platformRequest("/platform-admin"));
 
     expect(response.status).toBeGreaterThanOrEqual(300);
     expect(response.status).toBeLessThan(400);
     const location = response.headers.get("location");
     expect(location).toBeTruthy();
-    expect(location).not.toBe("https://test.hospira.ro/hospira-admin");
+    expect(location).not.toBe("https://test.hospira.ro/platform-admin");
     expect(location).toContain("/admin/login");
-    expect(location).toContain("next=%2Fhospira-admin");
+    expect(location).toContain("next=%2Fplatform-admin");
   });
 
-  it("does not redirect /ro/hospira-admin to itself", async () => {
-    const response = await proxy(platformRequest("/ro/hospira-admin"));
+  it("does not redirect /ro/platform-admin to itself", async () => {
+    const response = await proxy(platformRequest("/ro/platform-admin"));
 
     expect(response.status).toBeGreaterThanOrEqual(300);
     expect(response.status).toBeLessThan(400);
     const location = response.headers.get("location");
     expect(location).toBeTruthy();
-    expect(location).not.toContain("/hospira-admin/hospira-admin");
-    expect(location).not.toMatch(/\/hospira-admin\/?$/);
+    expect(location).not.toContain("/platform-admin/platform-admin");
+    expect(location).not.toMatch(/\/platform-admin\/?$/);
     expect(location).toContain("/admin/login");
   });
 
-  it("redirects legacy /nestio-admin to /hospira-admin", async () => {
+  it("redirects legacy /nestio-admin to /platform-admin", async () => {
     const response = await proxy(platformRequest("/nestio-admin"));
 
     expect(response.status).toBe(308);
     expect(response.headers.get("location")).toBe(
-      "https://test.hospira.ro/hospira-admin"
+      "https://test.hospira.ro/platform-admin"
     );
   });
 
-  it("redirects legacy /ro/nestio-admin to /ro/hospira-admin", async () => {
+  it("redirects legacy /ro/nestio-admin to /ro/platform-admin", async () => {
     const response = await proxy(platformRequest("/ro/nestio-admin"));
 
     expect(response.status).toBe(308);
     expect(response.headers.get("location")).toBe(
-      "https://test.hospira.ro/ro/hospira-admin"
+      "https://test.hospira.ro/ro/platform-admin"
+    );
+  });
+
+  it("redirects legacy /hospira-admin to /platform-admin", async () => {
+    const response = await proxy(platformRequest("/hospira-admin"));
+
+    expect(response.status).toBe(308);
+    expect(response.headers.get("location")).toBe(
+      "https://test.hospira.ro/platform-admin"
+    );
+  });
+
+  it("redirects legacy /ro/hospira-admin to /ro/platform-admin", async () => {
+    const response = await proxy(platformRequest("/ro/hospira-admin"));
+
+    expect(response.status).toBe(308);
+    expect(response.headers.get("location")).toBe(
+      "https://test.hospira.ro/ro/platform-admin"
     );
   });
 });

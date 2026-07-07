@@ -3929,13 +3929,13 @@
         "plan_not_allowed": "Планът ти не включва този режим.",
         "reserved_domain": "Не можеш да използваш домейна на платформата Zalmox."
       },
-      "ZalmoxSubdomain": "Zalmox поддомейн (по подразбиране, винаги активен)",
-      "ZalmoxSubdomainHint": "Публичен сайт, календар за резервации и админ.",
+      "platformSubdomain": "Zalmox поддомейн (по подразбиране, винаги активен)",
+      "platformSubdomainHint": "Публичен сайт, календар за резервации и админ.",
       "kinds": {
         "custom_brand": "Собствен — само начална страница; останалото на поддомейн",
         "custom_full": "Собствен — сайт + админ + резервации",
         "custom_public": "Собствен — сайт + резервации; админ на Zalmox",
-        "Zalmox_subdomain": "Zalmox поддомейн (пълно приложение)"
+        "hospira_subdomain": "Zalmox поддомейн (пълно приложение)"
       },
       "markVerified": "Маркирай като верифициран (след DNS + Vercel)",
       "openSite": "Отвори сайта",
@@ -4323,7 +4323,7 @@
       "rights": "Всички права запазени."
     }
   },
-  "ZalmoxAdmin": {
+  "platformAdmin": {
     "nav": {
       "menuAria": "Zalmox admin menu",
       "menuOpen": "Otvori meniuto",

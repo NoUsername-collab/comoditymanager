@@ -18,7 +18,7 @@ export default async function AdminLoginPage({
     searchParams,
   ]);
   const next =
-    params.next?.startsWith("/admin") || params.next?.startsWith("/hospira-admin")
+    params.next?.startsWith("/admin") || params.next?.startsWith("/platform-admin")
       ? params.next
       : "/admin";
   const authError =

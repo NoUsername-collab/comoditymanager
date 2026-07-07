@@ -838,8 +838,8 @@
       "pageTitle": "Domains",
       "pageDescription": "Zalmox subdomain and custom domains (all modes).",
       "backToSettings": "← Back to settings",
-      "ZalmoxSubdomain": "Zalmox subdomain (default, always on)",
-      "ZalmoxSubdomainHint": "Public site, booking calendar, and admin.",
+      "platformSubdomain": "Zalmox subdomain (default, always on)",
+      "platformSubdomainHint": "Public site, booking calendar, and admin.",
       "openSite": "Open site",
       "upgradeForCustom": "Custom domain: available from Professional plan.",
       "addCustomTitle": "Add custom domain",
@@ -852,7 +852,7 @@
       "markVerified": "Mark verified (after DNS + Vercel)",
       "remove": "Remove",
       "kinds": {
-        "Zalmox_subdomain": "Zalmox subdomain (full app)",
+        "hospira_subdomain": "Zalmox subdomain (full app)",
         "custom_full": "Custom — site + admin + bookings",
         "custom_public": "Custom — site + bookings; admin on Zalmox",
         "custom_brand": "Custom — homepage only; rest on subdomain"
@@ -4572,7 +4572,7 @@
       "rights": "All rights reserved."
     }
   },
-  "ZalmoxAdmin": {
+  "platformAdmin": {
     "nav": {
       "menuAria": "Zalmox admin menu",
       "menuOpen": "Open menu",

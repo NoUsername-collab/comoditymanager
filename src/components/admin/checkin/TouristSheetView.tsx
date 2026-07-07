@@ -73,9 +73,9 @@ export function TouristSheetView({
                 <strong>{data.registryRef}</strong>
               </div>
               {showPlatformBranding ? (
-                <div className="tourist-sheet__hospira-mark" aria-hidden>
-                  <span className="tourist-sheet__hospira-name">{PLATFORM_NAME}</span>
-                  <span className="tourist-sheet__hospira-tag">{t("platformTag")}</span>
+                <div className="tourist-sheet__platform-mark" aria-hidden>
+                  <span className="tourist-sheet__platform-name">{PLATFORM_NAME}</span>
+                  <span className="tourist-sheet__platform-tag">{t("platformTag")}</span>
                 </div>
               ) : null}
             </div>

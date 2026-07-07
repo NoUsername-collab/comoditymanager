@@ -837,8 +837,8 @@
       "pageTitle": "Domenii",
       "pageDescription": "Subdomeniu Zalmox si domenii proprii (toate variantele).",
       "backToSettings": "← Inapoi la setari",
-      "ZalmoxSubdomain": "Subdomeniu Zalmox (implicit, intotdeauna activ)",
-      "ZalmoxSubdomainHint": "Admin, calendar si site public — totul merge aici.",
+      "platformSubdomain": "Subdomeniu Zalmox (implicit, intotdeauna activ)",
+      "platformSubdomainHint": "Admin, calendar si site public — totul merge aici.",
       "openSite": "Deschide site-ul",
       "upgradeForCustom": "Domeniu propriu: disponibil de la planul Professional.",
       "addCustomTitle": "Adauga domeniu propriu",
@@ -851,7 +851,7 @@
       "markVerified": "Marcheaza verificat (dupa DNS + Vercel)",
       "remove": "Sterge",
       "kinds": {
-        "Zalmox_subdomain": "Subdomeniu Zalmox (complet)",
+        "hospira_subdomain": "Subdomeniu Zalmox (complet)",
         "custom_full": "Domeniu propriu — site + admin + rezervari",
         "custom_public": "Domeniu propriu — site + rezervari; admin pe Zalmox",
         "custom_brand": "Domeniu propriu — doar homepage; restul pe subdomeniu"
@@ -4555,7 +4555,7 @@
       "rights": "Toate drepturile rezervate."
     }
   },
-  "ZalmoxAdmin": {
+  "platformAdmin": {
     "nav": {
       "menuAria": "Meniu Zalmox admin",
       "menuOpen": "Deschide meniul",

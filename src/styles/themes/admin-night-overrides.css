@@ -247,7 +247,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 }
 
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .tourist-sheet__stamp,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .tourist-sheet__hospira-mark {
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .tourist-sheet__platform-mark {
   color: #111 !important;
   border-color: #111 !important;
   background: #f5f5f5 !important;

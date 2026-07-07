@@ -46,7 +46,7 @@ async function finalizeStaffLogin(
 
   if (
     !tenant &&
-    safeNext.startsWith("/hospira-admin") &&
+    safeNext.startsWith("/platform-admin") &&
     user.email &&
     isPlatformAdminEmail(user.email)
   ) {

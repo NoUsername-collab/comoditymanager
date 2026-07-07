@@ -1,5 +1,5 @@
-/* Hospira platform admin — semantic status on dark shell */
-.hospira-status-badge {
+/* Zalmox platform admin — semantic status on dark shell */
+.platform-status-badge {
   display: inline-flex;
   align-items: center;
   border-radius: 9999px;
@@ -9,22 +9,22 @@
   line-height: 1.25;
 }
 
-.hospira-status-badge--active {
+.platform-status-badge--active {
   background: color-mix(in srgb, var(--active-border) 22%, #0a0a0a);
   color: color-mix(in srgb, var(--active-border) 72%, white);
 }
 
-.hospira-status-badge--trial {
+.platform-status-badge--trial {
   background: color-mix(in srgb, var(--pending-border) 22%, #0a0a0a);
   color: color-mix(in srgb, var(--pending-border) 78%, white);
 }
 
-.hospira-status-badge--suspended {
+.platform-status-badge--suspended {
   background: color-mix(in srgb, var(--cancelled-border) 22%, #0a0a0a);
   color: color-mix(in srgb, var(--cancelled-border) 72%, white);
 }
 
-.hospira-status-badge--cancelled {
+.platform-status-badge--cancelled {
   background: #262626;
   color: #a3a3a3;
 }

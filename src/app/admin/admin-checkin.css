@@ -1028,7 +1028,7 @@
   color: var(--fisa-ink);
 }
 
-.tourist-sheet__hospira-mark {
+.tourist-sheet__platform-mark {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -1040,7 +1040,7 @@
   text-align: right;
 }
 
-.tourist-sheet__hospira-name {
+.tourist-sheet__platform-name {
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 0.72rem;
   font-weight: 800;
@@ -1048,7 +1048,7 @@
   text-transform: uppercase;
 }
 
-.tourist-sheet__hospira-tag {
+.tourist-sheet__platform-tag {
   font-size: 0.48rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -1277,7 +1277,7 @@ html[data-layout-chrome="compact"] .tourist-sheet__registry {
   justify-self: start;
 }
 
-html[data-layout-chrome="compact"] .tourist-sheet__hospira-mark {
+html[data-layout-chrome="compact"] .tourist-sheet__platform-mark {
   grid-column: 1 / -1;
   flex-direction: row;
   align-items: center;
@@ -1331,7 +1331,7 @@ html[data-layout-chrome="compact"] .tourist-sheet__signatures {
 
   .tourist-sheet__section-title,
   .tourist-sheet__table th,
-  .tourist-sheet__hospira-mark {
+  .tourist-sheet__platform-mark {
     background: #fff !important;
     -webkit-print-color-adjust: economy;
     print-color-adjust: economy;

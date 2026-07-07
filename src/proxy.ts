@@ -436,13 +436,23 @@ export async function proxy(request: NextRequest) {
       const legacy = request.nextUrl.clone();
       legacy.pathname = request.nextUrl.pathname.replace(
         "/nestio-admin",
-        "/hospira-admin"
+        "/platform-admin"
+      );
+      return NextResponse.redirect(legacy, 308);
+    }
+
+    // Legacy route — redirect old /hospira-admin bookmarks to /platform-admin
+    if (path.startsWith("/hospira-admin")) {
+      const legacy = request.nextUrl.clone();
+      legacy.pathname = request.nextUrl.pathname.replace(
+        "/hospira-admin",
+        "/platform-admin"
       );
       return NextResponse.redirect(legacy, 308);
     }
 
     // Zalmox internal admin — platform domain only, email-gated
-    if (path.startsWith("/hospira-admin")) {
+    if (path.startsWith("/platform-admin")) {
       const { configured, url, key } = getEdgeSupabaseConfig();
       if (!configured || !url || !key) {
         const noAuth = request.nextUrl.clone();
@@ -561,9 +571,12 @@ export async function proxy(request: NextRequest) {
           // Platform admin routes stay on platform domain
           if (
             safe.startsWith("/nestio-admin") ||
-            safe.startsWith("/hospira-admin")
+            safe.startsWith("/hospira-admin") ||
+            safe.startsWith("/platform-admin")
           ) {
-            const normalized = safe.replace("/nestio-admin", "/hospira-admin");
+            const normalized = safe
+              .replace("/nestio-admin", "/platform-admin")
+              .replace("/hospira-admin", "/platform-admin");
             return NextResponse.redirect(new URL(normalized, request.url));
           }
 

@@ -708,7 +708,7 @@
   }
 }
 
-/* ── App density: Tailwind prea aerisit (admin + hospira + public) ── */
+/* ── App density: Tailwind prea aerisit (admin + platform + public) ── */
 @media (min-width: 768px) {
   .admin-page-main :where(.space-y-8) > :not([hidden]) ~ :not([hidden]),
   .nestio-admin-main :where(.space-y-8) > :not([hidden]) ~ :not([hidden]) {

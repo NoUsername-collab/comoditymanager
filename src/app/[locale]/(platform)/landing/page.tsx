@@ -335,7 +335,7 @@ export default async function LandingPage() {
           <div className="lp-compare__col lp-compare__col--good">
             <div className="lp-compare__col-header">
               <span className="lp-compare__icon">⚡</span>
-              <h3>{t("withHospira")}</h3>
+              <h3>{t("withZalmox")}</h3>
             </div>
             <ul>
               <li>{t("solution1")}</li>

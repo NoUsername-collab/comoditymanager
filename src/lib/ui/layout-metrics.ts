@@ -109,7 +109,7 @@ export function formatLayoutMetrics(m: LayoutMetrics): string {
   return lines.join("\n");
 }
 
-export const LAYOUT_DEBUG_STORAGE_KEY = "hospira-layout-debug";
+export const LAYOUT_DEBUG_STORAGE_KEY = "platform-layout-debug";
 
 export function isLayoutDebugEnabled(): boolean {
   if (typeof window === "undefined") return false;

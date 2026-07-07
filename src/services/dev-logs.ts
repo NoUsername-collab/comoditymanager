@@ -7,7 +7,7 @@ import {
   shouldSkipTenantErrorLog,
 } from "@/lib/tenant/error-safeguard";
 import { getTenantBySlug } from "@/services/tenants";
-import { throwIfDbError } from "@/lib/hospira-admin/format-db-error";
+import { throwIfDbError } from "@/lib/platform-admin/format-db-error";
 import { getTenantScope } from "@/lib/tenant/scope";
 
 export type DevLogLevel = "error" | "warn" | "info" | "debug";

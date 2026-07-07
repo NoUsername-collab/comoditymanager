@@ -4,9 +4,9 @@ export type DisplayProfileId = "wide" | "laptop" | "compact-laptop" | "narrow";
 
 export type DisplayLayoutPreference = "auto" | DisplayProfileId;
 
-export const DISPLAY_LAYOUT_STORAGE_KEY = "hospira-display-layout";
+export const DISPLAY_LAYOUT_STORAGE_KEY = "platform-display-layout";
 
-export const DISPLAY_LAYOUT_CHANGED_EVENT = "hospira:display-layout-changed";
+export const DISPLAY_LAYOUT_CHANGED_EVENT = "zalmox:display-layout-changed";
 
 const MANUAL_PROFILES: DisplayProfileId[] = [
   "wide",
