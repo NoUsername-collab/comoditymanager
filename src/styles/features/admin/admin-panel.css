@@ -1,0 +1,5 @@
+/* Panou secțiune admin — tema default (fără chrome decorativ) */
+
+.admin-panel__titlebar {
+  display: none;
+}

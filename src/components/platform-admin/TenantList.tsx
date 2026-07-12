@@ -1,12 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { TenantBillingToggle } from "@/components/platform-admin/TenantBillingToggle";
+import { TenantProvisionForm } from "@/components/platform-admin/TenantProvisionForm";
 import { TenantCsvExportButton } from "@/components/platform-admin/TenantCsvExportButton";
 import { CopyTextButton } from "@/components/platform-admin/CopyTextButton";
 import type { PlatformTenantSummary } from "@/services/platform-admin";
+import {
+  TenantEmailAlertBadge,
+  TenantSetupBadge,
+} from "@/components/platform-admin/TenantSignalBadges";
 
 import { PLATFORM_STATUS_BADGE } from "@/lib/platform-admin/status-badge";
 
@@ -14,12 +19,31 @@ const STATUS_BADGE = PLATFORM_STATUS_BADGE;
 
 type StatusFilter = "all" | "active" | "trial" | "suspended" | "cancelled";
 
+function tenantStatusLabel(
+  t: ReturnType<typeof useTranslations<"platformAdmin.tenants">>,
+  status: string
+): string {
+  switch (status) {
+    case "active":
+      return t("statusActive");
+    case "trial":
+      return t("statusTrial");
+    case "suspended":
+      return t("statusSuspended");
+    case "cancelled":
+      return t("statusCancelled");
+    default:
+      return status;
+  }
+}
+
 export function TenantList({
   tenants,
 }: {
   tenants: PlatformTenantSummary[];
 }) {
   const t = useTranslations("platformAdmin.tenants");
+  const locale = useLocale();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [planFilter, setPlanFilter] = useState("all");
@@ -62,7 +86,7 @@ export function TenantList({
         </p>
       </div>
 
-      <div className="platform-tenant-toolbar flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+      <div className="platform-tenant-toolbar flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
         <input
           type="search"
           value={query}
@@ -72,6 +96,7 @@ export function TenantList({
           aria-label={t("searchPlaceholder")}
         />
         <TenantCsvExportButton />
+        <TenantProvisionForm />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
@@ -99,7 +124,7 @@ export function TenantList({
         </select>
       </div>
 
-      <PlatformTenantsMobileCards tenants={filtered} />
+      <PlatformTenantsMobileCards tenants={filtered} locale={locale} />
 
       <div className="platform-tenant-table-desktop max-h-[min(75dvh,40rem)] overflow-auto rounded-lg border border-neutral-800">
         <table className="w-full text-sm">
@@ -124,7 +149,22 @@ export function TenantList({
                 className="platform-tenant-row transition-colors hover:bg-neutral-900/50"
               >
                 <td className="px-3 py-2 font-medium text-white">
-                  {tenant.display_name}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span>{tenant.display_name}</span>
+                    {tenant.setup_incomplete && (
+                      <TenantSetupBadge label={t("badgeSetup")} />
+                    )}
+                    <TenantEmailAlertBadge
+                      alert={tenant.email_alert}
+                      sent={tenant.email_sent_month}
+                      cap={tenant.email_cap_month}
+                      labels={{
+                        warning: t("badgeEmailWarning"),
+                        exceeded: t("badgeEmailExceeded"),
+                        unlimited: "",
+                      }}
+                    />
+                  </div>
                 </td>
                 <td className="px-3 py-2 font-mono text-xs text-neutral-400">
                   <div className="flex items-center gap-2">
@@ -141,7 +181,7 @@ export function TenantList({
                   <span
                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[tenant.status] ?? STATUS_BADGE.cancelled}`}
                   >
-                    {tenant.status}
+                    {tenantStatusLabel(t, tenant.status)}
                   </span>
                 </td>
                 <td className="px-3 py-2 text-right text-neutral-300">
@@ -160,7 +200,7 @@ export function TenantList({
                   />
                 </td>
                 <td className="px-3 py-2 text-xs text-neutral-500">
-                  {new Date(tenant.created_at).toLocaleDateString("ro")}
+                  {new Date(tenant.created_at).toLocaleDateString(locale)}
                 </td>
                 <td className="px-3 py-2 text-right">
                   <Link
@@ -191,8 +231,10 @@ export function TenantList({
 
 function PlatformTenantsMobileCards({
   tenants,
+  locale,
 }: {
   tenants: PlatformTenantSummary[];
+  locale: string;
 }) {
   const t = useTranslations("platformAdmin.tenants");
 
@@ -216,12 +258,27 @@ function PlatformTenantsMobileCards({
               <p className="truncate text-base font-semibold text-white">
                 {tenant.display_name}
               </p>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {tenant.setup_incomplete && (
+                  <TenantSetupBadge label={t("badgeSetup")} />
+                )}
+                <TenantEmailAlertBadge
+                  alert={tenant.email_alert}
+                  sent={tenant.email_sent_month}
+                  cap={tenant.email_cap_month}
+                  labels={{
+                    warning: t("badgeEmailWarning"),
+                    exceeded: t("badgeEmailExceeded"),
+                    unlimited: "",
+                  }}
+                />
+              </div>
               <p className="font-mono text-xs text-neutral-500">{tenant.slug}</p>
             </div>
             <span
               className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE[tenant.status] ?? STATUS_BADGE.cancelled}`}
             >
-              {tenant.status}
+              {tenantStatusLabel(t, tenant.status)}
             </span>
           </div>
 
@@ -255,7 +312,7 @@ function PlatformTenantsMobileCards({
 
           <p className="mt-2 text-[11px] text-neutral-500">
             {t("created", {
-              date: new Date(tenant.created_at).toLocaleDateString("ro"),
+              date: new Date(tenant.created_at).toLocaleDateString(locale),
             })}
           </p>
         </li>

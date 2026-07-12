@@ -1,4 +1,4 @@
-import "@/app/admin/admin-booking-detail.css";
+import "@/styles/features/admin/admin-booking-detail.css";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";

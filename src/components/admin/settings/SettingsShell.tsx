@@ -83,12 +83,16 @@ export function SettingsShell({
         : t("roleOperator");
 
   return (
-    <div className="settings-shell">
+    <div className="settings-shell grid min-h-[min(72vh,52rem)] grid-cols-1 md:grid-cols-[15.5rem_minmax(0,1fr)]">
       <aside className="settings-shell__nav" aria-label={t("navAria")}>
-        <div className="settings-shell__nav-head">
-          <p className="settings-shell__nav-title">{t("navTitle")}</p>
+        <div className="settings-shell__nav-head px-[0.35rem] py-1">
+          <p className="m-0 text-[0.6875rem] font-extrabold uppercase tracking-[0.08em] text-[var(--admin-text-muted,#71717a)]">
+            {t("navTitle")}
+          </p>
           {propertyName ? (
-            <p className="settings-shell__nav-property">{propertyName}</p>
+            <p className="mt-[0.2rem] text-[0.9375rem] font-bold leading-[1.3] text-[var(--admin-text,#18181b)]">
+              {propertyName}
+            </p>
           ) : null}
         </div>
 
@@ -123,11 +127,15 @@ export function SettingsShell({
           )}
         </nav>
 
-        <div className="settings-shell__nav-foot">
-          <span className="settings-shell__nav-foot-label">{t("role")}</span>
-          <span className="settings-shell__nav-foot-value">{roleLabel}</span>
+        <div className="mt-auto border-t border-dashed border-[var(--admin-panel-border,#e4e4e7)] px-[0.35rem] pb-[0.25rem] pt-[0.65rem] text-[0.6875rem]">
+          <span className="block font-bold uppercase tracking-[0.06em] text-[var(--admin-text-muted,#71717a)]">
+            {t("role")}
+          </span>
+          <span className="mt-[0.15rem] block font-semibold text-[var(--admin-text,#18181b)]">
+            {roleLabel}
+          </span>
           {checkInTime && checkOutTime ? (
-            <span className="settings-shell__nav-foot-meta">
+            <span className="mt-[0.25rem] block text-[var(--admin-text-muted,#71717a)]">
               {checkInTime} → {checkOutTime}
             </span>
           ) : null}
@@ -180,8 +188,10 @@ function SettingsNavGroupBlock({
 }) {
   return (
     <div className="settings-shell__group">
-      <p className="settings-shell__group-label">{t(group.labelKey)}</p>
-      <ul className="settings-shell__group-list">
+      <p className="mb-[0.35rem] px-[0.35rem] text-[0.625rem] font-extrabold uppercase tracking-[0.07em] text-[var(--admin-text-muted,#a1a1aa)]">
+        {t(group.labelKey)}
+      </p>
+      <ul className="flex list-none flex-col gap-[0.2rem] p-0">
         {group.items.map((item) => (
           <SettingsNavLink
             key={item.id}
@@ -213,6 +223,7 @@ function SettingsNavLink({
         href={item.href}
         className={[
           "settings-shell__link",
+          "block rounded-xl border border-transparent px-[0.65rem] py-[0.55rem] no-underline transition-[background,border-color] duration-150",
           active && "settings-shell__link--active",
           hasIssue && "settings-shell__link--has-issue",
         ]
@@ -220,14 +231,18 @@ function SettingsNavLink({
           .join(" ")}
         aria-current={active ? "page" : undefined}
       >
-        <span className="settings-shell__link-row">
-          <span className="settings-shell__link-label">{t(item.labelKey)}</span>
+        <span className="settings-shell__link-row flex items-center justify-between gap-2">
+          <span className="settings-shell__link-label block text-[0.8125rem] font-bold text-[var(--admin-text,#18181b)]">
+            {t(item.labelKey)}
+          </span>
           {hasIssue ? (
             <SetupIssueBadge className="settings-shell__issue-badge" />
           ) : null}
         </span>
         {item.descriptionKey ? (
-          <span className="settings-shell__link-desc">{t(item.descriptionKey)}</span>
+          <span className="settings-shell__link-desc mt-[0.1rem] block text-[0.6875rem] leading-[1.35] text-[var(--admin-text-muted,#71717a)]">
+            {t(item.descriptionKey)}
+          </span>
         ) : null}
       </Link>
     </li>

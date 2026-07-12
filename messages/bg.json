@@ -2920,6 +2920,8 @@
       "emailRequired": "Email e zadylzhitelen.",
       "emailAccountMissing": "Акаунтът няма email адрес.",
       "emailProviderNotConfigured": "Имейл доставката не е конфигурирана на сървъра (липсва RESEND_API_KEY).",
+      "emailMonthlyCapExceeded": "Месечният лимит за имейл е достигнат. Свържете се с поддръжката или надградете плана.",
+      "emailSendFailed": "Имейлът не можа да бъде изпратен.",
       "invalidEmail": "Nevalizhen email format.",
       "invalidRole": "Nevalidna rolya.",
       "memberAlreadyExists": "Tozi chlen veche syshtestvuva v ekipa.",
@@ -2932,6 +2934,7 @@
       "floorBuildingMismatch": "Избраният етаж не принадлежи на избраната сграда. Презареди страницата и опитай отново.",
       "noTenantLinked": "Няма обект, свързан с този акаунт. Създай от Регистрация или свържи се с поддръжката.",
       "notMemberOfPension": "Този акаунт няма достъп до този обект.",
+      "tenantBlocked": "Акаунтът на този обект е спрян или анулиран. Свържи се с поддръжката на Zalmox, ако ти трябва достъп.",
       "ownerPasswordIncorrect": "Невалидна парола на собственика",
       "roomActivated": "Стаята е реактивирана",
       "roomDeactivated": "Стаята е маркирана като неактивна",
@@ -4387,7 +4390,26 @@
       "exportCsv": "Export CSV",
       "exporting": "Exportira se…",
       "exportSuccess": "CSV izteglen.",
-      "exportFailed": "Exportat ne uspya."
+      "exportFailed": "Exportat ne uspya.",
+      "badgeSetup": "Setup",
+      "badgeEmailWarning": "Email {sent}/{cap}",
+      "badgeEmailExceeded": "Limit nadvishena",
+      "provision": {
+        "open": "Provision tenant",
+        "title": "Rachno suzdavane na tenant",
+        "hint": "Sazdava akaunt na sobstvenik i startira onboard_new_tenant (kato signup).",
+        "displayName": "Ime na pension",
+        "slug": "Slug (po izbor)",
+        "ownerEmail": "Email na sobstvenik",
+        "ownerPassword": "Parola na sobstvenik",
+        "locale": "Ezik",
+        "country": "Darjava",
+        "plan": "Nachalen plan",
+        "submit": "Sazdai tenant",
+        "submitting": "Sazdava se…",
+        "cancel": "Otmeni",
+        "failed": "Provision ne uspya."
+      }
     },
     "tenantDetail": {
       "backToTenants": "Tenanti",
@@ -4411,10 +4433,24 @@
       "plan": "Plan",
       "status": "Status",
       "modules": "Add-on moduli",
+      "onboarding": {
+        "title": "Checklist za go-live",
+        "ready": "Gotov za go-live",
+        "progress": "{ready} ot {total} zadalzhitelni stъpki",
+        "goLive": "Go-live",
+        "optional": "po izbor",
+        "item": {
+          "status_ok": "Aktiven ili proben status",
+          "owner_email": "Email na sobstvenik",
+          "has_rooms": "Pone edna staya",
+          "has_members": "Pone edin chlen v ekipa",
+          "email_ready": "Email dostavka gotova",
+          "domain_configured": "Domen konfiguriran",
+          "plan_modules": "Moduli sinhronizirani s plana"
+        }
+      },
       "quickLinks": {
-        "title": "Bъrzi deistviya",
-        "impersonateHint": "Otvori admin panela na tozi tenant. Vlezte s platformenniya si akaunt.",
-        "openAdmin": "Otvori {slug}",
+        "title": "Operator deistviya",
         "viewLogs": "Vizh logove na tenant"
       },
       "health": {
@@ -4427,7 +4463,155 @@
         "empty": "Nyama konfigurirani domeni.",
         "unverified": "neverificiran",
         "sslPending": "SSL pending",
-        "copySlug": "Kopirai slug"
+        "copySlug": "Kopirai slug",
+        "addHint": "Dobavi custom domen (operator override).",
+        "domainPlaceholder": "calendar.primer.bg",
+        "routingKind": "Marshrutizatsiya",
+        "add": "Dobavi domen",
+        "adding": "Dobavya se…",
+        "remove": "Premahni",
+        "verify": "Markirai verificiran",
+        "actionSuccess": "Domenat e aktualiziran.",
+        "actionFailed": "Operatsiyata ne uspya."
+      },
+      "modulesForm": {
+        "save": "Zapazi moduli",
+        "saving": "Zapazva se…",
+        "success": "Modulite sa aktualizirani.",
+        "error": "Greshka: {message}",
+        "failed": "Aktualizatsiyata ne uspya."
+      },
+      "planIncludes": {
+        "title": "Kakvo vklyuchva planat",
+        "subtitle": "{plan} · {price}€/mes. — iztochnik: PLAN_CONFIGS",
+        "maxRooms": "Maks. stai",
+        "maxTeam": "Maks. ekip",
+        "maxProperties": "Maks. imoti",
+        "emailCap": "Limit email / mes.",
+        "branding": "Brending platforma",
+        "brandingOn": "Vidim",
+        "brandingOff": "Skrit",
+        "unlimited": "Neogranicheno",
+        "features": "Osnovni funkcii",
+        "modules": "Moduli (efektivni)",
+        "badgeIncluded": "Vklyuchen",
+        "badgeAddon": "Dobavka",
+        "syncModules": "Sinkhronizirai modulite",
+        "syncing": "Sinkhronizira se…",
+        "syncSuccess": "Modulite sa sinkhronizirani.",
+        "syncError": "Greshka: {message}",
+        "syncFailed": "Sinkhronizatsiyata ne uspya.",
+        "feature": {
+          "calendar": "Kalendar",
+          "gantt": "Gantt",
+          "guest_files": "Dosiete na gosti",
+          "bookings": "Rezervatsii",
+          "email_notifications": "Tranzaktsionen email",
+          "themes": "Temi",
+          "heatmap": "Heatmap nalichnost",
+          "rooms_unlimited": "Neogranicheni stai",
+          "priority_support": "Prioritetna poddrzhka",
+          "custom_domain": "Custom domen",
+          "sla_guarantee": "SLA 99.9%",
+          "dedicated_manager": "Posveten manager",
+          "onboarding": "Onboarding",
+          "automations": "Avtomatizatsii"
+        }
+      },
+      "emailDelivery": {
+        "title": "Email / Resend",
+        "from": "Podatel",
+        "mailDomain": "Mail domen",
+        "replyTo": "Reply-to",
+        "platformResend": "Platform Resend",
+        "platformResendOn": "Aktiven · {domain}",
+        "platformResendOff": "Lipsva RESEND_API_KEY",
+        "tenantEmailEnabled": "Email aktiv v tenant",
+        "verifiedDomains": "Verifikirani custom domeni",
+        "effectiveCap": "Efektiven mesechen limit",
+        "none": "Nyama",
+        "yes": "Da",
+        "no": "Ne",
+        "unlimited": "Neogranicheno",
+        "modeLabel": "Rezhim na dostavka",
+        "mode": {
+          "platform": {
+            "title": "Platform Resend",
+            "hint": "Spodelen RESEND_API_KEY na Vercel."
+          },
+          "tenant_resend": {
+            "title": "Tenant BYOK Resend",
+            "hint": "API klyuch na tenant chrez env."
+          },
+          "disabled": {
+            "title": "Deaktiviran",
+            "hint": "Bez izhodiasht email za tozi tenant."
+          }
+        },
+        "byokHint": "Zadai env {env} na Vercel (Secret), posle redeploy.",
+        "byokKeyPresent": "Otkriven e tenant Resend klyuch.",
+        "byokKeyMissing": "Lipsva tenant Resend klyuch.",
+        "byokConfirmed": "Operator potvardi BYOK",
+        "monthlyCapOverride": "Override na mesechen limit",
+        "monthlyCapPlaceholder": "Prazno = po plan",
+        "operatorNotes": "Beleshki operator",
+        "save": "Zapazi email politika",
+        "saving": "Zapazva se…",
+        "saveSuccess": "Email politikata e aktualizirana.",
+        "saveError": "Greshka: {message}",
+        "saveFailed": "Aktualizatsiyata ne uspya.",
+        "statusReady": "Gotov za izprashtane na email.",
+        "status_disabled": "Izprashtaneto e deaktivirano.",
+        "status_platform_unconfigured": "Lipsva platform RESEND_API_KEY.",
+        "status_byok_missing": "BYOK bez tenant klyuch.",
+        "status_tenant_email_disabled": "Tenant e deaktiviral email.",
+        "status_monthly_cap_exceeded": "Mesecheniyat limit za email e dostignat.",
+        "status_unknown": "Ne mozhe da se izprati email.",
+        "usageThisMonth": "Izprateni tozi mesec (UTC)",
+        "usageCapped": "{sent} / {cap}",
+        "usageUnlimited": "{sent} (neogranichen plan)",
+        "vaultTitle": "BYOK vault (kriptiran DB)",
+        "vaultLead": "Zalepi Resend API klyucha — kriptiran, ne se pokazva iztsyalo.",
+        "vaultStored": "Vault",
+        "vaultStoredYes": "Klyuch zapazan ({hint})",
+        "vaultStoredNo": "Nyama klyuch v vault",
+        "vaultKeyLabel": "Resend API klyuch",
+        "vaultKeyPlaceholder": "re_xxxxxxxx",
+        "vaultKeyHint": "Kriptirane s TENANT_SECRETS_ENCRYPTION_KEY.",
+        "vaultSave": "Zapazi v vault",
+        "vaultSaving": "Kriptira se…",
+        "vaultSaveSuccess": "Klyuchat e zapazan v vault.",
+        "vaultSaveError": "Greshka: {message}",
+        "vaultClear": "Premahni ot vault",
+        "vaultClearSuccess": "Klyuchat e premahnat.",
+        "vaultClearError": "Greshka: {message}",
+        "vaultEnvLegacy": "Legacy: Vercel env",
+        "vaultEnvFallbackActive": "Legacy env {env} (vault prazen)."
+      },
+      "planForm": {
+        "perMonth": "/mes.",
+        "save": "Zapazi plan",
+        "saving": "Zapazva se…",
+        "success": "Planat e aktualiziran.",
+        "error": "Greshka: {message}",
+        "failed": "Aktualizatsiyata ne uspya."
+      },
+      "statusForm": {
+        "active": "Aktiven",
+        "trial": "Trial",
+        "suspended": "Suspendiran",
+        "cancelled": "Anuliran",
+        "save": "Zapazi status",
+        "saving": "Zapazva se…",
+        "success": "Statusat e aktualiziran.",
+        "error": "Greshka: {message}",
+        "failed": "Aktualizatsiyata ne uspya."
+      },
+      "billingToggle": {
+        "paying": "Plashtasht ✓",
+        "free": "Bezplatno",
+        "pending": "…",
+        "failed": "Aktualizatsiyata ne uspya."
       },
       "activity": {
         "title": "Posledna aktivnost",
@@ -4508,7 +4692,85 @@
         "hint": "Proverete sekciyata dev_logs — greshkata mozhe da e veche zapisana.",
         "viewDevLogs": "Vizh dev_logs"
       }
+    },
+    "logsPage": {
+      "title": "Logove i diagnostika",
+      "health": {
+        "title": "Zdrave na tenantite",
+        "issuesCount": "{count} problema",
+        "allOk": "Vsichki OK",
+        "meta": "{buildings}S · {rooms}St · {members}Ch",
+        "viewLogs": "logove →"
+      },
+      "activity": {
+        "title": "Admin aktivnost",
+        "entryCount": "({count} zapisa)",
+        "hint": "Login, rezervatsii, stai, nastroiki — pri izpolzvane na tenant admin.",
+        "empty": "Nyama aktivnost. Opitai login ili deistvie v tenant admin.",
+        "emptyForTenant": "Nyama aktivnost za {tenant}. Opitai login ili deistvie.",
+        "when": "Koga",
+        "tenant": "Tenant",
+        "action": "Deistvie",
+        "details": "Detayli",
+        "actor": "Actor"
+      },
+      "devLog": {
+        "title": "Greshki i diagnostika (dev_logs)",
+        "entryCountFiltered": "({filtered} / {total} zapisa)",
+        "entryCount": "({count} zapisa)",
+        "hint": "Stack trace, JSON kontekst i request — klikni za detayli.",
+        "filterAria": "Filtr po nivo dev_logs",
+        "levelAll": "Vsichki",
+        "levelError": "Greshki",
+        "levelWarn": "Preduprezhdeniya",
+        "levelInfo": "Info",
+        "levelDebug": "Debug",
+        "empty": "Nyama dev logove. Greshkite ot server actions se poyavyavat tuk.",
+        "emptyFilter": "Nyama zapisi s nivo \"{level}\".",
+        "when": "Koga",
+        "tenant": "Tenant",
+        "level": "Nivo",
+        "source": "Izvor",
+        "message": "Saobshtenie",
+        "details": "Detayli",
+        "request": "Request:",
+        "user": "Potrebitel:",
+        "duration": "Prodalzhitelnost:"
+      },
+      "filter": {
+        "allTenants": "Vsichki tenanti"
+      },
+      "probe": {
+        "pageThrow": "Test hvyurlyane stranitsa (SSR)",
+        "pageThrowTitle": "Hvyurlya v SSR; greshkata otiva v dev_logs",
+        "actionThrow": "Test hvyurlyane action",
+        "actionPending": "Testva se…",
+        "actionTitle": "Zapis v dev_logs posle hvyurlyane",
+        "loggedMessage": "Test greshkata e zapisana v dev_logs.",
+        "viewDevLogs": "Vizh dev_logs ↓"
+      },
+      "modules": {
+        "ical_sync": "iCal Sync",
+        "invoicing": "Fakturirane",
+        "whatsapp": "WhatsApp",
+        "public_page": "Publichna stranitsa",
+        "guest_app": "Guest App",
+        "advanced_reports": "Naprednali otchetti",
+        "multi_property": "Multi-imot",
+        "white_label": "White Label",
+        "api_access": "API dostap"
+      }
     }
+  },
+  "tenantSuspended": {
+    "eyebrow": "Акаунтът е недостъпен",
+    "suspendedTitle": "Този обект е временно спрян",
+    "suspendedLead": "Публичните резервации, достъпът на гостите и staff панелът са изключени до реактивиране.",
+    "cancelledTitle": "Акаунтът на този обект е анулиран",
+    "cancelledLead": "Zalmox workspace за този обект вече не е активен.",
+    "supportHint": "Ако си собственик или оператор на Zalmox, свържи се с поддръжката за възстановяване или експорт на данни.",
+    "staffLogin": "Staff вход",
+    "contactSupport": "Свържи се с поддръжката"
   },
   "alphaGate": {
     "eyebrow": "Alpha · ogranichen dostap",

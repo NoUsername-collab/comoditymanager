@@ -101,13 +101,14 @@ if (service && !isValidJwtLikeKey(service)) {
   errors.push("SUPABASE_SERVICE_ROLE_KEY prea scurtă sau invalidă");
 }
 
-// Platform admin emails (obligatoriu)
-const hospiraAdminEmails =
+// Platform admin emails (recommended)
+const platformAdminEmails =
+  process.env.ZALMOX_ADMIN_EMAILS?.trim() ||
   process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
   process.env.NESTIO_ADMIN_EMAILS?.trim();
-if (!hospiraAdminEmails) {
+if (!platformAdminEmails) {
   warnings.push(
-    "HOSPIRA_ADMIN_EMAILS lipseste — nu vei putea accesa /hospira-admin (legacy: NESTIO_ADMIN_EMAILS)"
+    "ZALMOX_ADMIN_EMAILS lipseste — nu vei putea accesa /platform-admin (legacy: HOSPIRA_ADMIN_EMAILS, NESTIO_ADMIN_EMAILS)"
   );
 }
 
@@ -189,7 +190,7 @@ if (warnings.length) {
 console.log("");
 ok(`Profil: ${profile}`);
 ok(`Supabase: ${url?.replace(/https:\/\//, "").split(".")[0]}…`);
-ok(`Platform admin: ${hospiraAdminEmails ?? "(nesetat)"}`);
+ok(`Platform admin: ${platformAdminEmails ?? "(nesetat)"}`);
 if (adminEmail || operatorEmail) {
   ok(`Staff legacy: Admin → ${adminEmail ?? "—"}, Operator → ${operatorEmail ?? "—"}`);
 }

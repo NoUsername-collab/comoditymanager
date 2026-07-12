@@ -38,22 +38,38 @@ export function PwaInstallBanner() {
 
   return (
     <>
-      <div className="pwa-install-banner" role="complementary" aria-label={t("installApp")}>
-        <span className="pwa-install-banner__icon" aria-hidden>⚡</span>
-        <div className="pwa-install-banner__text">
-          <strong className="pwa-install-banner__title">Zalmox</strong>
-          <span className="pwa-install-banner__sub">{t("bannerSub")}</span>
+      <div
+        className={[
+          "pwa-install-banner",
+          "fixed inset-x-3 bottom-[max(0.75rem,var(--ml-safe-bottom,0px))] z-[calc(var(--z-overlay,200)-1)]",
+          "flex items-center gap-[0.65rem] rounded-2xl border border-violet-500/30",
+          "bg-[var(--admin-card,#1a1a2e)] px-3 py-[0.65rem] text-[var(--admin-text,#e8e8f0)]",
+          "shadow-[0_8px_24px_rgb(0_0_0/0.3)]",
+        ].join(" ")}
+        role="complementary"
+        aria-label={t("installApp")}
+      >
+        <span className="shrink-0 text-2xl leading-none" aria-hidden>
+          ⚡
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <strong className="text-sm font-bold text-[var(--admin-text,#e8e8f0)]">
+            Zalmox
+          </strong>
+          <span className="text-xs text-[var(--admin-text-muted,#8888aa)]">
+            {t("bannerSub")}
+          </span>
         </div>
         <button
           type="button"
-          className="pwa-install-banner__btn"
+          className="min-h-11 shrink-0 cursor-pointer whitespace-nowrap rounded-lg border-none bg-violet-600 px-[0.85rem] py-[0.45rem] text-[0.8125rem] font-semibold text-white active:bg-violet-700"
           onClick={() => void handleInstall()}
         >
           {t("installApp")}
         </button>
         <button
           type="button"
-          className="pwa-install-banner__close"
+          className="grid h-8 w-8 min-h-11 min-w-11 shrink-0 cursor-pointer place-items-center rounded-md border-none bg-transparent p-0 text-[0.85rem] text-[var(--admin-text-muted,#8888aa)] active:text-[var(--admin-text,#e8e8f0)]"
           onClick={dismiss}
           aria-label={t("close")}
         >

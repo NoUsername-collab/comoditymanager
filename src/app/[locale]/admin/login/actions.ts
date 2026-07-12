@@ -11,7 +11,8 @@ import {
 } from "@/lib/auth/constants";
 import { resolveStaffRole } from "@/lib/auth/tenant-staff";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
-import { resolveRequestTenant } from "@/lib/tenant/active";
+import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/active";
+import { isTenantOperational } from "@/domain/tenant/operational";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";
 import { withTenantId } from "@/lib/tenant/scope";
 import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
@@ -159,6 +160,12 @@ export async function loginAction(
     return { error: t("invalidUserOrPassword") };
   }
 
+  const hostTenant = await lookupRequestTenantHost();
+  if (hostTenant && !isTenantOperational(hostTenant.status)) {
+    await supabase.auth.signOut();
+    return { error: t("tenantBlocked") };
+  }
+
   const tenant = await resolveRequestTenant();
   const role = await resolveStaffRole(user);
 
@@ -196,6 +203,14 @@ export async function completeLoginAfterMfaAction(next: string): Promise<void> {
 
   if (!user) {
     redirect("/admin/login");
+  }
+
+  const hostTenant = await lookupRequestTenantHost();
+  if (hostTenant && !isTenantOperational(hostTenant.status)) {
+    await supabase.auth.signOut();
+    redirect(
+      `/tenant-suspended?status=${encodeURIComponent(hostTenant.status)}`
+    );
   }
 
   const tenant = await resolveRequestTenant();

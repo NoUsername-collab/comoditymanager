@@ -93,14 +93,21 @@ class NoopProvider implements IEmailProvider {
   }
 }
 
-export function getEmailProvider(): IEmailProvider {
-  const resendKey = process.env.RESEND_API_KEY?.trim();
-  if (resendKey) {
-    return new ResendProvider(resendKey);
+export function getEmailProvider(apiKey?: string): IEmailProvider {
+  const resolvedKey = apiKey?.trim() || process.env.RESEND_API_KEY?.trim();
+  if (resolvedKey) {
+    return new ResendProvider(resolvedKey);
   }
   return new NoopProvider();
 }
 
-export async function sendEmail(message: EmailMessage): Promise<EmailResult> {
-  return getEmailProvider().send(message);
+export type SendEmailOptions = {
+  apiKey?: string;
+};
+
+export async function sendEmail(
+  message: EmailMessage,
+  options?: SendEmailOptions,
+): Promise<EmailResult> {
+  return getEmailProvider(options?.apiKey).send(message);
 }

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import "@/app/admin/admin-availability-route.css";
-import "@/app/admin/admin-home.css";
+import "@/styles/features/admin/admin-availability-route.css";
+import "@/styles/features/admin/admin-home.css";
 import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
 import { AvailabilityHomePreview } from "@/components/admin/availability/AvailabilityHomePreview";
 import type { AvailabilityShellSearchParams } from "@/components/admin/availability/AvailabilityDashboardShell";

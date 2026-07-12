@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { createClient } from "@/lib/supabase/server";
+import { isTenantOperational } from "@/domain/tenant/operational";
 import {
   type StaffRole,
 } from "@/lib/auth/roles";
@@ -20,7 +21,7 @@ import { locationAccessibleForMemberRole } from "@/lib/auth/location-unlock";
 import { getRequestAdminPath } from "@/lib/auth/admin-path";
 import { isMfaExemptAdminPath } from "@/lib/auth/mfa-policy";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
-import { resolveRequestTenant } from "@/lib/tenant/active";
+import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/active";
 import {
   getTenantMemberRole,
   type TenantMemberRole,
@@ -75,6 +76,13 @@ export const getStaffShellAccess = cache(async () => {
 });
 
 export async function requireStaff() {
+  const hostTenant = await lookupRequestTenantHost();
+  if (hostTenant && !isTenantOperational(hostTenant.status)) {
+    await redirect(
+      `/tenant-suspended?status=${encodeURIComponent(hostTenant.status)}`
+    );
+  }
+
   const ctx = await cachedStaffContext();
 
   if (!ctx.user) {

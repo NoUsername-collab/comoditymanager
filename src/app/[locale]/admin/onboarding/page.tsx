@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { getPensionSettings } from "@/services/pension-settings";
 import { OnboardingWizard } from "@/components/admin/onboarding/OnboardingWizard";
-import "@/app/admin/admin-onboarding.css";
+import "@/styles/features/admin/admin-onboarding.css";
 
 export default async function OnboardingPage() {
   const [t, settings] = await Promise.all([

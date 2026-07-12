@@ -3015,6 +3015,7 @@
       "invalidUserOrPassword": "Utilizator sau parolă greșită",
       "rateLimited": "Prea multe încercări. Așteaptă câteva minute.",
       "notMemberOfPension": "Contul nu are acces la această pensiune.",
+      "tenantBlocked": "Contul acestei pensiuni este suspendat sau anulat. Contactează suportul Zalmox dacă ai nevoie de acces.",
       "noTenantLinked": "Nu există o pensiune legată de acest cont. Creează una din Înregistrare sau contactează suportul.",
       "loginSummary": "Autentificare {role}",
       "adminLogout": "Deconectare admin",
@@ -3059,6 +3060,8 @@
       "emailRequired": "Emailul este obligatoriu.",
       "emailAccountMissing": "Contul tău nu are adresă de email.",
       "emailProviderNotConfigured": "Livrarea email nu e configurată pe server (lipsește RESEND_API_KEY).",
+      "emailMonthlyCapExceeded": "Limita lunară de email a fost atinsă. Contactează suportul sau upgradează planul.",
+      "emailSendFailed": "Emailul nu a putut fi trimis.",
       "invalidEmail": "Format email invalid.",
       "invalidRole": "Rol invalid.",
       "memberAlreadyExists": "Acest membru exista deja in echipa.",
@@ -4619,7 +4622,26 @@
       "exportCsv": "Export CSV",
       "exporting": "Se exportă…",
       "exportSuccess": "CSV descărcat.",
-      "exportFailed": "Export eșuat."
+      "exportFailed": "Export eșuat.",
+      "badgeSetup": "Setup",
+      "badgeEmailWarning": "Email {sent}/{cap}",
+      "badgeEmailExceeded": "Limită depășită",
+      "provision": {
+        "open": "Provision tenant",
+        "title": "Creare manuală tenant",
+        "hint": "Creează cont proprietar și rulează onboard_new_tenant (ca la signup).",
+        "displayName": "Nume proprietate",
+        "slug": "Slug (opțional)",
+        "ownerEmail": "Email proprietar",
+        "ownerPassword": "Parolă proprietar",
+        "locale": "Limbă",
+        "country": "Țară",
+        "plan": "Plan inițial",
+        "submit": "Creează tenant",
+        "submitting": "Se creează…",
+        "cancel": "Anulează",
+        "failed": "Provision eșuat."
+      }
     },
     "tenantDetail": {
       "backToTenants": "Tenanți",
@@ -4643,10 +4665,24 @@
       "plan": "Plan",
       "status": "Status",
       "modules": "Module add-on",
+      "onboarding": {
+        "title": "Checklist go-live",
+        "ready": "Gata de go-live",
+        "progress": "{ready} din {total} pași obligatorii finalizați",
+        "goLive": "Go-live",
+        "optional": "opțional",
+        "item": {
+          "status_ok": "Status activ sau trial",
+          "owner_email": "Email proprietar setat",
+          "has_rooms": "Cel puțin o cameră",
+          "has_members": "Cel puțin un membru în echipă",
+          "email_ready": "Email pregătit pentru trimitere",
+          "domain_configured": "Domeniu configurat",
+          "plan_modules": "Module sincronizate cu planul"
+        }
+      },
       "quickLinks": {
-        "title": "Acțiuni rapide",
-        "impersonateHint": "Deschide panoul admin al acestui tenant. Te autentifici cu contul tău.",
-        "openAdmin": "Deschide {slug}",
+        "title": "Acțiuni operator",
         "viewLogs": "Vezi loguri tenant"
       },
       "health": {
@@ -4659,7 +4695,155 @@
         "empty": "Niciun domeniu configurat.",
         "unverified": "neverificat",
         "sslPending": "SSL pending",
-        "copySlug": "Copiază slug"
+        "copySlug": "Copiază slug",
+        "addHint": "Adaugă domeniu custom (override operator).",
+        "domainPlaceholder": "calendar.exemplu.ro",
+        "routingKind": "Rutare",
+        "add": "Adaugă domeniu",
+        "adding": "Se adaugă…",
+        "remove": "Șterge",
+        "verify": "Marchează verificat",
+        "actionSuccess": "Domeniu actualizat.",
+        "actionFailed": "Operațiune domeniu eșuată."
+      },
+      "modulesForm": {
+        "save": "Salvează module",
+        "saving": "Se salvează…",
+        "success": "Module actualizate.",
+        "error": "Eroare: {message}",
+        "failed": "Actualizare eșuată."
+      },
+      "planIncludes": {
+        "title": "Ce include planul",
+        "subtitle": "{plan} · {price}€/lună — sursă: PLAN_CONFIGS",
+        "maxRooms": "Max camere",
+        "maxTeam": "Max echipă",
+        "maxProperties": "Max proprietăți",
+        "emailCap": "Cap email / lună",
+        "branding": "Branding platformă",
+        "brandingOn": "Vizibil",
+        "brandingOff": "Ascuns",
+        "unlimited": "Nelimitat",
+        "features": "Funcții core",
+        "modules": "Module (efective)",
+        "badgeIncluded": "Inclus",
+        "badgeAddon": "Add-on",
+        "syncModules": "Sincronizează modulele",
+        "syncing": "Se sincronizează…",
+        "syncSuccess": "Module sincronizate cu planul.",
+        "syncError": "Eroare: {message}",
+        "syncFailed": "Sincronizare eșuată.",
+        "feature": {
+          "calendar": "Calendar",
+          "gantt": "Gantt",
+          "guest_files": "Fișe oaspeți",
+          "bookings": "Rezervări",
+          "email_notifications": "Email tranzacțional",
+          "themes": "Teme",
+          "heatmap": "Heatmap disponibilitate",
+          "rooms_unlimited": "Camere nelimitate",
+          "priority_support": "Suport prioritar",
+          "custom_domain": "Domeniu custom",
+          "sla_guarantee": "SLA 99.9%",
+          "dedicated_manager": "Manager dedicat",
+          "onboarding": "Onboarding",
+          "automations": "Automatizări"
+        }
+      },
+      "emailDelivery": {
+        "title": "Email / Resend",
+        "from": "Expeditor",
+        "mailDomain": "Domeniu mail",
+        "replyTo": "Reply-to",
+        "platformResend": "Resend platformă",
+        "platformResendOn": "Activ · {domain}",
+        "platformResendOff": "Lipsește RESEND_API_KEY",
+        "tenantEmailEnabled": "Email activ în tenant",
+        "verifiedDomains": "Domenii custom verificate",
+        "effectiveCap": "Cap lunar efectiv",
+        "none": "Niciunul",
+        "yes": "Da",
+        "no": "Nu",
+        "unlimited": "Nelimitat",
+        "modeLabel": "Mod livrare",
+        "mode": {
+          "platform": {
+            "title": "Resend platformă",
+            "hint": "RESEND_API_KEY comun pe Vercel (implicit)."
+          },
+          "tenant_resend": {
+            "title": "Resend BYOK tenant",
+            "hint": "Cheie API tenant în env (viitor: vault)."
+          },
+          "disabled": {
+            "title": "Dezactivat",
+            "hint": "Fără email outbound pentru acest tenant."
+          }
+        },
+        "byokHint": "Setează env {env} pe Vercel (Secret), apoi redeploy.",
+        "byokKeyPresent": "Cheie Resend tenant detectată în env.",
+        "byokKeyMissing": "Cheie Resend tenant lipsă din env.",
+        "byokConfirmed": "Operator a confirmat setup BYOK",
+        "monthlyCapOverride": "Override cap lunar (opțional)",
+        "monthlyCapPlaceholder": "Gol = default plan",
+        "operatorNotes": "Note operator",
+        "save": "Salvează politica email",
+        "saving": "Se salvează…",
+        "saveSuccess": "Politică email actualizată.",
+        "saveError": "Eroare: {message}",
+        "saveFailed": "Actualizare eșuată.",
+        "statusReady": "Gata de trimitere email.",
+        "status_disabled": "Trimitere dezactivată pentru tenant.",
+        "status_platform_unconfigured": "Lipsește RESEND_API_KEY platformă.",
+        "status_byok_missing": "Mod BYOK dar lipsește cheia tenant.",
+        "status_tenant_email_disabled": "Tenant a dezactivat emailul în setări.",
+        "status_monthly_cap_exceeded": "Cap lunar email atins pentru acest tenant.",
+        "status_unknown": "Nu se poate trimite email.",
+        "usageThisMonth": "Trimise luna aceasta (UTC)",
+        "usageCapped": "{sent} / {cap}",
+        "usageUnlimited": "{sent} (plan nelimitat)",
+        "vaultTitle": "Vault BYOK (DB criptat)",
+        "vaultLead": "Lipește cheia Resend a clientului — se salvează criptat, nu se mai arată integral.",
+        "vaultStored": "Vault",
+        "vaultStoredYes": "Cheie salvată ({hint})",
+        "vaultStoredNo": "Fără cheie în vault",
+        "vaultKeyLabel": "Cheie API Resend",
+        "vaultKeyPlaceholder": "re_xxxxxxxx",
+        "vaultKeyHint": "Criptare cu TENANT_SECRETS_ENCRYPTION_KEY. Doar platform admin.",
+        "vaultSave": "Salvează în vault",
+        "vaultSaving": "Se criptează…",
+        "vaultSaveSuccess": "Cheie salvată în vault. Mod BYOK activ.",
+        "vaultSaveError": "Eroare: {message}",
+        "vaultClear": "Șterge din vault",
+        "vaultClearSuccess": "Cheie ștearsă din vault.",
+        "vaultClearError": "Eroare: {message}",
+        "vaultEnvLegacy": "Legacy: fallback env Vercel",
+        "vaultEnvFallbackActive": "Folosește env legacy {env} (vault gol)."
+      },
+      "planForm": {
+        "perMonth": "/lună",
+        "save": "Salvează plan",
+        "saving": "Se salvează…",
+        "success": "Plan actualizat.",
+        "error": "Eroare: {message}",
+        "failed": "Actualizare eșuată."
+      },
+      "statusForm": {
+        "active": "Activ",
+        "trial": "Trial",
+        "suspended": "Suspendat",
+        "cancelled": "Anulat",
+        "save": "Salvează status",
+        "saving": "Se salvează…",
+        "success": "Status actualizat.",
+        "error": "Eroare: {message}",
+        "failed": "Actualizare eșuată."
+      },
+      "billingToggle": {
+        "paying": "Plătitor ✓",
+        "free": "Gratuit",
+        "pending": "…",
+        "failed": "Actualizare eșuată."
       },
       "activity": {
         "title": "Ultima activitate",
@@ -4740,7 +4924,85 @@
         "hint": "Verifică secțiunea dev_logs — eroarea poate fi deja înregistrată acolo.",
         "viewDevLogs": "Vezi dev_logs"
       }
+    },
+    "logsPage": {
+      "title": "Loguri & diagnostic",
+      "health": {
+        "title": "Sănătate tenanți",
+        "issuesCount": "{count} probleme",
+        "allOk": "Toți OK",
+        "meta": "{buildings}B · {rooms}C · {members}M",
+        "viewLogs": "loguri →"
+      },
+      "activity": {
+        "title": "Activitate admin",
+        "entryCount": "({count} intrări)",
+        "hint": "Login, rezervări, camere, setări — se populează când folosești admin-ul tenantului.",
+        "empty": "Niciun log de activitate. Încearcă login sau o acțiune în admin tenant.",
+        "emptyForTenant": "Niciun log pentru {tenant}. Încearcă login sau o acțiune în admin tenant.",
+        "when": "Când",
+        "tenant": "Tenant",
+        "action": "Acțiune",
+        "details": "Detalii",
+        "actor": "Actor"
+      },
+      "devLog": {
+        "title": "Erori & diagnostice (dev_logs)",
+        "entryCountFiltered": "({filtered} / {total} intrări)",
+        "entryCount": "({count} intrări)",
+        "hint": "Stack trace, context JSON și request — click pe intrare pentru detalii.",
+        "filterAria": "Filtru nivel dev_logs",
+        "levelAll": "Toate",
+        "levelError": "Erori",
+        "levelWarn": "Avertismente",
+        "levelInfo": "Info",
+        "levelDebug": "Debug",
+        "empty": "Niciun dev log încă. Erorile din server actions apar aici automat.",
+        "emptyFilter": "Nicio intrare cu nivel „{level}".",
+        "when": "Când",
+        "tenant": "Tenant",
+        "level": "Nivel",
+        "source": "Sursă",
+        "message": "Mesaj",
+        "details": "Detalii",
+        "request": "Request:",
+        "user": "Utilizator:",
+        "duration": "Durată:"
+      },
+      "filter": {
+        "allTenants": "Toți tenanții"
+      },
+      "probe": {
+        "pageThrow": "Test aruncare pagină (SSR)",
+        "pageThrowTitle": "Aruncă în SSR; eroarea apare în dev_logs și error boundary",
+        "actionThrow": "Test aruncare acțiune",
+        "actionPending": "Se testează…",
+        "actionTitle": "Scrie în dev_logs apoi aruncă (server action)",
+        "loggedMessage": "Eroarea de test a fost aruncată și înregistrată în dev_logs.",
+        "viewDevLogs": "Vezi dev_logs ↓"
+      },
+      "modules": {
+        "ical_sync": "iCal Sync",
+        "invoicing": "Facturare",
+        "whatsapp": "WhatsApp",
+        "public_page": "Pagina publică",
+        "guest_app": "Guest App",
+        "advanced_reports": "Rapoarte avansate",
+        "multi_property": "Multi-proprietate",
+        "white_label": "White Label",
+        "api_access": "API Access"
+      }
     }
+  },
+  "tenantSuspended": {
+    "eyebrow": "Cont indisponibil",
+    "suspendedTitle": "Această pensiune este suspendată temporar",
+    "suspendedLead": "Rezervările publice, accesul oaspeților și panoul staff sunt dezactivate până la reactivare.",
+    "cancelledTitle": "Contul acestei pensiuni a fost anulat",
+    "cancelledLead": "Workspace-ul Zalmox pentru această pensiune nu mai este activ.",
+    "supportHint": "Dacă ești owner sau operator Zalmox, contactează suportul pentru reactivare sau export date.",
+    "staffLogin": "Login staff",
+    "contactSupport": "Contactează suportul"
   },
   "alphaGate": {
     "eyebrow": "Alpha · acces restricționat",

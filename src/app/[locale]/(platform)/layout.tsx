@@ -2,10 +2,12 @@ import { PlatformHeader } from "@/components/platform/PlatformHeader";
 import { PlatformFooter } from "@/components/platform/PlatformFooter";
 import { MobileShell } from "@/layout/components/MobileShell";
 import type { CSSProperties } from "react";
-import "@/app/signup.css";
-import "@/app/landing.css";
-import "@/app/landing-premium.css";
-import "@/app/platform.css";
+import "@/styles/features/platform/signup.css";
+import "@/styles/features/platform/landing.css";
+import "@/styles/features/platform/landing-premium.css";
+import "@/styles/features/platform/platform.css";
+import "@/styles/features/platform/platform-split.css";
+import "@/styles/features/layout/mobile-public.css";
 
 const platformVars = {
   "--site-bg": "#f8fafc",

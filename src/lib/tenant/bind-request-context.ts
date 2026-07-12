@@ -6,17 +6,36 @@ import {
   TenantContextMissingError,
   type TenantContext,
 } from "@/core/tenant/context";
-import { resolveRequestTenant, TenantNotFoundError } from "@/lib/tenant/active";
+import { isTenantOperational } from "@/domain/tenant/operational";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import {
+  lookupRequestTenantHost,
+  resolveRequestTenant,
+  TenantNotFoundError,
+} from "@/lib/tenant/active";
 import { parseTenantFromHost } from "@/lib/tenant/host";
 import { tenantRowToRecord } from "@/lib/tenant/record";
-import { getTenantBySlug } from "@/services/tenants";
+import { lookupTenantBySlugAnyStatus } from "@/services/tenants";
 import { headers } from "next/headers";
+
+async function redirectIfTenantBlocked(
+  row: { status: string } | null
+): Promise<void> {
+  if (!row || isTenantOperational(row.status)) return;
+  await redirect(`/tenant-suspended?status=${encodeURIComponent(row.status)}`);
+}
 
 /**
  * Bind tenant context for the current request from host headers / DB.
  * Production: host tenant only — never "first row in tenants table".
  */
 export const bindTenantContextFromRequest = cache(async (): Promise<TenantContext> => {
+  const hostTenant = await lookupRequestTenantHost();
+  if (hostTenant) {
+    await redirectIfTenantBlocked(hostTenant);
+    return setTenantContext(tenantRowToRecord(hostTenant));
+  }
+
   const fromHost = await resolveRequestTenant();
   if (fromHost) {
     return setTenantContext(tenantRowToRecord(fromHost));
@@ -26,6 +45,10 @@ export const bindTenantContextFromRequest = cache(async (): Promise<TenantContex
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "";
   const parsed = parseTenantFromHost(host);
   if (parsed.type === "tenant") {
+    const blocked = await lookupTenantBySlugAnyStatus(parsed.slug);
+    if (blocked && !isTenantOperational(blocked.status)) {
+      await redirectIfTenantBlocked(blocked);
+    }
     throw new TenantNotFoundError(parsed.slug);
   }
   if (parsed.type === "custom") {
@@ -35,9 +58,12 @@ export const bindTenantContextFromRequest = cache(async (): Promise<TenantContex
   if (process.env.NODE_ENV === "development") {
     const devSlug = process.env.DEV_TENANT_SLUG?.trim();
     if (devSlug) {
-      const row = await getTenantBySlug(devSlug);
+      const row = await lookupTenantBySlugAnyStatus(devSlug);
       if (row) {
-        return setTenantContext(tenantRowToRecord(row));
+        await redirectIfTenantBlocked(row);
+        if (isTenantOperational(row.status)) {
+          return setTenantContext(tenantRowToRecord(row));
+        }
       }
     }
     return setTenantContext(DEV_FALLBACK_TENANT);

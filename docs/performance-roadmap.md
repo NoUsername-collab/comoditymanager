@@ -17,6 +17,7 @@ Actualizat **2026-06-22**.
 | **CSS** | `admin-settings.css` deferit pe layout settings; login CSS pe rută |
 | **Settings** | `loadSettingsStaffContext` cache + parallel staff/pension |
 | **Camera** | `Permissions-Policy: camera=(self)` pentru scan MRZ |
+| **Admin mobile core** | `(panel)/layout` loads `mobile-core.css` + `mobile-admin.css` (guards + route rules) |
 
 ## Verificare
 
@@ -29,10 +30,11 @@ npx tsc --noEmit
 ## TODO (prioritizat)
 
 1. ~~**Prefetch** — evită prefetch rute grele (calendar) pe linkuri secundare~~ ✓
-2. **Guest profiles** — batch attach la liste mari de bookings (monitor N+1)
-3. **Statistics** — cache agregări anuale (heavy compute)
-4. **Images** — `next/image` pe site public unde lipsește
+2. **Guest profiles** — batch attach la liste mari de bookings (monitor N+1) — deja implementat
+3. **Statistics** — cache agregări anuale (heavy compute) — deja `unstable_cache` 120s
+4. **Images** — `next/image` pe site public unde lipsește — `render-section` OK; editor galerie rămâne `<img>` (URL-uri arbitrare)
 5. **Service worker** — out of scope web; pregătit pentru app nativă
+6. **mobile-admin.css trim** — mută reguli rămase în route bundles; panel doar `mobile-core` + bundle per rută
 
 ## Principii
 

@@ -25,6 +25,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  delete process.env.ZALMOX_ADMIN_EMAILS;
   delete process.env.HOSPIRA_ADMIN_EMAILS;
   delete process.env.NESTIO_ADMIN_EMAILS;
 });

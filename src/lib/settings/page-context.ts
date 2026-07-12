@@ -11,7 +11,7 @@ import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import type { PermissionGroupId } from "@/domain/settings/team-permissions";
 import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
+import type { SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 
 export const loadSettingsStaffContext = cache(async () => {
   const [staff, pensionResult] = await Promise.all([

@@ -1,4 +1,4 @@
-# Performance notes — Hospira / Casa Emil
+# Performance notes — Zalmox
 
 Actualizat 2026-06-22 (pass agresiv + diagnostic real).
 

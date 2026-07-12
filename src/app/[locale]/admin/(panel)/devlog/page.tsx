@@ -1,4 +1,4 @@
-import "@/app/admin/admin-devlog.css";
+import "@/styles/features/admin/admin-devlog.css";
 import { listDevLogs, type DevLogLevel } from "@/services/dev-logs";
 import { DevLogFilters } from "@/components/admin/devlog/DevLogFilters";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";

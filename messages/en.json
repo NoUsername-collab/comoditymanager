@@ -3031,6 +3031,7 @@
       "invalidUserOrPassword": "Invalid user or password",
       "rateLimited": "Too many attempts. Please wait a few minutes.",
       "notMemberOfPension": "This account does not have access to this property.",
+      "tenantBlocked": "This property account is suspended or cancelled. Contact Zalmox support if you need access.",
       "noTenantLinked": "No property is linked to this account. Create one from Sign up or contact support.",
       "loginSummary": "Login {role}",
       "adminLogout": "Admin logout",
@@ -3075,6 +3076,8 @@
       "emailRequired": "Email is required.",
       "emailAccountMissing": "Your account has no email address.",
       "emailProviderNotConfigured": "Email delivery is not configured on the server (RESEND_API_KEY missing).",
+      "emailMonthlyCapExceeded": "Monthly email limit reached for your plan. Contact support or upgrade.",
+      "emailSendFailed": "Could not send email.",
       "invalidEmail": "Invalid email format.",
       "invalidRole": "Invalid role.",
       "memberAlreadyExists": "This member already exists in the team.",
@@ -4636,7 +4639,26 @@
       "exportCsv": "Export CSV",
       "exporting": "Exporting…",
       "exportSuccess": "CSV downloaded.",
-      "exportFailed": "Export failed."
+      "exportFailed": "Export failed.",
+      "badgeSetup": "Setup",
+      "badgeEmailWarning": "Email {sent}/{cap}",
+      "badgeEmailExceeded": "Cap exceeded",
+      "provision": {
+        "open": "Provision tenant",
+        "title": "Manual tenant provision",
+        "hint": "Creates owner account and runs onboard_new_tenant (same as signup).",
+        "displayName": "Property name",
+        "slug": "Slug (optional)",
+        "ownerEmail": "Owner email",
+        "ownerPassword": "Owner password",
+        "locale": "Locale",
+        "country": "Country",
+        "plan": "Initial plan",
+        "submit": "Create tenant",
+        "submitting": "Creating…",
+        "cancel": "Cancel",
+        "failed": "Provision failed."
+      }
     },
     "tenantDetail": {
       "backToTenants": "Tenants",
@@ -4660,10 +4682,24 @@
       "plan": "Plan",
       "status": "Status",
       "modules": "Add-on modules",
+      "onboarding": {
+        "title": "Go-live checklist",
+        "ready": "Ready for go-live",
+        "progress": "{ready} of {total} required steps complete",
+        "goLive": "Go-live",
+        "optional": "optional",
+        "item": {
+          "status_ok": "Active or trial status",
+          "owner_email": "Owner email set",
+          "has_rooms": "At least one room",
+          "has_members": "At least one team member",
+          "email_ready": "Email delivery ready",
+          "domain_configured": "Domain configured",
+          "plan_modules": "Plan modules synced"
+        }
+      },
       "quickLinks": {
-        "title": "Quick actions",
-        "impersonateHint": "Open this tenant's admin panel. Sign in with your platform account.",
-        "openAdmin": "Open {slug}",
+        "title": "Operator actions",
         "viewLogs": "View tenant logs"
       },
       "health": {
@@ -4676,7 +4712,155 @@
         "empty": "No domains configured.",
         "unverified": "unverified",
         "sslPending": "SSL pending",
-        "copySlug": "Copy slug"
+        "copySlug": "Copy slug",
+        "addHint": "Add a custom domain (operator override).",
+        "domainPlaceholder": "calendar.example.com",
+        "routingKind": "Routing",
+        "add": "Add domain",
+        "adding": "Adding…",
+        "remove": "Remove",
+        "verify": "Mark verified",
+        "actionSuccess": "Domain updated.",
+        "actionFailed": "Domain operation failed."
+      },
+      "modulesForm": {
+        "save": "Save modules",
+        "saving": "Saving…",
+        "success": "Modules updated.",
+        "error": "Error: {message}",
+        "failed": "Update failed."
+      },
+      "planIncludes": {
+        "title": "Plan includes",
+        "subtitle": "{plan} · {price}€/month — source of truth from PLAN_CONFIGS",
+        "maxRooms": "Max rooms",
+        "maxTeam": "Max team",
+        "maxProperties": "Max properties",
+        "emailCap": "Email cap / month",
+        "branding": "Platform branding",
+        "brandingOn": "Visible",
+        "brandingOff": "Hidden",
+        "unlimited": "Unlimited",
+        "features": "Core features",
+        "modules": "Modules (effective)",
+        "badgeIncluded": "Included",
+        "badgeAddon": "Add-on",
+        "syncModules": "Sync modules from plan",
+        "syncing": "Syncing…",
+        "syncSuccess": "Modules synced to plan defaults.",
+        "syncError": "Error: {message}",
+        "syncFailed": "Sync failed.",
+        "feature": {
+          "calendar": "Calendar",
+          "gantt": "Gantt",
+          "guest_files": "Guest files",
+          "bookings": "Bookings",
+          "email_notifications": "Transactional email",
+          "themes": "Themes",
+          "heatmap": "Availability heatmap",
+          "rooms_unlimited": "Unlimited rooms",
+          "priority_support": "Priority support",
+          "custom_domain": "Custom domain",
+          "sla_guarantee": "SLA 99.9%",
+          "dedicated_manager": "Dedicated manager",
+          "onboarding": "Onboarding",
+          "automations": "Automations"
+        }
+      },
+      "emailDelivery": {
+        "title": "Email / Resend",
+        "from": "From",
+        "mailDomain": "Mail domain",
+        "replyTo": "Reply-to",
+        "platformResend": "Platform Resend",
+        "platformResendOn": "Active · {domain}",
+        "platformResendOff": "RESEND_API_KEY missing",
+        "tenantEmailEnabled": "Tenant email enabled",
+        "verifiedDomains": "Verified custom domains",
+        "effectiveCap": "Effective monthly cap",
+        "none": "None",
+        "yes": "Yes",
+        "no": "No",
+        "unlimited": "Unlimited",
+        "modeLabel": "Delivery mode",
+        "mode": {
+          "platform": {
+            "title": "Platform Resend",
+            "hint": "Shared RESEND_API_KEY on Vercel (default)."
+          },
+          "tenant_resend": {
+            "title": "Tenant BYOK Resend",
+            "hint": "Tenant API key via env var (future: vault)."
+          },
+          "disabled": {
+            "title": "Disabled",
+            "hint": "No outbound email for this tenant."
+          }
+        },
+        "byokHint": "Set env {env} on Vercel (Secret), then redeploy.",
+        "byokKeyPresent": "Tenant Resend key detected in env.",
+        "byokKeyMissing": "Tenant Resend key not found in env.",
+        "byokConfirmed": "Operator confirmed BYOK setup",
+        "monthlyCapOverride": "Monthly cap override (optional)",
+        "monthlyCapPlaceholder": "Leave empty for plan default",
+        "operatorNotes": "Operator notes",
+        "save": "Save email policy",
+        "saving": "Saving…",
+        "saveSuccess": "Email policy updated.",
+        "saveError": "Error: {message}",
+        "saveFailed": "Update failed.",
+        "statusReady": "Ready to send email.",
+        "status_disabled": "Sending disabled for this tenant.",
+        "status_platform_unconfigured": "Platform RESEND_API_KEY missing.",
+        "status_byok_missing": "BYOK mode but tenant key missing.",
+        "status_tenant_email_disabled": "Tenant disabled email in settings.",
+        "status_monthly_cap_exceeded": "Monthly email cap reached for this tenant.",
+        "status_unknown": "Cannot send email (unknown reason).",
+        "usageThisMonth": "Sent this month (UTC)",
+        "usageCapped": "{sent} / {cap}",
+        "usageUnlimited": "{sent} (unlimited plan)",
+        "vaultTitle": "BYOK vault (encrypted DB)",
+        "vaultLead": "Paste the tenant Resend API key here — stored encrypted, never shown again in full.",
+        "vaultStored": "Vault",
+        "vaultStoredYes": "Key stored ({hint})",
+        "vaultStoredNo": "No key in vault",
+        "vaultKeyLabel": "Resend API key",
+        "vaultKeyPlaceholder": "re_xxxxxxxx",
+        "vaultKeyHint": "Key is encrypted with TENANT_SECRETS_ENCRYPTION_KEY. Only platform admins can write.",
+        "vaultSave": "Save key to vault",
+        "vaultSaving": "Encrypting…",
+        "vaultSaveSuccess": "Key saved to vault. Mode set to tenant BYOK.",
+        "vaultSaveError": "Error: {message}",
+        "vaultClear": "Remove from vault",
+        "vaultClearSuccess": "Vault key removed.",
+        "vaultClearError": "Error: {message}",
+        "vaultEnvLegacy": "Legacy: Vercel env fallback",
+        "vaultEnvFallbackActive": "Using legacy env {env} (vault empty)."
+      },
+      "planForm": {
+        "perMonth": "/mo",
+        "save": "Save plan",
+        "saving": "Saving…",
+        "success": "Plan updated.",
+        "error": "Error: {message}",
+        "failed": "Update failed."
+      },
+      "statusForm": {
+        "active": "Active",
+        "trial": "Trial",
+        "suspended": "Suspended",
+        "cancelled": "Cancelled",
+        "save": "Save status",
+        "saving": "Saving…",
+        "success": "Status updated.",
+        "error": "Error: {message}",
+        "failed": "Update failed."
+      },
+      "billingToggle": {
+        "paying": "Paying ✓",
+        "free": "Free",
+        "pending": "…",
+        "failed": "Update failed."
       },
       "activity": {
         "title": "Last activity",
@@ -4757,7 +4941,85 @@
         "hint": "Check the dev_logs section — the error may already be recorded there.",
         "viewDevLogs": "View dev_logs"
       }
+    },
+    "logsPage": {
+      "title": "Logs & diagnostics",
+      "health": {
+        "title": "Tenant health",
+        "issuesCount": "{count} issues",
+        "allOk": "All OK",
+        "meta": "{buildings}B · {rooms}R · {members}M",
+        "viewLogs": "logs →"
+      },
+      "activity": {
+        "title": "Admin activity",
+        "entryCount": "({count} entries)",
+        "hint": "Logins, bookings, rooms, settings — populated when the tenant admin is used.",
+        "empty": "No activity logs yet. Try logging in or an action in tenant admin.",
+        "emptyForTenant": "No activity for {tenant}. Try login or an action in tenant admin.",
+        "when": "When",
+        "tenant": "Tenant",
+        "action": "Action",
+        "details": "Details",
+        "actor": "Actor"
+      },
+      "devLog": {
+        "title": "Errors & diagnostics (dev_logs)",
+        "entryCountFiltered": "({filtered} / {total} entries)",
+        "entryCount": "({count} entries)",
+        "hint": "Stack trace, JSON context and request — click an entry for details.",
+        "filterAria": "dev_logs level filter",
+        "levelAll": "All",
+        "levelError": "Errors",
+        "levelWarn": "Warnings",
+        "levelInfo": "Info",
+        "levelDebug": "Debug",
+        "empty": "No dev logs yet. Server action errors appear here automatically.",
+        "emptyFilter": "No entries with level \"{level}\".",
+        "when": "When",
+        "tenant": "Tenant",
+        "level": "Level",
+        "source": "Source",
+        "message": "Message",
+        "details": "Details",
+        "request": "Request:",
+        "user": "User:",
+        "duration": "Duration:"
+      },
+      "filter": {
+        "allTenants": "All tenants"
+      },
+      "probe": {
+        "pageThrow": "Test page throw (SSR)",
+        "pageThrowTitle": "Throw in SSR; error appears in dev_logs and error boundary",
+        "actionThrow": "Test action throw",
+        "actionPending": "Testing…",
+        "actionTitle": "Write to dev_logs then throw (server action)",
+        "loggedMessage": "Test error was thrown and recorded in dev_logs.",
+        "viewDevLogs": "View dev_logs ↓"
+      },
+      "modules": {
+        "ical_sync": "iCal Sync",
+        "invoicing": "Invoicing",
+        "whatsapp": "WhatsApp",
+        "public_page": "Public page",
+        "guest_app": "Guest app",
+        "advanced_reports": "Advanced reports",
+        "multi_property": "Multi-property",
+        "white_label": "White label",
+        "api_access": "API access"
+      }
     }
+  },
+  "tenantSuspended": {
+    "eyebrow": "Account unavailable",
+    "suspendedTitle": "This property is temporarily suspended",
+    "suspendedLead": "Public booking, guest access, and staff admin are disabled until the account is reactivated.",
+    "cancelledTitle": "This property account was cancelled",
+    "cancelledLead": "The Zalmox workspace for this property is no longer active.",
+    "supportHint": "If you are the owner or Zalmox operator, contact support to restore access or export data.",
+    "staffLogin": "Staff login",
+    "contactSupport": "Contact support"
   },
   "alphaGate": {
     "eyebrow": "Alpha · restricted access",

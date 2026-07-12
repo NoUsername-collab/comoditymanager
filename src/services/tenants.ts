@@ -119,6 +119,68 @@ export async function getTenantBySlug(slug: string): Promise<TenantRow | null> {
   return getCachedTenantBySlug(slug)();
 }
 
+async function fetchTenantBySlugAnyStatus(slug: string): Promise<TenantRow | null> {
+  try {
+    const supabase = createPublicAdminClient();
+    const { data, error } = await supabase
+      .from("tenants")
+      .select(TENANT_ROW_SELECT)
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data as TenantRow;
+  } catch {
+    return null;
+  }
+}
+
+const getCachedTenantBySlugAnyStatus = (slug: string) =>
+  unstable_cache(
+    () => fetchTenantBySlugAnyStatus(slug),
+    ["tenant-by-slug-any-status", slug],
+    { revalidate: 60, tags: [`tenant-slug-${slug}`, `tenant-slug-status-${slug}`] }
+  );
+
+/** Host enforcement — includes suspended/cancelled tenants. */
+export async function lookupTenantBySlugAnyStatus(
+  slug: string
+): Promise<TenantRow | null> {
+  if (!slug) return null;
+  return getCachedTenantBySlugAnyStatus(slug)();
+}
+
+async function fetchTenantByDomainAnyStatus(domain: string): Promise<TenantRow | null> {
+  try {
+    const supabase = createPublicAdminClient();
+    const { data: domainRow, error: domainError } = await supabase
+      .from("tenant_domains")
+      .select("tenant_id")
+      .eq("domain", domain.toLowerCase().trim())
+      .maybeSingle();
+
+    if (domainError || !domainRow?.tenant_id) return null;
+    return getTenantByIdUncached(domainRow.tenant_id);
+  } catch {
+    return null;
+  }
+}
+
+const getCachedTenantByDomainAnyStatus = (domain: string) =>
+  unstable_cache(
+    () => fetchTenantByDomainAnyStatus(domain),
+    ["tenant-by-domain-any-status", domain],
+    { revalidate: 60, tags: [`tenant-domain-${domain}`, `tenant-domain-status-${domain}`] }
+  );
+
+/** Host enforcement — includes suspended/cancelled tenants. */
+export async function lookupTenantByDomainAnyStatus(
+  domain: string
+): Promise<TenantRow | null> {
+  if (!domain) return null;
+  return getCachedTenantByDomainAnyStatus(domain)();
+}
+
 /** Lookup by custom domain (rezervari.pensiunea.ro). */
 async function fetchTenantIdByDomain(domain: string): Promise<string | null> {
   try {

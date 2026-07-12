@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
-import "@/app/admin/admin-checkin.css";
+import "@/components/admin/checkin/import-checkin-styles";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import type { BookingForCheckin, CheckinSettings } from "@/domain/checkin/types";
 

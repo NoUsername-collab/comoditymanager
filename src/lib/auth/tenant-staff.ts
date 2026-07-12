@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
-import { resolveRequestTenant } from "@/lib/tenant/active";
+import { isTenantOperational } from "@/domain/tenant/operational";
+import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/active";
 import type { StaffRole } from "@/lib/auth/roles";
 import {
   getTenantMemberRole,
@@ -33,19 +34,23 @@ export async function resolveStaffRole(
 ): Promise<StaffRole | null> {
   if (!user?.id) return null;
 
+  const hostTenant = await lookupRequestTenantHost();
+  if (hostTenant) {
+    if (!isTenantOperational(hostTenant.status)) return null;
+    return getStaffRoleForTenant(user.id, hostTenant.id);
+  }
+
   const tenant = await resolveRequestTenant();
   if (tenant) {
     return getStaffRoleForTenant(user.id, tenant.id);
   }
 
-  // No tenant resolved — check app_metadata as last resort
-  // This covers users created via signup (app_metadata.role = "owner")
+  // Platform apex / local dev without tenant host — metadata from signup bootstrap only.
   const metaRole = user.app_metadata?.role;
   if (metaRole === "admin" || metaRole === "operator" || metaRole === "owner") {
     return metaRole === "operator" ? "operator" : "admin";
   }
 
-  // No legacy env var bypass — prevents "god mode" access across tenants
   return null;
 }
 

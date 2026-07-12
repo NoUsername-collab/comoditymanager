@@ -6,5 +6,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Architecture
 
-Read **[ARCHITECTURE.md](./ARCHITECTURE.md)** before adding modules or cross-layer imports.
-Layer rules are enforced by `src/lib/architecture/__tests__/import-boundaries.test.ts`.
+Read **[ARCHITECTURE.md](./ARCHITECTURE.md)** before adding modules or cross-layer imports.  
+Onboarding index: **[docs/README.md](./docs/README.md)**.  
+Layer rules: `src/lib/architecture/__tests__/import-boundaries.test.ts`, `css-boundaries.test.ts`.

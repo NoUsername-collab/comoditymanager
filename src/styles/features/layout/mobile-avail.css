@@ -1,0 +1,517 @@
+/* mobile-avail.css — Disponibilitate mobile compat (split from mobile-admin.css) */
+
+
+
+/* ── Availability ── */
+html[data-layout-chrome="compact"] .availability-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+/* ── Availability (availability-premium.css) ── */
+html[data-layout-chrome="compact"] .avail-weekends-panel__grid,
+html[data-layout-chrome="compact"] .availability-home-preview__weekends .avail-weekends-panel__grid,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .avail-weekends-panel__grid,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .availability-home-preview__weekends .avail-weekends-panel__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+
+html[data-layout-mode="mobile"] .avail-weekends-panel__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+/* ── Disponibilitate ── */
+html[data-layout-chrome="compact"] .availability-week-nav button,
+html[data-layout-chrome="compact"] .avail-weekend-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+/* availability detail: mobile-layout-flawless.css */
+
+html[data-layout-chrome="compact"] .availability-month-matrix {
+  font-size: 0.68rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-month-matrix tbody {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 10rem;
+}
+
+
+
+/* ── Pass 25: availability day detail skeleton (shell layout: pass 26) ── */
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton > div:first-child {
+  padding: 0.65rem 0.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton__rows {
+  padding: 0.65rem 0.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton .admin-route-skeleton__card {
+  min-height: var(--ml-touch-min, 2.75rem);
+  height: auto;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton > div:last-child {
+  padding: 0.65rem 0.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: white;
+  backdrop-filter: none;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__footer .admin-text-action {
+  width: 100%;
+  justify-content: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+/* ── Availability KPI: 2-up on compact (ignore min-width 768 4-col) ── */
+html[data-layout-chrome="compact"] .avail-kpi-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-kpi-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+  box-shadow: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-month-matrix,
+html[data-layout-chrome="compact"] .availability-week-matrix {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-page-bg, #0f172a) 4%, transparent);
+}
+
+
+
+/* ── Availability month matrix: taller day cells ── */
+html[data-layout-chrome="compact"] .availability-day-cell-slot {
+  min-height: 2.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-day-cell.avail-heat-cell {
+  min-height: 2.75rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-building-chip {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .room-availability-grid {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+html[data-layout-chrome="compact"] .room-availability-grid__inner {
+  width: max-content;
+  min-width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-interval-bar button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.85rem;
+  font-size: 0.8125rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel > div {
+  padding-inline: 0.85rem !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel .avail-room-tile {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel .avail-room-tile span:last-child {
+  margin-left: auto;
+  text-align: right;
+}
+
+
+
+/* Availability KPI help popover */
+html[data-layout-chrome="compact"] .avail-kpi-card + .admin-overlay-stack .admin-floating-panel {
+  max-width: min(calc(100vw - 1rem), 20rem);
+}
+
+
+
+/* ── Pass 18: availability nav + platform form CTAs ── */
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav__btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-dashboard-nav__title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+
+
+/* ── Pass 19: date picker, language menu, staff role menu, legends ── */
+
+html[data-layout-chrome="compact"] .availability-date-picker {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-date-picker label {
+  width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-date-picker input[type="date"] {
+  width: 100%;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-date-picker button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.75rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-heat-legend {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-heat-legend__items {
+  flex-wrap: wrap;
+  gap: 0.35rem 0.65rem;
+}
+
+
+
+/* ── Pass 21: admin home availability preview, room cards, invoice page ── */
+
+html[data-layout-chrome="compact"] .availability-home-preview__toolbar {
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-home-preview__period {
+  flex: 1;
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-home-preview__arrow {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-home-preview__month {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-home-preview__calendar {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-home-preview__body {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+/* ── Pass 26: availability day sheet, guest rebook, identity, booking cancel ── */
+
+html[data-layout-chrome="compact"] .availability-detail-panel.availability-detail-panel--overlay,
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(
+    72dvh,
+    calc(
+      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - var(--ml-safe-bottom, 0px) - 1.5rem
+    )
+  );
+  overflow: hidden;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__header {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__body,
+html[data-layout-chrome="compact"] .availability-day-detail-skeleton__rows {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+  background: var(--color-surface, #fff);
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-detail-panel__retry {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .admin-home-avail-skeleton .admin-route-skeleton__card {
+  min-height: 2rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-kpi-card__label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  line-height: 1.3;
+}
+
+
+
+/* ── Pass 29: availability toolbar stack, drawer scroll, guest cards, perf ── */
+
+html[data-layout-chrome="compact"] .avail-dashboard-toolbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-display-mode {
+  display: flex;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  padding: 0.2rem;
+  gap: 0.2rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-display-mode button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.35rem;
+  font-size: max(11px, 0.68rem);
+  font-weight: 700;
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-view-tabs {
+  width: 100%;
+  justify-content: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-view-tab {
+  flex: 1 1 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: max(12px, 0.75rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-week-nav {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-week-nav__prev,
+html[data-layout-chrome="compact"] .availability-week-nav__next {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 35%, var(--admin-panel-border, #e4e4e7));
+  background: var(--admin-panel-bg, #fff);
+  font-size: max(13px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-interval-bar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-interval-bar__actions {
+  flex-direction: column;
+  width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .avail-interval-bar__copy,
+html[data-layout-chrome="compact"] .avail-interval-bar__clear {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(13px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .availability-month-matrix {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 22rem;
+  contain: layout style;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--admin-page-bg, #0f172a) 4%, transparent),
+    0 4px 14px color-mix(in srgb, var(--admin-accent, #059669) 5%, transparent);
+}

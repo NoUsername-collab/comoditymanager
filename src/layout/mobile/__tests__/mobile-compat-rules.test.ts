@@ -2,27 +2,42 @@
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const ROOT = join(process.cwd(), "src/app");
+const LAYOUT_ROOT = join(process.cwd(), "src/styles/features/layout");
+const ADMIN_FEATURES_ROOT = join(process.cwd(), "src/styles/features/admin");
 const PROJECT_ROOT = process.cwd();
 
+const MOBILE_ADMIN_ROUTE_BUNDLES = [
+  "mobile-admin.css",
+  "mobile-settings.css",
+  "mobile-platform-admin.css",
+  "mobile-gantt.css",
+  "mobile-cazari.css",
+  "mobile-avail.css",
+];
+
 /**
- * These per-pass mobile CSS files (guards/flawless/compact-fixes/admin-pages/
- * alignment) were consolidated into mobile.css at some point; the individual
- * files no longer exist on disk. Alias them so the ~300 granular assertions
- * below (each testing a specific selector, not a specific file) keep working
- * against the real, current location of that content.
+ * Per-pass mobile CSS files were split into route-scoped bundles.
+ * Aliases preserve granular assertions against the bundle that now owns each rule.
  */
-const CONSOLIDATED_CSS_ALIASES: Record<string, string> = {
-  "mobile-layout-guards.css": "mobile.css",
-  "mobile-layout-flawless.css": "mobile.css",
-  "mobile-layout-compact-fixes.css": "mobile.css",
-  "mobile-layout-admin-pages.css": "mobile.css",
-  "mobile-layout-alignment.css": "mobile.css",
+const CONSOLIDATED_CSS_ALIASES: Record<string, string | string[]> = {
+  "mobile-layout-guards.css": "mobile-core.css",
+  "mobile-layout-alignment.css": ["mobile-core.css", ...MOBILE_ADMIN_ROUTE_BUNDLES],
+  "mobile-layout-compact-fixes.css": ["mobile-core.css", ...MOBILE_ADMIN_ROUTE_BUNDLES],
+  "mobile-layout-admin-pages.css": MOBILE_ADMIN_ROUTE_BUNDLES,
+  "mobile-layout-flawless.css": [...MOBILE_ADMIN_ROUTE_BUNDLES, "mobile-public.css"],
 };
 
 function readCss(name: string): string {
   const resolved = CONSOLIDATED_CSS_ALIASES[name] ?? name;
-  return readFileSync(join(ROOT, resolved), "utf8");
+  const files = Array.isArray(resolved) ? resolved : [resolved];
+  return files
+    .map((file) => {
+      if (file.startsWith("admin/")) {
+        return readFileSync(join(ADMIN_FEATURES_ROOT, file.slice("admin/".length)), "utf8");
+      }
+      return readFileSync(join(LAYOUT_ROOT, file), "utf8");
+    })
+    .join("\n");
 }
 
 /**
@@ -40,10 +55,18 @@ describe("mobile compatibility CSS rules", () => {
 
   it("guards compact chrome overflow and safe-area scroll padding", () => {
     const compactFixes = readCss("mobile-layout-compact-fixes.css");
+    const mobileAdmin = [
+      readFileSync(join(LAYOUT_ROOT, "mobile-admin.css"), "utf8"),
+      readFileSync(join(LAYOUT_ROOT, "mobile-settings.css"), "utf8"),
+      readFileSync(join(LAYOUT_ROOT, "mobile-platform-admin.css"), "utf8"),
+      readFileSync(join(LAYOUT_ROOT, "mobile-gantt.css"), "utf8"),
+      readFileSync(join(LAYOUT_ROOT, "mobile-cazari.css"), "utf8"),
+      readFileSync(join(LAYOUT_ROOT, "mobile-avail.css"), "utf8"),
+    ].join("\n");
     expect(guards).toContain('html[data-layout-chrome="compact"] .ml-content');
-    expect(guards).toContain("scroll-padding-top");
-    expect(guards).toContain("var(--ml-admin-chrome-top");
-    expect(guards).toContain("var(--ml-page-scroll-bottom");
+    expect(mobileAdmin).toContain("scroll-padding-top");
+    expect(mobileAdmin).toContain("var(--ml-admin-chrome-top");
+    expect(mobileAdmin).toContain("var(--ml-page-scroll-bottom");
     expect(compactFixes).toContain("--ml-content-pad-bottom");
     expect(compactFixes).not.toContain(
       "calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom) + 0.5rem)"
@@ -60,9 +83,9 @@ describe("mobile compatibility CSS rules", () => {
     expect(compactFixes).toMatch(
       /\[data-layout-orientation="portrait"\] \.gantt-calendar-page \.gantt-scroll[\s\S]*max-height:\s*calc/
     );
-    // compact-fixes rules were consolidated into mobile.css; the shell pulls
-    // them in via that import instead of a dedicated compact-fixes file now.
-    expect(shell).toContain('@import "./mobile.css"');
+    // compact-fixes live in mobile-core; route bundles load mobile-admin / mobile-public.
+    expect(shell).toContain('@import "./mobile-core.css"');
+    expect(shell).not.toContain('@import "./mobile.css"');
   });
 
   it("prevents iOS input zoom (16px minimum)", () => {
@@ -75,12 +98,12 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("gear portal stacks above page chrome", () => {
-    const globals = readFileSync(
-      join(process.cwd(), "src/app/globals.css"),
+    const adminShell = readFileSync(
+      join(process.cwd(), "src/styles/admin/shell.css"),
       "utf8"
     );
-    expect(globals).toContain(".admin-gear__dropdown--portal");
-    expect(globals).toMatch(
+    expect(adminShell).toContain(".admin-gear__dropdown--portal");
+    expect(adminShell).toMatch(
       /\.admin-gear__dropdown--portal[\s\S]*z-index:\s*var\(--z-overlay/
     );
     expect(flawless).toMatch(
@@ -467,21 +490,21 @@ describe("mobile compatibility CSS rules", () => {
 
   it("pass 32 mobile nav, media migration, gantt scroll sync", () => {
     const cazariToolbar = readFileSync(
-      join(process.cwd(), "src/app/admin/admin-cazari-toolbar.css"),
+      join(process.cwd(), "src/styles/features/admin/admin-cazari-toolbar.css"),
       "utf8"
     );
     expect(cazariToolbar).not.toMatch(/@media\s*\(\s*max-width:\s*520px\s*\)/);
     expect(cazariToolbar).toContain('html[data-layout-chrome="compact"] .cazari-view-filters');
 
     const settingsCss = readFileSync(
-      join(process.cwd(), "src/app/admin/admin-settings.css"),
+      join(process.cwd(), "src/styles/features/admin/admin-settings.css"),
       "utf8"
     );
     expect(settingsCss).not.toMatch(/@media\s*\(\s*max-width:\s*899px\s*\)/);
     expect(settingsCss).toContain('html[data-layout-chrome="compact"] .settings-shell__nav-groups');
 
     const checkinCss = readFileSync(
-      join(process.cwd(), "src/app/admin/admin-checkin.css"),
+      join(process.cwd(), "src/styles/features/admin/admin-checkin.css"),
       "utf8"
     );
     expect(checkinCss).not.toMatch(/@media\s*\(\s*max-width:\s*640px\s*\)/);
@@ -541,7 +564,7 @@ describe("mobile compatibility CSS rules", () => {
     const compactFixes = readCss("mobile-layout-compact-fixes.css");
     const shell = readCss("mobile-layout.css");
     const settingsCss = readFileSync(
-      join(process.cwd(), "src/app/admin/admin-settings.css"),
+      join(process.cwd(), "src/styles/features/admin/admin-settings.css"),
       "utf8"
     );
     const ganttMobile = readCss("admin/gantt-mobile.css");

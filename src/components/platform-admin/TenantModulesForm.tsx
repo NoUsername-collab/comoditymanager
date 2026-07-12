@@ -1,29 +1,31 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { breakdownTenantModules } from "@/core/config/plan-catalog";
+import { MODULE_CATALOG, type PlanId } from "@/core/config/plans";
+import { useRouter } from "@/i18n/navigation";
 import { changeTenantModulesAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
 
-const ALL_MODULES = [
-  { id: "ical_sync", label: "iCal Sync" },
-  { id: "invoicing", label: "Facturare" },
-  { id: "whatsapp", label: "WhatsApp" },
-  { id: "public_page", label: "Pagina publică" },
-  { id: "advanced_reports", label: "Rapoarte avansate" },
-  { id: "multi_property", label: "Multi-proprietate" },
-  { id: "white_label", label: "White Label" },
-  { id: "api_access", label: "API Access" },
-];
+const ALL_MODULES = Object.values(MODULE_CATALOG);
 
 export function TenantModulesForm({
   tenantId,
   currentModules,
+  planId,
 }: {
   tenantId: string;
   currentModules: string[];
+  planId: PlanId;
 }) {
+  const t = useTranslations("platformAdmin.tenantDetail.modulesForm");
+  const tModule = useTranslations("platformAdmin.logsPage.modules");
+  const tIncludes = useTranslations("platformAdmin.tenantDetail.planIncludes");
+  const router = useRouter();
   const [selected, setSelected] = useState<string[]>(currentModules);
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<string | null>(null);
+  const included = breakdownTenantModules(planId, currentModules).includedInPlan;
 
   const toggle = (moduleId: string) => {
     setSelected((prev) =>
@@ -43,9 +45,10 @@ export function TenantModulesForm({
     startTransition(async () => {
       const result = await changeTenantModulesAction(tenantId, selected);
       if (result.success) {
-        setFeedback("Module actualizate.");
+        setFeedback(t("success"));
+        router.refresh();
       } else {
-        setFeedback(`Eroare: ${result.error}`);
+        setFeedback(t("error", { message: result.error ?? t("failed") }));
       }
     });
   };
@@ -68,7 +71,12 @@ export function TenantModulesForm({
               onChange={() => toggle(m.id)}
               className="h-3.5 w-3.5 rounded border-neutral-600 bg-neutral-800 text-sky-500 focus:ring-sky-600"
             />
-            <span className="flex-1">{m.label}</span>
+            <span className="flex-1">{tModule(m.id)}</span>
+            {included.includes(m.id) && (
+              <span className="text-[10px] uppercase text-emerald-500">
+                {tIncludes("badgeIncluded")}
+              </span>
+            )}
           </label>
         ))}
       </div>
@@ -78,12 +86,12 @@ export function TenantModulesForm({
         disabled={isPending || !hasChanged}
         className="w-full rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isPending ? "Se salvează..." : "Salvează module"}
+        {isPending ? t("saving") : t("save")}
       </button>
 
       {feedback && (
         <p
-          className={`text-xs ${feedback.startsWith("Eroare") ? "text-red-400" : "text-emerald-400"}`}
+          className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}
         >
           {feedback}
         </p>

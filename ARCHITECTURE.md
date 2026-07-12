@@ -80,9 +80,46 @@ Avoid new mega-barrels that re-export entire subtrees.
 
 ## CSS / styling
 
-Large global CSS files (`globals.css`, `admin-*.css`) are **legacy debt**.
-New styles: co-locate with feature or use theme tokens in `src/styles/themes/`.
-Do not add more cross-cutting rules to `globals.css` without a migration plan.
+Styles live under **`src/styles/`** — not scattered in `src/app/` (except the root `globals.css` shim required by Next.js).
+
+| Layer | Path | Role |
+|-------|------|------|
+| Entry | `styles/entry/` | Global bundle: Tailwind, tokens, site brand |
+| Themes | `styles/themes/` | Day/night tokens, admin palette bridge |
+| Tokens | `styles/tokens/` | Semantic surface variables |
+| Admin shell | `styles/admin/` | HUD, liquid, today bar (admin routes only) |
+| Features | `styles/features/{admin,public,platform,guest,layout,shared}/` | Route/feature CSS |
+
+**Import rules:**
+- Root layout: `app/globals.css` → `styles/entry/global.css` only
+- Route layouts import from `@/styles/features/...`
+- New CSS files go in `styles/features/` or `styles/admin/` — never `src/app/*.css`
+- Enforced by `src/lib/architecture/__tests__/css-boundaries.test.ts`
+
+**Hybrid styling:** Tailwind v4 utilities for layout/spacing; BEM classes + CSS variables for feature UI. Prefer theme tokens over hardcoded colors.
+
+**Incremental Tailwind pattern (example: `SettingsSaveBar`):**
+- Layout/spacing/colors in JSX: `flex`, `gap-*`, `text-[var(--admin-text-muted)]`
+- Keep BEM hooks only where mobile CSS or complex chrome depends on them: `.settings-save-bar`, `.settings-save-bar__actions`
+- Compact sticky/offset rules stay in `admin-settings.css` + `mobile-core.css` (`data-layout-chrome="compact"`)
+
+**Route scoping:** Heavy bundles load only on routes that need them — not in the global entry.
+
+| Bundle | Entry import | Route layout |
+|--------|--------------|--------------|
+| `gantt-premium.css` (+ `gantt.css`, stay chips) | `admin-gantt-features.css` | `admin/(panel)/calendar/layout.tsx` |
+| `gantt-mobile.css` | direct | `admin/(panel)/calendar/layout.tsx` |
+| `admin-settings.css` | direct | `admin/(panel)/settings/layout.tsx` |
+| `admin-availability-route.css` | direct | `admin/(panel)/disponibilitate/layout.tsx` |
+| `admin-checkin.css` | `import-checkin-styles.ts` | `CheckinModal`, `CheckinWizardLauncher` |
+| `mobile-admin.css` | direct | `admin/(panel)/layout.tsx` |
+| `mobile-settings.css` | direct | `admin/(panel)/settings/layout.tsx` |
+| `mobile-platform-admin.css` | direct | `platform-admin/(panel)/layout.tsx` |
+| `mobile-gantt.css` | direct | `admin/(panel)/calendar/layout.tsx` |
+| `mobile-cazari.css` | direct | `admin/(panel)/cazari/layout.tsx`, `guests/layout.tsx` |
+| `mobile-avail.css` | direct | `admin/(panel)/disponibilitate/layout.tsx` |
+
+Enforced by `css-boundaries.ts` for global-bundle leaks (`gantt-premium`, `admin-settings`, etc.).
 
 ## Mobile layout
 
@@ -104,4 +141,5 @@ When touching coupled code:
 - Some `components/` import Supabase client for MFA (auth UI — candidate for `lib/auth/` facade)
 - `services/availability-month.ts` imports a component helper (`RoomFeatureBadges`) — invert dependency
 - `@/core` barrel still wide; prefer direct imports for new code
-- Global CSS god files not yet split by feature
+- Global CSS god files not yet split by feature — **resolved**: styles live under `src/styles/`; `globals.css` is a 1-line shim
+- `mobile.css` split into layout-scoped bundles: `mobile-core` (global), `mobile-admin` (core), `mobile-settings` / `mobile-platform-admin` (scoped layouts), `mobile-gantt` / `mobile-cazari` / `mobile-avail` (per route), `mobile-public` (public layouts)

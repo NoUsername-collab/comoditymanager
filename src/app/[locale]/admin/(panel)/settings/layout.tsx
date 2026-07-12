@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import "@/app/admin/admin-settings.css";
+import "@/styles/features/admin/admin-settings.css";
+import "@/styles/features/layout/mobile-settings.css";
 import { getTranslations } from "next-intl/server";
 import { loadSettingsStaffContext } from "@/lib/settings/page-context";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";

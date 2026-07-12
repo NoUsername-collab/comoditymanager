@@ -1,7 +1,10 @@
 ﻿import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
-import "@/app/admin/admin-features.css";
+import "@/styles/features/admin/admin-features.css";
+import "@/styles/admin/shell.css";
+import "@/styles/features/layout/mobile-core.css";
+import "@/styles/features/layout/mobile-admin.css";
 import { AdminShellClient } from "@/components/admin/AdminShellClient";
 
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";

@@ -2,6 +2,7 @@
 
 import { revalidatePath, revalidateTag } from "next/cache";
 import { runPlatformAdminAction } from "@/lib/platform-admin/platform-action";
+import { logPlatformAdminActivity } from "@/lib/platform-admin/platform-activity-log";
 import { tenantsToCsv } from "@/lib/platform-admin/tenant-csv";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { buildTenantSiteUrl } from "@/lib/tenant/host";
@@ -78,7 +79,7 @@ export async function generateOwnerMagicLinkAction(
     return { success: false, error: "Tenant invalid." };
   }
 
-  const run = await runPlatformAdminAction(async () => {
+  const run = await runPlatformAdminAction(async (session) => {
     const tenant = await getPlatformTenantById(tenantId);
     if (!tenant) {
       throw new Error("Tenant negăsit.");
@@ -105,6 +106,14 @@ export async function generateOwnerMagicLinkAction(
     if (!link) {
       throw new Error("Link magic negenerat.");
     }
+
+    await logPlatformAdminActivity({
+      tenantId,
+      actor: session,
+      action: "platform.owner_magic_link_generated",
+      summary: `Magic link generat pentru ${email}`,
+      metadata: { ownerEmail: email },
+    });
 
     return { link };
   });

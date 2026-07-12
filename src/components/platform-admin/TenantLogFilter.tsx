@@ -1,12 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function TenantLogFilter({
   tenants,
 }: {
   tenants: { id: string; slug: string; displayName: string }[];
 }) {
+  const t = useTranslations("platformAdmin.logsPage.filter");
   const router = useRouter();
   const searchParams = useSearchParams();
   const current = searchParams.get("tenant") ?? "";
@@ -28,10 +30,10 @@ export function TenantLogFilter({
       onChange={handleChange}
       className="nestio-log-filter min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-neutral-700 bg-neutral-800 px-3 py-2 text-sm text-neutral-200 focus:border-sky-600 focus:outline-none"
     >
-      <option value="">Toți tenanții</option>
-      {tenants.map((t) => (
-        <option key={t.id} value={t.id}>
-          {t.displayName} ({t.slug})
+      <option value="">{t("allTenants")}</option>
+      {tenants.map((row) => (
+        <option key={row.id} value={row.id}>
+          {row.displayName} ({row.slug})
         </option>
       ))}
     </select>

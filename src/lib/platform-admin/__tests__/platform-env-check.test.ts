@@ -15,14 +15,14 @@ describe("getPlatformEnvChecklist", () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://x.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-key-with-enough-length";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key-enough-length";
-    process.env.HOSPIRA_ADMIN_EMAILS = "admin@hospira.ro";
+    process.env.ZALMOX_ADMIN_EMAILS = "admin@zalmox.ro";
 
     const checklist = getPlatformEnvChecklist();
     const supabaseUrl = checklist.find(
       (item) => item.key === "NEXT_PUBLIC_SUPABASE_URL"
     );
     const adminEmails = checklist.find(
-      (item) => item.key === "HOSPIRA_ADMIN_EMAILS"
+      (item) => item.key === "ZALMOX_ADMIN_EMAILS"
     );
 
     expect(supabaseUrl?.configured).toBe(true);
@@ -30,12 +30,23 @@ describe("getPlatformEnvChecklist", () => {
     expect(adminEmails?.configured).toBe(true);
   });
 
-  it("accepts legacy NESTIO_ADMIN_EMAILS for admin emails check", () => {
-    delete process.env.HOSPIRA_ADMIN_EMAILS;
-    process.env.NESTIO_ADMIN_EMAILS = "legacy@hospira.ro";
+  it("accepts legacy HOSPIRA_ADMIN_EMAILS for admin emails check", () => {
+    delete process.env.ZALMOX_ADMIN_EMAILS;
+    process.env.HOSPIRA_ADMIN_EMAILS = "legacy@hospira.ro";
 
     const adminEmails = getPlatformEnvChecklist().find(
-      (item) => item.key === "HOSPIRA_ADMIN_EMAILS"
+      (item) => item.key === "ZALMOX_ADMIN_EMAILS"
+    );
+    expect(adminEmails?.configured).toBe(true);
+  });
+
+  it("accepts legacy NESTIO_ADMIN_EMAILS for admin emails check", () => {
+    delete process.env.ZALMOX_ADMIN_EMAILS;
+    delete process.env.HOSPIRA_ADMIN_EMAILS;
+    process.env.NESTIO_ADMIN_EMAILS = "legacy@nestio.ro";
+
+    const adminEmails = getPlatformEnvChecklist().find(
+      (item) => item.key === "ZALMOX_ADMIN_EMAILS"
     );
     expect(adminEmails?.configured).toBe(true);
   });

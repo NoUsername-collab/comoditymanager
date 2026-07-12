@@ -658,21 +658,23 @@ export async function sendTestEmailAction(): Promise<
     return { ok: false, error: t("emailAccountMissing") };
   }
 
-  const { sendEmail, isEmailDeliveryConfigured } = await import(
-    "@/lib/email/provider"
-  );
+  const { isEmailDeliveryConfigured } = await import("@/lib/email/provider");
   if (!isEmailDeliveryConfigured()) {
     return { ok: false, error: t("emailProviderNotConfigured") };
   }
+  const { sendTenantEmail } = await import("@/services/email-send");
+  const { getTenantById } = await import("@/services/tenants");
   const { resolveTransactionalEmailIdentity } = await import(
     "@/services/email-identity"
   );
   const { testEmailTemplate } = await import("@/lib/email/templates");
   const { getEmailSettings } = await import("@/services/email-settings");
 
-  const [identity, emailSettings] = await Promise.all([
+  const tenantId = await resolveTenantIdForData();
+  const [identity, emailSettings, tenant] = await Promise.all([
     resolveTransactionalEmailIdentity(),
     getEmailSettings(),
+    getTenantById(tenantId),
   ]);
 
   const template = testEmailTemplate({
@@ -680,7 +682,11 @@ export async function sendTestEmailAction(): Promise<
     customFooter: emailSettings.email_custom_footer,
   });
 
-  const result = await sendEmail({
+  if (!tenant) {
+    return { ok: false, error: t("emailSendFailed") };
+  }
+
+  const result = await sendTenantEmail(tenantId, tenant.slug, {
     from: identity.fromAddress,
     to: email,
     subject: template.subject,
@@ -688,6 +694,10 @@ export async function sendTestEmailAction(): Promise<
     text: template.text,
     replyTo: identity.defaultReplyTo ?? undefined,
   });
+
+  if (result.messageId === "skipped-monthly_cap_exceeded") {
+    return { ok: false, error: t("emailMonthlyCapExceeded") };
+  }
 
   if (!result.success) {
     return { ok: false, error: result.error ?? "Send failed" };

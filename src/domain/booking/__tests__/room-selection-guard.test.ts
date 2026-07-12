@@ -215,7 +215,7 @@ describe("Room Selection Guard", () => {
 
   describe("Integration: Trying to book 2 rooms", () => {
     it("scenario: user tries to select 3 rooms for 2-room booking", () => {
-      let state: RoomSelectionState = {
+      const state: RoomSelectionState = {
         requiredRoomCount: 2,
         selectedRoomIds: [],
         availableRooms: mockRooms,
@@ -242,7 +242,7 @@ describe("Room Selection Guard", () => {
     });
 
     it("scenario: user selects 2, then deselects 1, then selects another", () => {
-      let state: RoomSelectionState = {
+      const state: RoomSelectionState = {
         requiredRoomCount: 2,
         selectedRoomIds: ["r1", "r2"],
         availableRooms: mockRooms,

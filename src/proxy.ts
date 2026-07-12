@@ -41,12 +41,47 @@ import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
 import { routing } from "./i18n/routing";
 import {
   detectDomainContext,
-  isLocationAdminPath,
   requestHostFrom,
   stripLocalePrefix,
 } from "@/lib/proxy/request-context";
+import { isTenantOperational } from "@/domain/tenant/operational";
+import { lookupTenantHostOnEdge } from "@/lib/tenant/tenant-host-edge";
 
 const intlMiddleware = createIntlMiddleware(routing);
+
+const TENANT_STATUS_EXEMPT_PATHS = new Set([
+  "/tenant-suspended",
+  "/admin/login",
+]);
+
+function tenantSuspendedRedirect(
+  request: NextRequest,
+  path: string,
+  status: string
+): NextResponse | null {
+  if (TENANT_STATUS_EXEMPT_PATHS.has(path)) return null;
+  const url = request.nextUrl.clone();
+  url.pathname = "/tenant-suspended";
+  url.search = "";
+  url.searchParams.set("status", status);
+  return NextResponse.redirect(url);
+}
+
+async function blockedTenantRedirectIfNeeded(
+  request: NextRequest,
+  path: string,
+  slug: string | undefined,
+  customDomain: string | undefined
+): Promise<NextResponse | null> {
+  if (!slug && !customDomain) return null;
+
+  const lookup = await lookupTenantHostOnEdge(
+    slug ? { slug } : { customDomain: customDomain! }
+  );
+  if (!lookup || isTenantOperational(lookup.status)) return null;
+
+  return tenantSuspendedRedirect(request, path, lookup.status);
+}
 
 function alphaGateRedirectIfNeeded(
   request: NextRequest,
@@ -160,6 +195,14 @@ async function runTenantAppProxy(
   const tenantRequest = new NextRequest(request.url, {
     headers: requestHeaders,
   });
+
+  const blockedRedirect = await blockedTenantRedirectIfNeeded(
+    request,
+    path,
+    slug,
+    customDomain
+  );
+  if (blockedRedirect) return blockedRedirect;
 
   if (path === "/landing" || path === "/signup" || path === "/preturi") {
     const url = request.nextUrl.clone();
@@ -289,6 +332,17 @@ async function runTenantAppProxy(
   }
 
   if (isLoginPage && user) {
+    const blockedOnLogin = await blockedTenantRedirectIfNeeded(
+      request,
+      path,
+      slug,
+      customDomain
+    );
+    if (blockedOnLogin) {
+      await supabase.auth.signOut();
+      return blockedOnLogin;
+    }
+
     const effectiveRole = await resolveEffectiveStaffRole(
       user.id,
       user.email,
@@ -605,6 +659,19 @@ export async function proxy(request: NextRequest) {
   if (domain.type === "custom") {
     const resolved = await resolveDomainRoutingOnEdge(domain.domain);
     if (!resolved) {
+      const blocked = await lookupTenantHostOnEdge({
+        customDomain: domain.domain,
+      });
+      if (blocked && !isTenantOperational(blocked.status)) {
+        const path = stripLocalePrefix(request.nextUrl.pathname, routing.locales);
+        const suspended = tenantSuspendedRedirect(
+          request,
+          path,
+          blocked.status
+        );
+        if (suspended) return suspended;
+      }
+
       const url = request.nextUrl.clone();
       if (process.env.NODE_ENV === "production") {
         url.protocol = "https:";

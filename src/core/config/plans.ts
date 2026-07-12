@@ -60,6 +60,8 @@ export interface PlanConfig {
   includedModules: ModuleId[];
   showBranding: boolean;
   maxProperties: number;
+  /** Monthly transactional email cap; null = unlimited. Operator may override per tenant. */
+  emailMonthlyCap: number | null;
 }
 
 // ─── Feature sets per tier ──────────────────────────────────────
@@ -108,6 +110,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     includedModules: ["public_page", "guest_app"],
     showBranding: true,
     maxProperties: 1,
+    emailMonthlyCap: 300,
   },
   essential: {
     id: "essential",
@@ -120,6 +123,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     includedModules: ["public_page", "guest_app", "ical_sync", "advanced_reports"],
     showBranding: false,
     maxProperties: 1,
+    emailMonthlyCap: 2_000,
   },
   professional: {
     id: "professional",
@@ -139,6 +143,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     ],
     showBranding: false,
     maxProperties: 3,
+    emailMonthlyCap: null,
   },
   business: {
     id: "business",
@@ -161,6 +166,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     ],
     showBranding: false,
     maxProperties: 10,
+    emailMonthlyCap: null,
   },
 
   // ── Local ──────────────────────────────────────────────────────
@@ -175,6 +181,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     includedModules: [],
     showBranding: false,
     maxProperties: 1,
+    emailMonthlyCap: 2_000,
   },
   local_professional: {
     id: "local_professional",
@@ -187,6 +194,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     includedModules: ["invoicing", "advanced_reports"],
     showBranding: false,
     maxProperties: 1,
+    emailMonthlyCap: null,
   },
   local_business: {
     id: "local_business",
@@ -204,6 +212,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     ],
     showBranding: false,
     maxProperties: 5,
+    emailMonthlyCap: null,
   },
 
   // ── Hybrid ────────────────────────────────────────────────────
@@ -218,6 +227,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     includedModules: [],
     showBranding: false,
     maxProperties: 1,
+    emailMonthlyCap: 2_000,
   },
   hybrid_professional: {
     id: "hybrid_professional",
@@ -230,6 +240,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     includedModules: ["invoicing", "advanced_reports"],
     showBranding: false,
     maxProperties: 1,
+    emailMonthlyCap: null,
   },
   hybrid_business: {
     id: "hybrid_business",
@@ -247,6 +258,7 @@ export const PLAN_CONFIGS: Record<PlanId, PlanConfig> = {
     ],
     showBranding: false,
     maxProperties: 5,
+    emailMonthlyCap: null,
   },
 };
 

@@ -1,11 +1,13 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { buildTenantSiteUrl } from "@/lib/tenant/host";
 import type { TenantLastActivity } from "@/services/platform-admin";
 
 export async function TenantActivityPanel({
   activity,
+  locale,
 }: {
   activity: TenantLastActivity;
+  locale: string;
 }) {
   const t = await getTranslations("platformAdmin.tenantDetail.activity");
 
@@ -20,7 +22,7 @@ export async function TenantActivityPanel({
         <>
           <InfoRow
             label={t("lastAt")}
-            value={new Date(activity.lastActivityAt).toLocaleString("ro")}
+            value={new Date(activity.lastActivityAt).toLocaleString(locale)}
           />
           <InfoRow label={t("lastAction")} value={activity.lastAction ?? "—"} />
           <InfoRow

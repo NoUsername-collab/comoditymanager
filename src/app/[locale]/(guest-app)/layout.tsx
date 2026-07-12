@@ -1,5 +1,6 @@
 import { tryBindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
-import "@/app/guest-app.css";
+import "@/styles/features/guest/guest-app.css";
+import "@/styles/features/layout/mobile-public.css";
 
 export default async function GuestAppLayout({
   children,

@@ -1,0 +1,9 @@
+/* Legacy aggregate — tests may read split bundles via aliases. */
+@import "./mobile-core.css";
+@import "./mobile-admin.css";
+@import "./mobile-settings.css";
+@import "./mobile-platform-admin.css";
+@import "./mobile-gantt.css";
+@import "./mobile-cazari.css";
+@import "./mobile-avail.css";
+@import "./mobile-public.css";

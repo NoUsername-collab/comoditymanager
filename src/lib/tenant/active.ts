@@ -7,6 +7,8 @@ import {
 import {
   getTenantByDomain,
   getTenantBySlug,
+  lookupTenantByDomainAnyStatus,
+  lookupTenantBySlugAnyStatus,
   type TenantRow,
 } from "@/services/tenants";
 import { requireTenantIdForData } from "@/lib/tenant/guards";
@@ -53,6 +55,31 @@ export const resolveRequestTenant = cache(async (): Promise<TenantRow | null> =>
     if (devSlug) {
       return getTenantBySlug(devSlug);
     }
+  }
+
+  return null;
+});
+
+/** Tenant on current host, including suspended/cancelled (enforcement only). */
+export const lookupRequestTenantHost = cache(async (): Promise<TenantRow | null> => {
+  const h = await headers();
+  const slug = h.get("x-tenant-slug")?.trim();
+  if (slug) {
+    return lookupTenantBySlugAnyStatus(slug);
+  }
+  const domain = h.get("x-tenant-domain")?.trim();
+  if (domain) {
+    return lookupTenantByDomainAnyStatus(domain);
+  }
+
+  const hostSlug = tenantSlugFromHost(requestHost(h));
+  if (hostSlug) {
+    return lookupTenantBySlugAnyStatus(hostSlug);
+  }
+
+  const hostDomain = tenantDomainFromHost(requestHost(h));
+  if (hostDomain) {
+    return lookupTenantByDomainAnyStatus(hostDomain);
   }
 
   return null;

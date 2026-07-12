@@ -2,6 +2,8 @@ import { requirePlatformAdmin } from "@/lib/auth/require-platform-admin";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import "@/styles/features/layout/mobile-core.css";
+import "@/styles/features/layout/mobile-platform-admin.css";
 import { PlatformAdminMobileNav } from "@/layout/components/PlatformAdminMobileNav";
 import { MobileContent } from "@/layout/components/MobileContent";
 import { MobileShell } from "@/layout/components/MobileShell";

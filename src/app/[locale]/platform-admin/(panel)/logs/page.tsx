@@ -1,10 +1,12 @@
-import "@/app/admin/admin-devlog.css";
+import { getTranslations } from "next-intl/server";
 import { PlatformActivityLogTable } from "@/components/platform-admin/PlatformActivityLogTable";
 import { PlatformDevLogTable } from "@/components/platform-admin/PlatformDevLogTable";
 import { LogsProbeButton } from "@/components/platform-admin/LogsProbeButton";
 import { TenantHealthPanel } from "@/components/platform-admin/TenantHealthPanel";
 import { probePlatformLogsPageThrow } from "@/app/[locale]/platform-admin/(panel)/actions/logs-actions";
 import { loadPlatformLogsPageData } from "@/services/platform-logs-page-data";
+
+import "@/styles/features/admin/admin-devlog.css";
 
 export default async function LogsPage({
   searchParams,
@@ -20,8 +22,10 @@ export default async function LogsPage({
     await probePlatformLogsPageThrow();
   }
 
-  const pageData = await loadPlatformLogsPageData(params.tenant || null);
-  const tenantFilter = params.tenant || null;
+  const [pageData, t] = await Promise.all([
+    loadPlatformLogsPageData(params.tenant || null),
+    getTranslations("platformAdmin.logsPage"),
+  ]);
 
   const {
     healthChecks,
@@ -34,7 +38,7 @@ export default async function LogsPage({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-bold">Loguri & diagnostic</h1>
+        <h1 className="text-xl font-bold">{t("title")}</h1>
         <LogsProbeButton />
       </div>
 

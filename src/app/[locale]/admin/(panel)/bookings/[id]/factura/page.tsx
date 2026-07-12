@@ -25,6 +25,7 @@ import {
 import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
 import { getBookingById } from "@/services/bookings/queries";
 import { getTranslations } from "next-intl/server";
+import "@/styles/features/shared/invoice-print.css";
 
 export default async function BookingInvoicePage({
   params,

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import "@/styles/features/layout/layout-debug.css";
 
 const LayoutDebugOverlay = dynamic(
   () =>

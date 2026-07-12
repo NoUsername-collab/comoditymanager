@@ -13,6 +13,9 @@ import {
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { TenantRow } from "./tenants";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
+import { loadTenantEmailListAlerts } from "@/lib/platform-admin/tenant-email-alerts";
+import { quickSetupIncomplete } from "@/domain/platform-admin/tenant-onboarding";
+import type { EmailUsageAlertLevel } from "@/domain/email/usage-alert";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -21,6 +24,10 @@ export interface PlatformTenantSummary extends TenantRow {
   room_count: number;
   booking_count: number;
   domain_hosts: string[];
+  email_sent_month: number;
+  email_cap_month: number | null;
+  email_alert: EmailUsageAlertLevel;
+  setup_incomplete: boolean;
 }
 
 export interface PlatformStats {
@@ -131,11 +138,21 @@ export const listAllTenants = cache(async (): Promise<PlatformTenantSummary[]> =
     throw new Error("[tenants (listAllTenants)] no data returned");
   }
 
-  return attachResourceCounts(
-    tenants,
-    resourceCounts,
-    domainMap
-  ) as PlatformTenantSummary[];
+  const withCounts = attachResourceCounts(tenants, resourceCounts, domainMap);
+  const emailAlerts = await loadTenantEmailListAlerts(
+    withCounts.map((t) => ({ id: t.id, plan_id: t.plan_id })),
+  );
+
+  return withCounts.map((tenant) => {
+    const email = emailAlerts.get(tenant.id);
+    return {
+      ...tenant,
+      email_sent_month: email?.sentCount ?? 0,
+      email_cap_month: email?.cap ?? null,
+      email_alert: email?.alert ?? "unlimited",
+      setup_incomplete: quickSetupIncomplete(tenant),
+    };
+  }) as PlatformTenantSummary[];
 });
 
 function todayIsoDate(): string {
@@ -238,7 +255,7 @@ export const getPlatformTenantById = cache(async (
 
   if (error || !tenant) return null;
 
-  const [members, rooms, bookings, domainMap] = await Promise.all([
+  const [members, rooms, bookings, domains] = await Promise.all([
     safeCount(
       supabase
         .from("tenant_members")
@@ -258,17 +275,63 @@ export const getPlatformTenantById = cache(async (
         .select("id", { count: "exact", head: true })
         .eq("tenant_id", tenantId)
     ),
-    loadTenantDomainMap(supabase),
+    loadTenantDomainsForTenant(supabase, tenantId),
   ]);
 
-  return {
+  const summary = {
     ...tenant,
     member_count: members,
     room_count: rooms,
     booking_count: bookings,
-    domain_hosts: domainMap.get(tenantId) ?? [],
+    domain_hosts: domains,
+  };
+
+  const emailAlerts = await loadTenantEmailListAlerts([
+    { id: tenantId, plan_id: tenant.plan_id },
+  ]);
+  const email = emailAlerts.get(tenantId);
+
+  return {
+    ...summary,
+    email_sent_month: email?.sentCount ?? 0,
+    email_cap_month: email?.cap ?? null,
+    email_alert: email?.alert ?? "unlimited",
+    setup_incomplete: quickSetupIncomplete(summary),
   } as PlatformTenantSummary;
 });
+
+async function loadTenantDomainsForTenant(
+  supabase: ReturnType<typeof createPublicAdminClient>,
+  tenantId: string
+): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("tenant_domains")
+    .select("domain")
+    .eq("tenant_id", tenantId);
+
+  throwIfDbError("tenant_domains (getPlatformTenantById)", error);
+  return (data ?? []).map((row) => row.domain);
+}
+
+/** Lightweight read before platform-admin mutations (no counts / domain scan). */
+export async function getTenantMutationSnapshot(
+  tenantId: string
+): Promise<{
+  plan_id: string | null;
+  status: string;
+  is_paying: boolean | null;
+  active_modules: string[] | null;
+} | null> {
+  const supabase = createPublicAdminClient();
+  const { data, error } = await supabase
+    .from("tenants")
+    .select("plan_id, status, is_paying, active_modules")
+    .eq("id", tenantId)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data;
+}
 
 /** Most recent admin_activity_log entry for a tenant. */
 export const getTenantLastActivity = cache(async (
@@ -326,12 +389,27 @@ export async function updateTenantStatus(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = createPublicAdminClient();
 
+  const { data: existing, error: readError } = await supabase
+    .from("tenants")
+    .select("slug")
+    .eq("id", tenantId)
+    .maybeSingle();
+
+  if (readError) return { success: false, error: readError.message };
+
   const { error } = await supabase
     .from("tenants")
     .update({ status, updated_at: new Date().toISOString() })
     .eq("id", tenantId);
 
   if (error) return { success: false, error: error.message };
+
+  if (existing?.slug) {
+    const { revalidateTag } = await import("next/cache");
+    revalidateTag(`tenant-slug-${existing.slug}`, "max");
+    revalidateTag(`tenant-slug-status-${existing.slug}`, "max");
+  }
+
   return { success: true };
 }
 

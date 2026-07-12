@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { changeTenantPlanAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
-import type { PlanId, CloudPlan } from "@/core/config/plans";
+import { PLAN_CONFIGS, type CloudPlan, type PlanId } from "@/core/config/plans";
 
-const CLOUD_PLANS: { id: CloudPlan; label: string; price: string }[] = [
-  { id: "free", label: "Free", price: "0€" },
-  { id: "essential", label: "Essential", price: "19€" },
-  { id: "professional", label: "Professional", price: "49€" },
-  { id: "business", label: "Business", price: "99€" },
+const CLOUD_PLAN_IDS: CloudPlan[] = [
+  "free",
+  "essential",
+  "professional",
+  "business",
 ];
 
 export function TenantPlanForm({
@@ -18,6 +20,8 @@ export function TenantPlanForm({
   tenantId: string;
   currentPlan: PlanId;
 }) {
+  const t = useTranslations("platformAdmin.tenantDetail.planForm");
+  const router = useRouter();
   const [selected, setSelected] = useState<PlanId>(currentPlan);
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -28,9 +32,10 @@ export function TenantPlanForm({
     startTransition(async () => {
       const result = await changeTenantPlanAction(tenantId, selected);
       if (result.success) {
-        setFeedback("Plan actualizat.");
+        setFeedback(t("success"));
+        router.refresh();
       } else {
-        setFeedback(`Eroare: ${result.error}`);
+        setFeedback(t("error", { message: result.error ?? t("failed") }));
       }
     });
   };
@@ -38,27 +43,32 @@ export function TenantPlanForm({
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        {CLOUD_PLANS.map((plan) => (
-          <label
-            key={plan.id}
-            className={`nestio-tenant-option flex min-h-[var(--ml-touch-min,2.75rem)] cursor-pointer items-center gap-3 rounded-md border px-3 py-2 text-sm transition-colors ${
-              selected === plan.id
-                ? "border-sky-600 bg-sky-950/50 text-white"
-                : "border-neutral-700 text-neutral-400 hover:border-neutral-600"
-            }`}
-          >
-            <input
-              type="radio"
-              name="plan"
-              value={plan.id}
-              checked={selected === plan.id}
-              onChange={() => setSelected(plan.id)}
-              className="sr-only"
-            />
-            <span className="flex-1 font-medium">{plan.label}</span>
-            <span className="text-xs text-neutral-500">{plan.price}/lună</span>
-          </label>
-        ))}
+        {CLOUD_PLAN_IDS.map((planId) => {
+          const plan = PLAN_CONFIGS[planId];
+          return (
+            <label
+              key={planId}
+              className={`nestio-tenant-option flex min-h-[var(--ml-touch-min,2.75rem)] cursor-pointer items-center gap-3 rounded-md border px-3 py-2 text-sm transition-colors ${
+                selected === planId
+                  ? "border-sky-600 bg-sky-950/50 text-white"
+                  : "border-neutral-700 text-neutral-400 hover:border-neutral-600"
+              }`}
+            >
+              <input
+                type="radio"
+                name="plan"
+                value={planId}
+                checked={selected === planId}
+                onChange={() => setSelected(planId)}
+                className="sr-only"
+              />
+              <span className="flex-1 font-medium">{plan.label}</span>
+              <span className="text-xs text-neutral-500">
+                {plan.priceEur}€{t("perMonth")}
+              </span>
+            </label>
+          );
+        })}
       </div>
 
       <button
@@ -66,12 +76,12 @@ export function TenantPlanForm({
         disabled={isPending || selected === currentPlan}
         className="w-full rounded-md bg-sky-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isPending ? "Se salvează..." : "Salvează plan"}
+        {isPending ? t("saving") : t("save")}
       </button>
 
       {feedback && (
         <p
-          className={`text-xs ${feedback.startsWith("Eroare") ? "text-red-400" : "text-emerald-400"}`}
+          className={`text-xs ${feedback === t("success") ? "text-emerald-400" : "text-red-400"}`}
         >
           {feedback}
         </p>

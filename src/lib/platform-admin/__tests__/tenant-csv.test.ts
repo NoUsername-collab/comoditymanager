@@ -27,6 +27,10 @@ function sampleTenant(
     room_count: 5,
     booking_count: 12,
     domain_hosts: [],
+    email_sent_month: 0,
+    email_cap_month: null,
+    email_alert: "unlimited",
+    setup_incomplete: false,
     ...partial,
   };
 }

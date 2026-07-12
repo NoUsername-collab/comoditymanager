@@ -1,6 +1,8 @@
 # Mediu test live (~2 săptămâni)
 
-> **Nestio (signup + subdomenii tenant):** ghid actualizat → **[test-domeniu-hospira.md](./test-domeniu-hospira.md)**  
+> **Notă (2026):** ghid istoric de staging. Platforma poate fi **deja live** — pentru smoke pe producție folosește [PRODUCTION-READINESS.md](./PRODUCTION-READINESS.md). Exemplele „Casa Emil” / `casaemil.ro` sunt **tenant de test**, nu un caz special al codului.
+
+> **Staging domains:** ghid actualizat → **[test-domeniu-hospira.md](./test-domeniu-hospira.md)** (nume fișier legacy; conținut pentru domeniu staging)  
 > (Supabase Cloud, `test.nestio.ro`, `*.test.nestio.ro`, Vercel — fără localhost)
 
 Scop: **URL stabil** + **bază de date doar de test**, separată de dev-ul tău zilnic și de producția clientului. Prietenul (sau oricine) poate folosi app-ul ca în realitate, fără să atingă datele importante.

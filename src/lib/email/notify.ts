@@ -1,4 +1,5 @@
 import { sendEmail, type EmailResult } from "@/lib/email/provider";
+import { sendTenantEmail } from "@/services/email-send";
 import {
   newBookingRequestToOwner,
   bookingConfirmedToGuest,
@@ -13,6 +14,8 @@ import {
   resolveTransactionalEmailIdentityForTenant,
   type TransactionalEmailIdentity,
 } from "@/services/email-identity";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
+import { getTenantById } from "@/services/tenants";
 
 type EmailNotifyFlag =
   | "email_notify_new_request"
@@ -57,6 +60,13 @@ async function loadIdentity() {
   return resolveTransactionalEmailIdentity();
 }
 
+async function sendForCurrentTenant(message: Parameters<typeof sendEmail>[0]) {
+  const tenantId = await resolveTenantIdForData();
+  const tenant = await getTenantById(tenantId);
+  if (!tenant) return sendEmail(message);
+  return sendTenantEmail(tenantId, tenant.slug, message);
+}
+
 export async function notifyOwnerNewRequest(data: {
   ownerEmail: string;
   pensionName: string;
@@ -90,7 +100,7 @@ export async function notifyOwnerNewRequest(data: {
       adminUrl: `${data.baseUrl}/admin/bookings/${data.bookingId}`,
     });
 
-    const result = await sendEmail({
+    const result = await sendForCurrentTenant({
       from: identity.fromAddress,
       to: data.ownerEmail,
       subject: template.subject,
@@ -141,7 +151,7 @@ export async function notifyGuestConfirmed(data: {
       guestAppUrl: data.guestAppUrl,
     });
 
-    const result = await sendEmail({
+    const result = await sendForCurrentTenant({
       from: identity.fromAddress,
       to: data.guestEmail,
       subject: template.subject,
@@ -182,7 +192,7 @@ export async function notifyGuestAppLink(data: {
       checkOutTime: data.checkOutTime,
     });
 
-    const result = await sendEmail({
+    const result = await sendForCurrentTenant({
       from: identity.fromAddress,
       to: data.guestEmail,
       subject: template.subject,
@@ -219,7 +229,7 @@ export async function notifyGuestCancelled(data: {
       reason: data.reason,
     });
 
-    const result = await sendEmail({
+    const result = await sendForCurrentTenant({
       from: identity.fromAddress,
       to: data.guestEmail,
       subject: template.subject,
@@ -251,17 +261,29 @@ export async function notifyOwnerDailySummary(data: {
     return;
   }
   try {
-    const identity = await resolveTransactionalEmailIdentityForTenant(data.tenantId);
+    const [identity, tenant] = await Promise.all([
+      resolveTransactionalEmailIdentityForTenant(data.tenantId),
+      getTenantById(data.tenantId),
+    ]);
     const template = dailySummaryToOwner(data.summary);
 
-    const result = await sendEmail({
-      from: identity.fromAddress,
-      to: data.ownerEmail,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
-      replyTo: pickReplyTo(identity, data.emailSettings.email_reply_to),
-    });
+    const result = tenant
+      ? await sendTenantEmail(data.tenantId, tenant.slug, {
+          from: identity.fromAddress,
+          to: data.ownerEmail,
+          subject: template.subject,
+          html: template.html,
+          text: template.text,
+          replyTo: pickReplyTo(identity, data.emailSettings.email_reply_to),
+        })
+      : await sendEmail({
+          from: identity.fromAddress,
+          to: data.ownerEmail,
+          subject: template.subject,
+          html: template.html,
+          text: template.text,
+          replyTo: pickReplyTo(identity, data.emailSettings.email_reply_to),
+        });
 
     logEmailResult("notifyOwnerDailySummary", result);
   } catch (error) {

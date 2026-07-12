@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Audit — Zalmox (CasaEmil)</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --surface-2: #243044;
+      --border: #2d3a4f;
+      --text: #e8edf4;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-dim: #0ea5e9;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+    }
+    .page { max-width: 920px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    .overall-rating {
+      font-size: 1.1rem;
+      color: var(--muted);
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border-radius: 10px;
+      border-left: 4px solid var(--accent);
+    }
+    .overall-rating strong { color: var(--accent); font-size: 1.35rem; }
+    .meta { margin-top: 1rem; font-size: 0.85rem; color: var(--muted); }
+    h2 {
+      font-size: 1.35rem;
+      margin: 2.25rem 0 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 { font-size: 1.05rem; margin: 1.5rem 0 0.65rem; color: var(--accent); }
+    h4 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin: 1rem 0 0.5rem;
+    }
+    p { margin-bottom: 0.85rem; color: #cbd5e1; }
+    ul { margin: 0.5rem 0 1rem 1.35rem; color: #cbd5e1; }
+    li { margin-bottom: 0.35rem; }
+    ol { margin: 0.5rem 0 1rem 1.35rem; color: #cbd5e1; }
+    ol li { margin-bottom: 0.5rem; }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.88em;
+      background: var(--surface-2);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.92rem;
+      background: var(--surface);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    th, td {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface-2);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(56, 189, 248, 0.04); }
+    .score { font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .score-high { color: var(--success); }
+    .score-mid { color: var(--warning); }
+    .dimension-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .dimension-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .dimension-header h3 { margin: 0; color: var(--text); font-size: 1.1rem; }
+    .dimension-header .score { font-size: 1.15rem; }
+    .tag {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .tag-p0 { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .tag-p1 { background: rgba(249, 115, 22, 0.2); color: #fdba74; }
+    .tag-p2 { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+    .tag-p3 { background: rgba(100, 116, 139, 0.3); color: #cbd5e1; }
+    .strengths li::marker { color: var(--success); }
+    .gaps li::marker { color: var(--warning); }
+    .check-ok { color: var(--success); font-weight: 600; }
+    .check-warn { color: var(--warning); font-weight: 600; }
+    .scorecard-table tr:last-child { font-weight: 700; background: var(--surface-2); }
+    .print-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 20, 25, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .print-bar button {
+      background: var(--accent-dim);
+      color: #0f172a;
+      border: none;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .print-bar button:hover { background: var(--accent); }
+    .print-bar button.secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    @media print {
+      body { background: #fff; color: #111; font-size: 11pt; }
+      .page { max-width: 100%; padding: 0; }
+      .print-bar { display: none; }
+      header, .dimension-block, table { background: #fff; border-color: #ccc; }
+      h2, h3, .dimension-header h3 { color: #111; }
+      p, ul, li, ol { color: #333; }
+      th { background: #f0f0f0; color: #111; }
+      .overall-rating { border-left-color: #0369a1; background: #f8fafc; }
+      .overall-rating strong, .score { color: #0369a1; }
+      .score-high { color: #047857; }
+      .score-mid { color: #b45309; }
+      .check-ok { color: #047857; }
+      .check-warn { color: #b45309; }
+      .dimension-block, table { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-bar">
+    <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    <button type="button" class="secondary" onclick="downloadHtml()">Download HTML</button>
+  </div>
+
+  <div class="page">
+    <header>
+      <h1>Project Audit: Zalmox (CasaEmil)</h1>
+      <div class="overall-rating">
+        <strong>Overall rating: 7.8 / 10 (B+)</strong> — A mature, security-conscious multi-tenant hospitality PMS with strong engineering discipline, held back by documentation drift, styling debt, and an in-flight rebrand.
+      </div>
+      <p class="meta">Generated: Tuesday, 7 July 2026 · Repository: CasaEmil / Zalmox v0.2.0</p>
+    </header>
+
+    <section>
+      <h2>Executive summary</h2>
+      <p>This is not a starter template dressed up as a product. It is a <strong>full-featured property management system</strong> (Gantt calendar, check-in with MRZ/passport scanning, fiscal invoicing, guest app, public booking site, platform admin, multi-tenant routing) built on a modern stack with unusually good architectural guardrails for a project at <code>v0.2.0</code>.</p>
+      <p>The codebase is <strong>production-capable with conditions</strong> — matching your own <code>docs/PRODUCTION-READINESS.md</code> verdict — but it is mid-migration (<code>hospira</code> → <code>platform-admin</code> / Zalmox rebrand) and carries measurable technical debt.</p>
+    </section>
+
+    <section>
+      <h2>Verification snapshot (run today)</h2>
+      <table>
+        <thead><tr><th>Check</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td><code>npm test</code></td><td class="check-ok">1,296 / 1,296 passed (145 files)</td></tr>
+          <tr><td><code>npm run test:security</code></td><td class="check-ok">107 / 107 passed</td></tr>
+          <tr><td><code>npx tsc --noEmit</code></td><td class="check-ok">Clean</td></tr>
+          <tr><td><code>npm run build</code></td><td class="check-ok">Success (154 routes)</td></tr>
+          <tr><td><code>npm run lint</code></td><td class="check-warn">3 errors, 97 warnings</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Dimension ratings</h2>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>1. Architecture</h3><span class="score score-high">8.5 / 10</span></div>
+        <h4>Strengths</h4>
+        <ul class="strengths">
+          <li>Clear layer model documented in <code>ARCHITECTURE.md</code>: <code>domain/</code> → <code>services/</code> → <code>features/</code> → <code>components/</code> → <code>app/</code></li>
+          <li><strong>Import boundaries enforced in CI tests</strong> — strict rules for domain/features/services with zero tolerance</li>
+          <li>Domain logic is genuinely pure (booking conflicts, gantt math, check-in validation, fiscal VAT, guest dedup)</li>
+          <li>Multi-tenant kernel in <code>core/</code> with plan gates and module registry</li>
+          <li><code>proxy.ts</code> is a serious edge middleware: tenant resolution, MFA, alpha gate, team permissions, i18n</li>
+        </ul>
+        <h4>Debt</h4>
+        <ul class="gaps">
+          <li>58 <code>components → app</code> imports tracked as a baseline cap (not shrinking yet)</li>
+          <li><code>services/availability-month.ts</code> imports a component helper (inverted dependency)</li>
+          <li>Many routes still call <code>services/</code> directly instead of thin loaders</li>
+          <li><code>features/</code> is underused relative to <code>components/</code> (~1,165 TS files total)</li>
+        </ul>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>2. Security &amp; multi-tenancy</h3><span class="score score-high">8.5 / 10</span></div>
+        <h4>Strengths</h4>
+        <ul class="strengths">
+          <li>Documented tenant isolation rules in <code>docs/tenant-security.md</code></li>
+          <li>Static <strong>tenant query audit</strong> (<code>audit-tenant-queries.ts</code>) catches IDOR footguns in services</li>
+          <li>92 Supabase migrations including RLS hardening (<code>045_tenant_rls_bulletproof.sql</code>, <code>076_settings_rls_bulletproof.sql</code>)</li>
+          <li>MFA policy, alpha gate, rate limiting, team permission paths enforced at edge</li>
+          <li>Host-based tenant resolution — no "first tenant in DB" fallback in production</li>
+        </ul>
+        <h4>Gaps</h4>
+        <ul class="gaps">
+          <li>Static audit is pragmatic, not exhaustive</li>
+          <li>Rebrand leaves legacy <code>HOSPIRA_*</code> env vars and docs references</li>
+          <li>Sensitive guest data (CNP, MRZ, national IDs) — security is thoughtful but the blast radius is high if anything slips</li>
+        </ul>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>3. Testing</h3><span class="score score-high">8.5 / 10</span></div>
+        <h4>Strengths</h4>
+        <ul class="strengths">
+          <li><strong>1,296 unit/integration tests</strong> across domain, lib, services, layout, hooks</li>
+          <li>Dedicated security test suite</li>
+          <li>Import boundary + tenant query audits as tests</li>
+          <li><strong>8 Playwright e2e specs</strong> (auth, booking, admin nav, mobile compat, public calendar)</li>
+        </ul>
+        <h4>Gaps</h4>
+        <ul class="gaps">
+          <li>No visible <strong>GitHub Actions / CI pipeline</strong> (<code>.github/</code> absent)</li>
+          <li>E2E coverage is thin relative to surface area (154 routes)</li>
+          <li>Component-level tests are sparse (mostly domain/lib)</li>
+        </ul>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>4. Code quality</h3><span class="score score-mid">7.5 / 10</span></div>
+        <h4>Strengths</h4>
+        <ul class="strengths">
+          <li><code>strict: true</code> TypeScript</li>
+          <li>Zod schemas for settings/forms</li>
+          <li>Consistent patterns: server actions, <code>requireTenantIdForData()</code>, error formatting</li>
+          <li>Build and typecheck both pass on Next.js 16 + React 19</li>
+        </ul>
+        <h4>Weaknesses</h4>
+        <ul class="gaps">
+          <li>ESLint: 97 warnings (mostly unused vars), 3 errors (<code>prefer-const</code>, <code>@ts-ignore</code>)</li>
+          <li>Large files: <code>proxy.ts</code> (~650 lines), heavy admin components</li>
+          <li>Active rename leaves mixed naming (<code>hospira</code>, <code>platform-admin</code>, <code>Zalmox</code> in ARCHITECTURE.md)</li>
+        </ul>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>5. Product depth</h3><span class="score score-high">9.0 / 10</span></div>
+        <p>For a <code>v0.2.0</code> SaaS, feature breadth is exceptional:</p>
+        <table>
+          <thead><tr><th>Area</th><th>Maturity</th></tr></thead>
+          <tbody>
+            <tr><td>Gantt / calendar ops</td><td>High — drag-create, virtualized body, quick actions</td></tr>
+            <tr><td>Check-in / tourist sheet</td><td>High — MRZ OCR, identity guards, per-room modes</td></tr>
+            <tr><td>Guest CRM</td><td>High — dedup scoring, rebook, reputation</td></tr>
+            <tr><td>Fiscal / payments</td><td>Medium-high — ledger, proforma, ANAF stub, SAGA export</td></tr>
+            <tr><td>Public site + booking</td><td>High — themed, configurable</td></tr>
+            <tr><td>Guest stay app</td><td>High — precheckin, milestones, PWA</td></tr>
+            <tr><td>Platform admin</td><td>High — tenants, logs, impersonation, health</td></tr>
+            <tr><td>i18n</td><td>ro / en / bg via <code>next-intl</code></td></tr>
+            <tr><td>Mobile</td><td>Dedicated layout system with compat tests</td></tr>
+          </tbody>
+        </table>
+        <p>This reads like a <strong>real commercial PMS</strong>, not a demo.</p>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>6. Styling &amp; UI debt</h3><span class="score score-mid">5.5 / 10</span></div>
+        <ul class="gaps">
+          <li><strong>61 CSS files</strong>, many legacy global sheets (<code>admin-*.css</code>, <code>gantt-premium.css</code>, etc.)</li>
+          <li><code>ARCHITECTURE.md</code> explicitly calls this "legacy debt"</li>
+          <li>Tailwind 4 is present but coexists with large imperative CSS</li>
+          <li>Theme token work started (<code>src/styles/themes/</code>) but migration incomplete</li>
+        </ul>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>7. Documentation &amp; onboarding</h3><span class="score score-mid">6.0 / 10</span></div>
+        <table>
+          <thead><tr><th>Asset</th><th>Quality</th></tr></thead>
+          <tbody>
+            <tr><td><code>ARCHITECTURE.md</code></td><td>Excellent</td></tr>
+            <tr><td><code>docs/tenant-security.md</code></td><td>Good</td></tr>
+            <tr><td><code>docs/PRODUCTION-READINESS.md</code></td><td>Detailed but <strong>stale</strong> (still "Hospira", 1225 tests, <code>/hospira-admin</code>)</td></tr>
+            <tr><td><code>README.md</code></td><td><strong>Default create-next-app boilerplate</strong> — misleading for new contributors</td></tr>
+            <tr><td><code>docs/vercel-env.md</code>, <code>docs/DDD.md</code></td><td>Present</td></tr>
+          </tbody>
+        </table>
+        <p>A strong engineer can navigate this; a new hire would struggle without guidance.</p>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>8. DevOps &amp; operability</h3><span class="score score-mid">6.0 / 10</span></div>
+        <h4>Strengths</h4>
+        <ul class="strengths">
+          <li><code>prebuild</code> env validation (<code>scripts/check-env.mjs</code>)</li>
+          <li>Setup scripts: <code>setup-admin</code>, <code>setup-platform-admin</code>, <code>env:secret</code></li>
+          <li>Sentry integration</li>
+          <li>Cron routes (backup, daily summary, fiscal submissions)</li>
+          <li>Health endpoint</li>
+        </ul>
+        <h4>Gaps</h4>
+        <ul class="gaps">
+          <li>No automated CI/CD in repo</li>
+          <li>Lint not enforced as a gate</li>
+          <li><code>metadataBase</code> warnings at build time</li>
+          <li>Production checklist is manual and lengthy</li>
+        </ul>
+      </div>
+
+      <div class="dimension-block">
+        <div class="dimension-header"><h3>9. Maintainability &amp; migration state</h3><span class="score score-mid">6.5 / 10</span></div>
+        <p>Git status shows an <strong>active rebrand in progress</strong>:</p>
+        <ul class="gaps">
+          <li><code>hospira-admin</code> → <code>platform-admin</code> (routes, components, lib)</li>
+          <li>Message files, CSS, proxy, and docs partially updated</li>
+          <li><code>ARCHITECTURE.md</code> still references <code>Zalmox-admin</code> paths inconsistently</li>
+        </ul>
+        <p>This is normal mid-refactor pain, but it increases cognitive load until completed.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Scorecard</h2>
+      <table class="scorecard-table">
+        <thead><tr><th>Dimension</th><th>Score</th></tr></thead>
+        <tbody>
+          <tr><td>Architecture</td><td class="score score-high">8.5</td></tr>
+          <tr><td>Security / multi-tenancy</td><td class="score score-high">8.5</td></tr>
+          <tr><td>Testing</td><td class="score score-high">8.5</td></tr>
+          <tr><td>Code quality</td><td class="score score-mid">7.5</td></tr>
+          <tr><td>Product depth</td><td class="score score-high">9.0</td></tr>
+          <tr><td>Styling / UI maintainability</td><td class="score score-mid">5.5</td></tr>
+          <tr><td>Documentation</td><td class="score score-mid">6.0</td></tr>
+          <tr><td>DevOps / CI</td><td class="score score-mid">6.0</td></tr>
+          <tr><td>Maintainability (current state)</td><td class="score score-mid">6.5</td></tr>
+          <tr><td><strong>Weighted overall</strong></td><td class="score"><strong>7.8 / 10</strong></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Top strengths</h2>
+      <ol>
+        <li><strong>Domain-driven core</strong> — Business rules live in testable pure functions, not scattered in React components.</li>
+        <li><strong>Security as engineering</strong> — Tenant isolation is designed, documented, and partially automated (audits, RLS, edge guards).</li>
+        <li><strong>Test culture</strong> — 1,296 tests for a private SaaS is well above average.</li>
+        <li><strong>Real product scope</strong> — Romanian hospitality domain knowledge is embedded (CNP, fisa turist, fiscal, SAGA).</li>
+        <li><strong>Modern, current stack</strong> — Next 16, React 19, Supabase SSR, Vitest 4, Zod 4.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Top risks / improvement priorities</h2>
+      <table>
+        <thead><tr><th>Priority</th><th>Issue</th><th>Impact</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-p0">P0</span></td><td>Finish <code>hospira</code> → <code>platform-admin</code> / Zalmox rebrand</td><td>Broken docs, env confusion, mixed routes</td></tr>
+          <tr><td><span class="tag tag-p1">P1</span></td><td>Add CI (test + lint + build on PR)</td><td>Regressions slip through today</td></tr>
+          <tr><td><span class="tag tag-p1">P1</span></td><td>Replace README + refresh PRODUCTION-READINESS</td><td>Onboarding and go-live risk</td></tr>
+          <tr><td><span class="tag tag-p2">P2</span></td><td>Fix 3 ESLint errors; chip away at warnings</td><td>Code hygiene</td></tr>
+          <tr><td><span class="tag tag-p2">P2</span></td><td>CSS migration plan (feature-scoped styles)</td><td>Velocity drag on UI work</td></tr>
+          <tr><td><span class="tag tag-p3">P3</span></td><td>Lower <code>components→app</code> baseline below 58</td><td>Architecture erosion</td></tr>
+          <tr><td><span class="tag tag-p3">P3</span></td><td>Expand e2e for critical paths (check-in, fiscal)</td><td>Confidence at deploy</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Verdict by audience</h2>
+      <table>
+        <thead><tr><th>Audience</th><th>Assessment</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Investor / buyer</strong></td><td>Strong technical asset; <code>v0.2.0</code> label undersells maturity. Rebrand and ops docs need cleanup before due diligence.</td></tr>
+          <tr><td><strong>Engineer joining</strong></td><td>Well-structured if you read <code>ARCHITECTURE.md</code> first; README will mislead you.</td></tr>
+          <tr><td><strong>Operator (Casa Emil)</strong></td><td>Ready for reception use <strong>with manual infra checklist</strong> — aligns with existing docs.</td></tr>
+          <tr><td><strong>You (maintainer)</strong></td><td>Solid B+ codebase; biggest wins are finishing the rename, adding CI, and doc sync — not rewriting architecture.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    function downloadHtml() {
+      const blob = new Blob([document.documentElement.outerHTML], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "zalmox-project-audit.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

@@ -15,6 +15,7 @@ import {
 import { SETUP_ISSUE_IDS } from "../types";
 
 afterEach(() => {
+  delete process.env.ZALMOX_ADMIN_EMAILS;
   delete process.env.HOSPIRA_ADMIN_EMAILS;
   delete process.env.NESTIO_ADMIN_EMAILS;
 });

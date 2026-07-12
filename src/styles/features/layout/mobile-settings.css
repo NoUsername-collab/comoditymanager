@@ -1,0 +1,27 @@
+/* mobile-settings.css — admin settings UI (split from mobile-admin.css) */
+
+
+
+
+/* Settings / nested pages — no second gutter */
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  padding-inline: 0 !important;
+  padding-block: 0 !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-shell {
+  padding-inline: 0;
+}
+
+
+
+
+/* Settings: sticky save bar clearance + accordion touch */
+html[data-layout-chrome="compact"] .admin-settings-page .settings-form-stack,
+html[data-layout-chrome="compact"] .admin-settings-page .admin-settings-panel__inner {
+  padding-bottom: 0.35rem;
+}

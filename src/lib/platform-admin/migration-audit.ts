@@ -29,6 +29,9 @@ const CRITICAL_MARKERS: MarkerProbe[] = [
   { id: "007", label: "admin_activity_log", table: "admin_activity_log" },
   { id: "036", label: "platform_settings", table: "platform_settings" },
   { id: "051", label: "resource_counts_rpc", table: "tenants", column: "plan_id" },
+  { id: "093", label: "tenant_email_delivery", table: "tenant_email_delivery", column: "delivery_mode" },
+  { id: "094", label: "tenant_email_secrets", table: "tenant_email_secrets", column: "resend_key_hint" },
+  { id: "095", label: "tenant_email_usage", table: "tenant_email_usage", column: "sent_count" },
 ];
 
 export function isMissingSchemaError(message: string): boolean {

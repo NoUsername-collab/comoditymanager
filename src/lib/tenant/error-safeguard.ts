@@ -54,7 +54,7 @@ export function registerTenantProcessErrorHandlers(): void {
 
   processHandlersRegistered = true;
 
-  // @ts-ignore - process is only available on Node.js
+  // Server-only: keep a narrow type for Node process access.
   const nodeProcess = process as NodeJS.Process;
 
   nodeProcess.on("unhandledRejection", (reason) => {

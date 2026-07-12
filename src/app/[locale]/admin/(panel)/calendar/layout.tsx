@@ -1,6 +1,7 @@
-import "@/app/admin/admin-gantt-features.css";
-import "@/app/admin/admin-availability-route.css";
-import "@/app/admin/gantt-mobile.css";
+import "@/styles/features/admin/admin-gantt-features.css";
+import "@/styles/features/admin/admin-availability-route.css";
+import "@/styles/features/admin/gantt-mobile.css";
+import "@/styles/features/layout/mobile-gantt.css";
 
 export default function AdminCalendarLayout({
   children,

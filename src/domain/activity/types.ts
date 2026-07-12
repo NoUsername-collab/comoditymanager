@@ -7,6 +7,7 @@ export type ActivityEntityType =
   | "settings"
   | "session"
   | "pension"
+  | "tenant"
   | "guest"
   | "staff";
 
@@ -73,7 +74,20 @@ export type ActivityAction =
   | "staff.deactivated"
   | "staff.reactivated"
   | "auth.login"
-  | "auth.logout";
+  | "auth.logout"
+  | "platform.tenant_provisioned"
+  | "platform.tenant_plan_changed"
+  | "platform.tenant_status_changed"
+  | "platform.tenant_modules_changed"
+  | "platform.tenant_modules_synced"
+  | "platform.tenant_billing_changed"
+  | "platform.tenant_email_delivery_changed"
+  | "platform.tenant_resend_vault_saved"
+  | "platform.tenant_resend_vault_cleared"
+  | "platform.tenant_domain_added"
+  | "platform.tenant_domain_removed"
+  | "platform.tenant_domain_verified"
+  | "platform.owner_magic_link_generated";
 
 export type ActivityLogEntry = {
   id: string;

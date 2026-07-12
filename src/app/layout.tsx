@@ -5,6 +5,7 @@ import { LayoutDebugHostGate } from "@/components/debug/LayoutDebugHostGate";
 import { PwaServiceWorkerRegister } from "@/components/pwa/PwaServiceWorkerRegister";
 import { DEVICE_BOOT_SCRIPT } from "@/lib/device";
 import { ADMIN_THEME_BOOT_SCRIPT } from "@/lib/admin-theme";
+import { platformSiteUrl } from "@/lib/platform/branding";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,6 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(platformSiteUrl()),
   title: "Zalmox",
   description: "Software modern pentru pensiuni si hoteluri mici",
   applicationName: "Zalmox",

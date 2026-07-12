@@ -1,6 +1,6 @@
 # Mobile Layout
 
-Decoupled viewport layout system for Nestio. When working with AI, say **"Mobile layout"** to target this module.
+Decoupled viewport layout system for Zalmox. When working with AI, say **"Mobile layout"** to target this module.
 
 ## Modes (`data-layout-mode` on `<html>`)
 
@@ -37,9 +37,15 @@ Single apply path: `applyDocumentLayout()` in `apply-document-layout.ts`.
 | `dom.ts` | Apply/read `data-layout-mode` on document |
 | `admin-tabs.ts` | Shared admin nav items (top + bottom nav) |
 | `../components/` | Shell chrome (`AdminMobileBottomNav`, `PublicMobileMenu`, `MobileShell`) |
-| `../../app/mobile-layout.css` | Shell primitives (`.ml-shell`, `.ml-bottom-nav`, `.ml-drawer`) |
-| `../../app/mobile-layout-pages.css` | Page-level mobile rules (admin, gantt, cazări, public) |
-| `../../app/mobile-layout-premium.css` | Compact overrides for admin premium `@media` CSS |
+| `../../styles/features/layout/mobile-layout.css` | Shell primitives + `@import` of `mobile-core.css` (global) |
+| `../../styles/features/layout/mobile-core.css` | Guards, alignment tokens, touch targets (~350 lines) |
+| `../../styles/features/layout/mobile-admin.css` | Admin core (HUD + general admin pages) |
+| `../../styles/features/layout/mobile-settings.css` | Admin settings UI (settings pages) |
+| `../../styles/features/layout/mobile-platform-admin.css` | Platform admin UI (nestio-admin / platform-admin) |
+| `../../styles/features/layout/mobile-gantt.css` | Gantt calendar only (`calendar/layout.tsx`) |
+| `../../styles/features/layout/mobile-cazari.css` | Cazări + guests (`cazari/`, `guests/` layouts) |
+| `../../styles/features/layout/mobile-avail.css` | Disponibilitate (`disponibilitate/layout.tsx`) |
+| `../../styles/features/layout/mobile-public.css` | Public site + platform marketing + guest-app (import in public layouts) |
 | `../../hooks/useMobileLayout.ts` | React hook when JS must branch |
 
 ## Rules

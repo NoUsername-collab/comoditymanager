@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { changeTenantBillingAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
 
 export function TenantBillingToggle({
@@ -10,16 +12,27 @@ export function TenantBillingToggle({
   tenantId: string;
   isPaying: boolean;
 }) {
+  const t = useTranslations("platformAdmin.tenantDetail.billingToggle");
+  const router = useRouter();
+  const [paying, setPaying] = useState(isPaying);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setPaying(isPaying);
+  }, [isPaying]);
+
   const toggle = () => {
     setError(null);
+    const next = !paying;
     startTransition(async () => {
-      const result = await changeTenantBillingAction(tenantId, !isPaying);
+      const result = await changeTenantBillingAction(tenantId, next);
       if (!result.success) {
-        setError(result.error ?? "Eroare");
+        setError(result.error ?? t("failed"));
+        return;
       }
+      setPaying(next);
+      router.refresh();
     });
   };
 
@@ -30,12 +43,12 @@ export function TenantBillingToggle({
         onClick={toggle}
         disabled={pending}
         className={`tenant-billing-toggle min-h-[var(--ml-touch-min,2.75rem)] rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-          isPaying
+          paying
             ? "tenant-billing-toggle--paying"
             : "tenant-billing-toggle--free"
         } disabled:opacity-50`}
       >
-        {pending ? "..." : isPaying ? "Plătitor ✓" : "Gratuit"}
+        {pending ? t("pending") : paying ? t("paying") : t("free")}
       </button>
       {error && (
         <p className="text-xs text-red-400" role="alert">

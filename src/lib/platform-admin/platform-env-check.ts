@@ -28,7 +28,9 @@ function isSet(key: string): boolean {
 /** Env vars relevant to platform operations (no values returned). */
 export function getPlatformEnvChecklist(): EnvCheckItem[] {
   const adminEmails =
-    isSet("HOSPIRA_ADMIN_EMAILS") || isSet("NESTIO_ADMIN_EMAILS");
+    isSet("ZALMOX_ADMIN_EMAILS") ||
+    isSet("HOSPIRA_ADMIN_EMAILS") ||
+    isSet("NESTIO_ADMIN_EMAILS");
 
   return [
     {
@@ -50,7 +52,7 @@ export function getPlatformEnvChecklist(): EnvCheckItem[] {
       recommended: false,
     },
     {
-      key: "HOSPIRA_ADMIN_EMAILS",
+      key: "ZALMOX_ADMIN_EMAILS",
       configured: adminEmails,
       required: true,
       recommended: true,
@@ -66,6 +68,12 @@ export function getPlatformEnvChecklist(): EnvCheckItem[] {
       configured: isSet("RESEND_MAIL_DOMAIN"),
       required: false,
       recommended: false,
+    },
+    {
+      key: "TENANT_SECRETS_ENCRYPTION_KEY",
+      configured: isSet("TENANT_SECRETS_ENCRYPTION_KEY"),
+      required: false,
+      recommended: true,
     },
     {
       key: "CRON_SECRET",

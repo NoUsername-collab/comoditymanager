@@ -1,26 +1,28 @@
+import { getTranslations } from "next-intl/server";
 import { HEALTH_ICON } from "@/lib/platform-admin/log-styles";
 import { Link } from "@/i18n/navigation";
 import type { TenantHealthCheck } from "@/services/platform-debug";
 
-export function TenantHealthPanel({
+export async function TenantHealthPanel({
   healthChecks,
 }: {
   healthChecks: TenantHealthCheck[];
 }) {
+  const t = await getTranslations("platformAdmin.logsPage.health");
   const unhealthy = healthChecks.filter((check) => !check.healthy);
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
       <h2 className="mb-2 text-base font-semibold">
-        Sănătate tenanți
+        {t("title")}
         {unhealthy.length > 0 && (
           <span className="ml-2 rounded-full bg-red-900 px-2 py-0.5 text-xs text-red-300">
-            {unhealthy.length} probleme
+            {t("issuesCount", { count: unhealthy.length })}
           </span>
         )}
         {unhealthy.length === 0 && (
           <span className="ml-2 platform-status-badge platform-status-badge--active">
-            Toți OK
+            {t("allOk")}
           </span>
         )}
       </h2>
@@ -50,7 +52,11 @@ export function TenantHealthPanel({
               </div>
               <div className="platform-health-row__meta mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs">
                 <span className="text-neutral-400">
-                  {check.buildingCount}B · {check.roomCount}C · {check.memberCount}M
+                  {t("meta", {
+                    buildings: check.buildingCount,
+                    rooms: check.roomCount,
+                    members: check.memberCount,
+                  })}
                 </span>
                 {check.issues.length > 0 && (
                   <span className="text-red-400">{check.issues.join(" · ")}</span>
@@ -59,7 +65,7 @@ export function TenantHealthPanel({
                   href={`/platform-admin/logs?tenant=${check.tenantId}`}
                   className="text-sky-400 hover:text-sky-300"
                 >
-                  logs →
+                  {t("viewLogs")}
                 </Link>
               </div>
             </div>

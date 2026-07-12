@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { probePlatformLogsErrorAction } from "@/app/[locale]/platform-admin/(panel)/actions/logs-actions";
 import { Link } from "@/i18n/navigation";
 
 export function LogsProbeButton() {
+  const t = useTranslations("platformAdmin.logsPage.probe");
   const [pending, startTransition] = useTransition();
   const [probeResult, setProbeResult] = useState<{
     ok: boolean;
@@ -22,9 +24,9 @@ export function LogsProbeButton() {
         <Link
           href="/platform-admin/logs?throw=page"
           className="min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-red-800 bg-red-950/40 px-3 py-2 text-sm font-medium text-red-200 hover:bg-red-900/50"
-          title="Aruncă în SSR; eroarea apare în dev_logs și în error boundary"
+          title={t("pageThrowTitle")}
         >
-          Test aruncare pagină (SSR)
+          {t("pageThrow")}
         </Link>
         <button
           type="button"
@@ -37,7 +39,7 @@ export function LogsProbeButton() {
                 setProbeResult({
                   ok: false,
                   message:
-                    "Probe-ul a returnat fără aruncare — comportament neașteptat.",
+                    "Probe returned without throwing — unexpected behavior.",
                 });
               } catch (error) {
                 const message =
@@ -52,9 +54,9 @@ export function LogsProbeButton() {
             });
           }}
           className="min-h-[var(--ml-touch-min,2.75rem)] rounded-md border border-amber-800 bg-amber-950/40 px-3 py-2 text-sm font-medium text-amber-200 hover:bg-amber-900/50 disabled:opacity-60"
-          title="Scrie în dev_logs apoi aruncă eroare (server action)"
+          title={t("actionTitle")}
         >
-          {pending ? "Se testează…" : "Test aruncare acțiune"}
+          {pending ? t("actionPending") : t("actionThrow")}
         </button>
       </div>
       {probeResult && (
@@ -68,8 +70,7 @@ export function LogsProbeButton() {
         >
           {probeResult.ok && probeResult.logWritten && (
             <p className="mb-2 font-sans text-sm text-emerald-100">
-              Eroarea de test a fost aruncată și înregistrată în{" "}
-              <strong>dev_logs</strong>.
+              {t("loggedMessage")}
             </p>
           )}
           <p className="whitespace-pre-wrap break-words font-mono">
@@ -80,7 +81,7 @@ export function LogsProbeButton() {
               href="/platform-admin/logs#dev-logs"
               className="mt-2 inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-emerald-700/60 bg-emerald-900/30 px-3 py-1.5 text-sm font-medium text-emerald-100 hover:bg-emerald-900/50"
             >
-              Vezi dev_logs ↓
+              {t("viewDevLogs")}
             </Link>
           )}
         </div>

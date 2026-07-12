@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import "@/app/admin/admin-checkin.css";
+import "@/components/admin/checkin/import-checkin-styles";
 import { useTranslations } from "next-intl";
 import { loadCheckinWizardContextAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
 import type { CheckinWizardContextResult } from "@/app/[locale]/admin/(panel)/checkin/actions";

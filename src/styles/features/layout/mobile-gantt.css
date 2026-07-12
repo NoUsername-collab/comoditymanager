@@ -1,0 +1,818 @@
+/* mobile-gantt.css — Gantt calendar mobile compat (split from mobile-admin.css) */
+
+
+
+html[data-layout-chrome="compact"] .gantt-stay-hint {
+  display: none;
+}
+
+
+
+/* Gantt compact toolbar portrait grid: admin/gantt-mobile.css */
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__left {
+  order: 1;
+  flex: 0 0 auto;
+}
+
+
+
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__center {
+  order: 3;
+  flex: 1 0 100%;
+  justify-content: center;
+}
+
+
+
+html[data-layout-chrome="compact"]:not([data-layout-orientation="portrait"]) .gantt-compact-toolbar__right {
+  order: 2;
+  margin-left: auto;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-shell table {
+  min-width: min(720px, 100%);
+}
+
+
+
+/* Wide chrome, narrow viewport (was gantt-premium.css @media 1180 / 860) */
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__row--primary {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__primary-section--rooms {
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__row--navigator {
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-band {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.55rem;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__side-dock--left,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__side-dock--right,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-main {
+  justify-content: center;
+  justify-self: stretch;
+  grid-row: auto;
+  grid-column: 1;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .gantt-inline-controls__navigator-main {
+  pointer-events: auto;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__row--primary {
+  justify-content: center;
+  min-height: auto;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__center,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__primary-section--rooms {
+  justify-content: flex-start;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__center {
+  flex: 0 0 auto;
+  position: static;
+  transform: none;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__room-picker-shell,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__period-main .gantt-toolbar__period-shell {
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-inline-controls__side-dock > * {
+  width: 100%;
+}
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-toolbar__period--hero,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .gantt-toolbar__quick-jumps {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+
+/* ── Gantt panels on compact ── */
+html[data-layout-chrome="compact"] .gantt-filters-panel,
+html[data-layout-chrome="compact"] .admin-floating-panel {
+  max-width: min(360px, calc(100vw - 1rem));
+  margin-inline: auto;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-inline-controls__period-main {
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .admin-page.admin-settings-page,
+html[data-layout-chrome="compact"] .admin-page.gantt-calendar-page {
+  padding-inline: 0 !important;
+}
+
+
+
+/* ── Gantt cereri cards + context menu ── */
+html[data-layout-chrome="compact"] .gantt-cereri-card__guest,
+html[data-layout-chrome="compact"] .gantt-cereri-card__dates {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-cereri-card__party {
+  flex-shrink: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu {
+  max-width: min(18rem, calc(100vw - 1rem));
+  min-width: min(12rem, calc(100vw - 2rem));
+  padding: 0.35rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu__head {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  padding: 0.55rem 0.65rem 0.65rem;
+  font-size: 0.72rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+}
+
+
+
+/* ── Gantt landscape: compact toolbar touch targets ── */
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
+  min-height: var(--gantt-touch-min, 2.75rem) !important;
+}
+
+
+
+/* ── Gantt portrait toolbar: gantt-scoped touch min ── */
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__period-jump,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar__period-jump {
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
+}
+
+
+
+/* ── Gantt segment labels: short text on compact ── */
+html[data-layout-chrome="compact"] .gantt-seg__btn-text--long {
+  display: none !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-seg__btn-text--short {
+  display: inline !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-seg__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-popover-premium__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.85rem;
+}
+
+
+
+/* ── Pass 5: panel text/content alignment on compact ── */
+html[data-layout-chrome="compact"] :is(
+  .admin-floating-panel,
+  .admin-floating-panel__body,
+  .admin-panel-section,
+  .admin-panel,
+  .admin-panel-body,
+  .bd-card,
+  .availability-detail-panel,
+  .admin-quick-panel,
+  .ml-drawer,
+  .gantt-popover-premium,
+  .gantt-filters-panel
+) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] :is(
+  .admin-floating-panel__title,
+  .bd-card__title,
+  .bd-info-value,
+  .ml-drawer__link,
+  .gantt-popover-premium__body p,
+  .gantt-popover-premium__body span
+) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .admin-floating-panel__body {
+  padding: 0.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-popover-premium__actions {
+  flex-direction: column;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-popover-premium__btn {
+  width: 100%;
+  flex: none;
+}
+
+
+
+/* Gantt filters panel: segment labels wrap inside narrow panel */
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg,
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__track {
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__track {
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__btn {
+  min-width: 0;
+  flex: 1 1 calc(50% - 0.15rem);
+  white-space: normal;
+  line-height: 1.25;
+  text-align: center;
+  padding-inline: 0.35rem;
+  font-size: 0.72rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-filters-panel .gantt-seg__label {
+  overflow-wrap: anywhere;
+  line-height: 1.3;
+}
+
+
+
+/* Gantt footer legend: clear home indicator (no bottom nav) */
+html[data-layout-chrome="compact"] .gantt-footer-legend--compact {
+  margin-bottom: 0.15rem;
+  padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-footer-legend__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.65rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-footer-legend__body .gantt-legend-swatch {
+  flex-shrink: 0;
+}
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-calendar-page {
+  padding-bottom: 0.25rem !important;
+}
+
+
+
+/* gantt-scroll viewport bounds: mobile-layout-compact-fixes.css + admin/gantt-mobile.css */
+
+/* Cazări stay cards: action row stacks */
+html[data-layout-chrome="compact"] .stay-card__actions {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+
+
+/* Gantt context menu: stay on-screen */
+html[data-layout-chrome="compact"] .gantt-ctx-menu {
+  z-index: var(--z-overlay, 200);
+  max-height: min(70dvh, var(--ml-vvh, 100dvh));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+/* Gantt filters: dock below top nav instead of floating off-toolbar */
+html[data-layout-chrome="compact"] .gantt-filters-panel.admin-floating-panel:not(.admin-floating-panel--modal) {
+  left: 50% !important;
+  right: auto !important;
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem) !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  max-width: min(360px, calc(100vw - 1rem));
+}
+
+
+
+/* Gantt create / move / occupancy modals */
+html[data-layout-chrome="compact"] .gantt-quick-panel.admin-floating-panel--modal,
+html[data-layout-chrome="compact"] .gantt-move-room,
+html[data-layout-chrome="compact"] .gantt-occ-detail {
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form input,
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form select,
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form textarea,
+html[data-layout-chrome="compact"] .gantt-move-room input,
+html[data-layout-chrome="compact"] .gantt-move-room select,
+html[data-layout-chrome="compact"] .gantt-occ-detail input,
+html[data-layout-chrome="compact"] .gantt-occ-detail select {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form button,
+html[data-layout-chrome="compact"] .gantt-move-room button,
+html[data-layout-chrome="compact"] .gantt-occ-detail button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .grid.sm\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .flex.flex-wrap.items-center.gap-2 button {
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+  font-size: 0.8125rem;
+}
+
+
+
+/* Operative check-in/out dialog (custom portal, not AdminFloatingPanel) */
+html[data-layout-chrome="compact"] .gantt-check-time-dialog__backdrop {
+  z-index: var(--z-overlay, 200);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog {
+  z-index: calc(var(--z-overlay, 200) + 1);
+  max-width: min(22rem, calc(100vw - 1rem));
+  max-height: min(
+    92dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-safe-top, 0px) - var(--ml-safe-bottom, 0px) - 2rem)
+  );
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(1rem, var(--ml-safe-bottom, 0px));
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog input[type="datetime-local"] {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.55rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog .mt-4.flex {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog .mt-4.flex button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.875rem;
+  padding-block: 0.55rem;
+}
+
+
+
+/* Context menu backdrop aligned with menu stack */
+html[data-layout-chrome="compact"] .gantt-ctx-menu-backdrop {
+  z-index: calc(var(--z-overlay, 200) - 1);
+}
+
+
+
+/* Gantt mobile bottom sheets */
+html[data-layout-chrome="compact"] .gantt-ctx-menu--sheet {
+  top: auto !important;
+  bottom: 0;
+  left: 0 !important;
+  right: 0;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  border-radius: 1rem 1rem 0 0;
+  padding-bottom: calc(0.35rem + var(--ml-safe-bottom, 0px));
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-ctx-menu--sheet .gantt-ctx-menu__confirm-msg {
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-check-time-dialog--sheet {
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  transform: none;
+  border-radius: 1rem 1rem 0 0;
+  padding-bottom: calc(1rem + var(--ml-safe-bottom, 0px));
+}
+
+
+
+/* Long-press context menus: avoid accidental selection on Gantt bars */
+html[data-layout-chrome="compact"] .gantt-seg__btn,
+html[data-layout-chrome="compact"] .gantt-room-label {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+
+
+/* Pull-to-refresh containment on admin scroll roots */
+html[data-layout-chrome="compact"] .admin-page-main,
+html[data-layout-chrome="compact"] .gantt-scroll,
+html[data-layout-chrome="compact"] .nestio-admin-main .overflow-x-auto {
+  overscroll-behavior: contain;
+}
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-compact-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  backdrop-filter: none;
+  padding-block: 0.15rem;
+  margin-bottom: 0.12rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-view-switcher {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-view-switcher__tabs {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-view-switcher__tabs button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+  white-space: normal;
+  line-height: 1.2;
+  text-align: center;
+  padding-inline: 0.35rem;
+  font-size: max(12px, 0.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-view-switcher__select {
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-view-switcher > span.ml-auto {
+  margin-left: 0 !important;
+  width: 100%;
+  text-align: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel.admin-floating-panel--modal .admin-floating-panel__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__footer {
+  flex-shrink: 0;
+  padding: 0.65rem 0.85rem;
+  padding-bottom: max(0.85rem, var(--ml-safe-bottom, 0px));
+  border-top: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 80%, transparent);
+  background: var(--admin-panel-bg, #fff);
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__cancel {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+/* ── Pass 28: gantt quick actions, stay review, receptie rows, adjust toggle ── */
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__actions {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__action {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel--busy .gantt-quick-panel__body {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-quick-panel--busy .gantt-quick-panel__footer {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge {
+  min-width: 0.62rem;
+  min-height: 0.62rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn--edge,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip,
+  html[data-layout-chrome="compact"] .gantt-cap-bulb-glow {
+    animation: none !important;
+  }
+}
+
+
+
+/* Gantt: tight but symmetric gutter */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
+  padding-inline: max(var(--ml-page-gutter-tight), var(--ml-safe-left, 0px))
+    max(var(--ml-page-gutter-tight), var(--ml-safe-right, 0px));
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-calendar-page.admin-page {
+  padding: 0 !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  padding-inline: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar {
+  margin-inline: 0 !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.gantt-calendar-page,
+html[data-layout-chrome="compact"] .admin-page-main .admin-page.admin-settings-page {
+  padding-block: 0 !important;
+}
+
+
+
+/* Gantt owns the viewport — no double pad on the scroll shell */
+html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin-page-main {
+  padding-bottom: 0;
+  scroll-padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+
+
+/* Zero horizontal bleed on 390px — clip page columns */
+html[data-layout-chrome="compact"] .admin-shell,
+html[data-layout-chrome="compact"] .admin-page,
+html[data-layout-chrome="compact"] .cazari-page,
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-shell,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell,
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
+  overflow-x: clip;
+  max-width: 100%;
+  min-width: 0;
+}
+
+
+
+/* Gantt portrait: bounded flex scroll (nav already excluded by shell flex) */
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-calendar-page .gantt-scroll {
+  min-height: 10rem;
+  max-height: calc(
+    var(--ml-vvh, 100dvh)
+      - var(--ml-admin-bottom-clearance, calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom)))
+      - var(--ml-admin-chrome-top, var(--ml-safe-top, 0px))
+      - 5.75rem
+  );
+  scroll-padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+
+
+/* Gantt: cap strip + stay tap targets */
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay-chrome {
+  overflow-x: clip;
+  min-width: 0;
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip {
+  max-width: 100%;
+  overflow: hidden;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__alert,
+html[data-layout-chrome="compact"] .gantt-stay--chip .gantt-stay__cap-strip .gantt-stay__badge {
+  flex-shrink: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__select,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__icon-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__nav-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
+html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
+  min-width: var(--gantt-touch-min, 2.75rem);
+  min-height: var(--gantt-touch-min, 2.75rem);
+}

@@ -26,6 +26,7 @@ if (!loaded) {
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const emails =
+  process.env.ZALMOX_ADMIN_EMAILS?.trim() ||
   process.env.HOSPIRA_ADMIN_EMAILS?.trim() ||
   process.env.NESTIO_ADMIN_EMAILS?.trim();
 const password = process.env.ADMIN_INITIAL_PASSWORD;
@@ -38,7 +39,7 @@ if (!url || !serviceKey) {
 }
 if (!emails) {
   console.error(
-    `Adauga HOSPIRA_ADMIN_EMAILS in ${envFile} (ex: contact@hospira.ro)`
+    `Adauga ZALMOX_ADMIN_EMAILS in ${envFile} (ex: admin@zalmox.ro)`
   );
   process.exit(1);
 }

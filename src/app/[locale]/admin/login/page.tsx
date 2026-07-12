@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 import { getTranslations } from "next-intl/server";
-import "@/app/admin-login.css";
+import "@/styles/features/shared/admin-login.css";
 
 export default async function AdminLoginPage({
   searchParams,

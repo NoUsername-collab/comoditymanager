@@ -1,0 +1,612 @@
+/* mobile-public.css — public site + platform marketing mobile compat (split from mobile.css) */
+
+
+/* ── Public site ── */
+html[data-layout-chrome="compact"] .public-header__inner {
+  padding-inline: 0.85rem;
+  gap: 0.5rem;
+}
+
+
+html[data-layout-chrome="compact"] .public-header__inner > .flex .language-switcher {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .public-header__inner .ml-mobile-menu {
+  display: block;
+}
+
+
+html[data-layout-chrome="compact"] .public-header__name {
+  font-size: 0.95rem;
+}
+
+
+html[data-layout-chrome="compact"] .public-page {
+  padding-inline: 1rem;
+}
+
+
+html[data-layout-chrome="compact"] .public-booking-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form {
+  padding: 1rem 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form input,
+html[data-layout-chrome="compact"] .guest-booking-form select,
+html[data-layout-chrome="compact"] .guest-booking-form textarea {
+  font-size: 16px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form .guest-form-grid-2 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .public-footer__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+/* ── Platform ── */
+html[data-layout-chrome="compact"] .platform-header__inner {
+  padding-inline: 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .platform-header__nav {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .platform-header__nav .platform-header__link,
+html[data-layout-chrome="compact"] .platform-header__nav .language-switcher {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .ml-mobile-menu--platform {
+  display: block;
+}
+
+
+html[data-layout-chrome="wide"] .ml-drawer__locale,
+html[data-layout-chrome="wide"] .header-locale-switch--drawer {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .header-locale-switch--nav {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .pricing-table-wrap {
+  margin-top: 2rem;
+  margin-inline: 0;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+html[data-layout-chrome="compact"] .pricing-table {
+  min-width: 0;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+}
+
+
+html[data-layout-chrome="compact"] .pricing-table th,
+html[data-layout-chrome="compact"] .pricing-table td {
+  padding: 0.6rem 0.45rem;
+  word-break: break-word;
+}
+
+
+html[data-layout-chrome="compact"] .signup-page {
+  align-items: flex-start;
+  padding: max(1rem, var(--ml-safe-top, 0px)) 0.85rem max(1rem, var(--ml-safe-bottom, 0px));
+  min-height: 100dvh;
+  min-height: var(--ml-vvh, 100dvh);
+}
+
+
+html[data-layout-chrome="compact"] .signup-benefits {
+  padding: 1rem 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .signup-benefits__title {
+  font-size: 1.5rem;
+}
+
+
+html[data-layout-chrome="compact"] .signup-form-wrapper {
+  padding: 1rem 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .landing-hero {
+  padding-inline: 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .landing-section {
+  padding-inline: 0.85rem;
+}
+
+
+/* ── Statistics ── */
+/* statistics: mobile-layout-flawless.css */
+
+/* ── Public home ── */
+html[data-layout-chrome="compact"] .public-hero {
+  padding-block: 2rem 2.5rem;
+}
+
+
+html[data-layout-chrome="compact"] .public-hero__title {
+  font-size: clamp(1.65rem, 7vw, 2.25rem);
+  line-height: 1.15;
+}
+
+
+html[data-layout-chrome="compact"] .public-hero__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+html[data-layout-chrome="compact"] .public-hero__actions .site-cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+html[data-layout-chrome="compact"] .public-features {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+html[data-layout-chrome="compact"] .public-steps {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+html[data-layout-chrome="compact"] .public-section {
+  padding-inline: 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .public-cta-band {
+  padding-inline: 0.85rem;
+  text-align: center;
+}
+
+
+html[data-layout-chrome="compact"] .public-cta-band .site-cta {
+  width: 100%;
+  max-width: 20rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+/* ── Public staff preview (logged-in home) ── */
+html[data-layout-chrome="compact"] .public-staff-preview .grid,
+html[data-layout-chrome="compact"] .public-staff-preview [class*="grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+html[data-layout-chrome="compact"] .public-staff-preview a,
+html[data-layout-chrome="compact"] .public-staff-preview button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+/* ── Public pages (termeni, GDPR, calendar) ── */
+html[data-layout-chrome="compact"] .public-page__inner {
+  padding-inline: 0;
+  max-width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .public-page__title {
+  font-size: clamp(1.35rem, 5.5vw, 1.75rem);
+}
+
+
+html[data-layout-chrome="compact"] .public-page__lead,
+html[data-layout-chrome="compact"] .public-page .prose {
+  font-size: 0.9375rem;
+}
+
+
+/* ── Platform landing extras ── */
+html[data-layout-chrome="compact"] .landing-showcase {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+html[data-layout-chrome="compact"] .landing-showcase__main,
+html[data-layout-chrome="compact"] .landing-showcase__aside {
+  min-width: 0;
+}
+
+
+html[data-layout-chrome="compact"] .landing-stats,
+html[data-layout-chrome="compact"] .landing-stats--inline {
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+
+html[data-layout-chrome="compact"] .landing-stat {
+  min-width: 0;
+  flex: 1 1 calc(50% - 0.35rem);
+  max-width: 100%;
+  padding: 0.75rem 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .landing-stat__label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+
+html[data-layout-chrome="compact"] .landing-hero__title,
+html[data-layout-chrome="compact"] .landing-hero__subtitle,
+html[data-layout-chrome="compact"] .landing-hero__badge {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+html[data-layout-chrome="compact"] .landing-hero__badge {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+}
+
+
+html[data-layout-chrome="compact"] .landing-hero__actions--multi .landing-cta:not(.landing-cta--link) {
+  width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .landing-hero__actions--multi .landing-cta--link {
+  align-self: center;
+}
+
+
+html[data-layout-chrome="compact"] .landing-final-cta__secondary {
+  flex-direction: column;
+  width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .landing-final-cta__secondary .landing-cta:not(.landing-cta--link) {
+  width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .platform-header--split .platform-header__inner {
+  padding-inline: 0.85rem;
+}
+
+
+html[data-layout-chrome="compact"] .platform-header--split .platform-header__cta,
+html[data-layout-chrome="compact"] .platform-header--split .platform-header__link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+/* ── Platform footer wrap ── */
+html[data-layout-chrome="compact"] .platform-footer {
+  padding: 2rem 1rem calc(1.5rem + var(--ml-safe-bottom, 0px));
+}
+
+
+/* ── Nestio admin ── */
+.platform-tenant-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 2.75rem;
+}
+
+
+/* KPI chips: 2 cols max on compact */
+html[data-layout-chrome="compact"] .public-staff-preview .sm\:grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+
+html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-4,
+html[data-layout-chrome="compact"] .public-staff-preview .xl\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+/* ── Public booking options ── */
+html[data-layout-chrome="compact"] .public-option-card {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+html[data-layout-chrome="compact"] .public-step-track {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/* Public hero / landing: no horizontal bleed */
+html[data-layout-chrome="compact"] .public-hero,
+html[data-layout-chrome="compact"] .public-hero__inner {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+
+html[data-layout-chrome="compact"] .public-hero__title,
+html[data-layout-chrome="compact"] .public-hero__subtitle,
+html[data-layout-chrome="compact"] .public-hero__tagline,
+html[data-layout-chrome="compact"] .public-hero__meta {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+html[data-layout-chrome="compact"] .public-hero__badge {
+  max-width: 100%;
+  text-align: center;
+  white-space: normal;
+}
+
+
+/* Signup / platform: iOS viewport + input zoom guard */
+html[data-layout-chrome="compact"] .signup-page {
+  min-height: 100dvh;
+  min-height: var(--ml-vvh, 100dvh);
+  padding-bottom: max(1rem, var(--ml-safe-bottom, 0px));
+}
+
+
+html[data-layout-chrome="compact"] .signup-form__input,
+html[data-layout-chrome="compact"] .signup-form__submit {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+html[data-layout-chrome="compact"] .signup-form-wrapper,
+html[data-layout-chrome="compact"] .signup-benefits {
+  min-width: 0;
+  max-width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .landing-cta {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-actions,
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-actions button,
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-actions button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .platform-header,
+html[data-layout-chrome="compact"] .public-header {
+  padding-top: max(0.5rem, var(--ml-safe-top, 0px));
+}
+
+
+html[data-layout-chrome="compact"] .platform-tenant-card__detail,
+html[data-layout-chrome="compact"] .platform-tenant-row a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  touch-action: manipulation;
+}
+
+
+/* ── Pass 12: drawer a11y sweep + public touch/safe-area ── */
+
+html[data-layout-chrome="compact"] .public-header__cta {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .public-header__inner {
+  padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
+    max(0.85rem, var(--ml-safe-right, 0px));
+}
+
+
+html[data-layout-chrome="compact"] .public-footer__inner {
+  padding-bottom: calc(2.5rem + var(--ml-safe-bottom, 0px));
+}
+
+
+html[data-layout-chrome="compact"] .public-back-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.25rem;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form input[type="checkbox"],
+html[data-layout-chrome="compact"] .guest-booking-form input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  margin-top: 0;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form label:has(input[type="checkbox"]),
+html[data-layout-chrome="compact"] .guest-booking-form label:has(input[type="radio"]) {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+}
+
+
+html[data-layout-chrome="compact"] .pricing-table-desktop {
+  display: none;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form .flex.flex-wrap.gap-2 {
+  flex-direction: column;
+}
+
+
+html[data-layout-chrome="compact"] .guest-booking-form .site-cta,
+html[data-layout-chrome="compact"] .guest-booking-form .site-btn-secondary {
+  width: 100%;
+  justify-content: center;
+}
+
+
+html[data-layout-chrome="compact"] .landing-faq__q {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding-block: 0.75rem;
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .pricing-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+html[data-layout-chrome="compact"] .public-confirm-page__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.15rem;
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .public-confirm-page__admin-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.5rem;
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .guest-app__mrz__camera-wrap {
+  aspect-ratio: 3 / 4;
+  max-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 14rem));
+}
+
+
+html[data-layout-chrome="compact"] .guest-app__mrz__torch-btn,
+html[data-layout-chrome="compact"] .guest-app__mrz__manual-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+/* ── Public staff preview ── */
+html[data-layout-chrome="compact"] .public-section .lg\:flex-row {
+  flex-direction: column;
+}
+
+
+html[data-layout-chrome="compact"] .public-section .xl\:grid-cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+
+html[data-layout-chrome="compact"] .public-section .xl\:grid-cols-\[minmax\(0\,0\.9fr\)_minmax\(0\,1\.1fr\)\] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+/* ── Platform / public main ── */
+html[data-layout-chrome="compact"] .platform-shell .ml-main,
+html[data-layout-chrome="compact"] .ml-shell--public .ml-main {
+  padding-inline: 0;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase,
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase__main,
+html[data-layout-chrome="compact"] .platform-shell .landing-showcase__aside {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+
+html[data-layout-chrome="compact"] .landing-showcase--pro {
+  aspect-ratio: 4 / 3;
+  contain: layout style;
+  min-height: 12rem;
+}
+
+
+html[data-layout-chrome="compact"] .landing img,
+html[data-layout-chrome="compact"] .signup-page img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+html[data-layout-chrome="compact"] .landing img:not([fetchpriority="high"]),
+html[data-layout-chrome="compact"] .signup-page img:not([fetchpriority="high"]) {
+  content-visibility: auto;
+}

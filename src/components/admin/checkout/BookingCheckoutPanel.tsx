@@ -33,7 +33,7 @@ import {
   GuestStayRatingFields,
   type GuestStayRatingValue,
 } from "@/components/admin/guests/GuestStayRatingFields";
-import "@/app/admin/booking-checkout-panel.css";
+import "@/styles/features/admin/booking-checkout-panel.css";
 
 export type BookingCheckoutPanelProps = {
   open: boolean;

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const intlMiddleware = vi.fn(() => NextResponse.next());
 const getUser = vi.fn();
+const lookupTenantHostOnEdge = vi.fn();
 
 vi.mock("next-intl/middleware", () => ({
   default: () => intlMiddleware,
@@ -35,6 +36,10 @@ vi.mock("@/lib/tenant/domain-routing-edge", () => ({
   resolveDomainRoutingOnEdge: vi.fn(),
 }));
 
+vi.mock("@/lib/tenant/tenant-host-edge", () => ({
+  lookupTenantHostOnEdge,
+}));
+
 vi.mock("@/services/tenant-members", () => ({
   getPrimaryTenantSlugForUser: vi.fn(),
 }));
@@ -48,6 +53,7 @@ function platformRequest(pathname: string) {
 beforeEach(() => {
   vi.clearAllMocks();
   getUser.mockResolvedValue({ data: { user: null } });
+  lookupTenantHostOnEdge.mockResolvedValue(null);
   intlMiddleware.mockImplementation(() => NextResponse.next());
 });
 
@@ -110,5 +116,55 @@ describe("proxy platform platform-admin", () => {
     expect(response.headers.get("location")).toBe(
       "https://test.hospira.ro/ro/platform-admin"
     );
+  });
+});
+
+describe("proxy tenant status enforcement", () => {
+  function tenantRequest(pathname: string) {
+    return new NextRequest(`https://casaemil.hospira.ro${pathname}`, {
+      headers: { host: "casaemil.hospira.ro" },
+    });
+  }
+
+  it("redirects suspended tenant public routes to /tenant-suspended", async () => {
+    lookupTenantHostOnEdge.mockResolvedValue({
+      tenantId: "t1",
+      slug: "casaemil",
+      status: "suspended",
+    });
+
+    const response = await proxy(tenantRequest("/calendar"));
+
+    expect(response.status).toBeGreaterThanOrEqual(300);
+    expect(response.status).toBeLessThan(400);
+    const location = response.headers.get("location");
+    expect(location).toContain("/tenant-suspended");
+    expect(location).toContain("status=suspended");
+  });
+
+  it("allows /tenant-suspended on blocked tenant host", async () => {
+    lookupTenantHostOnEdge.mockResolvedValue({
+      tenantId: "t1",
+      slug: "casaemil",
+      status: "cancelled",
+    });
+
+    const response = await proxy(tenantRequest("/tenant-suspended"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
+  });
+
+  it("allows /admin/login on blocked tenant host", async () => {
+    lookupTenantHostOnEdge.mockResolvedValue({
+      tenantId: "t1",
+      slug: "casaemil",
+      status: "suspended",
+    });
+
+    const response = await proxy(tenantRequest("/admin/login"));
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("location")).toBeNull();
   });
 });

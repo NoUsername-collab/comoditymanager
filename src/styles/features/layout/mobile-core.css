@@ -1,0 +1,260 @@
+/* mobile-core.css — global mobile guards, alignment, touch (split from mobile.css) */
+﻿/* mobile.css — toate fișierele mobile-layout-*.css consolidate
+ * Ordinea de cascadă e păstrată identic cu mobile-layout.css.
+ * Nu edita manual — secțiunile sunt marcate cu === SECTION === */
+
+
+/* ═══ mobile-layout-pages.css ═══ */
+/**
+ * Mobile layout — page-level rules (admin, public, platform).
+ * Scoped by data-layout-mode / data-layout-orientation.
+ */
+
+/* ── Global mobile perf & scroll ── */
+html[data-layout-chrome="compact"],
+html[data-layout-mode="tablet"] {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+
+html[data-layout-chrome="compact"] body,
+html[data-layout-mode="tablet"] body {
+  overscroll-behavior-y: none;
+}
+
+
+html[data-layout-chrome="compact"] .ml-shell,
+html[data-layout-mode="tablet"] .ml-shell {
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .layout-debug-overlay {
+  width: min(18rem, calc(100vw - 1rem));
+  max-width: calc(100vw - 1rem);
+}
+
+
+html[data-layout-chrome="compact"] .layout-debug-overlay__body {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+/* Layout debug: above bottom nav on compact */
+html[data-layout-chrome="compact"] .layout-debug-overlay {
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.5rem);
+  max-height: min(40dvh, 16rem);
+}
+
+
+html[data-layout-chrome="compact"] .layout-debug-overlay__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+
+/* ═══ mobile-layout-guards.css ═══ */
+/**
+ * Mobile layout guards — overflow, touch, compact chrome across all surfaces.
+ */
+
+/* Prevent horizontal scroll bleed on compact chrome */
+html.layout-chrome-compact,
+html.layout-chrome-compact body.ml-overflow-guard {
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
+
+.ml-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+
+/* iOS: prevent focus zoom on inputs (16px minimum) */
+html[data-layout-chrome="compact"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html[data-layout-chrome="compact"] select,
+html[data-layout-chrome="compact"] textarea {
+  font-size: max(16px, 1rem);
+}
+
+
+/* Crisp taps — no 300ms delay, no grey flash */
+html[data-layout-chrome="compact"] button,
+html[data-layout-chrome="compact"] a,
+html[data-layout-chrome="compact"] [role="button"],
+html[data-layout-chrome="compact"] .ml-drawer__link,
+html[data-layout-chrome="compact"] .ml-bottom-nav__link {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--ml-touch-min, 2.75rem);
+}
+
+
+html[data-layout-chrome="compact"] .ml-mobile-menu--platform {
+  display: block;
+}
+
+
+html[data-layout-chrome="compact"] .ml-shell--auth {
+  min-height: 100dvh;
+  padding-inline: 0;
+}
+
+
+html[data-layout-chrome="compact"] .alpha-gate-page {
+  min-height: 100dvh;
+  padding: max(1rem, var(--ml-safe-top)) 1rem max(1rem, var(--ml-safe-bottom));
+  align-items: flex-start;
+  padding-top: max(2rem, var(--ml-safe-top));
+}
+
+
+html[data-layout-chrome="compact"] .alpha-gate-card {
+  padding: 1rem !important;
+  border-radius: 0.75rem;
+}
+
+
+html[data-layout-chrome="compact"] .alpha-gate-form button[type="submit"] {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+@keyframes pwa-banner-slide-up {
+  from { transform: translateY(110%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+
+.pwa-install-banner {
+  animation: pwa-banner-slide-up 0.3s ease;
+}
+
+
+.ml-drawer__link--button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+
+html[data-layout-chrome="compact"] .guest-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 9rem;
+}
+
+
+html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+  padding-bottom: max(0.15rem, var(--ml-safe-bottom, 0px));
+}
+
+
+html[data-layout-chrome="compact"] .stay-card__actions .stay-quick-ops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops__primary,
+html[data-layout-chrome="compact"] .stay-quick-ops__shift-pair,
+html[data-layout-chrome="compact"] .stay-quick-ops__tertiary {
+  display: contents;
+}
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops__btn,
+html[data-layout-chrome="compact"] .stay-quick-ops__checkin,
+html[data-layout-chrome="compact"] .stay-quick-ops__checkout,
+html[data-layout-chrome="compact"] .stay-quick-ops__shift,
+html[data-layout-chrome="compact"] .stay-quick-ops__edit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.55rem;
+  font-size: max(12px, 0.75rem);
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .stay-card__actions > button,
+html[data-layout-chrome="compact"] .stay-card__actions .stay-card__cancel-trigger {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  font-size: max(12px, 0.8125rem);
+  touch-action: manipulation;
+}
+
+
+html[data-layout-chrome="compact"] .settings-loading {
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 0;
+}
+
+
+/* ═══ mobile-layout-compact-fixes.css ═══ */
+/**
+ * Compact chrome — scroll padding, overflow clip, Gantt/Cazări/Settings fixes.
+ * Loaded last in mobile-layout.css (pass 33).
+ */
+
+html[data-layout-chrome="compact"] {
+  --ml-content-pad-bottom: var(
+    --ml-page-main-pad-bottom,
+    max(0.65rem, var(--ml-safe-bottom, 0px))
+  );
+}
+
+
+html[data-layout-chrome="compact"] .ml-content {
+  overflow-x: clip;
+}
+
+
+html[data-layout-chrome="compact"] .settings-save-bar__actions button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .stay-card__actions {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--active::before {
+  height: 3px;
+  opacity: 1;
+  transform: scaleX(1);
+}

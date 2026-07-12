@@ -24,8 +24,7 @@ import {
 } from "@/domain/checkin/types";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
-import "@/app/admin/admin-checkin.css";
-import "@/app/admin/booking-checkout-panel.css";
+import "@/styles/features/admin/booking-checkout-panel.css";
 
 export type BookingCheckinPaymentPanelProps = {
   open: boolean;

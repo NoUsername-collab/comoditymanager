@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   getPlatformTenantById,
   getTenantLastActivity,
@@ -8,13 +8,15 @@ import { getTenantHealthCheck } from "@/services/platform-debug";
 import { listTenantDomains } from "@/services/tenant-domains";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
 import { TenantPlanForm } from "@/components/platform-admin/TenantPlanForm";
+import { TenantPlanIncludesPanel } from "@/components/platform-admin/TenantPlanIncludesPanel";
+import { TenantEmailDeliveryPanel } from "@/components/platform-admin/TenantEmailDeliveryPanel";
+import { TenantOnboardingChecklistPanel } from "@/components/platform-admin/TenantOnboardingChecklistPanel";
 import { TenantStatusForm } from "@/components/platform-admin/TenantStatusForm";
 import { TenantModulesForm } from "@/components/platform-admin/TenantModulesForm";
 import { TenantBillingToggle } from "@/components/platform-admin/TenantBillingToggle";
-import { TenantQuickLinks } from "@/components/platform-admin/TenantQuickLinks";
+import { TenantOperatorPanel } from "@/components/platform-admin/TenantOperatorPanel";
 import { TenantHealthBadge } from "@/components/platform-admin/TenantHealthBadge";
-import { TenantDomainsPanel } from "@/components/platform-admin/TenantDomainsPanel";
-import { TenantSupportTools } from "@/components/platform-admin/TenantSupportTools";
+import { TenantDomainsManager } from "@/components/platform-admin/TenantDomainsManager";
 import {
   TenantActivityPanel,
   TenantSiteLinksPanel,
@@ -27,17 +29,19 @@ export default async function TenantDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [tenant, health, domains, activity, t] = await Promise.all([
+  const [tenant, health, domains, activity, t, locale] = await Promise.all([
     getPlatformTenantById(id),
     getTenantHealthCheck(id),
     listTenantDomains(id),
     getTenantLastActivity(id),
     getTranslations("platformAdmin.tenantDetail"),
+    getLocale(),
   ]);
 
   if (!tenant) notFound();
 
-  const currentPlan = PLAN_CONFIGS[(tenant.plan_id || "free") as PlanId];
+  const currentPlanId = (tenant.plan_id || "free") as PlanId;
+  const currentPlan = PLAN_CONFIGS[currentPlanId];
 
   return (
     <div className="platform-tenant-detail space-y-4">
@@ -67,7 +71,7 @@ export default async function TenantDetailPage({
           <InfoRow label={t("timezone")} value={tenant.timezone || "Europe/Bucharest"} />
           <InfoRow
             label={t("created")}
-            value={new Date(tenant.created_at).toLocaleString("ro")}
+            value={new Date(tenant.created_at).toLocaleString(locale)}
           />
         </div>
 
@@ -98,20 +102,21 @@ export default async function TenantDetailPage({
           />
         </div>
 
-        <TenantQuickLinks tenantId={tenant.id} slug={tenant.slug} />
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <TenantDomainsPanel domains={domains} slug={tenant.slug} />
-        <TenantActivityPanel activity={activity} />
-        <TenantSiteLinksPanel slug={tenant.slug} />
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <TenantSupportTools
+        <TenantOperatorPanel
           tenantId={tenant.id}
           ownerEmail={tenant.owner_email}
         />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <TenantOnboardingChecklistPanel tenantId={tenant.id} />
+        <TenantDomainsManager
+          tenantId={tenant.id}
+          domains={domains}
+          slug={tenant.slug}
+        />
+        <TenantActivityPanel activity={activity} locale={locale} />
+        <TenantSiteLinksPanel slug={tenant.slug} />
       </div>
 
       {health && (
@@ -119,6 +124,15 @@ export default async function TenantDetailPage({
           <TenantHealthBadge health={health} />
         </div>
       )}
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <TenantPlanIncludesPanel
+          tenantId={tenant.id}
+          planId={currentPlanId}
+          activeModules={tenant.active_modules || []}
+        />
+        <TenantEmailDeliveryPanel tenantId={tenant.id} />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-3.5">
@@ -148,6 +162,7 @@ export default async function TenantDetailPage({
           <TenantModulesForm
             tenantId={tenant.id}
             currentModules={tenant.active_modules || []}
+            planId={currentPlanId}
           />
         </div>
       </div>

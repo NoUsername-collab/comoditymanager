@@ -1,0 +1,879 @@
+/* mobile-cazari.css — Cazări, guests, receptie mobile compat (split from mobile-admin.css) */
+
+
+
+html[data-layout-chrome="compact"] .stay-card {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-card--stacked {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[140px\],
+html[data-layout-chrome="compact"] .stay-card .sm\:min-w-\[270px\] {
+  min-width: 0 !important;
+  width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-page__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-grid--hero {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+/* Tablet portrait gutter: mobile-layout-alignment.css */
+
+/* ── Long admin lists: skip off-screen paint on mobile ── */
+html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .stay-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 4.5rem;
+}
+
+
+
+/* ── Guests (admin-guests.css @media) ── */
+html[data-layout-chrome="compact"] .guest-page {
+  padding: 0.85rem 1rem 1.5rem;
+  max-width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-search {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-page {
+  padding: 0.85rem 1rem 1.5rem;
+  max-width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-page__profile,
+html[data-layout-chrome="wide"][data-layout-mode="tablet"] .guest-profile-page__profile {
+  order: -1;
+}
+
+
+
+html[data-layout-chrome="wide"][data-layout-mode="tablet"] .guest-profile-page__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-notes-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-hero {
+  padding: 1rem;
+}
+
+
+
+/* statistics charts in XP windows: mobile-layout-flawless.css */
+
+/* ── Rebook / receptie / confirm ── */
+html[data-layout-chrome="compact"] .guest-rebook-page {
+  padding: 0.85rem 1rem 1.5rem !important;
+  max-width: 100%;
+}
+
+
+
+/* ═══ mobile-layout-admin-pages.css ═══ */
+/**
+ * Admin page compact rules — settings, cazări, statistics, receptie, buildings.
+ */
+
+/* ── Settings: gutter owned by admin-page-main (mobile-layout-alignment.css) ── */
+html[data-layout-chrome="compact"] .admin-settings-page,
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  padding: 0 !important;
+}
+
+
+
+/* statistics touch + bar chart: mobile-layout-flawless.css */
+
+/* ── Cazări ── */
+html[data-layout-chrome="compact"] .stay-card .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card .stay-card__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem;
+}
+
+
+
+/* ── Receptie / phone booking ── */
+html[data-layout-chrome="compact"] .phone-booking-form input,
+html[data-layout-chrome="compact"] .phone-booking-form select,
+html[data-layout-chrome="compact"] .phone-booking-form textarea,
+html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+/* simulation: mobile-layout-flawless.css */
+
+/* ═══ mobile-layout-remaining.css ═══ */
+/**
+ * Mobile layout — pages not yet covered elsewhere.
+ * Public home/legal, receptie, admin page padding, bookings, cazări, platform admin.
+ */
+
+/* Below-fold public sections — skip paint until near viewport */
+html[data-layout-chrome="compact"] .public-section,
+html[data-layout-chrome="compact"] .public-cta-band,
+html[data-layout-chrome="compact"] .public-staff-preview-skeleton {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 14rem;
+}
+
+
+
+/* ── Bookings / cereri ── */
+html[data-layout-chrome="compact"] .cerere-list {
+  gap: 0.55rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__head {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
+  padding: 0.6rem 0.65rem 0.5rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__dates {
+  overflow-wrap: anywhere;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: stretch;
+  width: 100%;
+  padding-inline: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__body {
+  padding: 0.45rem 0.65rem 0.5rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__profile-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.15rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item__email {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+/* ── Cazări ── */
+html[data-layout-chrome="compact"] .cazari-page > .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-card {
+  gap: 0.65rem !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-card a,
+html[data-layout-chrome="compact"] .stay-card button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem !important;
+  padding-block: 0.5rem !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-view-filters {
+  gap: 0.3rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.72rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  gap: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-filters {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-tabs a,
+html[data-layout-chrome="compact"] .cazari-tabs button {
+  flex-shrink: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-filters a,
+html[data-layout-chrome="compact"] .cazari-filters button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* ── Receptie + confirm ── */
+html[data-layout-chrome="compact"] .receptie-page,
+html[data-layout-chrome="compact"] .public-confirm-page {
+  padding: 0.85rem 0.85rem 1.5rem !important;
+  max-width: 100%;
+}
+
+
+
+/* ── Cazări touch ── */
+html[data-layout-chrome="compact"] .cazari-horizon a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+
+
+/* ── Receptie quick panel ── */
+html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
+  min-height: var(--ml-touch-min, 2.75rem) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.5rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+
+
+/* ── Recepție page ── */
+html[data-layout-chrome="compact"] .receptie-page {
+  padding: 0.85rem max(0.85rem, var(--ml-safe-left, 0px))
+    calc(1.5rem + var(--ml-safe-bottom, 0px)) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .receptie-page__back-admin {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+/* ── Pass 3: guest profile, booking detail, HUD, tiles ── */
+html[data-layout-chrome="compact"] .guest-profile-tabs {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-tabs__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-page__back {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-history__detail-link,
+html[data-layout-chrome="compact"] .guest-history-compact__link,
+html[data-layout-chrome="compact"] .guest-rebook-collapse__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .receptie-page__nav a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-search-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-search-form input[type="search"] {
+  width: 100%;
+  min-width: 0 !important;
+  font-size: max(16px, 1rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-search-form button {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops button,
+html[data-layout-chrome="compact"] .stay-quick-ops a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+  font-size: max(12px, 0.75rem);
+  padding-inline: 0.5rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-history-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.25rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-load-more,
+html[data-layout-chrome="compact"] .cereri-load-more {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+/* Cazări / cereri long lists: skip off-screen paint on compact */
+html[data-layout-chrome="compact"] .cazari-page .stay-card,
+html[data-layout-chrome="compact"] .cerere-item {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 4.5rem;
+}
+
+
+
+/* ── Pass 16: Nestio forms, receptie checkbox, FAQ, drawer safe-area ── */
+
+html[data-layout-chrome="compact"] .tenant-billing-toggle,
+html[data-layout-chrome="compact"] .platform-impersonate-link,
+html[data-layout-chrome="compact"] .platform-dashboard__cta,
+html[data-layout-chrome="compact"] .nestio-tenant-option,
+html[data-layout-chrome="compact"] .nestio-log-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-rebook-page__back {
+  padding-inline: 0.15rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-rebook-form input,
+html[data-layout-chrome="compact"] .guest-rebook-form select,
+html[data-layout-chrome="compact"] .guest-rebook-form textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  max-width: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-rebook-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-rebook-form__actions button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-notes-form__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-notes-form__textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 8rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-notes-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-notes-form__cancel,
+html[data-layout-chrome="compact"] .guest-notes-form__save {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-controls-form__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-controls-form__field input,
+html[data-layout-chrome="compact"] .guest-profile-controls-form__field select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-profile-controls-form button,
+html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-cereri-fill {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-rebook-buttons {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-rebook-buttons__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+html[data-layout-chrome="compact"] .receptie-page__back-site {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+  touch-action: manipulation;
+}
+
+
+
+/* ── Pass 31: MRZ fullscreen camera, settings accordion, gantt cap touch ── */
+
+html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
+  top: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: var(--ml-vvh, 100dvh) !important;
+  height: var(--ml-vvh, 100dvh) !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: max(0.75rem, var(--ml-safe-bottom, 0px));
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops {
+  /* Grid + display:contents groups — admin-cazari-cards.css */
+  gap: 0.4rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .stay-quick-ops button,
+html[data-layout-chrome="compact"] .stay-quick-ops a {
+  justify-content: center;
+}
+
+
+
+@media (display-mode: standalone) {
+  html[data-layout-chrome="compact"] .ml-bottom-nav--admin {
+    padding-top: max(0.45rem, var(--ml-safe-top, 0px));
+  }
+
+  html[data-layout-chrome="compact"] .admin-shell.ml-shell {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  html[data-layout-chrome="compact"] .mrz-scan-modal.admin-floating-panel--modal {
+    padding-top: var(--ml-safe-top, 0px);
+    padding-bottom: var(--ml-safe-bottom, 0px);
+  }
+}
+
+
+
+/* UX: sticky cazări filters + horizon on compact */
+html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.28rem 0.18rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 92%, transparent);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-view-filter {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.45rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-horizon__pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+
+
+/* UX: pinned cereri section — clear separation */
+html[data-layout-chrome="compact"] .cazari-pinned-cereri {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--admin-surface-border, #e4e4e7);
+  border-left: 3px solid var(--pending-border, #f59e0b);
+  padding-left: 0.5rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-pinned-cereri .admin-panel__titlebar {
+  background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, transparent);
+}
+
+
+
+html[data-layout-chrome="compact"] .guest-search {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  margin-inline: 0;
+  padding-block: 0.35rem 0.45rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+
+
+/* Pass 31: cazări horizon — horizontal pill scroll, no wrap overflow */
+html[data-layout-chrome="compact"] .cazari-horizon {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 0.15rem;
+  margin-inline: 0;
+  scrollbar-width: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-horizon::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-horizon__label {
+  flex-shrink: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-horizon a,
+html[data-layout-chrome="compact"] .cazari-horizon__pill {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+
+
+html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+  margin-inline: 0;
+  padding-inline: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+/* Pass 31: list paint isolation */
+html[data-layout-chrome="compact"] .stay-list > li,
+html[data-layout-chrome="compact"] .stay-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 7rem;
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .admin-page-toolbar,
+  html[data-layout-chrome="compact"] .guest-search {
+    backdrop-filter: none;
+  }
+}
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
+  aspect-ratio: auto;
+  width: 100%;
+  max-height: min(68dvh, calc(var(--ml-vvh, 100dvh) - 10rem));
+  min-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 12rem));
+  border-radius: 0;
+}
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .platform-tenant-card,
+html[data-layout-chrome="compact"] .statistics-page .statistics-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 5rem;
+}
+
+
+
+/* Cazări: shorter cards, actions contained */
+html[data-layout-chrome="compact"] .stay-card {
+  contain-intrinsic-size: auto 4rem;
+  overflow-x: clip;
+  gap: 0.45rem !important;
+  padding-block: 0.5rem !important;
+}
+
+
+
+/* MRZ: camera fills modal body */
+html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap {
+  flex: 1 1 auto;
+  aspect-ratio: auto;
+  width: 100%;
+  min-height: min(62dvh, calc(var(--ml-vvh, 100dvh) - 9rem));
+  max-height: none;
+  border-radius: 0.5rem;
+}
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+@media (pointer: coarse) {
+  /*
+   * backdrop-filter pe sticky toolbars cauzează re-compositare la fiecare
+   * frame de scroll pe Android mid-range. Înlocuim cu background opac.
+   */
+  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .admin-page-toolbar,
+  html[data-layout-chrome="compact"] .guest-search {
+    backdrop-filter: none;
+    background: var(--admin-surface-bg, #fff);
+  }
+
+  html[data-layout-chrome="compact"] .admin-page-main > .admin-page-toolbar--dark {
+    backdrop-filter: none;
+    background: color-mix(in srgb, #0a0a0a 98%, transparent);
+  }
+
+  /* Admin gear trigger — backdrop-filter: blur(10px) inutilă pe mobile */
+  .admin-gear__trigger {
+    backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.12);
+  }
+}

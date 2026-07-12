@@ -1,28 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { DEV_LEVEL_COLOR } from "@/lib/platform-admin/log-styles";
 import type { PlatformDevLogEntry } from "@/services/platform-debug";
 
 type DevLogLevelFilter = "all" | "error" | "warn" | "info" | "debug";
 
-const LEVEL_FILTERS: { value: DevLogLevelFilter; label: string }[] = [
-  { value: "all", label: "Toate" },
-  { value: "error", label: "Erori" },
-  { value: "warn", label: "Avertismente" },
-  { value: "info", label: "Info" },
-  { value: "debug", label: "Debug" },
+const LEVEL_FILTER_IDS: DevLogLevelFilter[] = [
+  "all",
+  "error",
+  "warn",
+  "info",
+  "debug",
 ];
-
-function formatWhen(iso: string): string {
-  return new Date(iso).toLocaleString("ro", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-}
 
 function isErrorLevel(level: string): boolean {
   return level === "error";
@@ -39,13 +30,14 @@ function rowHighlightClass(level: string): string {
 }
 
 function DevLogDetails({ log }: { log: PlatformDevLogEntry }) {
+  const t = useTranslations("platformAdmin.logsPage.devLog");
   const hasContext = Object.keys(log.context).length > 0;
 
   return (
     <div className="platform-devlog-entry__details mt-2 space-y-2 border-t border-neutral-700/80 pt-2 text-xs text-neutral-400">
       {log.request_path && (
         <p>
-          <span className="font-semibold text-neutral-300">Request:</span>{" "}
+          <span className="font-semibold text-neutral-300">{t("request")}</span>{" "}
           <span className="font-mono">
             {log.request_method ?? "—"} {log.request_path}
           </span>
@@ -53,13 +45,13 @@ function DevLogDetails({ log }: { log: PlatformDevLogEntry }) {
       )}
       {log.user_email && (
         <p>
-          <span className="font-semibold text-neutral-300">Utilizator:</span>{" "}
+          <span className="font-semibold text-neutral-300">{t("user")}</span>{" "}
           <span className="font-mono">{log.user_email}</span>
         </p>
       )}
       {log.tenant_name && log.tenant_name !== "—" && (
         <p>
-          <span className="font-semibold text-neutral-300">Tenant:</span>{" "}
+          <span className="font-semibold text-neutral-300">{t("tenant")}:</span>{" "}
           <span className="font-mono">
             {log.tenant_name} ({log.tenant_slug})
           </span>
@@ -67,7 +59,7 @@ function DevLogDetails({ log }: { log: PlatformDevLogEntry }) {
       )}
       {log.duration_ms != null && (
         <p>
-          <span className="font-semibold text-neutral-300">Durată:</span>{" "}
+          <span className="font-semibold text-neutral-300">{t("duration")}</span>{" "}
           {log.duration_ms}ms
         </p>
       )}
@@ -90,6 +82,8 @@ function defaultLevelFilter(logs: PlatformDevLogEntry[]): DevLogLevelFilter {
 }
 
 export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
+  const t = useTranslations("platformAdmin.logsPage.devLog");
+  const locale = useLocale();
   const [levelFilter, setLevelFilter] = useState<DevLogLevelFilter>(() =>
     defaultLevelFilter(logs)
   );
@@ -107,6 +101,36 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
     return logs.filter((log) => log.level === levelFilter);
   }, [logs, levelFilter]);
 
+  const formatWhen = (iso: string) =>
+    new Date(iso).toLocaleString(locale, {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+  const levelLabel = (value: DevLogLevelFilter) => {
+    if (value === "all") return t("levelAll");
+    if (value === "error") return t("levelError");
+    if (value === "warn") return t("levelWarn");
+    if (value === "info") return t("levelInfo");
+    return t("levelDebug");
+  };
+
+  const entryCountLabel =
+    levelFilter !== "all"
+      ? t("entryCountFiltered", {
+          filtered: filteredLogs.length,
+          total: logs.length,
+        })
+      : t("entryCount", { count: filteredLogs.length });
+
+  const emptyMessage =
+    logs.length === 0
+      ? t("empty")
+      : t("emptyFilter", { level: levelFilter });
+
   return (
     <div
       id="dev-logs"
@@ -115,23 +139,19 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
       <div className="mb-2 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h2 className="text-base font-semibold">
-            Erori & diagnostice (dev_logs)
+            {t("title")}
             <span className="ml-2 text-sm font-normal text-neutral-500">
-              ({filteredLogs.length}
-              {levelFilter !== "all" ? ` / ${logs.length}` : ""} intrări)
+              {entryCountLabel}
             </span>
           </h2>
-          <p className="mt-1 text-xs text-neutral-500">
-            Stack trace, context JSON și request — click pe intrare pentru
-            detalii.
-          </p>
+          <p className="mt-1 text-xs text-neutral-500">{t("hint")}</p>
         </div>
         <div
           className="flex flex-wrap gap-1.5"
           role="group"
-          aria-label="Filtru nivel dev_logs"
+          aria-label={t("filterAria")}
         >
-          {LEVEL_FILTERS.map(({ value, label }) => {
+          {LEVEL_FILTER_IDS.map((value) => {
             const count =
               value === "all" ? levelCounts.all : (levelCounts[value] ?? 0);
             const active = levelFilter === value;
@@ -148,7 +168,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
                     : "border-neutral-700 bg-neutral-800/60 text-neutral-400 hover:border-neutral-600 hover:text-neutral-200"
                 }`}
               >
-                {label}
+                {levelLabel(value)}
                 <span className="ml-1 tabular-nums text-neutral-500">
                   ({count})
                 </span>
@@ -193,9 +213,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
         ))}
         {filteredLogs.length === 0 && (
           <li className="rounded-md border border-dashed border-neutral-700 px-4 py-4 text-center text-sm text-neutral-500">
-            {logs.length === 0
-              ? "Niciun dev log încă. Erorile din server actions apar aici automat."
-              : `Nicio intrare cu nivel „${levelFilter}".`}
+            {emptyMessage}
           </li>
         )}
       </ul>
@@ -204,12 +222,12 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
         <table className="w-full text-xs">
           <thead className="sticky top-0 border-b border-neutral-700 bg-neutral-900 text-left uppercase text-neutral-500">
             <tr>
-              <th className="px-3 py-2">Când</th>
-              <th className="px-3 py-2">Tenant</th>
-              <th className="px-3 py-2">Nivel</th>
-              <th className="px-3 py-2">Sursă</th>
-              <th className="px-3 py-2">Mesaj</th>
-              <th className="px-3 py-2">Detalii</th>
+              <th className="px-3 py-2">{t("when")}</th>
+              <th className="px-3 py-2">{t("tenant")}</th>
+              <th className="px-3 py-2">{t("level")}</th>
+              <th className="px-3 py-2">{t("source")}</th>
+              <th className="px-3 py-2">{t("message")}</th>
+              <th className="px-3 py-2">{t("details")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-800">
@@ -259,9 +277,7 @@ export function PlatformDevLogTable({ logs }: { logs: PlatformDevLogEntry[] }) {
             {filteredLogs.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-3 py-4 text-center text-neutral-500">
-                  {logs.length === 0
-                    ? "Niciun dev log încă. Erorile din server actions apar aici automat."
-                    : `Nicio intrare cu nivel „${levelFilter}".`}
+                  {emptyMessage}
                 </td>
               </tr>
             )}

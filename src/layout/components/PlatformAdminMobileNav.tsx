@@ -37,16 +37,24 @@ export function PlatformAdminMobileNav() {
       <button
         ref={triggerRef}
         type="button"
-        className="ml-mobile-menu__trigger ml-mobile-menu__trigger--dark"
+        className={[
+          "ml-mobile-menu__trigger",
+          "inline-flex min-h-[var(--ml-touch-min)] min-w-[var(--ml-touch-min)] items-center justify-center",
+          "rounded-[0.65rem] border border-neutral-600 bg-neutral-800 text-neutral-50",
+          "touch-manipulation [-webkit-tap-highlight-color:transparent]",
+        ].join(" ")}
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="sr-only">{open ? t("menuClose") : t("menuOpen")}</span>
-        <span className="ml-mobile-menu__bars" aria-hidden>
-          <span />
-          <span />
-          <span />
+        <span
+          className="ml-mobile-menu__bars flex w-[1.1rem] flex-col gap-[0.22rem]"
+          aria-hidden
+        >
+          <span className="block h-0.5 rounded-[1px] bg-current" />
+          <span className="block h-0.5 rounded-[1px] bg-current" />
+          <span className="block h-0.5 rounded-[1px] bg-current" />
         </span>
       </button>
 
@@ -72,6 +80,7 @@ export function PlatformAdminMobileNav() {
           className={[
             "ml-drawer",
             "ml-drawer--platform",
+            "border-r-neutral-700 bg-neutral-900 text-neutral-100",
             open && "ml-drawer--open",
           ]
             .filter(Boolean)
@@ -81,7 +90,7 @@ export function PlatformAdminMobileNav() {
           aria-hidden={!open}
           hidden={!open}
         >
-            <div className="ml-drawer__head">
+            <div className="ml-drawer__head mb-1.5 flex shrink-0 items-center justify-end">
               <button
                 type="button"
                 className="ml-drawer__close"
@@ -101,8 +110,8 @@ export function PlatformAdminMobileNav() {
                     key={link.href}
                     href={link.href}
                     className={[
-                      "ml-drawer__link",
-                      active && "ml-drawer__link--active",
+                      "ml-drawer__link text-neutral-200",
+                      active && "ml-drawer__link--active bg-white/12",
                     ]
                       .filter(Boolean)
                       .join(" ")}

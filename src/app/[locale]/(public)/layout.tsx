@@ -11,8 +11,9 @@ import {
 import { MobileShell } from "@/layout/components/MobileShell";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
 import { getTranslations } from "next-intl/server";
-import "@/app/public-site.css";
-import "@/app/public-site-v2.css";
+import "@/styles/features/public/public-site.css";
+import "@/styles/features/public/public-site-v2.css";
+import "@/styles/features/layout/mobile-public.css";
 
 export default async function PublicLayout({
   children,

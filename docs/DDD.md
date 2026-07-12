@@ -1,13 +1,13 @@
-# DDD — Hospira PMS
+# DDD — Zalmox PMS
 
-Audit orientativ (iunie 2026). Nu este o țintă de rewrite complet — documentează cum stă codul și unde merită îmbunătățiri pragmatice.
+Audit orientativ (2026). Nu este o țintă de rewrite complet — documentează cum stă codul și unde merită îmbunătățiri pragmatice.
 
 ## Hartă de contexte (Bounded Contexts)
 
 ```mermaid
 flowchart TB
-  subgraph platform [Platformă Hospira]
-    HA[hospira-admin]
+  subgraph platform [Platformă Zalmox]
+    HA[platform-admin]
     SIGN[signup / onboarding]
     TEN[tenants / billing plan]
   end
@@ -41,7 +41,7 @@ flowchart TB
 | Context | Locație principală | Limbaj ubiquitar |
 |---------|-------------------|------------------|
 | **Operațiuni tenant** | `src/app/.../admin`, `src/services/bookings`, `src/services/checkin`, `src/domain/booking`, `src/domain/checkin`, `src/domain/cazari` | cerere, confirmată, anulată, cazare, oaspete, pensiune |
-| **Platformă** | `src/app/.../hospira-admin`, `src/services/platform-admin.ts`, `src/core/` | tenant, plan, impersonate |
+| **Platformă** | `src/app/.../platform-admin`, `src/services/platform-admin.ts`, `src/core/` | tenant, plan, impersonate |
 | **Site public / guest app** | `src/features/public-site`, `src/features/guest-app`, `src/domain/guest-app`, `src/domain/public-site` | cod stay, acces oaspete, milestone |
 | **Email** | `src/lib/email`, `src/domain/email`, `src/services/email-*` | from-address, template |
 | **Fiscal** | `src/domain/fiscal`, `src/domain/invoice`, `src/domain/accounting`, `src/services/issued-invoice.ts` | CUI, TVA, factură informală, export SAGA |

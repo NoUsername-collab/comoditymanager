@@ -11,8 +11,8 @@ import {
   publicThemeClassName,
   resolvePublicThemeStyle,
 } from "@/features/public-site/themes/loader";
-import "@/app/public-site.css";
-import "@/app/public-site-v2.css";
+import "@/styles/features/public/public-site.css";
+import "@/styles/features/public/public-site-v2.css";
 
 const PREVIEW_SECTION_LIMIT = 2;
 

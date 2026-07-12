@@ -51,7 +51,6 @@ export async function runPlatformAdminAction<T>(
       });
     } catch (logError) {
       console.error("[platform-admin-action] dev_log write failed:", logError);
-      throw logError;
     }
 
     return platformActionFailure(error, fallbackError);

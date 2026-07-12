@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import "@/app/admin/guest-stay-rating.css";
+import "@/styles/features/admin/guest-stay-rating.css";
 import { AdminTextarea } from "@/components/admin/ui/AdminInput";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 
