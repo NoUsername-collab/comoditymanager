@@ -4958,7 +4958,7 @@
         "levelInfo": "Info",
         "levelDebug": "Debug",
         "empty": "Niciun dev log încă. Erorile din server actions apar aici automat.",
-        "emptyFilter": "Nicio intrare cu nivel „{level}".",
+        "emptyFilter": "Nicio intrare cu nivel \"{level}\".",
         "when": "Când",
         "tenant": "Tenant",
         "level": "Nivel",
