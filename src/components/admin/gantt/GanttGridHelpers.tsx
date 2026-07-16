@@ -62,7 +62,7 @@ export function resolveGanttColumnMetrics(
     return { roomCol: "4.25rem", dayMin: "1.125rem" };
   }
   /* Portrait: narrower room col — more day columns visible */
-  return { roomCol: "3.5rem", dayMin: DAY_COL_MIN_W };
+  return { roomCol: "4rem", dayMin: DAY_COL_MIN_W };
 }
 
 /** Portrait mobile: ≤7d stretches to viewport; 15/30d uses fixed cols + horizontal scroll. */

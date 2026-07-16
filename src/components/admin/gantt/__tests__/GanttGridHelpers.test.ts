@@ -20,7 +20,7 @@ describe("resolveGanttColumnMetrics", () => {
 
   it("uses readable fixed columns in portrait compact chrome", () => {
     const m = resolveGanttColumnMetrics(true, "portrait");
-    expect(m.roomCol).toBe("3.5rem");
+    expect(m.roomCol).toBe("4rem");
     expect(m.dayMin).toBe(DAY_COL_MIN_W);
   });
 
