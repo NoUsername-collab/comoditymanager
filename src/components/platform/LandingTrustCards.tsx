@@ -8,31 +8,31 @@ export async function LandingTrustCards() {
 
   return (
     <section
-      className="landing-section landing-section--trust"
+      className="lp-section lp-section--trust"
       aria-labelledby="landing-trust-title"
     >
-      <h2 className="landing-section__title" id="landing-trust-title">
+      <h2 className="lp-section__title" id="landing-trust-title">
         {t("trustSectionTitle")}
       </h2>
-      <p className="landing-section__lead">{t("trustSectionLead")}</p>
-      <ul className="landing-trust-cards">
+      <p className="lp-section__lead">{t("trustSectionLead")}</p>
+      <ul className="lp-trust-cards">
         {TRUST_IDS.map((id) => (
           <li key={id}>
-            <article className="landing-trust-card">
-              <span className="landing-trust-card__glyph" aria-hidden>
+            <article className="lp-trust-card">
+              <span className="lp-trust-card__glyph" aria-hidden>
                 {t(`trustCards.${id}.glyph`)}
               </span>
-              <h3 className="landing-trust-card__title">
+              <h3 className="lp-trust-card__title">
                 {t(`trustCards.${id}.title`)}
               </h3>
-              <p className="landing-trust-card__desc">
+              <p className="lp-trust-card__desc">
                 {t(`trustCards.${id}.desc`)}
               </p>
             </article>
           </li>
         ))}
       </ul>
-      <p className="landing-trust-card__legal">
+      <p className="lp-trust-card__legal">
         {t("trustLegalPrefix")}{" "}
         <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
         {t("trustLegalSuffix")}

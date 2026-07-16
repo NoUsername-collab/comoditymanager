@@ -4302,7 +4302,7 @@
     "metaTitle": "Zalmox — software PMS pentru pensiuni",
     "metaDescription": "Calendar Gantt, cazări, check-in și site public pentru pensiuni mici din România, Moldova și Bulgaria. Începe gratuit, fără comision pe rezervările directe.",
     "heroBadge": "PMS pentru pensiuni · RO · MD · BG",
-    "heroTitle": "Gestionează pensiunea din telefon — fără caiet, fără Excel",
+    "heroTitle": "Gestionează pensiunea din telefon — fără caiet, fără <accent>Excel</accent>",
     "heroSubtitle": "Zalmox adună calendar Gantt, cazări, check-in și disponibilitate într-o singură platformă. Construit pentru proprietari de pensiuni din România, Moldova și Bulgaria.",
     "heroCta": "Începe gratuit",
     "heroCtaDemo": "Solicită demo",
@@ -4398,7 +4398,7 @@
     "trustLegalLink": "politica de confidențialitate",
     "trustLegalSuffix": ".",
     "pricingCompareCta": "Compară toate planurile",
-    "finalCtaTitle": "Gata de start?",
+    "finalCtaTitle": "Gata de <accent>start</accent>?",
     "finalCtaText": "Creează cont în 30 de secunde. Fără card de credit, fără obligații.",
     "finalCtaButton": "Creează cont gratuit"
   },

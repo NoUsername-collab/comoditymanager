@@ -43,7 +43,11 @@ export default async function LandingPage() {
           <div className="lp-hero__copy">
             <span className="lp-badge lp-badge--rainbow">{t("heroBadge")}</span>
             <h1 className="lp-hero__title" id="lp-hero-title">
-              {t("heroTitle")}
+              {t.rich("heroTitle", {
+                accent: (chunks) => (
+                  <span className="lp-hero__title-accent">{chunks}</span>
+                ),
+              })}
             </h1>
             <p className="lp-hero__subtitle">{t("heroSubtitle")}</p>
 
@@ -352,7 +356,7 @@ export default async function LandingPage() {
         <h2 className="lp-section-title" id="lp-pricing-title">{tp("gridTitle")}</h2>
         <p className="lp-section-lead">{tp("gridLead")}</p>
         <PricingGrid featuredPlan="professional" />
-        <p className="landing-pricing-note">{tp("vatNote")}</p>
+        <p className="lp-pricing-note">{tp("vatNote")}</p>
         <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
           <Link href="/preturi" className="lp-btn lp-btn--ghost">
             Compară toate planurile →
@@ -366,11 +370,11 @@ export default async function LandingPage() {
       {/* ── FAQ ───────────────────────────────────────────────────── */}
       <section className="lp-faq-section" aria-labelledby="lp-faq-title">
         <h2 className="lp-section-title" id="lp-faq-title">{tp("faqTitle")}</h2>
-        <div className="landing-faq lp-faq">
+        <div className="lp-faq">
           {[1, 2, 3, 4].map((i) => (
-            <details key={i} className="landing-faq__item">
-              <summary className="landing-faq__q">{tp(`faq${i}Q`)}</summary>
-              <p className="landing-faq__a">{tp(`faq${i}A`)}</p>
+            <details key={i} className="lp-faq__item">
+              <summary className="lp-faq__q">{tp(`faq${i}Q`)}</summary>
+              <p className="lp-faq__a">{tp(`faq${i}A`)}</p>
             </details>
           ))}
         </div>
@@ -381,7 +385,11 @@ export default async function LandingPage() {
         <div className="lp-final-cta__glow" aria-hidden />
         <div className="lp-final-cta__inner">
           <h2 className="lp-final-cta__title" id="lp-final-title">
-            {t("finalCtaTitle")}
+            {t.rich("finalCtaTitle", {
+              accent: (chunks) => (
+                <span className="lp-final-cta__title-accent">{chunks}</span>
+              ),
+            })}
           </h2>
           <p className="lp-final-cta__text">{t("finalCtaText")}</p>
           <div className="lp-final-cta__actions">

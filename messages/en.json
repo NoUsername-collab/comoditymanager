@@ -4319,7 +4319,7 @@
     "metaTitle": "Zalmox — PMS software for guesthouses",
     "metaDescription": "Gantt calendar, stays, check-in and public site for small guesthouses in Romania, Moldova and Bulgaria. Start free with zero commission on direct bookings.",
     "heroBadge": "PMS for guesthouses · RO · MD · BG",
-    "heroTitle": "Run your guesthouse from your phone — no notebook, no Excel",
+    "heroTitle": "Run your guesthouse from your phone — no notebook, no <accent>Excel</accent>",
     "heroSubtitle": "Zalmox brings Gantt calendar, stays, check-in and availability into one platform. Built for guesthouse owners in Romania, Moldova and Bulgaria.",
     "heroCta": "Start free",
     "heroCtaDemo": "Book a demo",
@@ -4415,7 +4415,7 @@
     "trustLegalLink": "privacy policy",
     "trustLegalSuffix": ".",
     "pricingCompareCta": "Compare all plans",
-    "finalCtaTitle": "Ready to start?",
+    "finalCtaTitle": "Ready to <accent>start</accent>?",
     "finalCtaText": "Create account in 30 seconds. No credit card, no obligations.",
     "finalCtaButton": "Create free account"
   },

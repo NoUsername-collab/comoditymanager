@@ -21,61 +21,67 @@ export async function PricingGrid({
   const plans = getCloudMarketingPlans();
 
   return (
-    <div
-      className={`landing-pricing${compact ? " landing-pricing--compact" : ""}`}
-    >
-      {plans.map((plan) => {
-        const id = plan.id as CloudPlan;
-        const featured = id === featuredPlan;
-        const priceLabel =
-          plan.priceEur === 0 ? t("priceFree") : t("billedMonthly");
-        const roomsLabel = formatPlanRoomLimit(
-          plan.maxRooms,
-          t("roomsUnlimited")
-        );
-        const roomLine = t(`plans.${id}.roomLine`, { count: roomsLabel });
-        const featureKeys = ["f1", "f2", "f3", "f4", "f5", "f6"] as const;
-        const features = featureKeys
-          .map((key) => t(`plans.${id}.${key}`))
-          .filter((line) => line.length > 0 && !line.startsWith("plans."));
+    <div className="lp">
+      <div
+        className={`lp-pricing-grid${compact ? " lp-pricing-grid--compact" : ""}`}
+      >
+        {plans.map((plan) => {
+          const id = plan.id as CloudPlan;
+          const featured = id === featuredPlan;
+          const priceLabel =
+            plan.priceEur === 0 ? t("priceFree") : t("billedMonthly");
+          const roomsLabel = formatPlanRoomLimit(
+            plan.maxRooms,
+            t("roomsUnlimited")
+          );
+          const roomLine = t(`plans.${id}.roomLine`, { count: roomsLabel });
+          const featureKeys = ["f1", "f2", "f3", "f4", "f5", "f6"] as const;
+          const features = featureKeys
+            .map((key) => t(`plans.${id}.${key}`))
+            .filter((line) => line.length > 0 && !line.startsWith("plans."));
 
-        return (
-          <article
-            key={id}
-            className={`landing-price-card${featured ? " landing-price-card--featured" : ""}`}
-          >
-            {featured && (
-              <span className="landing-price-card__badge">{t("recommended")}</span>
-            )}
-            <p className="landing-price-card__tier">{t(`plans.${id}.name`)}</p>
-            <h3 className="landing-price-card__name">{t(`plans.${id}.tagline`)}</h3>
-            <div className="landing-price-card__price">
-              <span className="landing-price-card__amount">
-                {plan.priceEur === 0 ? "0" : String(plan.priceEur)}
-              </span>
-              <span className="landing-price-card__currency">EUR</span>
-              {plan.priceEur > 0 && (
-                <span className="landing-price-card__per">{t("perMonth")}</span>
-              )}
-            </div>
-            <p className="landing-price-card__period">{priceLabel}</p>
-            <p className="landing-price-card__rooms">{roomLine}</p>
-            <ul className="landing-price-card__features">
-              {features.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-            <Link
-              href="/signup"
-              className={`landing-cta ${
-                featured ? "landing-cta--primary" : "landing-cta--outline"
-              }`}
+          return (
+            <article
+              key={id}
+              className={`lp-price-card${featured ? " lp-price-card--featured" : ""}`}
             >
-              {t(`plans.${id}.cta`)}
-            </Link>
-          </article>
-        );
-      })}
+              {featured && (
+                <span className="lp-price-card__badge">
+                  {t("recommended")}
+                </span>
+              )}
+              <p className="lp-price-card__tier">{t(`plans.${id}.name`)}</p>
+              <h3 className="lp-price-card__name">
+                {t(`plans.${id}.tagline`)}
+              </h3>
+              <div className="lp-price-card__price">
+                <span className="lp-price-card__amount">
+                  {plan.priceEur === 0 ? "0" : String(plan.priceEur)}
+                </span>
+                <span className="lp-price-card__currency">EUR</span>
+                {plan.priceEur > 0 && (
+                  <span className="lp-price-card__per">{t("perMonth")}</span>
+                )}
+              </div>
+              <p className="lp-price-card__period">{priceLabel}</p>
+              <p className="lp-price-card__rooms">{roomLine}</p>
+              <ul className="lp-price-card__features">
+                {features.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+              <Link
+                href="/signup"
+                className={`lp-btn ${
+                  featured ? "lp-btn--primary" : "lp-btn--ghost"
+                }`}
+              >
+                {t(`plans.${id}.cta`)}
+              </Link>
+            </article>
+          );
+        })}
+      </div>
     </div>
   );
 }
