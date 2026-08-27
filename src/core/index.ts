@@ -1,13 +1,8 @@
 /**
- * ╔══════════════════════════════════════════════════════════════════╗
- * ║  REZOVA — Core Barrel Export                                   ║
- * ║                                                                ║
- * ║  Single import for the entire modular architecture.            ║
- * ║  import { getTenantContext, checkFeature } from "@/core";      ║
- * ╚══════════════════════════════════════════════════════════════════╝
+ * Platform kernel — tenant context, plans, module registry, feature gates.
+ * Prefer direct imports (`@/core/tenant/context`) over this barrel for new code.
  */
 
-// ── Tenant ──────────────────────────────────────────────────────
 export {
   type TenantRecord,
   type TenantContext,
@@ -20,7 +15,6 @@ export {
   TenantContextMissingError,
 } from "@/core/tenant/context";
 
-// ── Plans & Pricing ──────────────────────────────────────────────
 export {
   type DeploymentMode,
   type CloudPlan,
@@ -35,7 +29,6 @@ export {
   MODULE_CATALOG,
 } from "@/core/config/plans";
 
-// ── Module Registry ──────────────────────────────────────────────
 export {
   type ModuleDefinition,
   type AdminNavItem,
@@ -46,7 +39,6 @@ export {
   isActionAvailable,
 } from "@/core/config/modules";
 
-// ── Feature Gates ────────────────────────────────────────────────
 export {
   assertFeature,
   assertModule,
@@ -62,33 +54,3 @@ export {
   ModuleGateError,
   LimitGateError,
 } from "@/core/hooks/use-feature-gate";
-
-// ── Data Provider ────────────────────────────────────────────────
-export {
-  getDataProvider,
-  resetDataProvider,
-} from "@/core/provider";
-
-// ── Repository Ports ─────────────────────────────────────────────
-export type {
-  ID,
-  ISODate,
-  ISODateTime,
-  QueryResult,
-  MutationResult,
-  IDataProvider,
-  IBuildingRepository,
-  IRoomRepository,
-  IGuestRepository,
-  IBookingRepository,
-  IPensionSettingsRepository,
-  IActivityLogRepository,
-  IFloorRepository,
-  BuildingRecord,
-  RoomRecord,
-  GuestRecord,
-  BookingRecord,
-  FloorRecord,
-  PensionSettingsRecord,
-  ActivityRecord,
-} from "@/core/ports/repository";

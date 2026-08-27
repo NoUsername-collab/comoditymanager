@@ -13,7 +13,7 @@ import {
   completeBookingCheckoutAction,
   editBookingCheckOutAction,
   loadBookingCheckoutPanelAction,
-} from "@/app/[locale]/admin/(panel)/bookings/actions";
+} from "@/features/bookings/actions";
 import {
   isEarlyDeparture,
   isLateCheckout,

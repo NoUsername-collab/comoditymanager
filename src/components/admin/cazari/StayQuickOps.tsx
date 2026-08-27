@@ -7,7 +7,7 @@ import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { BookingCheckoutPanel } from "@/components/admin/checkout/BookingCheckoutPanel";
 import { TouristSheetLauncher } from "@/components/admin/checkin/TouristSheetLauncher";
 import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
-import { shiftBookingOnGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
+import { shiftBookingOnGanttAction } from "@/features/calendar/actions";
 import {
   canOfferOperativeCheckIn,
   isOperativeCheckInDay,

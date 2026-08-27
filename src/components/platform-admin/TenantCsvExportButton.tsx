@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { exportTenantsCsvAction } from "@/app/[locale]/platform-admin/(panel)/actions/tools-actions";
+import { exportTenantsCsvAction } from "@/features/platform-admin/tools-actions";
 
 export function TenantCsvExportButton() {
   const t = useTranslations("platformAdmin.tenants");

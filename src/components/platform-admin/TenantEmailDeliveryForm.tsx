@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { changeTenantEmailDeliveryAction, saveTenantResendVaultKeyAction, clearTenantResendVaultKeyAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
+import { changeTenantEmailDeliveryAction, saveTenantResendVaultKeyAction, clearTenantResendVaultKeyAction } from "@/features/platform-admin/tenant-actions";
 import type { TenantEmailDeliveryMode } from "@/domain/email/delivery-policy";
 import type { TenantEmailOperatorSnapshot } from "@/services/tenant-email-delivery";
 

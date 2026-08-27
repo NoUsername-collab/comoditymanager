@@ -10,7 +10,7 @@ import {
   advanceMonthAction,
   advanceToNextCheckInAction,
   advanceToNextCheckOutAction,
-} from "@/app/[locale]/admin/(panel)/simulation/actions";
+} from "@/features/simulation/actions";
 
 /**
  * Two-state chip that lives in the admin top bar.

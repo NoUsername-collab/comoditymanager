@@ -8,7 +8,7 @@ import {
   platformAddTenantDomainAction,
   platformRemoveTenantDomainAction,
   platformVerifyTenantDomainAction,
-} from "@/app/[locale]/platform-admin/(panel)/actions/domain-actions";
+} from "@/features/platform-admin/domain-actions";
 import { CopyTextButton } from "@/components/platform-admin/CopyTextButton";
 import type { TenantDomainRow } from "@/services/tenant-domains";
 

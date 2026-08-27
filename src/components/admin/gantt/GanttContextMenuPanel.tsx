@@ -13,8 +13,8 @@ import {
   extendRoomHoldAction,
   quickConfirmCerereFromGanttAction,
   releaseRoomHoldAction,
-} from "@/app/[locale]/admin/(panel)/calendar/actions";
-import { cancelBookingOperativeAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
+} from "@/features/calendar/actions";
+import { cancelBookingOperativeAction } from "@/features/bookings/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";

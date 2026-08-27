@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import {
   saveOnboardingStep1Action,
   saveOnboardingStep3Action,
-} from "@/app/[locale]/admin/onboarding/actions";
+} from "@/features/onboarding/actions";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 const THEMES = [

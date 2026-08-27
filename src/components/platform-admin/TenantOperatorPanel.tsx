@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import {
   generateOwnerMagicLinkAction,
   revalidateTenantCacheAction,
-} from "@/app/[locale]/platform-admin/(panel)/actions/tools-actions";
+} from "@/features/platform-admin/tools-actions";
 import { CopyTextButton } from "@/components/platform-admin/CopyTextButton";
 
 export function TenantOperatorPanel({

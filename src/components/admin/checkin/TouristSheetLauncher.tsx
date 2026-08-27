@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { loadTouristSheetAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import { loadTouristSheetAction } from "@/features/checkin/actions";
 import { TouristSheetView } from "@/components/admin/checkin/TouristSheetView";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { changeTenantStatusAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
+import { changeTenantStatusAction } from "@/features/platform-admin/tenant-actions";
 
 type TenantStatus = "active" | "trial" | "suspended" | "cancelled";
 

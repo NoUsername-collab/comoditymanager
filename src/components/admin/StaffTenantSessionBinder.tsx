@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { bindTenantSessionAction } from "@/app/[locale]/admin/(panel)/actions/bind-tenant-session";
+import { bindTenantSessionAction } from "@/features/auth/bind-tenant-session";
 import { createClient } from "@/lib/supabase/client";
 
 /** Syncs JWT tenant claim with current host — required for bulletproof RLS if using user client. */

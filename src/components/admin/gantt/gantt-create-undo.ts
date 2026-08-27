@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import type { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { undoActivityLogAction } from "@/app/[locale]/admin/(panel)/activity/actions";
-import { undoGanttCreateAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
+import { undoActivityLogAction } from "@/features/activity/actions";
+import { undoGanttCreateAction } from "@/features/calendar/actions";
 
 type UndoPayload =
   | { logId: string }

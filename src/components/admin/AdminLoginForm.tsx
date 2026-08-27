@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import {
   loginAction,
   type LoginFormState,
-} from "@/app/[locale]/admin/login/actions";
+} from "@/features/auth/login";
 import { useState } from "react";
 import { MfaChallengeForm } from "@/components/admin/auth/MfaChallengeForm";
 import { AdminInput } from "@/components/admin/ui/AdminInput";

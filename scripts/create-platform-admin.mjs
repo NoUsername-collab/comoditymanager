@@ -2,7 +2,7 @@
  * Creeaza contul platform admin in Supabase Auth.
  *
  * In .env.local:
- *   HOSPIRA_ADMIN_EMAILS=contact@hospira.ro
+ *   ZALMOX_ADMIN_EMAILS=admin@zalmox.ro
  *   ADMIN_INITIAL_PASSWORD=parola-ta    (sterge dupa!)
  *
  * Ruleaza: npm run setup-platform-admin

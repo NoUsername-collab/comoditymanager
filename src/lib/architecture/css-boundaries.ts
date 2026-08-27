@@ -141,3 +141,32 @@ export function auditCssArchitecture(): CssViolation[] {
 
   return violations;
 }
+
+/**
+ * God CSS files must not grow. Caps are current line counts (including
+ * trailing newline). Lower the cap when you split a sheet.
+ */
+export const CSS_GOD_FILE_LINE_CAPS: { file: string; maxLines: number }[] = [
+  {
+    file: "src/styles/features/layout/mobile-admin.css",
+    maxLines: 4794,
+  },
+  {
+    file: "src/styles/features/admin/gantt-premium.css",
+    maxLines: 4654,
+  },
+];
+
+export type CssGodFileSize = {
+  file: string;
+  lines: number;
+  maxLines: number;
+};
+
+export function auditCssGodFileSizes(root = path.resolve(process.cwd())): CssGodFileSize[] {
+  return CSS_GOD_FILE_LINE_CAPS.map(({ file, maxLines }) => {
+    const abs = path.join(root, file);
+    const lines = fs.readFileSync(abs, "utf8").split("\n").length;
+    return { file, lines, maxLines };
+  });
+}

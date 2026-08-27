@@ -10,6 +10,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveMfaRedirectPath } from "@/lib/auth/mfa-redirect";
+import { readPlatformAdminEmailsRaw } from "@/lib/env/platform-admin-emails";
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { isProductionRuntime } from "@/lib/security/production-runtime";
 
@@ -17,10 +18,7 @@ import { isProductionRuntime } from "@/lib/security/production-runtime";
 const FALLBACK_EMAILS = `admin@zalmox.app,${PLATFORM_CONTACT_EMAIL}`;
 
 function getPlatformAdminEmails(): string[] {
-  const raw =
-    process.env.ZALMOX_ADMIN_EMAILS?.trim() ||
-    process.env.NESTIO_ADMIN_EMAILS?.trim() ||
-    process.env.HOSPIRA_ADMIN_EMAILS?.trim();
+  const raw = readPlatformAdminEmailsRaw();
 
   if (!raw) {
     if (isProductionRuntime()) return [];

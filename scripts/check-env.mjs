@@ -159,6 +159,10 @@ for (const def of ENV_MANIFEST) {
     }
   }
 
+  if (def.key === "ZALMOX_ADMIN_EMAILS") {
+    continue;
+  }
+
   if (
     profile === "production" &&
     def.recommendedInProduction &&

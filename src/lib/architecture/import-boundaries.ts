@@ -45,6 +45,11 @@ const LAYER_RULES: LayerRule[] = [
     layer: "services",
     forbidden: [/^@\/app\//],
   },
+  {
+    id: "services-no-components",
+    layer: "services",
+    forbidden: [/^@\/components\//],
+  },
 ];
 
 const IMPORT_RE =
@@ -76,7 +81,11 @@ function rulesForLayer(layer: string): LayerRule[] {
   return LAYER_RULES.filter((r) => r.layer === layer);
 }
 
-/** Scan src/ for layer boundary violations. */
+function lineNumberAt(content: string, index: number): number {
+  return content.slice(0, index).split("\n").length;
+}
+
+/** Scan src/ for layer boundary violations (multiline imports included). */
 export function auditImportBoundaries(root = SRC): ImportViolation[] {
   const violations: ImportViolation[] = [];
 
@@ -86,24 +95,21 @@ export function auditImportBoundaries(root = SRC): ImportViolation[] {
 
     const content = fs.readFileSync(file, "utf8");
     const relFile = path.relative(process.cwd(), file).replace(/\\/g, "/");
-    const lines = content.split("\n");
+    const rules = rulesForLayer(layer);
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      IMPORT_RE.lastIndex = 0;
-      let match: RegExpExecArray | null;
-      while ((match = IMPORT_RE.exec(line)) !== null) {
-        const importPath = match[1];
-        for (const rule of rulesForLayer(layer)) {
-          for (const forbidden of rule.forbidden) {
-            if (forbidden.test(importPath)) {
-              violations.push({
-                file: relFile,
-                line: i + 1,
-                importPath,
-                rule: rule.id,
-              });
-            }
+    IMPORT_RE.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = IMPORT_RE.exec(content)) !== null) {
+      const importPath = match[1];
+      for (const rule of rules) {
+        for (const forbidden of rule.forbidden) {
+          if (forbidden.test(importPath)) {
+            violations.push({
+              file: relFile,
+              line: lineNumberAt(content, match.index),
+              importPath,
+              rule: rule.id,
+            });
           }
         }
       }

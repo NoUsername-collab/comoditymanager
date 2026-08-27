@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { auditCssArchitecture } from "@/lib/architecture/css-boundaries";
+import {
+  auditCssArchitecture,
+  auditCssGodFileSizes,
+} from "@/lib/architecture/css-boundaries";
 
 describe("CSS architecture audit", () => {
   it("keeps feature CSS out of src/app/ (globals shim only)", () => {
@@ -30,5 +33,21 @@ describe("CSS architecture audit", () => {
   it("organizes styles under src/styles/ (themes + features + entry)", () => {
     const violations = auditCssArchitecture();
     expect(violations.length).toBe(0);
+  });
+
+  it("freezes god CSS files at current line caps", () => {
+    const sizes = auditCssGodFileSizes();
+
+    for (const { file, lines, maxLines } of sizes) {
+      if (lines !== maxLines) {
+        const hint =
+          lines < maxLines
+            ? `Size dropped — set maxLines to ${lines} in CSS_GOD_FILE_LINE_CAPS.`
+            : `God file grew — put new rules in a route-scoped sheet or Tailwind, then split later.`;
+        expect.fail(`${file}: ${lines} lines (cap ${maxLines}). ${hint}`);
+      }
+    }
+
+    expect(sizes.every((s) => s.lines === s.maxLines)).toBe(true);
   });
 });

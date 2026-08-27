@@ -12,7 +12,7 @@ import { CheckinPaymentStep } from "@/components/admin/checkin/CheckinPaymentSte
 import {
   loadBookingCheckinPaymentPanelAction,
   updateCheckinPaymentAction,
-} from "@/app/[locale]/admin/(panel)/checkin/actions";
+} from "@/features/checkin/actions";
 import {
   checkinPaymentBalance,
   isCheckinPaymentSettled,

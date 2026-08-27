@@ -9,7 +9,7 @@ import {
 import {
   deleteRoomBlockAction,
   releaseRoomHoldAction,
-} from "@/app/[locale]/admin/(panel)/calendar/actions";
+} from "@/features/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";

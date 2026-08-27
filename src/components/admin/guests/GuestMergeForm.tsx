@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { mergeGuestsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { mergeGuestsAction } from "@/features/guests/actions";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";

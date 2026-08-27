@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { quickConfirmCerereFromGanttAction } from "@/app/[locale]/admin/(panel)/calendar/actions";
-import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
+import { quickConfirmCerereFromGanttAction } from "@/features/calendar/actions";
+import { cancelBookingAction } from "@/features/bookings/actions";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminButton } from "@/components/admin/ui/AdminButton";

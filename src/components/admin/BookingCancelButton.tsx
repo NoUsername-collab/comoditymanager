@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { cancelBookingOperativeAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
+import { cancelBookingOperativeAction } from "@/features/bookings/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";

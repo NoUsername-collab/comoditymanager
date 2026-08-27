@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, useTransition } from "react";
-import { suggestExistingGuestAction } from "@/app/[locale]/(public)/calendar/actions";
+import { suggestExistingGuestAction } from "@/features/public-site/calendar-actions";
 import {
   allIdentityEmpty,
   hasLookupIdentity,

@@ -36,17 +36,23 @@ export const ENV_MANIFEST = [
     description: "Cheie service_role — doar server, niciodată în browser",
   },
   {
-    key: "HOSPIRA_ADMIN_EMAILS",
+    key: "ZALMOX_ADMIN_EMAILS",
     requirement: "runtime",
     recommendedInProduction: true,
     description:
-      "Email-uri platform admin (virgulă) — acces /hospira-admin. Legacy: NESTIO_ADMIN_EMAILS",
+      "Email-uri platform admin (virgulă) — acces /platform-admin. Legacy: HOSPIRA_ADMIN_EMAILS, NESTIO_ADMIN_EMAILS",
+  },
+  {
+    key: "HOSPIRA_ADMIN_EMAILS",
+    requirement: "optional",
+    description:
+      "Legacy — înlocuit de ZALMOX_ADMIN_EMAILS; acceptat temporar la tranziție",
   },
   {
     key: "NESTIO_ADMIN_EMAILS",
     requirement: "optional",
     description:
-      "Legacy — înlocuit de HOSPIRA_ADMIN_EMAILS; acceptat temporar la tranziție",
+      "Legacy — înlocuit de ZALMOX_ADMIN_EMAILS; acceptat temporar la tranziție",
   },
   {
     key: "NEXT_PUBLIC_PLATFORM_DOMAIN",

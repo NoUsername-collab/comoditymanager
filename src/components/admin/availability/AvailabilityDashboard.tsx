@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { fetchDayAvailabilityDetailAction } from "@/app/[locale]/admin/(panel)/disponibilitate/actions";
+import { fetchDayAvailabilityDetailAction } from "@/features/availability/actions";
 import { minFreeAcrossDays } from "@/domain/availability/compute";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { formatDateWithDay } from "@/lib/ro-calendar";

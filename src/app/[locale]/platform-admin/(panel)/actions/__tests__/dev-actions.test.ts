@@ -28,7 +28,7 @@ describe("revalidatePlatformAdminCacheAction", () => {
     );
 
     const { revalidatePlatformAdminCacheAction } = await import(
-      "@/app/[locale]/platform-admin/(panel)/actions/dev-actions"
+      "@/features/platform-admin/dev-actions"
     );
 
     const result = await revalidatePlatformAdminCacheAction();
@@ -51,7 +51,7 @@ describe("revalidatePlatformAdminCacheAction", () => {
     });
 
     const { revalidatePlatformAdminCacheAction } = await import(
-      "@/app/[locale]/platform-admin/(panel)/actions/dev-actions"
+      "@/features/platform-admin/dev-actions"
     );
 
     const result = await revalidatePlatformAdminCacheAction();

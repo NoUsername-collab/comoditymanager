@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { saveGuestStayReviewAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { saveGuestStayReviewAction } from "@/features/guests/actions";
 import { useTranslations } from "next-intl";
 import type { GuestStayReviewRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";

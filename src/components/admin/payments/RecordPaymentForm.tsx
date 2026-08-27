@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { recordPaymentAction } from "@/app/[locale]/admin/(panel)/bookings/payment-actions";
+import { recordPaymentAction } from "@/features/bookings/payment-actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import type { PaymentMethod } from "@/domain/payments/types";

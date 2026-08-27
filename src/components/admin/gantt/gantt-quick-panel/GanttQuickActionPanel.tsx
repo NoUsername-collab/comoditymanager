@@ -21,7 +21,7 @@ import {
   createRoomHoldsFromGanttAction,
   moveBookingRoomFromPivotAction,
   previewRoomMoveAction,
-} from "@/app/[locale]/admin/(panel)/calendar/actions";
+} from "@/features/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
   BLOCK_REASON_PRESETS,

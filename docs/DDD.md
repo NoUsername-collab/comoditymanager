@@ -50,7 +50,7 @@ flowchart TB
 
 - **Shared kernel (parțial):** `BookingStatus`, `BookingRow`, date ISO, `tenant` scope — în `src/domain/booking`, `src/domain/tenant`, `src/lib/stay-dates`.
 - **Anti-corruption:** mapări Supabase → `BookingRow` în `src/services/bookings/map.ts`; guest-app folosește `access-rules` separate de admin.
-- **Conformist:** majoritatea serviciilor accesează direct Supabase, nu porturile din `src/core/ports/repository.ts` (hexagonal parțial, neadoptat în fluxul principal).
+- **Conformist:** serviciile accesează direct Supabase. Un port hexagonal (`IDataProvider`) a fost șters — nu era apelat.
 
 ## Straturi
 
@@ -100,7 +100,6 @@ Nu există entități `Booking.confirm()` — tranzițiile sunt în servicii cu 
 | Logică duplicată în servicii | Mediu | ~~status confirmare în lifecycle + create~~ → `lifecycle-guards` |
 | Anemic types + rich functions | Scăzut (intenționat) | `BookingStatus` e string union; comportament în module |
 | God services | Mediu | `bookings/queries.ts`, `room-catalog.ts` |
-| Hexagonal nefolosit | Scăzut | `core/ports` există; fluxul folosește Supabase direct |
 | Domain în componente mari | Mediu | `CheckinStepper` — multe importuri domain, dar delegă validarea |
 | Email templates în `lib/` | Scăzut | prezentare HTML, nu reguli business |
 
@@ -108,13 +107,12 @@ Nu există entități `Booking.confirm()` — tranzițiile sunt în servicii cu 
 
 Pentru un PMS Next.js pragmatic: **peste medie**. Domain layer real, testat, cu limbaj românesc consistent. Nu e DDD clasic (fără agregate OO, fără repository peste tot), dar structura susține evoluția fără rewrite.
 
-## Top 5 îmbunătățiri pragmatice
+## Top 4 îmbunătățiri pragmatice
 
 1. **Extrage guard-uri de lifecycle booking** — făcut: `domain/booking/lifecycle-guards.ts`.
 2. **Mută `stay-dates` în `domain/time` sau `domain/shared`** — reduce confuzia „e lib sau domain?”.
 3. **Împarte `bookings/queries.ts`** — queries vs map vs filtre operative.
 4. **Policy object pentru check-in** — `CheckinPolicy` din settings + booking, folosit de validate și servicii.
-5. **Adoptă treptat `core/ports`** pentru entități noi sau migrare SQLite — un context la un moment.
 
 ## Fișiere cheie
 
@@ -125,5 +123,4 @@ src/domain/cazari/      — page-splits, horizon, stay-search
 src/domain/setup-issues/— checks, progress, paths
 src/domain/gantt/       — stay-card-display, calendar-derivations
 src/services/bookings/  — application layer rezervări
-src/core/ports/         — contracte viitoare (hexagonal)
 ```

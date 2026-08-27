@@ -1,4 +1,4 @@
-import type { CazariLabels } from "@/components/admin/cazari/types";
+import type { CazariLabels } from "@/domain/cazari/labels";
 
 type CazariLabelSources = {
   tPages: (key: string, values?: Record<string, string | number>) => string;

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { changeTenantPlanAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
+import { changeTenantPlanAction } from "@/features/platform-admin/tenant-actions";
 import { PLAN_CONFIGS, type CloudPlan, type PlanId } from "@/core/config/plans";
 
 const CLOUD_PLAN_IDS: CloudPlan[] = [

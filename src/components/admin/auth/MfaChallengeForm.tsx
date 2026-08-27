@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { readPwaInstallContext } from "@/lib/pwa/install";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
-import { completeLoginAfterMfaAction } from "@/app/[locale]/admin/login/actions";
+import { completeLoginAfterMfaAction } from "@/features/auth/login";
 
 type Props = {
   next: string;

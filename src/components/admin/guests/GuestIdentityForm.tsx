@@ -12,7 +12,7 @@ import {
 } from "@/domain/guest/national-id";
 import type { NationalIdType } from "@/domain/guest/national-id";
 import { NationalIdTypePicker } from "@/components/admin/guests/NationalIdTypePicker";
-import { updateGuestIdentityAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { updateGuestIdentityAction } from "@/features/guests/actions";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import {
   useAdminPending,

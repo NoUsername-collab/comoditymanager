@@ -66,6 +66,13 @@ describe("isPlatformAdminEmail", () => {
     expect(isPlatformAdminEmail("Admin@Zalmox.App")).toBe(true);
   });
 
+  it("recognises emails from ZALMOX_ADMIN_EMAILS first", () => {
+    process.env.ZALMOX_ADMIN_EMAILS = "ops@zalmox.app";
+    process.env.HOSPIRA_ADMIN_EMAILS = "a@b.com";
+    expect(isPlatformAdminEmail("ops@zalmox.app")).toBe(true);
+    expect(isPlatformAdminEmail("a@b.com")).toBe(false);
+  });
+
   it("recognises emails from HOSPIRA_ADMIN_EMAILS", () => {
     delete process.env.ZALMOX_ADMIN_EMAILS;
     process.env.HOSPIRA_ADMIN_EMAILS = "a@b.com, c@d.com";

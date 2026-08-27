@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { probePlatformLogsErrorAction } from "@/app/[locale]/platform-admin/(panel)/actions/logs-actions";
+import { probePlatformLogsErrorAction } from "@/features/platform-admin/logs-actions";
 import { Link } from "@/i18n/navigation";
 
 export function LogsProbeButton() {

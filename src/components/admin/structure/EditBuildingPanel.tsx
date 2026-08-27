@@ -7,8 +7,8 @@ import type { AcMode } from "@/types/database";
 import {
   updateBuildingFormAction,
   type BuildingFormState,
-} from "@/app/[locale]/admin/(panel)/buildings/actions";
-import { deleteBuildingAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+} from "@/features/buildings/actions";
+import { deleteBuildingAction } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";

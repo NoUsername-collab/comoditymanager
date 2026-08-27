@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { StructureFloor, StructureRoom } from "@/services/location-structure";
-import { assignRoomFloorAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { assignRoomFloorAction } from "@/features/buildings/actions";
 import { RoomManageActions } from "@/components/admin/rooms/RoomManageActions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";

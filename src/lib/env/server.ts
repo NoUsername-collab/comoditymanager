@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { readPlatformAdminEmailsRaw } from "@/lib/env/platform-admin-emails";
 import { isProductionRuntime } from "@/lib/security/production-runtime";
 
 const serverEnvSchema = z.object({
@@ -10,7 +11,8 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  // Platform admin (HOSPIRA_ADMIN_EMAILS preferred; NESTIO_ADMIN_EMAILS legacy)
+  ZALMOX_ADMIN_EMAILS: z.string().optional(),
+  // Legacy rebrands — still accepted until Vercel is fully cut over
   HOSPIRA_ADMIN_EMAILS: z.string().optional(),
   NESTIO_ADMIN_EMAILS: z.string().optional(),
   // Resend (optional — read at runtime by lib/email/provider; noop without RESEND_API_KEY)
@@ -50,12 +52,10 @@ export function getServerEnv(): ServerEnv {
   }
 
   if (isProductionRuntime()) {
-    const adminEmails =
-      parsed.data.HOSPIRA_ADMIN_EMAILS?.trim() ||
-      parsed.data.NESTIO_ADMIN_EMAILS?.trim();
+    const adminEmails = readPlatformAdminEmailsRaw(parsed.data);
     if (!adminEmails) {
       throw new Error(
-        "HOSPIRA_ADMIN_EMAILS must be set in production (comma-separated platform admin emails)"
+        "ZALMOX_ADMIN_EMAILS must be set in production (comma-separated platform admin emails). Legacy HOSPIRA_ADMIN_EMAILS / NESTIO_ADMIN_EMAILS still accepted."
       );
     }
 
@@ -114,4 +114,9 @@ export function isFactoryResetEnabled(): boolean {
 /** Validates env at Node server boot (instrumentation). */
 export function assertServerEnvAtBoot(): void {
   getServerEnv();
+}
+
+/** Test-only — clears the boot cache so env stubs take effect. */
+export function resetServerEnvCache(): void {
+  cached = null;
 }

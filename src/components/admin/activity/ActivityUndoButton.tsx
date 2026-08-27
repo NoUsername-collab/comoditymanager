@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { undoActivityLogAction } from "@/app/[locale]/admin/(panel)/activity/actions";
+import { undoActivityLogAction } from "@/features/activity/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
 function UndoIcon({ className }: { className?: string }) {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { updateCheckinSettingsAction } from "@/app/[locale]/admin/(panel)/checkin/actions";
+import { updateCheckinSettingsAction } from "@/features/checkin/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
 import {
   settingsPartialChanged,

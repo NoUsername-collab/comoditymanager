@@ -3,7 +3,7 @@ import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { AdminPlanBadge } from "@/components/admin/AdminPlanBadge";
 import { HudIconGear, HudIconGlobe } from "@/components/admin/AdminHudIcons";
-import { LogoutButton } from "@/app/[locale]/admin/(panel)/logout-button";
+import { LogoutButton } from "@/components/admin/LogoutButton";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { SimTriggerChip } from "@/components/admin/SimTriggerChip";

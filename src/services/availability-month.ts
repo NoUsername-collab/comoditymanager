@@ -23,7 +23,7 @@ import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import type { AcMode } from "@/types/database";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
-import { roomMatchesFeatureFilter } from "@/components/admin/catalog/RoomFeatureBadges";
+import { roomMatchesFeatureFilter } from "@/domain/room/feature-filter";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 
 export type DayAvailabilityStatus = "available" | "full";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { undoBookingCancellationAction } from "@/app/[locale]/admin/(panel)/activity/actions";
+import { undoBookingCancellationAction } from "@/features/activity/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 
 function UndoIcon({ className }: { className?: string }) {

@@ -10,7 +10,7 @@ import {
 import {
   moveBookingRoomFromPivotAction,
   previewRoomMoveAction,
-} from "@/app/[locale]/admin/(panel)/calendar/actions";
+} from "@/features/calendar/actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminButton } from "@/components/admin/ui/AdminButton";

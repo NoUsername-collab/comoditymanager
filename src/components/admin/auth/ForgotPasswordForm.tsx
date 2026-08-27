@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { forgotPasswordAction } from "@/app/[locale]/admin/forgot-password/actions";
+import { forgotPasswordAction } from "@/features/auth/forgot-password";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 export function ForgotPasswordForm() {

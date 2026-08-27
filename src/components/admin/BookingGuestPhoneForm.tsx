@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { updateBookingGuestPhoneAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
+import { updateBookingGuestPhoneAction } from "@/features/bookings/actions";
 import {
   useAdminPending,
   useRunAdminAction,

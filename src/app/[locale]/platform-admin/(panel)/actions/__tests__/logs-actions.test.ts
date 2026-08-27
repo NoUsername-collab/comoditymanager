@@ -28,7 +28,9 @@ describe("platform logs probe actions", () => {
       email: "admin@hospira.ro",
     });
 
-    const { probePlatformLogsErrorAction } = await import("../logs-actions");
+    const { probePlatformLogsErrorAction } = await import(
+      "@/features/platform-admin/logs-actions"
+    );
 
     await expect(probePlatformLogsErrorAction()).rejects.toThrow(
       /\[platform-admin\/logs:probe\]/
@@ -51,7 +53,9 @@ describe("platform logs probe actions", () => {
       email: "ops@hospira.ro",
     });
 
-    const { probePlatformLogsPageThrow } = await import("../logs-actions");
+    const { probePlatformLogsPageThrow } = await import(
+      "@/features/platform-admin/logs-actions"
+    );
 
     await expect(probePlatformLogsPageThrow()).rejects.toThrow(
       /\[platform-admin\/logs:probe-ssr\]/
@@ -69,7 +73,9 @@ describe("platform logs probe actions", () => {
   it("rejects when platform admin session is missing", async () => {
     getPlatformAdminWithMfaOrNull.mockResolvedValue(null);
 
-    const { probePlatformLogsErrorAction } = await import("../logs-actions");
+    const { probePlatformLogsErrorAction } = await import(
+      "@/features/platform-admin/logs-actions"
+    );
 
     await expect(probePlatformLogsErrorAction()).rejects.toThrow(/Neautorizat/);
     expect(capturePlatformAdminError).not.toHaveBeenCalled();

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
 import { slugifyTenantName } from "@/lib/platform-admin/tenant-slug";
-import { provisionTenantAction } from "@/app/[locale]/platform-admin/(panel)/actions/provision-actions";
+import { provisionTenantAction } from "@/features/platform-admin/provision-actions";
 
 const PLAN_OPTIONS = Object.keys(PLAN_CONFIGS) as PlanId[];
 

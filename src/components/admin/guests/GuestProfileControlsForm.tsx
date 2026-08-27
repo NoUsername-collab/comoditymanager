@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { updateGuestProfileControlsAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { updateGuestProfileControlsAction } from "@/features/guests/actions";
 import type { GuestProfileRow } from "@/domain/guest/types";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";

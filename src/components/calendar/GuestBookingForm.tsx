@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import {
   previewGuestStayAction,
   submitGuestRequestAction,
-} from "@/app/[locale]/(public)/calendar/actions";
+} from "@/features/public-site/calendar-actions";
 import { GuestNameFields } from "@/components/calendar/GuestNameFields";
 import { RoomSelectionWithGuard } from "@/components/calendar/RoomSelectionWithGuard";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { updateGuestNotesAction } from "@/app/[locale]/admin/(panel)/guests/actions";
+import { updateGuestNotesAction } from "@/features/guests/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminAlertDialog } from "@/components/admin/overlay/AdminAlertDialog";

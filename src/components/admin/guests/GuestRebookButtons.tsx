@@ -3,7 +3,7 @@
 import {
   rebookLastStayAction,
   rebookNextYearAction,
-} from "@/app/[locale]/admin/(panel)/guests/actions";
+} from "@/features/guests/actions";
 import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";

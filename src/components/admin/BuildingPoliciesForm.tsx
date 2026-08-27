@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
-import { updateBuildingPoliciesAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+import { updateBuildingPoliciesAction } from "@/features/buildings/actions";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 
 export function BuildingPoliciesForm({

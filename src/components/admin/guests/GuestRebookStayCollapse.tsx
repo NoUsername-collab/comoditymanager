@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { GuestRebookStayForm } from "@/components/admin/guests/GuestRebookStayForm";
-import { loadGuestRebookPanelAction } from "@/app/[locale]/admin/(panel)/guests/rebook-actions";
+import { loadGuestRebookPanelAction } from "@/features/guests/rebook-actions";
 import type { GuestRebookDraft } from "@/services/guest-rebook";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 

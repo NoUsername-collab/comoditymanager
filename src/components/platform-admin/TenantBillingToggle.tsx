@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { changeTenantBillingAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
+import { changeTenantBillingAction } from "@/features/platform-admin/tenant-actions";
 
 export function TenantBillingToggle({
   tenantId,

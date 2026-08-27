@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { resetPasswordAction } from "@/app/[locale]/admin/reset-password/actions";
+import { resetPasswordAction } from "@/features/auth/reset-password";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
 export function ResetPasswordForm() {

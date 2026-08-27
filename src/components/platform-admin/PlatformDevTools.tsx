@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { revalidatePlatformAdminCacheAction } from "@/app/[locale]/platform-admin/(panel)/actions/dev-actions";
+import { revalidatePlatformAdminCacheAction } from "@/features/platform-admin/dev-actions";
 import type { MigrationMarker } from "@/lib/platform-admin/migration-audit";
 
 export function PlatformDevTools({

@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { breakdownTenantModules } from "@/core/config/plan-catalog";
 import { MODULE_CATALOG, type PlanId } from "@/core/config/plans";
 import { useRouter } from "@/i18n/navigation";
-import { changeTenantModulesAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
+import { changeTenantModulesAction } from "@/features/platform-admin/tenant-actions";
 
 const ALL_MODULES = Object.values(MODULE_CATALOG);
 

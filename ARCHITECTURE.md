@@ -1,4 +1,4 @@
-﻿# Zalmox / Zalmox — Architecture & Module Boundaries
+﻿# Zalmox — Architecture & Module Boundaries
 
 This document defines **allowed import directions** and where new code should live.
 Goal: thin routes, testable domain logic, no UI↔route spaghetti.
@@ -8,7 +8,7 @@ Goal: thin routes, testable domain logic, no UI↔route spaghetti.
 ```
 app/          → routes, layouts, thin re-exports only
 features/     → vertical slices (guest-app, public-site, settings, …)
-components/   → shared UI (admin, Zalmox-admin, public, …)
+components/   → shared UI (admin, platform-admin, public, …)
 services/     → data access, Supabase, caching, orchestration
 domain/       → pure types, validation, business rules (no I/O)
 lib/          → cross-cutting utilities (auth, env, tenant, security)
@@ -28,26 +28,30 @@ core/         → tenant context, plans, module registry (platform kernel)
 **Server actions** live in `features/<area>/actions/` (with `"use server"`).
 Route files under `app/` re-export them for Next.js colocation — components import from `features/`, never from `app/`.
 
+**Honest current state:** tenant admin, platform-admin, public calendar, signup, and alpha-gate server actions live in `features/`. **`components → app` is a strict zero** (enforced in `import-boundaries.test.ts`, multiline-aware). Route files under `app/` re-export actions; components import from `features/`, never from `app/`.
+
 ## Product boundaries
 
 | Area | Route prefix | Code home |
 |------|--------------|-----------|
-| Tenant admin | `/admin/*` | `components/admin/`, `features/settings/` |
-| Platform admin | `/Zalmox-admin/*` | `components/Zalmox-admin/`, `lib/Zalmox-admin/` |
+| Tenant admin | `/admin/*` | `components/admin/` (UI), actions in `features/{checkin,calendar,bookings,buildings,rooms,guests,activity,availability,auth,settings,onboarding,simulation}/` |
+| Platform admin | `/platform-admin/*` | `components/platform-admin/`, `features/platform-admin/`, `lib/platform-admin/` |
 | Guest app | `/stay/[code]/*` | `features/guest-app/`, `services/guest-app/` |
 | Public site | `/`, `/calendar`, … | `features/public-site/`, `services/public-site/` |
-| Platform landing | `/landing`, signup | `components/platform/`, `(platform)/` routes |
+| Platform landing | `/landing`, signup | `components/platform/`, `features/signup/` |
 
-Do not mix tenant UI into `Zalmox-admin/` or platform-only logic into tenant `admin/`.
+Do not mix tenant UI into `platform-admin/` or platform-only logic into tenant `admin/`.
 
 ## Shared types (decoupling pattern)
 
-Types used by both domain and services belong in **`domain/`**, not `services/`:
+Types used by both domain and services belong in **`domain/`**, not `services/` or `components/`:
 
 - `domain/tenant/types.ts` — `TenantMemberRole`
 - `domain/booking/row.ts` — `BookingRow`, list row aliases
 - `domain/cazari/page-lists.ts` — Cazări page payloads
+- `domain/cazari/labels.ts` — `CazariLabels`
 - `domain/availability/day.ts` — `DayAvailability` (= `ComputedDay`)
+- `domain/room/feature-filter.ts` — `roomMatchesFeatureFilter`
 
 Services **re-export** these for backward compatibility; new code imports from `domain/`.
 
@@ -55,15 +59,32 @@ Services **re-export** these for backward compatibility; new code imports from `
 
 | Module | Purpose |
 |--------|---------|
-| `features/public-site/` | Public site UI, preview, domain types |
+| `features/public-site/` | Public site UI, preview, domain types, public calendar booking actions |
 | `features/guest-app/` | Guest stay UI + `actions/` |
-| `features/settings/` | Admin settings server actions |
+| `features/settings/` | Admin settings + room catalog server actions |
+| `features/checkin/` | Check-in / tourist-sheet / payment-panel server actions |
+| `features/calendar/` | Gantt create / move / hold / block server actions |
+| `features/bookings/` | Booking cancel / checkout / phone / check-time / payment / invoice / guest-app share |
+| `features/buildings/` | Building / floor / room-structure server actions |
+| `features/guests/` | Guest profile / merge / notes / rebook server actions |
+| `features/activity/` | Activity-log undo server actions |
+| `features/availability/` | Day-availability detail server actions |
+| `features/auth/` | Admin login, logout, forgot/reset password, bind-tenant-session |
+| `features/onboarding/` | First-run onboarding server actions |
+| `features/simulation/` | Demo/simulation trigger server actions |
+| `features/platform-admin/` | Tenant provision / plan / domains / logs / tools server actions |
+| `features/rooms/` | Create / update room from admin structure pages |
+| `features/signup/` | Platform self-serve signup |
+| `features/alpha-gate/` | Alpha unlock server action |
+
+These slices are real. **PMS UI is still `components/admin`.** Action coupling from UI to `app/` is gone. Do not pretend the UI layer is migrated.
 
 When adding a new vertical, prefer `features/<name>/` over growing `components/` or `app/`.
 
 ## Config & env
 
 - **Secrets / env vars**: only `lib/env/` (server, edge, client split)
+- **Platform admin emails**: `ZALMOX_ADMIN_EMAILS` (legacy `HOSPIRA_ADMIN_EMAILS` / `NESTIO_ADMIN_EMAILS` still accepted)
 - **Branding / platform domain**: env + `lib/tenant/host.ts` — not hardcoded in components
 - **Legacy `nestio.ro`**: parsed in `lib/tenant/host.ts` for backward compatibility; product name is Zalmox
 
@@ -71,7 +92,7 @@ When adding a new vertical, prefer `features/<name>/` over growing `components/`
 
 | Barrel | Status |
 |--------|--------|
-| `@/core` | Allowed — platform kernel entry |
+| `@/core` | Allowed — platform kernel entry (tenant, plans, gates). Prefer direct imports for new code |
 | `@/layout/mobile` | Allowed — mobile layout API |
 | `@/services/bookings`, `@/services/guests`, `@/services/checkin` | Legacy re-exports; prefer direct file imports for tree-shaking |
 | `@/features/settings/actions` | Allowed — settings action surface |
@@ -96,6 +117,15 @@ Styles live under **`src/styles/`** — not scattered in `src/app/` (except the 
 - New CSS files go in `styles/features/` or `styles/admin/` — never `src/app/*.css`
 - Enforced by `src/lib/architecture/__tests__/css-boundaries.test.ts`
 
+**Placement vs size:** CSS *lives* in the right folders. Size is not solved. God files (line caps enforced — must not grow):
+
+| File | Cap (lines) |
+|------|-------------|
+| `styles/features/layout/mobile-admin.css` | 4794 |
+| `styles/features/admin/gantt-premium.css` | 4654 |
+
+**Freeze:** do not add rules to these two files. New styles go in a route-scoped sheet or Tailwind in JSX. Split only when you already touch that feature.
+
 **Hybrid styling:** Tailwind v4 utilities for layout/spacing; BEM classes + CSS variables for feature UI. Prefer theme tokens over hardcoded colors.
 
 **Incremental Tailwind pattern (example: `SettingsSaveBar`):**
@@ -119,7 +149,7 @@ Styles live under **`src/styles/`** — not scattered in `src/app/` (except the 
 | `mobile-cazari.css` | direct | `admin/(panel)/cazari/layout.tsx`, `guests/layout.tsx` |
 | `mobile-avail.css` | direct | `admin/(panel)/disponibilitate/layout.tsx` |
 
-Enforced by `css-boundaries.ts` for global-bundle leaks (`gantt-premium`, `admin-settings`, etc.).
+Enforced by `css-boundaries.ts` for global-bundle leaks (`gantt-premium`, `admin-settings`, etc.) and god-file line caps.
 
 ## Mobile layout
 
@@ -132,14 +162,15 @@ When touching coupled code:
 1. Move shared types to `domain/`
 2. Move server actions to `features/*/actions/`
 3. Keep `app/` as thin re-exports
-4. Run `npm test` (includes import boundary audit)
-5. Update this doc if you add a new layer rule
+4. Keep `components → app` at zero — new UI must import `features/<area>`, not `app/`
+5. Run `npm test` (includes import/CSS boundary audits)
+6. Update this doc if you add a new layer rule
 
 ## Remaining debt (known)
 
+- PMS core UI is still `components/admin` (~277 files), not `features/`
 - Many `app/` pages still call `services/` directly (acceptable for routes; extract loaders over time)
 - Some `components/` import Supabase client for MFA (auth UI — candidate for `lib/auth/` facade)
-- `services/availability-month.ts` imports a component helper (`RoomFeatureBadges`) — invert dependency
 - `@/core` barrel still wide; prefer direct imports for new code
-- Global CSS god files not yet split by feature — **resolved**: styles live under `src/styles/`; `globals.css` is a 1-line shim
-- `mobile.css` split into layout-scoped bundles: `mobile-core` (global), `mobile-admin` (core), `mobile-settings` / `mobile-platform-admin` (scoped layouts), `mobile-gantt` / `mobile-cazari` / `mobile-avail` (per route), `mobile-public` (public layouts)
+- CSS location is correct; **size is not** — `mobile-admin.css` and `gantt-premium.css` are frozen at current line caps
+- Legacy host names (`nestio`, `hospira`) still appear in routing/CSS class names

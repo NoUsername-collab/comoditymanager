@@ -10,8 +10,8 @@ import type { StructureFloor } from "@/services/location-structure";
 import {
   updateFloorFormAction,
   type FloorFormState,
-} from "@/app/[locale]/admin/(panel)/buildings/actions";
-import { deleteFloorAction } from "@/app/[locale]/admin/(panel)/buildings/actions";
+} from "@/features/buildings/actions";
+import { deleteFloorAction } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";

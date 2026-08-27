@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { logoutAction } from "@/app/[locale]/admin/login/actions";
+import { logoutAction } from "@/features/auth/login";
 import { getSessionUser } from "@/services/auth-session";
 
 /** Doar când ești logat — oaspeții nu văd niciun link Admin. */

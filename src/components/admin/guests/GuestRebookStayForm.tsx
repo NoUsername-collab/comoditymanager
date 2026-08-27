@@ -10,7 +10,7 @@ import { RoomFeatureBadges } from "@/components/admin/catalog/RoomFeatureBadges"
 import {
   previewGuestRebookRoomsAction,
   submitGuestRebookStayAction,
-} from "@/app/[locale]/admin/(panel)/guests/rebook-actions";
+} from "@/features/guests/rebook-actions";
 import type { GuestRebookDraft } from "@/services/guest-rebook";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import { formatStayPeriod } from "@/lib/ro-calendar";

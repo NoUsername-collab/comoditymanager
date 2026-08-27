@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { syncTenantPlanModulesAction } from "@/app/[locale]/platform-admin/(panel)/actions/tenant-actions";
+import { syncTenantPlanModulesAction } from "@/features/platform-admin/tenant-actions";
 import type { PlanId } from "@/core/config/plans";
 
 export function TenantSyncPlanModulesButton({

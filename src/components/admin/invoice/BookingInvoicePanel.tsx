@@ -7,7 +7,7 @@ import {
   convertProformaToInvoiceAction,
   issueBookingInvoiceAction,
   issueBookingProformaAction,
-} from "@/app/[locale]/admin/(panel)/bookings/invoice-actions";
+} from "@/features/bookings/invoice-actions";
 import { IssuedInvoiceView } from "@/components/admin/invoice/IssuedInvoiceView";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {

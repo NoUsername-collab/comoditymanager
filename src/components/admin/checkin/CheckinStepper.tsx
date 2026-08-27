@@ -31,7 +31,7 @@ import {
   createCheckinAction,
   updateCheckinAction,
   type CreateCheckinResult,
-} from "@/app/[locale]/admin/(panel)/checkin/actions";
+} from "@/features/checkin/actions";
 import type { CheckinWizardMode } from "@/components/admin/checkin/CheckinWizardLauncher";
 import type { CheckinTransferOffer } from "@/domain/checkin/identity-result";
 import { createInitialCheckinGuests } from "@/components/admin/checkin/checkin-guest-defaults";

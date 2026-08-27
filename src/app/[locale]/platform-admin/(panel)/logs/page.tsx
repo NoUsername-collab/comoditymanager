@@ -3,7 +3,7 @@ import { PlatformActivityLogTable } from "@/components/platform-admin/PlatformAc
 import { PlatformDevLogTable } from "@/components/platform-admin/PlatformDevLogTable";
 import { LogsProbeButton } from "@/components/platform-admin/LogsProbeButton";
 import { TenantHealthPanel } from "@/components/platform-admin/TenantHealthPanel";
-import { probePlatformLogsPageThrow } from "@/app/[locale]/platform-admin/(panel)/actions/logs-actions";
+import { probePlatformLogsPageThrow } from "@/features/platform-admin/logs-actions";
 import { loadPlatformLogsPageData } from "@/services/platform-logs-page-data";
 
 import "@/styles/features/admin/admin-devlog.css";

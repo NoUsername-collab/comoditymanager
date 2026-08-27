@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import {
   deleteRoomFromBuildingAction,
   setRoomActiveAction,
-} from "@/app/[locale]/admin/(panel)/buildings/actions";
+} from "@/features/buildings/actions";
 import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import {

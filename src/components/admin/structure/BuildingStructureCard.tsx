@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import type { StructureBuilding } from "@/services/location-structure";
 import type { RoomOptionDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
-import { AddFloorForm } from "@/app/[locale]/admin/(panel)/buildings/add-floor-form";
+import { AddFloorForm } from "@/components/admin/structure/AddFloorForm";
 import { BuildingPoliciesForm } from "@/components/admin/BuildingPoliciesForm";
 import { getBuildingTheme } from "@/lib/building-theme";
 import { FloorStructureSection } from "./FloorStructureSection";

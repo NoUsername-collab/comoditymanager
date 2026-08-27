@@ -17,7 +17,7 @@ import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import {
   undoBookingCheckInAction,
   undoBookingCheckOutAction,
-} from "@/app/[locale]/admin/(panel)/bookings/actions";
+} from "@/features/bookings/actions";
 import { formatOperationalTimestamp } from "@/lib/operational-check";
 import {
   canOfferOperativeCheckIn,

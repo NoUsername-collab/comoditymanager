@@ -9,7 +9,7 @@ import {
   loadGuestAccessLinkAction,
   regenerateGuestAccessAction,
   sendGuestAppLinkEmailAction,
-} from "@/app/[locale]/admin/(panel)/bookings/guest-app-actions";
+} from "@/features/bookings/guest-app-actions";
 
 type Props = {
   bookingId: string;

@@ -10,7 +10,7 @@ import {
   createRoomTypeAction,
   updateRoomOptionAction,
   updateRoomTypeAction,
-} from "@/app/[locale]/admin/(panel)/settings/location/catalog/actions";
+} from "@/features/settings/actions/catalog";
 
 export function AdminRoomCatalogPanel({
   types,

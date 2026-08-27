@@ -3,7 +3,7 @@ import { formatBookingRef } from "@/lib/booking-admin-links";
 import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
 import { StayQuickOpsLazy } from "@/components/admin/cazari/StayQuickOpsLazy";
-import { cancelBookingAction } from "@/app/[locale]/admin/(panel)/bookings/actions";
+import { cancelBookingAction } from "@/features/bookings/actions";
 import type { CazariLabels, OperationalStay } from "@/components/admin/cazari/types";
 
 export function StayActions({

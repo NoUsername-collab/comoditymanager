@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { unlockAlphaGateAction } from "@/app/[locale]/alpha-gate/actions";
+import { unlockAlphaGateAction } from "@/features/alpha-gate/actions";
 
 type AlphaGateFormProps = {
   nextPath: string;

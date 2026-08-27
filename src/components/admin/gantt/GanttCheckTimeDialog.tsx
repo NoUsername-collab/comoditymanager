@@ -16,7 +16,7 @@ import {
   editBookingCheckOutAction,
   setBookingCheckInAction,
   setBookingCheckOutAction,
-} from "@/app/[locale]/admin/(panel)/bookings/actions";
+} from "@/features/bookings/actions";
 import {
   canOfferOperativeCheckIn,
   isOperativeCheckInTimestampValid,

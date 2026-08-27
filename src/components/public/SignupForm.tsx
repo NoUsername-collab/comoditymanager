@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { signupAction } from "@/app/[locale]/(platform)/signup/actions";
+import { signupAction } from "@/features/signup/actions";
 
 type SignupSuccess = {
   pensionName: string;
