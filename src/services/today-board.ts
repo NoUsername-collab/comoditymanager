@@ -17,7 +17,7 @@ import {
   DEFAULT_CHECKIN_SETTINGS,
   getCheckinSettings,
 } from "@/services/checkin";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 
 export type RoomToClean = {
   room_id: string;
@@ -381,7 +381,7 @@ const getCachedTodayBoard = (
 export const loadTodayBoard = cache(
   async (checkInTime: string, checkOutTime: string): Promise<TodayBoard> => {
     const [today, { tenantId }] = await Promise.all([
-      getEffectiveToday(),
+      todayIso(),
       getTenantScope(),
     ]);
     return getCachedTodayBoard(tenantId, today, checkInTime, checkOutTime)();

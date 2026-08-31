@@ -141,7 +141,7 @@ export function GanttCalendar({
   featureFilter?: GanttFeatureFilter;
   layerFilter?: GanttLayerFilter;
   focusDay?: string | null;
-  /** Effective "today" — sim date when simulation is active */
+  /** Calendar "today" (ISO), defaults to the real calendar date. */
   today?: string;
   /** Owner or Setări → Check-in allows edits after check-out. */
   canEditAfterCheckout?: boolean;

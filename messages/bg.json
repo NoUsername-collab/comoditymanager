@@ -1107,7 +1107,7 @@
             },
             "reports_tools": {
               "title": "Отчети и инструменти",
-              "desc": "Статистики, export, симулация."
+              "desc": "Статистики, export."
             }
           }
         },
@@ -2547,28 +2547,6 @@
       "requestsPerRoom": "Заявки по стая",
       "occupiedTitle": "Заети",
       "focusGanttWeek": "Фокус Gantt (седмица)"
-    },
-    "simulation": {
-      "startSim": "Симулация",
-      "starting": "Стартиране...",
-      "simActive": "СИМУЛАЦИЯ",
-      "simDate": "Дата:",
-      "daysAdvanced": "+{count, plural, one {# ден} other {# дни}}",
-      "nextDay": "Напред един ден",
-      "nextWeek": "Напред една седмица",
-      "nextMonth": "Напред един месец",
-      "nextCheckIn": "Скок до следващото настаняване",
-      "nextCheckOut": "Скок до следващото напускане",
-      "noUpcomingCheckIn": "Няма предстоящо настаняване",
-      "noUpcomingCheckOut": "Няма предстоящо напускане",
-      "dayShort": "д",
-      "stopSim": "Спри",
-      "confirmStop": "Сигурни ли сте?",
-      "yes": "Да",
-      "no": "Не",
-      "processing": "Обработка...",
-      "realDateLabel": "Реална: {date}",
-      "noDbBackupWarning": "Без DB резервно копие — промените остават върху реалните данни при Спри"
     },
     "confirmRooms": {
       "confirmBooking": "Потвърди резервацията",

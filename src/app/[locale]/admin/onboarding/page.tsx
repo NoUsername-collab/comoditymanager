@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { getPensionSettings } from "@/services/pension-settings";
-import { OnboardingWizard } from "@/components/admin/onboarding/OnboardingWizard";
+import { OnboardingWizard } from "@/features/onboarding/ui/OnboardingWizard";
 import "@/styles/features/admin/admin-onboarding.css";
 
 export default async function OnboardingPage() {

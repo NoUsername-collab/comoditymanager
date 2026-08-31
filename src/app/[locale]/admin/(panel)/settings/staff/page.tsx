@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { StaffList } from "@/components/admin/settings/StaffList";
-import { StaffInviteForm } from "@/components/admin/settings/StaffInviteForm";
+import { StaffList } from "@/features/settings/ui/StaffList";
+import { StaffInviteForm } from "@/features/settings/ui/StaffInviteForm";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { listActiveTenantMembers } from "@/services/tenant-members";
 import { guardSettingsPermission } from "@/lib/settings/page-context";

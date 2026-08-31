@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import { ForgotPasswordForm } from "@/components/admin/auth/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/features/auth/ui/ForgotPasswordForm";
 import "@/styles/features/shared/admin-login.css";
 
 export default async function ForgotPasswordPage() {

@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
-import { AdminPalettePicker } from "@/components/admin/settings/AdminPalettePicker";
-import { AdminDisplayLayoutPicker } from "@/components/admin/settings/AdminDisplayLayoutPicker";
-import { AdminFxSettings } from "@/components/admin/settings/AdminFxSettings";
-import { AppearanceSettingsAsideLazy } from "@/components/admin/settings/AppearanceSettingsAsideLazy";
+import { AdminPalettePicker } from "@/features/settings/ui/AdminPalettePicker";
+import { AdminDisplayLayoutPicker } from "@/features/settings/ui/AdminDisplayLayoutPicker";
+import { AdminFxSettings } from "@/features/settings/ui/AdminFxSettings";
+import { AppearanceSettingsAsideLazy } from "@/features/settings/ui/AppearanceSettingsAsideLazy";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";

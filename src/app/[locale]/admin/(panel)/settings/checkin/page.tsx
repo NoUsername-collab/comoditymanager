@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { CheckinSettingsPanel } from "@/components/admin/checkin/CheckinSettingsPanel";
+import { CheckinSettingsPanel } from "@/features/checkin/ui/CheckinSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";

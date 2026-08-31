@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { notFound } from "next/navigation";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
+import { ConfirmRoomsForm } from "@/features/bookings/ui/ConfirmRoomsForm";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
 import { getStayPricingRules } from "@/services/booking-rules-settings";

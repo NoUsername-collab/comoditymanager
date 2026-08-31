@@ -11,13 +11,8 @@ import { getSupabasePublicConfig } from "@/lib/env/server";
 export const createClient = cache(async () => {
   const cookieStore = await cookies();
   const { url, anonKey } = getSupabasePublicConfig();
-  const { isSimActive } = await import("@/domain/simulation/sim-cookie");
-  const simActive = await isSimActive();
 
   return createServerClient(url, anonKey, {
-    ...(simActive
-      ? { db: { schema: "sim_sandbox" as "public" } }
-      : {}),
     cookies: {
       getAll() {
         return cookieStore.getAll();

@@ -36,10 +36,7 @@ export function pathPermissionGroup(pathname: string): PermissionGroupId | null 
     return "team_admin";
   }
 
-  if (
-    matchesPrefix(path, "/admin/statistics") ||
-    matchesPrefix(path, "/admin/simulation")
-  ) {
+  if (matchesPrefix(path, "/admin/statistics")) {
     return "reports_tools";
   }
 

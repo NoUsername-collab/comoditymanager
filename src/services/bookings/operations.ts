@@ -1,7 +1,5 @@
 import { unstable_cache } from "next/cache";
 import type { GuestFlagLevel } from "@/domain/guest/types";
-import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import {
@@ -13,7 +11,6 @@ import { getCheckinByBookingId } from "@/services/checkin/queries";
 import { getCheckinSettings } from "@/services/checkin/settings";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
@@ -37,7 +34,7 @@ import {
   assertRoomsAvailableForOccupancy,
 } from "@/services/room-occupancy";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp, isoToDatetimeLocal } from "@/lib/operational-check";
 import { assertPostCheckoutEditAllowed, assertBookingPostCheckoutEditAllowed } from "./post-checkout-guard";
 

@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
-import { GuestRebookStayForm } from "@/components/admin/guests/GuestRebookStayForm";
+import { GuestRebookStayForm } from "@/features/guests/ui/GuestRebookStayForm";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { loadGuestRebookPanelPayload } from "@/services/guest-rebook";
 import { getTranslations } from "next-intl/server";

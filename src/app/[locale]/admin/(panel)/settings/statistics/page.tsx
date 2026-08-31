@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { StatisticsSettingsPanel } from "@/components/admin/settings/StatisticsSettingsPanel";
+import { StatisticsSettingsPanel } from "@/features/settings/ui/StatisticsSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import {

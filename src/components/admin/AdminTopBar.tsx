@@ -3,10 +3,9 @@ import { AdminDayNightSwitch } from "@/components/admin/AdminDayNightSwitch";
 import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { AdminPlanBadge } from "@/components/admin/AdminPlanBadge";
 import { HudIconGear, HudIconGlobe } from "@/components/admin/AdminHudIcons";
-import { LogoutButton } from "@/components/admin/LogoutButton";
+import { LogoutButton } from "@/features/auth/ui/LogoutButton";
 import { LanguageSwitcher } from "@/components/public/LanguageSwitcher";
 import { AdminNav } from "@/components/admin/AdminNav";
-import { SimTriggerChip } from "@/components/admin/SimTriggerChip";
 import { AdminGearMenu } from "@/components/admin/AdminGearMenu";
 import { PwaInstallAction } from "@/components/pwa/PwaInstallAction";
 import { getTranslations } from "next-intl/server";
@@ -15,17 +14,9 @@ import { getTenantContext } from "@/core/tenant/context";
 export async function AdminTopBar({
   cereriCount,
   locationUnlocked = false,
-  isAdmin = false,
-  simActive = false,
-  simDate,
-  simDays,
 }: {
   cereriCount: number;
   locationUnlocked?: boolean;
-  isAdmin?: boolean;
-  simActive?: boolean;
-  simDate?: string | null;
-  simDays?: number;
 }) {
   const t = await getTranslations("admin.shell");
   const tCommon = await getTranslations("common");
@@ -87,16 +78,6 @@ export async function AdminTopBar({
                   <LanguageSwitcher compact variant="inline" />
                 </div>
               </div>
-              {isAdmin ? (
-                <div className="admin-gear__footer-sim">
-                  <SimTriggerChip
-                    compact
-                    simActive={simActive}
-                    simDate={simDate}
-                    simDays={simDays}
-                  />
-                </div>
-              ) : null}
             </div>
           </AdminGearMenu>
         </div>

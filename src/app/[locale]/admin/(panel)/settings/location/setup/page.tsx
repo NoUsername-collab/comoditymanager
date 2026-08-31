@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { AdminRoomCatalogPanel } from "@/components/admin/catalog/AdminRoomCatalogPanel";
+import { AdminRoomCatalogPanel } from "@/features/rooms/ui/AdminRoomCatalogPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { listRoomOptions, listRoomTypes } from "@/services/room-catalog";

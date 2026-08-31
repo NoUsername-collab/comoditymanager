@@ -1,6 +1,5 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
@@ -129,9 +128,6 @@ const getCachedStaysForAvailability = (
 const loadStaysForAvailability = cache(
   async (rangeStart: string, rangeEnd: string): Promise<NightStay[]> => {
     const { tenantId } = await getTenantScope();
-    if (await isSimActive()) {
-      return loadStaysForAvailabilityImpl(tenantId, rangeStart, rangeEnd);
-    }
     return getCachedStaysForAvailability(tenantId, rangeStart, rangeEnd)();
   }
 );
@@ -339,9 +335,6 @@ const getCachedBuildingDashboards = (tenantId: string, viewDate: string) =>
 
 const loadBuildingDashboardsForRequest = cache(
   async (tenantId: string, viewDate: string, viewDateParam?: string) => {
-    if (await isSimActive()) {
-      return listBuildingDashboardsImpl(viewDateParam);
-    }
     return getCachedBuildingDashboards(tenantId, viewDate)();
   }
 );

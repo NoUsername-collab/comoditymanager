@@ -6,7 +6,7 @@ import {
 
 /**
  * Admin client that ALWAYS targets the public schema.
- * Safe to import from Edge middleware/instrumentation (no sim cookie).
+ * Safe to import from Edge middleware/instrumentation.
  */
 export function createPublicAdminClient() {
   const { url } = getSupabasePublicConfig();

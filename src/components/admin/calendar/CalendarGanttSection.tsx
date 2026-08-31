@@ -22,13 +22,12 @@ import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
 import { sortRoomsLikeLocationStructure } from "@/domain/room/display-order";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getLocale, getTranslations } from "next-intl/server";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { parseIso, todayIso } from "@/lib/stay-dates";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 import {
   DEFAULT_CHECKIN_SETTINGS,
   getCheckinDeparturePolicy,
 } from "@/services/checkin/settings";
-import { parseIso } from "@/lib/stay-dates";
 
 export type CalendarSearchParams = {
   y?: string;
@@ -72,7 +71,7 @@ export async function CalendarGanttSection({
   searchParams: Promise<CalendarSearchParams>;
 }) {
   const paramsPromise = searchParams;
-  const todayPromise = getEffectiveToday();
+  const today = todayIso();
   const localePromise = getLocale();
 
   const departurePolicyPromise = getCheckinDeparturePolicy().catch(() => ({
@@ -97,9 +96,9 @@ export async function CalendarGanttSection({
     getTranslations("admin.gantt.range"),
     localePromise,
     paramsPromise,
-    todayPromise,
-    Promise.all([paramsPromise, todayPromise, localePromise])
-      .then(([p, today, loc]) => {
+    today,
+    Promise.all([paramsPromise, localePromise])
+      .then(([p, loc]) => {
         const ref = parseIso(today);
         const y = Number(p.y) || ref.getFullYear();
         const m = p.m !== undefined ? Number(p.m) : ref.getMonth();

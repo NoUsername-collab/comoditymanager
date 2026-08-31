@@ -1,15 +1,7 @@
 import { Link } from "@/i18n/navigation";
-import { RoomForm } from "@/components/admin/RoomForm";
+import { RoomForm } from "@/features/rooms/ui/RoomForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { listBuildings } from "@/services/buildings";
-import { listAllFloors } from "@/services/floors";
-import {
-  ensureBuildingPoliciesFromLegacy,
-  getBuildingOptionPolicies,
-  listRoomOptions,
-  listRoomTypes,
-} from "@/services/room-catalog";
-import { listAllRooms } from "@/services/rooms-admin";
+import { loadNewRoomPage } from "@/features/rooms/loaders";
 import { roomScopeKey } from "@/domain/room/scope-key";
 import { createRoomAction } from "../actions";
 import { guardOperatorRoute } from "@/lib/auth/require-staff";
@@ -47,36 +39,20 @@ export default async function NewRoomPage({
     searchParams,
   ]);
   const backToStructure = return_to === "structure";
-  let buildings: Awaited<ReturnType<typeof listBuildings>> = [];
-  let types: Awaited<ReturnType<typeof listRoomTypes>> = [];
-  let options: Awaited<ReturnType<typeof listRoomOptions>> = [];
-  let allRooms: Awaited<ReturnType<typeof listAllRooms>> = [];
-  let allFloors: Awaited<ReturnType<typeof listAllFloors>> = [];
+  const {
+    buildings,
+    types,
+    options,
+    allRooms,
+    allFloors,
+    policyResults,
+    loadError: loadErrorRaw,
+  } = await loadNewRoomPage();
   let loadError: string | null = null;
   let catalogMissing = false;
-
-  const buildingsPromise = listBuildings();
-  let policyResults: Awaited<ReturnType<typeof getBuildingOptionPolicies>>[] = [];
-  try {
-    [buildings, types, options, allRooms, allFloors, policyResults] =
-      await Promise.all([
-        buildingsPromise,
-        listRoomTypes(),
-        listRoomOptions(),
-        listAllRooms(),
-        listAllFloors(),
-        buildingsPromise.then((loadedBuildings) =>
-          Promise.all(
-            loadedBuildings.map((b) =>
-              ensureBuildingPoliciesFromLegacy(b.id, b.ac_mode).catch(
-                () => [] as Awaited<ReturnType<typeof getBuildingOptionPolicies>>
-              )
-            )
-          )
-        ),
-      ]);
-  } catch (e) {
-    loadError = e instanceof Error ? e.message : tCommon("error");
+  if (loadErrorRaw) {
+    loadError =
+      loadErrorRaw instanceof Error ? loadErrorRaw.message : tCommon("error");
     if (String(loadError).includes("room_type_definitions")) {
       catalogMissing = true;
     }
@@ -84,12 +60,10 @@ export default async function NewRoomPage({
 
   const floorsByBuilding: Record<
     string,
-    Awaited<ReturnType<typeof listAllFloors>>
+    (typeof allFloors)[number][]
   > = {};
-  const policiesByBuilding: Record<
-    string,
-    Awaited<ReturnType<typeof getBuildingOptionPolicies>>
-  > = {};
+  const policiesByBuilding: Record<string, (typeof policyResults)[number]> =
+    {};
 
   const existingNamesByScope: Record<string, string[]> = {};
   const nextSortByBuilding: Record<string, number> = {};

@@ -2,7 +2,7 @@
 import { getTranslations } from "next-intl/server";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
-import { BuildingStructureCard } from "@/components/admin/structure/BuildingStructureCard";
+import { BuildingStructureCard } from "@/features/buildings/ui/BuildingStructureCard";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { formatAdminError } from "@/lib/admin/format-error";
 import { listLocationStructure } from "@/services/location-structure";

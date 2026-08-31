@@ -1,5 +1,5 @@
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { AvailabilityDashboardShell } from "@/components/admin/availability/AvailabilityDashboardShell";
+import { AvailabilityDashboardShell } from "@/features/availability/ui/AvailabilityDashboardShell";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminDisponibilitatePage({

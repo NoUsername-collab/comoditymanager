@@ -1,4 +1,4 @@
-import { AvailabilityDashboardLazy } from "@/components/admin/availability/AvailabilityDashboardLazy";
+import { AvailabilityDashboardLazy } from "@/features/availability/ui/AvailabilityDashboardLazy";
 import { loadAvailabilityDashboard } from "@/services/availability-month";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { AvailabilityPanelView } from "@/lib/availability-panel-query";

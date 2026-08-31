@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
-import { addDays } from "@/lib/stay-dates";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { addDays, todayIso } from "@/lib/stay-dates";
 import {
   buildCazariPageHref,
   CAZARI_HORIZON_DAYS,
@@ -16,21 +15,20 @@ import {
   shouldPinCereriAboveConfirmate,
   splitOperationalStays,
 } from "@/domain/cazari/page-splits";
-import { loadCazariPrimaryData } from "@/services/cazari-page-data";
 import { buildCazariLabels } from "@/services/cazari-labels";
 import { formatCazariLabel } from "@/lib/cazari-label-format";
 import { AdminStaySearchForm } from "@/components/admin/AdminStaySearchForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import { CazariOpsToolbar } from "@/components/admin/cazari/CazariOpsToolbar";
-import { ConfirmedBuckets } from "@/components/admin/cazari/ConfirmedBuckets";
+import { CazariOpsToolbar } from "@/features/cazari/ui/CazariOpsToolbar";
+import { ConfirmedBuckets } from "@/features/cazari/ui/ConfirmedBuckets";
 import {
   CazariHistoryAside,
   CazariHistoryAsideFallback,
-} from "@/components/admin/cazari/CazariHistoryAside";
-import { StayList } from "@/components/admin/cazari/StayList";
-import { CazariOperativeShell } from "@/components/admin/cazari/CazariOperativeShell";
-import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
+} from "@/features/cazari/ui/CazariHistoryAside";
+import { StayList } from "@/features/cazari/ui/StayList";
+import { CazariOperativeShell } from "@/features/cazari/ui/CazariOperativeShell";
+import { loadCazariPage } from "@/features/cazari/loaders";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminCazariPage({
@@ -44,20 +42,16 @@ export default async function AdminCazariPage({
     reaccepted?: string;
   }>;
 }) {
-  const [tPages, tCommon, tFlow, params, effectiveToday, cazariResult, postCheckoutPolicy] =
+  const [tPages, tCommon, tFlow, params, effectiveToday, cazariPage] =
     await Promise.all([
       getTranslations("admin.pages.cazari"),
       getTranslations("admin.common"),
       getTranslations("booking.flowStatus"),
       searchParams,
-      getEffectiveToday(),
-      loadCazariPrimaryData(),
-      resolvePostCheckoutEditPolicy().catch(() => ({
-        memberRole: null,
-        allowPostCheckoutEdits: false,
-        canEditAfterCheckout: false,
-      })),
+      todayIso(),
+      loadCazariPage(),
     ]);
+  const { cazariResult, postCheckoutPolicy } = cazariPage;
 
   const q = firstCazariQueryValue(params.q).trim();
   const horizon = readCazariHorizon(params.h);

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { EmailSettingsPanel } from "@/components/admin/settings/EmailSettingsPanel";
+import { EmailSettingsPanel } from "@/features/settings/ui/EmailSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { getEmailDeliveryConfig } from "@/lib/email/provider";

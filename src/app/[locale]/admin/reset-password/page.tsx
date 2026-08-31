@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
-import { ResetPasswordForm } from "@/components/admin/auth/ResetPasswordForm";
+import { ResetPasswordForm } from "@/features/auth/ui/ResetPasswordForm";
 import "@/styles/features/shared/admin-login.css";
 
 export default async function ResetPasswordPage() {

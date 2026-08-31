@@ -5,12 +5,12 @@ import type {
   GuestSearchFilter,
   GuestSearchResult,
 } from "@/domain/guest/types";
-import { GuestListCard } from "@/components/admin/guests/GuestListCard";
-import { GuestCollapsibleSection } from "@/components/admin/guests/GuestCollapsibleSection";
-import { GuestRecentHeroSection } from "@/components/admin/guests/GuestRecentHeroSection";
-import { GuestPreviewPanel } from "@/components/admin/guests/GuestPreviewPanel";
+import { GuestListCard } from "@/features/guests/ui/GuestListCard";
+import { GuestCollapsibleSection } from "@/features/guests/ui/GuestCollapsibleSection";
+import { GuestRecentHeroSection } from "@/features/guests/ui/GuestRecentHeroSection";
+import { GuestPreviewPanel } from "@/features/guests/ui/GuestPreviewPanel";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
-import { GuestSearchForm } from "@/components/admin/guests/GuestSearchForm";
+import { GuestSearchForm } from "@/features/guests/ui/GuestSearchForm";
 import {
   buildGuestListHref,
   guestListPreviewHref,

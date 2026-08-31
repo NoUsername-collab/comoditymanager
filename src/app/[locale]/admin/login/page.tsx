@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+import { AdminLoginForm } from "@/features/auth/ui/AdminLoginForm";
 import { getTranslations } from "next-intl/server";
 import "@/styles/features/shared/admin-login.css";
 

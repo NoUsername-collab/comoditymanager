@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { AdminTenantDomainsPanel } from "@/components/admin/settings/AdminTenantDomainsPanel";
+import { AdminTenantDomainsPanel } from "@/features/settings/ui/AdminTenantDomainsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { allowedCustomRoutingKindsForPlan } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";

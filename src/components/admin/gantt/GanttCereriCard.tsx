@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Link } from "@/i18n/navigation";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import type { GuestFlagLevel } from "@/domain/guest/types";
-import { GuestFlagPill } from "@/components/admin/guests/GuestFlagPill";
+import { GuestFlagPill } from "@/features/guests/ui/GuestFlagPill";
 
 type Props = {
   href: string;

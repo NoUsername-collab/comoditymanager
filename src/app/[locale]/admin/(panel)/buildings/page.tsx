@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { listBuildingDashboards } from "@/services/building-dashboard";
-import { BuildingDashboardCard } from "@/components/admin/BuildingDashboardCard";
+import { BuildingDashboardCard } from "@/features/buildings/ui/BuildingDashboardCard";
 import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";

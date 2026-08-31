@@ -28,13 +28,48 @@ core/         → tenant context, plans, module registry (platform kernel)
 **Server actions** live in `features/<area>/actions/` (with `"use server"`).
 Route files under `app/` re-export them for Next.js colocation — components import from `features/`, never from `app/`.
 
-**Honest current state:** tenant admin, platform-admin, public calendar, signup, and alpha-gate server actions live in `features/`. **`components → app` is a strict zero** (enforced in `import-boundaries.test.ts`, multiline-aware). Route files under `app/` re-export actions; components import from `features/`, never from `app/`.
+**Placement rule:** new feature screens go in `features/<area>/ui/`. Do **not** add feature UI under `components/admin/` except shared chrome (`shell/`, `ui/`, `feedback/`, `loading/`, `overlay/`, TopBar/Nav).
+
+## Scoreboard (honest)
+
+Update this table when a wave lands. Do not mark a slice “done” if UI still lives in `components/`.
+
+| Slice | Actions | Loaders | UI |
+|-------|---------|---------|----|
+| guest-app | done | **fat layout extracted** | **in `features/guest-app/`** (model) |
+| public-site | done | leftover | leftover (`components/calendar`, `components/public`) |
+| signup / alpha-gate | done | n/a | leftover |
+| auth | done | n/a | **in `features/auth/ui/`** |
+| checkin | done | leftover | **in `features/checkin/ui/`** |
+| calendar / gantt | done | leftover | leftover (`components/admin/gantt`) |
+| bookings | done | **detail + factura** | **in `features/bookings/ui/`** |
+| buildings / rooms / structure | done | **rooms new/edit** | **in `features/buildings/ui/` + `features/rooms/ui/`** |
+| guests | done | **guest detail** | **in `features/guests/ui/`** |
+| cazari | n/a (uses bookings/activity) | **page data** | **in `features/cazari/ui/`** |
+| availability | done | leftover | **in `features/availability/ui/`** |
+| settings | done | leftover | **panels in `features/settings/ui/`** (chrome stays in `components/admin/settings`) |
+| onboarding | done | leftover | **in `features/onboarding/ui/`** |
+| platform-admin | done | leftover | leftover (`components/platform-admin`) |
+| activity | done | n/a | leftover |
+
+**Already done (do not re-do):**
+- `ZALMOX_ADMIN_EMAILS` + legacy fallback
+- Dead hexagon (`IDataProvider`) removed
+- **All server actions in `features/`** — `components → app` is a **strict zero**
+- `app/` action files are thin re-exports only
+- CSS *lives* in `src/styles/` (size is a separate leftover)
+
+**Not done:**
+- PMS UI: ~279 files in `components/admin/` (shell stays; feature folders move)
+- ~40 `page.tsx` + 3 layouts still import `@/services/` (extract `features/<area>/loaders.ts`)
+- 3 components import Supabase browser client (MFA / session binder)
+- CSS size: god-file freeze; split only when that feature’s UI moves
 
 ## Product boundaries
 
 | Area | Route prefix | Code home |
 |------|--------------|-----------|
-| Tenant admin | `/admin/*` | `components/admin/` (UI), actions in `features/{checkin,calendar,bookings,buildings,rooms,guests,activity,availability,auth,settings,onboarding,simulation}/` |
+| Tenant admin | `/admin/*` | chrome in `components/admin/{shell,ui,feedback}`; feature UI **target** `features/<area>/ui/`; actions already in `features/` |
 | Platform admin | `/platform-admin/*` | `components/platform-admin/`, `features/platform-admin/`, `lib/platform-admin/` |
 | Guest app | `/stay/[code]/*` | `features/guest-app/`, `services/guest-app/` |
 | Public site | `/`, `/calendar`, … | `features/public-site/`, `services/public-site/` |
@@ -57,29 +92,28 @@ Services **re-export** these for backward compatibility; new code imports from `
 
 ## Feature modules
 
-| Module | Purpose |
-|--------|---------|
-| `features/public-site/` | Public site UI, preview, domain types, public calendar booking actions |
-| `features/guest-app/` | Guest stay UI + `actions/` |
-| `features/settings/` | Admin settings + room catalog server actions |
-| `features/checkin/` | Check-in / tourist-sheet / payment-panel server actions |
-| `features/calendar/` | Gantt create / move / hold / block server actions |
-| `features/bookings/` | Booking cancel / checkout / phone / check-time / payment / invoice / guest-app share |
-| `features/buildings/` | Building / floor / room-structure server actions |
-| `features/guests/` | Guest profile / merge / notes / rebook server actions |
-| `features/activity/` | Activity-log undo server actions |
-| `features/availability/` | Day-availability detail server actions |
-| `features/auth/` | Admin login, logout, forgot/reset password, bind-tenant-session |
-| `features/onboarding/` | First-run onboarding server actions |
-| `features/simulation/` | Demo/simulation trigger server actions |
-| `features/platform-admin/` | Tenant provision / plan / domains / logs / tools server actions |
-| `features/rooms/` | Create / update room from admin structure pages |
-| `features/signup/` | Platform self-serve signup |
-| `features/alpha-gate/` | Alpha unlock server action |
+| Module | What is actually there |
+|--------|------------------------|
+| `features/public-site/` | Preview UI + calendar/confirm **actions** (public booking forms still in `components/`) |
+| `features/guest-app/` | Stay UI + `actions/` |
+| `features/settings/` | Settings + catalog **actions** + `ui/` (panels; chrome stays in `components/admin/settings`) |
+| `features/checkin/` | Check-in **actions** + `ui/` |
+| `features/calendar/` | Gantt **actions** |
+| `features/bookings/` | Booking **actions** + `loaders.ts` + `ui/` (detail, invoice, payments, checkout, confirm) |
+| `features/buildings/` | Building/floor **actions** + `ui/` (dashboard, structure) |
+| `features/guests/` | Guest **actions** + `loaders.ts` + `ui/` |
+| `features/activity/` | Undo **actions** |
+| `features/availability/` | Day-detail **actions** + `ui/` (dashboard, home preview) |
+| `features/auth/` | Login / logout / password / bind-session **actions** + `ui/` (login, MFA challenge, forgot/reset) |
+| `features/onboarding/` | Onboarding **actions** + `ui/` (wizard, bar, checklist) |
+| `features/platform-admin/` | Platform **actions** |
+| `features/rooms/` | Room create/edit **actions** + `loaders.ts` + `ui/` (forms, catalog badges) |
+| `features/signup/` | Signup **action** |
+| `features/alpha-gate/` | Unlock **action** |
 
-These slices are real. **PMS UI is still `components/admin`.** Action coupling from UI to `app/` is gone. Do not pretend the UI layer is migrated.
+**PMS UI is still `components/admin`.** Actions are migrated. UI and page loaders are the remaining waves (B–C in the UI migration plan).
 
-When adding a new vertical, prefer `features/<name>/` over growing `components/` or `app/`.
+When adding a new vertical, put actions + loaders + UI under `features/<name>/` — not `components/admin/` or fat `app/` pages.
 
 ## Config & env
 
@@ -121,7 +155,7 @@ Styles live under **`src/styles/`** — not scattered in `src/app/` (except the 
 
 | File | Cap (lines) |
 |------|-------------|
-| `styles/features/layout/mobile-admin.css` | 4794 |
+| `styles/features/layout/mobile-admin.css` | 4772 |
 | `styles/features/admin/gantt-premium.css` | 4654 |
 
 **Freeze:** do not add rules to these two files. New styles go in a route-scoped sheet or Tailwind in JSX. Split only when you already touch that feature.
@@ -160,17 +194,20 @@ Enforced by `css-boundaries.ts` for global-bundle leaks (`gantt-premium`, `admin
 When touching coupled code:
 
 1. Move shared types to `domain/`
-2. Move server actions to `features/*/actions/`
-3. Keep `app/` as thin re-exports
-4. Keep `components → app` at zero — new UI must import `features/<area>`, not `app/`
-5. Run `npm test` (includes import/CSS boundary audits)
-6. Update this doc if you add a new layer rule
+2. Server actions already live in `features/` — keep `app/` as thin re-exports
+3. Extract page data to `features/<area>/loaders.ts` — `page.tsx` = guard + loader + render
+4. Move feature UI to `features/<area>/ui/` — chrome stays in `components/admin/{shell,ui,feedback}`
+5. Keep `components → app` at zero
+6. Run `npm test` (includes import/CSS boundary audits)
+7. Update the **Scoreboard** in this doc
+
+**Wave order (do not skip to Gantt):** A scoreboard (this section) → B fat-page loaders → C UI slices (auth → … → gantt last) → D MFA facade → E CSS only if that slice is already open.
 
 ## Remaining debt (known)
 
-- PMS core UI is still `components/admin` (~277 files), not `features/`
-- Many `app/` pages still call `services/` directly (acceptable for routes; extract loaders over time)
-- Some `components/` import Supabase client for MFA (auth UI — candidate for `lib/auth/` facade)
-- `@/core` barrel still wide; prefer direct imports for new code
-- CSS location is correct; **size is not** — `mobile-admin.css` and `gantt-premium.css` are frozen at current line caps
+- PMS feature UI still in `components/admin/` (~279 files); shell stays
+- `app/` pages still import `@/services/` until loaders exist for that route
+- MFA / session binder import `@/lib/supabase/client` (Val D)
+- `@/core` barrel: prefer direct imports for new code
+- CSS location is correct; **size is not** — god files frozen at current line caps
 - Legacy host names (`nestio`, `hospira`) still appear in routing/CSS class names

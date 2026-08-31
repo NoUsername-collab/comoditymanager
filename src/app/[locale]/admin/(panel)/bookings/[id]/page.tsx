@@ -8,32 +8,20 @@ import {
   bookingCalendarHref,
   formatBookingRef,
 } from "@/lib/booking-admin-links";
-import { BookingCancelButton } from "@/components/admin/BookingCancelButton";
-import { BookingGuestPhoneForm } from "@/components/admin/BookingGuestPhoneForm";
-import { BookingOperationalPanel } from "@/components/admin/BookingOperationalPanel";
+import { BookingCancelButton } from "@/features/bookings/ui/BookingCancelButton";
+import { BookingGuestPhoneForm } from "@/features/bookings/ui/BookingGuestPhoneForm";
+import { BookingOperationalPanel } from "@/features/bookings/ui/BookingOperationalPanel";
 import { BookingActivitySection } from "@/components/admin/activity/BookingActivitySection";
-import { BookingStayEditor } from "@/components/admin/BookingStayEditor";
-import { ConfirmRoomsForm } from "@/components/admin/ConfirmRoomsForm";
-import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
-import { GuestAccessSharePanel } from "@/components/admin/bookings/GuestAccessSharePanel";
-import { GuestFeedbackBadge } from "@/components/admin/bookings/GuestFeedbackBadge";
-import { getGuestFeedbackByBookingId } from "@/services/guest-feedback";
-import { loadFinancialSnapshot } from "@/services/booking-financial";
-import { StayFinancialPanel } from "@/components/admin/payments/StayFinancialPanel";
-import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
+import { BookingStayEditor } from "@/features/bookings/ui/BookingStayEditor";
+import { ConfirmRoomsForm } from "@/features/bookings/ui/ConfirmRoomsForm";
+import { GuestDedupWarning } from "@/features/guests/ui/GuestDedupWarning";
+import { GuestAccessSharePanel } from "@/features/bookings/ui/GuestAccessSharePanel";
+import { GuestFeedbackBadge } from "@/features/bookings/ui/GuestFeedbackBadge";
+import { StayFinancialPanel } from "@/features/bookings/ui/StayFinancialPanel";
+import { GuestProfileBadges } from "@/features/guests/ui/GuestProfileBadges";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { getStayPricingRules } from "@/services/booking-rules-settings";
-import { loadBookingConfirmContext } from "@/services/booking-confirm";
-import {
-  DEFAULT_CHECKIN_SETTINGS,
-  getCheckinByBookingId,
-  getCheckinSettings,
-} from "@/services/checkin";
-import { attachCheckinRecordState } from "@/services/checkin/attach-booking-state";
 import { isBookingEditableAfterCheckout } from "@/domain/booking/post-checkout-edit";
-import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
-import type { BookingForCheckin } from "@/domain/checkin/types";
-import { dedupInputFromBooking, findDedupCandidates } from "@/services/guest-dedup";
+import { loadBookingDetailPage } from "@/features/bookings/loaders";
 import {
   cancelBookingAction,
   confirmBookingAction,
@@ -56,72 +44,34 @@ export default async function BookingDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ return_to?: string }>;
 }) {
-  const ctxPromise = params.then(({ id }) =>
-    loadBookingConfirmContext(id).catch(() => null)
-  );
-  const checkinSettingsPromise = getCheckinSettings().catch(() => null);
-  const postCheckoutPolicyPromise = resolvePostCheckoutEditPolicy().catch(() => ({
-    memberRole: null,
-    allowPostCheckoutEdits: false,
-    canEditAfterCheckout: false,
-  }));
-  const bookingExtrasPromise = ctxPromise.then((ctx) => {
-    if (!ctx) {
-      return {
-        dedupCandidates: [] as Awaited<ReturnType<typeof findDedupCandidates>>,
-        existingCheckin: null as Awaited<
-          ReturnType<typeof getCheckinByBookingId>
-        >,
-        guestFeedback: null as Awaited<
-          ReturnType<typeof getGuestFeedbackByBookingId>
-        >,
-        financialSnapshot: null as Awaited<
-          ReturnType<typeof loadFinancialSnapshot>
-        >,
-      };
-    }
-    const { booking } = ctx;
-    return Promise.all([
-      findDedupCandidates(
-        dedupInputFromBooking({
-          guestLastName: booking.guest_last_name ?? "",
-          guestFirstName: booking.guest_first_name ?? "",
-          guestEmail: booking.guest_email,
-          guestPhone: booking.guest_phone ?? "",
-          excludeGuestId: booking.guest_id ?? undefined,
-        })
-      ).catch(() => []),
-      getCheckinByBookingId(booking.id).catch(() => null),
-      getGuestFeedbackByBookingId(booking.id).catch(() => null),
-      booking.status === "confirmata"
-        ? loadFinancialSnapshot(booking.id).catch(() => null)
-        : Promise.resolve(null),
-    ]).then(([dedupCandidates, existingCheckin, guestFeedback, financialSnapshot]) => ({
-      dedupCandidates,
-      existingCheckin,
-      guestFeedback,
-      financialSnapshot,
-    }));
-  });
-
-  const [tPage, tCommon, tFlow, tStay, sp, ctx, bookingExtras, checkinSettings, postCheckoutPolicy, pricingRules] =
-    await Promise.all([
-      getTranslations("admin.pages.bookingDetail"),
-      getTranslations("admin.common"),
-      getTranslations("booking.flowStatus"),
-      getTranslations("admin.stayEditor"),
-      searchParams,
-      ctxPromise,
-      bookingExtrasPromise,
-      checkinSettingsPromise,
-      postCheckoutPolicyPromise,
-      getStayPricingRules().catch(() => null),
-    ]);
+  const [tPage, tCommon, tFlow, tStay, sp, data] = await Promise.all([
+    getTranslations("admin.pages.bookingDetail"),
+    getTranslations("admin.common"),
+    getTranslations("booking.flowStatus"),
+    getTranslations("admin.stayEditor"),
+    searchParams,
+    params.then(({ id }) => loadBookingDetailPage(id)),
+  ]);
   const returnTo = safeReturnTo(sp.return_to);
-  if (!ctx) notFound();
+  if (!data) notFound();
 
   const {
+    ctx,
     booking,
+    dedupCandidates,
+    existingCheckin,
+    guestFeedback,
+    financialSnapshot,
+    checkinSettings: effectiveCheckinSettings,
+    postCheckoutPolicy,
+    pricingRules,
+    operativeBooking,
+    checkedInRooms,
+    keysHandedRooms,
+    hasCheckinRecord,
+    bookingForCheckin,
+  } = data;
+  const {
     checkInTime,
     checkOutTime,
     guestCount,
@@ -129,35 +79,6 @@ export default async function BookingDetailPage({
     minRoomsNeeded,
     canFulfill,
   } = ctx;
-
-  const { dedupCandidates, existingCheckin, guestFeedback, financialSnapshot } = bookingExtras;
-  const effectiveCheckinSettings = checkinSettings ?? DEFAULT_CHECKIN_SETTINGS;
-
-  const [bookingWithCheckin] = await attachCheckinRecordState([booking], {
-    repairOrphans: true,
-  });
-  const operativeBooking = bookingWithCheckin ?? booking;
-  const checkedInRooms = operativeBooking.checked_in_rooms ?? [];
-  const keysHandedRooms = operativeBooking.keys_handed_rooms ?? [];
-  const hasCheckinRecord =
-    !!operativeBooking.has_checkin_record || !!existingCheckin;
-
-  const bookingForCheckin: BookingForCheckin = {
-    id: booking.id,
-    status: booking.status,
-    total_price: booking.total_price ?? 0,
-    check_in: booking.check_in,
-    check_out: booking.check_out,
-    guest_name: booking.guest_name,
-    guest_last_name: booking.guest_last_name ?? null,
-    guest_first_name: booking.guest_first_name ?? null,
-    guest_phone: booking.guest_phone ?? null,
-    guest_email: booking.guest_email ?? null,
-    num_adults: booking.num_adults,
-    num_children: booking.num_children ?? 0,
-    room_names: booking.room_names,
-    checked_in_rooms: checkedInRooms,
-  };
 
   const nights = stayNightCount(booking.check_in, booking.check_out);
   const isCancelled = booking.status === "anulata";

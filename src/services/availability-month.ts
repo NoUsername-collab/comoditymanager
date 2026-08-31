@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { nightOccupied } from "@/lib/stay-dates";
+import { addDays, nightOccupied, todayIso } from "@/lib/stay-dates";
 import { daysInMonth, monthYearLabel } from "@/lib/ro-calendar";
 import { getLocale } from "next-intl/server";
 import { listOccupiedRoomRanges, listBookingsForRange } from "@/services/bookings";
@@ -18,12 +18,10 @@ import {
   scanWeekendsInDays,
   type WeekendPick,
 } from "@/domain/availability/weekend-finder";
-import { addDays, todayIso } from "@/lib/stay-dates";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { roomMatchesFeatureFilter } from "@/domain/room/feature-filter";
 import type { AcMode } from "@/types/database";
 import { resolveGanttBuildingColor } from "@/lib/building-color-palette";
 import { getRoomOptionSlugsByRoomIds } from "@/services/room-catalog";
-import { roomMatchesFeatureFilter } from "@/domain/room/feature-filter";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 
 export type DayAvailabilityStatus = "available" | "full";
@@ -225,27 +223,21 @@ async function loadAvailabilityDashboardImpl(
 
   const scanEnd = addDays(end, 75);
 
-  const todayPromise = getEffectiveToday();
+  const today = todayIso();
   const roomsPromise = listAllRooms();
 
   const [locale, scanStart, roomsRaw, buildings, occupied, bookings, optionSlugsByRoom] =
     await Promise.all([
       getLocale(),
-      todayPromise,
+      today,
       roomsPromise,
       listBuildings(),
-      todayPromise.then((today) => {
-        const rangeStart = today < start ? today : start;
-        return listOccupiedRoomRanges(undefined, {
-          forPublicCalendar: true,
-          rangeStart,
-          rangeEnd: scanEnd,
-        });
+      listOccupiedRoomRanges(undefined, {
+        forPublicCalendar: true,
+        rangeStart: today < start ? today : start,
+        rangeEnd: scanEnd,
       }),
-      todayPromise.then((today) => {
-        const rangeStart = today < start ? today : start;
-        return listBookingsForRange(rangeStart, scanEnd);
-      }),
+      listBookingsForRange(today < start ? today : start, scanEnd),
       roomsPromise
         .then((rooms) => getRoomOptionSlugsByRoomIds(rooms.map((r) => r.id)))
         .catch(() => ({} as Record<string, string[]>)),

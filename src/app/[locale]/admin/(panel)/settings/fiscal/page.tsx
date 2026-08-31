@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { FiscalBillingSettingsPanel } from "@/components/admin/settings/FiscalBillingSettingsPanel";
+import { FiscalBillingSettingsPanel } from "@/features/settings/ui/FiscalBillingSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";

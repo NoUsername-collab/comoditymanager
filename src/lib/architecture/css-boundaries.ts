@@ -30,7 +30,7 @@ const ROUTE_SCOPED_CSS = [
 /** gantt-premium may only be pulled in via the calendar feature bundle. */
 const GANTT_PREMIUM_IMPORT_PARENT = "src/styles/features/admin/admin-gantt-features.css";
 
-const CHECKIN_CSS_ENTRY = "src/components/admin/checkin/import-checkin-styles.ts";
+const CHECKIN_CSS_ENTRY = "src/features/checkin/ui/import-checkin-styles.ts";
 
 function listCssFiles(dir: string, base = dir): string[] {
   const out: string[] = [];
@@ -134,7 +134,7 @@ export function auditCssArchitecture(): CssViolation[] {
         file: normalized,
         rule: "checkin-css-single-entry",
         detail:
-          "Import @/components/admin/checkin/import-checkin-styles instead of admin-checkin.css",
+          "Import @/features/checkin/ui/import-checkin-styles instead of admin-checkin.css",
       });
     }
   }
@@ -149,7 +149,7 @@ export function auditCssArchitecture(): CssViolation[] {
 export const CSS_GOD_FILE_LINE_CAPS: { file: string; maxLines: number }[] = [
   {
     file: "src/styles/features/layout/mobile-admin.css",
-    maxLines: 4794,
+    maxLines: 4772,
   },
   {
     file: "src/styles/features/admin/gantt-premium.css",

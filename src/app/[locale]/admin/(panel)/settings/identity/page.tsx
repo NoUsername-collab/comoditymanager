@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { PensionIdentityForm } from "@/components/admin/settings/PensionIdentityForm";
+import { PensionIdentityForm } from "@/features/settings/ui/PensionIdentityForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { getPensionIdentity } from "@/services/pension-identity";

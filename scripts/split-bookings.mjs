@@ -15,12 +15,11 @@ function slice(startMarker, endMarker) {
 const sharedImports = `import { unstable_cache } from "next/cache";
 import type { GuestFlagLevel } from "@/domain/guest/types";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 import {
   logAdminActivity,
   logAdminActivityFromSession,

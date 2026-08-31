@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { MfaEnrollmentPanel } from "@/components/admin/settings/MfaEnrollmentPanel";
+import { MfaEnrollmentPanel } from "@/features/settings/ui/MfaEnrollmentPanel";
 
 export const dynamic = "force-dynamic";
 

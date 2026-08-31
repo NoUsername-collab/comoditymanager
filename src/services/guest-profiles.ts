@@ -16,7 +16,7 @@ import {
   computeStayReviewEffectiveStars,
   clampGuestNoteStars,
 } from "@/domain/guest/reputation";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
@@ -179,7 +179,7 @@ async function listCompletedStayBookings(
   guestId: string
 ): Promise<{ check_in: string; check_out: string }[]> {
   const [today, { tenantId, supabase }] = await Promise.all([
-    getEffectiveToday(),
+    todayIso(),
     getTenantScope(),
   ]);
   const { data, error } = await supabase
@@ -201,7 +201,7 @@ export async function recomputeGuestProfile(
   await ensureGuestProfiles([guestId]);
   const current = (await fetchGuestProfileRow(guestId)) ?? createDefaultGuestProfile(guestId);
   const [today, completedStayBookings, reviews] = await Promise.all([
-    getEffectiveToday(),
+    todayIso(),
     listCompletedStayBookings(guestId),
     listGuestStayReviewsForGuest(guestId),
   ]);
@@ -265,7 +265,7 @@ export async function saveGuestStayReview(input: {
   const effectiveStars = computeStayReviewEffectiveStars({ polarity, intensity });
   const [booking, today] = await Promise.all([
     getBookingReviewCheck(input.bookingId),
-    getEffectiveToday(),
+    todayIso(),
   ]);
   if (!booking) throw new Error("guest.stay_not_found");
   if (booking.guest_id !== input.guestId) {

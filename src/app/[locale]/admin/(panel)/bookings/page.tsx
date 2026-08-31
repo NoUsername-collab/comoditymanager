@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { GuestProfileBadges } from "@/components/admin/guests/GuestProfileBadges";
+import { GuestProfileBadges } from "@/features/guests/ui/GuestProfileBadges";
 import {
   CERERE_LIST_MAX_SHOWN,
   CERERE_LIST_PAGE_SIZE,

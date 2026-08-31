@@ -3,7 +3,7 @@ import { parseGuestAppFeatureSlug } from "@/domain/guest-app/routes";
 import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
 import { resolveGuestAppContext } from "@/services/guest-app/resolve-context";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 import { getLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -15,7 +15,7 @@ export default async function GuestStayFeaturePage({
   const [{ code, feature: featureSlug }, locale, today] = await Promise.all([
     params,
     getLocale(),
-    getEffectiveToday(),
+    todayIso(),
   ]);
   const featureId = parseGuestAppFeatureSlug(featureSlug);
   if (!featureId) notFound();

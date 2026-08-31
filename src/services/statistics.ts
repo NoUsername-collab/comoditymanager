@@ -3,7 +3,7 @@ import { unstable_cache } from "next/cache";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantScope } from "@/lib/tenant/scope";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 import {
   buildYearStatistics,
   discoverYears,
@@ -182,7 +182,7 @@ async function loadStatisticsReportForTenant(
 ): Promise<StatisticsReport> {
   const [{ bookings, snapshot }, today] = await Promise.all([
     loadStatisticsBaseDataForTenant(tenantId),
-    getEffectiveToday(),
+    todayIso(),
   ]);
   return buildStatisticsReportFromBase(bookings, snapshot, today);
 }

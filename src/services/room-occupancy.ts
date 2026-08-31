@@ -17,7 +17,7 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getTenantPublicScope, getTenantScope } from "@/lib/tenant/scope";
 import { getPensionSettings } from "@/services/pension-settings";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 import { releaseExpiredRoomHolds } from "@/services/room-holds";
 
 const ALL_KINDS: OccupancyKind[] = ["hold", "request", "stay", "block"];
@@ -45,7 +45,7 @@ async function resolveOccupancyContext(
   const [ref, scope] = await Promise.all([
     options.referenceDate
       ? Promise.resolve(options.referenceDate)
-      : getEffectiveToday(),
+      : todayIso(),
     options.tenantId
       ? Promise.resolve({ tenantId: options.tenantId })
       : options.forPublicCalendar

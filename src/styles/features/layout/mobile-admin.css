@@ -1729,17 +1729,6 @@ html[data-layout-chrome="compact"] .admin-dn-switch__btn {
   min-height: var(--ml-touch-min, 2.75rem);
 }
 
-
-
-
-html[data-layout-chrome="compact"] .sim-trigger-chip {
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding-inline: 0.65rem;
-}
-
-
-
-
 /* ── Onboarding bar: compact ── */
 html[data-layout-chrome="compact"] .onboarding-bar {
   padding-block: 0;
@@ -2832,17 +2821,6 @@ html[data-layout-chrome="compact"] .admin-gear__footer .sim-error-toast {
   left: auto;
   font-size: 0.72rem;
 }
-
-
-
-
-html[data-layout-chrome="compact"] .admin-gear__footer .sim-trigger-chip--compact {
-  width: 100%;
-  justify-content: center;
-}
-
-
-
 
 /* Admin panel error boundary */
 html[data-layout-chrome="compact"] .ml-content.flex.min-h-\[40dvh\] {

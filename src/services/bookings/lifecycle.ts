@@ -1,14 +1,12 @@
 import { after } from "next/server";
 import { unstable_cache } from "next/cache";
 import type { GuestFlagLevel } from "@/domain/guest/types";
-import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
+import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { assertBookingConfirmable } from "@/domain/booking/lifecycle-guards";
 import type { BookingStatus } from "@/domain/booking/types";
 import { addDays, parseIso } from "@/lib/stay-dates";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 import {
   logAdminActivity,
   logAdminActivityFromSession,
@@ -32,7 +30,7 @@ import {
   assertRoomsAvailableForOccupancy,
 } from "@/services/room-occupancy";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
+import { getTenantScope } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
 
 import { createServerTimer } from "@/lib/dev/server-timing";
@@ -53,63 +51,18 @@ export async function confirmBookingWithRooms(
   );
   await assertRoomsAssignableForBooking(bookingId, roomIds);
 
-  const [{ tenantId, supabase }, booking, simActive] = await Promise.all([
-    getTenantScope(),
-    getBookingById(bookingId),
-    isSimActive(),
-  ]);
+  const { tenantId } = await getTenantScope();
+  const booking = await getBookingById(bookingId);
   assertBookingConfirmable(booking);
 
-  if (simActive) {
-    // Simulation mode: use individual operations on sim_sandbox schema.
-    // Atomicity is not critical for throwaway simulation data.
-
-    await supabase
-      .from("booking_rooms")
-      .delete()
-      .eq("tenant_id", tenantId)
-      .eq("booking_id", bookingId);
-
-    const { error: brError } = await supabase.from("booking_rooms").insert(
-      roomIds.map((room_id) =>
-        withTenantId(tenantId, {
-          booking_id: bookingId,
-          room_id,
-          extra_beds: 0,
-        })
-      )
-    );
-    if (brError) throw new Error(brError.message);
-
-    const { error: upError } = await supabase
-      .from("bookings")
-      .update({
-        status: "confirmata",
-        total_price: totalPrice,
-        confirmed_at: new Date().toISOString(),
-      })
-      .eq("tenant_id", tenantId)
-      .eq("id", bookingId);
-
-    if (upError) throw new Error(upError.message);
-
-    await syncBookingRoomSegments(bookingId);
-  } else {
-    // Production: use atomic RPC — all DB operations run in a single
-    // transaction so a crash can never orphan room assignments.
-    const supabase = createPublicAdminClient();
-
-    const { error: rpcError } = await supabase.rpc(
-      "confirm_booking_with_rooms",
-      {
-        p_booking_id: bookingId,
-        p_room_ids: roomIds,
-        p_total_price: totalPrice,
-        p_tenant_id: tenantId,
-      }
-    );
-    if (rpcError) throw new Error(rpcError.message);
-  }
+  const supabase = createPublicAdminClient();
+  const { error: rpcError } = await supabase.rpc("confirm_booking_with_rooms", {
+    p_booking_id: bookingId,
+    p_room_ids: roomIds,
+    p_total_price: totalPrice,
+    p_tenant_id: tenantId,
+  });
+  if (rpcError) throw new Error(rpcError.message);
 
   await logAdminActivityFromSession({
     action: "booking.confirmed",

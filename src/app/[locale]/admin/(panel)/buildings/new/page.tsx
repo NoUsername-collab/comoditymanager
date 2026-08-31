@@ -1,4 +1,4 @@
-import { BuildingForm } from "@/components/admin/BuildingForm";
+import { BuildingForm } from "@/features/buildings/ui/BuildingForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { listRoomOptions } from "@/services/room-catalog";
 import { createBuildingAction } from "../actions";

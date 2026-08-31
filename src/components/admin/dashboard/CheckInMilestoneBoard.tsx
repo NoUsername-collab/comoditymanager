@@ -14,7 +14,7 @@ import type { CheckInQuestItem } from "@/services/today-board";
 
 const CheckinModal = dynamic(
   () =>
-    import("@/components/admin/checkin/CheckinModal").then((m) => ({
+    import("@/features/checkin/ui/CheckinModal").then((m) => ({
       default: m.CheckinModal,
     })),
   { ssr: false },

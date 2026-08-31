@@ -10,7 +10,7 @@ import type {
   GuestAccessBookingSnapshot,
   GuestAccessResult,
 } from "@/domain/guest-app/types";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { todayIso } from "@/lib/stay-dates";
 import {
   checkRateLimit,
   getClientIp,
@@ -198,7 +198,7 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
     const statusReason = isGuestAccessBookingStatusValid(booking.status);
     if (statusReason) return { ok: false, reason: statusReason };
 
-    const today = await getEffectiveToday();
+    const today = todayIso();
     const earlyAccessDays = 0;
     const opensOn =
       guestAccessOpensOn(booking.checkIn, earlyAccessDays) ??

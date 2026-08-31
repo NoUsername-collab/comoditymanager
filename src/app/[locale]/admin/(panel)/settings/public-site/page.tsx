@@ -1,5 +1,5 @@
 ﻿import { Suspense } from "react";
-import { PublicSiteSettingsForm } from "@/components/admin/settings/PublicSiteSettingsForm";
+import { PublicSiteSettingsForm } from "@/features/settings/ui/PublicSiteSettingsForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { getPublicSiteAdminBundle } from "@/services/public-site/queries";
 import { getLocale, getTranslations } from "next-intl/server";

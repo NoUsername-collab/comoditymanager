@@ -1,14 +1,7 @@
 import { notFound } from "next/navigation";
-import { RoomEditForm } from "@/components/admin/RoomEditForm";
+import { RoomEditForm } from "@/features/rooms/ui/RoomEditForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { listBuildings } from "@/services/buildings";
-import { listAllFloors } from "@/services/floors";
-import {
-  ensureBuildingPoliciesFromLegacy,
-  listRoomOptions,
-  listRoomTypes,
-} from "@/services/room-catalog";
-import { getRoomById } from "@/services/rooms-admin";
+import { loadEditRoomPage } from "@/features/rooms/loaders";
 import { updateRoomAction } from "./actions";
 import { guardOperatorRoute } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
@@ -30,33 +23,11 @@ export default async function EditRoomPage({
   ]);
   const backToStructure = return_to === "structure";
 
-  const buildingsPromise = listBuildings().catch(
-    () => [] as Awaited<ReturnType<typeof listBuildings>>
-  );
-  const [room, buildings, types, options, allFloors, policyResults] =
-    await Promise.all([
-      getRoomById(id).catch(() => null),
-      buildingsPromise,
-      listRoomTypes().catch(() => []),
-      listRoomOptions().catch(() => []),
-      listAllFloors().catch(() => []),
-      buildingsPromise.then((loadedBuildings) =>
-        Promise.all(
-          loadedBuildings.map((b) =>
-            ensureBuildingPoliciesFromLegacy(b.id, b.ac_mode).catch(
-              () => [] as Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>
-            )
-          )
-        )
-      ),
-    ]);
-  if (!room) notFound();
-  const floorsByBuilding: Record<string, Awaited<ReturnType<typeof listAllFloors>>> =
-    {};
-  const policiesByBuilding: Record<
-    string,
-    Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>
-  > = {};
+  const data = await loadEditRoomPage(id);
+  if (!data) notFound();
+  const { room, buildings, types, options, allFloors, policyResults } = data;
+  const floorsByBuilding: Record<string, typeof allFloors> = {};
+  const policiesByBuilding: Record<string, (typeof policyResults)[number]> = {};
   for (let i = 0; i < buildings.length; i += 1) {
     const building = buildings[i];
     floorsByBuilding[building.id] = allFloors.filter(

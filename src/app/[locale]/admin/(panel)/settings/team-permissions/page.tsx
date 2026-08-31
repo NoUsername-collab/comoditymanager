@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { TeamPermissionsPanel } from "@/components/admin/settings/TeamPermissionsPanel";
+import { TeamPermissionsPanel } from "@/features/settings/ui/TeamPermissionsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import {

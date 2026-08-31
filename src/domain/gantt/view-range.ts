@@ -357,7 +357,7 @@ export function resolveGanttRange(params: {
   q?: number;
   locale?: string;
   labels?: GanttRangeLabels;
-  /** Effective "today" — pass sim date when simulation is active */
+  /** Calendar "today" (ISO), defaults to the real calendar date. */
   today?: string;
 }): GanttViewRange {
   const locale = params.locale ?? "ro";

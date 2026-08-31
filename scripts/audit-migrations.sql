@@ -28,8 +28,8 @@ with checks as (
     ('020', 'dev_logs',                'table',              'dev_logs',                                 ''),
     ('021', 'guest_identity',          'column',             'guests',                                   'identity_status'),
     ('022', 'national_id',             'column',             'guests',                                   'national_id_type'),
-    ('023', 'simulation',              'function',           'sim_start',                                ''),
-    ('024', 'simulation_schema',       'function',           'sim_advance',                              ''),
+    ('023', 'simulation',              'seed',               '',                                         'SUPERSEDED by 096 — sim_* functions dropped'),
+    ('024', 'simulation_schema',       'seed',               '',                                         'SUPERSEDED by 096 — sim_sandbox dropped'),
     ('025', 'atomic_confirm',          'function',           'confirm_booking_with_rooms',               ''),
     ('026', 'multi_tenant',            'table',              'tenants',                                  ''),
     ('027', 'booking_conflict_guard',  'function',           'check_segment_conflict_before_insert',     ''),
@@ -97,7 +97,8 @@ with checks as (
     ('089', 'fiscal_submission',       'table',              'tenant_fiscal_settings',                   ''),
     ('090', 'early_checkout_policy_repair', 'column',        'pension_settings',                         'early_checkout_allowed'),
     ('091', 'expand_admin_palette_themes', 'constraint_contains', 'pension_settings_admin_palette_key_check', 'pearl'),
-    ('092', 'expand_public_site_theme_ids', 'constraint_contains', 'public_site_settings_theme_id_check', 'pearl')
+    ('092', 'expand_public_site_theme_ids', 'constraint_contains', 'public_site_settings_theme_id_check', 'pearl'),
+    ('096', 'drop_simulation',       'function_dropped',    'sim_start',                                '')
   ) as t(migration_id, slug, kind, obj1, obj2)
 ),
 table_exists as (
@@ -166,6 +167,8 @@ select
     when c.kind = 'column_dropped' and ce.column_name is null then 'OK'
     when c.kind = 'column_dropped' and ce.column_name is not null then 'MISSING'
     when c.kind = 'function' and fe.function_name is not null then 'OK'
+    when c.kind = 'function_dropped' and fe.function_name is null then 'OK'
+    when c.kind = 'function_dropped' and fe.function_name is not null then 'MISSING'
     when c.kind = 'policy' and pe.policyname is not null then 'OK'
     when c.kind = 'constraint' and ce2.constraint_name is not null then 'OK'
     when c.kind = 'index' and ie.indexname is not null then 'OK'
@@ -186,7 +189,7 @@ left join column_exists ce
   on c.kind in ('column', 'column_dropped')
  and ce.table_name = c.obj1
  and ce.column_name = c.obj2
-left join function_exists fe on c.kind = 'function' and fe.function_name = c.obj1
+left join function_exists fe on c.kind in ('function', 'function_dropped') and fe.function_name = c.obj1
 left join policy_exists pe on c.kind = 'policy' and pe.tablename = c.obj1 and pe.policyname = c.obj2
 left join constraint_exists ce2
   on c.kind in ('constraint', 'constraint_dropped')

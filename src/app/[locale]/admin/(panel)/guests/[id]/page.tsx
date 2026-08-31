@@ -2,29 +2,21 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
-import { GuestMergeForm } from "@/components/admin/guests/GuestMergeForm";
-import { GuestBlacklistPanel } from "@/components/admin/guests/GuestBlacklistPanel";
-import { GuestDedupWarning } from "@/components/admin/guests/GuestDedupWarning";
-import { GuestIdentityCard } from "@/components/admin/guests/GuestIdentityCard";
-import { GuestIdentityForm } from "@/components/admin/guests/GuestIdentityForm";
-import { GuestNotesForm } from "@/components/admin/guests/GuestNotesForm";
-import { GuestProfileCards } from "@/components/admin/guests/GuestProfileCards";
-import { GuestProfileControlsForm } from "@/components/admin/guests/GuestProfileControlsForm";
-import { GuestRebookButtons } from "@/components/admin/guests/GuestRebookButtons";
-import { GuestRebookStayCollapse } from "@/components/admin/guests/GuestRebookStayCollapse";
-import { loadGuestRebookPanelPayload } from "@/services/guest-rebook";
-import { GuestProfileSection } from "@/components/admin/guests/GuestProfileSection";
-import { GuestStayReviewForm } from "@/components/admin/guests/GuestStayReviewForm";
-import { GuestStayStarsInline } from "@/components/admin/guests/GuestStayStarsInline";
+import { GuestMergeForm } from "@/features/guests/ui/GuestMergeForm";
+import { GuestBlacklistPanel } from "@/features/guests/ui/GuestBlacklistPanel";
+import { GuestDedupWarning } from "@/features/guests/ui/GuestDedupWarning";
+import { GuestIdentityCard } from "@/features/guests/ui/GuestIdentityCard";
+import { GuestIdentityForm } from "@/features/guests/ui/GuestIdentityForm";
+import { GuestNotesForm } from "@/features/guests/ui/GuestNotesForm";
+import { GuestProfileCards } from "@/features/guests/ui/GuestProfileCards";
+import { GuestProfileControlsForm } from "@/features/guests/ui/GuestProfileControlsForm";
+import { GuestRebookButtons } from "@/features/guests/ui/GuestRebookButtons";
+import { GuestRebookStayCollapse } from "@/features/guests/ui/GuestRebookStayCollapse";
+import { GuestProfileSection } from "@/features/guests/ui/GuestProfileSection";
+import { GuestStayReviewForm } from "@/features/guests/ui/GuestStayReviewForm";
+import { GuestStayStarsInline } from "@/features/guests/ui/GuestStayStarsInline";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
-import {
-  findDuplicateGuestsForGuest,
-  getGuestBaseById,
-  getGuestBookingHistory,
-  getGuestById,
-} from "@/services/guests";
-import { dedupInputFromGuest, findDedupCandidates } from "@/services/guest-dedup";
+import { loadGuestDetailPage } from "@/features/guests/loaders";
 import { getTranslations } from "next-intl/server";
 
 function statusLabel(status: string, tFlow: (key: string) => string): string {
@@ -63,35 +55,6 @@ export default async function GuestDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ from?: string; tab?: string }>;
 }) {
-  const paramsPromise = params;
-  const guestIdPromise = paramsPromise.then(({ id: guestId }) => guestId);
-  const historyPromise = guestIdPromise.then((guestId) =>
-    getGuestBookingHistory(guestId)
-      .then((data) => ({ ok: true as const, data }))
-      .catch((e) => ({ ok: false as const, error: e }))
-  );
-  const guestResultPromise = guestIdPromise.then((guestId) =>
-    getGuestById(guestId).catch(() => null)
-  );
-  const duplicatesPromise = guestIdPromise.then((guestId) =>
-    findDuplicateGuestsForGuest(guestId)
-      .then((data) => ({ ok: true as const, data }))
-      .catch((e) => ({ ok: false as const, error: e }))
-  );
-
-  const baseGuestPromise = guestIdPromise.then((guestId) =>
-    getGuestBaseById(guestId)
-  );
-  const dedupCandidatesPromise = guestResultPromise.then((guest) =>
-    guest
-      ? findDedupCandidates(dedupInputFromGuest(guest)).catch(() => [])
-      : baseGuestPromise.then((base) =>
-          base
-            ? findDedupCandidates(dedupInputFromGuest(base)).catch(() => [])
-            : []
-        )
-  );
-
   const [
     tPage,
     tCommon,
@@ -99,6 +62,20 @@ export default async function GuestDetailPage({
     tFlow,
     { id },
     { from, tab },
+    data,
+  ] = await Promise.all([
+    getTranslations("admin.pages.guestDetail"),
+    getTranslations("admin.common"),
+    getTranslations("admin.guests"),
+    getTranslations("booking.flowStatus"),
+    params,
+    searchParams,
+    params.then(({ id }) => loadGuestDetailPage(id)),
+  ]);
+  const activeTab = resolveTab(tab);
+  if (!data) notFound();
+
+  const {
     baseGuest,
     guestResult,
     historyResult,
@@ -106,31 +83,7 @@ export default async function GuestDetailPage({
     dedupCandidates,
     today,
     latestRebookPayload,
-  ] = await Promise.all([
-    getTranslations("admin.pages.guestDetail"),
-    getTranslations("admin.common"),
-    getTranslations("admin.guests"),
-    getTranslations("booking.flowStatus"),
-    paramsPromise,
-    searchParams,
-    baseGuestPromise,
-    guestResultPromise,
-    historyPromise,
-    duplicatesPromise,
-    dedupCandidatesPromise,
-    getEffectiveToday(),
-    historyPromise.then((result) =>
-      result.ok && result.data[0]
-        ? guestIdPromise.then((guestId) =>
-            loadGuestRebookPanelPayload(guestId, result.data[0].id).catch(
-              () => null
-            )
-          )
-        : null
-    ),
-  ]);
-  const activeTab = resolveTab(tab);
-  if (!baseGuest) notFound();
+  } = data;
 
   let guest = guestResult;
   let profileError: string | null = null;
@@ -139,22 +92,18 @@ export default async function GuestDetailPage({
     profileError = tPage("profileSnapshotError");
   }
 
-  let history = [] as Awaited<ReturnType<typeof getGuestBookingHistory>>;
+  let history = historyResult.ok ? historyResult.data : [];
   let historyError: string | null = null;
-  if (historyResult.ok) {
-    history = historyResult.data;
-  } else {
+  if (!historyResult.ok) {
     historyError =
       historyResult.error instanceof Error
         ? historyResult.error.message
         : tPage("historyLoadError");
   }
 
-  let duplicates = [] as Awaited<ReturnType<typeof findDuplicateGuestsForGuest>>;
+  let duplicates = duplicatesResult.ok ? duplicatesResult.data : [];
   let duplicatesError: string | null = null;
-  if (duplicatesResult.ok) {
-    duplicates = duplicatesResult.data;
-  } else {
+  if (!duplicatesResult.ok) {
     duplicatesError =
       duplicatesResult.error instanceof Error
         ? duplicatesResult.error.message

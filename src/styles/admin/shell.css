@@ -944,22 +944,6 @@
   width: 100%;
 }
 
-.admin-gear__footer-sim {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding-top: 0.35rem;
-  border-top: 1px solid var(--admin-panel-border, #e4e4e7);
-}
-
-.admin-gear__footer .sim-trigger-wrap {
-  flex-shrink: 0;
-  margin-left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
 .admin-gear__footer .language-switcher--compact {
   width: auto;
 }
@@ -992,12 +976,6 @@
   color: #b91c1c;
   background: transparent;
   transform: none;
-}
-
-.admin-gear__footer .sim-trigger-chip--compact {
-  padding: 0.22rem 0.45rem;
-  font-size: 0.6rem;
-  border-radius: 0.4rem;
 }
 
 .admin-hud__nav {

@@ -1,10 +1,10 @@
 import { Link } from "@/i18n/navigation";
 import { getPensionSettings } from "@/services/pension-settings";
-import { AdminFactoryResetPanel } from "@/components/admin/settings/AdminFactoryResetPanel";
+import { AdminFactoryResetPanel } from "@/features/settings/ui/AdminFactoryResetPanel";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import { AdminLocationLockBar } from "@/components/admin/settings/AdminLocationLockBar";
-import { AdminStaffPasswordPanel } from "@/components/admin/settings/AdminStaffPasswordPanel";
+import { AdminLocationLockBar } from "@/features/settings/ui/AdminLocationLockBar";
+import { AdminStaffPasswordPanel } from "@/features/settings/ui/AdminStaffPasswordPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";

@@ -5,8 +5,8 @@ import { SETTINGS_SECTION_REDIRECTS } from "@/domain/settings/settings-nav";
 import { computeSettingsCompletion } from "@/domain/settings/settings-completion";
 import { resolveContactWithPrimary } from "@/domain/settings/pension-identity";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
-import { SettingsOverview } from "@/components/admin/settings/SettingsOverview";
-import { AdminCurrentThemeSummary } from "@/components/admin/settings/AdminCurrentThemeSummary";
+import { SettingsOverview } from "@/features/settings/ui/SettingsOverview";
+import { AdminCurrentThemeSummary } from "@/features/settings/ui/AdminCurrentThemeSummary";
 import {
   buildSettingsAlerts,
   loadSettingsStaffContext,

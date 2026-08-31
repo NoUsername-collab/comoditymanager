@@ -1178,7 +1178,7 @@
             },
             "reports_tools": {
               "title": "Rapoarte & instrumente",
-              "desc": "Statistici, export, mod simulare."
+              "desc": "Statistici, export."
             }
           }
         },
@@ -1581,7 +1581,7 @@
           "bookingNotFound": "Rezervarea nu a fost găsită.",
           "notConfirmed": "Disponibil doar pentru rezervări confirmate.",
           "appDisabled": "Guest app este dezactivată în setări.",
-          "simBookingOnly": "Rezervarea există doar în simulare — oprește simularea, apoi regenerează linkul.",
+          "simBookingOnly": "Rezervarea nu există în baza de date.",
           "tenantNotResolved": "Tenant nerezolvat pe acest host.",
           "linkUnavailable": "Link indisponibil — verifică migrarea și confirmarea.",
           "noEmail": "Rezervarea nu are email pentru trimitere."
@@ -2678,28 +2678,6 @@
       "requestsPerRoom": "Cereri pe cameră",
       "occupiedTitle": "Ocupate",
       "focusGanttWeek": "Focus Gantt (săptămâna)"
-    },
-    "simulation": {
-      "startSim": "Simulare",
-      "starting": "Se pornește...",
-      "simActive": "SIMULARE",
-      "simDate": "Data:",
-      "daysAdvanced": "+{count, plural, one {# zi} other {# zile}}",
-      "nextDay": "Avansează o zi",
-      "nextWeek": "Avansează o săptămână",
-      "nextMonth": "Avansează o lună",
-      "nextCheckIn": "Salt la următorul check-in",
-      "nextCheckOut": "Salt la următorul check-out",
-      "noUpcomingCheckIn": "Niciun check-in viitor",
-      "noUpcomingCheckOut": "Niciun check-out viitor",
-      "dayShort": "zi",
-      "stopSim": "Oprește",
-      "confirmStop": "Ești sigur?",
-      "yes": "Da",
-      "no": "Nu",
-      "processing": "Se procesează...",
-      "realDateLabel": "Real: {date}",
-      "noDbBackupWarning": "Fără backup DB — modificările rămân pe date reale la Stop"
     },
     "confirmRooms": {
       "confirmBooking": "Confirmă rezervarea",

@@ -15,13 +15,13 @@ import dynamic from "next/dynamic";
 import {
   CheckinWizardLauncher,
   type CheckinWizardMode,
-} from "@/components/admin/checkin/CheckinWizardLauncher";
+} from "@/features/checkin/ui/CheckinWizardLauncher";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
 
 const BookingCheckoutPanel = dynamic(
   () =>
-    import("@/components/admin/checkout/BookingCheckoutPanel").then((m) => ({
+    import("@/features/bookings/ui/BookingCheckoutPanel").then((m) => ({
       default: m.BookingCheckoutPanel,
     })),
   { ssr: false }

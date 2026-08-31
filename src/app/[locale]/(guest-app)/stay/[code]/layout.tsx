@@ -5,39 +5,14 @@ import { GuestAppShell } from "@/features/guest-app/GuestAppShell";
 import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { resolveGuestAppThemeStyle } from "@/features/guest-app/themes/loader";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
-import { resolveGuestAccessByCode } from "@/services/guest-app/access";
-import { getGuestAppSettingsPublic } from "@/services/guest-app/settings";
-import { getPensionSettings } from "@/services/pension-settings";
-import { getPublicSiteConfig } from "@/services/public-site/queries";
-import type { GuestAccessResult } from "@/domain/guest-app/types";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
-
-async function resolveGuestSession(code: string): Promise<GuestAccessResult> {
-  try {
-    return await resolveGuestAccessByCode(code);
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Nu puteți accesa această pagină.";
-    if (message.includes("auth.tenant_host_required")) {
-      return { ok: false, reason: "wrong_host" };
-    }
-    throw error;
-  }
-}
-
-async function resolveGuestSessionSafe(code: string): Promise<GuestAccessResult> {
-  try {
-    return await resolveGuestSession(code);
-  } catch {
-    return { ok: false, reason: "not_found" };
-  }
-}
+import {
+  loadGuestStayLayout,
+  loadGuestStayMetadata,
+} from "@/features/guest-app/loaders";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [pensionSettings, guestSettings, publicConfig, t] = await Promise.all([
-    getPensionSettings().catch(() => null),
-    getGuestAppSettingsPublic().catch(() => null),
-    getPublicSiteConfig().catch(() => null),
+  const [{ pensionSettings, guestSettings, publicConfig }, t] = await Promise.all([
+    loadGuestStayMetadata(),
     getTranslations("guestApp.meta"),
   ]);
   const pensionName = pensionSettings?.display_name ?? t("fallbackName");
@@ -74,24 +49,16 @@ export default async function GuestStayLayout({
   children: React.ReactNode;
   params: Promise<{ code: string }>;
 }) {
-  const [{ code }, pensionSettings, publicConfig, guestSettings, today, session] =
-    await Promise.all([
-      params,
-      getPensionSettings().catch(() => null),
-      getPublicSiteConfig().catch(() => null),
-      getGuestAppSettingsPublic().catch(() => null),
-      getEffectiveToday(),
-      params.then((p) => resolveGuestSessionSafe(p.code)),
-    ]);
-
-  const pensionName = pensionSettings?.display_name ?? "Cazare";
-  const publicThemeId = publicConfig?.themeId ?? "noir";
-  const shellAppearance =
-    guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
-  const receptionPhone =
-    guestSettings?.content.hotel?.phone?.trim() ||
-    publicConfig?.contact.phone?.trim() ||
-    null;
+  const { code } = await params;
+  const {
+    publicConfig,
+    today,
+    session,
+    pensionName,
+    publicThemeId,
+    shellAppearance,
+    receptionPhone,
+  } = await loadGuestStayLayout(code);
 
   if (!session.ok) {
     return (

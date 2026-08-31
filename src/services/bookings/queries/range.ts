@@ -1,7 +1,6 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 
@@ -67,8 +66,5 @@ export async function listBookingsForRange(
   rangeEnd: string
 ): Promise<BookingRow[]> {
   const { tenantId } = await getTenantScope();
-  if (await isSimActive()) {
-    return listBookingsForRangeImpl(tenantId, rangeStart, rangeEnd);
-  }
   return loadBookingsForRange(tenantId, rangeStart, rangeEnd);
 }

@@ -1,10 +1,8 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import { isSimActive } from "@/domain/simulation/sim-cookie";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
-import { addDays } from "@/lib/stay-dates";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
+import { addDays, todayIso } from "@/lib/stay-dates";
 import { getTenantScope } from "@/lib/tenant/scope";
 
 import {
@@ -27,7 +25,7 @@ async function listOperationalStaysImpl(
   tenantId: string,
 ): Promise<OperationalStayRow[]> {
   const [today, supabase] = await Promise.all([
-    getEffectiveToday(),
+    todayIso(),
     Promise.resolve(createPublicAdminClient()),
   ]);
   const horizonEnd = addDays(today, 365);
@@ -77,9 +75,6 @@ const getCachedOperationalStays = (tenantId: string) =>
   );
 
 const loadOperationalStaysForTenant = cache(async (tenantId: string) => {
-  if (await isSimActive()) {
-    return listOperationalStaysImpl(tenantId);
-  }
   return getCachedOperationalStays(tenantId)();
 });
 
@@ -100,7 +95,7 @@ async function listRecentlyConfirmedStayHistoryImpl(
   limit: number,
 ): Promise<CompletedStayHistoryRow[]> {
   const [today, supabase] = await Promise.all([
-    getEffectiveToday(),
+    todayIso(),
     Promise.resolve(createPublicAdminClient()),
   ]);
   const { data, error } = await supabase
@@ -154,7 +149,7 @@ async function listCompletedStayHistoryImpl(
   limit: number,
 ): Promise<CompletedStayHistoryRow[]> {
   const [today, supabase] = await Promise.all([
-    getEffectiveToday(),
+    todayIso(),
     Promise.resolve(createPublicAdminClient()),
   ]);
   const { data, error } = await supabase

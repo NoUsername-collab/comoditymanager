@@ -1,5 +1,5 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { BookingRulesSettingsPanel } from "@/components/admin/settings/BookingRulesSettingsPanel";
+import { BookingRulesSettingsPanel } from "@/features/settings/ui/BookingRulesSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { getBookingRulesSettings } from "@/services/booking-rules-settings";

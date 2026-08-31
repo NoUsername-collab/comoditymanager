@@ -384,13 +384,13 @@ describe("mobile compatibility CSS rules", () => {
     expect(ganttQuick).toContain("aria-busy={pending}");
 
     const stayReview = readFileSync(
-      join(process.cwd(), "src/components/admin/guests/GuestStayReviewForm.tsx"),
+      join(process.cwd(), "src/features/guests/ui/GuestStayReviewForm.tsx"),
       "utf8"
     );
     expect(stayReview).toContain("guest-stay-review-form__summary");
 
     const heatCells = readFileSync(
-      join(process.cwd(), "src/components/admin/availability/AvailabilityHeatCells.tsx"),
+      join(process.cwd(), "src/features/availability/ui/AvailabilityHeatCells.tsx"),
       "utf8"
     );
     expect(heatCells).toContain("onPointerDown");
@@ -429,7 +429,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".ml-drawer--admin .ml-drawer__nav");
 
     const availDashboard = readFileSync(
-      join(process.cwd(), "src/components/admin/availability/AvailabilityDashboard.tsx"),
+      join(process.cwd(), "src/features/availability/ui/AvailabilityDashboard.tsx"),
       "utf8"
     );
     expect(availDashboard).toContain("avail-dashboard-toolbar");
@@ -476,13 +476,13 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".gantt-stay__cap-strip");
 
     const mrzDialog = readFileSync(
-      join(process.cwd(), "src/components/admin/checkin/MrzScanDialog.tsx"),
+      join(process.cwd(), "src/features/checkin/ui/MrzScanDialog.tsx"),
       "utf8"
     );
     expect(mrzDialog).toContain("mrz-scan-modal");
 
     const stayList = readFileSync(
-      join(process.cwd(), "src/components/admin/cazari/StayList.tsx"),
+      join(process.cwd(), "src/features/cazari/ui/StayList.tsx"),
       "utf8"
     );
     expect(stayList).toContain("stay-list");
@@ -546,7 +546,7 @@ describe("mobile compatibility CSS rules", () => {
     );
 
     const stayQuickOps = readFileSync(
-      join(process.cwd(), "src/components/admin/cazari/StayQuickOps.tsx"),
+      join(process.cwd(), "src/features/cazari/ui/StayQuickOps.tsx"),
       "utf8"
     );
     expect(stayQuickOps).toContain("stay-quick-ops__btn");

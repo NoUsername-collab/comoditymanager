@@ -1,1 +1,1 @@
-export { LogoutButton } from "@/components/admin/LogoutButton";
+export { LogoutButton } from "@/features/auth/ui/LogoutButton";

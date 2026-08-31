@@ -3,27 +3,14 @@ import {
   BookingInvoicePanel,
   type BookingInvoiceListItem,
   type BookingProformaListItem,
-} from "@/components/admin/invoice/BookingInvoicePanel";
+} from "@/features/bookings/ui/BookingInvoicePanel";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import {
   resolveDefaultInvoiceAmount,
 } from "@/domain/invoice/invoice-allocation";
 import { resolveDefaultProformaAmount } from "@/domain/invoice/proforma";
-import { ensureTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
-import { resolveShowBrandingForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
-import { loadFinancialSnapshot } from "@/services/booking-financial";
-import {
-  listBookingProformas,
-  previewBookingProforma,
-  proformaCanConvert,
-} from "@/services/booking-proforma";
-import { getFiscalStatusMapForInvoices } from "@/services/fiscal-submission";
-import {
-  listBookingInvoices,
-  previewBookingInvoice,
-} from "@/services/issued-invoice";
-import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
-import { getBookingById } from "@/services/bookings/queries";
+import { loadBookingInvoicePage } from "@/features/bookings/loaders";
+import { proformaCanConvert } from "@/services/booking-proforma";
 import { getTranslations } from "next-intl/server";
 import "@/styles/features/shared/invoice-print.css";
 
@@ -32,31 +19,25 @@ export default async function BookingInvoicePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [{ id }, , tPage, tCommon, booking] = await Promise.all([
+  const [{ id }, tPage, tCommon, data] = await Promise.all([
     params,
-    ensureTenantContextFromRequest(),
     getTranslations("admin.pages.invoice"),
     getTranslations("admin.common"),
-    params.then(({ id }) => getBookingById(id)),
+    params.then(({ id }) => loadBookingInvoicePage(id)),
   ]);
 
-  if (!booking || booking.status !== "confirmata") notFound();
+  if (!data) notFound();
 
-  const [invoices, proformas, financial, preview, proformaPreview, fiscalSettings] =
-    await Promise.all([
-      listBookingInvoices(id),
-      listBookingProformas(id),
-      loadFinancialSnapshot(id),
-      previewBookingInvoice(id),
-      previewBookingProforma(id),
-      getTenantFiscalSettings(),
-    ]);
-
-  if (!preview || !financial) notFound();
-
-  const fiscalStatusByInvoiceId = await getFiscalStatusMapForInvoices(
-    invoices.map((inv) => inv.id)
-  );
+  const {
+    invoices,
+    proformas,
+    financial,
+    preview,
+    proformaPreview,
+    fiscalSettings,
+    fiscalStatusByInvoiceId,
+    showPlatformBranding,
+  } = data;
 
   const invoiceList: BookingInvoiceListItem[] = invoices.map((inv) => ({
     id: inv.id,
@@ -93,7 +74,6 @@ export default async function BookingInvoicePage({
     remainingToInvoice: financial.remainingToInvoice,
     uninvoicedPaid: financial.uninvoicedPaid,
   });
-  const showPlatformBranding = await resolveShowBrandingForRequest();
 
   return (
     <AdminPageFrame

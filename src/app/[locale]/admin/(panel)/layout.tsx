@@ -9,12 +9,8 @@ import { AdminShellClient } from "@/components/admin/AdminShellClient";
 
 import { AdminAppearanceProvider } from "@/components/admin/AdminAppearanceProvider";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
-import { SimOverlay } from "@/components/admin/SimOverlay";
 import { loadAdminShellContext } from "@/lib/admin/shell-context";
-import { getSimStatus } from "@/domain/simulation/sim-cookie";
-import { todayReal } from "@/domain/simulation/sim-clock";
-import { isSimBackupPresent } from "@/services/simulation";
-import { OnboardingBarLazy } from "@/components/admin/onboarding/OnboardingBarLazy";
+import { OnboardingBarLazy } from "@/features/onboarding/ui/OnboardingBarLazy";
 import { AdminMobileBottomNav } from "@/layout/components/AdminMobileBottomNav";
 import { MobileShell } from "@/layout/components/MobileShell";
 import { PwaInstallBanner } from "@/components/pwa/PwaInstallBanner";
@@ -24,23 +20,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [shell, t, simBundle] = await Promise.all([
+  const [shell, t] = await Promise.all([
     loadAdminShellContext(),
     getTranslations("admin.layout"),
-    (async () => {
-      const simStatus = await getSimStatus();
-      const simDbBackup = simStatus.active
-        ? await isSimBackupPresent().catch(() => false)
-        : true;
-      return { simStatus, simDbBackup };
-    })(),
   ]);
 
-  const { simStatus, simDbBackup } = simBundle;
   const {
-    staff,
     cereriCount,
-    isAdmin,
     locationUnlocked,
     statisticsAccess,
     appearanceSettings,
@@ -54,10 +40,6 @@ export default async function AdminLayout({
             <AdminTopBar
               cereriCount={cereriCount}
               locationUnlocked={locationUnlocked}
-              isAdmin={isAdmin}
-              simActive={simStatus.active}
-              simDate={simStatus.active ? simStatus.currentDate : null}
-              simDays={simStatus.active ? simStatus.daysAdvanced : 0}
             />
           </div>
         </div>
@@ -86,14 +68,6 @@ export default async function AdminLayout({
         />
 
         <PwaInstallBanner />
-
-        <SimOverlay
-          active={simStatus.active}
-          currentDate={simStatus.active ? simStatus.currentDate : null}
-          daysAdvanced={simStatus.active ? simStatus.daysAdvanced : 0}
-          realDate={todayReal()}
-          dbBackupActive={simDbBackup}
-        />
       </MobileShell>
     </AdminAppearanceProvider>
   );

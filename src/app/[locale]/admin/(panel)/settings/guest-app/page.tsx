@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { GuestAppSettingsForm } from "@/components/admin/settings/GuestAppSettingsForm";
+import { GuestAppSettingsForm } from "@/features/settings/ui/GuestAppSettingsForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { resolveRequestTenant } from "@/lib/tenant/active";
 import { ensureGuestAppSettingsRow } from "@/services/guest-app/mutations";

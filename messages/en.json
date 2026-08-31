@@ -1176,7 +1176,7 @@
             },
             "reports_tools": {
               "title": "Reports & advanced tools",
-              "desc": "Statistics, export, simulation mode."
+              "desc": "Statistics, export."
             }
           }
         },
@@ -1597,7 +1597,7 @@
           "bookingNotFound": "Booking not found.",
           "notConfirmed": "Only available for confirmed bookings.",
           "appDisabled": "Guest app is disabled in settings.",
-          "simBookingOnly": "Booking exists only in simulation — stop simulation, then regenerate the link.",
+          "simBookingOnly": "Booking was not found in the database.",
           "tenantNotResolved": "Tenant could not be resolved on this host.",
           "linkUnavailable": "Link unavailable — check migration and confirmation.",
           "noEmail": "Booking has no email address."
@@ -2694,28 +2694,6 @@
       "requestsPerRoom": "Room requests",
       "occupiedTitle": "Occupied",
       "focusGanttWeek": "Focus Gantt (week)"
-    },
-    "simulation": {
-      "startSim": "Simulate",
-      "starting": "Starting...",
-      "simActive": "SIMULATION",
-      "simDate": "Date:",
-      "daysAdvanced": "+{count, plural, one {# day} other {# days}}",
-      "nextDay": "Advance one day",
-      "nextWeek": "Advance one week",
-      "nextMonth": "Advance one month",
-      "nextCheckIn": "Jump to next check-in",
-      "nextCheckOut": "Jump to next check-out",
-      "noUpcomingCheckIn": "No upcoming check-in",
-      "noUpcomingCheckOut": "No upcoming check-out",
-      "dayShort": "d",
-      "stopSim": "Stop",
-      "confirmStop": "Are you sure?",
-      "yes": "Yes",
-      "no": "No",
-      "processing": "Processing...",
-      "realDateLabel": "Real: {date}",
-      "noDbBackupWarning": "No DB backup — changes persist on real data when you stop"
     },
     "confirmRooms": {
       "confirmBooking": "Confirm booking",

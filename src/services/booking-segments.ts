@@ -7,7 +7,6 @@ import { addDays, stayNightCount, todayIso } from "@/lib/stay-dates";
 import { getTenantScope, withTenantId } from "@/lib/tenant/scope";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
-import { getEffectiveToday } from "@/domain/simulation/sim-clock";
 
 async function roomNightlyRate(roomId: string): Promise<number> {
   const rates = await roomNightlyRates([roomId]);
@@ -306,7 +305,7 @@ export async function previewRoomMoveFromPivot(input: {
   const source = segments.find((s) => s.room_id === input.sourceRoomId);
   if (!source) throw new Error("segments.source_not_found");
 
-  const effectiveToday = await getEffectiveToday();
+  const effectiveToday = todayIso();
   const plan = resolveRoomMovePlan(
     source.segment_start,
     source.segment_end,
@@ -389,7 +388,7 @@ export async function moveBookingRoomFromPivot(input: {
   const [{ tenantId, supabase }, segments, effectiveToday2] = await Promise.all([
     getTenantScope(),
     listSegmentsForBooking(input.bookingId),
-    getEffectiveToday(),
+    todayIso(),
   ]);
 
   const { data: booking, error: bErr } = await supabase

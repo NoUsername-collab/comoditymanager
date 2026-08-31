@@ -1,1 +1,1 @@
-export { AddFloorForm } from "@/components/admin/structure/AddFloorForm";
+export { AddFloorForm } from "@/features/buildings/ui/AddFloorForm";
