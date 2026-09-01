@@ -1,0 +1,389 @@
+/**
+ * Zalmox platform brand — locked 1 sept 2026 (docs/design-culori.html).
+ * Ink + steel. Applies to landing, preturi, signup (platform shell).
+ * Do not add a second accent family here.
+ */
+
+.platform-shell--split {
+  --zx-ink: #12141c;
+  --zx-ink-2: #1c2433;
+  --zx-paper: #eef0f5;
+  --zx-paper-2: #f7f8fb;
+  --zx-surface: #ffffff;
+  --zx-text: #1a1d2e;
+  --zx-muted: #5a6080;
+  --zx-steel: #7aa2ff;
+  --zx-steel-deep: #3d5aab;
+  --zx-steel-hover: #2f4a96;
+
+  --site-bg: var(--zx-paper);
+  --site-fg: var(--zx-text);
+  --site-muted: var(--zx-muted);
+  --site-accent: var(--zx-steel-deep);
+  --site-accent-fg: #ffffff;
+  --site-header-bg: color-mix(in srgb, var(--zx-surface) 88%, transparent);
+  --site-card: var(--zx-surface);
+  --site-border: #d5dbe8;
+
+  --light-bg: var(--zx-paper);
+  --light-bg-soft: var(--zx-paper-2);
+  --light-fg: var(--zx-text);
+  --light-muted: var(--zx-muted);
+  --light-card: var(--zx-surface);
+  --light-border: #d5dbe8;
+  --light-accent: var(--zx-steel-deep);
+  --light-accent-deep: var(--zx-steel-hover);
+  --light-accent-soft: color-mix(in srgb, var(--zx-steel) 18%, var(--zx-surface));
+  --light-glow: color-mix(in srgb, var(--zx-steel) 12%, transparent);
+
+  background: var(--zx-paper);
+  color: var(--zx-text);
+}
+
+.platform-shell--split .platform-header--split .platform-header__cta:hover {
+  background: var(--zx-steel-hover);
+}
+
+/* Landing premium tokens — same family, no purple / gold / rainbow */
+.lp {
+  --lp-dark-1: #12141c;
+  --lp-dark-2: #1c2433;
+  --lp-dark-3: #1c2433;
+  --lp-dark-bg: #12141c;
+  --lp-dark-text: #e8edf4;
+  --lp-dark-text-muted: #93a0b4;
+  --lp-dark-text-faint: #6b7690;
+  --lp-dark-border: color-mix(in srgb, #7aa2ff 18%, transparent);
+  --lp-dark-surface: color-mix(in srgb, #ffffff 5%, transparent);
+  --lp-dark-surface-2: color-mix(in srgb, #ffffff 8%, transparent);
+
+  --lp-bg: #ffffff;
+  --lp-bg-alt: #eef0f5;
+  --lp-text: #1a1d2e;
+  --lp-text-muted: #5a6080;
+  --lp-text-soft: #3d4460;
+  --lp-text-body: #3d4460;
+  --lp-text-faint: #8b93a8;
+  --lp-border: #d5dbe8;
+  --lp-border-soft: #e8ebf2;
+
+  --lp-accent-1: #3d5aab;
+  --lp-accent-2: #3d5aab;
+  --lp-accent-3: #2f4a96;
+  --lp-accent-gradient: #3d5aab;
+  --lp-accent-soft: color-mix(in srgb, #7aa2ff 12%, #ffffff);
+  --lp-accent-border: color-mix(in srgb, #3d5aab 22%, transparent);
+  --lp-accent-on-dark: #7aa2ff;
+  --lp-accent-light-gradient: #7aa2ff;
+  --lp-highlight-gradient: #7aa2ff;
+
+  --lp-shadow-card: none;
+  --lp-shadow-lifted: none;
+}
+
+.lp-hero {
+  background: #12141c;
+}
+
+.lp-hero__grid,
+.lp-feat-section__inner,
+.lp-section-title,
+.lp-section-lead {
+  max-width: 72rem;
+}
+
+@media (min-width: 1024px) {
+  .lp-hero__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.lp-hero__glow {
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, #7aa2ff 18%, transparent) 0%,
+    transparent 68%
+  );
+  filter: blur(48px);
+  opacity: 0.7;
+}
+
+.lp-hero__title-accent,
+.lp-final-cta__title-accent {
+  background: none;
+  -webkit-text-fill-color: #7aa2ff;
+  color: #7aa2ff;
+}
+
+.lp-hero__subtitle,
+.lp-hero__note {
+  color: #93a0b4;
+}
+
+@media (min-width: 640px) {
+  .lp-pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .lp-pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.lp-badge--rainbow,
+.lp-badge--violet,
+.lp-badge--pink,
+.lp-badge--teal,
+.lp-badge--amber {
+  background: color-mix(in srgb, #7aa2ff 12%, transparent);
+  color: #7aa2ff;
+  border: 1px solid color-mix(in srgb, #7aa2ff 28%, transparent);
+  box-shadow: none;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.lp-btn--primary {
+  background: #3d5aab;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.lp-btn--primary:hover {
+  background: #2f4a96;
+  filter: none;
+  transform: none;
+  box-shadow: none;
+}
+
+.lp-btn--ghost {
+  color: #3d5aab;
+  border-color: color-mix(in srgb, #3d5aab 35%, transparent);
+}
+
+.lp-btn--ghost:hover {
+  background: color-mix(in srgb, #7aa2ff 10%, transparent);
+  border-color: #3d5aab;
+}
+
+.lp-btn--glow {
+  animation: none;
+  box-shadow: none;
+}
+
+.lp-feat-section--dark {
+  background: #12141c;
+}
+
+.lp-feat-section--dark .lp-feat-section__title {
+  color: #e8edf4;
+}
+
+.lp-feat-section--dark .lp-feat-section__desc {
+  color: #93a0b4;
+}
+
+.lp-trust-badge {
+  color: #3d5aab;
+}
+
+.lp-pricing-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.hero-browser__nav--active {
+  background: color-mix(in srgb, #7aa2ff 28%, transparent);
+}
+
+.hero-browser__url-lock {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 2px;
+  background: #7aa2ff;
+  opacity: 0.7;
+}
+
+.hero-notif__icon {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #7aa2ff;
+}
+
+.lp-final-cta {
+  background: #12141c;
+}
+
+.lp-final-cta__glow {
+  display: none;
+}
+
+.rb--ok,
+.rb--green {
+  background: #22c55e;
+}
+.rb--pending,
+.rb--amber {
+  background: #f59e0b;
+}
+.rb--past,
+.rb--blue {
+  background: #a8a29e;
+}
+.rb--hold,
+.rb--teal {
+  background: #38bdf8;
+}
+.rb--violet,
+.rb--pink,
+.rb--orange,
+.rb--rose {
+  background: #3d5aab;
+}
+
+.feat-mockup__btn {
+  background: #3d5aab;
+  box-shadow: none;
+}
+
+.phone-frame__shell,
+.phone-frame__notch {
+  border-color: #12141c;
+  background-color: #12141c;
+}
+
+.phone-frame__shell {
+  box-shadow: none;
+  filter: none;
+}
+
+.phone-frame {
+  filter: none;
+}
+
+.hero-browser {
+  box-shadow: none;
+}
+
+.hero-browser__nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-browser__nav::after {
+  content: "";
+  display: block;
+  width: 58%;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, #7aa2ff 55%, #1c2433);
+  opacity: 0.7;
+}
+
+.lp-feat-list--dark li {
+  color: #c9d4e3;
+}
+
+.lp-feat-list--dark li::before {
+  color: #7aa2ff;
+}
+
+.lp-price-card--featured {
+  box-shadow: none;
+  border-color: #3d5aab;
+}
+
+/* Preturi / signup still use .landing-* from landing.css — kill rainbow */
+.landing-hero__glow {
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, #7aa2ff 16%, transparent) 0%,
+    transparent 68%
+  );
+  filter: blur(48px);
+  opacity: 0.65;
+  width: auto;
+  max-width: none;
+  height: auto;
+  max-height: none;
+}
+
+.landing-hero__title,
+.landing-section__title,
+.landing-stat__value,
+.landing-price-card--featured .landing-price-card__tier {
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: #1a1d2e;
+  color: #1a1d2e;
+  animation: none;
+}
+
+.landing-hero__badge,
+.landing-hero__badge::before {
+  background: color-mix(in srgb, #7aa2ff 12%, transparent);
+  color: #3d5aab;
+  border: 1px solid color-mix(in srgb, #7aa2ff 28%, transparent);
+  z-index: auto;
+}
+
+.landing-cta--primary,
+.landing-price-card__badge {
+  background: #3d5aab;
+  color: #ffffff;
+  box-shadow: none;
+  border: none;
+  filter: none;
+  transform: none;
+}
+
+.landing-cta--primary:hover {
+  background: #2f4a96;
+  filter: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.landing-pricing .landing-price-card:nth-child(1) .landing-price-card__tier,
+.landing-pricing .landing-price-card:nth-child(1) .landing-price-card__period,
+.landing-pricing .landing-price-card:nth-child(1) .landing-price-card__features li::before,
+.landing-pricing .landing-price-card:nth-child(2) .landing-price-card__tier,
+.landing-pricing .landing-price-card:nth-child(2) .landing-price-card__period,
+.landing-pricing .landing-price-card:nth-child(4) .landing-price-card__tier,
+.landing-pricing .landing-price-card:nth-child(4) .landing-price-card__period {
+  color: #3d5aab;
+}
+
+.landing-price-card--featured {
+  border-image: none;
+  box-shadow: none;
+  border-color: #3d5aab;
+}
+
+.landing-price-card__features li::before {
+  content: "✓";
+  color: #3d5aab;
+}
+
+.landing-faq__item:hover {
+  border-color: #d5dbe8;
+  box-shadow: none;
+}
+
+.landing-final-cta {
+  background: #12141c;
+  border: 1px solid color-mix(in srgb, #7aa2ff 18%, transparent);
+  color: #e8edf4;
+}
+
+.phone-app__hero {
+  background: linear-gradient(135deg, color-mix(in srgb, #3d5aab 42%, #12141c), color-mix(in srgb, #7aa2ff 22%, #12141c));
+  border: 1px solid color-mix(in srgb, #7aa2ff 28%, transparent);
+}

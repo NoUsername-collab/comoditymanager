@@ -15,7 +15,7 @@ export function PlatformHeaderChrome({ labels }: { labels: PlatformHeaderLabels 
   return (
     <div className="platform-header__inner">
       <Link href="/landing" className="platform-header__brand">
-        <span className="platform-header__logo">H</span>
+        <span className="platform-header__logo">Z</span>
         <span className="platform-header__name">Zalmox</span>
       </Link>
 

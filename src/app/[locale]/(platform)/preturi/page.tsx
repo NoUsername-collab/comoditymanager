@@ -3,9 +3,15 @@ import {
   PricingComparisonTable,
   PricingGrid,
 } from "@/features/signup/ui/PricingGrid";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export default async function PreturiPage() {
+export default async function PreturiPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations("pricing");
 
   return (

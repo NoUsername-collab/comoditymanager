@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zalmox — Sistem de culori (doar design)</title>
+  <style>
+    :root {
+      --bg: #0e1218;
+      --surface: #1a2230;
+      --border: #2e3b50;
+      --text: #eef2f7;
+      --muted: #93a0b4;
+      --accent: #7aa2ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 15.5px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+    .kicker {
+      font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.5rem;
+    }
+    h1 { font-size: 2rem; letter-spacing: -0.03em; line-height: 1.15; }
+    h2 { font-size: 1.35rem; margin: 2.3rem 0 0.8rem; letter-spacing: -0.02em; }
+    h3 { font-size: 1.05rem; margin: 0 0 0.45rem; }
+    p, li { color: #c9d4e3; }
+    p { margin-bottom: 0.8rem; }
+    ul, ol { margin: 0.4rem 0 1rem 1.2rem; }
+    li { margin-bottom: 0.35rem; }
+    .lead { margin-top: 0.85rem; color: var(--muted); max-width: 44rem; font-size: 1.05rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.1rem; }
+    .chip {
+      font-size: 0.8rem; padding: 0.28rem 0.65rem; border: 1px solid var(--border);
+      border-radius: 999px; color: var(--muted); background: #141a22;
+    }
+    .chip strong { color: var(--text); }
+    nav.toc {
+      display: flex; flex-wrap: wrap; gap: 0.55rem 1rem;
+      position: sticky; top: 0; z-index: 5;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      margin: 1.25rem -1.25rem 1.6rem;
+      padding: 0.85rem 1.25rem;
+    }
+    nav.toc a { color: var(--muted); text-decoration: none; font-size: 0.86rem; }
+    nav.toc a:hover { color: var(--text); }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.05rem 1.15rem;
+      margin-bottom: 1rem;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .swatches { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 0.7rem 0 0.3rem; }
+    .swatch {
+      width: 4.6rem;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #3a4a62;
+    }
+    .swatch i {
+      display: block; height: 2.6rem;
+    }
+    .swatch span {
+      display: block;
+      font-size: 0.68rem;
+      padding: 0.28rem 0.35rem 0.38rem;
+      background: #121820;
+      color: var(--muted);
+      font-family: Consolas, ui-monospace, monospace;
+    }
+    .family-hero {
+      height: 5.2rem;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      border: 1px solid #3a4a62;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin: 0.5rem 0 1rem; }
+    th, td { text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .no { color: #f8b4b4; }
+    .yes { color: #b7f0d4; }
+    .warn { color: #fbbf24; }
+    .rule { border-left: 3px solid var(--accent); padding-left: 0.9rem; margin: 1rem 0; }
+    footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.82rem; color: var(--muted); }
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      h1 { font-size: 1.55rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="kicker">Zalmox · doar design · fără cod</p>
+    <h1>Sistem de culori</h1>
+    <p class="lead">
+      O față pentru platformă (site Zalmox + tema implicită a produsului).
+      Apoi două teme de app. Trei teme pentru site-ul pensiunii.
+      Custom doar la cerere, cu reguli — nu un picker cu milioane de culori.
+    </p>
+    <div class="meta">
+      <span class="chip">Decizie: <strong>1 sept 2026</strong></span>
+      <span class="chip">Implementare: <strong>șina Design, după Bloc A</strong></span>
+      <span class="chip">Azi în cod: <strong>6 palete</strong> — prea multe</span>
+    </div>
+
+    <nav class="toc">
+      <a href="#straturi">Straturi</a>
+      <a href="#zalmox">Zalmox</a>
+      <a href="#app">App</a>
+      <a href="#client">Site clienți</a>
+      <a href="#custom">Custom</a>
+      <a href="#nu">Ce nu e temă</a>
+    </nav>
+
+    <section id="straturi">
+      <h2>Trei straturi. Nu se amestecă.</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>1. Semantic — blocat</h3>
+          <p>Confirmat, cerere, trecut, hold, blocat. Aceleași pe toate temele. Gantt-ul rămâne citibil la recepție, nu se vopsește în aurul pensiunii.</p>
+        </div>
+        <div class="card">
+          <h3>2. Brand — se alege</h3>
+          <p>Fundal, suprafață, text, un accent, buton. Asta e „tema”. Zi / noapte e un <em>mod</em>, nu o temă nouă.</p>
+        </div>
+        <div class="card">
+          <h3>3. Clădire — operațional</h3>
+          <p>Banda de pe rândul Gantt (spine). E pentru a deosebi clădirile, nu pentru brand. Rămâne cum e.</p>
+        </div>
+      </div>
+      <div class="rule">
+        <p><strong>Regulă:</strong> site-ul de prezentare Zalmox și tema implicită a app-ului sunt <em>aceeași familie</em> — Zalmox. Pensiunea clientului nu arată ca Zalmox. Zalmox nu arată ca o pensiune de munte.</p>
+      </div>
+    </section>
+
+    <section id="zalmox">
+      <h2>Platformă · Zalmox (main)</h2>
+      <p>Una singură. Folosită pe: landing, signup, prețuri, platform-admin, și ca default când un tenant n-a ales încă. Rece, produs software — nu aur de boutique (ăla e Noir, pentru clienți).</p>
+      <div class="card">
+        <div class="family-hero" style="background: linear-gradient(105deg, #12141c 0%, #1c2433 55%, #2a3348 100%);"></div>
+        <h3>Zalmox — cerneală + oțel</h3>
+        <p>Noapte: fundal aproape negru-albastru, accent oțel. Zi: hârtie rece, același albastru mai închis pe butoane. Numele se citește; nu e hotel, e platformă.</p>
+        <p class="chip" style="display:inline-block;margin-bottom:0.6rem">Mod noapte</p>
+        <div class="swatches">
+          <div class="swatch"><i style="background:#12141c"></i><span>#12141c</span></div>
+          <div class="swatch"><i style="background:#1c2433"></i><span>#1c2433</span></div>
+          <div class="swatch"><i style="background:#e8edf4"></i><span>#e8edf4</span></div>
+          <div class="swatch"><i style="background:#7aa2ff"></i><span>#7aa2ff</span></div>
+          <div class="swatch"><i style="background:#93b4ff"></i><span>#93b4ff</span></div>
+        </div>
+        <p class="chip" style="display:inline-block;margin:0.7rem 0 0.5rem">Mod zi</p>
+        <div class="swatches">
+          <div class="swatch"><i style="background:#eef0f5"></i><span>#eef0f5</span></div>
+          <div class="swatch"><i style="background:#ffffff"></i><span>#ffffff</span></div>
+          <div class="swatch"><i style="background:#1a1d2e"></i><span>#1a1d2e</span></div>
+          <div class="swatch"><i style="background:#3d5aab"></i><span>#3d5aab</span></div>
+          <div class="swatch"><i style="background:#2f4a96"></i><span>#2f4a96</span></div>
+        </div>
+        <p style="margin-top:0.85rem;color:#93a0b4;font-size:0.9rem">Etichete: Ink, Steel, Paper. Nu „blue SaaS generic” din tokenii vechi (#4f7ef8 pe fond lila) și nu Noir (aur). Landing-ul și app-ul default trebuie să coincidă vizual.</p>
+      </div>
+    </section>
+
+    <section id="app">
+      <h2>App · încă 2 teme (catalog tenant)</h2>
+      <p>Pe lângă Zalmox (default), operatorul alege <strong>una</strong> pentru tot produsul intern: admin + guest app. Nu 6. Păstrăm cele două familii care deja există și arată a ospitalitate.</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="family-hero" style="background: linear-gradient(105deg, #07060a 0%, #14111c 50%, #d6b55a 140%);"></div>
+          <h3>Noir — cerneală + aur</h3>
+          <p>Boutique, vin, conac. Noapte aproape negru, accent aur <code>#d6b55a</code>. Zi: hârtie caldă, aur închis pe buton.</p>
+          <div class="swatches">
+            <div class="swatch"><i style="background:#07060a"></i><span>#07060a</span></div>
+            <div class="swatch"><i style="background:#0e0c14"></i><span>#0e0c14</span></div>
+            <div class="swatch"><i style="background:#f3efe3"></i><span>#f3efe3</span></div>
+            <div class="swatch"><i style="background:#d6b55a"></i><span>#d6b55a</span></div>
+            <div class="swatch"><i style="background:#9a7a1a"></i><span>#9a7a1a</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="family-hero" style="background: linear-gradient(105deg, #0a1210 0%, #172420 50%, #1a6b4a 140%);"></div>
+          <h3>Alpine — pădure</h3>
+          <p>Munte, lemn, iarbă. Zi: verde <code>#1a6b4a</code> pe hârtie. Noapte: mentă <code>#3ecf98</code> pe verde-negru.</p>
+          <div class="swatches">
+            <div class="swatch"><i style="background:#0a1210"></i><span>#0a1210</span></div>
+            <div class="swatch"><i style="background:#f2f6f3"></i><span>#f2f6f3</span></div>
+            <div class="swatch"><i style="background:#e8f2ec"></i><span>#e8f2ec</span></div>
+            <div class="swatch"><i style="background:#1a6b4a"></i><span>#1a6b4a</span></div>
+            <div class="swatch"><i style="background:#3ecf98"></i><span>#3ecf98</span></div>
+          </div>
+        </div>
+      </div>
+      <p><strong>Guest app</strong> moștenește tema app-ului (sau tema site-ului public, dacă e aceeași familie). Nu a treia paletă „pentru oaspeți”.</p>
+    </section>
+
+    <section id="client">
+      <h2>Site prezentare clienți · 3 teme</h2>
+      <p>Oaspetele de pe domeniul pensiunii. Zalmox nu e în lista asta. Trei atmosfere de cazare, inclusiv una care nu e în app (marea) — ca să nu umflăm PMS-ul.</p>
+      <div class="grid-3">
+        <div class="card">
+          <div class="family-hero" style="background: linear-gradient(105deg, #1a1510 0%, #d6b55a 160%);"></div>
+          <h3>Noir</h3>
+          <p>Același aur ca în app. Site + recepție arată a aceeași casă.</p>
+        </div>
+        <div class="card">
+          <div class="family-hero" style="background: linear-gradient(105deg, #0f1a14 0%, #1a6b4a 160%);"></div>
+          <h3>Alpine</h3>
+          <p>Același verde. Pensiune de munte, aliniată cu admin.</p>
+        </div>
+        <div class="card">
+          <div class="family-hero" style="background: linear-gradient(105deg, #081828 0%, #e07a4a 160%);"></div>
+          <h3>Mediterranean</h3>
+          <p>Mare, teracotă <code>#e07a4a</code> / <code>#c45a28</code>. Doar site (+ guest app dacă moștenește public). Nu o adăugăm ca a 4-a temă de Gantt.</p>
+          <div class="swatches">
+            <div class="swatch"><i style="background:#081828"></i><span>#081828</span></div>
+            <div class="swatch"><i style="background:#f6f0e6"></i><span>#f6f0e6</span></div>
+            <div class="swatch"><i style="background:#e07a4a"></i><span>#e07a4a</span></div>
+            <div class="swatch"><i style="background:#c45a28"></i><span>#c45a28</span></div>
+          </div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Unde</th><th>Zalmox</th><th>Noir</th><th>Alpine</th><th>Mediterranean</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Landing / signup / platform-admin</td>
+            <td class="yes">Da · default</td>
+            <td class="no">Nu</td>
+            <td class="no">Nu</td>
+            <td class="no">Nu</td>
+          </tr>
+          <tr>
+            <td>Admin pensiune + guest app</td>
+            <td class="yes">Default până aleg</td>
+            <td class="yes">Da</td>
+            <td class="yes">Da</td>
+            <td class="warn">Nu în picker app*</td>
+          </tr>
+          <tr>
+            <td>Site public pensiune</td>
+            <td class="no">Nu (e brandul nostru)</td>
+            <td class="yes">Da</td>
+            <td class="yes">Da</td>
+            <td class="yes">Da</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:0.9rem;color:#93a0b4">*Dacă pensiunea alege Mediterranean pe site, guest app-ul moștenește site-ul. Admin-ul rămâne Noir sau Alpine — sau, la custom, aliniem tot. Nu 4 Gantt-uri.</p>
+    </section>
+
+    <section id="custom">
+      <h2>Custom · la cerere, cu atenție</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Ce primim de la client</h3>
+          <ol>
+            <li>Logo (SVG sau PNG pe fundal transparent).</li>
+            <li>Un accent: un hex SAU „ca în logo”.</li>
+            <li>Preferință: zi sau noapte ca default.</li>
+            <li>Un cuvânt: cald / rece / rustic — nu un moodboard de 40 de slide-uri.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Ce livrăm noi</h3>
+          <ol>
+            <li>O familie: 5 culori noapte + 5 zi (ca swatch-urile de mai sus).</li>
+            <li>Contrast text/buton verificat (citibil, nu „aur pe galben”).</li>
+            <li>Gantt semantic neschimbat. Accentul e header, butoane, site — nu barele de rezervare.</li>
+            <li>O rundă de retuș. A doua e extra.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Nu e custom</h3>
+        <ul>
+          <li class="no">Color picker liber în Setări (strică contrastul și Gantt-ul).</li>
+          <li class="no">„Vreau exact ca Booking / Airbnb / site-ul vecinului.”</li>
+          <li class="no">Gradient pe fiecare card, 4 accente, temă diferită pe fiecare clădire.</li>
+          <li class="no">Să arate site-ul pensiunii ca landing-ul Zalmox.</li>
+          <li class="no">Pearl / Slate / Forest din catalogul actual — se îngheață, nu se vând, nu se mai adaugă variante.</li>
+        </ul>
+        <p>Custom e excepție de onboarding (timp + bani), nu un feature de self-serve înainte de lansare.</p>
+      </div>
+    </section>
+
+    <section id="nu">
+      <h2>Ce nu e temă</h2>
+      <table>
+        <thead><tr><th>Lucru</th><th>De ce rămâne separat</th></tr></thead>
+        <tbody>
+          <tr><td>Zi / noapte</td><td>Același brand, două lumini. Ca un întrerupător, nu un catalog.</td></tr>
+          <tr><td>Culori Gantt (confirmat / cerere…)</td><td>Recepția trebuie să citească status, nu brand.</td></tr>
+          <tr><td>Culori clădire (spine)</td><td>Hartă operațională, 4–6 nuanțe fixe.</td></tr>
+          <tr><td>Succes / eroare / warning</td><td>Verde / roșu / chihlimbar de sistem. Nu se vopsesc în aur.</td></tr>
+        </tbody>
+      </table>
+      <div class="rule">
+        <p><strong>Lock aplicat 1 sept 2026:</strong> platforma Zalmox (landing, preturi, signup) folosește oțelul din acest document via <code>src/styles/features/platform/zalmox-brand.css</code>. Nu se adaugă o a doua familie de accente pe shell-ul de platformă. Gantt semantic rămâne neschimbat. Site-urile clienților nu primesc oțelul Zalmox.</p>
+      </div>
+    </section>
+
+    <footer>
+      Design lock · 1 sept 2026 · <code>docs/design-culori.html</code><br />
+      Culorile Noir / Alpine / Mediterranean sunt cele deja din produs. Zalmox (oțel) e identitatea de platformă, aplicată pe landing / preturi / signup.
+    </footer>
+  </div>
+</body>
+</html>

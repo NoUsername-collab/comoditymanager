@@ -8,18 +8,19 @@ import "@/styles/features/platform/landing-premium.css";
 import "@/styles/features/platform/platform.css";
 import "@/styles/features/platform/platform-split.css";
 import "@/styles/features/layout/mobile-public.css";
+import "@/styles/features/platform/zalmox-brand.css";
 
 const platformVars = {
-  "--site-bg": "#f8fafc",
-  "--site-fg": "#0f172a",
-  "--site-muted": "#64748b",
-  "--site-accent": "#2563eb",
+  "--site-bg": "#eef0f5",
+  "--site-fg": "#1a1d2e",
+  "--site-muted": "#5a6080",
+  "--site-accent": "#3d5aab",
   "--site-accent-fg": "#ffffff",
-  "--site-header-bg": "color-mix(in srgb, #ffffff 82%, transparent)",
+  "--site-header-bg": "color-mix(in srgb, #ffffff 88%, transparent)",
   "--site-card": "#ffffff",
-  "--site-border": "#e2e8f0",
-  backgroundColor: "#f8fafc",
-  color: "#0f172a",
+  "--site-border": "#d5dbe8",
+  backgroundColor: "#eef0f5",
+  color: "#1a1d2e",
 } as CSSProperties;
 
 export default function PlatformLayout({
