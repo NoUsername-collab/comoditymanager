@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { cancelBookingOperativeAction } from "@/features/bookings/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
 import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
-import { deferGanttBackgroundRefresh, removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
+import { removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
 
 export function BookingCancelButton({
   label,
@@ -31,7 +30,6 @@ export function BookingCancelButton({
   onOperativeSuccess?: () => void;
 }) {
   const tCommon = useTranslations("admin.common");
-  const router = useRouter();
   const { showToast } = useAdminFx();
   const [open, setOpen] = useState(false);
   const { pending } = useAdminPending();
@@ -59,7 +57,6 @@ export function BookingCancelButton({
       }
       publishCazariStayCancelled(bookingId);
       removeGanttLiveBooking(bookingId);
-      deferGanttBackgroundRefresh(router);
       onOperativeSuccess?.();
       setOpen(false);
     });

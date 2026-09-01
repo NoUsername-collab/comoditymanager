@@ -22,7 +22,13 @@ import { useGanttOperativeCheck } from "@/features/calendar/ui/GanttOperativeChe
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { computeFixedPointerMenuPosition } from "@/lib/ui/viewport-position";
-import { deferGanttBackgroundRefresh, removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
+import { occupancyPhase } from "@/domain/occupancy/phase";
+import {
+  publishGanttLiveBooking,
+  publishGanttLiveSegment,
+  removeGanttLiveBooking,
+  removeGanttLiveSegment,
+} from "@/lib/gantt/live-bookings";
 import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 
@@ -160,7 +166,6 @@ export function GanttContextMenuPanel() {
       notifyCancel(isCerere ? t("requestCancelled") : t("stayCancelled"), guestName);
       setCancelConfirm(null);
       closeMenu();
-      deferGanttBackgroundRefresh(router);
     });
   }
 
@@ -174,13 +179,15 @@ export function GanttContextMenuPanel() {
         }
         return;
       }
+      if (res.booking) {
+        publishGanttLiveBooking(res.booking);
+      }
       showToast({
         kind: "success",
         title: t("stayConfirmedQuick"),
         message: guestName,
       });
       closeMenu();
-      deferGanttBackgroundRefresh(router);
     });
   }
 
@@ -196,8 +203,8 @@ export function GanttContextMenuPanel() {
         return;
       }
       notifyCancel(isHold ? t("holdReleased") : t("blockRemoved"), menu.roomName);
+      removeGanttLiveSegment(menu.segment.id);
       closeMenu();
-      router.refresh();
     });
   }
 
@@ -217,8 +224,12 @@ export function GanttContextMenuPanel() {
         title: isHold ? t("extendHold") : t("extendBlock"),
         message: formatStayPeriod(menu.segment.checkIn, res.check_out, locale, true),
       });
+      publishGanttLiveSegment({
+        ...menu.segment,
+        checkOut: res.check_out,
+        phase: occupancyPhase(menu.segment.checkIn, res.check_out),
+      });
       closeMenu();
-      router.refresh();
     });
   }
 

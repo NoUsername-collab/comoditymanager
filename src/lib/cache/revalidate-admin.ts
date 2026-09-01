@@ -62,7 +62,8 @@ export function revalidateBookingSurfaces(tenantId?: string) {
   } else {
     revalidateTag(CACHE_TAGS.bookingCounts, "max");
   }
-  revalidatePath("/admin", "layout");
+  // Do not revalidatePath("/admin", "layout") here — that rebuilds the whole
+  // admin shell on every stay mutation and is why Gantt saves feel like a minute.
   revalidatePath("/admin/calendar");
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/cazari");

@@ -49,7 +49,7 @@ import {
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { useGanttCalendarNavigation } from "@/hooks/useGanttCalendarNavigation";
-import { useGanttLiveBookings } from "@/lib/gantt/live-bookings";
+import { useGanttLiveCalendar } from "@/lib/gantt/live-bookings";
 import { GanttCompactToolbar } from "@/features/calendar/ui/GanttCompactToolbar";
 import { GanttFiltersPanel } from "@/features/calendar/ui/GanttFiltersPanel";
 import { GanttOperativeSurfaces } from "@/features/calendar/ui/GanttOperativeSurfaces";
@@ -112,7 +112,7 @@ export function GanttCalendar({
   viewRange,
   rooms,
   bookings: serverBookings,
-  occupancy = [],
+  occupancy: serverOccupancy = [],
   groupByBuilding = false,
   buildings = [],
   checkInTime = DEFAULT_CHECK_IN_TIME,
@@ -152,8 +152,12 @@ export function GanttCalendar({
   cleanCount?: number;
   departurePolicy?: GanttDeparturePolicy;
 }) {
-  const bookings = useGanttLiveBookings(serverBookings);
   const effectiveToday = todayProp ?? todayIso();
+  const { bookings, occupancy } = useGanttLiveCalendar(
+    serverBookings,
+    serverOccupancy,
+    effectiveToday,
+  );
   const tCommon = useTranslations("admin.common");
   const buildingFallbackLabel = tCommon("building");
   const locale = useLocale();
@@ -824,6 +828,11 @@ export function GanttCalendar({
             : "move-room-closed"
         }
         draft={moveRoomDraft}
+        booking={
+          moveRoomDraft
+            ? bookings.find((row) => row.id === moveRoomDraft.bookingId) ?? null
+            : null
+        }
         rooms={rooms.map((r) => ({
           id: r.id,
           name: r.name,

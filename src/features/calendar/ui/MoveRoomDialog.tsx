@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import {
   useAdminPending,
@@ -15,8 +14,11 @@ import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
+import { remapBookingRoom } from "@/domain/gantt/live-occupancy";
+import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { MoveRoomDraft } from "@/domain/gantt/drafts";
+import type { BookingRow } from "@/services/bookings/types";
 
 type RoomOption = { id: string; name: string; building_name: string };
 
@@ -25,14 +27,14 @@ export type { MoveRoomDraft };
 type Props = {
   draft: MoveRoomDraft | null;
   rooms: RoomOption[];
+  booking?: BookingRow | null;
   onClose: () => void;
 };
 
-export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
+export function MoveRoomDialog({ draft, rooms, booking = null, onClose }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
-  const router = useRouter();
   const { notifyMoved } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -115,8 +117,18 @@ export function MoveRoomDialog({ draft, rooms, onClose }: Props) {
         return;
       }
       notifyMoved(tGantt("moveRoom.moved"), tGantt("moveRoom.updated", { guestName: current.guestName }));
+      if (booking) {
+        const target = rooms.find((room) => room.id === targetRoomId);
+        publishGanttLiveBooking(
+          remapBookingRoom(
+            booking,
+            current.sourceRoomId,
+            targetRoomId,
+            target?.name ?? current.sourceRoomName,
+          ),
+        );
+      }
       onClose();
-      router.refresh();
     });
   }
 

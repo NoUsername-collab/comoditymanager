@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { BookingCheckoutPanel } from "@/features/bookings/ui/BookingCheckoutPanel";
@@ -14,7 +13,7 @@ import {
 } from "@/domain/booking/operative-checkin";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
-import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
+import { publishCazariStayPatch } from "@/lib/cazari/live-stays";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -64,7 +63,6 @@ export function StayQuickOps({
   hasCheckinRecord = false,
   emitFisaLabel,
 }: Props) {
-  const router = useRouter();
   const tCommon = useTranslations("common");
   const tServer = useTranslations("admin.serverActions");
   const { showToast } = useAdminFx();
@@ -175,7 +173,11 @@ export function StayQuickOps({
         title: dayDelta > 0 ? labels.moveNextDay : labels.movePrevDay,
         message: guestName,
       });
-      deferGanttBackgroundRefresh(router);
+      publishCazariStayPatch({
+        id: bookingId,
+        check_in: res.check_in,
+        check_out: res.check_out,
+      });
     });
   }
 
@@ -287,7 +289,6 @@ export function StayQuickOps({
           onClose={() => setEditCheckOutOpen(false)}
           onSuccess={() => {
             setEditCheckOutOpen(false);
-            deferGanttBackgroundRefresh(router);
           }}
         />
       ) : null}

@@ -35,6 +35,32 @@ export type ConfirmRoomOption = {
   price_per_night: number;
 };
 
+/** Gantt / already-assigned rooms — skip the full hotel availability catalog. */
+export async function resolveAssignedStayTotal(
+  checkIn: string,
+  checkOut: string,
+  roomIds: string[],
+): Promise<number> {
+  const { getRoomsByIds } = await import("@/services/rooms-admin");
+  const [rooms, pricingRules] = await Promise.all([
+    getRoomsByIds(roomIds),
+    getStayPricingRules(),
+  ]);
+  if (rooms.length !== roomIds.length) {
+    throw new Error("booking.one_or_more_rooms_unavailable_reload");
+  }
+  const standard = computeStandardStayTotal(
+    rooms,
+    checkIn,
+    checkOut,
+    pricingRules,
+  );
+  if (!Number.isFinite(standard) || standard <= 0) {
+    throw new Error("booking.calculated_price_invalid_check_room_prices");
+  }
+  return standard;
+}
+
 /** Preț înregistrat la confirmare — mereu total standard (+ supliment opțional). */
 export async function resolveTotalPriceForConfirm(
   bookingId: string,

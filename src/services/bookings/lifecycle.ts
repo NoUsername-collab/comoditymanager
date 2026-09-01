@@ -41,19 +41,30 @@ import { createBookingRequest } from "./create";
 export async function confirmBookingWithRooms(
   bookingId: string,
   roomIds: string[],
-  totalPrice: number
+  totalPrice: number,
+  options?: { assignedRoomsOnly?: boolean }
 ): Promise<void> {
   if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
     throw new Error("booking.total_price_required_on_confirm");
   }
-  const { assertRoomsAssignableForBooking } = await import(
-    "@/services/booking-confirm"
-  );
-  await assertRoomsAssignableForBooking(bookingId, roomIds);
 
   const { tenantId } = await getTenantScope();
   const booking = await getBookingById(bookingId);
   assertBookingConfirmable(booking);
+
+  if (options?.assignedRoomsOnly) {
+    await assertRoomsAvailableForOccupancy(
+      booking.check_in,
+      booking.check_out,
+      roomIds,
+      bookingId
+    );
+  } else {
+    const { assertRoomsAssignableForBooking } = await import(
+      "@/services/booking-confirm"
+    );
+    await assertRoomsAssignableForBooking(bookingId, roomIds);
+  }
 
   const supabase = createPublicAdminClient();
   const { error: rpcError } = await supabase.rpc("confirm_booking_with_rooms", {
@@ -79,10 +90,12 @@ export async function confirmBookingWithRooms(
     },
   });
 
-  const { issueGuestAccessForBooking } = await import(
-    "@/services/guest-app/access"
-  );
-  await issueGuestAccessForBooking(bookingId).catch(() => null);
+  after(async () => {
+    const { issueGuestAccessForBooking } = await import(
+      "@/services/guest-app/access"
+    );
+    await issueGuestAccessForBooking(bookingId).catch(() => null);
+  });
 }
 
 export async function rescheduleBookingDates(

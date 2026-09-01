@@ -6,7 +6,6 @@ import { requireAnyStaff, requireStaffPermission, getStaffUser } from "@/lib/aut
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
   revalidateAdminCalendar,
-  revalidateBookingSurfaces,
   revalidateBookingSurfacesExtended,
 } from "@/lib/cache/revalidate-admin";
 import {
@@ -17,7 +16,7 @@ import {
   duplicateBookingAsCerere,
   shiftBookingByDays,
 } from "@/services/bookings";
-import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
+import { resolveAssignedStayTotal } from "@/services/booking-confirm";
 import { createRoomBlock, deleteRoomBlock, extendRoomBlockOneNight } from "@/services/room-blocks";
 import {
   createRoomHold,
@@ -52,6 +51,21 @@ function actorEmail(user: { email?: string | null } | null): string | null {
   return user?.email ?? null;
 }
 
+function scheduleBookingRevalidate(
+  extra?: Parameters<typeof revalidateBookingSurfacesExtended>[0],
+) {
+  after(async () => {
+    const tenantId = extra?.tenantId ?? (await resolveTenantIdForData());
+    revalidateBookingSurfacesExtended({ ...extra, tenantId });
+  });
+}
+
+function scheduleCalendarRevalidate() {
+  after(() => {
+    revalidateAdminCalendar();
+  });
+}
+
 export async function createRoomHoldsFromGanttAction(input: {
   roomIds: string[];
   checkIn: string;
@@ -74,7 +88,7 @@ export async function createRoomHoldsFromGanttAction(input: {
       expiresHours: input.expiresHours,
       createdBy: actorEmail(user),
     });
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
@@ -115,7 +129,7 @@ export async function createRoomHoldFromGanttAction(input: {
       expiresHours: input.expiresHours,
       createdBy: actorEmail(user),
     });
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
@@ -155,7 +169,7 @@ export async function createRoomBlockFromGanttAction(input: {
       reason: input.reason,
       createdBy: actorEmail(user),
     });
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.block_created",
       entityType: "room",
@@ -180,9 +194,11 @@ export async function createRoomBlockFromGanttAction(input: {
 
 export async function quickConfirmCerereFromGanttAction(
   bookingId: string
-): Promise<{ ok: true } | ActionErr> {
+): Promise<{ ok: true; booking: BookingRow } | ActionErr> {
   const t = await getT();
+  const timer = createServerTimer("quickConfirmCerereFromGantt");
   await requireStaffPermission("booking_management");
+  timer.mark("auth");
   try {
     const booking = await getBookingById(bookingId);
     if (!booking) return { ok: false, error: t("bookingNotFound") };
@@ -193,18 +209,24 @@ export async function quickConfirmCerereFromGanttAction(
     if (roomIds.length === 0) {
       return { ok: false, error: t("assignRoomsBeforeConfirm") };
     }
-    const total = await resolveTotalPriceForConfirm(
-      bookingId,
+    const total = await resolveAssignedStayTotal(
+      booking.check_in,
+      booking.check_out,
       roomIds,
-      new FormData()
     );
-    await confirmBookingWithRooms(bookingId, roomIds, total);
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateBookingSurfacesExtended({ bookingId, tenantId, includeHistoric: true });
+    timer.mark("price");
+    await confirmBookingWithRooms(bookingId, roomIds, total, {
+      assignedRoomsOnly: true,
     });
-    return { ok: true };
+    timer.mark("confirm");
+    scheduleBookingRevalidate({ bookingId, includeHistoric: true });
+    timer.finish({ bookingId });
+    return {
+      ok: true,
+      booking: { ...booking, status: "confirmata", total_price: total },
+    };
   } catch (e) {
+    timer.finish({ error: true });
     return {
       ok: false,
       error: e instanceof Error ? e.message : t("confirmError"),
@@ -219,7 +241,7 @@ export async function extendRoomHoldAction(
   await requireAnyStaff();
   try {
     const check_out = await extendRoomHoldOneNight(holdId);
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     return { ok: true, check_out };
   } catch (e) {
     return {
@@ -236,7 +258,7 @@ export async function extendRoomBlockAction(
   await requireAnyStaff();
   try {
     const check_out = await extendRoomBlockOneNight(blockId);
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     return { ok: true, check_out };
   } catch (e) {
     return {
@@ -254,7 +276,7 @@ export async function releaseRoomHoldAction(
   try {
     const user = await getStaffUser();
     await releaseRoomHold(holdId, actorEmail(user));
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     return { ok: true };
   } catch (e) {
     return {
@@ -271,7 +293,7 @@ export async function deleteRoomBlockAction(
   await requireAnyStaff();
   try {
     await deleteRoomBlock(blockId);
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     return { ok: true };
   } catch (e) {
     return {
@@ -300,7 +322,7 @@ export async function undoGanttCreateAction(input: {
       if (!blockId) throw new Error(t("blockIdMissing"));
       await deleteRoomBlock(blockId);
     }
-    revalidateAdminCalendar();
+    scheduleCalendarRevalidate();
     return { ok: true };
   } catch (e) {
     return {
@@ -357,10 +379,7 @@ export async function createCerereFromGanttAction(input: {
     });
     timer.mark("createBookingRequest");
 
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateBookingSurfaces(tenantId);
-    });
+    scheduleBookingRevalidate();
 
     const booking = buildSyntheticGanttBookingRow({
       id,
@@ -440,13 +459,12 @@ export async function createDirectStayFromGanttAction(input: {
       input.checkOut,
     );
 
-    await confirmBookingWithRooms(bookingId, [input.roomId], total);
+    await confirmBookingWithRooms(bookingId, [input.roomId], total, {
+      assignedRoomsOnly: true,
+    });
     timer.mark("confirm");
 
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateBookingSurfaces(tenantId);
-    });
+    scheduleBookingRevalidate();
 
     const booking = buildSyntheticGanttBookingRow({
       id: bookingId,
@@ -501,14 +519,10 @@ export async function shiftBookingOnGanttAction(
       return { ok: false, error: t("invalidMove") };
     }
     const result = await shiftBookingByDays(bookingId, dayDelta);
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateBookingSurfacesExtended({
-        bookingId,
-        tenantId,
-        includeHistoric: true,
-        includeStatistics: true,
-      });
+    scheduleBookingRevalidate({
+      bookingId,
+      includeHistoric: true,
+      includeStatistics: true,
     });
     return { ok: true, ...result };
   } catch (e) {
@@ -551,10 +565,7 @@ export async function moveBookingRoomFromPivotAction(input: {
   await requireStaffPermission("booking_management");
   try {
     await moveBookingRoomFromPivot(input);
-    revalidateBookingSurfacesExtended({
-      bookingId: input.bookingId,
-      includeStatistics: true,
-    });
+    scheduleBookingRevalidate({ bookingId: input.bookingId });
     return { ok: true };
   } catch (e) {
     return {
@@ -575,10 +586,9 @@ export async function adjustBookingStayNightsAction(
       return { ok: false, error: t("invalidAdjustment") };
     }
     const result = await adjustBookingStayNights(bookingId, nightDelta);
-    revalidateBookingSurfacesExtended({
+    scheduleBookingRevalidate({
       bookingId,
       includeHistoric: true,
-      includeStatistics: true,
     });
     return { ok: true, ...result };
   } catch (e) {
@@ -596,10 +606,7 @@ export async function duplicateBookingAsCerereAction(
   await requireAnyStaff();
   try {
     const id = await duplicateBookingAsCerere(bookingId);
-    revalidateBookingSurfacesExtended({
-      includeCereri: true,
-      includeStatistics: true,
-    });
+    scheduleBookingRevalidate({ includeCereri: true });
     return { ok: true, id };
   } catch (e) {
     return {

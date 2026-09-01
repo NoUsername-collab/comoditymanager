@@ -8,7 +8,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canOfferOperativeCheckIn } from "@/domain/booking/operative-checkin";
 import dynamic from "next/dynamic";
@@ -17,7 +16,6 @@ import {
   type CheckinWizardMode,
 } from "@/features/checkin/ui/CheckinWizardLauncher";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
 
 const BookingCheckoutPanel = dynamic(
   () =>
@@ -66,7 +64,6 @@ export function OperativeCheckProvider({
   today: string;
   canEditAfterCheckout?: boolean;
 }) {
-  const router = useRouter();
   const { showToast } = useAdminFx();
   const tGantt = useTranslations("admin.gantt");
   const tServer = useTranslations("admin.serverActions");
@@ -122,10 +119,6 @@ export function OperativeCheckProvider({
     setCheckinBookingId(null);
     setCheckinWizardMode("create");
   }, []);
-  const refreshAfterCheckin = useCallback(
-    () => deferGanttBackgroundRefresh(router),
-    [router],
-  );
 
   const value = useMemo(
     () => ({ today, canEditAfterCheckout, openCheckInWizard, openCheckOut }),
@@ -141,7 +134,6 @@ export function OperativeCheckProvider({
           open
           mode={checkinWizardMode}
           onClose={closeCheckinWizard}
-          onSuccess={refreshAfterCheckin}
         />
       ) : null}
       {checkoutDialog ? (
@@ -152,7 +144,6 @@ export function OperativeCheckProvider({
           plannedCheckIn={checkoutDialog.plannedCheckIn}
           plannedCheckOut={checkoutDialog.plannedCheckOut}
           onClose={() => setCheckoutDialog(null)}
-          onSuccess={() => deferGanttBackgroundRefresh(router)}
         />
       ) : null}
     </Ctx.Provider>

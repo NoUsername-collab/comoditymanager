@@ -30,9 +30,10 @@ import {
 } from "@/domain/gantt/block-reasons";
 import { showGanttCreateUndoToast } from "@/features/calendar/ui/gantt-create-undo";
 import {
-  deferGanttBackgroundRefresh,
+  publishGanttHoldOrBlock,
   publishGanttLiveBooking,
 } from "@/lib/gantt/live-bookings";
+import { remapBookingRoom } from "@/domain/gantt/live-occupancy";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
@@ -640,8 +641,19 @@ export function GanttQuickActionPanel({
       } else {
         showToast({ kind: "success", title: tGantt("quick.holdCreated"), message: period });
       }
+      const holdIds = "ids" in res ? res.ids : [res.id];
+      const holdRoomIds =
+        draft?.roomIds && draft.roomIds.length > 1 ? draft.roomIds : [activeRoomId];
+      publishGanttHoldOrBlock({
+        ids: holdIds,
+        kind: "hold",
+        roomIds: holdRoomIds,
+        checkIn: activeCheckIn,
+        checkOut: activeCheckOut,
+        reason,
+        today: effectiveToday,
+      });
       onClose();
-      router.refresh();
     });
   }
 
@@ -684,8 +696,16 @@ export function GanttQuickActionPanel({
       } else {
         showToast({ kind: "success", title: tGantt("quick.blockCreated"), message: period });
       }
+      publishGanttHoldOrBlock({
+        ids: [res.id],
+        kind: "block",
+        roomIds: [activeRoomId],
+        checkIn: activeCheckIn,
+        checkOut: activeCheckOut,
+        reason: resolvedReason,
+        today: effectiveToday,
+      });
       onClose();
-      router.refresh();
     });
   }
 
@@ -732,7 +752,6 @@ export function GanttQuickActionPanel({
             : tGantt("quick.bookingAppears"),
       });
       onClose();
-      deferGanttBackgroundRefresh(router);
     });
   }
 
@@ -753,8 +772,16 @@ export function GanttQuickActionPanel({
         return;
       }
       notifyMoved(tGantt("moveRoom.moved"), selectedBooking.guest_name);
+      const target = rooms.find((room) => room.id === moveTargetRoomId);
+      publishGanttLiveBooking(
+        remapBookingRoom(
+          selectedBooking,
+          moveSourceRoomId,
+          moveTargetRoomId,
+          target?.name ?? moveTargetRoomId,
+        ),
+      );
       onClose();
-      router.refresh();
     });
   }
 

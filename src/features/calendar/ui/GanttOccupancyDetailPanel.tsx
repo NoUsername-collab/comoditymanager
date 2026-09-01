@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@/i18n/navigation";
+import { removeGanttLiveSegment } from "@/lib/gantt/live-bookings";
 import { useLocale, useTranslations } from "next-intl";
 import {
   useAdminPending,
@@ -42,7 +42,6 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
-  const router = useRouter();
   const { showToast, notifyCancel } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -67,8 +66,8 @@ export function GanttOccupancyDetailPanel({ detail, onClose }: Props) {
         isHold ? tGantt("occupancy.holdReleased") : tGantt("occupancy.blockDeleted"),
         `${roomName} · ${period}`
       );
+      removeGanttLiveSegment(segment.id);
       onClose();
-      router.refresh();
     });
   }
 

@@ -8,7 +8,8 @@ import { cancelBookingAction } from "@/features/bookings/actions";
 import { BookingCancelButton } from "@/features/bookings/ui/BookingCancelButton";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { deferGanttBackgroundRefresh } from "@/lib/gantt/live-bookings";
+import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
+import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
 import type { OperationalStay } from "@/features/cazari/ui/types";
 
 export type StayRequestActionLabels = {
@@ -47,8 +48,11 @@ export function StayRequestActions({
         }
         return;
       }
+      if (res.booking) {
+        publishGanttLiveBooking(res.booking);
+      }
+      publishCazariStayCancelled(stay.id);
       celebrateConfirm(labels.quickAcceptSuccess, stay.guest_name);
-      deferGanttBackgroundRefresh(router);
     });
   }
 
