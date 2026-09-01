@@ -1,0 +1,1000 @@
+/* ═══ mobile-layout-premium.css ═══ */
+/**
+ * Layout-chrome overrides for admin premium CSS (replaces legacy @media).
+ * Compact = phone / tablet-portrait; wide + bp = laptop / narrow desktop.
+ */
+
+/* ── HUD (was globals.css @media 1400 / 900) ── */
+html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__center {
+  order: 3;
+  flex: 1 1 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+
+
+
+html[data-layout-chrome="wide"]:not([data-layout-bp="2xl"]) .admin-hud__nav {
+  flex-wrap: nowrap;
+  width: max-content;
+  min-width: min(100%, max-content);
+}
+
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .admin-hud__brand {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__right {
+  margin-left: auto;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__tools {
+  justify-content: flex-end;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__brand-text {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-page__header,
+html[data-layout-chrome="compact"] .guest-page__search-area {
+  padding: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-search__bar {
+  min-width: 0;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  border-left: none;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-search__submit,
+html[data-layout-chrome="compact"] .guest-search__reset {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+/* ── Admin home (admin-home.css) ── */
+html[data-layout-chrome="compact"] .admin-home-buildings-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-actions {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-today-board--compact .admin-today-board__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-quest__head {
+  flex-direction: column;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-quest__progress-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-quest__meter {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-quest__card {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-quest__card-actions {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-quest__cta {
+  flex: 1;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-panel__head {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+/* ── Statistics & charts ── */
+html[data-layout-chrome="compact"] .admin-page-main .lg\:grid-cols-2 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .site-themed main.mx-auto.max-w-2xl,
+html[data-layout-chrome="compact"] .site-themed main.max-w-lg {
+  padding-inline: 1rem !important;
+  padding-block: 1.25rem !important;
+}
+
+
+
+
+/* ── Misc admin inputs ── */
+html[data-layout-chrome="compact"] .admin-page-main .min-w-\[260px\] {
+  min-width: 0 !important;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  padding-inline: 0.85rem;
+}
+
+
+
+
+/* ── Booking detail (was admin-booking-detail.css @media 1100 / 768) ── */
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-grid3 {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+}
+
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-grid3 > .bd-col:nth-child(3) {
+  grid-column: 2;
+}
+
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-card--history {
+  position: static;
+}
+
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .bd-grid3 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .bd-grid3 > .bd-col:nth-child(3) {
+  grid-column: auto;
+}
+
+
+
+
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"], [data-layout-bp="lg"]) .bd-room-grid,
+html[data-layout-chrome="wide"]:is([data-layout-bp="sm"], [data-layout-bp="md"]) .bd-room-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+/* ── History journal (was admin-history.css @media 520) ── */
+html[data-layout-chrome="compact"] .activity-journal__tabs {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-palette-tokens,
+html[data-layout-chrome="compact"] .admin-palette-zones,
+html[data-layout-chrome="compact"] .admin-palette-extend__modes {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+/* ── Statistics ── */
+html[data-layout-chrome="compact"] .statistics-year-nav {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card__actions button,
+html[data-layout-chrome="compact"] .building-dashboard-card__actions a,
+html[data-layout-chrome="compact"] .rooms-building-section button,
+html[data-layout-chrome="compact"] .rooms-building-section a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+/* ── Guests search ── */
+html[data-layout-chrome="compact"] .guest-search__bar {
+  flex-wrap: wrap;
+  min-width: 0 !important;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-search__input {
+  min-width: 0 !important;
+  width: 100%;
+  flex: 1 1 calc(100% - 2.5rem);
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.55rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  flex: 1 1 100%;
+  border-left: none;
+  border-top: 1px solid var(--border, #e4e4e7);
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+  padding-inline: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-search__submit {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.875rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+/* ── HUD touch targets ── */
+html[data-layout-chrome="compact"] .admin-gear__trigger {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-gear__item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: 2.5rem;
+  padding-inline: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .language-switcher__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+}
+
+
+
+
+/* ── Admin more menu — top sheet below black nav (not left drawer) ── */
+html[data-layout-chrome="compact"] .ml-drawer__backdrop--admin.ml-drawer__backdrop--visible {
+  z-index: 85;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin {
+  z-index: 90;
+  inset: max(0.35rem, var(--ml-safe-top, 0px)) 0 auto 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.35rem max(0.65rem, var(--ml-safe-left, 0px))
+    calc(0.55rem + var(--ml-safe-bottom, 0px)) max(0.65rem, var(--ml-safe-right, 0px));
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 82%, transparent);
+  border-radius: 0 0 0.85rem 0.85rem;
+  background: var(--admin-hud-bg, #0f0e14);
+  color: var(--admin-fg, #e8e4dc);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.42),
+    inset 0 -1px 0 color-mix(in srgb, var(--admin-fg, #e8e4dc) 6%, transparent);
+  transform: translate3d(0, calc(-100% - 0.35rem), 0);
+  transition: transform var(--ml-duration-drawer) var(--ml-ease-out);
+  display: flex;
+  flex-direction: column;
+  max-height: min(
+    72dvh,
+    calc(
+      var(--ml-vvh, 100dvh)
+        - max(0.35rem, var(--ml-safe-top, 0px))
+        - var(--ml-admin-bottom-clearance, calc(var(--ml-bottom-nav-height) + var(--ml-safe-bottom)))
+        - 0.35rem
+    )
+  );
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin.ml-drawer--open {
+  transform: translate3d(0, 0, 0);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 78%, transparent);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__close {
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+  color: var(--admin-fg, #e8e4dc);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.32rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.15rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 65%, transparent);
+  background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 5%, transparent);
+  color: var(--admin-fg, #e8e4dc);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link--active {
+  border-color: color-mix(in srgb, var(--admin-accent, #d6b55a) 55%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #d6b55a) 14%, transparent);
+  color: var(--admin-accent, #d6b55a);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+  opacity: 0.92;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale {
+  grid-column: 1 / -1;
+  margin-top: 0.15rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--admin-border, #2a2838) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-label {
+  margin-bottom: 0.4rem;
+  font-size: 0.62rem;
+  color: color-mix(in srgb, var(--admin-fg, #e8e4dc) 58%, transparent);
+  width: 100%;
+  text-align: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__locale-flags {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher--inline .language-switcher__inline-options {
+  justify-content: center;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline {
+  min-height: 2rem;
+  min-width: 2rem;
+  padding: 0.18rem 0.32rem;
+  border-radius: 0.5rem;
+  border-color: color-mix(in srgb, var(--admin-border, #2a2838) 75%, transparent);
+  background: color-mix(in srgb, var(--admin-fg, #e8e4dc) 6%, transparent);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .language-switcher__option--inline.language-switcher__option--active {
+  border-color: color-mix(in srgb, var(--admin-accent, #d6b55a) 60%, transparent);
+  background: color-mix(in srgb, var(--admin-accent, #d6b55a) 16%, transparent);
+}
+
+
+
+
+.ml-drawer--admin {
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  border-right-color: var(--admin-panel-border, #e4e4e7);
+}
+
+
+
+
+.ml-drawer--admin .ml-drawer__link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--admin-text, #18181b);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+.ml-drawer--admin .ml-drawer__link-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+
+
+
+.ml-drawer--admin .ml-drawer__section {
+  margin-top: 0.35rem;
+}
+
+
+
+
+.ml-drawer--admin .ml-drawer__section-label {
+  margin: 0.35rem 0.75rem 0.15rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+
+
+
+.ml-drawer--admin .ml-drawer__link--alert {
+  position: relative;
+}
+
+
+
+
+.ml-drawer--admin .ml-drawer__link-badge {
+  margin-left: auto;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--admin-danger, #dc2626);
+  flex-shrink: 0;
+}
+
+
+
+
+.ml-drawer__issues {
+  margin: 0 0.5rem 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--admin-danger, #dc2626) 35%, transparent);
+  background: color-mix(in srgb, var(--admin-danger, #dc2626) 8%, transparent);
+}
+
+
+
+
+.ml-drawer__issues-heading {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+
+
+
+.ml-drawer__issues-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.25rem;
+}
+
+
+
+
+.ml-drawer__issue-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+}
+
+
+
+
+.ml-drawer__issue-link:active {
+  background: color-mix(in srgb, var(--admin-danger, #dc2626) 12%, transparent);
+}
+
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  .ml-drawer--admin .ml-drawer__link-badge {
+    animation: none;
+  }
+}
+
+
+
+
+.ml-bottom-nav__link--more {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel--gantt {
+  max-width: min(340px, calc(100vw - 1rem));
+}
+
+
+
+
+/* ── Admin page frame (all AdminPageFrame pages) ── */
+html[data-layout-chrome="compact"] .admin-page {
+  padding: var(--ml-page-gutter-block, 0.65rem) 0 0.5rem !important;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-desc {
+  max-width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-toolbar .admin-page-desc + a,
+html[data-layout-chrome="compact"] .admin-page-toolbar a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+
+
+
+/* ── Settings panels ── */
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea,
+html[data-layout-chrome="compact"] .admin-settings-form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-badges--cerere {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+  padding: 0.45rem 0.65rem 0.55rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-badges--cerere__stat {
+  padding: 0.4rem 0.45rem;
+}
+
+
+
+
+/* ── Admin home cereri preview ── */
+html[data-layout-chrome="compact"] .admin-home-cereri-list {
+  gap: 0.4rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.55rem 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-cereri-item__guest {
+  font-size: 0.78rem;
+}
+
+
+
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card header,
+html[data-layout-chrome="compact"] .building-dashboard-card .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .building-dashboard-card a,
+html[data-layout-chrome="compact"] .building-dashboard-card button,
+html[data-layout-chrome="compact"] .rooms-building-section a,
+html[data-layout-chrome="compact"] .rooms-building-section button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .rooms-building-section > div:first-child {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .public-confirm-page .bd-confirm__submit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-grid,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .public-confirm-page .bd-room-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__name,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__building,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .bd-room-tile__details {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+/* ── Admin corner (staff on public site) ── */
+html[data-layout-chrome="compact"] .admin-corner {
+  right: max(0.5rem, var(--ml-safe-right));
+  top: max(0.35rem, var(--ml-safe-top));
+  max-width: calc(100vw - 1rem);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-corner a,
+html[data-layout-chrome="compact"] .admin-corner button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  font-size: 0.75rem;
+  padding-inline: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__inner {
+  min-width: 0;
+  max-width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 1.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__desc {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__links a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.2rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__contact a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__bottom {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  text-align: left;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-footer__bottom p {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45;
+}
+
+
+
+
+/* ── Invoice / factura ── */
+html[data-layout-chrome="compact"] .admin-invoice-page .issued-invoice-sheet__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+
+/* ── Location structure ── */
+html[data-layout-chrome="compact"] .location-structure-grid,
+html[data-layout-chrome="compact"] .location-structure-page .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+

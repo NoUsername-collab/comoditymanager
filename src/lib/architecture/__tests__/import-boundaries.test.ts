@@ -9,6 +9,8 @@ const STRICT_RULES = new Set([
   "services-no-app",
   "services-no-components",
   "components-no-app",
+  "components-no-supabase-client",
+  "features-no-supabase-client",
 ]);
 
 describe("import boundary audit", () => {

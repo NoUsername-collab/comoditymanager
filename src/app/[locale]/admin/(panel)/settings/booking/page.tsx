@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { BookingRulesSettingsPanel } from "@/features/settings/ui/BookingRulesSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import { loadBookingRulesSettings } from "@/features/settings/loaders";
 import {
   buildSettingsAlerts,
   guardSettingsPermission,
@@ -20,7 +20,7 @@ export default async function SettingsBookingPage({
     getTranslations("admin.pages.settings"),
     searchParams,
     guardSettingsPermission("pension_settings"),
-    getBookingRulesSettings().catch(() => null),
+    loadBookingRulesSettings(),
     getLocale(),
   ]);
 

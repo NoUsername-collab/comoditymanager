@@ -1,6 +1,6 @@
 import "@/styles/features/admin/admin-devlog.css";
-import { listDevLogs, type DevLogLevel } from "@/services/dev-logs";
-import { DevLogFilters } from "@/components/admin/devlog/DevLogFilters";
+import { loadDevLogsPage, type DevLogLevel } from "@/features/activity/loaders";
+import { DevLogFilters } from "@/features/activity/ui/DevLogFilters";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { getTranslations } from "next-intl/server";
 
@@ -27,40 +27,17 @@ export default async function DevLogPage({
 }: {
   searchParams: Promise<{ level?: string; source?: string; page?: string }>;
 }) {
-  const pageSize = 50;
-
-  const [t, raw, logsResult] = await Promise.all([
+  const [t, { level, source, page, pageSize, logsResult }] = await Promise.all([
     getTranslations("admin.devlog"),
-    searchParams,
-    searchParams.then((sp) => {
-      const level = (sp.level as DevLogLevel) || undefined;
-      const source = sp.source || undefined;
-      const page = Math.max(1, Number(sp.page) || 1);
-      return listDevLogs({
-        level,
-        source,
-        limit: pageSize,
-        offset: (page - 1) * pageSize,
-      })
-        .then((logs) => ({ ok: true as const, logs }))
-        .catch((e) => ({ ok: false as const, error: e }));
-    }),
+    searchParams.then((sp) => loadDevLogsPage(sp)),
   ]);
 
-  const level = (raw.level as DevLogLevel) || undefined;
-  const source = raw.source || undefined;
-  const page = Math.max(1, Number(raw.page) || 1);
-
-  let logs: Awaited<ReturnType<typeof listDevLogs>> = { logs: [], total: 0 };
-  let error: string | null = null;
-  if (logsResult.ok) {
-    logs = logsResult.logs;
-  } else {
-    error =
-      logsResult.error instanceof Error
-        ? logsResult.error.message
-        : "Failed to load logs";
-  }
+  const logs = logsResult.ok ? logsResult.logs : { logs: [], total: 0 };
+  const error = logsResult.ok
+    ? null
+    : logsResult.error instanceof Error
+      ? logsResult.error.message
+      : "Failed to load logs";
 
   const totalPages = Math.ceil(logs.total / pageSize);
 

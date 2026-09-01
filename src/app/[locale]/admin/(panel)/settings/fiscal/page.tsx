@@ -3,10 +3,7 @@ import { FiscalBillingSettingsPanel } from "@/features/settings/ui/FiscalBilling
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import type { TenantCountry } from "@/domain/fiscal/country-fiscal-profile";
-import { getBookingRulesSettings } from "@/services/booking-rules-settings";
-import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
-import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
-import { resolveRequestTenant } from "@/lib/tenant/active";
+import { loadSettingsFiscalPage } from "@/features/settings/loaders";
 import {
   buildSettingsAlerts,
   canEditFiscalBilling,
@@ -26,17 +23,14 @@ export default async function SettingsFiscalPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const [t, params, ctx, bookingRules, checkinSettings, tenantFiscalSettings, locale, tenant] =
-    await Promise.all([
-      getTranslations("admin.pages.settings"),
-      searchParams,
-      guardSettingsPermission("pension_settings"),
-      getBookingRulesSettings().catch(() => null),
-      getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
-      getTenantFiscalSettings().catch(() => null),
-      getLocale(),
-      resolveRequestTenant(),
-    ]);
+  const [t, params, ctx, fiscal, locale] = await Promise.all([
+    getTranslations("admin.pages.settings"),
+    searchParams,
+    guardSettingsPermission("pension_settings"),
+    loadSettingsFiscalPage(),
+    getLocale(),
+  ]);
+  const { bookingRules, checkinSettings, tenantFiscalSettings, tenant } = fiscal;
 
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);

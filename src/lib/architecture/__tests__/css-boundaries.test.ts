@@ -25,6 +25,8 @@ describe("CSS architecture audit", () => {
         v.rule === "no-global-gantt" ||
         v.rule === "no-global-route-css" ||
         v.rule === "gantt-premium-calendar-only" ||
+        v.rule === "gantt-premium-slices-via-barrel" ||
+        v.rule === "mobile-admin-slices-via-barrel" ||
         v.rule === "checkin-css-single-entry",
     );
     expect(violations).toEqual([]);

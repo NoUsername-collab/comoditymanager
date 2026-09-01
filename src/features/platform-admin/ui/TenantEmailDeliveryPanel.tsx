@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { TenantEmailDeliveryForm } from "@/components/platform-admin/TenantEmailDeliveryForm";
+import { TenantEmailDeliveryForm } from "@/features/platform-admin/ui/TenantEmailDeliveryForm";
 import { getTenantEmailOperatorSnapshot } from "@/services/tenant-email-delivery";
 
 export async function TenantEmailDeliveryPanel({ tenantId }: { tenantId: string }) {

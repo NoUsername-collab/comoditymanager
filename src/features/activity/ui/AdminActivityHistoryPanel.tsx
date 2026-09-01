@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
-import { ActivityLogSummary } from "@/components/admin/activity/ActivityLogSummary";
-import { ActivityJournal } from "@/components/admin/activity/ActivityJournal";
+import { ActivityLogSummary } from "@/features/activity/ui/ActivityLogSummary";
+import { ActivityJournal } from "@/features/activity/ui/ActivityJournal";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 import { listRecentActivity } from "@/services/activity-log";

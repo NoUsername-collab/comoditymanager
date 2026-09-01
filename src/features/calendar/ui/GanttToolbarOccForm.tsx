@@ -5,7 +5,7 @@ import {
   GanttQuickActionPanel,
   type GanttQuickPanelMode,
   type GanttQuickRoomOption,
-} from "@/components/admin/gantt/GanttQuickActionPanel";
+} from "@/features/calendar/ui/GanttQuickActionPanel";
 
 type Props = {
   mode: Exclude<GanttQuickPanelMode, "pick"> | null;

@@ -2,12 +2,12 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import type { GanttCalendar } from "@/components/admin/GanttCalendar";
+import type { GanttCalendar } from "@/features/calendar/ui/GanttCalendar";
 import { AdminGanttSkeleton } from "@/components/admin/loading/AdminGanttSkeleton";
 
 const GanttCalendarDynamic = dynamic(
   () =>
-    import("@/components/admin/GanttCalendar").then((m) => ({
+    import("@/features/calendar/ui/GanttCalendar").then((m) => ({
       default: m.GanttCalendar,
     })),
   {

@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { AdminQuickPanel } from "@/components/calendar/AdminQuickPanel";
-import { getPensionSettings } from "@/services/pension-settings";
+import { AdminQuickPanel } from "@/features/public-site/ui/AdminQuickPanel";
+import { loadReceptiePage } from "@/features/public-site/loaders";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTranslations } from "next-intl/server";
 
@@ -14,7 +14,7 @@ export default async function ReceptiePage({
     getTranslations("public.receptie"),
     getAdminUser(),
     searchParams,
-    getPensionSettings().catch(() => null),
+    loadReceptiePage(),
   ]);
 
   if (!admin) {

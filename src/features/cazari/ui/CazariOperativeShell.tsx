@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { OperativeCheckProvider } from "@/components/admin/operative/OperativeCheckProvider";
+import { OperativeCheckProvider } from "@/features/checkin/ui/OperativeCheckProvider";
 
 export function CazariOperativeShell({
   children,

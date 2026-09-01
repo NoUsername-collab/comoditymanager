@@ -1,4 +1,4 @@
-import { ActivityTimeline } from "@/components/admin/activity/ActivityTimeline";
+import { ActivityTimeline } from "@/features/activity/ui/ActivityTimeline";
 import { getTranslations } from "next-intl/server";
 import type { ActivityLogEntry } from "@/domain/activity/types";
 import { listBookingActivity } from "@/services/activity-log";

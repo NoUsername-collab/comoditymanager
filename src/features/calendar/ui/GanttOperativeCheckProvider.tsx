@@ -5,7 +5,7 @@ import {
   OperativeCheckProvider,
   useOperativeCheck,
   type OperativeCheckRequest,
-} from "@/components/admin/operative/OperativeCheckProvider";
+} from "@/features/checkin/ui/OperativeCheckProvider";
 
 /** @deprecated Prefer OperativeCheckProvider — păstrat pentru Gantt. */
 export type { OperativeCheckRequest };

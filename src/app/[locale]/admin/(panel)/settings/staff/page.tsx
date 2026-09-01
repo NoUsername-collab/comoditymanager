@@ -3,18 +3,14 @@ import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayo
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { StaffList } from "@/features/settings/ui/StaffList";
 import { StaffInviteForm } from "@/features/settings/ui/StaffInviteForm";
-import { resolveRequestTenant } from "@/lib/tenant/active";
-import { listActiveTenantMembers } from "@/services/tenant-members";
+import { loadStaffMembersPage } from "@/features/settings/loaders";
 import { guardSettingsPermission } from "@/lib/settings/page-context";
 
 export default async function StaffManagementPage() {
-  const tenantPromise = resolveRequestTenant();
-  const [t, , members] = await Promise.all([
+  const [t, , { members }] = await Promise.all([
     getTranslations("admin.pages.staffManagement"),
     guardSettingsPermission("team_admin"),
-    tenantPromise.then((resolvedTenant) =>
-      resolvedTenant ? listActiveTenantMembers(resolvedTenant.id) : [],
-    ),
+    loadStaffMembersPage(),
   ]);
 
   return (

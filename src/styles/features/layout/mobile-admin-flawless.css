@@ -1,0 +1,3112 @@
+/* ═══ mobile-layout-flawless.css ═══ */
+/**
+ * Mobile flawless pass — fixes dead selectors, grids, touch, overlays.
+ */
+
+/* ── Sim strip above safe area (top nav no longer at bottom) ── */
+html[data-layout-chrome="compact"] .sim-bottom-strip {
+  bottom: var(--ml-safe-bottom, 0px);
+  z-index: 55;
+  padding-block: 0.45rem;
+  font-size: 0.62rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-shell:has(.sim-bottom-strip) {
+  padding-bottom: calc(var(--ml-safe-bottom, 0px) + 1.75rem);
+}
+
+
+
+
+/* ── Universal grid stack (Tailwind sm/md/lg breakpoints still fire on tablet) ── */
+html[data-layout-chrome="compact"] .admin-page-main [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page-main [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page-main [class*="lg:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .ml-content [class*="lg:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="sm:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="md:grid-cols"],
+html[data-layout-chrome="compact"] .admin-page [class*="lg:grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+/* ── Admin panels (real class names) ── */
+html[data-layout-chrome="compact"] .admin-panel {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel__body {
+  max-height: min(
+    62dvh,
+    calc(
+      var(--ml-vvh, 100dvh) - var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) - 7rem
+    )
+  );
+  overflow-y: auto;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel-body {
+  padding: 0.65rem !important;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel .flex.items-end.justify-between {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.25rem;
+  gap: 0.35rem;
+}
+
+
+
+
+/* ── Statistics bar chart scroll ── */
+html[data-layout-chrome="compact"] .statistics-bar-chart {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 10rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-bar-chart .flex.items-end {
+  min-width: min-content;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-year-nav a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+/* ── Staff settings rows ── */
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions button,
+html[data-layout-chrome="compact"] .admin-staff-row__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card__actions a,
+html[data-layout-chrome="compact"] .stay-card__actions form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem !important;
+}
+
+
+
+
+/* ── Check-in ── */
+html[data-layout-chrome="compact"] .checkin-start-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicators {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicator {
+  flex: 1 1 calc(50% - 0.2rem);
+  min-width: 0;
+  font-size: 0.625rem;
+  padding: 0.45rem 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-stepper__indicator-label {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-guest-form__grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__input,
+html[data-layout-chrome="compact"] .checkin-modal .checkin-field__select,
+html[data-layout-chrome="compact"] .checkin-modal button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+}
+
+
+
+
+/* ── Devlog ── */
+html[data-layout-chrome="compact"] .devlog-filters__pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-pagination__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel li {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 0.5rem;
+}
+
+
+
+
+/* ── Invoice ── */
+html[data-layout-chrome="compact"] .informal-invoice-root table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .informal-invoice-sheet header {
+  padding: var(--ml-space-lg, 1rem) 0.85rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .informal-invoice-sheet > div {
+  padding-inline: 1rem !important;
+}
+
+
+
+
+/* ── Nestio logs tables ── */
+html[data-layout-chrome="compact"] .nestio-logs-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .nestio-logs-table-wrap table {
+  min-width: 36rem;
+}
+
+
+
+
+/* ── HUD tools: no wrap in 2-row grid header ── */
+html[data-layout-chrome="compact"] .admin-hud__right {
+  flex-wrap: nowrap !important;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__tools {
+  flex-wrap: nowrap;
+}
+
+
+
+
+/* ── Single-row HUD: bottom nav is canonical on compact ── */
+html[data-layout-chrome="compact"] .admin-hud__header {
+  grid-template-rows: auto;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__center {
+  display: none !important;
+}
+
+
+
+
+/* admin-toast-stack: Pass 6 below */
+
+/* ── Bottom nav: cereri alert pulse on inactive tab ── */
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--alert:not(.ml-bottom-nav__link--active) {
+  color: color-mix(in srgb, #fca5a5 88%, var(--admin-fg, #e8e4dc));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-bottom-nav__link--alert:not(.ml-bottom-nav__link--active) .ml-bottom-nav__icon {
+  animation: ml-nav-alert-pulse 2s ease-in-out infinite;
+}
+
+
+
+
+@keyframes ml-nav-alert-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+
+
+
+/* ── Guests: filter pills + pagination touch ── */
+html[data-layout-chrome="compact"] .guest-filter-pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-pagination__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem;
+}
+
+
+
+
+/* ── Check-in stepper nav ── */
+html[data-layout-chrome="compact"] .checkin-stepper__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-inline: 1rem;
+}
+
+
+
+
+/* ── Floating panels + HUD controls ── */
+html[data-layout-chrome="compact"] .admin-floating-panel__close {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+  font-size: 1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Onboarding bar: compact ── */
+html[data-layout-chrome="compact"] .onboarding-bar {
+  padding-block: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .onboarding-bar > div {
+  padding: 0.5rem 0.75rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .onboarding-bar button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .onboarding-bar a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+/* ── Admin shell links (not only buttons) ── */
+html[data-layout-chrome="compact"] .admin-shell a.admin-nav-tab,
+html[data-layout-chrome="compact"] .admin-page-main a.text-sm {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-grid-tile {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  font-size: 0.72rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-ops__btn,
+html[data-layout-chrome="compact"] .bd-stay__edit-btn,
+html[data-layout-chrome="compact"] .bd-phone-warn__save,
+html[data-layout-chrome="compact"] .bd-banner__cal-link,
+html[data-layout-chrome="compact"] .bd-confirm__submit {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-today-bar__toggle {
+  width: var(--ml-touch-min, 2.75rem);
+  height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-today-action,
+html[data-layout-chrome="compact"] .admin-today-badge {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-today-bar__badges {
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .activity-undo-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-display-layout__option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-toast__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-login-back {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .activity-journal__tab {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-history-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-factory-reset__trigger,
+html[data-layout-chrome="compact"] .admin-factory-reset__submit,
+html[data-layout-chrome="compact"] .admin-factory-reset__cancel {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__close {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  min-width: var(--ml-touch-min, 2.75rem) !important;
+  min-height: var(--ml-touch-min, 2.75rem) !important;
+  font-size: 1rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+
+
+
+/* ── Pass 4: check-in modal scroll, settings, payment, booking detail ── */
+html[data-layout-chrome="compact"] .checkin-modal.admin-floating-panel--modal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: min(92dvh, var(--ml-vvh, 100dvh));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  gap: 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper__content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper__nav {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: var(--admin-panel-bg, #fff);
+  padding-top: 0.65rem;
+  padding-bottom: max(0.35rem, var(--ml-safe-bottom, 0px));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-payment__options {
+  flex-direction: column;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-payment__option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.8125rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-checkbox {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+  padding-block: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-setting-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right {
+  align-self: flex-start;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right .checkin-field__input {
+  width: 100%;
+  max-width: 12rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-toggle {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+  padding-inline: 0.25rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner {
+  padding: 0.6rem 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__name {
+  font-size: 1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__dates {
+  flex-wrap: wrap;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__date-val {
+  white-space: normal;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__meta {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-room-tile {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-cancel-zone .admin-text-action,
+html[data-layout-chrome="compact"] .bd-cancel-zone button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-text-action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.5rem 0.85rem;
+  margin: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel table tbody a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+}
+
+
+
+
+/* ── Pass 5: floating panels / XP windows / check-in modal alignment ── */
+html[data-layout-chrome="compact"] .admin-floating-panel,
+html[data-layout-chrome="compact"] .admin-floating-panel--modal {
+  min-width: 0;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__header {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__title {
+  min-width: 0;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__body {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel table,
+html[data-layout-chrome="compact"] .checkin-modal table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel {
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal {
+  min-width: 0;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__header {
+  padding: 0.65rem 0.85rem;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__title {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.35;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) .admin-floating-panel__body {
+  padding: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .admin-floating-panel__header {
+  padding-inline: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal .checkin-stepper {
+  padding-inline: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel .admin-panel-section {
+  padding: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-card {
+  padding: 0.85rem;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-card--tight {
+  padding: 0.65rem 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  padding: 0.85rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel li > div:first-child {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
+  width: 100%;
+  justify-content: center !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer {
+  padding-inline: max(0.85rem, var(--ml-safe-left, 0px))
+    max(0.85rem, var(--ml-safe-right, 0px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  contain: layout style paint;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  white-space: normal;
+  line-height: 1.35;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel-section input,
+html[data-layout-chrome="compact"] .admin-panel-section select,
+html[data-layout-chrome="compact"] .admin-panel-section textarea {
+  font-size: 16px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+
+
+
+/* ── Pass 6: second mobile-more pass ── */
+
+/* Statistics KPI cards: 2-up (override universal 1-col stack) */
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.sm\:grid-cols-2,
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.lg\:grid-cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid.sm\:grid-cols-3 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid > .rounded-2xl {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page .admin-panel .grid > .rounded-2xl p {
+  overflow-wrap: anywhere;
+}
+
+
+
+
+/* Settings accordion triggers: full width on compact */
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger-main {
+  min-width: 0;
+  flex: 1;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-panel__title,
+html[data-layout-chrome="compact"] .admin-settings-panel__subtitle {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+/* Recepție phone booking: stack fields, aligned labels */
+html[data-layout-chrome="compact"] .phone-booking-form .grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .phone-booking-form label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .phone-booking-form input,
+html[data-layout-chrome="compact"] .phone-booking-form select,
+html[data-layout-chrome="compact"] .phone-booking-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
+  width: 100%;
+}
+
+
+
+
+/* Drawer links: icon + long labels without clip */
+html[data-layout-chrome="compact"] .ml-drawer__link {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__link > span:last-child {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__locale {
+  padding-inline: 0.1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__locale .language-switcher {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__locale .language-switcher__trigger {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+
+/* Toast clears top nav chrome */
+html[data-layout-chrome="compact"] .admin-toast-stack {
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.5rem);
+  right: max(0.65rem, var(--ml-safe-right, 0px));
+  width: min(22rem, calc(100vw - 1.25rem));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-shell:has(.admin-hud-alert) .admin-toast-stack {
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 2rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-toast-stack {
+  top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.35rem);
+}
+
+
+
+
+/* Booking banner: dates stack cleanly on narrow */
+html[data-layout-chrome="compact"] .bd-banner__stay-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__date-pair {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__date-sep {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__meta {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+
+/* ── Pass 7: gear portal, safe areas, iOS, page polish ── */
+
+/* Gear portaled menu: above HUD / Gantt chrome, below modals (100000) */
+html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
+  z-index: var(--z-overlay, 200);
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: auto;
+  overflow: visible;
+  contain: none;
+  box-shadow:
+    0 8px 28px rgba(15, 23, 42, 0.18),
+    0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-gear__footer {
+  overflow: visible;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-gear__item {
+  font-size: 0.8125rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud,
+html[data-layout-chrome="compact"] .admin-hud__surface,
+html[data-layout-chrome="compact"] .admin-hud__header,
+html[data-layout-chrome="compact"] .admin-hud__tools {
+  overflow: visible;
+}
+
+
+
+
+/* Devlog filters: horizontal pill scroll when crowded */
+html[data-layout-chrome="compact"] .devlog-filters__group {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  padding-bottom: 0.15rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-filters__group::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-filters__pill {
+  flex-shrink: 0;
+}
+
+
+
+
+/* Location structure: stack cards, touch actions */
+html[data-layout-chrome="compact"] .location-structure-page {
+  padding-inline: 0.85rem !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .location-structure-page article button,
+html[data-layout-chrome="compact"] .location-structure-page article a,
+html[data-layout-chrome="compact"] .location-structure-page article input,
+html[data-layout-chrome="compact"] .location-structure-page article select {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .location-structure-page article header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+/* Booking detail: ops actions wrap on narrow */
+html[data-layout-chrome="compact"] .bd-ops__actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-ops__btn {
+  flex: 1 1 calc(50% - 0.2rem);
+  min-width: 0;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-ops__steps {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+/* Recepție quick panel: full-width on phone */
+html[data-layout-chrome="compact"] .admin-quick-panel {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel li > div:first-child span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+/* Landscape tablet: HUD density + Gantt bottom clearance */
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__header {
+  padding-top: max(0.25rem, var(--ml-safe-top, 0px));
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__title {
+  font-size: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .stay-card__actions > * {
+  width: 100%;
+}
+
+
+
+
+/* Check-in stepper: number badges don't shrink */
+html[data-layout-chrome="compact"] .checkin-stepper__indicator-num {
+  flex-shrink: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-modal {
+  width: min(calc(var(--ml-vvw, 100vw) - 0.5rem), 28rem);
+  max-width: calc(var(--ml-vvw, 100vw) - 0.5rem);
+}
+
+
+
+
+/* Admin more menu scroll area — layout in mobile-layout-admin-pages.css */
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__nav {
+  padding-bottom: 0.15rem;
+}
+
+
+
+
+/* ── Pass 8: unverified panels / dialogs audit ── */
+
+/* All modals (except check-in which has its own stack): scroll body + safe viewport */
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0;
+  border-radius: 1rem 1rem 0 0;
+  max-height: min(
+    92dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-safe-top, 0px) - var(--ml-safe-bottom, 0px) - 1.5rem)
+  );
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+
+/* Popover panels (filters, stay chip): bounded viewport + scrollable body */
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) {
+  display: flex;
+  flex-direction: column;
+  max-height: min(
+    70dvh,
+    calc(var(--ml-vvh, 100dvh) - var(--ml-safe-top, 0px) - var(--ml-safe-bottom, 0px) - 2rem)
+  );
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) .admin-floating-panel__header {
+  flex-shrink: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel:not(.admin-floating-panel--modal) .admin-floating-panel__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+  font-size: 0.875rem;
+}
+
+
+
+
+/* Alert / confirm dialogs */
+html[data-layout-chrome="compact"] .admin-alert-dialog__actions {
+  flex-direction: column;
+  align-items: stretch;
+  padding-inline: 0.85rem;
+  padding-bottom: max(0.85rem, var(--ml-safe-bottom, 0px));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-alert-dialog__actions .admin-floating-panel__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-alert-dialog__message {
+  padding-inline: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-preview-panel a.rounded {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-preview-panel .admin-floating-panel__body > .space-y-4 {
+  padding-inline: 0;
+}
+
+
+
+
+/* Settings location unlock */
+html[data-layout-chrome="compact"] .admin-location-unlock input {
+  font-size: 16px;
+  max-width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-location-unlock button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+/* SIM chip error toast inside gear dropdown */
+html[data-layout-chrome="compact"] .admin-gear__footer .sim-error-toast {
+  max-width: min(16rem, calc(100vw - 2rem));
+  right: 0;
+  left: auto;
+  font-size: 0.72rem;
+}
+
+/* Admin panel error boundary */
+html[data-layout-chrome="compact"] .ml-content.flex.min-h-\[40dvh\] {
+  padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+
+
+
+/* Blacklist modal touch */
+html[data-layout-chrome="compact"] .guest-blacklist-modal .admin-floating-panel__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+/* ── Pass 9: best mobile UX — focus, errors, sticky scroll targets ── */
+
+html[data-layout-chrome="compact"] button:focus-visible,
+html[data-layout-chrome="compact"] a:focus-visible,
+html[data-layout-chrome="compact"] .ml-drawer__link:focus-visible,
+html[data-layout-chrome="compact"] .ml-bottom-nav__link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--admin-accent, #38bdf8) 70%, white);
+  outline-offset: 2px;
+}
+
+
+
+
+/* Anchor scroll: section headings clear top nav */
+html[data-layout-chrome="compact"] .admin-page-main :target,
+html[data-layout-chrome="compact"] .ml-main :target {
+  scroll-margin-top: calc(var(--ml-admin-nav-offset, calc(var(--ml-bottom-nav-height, 3.75rem) + var(--ml-safe-top, 0px))) + 0.75rem);
+  scroll-margin-bottom: calc(var(--ml-safe-bottom, 0px) + 1rem);
+}
+
+
+
+
+/* ── Pass 10: polish + perf paint on remaining surfaces ── */
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud-alert__link {
+  display: inline-flex;
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+  padding-inline: 0.35rem;
+  margin-inline: -0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-header__brand {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  padding-block: 0.35rem 0.5rem;
+  margin-bottom: 0.5rem;
+  background: color-mix(in srgb, var(--admin-surface-bg, #fff) 94%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .onboarding-checklist,
+html[data-layout-chrome="compact"] .admin-home-section,
+html[data-layout-chrome="compact"] .booking-ops-actions {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 8rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-entry__summary {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-entry__message {
+  flex: 1 1 100%;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.35;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-dn-switch__btn {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-toast__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.75rem;
+}
+
+
+
+
+/* ── Pass 13: statistics cards + year nav polish ── */
+
+html[data-layout-chrome="compact"] .statistics-cards {
+  display: block;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-table-desktop {
+  display: none;
+}
+
+
+
+
+html:not([data-layout-chrome="compact"]) .statistics-cards {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-page .statistics-year-nav {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.25rem;
+  margin-inline: -0.15rem;
+  padding-inline: 0.15rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-page .statistics-year-nav a {
+  flex-shrink: 0;
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-page .statistics-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 6rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-page .grid.gap-6 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+/* ── Pass 15: invoice line cards + print CTA ── */
+
+html[data-layout-chrome="compact"] .invoice-line-cards {
+  display: block;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .invoice-table-desktop {
+  display: none;
+}
+
+
+
+
+html:not([data-layout-chrome="compact"]) .invoice-line-cards {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .informal-invoice-print {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .informal-invoice-actions {
+  flex-direction: column;
+}
+
+
+
+
+/* ── Pass 16: pricing comparison cards + tenant detail + booking CTAs ── */
+
+html[data-layout-chrome="compact"] .pricing-comparison-cards {
+  display: block;
+  margin-top: 2rem;
+}
+
+
+
+
+html:not([data-layout-chrome="compact"]) .pricing-comparison-cards {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .pricing-comparison-card__row {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .tenant-billing-toggle {
+  width: 100%;
+  justify-content: center;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .platform-dashboard__cta {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .nestio-tenant-option input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  flex-shrink: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .phone-booking-form__checkbox,
+html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="checkbox"]) {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .phone-booking-form__checkbox input[type="checkbox"],
+html[data-layout-chrome="compact"] .phone-booking-form label:has(input[type="checkbox"]) input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  flex-shrink: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--platform {
+  padding-bottom: calc(1.5rem + var(--ml-safe-bottom, 0px));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-years-section .statistics-year-card__link {
+  width: 100%;
+  justify-content: flex-start;
+  padding-block: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .language-switcher__option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.5rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-row__role-menu {
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-row__role-option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  font-size: max(16px, 0.875rem);
+  padding-block: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .building-climate-legend {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+
+
+
+/* ── Pass 20: domains, structure, staff invite, guest rebook ── */
+
+html[data-layout-chrome="compact"] .tenant-domains-panel input,
+html[data-layout-chrome="compact"] .tenant-domains-panel select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .tenant-domains-panel button,
+html[data-layout-chrome="compact"] .tenant-domains-panel a[href] {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .tenant-domain-card .flex.flex-wrap {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .tenant-domain-card button {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-invite__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-invite input,
+html[data-layout-chrome="compact"] .admin-staff-invite select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-invite__submit button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .building-structure-card > header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .building-structure-card > header > div:last-child {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .building-structure-card > header a {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-dashboard-card header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-manage-actions {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-manage-actions a,
+html[data-layout-chrome="compact"] .room-manage-actions button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-invoice-page {
+  padding-bottom: var(--ml-safe-bottom, 0px);
+}
+
+
+
+
+/* ── Pass 22: room/building forms + gantt view switcher ── */
+
+html[data-layout-chrome="compact"] .admin-room-form__mode {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-room-form__mode button {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-room-form__fields input,
+html[data-layout-chrome="compact"] .admin-room-form__fields select,
+html[data-layout-chrome="compact"] .admin-room-form__fields textarea,
+html[data-layout-chrome="compact"] .admin-building-form input,
+html[data-layout-chrome="compact"] .admin-building-form select,
+html[data-layout-chrome="compact"] .admin-building-form textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  max-width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-room-form__fields button[type="submit"],
+html[data-layout-chrome="compact"] .admin-building-form button[type="submit"] {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+/* ── Pass 23: color picker, add floor, building rooms, guest merge ── */
+
+html[data-layout-chrome="compact"] .color-palette-picker__swatch {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .add-floor-form__trigger,
+html[data-layout-chrome="compact"] .building-rooms-collapsible__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .add-floor-form__fields {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .add-floor-form__fields label {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .add-floor-form__fields input {
+  width: 100% !important;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .add-floor-form__fields button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-disclosure-summary {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding-block: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-merge-form select,
+html[data-layout-chrome="compact"] .guest-merge-form button {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-back {
+  padding-inline: 0.15rem;
+}
+
+
+
+
+/* ── Pass 24: structure, location lock, delete confirm, guest notes, settings CTAs ── */
+
+html[data-layout-chrome="compact"] .floor-structure-section__head {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .floor-structure-section__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .floor-structure-section__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form label {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form input {
+  width: 100% !important;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-structure-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-structure-row__controls {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .room-structure-row__floor-select {
+  max-width: none !important;
+  width: 100%;
+  font-size: max(16px, 0.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-location-lock-bar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-location-lock-bar__badge {
+  text-align: center;
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-location-lock-btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .delete-confirm-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .delete-confirm-form__confirm,
+html[data-layout-chrome="compact"] .delete-confirm-form__cancel {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-submit__btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .activity-timeline__card a {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-block: 0.25rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-location-nav {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-location-nav__card,
+html[data-layout-chrome="compact"] .admin-settings-location-nav__rooms-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-password-panel select,
+html[data-layout-chrome="compact"] .admin-staff-password-panel input {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-staff-password-panel__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-blacklist-panel__trigger {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-blacklist-modal__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-blacklist-modal__btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-identity-form__row--multi {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-identity-form__row--multi > .guest-identity-form__field {
+  width: 100%;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-identity-form__input,
+html[data-layout-chrome="compact"] .guest-identity-form__select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-identity-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-identity-form__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .booking-cancel-form__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .booking-cancel-form__confirm,
+html[data-layout-chrome="compact"] .booking-cancel-form__dismiss {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__top {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-banner__identity {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-stay-editor__actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-stay-editor__cancel,
+html[data-layout-chrome="compact"] .admin-stay-editor__save {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+/* pass 27 — admin empty states + home availability skeleton */
+html[data-layout-chrome="compact"] .admin-empty-state {
+  padding-inline: max(0.5rem, var(--ml-safe-left, 0px))
+    max(0.5rem, var(--ml-safe-right, 0px));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-empty-state__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.65rem 1.25rem;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+/* ── Pass 27: empty states, drawer close, sticky CTAs, reduced motion ── */
+
+html[data-layout-chrome="compact"] .admin-empty-state {
+  padding: var(--ml-space-lg, 1rem) 0.85rem;
+  min-width: 0;
+  text-align: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-empty-state__title,
+html[data-layout-chrome="compact"] .admin-empty-state__desc,
+html[data-layout-chrome="compact"] .admin-empty-state__text {
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  line-height: 1.4;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-empty-state__action {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.65rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-back {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 0.15rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__head {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+  margin-bottom: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__head {
+  justify-content: space-between;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.65rem;
+  background: transparent;
+  color: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--platform .ml-drawer__close {
+  color: #fafafa;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer__close:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .phone-booking-form__submit {
+  position: sticky;
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.35rem);
+  z-index: 2;
+  margin-top: 0.5rem;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-floating-panel--modal:not(.checkin-modal) .admin-floating-panel__header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--admin-panel-bg, #fff);
+}
+
+
+
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-layout-chrome="compact"] .admin-route-skeleton__toolbar,
+  html[data-layout-chrome="compact"] .admin-route-skeleton__row,
+  html[data-layout-chrome="compact"] .admin-route-skeleton__card {
+    animation: none;
+    opacity: 0.65;
+  }
+
+  html[data-layout-chrome="compact"] .ml-bottom-nav__link--alert:not(.ml-bottom-nav__link--active) .ml-bottom-nav__icon {
+    animation: none;
+  }
+}
+
+
+
+
+/* ── Pass 27 (cont.): settings panels, confirm header, phone form ── */
+
+html[data-layout-chrome="compact"] .statistics-settings__link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .statistics-settings__select {
+  width: 100%;
+  max-width: 100%;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-fx-settings__row {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-fx-settings__row input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right {
+  align-self: stretch;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .checkin-setting-row__right .checkin-field__input {
+  max-width: none;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-confirm__header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-confirm__times {
+  margin-left: 0 !important;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-confirm__submit {
+  width: 100%;
+  position: sticky;
+  bottom: calc(var(--ml-safe-bottom, 0px) + 0.35rem);
+  z-index: 2;
+  margin-top: 0.85rem;
+  padding-bottom: max(0.5rem, var(--ml-safe-bottom, 0px));
+  box-shadow: 0 -4px 12px color-mix(in srgb, #000 8%, transparent);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-phone-warn__form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-phone-warn__label {
+  width: 100%;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-phone-warn__input {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-phone-warn__save {
+  width: 100%;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__summary {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__metrics {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__metrics select,
+html[data-layout-chrome="compact"] .guest-stay-review-form__metrics input {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__note textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 5.5rem;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-stay-review-form__submit {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-confirm__adjust-toggle {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-confirm__adjust-toggle input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel__row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel__row > div {
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-quick-panel__row .admin-quick-panel__confirm-link {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0.45rem;
+  font-size: max(16px, 0.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .language-switcher__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.65rem;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .language-switcher__menu--portal {
+  max-width: min(12rem, calc(100vw - 1rem));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .guest-card__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan__tab,
+html[data-layout-chrome="compact"] .mrz-scan__parse-btn,
+html[data-layout-chrome="compact"] .mrz-scan__actions .checkin-stepper__btn,
+html[data-layout-chrome="compact"] .checkin-guest-form__mrz-btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan__textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: 6rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan__camera-wrap {
+  aspect-ratio: 3 / 4;
+  max-height: min(52dvh, calc(var(--ml-vvh, 100dvh) - 14rem));
+  border-radius: 0.85rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan__torch-btn,
+html[data-layout-chrome="compact"] .mrz-scan__manual-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.65rem;
+  background: var(--admin-panel-bg, #fff);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .mrz-scan__actions .checkin-stepper__btn {
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 96%, transparent);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-panel__body {
+  overflow-x: clip;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea {
+  font-size: max(16px, 1rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-drawer--admin .ml-drawer__close {
+  min-width: var(--ml-touch-min, 2.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .stay-card__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .ml-content {
+  /* overflow-x: clip — mobile-layout-compact-fixes.css */
+  scroll-padding-top: calc(var(--ml-admin-chrome-top, var(--ml-safe-top, 0px)) + 0.5rem);
+  scroll-padding-bottom: var(
+    --ml-page-scroll-bottom,
+    calc(var(--ml-safe-bottom, 0px) + 0.35rem)
+  );
+}
+
+
+
+
+/* ── Admin page frames ── */
+html[data-layout-chrome="compact"] .admin-page-main > main,
+html[data-layout-mode="mobile"] .admin-page-main > main {
+  padding-block: var(--ml-page-gutter-block, 0.65rem) 0;
+  padding-inline: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-toolbar {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+/* ── Paint isolation: off-screen sections skip layout on compact ── */
+html[data-layout-chrome="compact"] .bd-col,
+html[data-layout-chrome="compact"] .bd-card {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 12rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-kpi,
+html[data-layout-chrome="compact"] .admin-home-panel,
+html[data-layout-chrome="compact"] .admin-home-section {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 6rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page .rounded-2xl.border {
+  content-visibility: auto;
+  contain: layout style;
+  contain-intrinsic-size: auto 5rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-main,
+html[data-layout-chrome="compact"] .ml-main,
+html[data-layout-chrome="compact"] .admin-panel__body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-padding-bottom: var(--ml-page-scroll-bottom, calc(var(--ml-safe-bottom, 0px) + 0.35rem));
+}
+
+
+
+
+/* admin panels: see mobile-layout-flawless.css (.admin-panel) */
+
+html[data-layout-chrome="compact"] .admin-page-back {
+  font-size: 0.8125rem;
+}
+
+
+
+
+/* ── Admin settings / forms (see mobile-layout-admin-pages.css) ── */
+
+html[data-layout-chrome="compact"] .admin-panel-section {
+  padding: 1rem 0.85rem;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-panel-section__title,
+html[data-layout-chrome="compact"] .admin-panel-section__desc {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-gear__dropdown:not(.admin-gear__dropdown--portal) {
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: 0;
+  left: auto;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-gear__dropdown--portal {
+  max-width: min(20rem, calc(var(--ml-vvw, 100vw) - 1rem));
+  right: auto;
+  overflow: visible;
+  contain: none;
+}
+
+
+
+
+/* ── Booking detail & modals ── */
+html[data-layout-chrome="compact"] .admin-modal,
+html[data-layout-chrome="compact"] .checkin-modal {
+  width: min(calc(var(--ml-vvw, 100vw) - 1rem), 28rem);
+  max-height: min(92dvh, var(--ml-vvh, 100dvh));
+  margin-inline: auto;
+}
+
+
+
+
+/* ── Auth / login ── */
+html[data-layout-chrome="compact"] .admin-login-page {
+  padding: max(1rem, var(--ml-safe-top)) 1rem max(1rem, var(--ml-safe-bottom));
+  align-items: flex-start;
+  padding-top: max(2rem, var(--ml-safe-top));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-login-card {
+  padding: 1rem !important;
+  border-radius: 0.75rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-corner {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-inline: 0.65rem;
+}
+
+
+
+
+/* ── Tablet portrait uses compact chrome too ── */
+html[data-layout-chrome="compact"][data-layout-mode="tablet"] .admin-shell {
+  padding-bottom: 0;
+}
+
+
+
+

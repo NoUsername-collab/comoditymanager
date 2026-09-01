@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase/client";
 import { readPwaInstallContext } from "@/lib/pwa/install";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 import { completeLoginAfterMfaAction } from "@/features/auth/login";
+import { verifyTotpChallenge } from "@/lib/auth/mfa-browser";
 
 type Props = {
   next: string;
@@ -32,37 +32,15 @@ export function MfaChallengeForm({ next, onCancel }: Props) {
       setBusy(true);
 
       try {
-        const supabase = createClient();
-        const { data: factors, error: listError } =
-          await supabase.auth.mfa.listFactors();
-
-        if (listError) {
-          setError(t("verifyFailed"));
-          return;
-        }
-
-        const totpFactor = factors.totp.find((factor) => factor.status === "verified");
-        if (!totpFactor) {
-          setError(t("noFactor"));
-          return;
-        }
-
-        const { data: challenge, error: challengeError } =
-          await supabase.auth.mfa.challenge({ factorId: totpFactor.id });
-
-        if (challengeError || !challenge) {
-          setError(t("verifyFailed"));
-          return;
-        }
-
-        const { error: verifyError } = await supabase.auth.mfa.verify({
-          factorId: totpFactor.id,
-          challengeId: challenge.id,
-          code: code.trim(),
-        });
-
-        if (verifyError) {
-          setError(t("invalidCode"));
+        const verified = await verifyTotpChallenge(code);
+        if (!verified.ok) {
+          setError(
+            verified.reason === "invalid_code"
+              ? t("invalidCode")
+              : verified.reason === "no_factor"
+                ? t("noFactor")
+                : t("verifyFailed")
+          );
           return;
         }
 

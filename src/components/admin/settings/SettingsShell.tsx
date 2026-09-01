@@ -13,7 +13,7 @@ import {
 } from "@/domain/settings/settings-nav";
 import { navItemHasIssues } from "@/domain/setup-issues/paths";
 import type { SetupIssue } from "@/domain/setup-issues/types";
-import { SetupIssueBadge } from "@/components/admin/setup-issues/SetupIssueBadge";
+import { SetupIssueBadge } from "@/components/admin/settings/SetupIssueBadge";
 
 import type { TeamPermissions } from "@/domain/settings/team-permissions";
 

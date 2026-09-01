@@ -9,7 +9,7 @@ import {
 import { getStayPricingRules } from "@/services/booking-rules-settings";
 import { loadBookingConfirmContext } from "@/services/booking-confirm";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
-import { getBookingById } from "@/services/bookings/queries";
+import { getBookingById, countCereriNoi, listCereriNoiPage } from "@/services/bookings/queries";
 import {
   DEFAULT_CHECKIN_SETTINGS,
   getCheckinByBookingId,
@@ -24,6 +24,22 @@ import {
   previewBookingInvoice,
 } from "@/services/issued-invoice";
 import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
+
+export {
+  CERERE_LIST_MAX_SHOWN,
+  CERERE_LIST_PAGE_SIZE,
+} from "@/services/bookings/queries";
+export { proformaCanConvert } from "@/services/booking-proforma";
+
+export async function loadCereriListPage(shown: number) {
+  const [total, cereriResult] = await Promise.all([
+    countCereriNoi(),
+    listCereriNoiPage(shown)
+      .then((data) => ({ ok: true as const, data }))
+      .catch((error) => ({ ok: false as const, error })),
+  ]);
+  return { total, cereriResult };
+}
 
 const EMPTY_POST_CHECKOUT_POLICY = {
   memberRole: null,

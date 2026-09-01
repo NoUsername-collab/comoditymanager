@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { bindTenantSessionAction } from "@/features/auth/bind-tenant-session";
-import { createClient } from "@/lib/supabase/client";
+import { refreshBrowserAuthSession } from "@/lib/auth/mfa-browser";
 
 /** Syncs JWT tenant claim with current host — required for bulletproof RLS if using user client. */
 export function StaffTenantSessionBinder() {
@@ -16,8 +16,7 @@ export function StaffTenantSessionBinder() {
       const result = await bindTenantSessionAction();
       if (!result.ok || !result.refreshed) return;
 
-      const supabase = createClient();
-      await supabase.auth.refreshSession();
+      await refreshBrowserAuthSession();
     })();
   }, []);
 

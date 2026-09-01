@@ -1,0 +1,101 @@
+/* ═══ Touch targets — minimum 44px pe dispozitive touch ═══ */
+/*
+ * iOS HIG și WCAG 2.5.8 cer min 44×44px pentru orice element interactiv.
+ * Scoped strict pe pointer: coarse (touch) ca să nu afecteze desktop.
+ */
+@media (pointer: coarse) {
+  button:not([data-touch-unconstrained]),
+  [role="button"]:not([data-touch-unconstrained]),
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  summary {
+    min-height: 44px;
+  }
+
+  /* Link-uri de navigare admin */
+  .ml-bottom-nav__link,
+  .ml-drawer__link,
+  .admin-gear__item {
+    min-height: 44px;
+  }
+
+  /* Butoane mici cu icon (stepper +/−, toggle, preview ↗) */
+  .checkin-stepper__btn,
+  .guest-card__preview-btn,
+  .checkin-toggle,
+  .admin-hud__btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Dropdown-uri și select-uri native */
+  select {
+    min-height: 44px;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+}
+
+
+
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE GPU & ANIMATION BUDGET
+   ═══════════════════════════════════════════════════════════ */
+
+@media (pointer: coarse) {
+  /*
+   * Blob-urile liquid background (admin-dn-drift-*) rulează
+   * filter:blur(42px) + transform infinit — cel mai scump lucru
+   * pe mobile GPU. Le oprim animațiile și reducem blur-ul.
+   */
+  .admin-dn-liquid__blob {
+    animation-play-state: paused !important;
+    filter: blur(18px); /* 42px → 18px: blur cost ∝ radius², 5× mai ieftin */
+    will-change: auto; /* eliberăm GPU layer-ul rezervat inutil */
+  }
+
+  /* Logo float e decorativ — oprim pe mobile */
+  .brand-logo-shell,
+  .group:hover .brand-logo-shell {
+    animation: none;
+  }
+
+  /* HUD sync dot pulse — OK dacă e doar opacity, fără transform scale */
+  .admin-hud__sync-dot--live {
+    animation: none;
+    opacity: 0.9;
+  }
+
+  /* Bottom nav active indicator — GPU layer explicit pentru scaleX */
+  .ml-bottom-nav__link::before {
+    will-change: transform;
+  }
+
+  /* Dezactivăm hover transforms pe mobile — nu există hover real */
+  .admin-hud__chip--ghost:hover {
+    transform: none;
+    background: var(--admin-chip-bg, var(--admin-surface-bg, #ffffff));
+    border-color: var(--admin-chip-border, #e4e4e7);
+    box-shadow: none;
+  }
+}
+
+
+
+
+/* prefers-reduced-motion: oprește absolut totul continuu */
+@media (prefers-reduced-motion: reduce) {
+  .admin-dn-liquid__blob {
+    animation: none !important;
+    filter: none;
+    opacity: 0.3;
+  }
+
+  .admin-hud__sync-dot--live,
+  .admin-cereri-glow-pulse,
+  .setup-issue-badge {
+    animation: none !important;
+  }
+}

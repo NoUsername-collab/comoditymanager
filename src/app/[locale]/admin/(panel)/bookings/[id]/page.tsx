@@ -1,4 +1,3 @@
-import "@/styles/features/admin/admin-booking-detail.css";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
@@ -11,7 +10,7 @@ import {
 import { BookingCancelButton } from "@/features/bookings/ui/BookingCancelButton";
 import { BookingGuestPhoneForm } from "@/features/bookings/ui/BookingGuestPhoneForm";
 import { BookingOperationalPanel } from "@/features/bookings/ui/BookingOperationalPanel";
-import { BookingActivitySection } from "@/components/admin/activity/BookingActivitySection";
+import { BookingActivitySection } from "@/features/activity/ui/BookingActivitySection";
 import { BookingStayEditor } from "@/features/bookings/ui/BookingStayEditor";
 import { ConfirmRoomsForm } from "@/features/bookings/ui/ConfirmRoomsForm";
 import { GuestDedupWarning } from "@/features/guests/ui/GuestDedupWarning";

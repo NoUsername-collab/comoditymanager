@@ -7,7 +7,7 @@ import {
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
-import { GanttCheckTimeDialog } from "@/components/admin/gantt/GanttCheckTimeDialog";
+import { GanttCheckTimeDialog } from "@/features/calendar/ui/GanttCheckTimeDialog";
 import { BookingCheckoutPanel } from "@/features/bookings/ui/BookingCheckoutPanel";
 import {
   checkinPaymentBalance,

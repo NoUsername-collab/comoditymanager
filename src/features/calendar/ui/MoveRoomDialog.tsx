@@ -16,16 +16,11 @@ import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPane
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import type { MoveRoomDraft } from "@/domain/gantt/drafts";
 
 type RoomOption = { id: string; name: string; building_name: string };
 
-export type MoveRoomDraft = {
-  bookingId: string;
-  guestName: string;
-  sourceRoomId: string;
-  sourceRoomName: string;
-  roomIds: string[];
-};
+export type { MoveRoomDraft };
 
 type Props = {
   draft: MoveRoomDraft | null;

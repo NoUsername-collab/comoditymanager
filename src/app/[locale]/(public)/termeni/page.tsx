@@ -1,6 +1,6 @@
-import { PublicPageShell } from "@/components/public/PublicPageShell";
+import { PublicPageShell } from "@/features/public-site/ui/PublicPageShell";
 import { buildCancellationPolicyText } from "@/domain/settings/booking-rules";
-import { getBookingRulesSettings } from "@/services/booking-rules-settings";
+import { loadTermeniPage } from "@/features/public-site/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
@@ -10,7 +10,7 @@ export default async function TermeniPage() {
     getTranslations("public.shell"),
     getTranslations("public.footer"),
     getLocale(),
-    getBookingRulesSettings().catch(() => null),
+    loadTermeniPage(),
   ]);
 
   const policyLocale = locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";

@@ -5,7 +5,7 @@ import type { AdminDashboardData } from "@/services/admin-dashboard";
 
 const PublicStaffPreviewDynamic = dynamic(
   () =>
-    import("@/components/public/PublicStaffPreview").then((m) => ({
+    import("@/features/public-site/ui/PublicStaffPreview").then((m) => ({
       default: m.PublicStaffPreview,
     })),
   {

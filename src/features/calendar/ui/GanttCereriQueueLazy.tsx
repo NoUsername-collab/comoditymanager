@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import type { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
+import type { GanttCereriQueue } from "@/features/calendar/ui/GanttCereriQueue";
 
 const GanttCereriQueueDynamic = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttCereriQueue").then((m) => ({
+    import("@/features/calendar/ui/GanttCereriQueue").then((m) => ({
       default: m.GanttCereriQueue,
     })),
   {

@@ -1,4 +1,4 @@
-import { PublicPageShell } from "@/components/public/PublicPageShell";
+import { PublicPageShell } from "@/features/public-site/ui/PublicPageShell";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 

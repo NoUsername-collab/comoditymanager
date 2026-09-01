@@ -6,8 +6,8 @@ import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { RoomGridTile } from "@/components/admin/ui/RoomGridTile";
 import { RoomAvailabilityGrid } from "@/components/admin/ui/RoomAvailabilityGrid";
-import { CheckInMilestoneBoard } from "@/components/admin/dashboard/CheckInMilestoneBoard";
-import { TodayBoardBadges } from "@/components/admin/dashboard/TodayBoardBadges";
+import { CheckInMilestoneBoard } from "@/features/availability/ui/CheckInMilestoneBoard";
+import { TodayBoardBadges } from "@/features/availability/ui/TodayBoardBadges";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 
 export async function AdminDashboard({

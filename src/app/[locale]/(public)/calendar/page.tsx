@@ -1,13 +1,13 @@
 import { Link } from "@/i18n/navigation";
-import { GuestBookingFormLazy } from "@/components/calendar/GuestBookingFormLazy";
-import { getPublicSiteConfig } from "@/services/public-site/queries";
+import { GuestBookingFormLazy } from "@/features/public-site/ui/GuestBookingFormLazy";
+import { loadPublicCalendarPage } from "@/features/public-site/loaders";
 import { getTranslations } from "next-intl/server";
 
 export default async function CalendarPublicPage() {
   const [t, tShell, config] = await Promise.all([
     getTranslations("public.calendar"),
     getTranslations("public.shell"),
-    getPublicSiteConfig(),
+    loadPublicCalendarPage(),
   ]);
 
   if (!config.bookingEnabled) {

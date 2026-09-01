@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { listBuildingDashboards } from "@/services/building-dashboard";
+import { loadBuildingsListPage } from "@/features/buildings/loaders";
 import { BuildingDashboardCard } from "@/features/buildings/ui/BuildingDashboardCard";
-import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
+import { AvailabilityDatePicker } from "@/features/availability/ui/AvailabilityDatePicker";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
@@ -20,23 +20,15 @@ export default async function BuildingsPage({
   const [t, params, dashboardsResult] = await Promise.all([
     getTranslations("admin.pages.buildings"),
     paramsPromise,
-    paramsPromise
-      .then((p) => listBuildingDashboards(parseViewDate(p.date)))
-      .then((data) => ({ ok: true as const, data }))
-      .catch((e) => ({ ok: false as const, error: e })),
+    paramsPromise.then((p) => loadBuildingsListPage(parseViewDate(p.date))),
   ]);
   const viewDate = parseViewDate(params.date);
-  let dashboards: Awaited<ReturnType<typeof listBuildingDashboards>> = [];
-  let error: string | null = null;
-
-  if (dashboardsResult.ok) {
-    dashboards = dashboardsResult.data;
-  } else {
-    error =
-      dashboardsResult.error instanceof Error
-        ? dashboardsResult.error.message
-        : t("unknownError");
-  }
+  const dashboards = dashboardsResult.ok ? dashboardsResult.data : [];
+  const error = dashboardsResult.ok
+    ? null
+    : dashboardsResult.error instanceof Error
+      ? dashboardsResult.error.message
+      : t("unknownError");
 
   return (
     <AdminPageFrame

@@ -22,11 +22,11 @@ import { guestPartyTotal } from "@/lib/guest-party";
 import { nightOccupied } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
-import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
-import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
-import { GanttDragCreateLayer } from "@/components/admin/gantt/GanttDragCreateLayer";
-import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
-import { GanttOccupancyBar } from "@/components/admin/gantt/GanttOccupancyBar";
+import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
+import type { GanttCreateDraft } from "@/features/calendar/ui/GanttCreateDialog";
+import { GanttDragCreateLayer } from "@/features/calendar/ui/GanttDragCreateLayer";
+import { GanttDraggableStay } from "@/features/calendar/ui/GanttDraggableStay";
+import { GanttOccupancyBar } from "@/features/calendar/ui/GanttOccupancyBar";
 import { DayGrid, type GanttDayGridOptions, type GanttShellZoom } from "./GanttGridHelpers";
 
 /* ── Compact status LED ───────────────────────────────────────── */

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, type RefObject } from "react";
-import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
+import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import {
   isGanttSpecialContextTarget,

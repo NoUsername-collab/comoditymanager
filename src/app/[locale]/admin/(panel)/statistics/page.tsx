@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { requireStaff } from "@/lib/auth/require-staff";
-import { getPensionSettings, pensionStatisticsVisibility } from "@/services/pension-settings";
+import { loadStatisticsPageAccess } from "@/features/settings/loaders";
 import { canAccessStatistics } from "@/domain/settings/statistics-visibility";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { MonthCompareSection } from "./_sections/MonthCompareSection";
@@ -14,14 +14,12 @@ export default async function AdminStatisticsPage({
 }: {
   searchParams: Promise<{ year?: string }>;
 }) {
-  const [tPages, { memberRole }, pension, params] = await Promise.all([
+  const [tPages, { memberRole }, { visibility }, params] = await Promise.all([
     getTranslations("admin.pages.statistics"),
     requireStaff(),
-    getPensionSettings().catch(() => null),
+    loadStatisticsPageAccess(),
     searchParams,
   ]);
-
-  const visibility = pensionStatisticsVisibility(pension);
   if (!canAccessStatistics(memberRole, visibility)) {
     await redirect("/admin/settings?access=statistics");
   }

@@ -12,9 +12,9 @@ import { deleteBuildingAction } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
-import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
+import { DeleteConfirmButton } from "@/components/admin/ui/DeleteConfirmButton";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
-import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
+import { ColorPalettePicker } from "@/features/buildings/ui/ColorPalettePicker";
 
 export function EditBuildingPanel({ building }: { building: Building }) {
   const t = useTranslations("admin.locationStructure");

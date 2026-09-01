@@ -1,7 +1,7 @@
 import { bindTenantContextFromRequest } from "@/lib/tenant/bind-request-context";
-import { AdminCorner } from "@/components/public/AdminCorner";
-import { PublicFooter } from "@/components/public/PublicFooter";
-import { PublicHeader } from "@/components/public/PublicHeader";
+import { AdminCorner } from "@/features/public-site/ui/AdminCorner";
+import { PublicFooter } from "@/features/public-site/ui/PublicFooter";
+import { PublicHeader } from "@/features/public-site/ui/PublicHeader";
 import { PublicContactBar } from "@/features/public-site/contact/PublicContactBar";
 import { PublicSiteConfigProvider } from "@/features/public-site/PublicSiteConfigProvider";
 import {
@@ -9,7 +9,7 @@ import {
   resolvePublicThemeStyle,
 } from "@/features/public-site/themes/loader";
 import { MobileShell } from "@/layout/components/MobileShell";
-import { getPublicSiteConfig } from "@/services/public-site/queries";
+import { loadPublicSiteConfig } from "@/features/public-site/loaders";
 import { getTranslations } from "next-intl/server";
 import "@/styles/features/public/public-site.css";
 import "@/styles/features/public/public-site-v2.css";
@@ -23,7 +23,7 @@ export default async function PublicLayout({
   await bindTenantContextFromRequest();
 
   const [config, tFooter] = await Promise.all([
-    getPublicSiteConfig(),
+    loadPublicSiteConfig(),
     getTranslations("public.footer"),
   ]);
 

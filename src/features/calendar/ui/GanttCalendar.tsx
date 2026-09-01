@@ -26,66 +26,66 @@ import {
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 import { addDays, todayIso } from "@/lib/stay-dates";
-import { GanttPinnedSelectionChip } from "@/components/admin/gantt/GanttPinnedSelectionChip";
+import { GanttPinnedSelectionChip } from "@/features/calendar/ui/GanttPinnedSelectionChip";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
   setGanttRoomPinnedSpan,
   clearGanttRoomPinnedSpan,
 } from "@/domain/gantt/room-at-point";
 import { ghostBarPosition } from "@/domain/gantt/drag-create";
-import type { GanttOccDetail } from "@/components/admin/gantt/GanttOccupancyDetailPanel";
-import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
+import type { GanttOccDetail } from "@/features/calendar/ui/GanttOccupancyDetailPanel";
+import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
 import {
   LONG_PRESS_MOVE_PX,
   type GanttCreateDraftRequest,
 } from "@/domain/gantt/context-menu";
-import { GanttContextMenuProvider } from "@/components/admin/gantt/GanttContextMenuContext";
-import { GanttStayTapPopoverProvider } from "@/components/admin/gantt/GanttStayTapPopoverContext";
-import { GanttContextMenuBridge } from "@/components/admin/gantt/GanttContextMenuBridge";
-import { GanttOperativeCheckProvider } from "@/components/admin/gantt/GanttOperativeCheckProvider";
+import { GanttContextMenuProvider } from "@/features/calendar/ui/GanttContextMenuContext";
+import { GanttStayTapPopoverProvider } from "@/features/calendar/ui/GanttStayTapPopoverContext";
+import { GanttContextMenuBridge } from "@/features/calendar/ui/GanttContextMenuBridge";
+import { GanttOperativeCheckProvider } from "@/features/calendar/ui/GanttOperativeCheckProvider";
 import {
   type GanttOpsPickerMode,
-} from "@/components/admin/gantt/GanttOpsPickerPanel";
+} from "@/features/calendar/ui/GanttOpsPickerPanel";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { useGanttCalendarNavigation } from "@/hooks/useGanttCalendarNavigation";
 import { useGanttLiveBookings } from "@/lib/gantt/live-bookings";
-import { GanttCompactToolbar } from "@/components/admin/gantt/GanttCompactToolbar";
-import { GanttFiltersPanel } from "@/components/admin/gantt/GanttFiltersPanel";
-import { GanttOperativeSurfaces } from "@/components/admin/gantt/GanttOperativeSurfaces";
+import { GanttCompactToolbar } from "@/features/calendar/ui/GanttCompactToolbar";
+import { GanttFiltersPanel } from "@/features/calendar/ui/GanttFiltersPanel";
+import { GanttOperativeSurfaces } from "@/features/calendar/ui/GanttOperativeSurfaces";
 import { useLocale, useTranslations } from "next-intl";
 
 const GanttCreateDialog = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttCreateDialog").then((m) => ({
+    import("@/features/calendar/ui/GanttCreateDialog").then((m) => ({
       default: m.GanttCreateDialog,
     })),
   { ssr: false }
 );
 const MoveRoomDialog = dynamic(
   () =>
-    import("@/components/admin/gantt/MoveRoomDialog").then((m) => ({
+    import("@/features/calendar/ui/MoveRoomDialog").then((m) => ({
       default: m.MoveRoomDialog,
     })),
   { ssr: false }
 );
 const GanttOccupancyDetailPanelLazy = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttOccupancyDetailPanel").then((m) => ({
+    import("@/features/calendar/ui/GanttOccupancyDetailPanel").then((m) => ({
       default: m.GanttOccupancyDetailPanel,
     })),
   { ssr: false }
 );
 const GanttToolbarOccForm = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttToolbarOccForm").then((m) => ({
+    import("@/features/calendar/ui/GanttToolbarOccForm").then((m) => ({
       default: m.GanttToolbarOccForm,
     })),
   { ssr: false }
 );
 const GanttStickyViewportHeader = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttStickyViewportHeader").then((m) => ({
+    import("@/features/calendar/ui/GanttStickyViewportHeader").then((m) => ({
       default: m.GanttStickyViewportHeader,
     })),
   { ssr: false }
@@ -96,12 +96,12 @@ import {
   resolveGanttDayGridOptions,
   resolveGanttTableLayout,
   resolveGanttShellZoom,
-} from "@/components/admin/gantt/GanttGridHelpers";
-import { GanttDayHeader } from "@/components/admin/gantt/GanttDayHeader";
-import { GanttDailySummaryRow } from "@/components/admin/gantt/GanttDailySummaryRow";
-import { GanttFooterLegend } from "@/components/admin/gantt/GanttFooterLegend";
-import { GanttVirtualizedBody } from "@/components/admin/gantt/GanttVirtualizedBody";
-import { GanttZoneRibbon } from "@/components/admin/gantt/GanttZoneRibbon";
+} from "@/features/calendar/ui/GanttGridHelpers";
+import { GanttDayHeader } from "@/features/calendar/ui/GanttDayHeader";
+import { GanttDailySummaryRow } from "@/features/calendar/ui/GanttDailySummaryRow";
+import { GanttFooterLegend } from "@/features/calendar/ui/GanttFooterLegend";
+import { GanttVirtualizedBody } from "@/features/calendar/ui/GanttVirtualizedBody";
+import { GanttZoneRibbon } from "@/features/calendar/ui/GanttZoneRibbon";
 
 export type { GanttRoom };
 

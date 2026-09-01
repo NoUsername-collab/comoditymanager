@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { LandingHeroShowcase } from "@/components/platform/LandingHeroShowcase";
-import { LandingTools } from "@/components/platform/LandingTools";
-import { LandingTrustCards } from "@/components/platform/LandingTrustCards";
-import { PricingGrid } from "@/components/platform/PricingGrid";
+import { LandingHeroShowcase } from "@/features/signup/ui/LandingHeroShowcase";
+import { LandingTools } from "@/features/signup/ui/LandingTools";
+import { LandingTrustCards } from "@/features/signup/ui/LandingTrustCards";
+import { PricingGrid } from "@/features/signup/ui/PricingGrid";
 import {
   BookingFormMockup,
   GuestAppMockup,
   DashboardMockup,
-} from "@/components/platform/LandingMockups";
+} from "@/features/signup/ui/LandingMockups";
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { getTranslations } from "next-intl/server";
 

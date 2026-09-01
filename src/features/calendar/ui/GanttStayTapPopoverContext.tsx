@@ -14,7 +14,7 @@ import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import {
   GanttStayPopover,
   type GanttStayPopoverData,
-} from "@/components/admin/gantt/GanttStayPopover";
+} from "@/features/calendar/ui/GanttStayPopover";
 
 export type GanttStayTapPopoverPayload = {
   key: string;

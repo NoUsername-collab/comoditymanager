@@ -1,13 +1,13 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { GanttPeriodJumpControl } from "@/components/admin/gantt/GanttPeriodJumpControl";
-import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
+import { GanttPeriodJumpControl } from "@/features/calendar/ui/GanttPeriodJumpControl";
+import { GanttRadialController } from "@/features/calendar/ui/GanttRadialController";
 import { HudIconGrid, HudIconHome } from "@/components/admin/AdminHudIcons";
 import {
   ToolbarFilterIcon,
   type InlineZoomChoice,
-} from "@/components/admin/gantt/GanttGridHelpers";
+} from "@/features/calendar/ui/GanttGridHelpers";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";

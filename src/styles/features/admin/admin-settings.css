@@ -2764,3 +2764,15 @@ html[data-layout-chrome="compact"] .settings-shell__main {
   white-space: nowrap;
   border: 0;
 }
+
+.fiscal-settings__efactura {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--admin-surface-border, #e4e4e7);
+}
+
+.fiscal-settings__efactura-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}

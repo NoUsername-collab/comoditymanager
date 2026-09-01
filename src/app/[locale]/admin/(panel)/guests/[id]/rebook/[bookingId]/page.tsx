@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { GuestRebookStayForm } from "@/features/guests/ui/GuestRebookStayForm";
 import { formatStayPeriod } from "@/lib/ro-calendar";
-import { loadGuestRebookPanelPayload } from "@/services/guest-rebook";
+import { loadGuestRebookPage } from "@/features/guests/loaders";
 import { getTranslations } from "next-intl/server";
 
 export default async function GuestRebookStayPage({
@@ -17,7 +17,7 @@ export default async function GuestRebookStayPage({
     params,
     searchParams,
     params.then(({ id, bookingId: sourceBookingId }) =>
-      loadGuestRebookPanelPayload(id, sourceBookingId)
+      loadGuestRebookPage(id, sourceBookingId)
     ),
   ]);
 

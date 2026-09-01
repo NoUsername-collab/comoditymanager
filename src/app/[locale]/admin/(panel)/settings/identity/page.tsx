@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { PensionIdentityForm } from "@/features/settings/ui/PensionIdentityForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { getPensionIdentity } from "@/services/pension-identity";
+import { loadPensionIdentity } from "@/features/settings/loaders";
 import {
   buildSettingsAlerts,
   guardSettingsPermission,
@@ -20,7 +20,7 @@ export default async function SettingsIdentityPage({
     getTranslations("admin.pages.settings"),
     searchParams,
     guardSettingsPermission("pension_settings"),
-    getPensionIdentity(),
+    loadPensionIdentity(),
   ]);
 
   const alerts = await buildSettingsAlerts(params);

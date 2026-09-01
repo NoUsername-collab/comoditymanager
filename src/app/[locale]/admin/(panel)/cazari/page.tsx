@@ -15,9 +15,9 @@ import {
   shouldPinCereriAboveConfirmate,
   splitOperationalStays,
 } from "@/domain/cazari/page-splits";
-import { buildCazariLabels } from "@/services/cazari-labels";
+import { buildCazariLabels, loadCazariPage } from "@/features/cazari/loaders";
 import { formatCazariLabel } from "@/lib/cazari-label-format";
-import { AdminStaySearchForm } from "@/components/admin/AdminStaySearchForm";
+import { AdminStaySearchForm } from "@/features/cazari/ui/AdminStaySearchForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import { CazariOpsToolbar } from "@/features/cazari/ui/CazariOpsToolbar";
@@ -28,7 +28,6 @@ import {
 } from "@/features/cazari/ui/CazariHistoryAside";
 import { StayList } from "@/features/cazari/ui/StayList";
 import { CazariOperativeShell } from "@/features/cazari/ui/CazariOperativeShell";
-import { loadCazariPage } from "@/features/cazari/loaders";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminCazariPage({

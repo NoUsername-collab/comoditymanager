@@ -1,8 +1,8 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
-import { useGanttMenuTrigger } from "@/components/admin/gantt/useGanttMenuTrigger";
+import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
+import { useGanttMenuTrigger } from "@/features/calendar/ui/useGanttMenuTrigger";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { OccupancyKind, OccupancySegment } from "@/domain/occupancy/types";
 

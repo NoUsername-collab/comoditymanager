@@ -6,13 +6,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
 import { useAdminPending } from "@/components/admin/feedback/AdminPendingProvider";
 import { useRouter } from "@/i18n/navigation";
-import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
-import { useGanttStayTapPopover } from "@/components/admin/gantt/GanttStayTapPopoverContext";
+import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
+import { useGanttStayTapPopover } from "@/features/calendar/ui/GanttStayTapPopoverContext";
 import {
   LONG_PRESS_MS,
   LONG_PRESS_MOVE_PX,
 } from "@/domain/gantt/context-menu";
-import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
+import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import {
@@ -28,7 +28,7 @@ import {
 } from "@/domain/gantt/stay-card-display";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
-import { GanttBookingBar } from "@/components/admin/GanttBookingBar";
+import { GanttBookingBar } from "@/features/calendar/ui/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { formatStayPeriod } from "@/lib/ro-calendar";

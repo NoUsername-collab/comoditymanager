@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { getPensionSettings } from "@/services/pension-settings";
+import { loadSettingsLocationPage } from "@/features/settings/loaders";
 import { AdminFactoryResetPanel } from "@/features/settings/ui/AdminFactoryResetPanel";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -9,8 +9,6 @@ import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayo
 import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import type { SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
-import { isFactoryResetEnabled } from "@/services/database-reset";
-import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { updateOperationalSettingsAction } from "../actions";
 import { getTranslations } from "next-intl/server";
@@ -20,26 +18,14 @@ export default async function LocationAdminPage({
 }: {
   searchParams: Promise<{ saved?: string; reset?: string; unlocked?: string; locked?: string }>;
 }) {
-  const [tPage, tCommon, , params, staffAccounts, pensionResult] = await Promise.all([
+  const [tPage, tCommon, , params, locationPage] = await Promise.all([
     getTranslations("admin.pages.settingsLocation"),
     getTranslations("admin.common"),
     requireLocationAdmin(),
     searchParams,
-    listStaffAccountsForCurrentTenant(),
-    (async () => {
-      try {
-        return {
-          settings: await getPensionSettings(),
-          error: null as string | null,
-        };
-      } catch (e) {
-        return {
-          settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
-          error: e instanceof Error ? e.message : "generic",
-        };
-      }
-    })(),
+    loadSettingsLocationPage(),
   ]);
+  const { staffAccounts, pensionResult, factoryResetEnabled } = locationPage;
 
   const settings = pensionResult.settings;
   let error = pensionResult.error;
@@ -177,7 +163,7 @@ export default async function LocationAdminPage({
             </p>
           </SettingsSection>
 
-          {isFactoryResetEnabled() ? (
+          {factoryResetEnabled ? (
             <SettingsSection
               title={tPage("danger.title")}
               description={tCommon("factoryResetSubtitle")}

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import { PublicStaffPreviewLazy } from "@/components/public/PublicStaffPreviewLazy";
+import { PublicStaffPreviewLazy } from "@/features/public-site/ui/PublicStaffPreviewLazy";
 import { pickLocalized } from "@/features/public-site/domain/localized";
 import { PublicSitePage } from "@/features/public-site/templates/PublicSiteTemplates";
-import { getAdminUser } from "@/lib/auth/require-admin";
-import { loadStaffPublicPreview } from "@/services/admin-dashboard";
-import { getPublicSiteConfig } from "@/services/public-site/queries";
+import {
+  loadPublicHomePage,
+  loadPublicSiteConfig,
+} from "@/features/public-site/loaders";
 import { getLocale } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [config, locale] = await Promise.all([getPublicSiteConfig(), getLocale()]);
+  const [config, locale] = await Promise.all([loadPublicSiteConfig(), getLocale()]);
 
   return {
     title: pickLocalized(config.seo.metaTitle, locale, [config.displayName]),
@@ -17,14 +18,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const staffUserPromise = getAdminUser().catch(() => null);
-  const [config, locale, staffUser, staffPreview] = await Promise.all([
-    getPublicSiteConfig(),
+  const [locale, { config, staffPreview }] = await Promise.all([
     getLocale(),
-    staffUserPromise,
-    staffUserPromise.then((user) =>
-      user ? loadStaffPublicPreview().catch(() => null) : null
-    ),
+    loadPublicHomePage(),
   ]);
 
   return (

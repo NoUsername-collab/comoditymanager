@@ -12,9 +12,9 @@ import type { GanttZoom } from "@/domain/gantt/view-range";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
-import { GanttCereriQueue } from "@/components/admin/gantt/GanttCereriQueue";
-import { GanttToolbarOccForm } from "@/components/admin/gantt/GanttToolbarOccForm";
-import { GanttRadialController } from "@/components/admin/gantt/GanttRadialController";
+import { GanttCereriQueue } from "@/features/calendar/ui/GanttCereriQueue";
+import { GanttToolbarOccForm } from "@/features/calendar/ui/GanttToolbarOccForm";
+import { GanttRadialController } from "@/features/calendar/ui/GanttRadialController";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
 
 export type GanttViewMode = "all" | "building" | "room";

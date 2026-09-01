@@ -12,7 +12,7 @@ import {
 } from "@/domain/settings/settings-section-status";
 import { navItemHasIssues } from "@/domain/setup-issues/paths";
 import type { SetupIssue } from "@/domain/setup-issues/types";
-import { SetupIssueBadge } from "@/components/admin/setup-issues/SetupIssueBadge";
+import { SetupIssueBadge } from "@/components/admin/settings/SetupIssueBadge";
 import { SettingsSetupProgress } from "@/features/settings/ui/SettingsSetupProgress";
 
 import type { ReactNode } from "react";

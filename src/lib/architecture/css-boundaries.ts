@@ -21,14 +21,32 @@ const GLOBAL_CSS_BUNDLES = [
 /** Route-scoped sheets — never in global bundles (see ARCHITECTURE.md § CSS). */
 const ROUTE_SCOPED_CSS = [
   "gantt-premium.css",
+  "gantt-premium-shell.css",
+  "gantt-premium-toolbar.css",
+  "gantt-premium-stays.css",
+  "gantt-premium-overlays.css",
+  "gantt-premium-density.css",
+  "gantt-premium-quick-panel.css",
   "admin-gantt-features.css",
   "gantt-mobile.css",
   "admin-settings.css",
+  "admin-history.css",
+  "admin-cazari-toolbar.css",
+  "admin-cazari-cards.css",
+  "admin-payments.css",
+  "admin-booking-detail.css",
+  "mobile-admin-hud.css",
+  "mobile-admin-premium.css",
+  "mobile-admin-flawless.css",
+  "mobile-admin-alignment.css",
+  "mobile-admin-touch.css",
   "../shared/gantt.css",
 ] as const;
 
-/** gantt-premium may only be pulled in via the calendar feature bundle. */
+/** gantt-premium barrel may only be pulled in via the calendar feature bundle. */
 const GANTT_PREMIUM_IMPORT_PARENT = "src/styles/features/admin/admin-gantt-features.css";
+const GANTT_PREMIUM_SLICE_PARENT = "src/styles/features/admin/gantt-premium.css";
+const MOBILE_ADMIN_SLICE_PARENT = "src/styles/features/layout/mobile-admin.css";
 
 const CHECKIN_CSS_ENTRY = "src/features/checkin/ui/import-checkin-styles.ts";
 
@@ -111,6 +129,31 @@ export function auditCssArchitecture(): CssViolation[] {
       });
     }
 
+    const importsGanttPremiumSlice = /@import\s+[^;]*gantt-premium-[a-z0-9-]+\.css/.test(
+      content,
+    );
+    if (importsGanttPremiumSlice && normalized !== GANTT_PREMIUM_SLICE_PARENT) {
+      violations.push({
+        file: normalized,
+        rule: "gantt-premium-slices-via-barrel",
+        detail:
+          "gantt-premium-*.css slices must only be @imported from gantt-premium.css",
+      });
+    }
+
+    const importsMobileAdminSlice =
+      /@import\s+[^;]*mobile-admin-(hud|premium|flawless|alignment|touch)\.css/.test(
+        content,
+      );
+    if (importsMobileAdminSlice && normalized !== MOBILE_ADMIN_SLICE_PARENT) {
+      violations.push({
+        file: normalized,
+        rule: "mobile-admin-slices-via-barrel",
+        detail:
+          "mobile-admin-*.css slices must only be @imported from mobile-admin.css",
+      });
+    }
+
     if (GLOBAL_CSS_BUNDLES.includes(normalized)) {
       for (const scoped of ROUTE_SCOPED_CSS) {
         if (new RegExp(`@import\\s+[^;]*${scoped.replace(/\./g, "\\.")}`).test(content)) {
@@ -149,11 +192,11 @@ export function auditCssArchitecture(): CssViolation[] {
 export const CSS_GOD_FILE_LINE_CAPS: { file: string; maxLines: number }[] = [
   {
     file: "src/styles/features/layout/mobile-admin.css",
-    maxLines: 4772,
+    maxLines: 8,
   },
   {
     file: "src/styles/features/admin/gantt-premium.css",
-    maxLines: 4654,
+    maxLines: 9,
   },
 ];
 

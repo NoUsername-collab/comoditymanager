@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
 import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import { guestPartyTotal } from "@/lib/guest-party";
-import { GanttDraggableStay } from "@/components/admin/gantt/GanttDraggableStay";
+import { GanttDraggableStay } from "@/features/calendar/ui/GanttDraggableStay";
 import { occupancyPhase } from "@/domain/occupancy/phase";
 import { stayTodayHighlight } from "@/domain/gantt/today-activity";
 import type { GanttViewRange } from "@/domain/gantt/view-range";

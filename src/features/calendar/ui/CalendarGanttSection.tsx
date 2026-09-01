@@ -1,18 +1,21 @@
 import { Suspense } from "react";
-import { CalendarAvailabilityStream } from "@/components/admin/calendar/CalendarAvailabilityStream";
+import { CalendarAvailabilityStream } from "@/features/calendar/ui/CalendarAvailabilityStream";
 import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
-import { GanttCalendarLazy } from "@/components/admin/GanttCalendarLazy";
-import { GanttAvailabilityHeatmapPanelLazy } from "@/components/admin/gantt/GanttAvailabilityHeatmapPanelLazy";
-import { GanttCereriQueueLazy } from "@/components/admin/gantt/GanttCereriQueueLazy";
+import { GanttCalendarLazy } from "@/features/calendar/ui/GanttCalendarLazy";
+import { GanttAvailabilityHeatmapPanelLazy } from "@/features/calendar/ui/GanttAvailabilityHeatmapPanelLazy";
+import { GanttCereriQueueLazy } from "@/features/calendar/ui/GanttCereriQueueLazy";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import type { GanttViewMode } from "@/components/admin/gantt/GanttToolbar";
+import type { GanttViewMode } from "@/features/calendar/ui/GanttToolbar";
 import {
   readAvailabilityPanelState,
   mergeAvailabilityPanelSearch,
 } from "@/lib/availability-panel-query";
 import { resolveGanttRange } from "@/domain/gantt/view-range";
-import { loadCalendarCoreData } from "@/services/calendar-page-data";
+import {
+  loadCalendarGanttPage,
+  type CalendarSearchParams,
+} from "@/features/calendar/loaders";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
@@ -22,35 +25,9 @@ import { filterGanttRoomsByFeature } from "@/domain/gantt/filters";
 import { sortRoomsLikeLocationStructure } from "@/domain/room/display-order";
 import { parseGanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import { getLocale, getTranslations } from "next-intl/server";
-import { parseIso, todayIso } from "@/lib/stay-dates";
-import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
-import {
-  DEFAULT_CHECKIN_SETTINGS,
-  getCheckinDeparturePolicy,
-} from "@/services/checkin/settings";
+import { parseIso } from "@/lib/stay-dates";
 
-export type CalendarSearchParams = {
-  y?: string;
-  m?: string;
-  view?: string;
-  building?: string;
-  room?: string;
-  zoom?: string;
-  ws?: string;
-  q?: string;
-  filter?: string;
-  layer?: string;
-  feat?: string;
-  fd?: string;
-  avail?: string;
-  avail_y?: string;
-  avail_m?: string;
-  avail_day?: string;
-  avail_building?: string;
-  avail_view?: string;
-  avail_ws?: string;
-  avail_feat?: string;
-};
+export type { CalendarSearchParams };
 
 function toUrlSearchParams(params: Record<string, string | undefined>) {
   const search = new URLSearchParams();
@@ -70,62 +47,19 @@ export async function CalendarGanttSection({
 }: {
   searchParams: Promise<CalendarSearchParams>;
 }) {
-  const paramsPromise = searchParams;
-  const today = todayIso();
   const localePromise = getLocale();
-
-  const departurePolicyPromise = getCheckinDeparturePolicy().catch(() => ({
-    earlyCheckoutAllowed: DEFAULT_CHECKIN_SETTINGS.early_checkout_allowed,
-    earlyCheckoutFee: DEFAULT_CHECKIN_SETTINGS.early_checkout_fee,
-    checkoutTimeUntil: DEFAULT_CHECKIN_SETTINGS.checkout_time_until,
-  }));
-
   const [
     t,
     tCommon,
     tGanttRange,
     locale,
-    params,
-    effectiveToday,
-    dataResult,
-    postCheckoutPolicy,
-    departurePolicyData,
+    { today: effectiveToday, params, dataResult, postCheckoutPolicy, departurePolicyData },
   ] = await Promise.all([
     getTranslations("admin.pages.calendar"),
     getTranslations("admin.common"),
     getTranslations("admin.gantt.range"),
     localePromise,
-    paramsPromise,
-    today,
-    Promise.all([paramsPromise, localePromise])
-      .then(([p, loc]) => {
-        const ref = parseIso(today);
-        const y = Number(p.y) || ref.getFullYear();
-        const m = p.m !== undefined ? Number(p.m) : ref.getMonth();
-        const q = p.q !== undefined ? Number(p.q) : Math.floor(m / 3);
-        const previewRange = resolveGanttRange({
-          y,
-          m,
-          zoom: p.zoom,
-          ws: p.ws,
-          q,
-          locale: loc,
-          today,
-        });
-        return loadCalendarCoreData(
-          previewRange.rangeStart,
-          previewRange.rangeEnd,
-          today,
-        );
-      })
-      .then((data) => ({ ok: true as const, data }))
-      .catch((error) => ({ ok: false as const, error })),
-    resolvePostCheckoutEditPolicy().catch(() => ({
-      memberRole: null,
-      allowPostCheckoutEdits: false,
-      canEditAfterCheckout: false,
-    })),
-    departurePolicyPromise,
+    loadCalendarGanttPage(searchParams, localePromise),
   ]);
 
   const refDate = parseIso(effectiveToday);

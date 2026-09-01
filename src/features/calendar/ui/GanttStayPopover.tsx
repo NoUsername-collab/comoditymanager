@@ -12,42 +12,14 @@ import {
   GanttStayNightsSlider,
   GanttStayRoomsSlider,
   GanttStayTimeline as GanttStayTimelineBar,
-} from "@/components/admin/gantt/GanttStayTimeline";
+} from "@/features/calendar/ui/GanttStayTimeline";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { stayNightCount } from "@/lib/stay-dates";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
+import type { GanttStayPopoverData } from "@/domain/gantt/drafts";
 
-export type GanttStayPopoverData = {
-  bookingId: string;
-  guestName: string;
-  label: string;
-  checkIn: string;
-  checkOut: string;
-  /** Data reală de sosire a rezervării (nu segmentul vizibil pe timeline). */
-  bookingCheckIn?: string;
-  status: "cerere_noua" | "confirmata";
-  actualCheckInAt?: string | null;
-  actualCheckOutAt?: string | null;
-  numAdults: number;
-  numChildren: number;
-  checkInTime: string;
-  checkOutTime: string;
-  continuesBefore: boolean;
-  continuesAfter: boolean;
-  buildingColor?: string | null;
-  roomId?: string;
-  roomName?: string;
-  roomNames?: string[];
-  guestPhone?: string | null;
-  totalPrice?: number | null;
-  canMoveRoom?: boolean;
-  onMoveRoom?: () => void;
-  timeline?: GanttStayTimeline | null;
-  showUnpaid?: boolean;
-  showMissingIdentity?: boolean;
-  keysHandedRooms?: string[];
-};
+export type { GanttStayPopoverData };
 
 function resolveRoomList(data: GanttStayPopoverData): string[] {
   if (data.roomNames && data.roomNames.length > 0) {

@@ -5,7 +5,7 @@ import {
   planIncludesFeature,
 } from "@/core/config/plan-catalog";
 import { PLAN_CONFIGS, type CoreFeature, type PlanId } from "@/core/config/plans";
-import { TenantSyncPlanModulesButton } from "@/components/platform-admin/TenantSyncPlanModulesButton";
+import { TenantSyncPlanModulesButton } from "@/features/platform-admin/ui/TenantSyncPlanModulesButton";
 
 const FEATURE_KEYS: CoreFeature[] = [
   "calendar",

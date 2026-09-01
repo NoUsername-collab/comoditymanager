@@ -5,7 +5,7 @@ import {
   deleteRoomFromBuildingAction,
   setRoomActiveAction,
 } from "@/features/buildings/actions";
-import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
+import { DeleteConfirmButton } from "@/components/admin/ui/DeleteConfirmButton";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import {
   AdminTextActionButton,

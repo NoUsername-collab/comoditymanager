@@ -1,6 +1,8 @@
 import { loadCazariPrimaryData } from "@/services/cazari-page-data";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 
+export { buildCazariLabels } from "@/services/cazari-labels";
+
 const EMPTY_POST_CHECKOUT_POLICY = {
   memberRole: null,
   allowPostCheckoutEdits: false,

@@ -1,5 +1,5 @@
-import { PlatformHeader } from "@/components/platform/PlatformHeader";
-import { PlatformFooter } from "@/components/platform/PlatformFooter";
+import { PlatformHeader } from "@/features/signup/ui/PlatformHeader";
+import { PlatformFooter } from "@/features/signup/ui/PlatformFooter";
 import { MobileShell } from "@/layout/components/MobileShell";
 import type { CSSProperties } from "react";
 import "@/styles/features/platform/signup.css";

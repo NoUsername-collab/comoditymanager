@@ -15,7 +15,7 @@ import {
   periodStepMeta,
   drillDownZoomFrom,
   type InlineZoomChoice,
-} from "@/components/admin/gantt/GanttGridHelpers";
+} from "@/features/calendar/ui/GanttGridHelpers";
 import { useTranslations } from "next-intl";
 
 export type GanttCalendarPatch = {

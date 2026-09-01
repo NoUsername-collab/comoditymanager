@@ -1,8 +1,5 @@
 import { GuestAppHomeScreen } from "@/features/guest-app/GuestAppHomeScreen";
-import { resolveGuestAccessByCode } from "@/services/guest-app/access";
-import { resolveGuestAppContext } from "@/services/guest-app/resolve-context";
-import { getPensionSettings } from "@/services/pension-settings";
-import { todayIso } from "@/lib/stay-dates";
+import { loadGuestStayHome } from "@/features/guest-app/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -11,34 +8,21 @@ export default async function GuestStayHomePage({
 }: {
   params: Promise<{ code: string }>;
 }) {
-  const [{ code }, locale, today, pensionSettings, tMeta, session] = await Promise.all([
+  const [{ code }, locale, tMeta] = await Promise.all([
     params,
     getLocale(),
-    todayIso(),
-    getPensionSettings().catch(() => null),
     getTranslations("guestApp.meta"),
-    params.then((p) =>
-      resolveGuestAccessByCode(p.code).catch(() => ({
-        ok: false as const,
-        reason: "not_found" as const,
-      }))
-    ),
   ]);
-  const pensionName = pensionSettings?.display_name ?? tMeta("fallbackName");
-  if (!session.ok) notFound();
-
-  const ctx = await resolveGuestAppContext(
-    session.settings,
-    session.booking,
-    locale,
-  );
+  const loaded = await loadGuestStayHome(code, locale);
+  const pensionName = loaded.pensionSettings?.display_name ?? tMeta("fallbackName");
+  if (!loaded.ok) notFound();
 
   return (
     <GuestAppHomeScreen
-      accessCode={session.accessCode}
-      ctx={ctx}
+      accessCode={loaded.session.accessCode}
+      ctx={loaded.ctx}
       pensionName={pensionName}
-      today={today}
+      today={loaded.today}
     />
   );
 }

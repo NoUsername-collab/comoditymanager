@@ -1,5 +1,5 @@
 import { AvailabilityDashboardLazy } from "@/features/availability/ui/AvailabilityDashboardLazy";
-import { loadAvailabilityDashboard } from "@/services/availability-month";
+import { loadAvailabilityDashboardPage } from "@/features/availability/loaders";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
 import type { AvailabilityPanelView } from "@/lib/availability-panel-query";
 import { getTranslations } from "next-intl/server";
@@ -25,23 +25,15 @@ export async function CalendarAvailabilityStream({
 }) {
   const [t, dashboardResult] = await Promise.all([
     getTranslations("admin.pages.calendar"),
-    loadAvailabilityDashboard(year, month, buildingId, featureFilter)
-      .then((dashboard) => ({ ok: true as const, dashboard }))
-      .catch((e) => ({ ok: false as const, error: e })),
+    loadAvailabilityDashboardPage(year, month, buildingId, featureFilter),
   ]);
 
-  let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null =
-    null;
-  let error: string | null = null;
-
-  if (dashboardResult.ok) {
-    dashboard = dashboardResult.dashboard;
-  } else {
-    error =
-      dashboardResult.error instanceof Error
-        ? dashboardResult.error.message
-        : t("heatmapError");
-  }
+  const dashboard = dashboardResult.ok ? dashboardResult.data : null;
+  const error = dashboardResult.ok
+    ? null
+    : dashboardResult.error instanceof Error
+      ? dashboardResult.error.message
+      : t("heatmapError");
 
   if (error) {
     return (

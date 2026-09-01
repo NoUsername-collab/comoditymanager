@@ -1,12 +1,12 @@
 import { getLocale, getTranslations } from "next-intl/server";
-import { loadStatisticsReport } from "@/services/statistics";
+import { loadStatisticsReportPage } from "@/features/settings/loaders";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import { StatisticsAllYearsSection } from "@/components/admin/statistics/StatisticsAllYearsSection";
-import { StatisticsBarChartLazy } from "@/components/admin/statistics/StatisticsBarChartLazy";
-import { StatisticsExportPanel } from "@/components/admin/statistics/StatisticsExportPanel";
-import { StatisticsMonthlyKpiTable } from "@/components/admin/statistics/StatisticsMonthlyKpiTable";
-import { StatisticsPerBuildingSection } from "@/components/admin/statistics/StatisticsPerBuildingSection";
-import { StatisticsYearNav } from "@/components/admin/statistics/StatisticsYearNav";
+import { StatisticsAllYearsSection } from "@/features/settings/ui/StatisticsAllYearsSection";
+import { StatisticsBarChartLazy } from "@/features/settings/ui/StatisticsBarChartLazy";
+import { StatisticsExportPanel } from "@/features/settings/ui/StatisticsExportPanel";
+import { StatisticsMonthlyKpiTable } from "@/features/settings/ui/StatisticsMonthlyKpiTable";
+import { StatisticsPerBuildingSection } from "@/features/settings/ui/StatisticsPerBuildingSection";
+import { StatisticsYearNav } from "@/features/settings/ui/StatisticsYearNav";
 import { getPathname } from "@/i18n/navigation";
 import { StatCard } from "./StatCard";
 
@@ -24,9 +24,7 @@ export async function StatisticsReportSection({ year }: { year?: string }) {
     getLocale(),
     getTranslations("admin.pages.statistics"),
     getTranslations("admin.common"),
-    loadStatisticsReport()
-      .then((value) => ({ status: "fulfilled" as const, value }))
-      .catch((reason) => ({ status: "rejected" as const, reason })),
+    loadStatisticsReportPage(),
   ]);
 
   if (reportResult.status === "rejected") {

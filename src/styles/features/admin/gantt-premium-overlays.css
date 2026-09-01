@@ -1,0 +1,835 @@
+/* Rând sumar — camere libere / zi */
+.gantt-summary-row {
+  background: var(--admin-surface-bg, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+}
+
+.gantt-summary-row__label {
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--border) 94%, transparent);
+  color: var(--admin-text-muted, #52525b);
+  padding-inline: 0.75rem;
+}
+
+.gantt-summary-row__days {
+  padding: 0 !important;
+}
+
+.gantt-summary-row__label-title {
+  display: block;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.gantt-summary-row__label-state {
+  display: block;
+  margin-top: 0.18rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent) 56%, var(--admin-text-muted, #71717a));
+}
+
+.gantt-summary-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font-size: 0.64rem;
+  line-height: 1.1;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+.gantt-summary-cell:hover {
+  transform: scale(1.01);
+  z-index: 2;
+  filter: brightness(1.015);
+}
+
+.gantt-summary-cell:active {
+  transform: scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
+.gantt-summary-cell__value {
+  font-weight: 800;
+  font-size: 0.7rem;
+}
+
+.gantt-summary-cell__total {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+.gantt-summary-cell--high {
+  background: color-mix(in srgb, var(--success) 10%, var(--surface));
+  color: var(--admin-text, #18181b);
+}
+
+.gantt-summary-cell--mid {
+  background: color-mix(in srgb, var(--warning) 8%, var(--surface));
+  color: var(--admin-text, #18181b);
+}
+
+.gantt-summary-cell--low {
+  background: color-mix(in srgb, var(--warning) 14%, var(--surface));
+  color: var(--admin-text, #18181b);
+}
+
+.gantt-summary-cell--full {
+  background: color-mix(in srgb, var(--error) 12%, var(--surface));
+  color: var(--admin-text, #18181b);
+}
+
+.gantt-summary-cell--weekend {
+  opacity: 0.96;
+}
+
+.gantt-summary-cell--today {
+  box-shadow:
+    inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
+    inset -2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
+    inset 0 0 0 1px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 26%, white),
+    0 0 8px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 8%, transparent);
+}
+
+.gantt-summary-cell--past {
+  background: var(--past-bg, #e8eaf0) !important;
+  color: var(--past-text, #7a809a) !important;
+}
+
+.gantt-summary-cell--selected {
+  box-shadow:
+    inset 0 0 0 2px var(--admin-accent, #4f7ef8),
+    0 0 0 1px color-mix(in srgb, var(--surface) 86%, transparent);
+  transform: scale(1.02);
+}
+
+.gantt-summary-cell--compact .gantt-summary-cell__value {
+  font-size: 0.625rem;
+}
+
+.gantt-toolbar__edge-anchor {
+  display: inline-flex;
+  min-height: 2.2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.78rem;
+  border: 1px solid color-mix(in srgb, var(--admin-panel-border, #e4e4e7) 80%, transparent);
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 96%, transparent);
+  padding: 0.42rem 0.72rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--admin-text, #18181b);
+  white-space: nowrap;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--surface) 84%, transparent);
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
+}
+
+.gantt-toolbar__edge-anchor:hover {
+  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--border-strong) 88%, transparent);
+  transform: translateY(-1px);
+}
+
+.gantt-toolbar__edge-anchor:active {
+  transform: translateY(0px) scale(0.97);
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
+.gantt-toolbar__edge-anchor--active {
+  background: color-mix(in srgb, var(--surface-2) 96%, transparent);
+  border-color: color-mix(in srgb, var(--border-strong) 96%, transparent);
+  color: var(--admin-text, #18181b);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 92%, transparent);
+}
+
+.gantt-toolbar__gap-anchor {
+  min-width: 2.34rem;
+  justify-content: center;
+}
+
+.gantt-toolbar__gap-anchor--icon {
+  width: 2.34rem;
+  height: 2.34rem;
+  padding: 0;
+  border-radius: 0.74rem;
+}
+
+.gantt-toolbar__gap-icon {
+  width: 0.98rem;
+  height: 0.98rem;
+  flex-shrink: 0;
+}
+
+.gantt-toolbar__filters-anchor {
+  min-width: 2.18rem;
+}
+
+.gantt-toolbar__filters-anchor--icon {
+  width: 2.18rem;
+  height: 2.18rem;
+  padding: 0;
+  border-radius: 0.78rem;
+}
+
+.gantt-toolbar__filters-icon {
+  width: 0.96rem;
+  height: 0.96rem;
+  flex-shrink: 0;
+}
+
+.gantt-filters-panel .admin-floating-panel__body {
+  padding: 0.7rem;
+}
+
+.gantt-filters-panel .gantt-seg {
+  box-shadow: none;
+}
+
+.gantt-summary-filter-banner {
+  animation: gantt-popover-in 0.2s ease-out;
+  border-color: var(--admin-tint-success-border);
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 90%, transparent);
+  color: var(--status-confirmed-text);
+}
+
+.gantt-summary-filter-banner__btn {
+  border-radius: 0.375rem;
+  border: 1px solid var(--admin-tint-success-border);
+  background: var(--admin-surface-bg);
+  padding: 0.25rem 0.625rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+}
+
+.gantt-summary-filter-banner__btn:hover {
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 55%, var(--admin-surface-bg));
+}
+
+.gantt-popover-premium--rich .gantt-popover-premium__body {
+  padding-bottom: 0.75rem;
+}
+
+/* Hover card — flat, simetric, tokeni admin */
+.gantt-stay-note.admin-floating-panel {
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.gantt-stay-note.admin-floating-panel .admin-floating-panel__body {
+  padding: 0;
+  background: transparent;
+}
+
+.gantt-stay-note__card {
+  display: flex;
+  flex-direction: column;
+  margin: 0.25rem;
+  padding: 1rem;
+  border-radius: var(--admin-surface-radius, 0.75rem);
+  border: 1px solid var(--admin-surface-border, #e4e4e7);
+  border-top: 3px solid var(--stay-note-accent, var(--active-border));
+  background: var(--admin-surface-bg, #ffffff);
+  color: var(--admin-text, #292524);
+  box-shadow: var(--admin-surface-shadow, 0 4px 14px rgba(15, 23, 42, 0.08));
+  animation: gantt-popover-in 0.18s ease-out;
+}
+
+.gantt-stay-note__card--cerere {
+  border-top-color: var(--pending-border, #d97706);
+}
+
+.gantt-stay-note__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--admin-surface-border, #e4e4e7);
+  text-align: center;
+}
+
+.gantt-stay-note__status-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.gantt-stay-note__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.gantt-stay-note__status--pending {
+  color: var(--admin-tint-warning-text, #92400e);
+  background: var(--admin-tint-warning-bg, #fffbeb);
+  border-color: var(--admin-tint-warning-border, #fcd34d);
+}
+
+.gantt-stay-note__status--unpaid {
+  color: var(--admin-tint-danger-text, #b91c1c);
+  background: var(--admin-tint-danger-bg, #fef2f2);
+  border-color: var(--admin-tint-danger-border, #fecaca);
+}
+
+.gantt-stay-note__status--identity {
+  color: var(--admin-tint-warning-text, #92400e);
+  background: var(--admin-tint-warning-bg, #fffbeb);
+  border-color: var(--admin-tint-warning-border, #fcd34d);
+}
+
+.gantt-stay-note__name {
+  margin: 0;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--admin-text, #1c1917);
+}
+
+.gantt-stay-note__section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--admin-surface-border, #e4e4e7);
+  text-align: center;
+}
+
+.gantt-stay-note__section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.gantt-stay-note__section--progress {
+  gap: 0.55rem;
+  align-items: stretch;
+  text-align: left;
+}
+
+.gantt-stay-note__section-label {
+  margin: 0;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted, #78716c);
+}
+
+.gantt-stay-note__period {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.gantt-stay-note__period-icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: var(--admin-text-muted, #78716c);
+}
+
+.gantt-stay-note__period-dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem 0.4rem;
+  min-width: 0;
+}
+
+.gantt-stay-note__period-from,
+.gantt-stay-note__period-to {
+  font-size: 0.71875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--admin-text, #44403c);
+}
+
+.gantt-stay-note__period-arrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #a8a29e);
+}
+
+.gantt-stay-note__nights {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--admin-text-muted, #78716c);
+}
+
+.gantt-stay-note__progress {
+  display: grid;
+  grid-template-columns: minmax(2.75rem, auto) 1fr minmax(1.75rem, auto);
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+}
+
+.gantt-stay-note__progress + .gantt-stay-note__progress {
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--admin-surface-border, #e4e4e7);
+}
+
+.gantt-stay-note__progress-label {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted, #78716c);
+  white-space: nowrap;
+}
+
+.gantt-stay-note__progress-track {
+  min-width: 0;
+}
+
+.gantt-stay-note__progress-frac {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-text, #44403c);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.gantt-stay-note .gantt-stay__timeline {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.gantt-stay-note .gantt-stay__timeline-track {
+  position: relative;
+  display: block;
+  height: 6px;
+  width: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--stay-note-accent, #059669) 10%, var(--admin-surface-border, #e7e5e4));
+  overflow: hidden;
+}
+
+.gantt-stay-note .gantt-stay__timeline-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--stay-timeline-fill, 0%);
+  border-radius: inherit;
+  transition: width 0.28s ease;
+  pointer-events: none;
+}
+
+.gantt-stay-note .gantt-stay__timeline--checkin .gantt-stay__timeline-fill {
+  background: var(--gantt-cap-ok, var(--active-border));
+}
+
+.gantt-stay-note .gantt-stay__timeline--nights .gantt-stay__timeline-fill {
+  background: color-mix(in srgb, var(--stay-note-accent, #059669) 85%, var(--surface));
+}
+
+.gantt-stay-note__room-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.gantt-stay-note__room {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--admin-text, #1c1917);
+  background: color-mix(in srgb, var(--stay-note-accent, #059669) 8%, var(--admin-surface-bg, #fff));
+  border: 1px solid color-mix(in srgb, var(--stay-note-accent, #059669) 22%, var(--admin-surface-border, #e4e4e7));
+}
+
+.gantt-stay-note__room--empty {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: var(--admin-text-muted, #a8a29e);
+}
+
+.gantt-stay-note__room-key {
+  font-size: 0.625rem;
+  line-height: 1;
+}
+
+.gantt-stay-note .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Pinned selection (Ctrl+drag multi-room) */
+.gantt-room-row--pinned td:last-child {
+  background: var(--admin-tint-info-bg, #eff6ff);
+}
+
+.gantt-drag-row.gantt-room-row--pinned::after {
+  content: "";
+  position: absolute;
+  top: var(--gantt-stay-top);
+  left: var(--gantt-pinned-left, 0%);
+  width: var(--gantt-pinned-width, 0%);
+  min-width: 2.75rem;
+  height: var(--gantt-stay-h);
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, #3b82f6 26%, transparent);
+  border: 1.5px solid rgba(37, 99, 235, 0.5);
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  z-index: 7;
+}
+
+.gantt-pinned-chip {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  border-top: 1px solid color-mix(in srgb, #2563eb 30%, var(--border));
+  background: var(--admin-tint-info-bg, #eff6ff);
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e40af;
+  animation: gantt-popover-in 0.18s ease-out;
+}
+
+.gantt-pinned-chip__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gantt-pinned-chip__btn {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.gantt-pinned-chip__btn:active {
+  transform: scale(0.97);
+}
+
+.gantt-pinned-chip__btn--commit {
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.gantt-pinned-chip__btn--commit:hover {
+  background: #1d4ed8;
+}
+
+.gantt-pinned-chip__btn--cancel {
+  background: transparent;
+  color: #64748b;
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.gantt-pinned-chip__btn--cancel:hover {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.gantt-pinned-chip__btn--cancel:active {
+  color: #b91c1c;
+  background: rgba(220, 38, 38, 0.15);
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Gantt Action Strip — badges ↔ action buttons with push animation
+   ═══════════════════════════════════════════════════════════════ */
+
+.gantt-action-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2rem;
+  position: relative;
+  padding-left: 2px;
+}
+
+.gantt-action-strip__toggle-slot {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* ── Track (contains both badges and action layers) ── */
+.gantt-action-strip__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  min-width: 12rem;
+}
+
+/* ── Badges (default, visible when collapsed) ── */
+.gantt-action-strip__badges {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: transform 0.35s cubic-bezier(0.34, 1.15, 0.64, 1),
+              opacity 0.25s ease;
+  flex-shrink: 0;
+}
+
+.gantt-action-strip__badges--out {
+  transform: translateX(110%);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.gantt-action-strip__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.22rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset;
+}
+
+.gantt-action-strip__badge strong {
+  font-weight: 800;
+  font-size: 0.64rem;
+}
+
+.gantt-action-strip__badge--new {
+  background: var(--admin-tint-warning-bg);
+  color: var(--status-pending-text);
+  border: 1px solid var(--admin-tint-warning-border);
+}
+
+.gantt-action-strip__badge--pulse {
+  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+}
+
+.gantt-action-strip__badge--in {
+  background: var(--admin-tint-success-bg);
+  color: var(--status-confirmed-text);
+  border: 1px solid var(--admin-tint-success-border);
+}
+
+.gantt-action-strip__badge--out {
+  background: color-mix(in srgb, var(--admin-tint-warning-bg) 85%, var(--surface));
+  color: var(--status-pending-text);
+  border: 1px solid var(--admin-tint-warning-border);
+}
+
+.gantt-action-strip__badge--clean {
+  background: var(--admin-tint-violet-bg);
+  color: var(--admin-tint-violet-text);
+  border: 1px solid var(--admin-tint-violet-border);
+}
+
+.gantt-radial-ring {
+  border-color: color-mix(in srgb, var(--admin-tint-success-border) 70%, transparent);
+  background: color-mix(in srgb, var(--admin-tint-success-bg) 40%, transparent);
+}
+
+.gantt-radial-hub {
+  border-color: var(--admin-tint-success-border);
+}
+
+/* ── Action buttons (hidden by default, slide in on reveal) ── */
+.gantt-action-strip__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  position: absolute;
+  left: 0;
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.15, 0.64, 1),
+              opacity 0.25s ease;
+}
+
+.gantt-action-strip__actions--in {
+  position: relative;
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gantt-action-strip__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.56rem;
+  border-radius: 0.6rem;
+  font-size: 0.6rem;
+  font-weight: 800;
+  white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  background: color-mix(in srgb, var(--surface) 97%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateX(-0.5rem);
+  transition: opacity 0.2s ease,
+              transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1),
+              background 0.15s ease;
+}
+
+.gantt-action-strip__actions--in .gantt-action-strip__btn {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.gantt-action-strip__btn:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.gantt-action-strip__btn:active {
+  background: color-mix(in srgb, var(--surface-2) 88%, black);
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
+.gantt-action-strip__btn--manage {
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+/* ── Reveal arrow (left slot, visible when collapsed) ── */
+.gantt-action-strip__reveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.gantt-action-strip__reveal:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.gantt-action-strip__reveal:active {
+  background: color-mix(in srgb, var(--surface-2) 88%, black);
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+
+.gantt-action-strip__reveal--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
+}
+
+/* ── Collapse arrow (left slot, visible when expanded) ── */
+.gantt-action-strip__collapse {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--surface) 95%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.8);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.gantt-action-strip__collapse--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.gantt-action-strip__collapse:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.gantt-action-strip__collapse:active {
+  background: color-mix(in srgb, var(--surface-2) 88%, black);
+  filter: brightness(0.92);
+  transform: scale(0.95);
+  transition-duration: 0.06s;
+}
+

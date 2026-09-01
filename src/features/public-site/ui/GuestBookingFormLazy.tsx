@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import type { GuestBookingForm } from "@/components/calendar/GuestBookingForm";
+import type { GuestBookingForm } from "@/features/public-site/ui/GuestBookingForm";
 
 const GuestBookingFormDynamic = dynamic(
   () =>
-    import("@/components/calendar/GuestBookingForm").then((m) => ({
+    import("@/features/public-site/ui/GuestBookingForm").then((m) => ({
       default: m.GuestBookingForm,
     })),
   {

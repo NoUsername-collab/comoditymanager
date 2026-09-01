@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import type { AcMode } from "@/types/database";
 import type { RoomOptionDefinition } from "@/types/room-catalog";
 import type { OptionPolicyMode } from "@/types/room-catalog";
-import { ColorPalettePicker } from "@/components/admin/ColorPalettePicker";
+import { ColorPalettePicker } from "@/features/buildings/ui/ColorPalettePicker";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";

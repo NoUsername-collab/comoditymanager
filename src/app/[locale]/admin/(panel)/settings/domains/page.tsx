@@ -3,18 +3,16 @@ import { AdminTenantDomainsPanel } from "@/features/settings/ui/AdminTenantDomai
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { allowedCustomRoutingKindsForPlan } from "@/lib/tenant/domain-routing";
 import { platformDomainFromRequestHost } from "@/lib/tenant/host";
-import { getActiveTenantIdForData, resolveRequestTenant } from "@/lib/tenant/active";
 import { PLAN_CONFIGS, type CoreFeature, type PlanId } from "@/core/config/plans";
-import { listTenantDomains } from "@/services/tenant-domains";
+import { loadSettingsDomainsPage } from "@/features/settings/loaders";
 import { headers } from "next/headers";
 import { guardSettingsPermission } from "@/lib/settings/page-context";
 
 export default async function SettingsDomainsPage() {
-  const [t, , tenant, domains, requestHeaders] = await Promise.all([
+  const [t, , { tenant, domains }, requestHeaders] = await Promise.all([
     getTranslations("admin.domains"),
     guardSettingsPermission("pension_settings"),
-    resolveRequestTenant(),
-    getActiveTenantIdForData().then((id) => listTenantDomains(id)),
+    loadSettingsDomainsPage(),
     headers(),
   ]);
 

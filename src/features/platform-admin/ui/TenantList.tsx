@@ -3,15 +3,15 @@
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { TenantBillingToggle } from "@/components/platform-admin/TenantBillingToggle";
-import { TenantProvisionForm } from "@/components/platform-admin/TenantProvisionForm";
-import { TenantCsvExportButton } from "@/components/platform-admin/TenantCsvExportButton";
-import { CopyTextButton } from "@/components/platform-admin/CopyTextButton";
+import { TenantBillingToggle } from "@/features/platform-admin/ui/TenantBillingToggle";
+import { TenantProvisionForm } from "@/features/platform-admin/ui/TenantProvisionForm";
+import { TenantCsvExportButton } from "@/features/platform-admin/ui/TenantCsvExportButton";
+import { CopyTextButton } from "@/features/platform-admin/ui/CopyTextButton";
 import type { PlatformTenantSummary } from "@/services/platform-admin";
 import {
   TenantEmailAlertBadge,
   TenantSetupBadge,
-} from "@/components/platform-admin/TenantSignalBadges";
+} from "@/features/platform-admin/ui/TenantSignalBadges";
 
 import { PLATFORM_STATUS_BADGE } from "@/lib/platform-admin/status-badge";
 

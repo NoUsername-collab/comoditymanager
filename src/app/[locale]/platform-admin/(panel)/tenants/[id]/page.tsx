@@ -1,26 +1,21 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
-import {
-  getPlatformTenantById,
-  getTenantLastActivity,
-} from "@/services/platform-admin";
-import { getTenantHealthCheck } from "@/services/platform-debug";
-import { listTenantDomains } from "@/services/tenant-domains";
+import { loadPlatformTenantDetailPage } from "@/features/platform-admin/loaders";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
-import { TenantPlanForm } from "@/components/platform-admin/TenantPlanForm";
-import { TenantPlanIncludesPanel } from "@/components/platform-admin/TenantPlanIncludesPanel";
-import { TenantEmailDeliveryPanel } from "@/components/platform-admin/TenantEmailDeliveryPanel";
-import { TenantOnboardingChecklistPanel } from "@/components/platform-admin/TenantOnboardingChecklistPanel";
-import { TenantStatusForm } from "@/components/platform-admin/TenantStatusForm";
-import { TenantModulesForm } from "@/components/platform-admin/TenantModulesForm";
-import { TenantBillingToggle } from "@/components/platform-admin/TenantBillingToggle";
-import { TenantOperatorPanel } from "@/components/platform-admin/TenantOperatorPanel";
-import { TenantHealthBadge } from "@/components/platform-admin/TenantHealthBadge";
-import { TenantDomainsManager } from "@/components/platform-admin/TenantDomainsManager";
+import { TenantPlanForm } from "@/features/platform-admin/ui/TenantPlanForm";
+import { TenantPlanIncludesPanel } from "@/features/platform-admin/ui/TenantPlanIncludesPanel";
+import { TenantEmailDeliveryPanel } from "@/features/platform-admin/ui/TenantEmailDeliveryPanel";
+import { TenantOnboardingChecklistPanel } from "@/features/platform-admin/ui/TenantOnboardingChecklistPanel";
+import { TenantStatusForm } from "@/features/platform-admin/ui/TenantStatusForm";
+import { TenantModulesForm } from "@/features/platform-admin/ui/TenantModulesForm";
+import { TenantBillingToggle } from "@/features/platform-admin/ui/TenantBillingToggle";
+import { TenantOperatorPanel } from "@/features/platform-admin/ui/TenantOperatorPanel";
+import { TenantHealthBadge } from "@/features/platform-admin/ui/TenantHealthBadge";
+import { TenantDomainsManager } from "@/features/platform-admin/ui/TenantDomainsManager";
 import {
   TenantActivityPanel,
   TenantSiteLinksPanel,
-} from "@/components/platform-admin/TenantDetailExtras";
+} from "@/features/platform-admin/ui/TenantDetailExtras";
 import { Link } from "@/i18n/navigation";
 
 export default async function TenantDetailPage({
@@ -29,11 +24,8 @@ export default async function TenantDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [tenant, health, domains, activity, t, locale] = await Promise.all([
-    getPlatformTenantById(id),
-    getTenantHealthCheck(id),
-    listTenantDomains(id),
-    getTenantLastActivity(id),
+  const [{ tenant, health, domains, activity }, t, locale] = await Promise.all([
+    loadPlatformTenantDetailPage(id),
     getTranslations("platformAdmin.tenantDetail"),
     getLocale(),
   ]);

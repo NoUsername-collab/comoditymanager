@@ -1,4 +1,5 @@
 import type { BookingRow } from "@/services/bookings";
+import type { GanttCreateDraft } from "@/domain/gantt/drafts";
 
 export type GanttQuickRoomOption = {
   id: string;
@@ -6,15 +7,7 @@ export type GanttQuickRoomOption = {
   building_name: string;
 };
 
-export type GanttQuickCreateDraft = {
-  roomId: string;
-  roomIds?: string[];
-  roomName: string;
-  checkIn: string;
-  checkOut: string;
-  hasConflict: boolean;
-  initialMode?: "hold" | "block" | "cerere" | "direct";
-};
+export type GanttQuickCreateDraft = GanttCreateDraft;
 
 export type GanttQuickPanelMode =
   | "pick"

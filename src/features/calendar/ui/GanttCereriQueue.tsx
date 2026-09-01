@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
-import { GanttCereriCard } from "@/components/admin/gantt/GanttCereriCard";
+import { GanttCereriCard } from "@/features/calendar/ui/GanttCereriCard";
 import { formatGuestPartyShort } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { BookingRow } from "@/services/bookings";

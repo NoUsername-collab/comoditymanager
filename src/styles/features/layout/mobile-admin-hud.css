@@ -1,0 +1,346 @@
+/* mobile-admin.css — admin + platform-admin mobile compat (split from mobile.css) */
+
+
+/* ── Admin HUD compact ── */
+html[data-layout-chrome="compact"] .admin-hud__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  gap: 0.35rem 0.5rem;
+  padding: 0.5rem 0.85rem 0.45rem;
+  padding-top: max(0.45rem, var(--ml-safe-top));
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__brand {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__right {
+  grid-column: 2;
+  grid-row: 1;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  margin-left: 0;
+  max-width: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__center {
+  display: flex;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  order: unset;
+  flex: unset;
+  min-width: 0;
+  justify-content: flex-start;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: 0 -0.15rem;
+  padding: 0 0.15rem 0.1rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__center::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__nav {
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  width: max-content;
+  min-width: min(100%, max-content);
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-nav-tab {
+  min-height: var(--ml-touch-min, 2.75rem);
+  flex-shrink: 0;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.72rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-nav-tab__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud__title {
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__header {
+  padding-block: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__tools .admin-version-badge,
+html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .admin-hud__tools .admin-plan-badge {
+  display: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-hud-alert {
+  padding-inline: 0.85rem;
+  font-size: 0.68rem;
+}
+
+
+
+
+/* Page gutter: mobile-layout-alignment.css (--ml-page-inline-*) */
+
+/* ── Admin grids stack on mobile ── */
+html[data-layout-chrome="compact"] .admin-page-main .grid.xl\:grid-cols-\[minmax\(0\,1fr\)_minmax\(18rem\,30\%\)\],
+html[data-layout-chrome="compact"] .admin-page-main [class*="xl:grid-cols"] {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-main aside {
+  position: static;
+  max-height: none;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-page-main .sm\:grid-cols-2,
+html[data-layout-chrome="compact"] .admin-page-main .xl\:grid-cols-5 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+/* availability detail: mobile-layout-flawless.css */
+
+/* ── Booking detail (.bd-grid3) ── */
+html[data-layout-chrome="compact"] .bd-grid3 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-grid3 > .bd-col:nth-child(3) {
+  grid-column: auto;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-card--history {
+  position: static;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .bd-room-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+/* ── Guests ── */
+html[data-layout-chrome="compact"] .guest-hero__stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+
+
+html[data-layout-mode="mobile"] .guest-hero__stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+
+
+/* ── Admin home ── */
+html[data-layout-chrome="compact"] .admin-home {
+  max-width: 100%;
+  padding: 0.65rem 0.85rem 2rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-hero__strip {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-hero__actions {
+  margin-left: 0;
+  flex-wrap: wrap;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-hero__title,
+html[data-layout-chrome="compact"] .admin-home-hero__meta {
+  white-space: normal;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+  width: 100%;
+  justify-content: stretch;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-kpi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding: 0.35rem 0.5rem;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .admin-home-kpi strong {
+  font-size: 0.85rem;
+}
+
+
+
+
+/* ── Devlog ── */
+html[data-layout-chrome="compact"] .devlog-page {
+  padding: 0.85rem 1rem 1.5rem;
+  max-width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-entry__summary {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-filters {
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.65rem;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-filters__group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  width: 100%;
+}
+
+
+
+
+html[data-layout-chrome="compact"] .devlog-filters__label {
+  flex: 0 0 100%;
+  margin-right: 0;
+  margin-bottom: 0.1rem;
+}
+
+
+
+
+/* devlog pill scroll: mobile-layout-flawless.css Pass 7 */
+
+html[data-layout-chrome="compact"] .activity-journal__tabs {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+
+
+/* ── Tables & wide content ── */
+html[data-layout-chrome="compact"] .admin-page-main table,
+html[data-layout-chrome="compact"] .admin-page-main .overflow-x-auto {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+
+/* ── Tablet refinements ── */
+html[data-layout-mode="tablet"] .admin-hud__center {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+
+
+

@@ -4,7 +4,7 @@ import { useRouter } from "@/i18n/navigation";
 import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { submitPhoneBookingAction } from "@/features/public-site/calendar-actions";
-import { GuestNameFields } from "@/components/calendar/GuestNameFields";
+import { GuestNameFields } from "@/features/public-site/ui/GuestNameFields";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import { useGuestIdentityAutofill } from "@/hooks/useGuestIdentityAutofill";
 import {

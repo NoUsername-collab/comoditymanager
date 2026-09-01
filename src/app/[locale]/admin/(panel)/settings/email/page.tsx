@@ -3,8 +3,7 @@ import { EmailSettingsPanel } from "@/features/settings/ui/EmailSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { getEmailDeliveryConfig } from "@/lib/email/provider";
-import { resolveTransactionalEmailIdentity } from "@/services/email-identity";
-import { getEmailSettings, DEFAULT_EMAIL_SETTINGS } from "@/services/email-settings";
+import { loadSettingsEmailPage } from "@/features/settings/loaders";
 import {
   buildSettingsAlerts,
   guardSettingsPermission,
@@ -18,12 +17,11 @@ export default async function SettingsEmailPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const [t, params, ctx, emailSettings, emailIdentity] = await Promise.all([
+  const [t, params, ctx, { emailSettings, emailIdentity }] = await Promise.all([
     getTranslations("admin.pages.settings"),
     searchParams,
     guardSettingsPermission("pension_settings"),
-    getEmailSettings().catch(() => DEFAULT_EMAIL_SETTINGS),
-    resolveTransactionalEmailIdentity().catch(() => null),
+    loadSettingsEmailPage(),
   ]);
 
   const alerts = await buildSettingsAlerts(params);

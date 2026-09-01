@@ -1,6 +1,8 @@
-import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
-import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
-import type { GanttStayPopoverData } from "@/components/admin/gantt/GanttStayPopover";
+import type {
+  GanttCreateDraft,
+  GanttStayPopoverData,
+  MoveRoomDraft,
+} from "@/domain/gantt/drafts";
 import type { OccupancyPhase, OccupancySegment } from "@/domain/occupancy/types";
 
 export type GanttContextMenuPoint = {

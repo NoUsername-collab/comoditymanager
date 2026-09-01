@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import {
   GanttBuildingMarker,
   GanttRoomMarker,
-} from "@/components/admin/gantt/GanttBuildingMarker";
+} from "@/features/calendar/ui/GanttBuildingMarker";
 
 function LegendBody({
   checkInTime,

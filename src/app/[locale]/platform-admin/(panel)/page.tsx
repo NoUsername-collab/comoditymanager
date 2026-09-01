@@ -1,14 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { getPlatformStats } from "@/services/platform-admin";
-import { getPlatformInfraHealth } from "@/lib/platform-admin/platform-health";
+import { loadPlatformDashboardPage } from "@/features/platform-admin/loaders";
 import { Link } from "@/i18n/navigation";
-import { PlatformHealthStrip } from "@/components/platform-admin/PlatformHealthStrip";
+import { PlatformHealthStrip } from "@/features/platform-admin/ui/PlatformHealthStrip";
 
 export default async function PlatformAdminDashboard() {
-  const t = await getTranslations("platformAdmin.dashboard");
-  const [stats, infraHealth] = await Promise.all([
-    getPlatformStats(),
-    getPlatformInfraHealth(),
+  const [{ stats, infraHealth }, t] = await Promise.all([
+    loadPlatformDashboardPage(),
+    getTranslations("platformAdmin.dashboard"),
   ]);
 
   return (

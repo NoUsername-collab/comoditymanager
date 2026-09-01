@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { readPwaInstallContext } from "@/lib/pwa/install";
+import { mapMfaEnrollError } from "@/lib/auth/mfa-enroll";
 import {
-  clearUnverifiedTotpFactors,
-  mapMfaEnrollError,
-} from "@/lib/auth/mfa-enroll";
+  confirmTotpEnrollment,
+  getTotpEnrollmentStatus,
+  startTotpEnrollment,
+  unenrollAllTotpFactors,
+} from "@/lib/auth/mfa-browser";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
@@ -44,16 +46,13 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const supabase = createClient();
-      const { data: factors, error: listError } =
-        await supabase.auth.mfa.listFactors();
-      if (listError) {
+      const status = await getTotpEnrollmentStatus();
+      if (!status.ok) {
         setError(t("loadFailed"));
         return;
       }
-      const verified = factors.totp.some((factor) => factor.status === "verified");
-      setEnrolled(verified);
-      if (verified) {
+      setEnrolled(status.enrolled);
+      if (status.enrolled) {
         setFactorId(null);
         setQrDataUrl(null);
         setSecret(null);
@@ -73,23 +72,16 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const supabase = createClient();
-      await clearUnverifiedTotpFactors(supabase);
-
-      const { data, error: enrollError } = await supabase.auth.mfa.enroll({
-        factorType: "totp",
-        friendlyName: "Zalmox Admin",
-      });
-
-      if (enrollError || !data?.totp) {
-        setError(mapMfaEnrollError(enrollError?.message, t));
+      const started = await startTotpEnrollment();
+      if (!started.ok) {
+        setError(mapMfaEnrollError(started.message, t));
         return;
       }
 
-      setFactorId(data.id);
-      setSecret(data.totp.secret);
+      setFactorId(started.factorId);
+      setSecret(started.secret);
       const QRCode = (await import("qrcode")).default;
-      const dataUrl = await QRCode.toDataURL(data.totp.uri, {
+      const dataUrl = await QRCode.toDataURL(started.uri, {
         margin: 1,
         width: 200,
         color: { dark: "#111111", light: "#ffffff" },
@@ -109,23 +101,15 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const supabase = createClient();
-      const { data: challenge, error: challengeError } =
-        await supabase.auth.mfa.challenge({ factorId });
-
-      if (challengeError || !challenge) {
-        setError(t("verifyFailed"));
-        return;
-      }
-
-      const { error: verifyError } = await supabase.auth.mfa.verify({
+      const verified = await confirmTotpEnrollment({
         factorId,
-        challengeId: challenge.id,
-        code: code.trim(),
+        code,
       });
 
-      if (verifyError) {
-        setError(t("invalidCode"));
+      if (!verified.ok) {
+        setError(
+          verified.reason === "invalid_code" ? t("invalidCode") : t("verifyFailed")
+        );
         return;
       }
 
@@ -147,10 +131,10 @@ export function MfaEnrollmentPanel({ next = "/admin" }: Props) {
     setBusy(true);
     setError(null);
     try {
-      const supabase = createClient();
-      const { data: factors } = await supabase.auth.mfa.listFactors();
-      for (const factor of factors?.totp ?? []) {
-        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      const result = await unenrollAllTotpFactors();
+      if (!result.ok) {
+        setError(t("unenrollFailed"));
+        return;
       }
       await refreshStatus();
     } catch {

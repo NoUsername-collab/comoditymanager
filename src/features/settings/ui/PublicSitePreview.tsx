@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { BrandMarkSvg } from "@/components/public/BrandMarkSvg";
+import { BrandMarkSvg } from "@/features/public-site/ui/BrandMarkSvg";
 import { buildPublicContactLinks } from "@/features/public-site/contact/PublicContactBar";
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { renderPublicSection } from "@/features/public-site/sections/render-section";

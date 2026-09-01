@@ -7,8 +7,8 @@ import {
   previewGuestStayAction,
   submitGuestRequestAction,
 } from "@/features/public-site/calendar-actions";
-import { GuestNameFields } from "@/components/calendar/GuestNameFields";
-import { RoomSelectionWithGuard } from "@/components/calendar/RoomSelectionWithGuard";
+import { GuestNameFields } from "@/features/public-site/ui/GuestNameFields";
+import { RoomSelectionWithGuard } from "@/features/public-site/ui/RoomSelectionWithGuard";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import type {
   GuestStayOption,

@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import {
   LandingToolIcon,
   type LandingToolIconName,
-} from "@/components/platform/LandingToolIcons";
+} from "@/features/signup/ui/LandingToolIcons";
 
 const TOOL_IDS: LandingToolIconName[] = [
   "gantt",

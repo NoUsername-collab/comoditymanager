@@ -4,12 +4,12 @@ import { useState } from "react";
 import type { BookingRow } from "@/services/bookings";
 import {
   GanttQuickActionPanel,
-  type GanttQuickCreateDraft,
   type GanttQuickPanelMode,
   type GanttQuickRoomOption,
-} from "@/components/admin/gantt/GanttQuickActionPanel";
+} from "@/features/calendar/ui/GanttQuickActionPanel";
+import type { GanttCreateDraft } from "@/domain/gantt/drafts";
 
-export type GanttCreateDraft = GanttQuickCreateDraft;
+export type { GanttCreateDraft };
 
 type Props = {
   draft: GanttCreateDraft | null;

@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import type { AcMode } from "@/types/database";
-import { GanttBuildingMarker } from "@/components/admin/gantt/GanttBuildingMarker";
+import { GanttBuildingMarker } from "@/features/calendar/ui/GanttBuildingMarker";
 import { resolveGanttAcMarkerColor } from "@/lib/gantt-ac-marker";
 
 export type GanttBuildingChip = {

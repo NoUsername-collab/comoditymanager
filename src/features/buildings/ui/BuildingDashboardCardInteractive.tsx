@@ -9,7 +9,7 @@ import { AC_LABELS, occupancyCaptionFromWindow } from "@/lib/admin-ui";
 import { OccupancyRow } from "@/components/admin/ui/OccupancyRow";
 import { AddFloorForm } from "@/features/buildings/ui/AddFloorForm";
 import { BuildingRoomsCollapsible } from "./BuildingRoomsCollapsible";
-import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
+import { DeleteConfirmButton } from "@/components/admin/ui/DeleteConfirmButton";
 import { deleteBuildingAction } from "@/features/buildings/actions";
 import { BuildingDefaultPriceForm } from "./BuildingDefaultPriceForm";
 import { BuildingPoliciesForm } from "./BuildingPoliciesForm";

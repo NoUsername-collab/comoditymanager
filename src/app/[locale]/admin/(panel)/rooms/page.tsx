@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { listRoomDashboards } from "@/services/room-dashboard";
-import { listBuildings } from "@/services/buildings";
+import { loadRoomsListPage } from "@/features/rooms/loaders";
 import { RoomDashboardCard } from "@/features/rooms/ui/RoomDashboardCard";
 import { RoomsBuildingSection } from "@/features/rooms/ui/RoomsBuildingSection";
-import { AvailabilityDatePicker } from "@/components/admin/AvailabilityDatePicker";
+import { AvailabilityDatePicker } from "@/features/availability/ui/AvailabilityDatePicker";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { ClimateLegend } from "@/components/admin/ui/ClimateLegend";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
@@ -21,26 +20,13 @@ export default async function AdminRoomsPage({
   const [t, params, dataResult] = await Promise.all([
     getTranslations("admin.pages.rooms"),
     searchParams,
-    searchParams
-      .then((sp) => {
-        const viewDate = parseViewDate(sp.date);
-        return Promise.all([listRoomDashboards(viewDate), listBuildings()]);
-      })
-      .then(([rooms, buildings]) => ({ ok: true as const, rooms, buildings }))
-      .catch((e) => ({ ok: false as const, error: e })),
+    searchParams.then((sp) => loadRoomsListPage(parseViewDate(sp.date))),
   ]);
   const viewDate = parseViewDate(params.date);
   const dateLabel = viewDateLabel(viewDate);
-  let rooms: Awaited<ReturnType<typeof listRoomDashboards>> = [];
-  let buildings: Awaited<ReturnType<typeof listBuildings>> = [];
-  let error: string | null = null;
-
-  if (dataResult.ok) {
-    rooms = dataResult.rooms;
-    buildings = dataResult.buildings;
-  } else {
-    error = t("genericError");
-  }
+  const rooms = dataResult.ok ? dataResult.rooms : [];
+  const buildings = dataResult.ok ? dataResult.buildings : [];
+  const error = dataResult.ok ? null : t("genericError");
 
   const buildingOrder = new Map(buildings.map((b, i) => [b.id, i]));
 

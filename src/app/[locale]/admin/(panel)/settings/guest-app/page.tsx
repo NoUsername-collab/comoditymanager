@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { GuestAppSettingsForm } from "@/features/settings/ui/GuestAppSettingsForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
-import { resolveRequestTenant } from "@/lib/tenant/active";
-import { ensureGuestAppSettingsRow } from "@/services/guest-app/mutations";
+import { loadGuestAppSettingsPage } from "@/features/settings/loaders";
 import { getTranslations } from "next-intl/server";
 import {
   buildSettingsAlerts,
@@ -15,12 +14,12 @@ export default async function GuestAppSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, tSettings, params, ctx, tenant] = await Promise.all([
+  const [t, tSettings, params, ctx, { tenant, settings }] = await Promise.all([
     getTranslations("admin.pages.guestApp"),
     getTranslations("admin.pages.settings"),
     searchParams,
     guardSettingsPermission("pension_settings"),
-    resolveRequestTenant(),
+    loadGuestAppSettingsPage(),
   ]);
 
   if (!tenant) {
@@ -31,7 +30,6 @@ export default async function GuestAppSettingsPage({
     );
   }
 
-  const settings = await ensureGuestAppSettingsRow(tenant.id).catch(() => null);
   const alerts = await buildSettingsAlerts(params);
   const readOnly = !canEditPensionSettingsUi(ctx);
   if (readOnly) alerts.push({ tone: "info", message: t("readOnly") });

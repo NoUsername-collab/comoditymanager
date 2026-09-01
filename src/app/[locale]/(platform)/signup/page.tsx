@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { SignupForm } from "@/components/public/SignupForm";
+import { SignupForm } from "@/features/signup/ui/SignupForm";
 import { Link } from "@/i18n/navigation";
 
 export default async function SignupPage() {

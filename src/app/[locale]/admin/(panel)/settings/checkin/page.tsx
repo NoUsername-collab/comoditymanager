@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { CheckinSettingsPanel } from "@/features/checkin/ui/CheckinSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { getCheckinSettings, DEFAULT_CHECKIN_SETTINGS } from "@/services/checkin";
+import { loadCheckinSettingsPage } from "@/features/checkin/loaders";
 import {
   buildSettingsAlerts,
   guardSettingsPermission,
@@ -20,7 +20,7 @@ export default async function SettingsCheckinPage({
     getTranslations("admin.pages.settings"),
     searchParams,
     guardSettingsPermission("pension_settings"),
-    getCheckinSettings().catch(() => DEFAULT_CHECKIN_SETTINGS),
+    loadCheckinSettingsPage(),
   ]);
 
   const alerts = await buildSettingsAlerts(params);

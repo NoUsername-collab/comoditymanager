@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import "@/styles/features/admin/admin-availability-route.css";
 import "@/styles/features/admin/admin-home.css";
-import { AdminDashboard } from "@/components/admin/dashboard/AdminDashboard";
+import { AdminDashboard } from "@/features/availability/ui/AdminDashboard";
 import { AvailabilityHomePreview } from "@/features/availability/ui/AvailabilityHomePreview";
 import type { AvailabilityShellSearchParams } from "@/features/availability/ui/AvailabilityDashboardShell";
-import { loadAdminDashboard } from "@/services/admin-dashboard";
+import { loadAdminHomePage } from "@/features/availability/loaders";
 
 function AvailabilityHomePreviewFallback() {
   return (
@@ -30,7 +30,7 @@ export default async function AdminHomePage({
 }) {
   const [availabilityParams, data] = await Promise.all([
     searchParams,
-    loadAdminDashboard(),
+    loadAdminHomePage(),
   ]);
   return (
     <AdminDashboard

@@ -5,9 +5,8 @@ import { GuestProfileBadges } from "@/features/guests/ui/GuestProfileBadges";
 import {
   CERERE_LIST_MAX_SHOWN,
   CERERE_LIST_PAGE_SIZE,
-  countCereriNoi,
-  listCereriNoiPage,
-} from "@/services/bookings/queries";
+  loadCereriListPage,
+} from "@/features/bookings/loaders";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
@@ -26,25 +25,17 @@ export default async function AdminBookingsPage({
     )
   );
 
-  const [t, total, cereriResult] = await Promise.all([
+  const [t, { total, cereriResult }] = await Promise.all([
     getTranslations("admin.pages.bookings"),
-    countCereriNoi(),
-    listCereriNoiPage(shown)
-      .then((data) => ({ ok: true as const, data }))
-      .catch((e) => ({ ok: false as const, error: e })),
+    loadCereriListPage(shown),
   ]);
 
-  let cereri: Awaited<ReturnType<typeof listCereriNoiPage>> = [];
-  let error: string | null = null;
-
-  if (cereriResult.ok) {
-    cereri = cereriResult.data;
-  } else {
-    error =
-      cereriResult.error instanceof Error
-        ? cereriResult.error.message
-        : t("genericError");
-  }
+  const cereri = cereriResult.ok ? cereriResult.data : [];
+  const error = cereriResult.ok
+    ? null
+    : cereriResult.error instanceof Error
+      ? cereriResult.error.message
+      : t("genericError");
 
   const hasMore = total > shown && shown < CERERE_LIST_MAX_SHOWN;
   const nextShown = shown + CERERE_LIST_PAGE_SIZE;

@@ -373,7 +373,7 @@
   }
 }
 
-/* Zone zi — base cell; zoom grammar lives in gantt-premium.css via data-gantt-zoom */
+/* Zone zi — base cell; zoom grammar lives in gantt-premium-density.css via data-gantt-zoom */
 .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell {
   position: relative;
   background-color: var(--gantt-zone-clean);

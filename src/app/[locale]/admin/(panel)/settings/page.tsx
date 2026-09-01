@@ -13,10 +13,7 @@ import {
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
 import { buildPublicContactLinks } from "@/features/public-site/contact/PublicContactBar";
-import { getPensionIdentity } from "@/services/pension-identity";
-import { getEmailSettings } from "@/services/email-settings";
-import { getPublicSiteConfigForAdmin } from "@/services/public-site/queries";
-import { resolveSetupIssues } from "@/services/setup-issues";
+import { loadSettingsOverviewData } from "@/features/settings/loaders";
 
 export const dynamic = "force-dynamic";
 
@@ -36,16 +33,14 @@ export default async function SettingsOverviewPage({
     loadSettingsStaffContext(),
   ]);
   const isOwner = ctx.staff.memberRole === "owner";
-  const [setupIssues, alerts, identity, publicConfig, emailSettings] = await Promise.all([
-    resolveSetupIssues({
+  const [overview, alerts] = await Promise.all([
+    loadSettingsOverviewData({
       email: ctx.staff.user.email,
       memberRole: ctx.staff.memberRole,
     }),
     buildSettingsAlerts(params, { isOwner }),
-    getPensionIdentity().catch(() => null),
-    getPublicSiteConfigForAdmin().catch(() => null),
-    getEmailSettings().catch(() => null),
   ]);
+  const { setupIssues, identity, publicConfig, emailSettings } = overview;
 
   const { staff, pensionResult, appearance } = ctx;
   const { role, memberRole } = staff;

@@ -1,4 +1,4 @@
-import { AlphaGateForm } from "@/components/public/AlphaGateForm";
+import { AlphaGateForm } from "@/features/alpha-gate/ui/AlphaGateForm";
 import { sanitizeAlphaGateReturnPath } from "@/lib/auth/alpha-gate";
 import { isAlphaGateEnabled } from "@/lib/auth/alpha-gate-edge";
 import { redirect } from "next/navigation";

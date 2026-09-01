@@ -9,8 +9,7 @@ import {
   resolveDefaultInvoiceAmount,
 } from "@/domain/invoice/invoice-allocation";
 import { resolveDefaultProformaAmount } from "@/domain/invoice/proforma";
-import { loadBookingInvoicePage } from "@/features/bookings/loaders";
-import { proformaCanConvert } from "@/services/booking-proforma";
+import { loadBookingInvoicePage, proformaCanConvert } from "@/features/bookings/loaders";
 import { getTranslations } from "next-intl/server";
 import "@/styles/features/shared/invoice-print.css";
 

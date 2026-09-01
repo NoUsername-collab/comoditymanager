@@ -15,7 +15,7 @@ import { deleteFloorAction } from "@/features/buildings/actions";
 import { useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
-import { DeleteConfirmButton } from "@/components/admin/DeleteConfirmButton";
+import { DeleteConfirmButton } from "@/components/admin/ui/DeleteConfirmButton";
 import { RoomStructureRow } from "./RoomStructureRow";
 
 export function FloorStructureSection({

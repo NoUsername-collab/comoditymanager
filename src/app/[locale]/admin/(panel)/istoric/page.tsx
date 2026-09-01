@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { requireStaff } from "@/lib/auth/require-staff";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
-import { AdminActivityHistoryPanel } from "@/components/admin/activity/AdminActivityHistoryPanel";
+import { AdminActivityHistoryPanel } from "@/features/activity/ui/AdminActivityHistoryPanel";
 
 export const dynamic = "force-dynamic";
 

@@ -6,7 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { BookingCheckoutPanel } from "@/features/bookings/ui/BookingCheckoutPanel";
 import { TouristSheetLauncher } from "@/features/checkin/ui/TouristSheetLauncher";
-import { useOperativeCheck } from "@/components/admin/operative/OperativeCheckProvider";
+import { useOperativeCheck } from "@/features/checkin/ui/OperativeCheckProvider";
 import { shiftBookingOnGanttAction } from "@/features/calendar/actions";
 import {
   canOfferOperativeCheckIn,

@@ -1,12 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { loadMonthComparison } from "@/services/month-comparison";
+import { loadStatisticsMonthCompare } from "@/features/settings/loaders";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import { MonthCompareCards } from "@/components/admin/dashboard/MonthCompareCards";
+import { MonthCompareCards } from "@/features/settings/ui/MonthCompareCards";
 
 export async function MonthCompareSection() {
   const [tPages, monthCompare] = await Promise.all([
     getTranslations("admin.pages.statistics"),
-    loadMonthComparison().catch(() => null),
+    loadStatisticsMonthCompare(),
   ]);
 
   if (!monthCompare) return null;

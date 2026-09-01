@@ -2,42 +2,25 @@ import { Link } from "@/i18n/navigation";
 import { AdminRoomCatalogPanel } from "@/features/rooms/ui/AdminRoomCatalogPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-import { listRoomOptions, listRoomTypes } from "@/services/room-catalog";
+import { loadLocationSetupCatalog } from "@/features/settings/loaders";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { getTranslations } from "next-intl/server";
 
 export default async function LocationSetupPage() {
-  const [tPage, tCommon, catalogResult] = await Promise.all([
+  const [tPage, tCommon, , catalogResult] = await Promise.all([
     getTranslations("admin.pages.settingsLocation"),
     getTranslations("admin.common"),
-    Promise.all([
-      requireLocationAdmin(),
-      listRoomTypes(true),
-      listRoomOptions(true),
-    ])
-      .then(([, types, options]) => ({
-        ok: true as const,
-        catalogTypes: types,
-        catalogOptions: options,
-      }))
-      .catch((e) => ({
-        ok: false as const,
-        error: e instanceof Error ? e.message : "catalogUnavailable",
-      })),
+    requireLocationAdmin(),
+    loadLocationSetupCatalog(),
   ]);
 
-  let catalogError: string | null = null;
-  let catalogTypes: Awaited<ReturnType<typeof listRoomTypes>> = [];
-  let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
-  if (catalogResult.ok) {
-    catalogTypes = catalogResult.catalogTypes;
-    catalogOptions = catalogResult.catalogOptions;
-  } else {
-    catalogError =
-      catalogResult.error === "catalogUnavailable"
-        ? tPage("catalogUnavailable")
-        : catalogResult.error;
-  }
+  const catalogTypes = catalogResult.ok ? catalogResult.catalogTypes : [];
+  const catalogOptions = catalogResult.ok ? catalogResult.catalogOptions : [];
+  const catalogError = catalogResult.ok
+    ? null
+    : catalogResult.error === "catalogUnavailable"
+      ? tPage("catalogUnavailable")
+      : catalogResult.error;
 
   return (
     <SettingsPageLayout title={tPage("setup.title")} description={tPage("setup.description")}>

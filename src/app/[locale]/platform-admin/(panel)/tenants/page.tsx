@@ -1,8 +1,8 @@
-import { listAllTenants } from "@/services/platform-admin";
-import { TenantList } from "@/components/platform-admin/TenantList";
+import { loadPlatformTenantsPage } from "@/features/platform-admin/loaders";
+import { TenantList } from "@/features/platform-admin/ui/TenantList";
 
 export default async function TenantsListPage() {
-  const tenants = await listAllTenants();
+  const tenants = await loadPlatformTenantsPage();
 
   return <TenantList tenants={tenants} />;
 }

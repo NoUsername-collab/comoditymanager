@@ -1,7 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import type {
-  GuestListItem,
   GuestSearchFilter,
   GuestSearchResult,
 } from "@/domain/guest/types";
@@ -17,17 +16,7 @@ import {
   guestProfileHref,
   parseGuestListHref,
 } from "@/lib/guest-list-links";
-import { getGuestById, listGuestHighlights, searchGuests } from "@/services/guests";
-
-function firstValue(value: string | string[] | undefined): string {
-  if (Array.isArray(value)) return value[0] ?? "";
-  return value ?? "";
-}
-
-function normalizePage(value: string): number {
-  const page = Number(value);
-  return Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
-}
+import { loadGuestsListPage } from "@/features/guests/loaders";
 
 function PaginationBar({
   pageLabel,
@@ -86,57 +75,14 @@ export default async function AdminGuestsPage({
 }: {
   searchParams: Promise<{ q?: string; filter?: string; page?: string; selected?: string }>;
 }) {
-  const [t, tCommon, raw, dataBundle] = await Promise.all([
+  const [t, tCommon, dataBundle] = await Promise.all([
     getTranslations("admin.pages.guests"),
     getTranslations("admin.common"),
-    searchParams,
-    searchParams.then(async (sp) => {
-      const q = firstValue(sp.q);
-      const filter = firstValue(sp.filter);
-      const page = normalizePage(firstValue(sp.page));
-      const selected = firstValue(sp.selected);
-      const hasSearchCriteria =
-        q.length > 0 || (filter && filter !== "all" && filter !== "");
-
-      try {
-        const [searchResult, highlightsResult, selectedResult] = await Promise.all([
-          searchGuests({ query: q, filter, page, pageSize: 20 }),
-          hasSearchCriteria
-            ? Promise.resolve(null)
-            : listGuestHighlights().catch(() => null),
-          selected ? getGuestById(selected).catch(() => null) : Promise.resolve(null),
-        ]);
-        return {
-          ok: true as const,
-          q,
-          filter,
-          page,
-          selected,
-          result: searchResult,
-          highlights:
-            searchResult.mode === "highlights" ? highlightsResult : null,
-          selectedGuest: selectedResult,
-        };
-      } catch (e) {
-        const selectedGuest = selected
-          ? await getGuestById(selected).catch(() => null)
-          : null;
-        return {
-          ok: false as const,
-          q,
-          filter,
-          page,
-          selected,
-          error: e instanceof Error ? e.message : "generic",
-          selectedGuest,
-        };
-      }
-    }),
+    searchParams.then((sp) => loadGuestsListPage(sp)),
   ]);
   const q = dataBundle.q;
   const filter = dataBundle.filter;
   const page = dataBundle.page;
-  const selected = dataBundle.selected;
   const currentHref = buildGuestListHref({ q, filter, page });
 
   const FILTER_LINKS: { id: GuestSearchFilter; label: string }[] = [
@@ -148,29 +94,25 @@ export default async function AdminGuestsPage({
     { id: "returning", label: t("filterReturning") },
   ];
 
-  let result: GuestSearchResult = {
-    items: [],
-    query: q,
-    filter: (filter as GuestSearchFilter) || "all",
-    page,
-    pageSize: 20,
-    hasMore: false,
-    hasPrevious: false,
-    mode: "highlights",
-  };
-  let highlights: Awaited<ReturnType<typeof listGuestHighlights>> | null = null;
-  let selectedGuest: Awaited<ReturnType<typeof getGuestById>> = null;
-  let error: string | null = null;
-
-  if (dataBundle.ok) {
-    result = dataBundle.result;
-    highlights = dataBundle.highlights;
-    selectedGuest = dataBundle.selectedGuest;
-  } else {
-    error =
-      dataBundle.error === "generic" ? t("genericError") : dataBundle.error;
-    selectedGuest = dataBundle.selectedGuest;
-  }
+  const result: GuestSearchResult = dataBundle.ok
+    ? dataBundle.result
+    : {
+        items: [],
+        query: q,
+        filter: (filter as GuestSearchFilter) || "all",
+        page,
+        pageSize: 20,
+        hasMore: false,
+        hasPrevious: false,
+        mode: "highlights",
+      };
+  const highlights = dataBundle.ok ? dataBundle.highlights : null;
+  const selectedGuest = dataBundle.selectedGuest;
+  const error = dataBundle.ok
+    ? null
+    : dataBundle.error === "generic"
+      ? t("genericError")
+      : dataBundle.error;
 
   return (
     <main className="guest-page ml-content">

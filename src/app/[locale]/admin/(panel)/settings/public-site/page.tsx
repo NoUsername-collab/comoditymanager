@@ -1,7 +1,7 @@
 ﻿import { Suspense } from "react";
 import { PublicSiteSettingsForm } from "@/features/settings/ui/PublicSiteSettingsForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
-import { getPublicSiteAdminBundle } from "@/services/public-site/queries";
+import { loadPublicSiteAdminBundle } from "@/features/settings/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
   buildSettingsAlerts,
@@ -20,7 +20,7 @@ export default async function PublicSiteSettingsPage({
     searchParams,
     getLocale(),
     guardSettingsPermission("pension_settings"),
-    getPublicSiteAdminBundle().catch(() => null),
+    loadPublicSiteAdminBundle(),
   ]);
 
   if (!bundle) {

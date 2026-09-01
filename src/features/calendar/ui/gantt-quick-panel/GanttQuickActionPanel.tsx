@@ -28,7 +28,7 @@ import {
   resolveBlockReason,
   type BlockReasonPresetId,
 } from "@/domain/gantt/block-reasons";
-import { showGanttCreateUndoToast } from "@/components/admin/gantt/gantt-create-undo";
+import { showGanttCreateUndoToast } from "@/features/calendar/ui/gantt-create-undo";
 import {
   deferGanttBackgroundRefresh,
   publishGanttLiveBooking,

@@ -1,16 +1,16 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { GanttContextMenuPanel } from "@/components/admin/gantt/GanttContextMenuPanel";
+import { GanttContextMenuPanel } from "@/features/calendar/ui/GanttContextMenuPanel";
 import {
   useGanttOperativeCheck,
-} from "@/components/admin/gantt/GanttOperativeCheckProvider";
-import type { GanttOpsPickerMode } from "@/components/admin/gantt/GanttOpsPickerPanel";
+} from "@/features/calendar/ui/GanttOperativeCheckProvider";
+import type { GanttOpsPickerMode } from "@/features/calendar/ui/GanttOpsPickerPanel";
 import type { BookingRow } from "@/services/bookings";
 
 const GanttOpsPickerPanel = dynamic(
   () =>
-    import("@/components/admin/gantt/GanttOpsPickerPanel").then((m) => ({
+    import("@/features/calendar/ui/GanttOpsPickerPanel").then((m) => ({
       default: m.GanttOpsPickerPanel,
     })),
   { ssr: false }

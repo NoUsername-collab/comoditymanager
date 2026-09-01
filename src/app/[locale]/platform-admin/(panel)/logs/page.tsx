@@ -1,10 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import { PlatformActivityLogTable } from "@/components/platform-admin/PlatformActivityLogTable";
-import { PlatformDevLogTable } from "@/components/platform-admin/PlatformDevLogTable";
-import { LogsProbeButton } from "@/components/platform-admin/LogsProbeButton";
-import { TenantHealthPanel } from "@/components/platform-admin/TenantHealthPanel";
+import { PlatformActivityLogTable } from "@/features/platform-admin/ui/PlatformActivityLogTable";
+import { PlatformDevLogTable } from "@/features/platform-admin/ui/PlatformDevLogTable";
+import { LogsProbeButton } from "@/features/platform-admin/ui/LogsProbeButton";
+import { TenantHealthPanel } from "@/features/platform-admin/ui/TenantHealthPanel";
 import { probePlatformLogsPageThrow } from "@/features/platform-admin/logs-actions";
-import { loadPlatformLogsPageData } from "@/services/platform-logs-page-data";
+import { loadPlatformLogsPage } from "@/features/platform-admin/loaders";
 
 import "@/styles/features/admin/admin-devlog.css";
 
@@ -23,7 +23,7 @@ export default async function LogsPage({
   }
 
   const [pageData, t] = await Promise.all([
-    loadPlatformLogsPageData(params.tenant || null),
+    loadPlatformLogsPage(params.tenant || null),
     getTranslations("platformAdmin.logsPage"),
   ]);
 

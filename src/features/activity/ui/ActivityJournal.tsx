@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { ActivityTimeline } from "@/components/admin/activity/ActivityTimeline";
+import { ActivityTimeline } from "@/features/activity/ui/ActivityTimeline";
 import {
   splitActivityByCategory,
   type ActivityJournalCategory,

@@ -50,6 +50,16 @@ const LAYER_RULES: LayerRule[] = [
     layer: "services",
     forbidden: [/^@\/components\//],
   },
+  {
+    id: "components-no-supabase-client",
+    layer: "components",
+    forbidden: [/^@\/lib\/supabase\/client$/],
+  },
+  {
+    id: "features-no-supabase-client",
+    layer: "features",
+    forbidden: [/^@\/lib\/supabase\/client$/],
+  },
 ];
 
 const IMPORT_RE =

@@ -1,6 +1,6 @@
 "use client";
 
-import { ActivityUndoButton } from "@/components/admin/activity/ActivityUndoButton";
+import { ActivityUndoButton } from "@/features/activity/ui/ActivityUndoButton";
 import { AdminTextActionLink } from "@/components/admin/ui/AdminTextAction";
 import { useLocale, useTranslations } from "next-intl";
 import {

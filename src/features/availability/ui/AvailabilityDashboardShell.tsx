@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { AvailabilityDashboardLazy } from "./AvailabilityDashboardLazy";
 import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
-import { loadAvailabilityDashboard } from "@/services/availability-month";
+import { loadAvailabilityDashboardPage } from "@/features/availability/loaders";
 import { parseGanttFeatureFilter } from "@/lib/gantt-query";
 import { mondayOfWeekIso } from "@/domain/availability/week-range";
 import { getTranslations } from "next-intl/server";
@@ -58,14 +58,17 @@ export async function AvailabilityDashboardShell({
     getTranslations("admin.common"),
     getTranslations("admin.availability"),
     getTranslations("admin.gantt"),
-    loadAvailabilityDashboard(year, month, buildingId, featureFilter)
-      .then((data) => ({ ok: true as const, data }))
-      .catch((e) => ({ ok: false as const, error: e })),
+    loadAvailabilityDashboardPage(year, month, buildingId, featureFilter),
   ]);
 
   const effectiveToday = today;
 
-  let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null = null;
+  let dashboard: NonNullable<
+    Extract<
+      Awaited<ReturnType<typeof loadAvailabilityDashboardPage>>,
+      { ok: true }
+    >["data"]
+  > | null = null;
   let error: string | null = null;
   if (dashboardResult.ok) {
     dashboard = dashboardResult.data;

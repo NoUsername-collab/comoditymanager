@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { ACTION_COLOR } from "@/lib/platform-admin/log-styles";
-import { TenantLogFilter } from "@/components/platform-admin/TenantLogFilter";
+import { TenantLogFilter } from "@/features/platform-admin/ui/TenantLogFilter";
 import type { PlatformLogFilterOption } from "@/services/platform-logs-page-data";
 import type { PlatformLogEntry } from "@/services/platform-debug";
 

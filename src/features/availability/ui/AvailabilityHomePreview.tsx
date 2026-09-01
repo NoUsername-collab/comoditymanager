@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { AvailabilityMonthGridReadonly } from "./AvailabilityMonthGridReadonly";
 import { AvailabilityWeekendsPanel } from "./AvailabilityWeekendsPanel";
-import { loadAvailabilityDashboard } from "@/services/availability-month";
+import { loadAvailabilityDashboardPage } from "@/features/availability/loaders";
 import type { AvailabilityShellSearchParams } from "./AvailabilityDashboardShell";
 import { todayIso } from "@/lib/stay-dates";
 import { getTranslations } from "next-intl/server";
@@ -27,9 +27,7 @@ export async function AvailabilityHomePreview({
 
   const [tCommon, dashboardResult] = await Promise.all([
     getTranslations("admin.common"),
-    loadAvailabilityDashboard(year, month, null, "all")
-      .then((dashboard) => ({ ok: true as const, dashboard }))
-      .catch((e) => ({ ok: false as const, error: e })),
+    loadAvailabilityDashboardPage(year, month, null, "all"),
   ]);
 
   const effectiveToday = today;
@@ -39,17 +37,12 @@ export async function AvailabilityHomePreview({
   const nextM = month === 11 ? 0 : month + 1;
   const nextY = month === 11 ? year + 1 : year;
 
-  let dashboard: Awaited<ReturnType<typeof loadAvailabilityDashboard>> | null = null;
-  let error: string | null = null;
-
-  if (dashboardResult.ok) {
-    dashboard = dashboardResult.dashboard;
-  } else {
-    error =
-      dashboardResult.error instanceof Error
-        ? dashboardResult.error.message
-        : tCommon("error");
-  }
+  const dashboard = dashboardResult.ok ? dashboardResult.data : null;
+  const error = dashboardResult.ok
+    ? null
+    : dashboardResult.error instanceof Error
+      ? dashboardResult.error.message
+      : tCommon("error");
 
   if (error) {
     return (

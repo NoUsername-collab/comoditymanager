@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import {
   PricingComparisonTable,
   PricingGrid,
-} from "@/components/platform/PricingGrid";
+} from "@/features/signup/ui/PricingGrid";
 import { getTranslations } from "next-intl/server";
 
 export default async function PreturiPage() {

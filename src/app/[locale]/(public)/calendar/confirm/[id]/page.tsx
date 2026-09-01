@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { ConfirmRoomsForm } from "@/features/bookings/ui/ConfirmRoomsForm";
 import { getAdminUser } from "@/lib/auth/require-admin";
-import { loadBookingConfirmContext } from "@/services/booking-confirm";
-import { getStayPricingRules } from "@/services/booking-rules-settings";
+import { loadPublicConfirmPage } from "@/features/public-site/loaders";
 import { quickConfirmAction } from "./actions";
 import { getTranslations } from "next-intl/server";
 
@@ -14,14 +13,11 @@ export default async function QuickConfirmPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [t, admin, { id }, ctx, pricingRules] = await Promise.all([
+  const [t, admin, { id }, { ctx, pricingRules }] = await Promise.all([
     getTranslations("public.confirm"),
     getAdminUser(),
     params,
-    params.then(({ id: bookingId }) =>
-      loadBookingConfirmContext(bookingId).catch(() => null)
-    ),
-    getStayPricingRules().catch(() => null),
+    params.then(({ id: bookingId }) => loadPublicConfirmPage(bookingId)),
   ]);
 
   if (!admin) {

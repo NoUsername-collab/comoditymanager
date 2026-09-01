@@ -14,7 +14,7 @@ import {
   loadSettingsStaffContext,
   pensionSettingsErrorMessage,
 } from "@/lib/settings/page-context";
-import { getPublicSiteConfigForAdmin } from "@/services/public-site/queries";
+import { loadPublicSiteThemeForAdmin } from "@/features/settings/loaders";
 import { updateAppearanceSettingsAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +44,7 @@ export default async function SettingsAppearancePage({
   }
 
   const canEditGlobalTheme = canEditPensionSettingsUi(ctx);
-  const publicSiteConfig = await getPublicSiteConfigForAdmin();
+  const publicSiteConfig = await loadPublicSiteThemeForAdmin();
 
   return (
     <SettingsPageLayout

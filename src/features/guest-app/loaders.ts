@@ -2,6 +2,7 @@ import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import type { GuestAccessResult } from "@/domain/guest-app/types";
 import { todayIso } from "@/lib/stay-dates";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
+import { resolveGuestAppContext } from "@/services/guest-app/resolve-context";
 import { getGuestAppSettingsPublic } from "@/services/guest-app/settings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
@@ -66,4 +67,35 @@ export async function loadGuestStayLayout(code: string) {
     shellAppearance,
     receptionPhone,
   };
+}
+
+export async function loadGuestStayHome(code: string, locale: string) {
+  const today = todayIso();
+  const [pensionSettings, session] = await Promise.all([
+    getPensionSettings().catch(() => null),
+    resolveGuestSessionSafe(code),
+  ]);
+  if (!session.ok) {
+    return { ok: false as const, today, pensionSettings, session };
+  }
+  const ctx = await resolveGuestAppContext(
+    session.settings,
+    session.booking,
+    locale,
+  );
+  return { ok: true as const, today, pensionSettings, session, ctx };
+}
+
+export async function loadGuestStayFeature(code: string, locale: string) {
+  const today = todayIso();
+  const session = await resolveGuestSessionSafe(code);
+  if (!session.ok) {
+    return { ok: false as const, today, session };
+  }
+  const ctx = await resolveGuestAppContext(
+    session.settings,
+    session.booking,
+    locale,
+  );
+  return { ok: true as const, today, session, ctx };
 }

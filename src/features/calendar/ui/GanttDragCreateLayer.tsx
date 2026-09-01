@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useAdminPendingOptional } from "@/components/admin/feedback/AdminPendingProvider";
-import { useGanttContextMenu } from "@/components/admin/gantt/GanttContextMenuContext";
-import type { GanttCreateDraft } from "@/components/admin/gantt/GanttCreateDialog";
+import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
+import type { GanttCreateDraft } from "@/features/calendar/ui/GanttCreateDialog";
 import {
   LONG_PRESS_MS,
   LONG_PRESS_MOVE_PX,

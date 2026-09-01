@@ -9,7 +9,7 @@ import {
   platformRemoveTenantDomainAction,
   platformVerifyTenantDomainAction,
 } from "@/features/platform-admin/domain-actions";
-import { CopyTextButton } from "@/components/platform-admin/CopyTextButton";
+import { CopyTextButton } from "@/features/platform-admin/ui/CopyTextButton";
 import type { TenantDomainRow } from "@/services/tenant-domains";
 
 const ROUTING_OPTIONS: TenantDomainRoutingKind[] = [

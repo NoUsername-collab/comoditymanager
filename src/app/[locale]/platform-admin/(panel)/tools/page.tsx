@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { auditCriticalMigrations } from "@/lib/platform-admin/migration-audit";
 import { getPlatformInfraHealth } from "@/lib/platform-admin/platform-health";
-import { PlatformDevTools } from "@/components/platform-admin/PlatformDevTools";
-import { PlatformEnvChecklist } from "@/components/platform-admin/PlatformEnvChecklist";
-import { PlatformHealthStrip } from "@/components/platform-admin/PlatformHealthStrip";
+import { PlatformDevTools } from "@/features/platform-admin/ui/PlatformDevTools";
+import { PlatformEnvChecklist } from "@/features/platform-admin/ui/PlatformEnvChecklist";
+import { PlatformHealthStrip } from "@/features/platform-admin/ui/PlatformHealthStrip";
 
 export default async function PlatformAdminToolsPage() {
   const t = await getTranslations("platformAdmin.tools");

@@ -1,5 +1,6 @@
 import { listBuildings } from "@/services/buildings";
 import { listAllFloors } from "@/services/floors";
+import { listRoomDashboards } from "@/services/room-dashboard";
 import {
   ensureBuildingPoliciesFromLegacy,
   getBuildingOptionPolicies,
@@ -79,4 +80,10 @@ export async function loadEditRoomPage(roomId: string) {
   if (!room) return null;
 
   return { room, buildings, types, options, allFloors, policyResults };
+}
+
+export async function loadRoomsListPage(viewDate: string) {
+  return Promise.all([listRoomDashboards(viewDate), listBuildings()])
+    .then(([rooms, buildings]) => ({ ok: true as const, rooms, buildings }))
+    .catch((error) => ({ ok: false as const, error }));
 }

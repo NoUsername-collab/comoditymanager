@@ -7,7 +7,7 @@ import {
   generateOwnerMagicLinkAction,
   revalidateTenantCacheAction,
 } from "@/features/platform-admin/tools-actions";
-import { CopyTextButton } from "@/components/platform-admin/CopyTextButton";
+import { CopyTextButton } from "@/features/platform-admin/ui/CopyTextButton";
 
 export function TenantOperatorPanel({
   tenantId,

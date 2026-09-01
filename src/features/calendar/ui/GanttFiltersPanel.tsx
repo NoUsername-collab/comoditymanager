@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import { SegmentGroup } from "@/components/admin/gantt/GanttToolbar";
+import { SegmentGroup } from "@/features/calendar/ui/GanttToolbar";
 import type { GanttFeatureFilter, GanttFilter } from "@/domain/gantt/filters";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
 import { useTranslations } from "next-intl";

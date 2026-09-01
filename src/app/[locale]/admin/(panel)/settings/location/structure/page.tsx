@@ -5,11 +5,7 @@ import { AdminLinkButton } from "@/components/admin/ui/AdminLinkButton";
 import { BuildingStructureCard } from "@/features/buildings/ui/BuildingStructureCard";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { formatAdminError } from "@/lib/admin/format-error";
-import { listLocationStructure } from "@/services/location-structure";
-import {
-  ensureBuildingPoliciesFromLegacy,
-  listRoomOptions,
-} from "@/services/room-catalog";
+import { loadLocationStructurePage } from "@/features/settings/loaders";
 
 export default async function LocationStructurePage() {
   const [, t, tCommon] = await Promise.all([
@@ -18,49 +14,22 @@ export default async function LocationStructurePage() {
     getTranslations("admin.common"),
   ]);
 
-  let structures: Awaited<ReturnType<typeof listLocationStructure>> = [];
-  let catalogOptions: Awaited<ReturnType<typeof listRoomOptions>> = [];
-  const policiesByBuilding: Record<
-    string,
-    Awaited<ReturnType<typeof ensureBuildingPoliciesFromLegacy>>
-  > = {};
+  let structures: Awaited<
+    ReturnType<typeof loadLocationStructurePage>
+  >["structures"] = [];
+  let catalogOptions: Awaited<
+    ReturnType<typeof loadLocationStructurePage>
+  >["catalogOptions"] = [];
+  let policiesByBuilding: Awaited<
+    ReturnType<typeof loadLocationStructurePage>
+  >["policiesByBuilding"] = {};
   let error: string | null = null;
 
   try {
-    const structuresPromise = listLocationStructure();
-    const [structuresResult, catalogResult, policyEntriesResult] =
-      await Promise.allSettled([
-        structuresPromise,
-        listRoomOptions(true),
-        structuresPromise.then((loadedStructures) =>
-          Promise.all(
-            loadedStructures.map(async (s) => {
-              try {
-                const policies = await ensureBuildingPoliciesFromLegacy(
-                  s.building.id,
-                  s.building.ac_mode
-                );
-                return [s.building.id, policies] as const;
-              } catch {
-                return [s.building.id, [] as Awaited<
-                  ReturnType<typeof ensureBuildingPoliciesFromLegacy>
-                >] as const;
-              }
-            })
-          )
-        ),
-      ]);
-    if (structuresResult.status === "rejected") {
-      throw structuresResult.reason;
-    }
-    structures = structuresResult.value;
-    catalogOptions =
-      catalogResult.status === "fulfilled" ? catalogResult.value : [];
-    if (policyEntriesResult.status === "fulfilled") {
-      for (const [buildingId, policies] of policyEntriesResult.value) {
-        policiesByBuilding[buildingId] = policies;
-      }
-    }
+    const loaded = await loadLocationStructurePage();
+    structures = loaded.structures;
+    catalogOptions = loaded.catalogOptions;
+    policiesByBuilding = loaded.policiesByBuilding;
   } catch (e) {
     error = formatAdminError(e, tCommon);
   }

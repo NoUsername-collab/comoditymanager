@@ -8,6 +8,11 @@ const PROJECT_ROOT = process.cwd();
 
 const MOBILE_ADMIN_ROUTE_BUNDLES = [
   "mobile-admin.css",
+  "mobile-admin-hud.css",
+  "mobile-admin-premium.css",
+  "mobile-admin-flawless.css",
+  "mobile-admin-alignment.css",
+  "mobile-admin-touch.css",
   "mobile-settings.css",
   "mobile-platform-admin.css",
   "mobile-gantt.css",
@@ -55,14 +60,9 @@ describe("mobile compatibility CSS rules", () => {
 
   it("guards compact chrome overflow and safe-area scroll padding", () => {
     const compactFixes = readCss("mobile-layout-compact-fixes.css");
-    const mobileAdmin = [
-      readFileSync(join(LAYOUT_ROOT, "mobile-admin.css"), "utf8"),
-      readFileSync(join(LAYOUT_ROOT, "mobile-settings.css"), "utf8"),
-      readFileSync(join(LAYOUT_ROOT, "mobile-platform-admin.css"), "utf8"),
-      readFileSync(join(LAYOUT_ROOT, "mobile-gantt.css"), "utf8"),
-      readFileSync(join(LAYOUT_ROOT, "mobile-cazari.css"), "utf8"),
-      readFileSync(join(LAYOUT_ROOT, "mobile-avail.css"), "utf8"),
-    ].join("\n");
+    const mobileAdmin = MOBILE_ADMIN_ROUTE_BUNDLES.map((file) =>
+      readFileSync(join(LAYOUT_ROOT, file), "utf8"),
+    ).join("\n");
     expect(guards).toContain('html[data-layout-chrome="compact"] .ml-content');
     expect(mobileAdmin).toContain("scroll-padding-top");
     expect(mobileAdmin).toContain("var(--ml-admin-chrome-top");
@@ -242,7 +242,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".platform-health-row");
 
     const checkTime = readFileSync(
-      join(process.cwd(), "src/components/admin/gantt/GanttCheckTimeDialog.tsx"),
+      join(process.cwd(), "src/features/calendar/ui/GanttCheckTimeDialog.tsx"),
       "utf8"
     );
     expect(checkTime).toContain("admin-modal-open");
@@ -316,7 +316,7 @@ describe("mobile compatibility CSS rules", () => {
 
   it("gantt context menu uses viewport-safe pointer positioning", () => {
     const ctxMenu = readFileSync(
-      join(process.cwd(), "src/components/admin/gantt/GanttContextMenuPanel.tsx"),
+      join(process.cwd(), "src/features/calendar/ui/GanttContextMenuPanel.tsx"),
       "utf8"
     );
     expect(ctxMenu).toContain("computeFixedPointerMenuPosition");
@@ -377,7 +377,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".language-switcher__trigger");
 
     const ganttQuick = readFileSync(
-      join(process.cwd(), "src/components/admin/gantt/gantt-quick-panel/GanttQuickActionPanel.tsx"),
+      join(process.cwd(), "src/features/calendar/ui/gantt-quick-panel/GanttQuickActionPanel.tsx"),
       "utf8"
     );
     expect(ganttQuick).toContain("gantt-quick-panel__actions");

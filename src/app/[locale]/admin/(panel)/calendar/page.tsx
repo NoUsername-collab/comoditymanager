@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import {
   CalendarGanttSection,
   type CalendarSearchParams,
-} from "@/components/admin/calendar/CalendarGanttSection";
+} from "@/features/calendar/ui/CalendarGanttSection";
 import { AdminGanttSkeleton } from "@/components/admin/loading/AdminGanttSkeleton";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 

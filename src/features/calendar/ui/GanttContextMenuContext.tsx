@@ -12,8 +12,8 @@ import type {
   GanttContextMenuTarget,
   GanttCreateDraftRequest,
 } from "@/domain/gantt/context-menu";
-import type { GanttOccDetail } from "@/components/admin/gantt/GanttOccupancyDetailPanel";
-import type { MoveRoomDraft } from "@/components/admin/gantt/MoveRoomDialog";
+import type { GanttOccDetail } from "@/features/calendar/ui/GanttOccupancyDetailPanel";
+import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
 
 export type GanttContextMenuActions = {
   openMenu: (target: GanttContextMenuTarget) => void;
