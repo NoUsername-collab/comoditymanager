@@ -3,9 +3,8 @@
 import { after } from "next/server";
 import { computeStandardStayTotal } from "@/domain/pricing/confirm-stay-total";
 import { requireAnyStaff, requireStaffPermission, getStaffUser } from "@/lib/auth/require-admin";
-import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
-  revalidateAdminCalendar,
+  revalidateBookingSurfaces,
   revalidateBookingSurfacesExtended,
 } from "@/lib/cache/revalidate-admin";
 import {
@@ -54,15 +53,17 @@ function actorEmail(user: { email?: string | null } | null): string | null {
 function scheduleBookingRevalidate(
   extra?: Parameters<typeof revalidateBookingSurfacesExtended>[0],
 ) {
-  after(async () => {
-    const tenantId = extra?.tenantId ?? (await resolveTenantIdForData());
-    revalidateBookingSurfacesExtended({ ...extra, tenantId });
+  after(() => {
+    revalidateBookingSurfacesExtended({
+      ...extra,
+      includeCalendar: false,
+    });
   });
 }
 
 function scheduleCalendarRevalidate() {
   after(() => {
-    revalidateAdminCalendar();
+    revalidateBookingSurfaces(undefined, { includeCalendar: false });
   });
 }
 
@@ -344,9 +345,8 @@ export async function createCerereFromGanttAction(input: {
   /** UI a verificat deja conflictul pe interval — evită al 2-lea query ocupare. */
   skipAvailabilityCheck?: boolean;
 }): Promise<ActionOk | ActionErr> {
-  const t = await getT();
   const timer = createServerTimer("createCerereFromGantt");
-  await requireAnyStaff();
+  const [t] = await Promise.all([getT(), requireAnyStaff()]);
   timer.mark("auth");
   try {
     const last = input.guestLastName.trim();
@@ -376,6 +376,7 @@ export async function createCerereFromGanttAction(input: {
       notes: t("createdFromGanttNote"),
       room_ids: [input.roomId],
       skipAvailabilityCheck: input.skipAvailabilityCheck === true,
+      deferGuestLink: true,
     });
     timer.mark("createBookingRequest");
 
@@ -448,6 +449,7 @@ export async function createDirectStayFromGanttAction(input: {
         notes: t("directStayFromGanttNote"),
         room_ids: [input.roomId],
         skipAvailabilityCheck: input.skipAvailabilityCheck === true,
+        deferGuestLink: true,
       }),
       getRoomById(input.roomId),
     ]);

@@ -7,6 +7,7 @@ import type {
 } from "@/domain/occupancy/types";
 import type { BookingStatus } from "@/domain/booking/types";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
+import { RECEPTION_OCCUPANCY_KINDS } from "@/domain/booking/reception-write";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
@@ -306,7 +307,7 @@ export async function getRoomOccupancy(
 /** Interval larg pentru verificări conflict — exclude opțional un booking. */
 export async function listOccupancyForConflictCheck(
   excludeBookingId?: string,
-  options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds"> & {
+  options?: Pick<OccupancyQueryOptions, "forPublicCalendar" | "roomIds" | "kinds"> & {
     rangeStart?: string;
     rangeEnd?: string;
   }
@@ -317,6 +318,7 @@ export async function listOccupancyForConflictCheck(
     {
     excludeBookingId,
     roomIds: options?.roomIds,
+    kinds: options?.kinds,
     forPublicCalendar: options?.forPublicCalendar,
     }
   );
@@ -342,7 +344,7 @@ export async function assertRoomsAvailableForOccupancy(
       rangeStart: checkIn,
       rangeEnd: checkOut,
       roomIds: unique,
-      forPublicCalendar: true,
+      kinds: RECEPTION_OCCUPANCY_KINDS,
     }),
   ]);
   const times = {

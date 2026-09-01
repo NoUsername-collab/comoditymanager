@@ -32,8 +32,10 @@ import { showGanttCreateUndoToast } from "@/features/calendar/ui/gantt-create-un
 import {
   publishGanttHoldOrBlock,
   publishGanttLiveBooking,
+  removeGanttLiveBooking,
 } from "@/lib/gantt/live-bookings";
 import { remapBookingRoom } from "@/domain/gantt/live-occupancy";
+import { buildSyntheticGanttBookingRow } from "@/services/bookings/synthetic-gantt-row";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput, AdminSelect } from "@/components/admin/ui/AdminInput";
@@ -720,26 +722,43 @@ export function GanttQuickActionPanel({
       return;
     }
     setError(null);
-    void runAdminAction(async () => {
-      const payload = {
-        roomId: activeRoomId,
-        roomName: activeRoom?.name ?? draft?.roomName,
-        checkIn: activeCheckIn,
-        checkOut: activeCheckOut,
-        guestLastName,
-        guestFirstName,
-        guestEmail,
-        guestPhone,
-        skipAvailabilityCheck: true,
-      };
+    const payload = {
+      roomId: activeRoomId,
+      roomName: activeRoom?.name ?? draft?.roomName,
+      checkIn: activeCheckIn,
+      checkOut: activeCheckOut,
+      guestLastName,
+      guestFirstName,
+      guestEmail,
+      guestPhone,
+    };
+    const tempId = `optimistic:${crypto.randomUUID()}`;
+    publishGanttLiveBooking(
+      buildSyntheticGanttBookingRow({
+        id: tempId,
+        checkIn: payload.checkIn,
+        checkOut: payload.checkOut,
+        status: kind === "cerere" ? "cerere_noua" : "confirmata",
+        guestLastName: payload.guestLastName,
+        guestFirstName: payload.guestFirstName,
+        guestEmail: payload.guestEmail,
+        guestPhone: payload.guestPhone,
+        roomId: payload.roomId,
+        roomName: payload.roomName,
+      }),
+    );
+    onClose();
+    void (async () => {
       const res =
         kind === "cerere"
           ? await createCerereFromGanttAction(payload)
           : await createDirectStayFromGanttAction(payload);
       if (!res.ok) {
-        setError(res.error);
+        removeGanttLiveBooking(tempId);
+        showToast({ kind: "error", title: tCommon("error"), message: res.error });
         return;
       }
+      removeGanttLiveBooking(tempId);
       if (res.booking) {
         publishGanttLiveBooking(res.booking);
       }
@@ -751,8 +770,7 @@ export function GanttQuickActionPanel({
             ? tGantt("quick.requestAppears")
             : tGantt("quick.bookingAppears"),
       });
-      onClose();
-    });
+    })();
   }
 
   function submitMove() {

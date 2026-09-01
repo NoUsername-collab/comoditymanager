@@ -139,6 +139,8 @@ export async function createBookingRequest(input: {
   room_ids?: string[];
   /** Caller a verificat deja disponibilitatea (evită query duplicat). */
   skipAvailabilityCheck?: boolean;
+  /** Link guest after insert — Gantt create must return before contact matching. */
+  deferGuestLink?: boolean;
 }): Promise<string> {
   const timer = createServerTimer("createBookingRequest");
   assertValidGuestPhone(input.guest_phone);
@@ -156,26 +158,39 @@ export async function createBookingRequest(input: {
         )
       : Promise.resolve();
 
-  const [{ tenantId, supabase }, { guestId, mergeConflict }] = await Promise.all([
-    getTenantScope(),
-    resolveGuestForBooking({
+  const { tenantId, supabase } = await getTenantScope();
+
+  let guestId: string | null = null;
+  let mergeConflict = false;
+  let guestAlert: { level: GuestFlagLevel; note: string | null } = {
+    level: "normal",
+    note: null,
+  };
+
+  if (input.deferGuestLink) {
+    await availabilityPromise;
+    timer.mark("scope");
+  } else {
+    const resolved = await resolveGuestForBooking({
       guest_name: input.guest_name,
       guest_last_name: input.guest_last_name,
       guest_first_name: input.guest_first_name,
       guest_email: input.guest_email,
       guest_phone: input.guest_phone,
-    }),
-  ]);
-
-  const [, guestAlert] = await Promise.all([
-    availabilityPromise,
-    resolveGuestAlertSnapshot({
-      guestId,
-      guestLastName: input.guest_last_name,
-      guestFirstName: input.guest_first_name,
-    }),
-  ]);
-  timer.mark("resolveGuest");
+    });
+    guestId = resolved.guestId;
+    mergeConflict = resolved.mergeConflict;
+    const [, alert] = await Promise.all([
+      availabilityPromise,
+      resolveGuestAlertSnapshot({
+        guestId,
+        guestLastName: input.guest_last_name,
+        guestFirstName: input.guest_first_name,
+      }),
+    ]);
+    guestAlert = alert;
+    timer.mark("resolveGuest");
+  }
 
   const { data, error } = await supabase
     .from("bookings")
@@ -225,6 +240,42 @@ export async function createBookingRequest(input: {
   const bookingId = data.id;
   const guestName = input.guest_name.trim();
   after(async () => {
+    let linkedGuestId = guestId;
+    let linkedAlert = guestAlert;
+    let linkedConflict = mergeConflict;
+
+    if (input.deferGuestLink) {
+      try {
+        const resolved = await resolveGuestForBooking({
+          guest_name: input.guest_name,
+          guest_last_name: input.guest_last_name,
+          guest_first_name: input.guest_first_name,
+          guest_email: input.guest_email,
+          guest_phone: input.guest_phone,
+        });
+        linkedGuestId = resolved.guestId;
+        linkedConflict = resolved.mergeConflict;
+        linkedAlert = await resolveGuestAlertSnapshot({
+          guestId: resolved.guestId,
+          guestLastName: input.guest_last_name,
+          guestFirstName: input.guest_first_name,
+        });
+        if (linkedGuestId || linkedAlert.level !== "normal") {
+          await supabase
+            .from("bookings")
+            .update({
+              guest_id: linkedGuestId,
+              guest_alert_level: linkedAlert.level,
+              guest_alert_note: linkedAlert.note,
+            })
+            .eq("tenant_id", tenantId)
+            .eq("id", bookingId);
+        }
+      } catch {
+        /* guest link is best-effort after the bar is already visible */
+      }
+    }
+
     await logAdminActivity({
       action: "booking.request_created",
       entityType: "booking",
@@ -234,10 +285,10 @@ export async function createBookingRequest(input: {
         check_in: input.check_in,
         check_out: input.check_out,
         guest_email: input.guest_email.trim(),
-        guest_id: guestId,
-        guest_alert_level: guestAlert.level,
-        guest_alert_note: guestAlert.note,
-        ...(mergeConflict ? { guest_merge_conflict: true } : {}),
+        guest_id: linkedGuestId,
+        guest_alert_level: linkedAlert.level,
+        guest_alert_note: linkedAlert.note,
+        ...(linkedConflict ? { guest_merge_conflict: true } : {}),
         ...(holdRooms.length > 0
           ? { room_ids: holdRooms, soft_hold: true }
           : {}),
@@ -245,15 +296,15 @@ export async function createBookingRequest(input: {
       actor: null,
     });
 
-    if (guestAlert.level !== "normal") {
+    if (linkedAlert.level !== "normal") {
       await logAdminActivity({
         action: "booking.flagged",
         entityType: "booking",
         entityId: bookingId,
         summary: `Cerere cu alertă client: ${guestName}`,
         metadata: {
-          guest_alert_level: guestAlert.level,
-          guest_alert_note: guestAlert.note,
+          guest_alert_level: linkedAlert.level,
+          guest_alert_note: linkedAlert.note,
         },
         actor: null,
       });

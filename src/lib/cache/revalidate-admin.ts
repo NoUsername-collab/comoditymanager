@@ -56,7 +56,10 @@ export function revalidateAfterFactoryReset(tenantId?: string) {
  * Shared cache invalidation after booking/calendar mutations.
  * @param tenantId — when provided, only busts this tenant's booking cache
  */
-export function revalidateBookingSurfaces(tenantId?: string) {
+export function revalidateBookingSurfaces(
+  tenantId?: string,
+  options?: { includeCalendar?: boolean },
+) {
   if (tenantId) {
     revalidateTag(tenantTag(tenantId, CACHE_TAGS.bookingCounts), "max");
   } else {
@@ -64,7 +67,11 @@ export function revalidateBookingSurfaces(tenantId?: string) {
   }
   // Do not revalidatePath("/admin", "layout") here — that rebuilds the whole
   // admin shell on every stay mutation and is why Gantt saves feel like a minute.
-  revalidatePath("/admin/calendar");
+  // Skip calendar while on Gantt: revalidatePath of the open page waits for a
+  // full RSC rebuild (several seconds) before the action can return.
+  if (options?.includeCalendar !== false) {
+    revalidatePath("/admin/calendar");
+  }
   revalidatePath("/admin/bookings");
   revalidatePath("/admin/cazari");
 }
@@ -75,8 +82,11 @@ export function revalidateBookingSurfacesExtended(options?: {
   includeHistoric?: boolean;
   includeStatistics?: boolean;
   includeCereri?: boolean;
+  includeCalendar?: boolean;
 }) {
-  revalidateBookingSurfaces(options?.tenantId);
+  revalidateBookingSurfaces(options?.tenantId, {
+    includeCalendar: options?.includeCalendar,
+  });
   if (options?.includeHistoric) {
     revalidatePath("/admin/istoric");
   }
