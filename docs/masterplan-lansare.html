@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zalmox — Masterplan lansare</title>
+  <style>
+    :root {
+      --bg: #0e1218;
+      --bg-2: #141a22;
+      --surface: #1a2230;
+      --surface-2: #222c3d;
+      --border: #2e3b50;
+      --text: #eef2f7;
+      --muted: #93a0b4;
+      --accent: #7aa2ff;
+      --accent-2: #9ec0ff;
+      --clean: #5eead4;
+      --design: #f0abfc;
+      --warn: #fbbf24;
+      --danger: #fb7185;
+      --ok: #34d399;
+      --shadow: 0 0 0 1px var(--border);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 15.5px;
+    }
+    a { color: var(--accent-2); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.25rem 5rem; }
+    header.hero {
+      padding: 1.5rem 0 1.75rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.75rem;
+    }
+    .kicker {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    h1 { font-size: 2rem; letter-spacing: -0.03em; font-weight: 720; line-height: 1.15; }
+    .lead { margin-top: 0.85rem; color: var(--muted); max-width: 42rem; font-size: 1.05rem; }
+    .meta {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.15rem;
+    }
+    .chip {
+      font-size: 0.8rem;
+      padding: 0.28rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      background: var(--bg-2);
+    }
+    .chip strong { color: var(--text); font-weight: 600; }
+    nav.toc {
+      display: flex; flex-wrap: wrap; gap: 0.55rem 1rem;
+      padding: 0.85rem 0 1.5rem;
+      position: sticky; top: 0; z-index: 5;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      margin: 0 -1.25rem 1.75rem;
+      padding-left: 1.25rem; padding-right: 1.25rem;
+    }
+    nav.toc a { text-decoration: none; font-size: 0.86rem; color: var(--muted); }
+    nav.toc a:hover { color: var(--text); }
+    h2 {
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      margin: 2.4rem 0 0.85rem;
+    }
+    h3 { font-size: 1.02rem; margin: 1.35rem 0 0.5rem; }
+    p { margin-bottom: 0.8rem; color: #c9d4e3; }
+    ul, ol { margin: 0.4rem 0 1rem 1.2rem; color: #c9d4e3; }
+    li { margin-bottom: 0.35rem; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.05rem 1.15rem;
+    }
+    .card.clean { border-top: 3px solid var(--clean); }
+    .card.design { border-top: 3px solid var(--design); }
+    .card.warn { border-top: 3px solid var(--warn); }
+    .card.danger { border-top: 3px solid var(--danger); }
+    .card h3 { margin-top: 0; }
+    .muted { color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin: 0.6rem 0 1.2rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.55rem 0.65rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .week {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem 0.7rem;
+      margin-bottom: 0.75rem;
+    }
+    .week-head {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem;
+      margin-bottom: 0.7rem;
+    }
+    .week-head strong { font-size: 1.05rem; }
+    .lane {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr;
+      gap: 0.55rem;
+      margin-bottom: 0.45rem;
+      font-size: 0.92rem;
+    }
+    .lane .tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding-top: 0.15rem;
+    }
+    .tag.clean { color: var(--clean); }
+    .tag.design { color: var(--design); }
+    .tag.you { color: var(--warn); }
+    .check {
+      display: flex; gap: 0.55rem; align-items: flex-start;
+      margin: 0.35rem 0;
+      color: #c9d4e3;
+    }
+    .check input { margin-top: 0.28rem; accent-color: var(--accent); }
+    .freeze li { color: #f8b4b4; }
+    .ok-list li { color: #b7f0d4; }
+    footer.note {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    @media (max-width: 760px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .lane { grid-template-columns: 1fr; gap: 0.15rem; }
+      h1 { font-size: 1.55rem; }
+    }
+    @media print {
+      nav.toc { display: none; }
+      body { background: #fff; color: #111; }
+      .card, .week { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="kicker">Zalmox · CasaEmil</p>
+      <h1>Masterplan lansare</h1>
+      <p class="lead">
+        Începi săptămâna viitoare. Până la lansare facem două lucruri în paralel:
+        <strong>curățenie de producție</strong> (să nu mintă, să nu se amestece pensiunile)
+        și <strong>design</strong> (să arate gata de oaspete și de recepție).
+        Fără funcții noi, fără cascade.
+      </p>
+      <div class="meta">
+        <span class="chip">Start: <strong>8 sept 2026</strong></span>
+        <span class="chip">Țintă: <strong>1 dec 2026</strong> (12 săpt.)</span>
+        <span class="chip">Buffer: <strong>până 15 ian 2027</strong></span>
+        <span class="chip">Regulă: <strong>o gaură, un patch, verificare</strong></span>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Cuprins">
+      <a href="#contract">Contract</a>
+      <a href="#sine">Cele două șine</a>
+      <a href="#inghet">Îngheț</a>
+      <a href="#cascada">Anti-cascadă</a>
+      <a href="#calendar">Calendar</a>
+      <a href="#lansare">Checklist lansare</a>
+    </nav>
+
+    <section id="contract">
+      <h2>Ce înseamnă „gata”</h2>
+      <p>Nu înseamnă iCal, WhatsApp, API sau e-Factura reală. Înseamnă asta:</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Operațional</h3>
+          <ul class="ok-list">
+            <li>O zi de recepție: Gantt, cazări, check-in, oaspeți.</li>
+            <li>Site public + cerere rezervare + guest app.</li>
+            <li>Factură PDF internă. Plăți la recepție (registru).</li>
+            <li>Staff pe domeniul pensiunii, nu pe apex-ul platformei.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Onest și izolat</h3>
+          <ul class="ok-list">
+            <li>Nimic nu zice „trimis / acceptat” dacă n-a plecat.</li>
+            <li><code>/preturi</code> vinde doar ce există.</li>
+            <li>Două pensiuni pe același server nu-și văd datele.</li>
+            <li>Owner are 2FA. Staging smoke înainte de go-live.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="sine">
+      <h2>Cele două șine — tot timpul în paralel</h2>
+      <div class="grid-2">
+        <div class="card clean">
+          <h3>Șina A · Curățenie</h3>
+          <p class="muted">O face AI-ul, tu spui „ok / nu / verifică pe ecran”.</p>
+          <ul>
+            <li>ANAF stub → eșuat, nu „acceptat”.</li>
+            <li>Email skip → nu s-a trimis, nu „success”.</li>
+            <li>Text prețuri tăiat la realitate.</li>
+            <li>Tenant context per-cerere (izolare).</li>
+            <li>RLS check-in, fără să scoatem cheia admin dintr-o dată.</li>
+            <li>MFA owner. 3–5 teste pe fluxurile reale.</li>
+          </ul>
+        </div>
+        <div class="card design">
+          <h3>Șina B · Design</h3>
+          <p class="muted">Tu decizi cum arată. AI-ul execută pe ecrane, nu rescrie motorul.</p>
+          <ul>
+            <li>Site public + landing + prețuri (oneste).</li>
+            <li>Guest app (Wi-Fi, check-in oaspete, look).</li>
+            <li>Admin mobil: HUD, butoane, densitate — nu Gantt nou.</li>
+            <li>Check-in / cazări: claritate, nu 1.400 linii noi de logică.</li>
+            <li>Un sistem de spațiu/culoare, nu 10 teme.</li>
+          </ul>
+        </div>
+      </div>
+      <p>În fiecare săptămână există <strong>curățenie</strong>, <strong>design</strong> și <strong>tu</strong> (uită-te 20 de minute pe ecran, zici ce e urât sau confuz). Fără săptămâni „doar arhitectură” și fără săptămâni „doar pixel”.</p>
+    </section>
+
+    <section id="inghet">
+      <h2>Înghețat până după lansare</h2>
+      <div class="card danger">
+        <p>Astea stau. Nu le „pregătim”. Nu le punem pe site. Nu le începem în week 6 pentru că e plictiseală.</p>
+        <ul class="freeze">
+          <li>iCal Booking / Airbnb</li>
+          <li>WhatsApp ca modul (link-ul de pe site rămâne, API Meta nu)</li>
+          <li>API REST + chei</li>
+          <li>e-Factura ANAF reală (doar oprim minciuna)</li>
+          <li>Plată online (Stripe / Netopia)</li>
+          <li>Planuri local / hybrid</li>
+          <li>White-label complet, SLA 99.9%</li>
+          <li>Rescriere Gantt, hexagon, „încă un val de foldere”</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="cascada">
+      <h2>Regula anti-cascadă</h2>
+      <div class="card warn">
+        <ol>
+          <li><strong>O problemă pe PR / pe sesiune.</strong> Nu „și RLS, și Gantt, și tema”.</li>
+          <li><strong>Nu scoatem <code>service_role</code></strong> până check-in-ul e pe aceleași reguli ca restul. Altfel se golește recepția.</li>
+          <li><strong>Design = CSS / layout / copy.</strong> Nu mutăm logică de business ca să arate mai bine.</li>
+          <li><strong>Verificare pe ecran</strong> după fiecare bloc: rezervare publică → admin → check-in. Dacă s-a stricat, ne oprim și revenim.</li>
+          <li><strong>Tu nu debug-uiești.</strong> Dacă ceva e ciudat, screenshot + „aici”. Nu stai noaptea în erori.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="calendar">
+      <h2>Calendar · 12 săptămâni + buffer</h2>
+      <p class="muted">Faza 1 = onestitate. Faza 2 = izolare. Faza 3 = design care se vede. Faza 4 = îngheț și lansare. Bufferul (dec–ian) e pentru alunecări, nu pentru iCal.</p>
+
+      <article class="week">
+        <div class="week-head">
+          <strong>S1 · 8–14 sept</strong>
+          <span class="chip">Bloc A</span>
+        </div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>ANAF stub în producție → failed. Email skip → success false. Copy <code>/preturi</code> tăiat (fără iCal / WhatsApp / API / SLA).</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Inventar ecrane: public, guest, admin mobil, check-in. 10 screenshot-uri „asta e urât”.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>Deschizi site + calendar + o pagină admin. Confirmi că textul de prețuri e adevărat.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>S2 · 15–21 sept</strong><span class="chip">A închis</span></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>Verificare: badge factură, mail de test, landing. Nicio altă schimbare de infrastructură.</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Direcție vizuală: 1 paletă, 1 tip de buton, 1 densitate. Landing + prețuri arată ca produs, nu ca draft.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>Alegi 3 referințe (pensiuni / hoteluri) — „așa da / așa nu”.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>S3–S4 · 22 sept – 5 oct</strong><span class="chip">Bloc B</span></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>Context tenant per-cerere (ca la booking-ul public). Un singur schimb. Fără atins RLS.</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Site public: hero, calendar, formular, legal. Guest app home + Wi-Fi.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>După B: deschizi două ferestre (dacă poți, două domenii). Dacă ceva e amestecat — stop.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>S5 · 6–12 oct</strong><span class="chip">Bloc C · atent</span></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>RLS pe tabelele de check-in, aliniat cu restul. Cheia admin rămâne. Nu „tăiem service_role”.</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Check-in + cazări: spațiu, ierarhie, butoane. Fără rescris stepper-ul.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>Un check-in complet pe staging. Dacă lista e goală, nu mai designăm în săptămâna aia.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>S6–S8 · 13 oct – 2 nov</strong><span class="chip">Design principal</span></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>Doar hotfix-uri. MFA obligatoriu pentru owner (S8). Start 3–5 teste e2e pe fluxurile reale.</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Admin mobil (meniu, carduri, bara de salvare). Gantt: densitate și lizibilitate, nu motor nou. Guest app restul ecranelor.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>Fiecare vineri: 15 min pe telefon. „Nu înțeleg butonul ăsta” e livrabil.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>S9–S10 · 3–16 nov</strong><span class="chip">Îngheț design</span></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>Smoke staging: rezervare → admin → Gantt → check-in → PDF. Env de producție verificat (fără parole în git).</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Doar polish: spații, texte, stări goale. Zero ecrane noi.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>Un om de la recepție (sau tu) face o zi simulată. Lista de „m-am împiedicat aici”.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>S11–S12 · 17 nov – 1 dec</strong><span class="chip">Go / no-go</span></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>DNS, email real (Resend), backup cron, health. Dacă ANAF încă nu e, rămâne oprit și scris clar în UI.</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Nimic structural. Screenshot-uri finale pentru site.</span></div>
+        <div class="lane"><span class="tag you">Tu</span><span>Decizie: lansăm 1 dec sau folosim bufferul. Nu adăugăm iCal ca să „mergem mai târziu”.</span></div>
+      </article>
+
+      <article class="week">
+        <div class="week-head"><strong>Buffer · dec 2026 – 15 ian 2027</strong></div>
+        <div class="lane"><span class="tag clean">Curățenie</span><span>Bug-uri de la primul tenant real. Atât.</span></div>
+        <div class="lane"><span class="tag design">Design</span><span>Retușuri din feedback. Nu al doilea redesign.</span></div>
+        <p class="muted" style="margin-top:0.6rem">Dacă totul e verde în S12, poți lansa în decembrie și folosi ianuarie ca lună liniștită. Dacă S5 (check-in/RLS) a durut, bufferul e de ce există.</p>
+      </article>
+    </section>
+
+    <section id="lansare">
+      <h2>Checklist înainte de go-live</h2>
+      <p class="muted">Bifele se salvează în browserul ăsta (local). Nu înlocuiesc staging-ul.</p>
+      <div class="card">
+        <div class="check"><input type="checkbox" data-k="p1" /><span>ANAF nu mai arată „acceptat” fără trimitere reală</span></div>
+        <div class="check"><input type="checkbox" data-k="p2" /><span>Email neconfigurat / sărit = mesaj clar, nu succes</span></div>
+        <div class="check"><input type="checkbox" data-k="p3" /><span><code>/preturi</code> fără iCal, WhatsApp modul, API, SLA</span></div>
+        <div class="check"><input type="checkbox" data-k="p4" /><span>Tenant context per-cerere, verificat pe staging</span></div>
+        <div class="check"><input type="checkbox" data-k="p5" /><span>Check-in pe staging: listă + salvare, nu gol</span></div>
+        <div class="check"><input type="checkbox" data-k="p6" /><span>Owner: 2FA obligatoriu</span></div>
+        <div class="check"><input type="checkbox" data-k="p7" /><span>Resend cheie + mail de test primit</span></div>
+        <div class="check"><input type="checkbox" data-k="p8" /><span>Rezervare publică apare în admin</span></div>
+        <div class="check"><input type="checkbox" data-k="p9" /><span>Gantt + cazări pe telefon, o tură de 10 min</span></div>
+        <div class="check"><input type="checkbox" data-k="p10" /><span>Guest app: Wi-Fi + check-in oaspete</span></div>
+        <div class="check"><input type="checkbox" data-k="p11" /><span>Backup cron + health OK</span></div>
+        <div class="check"><input type="checkbox" data-k="p12" /><span>Nicio funcție nouă în ultimele 2 săptămâni</span></div>
+      </div>
+    </section>
+
+    <footer class="note">
+      Plan intern · 1 sept 2026 · aliniat cu auditul de producție.
+      Nu e contract ANAF, nu e roadmap de marketplace.
+      Deschide fișierul: <code>docs/masterplan-lansare.html</code>
+    </footer>
+  </div>
+  <script>
+    const KEY = "zalmox-masterplan-checks-v1";
+    const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    document.querySelectorAll("input[data-k]").forEach((el) => {
+      el.checked = Boolean(saved[el.dataset.k]);
+      el.addEventListener("change", () => {
+        saved[el.dataset.k] = el.checked;
+        localStorage.setItem(KEY, JSON.stringify(saved));
+      });
+    });
+  </script>
+</body>
+</html>
