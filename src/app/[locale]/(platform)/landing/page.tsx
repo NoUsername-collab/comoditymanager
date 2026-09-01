@@ -111,8 +111,6 @@ export default async function LandingPage({
           t("featGanttL3"),
           t("featGanttL4"),
         ]}
-        ctaHref="/signup"
-        ctaLabel={t("heroCta")}
       >
         <LandingHeroShowcase />
       </LandingFeatureBand>
@@ -128,15 +126,12 @@ export default async function LandingPage({
           t("featSiteL3"),
           t("featSiteL4"),
         ]}
-        ctaHref="/signup"
-        ctaLabel={t("heroCta")}
       >
         <BookingFormMockup />
       </LandingFeatureBand>
 
       <LandingFeatureBand
         align="copy-first"
-        ink
         eyebrow={t("featGuestEyebrow")}
         title={t("featGuestTitle")}
         description={t("featGuestDesc")}
@@ -146,8 +141,6 @@ export default async function LandingPage({
           t("featGuestL3"),
           t("featGuestL4"),
         ]}
-        ctaHref="/signup"
-        ctaLabel={t("heroCta")}
       >
         <GuestAppMockup />
       </LandingFeatureBand>

@@ -1,4 +1,3 @@
-import { Link } from "@/i18n/navigation";
 import type { ReactNode } from "react";
 
 type Align = "copy-first" | "visual-first";
@@ -10,8 +9,6 @@ export function LandingFeatureBand({
   title,
   description,
   items,
-  ctaHref,
-  ctaLabel,
   children,
 }: {
   align: Align;
@@ -20,8 +17,6 @@ export function LandingFeatureBand({
   title: string;
   description: string;
   items: string[];
-  ctaHref: string;
-  ctaLabel: string;
   children: ReactNode;
 }) {
   const innerMod =
@@ -39,9 +34,6 @@ export function LandingFeatureBand({
           <li key={item}>{item}</li>
         ))}
       </ul>
-      <Link href={ctaHref} className="lp-btn lp-btn--primary">
-        {ctaLabel}
-      </Link>
     </div>
   );
 

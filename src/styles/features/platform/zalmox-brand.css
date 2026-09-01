@@ -44,6 +44,27 @@
   background: var(--zx-steel-hover);
 }
 
+.platform-shell--split .platform-header__logo,
+.platform-header--split .platform-header__logo {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--zx-steel-deep);
+}
+
+.platform-header__mark {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+}
+
+.platform-shell--split .platform-header__name {
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
 /* Landing premium tokens — same family, no purple / gold / rainbow */
 .lp {
   --lp-dark-1: #12141c;
@@ -290,8 +311,52 @@
   color: #c9d4e3;
 }
 
-.lp-feat-list--dark li::before {
-  color: #7aa2ff;
+.lp .lp-trust-strip__lead {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  max-width: 40rem;
+  text-align: center;
+  color: #5a6080;
+}
+
+.lp-trust-card__mark {
+  display: block;
+  width: 1.35rem;
+  height: 2px;
+  margin: 0 0 1rem;
+  background: #3d5aab;
+}
+
+.feat-mockup__avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: #3d5aab;
+  font-size: 0;
+}
+
+.phone-tile__icon,
+.phone-app__checkin-icon {
+  display: block;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 4px;
+  background: #3d5aab;
+  font-size: 0;
+}
+
+.phone-status__signal {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.45rem;
+  border-radius: 1px;
+  background: color-mix(in srgb, #e8edf4 45%, transparent);
+}
+
+.hero-notif,
+.hero-stat-card {
+  display: none;
 }
 
 .lp-price-card--featured {
@@ -380,6 +445,11 @@
 .landing-final-cta {
   background: #12141c;
   border: 1px solid color-mix(in srgb, #7aa2ff 18%, transparent);
+  color: #e8edf4;
+}
+
+.landing-final-cta__title,
+.landing-final-cta__text {
   color: #e8edf4;
 }
 

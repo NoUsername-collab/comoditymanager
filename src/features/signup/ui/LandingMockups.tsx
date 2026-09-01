@@ -5,7 +5,7 @@ export function BookingFormMockup() {
     <div className="feat-mockup feat-mockup--booking" aria-hidden>
       <div className="feat-mockup__card">
         <div className="feat-mockup__card-header">
-          <span className="feat-mockup__avatar">🏡</span>
+          <span className="feat-mockup__avatar" aria-hidden />
           <div>
             <div className="feat-bar feat-bar--title" style={{ width: 120 }} />
             <div className="feat-bar feat-bar--sub" style={{ width: 80, marginTop: 4 }} />
@@ -44,7 +44,9 @@ export function BookingFormMockup() {
             </div>
           </div>
         ))}
-        <button className="feat-mockup__btn">Rezervă acum</button>
+        <button className="feat-mockup__btn" type="button" tabIndex={-1}>
+          Trimite cerere
+        </button>
       </div>
     </div>
   );
@@ -59,30 +61,30 @@ export function GuestAppMockup() {
           {/* Status bar */}
           <div className="phone-status">
             <span>9:41</span>
-            <span>📶 🔋</span>
+            <span className="phone-status__signal" aria-hidden />
           </div>
           {/* App content */}
           <div className="phone-app">
             <div className="phone-app__hero">
               <p className="phone-app__welcome">Bun venit,</p>
-              <p className="phone-app__name">Andrei 👋</p>
+              <p className="phone-app__name">Andrei</p>
               <p className="phone-app__stay">Camera 201 · 5 nopți</p>
             </div>
             <div className="phone-app__tiles">
               {[
-                { icon: "📶", label: "Wi-Fi" },
-                { icon: "🏊", label: "Facilități" },
-                { icon: "🍳", label: "Mic dejun" },
-                { icon: "🗺️", label: "Ghid local" },
+                { label: "Wi-Fi" },
+                { label: "Facilități" },
+                { label: "Mic dejun" },
+                { label: "Ghid local" },
               ].map((tile) => (
                 <div key={tile.label} className="phone-tile">
-                  <span className="phone-tile__icon">{tile.icon}</span>
+                  <span className="phone-tile__icon" aria-hidden />
                   <span className="phone-tile__label">{tile.label}</span>
                 </div>
               ))}
             </div>
             <div className="phone-app__checkin">
-              <span className="phone-app__checkin-icon">✅</span>
+              <span className="phone-app__checkin-icon" aria-hidden />
               <div>
                 <p className="phone-app__checkin-title">Check-in online</p>
                 <p className="phone-app__checkin-sub">Completează în avans</p>

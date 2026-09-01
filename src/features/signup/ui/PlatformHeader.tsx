@@ -15,7 +15,6 @@ export async function PlatformHeader({
       <PlatformHeaderChrome
         labels={{
           pricing: t("pricing"),
-          gdpr: t("gdpr"),
           login: t("login"),
           signup: t("signup"),
         }}

@@ -707,10 +707,10 @@
 
 .lp-trust-strip__lead {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--lp-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   margin: 0;
 }
 

@@ -19,9 +19,10 @@ export async function LandingTrustCards() {
         {TRUST_IDS.map((id) => (
           <li key={id}>
             <article className="lp-trust-card">
-              <span className="lp-trust-card__glyph" aria-hidden>
-                {t(`trustCards.${id}.glyph`)}
-              </span>
+              <span
+                className={`lp-trust-card__mark lp-trust-card__mark--${id}`}
+                aria-hidden
+              />
               <h3 className="lp-trust-card__title">
                 {t(`trustCards.${id}.title`)}
               </h3>

@@ -99,18 +99,6 @@ export function PlatformMobileMenu() {
               {t("pricing")}
             </Link>
             <Link
-              href="/confidentialitate"
-              className={[
-                "ml-drawer__link",
-                isActive(pathname, "/confidentialitate") && "ml-drawer__link--active",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={() => setOpen(false)}
-            >
-              {t("gdpr")}
-            </Link>
-            <Link
               href="/admin/login"
               className="ml-drawer__link"
               onClick={() => setOpen(false)}

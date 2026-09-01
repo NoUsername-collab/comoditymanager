@@ -90,23 +90,6 @@ export function LandingHeroShowcase() {
           ))}
         </div>
       </div>
-
-      {/* Floating notification */}
-      <div className="hero-notif">
-        <div className="hero-notif__icon" aria-hidden />
-        <div className="hero-notif__text">
-          <p className="hero-notif__title">Rezervare nouă</p>
-          <p className="hero-notif__sub">Camera 201 · 5 nopți · 450 RON</p>
-        </div>
-        <span className="hero-notif__dot" />
-      </div>
-
-      {/* Floating stats card */}
-      <div className="hero-stat-card">
-        <p className="hero-stat-card__label">Ocupare azi</p>
-        <p className="hero-stat-card__value">4 / 6</p>
-        <p className="hero-stat-card__trend">camere ocupate</p>
-      </div>
     </div>
   );
 }
