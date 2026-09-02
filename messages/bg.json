@@ -19,6 +19,19 @@
     "optional": "по избор",
     "required": "задължително"
   },
+  "bookingIdentity": {
+    "lastName": "Фамилия",
+    "firstName": "Име",
+    "email": "Имейл",
+    "emailOptional": "Имейл (по избор)",
+    "phoneRequired": "Телефон *",
+    "lastNamePlaceholder": "напр. Иванова",
+    "firstNamePlaceholder": "напр. Мария",
+    "checkingExistingGuest": "Проверявам съществуващ клиент…",
+    "existingGuestFound": "Съществуващ гост: {name}. Данните са попълнени автоматично.",
+    "existingGuestWatchlist": "Гост в списък за наблюдение: {name}.",
+    "existingGuestBlacklist": "Гост в черен списък: {name}."
+  },
   "errors": {
     "required": "Задължително поле",
     "invalidEmail": "Невалиден имейл",
@@ -2840,7 +2853,7 @@
       "blockIdMissing": "Липсва ID на блокиране.",
       "undoError": "Грешка при undo",
       "nameAndEmailRequired": "Името и email са задължителни.",
-      "nameEmailPhoneRequired": "Име, email и телефон са задължителни.",
+      "nameEmailPhoneRequired": "Името и телефонът са задължителни.",
       "phoneRequired": "Телефонът е задължителен.",
       "phoneRequiredCheckIn": "Check-in без телефон е невъзможен. Добавете телефон на резервацията или в профила.",
       "invalidPhone": "Невалиден телефон.",
@@ -3314,6 +3327,7 @@
         "existingGuestFound": "Съществуващ гост: {name}. Данните са попълнени автоматично.",
         "existingGuestWatchlist": "Гост в списък за наблюдение: {name}.",
         "existingGuestBlacklist": "Гост в черен списък: {name}.",
+        "checkingExistingGuest": "Проверявам съществуващ клиент…",
         "title": {
           "pick": "Избери действие",
           "hold": "Бърз hold",

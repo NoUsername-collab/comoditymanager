@@ -47,7 +47,7 @@ import {
   parseIso,
   todayIso,
 } from "@/lib/stay-dates";
-import { useGuestIdentityAutofill } from "@/hooks/useGuestIdentityAutofill";
+import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
 
 export type GanttQuickRoomOption = {
   id: string;
@@ -388,32 +388,7 @@ export function GanttQuickActionPanel({
   const [blockPreset, setBlockPreset] =
     useState<BlockReasonPresetId>("maintenance");
   const [blockCustom, setBlockCustom] = useState("");
-  const guestIdentityHints = useMemo(
-    () => ({
-      onFound: (name: string) =>
-        tGantt("quick.existingGuestFound", { name }),
-      onWatchlist: (name: string) =>
-        tGantt("quick.existingGuestWatchlist", { name }),
-      onBlacklist: (name: string) =>
-        tGantt("quick.existingGuestBlacklist", { name }),
-    }),
-    [tGantt],
-  );
-  const {
-    guestLastName,
-    guestFirstName,
-    guestEmail,
-    guestPhone,
-    onLastNameChange,
-    onFirstNameChange,
-    onEmailChange,
-    onPhoneChange,
-    maybeAutofillGuest,
-    identityHint,
-    identityHintTone,
-    identityPending,
-    resetGuestIdentity,
-  } = useGuestIdentityAutofill(guestIdentityHints);
+  const identity = useBookingIdentity();
   const [moveBookingId, setMoveBookingId] = useState(defaultBooking?.id ?? "");
   const [moveSourceRoomId, setMoveSourceRoomId] = useState(
     defaultBooking?.room_ids[0] ?? ""
@@ -717,20 +692,17 @@ export function GanttQuickActionPanel({
       return;
     }
     if (!ensureCreatableInterval()) return;
-    if (!guestPhone.trim()) {
-      setError(tGantt("quick.errors.phoneRequired"));
-      return;
-    }
+    if (!identity.canSubmit) return;
     setError(null);
     const payload = {
       roomId: activeRoomId,
       roomName: activeRoom?.name ?? draft?.roomName,
       checkIn: activeCheckIn,
       checkOut: activeCheckOut,
-      guestLastName,
-      guestFirstName,
-      guestEmail,
-      guestPhone,
+      guestLastName: identity.guestLastName,
+      guestFirstName: identity.guestFirstName,
+      guestEmail: identity.guestEmail,
+      guestPhone: identity.guestPhone,
     };
     const tempId = `optimistic:${crypto.randomUUID()}`;
     publishGanttLiveBooking(
@@ -1036,59 +1008,7 @@ export function GanttQuickActionPanel({
 
         {mode === "cerere" || mode === "direct" ? (
           <>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className={labelClass}>
-                {tGantt("quick.lastNameLabel")}
-                <AdminInput
-                  className="mt-1"
-                  value={guestLastName}
-                  onChange={(e) => onLastNameChange(e.target.value)}
-                  onBlur={maybeAutofillGuest}
-                />
-              </label>
-              <label className={labelClass}>
-                {tGantt("quick.firstNameLabel")}
-                <AdminInput
-                  className="mt-1"
-                  value={guestFirstName}
-                  onChange={(e) => onFirstNameChange(e.target.value)}
-                  onBlur={maybeAutofillGuest}
-                />
-              </label>
-            </div>
-            {(identityPending || identityHint) && (
-              <p
-                className={[
-                  "text-xs",
-                  identityHintTone === "warn"
-                    ? "text-amber-800"
-                    : "text-emerald-800",
-                ].join(" ")}
-              >
-                {identityPending ? tCommon("loading") : identityHint}
-              </p>
-            )}
-            <label className={labelClass}>
-              {tGantt("quick.emailLabel")}
-              <AdminInput
-                type="email"
-                className="mt-1"
-                value={guestEmail}
-                onChange={(e) => onEmailChange(e.target.value)}
-                onBlur={maybeAutofillGuest}
-              />
-            </label>
-            <label className={labelClass}>
-              {tGantt("quick.phoneRequiredLabel")}
-              <AdminInput
-                className="mt-1"
-                type="tel"
-                required
-                value={guestPhone}
-                onChange={(e) => onPhoneChange(e.target.value)}
-                onBlur={maybeAutofillGuest}
-              />
-            </label>
+            <BookingIdentityPanel identity={identity} appearance="admin" />
             <div className="gantt-quick-panel__actions flex gap-2">
               {allowBack ? (
                 <AdminButton
@@ -1106,6 +1026,7 @@ export function GanttQuickActionPanel({
                 className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
+                  !identity.canSubmit ||
                   !activeRoomId ||
                   hasConflict ||
                   hasMultiRoomDraft ||
@@ -1115,9 +1036,11 @@ export function GanttQuickActionPanel({
               >
                 {pending
                   ? tCommon("saving")
-                  : mode === "cerere"
-                    ? tGantt("quick.createRequest")
-                    : tGantt("quick.confirmStay")}
+                  : !identity.identityChecksReady
+                    ? identity.checkingLabel
+                    : mode === "cerere"
+                      ? tGantt("quick.createRequest")
+                      : tGantt("quick.confirmStay")}
               </AdminButton>
             </div>
           </>

@@ -19,6 +19,11 @@ export function isPlaceholderEmail(email: string | null | undefined): boolean {
   return norm === PLACEHOLDER_GUEST_EMAIL || LEGACY_PLACEHOLDER_EMAILS.has(norm);
 }
 
+/** Staff create may omit email; persist the canonical placeholder. */
+export function staffBookingEmail(raw: string | null | undefined): string {
+  return normalizeEmail(raw) ?? PLACEHOLDER_GUEST_EMAIL;
+}
+
 /** Normalizează telefon românesc spre E.164 (+40…). */
 const PHONE_PLACEHOLDER_VALUES = new Set([
   "",

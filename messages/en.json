@@ -19,6 +19,19 @@
     "optional": "optional",
     "required": "required"
   },
+  "bookingIdentity": {
+    "lastName": "Last name",
+    "firstName": "First name",
+    "email": "Email",
+    "emailOptional": "Email (optional)",
+    "phoneRequired": "Phone *",
+    "lastNamePlaceholder": "e.g. Smith",
+    "firstNamePlaceholder": "e.g. Jane",
+    "checkingExistingGuest": "Checking existing guest…",
+    "existingGuestFound": "Existing guest: {name}. Details auto-filled.",
+    "existingGuestWatchlist": "Guest on watchlist: {name}.",
+    "existingGuestBlacklist": "Guest on blacklist: {name}."
+  },
   "errors": {
     "required": "Required field",
     "invalidEmail": "Invalid email",
@@ -2988,7 +3001,7 @@
       "blockIdMissing": "Block ID missing.",
       "undoError": "Undo error",
       "nameAndEmailRequired": "Name and email are required.",
-      "nameEmailPhoneRequired": "Name, email and phone are required.",
+      "nameEmailPhoneRequired": "Name and phone are required.",
       "phoneRequired": "Phone number is required.",
       "phoneRequiredCheckIn": "Check-in requires a phone number. Add it on the booking or guest profile.",
       "invalidPhone": "Invalid phone number.",
@@ -3601,6 +3614,7 @@
         "existingGuestFound": "Existing guest: {name}. Details auto-filled.",
         "existingGuestWatchlist": "Guest on watchlist: {name}.",
         "existingGuestBlacklist": "Guest on blacklist: {name}.",
+        "checkingExistingGuest": "Checking existing guest…",
         "title": {
           "pick": "Choose action",
           "hold": "Quick hold",

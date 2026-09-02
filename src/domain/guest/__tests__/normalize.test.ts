@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   normalizeEmail,
   isPlaceholderEmail,
+  staffBookingEmail,
   normalizePhone,
   isValidGuestPhone,
   assertValidGuestPhone,
@@ -44,6 +45,11 @@ describe("normalizeEmail", () => {
 describe("isPlaceholderEmail", () => {
   it("returns true for the canonical placeholder", () => {
     expect(isPlaceholderEmail("reception@no-email.local")).toBe(true);
+  });
+
+  it("uses the placeholder when staff omit email", () => {
+    expect(staffBookingEmail("")).toBe(PLACEHOLDER_GUEST_EMAIL);
+    expect(staffBookingEmail("  Ana@Host.RO ")).toBe("ana@host.ro");
   });
 
   it("returns true for the canonical placeholder with different casing", () => {

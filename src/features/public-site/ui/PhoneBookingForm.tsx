@@ -1,12 +1,14 @@
 "use client";
 
 import { useRouter } from "@/i18n/navigation";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { submitPhoneBookingAction } from "@/features/public-site/calendar-actions";
-import { GuestNameFields } from "@/features/public-site/ui/GuestNameFields";
+import {
+  BookingIdentityPanel,
+  useBookingIdentity,
+} from "@/features/bookings/ui/identity";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
-import { useGuestIdentityAutofill } from "@/hooks/useGuestIdentityAutofill";
 import {
   addDays,
   clampCheckInDate,
@@ -29,28 +31,7 @@ export function PhoneBookingForm({
   const defaultDates = defaultNewStayDates(today);
   const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
   const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
-  const guestIdentityHints = useMemo(
-    () => ({
-      onFound: (name: string) => tForm("existingGuestFound", { name }),
-      onWatchlist: (name: string) => tForm("existingGuestWatchlist", { name }),
-      onBlacklist: (name: string) => tForm("existingGuestBlacklist", { name }),
-    }),
-    [tForm],
-  );
-  const {
-    guestLastName,
-    guestFirstName,
-    guestPhone,
-    guestEmail,
-    onLastNameChange,
-    onFirstNameChange,
-    onPhoneChange,
-    onEmailChange,
-    maybeAutofillGuest,
-    identityHint,
-    identityHintTone,
-    identityPending,
-  } = useGuestIdentityAutofill(guestIdentityHints);
+  const identity = useBookingIdentity();
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
   function onCheckInChange(value: string) {
@@ -67,7 +48,7 @@ export function PhoneBookingForm({
   const [state, formAction, pending] = useActionState(
     async (
       _prev: { ok?: boolean; error?: string; saved?: boolean } | null,
-      formData: FormData
+      formData: FormData,
     ) => {
       try {
         const result = await submitPhoneBookingAction(formData);
@@ -82,7 +63,7 @@ export function PhoneBookingForm({
         };
       }
     },
-    null
+    null,
   );
 
   if (state?.ok && state.saved) {
@@ -94,7 +75,13 @@ export function PhoneBookingForm({
   }
 
   return (
-    <form action={formAction} className="phone-booking-form space-y-3 text-sm">
+    <form
+      action={formAction}
+      onSubmit={(event) => {
+        if (!identity.canSubmit) event.preventDefault();
+      }}
+      className="phone-booking-form space-y-3 text-sm"
+    >
       <p className="text-xs text-zinc-500">
         {t("receptionHours", { checkIn: checkInTime, checkOut: checkOutTime })}
       </p>
@@ -127,60 +114,36 @@ export function PhoneBookingForm({
           <DateWeekdayHint iso={checkOut} />
         </label>
       </div>
-      <GuestNameFields
-        compact
-        lastName={guestLastName}
-        firstName={guestFirstName}
-        onLastNameChange={onLastNameChange}
-        onFirstNameChange={onFirstNameChange}
-        onIdentityBlur={maybeAutofillGuest}
-      />
-      <div className="grid grid-cols-2 gap-2">
-        <label>
-          {tCommon("phone")} *
-          <input
-            name="guest_phone"
-            type="tel"
-            required
-            value={guestPhone}
-            onChange={(e) => onPhoneChange(e.target.value)}
-            onBlur={maybeAutofillGuest}
-            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
-          />
-        </label>
-        <label>
-          {t("emailOptional")}
-          <input
-            name="guest_email"
-            type="email"
-            value={guestEmail}
-            onChange={(e) => onEmailChange(e.target.value)}
-            onBlur={maybeAutofillGuest}
-            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
-          />
-        </label>
-      </div>
-      {(identityPending || identityHint) && (
-        <p
-          className={identityHintTone === "warn" ? "text-xs text-amber-700" : "text-xs text-zinc-500"}
-          aria-live="polite"
-        >
-          {identityPending ? tForm("checkingExistingGuest") : identityHint}
-        </p>
-      )}
+      <BookingIdentityPanel identity={identity} appearance="compact" />
       <div className="grid grid-cols-2 gap-2">
         <label>
           {tForm("adults").replace(" *", "")}
-          <input name="num_adults" type="number" min={1} defaultValue={2} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
+          <input
+            name="num_adults"
+            type="number"
+            min={1}
+            defaultValue={2}
+            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
+          />
         </label>
         <label>
           {tForm("children")}
-          <input name="num_children" type="number" min={0} defaultValue={0} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
+          <input
+            name="num_children"
+            type="number"
+            min={0}
+            defaultValue={0}
+            className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
+          />
         </label>
       </div>
       <label className="block">
         {t("notesLabel")}
-        <input name="notes" placeholder={t("notesPlaceholder")} className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5" />
+        <input
+          name="notes"
+          placeholder={t("notesPlaceholder")}
+          className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5"
+        />
       </label>
       <label className="phone-booking-form__checkbox flex min-h-[var(--ml-touch-min,2.75rem)] items-center gap-2 text-sm">
         <input type="checkbox" name="confirm_now" className="h-5 w-5 shrink-0 rounded" />
@@ -189,10 +152,14 @@ export function PhoneBookingForm({
       {state?.error && <p className="text-red-600">{state.error}</p>}
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || !identity.canSubmit}
         className="phone-booking-form__submit min-h-[var(--ml-touch-min,2.75rem)] w-full rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >
-        {pending ? t("saving") : t("submit")}
+        {pending
+          ? t("saving")
+          : !identity.identityChecksReady
+            ? identity.checkingLabel
+            : t("submit")}
       </button>
     </form>
   );

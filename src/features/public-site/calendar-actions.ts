@@ -5,9 +5,8 @@ import { revalidatePublicBookingSurfaces } from "@/lib/cache/revalidate-admin";
 import { getTranslations } from "next-intl/server";
 import { createBookingRequest } from "@/services/bookings";
 import { assertRoomsAvailableForStay } from "@/services/bookings/availability";
-import { findGuestAutofillMatch } from "@/services/guests";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
-import { assertValidGuestPhone } from "@/domain/guest/normalize";
+import { assertValidGuestPhone, staffBookingEmail } from "@/domain/guest/normalize";
 import { guestNamesFromForm } from "@/domain/guest-name";
 import { loadGuestStayPreview } from "@/services/guest-stay-preview";
 import { getRoomsByIds } from "@/services/rooms-admin";
@@ -267,7 +266,7 @@ export async function submitPhoneBookingAction(formData: FormData) {
     check_in,
     check_out,
     ...guest,
-    guest_email: guest_email || tServer("receptionFallbackEmail"),
+    guest_email: staffBookingEmail(guest_email),
     guest_phone,
     num_adults,
     num_children,
@@ -284,25 +283,4 @@ export async function submitPhoneBookingAction(formData: FormData) {
     return { ok: true as const, bookingId: id, redirectConfirm: true };
   }
   return { ok: true as const, bookingId: id };
-}
-
-export async function suggestExistingGuestAction(input: {
-  guest_last_name?: string;
-  guest_first_name?: string;
-  guest_email?: string;
-  guest_phone?: string;
-}) {
-  const [, t] = await Promise.all([
-    requireAnyStaff(),
-    getTranslations("errors"),
-  ]);
-  try {
-    const match = await findGuestAutofillMatch(input);
-    return { ok: true as const, match };
-  } catch (e) {
-    return {
-      ok: false as const,
-      error: e instanceof Error ? e.message : t("genericError"),
-    };
-  }
 }

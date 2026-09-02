@@ -7,7 +7,10 @@ import {
   previewGuestStayAction,
   submitGuestRequestAction,
 } from "@/features/public-site/calendar-actions";
-import { GuestNameFields } from "@/features/public-site/ui/GuestNameFields";
+import {
+  BookingIdentityPanel,
+  useBookingIdentity,
+} from "@/features/bookings/ui/identity";
 import { RoomSelectionWithGuard } from "@/features/public-site/ui/RoomSelectionWithGuard";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
 import type {
@@ -48,10 +51,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptGdpr, setAcceptGdpr] = useState(false);
   const [previewPending, startPreviewTransition] = useTransition();
-  const [guestLastName, setGuestLastName] = useState("");
-  const [guestFirstName, setGuestFirstName] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
+  const identity = useBookingIdentity({ lookup: false, emailRequired: true });
 
   const minCheckOut = checkIn ? addDays(checkIn, 1) : "";
 
@@ -149,7 +149,11 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const stepIndex = stepOrder.indexOf(step);
 
   const canSubmitContact =
-    acceptTerms && acceptGdpr && selectedRoomIds.length > 0 && step === "contact";
+    acceptTerms &&
+    acceptGdpr &&
+    selectedRoomIds.length > 0 &&
+    step === "contact" &&
+    identity.canSubmit;
 
   const steps: { key: Step; label: string }[] = [
     { key: "dates", label: t("stepDates") },
@@ -278,7 +282,13 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
       )}
 
       {step === "contact" && selectedRoomIds.length > 0 && preview && (
-        <form action={formAction} className="space-y-4">
+        <form
+          action={formAction}
+          onSubmit={(event) => {
+            if (!identity.canSubmit) event.preventDefault();
+          }}
+          className="space-y-4"
+        >
           <input type="hidden" name="check_in" value={checkIn} />
           <input type="hidden" name="check_out" value={checkOut} />
           <input type="hidden" name="num_adults" value={numAdults} />
@@ -328,34 +338,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
             </label>
           )}
 
-          <GuestNameFields
-            lastName={guestLastName}
-            firstName={guestFirstName}
-            onLastNameChange={setGuestLastName}
-            onFirstNameChange={setGuestFirstName}
-          />
-          <label className="site-field">
-            {tCommon("email")} *
-            <input
-              name="guest_email"
-              type="email"
-              required
-              className="mt-1 w-full"
-              value={guestEmail}
-              onChange={(e) => setGuestEmail(e.target.value)}
-            />
-          </label>
-          <label className="site-field">
-            {tCommon("phone")} *
-            <input
-              name="guest_phone"
-              type="tel"
-              required
-              className="mt-1 w-full"
-              value={guestPhone}
-              onChange={(e) => setGuestPhone(e.target.value)}
-            />
-          </label>
+          <BookingIdentityPanel identity={identity} appearance="public" />
           <label className="site-field">
             {t("messageOptional")}
             <textarea

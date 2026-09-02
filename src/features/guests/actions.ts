@@ -20,6 +20,7 @@ import { parseGuestTags } from "@/domain/guest/tags";
 import { assertValidGuestPhone } from "@/domain/guest/normalize";
 import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
 import {
+  findGuestAutofillMatch,
   findGuestByNationalId,
   mergeGuests,
   rebookGuestLastStay,
@@ -326,4 +327,25 @@ export async function saveGuestStayReviewAction(formData: FormData) {
   }
 
   revalidateGuestPaths(guestId, bookingId);
+}
+
+export async function suggestExistingGuestAction(input: {
+  guest_last_name?: string;
+  guest_first_name?: string;
+  guest_email?: string;
+  guest_phone?: string;
+}) {
+  const [, t] = await Promise.all([
+    requireAnyStaff(),
+    getTranslations("errors"),
+  ]);
+  try {
+    const match = await findGuestAutofillMatch(input);
+    return { ok: true as const, match };
+  } catch (e) {
+    return {
+      ok: false as const,
+      error: e instanceof Error ? e.message : t("genericError"),
+    };
+  }
 }

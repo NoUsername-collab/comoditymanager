@@ -28,7 +28,7 @@ import {
   moveBookingRoomFromPivot,
   previewRoomMoveFromPivot,
 } from "@/services/booking-segments";
-import { assertValidGuestPhone } from "@/domain/guest/normalize";
+import { assertValidGuestPhone, staffBookingEmail } from "@/domain/guest/normalize";
 import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
@@ -351,8 +351,8 @@ export async function createCerereFromGanttAction(input: {
   try {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
-    const email = input.guestEmail.trim();
-    if (!last || !first || !email || !input.guestPhone?.trim()) {
+    const email = staffBookingEmail(input.guestEmail);
+    if (!last || !first || !input.guestPhone?.trim()) {
       return { ok: false, error: t("nameEmailPhoneRequired") };
     }
     try {
@@ -423,8 +423,8 @@ export async function createDirectStayFromGanttAction(input: {
   try {
     const last = input.guestLastName.trim();
     const first = input.guestFirstName.trim();
-    const email = input.guestEmail.trim();
-    if (!last || !first || !email || !input.guestPhone?.trim()) {
+    const email = staffBookingEmail(input.guestEmail);
+    if (!last || !first || !input.guestPhone?.trim()) {
       return { ok: false, error: t("nameEmailPhoneRequired") };
     }
     try {

@@ -19,6 +19,19 @@
     "optional": "opțional",
     "required": "obligatoriu"
   },
+  "bookingIdentity": {
+    "lastName": "Nume",
+    "firstName": "Prenume",
+    "email": "Email",
+    "emailOptional": "Email (opțional)",
+    "phoneRequired": "Telefon *",
+    "lastNamePlaceholder": "ex. Popescu",
+    "firstNamePlaceholder": "ex. Maria",
+    "checkingExistingGuest": "Verific client existent…",
+    "existingGuestFound": "Client existent: {name}. Date completate automat.",
+    "existingGuestWatchlist": "Client pe listă de urmărire: {name}.",
+    "existingGuestBlacklist": "Client pe listă neagră: {name}."
+  },
   "errors": {
     "required": "Câmp obligatoriu",
     "invalidEmail": "Email invalid",
@@ -2972,7 +2985,7 @@
       "blockIdMissing": "ID blocare lipsă.",
       "undoError": "Eroare undo",
       "nameAndEmailRequired": "Nume și email sunt obligatorii.",
-      "nameEmailPhoneRequired": "Nume, email și telefon sunt obligatorii.",
+      "nameEmailPhoneRequired": "Numele și telefonul sunt obligatorii.",
       "phoneRequired": "Telefonul este obligatoriu.",
       "phoneRequiredCheckIn": "Check-in imposibil fără telefon. Completează telefonul pe rezervare sau în profilul clientului.",
       "invalidPhone": "Număr de telefon invalid.",
@@ -3584,6 +3597,7 @@
         "existingGuestFound": "Client existent: {name}. Date completate automat.",
         "existingGuestWatchlist": "Client pe listă de urmărire: {name}.",
         "existingGuestBlacklist": "Client pe listă neagră: {name}.",
+        "checkingExistingGuest": "Verific client existent…",
         "title": {
           "pick": "Alege acțiunea",
           "hold": "Hold rapid",
