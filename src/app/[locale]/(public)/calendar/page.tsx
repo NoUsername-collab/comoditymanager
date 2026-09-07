@@ -1,13 +1,16 @@
 import { Link } from "@/i18n/navigation";
 import { GuestBookingFormLazy } from "@/features/public-site/ui/GuestBookingFormLazy";
+import { PublicBookingNotice } from "@/features/public-site/ui/PublicBookingNotice";
+import { buildBookingNoticePresetCopy } from "@/features/public-site/ui/booking-notice-copy";
 import { loadPublicCalendarPage } from "@/features/public-site/loaders";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function CalendarPublicPage() {
-  const [t, tShell, config] = await Promise.all([
+  const [t, tShell, config, locale] = await Promise.all([
     getTranslations("public.calendar"),
     getTranslations("public.shell"),
     loadPublicCalendarPage(),
+    getLocale(),
   ]);
 
   if (!config.bookingEnabled) {
@@ -40,33 +43,15 @@ export default async function CalendarPublicPage() {
       </header>
 
       <div className="pub-booking-layout">
-        <aside className="pub-booking-aside">
-          <p className="text-sm font-semibold text-[var(--site-fg)]">{t("asideTitle")}</p>
-          <ul className="pub-booking-aside__list">
-            <li className="pub-booking-aside__item">
-              <span aria-hidden>✓</span>
-              <span>
-                <strong>{t("asideNoPayTitle")}</strong>
-                {t("asideNoPayText")}
-              </span>
-            </li>
-            <li className="pub-booking-aside__item">
-              <span aria-hidden>⏱</span>
-              <span>
-                <strong>{t("asideHoldTitle")}</strong>
-                {t("asideHoldText")}
-              </span>
-            </li>
-            <li className="pub-booking-aside__item">
-              <span aria-hidden>🕐</span>
-              <span>
-                <strong>{t("asideHoursTitle")}</strong>
-                {t("asideHoursText", { checkIn: checkInTime, checkOut: checkOutTime })}
-              </span>
-            </li>
-          </ul>
-          <p className="pub-booking-surplus-note">{t("surplusNote")}</p>
-        </aside>
+        <PublicBookingNotice
+          notice={config.bookingNotice}
+          locale={locale}
+          checkInTime={checkInTime}
+          checkOutTime={checkOutTime}
+          fallbackTitle={t("asideTitle")}
+          fallbackFooter={t("surplusNote")}
+          presets={buildBookingNoticePresetCopy(t)}
+        />
 
         <GuestBookingFormLazy checkInTime={checkInTime} checkOutTime={checkOutTime} />
       </div>

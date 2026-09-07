@@ -9,11 +9,16 @@ import {
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
 import { pickLocalized } from "@/features/public-site/domain/localized";
+import {
+  bookingNoticeFromDraft,
+  bookingNoticeToDraft,
+} from "@/features/public-site/domain/booking-notice";
 import type {
   PublicGalleryItem,
   PublicSiteConfig,
   PublicSiteSettingsInput,
 } from "@/features/public-site/domain/types";
+import { BookingNoticeEditor } from "@/features/settings/ui/BookingNoticeEditor";
 import type { PensionContact } from "@/domain/settings/pension-identity";
 import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
 import { savePublicSiteSettingsAction } from "@/features/settings/actions/public-site";
@@ -111,6 +116,9 @@ export function PublicSiteSettingsForm({
   const [bookingEnabled, setBookingEnabled] = useState(config.bookingEnabled);
   const [bookingNavPosition, setBookingNavPosition] = useState(
     config.bookingNavPosition
+  );
+  const [noticeDraft, setNoticeDraft] = useState(() =>
+    bookingNoticeToDraft(config.bookingNotice, locale)
   );
   const [usePrimaryContact, setUsePrimaryContact] = useState(
     config.usePrimaryContact ?? true
@@ -227,6 +235,7 @@ export function PublicSiteSettingsForm({
         bookingEnabled,
         bookingNavPosition,
         usePrimaryContact,
+        noticeDraft,
         heroTitle,
         heroSubtitle,
         heroTagline,
@@ -257,6 +266,7 @@ export function PublicSiteSettingsForm({
       bookingEnabled,
       bookingNavPosition,
       usePrimaryContact,
+      noticeDraft,
       heroTitle,
       heroSubtitle,
       heroTagline,
@@ -698,6 +708,12 @@ export function PublicSiteSettingsForm({
             </select>
           </label>
         </div>
+        <BookingNoticeEditor
+          value={noticeDraft}
+          onChange={setNoticeDraft}
+          checkInTime={config.checkInTime}
+          checkOutTime={config.checkOutTime}
+        />
       </FormSection>
 
       {!readOnly ? (
@@ -722,6 +738,7 @@ function buildInputFromState(args: {
   bookingEnabled: boolean;
   bookingNavPosition: PublicSiteSettingsInput["bookingNavPosition"];
   usePrimaryContact: boolean;
+  noticeDraft: ReturnType<typeof bookingNoticeToDraft>;
   heroTitle: string;
   heroSubtitle: string;
   heroTagline: string;
@@ -812,6 +829,7 @@ function buildInputFromState(args: {
       metaTitle: localized(args.seoTitle || args.heroTitle),
       metaDescription: localized(args.seoDescription || args.heroSubtitle),
     },
+    bookingNotice: bookingNoticeFromDraft(args.noticeDraft),
     sections,
   };
 }

@@ -607,6 +607,10 @@
     grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
     align-items: start;
   }
+
+  .pub-booking-layout:not(:has(.pub-booking-aside)) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pub-booking-aside {
@@ -631,6 +635,11 @@
   font-size: 0.875rem;
   line-height: 1.45;
   color: var(--pub-muted);
+}
+
+.pub-booking-aside__item strong {
+  display: block;
+  color: var(--site-fg);
 }
 
 .pub-booking-surplus-note {

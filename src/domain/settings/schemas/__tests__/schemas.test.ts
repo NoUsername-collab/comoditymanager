@@ -4,6 +4,13 @@ import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-s
 import { parseEmailSettingsPartial } from "@/domain/settings/schemas/email";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 
+const emptyBookingNotice = {
+  enabled: true,
+  title: {},
+  items: [],
+  footer: {},
+};
+
 describe("settings schemas", () => {
   it("accepts valid guest app settings", () => {
     const result = parseGuestAppSettingsInput(DEFAULT_GUEST_APP_SETTINGS);
@@ -29,6 +36,7 @@ describe("settings schemas", () => {
       hero: {},
       contact: {},
       seo: {},
+      bookingNotice: emptyBookingNotice,
       sections: [],
     });
     expect(result.ok).toBe(true);
@@ -45,6 +53,7 @@ describe("settings schemas", () => {
       hero: { ctaPrimaryHref: "javascript:alert(1)" },
       contact: {},
       seo: {},
+      bookingNotice: emptyBookingNotice,
       sections: [],
     });
     expect(result.ok).toBe(false);
@@ -61,6 +70,7 @@ describe("settings schemas", () => {
       hero: {},
       contact: { facebook: "javascript:alert(1)" },
       seo: {},
+      bookingNotice: emptyBookingNotice,
       sections: [],
     });
     expect(result.ok).toBe(false);

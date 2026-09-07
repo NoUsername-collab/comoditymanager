@@ -16,6 +16,12 @@ const baseRow = {
   hero: {},
   contact: { email: null, phone: null },
   seo: {},
+  bookingNotice: {
+    enabled: true,
+    title: {},
+    items: [],
+    footer: {},
+  },
 };
 
 const fallbackSections = [
@@ -110,6 +116,12 @@ describe("buildPublicSiteConfigFromInput", () => {
         hero: { title: { ro: "Draft title" } },
         contact: {},
         seo: {},
+        bookingNotice: {
+          enabled: true,
+          title: {},
+          items: [],
+          footer: {},
+        },
         sections: [{ sectionType: "intro", sortOrder: 10, visible: false, payload: {} }],
       },
       {

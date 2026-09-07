@@ -70,6 +70,7 @@ export function buildPublicSiteConfigFromInput(
       hero: input.hero,
       contact: input.contact,
       seo: input.seo,
+      bookingNotice: input.bookingNotice,
     },
     sections,
     {

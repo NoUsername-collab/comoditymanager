@@ -1,4 +1,6 @@
+import { normalizeBookingNotice } from "@/features/public-site/domain/booking-notice";
 import type {
+  PublicBookingNoticeConfig,
   PublicBookingNavPosition,
   PublicContactConfig,
   PublicHeroConfig,
@@ -56,6 +58,7 @@ export function mapPublicSiteSettingsRow(row: {
   hero: unknown;
   contact: unknown;
   seo: unknown;
+  booking_notice?: unknown;
 }): PublicSiteSettingsRow {
   return {
     id: row.id,
@@ -68,6 +71,9 @@ export function mapPublicSiteSettingsRow(row: {
     hero: (row.hero ?? {}) as PublicHeroConfig,
     contact: (row.contact ?? {}) as PublicContactConfig,
     seo: (row.seo ?? {}) as PublicSeoConfig,
+    bookingNotice: normalizeBookingNotice(
+      row.booking_notice as PublicBookingNoticeConfig | null | undefined
+    ),
   };
 }
 

@@ -4,6 +4,7 @@ import type {
   PublicTemplateId,
   PublicThemeId,
 } from "./types";
+import { defaultBookingNotice } from "./booking-notice";
 import { localizedFromString } from "./localized";
 
 type DefaultCopy = {
@@ -162,6 +163,7 @@ export function buildDefaultPublicSiteConfig(args: {
       metaTitle: localizedFromString(args.displayName),
       metaDescription: localizedFromString(args.copy.heroSubtitle),
     },
+    bookingNotice: defaultBookingNotice(),
     sections: buildDefaultPublicSections(args.copy),
   };
 }

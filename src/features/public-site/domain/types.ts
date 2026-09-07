@@ -41,6 +41,47 @@ export type PublicSeoConfig = {
   metaDescription?: LocalizedText;
 };
 
+export type BookingNoticePresetId =
+  | "noPay"
+  | "hold"
+  | "hours"
+  | "confirm"
+  | "reply"
+  | "payOnSite"
+  | "idCheck"
+  | "breakfast"
+  | "parking"
+  | "pets"
+  | "children"
+  | "cancel"
+  | "custom";
+export type BookingNoticeIconId =
+  | "check"
+  | "timer"
+  | "clock"
+  | "info"
+  | "phone"
+  | "card"
+  | "key"
+  | "meal"
+  | "park"
+  | "paw";
+
+export type PublicBookingNoticeItem = {
+  id: string;
+  preset: BookingNoticePresetId;
+  icon: BookingNoticeIconId;
+  title: LocalizedText;
+  text: LocalizedText;
+};
+
+export type PublicBookingNoticeConfig = {
+  enabled: boolean;
+  title: LocalizedText;
+  items: PublicBookingNoticeItem[];
+  footer: LocalizedText;
+};
+
 export type PublicBenefitItem = {
   icon?: string;
   title: LocalizedText;
@@ -89,6 +130,7 @@ export type PublicSiteSettingsRow = {
   hero: PublicHeroConfig;
   contact: PublicContactConfig;
   seo: PublicSeoConfig;
+  bookingNotice: PublicBookingNoticeConfig;
 };
 
 export type PublicSiteConfig = PublicSiteSettingsRow & {
@@ -109,5 +151,6 @@ export type PublicSiteSettingsInput = {
   hero: PublicHeroConfig;
   contact: PublicContactConfig;
   seo: PublicSeoConfig;
+  bookingNotice: PublicBookingNoticeConfig;
   sections: Omit<PublicSiteSection, "id">[];
 };

@@ -56,6 +56,53 @@ const publicSeoConfigSchema = z
   })
   .strict();
 
+const bookingNoticePresetSchema = z.enum([
+  "noPay",
+  "hold",
+  "hours",
+  "confirm",
+  "reply",
+  "payOnSite",
+  "idCheck",
+  "breakfast",
+  "parking",
+  "pets",
+  "children",
+  "cancel",
+  "custom",
+]);
+const bookingNoticeIconSchema = z.enum([
+  "check",
+  "timer",
+  "clock",
+  "info",
+  "phone",
+  "card",
+  "key",
+  "meal",
+  "park",
+  "paw",
+]);
+
+const publicBookingNoticeItemSchema = z
+  .object({
+    id: z.string().min(1).max(64),
+    preset: bookingNoticePresetSchema,
+    icon: bookingNoticeIconSchema,
+    title: localizedTextSchema,
+    text: localizedTextSchema,
+  })
+  .strict();
+
+const publicBookingNoticeSchema = z
+  .object({
+    enabled: z.boolean(),
+    title: localizedTextSchema,
+    items: z.array(publicBookingNoticeItemSchema).max(8),
+    footer: localizedTextSchema,
+  })
+  .strict();
+
 const publicBenefitItemSchema = z
   .object({
     icon: z.string().max(64).optional(),
@@ -120,11 +167,12 @@ export const publicSiteSettingsInputSchema = z
     themeId: publicThemeIdSchema,
     published: z.boolean(),
     bookingEnabled: z.boolean(),
-  bookingNavPosition: publicBookingNavPositionSchema,
-  usePrimaryContact: z.boolean(),
-  hero: publicHeroConfigSchema,
+    bookingNavPosition: publicBookingNavPositionSchema,
+    usePrimaryContact: z.boolean(),
+    hero: publicHeroConfigSchema,
     contact: publicContactConfigSchema,
     seo: publicSeoConfigSchema,
+    bookingNotice: publicBookingNoticeSchema,
     sections: z.array(publicSiteSectionInputSchema).max(50),
   })
   .strict();

@@ -26,6 +26,7 @@ export async function upsertPublicSiteSettingsImpl(
     p_hero: input.hero,
     p_contact: input.contact,
     p_seo: input.seo,
+    p_booking_notice: input.bookingNotice,
     p_sections: sectionsPayload,
   });
 

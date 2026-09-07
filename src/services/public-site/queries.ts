@@ -73,13 +73,13 @@ async function getPublicSiteConfigUncached(
   });
 
   const supabase = createPublicAdminClient();
+  const settingsColumns =
+    "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo";
 
-  const [settingsResult, sectionsResult] = await Promise.all([
+  const [initialSettingsResult, sectionsResult] = await Promise.all([
     supabase
       .from("public_site_settings")
-      .select(
-        "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo"
-      )
+      .select(`${settingsColumns}, booking_notice`)
       .eq("tenant_id", tenantId)
       .maybeSingle(),
     supabase
@@ -88,6 +88,18 @@ async function getPublicSiteConfigUncached(
       .eq("tenant_id", tenantId)
       .order("sort_order", { ascending: true }),
   ]);
+
+  let settingsResult = initialSettingsResult;
+  if (
+    settingsResult.error &&
+    settingsResult.error.message.includes("booking_notice")
+  ) {
+    settingsResult = await supabase
+      .from("public_site_settings")
+      .select(settingsColumns)
+      .eq("tenant_id", tenantId)
+      .maybeSingle();
+  }
 
   if (settingsResult.error) {
     if (isPublicSiteMigrationMissing(settingsResult.error.message)) {
