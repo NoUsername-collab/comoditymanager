@@ -22,6 +22,17 @@ type ContactCandidate = {
   email_normalized: string | null;
 };
 
+async function fetchContactCandidates(
+  query: PromiseLike<{
+    data: ContactCandidate[] | null;
+    error: { message: string } | null;
+  }>,
+): Promise<ContactCandidate[]> {
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 async function loadContactCandidates(args: {
   phoneNormalized: string | null;
   emailNormalized: string | null;
@@ -37,51 +48,38 @@ async function loadContactCandidates(args: {
     }
   };
 
+  const guestSelect = () =>
+    supabase
+      .from("guests")
+      .select("id, last_name, first_name, phone_normalized, email_normalized")
+      .eq("tenant_id", tenantId);
+
   const queries: Promise<ContactCandidate[]>[] = [];
 
   if (args.phoneNormalized) {
     queries.push(
-      supabase
-        .from("guests")
-        .select("id, last_name, first_name, phone_normalized, email_normalized")
-        .eq("tenant_id", tenantId)
-        .eq("phone_normalized", args.phoneNormalized)
-        .limit(5)
-        .then(({ data, error }) => {
-          if (error) throw new Error(error.message);
-          return (data ?? []) as ContactCandidate[];
-        }),
+      fetchContactCandidates(
+        guestSelect().eq("phone_normalized", args.phoneNormalized).limit(5),
+      ),
     );
   }
 
   if (args.emailNormalized) {
     queries.push(
-      supabase
-        .from("guests")
-        .select("id, last_name, first_name, phone_normalized, email_normalized")
-        .eq("tenant_id", tenantId)
-        .eq("email_normalized", args.emailNormalized)
-        .limit(5)
-        .then(({ data, error }) => {
-          if (error) throw new Error(error.message);
-          return (data ?? []) as ContactCandidate[];
-        }),
+      fetchContactCandidates(
+        guestSelect().eq("email_normalized", args.emailNormalized).limit(5),
+      ),
     );
   }
 
   if (args.lastName.length >= 2 && args.firstName.length >= 2) {
     queries.push(
-      supabase
-        .from("guests")
-        .select("id, last_name, first_name, phone_normalized, email_normalized")
-        .eq("tenant_id", tenantId)
-        .ilike("last_name", args.lastName)
-        .ilike("first_name", args.firstName)
-        .limit(5)
-        .then(({ data, error }) => {
-          if (error) throw new Error(error.message);
-          return (data ?? []) as ContactCandidate[];
-        }),
+      fetchContactCandidates(
+        guestSelect()
+          .ilike("last_name", args.lastName)
+          .ilike("first_name", args.firstName)
+          .limit(5),
+      ),
     );
   }
 
