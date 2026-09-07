@@ -125,6 +125,47 @@ export type GuestAutofillMatch = {
   flagLevel: "normal" | "watchlist" | "blacklist" | null;
 };
 
+async function loadGuestAutofillPayload(guestId: string): Promise<{
+  lastName: string;
+  firstName: string;
+  email: string | null;
+  phone: string | null;
+  displayName: string;
+  flagLevel: GuestAutofillMatch["flagLevel"];
+} | null> {
+  const { tenantId, supabase } = await getTenantScope();
+  const [guestRes, profileRes] = await Promise.all([
+    supabase
+      .from("guests")
+      .select("last_name, first_name, email, phone, display_name")
+      .eq("tenant_id", tenantId)
+      .eq("id", guestId)
+      .maybeSingle(),
+    supabase
+      .from("guest_profiles")
+      .select("flag_level")
+      .eq("tenant_id", tenantId)
+      .eq("guest_id", guestId)
+      .maybeSingle(),
+  ]);
+  if (guestRes.error) throw new Error(guestRes.error.message);
+  if (profileRes.error) throw new Error(profileRes.error.message);
+  if (!guestRes.data) return null;
+
+  const flag = profileRes.data?.flag_level;
+  return {
+    lastName: String(guestRes.data.last_name ?? ""),
+    firstName: String(guestRes.data.first_name ?? ""),
+    email: (guestRes.data.email as string | null) ?? null,
+    phone: (guestRes.data.phone as string | null) ?? null,
+    displayName: String(guestRes.data.display_name ?? ""),
+    flagLevel:
+      flag === "watchlist" || flag === "blacklist" || flag === "normal"
+        ? flag
+        : null,
+  };
+}
+
 async function findGuestAutofillMatchImpl(input: {
   guest_last_name?: string;
   guest_first_name?: string;
@@ -142,18 +183,12 @@ async function findGuestAutofillMatchImpl(input: {
 
   if (match.status !== "matched") return null;
 
-  const candidate = await getGuestBaseById(match.guestId);
-  if (!candidate) return null;
+  const payload = await loadGuestAutofillPayload(match.guestId);
+  if (!payload) return null;
 
-  const profile = await getGuestProfile(candidate.id);
   return {
-    guestId: candidate.id,
-    lastName: candidate.last_name,
-    firstName: candidate.first_name,
-    email: candidate.email,
-    phone: candidate.phone,
-    displayName: candidate.display_name,
-    flagLevel: profile?.flag_level ?? null,
+    guestId: match.guestId,
+    ...payload,
   };
 }
 

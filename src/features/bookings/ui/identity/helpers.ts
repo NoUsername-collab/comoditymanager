@@ -1,3 +1,5 @@
+import { isValidGuestPhone } from "@/domain/guest/normalize";
+
 export type GuestIdentityValues = {
   lastName: string;
   firstName: string;
@@ -5,13 +7,26 @@ export type GuestIdentityValues = {
   phone: string;
 };
 
-/** Pause after typing before hitting the guest lookup. */
-export const IDENTITY_LOOKUP_DEBOUNCE_MS = 350;
+/** Pause after a complete identity field before hitting lookup. */
+export const IDENTITY_LOOKUP_DEBOUNCE_MS = 200;
+
+function hasLookupEmail(email: string): boolean {
+  const trimmed = email.trim();
+  const at = trimmed.indexOf("@");
+  return at > 0 && trimmed.includes(".", at + 1);
+}
+
+/** Complete enough to search — not every keystroke of a phone number. */
+function hasLookupPhone(phone: string): boolean {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length >= 10) return true;
+  return digits.startsWith("7") && digits.length === 9;
+}
 
 export function hasLookupIdentity(values: GuestIdentityValues): boolean {
   return (
-    values.email.trim().length > 0 ||
-    values.phone.trim().length > 0 ||
+    hasLookupEmail(values.email) ||
+    hasLookupPhone(values.phone) ||
     (values.lastName.trim().length > 1 && values.firstName.trim().length > 1)
   );
 }
@@ -57,7 +72,7 @@ export function isBookingIdentitySubmitReady(input: {
 }): boolean {
   if (!input.identityChecksReady) return false;
   if (!input.lastName.trim() || !input.firstName.trim()) return false;
-  if (!input.phone.trim()) return false;
+  if (!hasLookupPhone(input.phone) || !isValidGuestPhone(input.phone)) return false;
   if (input.emailRequired && !input.email.trim()) return false;
   return true;
 }

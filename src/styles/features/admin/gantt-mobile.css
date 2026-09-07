@@ -1205,10 +1205,6 @@ html[data-layout-chrome="compact"] .gantt-toolbar-occ-form .gantt-quick-panel__p
   min-width: 0;
 }
 
-html[data-layout-chrome="compact"] .gantt-quick-panel__action-grid {
-  grid-template-columns: 1fr;
-}
-
 html[data-layout-chrome="compact"] .gantt-ctx-menu {
   max-width: min(18rem, calc(100vw - 1rem));
 }

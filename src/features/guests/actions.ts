@@ -335,14 +335,12 @@ export async function suggestExistingGuestAction(input: {
   guest_email?: string;
   guest_phone?: string;
 }) {
-  const [, t] = await Promise.all([
-    requireAnyStaff(),
-    getTranslations("errors"),
-  ]);
+  await requireAnyStaff();
   try {
     const match = await findGuestAutofillMatch(input);
     return { ok: true as const, match };
   } catch (e) {
+    const t = await getTranslations("errors");
     return {
       ok: false as const,
       error: e instanceof Error ? e.message : t("genericError"),

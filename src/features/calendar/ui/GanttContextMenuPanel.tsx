@@ -31,8 +31,13 @@ import {
 } from "@/lib/gantt/live-bookings";
 import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
+import { GanttCreateActionMenu } from "@/features/calendar/ui/gantt-create-actions/GanttCreateActionMenu";
+import {
+  ganttCreateActionsDisabled,
+  ganttCreateDraftFromMenu,
+} from "@/features/calendar/ui/gantt-create-actions/actions";
 
-const GANTT_CTX_MENU_BOUNDS = { width: 260, height: 320 };
+const GANTT_CTX_MENU_BOUNDS = { width: 280, height: 400 };
 
 type CancelConfirmState = {
   bookingId: string;
@@ -98,7 +103,11 @@ export function GanttContextMenuPanel() {
   useEffect(() => {
     if (!menu || !compactChrome) return;
     const panel = menuRef.current;
-    panel?.querySelector<HTMLElement>(".gantt-ctx-menu__item:not([disabled])")?.focus();
+    panel
+      ?.querySelector<HTMLElement>(
+        ".gantt-create-action:not([disabled]), .gantt-ctx-menu__item:not([disabled])"
+      )
+      ?.focus();
   }, [menu, compactChrome, cancelConfirm]);
 
   useEffect(() => {
@@ -307,65 +316,12 @@ export function GanttContextMenuPanel() {
                   ? `${menu.roomName} · ${formatStayPeriod(menu.checkIn, menu.checkOut, locale, true)}`
                   : formatStayPeriod(menu.checkIn, menu.checkOut, locale, true)}
               </p>
-              <MenuItem
-                label={t("createRequest")}
-                disabled={!menu.roomId || pending}
-                onClick={() =>
-                  menu.roomId &&
-                  requestCreate({
-                    roomId: menu.roomId,
-                    roomName: menu.roomName ?? t("room"),
-                    checkIn: menu.checkIn,
-                    checkOut: menu.checkOut,
-                    hasConflict: menu.hasConflict,
-                    initialMode: "cerere",
-                  })
-                }
-              />
-              <MenuItem
-                label={t("createDirectStay")}
-                disabled={!menu.roomId || pending}
-                onClick={() =>
-                  menu.roomId &&
-                  requestCreate({
-                    roomId: menu.roomId,
-                    roomName: menu.roomName ?? t("room"),
-                    checkIn: menu.checkIn,
-                    checkOut: menu.checkOut,
-                    hasConflict: menu.hasConflict,
-                    initialMode: "direct",
-                  })
-                }
-              />
-              <MenuItem
-                label={t("holdRoom")}
-                disabled={!menu.roomId || pending}
-                onClick={() =>
-                  menu.roomId &&
-                  requestCreate({
-                    roomId: menu.roomId,
-                    roomName: menu.roomName ?? t("room"),
-                    checkIn: menu.checkIn,
-                    checkOut: menu.checkOut,
-                    hasConflict: menu.hasConflict,
-                    initialMode: "hold",
-                  })
-                }
-              />
-              <MenuItem
-                label={t("blockRoom")}
-                disabled={!menu.roomId || pending}
-                onClick={() =>
-                  menu.roomId &&
-                  requestCreate({
-                    roomId: menu.roomId,
-                    roomName: menu.roomName ?? t("room"),
-                    checkIn: menu.checkIn,
-                    checkOut: menu.checkOut,
-                    hasConflict: menu.hasConflict,
-                    initialMode: "block",
-                  })
-                }
+              <GanttCreateActionMenu
+                disabled={ganttCreateActionsDisabled(menu, pending)}
+                onSelect={(id) => {
+                  const draft = ganttCreateDraftFromMenu(menu, id, t("room"));
+                  if (draft) requestCreate(draft);
+                }}
               />
             </>
           )}

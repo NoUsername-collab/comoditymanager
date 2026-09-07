@@ -26,7 +26,7 @@ import {
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
 import { addDays, todayIso } from "@/lib/stay-dates";
-import { GanttPinnedSelectionChip } from "@/features/calendar/ui/GanttPinnedSelectionChip";
+import { GanttPinnedCreateChip } from "@/features/calendar/ui/GanttPinnedSelectionChip";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
   setGanttRoomPinnedSpan,
@@ -494,36 +494,10 @@ export function GanttCalendar({
     []
   );
 
-  const commitPinnedSelection = useCallback(() => {
-    if (!pinnedSelection) return;
-    const firstRoomId = pinnedSelection.roomIds[0] ?? "";
-    setCreateDraft({
-      roomId: firstRoomId,
-      roomIds: pinnedSelection.roomIds,
-      roomName: `${pinnedSelection.roomIds.length} camere`,
-      checkIn: pinnedSelection.checkIn,
-      checkOut: pinnedSelection.checkOut,
-      hasConflict: false,
-    });
-    setPinnedSelection(null);
-    clearGanttRoomPinnedSpan();
-  }, [pinnedSelection]);
-
   const cancelPinnedSelection = useCallback(() => {
     setPinnedSelection(null);
     clearGanttRoomPinnedSpan();
   }, []);
-
-  const handleCreateDraftWithPinnedClear = useCallback(
-    (draft: GanttCreateDraftRequest) => {
-      if (pinnedSelection) {
-        setPinnedSelection(null);
-        clearGanttRoomPinnedSpan();
-      }
-      setCreateDraft(draft);
-    },
-    [pinnedSelection]
-  );
 
   useEffect(() => {
     if (!pinnedSelection) {
@@ -594,7 +568,10 @@ export function GanttCalendar({
     >
     <GanttStayTapPopoverProvider>
     <GanttContextMenuProvider
-      onRequestCreate={setCreateDraft}
+      onRequestCreate={(draft) => {
+        cancelPinnedSelection();
+        setCreateDraft(draft);
+      }}
       onOpenMoveRoom={setMoveRoomDraft}
       onOpenOccDetail={setOccDetail}
     >
@@ -771,7 +748,6 @@ export function GanttCalendar({
             onOccOpen={handleOccOpen}
             bookingById={bookingById}
             onMoveRoom={setMoveRoomDraft}
-            onCreateDraft={handleCreateDraftWithPinnedClear}
             pinnedSelection={pinnedSelection}
             onCtrlDragEnd={handleCtrlDragEnd}
             today={effectiveToday}
@@ -788,9 +764,14 @@ export function GanttCalendar({
         </table>
 
         {pinnedSelection && (
-          <GanttPinnedSelectionChip
+          <GanttPinnedCreateChip
             selection={pinnedSelection}
-            onCommit={commitPinnedSelection}
+            roomName={
+              pinnedSelection.roomIds.length > 1
+                ? `${pinnedSelection.roomIds.length} ${tCommon("rooms")}`
+                : rooms.find((room) => room.id === pinnedSelection.roomIds[0])
+                    ?.name ?? tCommon("room")
+            }
             onCancel={cancelPinnedSelection}
           />
         )}

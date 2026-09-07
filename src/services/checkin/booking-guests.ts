@@ -5,6 +5,7 @@ import { guestHasProfileData } from "@/domain/guest/profile-data";
 import type { GuestRow } from "@/domain/guest/types";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { getGuestBaseById } from "@/services/guests/lookup";
+import { occupantSlotsForCheckin } from "@/services/bookings/occupants";
 
 /** ID-uri client distincte deja legați de check-in-uri pe această rezervare. */
 export async function getGuestIdsFromBookingCheckins(
@@ -56,9 +57,13 @@ export async function listRegisteredGuestsForCheckin(
   bookingGuestId: string | null,
   roomNames: string[] | undefined,
 ): Promise<CheckinGuestInput[]> {
+  const occupantSlots = await occupantSlotsForCheckin(bookingId).catch(
+    () => [] as Awaited<ReturnType<typeof occupantSlotsForCheckin>>
+  );
+
   const ids = new Set<string>();
   if (bookingGuestId) ids.add(bookingGuestId);
-
+  for (const slot of occupantSlots) ids.add(slot.guestId);
   for (const id of await getGuestIdsFromBookingCheckins(bookingId)) {
     ids.add(id);
   }
@@ -66,8 +71,35 @@ export async function listRegisteredGuestsForCheckin(
   const guestRows = await loadGuestRows([...ids]);
   if (!guestRows.length) return [];
 
+  const guestById = new Map(guestRows.map((guest) => [guest.id, guest]));
   const rooms = bookingRoomNames(roomNames);
   const defaultRoom = rooms[0] ?? "—";
+
+  if (occupantSlots.length > 0) {
+    const mapped: CheckinGuestInput[] = [];
+    const seen = new Set<string>();
+    for (const slot of occupantSlots) {
+      const guest = guestById.get(slot.guestId);
+      if (!guest || seen.has(guest.id)) continue;
+      seen.add(guest.id);
+      mapped.push(
+        mapGuestRowToCheckinInput(guest, {
+          roomLabel: slot.roomLabel,
+          isRepresentative: slot.isRepresentative,
+        })
+      );
+    }
+    for (const guest of guestRows) {
+      if (seen.has(guest.id)) continue;
+      mapped.push(
+        mapGuestRowToCheckinInput(guest, {
+          roomLabel: defaultRoom,
+          isRepresentative: false,
+        })
+      );
+    }
+    return mapped;
+  }
 
   return guestRows.map((guest, index) =>
     mapGuestRowToCheckinInput(guest, {

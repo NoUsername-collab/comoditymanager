@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { useLocale, useTranslations } from "next-intl";
 import { useAdminPendingOptional } from "@/components/admin/feedback/AdminPendingProvider";
 import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
-import type { GanttCreateDraft } from "@/features/calendar/ui/GanttCreateDialog";
 import {
   LONG_PRESS_MS,
   LONG_PRESS_MOVE_PX,
@@ -42,7 +41,6 @@ type Props = {
   touch: boolean;
   renderGrid: ReactNode;
   children: ReactNode;
-  onCreateDraft: (draft: GanttCreateDraft) => void;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
 };
@@ -94,7 +92,6 @@ export function GanttDragCreateLayer({
   touch,
   renderGrid,
   children,
-  onCreateDraft,
   pinnedSelection,
   onCtrlDragEnd,
 }: Props) {
@@ -118,6 +115,7 @@ export function GanttDragCreateLayer({
   const armedStartIdxRef = useRef<number | null>(null);
   const armedSelectionModeRef = useRef<"range" | "ctrl">("range");
   const longPressOpenedRef = useRef(false);
+  const lastPointerRef = useRef({ x: 0, y: 0 });
   const [drag, setDrag] = useState<DragState | null>(null);
 
   const dayIsos = viewRange.days.map((d) => d.iso);
@@ -159,6 +157,7 @@ export function GanttDragCreateLayer({
     (clientX: number, clientY: number, dayIdx: number) => {
       const interval = intervalFromDayIndices(dayIsos, dayIdx, dayIdx);
       if (!interval) return;
+      lastPointerRef.current = { x: clientX, y: clientY };
       openMenu({
         kind: "create",
         clientX,
@@ -168,6 +167,7 @@ export function GanttDragCreateLayer({
         checkIn: interval.checkIn,
         checkOut: interval.checkOut,
         hasConflict: evalConflict(interval.checkIn, interval.checkOut),
+        roomIds: [roomId],
       });
     },
     [dayIsos, roomId, roomName, evalConflict, openMenu]
@@ -188,7 +188,11 @@ export function GanttDragCreateLayer({
       const interval = intervalFromDayIndices(dayIsos, startIdx, endIdx);
       if (!interval) return;
       const uniqueRooms = [...new Set(roomIds.length ? roomIds : [roomId])];
-      onCreateDraft({
+      const { x, y } = lastPointerRef.current;
+      openMenu({
+        kind: "create",
+        clientX: x,
+        clientY: y,
         roomId,
         roomIds: uniqueRooms,
         roomName:
@@ -205,11 +209,12 @@ export function GanttDragCreateLayer({
       });
       clearGanttRoomDragSpan();
     },
-    [dayIsos, roomId, roomName, evalConflictForRooms, onCreateDraft]
+    [dayIsos, roomId, roomName, evalConflictForRooms, openMenu, tCommon]
   );
 
   const updateDragAt = useCallback(
     (clientX: number, clientY: number) => {
+      lastPointerRef.current = { x: clientX, y: clientY };
       const row = rowRef.current;
       if (!row || !dragRef.current || dayCount === 0) return;
       const rect = row.getBoundingClientRect();
@@ -367,6 +372,7 @@ export function GanttDragCreateLayer({
       if (!row || dayCount === 0) return;
 
       longPressOpenedRef.current = false;
+      lastPointerRef.current = { x: e.clientX, y: e.clientY };
       pressOriginRef.current = { x: e.clientX, y: e.clientY };
       clearLongPress();
       const idx = dayIdxAt(e.clientX);

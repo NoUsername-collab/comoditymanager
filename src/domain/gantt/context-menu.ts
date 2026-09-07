@@ -17,6 +17,7 @@ export type GanttCreateTarget = GanttContextMenuPoint & {
   checkIn: string;
   checkOut: string;
   hasConflict: boolean;
+  roomIds?: string[];
 };
 
 /** @deprecated alias — folosește GanttCreateTarget */

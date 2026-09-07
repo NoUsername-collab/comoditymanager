@@ -23,7 +23,6 @@ import { nightOccupied } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
-import type { GanttCreateDraft } from "@/features/calendar/ui/GanttCreateDialog";
 import { GanttDragCreateLayer } from "@/features/calendar/ui/GanttDragCreateLayer";
 import { GanttDraggableStay } from "@/features/calendar/ui/GanttDraggableStay";
 import { GanttOccupancyBar } from "@/features/calendar/ui/GanttOccupancyBar";
@@ -64,7 +63,6 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onOccOpen,
   bookingById,
   onMoveRoom,
-  onCreateDraft,
   pinnedSelection,
   onCtrlDragEnd,
   today,
@@ -86,7 +84,6 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onOccOpen: (seg: OccupancySegment, roomName: string) => void;
   bookingById: Map<string, BookingRow>;
   onMoveRoom: (draft: MoveRoomDraft) => void;
-  onCreateDraft: (draft: GanttCreateDraft) => void;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
@@ -176,7 +173,6 @@ export const GanttRoomRow = memo(function GanttRoomRow({
           checkInTime={checkInTime}
           checkOutTime={checkOutTime}
           touch={touch}
-          onCreateDraft={onCreateDraft}
           pinnedSelection={pinnedSelection}
           onCtrlDragEnd={onCtrlDragEnd}
           renderGrid={

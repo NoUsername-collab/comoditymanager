@@ -3619,6 +3619,8 @@
         "conflictBody": "Intervalul se suprapune peste o ocupare existentă. Mută perioada direct din panoul de sus.",
         "note": "Notă",
         "multiRoomOnlyHold": "Pe selecția multi-cameră putem crea doar hold rapid din acest panel.",
+        "multiRoomHoldNote": "Hold-ul se aplică pe toate camerele selectate.",
+        "enterGuestsPerRoom": "Introdu oaspeții pe camere",
         "createRequest": "Creează cererea",
         "confirmStay": "Confirmă cazarea",
         "moveUnavailable": "Mutare indisponibilă",

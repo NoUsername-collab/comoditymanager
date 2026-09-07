@@ -13,7 +13,10 @@ export type GanttCreateSyntheticInput = {
   guestEmail: string;
   guestPhone: string;
   roomId: string;
+  roomIds?: string[];
   roomName?: string;
+  roomNames?: string[];
+  numAdults?: number;
   totalPrice?: number | null;
 };
 
@@ -21,7 +24,14 @@ export type GanttCreateSyntheticInput = {
 export function buildSyntheticGanttBookingRow(
   input: GanttCreateSyntheticInput,
 ): BookingRow {
-  const roomName = input.roomName?.trim() ?? "";
+  const roomIds =
+    input.roomIds && input.roomIds.length > 0 ? input.roomIds : [input.roomId];
+  const roomNames =
+    input.roomNames && input.roomNames.length > 0
+      ? input.roomNames
+      : input.roomName?.trim()
+        ? [input.roomName.trim()]
+        : [];
   return {
     id: input.id,
     check_in: input.checkIn,
@@ -36,10 +46,10 @@ export function buildSyntheticGanttBookingRow(
     guest_alert_level: "normal",
     guest_alert_note: null,
     guest_profile: null,
-    num_adults: 1,
+    num_adults: input.numAdults && input.numAdults > 0 ? input.numAdults : 1,
     num_children: 0,
-    room_ids: [input.roomId],
-    room_names: roomName ? [roomName] : [],
+    room_ids: roomIds,
+    room_names: roomNames,
     total_price: input.totalPrice ?? null,
     actual_check_in_at: null,
     actual_check_out_at: null,

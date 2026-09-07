@@ -37,40 +37,56 @@ async function loadContactCandidates(args: {
     }
   };
 
+  const queries: Promise<ContactCandidate[]>[] = [];
+
   if (args.phoneNormalized) {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("id, last_name, first_name, phone_normalized, email_normalized")
-      .eq("tenant_id", tenantId)
-      .eq("phone_normalized", args.phoneNormalized)
-      .limit(5);
-    if (error) throw new Error(error.message);
-    addRows((data ?? []) as ContactCandidate[]);
+    queries.push(
+      supabase
+        .from("guests")
+        .select("id, last_name, first_name, phone_normalized, email_normalized")
+        .eq("tenant_id", tenantId)
+        .eq("phone_normalized", args.phoneNormalized)
+        .limit(5)
+        .then(({ data, error }) => {
+          if (error) throw new Error(error.message);
+          return (data ?? []) as ContactCandidate[];
+        }),
+    );
   }
 
   if (args.emailNormalized) {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("id, last_name, first_name, phone_normalized, email_normalized")
-      .eq("tenant_id", tenantId)
-      .eq("email_normalized", args.emailNormalized)
-      .limit(5);
-    if (error) throw new Error(error.message);
-    addRows((data ?? []) as ContactCandidate[]);
+    queries.push(
+      supabase
+        .from("guests")
+        .select("id, last_name, first_name, phone_normalized, email_normalized")
+        .eq("tenant_id", tenantId)
+        .eq("email_normalized", args.emailNormalized)
+        .limit(5)
+        .then(({ data, error }) => {
+          if (error) throw new Error(error.message);
+          return (data ?? []) as ContactCandidate[];
+        }),
+    );
   }
 
   if (args.lastName.length >= 2 && args.firstName.length >= 2) {
-    const { data, error } = await supabase
-      .from("guests")
-      .select("id, last_name, first_name, phone_normalized, email_normalized")
-      .eq("tenant_id", tenantId)
-      .ilike("last_name", args.lastName)
-      .ilike("first_name", args.firstName)
-      .limit(5);
-    if (error) throw new Error(error.message);
-    addRows((data ?? []) as ContactCandidate[]);
+    queries.push(
+      supabase
+        .from("guests")
+        .select("id, last_name, first_name, phone_normalized, email_normalized")
+        .eq("tenant_id", tenantId)
+        .ilike("last_name", args.lastName)
+        .ilike("first_name", args.firstName)
+        .limit(5)
+        .then(({ data, error }) => {
+          if (error) throw new Error(error.message);
+          return (data ?? []) as ContactCandidate[];
+        }),
+    );
   }
 
+  const batches = await Promise.all(queries);
+  for (const rows of batches) addRows(rows);
   return [...byId.values()];
 }
 

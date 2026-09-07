@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -8,7 +9,6 @@ import {
 } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import type { BookingRow } from "@/services/bookings";
 import {
   useAdminPending,
   useRunAdminAction,
@@ -48,40 +48,14 @@ import {
   todayIso,
 } from "@/lib/stay-dates";
 import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
-
-export type GanttQuickRoomOption = {
-  id: string;
-  name: string;
-  building_name: string;
-};
-
-export type GanttQuickCreateDraft = {
-  roomId: string;
-  roomIds?: string[];
-  roomName: string;
-  checkIn: string;
-  checkOut: string;
-  hasConflict: boolean;
-  initialMode?: "hold" | "block" | "cerere" | "direct";
-};
-
-export type GanttQuickPanelMode =
-  | "pick"
-  | "hold"
-  | "block"
-  | "cerere"
-  | "direct"
-  | "move";
-
-type Props = {
-  mode: GanttQuickPanelMode | null;
-  rooms: GanttQuickRoomOption[];
-  bookings?: BookingRow[];
-  draft?: GanttQuickCreateDraft | null;
-  onClose: () => void;
-  onModeChange?: (mode: GanttQuickPanelMode) => void;
-  today?: string;
-};
+import {
+  GanttRoomOccupantIdentities,
+  type OccupantIdentityValue,
+} from "@/features/calendar/ui/gantt-quick-panel/GanttRoomOccupantIdentities";
+import type {
+  GanttQuickActionPanelProps,
+  GanttQuickPanelMode,
+} from "./types";
 
 const labelClass =
   "admin-field__label block uppercase tracking-[0.08em]";
@@ -258,87 +232,32 @@ function IntervalPlanner({
   );
 }
 
-function ActionGrid({
-  disabled,
-  onSelect,
-  tGantt,
+function StaySummary({
+  roomLabel,
+  period,
+  nights,
+  nightLabel,
 }: {
-  disabled: {
-    hold: boolean;
-    block: boolean;
-    cerere: boolean;
-    direct: boolean;
-  };
-  onSelect: (mode: "hold" | "block" | "cerere" | "direct") => void;
-  tGantt: (key: string) => string;
+  roomLabel: ReactNode;
+  period: string;
+  nights: number;
+  nightLabel: (count: number) => string;
 }) {
-  const actions = [
-    {
-      id: "cerere",
-      label: tGantt("quick.radial.request"),
-      hint: tGantt("quick.radial.unconfirmed"),
-      tone: "cerere",
-    },
-    {
-      id: "direct",
-      label: tGantt("quick.radial.direct"),
-      hint: tGantt("quick.radial.confirmed"),
-      tone: "direct",
-    },
-    {
-      id: "hold",
-      label: tGantt("quick.radial.hold"),
-      hint: tGantt("quick.radial.temporary"),
-      tone: "hold",
-    },
-    {
-      id: "block",
-      label: tGantt("quick.radial.block"),
-      hint: tGantt("quick.radial.unavailable"),
-      tone: "block",
-    },
-  ] as const;
-
   return (
-    <div>
-      <div className="gantt-quick-panel__pick-heading">
-        <p className="gantt-quick-panel__eyebrow text-[11px] font-semibold uppercase tracking-[0.18em]">
-          {tGantt("quick.radial.release")}
-        </p>
-        <p className="gantt-quick-panel__pick-title text-base font-extrabold">
-          {tGantt("quick.radial.choose")}
-        </p>
-      </div>
-
-      <div className="gantt-quick-panel__action-grid">
-        {actions.map((action) => {
-          const isDisabled = disabled[action.id];
-          return (
-            <button
-              key={action.id}
-              type="button"
-              disabled={isDisabled}
-              aria-disabled={isDisabled}
-              onClick={() => onSelect(action.id)}
-              className={[
-                "admin-surface-card admin-surface-card--interactive admin-booking-tone",
-                `admin-booking-tone--${action.tone}`,
-                "gantt-quick-panel__action-card",
-                isDisabled && "gantt-quick-panel__action-card--disabled",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            >
-              <span className="gantt-quick-panel__action-card-label">
-                {action.label}
-              </span>
-              <span className="gantt-quick-panel__action-card-hint">
-                {action.hint}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+    <div className="admin-surface-card gantt-quick-panel__stay-summary">
+      <p className="gantt-quick-panel__stay-summary-line">
+        <span className="gantt-quick-panel__value">{roomLabel}</span>
+        {period ? (
+          <span className="gantt-quick-panel__stay-summary-meta">
+            {LIST_SEPARATOR} {period}
+          </span>
+        ) : null}
+        {nights > 0 ? (
+          <span className="gantt-quick-panel__stay-summary-meta">
+            {LIST_SEPARATOR} {nightLabel(nights)}
+          </span>
+        ) : null}
+      </p>
     </div>
   );
 }
@@ -349,9 +268,8 @@ export function GanttQuickActionPanel({
   bookings = [],
   draft = null,
   onClose,
-  onModeChange,
   today: todayProp,
-}: Props) {
+}: GanttQuickActionPanelProps) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
@@ -389,6 +307,11 @@ export function GanttQuickActionPanel({
     useState<BlockReasonPresetId>("maintenance");
   const [blockCustom, setBlockCustom] = useState("");
   const identity = useBookingIdentity();
+  const [enterGuestsPerRoom, setEnterGuestsPerRoom] = useState(false);
+  const [occupantValues, setOccupantValues] = useState<OccupantIdentityValue[]>(
+    []
+  );
+  const [occupantsReady, setOccupantsReady] = useState(false);
   const [moveBookingId, setMoveBookingId] = useState(defaultBooking?.id ?? "");
   const [moveSourceRoomId, setMoveSourceRoomId] = useState(
     defaultBooking?.room_ids[0] ?? ""
@@ -414,6 +337,33 @@ export function GanttQuickActionPanel({
       : "";
   const multiRoomCount = draft?.roomIds?.length ?? 0;
   const hasMultiRoomDraft = multiRoomCount > 1;
+  const selectedCreateRooms = useMemo(() => {
+    const ids = draft?.roomIds?.length
+      ? draft.roomIds
+      : activeRoomId
+        ? [activeRoomId]
+        : [];
+    return ids.map((id) => ({
+      id,
+      name:
+        rooms.find((room) => room.id === id)?.name ??
+        (ids.length === 1
+          ? (activeRoom?.name ?? draft?.roomName ?? id)
+          : id),
+    }));
+  }, [draft, activeRoomId, rooms, activeRoom]);
+  const usePerRoomIdentities =
+    enterGuestsPerRoom && selectedCreateRooms.length > 1;
+  const identityReady = usePerRoomIdentities
+    ? occupantsReady
+    : identity.canSubmit;
+  const handleOccupantValues = useCallback(
+    (values: OccupantIdentityValue[], allReady: boolean) => {
+      setOccupantValues(values);
+      setOccupantsReady(allReady);
+    },
+    []
+  );
   const intervalInvalid =
     !activeCheckIn || !activeCheckOut || activeCheckIn >= activeCheckOut;
   const activeRoomIds = draft?.roomIds?.length
@@ -431,7 +381,6 @@ export function GanttQuickActionPanel({
         booking.check_in < activeCheckOut &&
         booking.check_out > activeCheckIn
     );
-  const allowBack = !!draft && !!onModeChange && mode !== "pick" && mode !== "move";
 
   const selectedBooking = useMemo(
     () => confirmedBookings.find((booking) => booking.id === moveBookingId) ?? null,
@@ -512,11 +461,6 @@ export function GanttQuickActionPanel({
   }, [selectedBooking, moveSourceRoomId, moveTargetRoomId, rooms, locale, tGantt]);
 
   if (!mode) return null;
-
-  function handleBack() {
-    setError(null);
-    onModeChange?.("pick");
-  }
 
   function updateCheckIn(nextCheckIn: string) {
     setError(null);
@@ -692,17 +636,33 @@ export function GanttQuickActionPanel({
       return;
     }
     if (!ensureCreatableInterval()) return;
-    if (!identity.canSubmit) return;
+    if (!identityReady) return;
+    const titular = usePerRoomIdentities ? occupantValues[0] : identity;
+    if (!titular) return;
     setError(null);
+    const roomIds = selectedCreateRooms.map((room) => room.id);
+    const roomNames = selectedCreateRooms.map((room) => room.name);
+    const occupants = usePerRoomIdentities
+      ? occupantValues.map((occupant) => ({
+          roomId: occupant.roomId,
+          guestLastName: occupant.guestLastName,
+          guestFirstName: occupant.guestFirstName,
+          guestEmail: occupant.guestEmail,
+          guestPhone: occupant.guestPhone,
+        }))
+      : undefined;
     const payload = {
-      roomId: activeRoomId,
-      roomName: activeRoom?.name ?? draft?.roomName,
+      roomId: roomIds[0] ?? activeRoomId,
+      roomIds,
+      roomName: roomNames.join(", ") || activeRoom?.name || draft?.roomName,
+      roomNames,
       checkIn: activeCheckIn,
       checkOut: activeCheckOut,
-      guestLastName: identity.guestLastName,
-      guestFirstName: identity.guestFirstName,
-      guestEmail: identity.guestEmail,
-      guestPhone: identity.guestPhone,
+      guestLastName: titular.guestLastName,
+      guestFirstName: titular.guestFirstName,
+      guestEmail: titular.guestEmail,
+      guestPhone: titular.guestPhone,
+      occupants,
     };
     const tempId = `optimistic:${crypto.randomUUID()}`;
     publishGanttLiveBooking(
@@ -714,9 +674,12 @@ export function GanttQuickActionPanel({
         guestLastName: payload.guestLastName,
         guestFirstName: payload.guestFirstName,
         guestEmail: payload.guestEmail,
-        guestPhone: payload.guestPhone,
+        guestPhone: payload.guestPhone ?? "",
         roomId: payload.roomId,
+        roomIds,
         roomName: payload.roomName,
+        roomNames,
+        numAdults: occupants && occupants.length > 1 ? occupants.length : 1,
       }),
     );
     onClose();
@@ -776,7 +739,6 @@ export function GanttQuickActionPanel({
   }
 
   const titleMap: Record<GanttQuickPanelMode, string> = {
-    pick: tGantt("quick.title.pick"),
     hold: tGantt("quick.title.hold"),
     block: tGantt("quick.title.block"),
     cerere: tGantt("quick.title.request"),
@@ -849,24 +811,37 @@ export function GanttQuickActionPanel({
               </label>
             ) : null}
 
-            <IntervalPlanner
-              title={intervalTitle}
-              subtitle={intervalSubtitle}
-              checkIn={activeCheckIn}
-              checkOut={activeCheckOut}
-              onCheckInChange={updateCheckIn}
-              onCheckOutChange={updateCheckOut}
-              onShift={shiftInterval}
-              onSetDuration={setIntervalDuration}
-              onToday={moveIntervalToToday}
-              minCheckIn={effectiveToday}
-              invalidInterval={intervalInvalid}
-              hasConflict={hasConflict}
-              invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
-              nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
-              locale={locale}
-              tGantt={tGantt}
-            />
+            {draft ? (
+              <StaySummary
+                roomLabel={intervalSubtitle}
+                period={period}
+                nights={
+                  intervalInvalid
+                    ? 0
+                    : nightsBetween(activeCheckIn, activeCheckOut)
+                }
+                nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
+              />
+            ) : (
+              <IntervalPlanner
+                title={intervalTitle}
+                subtitle={intervalSubtitle}
+                checkIn={activeCheckIn}
+                checkOut={activeCheckOut}
+                onCheckInChange={updateCheckIn}
+                onCheckOutChange={updateCheckOut}
+                onShift={shiftInterval}
+                onSetDuration={setIntervalDuration}
+                onToday={moveIntervalToToday}
+                minCheckIn={effectiveToday}
+                invalidInterval={intervalInvalid}
+                hasConflict={hasConflict}
+                invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
+                nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
+                locale={locale}
+                tGantt={tGantt}
+              />
+            )}
 
             {hasConflict ? (
               <SummaryCard
@@ -876,27 +851,14 @@ export function GanttQuickActionPanel({
               />
             ) : null}
 
-            {hasMultiRoomDraft ? (
+            {hasMultiRoomDraft && (mode === "hold") ? (
               <SummaryCard
                 title={tGantt("quick.note")}
                 tone="info"
-                body={tGantt("quick.multiRoomOnlyHold")}
+                body={tGantt("quick.multiRoomHoldNote")}
               />
             ) : null}
           </>
-        ) : null}
-
-        {mode === "pick" ? (
-          <ActionGrid
-            disabled={{
-              hold: hasConflict || intervalInvalid,
-              block: hasConflict || hasMultiRoomDraft || intervalInvalid,
-              cerere: hasConflict || hasMultiRoomDraft || intervalInvalid,
-              direct: hasConflict || hasMultiRoomDraft || intervalInvalid,
-            }}
-            onSelect={(nextMode) => onModeChange?.(nextMode)}
-            tGantt={tGantt}
-          />
         ) : null}
 
         {mode === "hold" ? (
@@ -924,16 +886,6 @@ export function GanttQuickActionPanel({
               </label>
             </div>
             <div className="gantt-quick-panel__actions flex gap-2">
-              {allowBack ? (
-                <AdminButton
-                  variant="secondary"
-                  size="sm"
-                  className="gantt-quick-panel__action flex-1"
-                  onClick={handleBack}
-                >
-                  {tGantt("quick.backToRadial")}
-                </AdminButton>
-              ) : null}
               <AdminButton
                 variant="primary"
                 size="sm"
@@ -977,16 +929,6 @@ export function GanttQuickActionPanel({
               </label>
             ) : null}
             <div className="gantt-quick-panel__actions flex gap-2">
-              {allowBack ? (
-                <AdminButton
-                  variant="secondary"
-                  size="sm"
-                  className="gantt-quick-panel__action flex-1"
-                  onClick={handleBack}
-                >
-                  {tGantt("quick.backToRadial")}
-                </AdminButton>
-              ) : null}
               <AdminButton
                 variant="primary"
                 size="sm"
@@ -1008,39 +950,51 @@ export function GanttQuickActionPanel({
 
         {mode === "cerere" || mode === "direct" ? (
           <>
-            <BookingIdentityPanel identity={identity} appearance="admin" />
+            {hasMultiRoomDraft ? (
+              <label className="gantt-quick-panel__occupants-toggle">
+                <input
+                  type="checkbox"
+                  checked={enterGuestsPerRoom}
+                  onChange={(e) => setEnterGuestsPerRoom(e.target.checked)}
+                />
+                <span>{tGantt("quick.enterGuestsPerRoom")}</span>
+              </label>
+            ) : null}
+            {usePerRoomIdentities ? (
+              <GanttRoomOccupantIdentities
+                rooms={selectedCreateRooms}
+                onValuesChange={handleOccupantValues}
+              />
+            ) : (
+              <BookingIdentityPanel identity={identity} appearance="admin" />
+            )}
             <div className="gantt-quick-panel__actions flex gap-2">
-              {allowBack ? (
-                <AdminButton
-                  variant="secondary"
-                  size="sm"
-                  className="gantt-quick-panel__action flex-1"
-                  onClick={handleBack}
-                >
-                  {tGantt("quick.backToRadial")}
-                </AdminButton>
-              ) : null}
               <AdminButton
                 variant="primary"
                 size="sm"
                 className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
-                  !identity.canSubmit ||
+                  !identityReady ||
                   !activeRoomId ||
                   hasConflict ||
-                  hasMultiRoomDraft ||
                   intervalInvalid
                 }
                 onClick={() => submitGuestCreate(mode)}
               >
                 {pending
                   ? tCommon("saving")
-                  : !identity.identityChecksReady
-                    ? identity.checkingLabel
-                    : mode === "cerere"
-                      ? tGantt("quick.createRequest")
-                      : tGantt("quick.confirmStay")}
+                  : usePerRoomIdentities
+                    ? !occupantsReady
+                      ? identity.checkingLabel
+                      : mode === "cerere"
+                        ? tGantt("quick.createRequest")
+                        : tGantt("quick.confirmStay")
+                    : !identity.identityChecksReady
+                      ? identity.checkingLabel
+                      : mode === "cerere"
+                        ? tGantt("quick.createRequest")
+                        : tGantt("quick.confirmStay")}
               </AdminButton>
             </div>
           </>

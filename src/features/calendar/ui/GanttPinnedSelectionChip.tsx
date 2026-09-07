@@ -3,10 +3,11 @@
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { useLocale, useTranslations } from "next-intl";
+import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
 
-type Props = {
+type ChipProps = {
   selection: PinnedSelection;
-  onCommit: () => void;
+  onCommit: (point: { clientX: number; clientY: number }) => void;
   onCancel: () => void;
 };
 
@@ -14,7 +15,7 @@ export function GanttPinnedSelectionChip({
   selection,
   onCommit,
   onCancel,
-}: Props) {
+}: ChipProps) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
   const locale = useLocale();
@@ -30,7 +31,7 @@ export function GanttPinnedSelectionChip({
       <button
         type="button"
         className="gantt-pinned-chip__btn gantt-pinned-chip__btn--commit"
-        onClick={onCommit}
+        onClick={(e) => onCommit({ clientX: e.clientX, clientY: e.clientY })}
       >
         {tCommon("create")}
       </button>
@@ -43,5 +44,39 @@ export function GanttPinnedSelectionChip({
         ×
       </button>
     </div>
+  );
+}
+
+export function GanttPinnedCreateChip({
+  selection,
+  roomName,
+  onCancel,
+}: {
+  selection: PinnedSelection;
+  roomName: string;
+  onCancel: () => void;
+}) {
+  const { openMenu } = useGanttContextMenu();
+
+  return (
+    <GanttPinnedSelectionChip
+      selection={selection}
+      onCommit={({ clientX, clientY }) => {
+        const firstRoomId = selection.roomIds[0] ?? "";
+        openMenu({
+          kind: "create",
+          clientX,
+          clientY,
+          roomId: firstRoomId,
+          roomName,
+          checkIn: selection.checkIn,
+          checkOut: selection.checkOut,
+          hasConflict: false,
+          roomIds: selection.roomIds,
+        });
+        onCancel();
+      }}
+      onCancel={onCancel}
+    />
   );
 }

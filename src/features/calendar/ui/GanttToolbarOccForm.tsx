@@ -8,7 +8,7 @@ import {
 } from "@/features/calendar/ui/GanttQuickActionPanel";
 
 type Props = {
-  mode: Exclude<GanttQuickPanelMode, "pick"> | null;
+  mode: GanttQuickPanelMode | null;
   rooms: GanttQuickRoomOption[];
   bookings: BookingRow[];
   onClose: () => void;

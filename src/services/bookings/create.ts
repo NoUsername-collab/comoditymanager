@@ -24,6 +24,10 @@ import {
 } from "@/domain/guest/normalize";
 import { resolveGuestForBooking } from "@/services/guest-booking-resolve";
 import {
+  saveBookingOccupants,
+  type BookingOccupantDraft,
+} from "@/services/bookings/occupants";
+import {
   listGuestProfileSummaries,
   resolveGuestAlertSnapshot,
 } from "@/services/guest-profiles";
@@ -141,6 +145,8 @@ export async function createBookingRequest(input: {
   skipAvailabilityCheck?: boolean;
   /** Link guest after insert — Gantt create must return before contact matching. */
   deferGuestLink?: boolean;
+  /** Per-room guests entered at create. Titular is bookings.guest_id. */
+  occupants?: BookingOccupantDraft[];
 }): Promise<string> {
   const timer = createServerTimer("createBookingRequest");
   assertValidGuestPhone(input.guest_phone);
@@ -273,6 +279,14 @@ export async function createBookingRequest(input: {
         }
       } catch {
         /* guest link is best-effort after the bar is already visible */
+      }
+    }
+
+    if (input.occupants && input.occupants.length > 0) {
+      try {
+        await saveBookingOccupants(bookingId, linkedGuestId, input.occupants);
+      } catch {
+        /* occupants are best-effort after the bar is already visible */
       }
     }
 

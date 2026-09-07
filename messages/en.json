@@ -3636,6 +3636,8 @@
         "conflictBody": "Interval overlaps an existing occupancy. Move the period directly from the top panel.",
         "note": "Note",
         "multiRoomOnlyHold": "For multi-room selection we can only create quick hold from this panel.",
+        "multiRoomHoldNote": "The hold applies to every selected room.",
+        "enterGuestsPerRoom": "Enter guests per room",
         "createRequest": "Create request",
         "confirmStay": "Confirm stay",
         "moveUnavailable": "Move unavailable",

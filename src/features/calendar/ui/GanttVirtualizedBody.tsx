@@ -17,7 +17,6 @@ import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
 import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
-import type { GanttCreateDraft } from "@/features/calendar/ui/GanttCreateDialog";
 import type { GanttDayGridOptions, GanttShellZoom } from "@/features/calendar/ui/GanttGridHelpers";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { GanttBuildingMarker } from "@/features/calendar/ui/GanttBuildingMarker";
@@ -178,7 +177,6 @@ type GanttBodyProps = {
   onOccOpen: (seg: OccupancySegment, roomName: string) => void;
   bookingById: Map<string, BookingRow>;
   onMoveRoom: (draft: MoveRoomDraft) => void;
-  onCreateDraft: (draft: GanttCreateDraft) => void;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
@@ -244,7 +242,6 @@ function GanttTbodyRows({
   onOccOpen,
   bookingById,
   onMoveRoom,
-  onCreateDraft,
   pinnedSelection,
   onCtrlDragEnd,
   today,
@@ -303,7 +300,6 @@ function GanttTbodyRows({
               onOccOpen={onOccOpen}
               bookingById={bookingById}
               onMoveRoom={onMoveRoom}
-              onCreateDraft={onCreateDraft}
               pinnedSelection={pinnedSelection}
               onCtrlDragEnd={onCtrlDragEnd}
               today={today}

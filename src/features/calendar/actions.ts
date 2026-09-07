@@ -23,7 +23,7 @@ import {
   extendRoomHoldOneNight,
   releaseRoomHold,
 } from "@/services/room-holds";
-import { getRoomById } from "@/services/rooms-admin";
+import { getRoomsByIds } from "@/services/rooms-admin";
 import {
   moveBookingRoomFromPivot,
   previewRoomMoveFromPivot,
@@ -48,6 +48,47 @@ type ActionErr = { ok: false; error: string };
 
 function actorEmail(user: { email?: string | null } | null): string | null {
   return user?.email ?? null;
+}
+
+type GanttGuestIdentityInput = {
+  guestLastName: string;
+  guestFirstName: string;
+  guestEmail: string;
+  guestPhone?: string;
+};
+
+export type GanttRoomOccupantInput = GanttGuestIdentityInput & {
+  roomId: string;
+};
+
+function ganttCreateRoomIds(input: { roomId: string; roomIds?: string[] }): string[] {
+  const ids = [
+    ...new Set(
+      (input.roomIds && input.roomIds.length > 0
+        ? input.roomIds
+        : [input.roomId]
+      ).filter(Boolean)
+    ),
+  ];
+  return ids.length > 0 ? ids : [input.roomId];
+}
+
+function validateGanttGuestIdentity(
+  input: GanttGuestIdentityInput,
+  t: Awaited<ReturnType<typeof getT>>
+): ActionErr | { last: string; first: string; email: string; phone: string } {
+  const last = input.guestLastName.trim();
+  const first = input.guestFirstName.trim();
+  const email = staffBookingEmail(input.guestEmail);
+  if (!last || !first || !input.guestPhone?.trim()) {
+    return { ok: false, error: t("nameEmailPhoneRequired") };
+  }
+  try {
+    assertValidGuestPhone(input.guestPhone);
+  } catch {
+    return { ok: false, error: t("invalidPhone") };
+  }
+  return { last, first, email, phone: input.guestPhone.trim() };
 }
 
 function scheduleBookingRevalidate(
@@ -335,13 +376,16 @@ export async function undoGanttCreateAction(input: {
 
 export async function createCerereFromGanttAction(input: {
   roomId: string;
+  roomIds?: string[];
   roomName?: string;
+  roomNames?: string[];
   checkIn: string;
   checkOut: string;
   guestLastName: string;
   guestFirstName: string;
   guestEmail: string;
   guestPhone?: string;
+  occupants?: GanttRoomOccupantInput[];
   /** UI a verificat deja conflictul pe interval — evită al 2-lea query ocupare. */
   skipAvailabilityCheck?: boolean;
 }): Promise<ActionOk | ActionErr> {
@@ -349,34 +393,43 @@ export async function createCerereFromGanttAction(input: {
   const [t] = await Promise.all([getT(), requireAnyStaff()]);
   timer.mark("auth");
   try {
-    const last = input.guestLastName.trim();
-    const first = input.guestFirstName.trim();
-    const email = staffBookingEmail(input.guestEmail);
-    if (!last || !first || !input.guestPhone?.trim()) {
-      return { ok: false, error: t("nameEmailPhoneRequired") };
+    const titular = validateGanttGuestIdentity(input, t);
+    if ("ok" in titular) return titular;
+    const roomIds = ganttCreateRoomIds(input);
+    const occupantDrafts = [];
+    if (input.occupants && input.occupants.length > 0) {
+      for (const [index, occupant] of input.occupants.entries()) {
+        const parsed = validateGanttGuestIdentity(occupant, t);
+        if ("ok" in parsed) return parsed;
+        occupantDrafts.push({
+          roomId: occupant.roomId,
+          guestLastName: parsed.last,
+          guestFirstName: parsed.first,
+          guestEmail: parsed.email,
+          guestPhone: parsed.phone,
+          isRepresentative: index === 0,
+        });
+      }
     }
-    try {
-      assertValidGuestPhone(input.guestPhone);
-    } catch {
-      return { ok: false, error: t("invalidPhone") };
-    }
+    const numAdults = occupantDrafts.length > 1 ? occupantDrafts.length : 1;
 
     const id = await createBookingRequest({
       check_in: input.checkIn,
       check_out: input.checkOut,
-      guest_name: `${last} ${first}`.trim(),
-      guest_last_name: last,
-      guest_first_name: first,
-      guest_email: email,
-      guest_phone: input.guestPhone.trim(),
-      num_adults: 1,
+      guest_name: `${titular.last} ${titular.first}`.trim(),
+      guest_last_name: titular.last,
+      guest_first_name: titular.first,
+      guest_email: titular.email,
+      guest_phone: titular.phone,
+      num_adults: numAdults,
       num_children: 0,
       has_minor: false,
       minor_age: "",
       notes: t("createdFromGanttNote"),
-      room_ids: [input.roomId],
+      room_ids: roomIds,
       skipAvailabilityCheck: input.skipAvailabilityCheck === true,
       deferGuestLink: true,
+      occupants: occupantDrafts.length > 0 ? occupantDrafts : undefined,
     });
     timer.mark("createBookingRequest");
 
@@ -387,12 +440,15 @@ export async function createCerereFromGanttAction(input: {
       checkIn: input.checkIn,
       checkOut: input.checkOut,
       status: "cerere_noua",
-      guestLastName: last,
-      guestFirstName: first,
-      guestEmail: email,
-      guestPhone: input.guestPhone.trim(),
-      roomId: input.roomId,
+      guestLastName: titular.last,
+      guestFirstName: titular.first,
+      guestEmail: titular.email,
+      guestPhone: titular.phone,
+      roomId: roomIds[0] ?? input.roomId,
+      roomIds,
       roomName: input.roomName,
+      roomNames: input.roomNames,
+      numAdults,
     });
     timer.finish({ bookingId: id });
     return { ok: true, id, booking };
@@ -407,13 +463,16 @@ export async function createCerereFromGanttAction(input: {
 
 export async function createDirectStayFromGanttAction(input: {
   roomId: string;
+  roomIds?: string[];
   roomName?: string;
+  roomNames?: string[];
   checkIn: string;
   checkOut: string;
   guestLastName: string;
   guestFirstName: string;
   guestEmail: string;
   guestPhone?: string;
+  occupants?: GanttRoomOccupantInput[];
   skipAvailabilityCheck?: boolean;
 }): Promise<ActionOk | ActionErr> {
   const timer = createServerTimer("gantt-create-direct");
@@ -421,47 +480,60 @@ export async function createDirectStayFromGanttAction(input: {
   await requireStaffPermission("booking_management");
   timer.mark("auth");
   try {
-    const last = input.guestLastName.trim();
-    const first = input.guestFirstName.trim();
-    const email = staffBookingEmail(input.guestEmail);
-    if (!last || !first || !input.guestPhone?.trim()) {
-      return { ok: false, error: t("nameEmailPhoneRequired") };
+    const titular = validateGanttGuestIdentity(input, t);
+    if ("ok" in titular) return titular;
+    const roomIds = ganttCreateRoomIds(input);
+    const occupantDrafts = [];
+    if (input.occupants && input.occupants.length > 0) {
+      for (const [index, occupant] of input.occupants.entries()) {
+        const parsed = validateGanttGuestIdentity(occupant, t);
+        if ("ok" in parsed) return parsed;
+        occupantDrafts.push({
+          roomId: occupant.roomId,
+          guestLastName: parsed.last,
+          guestFirstName: parsed.first,
+          guestEmail: parsed.email,
+          guestPhone: parsed.phone,
+          isRepresentative: index === 0,
+        });
+      }
     }
-    try {
-      assertValidGuestPhone(input.guestPhone);
-    } catch {
-      return { ok: false, error: t("invalidPhone") };
-    }
+    const numAdults = occupantDrafts.length > 1 ? occupantDrafts.length : 1;
 
-    const [bookingId, room] = await Promise.all([
+    const [bookingId, rooms] = await Promise.all([
       createBookingRequest({
         check_in: input.checkIn,
         check_out: input.checkOut,
-        guest_name: `${last} ${first}`.trim(),
-        guest_last_name: last,
-        guest_first_name: first,
-        guest_email: email,
-        guest_phone: input.guestPhone.trim(),
-        num_adults: 1,
+        guest_name: `${titular.last} ${titular.first}`.trim(),
+        guest_last_name: titular.last,
+        guest_first_name: titular.first,
+        guest_email: titular.email,
+        guest_phone: titular.phone,
+        num_adults: numAdults,
         num_children: 0,
         has_minor: false,
         minor_age: "",
         notes: t("directStayFromGanttNote"),
-        room_ids: [input.roomId],
+        room_ids: roomIds,
         skipAvailabilityCheck: input.skipAvailabilityCheck === true,
         deferGuestLink: true,
+        occupants: occupantDrafts.length > 0 ? occupantDrafts : undefined,
       }),
-      getRoomById(input.roomId),
+      getRoomsByIds(roomIds),
     ]);
     timer.mark("create");
 
+    if (rooms.length !== roomIds.length) {
+      return { ok: false, error: t("requestError") };
+    }
+
     const total = computeStandardStayTotal(
-      [{ price_per_night: Number(room.price_per_night) }],
+      rooms.map((room) => ({ price_per_night: Number(room.price_per_night) })),
       input.checkIn,
       input.checkOut,
     );
 
-    await confirmBookingWithRooms(bookingId, [input.roomId], total, {
+    await confirmBookingWithRooms(bookingId, roomIds, total, {
       assignedRoomsOnly: true,
     });
     timer.mark("confirm");
@@ -473,12 +545,15 @@ export async function createDirectStayFromGanttAction(input: {
       checkIn: input.checkIn,
       checkOut: input.checkOut,
       status: "confirmata",
-      guestLastName: last,
-      guestFirstName: first,
-      guestEmail: email,
-      guestPhone: input.guestPhone.trim(),
-      roomId: input.roomId,
-      roomName: input.roomName ?? room.name,
+      guestLastName: titular.last,
+      guestFirstName: titular.first,
+      guestEmail: titular.email,
+      guestPhone: titular.phone,
+      roomId: roomIds[0] ?? input.roomId,
+      roomIds,
+      roomName: input.roomName ?? rooms[0]?.name,
+      roomNames: input.roomNames ?? rooms.map((room) => room.name),
+      numAdults,
       totalPrice: total,
     });
     timer.finish({ id: bookingId });

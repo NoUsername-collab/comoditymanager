@@ -10,7 +10,6 @@ export type GanttQuickRoomOption = {
 export type GanttQuickCreateDraft = GanttCreateDraft;
 
 export type GanttQuickPanelMode =
-  | "pick"
   | "hold"
   | "block"
   | "cerere"
@@ -23,7 +22,6 @@ export type GanttQuickActionPanelProps = {
   bookings?: BookingRow[];
   draft?: GanttQuickCreateDraft | null;
   onClose: () => void;
-  onModeChange?: (mode: GanttQuickPanelMode) => void;
   today?: string;
 };
 

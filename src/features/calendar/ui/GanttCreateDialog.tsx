@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import type { BookingRow } from "@/services/bookings";
 import {
   GanttQuickActionPanel,
-  type GanttQuickPanelMode,
   type GanttQuickRoomOption,
 } from "@/features/calendar/ui/GanttQuickActionPanel";
 import type { GanttCreateDraft } from "@/domain/gantt/drafts";
@@ -24,28 +22,16 @@ export function GanttCreateDialog({
   bookings = [],
   onClose,
 }: Props) {
-  const [mode, setMode] = useState<GanttQuickPanelMode>(
-    draft?.initialMode ?? "pick"
-  );
-
-  function handleClose() {
-    setMode("pick");
-    onClose();
-  }
+  if (!draft?.initialMode) return null;
 
   return (
     <GanttQuickActionPanel
-      key={
-        draft
-          ? `${draft.roomId}:${draft.checkIn}:${draft.checkOut}:${draft.initialMode ?? "pick"}`
-          : "gantt-create-empty"
-      }
-      mode={draft ? mode : null}
+      key={`${draft.roomId}:${draft.checkIn}:${draft.checkOut}:${draft.initialMode}`}
+      mode={draft.initialMode}
       rooms={rooms}
       bookings={bookings}
       draft={draft}
-      onClose={handleClose}
-      onModeChange={setMode}
+      onClose={onClose}
     />
   );
 }

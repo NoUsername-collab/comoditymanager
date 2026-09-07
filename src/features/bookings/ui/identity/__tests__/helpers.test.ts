@@ -33,6 +33,30 @@ describe("guest identity autofill helpers", () => {
         phone: "",
       }),
     ).toBe(false);
+    expect(
+      hasLookupIdentity({
+        lastName: "",
+        firstName: "",
+        email: "",
+        phone: "07",
+      }),
+    ).toBe(false);
+    expect(
+      hasLookupIdentity({
+        lastName: "",
+        firstName: "",
+        email: "ana@",
+        phone: "",
+      }),
+    ).toBe(false);
+    expect(
+      hasLookupIdentity({
+        lastName: "",
+        firstName: "",
+        email: "ana@host.ro",
+        phone: "",
+      }),
+    ).toBe(true);
   });
 
   it("detects when all identity fields are empty", () => {
@@ -147,6 +171,7 @@ describe("booking identity submit gate", () => {
     ).toBe(false);
     expect(isBookingIdentitySubmitReady({ ...ready, lastName: "" })).toBe(false);
     expect(isBookingIdentitySubmitReady({ ...ready, phone: "" })).toBe(false);
+    expect(isBookingIdentitySubmitReady({ ...ready, phone: "07" })).toBe(false);
   });
 
   it("requires email only when asked", () => {

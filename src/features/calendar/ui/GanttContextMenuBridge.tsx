@@ -46,6 +46,7 @@ export function GanttContextMenuBridge({ shellRef, viewRange, occupancy }: Props
         clientX: e.clientX,
         clientY: e.clientY,
         ...ctx,
+        roomIds: ctx.roomId ? [ctx.roomId] : undefined,
       });
     };
 
