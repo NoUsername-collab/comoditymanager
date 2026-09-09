@@ -1,9 +1,15 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
-import type { StaffStayQuote } from "@/domain/availability/staff-stay-quote";
-import { RoomFeatureBadges } from "@/features/rooms/ui/RoomFeatureBadges";
+import {
+  staffStaySelectionKey,
+  type StaffStayQuote,
+  type StaffStaySuggestion,
+} from "@/domain/availability/staff-stay-quote";
+
+const CUSTOM_FILTER_THRESHOLD = 8;
 
 function formatCurrency(value: number, locale: string): string {
   return value.toLocaleString(locale, {
@@ -12,27 +18,75 @@ function formatCurrency(value: number, locale: string): string {
   });
 }
 
+function groupRoomsByBuilding(rooms: ConfirmRoomOption[]): {
+  building: string;
+  rooms: ConfirmRoomOption[];
+}[] {
+  const map = new Map<string, ConfirmRoomOption[]>();
+  for (const room of rooms) {
+    const list = map.get(room.building_name);
+    if (list) list.push(room);
+    else map.set(room.building_name, [room]);
+  }
+  return [...map.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([building, group]) => ({
+      building,
+      rooms: [...group].sort((a, b) => a.name.localeCompare(b.name)),
+    }));
+}
+
 export function StaffStayRoomPicker({
   rooms,
   quote,
+  suggestions,
   pending,
   previewError,
   onToggle,
+  onApply,
   appearance,
+  preferredRoomIds = [],
 }: {
   rooms: ConfirmRoomOption[];
   quote: StaffStayQuote;
+  suggestions: StaffStaySuggestion[];
   pending: boolean;
   previewError: string | null;
   onToggle: (roomId: string) => void;
+  onApply: (roomIds: string[]) => void;
   appearance: "admin" | "reception";
+  preferredRoomIds?: string[];
 }) {
   const t = useTranslations("admin.gantt.quick");
   const tConfirm = useTranslations("admin.confirmRooms");
   const tCommon = useTranslations("admin.common");
   const locale = useLocale();
   const selected = new Set(quote.selected.map((room) => room.id));
+  const selectedKey = staffStaySelectionKey(quote.selected.map((room) => room.id));
   const reception = appearance === "reception";
+  const preferredOk = suggestions.some((row) => row.kind === "preferred");
+  const [userWantsCustom, setUserWantsCustom] = useState<boolean | null>(null);
+  const [filter, setFilter] = useState("");
+  const defaultCustomOpen = preferredRoomIds.length > 0 && !preferredOk;
+  const customOpen = userWantsCustom ?? defaultCustomOpen;
+  const showFilter = rooms.length > CUSTOM_FILTER_THRESHOLD;
+
+  const filteredRooms = useMemo(() => {
+    const q = filter.trim().toLowerCase();
+    if (!q) return rooms;
+    return rooms.filter(
+      (room) =>
+        room.name.toLowerCase().includes(q) ||
+        room.building_name.toLowerCase().includes(q),
+    );
+  }, [rooms, filter]);
+
+  const grouped = useMemo(() => groupRoomsByBuilding(filteredRooms), [filteredRooms]);
+
+  function applySuggestion(row: StaffStaySuggestion) {
+    onApply(row.roomIds);
+    setUserWantsCustom(false);
+  }
 
   if (previewError) {
     return (
@@ -80,47 +134,123 @@ export function StaffStayRoomPicker({
           {quote.guestCount} {tCommon("persons")}
         </span>
         {quote.minRoomsNeeded > 0 ? (
-          <span>
-            {t("minRoomsHint", { count: quote.minRoomsNeeded })}
-          </span>
+          <span>{t("minRoomsHint", { count: quote.minRoomsNeeded })}</span>
         ) : null}
       </div>
-      <p className="staff-stay-rooms__label">
-        {tConfirm("availableRooms", { count: rooms.length })}
-      </p>
-      <div className="staff-stay-rooms__grid">
-        {rooms.map((room) => {
-          const on = selected.has(room.id);
-          return (
-            <button
-              key={room.id}
-              type="button"
-              onClick={() => onToggle(room.id)}
-              className={["staff-stay-room", on && "staff-stay-room--on"].filter(Boolean).join(" ")}
-              aria-pressed={on}
-            >
-              <span className="staff-stay-room__name">{room.name}</span>
-              <span className="staff-stay-room__building">{room.building_name}</span>
-              <span className="staff-stay-room__details">
-                <span>
-                  {room.max_capacity} {tCommon("personsShort")}
+
+      {suggestions.length > 0 ? (
+        <div className="staff-stay-suggestions">
+          <p className="staff-stay-rooms__label">{t("suggestionsLabel")}</p>
+          {suggestions.map((row) => {
+            const on = row.id === selectedKey;
+            const names = row.rooms.map((room) => room.name).join(" + ");
+            const kindLabel =
+              row.kind === "preferred"
+                ? t("suggestionCalendar")
+                : row.kind === "cheapest_single"
+                  ? t("suggestionCheapest")
+                  : t("suggestionCombo");
+            return (
+              <button
+                key={row.id}
+                type="button"
+                onClick={() => applySuggestion(row)}
+                className={["staff-stay-suggestion", on && "staff-stay-suggestion--on"].filter(Boolean).join(" ")}
+                aria-pressed={on}
+              >
+                <span className="staff-stay-suggestion__kind">{kindLabel}</span>
+                <span className="staff-stay-suggestion__rooms">{names}</span>
+                <span className="staff-stay-suggestion__price">
+                  {formatCurrency(row.estimateRon, locale)} RON
                 </span>
-                <span>
-                  {formatCurrency(room.price_per_night, locale)} RON
-                </span>
-              </span>
-              <span className="staff-stay-room__features">
-                <RoomFeatureBadges
-                  roomTypeName={room.room_type_name}
-                  optionSlugs={room.option_slugs}
-                  hasAc={room.has_ac}
-                  compact
-                />
-              </span>
-            </button>
-          );
-        })}
-      </div>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+
+      <button
+        type="button"
+        className="staff-stay-rooms__toggle"
+        onClick={() => setUserWantsCustom((prev) => !(prev ?? defaultCustomOpen))}
+        aria-expanded={customOpen}
+      >
+        {customOpen ? t("hideRooms") : t("pickRooms")}
+      </button>
+
+      {customOpen ? (
+        <div className="staff-stay-rooms__custom">
+          {quote.selected.length > 0 ? (
+            <div className="staff-stay-rooms__chips" aria-label={t("selectedRooms")}>
+              {quote.selected.map((room) => (
+                <button
+                  key={room.id}
+                  type="button"
+                  className="staff-stay-rooms__chip"
+                  onClick={() => onToggle(room.id)}
+                  aria-label={`${room.name}`}
+                >
+                  {room.name}
+                  <span aria-hidden="true">×</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {showFilter ? (
+            <input
+              type="search"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              placeholder={t("filterRooms")}
+              className="staff-stay-rooms__filter"
+            />
+          ) : null}
+          <div className="staff-stay-rooms__list">
+            {grouped.map((group) => (
+              <div key={group.building || "building"} className="staff-stay-rooms__group">
+                {group.building ? (
+                  <p className="staff-stay-rooms__group-label">{group.building}</p>
+                ) : null}
+                {group.rooms.map((room) => {
+                  const on = selected.has(room.id);
+                  return (
+                    <button
+                      key={room.id}
+                      type="button"
+                      onClick={() => onToggle(room.id)}
+                      className={["staff-stay-rooms__row", on && "staff-stay-rooms__row--on"].filter(Boolean).join(" ")}
+                      aria-pressed={on}
+                    >
+                      <span className="staff-stay-rooms__row-name">{room.name}</span>
+                      {room.building_name ? (
+                        <>
+                          <span className="staff-stay-rooms__sep" aria-hidden="true">
+                            ·
+                          </span>
+                          <span>{room.building_name}</span>
+                        </>
+                      ) : null}
+                      <span className="staff-stay-rooms__sep" aria-hidden="true">
+                        ·
+                      </span>
+                      <span>
+                        {room.max_capacity} {tCommon("personsShort")}
+                      </span>
+                      <span className="staff-stay-rooms__sep" aria-hidden="true">
+                        ·
+                      </span>
+                      <span>
+                        {formatCurrency(room.price_per_night, locale)} RON
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       {quote.selected.length > 0 && !quote.hostsGuests ? (
         <p className={reception ? "text-sm text-amber-200" : "admin-banner admin-banner--warning"} role="alert">
           {tConfirm("selectedCapacityInsufficient", {

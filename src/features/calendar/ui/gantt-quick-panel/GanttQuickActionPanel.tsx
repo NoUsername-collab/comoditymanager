@@ -1015,10 +1015,13 @@ export function GanttQuickActionPanel({
             <StaffStayRoomPicker
               rooms={stayPreview.rooms}
               quote={stayPreview.quote}
+              suggestions={stayPreview.suggestions}
               pending={stayPreview.pending}
               previewError={stayPreview.error}
               onToggle={stayPreview.toggleRoom}
+              onApply={stayPreview.applyRooms}
               appearance="admin"
+              preferredRoomIds={preferredRoomIds}
             />
             {hasMultiRoomDraft || stayPreview.selectedIds.length > 1 ? (
               <label className="gantt-quick-panel__occupants-toggle">

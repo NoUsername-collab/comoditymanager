@@ -156,9 +156,11 @@ export function PhoneBookingForm({
       <StaffStayRoomPicker
         rooms={stayPreview.rooms}
         quote={stayPreview.quote}
+        suggestions={stayPreview.suggestions}
         pending={stayPreview.pending}
         previewError={stayPreview.error}
         onToggle={stayPreview.toggleRoom}
+        onApply={stayPreview.applyRooms}
         appearance="reception"
       />
       <BookingIdentityPanel identity={identity} appearance="compact" />

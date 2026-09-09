@@ -5,9 +5,10 @@ import { previewStaffStayRoomsAction } from "@/features/bookings/staff-stay-acti
 import type { ConfirmRoomOption } from "@/services/booking-confirm";
 import type { StayPricingRules } from "@/domain/settings/booking-rules";
 import {
-  mergeStayRoomSelection,
+  buildStaffStaySuggestions,
   partyGuestCount,
   quoteStaffStaySelection,
+  resolveStaffStaySelection,
 } from "@/domain/availability/staff-stay-quote";
 
 export function useStaffStayPreview(args: {
@@ -54,11 +55,15 @@ export function useStaffStayPreview(args: {
         setRooms(res.rooms.availableRooms);
         setPricingRules(res.pricingRules);
         setSelectedIds((prev) =>
-          mergeStayRoomSelection(
-            prev,
-            res.rooms.availableRooms.map((room) => room.id),
+          resolveStaffStaySelection({
+            previousIds: prev,
+            availableRooms: res.rooms.availableRooms,
             preferredIds,
-          ),
+            guestCount,
+            checkIn: args.checkIn,
+            checkOut: args.checkOut,
+            pricingRules: res.pricingRules,
+          }),
         );
       });
     }, 280);
@@ -71,12 +76,17 @@ export function useStaffStayPreview(args: {
     args.numChildren,
     preferredKey,
     intervalValid,
+    guestCount,
   ]);
 
   function toggleRoom(roomId: string) {
     setSelectedIds((prev) =>
       prev.includes(roomId) ? prev.filter((id) => id !== roomId) : [...prev, roomId],
     );
+  }
+
+  function applyRooms(roomIds: string[]) {
+    setSelectedIds(roomIds);
   }
 
   const quote = useMemo(
@@ -92,12 +102,27 @@ export function useStaffStayPreview(args: {
     [rooms, selectedIds, guestCount, args.checkIn, args.checkOut, pricingRules],
   );
 
+  const suggestions = useMemo(
+    () =>
+      buildStaffStaySuggestions({
+        availableRooms: rooms,
+        guestCount,
+        preferredIds: args.preferredRoomIds,
+        checkIn: args.checkIn,
+        checkOut: args.checkOut,
+        pricingRules,
+      }),
+    [rooms, guestCount, preferredKey, args.checkIn, args.checkOut, pricingRules, args.preferredRoomIds],
+  );
+
   return {
     pending,
     error,
     rooms,
     selectedIds,
     toggleRoom,
+    applyRooms,
     quote,
+    suggestions,
   };
 }
