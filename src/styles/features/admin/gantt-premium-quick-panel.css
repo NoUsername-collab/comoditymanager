@@ -1,3 +1,5 @@
+@import "./staff-stay-create.css";
+
 /* ── Gantt create action menu + request panel ── */
 .gantt-quick-panel__planner {
   border-radius: 1.1rem;

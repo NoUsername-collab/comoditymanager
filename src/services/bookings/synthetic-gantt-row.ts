@@ -17,6 +17,7 @@ export type GanttCreateSyntheticInput = {
   roomName?: string;
   roomNames?: string[];
   numAdults?: number;
+  numChildren?: number;
   totalPrice?: number | null;
 };
 
@@ -47,7 +48,8 @@ export function buildSyntheticGanttBookingRow(
     guest_alert_note: null,
     guest_profile: null,
     num_adults: input.numAdults && input.numAdults > 0 ? input.numAdults : 1,
-    num_children: 0,
+    num_children:
+      input.numChildren && input.numChildren > 0 ? input.numChildren : 0,
     room_ids: roomIds,
     room_names: roomNames,
     total_price: input.totalPrice ?? null,

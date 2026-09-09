@@ -1,0 +1,171 @@
+.staff-stay-intent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.staff-stay-intent__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--admin-panel-border, #d4d4d8);
+  border-radius: 0.7rem;
+  background: var(--admin-panel-bg, #fff);
+  color: var(--admin-text, #18181b);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.staff-stay-intent__btn--on {
+  border-color: var(--admin-accent, #059669);
+  background: var(--admin-tint-info-bg, #ecfdf5);
+}
+
+.staff-stay-intent__label {
+  font-size: 0.875rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.staff-stay-intent__hint {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.staff-stay-rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.staff-stay-rooms__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.staff-stay-rooms__label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text, #18181b);
+}
+
+.staff-stay-rooms__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.staff-stay-room {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem 0.7rem;
+  border: 2px solid var(--admin-panel-border, #d4d4d8);
+  border-radius: 0.7rem;
+  background: var(--admin-panel-bg, #fff);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.staff-stay-room--on {
+  border-color: var(--admin-accent, #059669);
+  background: var(--admin-tint-info-bg, #ecfdf5);
+}
+
+.staff-stay-room__name {
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.staff-stay-room__building,
+.staff-stay-room__details {
+  font-size: 0.7rem;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.staff-stay-room__details {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.staff-stay-rooms__nudge {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.staff-stay-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.7rem;
+  background: var(--admin-surface-muted, #f4f4f5);
+}
+
+.staff-stay-quote__row,
+.staff-stay-quote__total {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.staff-stay-quote__total {
+  margin-top: 0.25rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--admin-panel-border, #d4d4d8);
+  font-size: 0.9rem;
+}
+
+.staff-stay-intent--reception .staff-stay-intent__btn,
+.staff-stay-rooms--reception .staff-stay-room {
+  border-color: rgb(82 82 91);
+  background: rgb(24 24 27 / 0.7);
+  color: #fafafa;
+}
+
+.staff-stay-intent--reception .staff-stay-intent__btn--on,
+.staff-stay-rooms--reception .staff-stay-room--on {
+  border-color: #34d399;
+  background: rgb(6 78 59 / 0.55);
+}
+
+.staff-stay-rooms--reception .staff-stay-rooms__meta,
+.staff-stay-rooms--reception .staff-stay-room__building,
+.staff-stay-rooms--reception .staff-stay-room__details,
+.staff-stay-rooms--reception .staff-stay-rooms__nudge {
+  color: rgb(212 212 216);
+}
+
+.staff-stay-rooms--reception .staff-stay-quote {
+  background: rgb(24 24 27 / 0.85);
+  color: #fafafa;
+}
+
+.staff-stay-rooms--reception .staff-stay-quote__total {
+  border-top-color: rgb(82 82 91);
+}
+
+html[data-layout-chrome="compact"] .staff-stay-intent__btn,
+html[data-layout-chrome="compact"] .staff-stay-room {
+  min-height: var(--ml-touch-min, 2.75rem);
+}

@@ -14,14 +14,16 @@ import {
   useRunAdminAction,
 } from "@/components/admin/feedback/AdminPendingProvider";
 import {
-  createCerereFromGanttAction,
-  createDirectStayFromGanttAction,
   createRoomBlockFromGanttAction,
   createRoomHoldFromGanttAction,
   createRoomHoldsFromGanttAction,
   moveBookingRoomFromPivotAction,
   previewRoomMoveAction,
 } from "@/features/calendar/actions";
+import {
+  createStaffStayAction,
+  type StaffStayIntent,
+} from "@/features/bookings/staff-stay-actions";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import {
   BLOCK_REASON_PRESETS,
@@ -48,6 +50,12 @@ import {
   todayIso,
 } from "@/lib/stay-dates";
 import { BookingIdentityPanel, useBookingIdentity } from "@/features/bookings/ui/identity";
+import {
+  StaffStayIntentToggle,
+  StaffStayOccupancyFields,
+  StaffStayRoomPicker,
+  useStaffStayPreview,
+} from "@/features/bookings/ui/staff-stay-create";
 import {
   GanttRoomOccupantIdentities,
   type OccupantIdentityValue,
@@ -322,6 +330,15 @@ export function GanttQuickActionPanel({
     text: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const isStayMode = mode === "cerere" || mode === "direct";
+  const [intent, setIntent] = useState<StaffStayIntent>(
+    mode === "direct" ? "direct" : "cerere",
+  );
+  useEffect(() => {
+    if (mode === "cerere" || mode === "direct") setIntent(mode);
+  }, [mode]);
+  const [numAdults, setNumAdults] = useState(2);
+  const [numChildren, setNumChildren] = useState(0);
 
   const activeRoomId = roomId;
   const activeCheckIn = checkIn;
@@ -337,7 +354,35 @@ export function GanttQuickActionPanel({
       : "";
   const multiRoomCount = draft?.roomIds?.length ?? 0;
   const hasMultiRoomDraft = multiRoomCount > 1;
+  const intervalInvalid =
+    !activeCheckIn || !activeCheckOut || activeCheckIn >= activeCheckOut;
+  const preferredRoomIds = useMemo(
+    () =>
+      draft?.roomIds && draft.roomIds.length > 0
+        ? draft.roomIds
+        : draft?.roomId
+          ? [draft.roomId]
+          : [],
+    [draft],
+  );
+  const stayPreview = useStaffStayPreview({
+    checkIn: activeCheckIn,
+    checkOut: activeCheckOut,
+    numAdults,
+    numChildren,
+    preferredRoomIds,
+    enabled: isStayMode && !intervalInvalid,
+  });
   const selectedCreateRooms = useMemo(() => {
+    if (isStayMode) {
+      return stayPreview.selectedIds.map((id) => ({
+        id,
+        name:
+          stayPreview.rooms.find((room) => room.id === id)?.name ??
+          rooms.find((room) => room.id === id)?.name ??
+          (id === draft?.roomId ? draft.roomName : id),
+      }));
+    }
     const ids = draft?.roomIds?.length
       ? draft.roomIds
       : activeRoomId
@@ -351,7 +396,15 @@ export function GanttQuickActionPanel({
           ? (activeRoom?.name ?? draft?.roomName ?? id)
           : id),
     }));
-  }, [draft, activeRoomId, rooms, activeRoom]);
+  }, [
+    isStayMode,
+    stayPreview.selectedIds,
+    stayPreview.rooms,
+    draft,
+    activeRoomId,
+    rooms,
+    activeRoom,
+  ]);
   const usePerRoomIdentities =
     enterGuestsPerRoom && selectedCreateRooms.length > 1;
   const identityReady = usePerRoomIdentities
@@ -364,8 +417,6 @@ export function GanttQuickActionPanel({
     },
     []
   );
-  const intervalInvalid =
-    !activeCheckIn || !activeCheckOut || activeCheckIn >= activeCheckOut;
   const activeRoomIds = draft?.roomIds?.length
     ? draft.roomIds
     : activeRoomId
@@ -630,17 +681,17 @@ export function GanttQuickActionPanel({
     });
   }
 
-  function submitGuestCreate(kind: "cerere" | "direct") {
-    if (!activeRoomId) {
-      setError(tGantt("quick.errors.chooseRoom"));
+  function submitGuestCreate(kind: StaffStayIntent) {
+    if (!ensureCreatableInterval()) return;
+    if (!stayPreview.quote.hostsGuests || stayPreview.selectedIds.length === 0) {
+      setError(tGantt("quick.errors.chooseRoomsForGuests"));
       return;
     }
-    if (!ensureCreatableInterval()) return;
     if (!identityReady) return;
     const titular = usePerRoomIdentities ? occupantValues[0] : identity;
     if (!titular) return;
     setError(null);
-    const roomIds = selectedCreateRooms.map((room) => room.id);
+    const roomIds = stayPreview.selectedIds;
     const roomNames = selectedCreateRooms.map((room) => room.name);
     const occupants = usePerRoomIdentities
       ? occupantValues.map((occupant) => ({
@@ -652,16 +703,16 @@ export function GanttQuickActionPanel({
         }))
       : undefined;
     const payload = {
-      roomId: roomIds[0] ?? activeRoomId,
+      intent: kind,
       roomIds,
-      roomName: roomNames.join(", ") || activeRoom?.name || draft?.roomName,
-      roomNames,
       checkIn: activeCheckIn,
       checkOut: activeCheckOut,
       guestLastName: titular.guestLastName,
       guestFirstName: titular.guestFirstName,
       guestEmail: titular.guestEmail,
       guestPhone: titular.guestPhone,
+      numAdults,
+      numChildren,
       occupants,
     };
     const tempId = `optimistic:${crypto.randomUUID()}`;
@@ -675,19 +726,18 @@ export function GanttQuickActionPanel({
         guestFirstName: payload.guestFirstName,
         guestEmail: payload.guestEmail,
         guestPhone: payload.guestPhone ?? "",
-        roomId: payload.roomId,
+        roomId: roomIds[0],
         roomIds,
-        roomName: payload.roomName,
+        roomName: roomNames.join(", "),
         roomNames,
-        numAdults: occupants && occupants.length > 1 ? occupants.length : 1,
+        numAdults,
+        numChildren,
+        totalPrice: stayPreview.quote.estimateRon,
       }),
     );
     onClose();
     void (async () => {
-      const res =
-        kind === "cerere"
-          ? await createCerereFromGanttAction(payload)
-          : await createDirectStayFromGanttAction(payload);
+      const res = await createStaffStayAction(payload);
       if (!res.ok) {
         removeGanttLiveBooking(tempId);
         showToast({ kind: "error", title: tCommon("error"), message: res.error });
@@ -780,7 +830,7 @@ export function GanttQuickActionPanel({
     <AdminFloatingPanel
       open
       onClose={onClose}
-      title={titleMap[mode]}
+      title={isStayMode ? titleMap[intent] : titleMap[mode]}
       variant="modal"
       width={640}
       className={["gantt-quick-panel", pending && "gantt-quick-panel--busy"].filter(Boolean).join(" ")}
@@ -791,7 +841,7 @@ export function GanttQuickActionPanel({
       >
         {mode !== "move" ? (
           <>
-            {!draft ? (
+            {!draft && !isStayMode ? (
               <label className={labelClass}>
                 {tCommon("room")}
                 <AdminSelect
@@ -825,7 +875,7 @@ export function GanttQuickActionPanel({
             ) : (
               <IntervalPlanner
                 title={intervalTitle}
-                subtitle={intervalSubtitle}
+                subtitle={isStayMode ? tGantt("quick.stayIntervalHint") : intervalSubtitle}
                 checkIn={activeCheckIn}
                 checkOut={activeCheckOut}
                 onCheckInChange={updateCheckIn}
@@ -835,7 +885,7 @@ export function GanttQuickActionPanel({
                 onToday={moveIntervalToToday}
                 minCheckIn={effectiveToday}
                 invalidInterval={intervalInvalid}
-                hasConflict={hasConflict}
+                hasConflict={!isStayMode && hasConflict}
                 invalidMessage={tGantt("quick.chooseCheckoutAfterCheckin")}
                 nightLabel={(count) => tGantt("quick.nightsLabel", { count })}
                 locale={locale}
@@ -843,7 +893,7 @@ export function GanttQuickActionPanel({
               />
             )}
 
-            {hasConflict ? (
+            {hasConflict && !isStayMode ? (
               <SummaryCard
                 title={tGantt("quick.conflict")}
                 tone="warn"
@@ -950,7 +1000,27 @@ export function GanttQuickActionPanel({
 
         {mode === "cerere" || mode === "direct" ? (
           <>
-            {hasMultiRoomDraft ? (
+            <StaffStayIntentToggle
+              value={intent}
+              onChange={setIntent}
+              appearance="admin"
+            />
+            <StaffStayOccupancyFields
+              numAdults={numAdults}
+              numChildren={numChildren}
+              onAdultsChange={setNumAdults}
+              onChildrenChange={setNumChildren}
+              appearance="admin"
+            />
+            <StaffStayRoomPicker
+              rooms={stayPreview.rooms}
+              quote={stayPreview.quote}
+              pending={stayPreview.pending}
+              previewError={stayPreview.error}
+              onToggle={stayPreview.toggleRoom}
+              appearance="admin"
+            />
+            {hasMultiRoomDraft || stayPreview.selectedIds.length > 1 ? (
               <label className="gantt-quick-panel__occupants-toggle">
                 <input
                   type="checkbox"
@@ -975,24 +1045,24 @@ export function GanttQuickActionPanel({
                 className="gantt-quick-panel__action gantt-quick-panel__action--primary flex-1"
                 disabled={
                   pending ||
+                  stayPreview.pending ||
                   !identityReady ||
-                  !activeRoomId ||
-                  hasConflict ||
+                  !stayPreview.quote.hostsGuests ||
                   intervalInvalid
                 }
-                onClick={() => submitGuestCreate(mode)}
+                onClick={() => submitGuestCreate(intent)}
               >
                 {pending
                   ? tCommon("saving")
                   : usePerRoomIdentities
                     ? !occupantsReady
                       ? identity.checkingLabel
-                      : mode === "cerere"
+                      : intent === "cerere"
                         ? tGantt("quick.createRequest")
                         : tGantt("quick.confirmStay")
                     : !identity.identityChecksReady
                       ? identity.checkingLabel
-                      : mode === "cerere"
+                      : intent === "cerere"
                         ? tGantt("quick.createRequest")
                         : tGantt("quick.confirmStay")}
               </AdminButton>

@@ -4,6 +4,7 @@ import { AdminQuickPanel } from "@/features/public-site/ui/AdminQuickPanel";
 import { loadReceptiePage } from "@/features/public-site/loaders";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTranslations } from "next-intl/server";
+import "@/styles/features/admin/staff-stay-create.css";
 
 export default async function ReceptiePage({
   searchParams,
