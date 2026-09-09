@@ -1,6 +1,20 @@
 /** CSS-only app mockups for feature showcase sections */
 
-export function BookingFormMockup() {
+export type BookingFormMockupLabels = {
+  checkIn: string;
+  nights: string;
+  roomsAvailable: string;
+  month: string;
+  roomDouble: string;
+  roomTwin: string;
+  roomSuite: string;
+  free: string;
+  occupied: string;
+  sendRequest: string;
+  room: string;
+};
+
+export function BookingFormMockup({ labels }: { labels: BookingFormMockupLabels }) {
   return (
     <div className="feat-mockup feat-mockup--booking" aria-hidden>
       <div className="feat-mockup__card">
@@ -12,89 +26,115 @@ export function BookingFormMockup() {
           </div>
         </div>
         <div className="feat-mockup__divider" />
-        <p className="feat-mockup__label">Check-in</p>
+        <p className="feat-mockup__label">{labels.checkIn}</p>
         <div className="feat-mockup__date-row">
           <div className="feat-mockup__date-box feat-mockup__date-box--active">
             <span className="feat-mockup__date-num">14</span>
-            <span className="feat-mockup__date-month">Iul</span>
+            <span className="feat-mockup__date-month">{labels.month}</span>
           </div>
           <div className="feat-mockup__arrow">→</div>
           <div className="feat-mockup__date-box">
             <span className="feat-mockup__date-num">19</span>
-            <span className="feat-mockup__date-month">Iul</span>
+            <span className="feat-mockup__date-month">{labels.month}</span>
           </div>
-          <div className="feat-mockup__nights">5 nopți</div>
+          <div className="feat-mockup__nights">{labels.nights}</div>
         </div>
-        <p className="feat-mockup__label" style={{ marginTop: 12 }}>Camere disponibile</p>
+        <p className="feat-mockup__label" style={{ marginTop: 12 }}>
+          {labels.roomsAvailable}
+        </p>
         {[
-          { room: "Camera 101", type: "Dublă", price: "290 RON", avail: true },
-          { room: "Camera 201", type: "Twin", price: "260 RON", avail: true },
-          { room: "Camera 301", type: "Suite", price: "450 RON", avail: false },
-        ].map((r) => (
-          <div key={r.room} className={`feat-mockup__room-row ${!r.avail ? "feat-mockup__room-row--unavail" : ""}`}>
+          { id: "101", type: labels.roomDouble, price: "290 RON", avail: true },
+          { id: "201", type: labels.roomTwin, price: "260 RON", avail: true },
+          { id: "301", type: labels.roomSuite, price: "450 RON", avail: false },
+        ].map((row) => (
+          <div
+            key={row.id}
+            className={`feat-mockup__room-row ${!row.avail ? "feat-mockup__room-row--unavail" : ""}`}
+          >
             <div>
-              <p className="feat-mockup__room-name">{r.room}</p>
-              <p className="feat-mockup__room-type">{r.type}</p>
+              <p className="feat-mockup__room-name">
+                {labels.room} {row.id}
+              </p>
+              <p className="feat-mockup__room-type">{row.type}</p>
             </div>
             <div className="feat-mockup__room-right">
-              <span className="feat-mockup__room-price">{r.price}</span>
-              {r.avail
-                ? <span className="feat-mockup__tag feat-mockup__tag--green">Liber</span>
-                : <span className="feat-mockup__tag feat-mockup__tag--gray">Ocupat</span>}
+              <span className="feat-mockup__room-price">{row.price}</span>
+              {row.avail ? (
+                <span className="feat-mockup__tag feat-mockup__tag--green">
+                  {labels.free}
+                </span>
+              ) : (
+                <span className="feat-mockup__tag feat-mockup__tag--gray">
+                  {labels.occupied}
+                </span>
+              )}
             </div>
           </div>
         ))}
         <button className="feat-mockup__btn" type="button" tabIndex={-1}>
-          Trimite cerere
+          {labels.sendRequest}
         </button>
       </div>
     </div>
   );
 }
 
-export function GuestAppMockup() {
+export type GuestAppMockupLabels = {
+  welcome: string;
+  guestName: string;
+  stay: string;
+  wifi: string;
+  facilities: string;
+  breakfast: string;
+  localGuide: string;
+  onlineCheckin: string;
+  onlineCheckinHint: string;
+  wifiNetwork: string;
+  wifiName: string;
+  wifiPassword: string;
+};
+
+export function GuestAppMockup({ labels }: { labels: GuestAppMockupLabels }) {
   return (
     <div className="phone-frame" aria-hidden>
       <div className="phone-frame__shell">
         <div className="phone-frame__notch" />
         <div className="phone-frame__screen">
-          {/* Status bar */}
           <div className="phone-status">
             <span>9:41</span>
             <span className="phone-status__signal" aria-hidden />
           </div>
-          {/* App content */}
           <div className="phone-app">
             <div className="phone-app__hero">
-              <p className="phone-app__welcome">Bun venit,</p>
-              <p className="phone-app__name">Andrei</p>
-              <p className="phone-app__stay">Camera 201 · 5 nopți</p>
+              <p className="phone-app__welcome">{labels.welcome}</p>
+              <p className="phone-app__name">{labels.guestName}</p>
+              <p className="phone-app__stay">{labels.stay}</p>
             </div>
             <div className="phone-app__tiles">
               {[
-                { label: "Wi-Fi" },
-                { label: "Facilități" },
-                { label: "Mic dejun" },
-                { label: "Ghid local" },
+                labels.wifi,
+                labels.facilities,
+                labels.breakfast,
+                labels.localGuide,
               ].map((tile) => (
-                <div key={tile.label} className="phone-tile">
+                <div key={tile} className="phone-tile">
                   <span className="phone-tile__icon" aria-hidden />
-                  <span className="phone-tile__label">{tile.label}</span>
+                  <span className="phone-tile__label">{tile}</span>
                 </div>
               ))}
             </div>
             <div className="phone-app__checkin">
               <span className="phone-app__checkin-icon" aria-hidden />
               <div>
-                <p className="phone-app__checkin-title">Check-in online</p>
-                <p className="phone-app__checkin-sub">Completează în avans</p>
+                <p className="phone-app__checkin-title">{labels.onlineCheckin}</p>
+                <p className="phone-app__checkin-sub">{labels.onlineCheckinHint}</p>
               </div>
               <span className="phone-app__chevron">›</span>
             </div>
             <div className="phone-app__wifi-card">
-              <p className="phone-app__wifi-label">Rețea Wi-Fi</p>
-              <p className="phone-app__wifi-name">Zalmox_Guests</p>
-              <p className="phone-app__wifi-pass">Parolă: <b>welcome2025</b></p>
+              <p className="phone-app__wifi-label">{labels.wifiNetwork}</p>
+              <p className="phone-app__wifi-name">{labels.wifiName}</p>
+              <p className="phone-app__wifi-pass">{labels.wifiPassword}</p>
             </div>
           </div>
         </div>

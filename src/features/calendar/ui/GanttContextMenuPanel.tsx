@@ -87,7 +87,7 @@ export function GanttContextMenuPanel() {
   const t = useTranslations("admin.common");
   const locale = useLocale();
   const router = useRouter();
-  const { menu, closeMenu, requestCreate, openMoveRoom } = useGanttContextMenu();
+  const { menu, closeMenu, dismissMenu, requestCreate, openMoveRoom } = useGanttContextMenu();
   const { showToast, notifyCancel } = useAdminFx();
   const { pending } = useAdminPending();
   const runAdminAction = useRunAdminAction();
@@ -113,11 +113,11 @@ export function GanttContextMenuPanel() {
   useEffect(() => {
     if (!menu) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeMenu();
+      if (e.key === "Escape") dismissMenu();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [menu, closeMenu]);
+  }, [menu, dismissMenu]);
 
   if (!menu) return null;
 
@@ -250,7 +250,11 @@ export function GanttContextMenuPanel() {
           disabled={pending}
           className="gantt-ctx-menu-backdrop fixed inset-0 z-[199] disabled:cursor-wait"
           aria-label={t("closeMenu")}
-          onClick={closeMenu}
+          onClick={dismissMenu}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            dismissMenu();
+          }}
         />
         <div
           ref={menuRef}

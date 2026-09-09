@@ -443,27 +443,6 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__home-btn {
   padding: 0;
 }
 
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--compact {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  width: var(--gantt-touch-min, 1.925rem);
-}
-
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-dot {
-  display: block;
-  width: 0.34rem;
-  height: 0.34rem;
-  border-radius: 50%;
-  background: currentColor;
-}
-
-html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn--active .gantt-compact-toolbar__today-dot {
-  background: #fff;
-  box-shadow: 0 0 0 1px #fff;
-}
-
 html[data-layout-chrome="compact"][data-layout-orientation="landscape"] .gantt-compact-toolbar__period-jump {
   min-height: var(--gantt-touch-min, 2.75rem);
   max-width: 7.5rem;

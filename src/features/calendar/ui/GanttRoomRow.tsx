@@ -65,6 +65,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onMoveRoom,
   pinnedSelection,
   onCtrlDragEnd,
+  onRangePin,
   today,
   dayGridOptions,
   shellZoom,
@@ -86,6 +87,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   onMoveRoom: (draft: MoveRoomDraft) => void;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
+  onRangePin?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
   dayGridOptions?: GanttDayGridOptions;
   shellZoom?: GanttShellZoom;
@@ -175,6 +177,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
           touch={touch}
           pinnedSelection={pinnedSelection}
           onCtrlDragEnd={onCtrlDragEnd}
+          onRangePin={onRangePin}
           renderGrid={
             <DayGrid
               columns={viewRange.days}

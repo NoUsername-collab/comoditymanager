@@ -4,12 +4,17 @@ import { useCallback, useEffect, useMemo, type RefObject } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { buildCalendarQuery } from "@/lib/gantt-query";
-import { jumpToDateInView, navigateRange } from "@/domain/gantt/view-range";
+import {
+  jumpToDateInView,
+  navigateRange,
+  ganttTodayStartAnchor,
+  type GanttViewRange,
+  type GanttZoom,
+} from "@/domain/gantt/view-range";
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
-import { addDays, parseIso } from "@/lib/stay-dates";
+import { parseIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter, GanttFilter } from "@/domain/gantt/filters";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
-import type { GanttViewRange, GanttZoom } from "@/domain/gantt/view-range";
 import {
   normalizeZoomChoice,
   periodStepMeta,
@@ -95,8 +100,8 @@ export function useGanttCalendarNavigation({
     [viewRange.zoom]
   );
   const todayStartAnchor = useMemo(
-    () => (zoomChoice === "today" ? effectiveToday : addDays(effectiveToday, -1)),
-    [zoomChoice, effectiveToday]
+    () => ganttTodayStartAnchor(effectiveToday, viewRange.zoom),
+    [effectiveToday, viewRange.zoom]
   );
   const firstIso = viewRange.days[0]?.iso ?? effectiveToday;
   const firstDate = parseIso(firstIso);
@@ -111,7 +116,7 @@ export function useGanttCalendarNavigation({
   const currentWs = searchParams.get("ws") ?? undefined;
   const currentBuildingId = searchParams.get("building") ?? null;
   const selectedFeature = featureFilter;
-  const isTodayStartMode = currentWs === todayStartAnchor;
+  const isOnToday = viewRange.zoom !== "month" && firstIso === todayStartAnchor;
   const isAvailabilityPanelOpen = searchParams.get("avail") === "1";
   const hasActiveFilters = filter !== "all" || selectedFeature !== "all";
 
@@ -157,65 +162,65 @@ export function useGanttCalendarNavigation({
         viewRange.zoom === "quarter"
           ? Number(viewRange.periodKey.split("-")[2])
           : Math.floor(currentMonth / 3);
-      const nextTodayStartAnchor =
-        nextZoom === "today" ? effectiveToday : addDays(effectiveToday, -1);
+
+      if (nextZoom === "month") {
+        const monthDate = isOnToday ? parseIso(effectiveToday) : firstDate;
+        pushCalendarPatch({
+          zoom: "month",
+          ws: null,
+          y: monthDate.getFullYear(),
+          m: monthDate.getMonth(),
+        });
+        return;
+      }
+
+      const nextAnchor = ganttTodayStartAnchor(effectiveToday, nextZoom);
       pushCalendarPatch({
         zoom: nextZoom,
-        ws:
-          nextZoom === "quarter" || nextZoom === "days30"
-            ? isTodayStartMode
-              ? nextTodayStartAnchor
-              : null
-            : isTodayStartMode
-              ? nextTodayStartAnchor
-              : effectiveToday,
+        ws: isOnToday ? nextAnchor : firstIso,
         q: nextZoom === "quarter" ? currentQuarter : undefined,
       });
     },
-    [currentMonth, effectiveToday, isTodayStartMode, pushCalendarPatch, viewRange.periodKey, viewRange.zoom]
+    [
+      currentMonth,
+      effectiveToday,
+      firstDate,
+      firstIso,
+      isOnToday,
+      pushCalendarPatch,
+      viewRange.periodKey,
+      viewRange.zoom,
+    ]
   );
 
-  const toggleTodayStartMode = useCallback(() => {
-    if (isTodayStartMode) {
-      const todayDate = parseIso(effectiveToday);
-      pushCalendarPatch({
-        y: todayDate.getFullYear(),
-        m: todayDate.getMonth(),
-        ws:
-          viewRange.zoom === "quarter" || viewRange.zoom === "days30"
-            ? null
-            : effectiveToday,
-        q: viewRange.zoom === "quarter" ? Math.floor(todayDate.getMonth() / 3) : undefined,
-      });
-      return;
-    }
-
-    const anchorDate = parseIso(todayStartAnchor);
+  const jumpToToday = useCallback(() => {
+    const nextZoom: GanttZoom =
+      viewRange.zoom === "month" ? "days30" : viewRange.zoom;
+    const ws = ganttTodayStartAnchor(effectiveToday, nextZoom);
+    const anchorDate = parseIso(ws);
     pushCalendarPatch({
       y: anchorDate.getFullYear(),
       m: anchorDate.getMonth(),
-      ws: todayStartAnchor,
-      q: viewRange.zoom === "quarter" ? Math.floor(anchorDate.getMonth() / 3) : undefined,
+      zoom: nextZoom,
+      ws,
+      q:
+        nextZoom === "quarter"
+          ? Math.floor(anchorDate.getMonth() / 3)
+          : undefined,
     });
-  }, [
-    effectiveToday,
-    isTodayStartMode,
-    pushCalendarPatch,
-    todayStartAnchor,
-    viewRange.zoom,
-  ]);
+  }, [effectiveToday, pushCalendarPatch, viewRange.zoom]);
 
   useEffect(() => {
     if (todayIndex < 0 || scrolledPeriodRef.current === viewRange.periodKey) {
       return;
     }
     scrolledPeriodRef.current = viewRange.periodKey;
-    if (isTodayStartMode) {
+    if (isOnToday) {
       return;
     }
     const t = window.setTimeout(scrollToTodayColumn, 120);
     return () => window.clearTimeout(t);
-  }, [viewRange.periodKey, todayIndex, isTodayStartMode, scrollToTodayColumn, scrolledPeriodRef]);
+  }, [viewRange.periodKey, todayIndex, isOnToday, scrollToTodayColumn, scrolledPeriodRef]);
 
   const navigatePeriod = useCallback(
     (direction: -1 | 1) => {
@@ -238,6 +243,16 @@ export function useGanttCalendarNavigation({
 
   const jumpToDate = useCallback(
     (iso: string) => {
+      if (viewRange.zoom === "month") {
+        const d = parseIso(iso);
+        pushCalendarPatch({
+          y: d.getFullYear(),
+          m: d.getMonth(),
+          zoom: "month",
+          ws: null,
+        });
+        return;
+      }
       const patch = jumpToDateInView(iso, viewRange.zoom);
       pushCalendarPatch({
         y: patch.y,
@@ -293,12 +308,12 @@ export function useGanttCalendarNavigation({
     handleSummaryDayClick,
     zoomChoice,
     firstIso,
-    isTodayStartMode,
+    isOnToday,
     isAvailabilityPanelOpen,
     hasActiveFilters,
     pushCalendarPatch,
     handleInlineZoomChange,
-    toggleTodayStartMode,
+    jumpToToday,
     navigatePeriod,
     jumpToDate,
     handleHeaderDayDrillDown,

@@ -9,6 +9,9 @@ export function GanttPeriodJumpControl({
   onPrev,
   onNext,
   onJump,
+  onJumpToToday,
+  todayLabel,
+  todayActive,
   prevAria,
   nextAria,
   jumpAria,
@@ -18,6 +21,9 @@ export function GanttPeriodJumpControl({
   onPrev: () => void;
   onNext: () => void;
   onJump: (iso: string) => void;
+  onJumpToToday: () => void;
+  todayLabel: string;
+  todayActive: boolean;
   prevAria: string;
   nextAria: string;
   jumpAria: string;
@@ -67,6 +73,22 @@ export function GanttPeriodJumpControl({
         aria-label={nextAria}
       >
         ›
+      </button>
+
+      <button
+        type="button"
+        className={[
+          "gantt-compact-toolbar__today-btn",
+          todayActive && "gantt-compact-toolbar__today-btn--active",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        onClick={onJumpToToday}
+        disabled={todayActive}
+        aria-label={todayLabel}
+        aria-current={todayActive ? "date" : undefined}
+      >
+        {todayLabel}
       </button>
 
       <input

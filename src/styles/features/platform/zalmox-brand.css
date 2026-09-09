@@ -291,6 +291,37 @@
   box-shadow: none;
 }
 
+.hero-browser--desk {
+  box-shadow: 0 0 0 1px color-mix(in srgb, #7aa2ff 14%, transparent);
+  background: #12141c;
+}
+
+.hero-browser--desk .hero-browser__chrome {
+  background: #1c2433;
+  border-bottom-color: color-mix(in srgb, #7aa2ff 16%, transparent);
+}
+
+.hero-browser__desk-title {
+  color: #e8edf4;
+  font-weight: 600;
+}
+
+.lp-hero__demo {
+  color: #93a0b4;
+}
+
+.lp-hero__demo:hover {
+  color: #7aa2ff;
+}
+
+.lp-desk-station__title {
+  color: #1a1d2e;
+}
+
+.lp-legal-line a {
+  color: #3d5aab;
+}
+
 .hero-browser__nav {
   display: flex;
   align-items: center;

@@ -213,22 +213,62 @@ export function filterSettingsNav(
     .filter((group) => group.items.length > 0);
 }
 
-export function resolveActiveSettingsNavId(pathname: string): string {
-  const normalized = pathname.replace(/\/$/, "");
+/** Matches `src/i18n/routing.ts` — strip locale if usePathname ever keeps it. */
+const SETTINGS_LOCALE_PREFIX = /^\/(ro|en|bg)(?=\/|$)/;
 
-  if (normalized === "/admin/settings") {
-    return "overview";
+export function normalizeSettingsPath(pathname: string): string {
+  let path = pathname.split(/[?#]/)[0] ?? pathname;
+  path = path.replace(/\/$/, "") || "/";
+  path = path.replace(SETTINGS_LOCALE_PREFIX, "") || "/";
+  return path;
+}
+
+function settingsLayoutSegmentToNavId(): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const group of SETTINGS_NAV_GROUPS) {
+    for (const item of group.items) {
+      if (item.id === "overview") continue;
+      const path = item.matchPath ?? item.href;
+      const segment = path.split("/").filter(Boolean).at(-1);
+      if (segment) map[segment] = item.id;
+    }
   }
+  return map;
+}
+
+const SETTINGS_SEGMENT_TO_NAV_ID = settingsLayoutSegmentToNavId();
+
+/**
+ * Active settings nav item. Prefer the layout child segment (reliable in
+ * the settings layout) and fall back to the longest matching path.
+ */
+export function resolveActiveSettingsNavId(
+  pathname: string,
+  layoutSegment?: string | null,
+): string {
+  if (layoutSegment) {
+    const fromSegment = SETTINGS_SEGMENT_TO_NAV_ID[layoutSegment];
+    if (fromSegment) return fromSegment;
+  }
+
+  const normalized = normalizeSettingsPath(pathname);
+  let bestId: string | null = null;
+  let bestLen = 0;
 
   for (const group of SETTINGS_NAV_GROUPS) {
     for (const item of group.items) {
       if (item.id === "overview") continue;
-      if (item.matchPath && normalized.startsWith(item.matchPath)) {
-        return item.id;
+      const path = item.matchPath ?? item.href;
+      if (normalized === path || normalized.startsWith(`${path}/`)) {
+        if (path.length > bestLen) {
+          bestId = item.id;
+          bestLen = path.length;
+        }
       }
     }
   }
 
+  if (bestId) return bestId;
   if (normalized.includes("/settings/location")) return "location";
   if (normalized.includes("/settings/team-permissions")) return "team-permissions";
   return "overview";

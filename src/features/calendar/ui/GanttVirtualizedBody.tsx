@@ -179,6 +179,7 @@ type GanttBodyProps = {
   onMoveRoom: (draft: MoveRoomDraft) => void;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
+  onRangePin?: (roomIds: string[], checkIn: string, checkOut: string) => void;
   today: string;
   dayGridOptions?: GanttDayGridOptions;
   shellZoom?: GanttShellZoom;
@@ -244,6 +245,7 @@ function GanttTbodyRows({
   onMoveRoom,
   pinnedSelection,
   onCtrlDragEnd,
+  onRangePin,
   today,
   dayGridOptions,
   shellZoom,
@@ -302,6 +304,7 @@ function GanttTbodyRows({
               onMoveRoom={onMoveRoom}
               pinnedSelection={pinnedSelection}
               onCtrlDragEnd={onCtrlDragEnd}
+              onRangePin={onRangePin}
               today={today}
               dayGridOptions={dayGridOptions}
               shellZoom={shellZoom}

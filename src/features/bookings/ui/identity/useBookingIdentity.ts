@@ -2,13 +2,19 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { isBookingIdentitySubmitReady } from "@/features/bookings/ui/identity/helpers";
+import {
+  isBookingIdentitySubmitReady,
+  type GuestIdentityValues,
+} from "@/features/bookings/ui/identity/helpers";
 import { useGuestIdentityAutofill } from "@/features/bookings/ui/identity/useGuestIdentityAutofill";
 
 export type BookingIdentityOptions = {
   /** Staff surfaces look up existing guests. Public booking must not. */
   lookup?: boolean;
   emailRequired?: boolean;
+  initialValues?: GuestIdentityValues;
+  /** Restored values already passed the lookup gate — don't block submit on remount. */
+  initialSettled?: boolean;
 };
 
 export function useBookingIdentity(options?: BookingIdentityOptions) {
@@ -23,7 +29,11 @@ export function useBookingIdentity(options?: BookingIdentityOptions) {
     }),
     [t],
   );
-  const identity = useGuestIdentityAutofill(hints, { lookup });
+  const identity = useGuestIdentityAutofill(hints, {
+    lookup,
+    initialValues: options?.initialValues,
+    initialSettled: options?.initialSettled,
+  });
 
   return {
     ...identity,

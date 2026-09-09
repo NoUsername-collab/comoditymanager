@@ -21,6 +21,8 @@ export function drillDownZoomFrom(current: InlineZoomChoice): InlineZoomChoice |
   switch (current) {
     case "quarter":
       return "days30";
+    case "month":
+      return "days7";
     case "days30":
       return "days7";
     case "days15":
@@ -85,7 +87,13 @@ export function resolveGanttDayGridOptions(
 export const GANTT_DAY_CELL =
   "gantt-day-cell min-w-0 bg-white shadow-[inset_0_0_0_1px_#d4d4d8]";
 
-export type InlineZoomChoice = "today" | "days7" | "days15" | "days30" | "quarter";
+export type InlineZoomChoice =
+  | "today"
+  | "days7"
+  | "days15"
+  | "days30"
+  | "month"
+  | "quarter";
 
 export const QUICK_SHIFT_STEPS = [{ days: 1 }, { days: 7 }, { days: 15 }, { days: 30 }] as const;
 
@@ -122,8 +130,13 @@ export type StickyViewportState = {
 
 export function normalizeZoomChoice(zoom: string): InlineZoomChoice {
   if (zoom === "week") return "days7";
-  if (zoom === "month") return "days30";
-  if (zoom === "today" || zoom === "days7" || zoom === "days15" || zoom === "days30") {
+  if (
+    zoom === "today" ||
+    zoom === "days7" ||
+    zoom === "days15" ||
+    zoom === "days30" ||
+    zoom === "month"
+  ) {
     return zoom;
   }
   return "quarter";
@@ -142,6 +155,8 @@ export function periodStepMeta(
       return { label: tCommon("stepFifteenDays"), aria: tCommon("fifteenDaysAria") };
     case "days30":
       return { label: tCommon("stepOneMonth"), aria: tCommon("oneMonthAria") };
+    case "month":
+      return { label: tCommon("stepCalendarMonth"), aria: tCommon("calendarMonthAria") };
     case "quarter":
       return { label: tCommon("stepOneQuarter"), aria: tCommon("oneQuarterAria") };
   }

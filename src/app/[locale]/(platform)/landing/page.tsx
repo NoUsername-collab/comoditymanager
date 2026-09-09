@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { LandingHeroShowcase } from "@/features/signup/ui/LandingHeroShowcase";
-import { LandingTools } from "@/features/signup/ui/LandingTools";
-import { LandingTrustCards } from "@/features/signup/ui/LandingTrustCards";
 import { LandingFeatureBand } from "@/features/signup/ui/LandingFeatureBand";
 import { PricingGrid } from "@/features/signup/ui/PricingGrid";
 import {
@@ -42,11 +40,9 @@ export default async function LandingPage({
 
   return (
     <main className="lp">
-      <section className="lp-hero" aria-labelledby="lp-hero-title">
-        <div className="lp-hero__glow" aria-hidden />
+      <section className="lp-hero lp-hero--desk" aria-labelledby="lp-hero-title">
         <div className="lp-hero__grid">
           <div className="lp-hero__copy">
-            <span className="lp-badge lp-badge--rainbow">{t("heroBadge")}</span>
             <h1 className="lp-hero__title" id="lp-hero-title">
               {t.rich("heroTitle", {
                 accent: (chunks) => (
@@ -60,141 +56,66 @@ export default async function LandingPage({
               <Link href="/signup" className="lp-btn lp-btn--primary lp-btn--lg">
                 {t("heroCta")}
               </Link>
-              <a href={demoHref} className="lp-btn lp-btn--ghost lp-btn--lg">
+              <a href={demoHref} className="lp-hero__demo">
                 {t("heroCtaDemo")}
               </a>
             </div>
 
             <p className="lp-hero__note">{t("heroNote")}</p>
-
-            <div className="lp-stats-inline" aria-label={t("statsAria")}>
-              <div className="lp-stat-inline">
-                <span className="lp-stat-inline__value">{t("stat1Value")}</span>
-                <span className="lp-stat-inline__label">{t("stat1Label")}</span>
-              </div>
-              <div className="lp-stat-inline__divider" />
-              <div className="lp-stat-inline">
-                <span className="lp-stat-inline__value">{t("stat2Value")}</span>
-                <span className="lp-stat-inline__label">{t("stat2Label")}</span>
-              </div>
-              <div className="lp-stat-inline__divider" />
-              <div className="lp-stat-inline">
-                <span className="lp-stat-inline__value">{t("stat3Value")}</span>
-                <span className="lp-stat-inline__label">{t("stat3Label")}</span>
-              </div>
-            </div>
           </div>
 
           <div className="lp-hero__visual">
-            <LandingHeroShowcase />
+            <LandingHeroShowcase title={t("mockup.calendarTitle")} />
           </div>
-        </div>
-      </section>
-
-      <section className="lp-trust-strip" aria-label={t("trustStripAria")}>
-        <p className="lp-trust-strip__lead">{t("trustLead")}</p>
-        <div className="lp-trust-strip__badges">
-          <span className="lp-trust-badge">{t("trust1")}</span>
-          <span className="lp-trust-badge">{t("trust2")}</span>
-          <span className="lp-trust-badge">{t("trust3")}</span>
         </div>
       </section>
 
       <LandingFeatureBand
         align="copy-first"
-        eyebrow={t("featGanttEyebrow")}
-        title={t("featGanttTitle")}
-        description={t("featGanttDesc")}
-        items={[
-          t("featGanttL1"),
-          t("featGanttL2"),
-          t("featGanttL3"),
-          t("featGanttL4"),
-        ]}
-      >
-        <LandingHeroShowcase />
-      </LandingFeatureBand>
+        title={t("shiftTitle")}
+        description={t("shiftDesc")}
+      />
 
-      <LandingFeatureBand
-        align="visual-first"
-        eyebrow={t("featSiteEyebrow")}
-        title={t("featSiteTitle")}
-        description={t("featSiteDesc")}
-        items={[
-          t("featSiteL1"),
-          t("featSiteL2"),
-          t("featSiteL3"),
-          t("featSiteL4"),
-        ]}
-      >
-        <BookingFormMockup />
-      </LandingFeatureBand>
-
-      <LandingFeatureBand
-        align="copy-first"
-        eyebrow={t("featGuestEyebrow")}
-        title={t("featGuestTitle")}
-        description={t("featGuestDesc")}
-        items={[
-          t("featGuestL1"),
-          t("featGuestL2"),
-          t("featGuestL3"),
-          t("featGuestL4"),
-        ]}
-      >
-        <GuestAppMockup />
-      </LandingFeatureBand>
-
-      <LandingTools />
-
-      <section className="lp-steps-section" aria-labelledby="lp-how-title">
-        <h2 className="lp-section-title" id="lp-how-title">
-          {t("howTitle")}
-        </h2>
-        <p className="lp-section-lead">{t("howLead")}</p>
-        <ol className="lp-steps">
-          {[
-            { num: "01", title: t("step1Title"), desc: t("step1Desc") },
-            { num: "02", title: t("step2Title"), desc: t("step2Desc") },
-            { num: "03", title: t("step3Title"), desc: t("step3Desc") },
-          ].map((s) => (
-            <li key={s.num} className="lp-step">
-              <div className="lp-step__num">{s.num}</div>
-              <h3 className="lp-step__title">{s.title}</h3>
-              <p className="lp-step__desc">{s.desc}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="lp-compare-section" aria-labelledby="lp-problem-title">
-        <h2 className="lp-section-title" id="lp-problem-title">
-          {t("problemTitle")}
-        </h2>
-        <div className="lp-compare">
-          <div className="lp-compare__col lp-compare__col--bad">
-            <div className="lp-compare__col-header">
-              <h3>{t("withoutZalmox")}</h3>
-            </div>
-            <ul>
-              <li>{t("problem1")}</li>
-              <li>{t("problem2")}</li>
-              <li>{t("problem3")}</li>
-              <li>{t("problem4")}</li>
-            </ul>
-          </div>
-          <div className="lp-compare__col lp-compare__col--good">
-            <div className="lp-compare__col-header">
-              <h3>{t("withZalmox")}</h3>
-            </div>
-            <ul>
-              <li>{t("solution1")}</li>
-              <li>{t("solution2")}</li>
-              <li>{t("solution3")}</li>
-              <li>{t("solution4")}</li>
-            </ul>
-          </div>
-        </div>
+      <section className="lp-desk-stations" aria-label={t("stationsAria")}>
+        <article className="lp-desk-station">
+          <h3 className="lp-desk-station__title">{t("stationSiteTitle")}</h3>
+          <p className="lp-desk-station__desc">{t("stationSiteDesc")}</p>
+          <BookingFormMockup
+            labels={{
+              checkIn: t("mockup.checkIn"),
+              nights: t("mockup.nights"),
+              roomsAvailable: t("mockup.roomsAvailable"),
+              month: t("mockup.monthShort"),
+              roomDouble: t("mockup.roomDouble"),
+              roomTwin: t("mockup.roomTwin"),
+              roomSuite: t("mockup.roomSuite"),
+              free: t("mockup.free"),
+              occupied: t("mockup.occupied"),
+              sendRequest: t("mockup.sendRequest"),
+              room: t("mockup.room"),
+            }}
+          />
+        </article>
+        <article className="lp-desk-station">
+          <h3 className="lp-desk-station__title">{t("stationGuestTitle")}</h3>
+          <p className="lp-desk-station__desc">{t("stationGuestDesc")}</p>
+          <GuestAppMockup
+            labels={{
+              welcome: t("mockup.welcome"),
+              guestName: t("mockup.guestName"),
+              stay: t("mockup.stay"),
+              wifi: t("mockup.wifi"),
+              facilities: t("mockup.facilities"),
+              breakfast: t("mockup.breakfast"),
+              localGuide: t("mockup.localGuide"),
+              onlineCheckin: t("mockup.onlineCheckin"),
+              onlineCheckinHint: t("mockup.onlineCheckinHint"),
+              wifiNetwork: t("mockup.wifiNetwork"),
+              wifiName: t("mockup.wifiName"),
+              wifiPassword: t("mockup.wifiPassword"),
+            }}
+          />
+        </article>
       </section>
 
       <section
@@ -215,7 +136,11 @@ export default async function LandingPage({
         </div>
       </section>
 
-      <LandingTrustCards />
+      <p className="lp-legal-line">
+        {t("trustLegalPrefix")}{" "}
+        <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
+        {t("trustLegalSuffix")}
+      </p>
 
       <section className="lp-faq-section" aria-labelledby="lp-faq-title">
         <h2 className="lp-section-title" id="lp-faq-title">
@@ -245,9 +170,6 @@ export default async function LandingPage({
             <Link href="/signup" className="lp-btn lp-btn--primary lp-btn--lg">
               {t("finalCtaButton")}
             </Link>
-            <a href={demoHref} className="lp-btn lp-btn--ghost-light lp-btn--lg">
-              {t("heroCtaDemo")}
-            </a>
           </div>
           <p className="lp-final-cta__note">{t("heroNote")}</p>
         </div>

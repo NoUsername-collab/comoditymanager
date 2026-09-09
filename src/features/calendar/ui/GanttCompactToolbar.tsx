@@ -10,7 +10,6 @@ import {
 } from "@/features/calendar/ui/GanttGridHelpers";
 import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
-import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import type { GanttDensity } from "@/hooks/useGanttDensity";
 import { useTranslations } from "next-intl";
 
@@ -36,8 +35,8 @@ export function GanttCompactToolbar({
   prevPeriodAria,
   nextPeriodAria,
   jumpAria,
-  isTodayStartMode,
-  onToggleTodayStartMode,
+  isOnToday,
+  onJumpToToday,
   layerFilter,
   onCalendarPatch,
   isAvailabilityPanelOpen,
@@ -69,8 +68,8 @@ export function GanttCompactToolbar({
   prevPeriodAria: string;
   nextPeriodAria: string;
   jumpAria: string;
-  isTodayStartMode: boolean;
-  onToggleTodayStartMode: () => void;
+  isOnToday: boolean;
+  onJumpToToday: () => void;
   layerFilter: GanttLayerFilter;
   onCalendarPatch: (patch: GanttCalendarPatch) => void;
   isAvailabilityPanelOpen: boolean;
@@ -84,7 +83,6 @@ export function GanttCompactToolbar({
   const tCommon = useTranslations("admin.common");
   const tNav = useTranslations("admin.nav");
   const tLayers = useTranslations("admin.gantt.layers");
-  const { compactChrome } = useCompactLayoutHints();
 
   return (
     <div className="gantt-compact-toolbar">
@@ -121,10 +119,11 @@ export function GanttCompactToolbar({
             onChange={(e) => onZoomChange(e.target.value as InlineZoomChoice)}
             aria-label={tCommon("interval")}
           >
-            <option value="today">{tCommon("todayShort")}</option>
+            <option value="today">{tCommon("oneDayShort")}</option>
             <option value="days7">{tCommon("sevenDaysShort")}</option>
             <option value="days15">{tCommon("fifteenDaysShort")}</option>
             <option value="days30">{tCommon("thirtyDaysShort")}</option>
+            <option value="month">{tCommon("calendarMonthShort")}</option>
             <option value="quarter">{tCommon("quarterShort")}</option>
           </select>
         </div>
@@ -135,6 +134,9 @@ export function GanttCompactToolbar({
           onPrev={onPrevPeriod}
           onNext={onNextPeriod}
           onJump={onJumpToDate}
+          onJumpToToday={onJumpToToday}
+          todayLabel={tCommon("todayShort")}
+          todayActive={isOnToday}
           prevAria={prevPeriodAria}
           nextAria={nextPeriodAria}
           jumpAria={jumpAria}
@@ -160,26 +162,6 @@ export function GanttCompactToolbar({
           {density === "comfortable"
             ? tCommon("ganttDensityComfortable")
             : tCommon("ganttDensityCompact")}
-        </button>
-
-        <button
-          type="button"
-          className={[
-            "gantt-compact-toolbar__today-btn",
-            compactChrome && "gantt-compact-toolbar__today-btn--compact",
-            isTodayStartMode && "gantt-compact-toolbar__today-btn--active",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onClick={onToggleTodayStartMode}
-          title={tCommon("alignToday")}
-          aria-label={tCommon("alignToday")}
-        >
-          {compactChrome ? (
-            <span className="gantt-compact-toolbar__today-dot" aria-hidden />
-          ) : (
-            tCommon("todayShort")
-          )}
         </button>
       </div>
 

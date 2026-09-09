@@ -52,25 +52,41 @@ function mergeAutofillValues(
 
 export function useGuestIdentityAutofill(
   hints: GuestIdentityHintLabels,
-  options?: { lookup?: boolean },
+  options?: {
+    lookup?: boolean;
+    initialValues?: GuestIdentityValues;
+    initialSettled?: boolean;
+  },
 ) {
   const lookupEnabled = options?.lookup !== false;
-  const [guestLastName, setGuestLastName] = useState("");
-  const [guestFirstName, setGuestFirstName] = useState("");
-  const [guestEmail, setGuestEmail] = useState("");
-  const [guestPhone, setGuestPhone] = useState("");
+  const initial = options?.initialValues;
+  const initialFingerprint =
+    initial && options?.initialSettled ? identityFingerprint(initial) : null;
+  const [guestLastName, setGuestLastName] = useState(initial?.lastName ?? "");
+  const [guestFirstName, setGuestFirstName] = useState(initial?.firstName ?? "");
+  const [guestEmail, setGuestEmail] = useState(initial?.email ?? "");
+  const [guestPhone, setGuestPhone] = useState(initial?.phone ?? "");
   const [identityHint, setIdentityHint] = useState<string | null>(null);
   const [identityHintTone, setIdentityHintTone] = useState<"neutral" | "warn">(
     "neutral",
   );
   const [settledFingerprint, setSettledFingerprint] = useState<string | null>(
-    null,
+    initialFingerprint,
   );
   const [identityPending, startIdentityTransition] = useTransition();
-  const userOwnedRef = useRef<Record<GuestField, boolean>>(emptyUserOwned());
+  const userOwnedRef = useRef<Record<GuestField, boolean>>(
+    initial
+      ? {
+          lastName: Boolean(initial.lastName.trim()),
+          firstName: Boolean(initial.firstName.trim()),
+          email: Boolean(initial.email.trim()),
+          phone: Boolean(initial.phone.trim()),
+        }
+      : emptyUserOwned(),
+  );
   const hintsRef = useRef(hints);
   const requestIdRef = useRef(0);
-  const settledFingerprintRef = useRef<string | null>(null);
+  const settledFingerprintRef = useRef<string | null>(initialFingerprint);
   const lookupEnabledRef = useRef(lookupEnabled);
 
   hintsRef.current = hints;

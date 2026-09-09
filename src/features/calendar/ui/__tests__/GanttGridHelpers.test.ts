@@ -4,6 +4,7 @@ import {
   ROOM_COL_W,
   drillDownZoomFrom,
   ganttDayGridStyle,
+  normalizeZoomChoice,
   resolveGanttColumnMetrics,
   resolveGanttDayGridOptions,
   resolveGanttShellZoom,
@@ -107,6 +108,7 @@ describe("resolveGanttShellZoom", () => {
     expect(resolveGanttShellZoom("days7")).toBe("7z");
     expect(resolveGanttShellZoom("days15")).toBe("15z");
     expect(resolveGanttShellZoom("days30")).toBe("30z");
+    expect(resolveGanttShellZoom("month")).toBe("30z");
     expect(resolveGanttShellZoom("quarter")).toBe("quarter");
   });
 });
@@ -114,9 +116,18 @@ describe("resolveGanttShellZoom", () => {
 describe("drillDownZoomFrom", () => {
   it("steps down zoom levels", () => {
     expect(drillDownZoomFrom("quarter")).toBe("days30");
+    expect(drillDownZoomFrom("month")).toBe("days7");
     expect(drillDownZoomFrom("days30")).toBe("days7");
     expect(drillDownZoomFrom("days15")).toBe("days7");
     expect(drillDownZoomFrom("days7")).toBe("today");
     expect(drillDownZoomFrom("today")).toBeNull();
+  });
+});
+
+describe("normalizeZoomChoice", () => {
+  it("keeps calendar month distinct from rolling 30 days", () => {
+    expect(normalizeZoomChoice("month")).toBe("month");
+    expect(normalizeZoomChoice("days30")).toBe("days30");
+    expect(normalizeZoomChoice("week")).toBe("days7");
   });
 });

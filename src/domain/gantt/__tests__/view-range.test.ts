@@ -3,8 +3,9 @@ import {
   buildMonthRange,
   buildQuarterRange,
   buildRollingRange,
-  buildWeekRange,
   mondayOfWeekContaining,
+  resolveGanttRange,
+  ganttTodayStartAnchor,
 } from "@/domain/gantt/view-range";
 
 describe("GanttDayColumn isPast", () => {
@@ -136,6 +137,50 @@ describe("buildQuarterRange", () => {
     expect(range.days[0].weekEndIso).toBeDefined();
     expect(range.rangeStart).toBe("2025-04-01");
     expect(range.rangeEnd).toBe("2025-07-01");
+  });
+});
+
+describe("resolveGanttRange default window", () => {
+  const today = "2025-06-15";
+
+  it("starts rolling 30 days at yesterday when ws is omitted", () => {
+    const range = resolveGanttRange({ zoom: "days30", today, locale: "en" });
+    expect(range.days[0].iso).toBe("2025-06-14");
+    expect(range.days).toHaveLength(30);
+    expect(range.zoom).toBe("days30");
+  });
+
+  it("starts 7-day zoom at yesterday when ws is omitted", () => {
+    const range = resolveGanttRange({ zoom: "days7", today, locale: "en" });
+    expect(range.days[0].iso).toBe("2025-06-14");
+    expect(range.days).toHaveLength(7);
+  });
+
+  it("keeps 1-day zoom on today when ws is omitted", () => {
+    const range = resolveGanttRange({ zoom: "today", today, locale: "en" });
+    expect(range.days).toHaveLength(1);
+    expect(range.days[0].iso).toBe(today);
+  });
+
+  it("uses the calendar month from the 1st for month zoom without ws", () => {
+    const range = resolveGanttRange({
+      zoom: "month",
+      y: 2025,
+      m: 5,
+      today,
+      locale: "en",
+    });
+    expect(range.days[0].iso).toBe("2025-06-01");
+    expect(range.days).toHaveLength(30);
+    expect(range.rangeEnd).toBe("2025-07-01");
+  });
+});
+
+describe("ganttTodayStartAnchor", () => {
+  it("peeks yesterday except on the 1-day zoom", () => {
+    expect(ganttTodayStartAnchor("2025-06-15", "today")).toBe("2025-06-15");
+    expect(ganttTodayStartAnchor("2025-06-15", "days30")).toBe("2025-06-14");
+    expect(ganttTodayStartAnchor("2025-06-15", "month")).toBe("2025-06-14");
   });
 });
 

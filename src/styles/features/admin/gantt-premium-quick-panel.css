@@ -106,24 +106,49 @@ html[data-layout-chrome="compact"] .gantt-create-action {
 .gantt-quick-panel__occupants {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
-.gantt-quick-panel__occupant {
-  padding-top: 0.75rem;
-  border-top: 1px solid color-mix(in srgb, var(--admin-text) 10%, transparent);
+.gantt-quick-panel__occupant-picker-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.gantt-quick-panel__occupant:first-child {
-  padding-top: 0;
-  border-top: none;
-}
-
-.gantt-quick-panel__occupant-room {
-  margin: 0 0 0.55rem;
+.gantt-quick-panel__occupant-picker-label {
+  margin: 0;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--admin-text-muted);
+}
+
+.gantt-quick-panel__occupant-progress {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--admin-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.gantt-quick-panel__occupant-picker {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.gantt-quick-panel__occupant-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.gantt-quick-panel__occupant-nav {
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .gantt-quick-panel__occupant-select,
+html[data-layout-chrome="compact"] .gantt-quick-panel__occupant-nav {
+  min-height: var(--ml-touch-min, 2.75rem);
 }

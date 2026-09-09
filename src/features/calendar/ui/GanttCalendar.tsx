@@ -27,7 +27,10 @@ import {
 } from "@/lib/constants";
 import { addDays, todayIso } from "@/lib/stay-dates";
 import { GanttPinnedCreateChip } from "@/features/calendar/ui/GanttPinnedSelectionChip";
-import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
+import {
+  pinnedSelectionFromRange,
+  type PinnedSelection,
+} from "@/domain/gantt/pinned-selection";
 import {
   setGanttRoomPinnedSpan,
   clearGanttRoomPinnedSpan,
@@ -494,6 +497,13 @@ export function GanttCalendar({
     []
   );
 
+  const handleRangePin = useCallback(
+    (roomIds: string[], checkIn: string, checkOut: string) => {
+      setPinnedSelection(pinnedSelectionFromRange(roomIds, checkIn, checkOut));
+    },
+    []
+  );
+
   const cancelPinnedSelection = useCallback(() => {
     setPinnedSelection(null);
     clearGanttRoomPinnedSpan();
@@ -525,12 +535,12 @@ export function GanttCalendar({
     handleSummaryDayClick,
     zoomChoice,
     firstIso,
-    isTodayStartMode,
+    isOnToday,
     isAvailabilityPanelOpen,
     hasActiveFilters,
     pushCalendarPatch,
     handleInlineZoomChange,
-    toggleTodayStartMode,
+    jumpToToday,
     navigatePeriod,
     jumpToDate,
     handleHeaderDayDrillDown,
@@ -572,6 +582,7 @@ export function GanttCalendar({
         cancelPinnedSelection();
         setCreateDraft(draft);
       }}
+      onDismissCreate={cancelPinnedSelection}
       onOpenMoveRoom={setMoveRoomDraft}
       onOpenOccDetail={setOccDetail}
     >
@@ -635,8 +646,8 @@ export function GanttCalendar({
           prevPeriodAria={tCommon("goBackBy", { period: activePeriodStep.aria })}
           nextPeriodAria={tCommon("goForwardBy", { period: activePeriodStep.aria })}
           jumpAria={tCommon("jumpToDate")}
-          isTodayStartMode={isTodayStartMode}
-          onToggleTodayStartMode={toggleTodayStartMode}
+          isOnToday={isOnToday}
+          onJumpToToday={jumpToToday}
           layerFilter={layerFilter}
           onCalendarPatch={pushCalendarPatch}
           isAvailabilityPanelOpen={isAvailabilityPanelOpen}
@@ -750,6 +761,7 @@ export function GanttCalendar({
             onMoveRoom={setMoveRoomDraft}
             pinnedSelection={pinnedSelection}
             onCtrlDragEnd={handleCtrlDragEnd}
+            onRangePin={handleRangePin}
             today={effectiveToday}
             dayGridOptions={dayGridOptions}
             shellZoom={shellZoom}

@@ -13,46 +13,52 @@ export function LandingFeatureBand({
 }: {
   align: Align;
   ink?: boolean;
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
-  items: string[];
-  children: ReactNode;
+  items?: string[];
+  children?: ReactNode;
 }) {
-  const innerMod =
-    align === "copy-first"
+  const hasVisual = Boolean(children);
+  const innerMod = !hasVisual
+    ? "lp-feat-section__inner--copy-only"
+    : align === "copy-first"
       ? "lp-feat-section__inner--left"
       : "lp-feat-section__inner--right";
 
   const copy = (
     <div className="lp-feat-section__copy">
-      <span className="lp-badge lp-badge--violet">{eyebrow}</span>
+      {eyebrow ? (
+        <span className="lp-badge lp-badge--violet">{eyebrow}</span>
+      ) : null}
       <h2 className="lp-feat-section__title">{title}</h2>
       <p className="lp-feat-section__desc">{description}</p>
-      <ul className={`lp-feat-list${ink ? " lp-feat-list--dark" : ""}`}>
-        {items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
+      {items && items.length > 0 ? (
+        <ul className={`lp-feat-list${ink ? " lp-feat-list--dark" : ""}`}>
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
     </div>
   );
 
-  const visual = (
+  const visual = hasVisual ? (
     <div className="lp-feat-section__visual">{children}</div>
-  );
+  ) : null;
 
   return (
     <section className={`lp-feat-section${ink ? " lp-feat-section--dark" : ""}`}>
       <div className={`lp-feat-section__inner ${innerMod}`}>
-        {align === "copy-first" ? (
+        {align === "visual-first" && visual ? (
           <>
-            {copy}
             {visual}
+            {copy}
           </>
         ) : (
           <>
-            {visual}
             {copy}
+            {visual}
           </>
         )}
       </div>

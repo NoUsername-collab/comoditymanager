@@ -1,6 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
@@ -40,6 +41,7 @@ export function SettingsShell({
 }: Props) {
   const t = useTranslations("admin.pages.settings");
   const pathname = usePathname();
+  const layoutSegment = useSelectedLayoutSegment();
   const [query, setQuery] = useState("");
 
   const navGroups = filterSettingsNav(SETTINGS_NAV_GROUPS, {
@@ -47,7 +49,7 @@ export function SettingsShell({
     memberRole,
     teamPermissions,
   });
-  const activeId = resolveActiveSettingsNavId(pathname);
+  const activeId = resolveActiveSettingsNavId(pathname, layoutSegment);
   const normalizedQuery = query.trim().toLowerCase();
 
   const filteredGroups = useMemo(() => {
@@ -74,7 +76,7 @@ export function SettingsShell({
     [navGroups],
   );
 
-  const onOverview = pathname.replace(/\/$/, "") === "/admin/settings";
+  const onOverview = activeId === "overview";
   const roleLabel =
     memberRole === "owner"
       ? t("roleOwner")

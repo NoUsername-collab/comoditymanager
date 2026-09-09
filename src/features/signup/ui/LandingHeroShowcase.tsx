@@ -1,5 +1,5 @@
-/** Premium browser + Gantt mockup — no real screenshots needed */
-export function LandingHeroShowcase() {
+/** Reception calendar mockup — desk screen, not a browser chrome clone. */
+export function LandingHeroShowcase({ title }: { title: string }) {
   const rooms = [
     { id: "101", bars: [{ cls: "rb rb--ok", style: { left: "5%", width: "35%" } }] },
     {
@@ -20,64 +20,28 @@ export function LandingHeroShowcase() {
     { id: "301", bars: [{ cls: "rb rb--ok", style: { left: "15%", width: "55%" } }] },
     { id: "401", bars: [{ cls: "rb rb--pending", style: { left: "2%", width: "40%" } }] },
   ];
-  const days = ["L", "M", "M", "J", "V", "S", "D", "L", "M", "M", "J", "V", "S", "D"];
+  const days = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
   return (
-    <div className="hero-browser" aria-hidden>
-      {/* Chrome bar */}
+    <div className="hero-browser hero-browser--desk" aria-hidden>
       <div className="hero-browser__chrome">
-        <div className="hero-browser__dots">
-          <span className="hero-browser__dot hero-browser__dot--red" />
-          <span className="hero-browser__dot hero-browser__dot--yellow" />
-          <span className="hero-browser__dot hero-browser__dot--green" />
-        </div>
-        <div className="hero-browser__url">
-          <span className="hero-browser__url-lock" aria-hidden />
-          zalmox.app/admin/calendar
-        </div>
-        <div className="hero-browser__actions">
-          <span className="hero-browser__action" />
-          <span className="hero-browser__action" />
-        </div>
+        <span className="hero-browser__desk-title">{title}</span>
       </div>
 
-      {/* App body */}
       <div className="hero-browser__body">
-        {/* Sidebar */}
-        <nav className="hero-browser__sidebar">
-          <div className="hero-browser__brand-dot">Z</div>
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className={`hero-browser__nav${i === 0 ? " hero-browser__nav--active" : ""}`}
-            />
-          ))}
-        </nav>
-
-        {/* Main */}
         <div className="hero-browser__main">
-          {/* Toolbar */}
-          <div className="hero-browser__toolbar">
-            <span className="hero-browser__month">Sept 2026</span>
-            <div className="hero-browser__toolbar-right">
-              <span className="hero-browser__chip hero-browser__chip--active">Gantt</span>
-              <span className="hero-browser__chip">Luna</span>
-              <span className="hero-browser__chip">Zi</span>
-            </div>
-          </div>
-
-          {/* Gantt head */}
           <div className="hero-browser__gantt-head">
             <span className="hero-browser__room-col" />
-            {days.map((d, i) => (
-              <span key={i} className={`hero-browser__day ${i === 3 ? "hero-browser__day--today" : ""}`}>
-                {d}
-                {i === 3 && <span className="hero-browser__today-dot" />}
+            {days.map((day, i) => (
+              <span
+                key={day}
+                className={`hero-browser__day ${i === 3 ? "hero-browser__day--today" : ""}`}
+              >
+                {day}
               </span>
             ))}
           </div>
 
-          {/* Gantt rows */}
           {rooms.map((room) => (
             <div key={room.id} className="hero-browser__gantt-row">
               <span className="hero-browser__room-label">{room.id}</span>

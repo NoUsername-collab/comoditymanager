@@ -56,7 +56,7 @@ export function GanttPinnedCreateChip({
   roomName: string;
   onCancel: () => void;
 }) {
-  const { openMenu } = useGanttContextMenu();
+  const { openMenu, closeMenu } = useGanttContextMenu();
 
   return (
     <GanttPinnedSelectionChip
@@ -74,9 +74,11 @@ export function GanttPinnedCreateChip({
           hasConflict: false,
           roomIds: selection.roomIds,
         });
+      }}
+      onCancel={() => {
+        closeMenu();
         onCancel();
       }}
-      onCancel={onCancel}
     />
   );
 }

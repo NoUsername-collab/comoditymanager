@@ -43,6 +43,7 @@ type Props = {
   children: ReactNode;
   pinnedSelection?: PinnedSelection | null;
   onCtrlDragEnd?: (roomIds: string[], checkIn: string, checkOut: string) => void;
+  onRangePin?: (roomIds: string[], checkIn: string, checkOut: string) => void;
 };
 
 type DragState = {
@@ -94,6 +95,7 @@ export function GanttDragCreateLayer({
   children,
   pinnedSelection,
   onCtrlDragEnd,
+  onRangePin,
 }: Props) {
   const tCommon = useTranslations("admin.common");
   const tGantt = useTranslations("admin.gantt");
@@ -158,6 +160,7 @@ export function GanttDragCreateLayer({
       const interval = intervalFromDayIndices(dayIsos, dayIdx, dayIdx);
       if (!interval) return;
       lastPointerRef.current = { x: clientX, y: clientY };
+      onRangePin?.([roomId], interval.checkIn, interval.checkOut);
       openMenu({
         kind: "create",
         clientX,
@@ -170,7 +173,7 @@ export function GanttDragCreateLayer({
         roomIds: [roomId],
       });
     },
-    [dayIsos, roomId, roomName, evalConflict, openMenu]
+    [dayIsos, roomId, roomName, evalConflict, openMenu, onRangePin]
   );
 
   const dayIdxAt = useCallback(
@@ -189,6 +192,7 @@ export function GanttDragCreateLayer({
       if (!interval) return;
       const uniqueRooms = [...new Set(roomIds.length ? roomIds : [roomId])];
       const { x, y } = lastPointerRef.current;
+      onRangePin?.(uniqueRooms, interval.checkIn, interval.checkOut);
       openMenu({
         kind: "create",
         clientX: x,
@@ -209,7 +213,7 @@ export function GanttDragCreateLayer({
       });
       clearGanttRoomDragSpan();
     },
-    [dayIsos, roomId, roomName, evalConflictForRooms, openMenu, tCommon]
+    [dayIsos, roomId, roomName, evalConflictForRooms, openMenu, tCommon, onRangePin]
   );
 
   const updateDragAt = useCallback(

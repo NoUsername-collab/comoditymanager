@@ -56,10 +56,11 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__today-btn {
-  padding: 0.14rem 0.38rem;
-  border-radius: 0.38rem;
-  font-size: 0.54rem;
-  letter-spacing: 0.05em;
+  padding: 0 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  height: var(--gantt-touch-min, 2.75rem);
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-compact-toolbar__density-btn {

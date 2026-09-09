@@ -119,14 +119,23 @@ function buildDayColumns(isoDates: string[], locale: string, today?: string): Ga
   });
 }
 
-function isRollingZoom(
-  zoom: GanttZoom
-): zoom is Exclude<GanttRollingZoom, "days30"> {
-  return zoom === "today" || zoom === "days7" || zoom === "days15";
+function isRollingZoom(zoom: GanttZoom): zoom is GanttRollingZoom {
+  return (
+    zoom === "today" ||
+    zoom === "days7" ||
+    zoom === "days15" ||
+    zoom === "days30"
+  );
 }
 
-function isMonthLikeZoom(zoom: GanttZoom): zoom is "days30" | "month" {
-  return zoom === "days30" || zoom === "month";
+function isMonthLikeZoom(zoom: GanttZoom): zoom is "month" {
+  return zoom === "month";
+}
+
+/** Window start for “today”: 1-day zoom on today, longer zooms peek yesterday. */
+export function ganttTodayStartAnchor(today: string, zoom: GanttZoom): string {
+  if (zoom === "today") return today;
+  return addDays(today, -1);
 }
 
 function rollingZoomLength(zoom: GanttRollingZoom): number {
@@ -371,7 +380,7 @@ export function resolveGanttRange(params: {
     params.ws && /^\d{4}-\d{2}-\d{2}$/.test(params.ws) ? params.ws : undefined;
 
   if (isRollingZoom(zoom)) {
-    const ws = validWs ?? effectiveToday;
+    const ws = validWs ?? ganttTodayStartAnchor(effectiveToday, zoom);
     return buildRollingRange(ws, zoom, locale, labels, effectiveToday);
   }
 
@@ -409,8 +418,8 @@ export function navigateRange(
 ): { y: number; m: number; zoom: GanttZoom; ws?: string; q?: number } {
   const isAnchoredFixedRange =
     (range.zoom === "quarter" && range.periodKey.startsWith("quarter-")) ||
-    ((range.zoom === "days30" || range.zoom === "month") &&
-      range.periodKey.startsWith(`${range.zoom}-`) &&
+    (range.zoom === "month" &&
+      range.periodKey.startsWith("month-") &&
       range.periodKey.split("-").length >= 4);
 
   if (isRollingZoom(range.zoom)) {
