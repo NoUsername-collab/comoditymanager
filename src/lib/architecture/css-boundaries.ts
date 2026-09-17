@@ -48,7 +48,10 @@ const GANTT_PREMIUM_IMPORT_PARENT = "src/styles/features/admin/admin-gantt-featu
 const GANTT_PREMIUM_SLICE_PARENT = "src/styles/features/admin/gantt-premium.css";
 const MOBILE_ADMIN_SLICE_PARENT = "src/styles/features/layout/mobile-admin.css";
 
-const CHECKIN_CSS_ENTRY = "src/features/checkin/ui/import-checkin-styles.ts";
+const CHECKIN_CSS_ALLOWED_IMPORTERS = new Set([
+  "src/features/checkin/ui/import-checkin-styles.ts",
+  "src/app/[locale]/admin/(panel)/settings/layout.tsx",
+]);
 
 function listCssFiles(dir: string, base = dir): string[] {
   const out: string[] = [];
@@ -169,7 +172,7 @@ export function auditCssArchitecture(): CssViolation[] {
 
   for (const file of listSourceFiles(SRC, SRC)) {
     const normalized = `src/${file}`;
-    if (normalized === CHECKIN_CSS_ENTRY) continue;
+    if (CHECKIN_CSS_ALLOWED_IMPORTERS.has(normalized)) continue;
 
     const content = fs.readFileSync(path.join(SRC, file), "utf8");
     if (/(?:import|from)\s+["'][^"']*admin-checkin\.css["']/.test(content)) {

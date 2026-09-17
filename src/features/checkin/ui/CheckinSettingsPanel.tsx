@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import "@/features/checkin/ui/import-checkin-styles";
 import { updateCheckinSettingsAction } from "@/features/checkin/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
 import {
@@ -281,7 +282,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
         )}
       </div>
 
-      {/* ── Program ─────────────────────────────────────────── */}
+      {/* Schedule */}
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">{t("sectionSchedule")}</span>

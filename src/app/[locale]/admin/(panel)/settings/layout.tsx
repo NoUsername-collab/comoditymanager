@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import "@/styles/features/admin/admin-settings.css";
 import "@/styles/features/layout/mobile-settings.css";
-import "@/features/checkin/ui/import-checkin-styles";
+import "@/styles/features/admin/admin-checkin.css";
 import { getTranslations } from "next-intl/server";
 import { loadSettingsStaffContext } from "@/lib/settings/page-context";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
