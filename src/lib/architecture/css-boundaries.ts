@@ -26,6 +26,7 @@ const ROUTE_SCOPED_CSS = [
   "gantt-premium-stays.css",
   "gantt-premium-overlays.css",
   "gantt-premium-density.css",
+  "gantt-premium-grid.css",
   "gantt-premium-quick-panel.css",
   "admin-gantt-features.css",
   "gantt-mobile.css",
@@ -199,7 +200,7 @@ export const CSS_GOD_FILE_LINE_CAPS: { file: string; maxLines: number }[] = [
   },
   {
     file: "src/styles/features/admin/gantt-premium.css",
-    maxLines: 9,
+    maxLines: 10,
   },
 ];
 

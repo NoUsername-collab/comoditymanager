@@ -1,0 +1,144 @@
+/* Gantt day grid: quiet paper, time as ticks, paint only where it matters. */
+
+.gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell {
+  background-image: none;
+  background-color: var(--gantt-zone-clean);
+}
+
+.gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell::after {
+  content: none;
+}
+
+.gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkout) 40%, transparent),
+    calc(var(--gantt-check-in-pct, 58.33%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkin) 40%, transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gantt-shell[data-gantt-zoom="7z"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell::before {
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkout) 55%, transparent),
+    calc(var(--gantt-check-in-pct, 58.33%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkin) 55%, transparent);
+}
+
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell::before,
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell::after {
+  content: none;
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--today:not(.gantt-day-cell--past) {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gantt-zone-checkout) 28%, var(--gantt-zone-clean)) 0,
+    color-mix(in srgb, var(--gantt-zone-checkout) 28%, var(--gantt-zone-clean))
+      var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    color-mix(in srgb, var(--gantt-zone-checkin) 28%, var(--gantt-zone-clean))
+      var(--gantt-check-in-pct, 58.33%),
+    color-mix(in srgb, var(--gantt-zone-checkin) 28%, var(--gantt-zone-clean)) 100%
+  );
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--turnover:not(.gantt-day-cell--past) {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--gantt-zone-checkout) 48%, var(--gantt-zone-clean)) 0,
+    color-mix(in srgb, var(--gantt-zone-checkout) 48%, var(--gantt-zone-clean))
+      var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
+    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
+    color-mix(in srgb, var(--gantt-zone-checkin) 48%, var(--gantt-zone-clean))
+      var(--gantt-check-in-pct, 58.33%),
+    color-mix(in srgb, var(--gantt-zone-checkin) 48%, var(--gantt-zone-clean)) 100%
+  );
+  box-shadow: none;
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--weekend {
+  background-color: color-mix(
+    in srgb,
+    var(--gantt-zone-clean) 96%,
+    var(--border-strong, #64748b)
+  );
+  box-shadow: none;
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--today {
+  box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9);
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--today.gantt-day-cell--turnover:not(.gantt-day-cell--past) {
+  box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9);
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--past {
+  background-image: none;
+  background-color: color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean));
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--past::before {
+  content: "";
+  box-shadow:
+    calc(var(--gantt-check-out-pct, 45.83%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkout) 22%, transparent),
+    calc(var(--gantt-check-in-pct, 58.33%) - 0.5px) 0 0 0
+      color-mix(in srgb, var(--gantt-line-checkin) 22%, transparent);
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--past::after {
+  content: none;
+}
+
+.gantt-shell .gantt-day-header-grid .gantt-day-header-cell--today {
+  box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9);
+}
+
+.gantt-shell .gantt-zone-ribbon {
+  max-width: 26rem;
+  margin: 0.15rem 0.75rem 0.4rem;
+  border-radius: 0.45rem;
+  overflow: hidden;
+}
+
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--today:not(.gantt-day-cell--past),
+.gantt-shell[data-gantt-zoom="quarter"]
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--turnover:not(.gantt-day-cell--past) {
+  background-image: none;
+}

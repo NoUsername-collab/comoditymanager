@@ -1,8 +1,9 @@
 /* Gantt premium — import barrel. Do not add rules here.
-   Split sheets: shell, toolbar, stays, overlays, density, quick-panel. */
+   Split sheets: shell, toolbar, stays, overlays, density, grid, quick-panel. */
 @import "./gantt-premium-shell.css";
 @import "./gantt-premium-toolbar.css";
 @import "./gantt-premium-stays.css";
 @import "./gantt-premium-overlays.css";
 @import "./gantt-premium-density.css";
+@import "./gantt-premium-grid.css";
 @import "./gantt-premium-quick-panel.css";

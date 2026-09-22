@@ -172,7 +172,7 @@ export function GanttCalendar({
   const { density, toggleDensity } = useGanttDensity();
   const compact = density === "compact";
   const shellZoom = resolveGanttShellZoom(viewRange.zoom);
-  const showZoneRibbon = shellZoom === "7z";
+  const showZoneRibbon = shellZoom === "7z" || shellZoom === "15z";
   const ganttRowHeight = density === "compact" ? GANTT_ROW_H_COMPACT : GANTT_ROW_H;
   const summaryFilterActive = filter !== "all";
   const columnMetrics = useMemo(

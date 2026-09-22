@@ -212,21 +212,6 @@ html[data-admin-palette] .gantt-shell {
   box-shadow: var(--admin-surface-shadow, none) !important;
 }
 
-html[data-admin-palette]
-  .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell {
-  background-color: var(--gantt-zone-clean) !important;
-  background-image: linear-gradient(
-    90deg,
-    var(--gantt-zone-checkout) 0,
-    var(--gantt-zone-checkout) var(--gantt-check-out-pct, 45.83%),
-    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
-    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
-    var(--gantt-zone-checkin) var(--gantt-check-in-pct, 58.33%),
-    var(--gantt-zone-checkin) 100%
-  ) !important;
-}
-
 html[data-admin-palette] .gantt-zone-ribbon__segment--checkout {
   background: var(--gantt-zone-checkout) !important;
   border-right-color: var(--gantt-line-checkout) !important;

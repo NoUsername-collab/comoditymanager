@@ -222,17 +222,11 @@ html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-da
 
 /* Slim today column marker — keep visibility, less chrome */
 html[data-layout-chrome="compact"] .gantt-day-header-grid .gantt-day-header-cell--today {
-  box-shadow:
-    inset 1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
-    inset -1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
-    inset 0 0 0 1px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 14%, var(--border)) !important;
+  box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--today {
-  box-shadow:
-    inset 1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
-    inset -1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
-    inset 0 0 0 1px color-mix(in srgb, var(--admin-gantt-today-line, #0ea5e9) 28%, white) !important;
+  box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-day-header-cell--today .gantt-day-header-cell__date {
@@ -1583,9 +1577,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell__tot
 
 /* TODAY — same inset on date, FREE and room grid for symmetry */
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-summary-cell--today {
-  box-shadow:
-    inset 1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9),
-    inset -1px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
+  box-shadow: inset 2px 0 0 0 var(--admin-gantt-today-line, #0ea5e9) !important;
 }
 
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-head-main-row__days {
