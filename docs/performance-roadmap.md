@@ -34,7 +34,7 @@ npx tsc --noEmit
 3. **Statistics** — cache agregări anuale (heavy compute) — deja `unstable_cache` 120s
 4. **Images** — `next/image` pe site public unde lipsește — `render-section` OK; editor galerie rămâne `<img>` (URL-uri arbitrare)
 5. **Service worker** — out of scope web; pregătit pentru app nativă
-6. **mobile-admin.css trim** — mută reguli rămase în route bundles; panel doar `mobile-core` + bundle per rută
+6. ~~**mobile-admin.css trim** — mută reguli rămase în route bundles; panel doar `mobile-core` + HUD barrel~~ ✓
 
 ## Principii
 

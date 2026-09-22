@@ -128,3 +128,41 @@ export function auditImportBoundaries(root = SRC): ImportViolation[] {
 
   return violations;
 }
+
+export type DualModuleViolation = {
+  file: string;
+  directory: string;
+  rule: "services-no-dual-module";
+};
+
+const IMPLEMENTATION_EXPORT =
+  /\bexport\s+(?:async\s+)?(?:function|class|const)\b/;
+
+function isImplementationModule(content: string): boolean {
+  return IMPLEMENTATION_EXPORT.test(content);
+}
+
+/**
+ * `src/services/foo.ts` + `src/services/foo/` is allowed only when the file
+ * is a re-export shim. Duplicate implementations (e.g. rooms-admin) are forbidden.
+ */
+export function auditDualServiceModules(root = SRC): DualModuleViolation[] {
+  const servicesDir = path.join(root, "services");
+  if (!fs.existsSync(servicesDir)) return [];
+
+  const violations: DualModuleViolation[] = [];
+  for (const entry of fs.readdirSync(servicesDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const dir = path.join(servicesDir, entry.name);
+    const sibling = path.join(servicesDir, `${entry.name}.ts`);
+    if (!fs.existsSync(sibling)) continue;
+    const content = fs.readFileSync(sibling, "utf8");
+    if (!isImplementationModule(content)) continue;
+    violations.push({
+      file: path.relative(process.cwd(), sibling).replace(/\\/g, "/"),
+      directory: path.relative(process.cwd(), dir).replace(/\\/g, "/"),
+      rule: "services-no-dual-module",
+    });
+  }
+  return violations;
+}

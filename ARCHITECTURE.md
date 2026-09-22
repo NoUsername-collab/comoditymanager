@@ -37,7 +37,7 @@ Update this table when a wave lands. Do not mark a slice “done” if UI still 
 | Slice | Actions | Loaders | UI |
 |-------|---------|---------|----|
 | guest-app | done | **stay layout + home + feature** | **in `features/guest-app/`** (model) |
-| public-site | done | **layout + home + calendar + receptie + termeni + confirm** | **in `features/public-site/ui/`** (chrome: `LanguageSwitcher`, skeletons in `components/public`) |
+| public-site | done | **layout + home + calendar + reception + termeni + confirm** | **in `features/public-site/ui/`** (chrome: `LanguageSwitcher`, skeletons in `components/public`) |
 | signup / alpha-gate | done | n/a | **in `features/signup/ui/` + `features/alpha-gate/ui/`** (landing included) |
 | auth | done | n/a | **in `features/auth/ui/`** |
 | checkin | done | **settings page** | **in `features/checkin/ui/`** (operative provider included) |
@@ -45,7 +45,7 @@ Update this table when a wave lands. Do not mark a slice “done” if UI still 
 | bookings | done | **list + detail + factura** | **in `features/bookings/ui/`** |
 | buildings / rooms / structure | done | **list + new/edit + location structure/setup** | **in `features/buildings/ui/` + `features/rooms/ui/`** |
 | guests | done | **list + detail + rebook** | **in `features/guests/ui/`** |
-| cazari | n/a (uses bookings/activity) | **page data + labels re-export** | **in `features/cazari/ui/`** (search form included) |
+| stays | n/a (uses bookings/activity) | **page data + labels re-export** | **in `features/stays/ui/`** (search form included) |
 | availability | done | **admin home + dashboard shell** | **in `features/availability/ui/`** (home dashboard included) |
 | settings | done | **overview + all settings pages + statistics + location** | **panels + statistics in `features/settings/ui/`** (chrome stays in `components/admin/settings`) |
 | onboarding | done | **pension settings** | **in `features/onboarding/ui/`** |
@@ -59,10 +59,10 @@ Update this table when a wave lands. Do not mark a slice “done” if UI still 
 - `app/` action files are thin re-exports only
 - CSS *lives* in `src/styles/`
 - **MFA / session binder use `lib/auth/mfa-browser`** — UI does not import `@/lib/supabase/client`
-- Cazari / payments / activity CSS is route-scoped (`cazari`, `istoric`, `bookings/[id]` layouts)
+- Stays / payments / activity CSS is route-scoped (`cazari` URL, history/`istoric`, `bookings/[id]` layouts)
 - `gantt-premium.css` is an import barrel (`gantt-premium-{shell,toolbar,stays,overlays,density,quick-panel}.css`)
-- `mobile-admin.css` is an import barrel (`mobile-admin-{hud,premium,flawless,alignment,touch}.css`)
-- Leftover feature screens moved: home dashboard, statistics, devlog filters, cazari search
+- `mobile-admin.css` is an import barrel (`mobile-admin-{hud,alignment,touch}.css`)
+- Leftover feature screens moved: home dashboard, statistics, devlog filters, stays search
 - Operative check-in provider in `features/checkin/ui/`; setup-issue badge in settings chrome
 
 **Not done:**
@@ -88,8 +88,8 @@ Types used by both domain and services belong in **`domain/`**, not `services/` 
 
 - `domain/tenant/types.ts` — `TenantMemberRole`
 - `domain/booking/row.ts` — `BookingRow`, list row aliases
-- `domain/cazari/page-lists.ts` — Cazări page payloads
-- `domain/cazari/labels.ts` — `CazariLabels`
+- `domain/stays/page-lists.ts` — stays page payloads
+- `domain/stays/labels.ts` — `StayListLabels`
 - `domain/availability/day.ts` — `DayAvailability` (= `ComputedDay`)
 - `domain/room/feature-filter.ts` — `roomMatchesFeatureFilter`
 
@@ -107,9 +107,9 @@ Services **re-export** these for backward compatibility; new code imports from `
 | `features/bookings/` | Booking **actions** + `loaders.ts` + `ui/` (detail, invoice, payments, checkout, confirm) |
 | `features/buildings/` | Building/floor **actions** + `loaders.ts` + `ui/` (dashboard, structure) |
 | `features/guests/` | Guest **actions** + `loaders.ts` + `ui/` |
-| `features/activity/` | Undo **actions** + `loaders.ts` + `ui/` (istoric, booking timeline, devlog filters) |
+| `features/activity/` | Undo **actions** + `loaders.ts` + `ui/` (history, booking timeline, devlog filters) |
 | `features/availability/` | Day-detail **actions** + `loaders.ts` + `ui/` (dashboard, home preview, today board) |
-| `features/cazari/` | `loaders.ts` + `ui/` (stay lists, search form) |
+| `features/stays/` | `loaders.ts` + `ui/` (stay lists, search form) |
 | `features/auth/` | Login / logout / password / bind-session **actions** + `ui/` (login, MFA challenge, forgot/reset) |
 | `features/onboarding/` | Onboarding **actions** + `loaders.ts` + `ui/` (wizard, bar, checklist) |
 | `features/platform-admin/` | Platform **actions** + `loaders.ts` + `ui/` (tenants, logs, tools) |
@@ -161,7 +161,7 @@ Styles live under **`src/styles/`** — not scattered in `src/app/` (except the 
 
 | File | Cap (lines) |
 |------|-------------|
-| `styles/features/layout/mobile-admin.css` | 8 (import barrel; sheets in `mobile-admin-*.css`) |
+| `styles/features/layout/mobile-admin.css` | 6 (import barrel; HUD + alignment + touch) |
 | `styles/features/admin/gantt-premium.css` | 9 (import barrel; sheets in `gantt-premium-*.css`) |
 
 **Freeze:** do not add rules to the `mobile-admin.css` or `gantt-premium.css` barrels. New Gantt styles go in `gantt-premium-*.css`. New admin-shell mobile styles go in `mobile-admin-*.css` (or a route-scoped sheet / Tailwind in JSX).
@@ -180,19 +180,19 @@ Styles live under **`src/styles/`** — not scattered in `src/app/` (except the 
 | `gantt-premium.css` (+ `gantt.css`, stay chips, `gantt-premium-*.css` slices) | `admin-gantt-features.css` | `admin/(panel)/calendar/layout.tsx` |
 | `gantt-mobile.css` | direct | `admin/(panel)/calendar/layout.tsx` |
 | `admin-settings.css` | direct | `admin/(panel)/settings/layout.tsx` |
-| `admin-history.css` | direct | `admin/(panel)/istoric/layout.tsx`, `cazari/layout.tsx`, `bookings/[id]/layout.tsx` |
-| `admin-cazari-toolbar.css` | direct | `admin/(panel)/cazari/layout.tsx` |
-| `admin-cazari-cards.css` | direct | `admin/(panel)/cazari/layout.tsx`, `bookings/[id]/layout.tsx` |
+| `admin-history.css` | direct | `admin/(panel)/istoric/` (history URL), `cazari/layout.tsx`, `bookings/[id]/layout.tsx` |
+| `admin-stays-toolbar.css` | direct | `admin/(panel)/cazari/layout.tsx` |
+| `admin-stays-cards.css` | direct | `admin/(panel)/cazari/layout.tsx`, `bookings/[id]/layout.tsx` |
 | `admin-payments.css` | direct | `admin/(panel)/bookings/[id]/layout.tsx` |
 | `admin-booking-detail.css` | direct | `admin/(panel)/bookings/[id]/layout.tsx` |
-| `admin-availability-route.css` | direct | `admin/(panel)/disponibilitate/layout.tsx` |
-| `admin-checkin.css` | `import-checkin-styles.ts` | `CheckinModal`, `CheckinWizardLauncher` |
-| `mobile-admin.css` (+ `mobile-admin-*.css` slices) | direct | `admin/(panel)/layout.tsx` |
+| `admin-availability-route.css` | direct | `admin/(panel)/disponibilitate/` (availability URL) |
+| `admin-checkin.css` | `import-checkin-styles.ts` (wizard) / direct (settings layout) | `CheckinModal`, `CheckinWizardLauncher`, `admin/(panel)/settings/layout.tsx` |
+| `mobile-admin.css` (hud + alignment + touch) | direct | `admin/(panel)/layout.tsx` |
 | `mobile-settings.css` | direct | `admin/(panel)/settings/layout.tsx` |
 | `mobile-platform-admin.css` | direct | `platform-admin/(panel)/layout.tsx` |
 | `mobile-gantt.css` | direct | `admin/(panel)/calendar/layout.tsx` |
-| `mobile-cazari.css` | direct | `admin/(panel)/cazari/layout.tsx`, `guests/layout.tsx` |
-| `mobile-avail.css` | direct | `admin/(panel)/disponibilitate/layout.tsx` |
+| `mobile-stays.css` | direct | `admin/(panel)/cazari/layout.tsx`, `guests/layout.tsx` |
+| `mobile-avail.css` | direct | `admin/(panel)/disponibilitate/` (availability URL) |
 
 Enforced by `css-boundaries.ts` for global-bundle leaks (`gantt-premium`, `admin-settings`, etc.) and god-file line caps.
 
@@ -220,3 +220,5 @@ When touching coupled code:
 - `@/core` barrel: prefer direct imports for new code
 - CSS location is correct; god files are barrels (`mobile-admin.css`, `gantt-premium.css`) — do not add rules to them
 - Legacy host names (`nestio`, `hospira`) still appear in routing/CSS class names
+- `routing_kind = hospira_subdomain` stays as the Postgres/edge enum — no schema rename in this campaign
+- Location-unlock cookie remains `casaemil_admin_location_unlock` (not localStorage; not dual-read)
