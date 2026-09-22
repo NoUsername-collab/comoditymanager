@@ -1,6 +1,7 @@
 import { guestsToPersist } from "./guest-layout";
 import { guestFullName } from "./identity-rules";
 import type { BookingForCheckin, CheckinGuestInput, CheckinSettings } from "./types";
+import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 
 export type TouristSheetGuestRow = {
   fullName: string;
@@ -22,7 +23,7 @@ export type TouristSheetData = {
   guests: TouristSheetGuestRow[];
 };
 
-/** Fișă din oaspeții deja salvați la check-in (re-emisie). */
+/** Tourist sheet from guests already saved at check-in (re-issue). */
 export function buildTouristSheetFromPersisted(
   booking: BookingForCheckin,
   guests: CheckinGuestInput[],
@@ -41,7 +42,7 @@ export function buildTouristSheetFromPersisted(
     year: new Date(booking.check_in).getFullYear(),
     issuedAt: issuedAt?.slice(0, 10) || defaultIssued,
     registryRef: booking.id.replace(/-/g, "").slice(0, 8).toUpperCase(),
-    pensionName: settings.pension_display_name || "Pensiune",
+    pensionName: settings.pension_display_name || DEFAULT_PENSION_DISPLAY_NAME,
     propertyAddress: settings.fisa_property_address?.trim() || "—",
     ownerCui: settings.fisa_owner_cui?.trim() || "",
     tourismLicense: settings.fisa_tourism_license?.trim() || "",
@@ -75,7 +76,7 @@ export function buildTouristSheetData(
     year: new Date(booking.check_in).getFullYear(),
     issuedAt,
     registryRef: booking.id.replace(/-/g, "").slice(0, 8).toUpperCase(),
-    pensionName: settings.pension_display_name || "Pensiune",
+    pensionName: settings.pension_display_name || DEFAULT_PENSION_DISPLAY_NAME,
     propertyAddress: settings.fisa_property_address?.trim() || "—",
     ownerCui: settings.fisa_owner_cui?.trim() || "",
     tourismLicense: settings.fisa_tourism_license?.trim() || "",

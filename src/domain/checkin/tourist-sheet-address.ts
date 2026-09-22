@@ -1,12 +1,12 @@
-export type FisaPropertyAddressParts = {
+export type TouristSheetAddressParts = {
   street: string;
   locality: string;
   county: string;
 };
 
-/** Compose ANAF fișă turist address from structured fields. */
-export function formatFisaPropertyAddress(
-  parts: FisaPropertyAddressParts
+/** Compose the ANAF tourist-sheet address from structured fields. */
+export function formatTouristSheetAddress(
+  parts: TouristSheetAddressParts
 ): string | null {
   const street = parts.street.trim();
   const locality = parts.locality.trim();
@@ -21,9 +21,9 @@ export function formatFisaPropertyAddress(
 }
 
 /** Best-effort split of legacy single-line addresses. */
-export function parseFisaPropertyAddress(
+export function parseTouristSheetAddress(
   raw: string | null | undefined
-): FisaPropertyAddressParts {
+): TouristSheetAddressParts {
   const text = raw?.trim() ?? "";
   if (!text) return { street: "", locality: "", county: "" };
 

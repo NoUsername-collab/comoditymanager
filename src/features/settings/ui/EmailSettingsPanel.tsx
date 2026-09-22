@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import "@/features/checkin/ui/import-checkin-styles";
 import {
   updateEmailSettingsAction,
   sendTestEmailAction,
@@ -290,7 +291,7 @@ export function EmailSettingsPanel({
           </div>
         </div>
 
-        <p className="checkin-fisa-save__hint">
+        <p className="checkin-sheet-save__hint">
           {t("senderPreview")}: <strong>{fromName.trim() || identity.displayName} &lt;{fromAddress.trim() || `noreply@${identity.mailDomain}`}&gt;</strong>
         </p>
       </div>
@@ -317,7 +318,7 @@ export function EmailSettingsPanel({
         </SettingRow>
 
         {!settings.email_reply_to && identity.defaultReplyTo ? (
-          <p className="checkin-fisa-save__hint">{t("replyToFallbackHint")}</p>
+          <p className="checkin-sheet-save__hint">{t("replyToFallbackHint")}</p>
         ) : null}
 
         <div className="checkin-setting-row checkin-setting-row--stack">
@@ -354,19 +355,19 @@ export function EmailSettingsPanel({
         </div>
 
         {!delivery.configured ? (
-          <p className="checkin-fisa-save__hint" role="status">
+          <p className="checkin-sheet-save__hint" role="status">
             {t("providerNotConfigured")}
           </p>
         ) : (
-          <p className="checkin-fisa-save__hint">
+          <p className="checkin-sheet-save__hint">
             {t("providerFrom", { from: identity.fromAddress })}
           </p>
         )}
 
-        <div className="checkin-fisa-save">
+        <div className="checkin-sheet-save">
           <button
             type="button"
-            className="checkin-fisa-save__btn"
+            className="checkin-sheet-save__btn"
             disabled={!delivery.configured || isSendingTest || isSaving}
             onClick={handleSendTest}
           >

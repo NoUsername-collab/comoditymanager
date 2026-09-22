@@ -806,13 +806,13 @@
   color: var(--admin-text);
 }
 
-.checkin-settings__fisa-note {
+.checkin-settings__sheet-note {
   margin: 0 0 0.5rem;
   font-size: 0.68rem;
   color: var(--admin-text-muted);
 }
 
-.checkin-fisa-save {
+.checkin-sheet-save {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -822,26 +822,26 @@
   border-top: 1px solid var(--admin-border);
 }
 
-.checkin-fisa-save__hint {
+.checkin-sheet-save__hint {
   margin: 0;
   max-width: 32rem;
   font-size: 0.68rem;
   color: var(--admin-text-muted);
 }
 
-.checkin-fisa-save__error {
+.checkin-sheet-save__error {
   margin: 0;
   font-size: 0.72rem;
   color: #b91c1c;
 }
 
-.checkin-fisa-save__ok {
+.checkin-sheet-save__ok {
   margin: 0;
   font-size: 0.72rem;
   color: var(--status-confirmed-text);
 }
 
-.checkin-fisa-save__btn {
+.checkin-sheet-save__btn {
   min-height: 2.5rem;
   padding: 0.45rem 1rem;
   border: 0;
@@ -853,7 +853,7 @@
   cursor: pointer;
 }
 
-.checkin-fisa-save__btn:disabled {
+.checkin-sheet-save__btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -866,26 +866,26 @@
   width: min(100%, 28rem);
 }
 
-.checkin-fisa-address {
+.checkin-sheet-address {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
   width: 100%;
 }
 
-.checkin-fisa-address__row {
+.checkin-sheet-address__row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
 }
 
-.checkin-fisa-address__field {
+.checkin-sheet-address__field {
   display: flex;
   flex-direction: column;
   gap: 0.22rem;
 }
 
-.checkin-fisa-address__label {
+.checkin-sheet-address__label {
   font-size: 0.62rem;
   font-weight: 700;
   color: var(--admin-text-muted);
@@ -908,23 +908,23 @@
 }
 
 .tourist-sheet--official {
-  --fisa-ink: #111;
-  --fisa-paper: #fff;
-  --fisa-rule: #111;
-  --fisa-muted: #444;
-  --fisa-fill: #f5f5f5;
-  --fisa-serif: "Times New Roman", Times, "Noto Serif", Georgia, serif;
-  --fisa-mono: "Courier New", Courier, "Lucida Console", monospace;
-  font-family: var(--fisa-serif);
-  color: var(--fisa-ink);
+  --sheet-ink: #111;
+  --sheet-paper: #fff;
+  --sheet-rule: #111;
+  --sheet-muted: #444;
+  --sheet-fill: #f5f5f5;
+  --sheet-serif: "Times New Roman", Times, "Noto Serif", Georgia, serif;
+  --sheet-mono: "Courier New", Courier, "Lucida Console", monospace;
+  font-family: var(--sheet-serif);
+  color: var(--sheet-ink);
 }
 
 .tourist-sheet__paper {
   position: relative;
   overflow: hidden;
   padding: 1rem 1.1rem 1.2rem;
-  border: 2px solid var(--fisa-rule);
-  background: var(--fisa-paper);
+  border: 2px solid var(--sheet-rule);
+  background: var(--sheet-paper);
   box-shadow: none;
 }
 
@@ -937,7 +937,7 @@
   top: 40%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-22deg);
-  font-family: var(--fisa-serif);
+  font-family: var(--sheet-serif);
   font-size: clamp(2.25rem, 11vw, 4rem);
   font-weight: 700;
   letter-spacing: 0.32em;
@@ -954,7 +954,7 @@
   text-align: center;
   padding-bottom: 0.85rem;
   margin-bottom: 0.85rem;
-  border-bottom: 2px solid var(--fisa-rule);
+  border-bottom: 2px solid var(--sheet-rule);
 }
 
 .tourist-sheet__masthead {
@@ -975,7 +975,7 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 .tourist-sheet__form-meta {
@@ -993,8 +993,8 @@
   gap: 0.1rem;
   min-width: 6.5rem;
   padding: 0.28rem 0.42rem;
-  border: 1.5px solid var(--fisa-rule);
-  background: var(--fisa-paper);
+  border: 1.5px solid var(--sheet-rule);
+  background: var(--sheet-paper);
 }
 
 .tourist-sheet__form-box-label {
@@ -1002,11 +1002,11 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 .tourist-sheet__form-box-code {
-  font-family: var(--fisa-mono);
+  font-family: var(--sheet-mono);
   font-size: 0.72rem;
   letter-spacing: 0.04em;
 }
@@ -1019,14 +1019,14 @@
   font-size: 0.58rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 .tourist-sheet__registry strong {
-  font-family: var(--fisa-mono);
+  font-family: var(--sheet-mono);
   font-size: 0.82rem;
   letter-spacing: 0.12em;
-  color: var(--fisa-ink);
+  color: var(--sheet-ink);
 }
 
 .tourist-sheet__platform-mark {
@@ -1036,8 +1036,8 @@
   gap: 0.08rem;
   justify-self: end;
   padding: 0.22rem 0.35rem;
-  border: 1px solid var(--fisa-rule);
-  background: var(--fisa-fill);
+  border: 1px solid var(--sheet-rule);
+  background: var(--sheet-fill);
   text-align: right;
 }
 
@@ -1054,7 +1054,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 .tourist-sheet__title {
@@ -1070,7 +1070,7 @@
   margin: 0 0 0.45rem;
   font-size: 0.58rem;
   font-style: italic;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 .tourist-sheet__year-row {
@@ -1084,7 +1084,7 @@
 }
 
 .tourist-sheet__year-row strong {
-  font-family: var(--fisa-mono);
+  font-family: var(--sheet-mono);
   font-weight: 700;
 }
 
@@ -1103,8 +1103,8 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid var(--fisa-rule);
-  background: var(--fisa-fill);
+  border: 1px solid var(--sheet-rule);
+  background: var(--sheet-fill);
 }
 
 .tourist-sheet__fields {
@@ -1130,7 +1130,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
   line-height: 1.2;
 }
 
@@ -1138,7 +1138,7 @@
   display: block;
   min-height: 1.15rem;
   padding: 0.1rem 0 0.2rem;
-  border-bottom: 1px solid var(--fisa-rule);
+  border-bottom: 1px solid var(--sheet-rule);
   font-weight: 600;
   line-height: 1.3;
   word-break: break-word;
@@ -1146,8 +1146,8 @@
 
 .tourist-sheet__table-wrap {
   margin-top: 0.45rem;
-  border: 1.5px solid var(--fisa-rule);
-  background: var(--fisa-paper);
+  border: 1.5px solid var(--sheet-rule);
+  background: var(--sheet-paper);
 }
 
 .tourist-sheet__table {
@@ -1159,7 +1159,7 @@
 
 .tourist-sheet__table th,
 .tourist-sheet__table td {
-  border: 1px solid var(--fisa-rule);
+  border: 1px solid var(--sheet-rule);
   padding: 0.32rem 0.38rem;
   text-align: left;
   vertical-align: top;
@@ -1170,7 +1170,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: var(--fisa-fill);
+  background: var(--sheet-fill);
 }
 
 .tourist-sheet__table tbody tr {
@@ -1181,12 +1181,12 @@
 .tourist-sheet__col-idx {
   width: 2rem;
   text-align: center !important;
-  font-family: var(--fisa-mono);
+  font-family: var(--sheet-mono);
   font-weight: 700;
 }
 
 .tourist-sheet__mono {
-  font-family: var(--fisa-mono);
+  font-family: var(--sheet-mono);
   font-size: 0.6rem;
   letter-spacing: 0.03em;
 }
@@ -1196,7 +1196,7 @@
   z-index: 1;
   margin-top: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px dashed var(--fisa-muted);
+  border-top: 1px dashed var(--sheet-muted);
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -1207,7 +1207,7 @@
   font-size: 0.56rem;
   line-height: 1.45;
   font-style: italic;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 .tourist-sheet__stamp {
@@ -1215,14 +1215,14 @@
   right: 0.5rem;
   bottom: 2.75rem;
   padding: 0.35rem 0.55rem;
-  border: 2px double var(--fisa-rule);
+  border: 2px double var(--sheet-rule);
   border-radius: 1px;
-  font-family: var(--fisa-serif);
+  font-family: var(--sheet-serif);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--fisa-ink);
+  color: var(--sheet-ink);
   opacity: 0.88;
   transform: rotate(-8deg);
 }
@@ -1245,7 +1245,7 @@
   display: block;
   width: 100%;
   height: 1px;
-  border-top: 1px solid var(--fisa-rule);
+  border-top: 1px solid var(--sheet-rule);
 }
 
 .tourist-sheet__signature-label {
@@ -1253,21 +1253,21 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
   text-align: center;
 }
 
 .tourist-sheet__brand {
   margin: 1rem 0 0;
   padding-top: 0.55rem;
-  border-top: 1px solid var(--fisa-rule);
+  border-top: 1px solid var(--sheet-rule);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-align: center;
-  color: var(--fisa-muted);
+  color: var(--sheet-muted);
 }
 
 html[data-layout-chrome="compact"] .tourist-sheet__form-meta {
@@ -1411,7 +1411,7 @@ html[data-layout-chrome="compact"] .checkin-identity-scope__options {
   grid-template-columns: 1fr;
 }
 
-html[data-layout-chrome="compact"] .checkin-fisa-address__row {
+html[data-layout-chrome="compact"] .checkin-sheet-address__row {
   grid-template-columns: 1fr;
 }
 
