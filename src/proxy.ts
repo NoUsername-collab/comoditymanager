@@ -1,15 +1,6 @@
 ﻿import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { NextResponse, NextRequest } from "next/server";
-import {
-  ALPHA_GATE_COOKIE,
-  isAlphaGateCookieFresh,
-} from "@/lib/auth/alpha-gate-cookie";
-import {
-  isAlphaGateEnabled,
-  isAlphaGateExemptPath,
-} from "@/lib/auth/alpha-gate-edge";
 import {
   ADMIN_LOCATION_UNLOCK_COOKIE,
 } from "@/lib/auth/admin-location-unlock-cookie";
@@ -24,7 +15,6 @@ import {
 import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { getTeamPermissionsOnEdge } from "@/lib/auth/team-permissions-edge";
 import {
-  resolveStaffRoleOnTenantHost,
   resolveTenantMemberRoleOnTenantHost,
   resolveTenantIdOnEdge,
 } from "@/lib/auth/tenant-staff-edge";
@@ -44,90 +34,19 @@ import {
   requestHostFrom,
   stripLocalePrefix,
 } from "@/lib/proxy/request-context";
+import {
+  tenantSuspendedRedirect,
+  blockedTenantRedirectIfNeeded,
+} from "@/lib/proxy/tenant-status";
+import { alphaGateRedirectIfNeeded } from "@/lib/proxy/alpha-gate";
+import {
+  resolveEffectiveStaffRole,
+  mfaRedirectIfNeeded,
+} from "@/lib/proxy/staff-mfa";
 import { isTenantOperational } from "@/domain/tenant/operational";
 import { lookupTenantHostOnEdge } from "@/lib/tenant/tenant-host-edge";
 
 const intlMiddleware = createIntlMiddleware(routing);
-
-const TENANT_STATUS_EXEMPT_PATHS = new Set([
-  "/tenant-suspended",
-  "/admin/login",
-]);
-
-function tenantSuspendedRedirect(
-  request: NextRequest,
-  path: string,
-  status: string
-): NextResponse | null {
-  if (TENANT_STATUS_EXEMPT_PATHS.has(path)) return null;
-  const url = request.nextUrl.clone();
-  url.pathname = "/tenant-suspended";
-  url.search = "";
-  url.searchParams.set("status", status);
-  return NextResponse.redirect(url);
-}
-
-async function blockedTenantRedirectIfNeeded(
-  request: NextRequest,
-  path: string,
-  slug: string | undefined,
-  customDomain: string | undefined
-): Promise<NextResponse | null> {
-  if (!slug && !customDomain) return null;
-
-  const lookup = await lookupTenantHostOnEdge(
-    slug ? { slug } : { customDomain: customDomain! }
-  );
-  if (!lookup || isTenantOperational(lookup.status)) return null;
-
-  return tenantSuspendedRedirect(request, path, lookup.status);
-}
-
-function alphaGateRedirectIfNeeded(
-  request: NextRequest,
-  path: string
-): NextResponse | null {
-  if (!isAlphaGateEnabled() || isAlphaGateExemptPath(path)) return null;
-
-  const token = request.cookies.get(ALPHA_GATE_COOKIE)?.value;
-  if (isAlphaGateCookieFresh(token)) return null;
-
-  const url = request.nextUrl.clone();
-  const segments = url.pathname.split("/").filter(Boolean);
-  const first = segments[0];
-  const hasLocale =
-    Boolean(first) &&
-    routing.locales.includes(first as (typeof routing.locales)[number]);
-  const localePrefix = hasLocale ? `/${first}` : "";
-  const returnTo =
-    request.nextUrl.pathname +
-    (request.nextUrl.search ? request.nextUrl.search : "");
-
-  url.pathname = `${localePrefix}/alpha-gate`;
-  url.search = "";
-  url.searchParams.set("next", returnTo);
-  return NextResponse.redirect(url);
-}
-
-async function resolveEffectiveStaffRole(
-  userId: string,
-  _email: string | undefined,
-  slug: string | undefined,
-  customDomain: string | undefined,
-  sessionClient?: SupabaseClient
-): Promise<"admin" | "operator" | null> {
-  if (slug) {
-    return resolveStaffRoleOnTenantHost(userId, { slug }, sessionClient);
-  }
-  if (customDomain) {
-    return resolveStaffRoleOnTenantHost(
-      userId,
-      { customDomain },
-      sessionClient
-    );
-  }
-  return null;
-}
 
 /** Forward proxy-injected headers to RSC (intl middleware only sees a cloned request). */
 function applyForwardedRequestHeaders(
@@ -157,26 +76,6 @@ function applyForwardedRequestHeaders(
   }
 
   return forwarded;
-}
-
-async function mfaRedirectIfNeeded(
-  request: NextRequest,
-  supabase: SupabaseClient,
-  user: { id: string; email?: string | null },
-  path: string,
-  memberRole: "owner" | "admin" | "operator" | null
-): Promise<NextResponse | null> {
-  if (isMfaExemptAdminPath(path)) return null;
-
-  const redirectPath = await resolveMfaRedirectPath(supabase, {
-    email: user.email,
-    memberRole,
-    next: path + (request.nextUrl.search ? request.nextUrl.search : ""),
-  });
-
-  if (!redirectPath) return null;
-
-  return NextResponse.redirect(new URL(redirectPath, request.url));
 }
 
 async function runTenantAppProxy(
