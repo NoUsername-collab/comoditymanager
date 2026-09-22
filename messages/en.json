@@ -3331,6 +3331,7 @@
       "publicSiteMediaType": "Use a JPEG, PNG or WebP photo.",
       "publicSiteMediaEmpty": "Choose a photo to upload.",
       "publicSiteMediaFailed": "Could not upload the photo. Try again.",
+      "publicSiteMigrationRequired": "The public site is missing a database update. Apply migration 100, then save again.",
       "genericError": "An error occurred. Please try again."
     },
     "availabilityLightSummary": {

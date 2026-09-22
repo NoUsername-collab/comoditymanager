@@ -42,6 +42,36 @@ describe("settings schemas", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("strips leftover jsonb keys so studio save is not rejected", () => {
+    const result = parsePublicSiteSettingsInput({
+      templateId: "classic",
+      themeId: "noir",
+      published: true,
+      bookingEnabled: true,
+      bookingNavPosition: "nav",
+      usePrimaryContact: true,
+      hero: { title: { en: "Stay" }, overlay: true },
+      contact: { email: null },
+      seo: {},
+      bookingNotice: emptyBookingNotice,
+      chrome: { showContactBar: true, unknown: 1 },
+      pages: {},
+      sections: [
+        {
+          sectionType: "intro",
+          sortOrder: 10,
+          visible: true,
+          payload: { title: { en: "About" }, layout: "wide" },
+        },
+      ],
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.hero).toEqual({ title: { en: "Stay" } });
+      expect(result.data.sections[0]?.payload).toEqual({ title: { en: "About" } });
+    }
+  });
+
   it("rejects javascript: URLs in public site hero", () => {
     const result = parsePublicSiteSettingsInput({
       templateId: "classic",

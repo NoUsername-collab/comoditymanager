@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { refresh, revalidatePath, updateTag } from "next/cache";
 import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
 import { requireStaffPermission } from "@/lib/auth/require-staff";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
@@ -33,11 +33,12 @@ export async function savePublicSiteSettingsAction(
 
     await upsertPublicSiteSettingsImpl(tenant.id, parsed.data);
 
-    revalidateTag(CACHE_TAGS.publicSite, "max");
-    revalidateTag(tenantTag(tenant.id, CACHE_TAGS.publicSite), "max");
+    updateTag(CACHE_TAGS.publicSite);
+    updateTag(tenantTag(tenant.id, CACHE_TAGS.publicSite));
     revalidatePath("/");
     revalidatePath("/calendar");
     revalidatePath("/admin/settings/public-site");
+    refresh();
 
     await logAdminActivityFromSession({
       action: "settings.public_site_updated",
@@ -60,6 +61,9 @@ export async function savePublicSiteSettingsAction(
       message === "auth.tenant_member_required"
     ) {
       return { ok: false, error: t("roleForbidden") };
+    }
+    if (message === "public_site.migration_missing") {
+      return { ok: false, error: t("publicSiteMigrationRequired") };
     }
     return { ok: false, error: message || t("genericError") };
   }

@@ -85,10 +85,17 @@ export function writeLocalizedMap(
   previous: LocalizedText | string | null | undefined,
   values: Partial<Record<PublicLocale, string>>,
 ): LocalizedText {
-  let next: LocalizedText =
+  const source: LocalizedText =
     typeof previous === "string"
       ? { ro: previous, en: previous, bg: previous }
-      : { ...(previous ?? {}) };
+      : {};
+  if (previous && typeof previous === "object") {
+    for (const locale of PUBLIC_LOCALES) {
+      const text = previous[locale];
+      if (typeof text === "string") source[locale] = text;
+    }
+  }
+  let next: LocalizedText = { ...source };
   for (const locale of PUBLIC_LOCALES) {
     if (values[locale] === undefined) continue;
     next = writeLocalized(next, locale, values[locale] ?? "");

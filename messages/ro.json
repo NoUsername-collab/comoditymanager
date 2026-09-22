@@ -3314,6 +3314,7 @@
       "publicSiteMediaType": "Folosește o poză JPEG, PNG sau WebP.",
       "publicSiteMediaEmpty": "Alege o poză de încărcat.",
       "publicSiteMediaFailed": "Nu am putut încărca poza. Încearcă din nou.",
+      "publicSiteMigrationRequired": "Pagina publică are nevoie de o actualizare în baza de date. Rulează migrarea 100, apoi salvează din nou.",
       "genericError": "A aparut o eroare. Incearca din nou."
     },
     "availabilityLightSummary": {

@@ -243,21 +243,20 @@ export function PublicSiteSettingsForm({
   const dirty = JSON.stringify(draftInput) !== initialSnapshot.current;
   useSettingsUnsavedWarning(!readOnly && dirty);
 
-  function buildInput(): PublicSiteSettingsInput {
-    return draftInput;
-  }
-
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
     setFieldErrors({});
+    const payload = mergeStudioToInput({ config, draft });
     startTransition(async () => {
-      const result = await savePublicSiteSettingsAction(buildInput());
+      const result = await savePublicSiteSettingsAction(payload);
       if (!result.ok) {
         setError(result.error);
         setFieldErrors(result.fieldErrors ?? {});
       } else {
+        initialSnapshot.current = JSON.stringify(payload);
         router.push(result.redirectTo);
+        router.refresh();
       }
     });
   }

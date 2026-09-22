@@ -107,3 +107,13 @@ export function isPublicSiteMigrationMissing(message: string): boolean {
     message.includes("public_site_sections")
   );
 }
+
+/** Postgres/PostgREST when the 14-arg RPC (chrome/pages) is not deployed yet. */
+export function isPublicSiteRpcMissing(message: string): boolean {
+  const text = message.toLowerCase();
+  return (
+    text.includes("could not find the function") ||
+    (text.includes("upsert_public_site_settings_atomic") &&
+      (text.includes("schema cache") || text.includes("does not exist")))
+  );
+}

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { parsePublicSiteSettingsInput } from "@/domain/settings/schemas/public-site";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   buildPublicSiteStudioDraft,
@@ -66,5 +67,18 @@ describe("public site studio draft", () => {
       ro: "RO intro",
       en: "EN intro",
     });
+  });
+
+  it("round-trips extra jsonb keys through parse", () => {
+    const messy = {
+      ...config,
+      hero: { ...config.hero, overlay: "legacy" },
+    } as PublicSiteConfig;
+    const draft = patchStudioCopy(buildPublicSiteStudioDraft(messy, "en"), {
+      heroTitle: "EN home",
+    });
+    const input = mergeStudioToInput({ config: messy, draft });
+    const parsed = parsePublicSiteSettingsInput(input);
+    expect(parsed.ok).toBe(true);
   });
 });

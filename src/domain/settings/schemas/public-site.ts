@@ -36,7 +36,7 @@ const publicHeroConfigSchema = z
     imageUrl: optionalUrlSchema.optional(),
     showCheckTimes: z.boolean().optional(),
   })
-  .strict();
+  .strip();
 
 const publicContactConfigSchema = z
   .object({
@@ -47,7 +47,7 @@ const publicContactConfigSchema = z
     facebook: optionalUrlSchema.optional(),
     instagram: optionalUrlSchema.optional(),
   })
-  .strict();
+  .strip();
 
 const publicFontIdSchema = z.enum(["theme", "serif", "sans"]);
 
@@ -57,7 +57,7 @@ const longLocalizedTextSchema = z
     en: z.string().max(20000).optional(),
     bg: z.string().max(20000).optional(),
   })
-  .strict();
+  .strip();
 
 const publicChromeConfigSchema = z
   .object({
@@ -77,7 +77,7 @@ const publicChromeConfigSchema = z
     showStayPrices: z.boolean().optional(),
     showPlace: z.boolean().optional(),
   })
-  .strict();
+  .strip();
 
 const publicPagesConfigSchema = z
   .object({
@@ -99,14 +99,14 @@ const publicPagesConfigSchema = z
     seoPrivacyDescription: localizedTextSchema.optional(),
     ogImageUrl: optionalUrlSchema.optional(),
   })
-  .strict();
+  .strip();
 
 const publicSeoConfigSchema = z
   .object({
     metaTitle: localizedTextSchema.optional(),
     metaDescription: localizedTextSchema.optional(),
   })
-  .strict();
+  .strip();
 
 const bookingNoticePresetSchema = z.enum([
   "noPay",
@@ -202,7 +202,7 @@ const publicSectionPayloadSchema = z
     ctaSecondaryLabel: localizedTextSchema.optional(),
     ctaSecondaryHref: optionalSafeNavHrefSchema.optional(),
   })
-  .strict();
+  .strip();
 
 const publicSiteSectionInputSchema = z
   .object({

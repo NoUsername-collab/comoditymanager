@@ -7,7 +7,7 @@ export const localizedTextSchema = z
     en: z.string().max(5000).optional(),
     bg: z.string().max(5000).optional(),
   })
-  .strict();
+  .strip();
 
 export const optionalEmailSchema = z
   .union([z.literal(""), z.null(), z.string().email().max(254)])
