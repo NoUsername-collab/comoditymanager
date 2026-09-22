@@ -1126,16 +1126,11 @@ html[data-layout-chrome="compact"] .onboarding-bar {
   padding-block: 0;
 }
 
-html[data-layout-chrome="compact"] .onboarding-bar > div {
-  padding: 0.5rem 0.75rem !important;
+html[data-layout-chrome="compact"] .onboarding-bar__inner {
+  padding: 0.5rem 0.75rem;
 }
 
-html[data-layout-chrome="compact"] .onboarding-bar button {
-  min-height: var(--ml-touch-min, 2.75rem);
-  padding-block: 0.35rem;
-}
-
-html[data-layout-chrome="compact"] .onboarding-bar a {
+html[data-layout-chrome="compact"] .onboarding-bar__cta {
   min-height: var(--ml-touch-min, 2.75rem);
 }
 

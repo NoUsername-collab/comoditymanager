@@ -14,4 +14,5 @@ export const SETUP_ISSUE_IDS = {
   THEME_NOT_CONFIGURED: "theme-not-configured",
   BUILDINGS_NOT_COLORED: "buildings-not-colored",
   CONTACT_EMAIL_MISSING: "contact-email-missing",
+  ROOMS_MISSING: "rooms-missing",
 } as const;

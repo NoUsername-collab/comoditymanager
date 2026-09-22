@@ -14,6 +14,7 @@ export type OnboardingIssueContext = {
   emailReplyTo: string | null;
   emailFromName: string | null;
   emailFromAddress: string | null;
+  roomCount: number;
 };
 
 async function hasAppearanceBeenSaved(tenantId: string): Promise<boolean> {
@@ -33,7 +34,7 @@ async function loadOnboardingIssueContextUncached(
 ): Promise<OnboardingIssueContext> {
   const supabase = createPublicAdminClient();
 
-  const [pensionResult, publicSiteResult, appearanceSaved] = await Promise.all([
+  const [pensionResult, publicSiteResult, appearanceSaved, roomsResult] = await Promise.all([
     supabase
       .from("pension_settings")
       .select(
@@ -47,6 +48,10 @@ async function loadOnboardingIssueContextUncached(
       .eq("tenant_id", tenantId)
       .maybeSingle(),
     hasAppearanceBeenSaved(tenantId),
+    supabase
+      .from("rooms")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId),
   ]);
 
   const pensionRow = pensionResult.data;
@@ -77,6 +82,7 @@ async function loadOnboardingIssueContextUncached(
       typeof pensionRow?.email_from_address === "string"
         ? pensionRow.email_from_address
         : null,
+    roomCount: roomsResult.count ?? 0,
   };
 }
 
@@ -89,7 +95,9 @@ const getCachedOnboardingIssueContext = (tenantId: string) =>
         CACHE_TAGS.pensionSettings,
         CACHE_TAGS.publicSite,
         CACHE_TAGS.buildings,
+        CACHE_TAGS.rooms,
         tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        tenantTag(tenantId, CACHE_TAGS.rooms),
       ],
       revalidate: 120,
     },

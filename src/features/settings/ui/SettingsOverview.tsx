@@ -64,6 +64,7 @@ export function SettingsOverview({
     if (!completion) return null;
     const coreIds = new Set([
       "identity",
+      "inventory",
       "contact-email",
       "theme",
       "buildings-color",

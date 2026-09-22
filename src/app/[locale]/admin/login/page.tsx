@@ -17,10 +17,12 @@ export default async function AdminLoginPage({
     getTranslations("admin.login"),
     searchParams,
   ]);
-  const next =
+  const requestedNext =
     params.next?.startsWith("/admin") || params.next?.startsWith("/platform-admin")
       ? params.next
-      : "/admin";
+      : null;
+  const next =
+    requestedNext ?? (params.signup === "1" ? "/admin/onboarding" : "/admin");
   const authError =
     params.error === "unauthorized"
       ? t("notMemberOfPension")

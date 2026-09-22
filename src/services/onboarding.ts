@@ -14,32 +14,69 @@ import {
   type OnboardingProgress,
 } from "@/domain/onboarding/progress";
 
+const safeCount = (p: PromiseLike<{ count: number | null }>) =>
+  Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
+
+export async function tenantHasAnyRoom(tenantId: string): Promise<boolean> {
+  const supabase = createPublicAdminClient();
+  const count = await safeCount(
+    supabase
+      .from("rooms")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+  );
+  return count > 0;
+}
+
 async function getOnboardingSnapshotUncached(
   tenantId: string
 ): Promise<OnboardingSnapshot> {
   const supabase = createPublicAdminClient();
 
-  const safeCount = (p: PromiseLike<{ count: number | null }>) =>
-    Promise.resolve(p).then((r) => r.count ?? 0).catch(() => 0);
-
   const [
     pensionSettings,
     buildingCount,
     roomCount,
-    bookingCount,
-    confirmedCount,
     memberCount,
+    publicSite,
   ] = await Promise.all([
     Promise.resolve(
-      supabase.from("pension_settings").select("display_name").eq("tenant_id", tenantId).maybeSingle()
+      supabase
+        .from("pension_settings")
+        .select("display_name")
+        .eq("tenant_id", tenantId)
+        .maybeSingle()
         .then((r) => r.data)
     ).catch(() => null),
 
-    safeCount(supabase.from("buildings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
-    safeCount(supabase.from("rooms").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
-    safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId)),
-    safeCount(supabase.from("bookings").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("status", "confirmata")),
-    safeCount(supabase.from("tenant_members").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("is_active", true).neq("role", "owner")),
+    safeCount(
+      supabase
+        .from("buildings")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+    ),
+    safeCount(
+      supabase
+        .from("rooms")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+    ),
+    safeCount(
+      supabase
+        .from("tenant_members")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", tenantId)
+        .eq("is_active", true)
+        .neq("role", "owner")
+    ),
+    Promise.resolve(
+      supabase
+        .from("public_site_settings")
+        .select("published")
+        .eq("tenant_id", tenantId)
+        .maybeSingle()
+        .then((r) => r.data)
+    ).catch(() => null),
   ]);
 
   const displayName = pensionSettings?.display_name?.trim() ?? "";
@@ -48,10 +85,8 @@ async function getOnboardingSnapshotUncached(
     hasPensionName: displayName.length > 0,
     buildingCount,
     roomCount,
-    hasBooking: bookingCount > 0,
-    hasConfirmedBooking: confirmedCount > 0,
     teamMemberCount: memberCount,
-    hasPublicPage: roomCount > 0, // public page works when rooms exist
+    hasPublicPage: publicSite?.published === true,
   };
 }
 
@@ -63,12 +98,12 @@ const getCachedOnboardingSnapshot = (tenantId: string) =>
       tags: [
         CACHE_TAGS.buildings,
         CACHE_TAGS.rooms,
-        CACHE_TAGS.bookingCounts,
         CACHE_TAGS.pensionSettings,
+        CACHE_TAGS.publicSite,
         tenantTag(tenantId, CACHE_TAGS.buildings),
         tenantTag(tenantId, CACHE_TAGS.rooms),
-        tenantTag(tenantId, CACHE_TAGS.bookingCounts),
         tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        tenantTag(tenantId, CACHE_TAGS.publicSite),
       ],
       revalidate: 60,
     }

@@ -1,9 +1,9 @@
-/* Onboarding wizard — always light, independent of theme */
+/* Onboarding wizard — calm dedicated setup surface, independent of admin chrome */
 
 .onboarding-page {
   color-scheme: light;
   color: #18181b;
-  background: linear-gradient(135deg, #eef2ff 0%, #f4f4f5 60%, #eff6ff 100%);
+  background: #f4f4f5;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -18,13 +18,8 @@
   gap: 0.45rem;
 }
 
-.onboarding-brand__icon {
-  font-size: 1.5rem;
-  line-height: 1;
-}
-
 .onboarding-brand__name {
-  font-size: 1.375rem;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #18181b;
@@ -44,17 +39,17 @@
   color: #52525b;
   margin: 0;
   text-align: center;
+  max-width: 28rem;
 }
 
 .onboarding-wizard {
   width: 100%;
-  max-width: 560px;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* ── Stepper ── */
 .onboarding-stepper {
   display: flex;
   align-items: center;
@@ -80,16 +75,15 @@
   background: #e4e4e7;
   color: #71717a;
   flex-shrink: 0;
-  transition: background 0.2s, color 0.2s;
 }
 
 .onboarding-stepper__step--active .onboarding-stepper__num {
-  background: #4f46e5;
+  background: #18181b;
   color: #fff;
 }
 
 .onboarding-stepper__step--done .onboarding-stepper__num {
-  background: #22c55e;
+  background: #047857;
   color: #fff;
 }
 
@@ -113,12 +107,10 @@
   flex-shrink: 0;
 }
 
-/* ── Card ── */
 .onboarding-card {
   background: #fff;
-  border-radius: 1.25rem;
+  border-radius: 1rem;
   border: 1px solid #e4e4e7;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 30px -5px rgba(79,70,229,0.1);
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -154,11 +146,11 @@
   gap: 0.85rem;
 }
 
-/* ── Fields ── */
 .onboarding-field {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  min-width: 0;
 }
 
 .onboarding-field__label {
@@ -175,13 +167,11 @@
   color: #18181b;
   background: #fff;
   width: 100%;
-  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .onboarding-field__input:focus {
   outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+  border-color: #18181b;
 }
 
 .onboarding-field-row {
@@ -190,7 +180,24 @@
   gap: 0.75rem;
 }
 
-/* ── Buttons ── */
+.onboarding-rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.onboarding-room-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.8fr auto;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+.onboarding-room-row__remove {
+  min-height: 2.5rem;
+  padding-inline: 0.5rem;
+}
+
 .onboarding-btn {
   display: inline-flex;
   align-items: center;
@@ -202,20 +209,19 @@
   font-weight: 600;
   cursor: pointer;
   border: none;
-  transition: background 0.15s, filter 0.15s;
   text-decoration: none;
   white-space: nowrap;
 }
 
 .onboarding-btn--primary {
-  background: #4f46e5;
+  background: #18181b;
   color: #fff;
   width: 100%;
   min-height: 2.75rem;
 }
 
 .onboarding-btn--primary:hover:not(:disabled) {
-  background: #4338ca;
+  background: #27272a;
 }
 
 .onboarding-btn--primary:disabled {
@@ -223,101 +229,31 @@
   cursor: wait;
 }
 
-.onboarding-btn--outline {
-  background: transparent;
-  color: #4f46e5;
-  border: 1.5px solid #4f46e5;
-  flex: 1;
-}
-
-.onboarding-btn--outline:hover {
-  background: #eef2ff;
-}
-
 .onboarding-btn--ghost {
   background: transparent;
-  color: #71717a;
-  flex: 1;
+  color: #52525b;
+  align-self: flex-start;
 }
 
 .onboarding-btn--ghost:hover {
-  color: #3f3f46;
+  color: #18181b;
   text-decoration: underline;
 }
 
-.onboarding-rooms-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-/* ── Themes ── */
-.onboarding-themes {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.65rem;
-}
-
-.onboarding-theme-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.6rem 0.75rem;
-  border: 1.5px solid #e4e4e7;
-  border-radius: 0.65rem;
-  background: #fafafa;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+.onboarding-skip {
+  display: block;
+  text-align: center;
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #3f3f46;
+  color: #71717a;
+  text-decoration: none;
 }
 
-.onboarding-theme-btn:hover {
-  border-color: #a5b4fc;
-  background: #f5f3ff;
+.onboarding-skip:hover {
+  color: #18181b;
+  text-decoration: underline;
 }
 
-.onboarding-theme-btn--selected {
-  border-color: #4f46e5;
-  background: #eef2ff;
-  color: #4338ca;
-}
-
-.onboarding-theme-btn__swatch {
-  width: 1.1rem;
-  height: 1.1rem;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 1.5px rgba(0,0,0,0.1);
-}
-
-/* ── Mode toggle ── */
-.onboarding-mode-toggle {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.onboarding-mode-btn {
-  flex: 1;
-  padding: 0.55rem 1rem;
-  border: 1.5px solid #e4e4e7;
-  border-radius: 0.6rem;
-  background: #fafafa;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #52525b;
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.onboarding-mode-btn--selected {
-  border-color: #4f46e5;
-  background: #eef2ff;
-  color: #4338ca;
-}
-
-/* ── Error ── */
 .onboarding-error {
   padding: 0.5rem 0.65rem;
   border-radius: 0.5rem;
@@ -328,16 +264,86 @@
   margin: 0;
 }
 
-@media (max-width: 480px) {
-  .onboarding-themes {
-    grid-template-columns: repeat(2, 1fr);
+.onboarding-bar {
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border, #3f3f46) 80%, transparent);
+  background: color-mix(in srgb, var(--admin-surface, #18181b) 92%, transparent);
+}
+
+.onboarding-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.6rem 1rem;
+}
+
+.onboarding-bar__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.onboarding-bar__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 650;
+  color: var(--admin-text, #fafafa);
+}
+
+.onboarding-bar__lead {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--admin-muted, #a1a1aa);
+}
+
+.onboarding-bar__cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 0.5rem;
+  background: var(--admin-text, #fafafa);
+  color: var(--admin-surface, #18181b);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.onboarding-bar__cta:hover {
+  filter: brightness(0.95);
+}
+
+@media (max-width: 640px) {
+  .onboarding-room-row {
+    grid-template-columns: 1fr 1fr;
   }
 
+  .onboarding-room-row__remove {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .onboarding-bar__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
   .onboarding-stepper__label {
     display: none;
   }
 
   .onboarding-card {
     padding: 1.25rem;
+  }
+
+  .onboarding-field-row {
+    grid-template-columns: 1fr;
   }
 }

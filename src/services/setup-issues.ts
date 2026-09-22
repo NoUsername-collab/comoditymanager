@@ -5,6 +5,7 @@ import {
   resolveBuildingsColorSetupIssue,
   resolveContactEmailSetupIssue,
   resolveMfaSetupIssue,
+  resolveRoomsMissingSetupIssue,
   resolveThemeSetupIssue,
   shouldResolveSetupIssues,
 } from "@/domain/setup-issues/checks";
@@ -79,6 +80,12 @@ async function resolveSetupIssuesUncached(
       usePrimaryContact: onboardingContext.usePrimaryContact,
     });
     if (contactIssue) issues.push(contactIssue);
+
+    const roomsIssue = resolveRoomsMissingSetupIssue({
+      ...opts,
+      roomCount: onboardingContext.roomCount,
+    });
+    if (roomsIssue) issues.push(roomsIssue);
   }
 
   return issues;
@@ -101,8 +108,10 @@ const getCachedSetupIssues = (
         CACHE_TAGS.pensionSettings,
         CACHE_TAGS.buildings,
         CACHE_TAGS.publicSite,
+        CACHE_TAGS.rooms,
         tenantTag(tenantId, CACHE_TAGS.pensionSettings),
         tenantTag(tenantId, CACHE_TAGS.buildings),
+        tenantTag(tenantId, CACHE_TAGS.rooms),
       ],
       revalidate: 300,
     },

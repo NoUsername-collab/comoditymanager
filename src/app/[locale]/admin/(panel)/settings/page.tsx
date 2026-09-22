@@ -40,7 +40,7 @@ export default async function SettingsOverviewPage({
     }),
     buildSettingsAlerts(params, { isOwner }),
   ]);
-  const { setupIssues, identity, publicConfig, emailSettings } = overview;
+  const { setupIssues, identity, publicConfig, emailSettings, roomCount } = overview;
 
   const { staff, pensionResult, appearance } = ctx;
   const { role, memberRole } = staff;
@@ -85,6 +85,7 @@ export default async function SettingsOverviewPage({
         emailFromName: emailSettings?.email_from_name,
         emailFromAddress: emailSettings?.email_from_address,
         includeMfa: isOwner || setupIssues.some((issue) => issue.id === "mfa-not-enabled"),
+        roomCount,
         publicSite: publicConfig
           ? {
               published: publicConfig.published,

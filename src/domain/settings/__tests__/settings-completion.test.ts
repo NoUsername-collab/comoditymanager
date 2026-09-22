@@ -99,4 +99,42 @@ describe("computeSettingsCompletion", () => {
     expect(summary.items.some((item) => item.id === "public-published")).toBe(true);
     expect(summary.percent).toBeLessThan(100);
   });
+
+  it("marks inventory complete only when rooms exist", () => {
+    const withoutRooms = computeSettingsCompletion({
+      displayName: "Casa Test",
+      setupIssues: [],
+      identityContact: {
+        email: "hotel@test.ro",
+        phone: "+40",
+        whatsapp: null,
+        telegram: null,
+        facebook: null,
+        instagram: null,
+      },
+      publicSite: null,
+      roomCount: 0,
+    });
+    expect(withoutRooms.items.find((item) => item.id === "inventory")?.done).toBe(false);
+    expect(withoutRooms.items.find((item) => item.id === "inventory")?.href).toBe(
+      "/admin/onboarding",
+    );
+
+    const withRooms = computeSettingsCompletion({
+      displayName: "Casa Test",
+      setupIssues: [],
+      identityContact: {
+        email: "hotel@test.ro",
+        phone: "+40",
+        whatsapp: null,
+        telegram: null,
+        facebook: null,
+        instagram: null,
+      },
+      publicSite: null,
+      roomCount: 3,
+    });
+    expect(withRooms.items.find((item) => item.id === "inventory")?.done).toBe(true);
+    expect(withRooms.items.find((item) => item.id === "inventory")?.href).toBe("/admin/rooms");
+  });
 });

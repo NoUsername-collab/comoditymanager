@@ -6,6 +6,7 @@ import {
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
 import { normalizeBuildingColor } from "@/lib/building-color-palette";
 import type { TenantMemberRole } from "@/domain/tenant/types";
+import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
 import { SETUP_ISSUE_IDS, type SetupIssue } from "./types";
 
 export const APPEARANCE_SETTINGS_PATH = "/admin/settings/appearance";
@@ -152,5 +153,21 @@ export function resolveContactEmailSetupIssue(opts: {
     severity: "warning",
     settingsPath: IDENTITY_SETTINGS_PATH,
     labelKey: "contactEmailMissing",
+  };
+}
+
+export function resolveRoomsMissingSetupIssue(opts: {
+  email?: string | null;
+  memberRole?: TenantMemberRole | null;
+  roomCount: number;
+}): SetupIssue | null {
+  if (!canReceiveOnboardingSetupIssues(opts)) return null;
+  if (opts.roomCount >= 1) return null;
+
+  return {
+    id: SETUP_ISSUE_IDS.ROOMS_MISSING,
+    severity: "warning",
+    settingsPath: ONBOARDING_PATH,
+    labelKey: "roomsMissing",
   };
 }

@@ -1,80 +1,57 @@
 /**
  * Onboarding steps — pure domain logic, zero dependencies.
  *
- * Each step has an ID, display info, and a check function that
- * receives a snapshot of tenant data and returns whether the step
- * is complete.
+ * Required complete = property name + at least one room.
+ * Public site and team invite are optional polish, not first-run gates.
  */
 
 export interface OnboardingSnapshot {
   hasPensionName: boolean;
   buildingCount: number;
   roomCount: number;
-  hasBooking: boolean;
-  hasConfirmedBooking: boolean;
   teamMemberCount: number; // excluding owner
   hasPublicPage: boolean;
 }
 
 export interface OnboardingStep {
   id: string;
-  emoji: string;
-  labelKey: string;       // i18n key
-  descriptionKey: string; // i18n key
+  labelKey: string;
+  descriptionKey: string;
   /** URL to navigate when user clicks the step */
   href: string;
-  /** Check if this step is complete */
   isComplete: (snapshot: OnboardingSnapshot) => boolean;
-  /** Is this step optional? (user can skip) */
   optional?: boolean;
 }
 
+export const ONBOARDING_PATH = "/admin/onboarding";
+
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
-    id: "pension_name",
-    emoji: "🏠",
-    labelKey: "onboarding.steps.pensionName",
-    descriptionKey: "onboarding.steps.pensionNameDesc",
-    href: "/admin/settings",
+    id: "property",
+    labelKey: "steps.property",
+    descriptionKey: "steps.propertyDesc",
+    href: ONBOARDING_PATH,
     isComplete: (s) => s.hasPensionName,
   },
   {
-    id: "first_building",
-    emoji: "🏗️",
-    labelKey: "onboarding.steps.firstBuilding",
-    descriptionKey: "onboarding.steps.firstBuildingDesc",
-    href: "/admin/buildings",
-    isComplete: (s) => s.buildingCount >= 1,
-  },
-  {
-    id: "first_room",
-    emoji: "🛏️",
-    labelKey: "onboarding.steps.firstRoom",
-    descriptionKey: "onboarding.steps.firstRoomDesc",
-    href: "/admin/rooms/new",
+    id: "inventory",
+    labelKey: "steps.inventory",
+    descriptionKey: "steps.inventoryDesc",
+    href: ONBOARDING_PATH,
     isComplete: (s) => s.roomCount >= 1,
   },
   {
-    id: "test_booking",
-    emoji: "📅",
-    labelKey: "onboarding.steps.testBooking",
-    descriptionKey: "onboarding.steps.testBookingDesc",
-    href: "/admin/disponibilitate",
-    isComplete: (s) => s.hasBooking,
-  },
-  {
-    id: "confirm_booking",
-    emoji: "✅",
-    labelKey: "onboarding.steps.confirmBooking",
-    descriptionKey: "onboarding.steps.confirmBookingDesc",
-    href: "/admin/cazari",
-    isComplete: (s) => s.hasConfirmedBooking,
+    id: "public_site",
+    labelKey: "steps.publicSite",
+    descriptionKey: "steps.publicSiteDesc",
+    href: "/admin/settings/public-site",
+    isComplete: (s) => s.hasPublicPage,
+    optional: true,
   },
   {
     id: "invite_team",
-    emoji: "👥",
-    labelKey: "onboarding.steps.inviteTeam",
-    descriptionKey: "onboarding.steps.inviteTeamDesc",
+    labelKey: "steps.inviteTeam",
+    descriptionKey: "steps.inviteTeamDesc",
     href: "/admin/settings/staff",
     isComplete: (s) => s.teamMemberCount >= 1,
     optional: true,

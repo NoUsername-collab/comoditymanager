@@ -15,9 +15,9 @@ import { lookupRequestTenantHost, resolveRequestTenant } from "@/lib/tenant/acti
 import { isTenantOperational } from "@/domain/tenant/operational";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";
 import { withTenantId } from "@/lib/tenant/scope";
-import { getPrimaryTenantSlugForUser } from "@/services/tenant-members";
+import { getPrimaryTenantSlugForUser, getTenantMemberRole } from "@/services/tenant-members";
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
-import { getTenantMemberRole } from "@/services/tenant-members";
+import { tenantHasAnyRoom } from "@/services/onboarding";
 import {
   checkRateLimit,
   getClientIp,
@@ -29,6 +29,19 @@ export type LoginFormState = {
   error: string | null;
   mfaRequired?: boolean;
 };
+
+async function resolveFirstRunDestination(
+  tenantId: string,
+  userId: string,
+  safeNext: string
+): Promise<string> {
+  const isAdminHome = safeNext === "/admin" || safeNext === "/admin/";
+  if (!isAdminHome) return safeNext;
+  const memberRole = await getTenantMemberRole(tenantId, userId);
+  if (memberRole !== "owner" && memberRole !== "admin") return safeNext;
+  const hasRooms = await tenantHasAnyRoom(tenantId);
+  return hasRooms ? safeNext : "/admin/onboarding";
+}
 
 async function finalizeStaffLogin(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -42,17 +55,20 @@ async function finalizeStaffLogin(
     next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
       ? next
       : "/admin";
+  const destination = tenant
+    ? await resolveFirstRunDestination(tenant.id, user.id, safeNext)
+    : safeNext;
 
   const loginSummary = t("loginSummary", { role: role ?? "staff" });
 
   if (
     !tenant &&
-    safeNext.startsWith("/platform-admin") &&
+    destination.startsWith("/platform-admin") &&
     user.email &&
     isPlatformAdminEmail(user.email)
   ) {
     await logLoginActivity(undefined, user, loginSummary);
-    redirect(safeNext);
+    redirect(destination);
   }
 
   let platformSlug: string | null = null;
@@ -71,14 +87,14 @@ async function finalizeStaffLogin(
   await logLoginActivity(tenant?.id, user, loginSummary);
 
   if (tenant) {
-    await localeRedirectInternal(safeNext);
+    await localeRedirectInternal(destination);
   }
 
   if (platformSlug) {
     const requestHost =
       (await headers()).get("x-forwarded-host") ??
       (await headers()).get("host");
-    redirect(buildTenantAdminUrl(platformSlug, safeNext, requestHost));
+    redirect(buildTenantAdminUrl(platformSlug, destination, requestHost));
   }
 
   await supabase.auth.signOut();

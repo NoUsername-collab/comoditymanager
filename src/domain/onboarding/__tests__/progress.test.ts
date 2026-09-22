@@ -7,18 +7,14 @@ const EMPTY_SNAPSHOT: OnboardingSnapshot = {
   hasPensionName: false,
   buildingCount: 0,
   roomCount: 0,
-  hasBooking: false,
-  hasConfirmedBooking: false,
   teamMemberCount: 0,
   hasPublicPage: false,
 };
 
 const COMPLETE_SNAPSHOT: OnboardingSnapshot = {
   hasPensionName: true,
-  buildingCount: 2,
-  roomCount: 5,
-  hasBooking: true,
-  hasConfirmedBooking: true,
+  buildingCount: 1,
+  roomCount: 3,
   teamMemberCount: 1,
   hasPublicPage: true,
 };
@@ -31,48 +27,57 @@ describe("Onboarding Progress", () => {
     expect(p.isComplete).toBe(false);
   });
 
+  it("is complete when name and rooms exist", () => {
+    const p = computeOnboardingProgress({
+      ...EMPTY_SNAPSHOT,
+      hasPensionName: true,
+      buildingCount: 1,
+      roomCount: 2,
+    });
+    expect(p.percentage).toBe(100);
+    expect(p.isComplete).toBe(true);
+  });
+
   it("returns 100% when all required steps complete", () => {
     const p = computeOnboardingProgress(COMPLETE_SNAPSHOT);
     expect(p.percentage).toBe(100);
     expect(p.isComplete).toBe(true);
   });
 
-  it("next step points to first incomplete required step", () => {
+  it("next step points to inventory after the property name", () => {
     const snapshot: OnboardingSnapshot = {
       ...EMPTY_SNAPSHOT,
-      hasPensionName: true, // first step done
+      hasPensionName: true,
     };
     const p = computeOnboardingProgress(snapshot);
-    expect(p.nextStep?.id).toBe("first_building");
+    expect(p.nextStep?.id).toBe("inventory");
   });
 
   it("counts optional steps in total but not in percentage", () => {
     const snapshot: OnboardingSnapshot = {
       ...COMPLETE_SNAPSHOT,
-      teamMemberCount: 0, // optional step incomplete
+      teamMemberCount: 0,
+      hasPublicPage: false,
     };
     const p = computeOnboardingProgress(snapshot);
-    expect(p.percentage).toBe(100); // still 100% — optional doesn't count
+    expect(p.percentage).toBe(100);
     expect(p.isComplete).toBe(true);
-    expect(p.completedCount).toBe(ONBOARDING_STEPS.length - 1);
+    expect(p.completedCount).toBe(ONBOARDING_STEPS.length - 2);
   });
 
-  it("has correct required step count", () => {
-    expect(REQUIRED_STEP_COUNT).toBe(5);
-    expect(ONBOARDING_STEPS).toHaveLength(6); // 5 required + 1 optional
+  it("has two required steps", () => {
+    expect(REQUIRED_STEP_COUNT).toBe(2);
+    expect(ONBOARDING_STEPS).toHaveLength(4);
   });
 
   it("partial progress computes correct percentage", () => {
     const snapshot: OnboardingSnapshot = {
       ...EMPTY_SNAPSHOT,
       hasPensionName: true,
-      buildingCount: 1,
-      roomCount: 3,
     };
     const p = computeOnboardingProgress(snapshot);
-    // 3 out of 5 required = 60%
-    expect(p.percentage).toBe(60);
-    expect(p.completedCount).toBe(3);
+    expect(p.percentage).toBe(50);
+    expect(p.completedCount).toBe(1);
     expect(p.isComplete).toBe(false);
   });
 });

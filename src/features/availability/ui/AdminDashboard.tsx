@@ -234,7 +234,7 @@ export async function AdminDashboard({
             emoji="🛏"
             title={tCommon("noRoomsConfigured")}
             description={tDashboard("configureRoomsFromSettings")}
-            actionHref="/admin/settings/location"
+            actionHref="/admin/onboarding"
             actionLabel={tDashboard("openConfiguration")}
           />
         )}

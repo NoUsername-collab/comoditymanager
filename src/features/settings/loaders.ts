@@ -27,6 +27,7 @@ import {
   listRoomTypes,
 } from "@/services/room-catalog";
 import { resolveSetupIssues } from "@/services/setup-issues";
+import { getOnboardingSnapshot } from "@/services/onboarding";
 import { listStaffAccountsForCurrentTenant } from "@/services/staff-accounts";
 import { listTenantDomains } from "@/services/tenant-domains";
 import { getTenantFiscalSettings } from "@/services/tenant-fiscal-settings";
@@ -41,7 +42,7 @@ export async function loadSettingsOverviewData(opts: {
   email: string | null | undefined;
   memberRole: TenantMemberRole | null;
 }) {
-  const [setupIssues, identity, publicConfig, emailSettings] = await Promise.all([
+  const [setupIssues, identity, publicConfig, emailSettings, snapshot] = await Promise.all([
     resolveSetupIssues({
       email: opts.email,
       memberRole: opts.memberRole,
@@ -49,8 +50,15 @@ export async function loadSettingsOverviewData(opts: {
     getPensionIdentity().catch(() => null),
     getPublicSiteConfigForAdmin().catch(() => null),
     getEmailSettings().catch(() => null),
+    getOnboardingSnapshot().catch(() => null),
   ]);
-  return { setupIssues, identity, publicConfig, emailSettings };
+  return {
+    setupIssues,
+    identity,
+    publicConfig,
+    emailSettings,
+    roomCount: snapshot?.roomCount ?? 0,
+  };
 }
 
 export async function loadPensionIdentity() {

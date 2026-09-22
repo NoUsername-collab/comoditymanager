@@ -5,48 +5,66 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import {
+  saveOnboardingInventoryAction,
   saveOnboardingStep1Action,
-  saveOnboardingStep3Action,
 } from "@/features/onboarding/actions";
 import { LocaleFlagSpinner } from "@/components/ui/LocaleFlagSpinner";
 
-const THEMES = [
-  { id: "noir", labelKey: "themeNoir", swatch: "#18181b" },
-  { id: "alpine", labelKey: "themeAlpine", swatch: "#0ea5e9" },
-  { id: "mediterranean", labelKey: "themeMediterranean", swatch: "#0d9488" },
-  { id: "pearl", labelKey: "themePearl", swatch: "#7c3aed" },
-  { id: "slate", labelKey: "themeSlate", swatch: "#475569" },
-  { id: "forest", labelKey: "themeForest", swatch: "#16a34a" },
-] as const;
+type RoomTypeOption = { id: string; name: string };
 
-type ThemeId = (typeof THEMES)[number]["id"];
+type RoomRow = {
+  key: string;
+  name: string;
+  typeId: string;
+  price: string;
+};
 
 type Props = {
   initialName: string;
   initialCheckIn: string;
   initialCheckOut: string;
-  initialTheme: string;
-  initialMode: "day" | "night";
+  building: { id: string; name: string } | null;
+  roomTypes: RoomTypeOption[];
+  roomCount: number;
 };
+
+function newRow(typeId: string, name = ""): RoomRow {
+  return {
+    key:
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `row-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name,
+    typeId,
+    price: "",
+  };
+}
 
 export function OnboardingWizard({
   initialName,
   initialCheckIn,
   initialCheckOut,
-  initialTheme,
-  initialMode,
+  building,
+  roomTypes,
+  roomCount,
 }: Props) {
   const t = useTranslations("admin.onboarding");
   const router = useRouter();
-  const [step, setStep] = useState(1);
+  const defaultTypeId = roomTypes[0]?.id ?? "";
+  const [step, setStep] = useState(initialName.trim().length >= 2 ? 2 : 1);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTheme, setSelectedTheme] = useState<ThemeId>(
-    (THEMES.find((th) => th.id === initialTheme)?.id ?? "noir") as ThemeId
+  const [propertyName, setPropertyName] = useState(initialName);
+  const [buildingName, setBuildingName] = useState(
+    building?.name || initialName
   );
-  const [selectedMode, setSelectedMode] = useState<"day" | "night">(initialMode);
+  const [rows, setRows] = useState<RoomRow[]>([
+    newRow(defaultTypeId, "1"),
+    newRow(defaultTypeId, "2"),
+  ]);
 
-  const steps = [t("stepProperty"), t("stepRooms"), t("stepTheme")];
+  const steps = [t("stepProperty"), t("stepRooms")];
+  const alreadyHasRooms = roomCount >= 1;
 
   async function handleStep1(fd: FormData) {
     setPending(true);
@@ -54,6 +72,11 @@ export function OnboardingWizard({
     try {
       const result = await saveOnboardingStep1Action(fd);
       if (result.ok) {
+        const nextName = String(fd.get("display_name") ?? "").trim();
+        setPropertyName(nextName);
+        if (!building && !buildingName.trim()) {
+          setBuildingName(nextName);
+        }
         setStep(2);
       } else {
         setError(result.error);
@@ -65,16 +88,13 @@ export function OnboardingWizard({
     }
   }
 
-  async function handleStep3() {
+  async function handleInventory(fd: FormData) {
     setPending(true);
     setError(null);
     try {
-      const fd = new FormData();
-      fd.set("admin_palette_key", selectedTheme);
-      fd.set("admin_day_night", selectedMode);
-      const result = await saveOnboardingStep3Action(fd);
+      const result = await saveOnboardingInventoryAction(fd);
       if (result.ok) {
-        router.push("/admin?onboarding=done");
+        router.push("/admin");
       } else {
         setError(result.error);
       }
@@ -85,9 +105,12 @@ export function OnboardingWizard({
     }
   }
 
+  function finishWithoutRooms() {
+    router.push("/admin");
+  }
+
   return (
     <div className="onboarding-wizard">
-      {/* Progress stepper */}
       <div className="onboarding-stepper" role="list" aria-label="Progress">
         {steps.map((label, i) => {
           const num = i + 1;
@@ -117,18 +140,21 @@ export function OnboardingWizard({
       </div>
 
       <div className="onboarding-card">
-        {/* ── Step 1: Property basics ── */}
         {step === 1 && (
           <>
             <h2 className="onboarding-card__title">{t("step1Title")}</h2>
             <p className="onboarding-card__lead">{t("step1Lead")}</p>
             <form
               className="onboarding-card__form"
-              action={async (fd) => { await handleStep1(fd); }}
+              action={async (fd) => {
+                await handleStep1(fd);
+              }}
             >
               <fieldset disabled={pending} className="onboarding-card__fieldset">
                 <label className="onboarding-field">
-                  <span className="onboarding-field__label">{t("propertyNameLabel")}</span>
+                  <span className="onboarding-field__label">
+                    {t("propertyNameLabel")}
+                  </span>
                   <input
                     name="display_name"
                     type="text"
@@ -143,7 +169,9 @@ export function OnboardingWizard({
                 </label>
                 <div className="onboarding-field-row">
                   <label className="onboarding-field">
-                    <span className="onboarding-field__label">{t("checkInLabel")}</span>
+                    <span className="onboarding-field__label">
+                      {t("checkInLabel")}
+                    </span>
                     <input
                       name="default_check_in_time"
                       type="time"
@@ -152,7 +180,9 @@ export function OnboardingWizard({
                     />
                   </label>
                   <label className="onboarding-field">
-                    <span className="onboarding-field__label">{t("checkOutLabel")}</span>
+                    <span className="onboarding-field__label">
+                      {t("checkOutLabel")}
+                    </span>
                     <input
                       name="default_check_out_time"
                       type="time"
@@ -161,89 +191,217 @@ export function OnboardingWizard({
                     />
                   </label>
                 </div>
-                {error && <p className="onboarding-error" role="alert">{error}</p>}
-                <button type="submit" disabled={pending} className="onboarding-btn onboarding-btn--primary">
+                {error && (
+                  <p className="onboarding-error" role="alert">
+                    {error}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={pending}
+                  className="onboarding-btn onboarding-btn--primary"
+                >
                   {pending ? (
-                    <><LocaleFlagSpinner label={t("saving")} size="md" /><span>{t("saving")}</span></>
-                  ) : t("nextBtn")}
+                    <>
+                      <LocaleFlagSpinner label={t("saving")} size="md" />
+                      <span>{t("saving")}</span>
+                    </>
+                  ) : (
+                    t("nextBtn")
+                  )}
                 </button>
               </fieldset>
             </form>
           </>
         )}
 
-        {/* ── Step 2: Rooms ── */}
         {step === 2 && (
           <>
             <h2 className="onboarding-card__title">{t("step2Title")}</h2>
             <p className="onboarding-card__lead">{t("step2Lead")}</p>
-            <div className="onboarding-rooms-actions">
-              <Link href="/admin/rooms" className="onboarding-btn onboarding-btn--outline">
-                {t("goToRooms")}
-              </Link>
-              <button
-                type="button"
-                onClick={() => setStep(3)}
-                className="onboarding-btn onboarding-btn--ghost"
-              >
-                {t("nextStep")}
-              </button>
-            </div>
-          </>
-        )}
 
-        {/* ── Step 3: Theme ── */}
-        {step === 3 && (
-          <>
-            <h2 className="onboarding-card__title">{t("step3Title")}</h2>
-            <p className="onboarding-card__lead">{t("step3Lead")}</p>
-            <div className="onboarding-themes">
-              {THEMES.map((th) => (
+            {alreadyHasRooms ? (
+              <>
+                <p className="onboarding-card__lead">{t("alreadyHasRooms")}</p>
                 <button
-                  key={th.id}
                   type="button"
-                  onClick={() => setSelectedTheme(th.id)}
-                  className={[
-                    "onboarding-theme-btn",
-                    selectedTheme === th.id ? "onboarding-theme-btn--selected" : "",
-                  ].join(" ")}
-                  aria-pressed={selectedTheme === th.id}
+                  className="onboarding-btn onboarding-btn--primary"
+                  onClick={finishWithoutRooms}
                 >
-                  <span
-                    className="onboarding-theme-btn__swatch"
-                    style={{ background: th.swatch }}
-                  />
-                  <span className="onboarding-theme-btn__label">{t(th.labelKey as "themeNoir")}</span>
+                  {t("finishBtn")}
                 </button>
-              ))}
-            </div>
-            <div className="onboarding-mode-toggle">
-              {(["night", "day"] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setSelectedMode(m)}
-                  className={[
-                    "onboarding-mode-btn",
-                    selectedMode === m ? "onboarding-mode-btn--selected" : "",
-                  ].join(" ")}
-                  aria-pressed={selectedMode === m}
-                >
-                  {m === "night" ? "🌙 Dark" : "☀️ Light"}
-                </button>
-              ))}
-            </div>
-            {error && <p className="onboarding-error" role="alert">{error}</p>}
-            <button
-              type="button"
-              onClick={handleStep3}
-              disabled={pending}
-              className="onboarding-btn onboarding-btn--primary"
-            >
-              {pending ? (
-                <><LocaleFlagSpinner label={t("saving")} size="md" /><span>{t("saving")}</span></>
-              ) : t("finishBtn")}
-            </button>
+              </>
+            ) : roomTypes.length === 0 ? (
+              <p className="onboarding-error" role="alert">
+                {t("noRoomTypes")}
+              </p>
+            ) : (
+              <form
+                className="onboarding-card__form"
+                action={async (fd) => {
+                  await handleInventory(fd);
+                }}
+              >
+                <fieldset disabled={pending} className="onboarding-card__fieldset">
+                  {building ? (
+                    <input type="hidden" name="building_id" value={building.id} />
+                  ) : null}
+                  <label className="onboarding-field">
+                    <span className="onboarding-field__label">
+                      {t("buildingNameLabel")}
+                    </span>
+                    <input
+                      name="building_name"
+                      type="text"
+                      required
+                      minLength={2}
+                      maxLength={100}
+                      value={buildingName}
+                      onChange={(e) => setBuildingName(e.target.value)}
+                      placeholder={
+                        propertyName || t("buildingNamePlaceholder")
+                      }
+                      className="onboarding-field__input"
+                    />
+                  </label>
+
+                  <div className="onboarding-rooms">
+                    {rows.map((row, index) => (
+                      <div key={row.key} className="onboarding-room-row">
+                        <label className="onboarding-field">
+                          <span className="onboarding-field__label">
+                            {t("roomNameLabel")}
+                          </span>
+                          <input
+                            name="room_name"
+                            type="text"
+                            required={index === 0}
+                            maxLength={40}
+                            value={row.name}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setRows((current) =>
+                                current.map((item) =>
+                                  item.key === row.key
+                                    ? { ...item, name: value }
+                                    : item
+                                )
+                              );
+                            }}
+                            placeholder={t("roomNamePlaceholder")}
+                            className="onboarding-field__input"
+                          />
+                        </label>
+                        <label className="onboarding-field">
+                          <span className="onboarding-field__label">
+                            {t("roomTypeLabel")}
+                          </span>
+                          <select
+                            name="room_type_id"
+                            value={row.typeId}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setRows((current) =>
+                                current.map((item) =>
+                                  item.key === row.key
+                                    ? { ...item, typeId: value }
+                                    : item
+                                )
+                              );
+                            }}
+                            className="onboarding-field__input"
+                          >
+                            {roomTypes.map((type) => (
+                              <option key={type.id} value={type.id}>
+                                {type.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="onboarding-field">
+                          <span className="onboarding-field__label">
+                            {t("roomPriceLabel")}
+                          </span>
+                          <input
+                            name="room_price"
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={row.price}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setRows((current) =>
+                                current.map((item) =>
+                                  item.key === row.key
+                                    ? { ...item, price: value }
+                                    : item
+                                )
+                              );
+                            }}
+                            placeholder={t("roomPricePlaceholder")}
+                            className="onboarding-field__input"
+                          />
+                        </label>
+                        {rows.length > 1 ? (
+                          <button
+                            type="button"
+                            className="onboarding-btn onboarding-btn--ghost onboarding-room-row__remove"
+                            onClick={() =>
+                              setRows((current) =>
+                                current.filter((item) => item.key !== row.key)
+                              )
+                            }
+                          >
+                            {t("removeRoomBtn")}
+                          </button>
+                        ) : (
+                          <span className="onboarding-room-row__remove" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {rows.length < 12 ? (
+                    <button
+                      type="button"
+                      className="onboarding-btn onboarding-btn--ghost"
+                      onClick={() =>
+                        setRows((current) => [
+                          ...current,
+                          newRow(defaultTypeId, String(current.length + 1)),
+                        ])
+                      }
+                    >
+                      {t("addRoomBtn")}
+                    </button>
+                  ) : null}
+
+                  {error && (
+                    <p className="onboarding-error" role="alert">
+                      {error}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={pending}
+                    className="onboarding-btn onboarding-btn--primary"
+                  >
+                    {pending ? (
+                      <>
+                        <LocaleFlagSpinner label={t("saving")} size="md" />
+                        <span>{t("saving")}</span>
+                      </>
+                    ) : (
+                      t("finishBtn")
+                    )}
+                  </button>
+                </fieldset>
+              </form>
+            )}
+
+            <Link href="/admin" className="onboarding-skip">
+              {t("skipToAdmin")}
+            </Link>
           </>
         )}
       </div>

@@ -49,6 +49,7 @@ export function computeSettingsCompletion(opts: {
   emailFromAddress?: string | null;
   includeMfa?: boolean;
   publicSite: PublicSiteCompletionSnapshot | null;
+  roomCount?: number;
 }): SettingsCompletionSummary {
   const {
     setupIssues,
@@ -67,6 +68,12 @@ export function computeSettingsCompletion(opts: {
       labelKey: "checklistIdentity",
       done: isIdentityConfigured(displayName),
       href: "/admin/settings/identity",
+    },
+    {
+      id: "inventory",
+      labelKey: "checklistInventory",
+      done: (opts.roomCount ?? 0) >= 1,
+      href: (opts.roomCount ?? 0) >= 1 ? "/admin/rooms" : "/admin/onboarding",
     },
     {
       id: "contact-email",

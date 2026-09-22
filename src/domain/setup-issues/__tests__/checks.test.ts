@@ -9,6 +9,7 @@ import {
   resolveBuildingsColorSetupIssue,
   resolveContactEmailSetupIssue,
   resolveMfaSetupIssue,
+  resolveRoomsMissingSetupIssue,
   resolveThemeSetupIssue,
   shouldResolveSetupIssues,
 } from "../checks";
@@ -242,6 +243,40 @@ describe("resolveContactEmailSetupIssue", () => {
         pensionEmail: "contact@pensiune.ro",
         publicSiteEmail: null,
         usePrimaryContact: true,
+      })
+    ).toBeNull();
+  });
+});
+
+describe("resolveRoomsMissingSetupIssue", () => {
+  it("flags owners with no rooms", () => {
+    const issue = resolveRoomsMissingSetupIssue({
+      memberRole: "owner",
+      roomCount: 0,
+    });
+
+    expect(issue).toEqual({
+      id: SETUP_ISSUE_IDS.ROOMS_MISSING,
+      severity: "warning",
+      settingsPath: "/admin/onboarding",
+      labelKey: "roomsMissing",
+    });
+  });
+
+  it("returns null when a room exists", () => {
+    expect(
+      resolveRoomsMissingSetupIssue({
+        memberRole: "owner",
+        roomCount: 2,
+      })
+    ).toBeNull();
+  });
+
+  it("returns null for operators", () => {
+    expect(
+      resolveRoomsMissingSetupIssue({
+        memberRole: "operator",
+        roomCount: 0,
       })
     ).toBeNull();
   });
