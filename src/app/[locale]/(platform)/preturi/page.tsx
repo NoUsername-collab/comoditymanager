@@ -5,7 +5,7 @@ import {
 } from "@/features/signup/ui/PricingGrid";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-export default async function PreturiPage({
+export default async function PricingPage({
   params,
 }: {
   params: Promise<{ locale: string }>;

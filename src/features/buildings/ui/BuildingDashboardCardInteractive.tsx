@@ -103,7 +103,7 @@ export function BuildingDashboardCardInteractive({
               {data.occupied_on_date} {tCommon("occupied")}
             </span>
             {data.pending_on_date > 0 && (
-              <span className="admin-cereri-glow rounded-full border border-red-300/80 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800">
+              <span className="admin-requests-glow rounded-full border border-red-300/80 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800">
                 {data.pending_on_date} {tCommon("requests")}
               </span>
             )}

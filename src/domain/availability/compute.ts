@@ -21,8 +21,8 @@ export type OccupiedRange = {
 export type DayCounts = {
   checkins: number;
   checkouts: number;
-  unassigned_cereri: number;
-  pending_cereri: number;
+  unassigned_requests: number;
+  pending_requests: number;
 };
 
 export type ComputedDay = {
@@ -37,8 +37,8 @@ export type ComputedDay = {
   status: "available" | "full";
   checkins: number;
   checkouts: number;
-  unassigned_cereri: number;
-  pending_cereri: number;
+  unassigned_requests: number;
+  pending_requests: number;
 };
 
 export function filterRoomsByBuilding<T extends AvailRoomInput>(
@@ -97,8 +97,8 @@ export function computeDayAvailability(
     status: free > 0 ? "available" : "full",
     checkins: counts.checkins,
     checkouts: counts.checkouts,
-    unassigned_cereri: counts.unassigned_cereri,
-    pending_cereri: counts.pending_cereri,
+    unassigned_requests: counts.unassigned_requests,
+    pending_requests: counts.pending_requests,
   };
 }
 

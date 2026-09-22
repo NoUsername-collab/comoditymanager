@@ -5,7 +5,7 @@ describe("computePensionMood", () => {
   test("calm when no operational pressure", () => {
     expect(
       computePensionMood({
-        cereriCount: 0,
+        requestCount: 0,
         unpaidInHouseCount: 0,
         pendingCheckIns: 0,
       })
@@ -15,7 +15,7 @@ describe("computePensionMood", () => {
   test("active when cereri or pending arrivals", () => {
     expect(
       computePensionMood({
-        cereriCount: 2,
+        requestCount: 2,
         unpaidInHouseCount: 0,
         pendingCheckIns: 0,
       })
@@ -23,7 +23,7 @@ describe("computePensionMood", () => {
 
     expect(
       computePensionMood({
-        cereriCount: 0,
+        requestCount: 0,
         unpaidInHouseCount: 0,
         pendingCheckIns: 1,
       })
@@ -33,7 +33,7 @@ describe("computePensionMood", () => {
   test("alert when in-house guests unpaid (overrides active)", () => {
     expect(
       computePensionMood({
-        cereriCount: 5,
+        requestCount: 5,
         unpaidInHouseCount: 1,
         pendingCheckIns: 3,
       })

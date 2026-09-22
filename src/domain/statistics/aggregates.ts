@@ -261,7 +261,7 @@ export function buildYearStatistics(
   return {
     year,
     confirmedStays: new Set(confirmed.map((b) => b.id)).size,
-    cereriCreated: bookings.filter((b) => bookingCreatedInYear(b, year)).length,
+    requestsCreated: bookings.filter((b) => bookingCreatedInYear(b, year)).length,
     cancelledStays: bookings.filter(
       (b) => b.status === "anulata" && bookingTouchesYear(b, year)
     ).length,

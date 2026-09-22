@@ -2,7 +2,7 @@ import { PublicPageShell } from "@/features/public-site/ui/PublicPageShell";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
-export default async function ConfidentialitatePage() {
+export default async function PrivacyPage() {
   const [t, tShell, tFooter] = await Promise.all([
     getTranslations("public.privacy"),
     getTranslations("public.shell"),

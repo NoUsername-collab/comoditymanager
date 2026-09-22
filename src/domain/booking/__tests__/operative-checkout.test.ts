@@ -55,9 +55,9 @@ describe("defaultOperativeCheckoutDatetime", () => {
     ).toBe("2026-06-12T12:00");
   });
 
-  it("falls back to noon when hour missing", () => {
+  it("falls back to default checkout time when hour missing", () => {
     expect(defaultOperativeCheckoutDatetime("2026-06-12", null)).toBe(
-      "2026-06-12T12:00"
+      "2026-06-12T11:00"
     );
   });
 });

@@ -1,4 +1,4 @@
-/** Tipuri business — fără dependență de Supabase (ușor de testat / mutat) */
+/** Business types — no Supabase dependency (easy to test / move). */
 
 export type BookingStatus = "cerere_noua" | "confirmata" | "anulata";
 

@@ -166,7 +166,7 @@ export const HeatDayCell = memo(function HeatDayCell({
             <span title={labels.arrivals} />
           </div>
         )}
-        {day.unassigned_cereri > 0 && (
+        {day.unassigned_requests > 0 && (
           <span className="absolute right-0.5 top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600 text-[8px] font-bold text-white">
             !
           </span>

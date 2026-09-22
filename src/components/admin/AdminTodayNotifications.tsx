@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 
 type Props = {
-  cereriCount: number;
+  requestCount: number;
   arrivalsCount: number;
   departuresCount: number;
   cleanCount: number;
@@ -18,7 +18,7 @@ type Props = {
  * Collapse: buttons slide out, badges slide back in.
  */
 export function AdminTodayNotifications({
-  cereriCount,
+  requestCount,
   arrivalsCount,
   departuresCount,
   cleanCount,
@@ -39,12 +39,12 @@ export function AdminTodayNotifications({
         <span
           className={[
             "admin-today-badge admin-today-badge--new",
-            cereriCount <= 0 && "admin-today-badge--idle",
+            requestCount <= 0 && "admin-today-badge--idle",
           ]
             .filter(Boolean)
             .join(" ")}
         >
-          <strong>{cereriCount}</strong> new
+          <strong>{requestCount}</strong> new
         </span>
         <span className="admin-today-badge admin-today-badge--in">
           <strong>{arrivalsCount}</strong> in
@@ -71,7 +71,7 @@ export function AdminTodayNotifications({
           className="admin-today-action admin-today-action--new"
           style={{ transitionDelay: "0ms" }}
         >
-          Cereri ({cereriCount})
+          Cereri ({requestCount})
         </Link>
         <Link
           href="/admin/cazari"

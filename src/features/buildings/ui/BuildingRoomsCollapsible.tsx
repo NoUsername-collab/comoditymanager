@@ -66,7 +66,7 @@ export function BuildingRoomsCollapsible({
                 {occupiedOnDate} {tCommon("occupied")}
               </span>
               {pendingOnDate > 0 && (
-                <span className="admin-cereri-glow rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-800">
+                <span className="admin-requests-glow rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[11px] font-bold text-red-800">
                   {pendingOnDate} {tCommon("requests")}
                 </span>
               )}

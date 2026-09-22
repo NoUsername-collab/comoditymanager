@@ -30,7 +30,7 @@ export type BuildingYearStatistics = {
 export type YearStatistics = {
   year: number;
   confirmedStays: number;
-  cereriCreated: number;
+  requestsCreated: number;
   cancelledStays: number;
   guestNights: number;
   roomNightsOccupied: number;

@@ -125,7 +125,7 @@ export function DayDetailPanel({
   const { day, rooms } = detail;
   const free = rooms.filter((r) => r.status === "free");
   const occupied = rooms.filter((r) => r.status === "occupied");
-  const cereri = rooms.filter((r) => r.status === "cerere");
+  const requests = rooms.filter((r) => r.status === "request");
 
   function roomSubtitle(r: (typeof rooms)[number]) {
     return (
@@ -157,19 +157,19 @@ export function DayDetailPanel({
       </div>
 
       <div className="availability-detail-panel__body flex-1 space-y-4 overflow-y-auto px-5 py-4">
-        {detail.unassigned_cereri > 0 && (
+        {detail.unassigned_requests > 0 && (
           <Link
             href="/admin/bookings"
-            className="admin-cereri-glow block rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-900 hover:bg-red-100"
+            className="admin-requests-glow block rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-900 hover:bg-red-100"
           >
-            {detail.unassigned_cereri} {labels.unassignedRequest}
-            {detail.unassigned_cereri !== 1 ? labels.unassignedRequestSuffix : ""} —{" "}
+            {detail.unassigned_requests} {labels.unassignedRequest}
+            {detail.unassigned_requests !== 1 ? labels.unassignedRequestSuffix : ""} —{" "}
             {labels.processArrow}
           </Link>
         )}
-        {detail.pending_cereri > 0 && (
+        {detail.pending_requests > 0 && (
           <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
-            {detail.pending_cereri} {labels.pendingRequestWithRooms}
+            {detail.pending_requests} {labels.pendingRequestWithRooms}
           </p>
         )}
 
@@ -205,17 +205,17 @@ export function DayDetailPanel({
           </div>
         )}
 
-        {cereri.length > 0 && (
+        {requests.length > 0 && (
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-wide text-amber-700">
-              {labels.requestsPerRoom} ({cereri.length})
+              {labels.requestsPerRoom} ({requests.length})
             </h3>
             <ul className="mt-2 space-y-1.5">
-              {cereri.map((r) => (
+              {requests.map((r) => (
                 <li key={r.id}>
                   <Link
                     href={r.booking_id ? `/admin/bookings/${r.booking_id}` : "/admin/bookings"}
-                    className="avail-room-tile avail-room-tile--cerere w-full"
+                    className="avail-room-tile avail-room-tile--request w-full"
                   >
                     <span
                       className="avail-room-tile__avatar"

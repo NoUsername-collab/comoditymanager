@@ -121,7 +121,7 @@ export async function StatisticsReportSection({ year }: { year?: string }) {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 text-sm">
-            <StatCard label={tPages("requestsYear")} value={String(yearData.cereriCreated)} small />
+            <StatCard label={tPages("requestsYear")} value={String(yearData.requestsCreated)} small />
             <StatCard label={tPages("cancelledYear")} value={String(yearData.cancelledStays)} small />
             <StatCard label={tPages("guestsTotal")} value={`${yearData.adults} + ${yearData.children}`} small />
           </div>

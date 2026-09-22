@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 
 type Props = {
-  cereriCount: number;
+  requestCount: number;
   arrivalsCount: number;
   departuresCount: number;
   cleanCount: number;
@@ -33,7 +33,7 @@ const Badge = ({
 );
 
 export function AdminTodayBar({
-  cereriCount,
+  requestCount,
   arrivalsCount,
   departuresCount,
   cleanCount,
@@ -46,7 +46,7 @@ export function AdminTodayBar({
       {!expanded && (
         <div className="flex items-center gap-1">
           <Badge
-            count={cereriCount}
+            count={requestCount}
             label="new"
             bg="bg-red-400/30"
             border="border border-red-400/60"
@@ -84,7 +84,7 @@ export function AdminTodayBar({
             href="/admin/cazari"
             className="inline-flex items-center gap-1 rounded-full bg-red-500/40 px-2.5 py-0.5 text-[10px] font-bold text-red-900 border border-red-500/60 hover:brightness-110 no-underline"
           >
-            Cereri ({cereriCount})
+            Cereri ({requestCount})
           </Link>
           <Link
             href="/admin/cazari"

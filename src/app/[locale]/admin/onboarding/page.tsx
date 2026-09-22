@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { loadOnboardingPage } from "@/features/onboarding/loaders";
 import { OnboardingWizard } from "@/features/onboarding/ui/OnboardingWizard";
+import { resolvePensionStayTimes } from "@/lib/constants";
 import "@/styles/features/admin/admin-onboarding.css";
 
 export default async function OnboardingPage() {
@@ -19,8 +20,8 @@ export default async function OnboardingPage() {
       <p className="onboarding-lead">{t("lead")}</p>
       <OnboardingWizard
         initialName={settings?.display_name ?? ""}
-        initialCheckIn={settings?.default_check_in_time ?? "14:00"}
-        initialCheckOut={settings?.default_check_out_time ?? "12:00"}
+        initialCheckIn={resolvePensionStayTimes(settings).checkIn}
+        initialCheckOut={resolvePensionStayTimes(settings).checkOut}
         initialTheme={settings?.admin_palette_key ?? "noir"}
         initialMode={settings?.admin_day_night ?? "night"}
       />

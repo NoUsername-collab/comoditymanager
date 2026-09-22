@@ -55,11 +55,11 @@ export type MonthAvailabilityKpis = {
   min_free_rooms: number;
   min_free_day_iso: string | null;
   unassigned_nights: number;
-  pending_cereri_nights: number;
+  pending_request_nights: number;
   vs_prev_full_delta: number;
 };
 
-export type CereriBandDay = {
+export type RequestBandDay = {
   iso: string;
   day: number;
   unassigned: number;
@@ -71,7 +71,7 @@ export type AvailabilityDashboard = MonthAvailabilityGrid & {
   kpis: MonthAvailabilityKpis;
   weekend_picks: WeekendPick[];
   next_weekend: WeekendPick | null;
-  cereri_band: CereriBandDay[];
+  request_band: RequestBandDay[];
   scan_days: DayAvailability[];
 };
 
@@ -84,7 +84,7 @@ export type DayRoomRow = {
   has_ac: boolean;
   room_type_name: string | null;
   option_slugs: string[];
-  status: "free" | "occupied" | "cerere";
+  status: "free" | "occupied" | "request";
   guest_name: string | null;
   booking_id: string | null;
 };
@@ -92,8 +92,8 @@ export type DayRoomRow = {
 export type DayAvailabilityDetail = {
   day: DayAvailability;
   rooms: DayRoomRow[];
-  unassigned_cereri: number;
-  pending_cereri: number;
+  unassigned_requests: number;
+  pending_requests: number;
 };
 
 function monthRange(year: number, month: number) {
@@ -164,8 +164,8 @@ function buildDaysForMonth(
         {
           checkins: countMaps.checkins.get(iso) ?? 0,
           checkouts: countMaps.checkouts.get(iso) ?? 0,
-          unassigned_cereri: countMaps.unassigned.get(iso) ?? 0,
-          pending_cereri: countMaps.pending.get(iso) ?? 0,
+          unassigned_requests: countMaps.unassigned.get(iso) ?? 0,
+          pending_requests: countMaps.pending.get(iso) ?? 0,
         },
         locale
       )
@@ -184,7 +184,7 @@ function computeKpis(
   let min_free = Infinity;
   let min_iso: string | null = null;
   let unassigned_nights = 0;
-  let pending_cereri_nights = 0;
+  let pending_request_nights = 0;
 
   for (const d of days) {
     if (d.free_rooms >= 3) days_relaxed += 1;
@@ -194,8 +194,8 @@ function computeKpis(
       min_free = d.free_rooms;
       min_iso = d.iso;
     }
-    unassigned_nights += d.unassigned_cereri;
-    pending_cereri_nights += d.pending_cereri;
+    unassigned_nights += d.unassigned_requests;
+    pending_request_nights += d.pending_requests;
   }
 
   return {
@@ -205,7 +205,7 @@ function computeKpis(
     min_free_rooms: min_free === Infinity ? 0 : min_free,
     min_free_day_iso: min_iso,
     unassigned_nights,
-    pending_cereri_nights,
+    pending_request_nights,
     vs_prev_full_delta: days_full - prevFullDays,
   };
 }
@@ -330,11 +330,11 @@ async function loadAvailabilityDashboardImpl(
   const weekend_picks = scanWeekendsInDays(mergedScan, 2).slice(0, 4);
   const next_weekend = findNextWeekendWithRooms(mergedScan, scanStart, 2);
 
-  const cereri_band: CereriBandDay[] = days.map((d) => ({
+  const request_band: RequestBandDay[] = days.map((d) => ({
     iso: d.iso,
     day: d.day,
-    unassigned: d.unassigned_cereri,
-    pending: d.pending_cereri,
+    unassigned: d.unassigned_requests,
+    pending: d.pending_requests,
   }));
 
   return {
@@ -349,7 +349,7 @@ async function loadAvailabilityDashboardImpl(
     kpis,
     weekend_picks,
     next_weekend,
-    cereri_band,
+    request_band,
     scan_days: mergedScan,
   };
 }
@@ -366,7 +366,7 @@ export async function loadMonthAvailabilityGrid(
 
 type DayRoomRowsPayload = Pick<
   DayAvailabilityDetail,
-  "rooms" | "unassigned_cereri" | "pending_cereri"
+  "rooms" | "unassigned_requests" | "pending_requests"
 >;
 
 const loadDayRoomRows = cache(async (
@@ -377,7 +377,7 @@ const loadDayRoomRows = cache(async (
   const scopePromise = getTenantScope();
   const roomsPromise = listAllRooms();
 
-  const [roomsRaw, buildings, optionSlugsByRoom, roomBookingResult, cereriResult] =
+  const [roomsRaw, buildings, optionSlugsByRoom, roomBookingResult, requestsResult] =
     await Promise.all([
       roomsPromise,
       listBuildings(),
@@ -422,7 +422,7 @@ const loadDayRoomRows = cache(async (
 
   const roomState = new Map<
     string,
-    { guest_name: string; booking_id: string; status: "occupied" | "cerere" }
+    { guest_name: string; booking_id: string; status: "occupied" | "request" }
   >();
 
   for (const row of roomBookingResult.data ?? []) {
@@ -448,7 +448,7 @@ const loadDayRoomRows = cache(async (
       | null;
     const b = Array.isArray(raw) ? raw[0] : raw;
     if (!b || !nightOccupied(iso, b.check_in, b.check_out)) continue;
-    const st = b.status === "cerere_noua" ? "cerere" : "occupied";
+    const st = b.status === "cerere_noua" ? "request" : "occupied";
     roomState.set(row.room_id, {
       guest_name: b.guest_name,
       booking_id: b.id,
@@ -479,14 +479,14 @@ const loadDayRoomRows = cache(async (
   });
 
   rooms.sort((a, b) => {
-    const order = { free: 0, cerere: 1, occupied: 2 };
+    const order = { free: 0, request: 1, occupied: 2 };
     if (a.status !== b.status) return order[a.status] - order[b.status];
     return a.name.localeCompare(b.name);
   });
 
   let unassigned = 0;
   let pending = 0;
-  for (const c of cereriResult.data ?? []) {
+  for (const c of requestsResult.data ?? []) {
     const br = (c.booking_rooms ?? []) as { room_id: string }[];
     if (br.length === 0) unassigned += 1;
     else pending += 1;
@@ -494,8 +494,8 @@ const loadDayRoomRows = cache(async (
 
   return {
     rooms,
-    unassigned_cereri: unassigned,
-    pending_cereri: pending,
+    unassigned_requests: unassigned,
+    pending_requests: pending,
   };
 });
 

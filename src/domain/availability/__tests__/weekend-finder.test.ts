@@ -26,8 +26,8 @@ function makeDay(iso: string, free_rooms: number, total_rooms = 10): ComputedDay
     status: free_rooms > 0 ? "available" : "full",
     checkins: 0,
     checkouts: 0,
-    unassigned_cereri: 0,
-    pending_cereri: 0,
+    unassigned_requests: 0,
+    pending_requests: 0,
   };
 }
 

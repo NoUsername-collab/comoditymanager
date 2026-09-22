@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { MonthAvailabilityKpis } from "@/services/availability-month";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
 
-type KpiKey = "relaxed" | "full" | "min" | "cereri";
+type KpiKey = "relaxed" | "full" | "min" | "requests";
 
 export function AvailabilityKpiStrip({ kpis }: { kpis: MonthAvailabilityKpis }) {
   const [kpiHelp, setKpiHelp] = useState<KpiKey | null>(null);
@@ -16,7 +16,7 @@ export function AvailabilityKpiStrip({ kpis }: { kpis: MonthAvailabilityKpis }) 
     relaxed: { title: tAvail("kpiRelaxedTitle"), body: tAvail("kpiRelaxedBody") },
     full: { title: tAvail("kpiFullTitle"), body: tAvail("kpiFullBody") },
     min: { title: tAvail("kpiMinTitle"), body: tAvail("kpiMinBody") },
-    cereri: { title: tAvail("kpiRequestsTitle"), body: tAvail("kpiRequestsBody") },
+    requests: { title: tAvail("kpiRequestsTitle"), body: tAvail("kpiRequestsBody") },
   };
 
   return (
@@ -38,7 +38,7 @@ export function AvailabilityKpiStrip({ kpis }: { kpis: MonthAvailabilityKpis }) 
                 : undefined,
             ],
             [
-              "cereri",
+              "requests",
               kpis.unassigned_nights,
               tAvail("kpiUnassignedNightsLabel"),
               kpis.unassigned_nights > 0 ? "avail-kpi-card--alert" : "",

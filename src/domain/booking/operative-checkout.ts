@@ -1,4 +1,5 @@
 import { parseIso } from "@/lib/stay-dates";
+import { DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 
 /** Stay passed planned departure with no operational check-out recorded. */
 export function isOverdueUnclosedStay(args: {
@@ -28,7 +29,7 @@ export function defaultOperativeCheckoutDatetime(
   plannedCheckOut: string,
   checkoutTimeUntil: string | null | undefined
 ): string {
-  const time = checkoutTimeUntil?.trim().slice(0, 5) || "12:00";
+  const time = checkoutTimeUntil?.trim().slice(0, 5) || DEFAULT_CHECK_OUT_TIME;
   return `${plannedCheckOut}T${time}`;
 }
 
