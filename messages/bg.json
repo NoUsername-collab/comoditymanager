@@ -1527,9 +1527,32 @@
         "noticeHoursHint": "В текста може {placeholderIn} и {placeholderOut} — попълват се с часовете на имота ({checkInTime} / {checkOutTime}).",
         "published": "Сайтът е публикуван",
         "heroTitleHint": "Основно заглавие в hero — използва се и като meta title, ако SEO полетата са празни.",
-        "heroImageHint": "URL на фоново изображение (JPG/PNG, препоръчително HTTPS).",
+        "heroImageHint": "HTTPS URL на снимката. Classic я завоалира, Editorial я поставя до заглавието, Immersive запълва екрана.",
         "usePrimaryContactHint": "Когато е отметнато, контактът от Идентичност попълва празните полета по-долу.",
         "publishedHint": "Изключете, за да скриете публичния сайт по време на настройка.",
+        "localeEditHint": "Редактирате само {locale}. Другите езици остават непроменени.",
+        "pageCopyTitle": "Текстове на страницата",
+        "pageCopyDesc": "Текстовете под hero — само този език.",
+        "introLead": "Уводен текст",
+        "benefitsLead": "Лид за ползи",
+        "stepsLead": "Лид за стъпки",
+        "ctaLead": "CTA текст",
+        "ctaLabel": "CTA бутон",
+        "benefitIcon": "Икона",
+        "benefitItemTitle": "Заглавие на полза",
+        "benefitItemText": "Текст на полза",
+        "stepItemTitle": "Заглавие на стъпка",
+        "stepItemText": "Текст на стъпка",
+        "benefitIcons": {
+          "bed": "Легла / стаи",
+          "spark": "Акцент",
+          "handshake": "Домакин",
+          "leaf": "Природа",
+          "wifi": "Wi-Fi",
+          "parking": "Паркинг",
+          "breakfast": "Закуска",
+          "mountain": "Планина"
+        },
         "seoTitle": "SEO и meta",
         "seoSectionDesc": "Заглавие и описание за Google и социални мрежи.",
         "seoMetaTitle": "Meta title",
@@ -1539,15 +1562,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Балансиран layout, ясни секции — идеален за традиционни къщи за гости."
+            "desc": "Брошура: разделен увод, фотографски hero, три равни колони."
           },
           "editorial": {
             "title": "Editorial",
-            "desc": "Голяма типография, редуващ се ритъм — стил списание."
+            "desc": "Списание: снимка до заглавието, ползи в редове, мозайка галерия."
           },
           "immersive": {
             "title": "Immersive",
-            "desc": "Hero на цял екран, максимален визуален ефект."
+            "desc": "Кинематографично фото на цял екран, едър шрифт, full-bleed галерия."
           }
         },
         "themes": {
@@ -1573,7 +1596,7 @@
           },
           "forest": {
             "title": "Forest",
-            "desc": "Еко лодж — тъмнозелено през деня, кехлибар нощем."
+            "desc": "Дневен лодж — мъхеста хартия, горскозелен акцент."
           }
         }
       },

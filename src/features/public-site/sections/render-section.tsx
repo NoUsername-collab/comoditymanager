@@ -8,6 +8,7 @@ import type {
   PublicSiteSection,
   PublicStepItem,
 } from "@/features/public-site/domain/types";
+import { PublicBenefitIcon } from "@/features/public-site/ui/PublicBenefitIcon";
 
 function SectionShell({
   id,
@@ -58,11 +59,7 @@ export function renderPublicSection(
           <div className={`pub-benefits pub-benefits--${template}`}>
             {items.map((item, index) => (
               <article key={`${pickLocalized(item.title, locale)}-${index}`} className="pub-benefit">
-                {item.icon ? (
-                  <div className="pub-benefit__icon" aria-hidden>
-                    {item.icon}
-                  </div>
-                ) : null}
+                <PublicBenefitIcon icon={item.icon} />
                 <h3 className="pub-benefit__title">{pickLocalized(item.title, locale)}</h3>
                 <p className="pub-benefit__text">{pickLocalized(item.text, locale)}</p>
               </article>

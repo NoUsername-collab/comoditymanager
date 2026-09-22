@@ -1584,9 +1584,32 @@
         "noticeHoursHint": "În text poți scrie {placeholderIn} și {placeholderOut} — se completează cu orele pensiunii ({checkInTime} / {checkOutTime}).",
         "published": "Site publicat",
         "heroTitleHint": "Titlul principal din hero — folosit și ca meta title dacă nu completezi SEO separat.",
-        "heroImageHint": "URL imagine de fundal pentru hero (JPG/PNG, HTTPS recomandat).",
+        "heroImageHint": "URL HTTPS al fotografiei. Classic o voalează, Editorial o pune lângă titlu, Immersive umple ecranul.",
         "usePrimaryContactHint": "Când e bifat, contactul din Identitate pensiune completează câmpurile goale de mai jos.",
         "publishedHint": "Dezactivează pentru a ascunde site-ul public (util în timpul configurării).",
+        "localeEditHint": "Editezi doar {locale}. Celelalte limbi rămân neschimbate.",
+        "pageCopyTitle": "Texte pe pagină",
+        "pageCopyDesc": "Textele pe care le citesc vizitatorii sub hero — doar limba aceasta.",
+        "introLead": "Text introducere",
+        "benefitsLead": "Lead beneficii",
+        "stepsLead": "Lead pași",
+        "ctaLead": "Text CTA",
+        "ctaLabel": "Buton CTA",
+        "benefitIcon": "Iconiță",
+        "benefitItemTitle": "Titlu beneficiu",
+        "benefitItemText": "Text beneficiu",
+        "stepItemTitle": "Titlu pas",
+        "stepItemText": "Text pas",
+        "benefitIcons": {
+          "bed": "Paturi / camere",
+          "spark": "Punct forte",
+          "handshake": "Gazdă",
+          "leaf": "Natură",
+          "wifi": "Wi-Fi",
+          "parking": "Parcare",
+          "breakfast": "Mic dejun",
+          "mountain": "Munte"
+        },
         "seoTitle": "SEO & meta",
         "seoSectionDesc": "Titlu și descriere pentru Google și rețele sociale.",
         "seoMetaTitle": "Meta title",
@@ -1596,15 +1619,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Layout echilibrat, secțiuni clare, ideal pentru pensiuni tradiționale."
+            "desc": "Broșură: intro pe două coloane, hero pe fotografie, trei coloane egale."
           },
           "editorial": {
             "title": "Editorial",
-            "desc": "Tipografie mare, ritm alternant, stil revistă."
+            "desc": "Revistă: fotografia lângă titlu, beneficii în listă, galerie mozaic."
           },
           "immersive": {
             "title": "Immersive",
-            "desc": "Hero full-screen, impact vizual maxim."
+            "desc": "Foto cinematică pe tot ecranul, tipografie mare, galerie full-bleed."
           }
         },
         "themes": {
@@ -1630,7 +1653,7 @@
           },
           "forest": {
             "title": "Forest",
-            "desc": "Eco lodge — verde adânc de zi, chihlimbar noaptea."
+            "desc": "Lodge de zi — hârtie mușchi, accent verde pădure."
           }
         }
       },

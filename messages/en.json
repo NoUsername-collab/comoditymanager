@@ -1600,9 +1600,32 @@
         "noticeHoursHint": "In the text you can write {placeholderIn} and {placeholderOut} — filled from property hours ({checkInTime} / {checkOutTime}).",
         "published": "Site published",
         "heroTitleHint": "Main hero headline — also used as meta title if SEO fields are empty.",
-        "heroImageHint": "Background image URL for the hero (JPG/PNG, HTTPS recommended).",
+        "heroImageHint": "HTTPS photo URL. Classic veils it, Editorial puts it beside the headline, Immersive fills the viewport.",
         "usePrimaryContactHint": "When checked, Property identity contact fills empty fields below.",
         "publishedHint": "Turn off to hide the public site while you finish setup.",
+        "localeEditHint": "Editing {locale} only. The other languages stay as they are.",
+        "pageCopyTitle": "Page copy",
+        "pageCopyDesc": "Texts visitors read below the hero — this language only.",
+        "introLead": "Introduction text",
+        "benefitsLead": "Benefits lead",
+        "stepsLead": "Steps lead",
+        "ctaLead": "CTA text",
+        "ctaLabel": "CTA button",
+        "benefitIcon": "Icon",
+        "benefitItemTitle": "Benefit title",
+        "benefitItemText": "Benefit text",
+        "stepItemTitle": "Step title",
+        "stepItemText": "Step text",
+        "benefitIcons": {
+          "bed": "Bed / rooms",
+          "spark": "Highlight",
+          "handshake": "Host",
+          "leaf": "Nature",
+          "wifi": "Wi-Fi",
+          "parking": "Parking",
+          "breakfast": "Breakfast",
+          "mountain": "Mountain"
+        },
         "seoTitle": "SEO & meta",
         "seoSectionDesc": "Title and description for Google and social previews.",
         "seoMetaTitle": "Meta title",
@@ -1612,15 +1635,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Balanced layout, clear sections — ideal for traditional guesthouses."
+            "desc": "Brochure: split intro, photography hero, three equal columns."
           },
           "editorial": {
             "title": "Editorial",
-            "desc": "Large typography, alternating rhythm — magazine style."
+            "desc": "Magazine: photo beside the headline, lined benefits, mosaic gallery."
           },
           "immersive": {
             "title": "Immersive",
-            "desc": "Full-screen hero, maximum visual impact."
+            "desc": "Cinematic full-viewport photo, large type, full-bleed gallery."
           }
         },
         "themes": {
@@ -1646,7 +1669,7 @@
           },
           "forest": {
             "title": "Forest",
-            "desc": "Eco lodge — deep forest green by day, amber at night."
+            "desc": "Daylight lodge — moss paper, forest-green accent."
           }
         }
       },

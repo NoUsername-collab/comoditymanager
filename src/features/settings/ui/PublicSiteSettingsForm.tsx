@@ -8,15 +8,21 @@ import {
   PUBLIC_TEMPLATE_OPTIONS,
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickLocalized, writeLocalized } from "@/features/public-site/domain/localized";
+import {
+  PUBLIC_BENEFIT_ICON_IDS,
+  normalizeBenefitIcon,
+} from "@/features/public-site/domain/benefit-icons";
 import {
   bookingNoticeFromDraft,
   bookingNoticeToDraft,
 } from "@/features/public-site/domain/booking-notice";
 import type {
+  PublicBenefitItem,
   PublicGalleryItem,
   PublicSiteConfig,
   PublicSiteSettingsInput,
+  PublicStepItem,
 } from "@/features/public-site/domain/types";
 import { BookingNoticeEditor } from "@/features/settings/ui/BookingNoticeEditor";
 import type { PensionContact } from "@/domain/settings/pension-identity";
@@ -33,6 +39,9 @@ import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldErr
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 
 type GalleryDraftItem = { id: string; url: string; caption: string };
+
+type CopyLineDraft = { icon: string; title: string; text: string };
+type StepLineDraft = { title: string; text: string };
 
 type PublicSiteDraft = {
   templateId: PublicSiteSettingsInput["templateId"];
@@ -60,9 +69,20 @@ type PublicSiteDraft = {
   galleryItems: GalleryDraftItem[];
   galleryVisible: boolean;
   introVisible: boolean;
+  introTitle: string;
+  introLead: string;
   benefitsVisible: boolean;
+  benefitsTitle: string;
+  benefitsLead: string;
+  benefitItems: CopyLineDraft[];
   stepsVisible: boolean;
+  stepsTitle: string;
+  stepsLead: string;
+  stepItems: StepLineDraft[];
   ctaVisible: boolean;
+  ctaTitle: string;
+  ctaLead: string;
+  ctaLabel: string;
 };
 
 let galleryDraftSeq = 0;
@@ -82,15 +102,19 @@ function galleryItemsToDraft(
   }));
 }
 
-function galleryDraftToItems(items: GalleryDraftItem[]): PublicGalleryItem[] {
+function galleryDraftToItems(
+  items: GalleryDraftItem[],
+  locale: string,
+  previous: PublicGalleryItem[],
+): PublicGalleryItem[] {
   return items
     .filter((item) => item.url.trim().length > 0)
     .map((item, index) => {
-      const caption = item.caption.trim();
+      const prev = previous.find((row) => row.id === item.id) ?? previous[index];
       return {
         id: item.id || `gallery-${index}`,
         url: item.url.trim(),
-        caption: caption ? { ro: caption, en: caption, bg: caption } : undefined,
+        caption: writeLocalized(prev?.caption, locale, item.caption),
       };
     });
 }
@@ -107,6 +131,21 @@ function buildPublicSiteDraft(
   );
   const heroTitle = pickLocalized(config.hero.title, locale, [config.displayName]);
   const heroSubtitle = pickLocalized(config.hero.subtitle, locale);
+  const introSection = config.sections.find((section) => section.sectionType === "intro");
+  const benefitsSection = config.sections.find((section) => section.sectionType === "benefits");
+  const stepsSection = config.sections.find((section) => section.sectionType === "steps");
+  const ctaSection = config.sections.find((section) => section.sectionType === "cta");
+  const benefitItems = ((benefitsSection?.payload.items ?? []) as PublicBenefitItem[]).map(
+    (item) => ({
+      icon: normalizeBenefitIcon(item.icon),
+      title: pickLocalized(item.title, locale),
+      text: pickLocalized(item.text, locale),
+    }),
+  );
+  const stepItems = ((stepsSection?.payload.items ?? []) as PublicStepItem[]).map((item) => ({
+    title: pickLocalized(item.title, locale),
+    text: pickLocalized(item.text, locale),
+  }));
   return {
     templateId: config.templateId,
     themeId: config.themeId,
@@ -138,9 +177,34 @@ function buildPublicSiteDraft(
     ),
     galleryVisible: gallerySection?.visible ?? false,
     introVisible: visibility.get("intro") ?? true,
+    introTitle: pickLocalized(introSection?.payload.title, locale),
+    introLead: pickLocalized(introSection?.payload.lead, locale),
     benefitsVisible: visibility.get("benefits") ?? true,
+    benefitsTitle: pickLocalized(benefitsSection?.payload.title, locale),
+    benefitsLead: pickLocalized(benefitsSection?.payload.lead, locale),
+    benefitItems:
+      benefitItems.length > 0
+        ? benefitItems
+        : [
+            { icon: "bed", title: "", text: "" },
+            { icon: "spark", title: "", text: "" },
+            { icon: "handshake", title: "", text: "" },
+          ],
     stepsVisible: visibility.get("steps") ?? true,
+    stepsTitle: pickLocalized(stepsSection?.payload.title, locale),
+    stepsLead: pickLocalized(stepsSection?.payload.lead, locale),
+    stepItems:
+      stepItems.length > 0
+        ? stepItems
+        : [
+            { title: "", text: "" },
+            { title: "", text: "" },
+            { title: "", text: "" },
+          ],
     ctaVisible: visibility.get("cta") ?? true,
+    ctaTitle: pickLocalized(ctaSection?.payload.title, locale),
+    ctaLead: pickLocalized(ctaSection?.payload.lead, locale),
+    ctaLabel: pickLocalized(ctaSection?.payload.ctaLabel, locale),
   };
 }
 
@@ -237,9 +301,27 @@ export function PublicSiteSettingsForm({
     }));
   }
 
+  function updateBenefitItem(index: number, patch: Partial<CopyLineDraft>) {
+    setDraft((d) => ({
+      ...d,
+      benefitItems: d.benefitItems.map((item, i) =>
+        i === index ? { ...item, ...patch } : item,
+      ),
+    }));
+  }
+
+  function updateStepItem(index: number, patch: Partial<StepLineDraft>) {
+    setDraft((d) => ({
+      ...d,
+      stepItems: d.stepItems.map((item, i) =>
+        i === index ? { ...item, ...patch } : item,
+      ),
+    }));
+  }
+
   const draftInput = useMemo(
-    () => buildInputFromState({ config, draft }),
-    [config, draft],
+    () => buildInputFromState({ config, draft, locale }),
+    [config, draft, locale],
   );
 
   const previewConfig = useMemo(
@@ -282,6 +364,9 @@ export function PublicSiteSettingsForm({
                 {tSettings("unsavedChanges")}
               </p>
             ) : null}
+            <SettingsFieldHint className="mb-3 block">
+              {t("localeEditHint", { locale: locale.toUpperCase() })}
+            </SettingsFieldHint>
             {error ? (
               <div className="settings-alerts">
                 <p className="settings-alerts__item settings-alerts__item--error" role="alert">
@@ -558,6 +643,138 @@ export function PublicSiteSettingsForm({
         </div>
       </FormSection>
 
+      <FormSection title={t("pageCopyTitle")} description={t("pageCopyDesc")} defaultOpen={false}>
+        <div className="admin-settings-fields">
+          <label>
+            <span>{t("sectionIntro")}</span>
+            <input
+              value={draft.introTitle}
+              onChange={(e) => patchDraft({ introTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("introLead")}</span>
+            <textarea
+              rows={3}
+              value={draft.introLead}
+              onChange={(e) => patchDraft({ introLead: e.target.value })}
+            />
+          </label>
+        </div>
+
+        <div className="admin-settings-fields mt-4">
+          <label>
+            <span>{t("sectionBenefits")}</span>
+            <input
+              value={draft.benefitsTitle}
+              onChange={(e) => patchDraft({ benefitsTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("benefitsLead")}</span>
+            <textarea
+              rows={2}
+              value={draft.benefitsLead}
+              onChange={(e) => patchDraft({ benefitsLead: e.target.value })}
+            />
+          </label>
+        </div>
+        {draft.benefitItems.map((item, index) => (
+          <div key={`benefit-${index}`} className="admin-settings-fields admin-settings-fields--2col mt-3">
+            <label>
+              <span>{t("benefitIcon")}</span>
+              <select
+                value={item.icon}
+                onChange={(e) => updateBenefitItem(index, { icon: e.target.value })}
+              >
+                {PUBLIC_BENEFIT_ICON_IDS.map((icon) => (
+                  <option key={icon} value={icon}>
+                    {t(`benefitIcons.${icon}`)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>{t("benefitItemTitle")}</span>
+              <input
+                value={item.title}
+                onChange={(e) => updateBenefitItem(index, { title: e.target.value })}
+              />
+            </label>
+            <label className="admin-settings-fields__full">
+              <span>{t("benefitItemText")}</span>
+              <textarea
+                rows={2}
+                value={item.text}
+                onChange={(e) => updateBenefitItem(index, { text: e.target.value })}
+              />
+            </label>
+          </div>
+        ))}
+
+        <div className="admin-settings-fields mt-4">
+          <label>
+            <span>{t("sectionSteps")}</span>
+            <input
+              value={draft.stepsTitle}
+              onChange={(e) => patchDraft({ stepsTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("stepsLead")}</span>
+            <textarea
+              rows={2}
+              value={draft.stepsLead}
+              onChange={(e) => patchDraft({ stepsLead: e.target.value })}
+            />
+          </label>
+        </div>
+        {draft.stepItems.map((item, index) => (
+          <div key={`step-${index}`} className="admin-settings-fields mt-3">
+            <label>
+              <span>{t("stepItemTitle")}</span>
+              <input
+                value={item.title}
+                onChange={(e) => updateStepItem(index, { title: e.target.value })}
+              />
+            </label>
+            <label>
+              <span>{t("stepItemText")}</span>
+              <textarea
+                rows={2}
+                value={item.text}
+                onChange={(e) => updateStepItem(index, { text: e.target.value })}
+              />
+            </label>
+          </div>
+        ))}
+
+        <div className="admin-settings-fields mt-4">
+          <label>
+            <span>{t("sectionCta")}</span>
+            <input
+              value={draft.ctaTitle}
+              onChange={(e) => patchDraft({ ctaTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("ctaLead")}</span>
+            <textarea
+              rows={2}
+              value={draft.ctaLead}
+              onChange={(e) => patchDraft({ ctaLead: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("ctaLabel")}</span>
+            <input
+              value={draft.ctaLabel}
+              onChange={(e) => patchDraft({ ctaLabel: e.target.value })}
+            />
+          </label>
+        </div>
+      </FormSection>
+
       <FormSection title={t("sectionGallery")} description={t("gallerySectionDesc")}>
         <label className="pub-settings-section-toggle mb-4">
           <input
@@ -692,27 +909,82 @@ export function PublicSiteSettingsForm({
 function buildInputFromState(args: {
   config: PublicSiteConfig;
   draft: PublicSiteDraft;
+  locale: string;
 }): PublicSiteSettingsInput {
-  const localized = (value: string) => ({ ro: value, en: value, bg: value });
-  const { config, draft } = args;
+  const { config, draft, locale } = args;
+  const write = (previous: Parameters<typeof writeLocalized>[0], value: string) =>
+    writeLocalized(previous, locale, value);
 
-  const baseSections = config.sections.filter((section) => section.sectionType !== "gallery");
-  const galleryItems = galleryDraftToItems(draft.galleryItems);
   const galleryFromConfig = config.sections.find((s) => s.sectionType === "gallery");
+  const galleryItems = galleryDraftToItems(
+    draft.galleryItems,
+    locale,
+    (galleryFromConfig?.payload.items ?? []) as PublicGalleryItem[],
+  );
+  const baseSections = config.sections.filter((section) => section.sectionType !== "gallery");
 
   const sections = [
     ...baseSections.map((section) => {
       if (section.sectionType === "intro") {
-        return { ...section, visible: draft.introVisible };
+        return {
+          ...section,
+          visible: draft.introVisible,
+          payload: {
+            ...section.payload,
+            title: write(section.payload.title, draft.introTitle),
+            lead: write(section.payload.lead, draft.introLead),
+          },
+        };
       }
       if (section.sectionType === "benefits") {
-        return { ...section, visible: draft.benefitsVisible };
+        const previous = (section.payload.items ?? []) as PublicBenefitItem[];
+        return {
+          ...section,
+          visible: draft.benefitsVisible,
+          payload: {
+            ...section.payload,
+            title: write(section.payload.title, draft.benefitsTitle),
+            lead: write(section.payload.lead, draft.benefitsLead),
+            items: draft.benefitItems
+              .filter((item) => item.title.trim() || item.text.trim())
+              .map((item, index) => ({
+                icon: normalizeBenefitIcon(item.icon),
+                title: write(previous[index]?.title, item.title),
+                text: write(previous[index]?.text, item.text),
+              })),
+          },
+        };
       }
       if (section.sectionType === "steps") {
-        return { ...section, visible: draft.stepsVisible };
+        const previous = (section.payload.items ?? []) as PublicStepItem[];
+        return {
+          ...section,
+          visible: draft.stepsVisible,
+          payload: {
+            ...section.payload,
+            title: write(section.payload.title, draft.stepsTitle),
+            lead: write(section.payload.lead, draft.stepsLead),
+            items: draft.stepItems
+              .filter((item) => item.title.trim() || item.text.trim())
+              .map((item, index) => ({
+                title: write(previous[index]?.title, item.title),
+                text: write(previous[index]?.text, item.text),
+              })),
+          },
+        };
       }
       if (section.sectionType === "cta") {
-        return { ...section, visible: draft.ctaVisible };
+        return {
+          ...section,
+          visible: draft.ctaVisible,
+          payload: {
+            ...section.payload,
+            title: write(section.payload.title, draft.ctaTitle),
+            lead: write(section.payload.lead, draft.ctaLead),
+            ctaLabel: write(section.payload.ctaLabel, draft.ctaLabel),
+            ctaHref: section.payload.ctaHref ?? "/calendar",
+          },
+        };
       }
       return section;
     }),
@@ -722,8 +994,8 @@ function buildInputFromState(args: {
       sortOrder: galleryFromConfig?.sortOrder ?? 30,
       visible: draft.galleryVisible && galleryItems.length > 0,
       payload: {
-        title: galleryFromConfig?.payload.title ?? localized("Galerie"),
-        lead: galleryFromConfig?.payload.lead ?? localized(""),
+        title: galleryFromConfig?.payload.title ?? {},
+        lead: galleryFromConfig?.payload.lead ?? {},
         items: galleryItems,
       },
     },
@@ -738,12 +1010,12 @@ function buildInputFromState(args: {
     usePrimaryContact: draft.usePrimaryContact,
     hero: {
       ...config.hero,
-      badge: localized(draft.heroBadge),
-      title: localized(draft.heroTitle),
-      subtitle: localized(draft.heroSubtitle),
-      tagline: localized(draft.heroTagline),
-      ctaPrimary: localized(draft.heroCtaPrimary),
-      ctaSecondary: localized(draft.heroCtaSecondary),
+      badge: write(config.hero.badge, draft.heroBadge),
+      title: write(config.hero.title, draft.heroTitle),
+      subtitle: write(config.hero.subtitle, draft.heroSubtitle),
+      tagline: write(config.hero.tagline, draft.heroTagline),
+      ctaPrimary: write(config.hero.ctaPrimary, draft.heroCtaPrimary),
+      ctaSecondary: write(config.hero.ctaSecondary, draft.heroCtaSecondary),
       ctaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
       ctaSecondaryHref: config.hero.ctaSecondaryHref ?? "#public-intro",
       imageUrl: draft.heroImageUrl.trim() || null,
@@ -758,8 +1030,11 @@ function buildInputFromState(args: {
       instagram: draft.contactInstagram.trim() || null,
     },
     seo: {
-      metaTitle: localized(draft.seoTitle || draft.heroTitle),
-      metaDescription: localized(draft.seoDescription || draft.heroSubtitle),
+      metaTitle: write(config.seo.metaTitle, draft.seoTitle || draft.heroTitle),
+      metaDescription: write(
+        config.seo.metaDescription,
+        draft.seoDescription || draft.heroSubtitle,
+      ),
     },
     bookingNotice: bookingNoticeFromDraft(draft.noticeDraft),
     sections,

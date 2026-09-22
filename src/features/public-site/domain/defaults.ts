@@ -58,17 +58,17 @@ export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection
         lead: localizedFromString(copy.benefitsLead),
         items: [
           {
-            icon: "🛏",
+            icon: "bed",
             title: localizedFromString(copy.benefit1Title),
             text: localizedFromString(copy.benefit1Text),
           },
           {
-            icon: "✦",
+            icon: "spark",
             title: localizedFromString(copy.benefit2Title),
             text: localizedFromString(copy.benefit2Text),
           },
           {
-            icon: "🤝",
+            icon: "handshake",
             title: localizedFromString(copy.benefit3Title),
             text: localizedFromString(copy.benefit3Text),
           },

@@ -25,3 +25,31 @@ export function pickLocalized(
 export function localizedFromString(text: string): LocalizedText {
   return { ro: text, en: text, bg: text };
 }
+
+const PUBLIC_LOCALES: PublicLocale[] = ["ro", "en", "bg"];
+
+function asPublicLocale(locale: string): PublicLocale {
+  return PUBLIC_LOCALES.includes(locale as PublicLocale)
+    ? (locale as PublicLocale)
+    : "en";
+}
+
+/** Write one language; leave the other two untouched. */
+export function writeLocalized(
+  previous: LocalizedText | string | null | undefined,
+  locale: string,
+  value: string,
+): LocalizedText {
+  const next: LocalizedText =
+    typeof previous === "string"
+      ? { ro: previous, en: previous, bg: previous }
+      : { ...(previous ?? {}) };
+  const key = asPublicLocale(locale);
+  const trimmed = value.trim();
+  if (!trimmed) {
+    delete next[key];
+    return next;
+  }
+  next[key] = trimmed;
+  return next;
+}

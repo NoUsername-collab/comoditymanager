@@ -49,7 +49,15 @@ export function PublicHeroBlock({
   ) : null;
 
   return (
-    <section className={`pub-hero pub-hero--${variant}`}>
+    <section
+      className={[
+        "pub-hero",
+        `pub-hero--${variant}`,
+        hero.imageUrl ? "pub-hero--has-media" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <div className="pub-hero__glow" aria-hidden />
       {hero.imageUrl ? (
         <div
@@ -58,6 +66,7 @@ export function PublicHeroBlock({
           aria-hidden
         />
       ) : null}
+      <div className="pub-hero__veil" aria-hidden />
       <div className="pub-hero__inner">
         {badge ? <p className="pub-hero__badge">{badge}</p> : null}
         <h1 className="pub-hero__title">{title}</h1>
