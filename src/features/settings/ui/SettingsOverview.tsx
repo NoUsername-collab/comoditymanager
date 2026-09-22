@@ -14,6 +14,7 @@ import { navItemHasIssues } from "@/domain/setup-issues/paths";
 import type { SetupIssue } from "@/domain/setup-issues/types";
 import { SetupIssueBadge } from "@/components/admin/settings/SetupIssueBadge";
 import { SettingsSetupProgress } from "@/features/settings/ui/SettingsSetupProgress";
+import { PublicSiteLaunchCard } from "@/features/settings/ui/PublicSiteLaunchCard";
 
 import type { ReactNode } from "react";
 import { useMemo } from "react";
@@ -31,6 +32,7 @@ type Props = {
   setupIssues?: SetupIssue[];
   completion?: SettingsCompletionSummary | null;
   publicSitePublished?: boolean;
+  publicSiteHeroImageUrl?: string | null;
 };
 
 export function SettingsOverview({
@@ -44,6 +46,7 @@ export function SettingsOverview({
   setupIssues = [],
   completion,
   publicSitePublished,
+  publicSiteHeroImageUrl,
 }: Props) {
   const t = useTranslations("admin.pages.settings");
   const tIssues = useTranslations("admin.setupIssues");
@@ -76,6 +79,9 @@ export function SettingsOverview({
     return { items: coreItems, completeCount, totalCount, percent };
   }, [completion]);
 
+  const canOpenPublicSite = navGroups.some((group) =>
+    group.items.some((item) => item.id === "public-site"),
+  );
   const publicCompletionItems =
     completion?.items.filter((item) => item.id.startsWith("public-")) ?? [];
 
@@ -135,6 +141,14 @@ export function SettingsOverview({
         </dl>
       </div>
 
+      {canOpenPublicSite ? (
+        <PublicSiteLaunchCard
+          displayName={propertyName}
+          published={publicSitePublished !== false}
+          heroImageUrl={publicSiteHeroImageUrl}
+        />
+      ) : null}
+
       {publicCompletionItems.length > 0 ? (
         <section className="settings-overview__checklist" aria-labelledby="settings-public-checklist-title">
           <h3 id="settings-public-checklist-title" className="settings-overview__group-title">
@@ -170,13 +184,16 @@ export function SettingsOverview({
         </section>
       ) : null}
 
-      {navGroups.map((group) => (
+      {navGroups.map((group) => {
+        const items = group.items.filter(
+          (item) => item.id !== "overview" && item.id !== "public-site",
+        );
+        if (items.length === 0) return null;
+        return (
         <div key={group.id} className="settings-overview__group">
           <h3 className="settings-overview__group-title">{t(group.labelKey)}</h3>
           <div className="settings-overview__grid">
-            {group.items
-              .filter((item) => item.id !== "overview")
-              .map((item) => {
+            {items.map((item) => {
                 const hasIssue = navItemHasIssues(setupIssues, item);
                 const status = resolveSettingsSectionStatus(item, setupIssues);
                 return (
@@ -217,7 +234,8 @@ export function SettingsOverview({
               })}
           </div>
         </div>
-      ))}
+        );
+      })}
 
       {quickItems.length === 0 ? (
         <p className="settings-overview__empty">{t("overviewEmpty")}</p>

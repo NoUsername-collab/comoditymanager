@@ -1,6 +1,6 @@
 ﻿import { Suspense } from "react";
+import { Link } from "@/i18n/navigation";
 import { PublicSiteSettingsForm } from "@/features/settings/ui/PublicSiteSettingsForm";
-import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { loadPublicSiteAdminBundle } from "@/features/settings/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
@@ -8,6 +8,7 @@ import {
   canEditPensionSettingsUi,
   guardSettingsPermission,
 } from "@/lib/settings/page-context";
+import "@/styles/features/admin/admin-public-site-studio.css";
 
 export default async function PublicSiteSettingsPage({
   searchParams,
@@ -24,9 +25,12 @@ export default async function PublicSiteSettingsPage({
 
   if (!bundle) {
     return (
-      <SettingsPageLayout title={t("title")}>
+      <div className="pub-site-studio-fallback">
+        <Link href="/admin/settings" className="pub-site-studio__back-settings">
+          ← {t("studioBackSettings")}
+        </Link>
         <p className="settings-empty settings-empty--error">{t("loadError")}</p>
-      </SettingsPageLayout>
+      </div>
     );
   }
 
@@ -36,21 +40,14 @@ export default async function PublicSiteSettingsPage({
   if (readOnly) alerts.push({ tone: "info", message: t("readOnly") });
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("title")}
-      description={t("description")}
-      compact
-      className="settings-page--studio"
-    >
-      <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
-        <PublicSiteSettingsForm
-          config={config}
-          locale={locale}
-          primaryContact={primaryContact}
-          readOnly={readOnly}
-        />
-      </Suspense>
-    </SettingsPageLayout>
+    <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
+      <PublicSiteSettingsForm
+        config={config}
+        locale={locale}
+        primaryContact={primaryContact}
+        readOnly={readOnly}
+        alerts={alerts}
+      />
+    </Suspense>
   );
 }

@@ -26,12 +26,12 @@ import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-con
 import { savePublicSiteSettingsAction } from "@/features/settings/actions/public-site";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { PublicSitePreview } from "@/features/settings/ui/PublicSitePreview";
 import { PublicSiteStudio } from "@/features/settings/ui/PublicSiteStudio";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldError";
+import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 import {
   buildPublicSiteStudioDraft,
@@ -69,11 +69,13 @@ export function PublicSiteSettingsForm({
   locale,
   primaryContact,
   readOnly = false,
+  alerts = [],
 }: {
   config: PublicSiteConfig;
   locale: string;
   primaryContact: PensionContact;
   readOnly?: boolean;
+  alerts?: SettingsAlert[];
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const tSettings = useTranslations("admin.pages.settings");
@@ -227,30 +229,56 @@ export function PublicSiteSettingsForm({
     <PublicSiteStudio
       published={draft.published}
       editLocale={draft.editLocale}
+      dirty={dirty}
       preview={<PublicSitePreview config={previewConfig} locale={draft.editLocale} />}
+      localeTabs={
+        <PublicSiteLocaleTabs
+          variant="chrome"
+          value={draft.editLocale}
+          onChange={setEditLocale}
+          disabled={readOnly}
+        />
+      }
+      saveControl={
+        readOnly ? null : (
+          <AdminSubmitButton
+            form="public-site-studio-form"
+            type="submit"
+            variant="primary"
+            size="sm"
+            disabled={pending}
+          >
+            {pending ? t("saving") : t("save")}
+          </AdminSubmitButton>
+        )
+      }
+      banner={
+        <>
+          <SettingsAlerts alerts={alerts} />
+          {!readOnly && dirty ? (
+            <p className="settings-unsaved-banner pub-site-studio__unsaved" role="status">
+              {tSettings("unsavedChanges")}
+            </p>
+          ) : null}
+          {error ? (
+            <div className="settings-alerts">
+              <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+                {error}
+              </p>
+            </div>
+          ) : null}
+        </>
+      }
       form={
-        <form onSubmit={handleSubmit} className="settings-form-stack">
+        <form
+          id="public-site-studio-form"
+          onSubmit={handleSubmit}
+          className="settings-form-stack"
+        >
           <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
-            <PublicSiteLocaleTabs
-              value={draft.editLocale}
-              onChange={setEditLocale}
-              disabled={readOnly}
-            />
             <SettingsFieldHint className="mb-3 block">
               {t("localeEditHint", { locale: draft.editLocale.toUpperCase() })}
             </SettingsFieldHint>
-            {!readOnly && dirty ? (
-              <p className="settings-unsaved-banner" role="status">
-                {tSettings("unsavedChanges")}
-              </p>
-            ) : null}
-            {error ? (
-              <div className="settings-alerts">
-                <p className="settings-alerts__item settings-alerts__item--error" role="alert">
-                  {error}
-                </p>
-              </div>
-            ) : null}
 
       <FormSection title={t("publishTitle")} description={t("publishedHint")}>
         <label className="pub-settings-section-toggle">
@@ -761,14 +789,6 @@ export function PublicSiteSettingsForm({
           checkOutTime={config.checkOutTime}
         />
       </FormSection>
-
-      {!readOnly ? (
-        <SettingsSaveBar status={pending ? "saving" : "idle"}>
-          <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
-            {pending ? t("saving") : t("save")}
-          </AdminSubmitButton>
-        </SettingsSaveBar>
-      ) : null}
           </fieldset>
         </form>
       }

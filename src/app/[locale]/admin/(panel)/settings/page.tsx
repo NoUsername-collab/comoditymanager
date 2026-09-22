@@ -120,6 +120,7 @@ export default async function SettingsOverviewPage({
         setupIssues={setupIssues}
         completion={completion}
         publicSitePublished={publicConfig?.published}
+        publicSiteHeroImageUrl={publicConfig?.hero.imageUrl}
       />
     </SettingsPageLayout>
   );
