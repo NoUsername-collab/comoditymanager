@@ -25,18 +25,18 @@
 }
 
 /* Cerere / neconfirmat */
-.gantt-booking-card--pending.gantt-stay--cerere,
-.gantt-booking-card--pending.gantt-stay-chrome.gantt-stay--cerere {
+.gantt-booking-card--pending.gantt-stay--request,
+.gantt-booking-card--pending.gantt-stay-chrome.gantt-stay--request {
   animation: gantt-booking-pulse 2s ease-in-out infinite;
 }
 
-.gantt-booking-card--pending.gantt-stay--cerere {
+.gantt-booking-card--pending.gantt-stay--request {
   background: var(--booking-pending-bg) !important;
   border-color: var(--booking-pending-border) !important;
   color: var(--booking-pending-text) !important;
 }
 
-.gantt-booking-card--active:not(.gantt-stay--cerere):not(.gantt-stay--phase-past) {
+.gantt-booking-card--active:not(.gantt-stay--request):not(.gantt-stay--phase-past) {
   background: var(--gantt-bar-fill-active, var(--booking-active-bg)) !important;
   border-color: var(--booking-active-border) !important;
   color: var(--booking-active-text) !important;

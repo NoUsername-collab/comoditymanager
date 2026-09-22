@@ -268,10 +268,10 @@
   transition-duration: 0.06s;
 }
 
-.admin-home-cta--cereri {
-  background: var(--admin-cereri-fill-bg, var(--cancelled-border, #ef4444));
-  color: var(--admin-cereri-fill-text, #fff);
-  border: 1px solid var(--admin-cereri-fill-border, transparent);
+.admin-home-cta--requests {
+  background: var(--admin-requests-fill-bg, var(--cancelled-border, #ef4444));
+  color: var(--admin-requests-fill-text, #fff);
+  border: 1px solid var(--admin-requests-fill-border, transparent);
 }
 
 .admin-home-cta--secondary {
@@ -526,7 +526,7 @@
     align-items: start;
   }
 
-  .admin-home-split--cereri-only {
+  .admin-home-split--requests-only {
     grid-template-columns: 1fr;
   }
 }
@@ -579,7 +579,7 @@
   transition-duration: 0.06s;
 }
 
-.admin-home-panel--cereri {
+.admin-home-panel--requests {
   border-color: var(--admin-tint-warning-border, color-mix(in srgb, #fbbf24 45%, var(--admin-panel-border)));
   background: var(--admin-tint-warning-bg, #fffbeb);
 }
@@ -625,9 +625,9 @@
   transition-duration: 0.06s;
 }
 
-.admin-home-action--cereri {
+.admin-home-action--requests {
   border-color: color-mix(in srgb, #f87171 50%, var(--admin-panel-border));
-  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+  animation: admin-requests-glow-pulse 2.2s ease-in-out infinite;
 }
 
 .admin-home-action__icon {
@@ -669,7 +669,7 @@
 }
 
 /* Listă cereri */
-.admin-home-cereri-list {
+.admin-home-requests-list {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -678,7 +678,7 @@
   list-style: none;
 }
 
-.admin-home-cereri-item {
+.admin-home-requests-item {
   display: block;
   border-radius: 0.65rem;
   border: 1px solid color-mix(in srgb, var(--admin-panel-border) 85%, transparent);
@@ -691,30 +691,30 @@
     transform 0.12s ease;
 }
 
-.admin-home-cereri-item:hover {
+.admin-home-requests-item:hover {
   border-color: color-mix(in srgb, #f59e0b 45%, var(--admin-panel-border));
   text-decoration: none;
 }
 
-.admin-home-cereri-item:active {
+.admin-home-requests-item:active {
   filter: brightness(0.97);
   transform: translateX(0) scale(0.97);
   transition-duration: 0.06s;
 }
 
-.admin-home-cereri-item__guest {
+.admin-home-requests-item__guest {
   font-size: 0.8125rem;
   font-weight: 800;
   color: var(--admin-text, #18181b);
 }
 
-.admin-home-cereri-item__meta {
+.admin-home-requests-item__meta {
   font-size: 0.6875rem;
   font-weight: 600;
   color: var(--admin-text-muted, #71717a);
 }
 
-.admin-home-cereri-item__dates {
+.admin-home-requests-item__dates {
   display: block;
   margin-top: 0.2rem;
   font-size: 0.6875rem;
@@ -776,7 +776,7 @@
 }
 
 /* Splash lumină — tab Cereri noi */
-@keyframes admin-cereri-light-sweep {
+@keyframes admin-requests-light-sweep {
   0% {
     transform: translateX(-130%) skewX(-14deg);
     opacity: 0;
@@ -793,13 +793,13 @@
   }
 }
 
-.admin-nav-tab--cereri-light {
+.admin-nav-tab--requests-light {
   position: relative;
   overflow: hidden;
   isolation: isolate;
 }
 
-.admin-nav-tab--cereri-light::before {
+.admin-nav-tab--requests-light::before {
   content: "";
   position: absolute;
   top: -2px;
@@ -807,14 +807,14 @@
   left: 0;
   width: 50%;
   background: color-mix(in srgb, white 35%, transparent);
-  animation: admin-cereri-light-sweep 2.6s ease-in-out infinite;
+  animation: admin-requests-light-sweep 2.6s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
 }
 
-.admin-nav-tab--cereri-light .admin-nav-tab__icon,
-.admin-nav-tab--cereri-light .admin-nav-tab__label,
-.admin-nav-tab--cereri-light .admin-nav-tab__badge {
+.admin-nav-tab--requests-light .admin-nav-tab__icon,
+.admin-nav-tab--requests-light .admin-nav-tab__label,
+.admin-nav-tab--requests-light .admin-nav-tab__badge {
   position: relative;
   z-index: 1;
 }
@@ -1263,13 +1263,13 @@
 /* checkin-quest responsive: mobile-layout-premium.css */
 
 @media (prefers-reduced-motion: reduce) {
-  .admin-nav-tab--cereri-light::before {
+  .admin-nav-tab--requests-light::before {
     animation: none;
     opacity: 0;
   }
 
-  .admin-home-cta--cereri,
-  .admin-home-action--cereri,
+  .admin-home-cta--requests,
+  .admin-home-action--requests,
   .admin-home-kpi--alert {
     animation: none;
   }

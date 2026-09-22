@@ -117,12 +117,12 @@
   color: var(--admin-tint-danger-text);
 }
 
-/* Tip rezervare Gantt radial — aliniat la --booking-* / stay-card */
+/* Gantt radial stay kind — aligned with --booking-* / stay-card */
 .admin-booking-tone {
   border: 1px solid;
 }
 
-.admin-booking-tone--cerere {
+.admin-booking-tone--request {
   border-color: var(--admin-tint-warning-border);
   background: var(--admin-tint-warning-bg);
   color: var(--status-pending-text);

@@ -56,7 +56,7 @@ export function GuestProfileControlsForm({
           <button
             type="button"
             onClick={() => setNoteOpen(true)}
-            className="admin-cereri-fill px-4 py-2 text-sm font-medium"
+            className="admin-requests-fill px-4 py-2 text-sm font-medium"
           >
             {manualNote.trim()
               ? tGuests("profileControls.editProfileNote")
@@ -73,7 +73,7 @@ export function GuestProfileControlsForm({
       <AdminSubmitButton
         type="submit"
         pendingLabel={tCommon("saving")}
-        className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+        className="admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
       >
         {tGuests("profileControls.saveGuestProfile")}
       </AdminSubmitButton>
@@ -99,7 +99,7 @@ export function GuestProfileControlsForm({
             <button
               type="button"
               onClick={() => setNoteOpen(false)}
-              className="admin-cereri-fill px-4 py-2 text-sm font-medium"
+              className="admin-requests-fill px-4 py-2 text-sm font-medium"
             >
               {tGuests("profileControls.applyInForm")}
             </button>

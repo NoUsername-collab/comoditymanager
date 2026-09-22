@@ -105,12 +105,12 @@ html[data-theme="default"][data-mode="night"] {
   --admin-switch-active-bg: var(--accent);
   --admin-switch-active-text: #0b0d12;
 
-  --admin-cereri-grad: var(--admin-btn-primary-bg);
+  --admin-requests-grad: var(--admin-btn-primary-bg);
 
-  --admin-cereri-fill-bg: var(--admin-btn-primary-bg);
-  --admin-cereri-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 82%, white);
-  --admin-cereri-fill-text: var(--admin-btn-primary-text);
-  --admin-cereri-fill-border: color-mix(in srgb, var(--admin-btn-primary-bg) 55%, #0b0d12);
+  --admin-requests-fill-bg: var(--admin-btn-primary-bg);
+  --admin-requests-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 82%, white);
+  --admin-requests-fill-text: var(--admin-btn-primary-text);
+  --admin-requests-fill-border: color-mix(in srgb, var(--admin-btn-primary-bg) 55%, #0b0d12);
 
   --admin-alert-bg: color-mix(in srgb, var(--pending-bg) 72%, var(--surface));
   --admin-alert-text: var(--pending-text);

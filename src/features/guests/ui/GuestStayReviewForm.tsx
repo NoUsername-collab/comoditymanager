@@ -63,7 +63,7 @@ export function GuestStayReviewForm({
         <AdminSubmitButton
           type="submit"
           pendingLabel={tGuests("review.saving")}
-          className="guest-stay-review-form__submit admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+          className="guest-stay-review-form__submit admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
           {tGuests("review.saveStayReview")}
         </AdminSubmitButton>

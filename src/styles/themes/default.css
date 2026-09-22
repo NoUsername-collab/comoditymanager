@@ -52,7 +52,7 @@ html[data-theme="default"] .admin-nav-tab--active {
 }
 
 html[data-theme="default"] .admin-nav-tab--quest {
-  background: var(--admin-cereri-grad) !important;
+  background: var(--admin-requests-grad) !important;
   color: #ffffff !important;
   animation: none !important;
 }
@@ -109,7 +109,7 @@ html[data-theme="default"] .admin-panel-section {
   background-image: none !important;
 }
 
-html[data-theme="default"] .admin-cereri-glow {
+html[data-theme="default"] .admin-requests-glow {
   animation: none !important;
   box-shadow: none !important;
   border: 1px solid var(--pending-border) !important;

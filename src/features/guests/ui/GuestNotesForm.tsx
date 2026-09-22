@@ -43,7 +43,7 @@ export function GuestNotesForm({
           type="button"
           onClick={() => setOpen(true)}
           disabled={pending}
-          className="guest-notes-form__trigger admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+          className="guest-notes-form__trigger admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
         >
           {initialNotes.trim() ? tGuests("notes.editGeneralNotes") : tGuests("notes.addGeneralNotes")}
         </button>
@@ -79,7 +79,7 @@ export function GuestNotesForm({
               type="button"
               onClick={() => void saveNotes()}
               disabled={pending}
-              className="guest-notes-form__save admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+              className="guest-notes-form__save admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
             >
               {pending ? tCommon("saving") : tGuests("notes.saveNotes")}
             </button>

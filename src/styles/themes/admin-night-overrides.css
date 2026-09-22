@@ -195,7 +195,7 @@ html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"]
 
 /* ── Admin home panels ── */
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-panel,
-html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-cereri-item,
+html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-requests-item,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-today-board__card,
 html:is([data-theme="noir"], [data-theme="alpine"], [data-theme="mediterranean"], [data-theme="pearl"], [data-theme="slate"], [data-theme="forest"], [data-theme="default"])[data-mode="night"] .admin-home-window-body {
   background: var(--admin-panel-bg) !important;

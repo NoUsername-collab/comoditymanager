@@ -198,7 +198,7 @@ html {
   --admin-gantt-today-line: var(--today-line);
   --admin-gantt-header-shadow: 0 1px 0 var(--border);
   --admin-gantt-unassigned: color-mix(in srgb, var(--pending-bg) 70%, var(--surface));
-  --admin-gantt-cerere: var(--pending-border);
+  --admin-gantt-request: var(--pending-border);
 
   --admin-font: var(--card-font);
   --admin-radius: var(--card-radius);
@@ -224,12 +224,12 @@ html {
   --admin-switch-active-text: #ffffff;
 
   /* Tab „cereri” — fill plat (brand accent, fără gradient operațional) */
-  --admin-cereri-grad: var(--admin-btn-primary-bg);
+  --admin-requests-grad: var(--admin-btn-primary-bg);
 
-  --admin-cereri-fill-bg: var(--admin-btn-primary-bg);
-  --admin-cereri-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 86%, black);
-  --admin-cereri-fill-text: var(--admin-btn-primary-text);
-  --admin-cereri-fill-border: color-mix(in srgb, var(--admin-btn-primary-bg) 68%, black);
+  --admin-requests-fill-bg: var(--admin-btn-primary-bg);
+  --admin-requests-fill-bg-hover: color-mix(in srgb, var(--admin-btn-primary-bg) 86%, black);
+  --admin-requests-fill-text: var(--admin-btn-primary-text);
+  --admin-requests-fill-border: color-mix(in srgb, var(--admin-btn-primary-bg) 68%, black);
 
   --admin-alert-bg: color-mix(in srgb, var(--pending-bg) 55%, var(--surface));
   --admin-alert-text: var(--pending-text);

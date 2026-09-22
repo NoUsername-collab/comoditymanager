@@ -1415,13 +1415,13 @@
 
 /* ─── Cereri noi (card list) ─── */
 
-.cerere-list {
+.request-list {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
 }
 
-.cerere-item {
+.request-item {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
   border-radius: 0.75rem;
@@ -1431,7 +1431,7 @@
   contain-intrinsic-size: auto 5rem;
 }
 
-.cerere-item__head {
+.request-item__head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -1440,11 +1440,11 @@
   border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
 }
 
-.cerere-item__lead {
+.request-item__lead {
   min-width: 0;
 }
 
-.cerere-item__name {
+.request-item__name {
   font-size: 0.9375rem;
   font-weight: 800;
   line-height: 1.25;
@@ -1454,7 +1454,7 @@
   white-space: nowrap;
 }
 
-.cerere-item__dates {
+.request-item__dates {
   margin-top: 0.2rem;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -1462,7 +1462,7 @@
   color: var(--accent);
 }
 
-.cerere-item__action {
+.request-item__action {
   flex-shrink: 0;
   align-self: center;
   padding: 0.45rem 0.85rem !important;
@@ -1472,20 +1472,20 @@
   white-space: nowrap;
 }
 
-.cerere-item__body {
+.request-item__body {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
   padding: 0.45rem 0.65rem 0.5rem;
 }
 
-.cerere-item__guests {
+.request-item__guests {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.cerere-item__email {
+.request-item__email {
   margin: 0;
   font-size: 0.7rem;
   line-height: 1.35;
@@ -1495,7 +1495,7 @@
   white-space: nowrap;
 }
 
-.cerere-item__profile-link {
+.request-item__profile-link {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
@@ -1507,18 +1507,18 @@
   text-decoration: none;
 }
 
-.cerere-item__profile-link:hover {
+.request-item__profile-link:hover {
   text-decoration: underline;
 }
 
-.cerere-item__profile-link:active {
+.request-item__profile-link:active {
   filter: brightness(0.92);
   transform: scale(0.98);
   transition-duration: 0.06s;
 }
 
 /* Cerere card metrics — no hint popovers (lighter DOM) */
-.guest-badges--cerere {
+.guest-badges--request {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.35rem;
@@ -1527,7 +1527,7 @@
   border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
 }
 
-.guest-badges--cerere__stat {
+.guest-badges--request__stat {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
@@ -1542,32 +1542,32 @@
   line-height: 1.2;
 }
 
-.guest-badges--cerere__stat strong {
+.guest-badges--request__stat strong {
   font-size: 0.8125rem;
   font-weight: 800;
   color: var(--text);
 }
 
-.guest-badges--cerere__stat--sky {
+.guest-badges--request__stat--sky {
   border-color: var(--admin-tint-info-border);
   background: var(--admin-tint-info-bg);
 }
 
-.guest-badges--cerere__stat--emerald {
+.guest-badges--request__stat--emerald {
   border-color: var(--admin-tint-success-border);
   background: var(--admin-tint-success-bg);
 }
 
-.guest-badges--cerere__stat--amber {
+.guest-badges--request__stat--amber {
   border-color: var(--admin-tint-warning-border);
   background: var(--admin-tint-warning-bg);
 }
 
-.guest-badges--cerere__stat--neutral {
+.guest-badges--request__stat--neutral {
   border-color: color-mix(in srgb, var(--border) 90%, transparent);
 }
 
-.guest-badges--cerere__label {
+.guest-badges--request__label {
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -1575,7 +1575,7 @@
   opacity: 0.85;
 }
 
-.guest-badges--cerere__alert {
+.guest-badges--request__alert {
   grid-column: 1 / -1;
   margin: 0.15rem 0 0;
   padding: 0.4rem 0.55rem;

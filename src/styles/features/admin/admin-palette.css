@@ -143,7 +143,7 @@ html[data-admin-palette] .admin-nav-tab--active .admin-nav-tab__icon {
 }
 
 html[data-admin-palette] .admin-nav-tab--quest {
-  background: var(--admin-cereri-grad) !important;
+  background: var(--admin-requests-grad) !important;
   color: var(--admin-btn-primary-text) !important;
 }
 
@@ -279,7 +279,7 @@ html[data-admin-palette] .gantt-seg__btn--active:hover {
   filter: brightness(1.06);
 }
 
-html[data-admin-palette] .gantt-cereri-queue--embedded {
+html[data-admin-palette] .gantt-requests-queue--embedded {
   background: color-mix(
     in srgb,
     var(--admin-accent-muted) 12%,
@@ -346,15 +346,15 @@ html[data-admin-palette] .status-day-full {
   color: var(--admin-full-text) !important;
 }
 
-html[data-admin-palette] .admin-cereri-fill {
-  background: var(--admin-cereri-fill-bg, var(--admin-btn-primary-bg)) !important;
-  color: var(--admin-cereri-fill-text, var(--admin-btn-primary-text)) !important;
-  border: 1px solid var(--admin-cereri-fill-border, color-mix(in srgb, var(--admin-btn-primary-bg) 68%, black)) !important;
+html[data-admin-palette] .admin-requests-fill {
+  background: var(--admin-requests-fill-bg, var(--admin-btn-primary-bg)) !important;
+  color: var(--admin-requests-fill-text, var(--admin-btn-primary-text)) !important;
+  border: 1px solid var(--admin-requests-fill-border, color-mix(in srgb, var(--admin-btn-primary-bg) 68%, black)) !important;
 }
 
-html[data-admin-palette] .admin-cereri-fill:hover:not(:disabled) {
+html[data-admin-palette] .admin-requests-fill:hover:not(:disabled) {
   background: var(
-    --admin-cereri-fill-bg-hover,
+    --admin-requests-fill-bg-hover,
     color-mix(in srgb, var(--admin-btn-primary-bg) 86%, black)
   ) !important;
 }
@@ -395,7 +395,7 @@ html[data-admin-palette] .gantt-thead-sticky tr {
 
 html[data-admin-palette] .gantt-unassigned-row .gantt-unassigned-cell {
   background: var(--admin-gantt-unassigned) !important;
-  border-color: var(--admin-gantt-cerere) !important;
+  border-color: var(--admin-gantt-request) !important;
 }
 
 html[data-admin-palette] .gantt-unassigned-label {

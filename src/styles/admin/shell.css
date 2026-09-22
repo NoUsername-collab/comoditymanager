@@ -460,7 +460,7 @@
   background: rgba(248, 113, 113, 0.3);
   color: #7f1d1d;
   border: 1px solid rgba(248, 113, 113, 0.62);
-  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+  animation: admin-requests-glow-pulse 2.2s ease-in-out infinite;
 }
 
 .admin-today-badge--new.admin-today-badge--idle {
@@ -1079,7 +1079,7 @@
 }
 
 /* Cereri active — glow (intensitate −30% față de varianta inițială) */
-@keyframes admin-cereri-glow-pulse {
+@keyframes admin-requests-glow-pulse {
   0%,
   100% {
     box-shadow:
@@ -1097,34 +1097,34 @@
   }
 }
 
-.admin-cereri-glow {
-  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+.admin-requests-glow {
+  animation: admin-requests-glow-pulse 2.2s ease-in-out infinite;
 }
 
 /* Butoane acțiune admin — fundal solid, contrast ridicat (fără gradient deschis) */
-.admin-cereri-fill {
-  background: var(--admin-cereri-fill-bg, var(--admin-btn-primary-bg, #059669)) !important;
-  color: var(--admin-cereri-fill-text, var(--admin-btn-primary-text, #ffffff)) !important;
-  border: 1px solid var(--admin-cereri-fill-border, color-mix(in srgb, #059669 68%, black)) !important;
+.admin-requests-fill {
+  background: var(--admin-requests-fill-bg, var(--admin-btn-primary-bg, #059669)) !important;
+  color: var(--admin-requests-fill-text, var(--admin-btn-primary-text, #ffffff)) !important;
+  border: 1px solid var(--admin-requests-fill-border, color-mix(in srgb, #059669 68%, black)) !important;
   font-weight: 600;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-cereri-fill-bg, #059669) 28%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--admin-requests-fill-bg, #059669) 28%, transparent);
 }
 
-.admin-cereri-fill:hover:not(:disabled) {
+.admin-requests-fill:hover:not(:disabled) {
   background: var(
-    --admin-cereri-fill-bg-hover,
+    --admin-requests-fill-bg-hover,
     color-mix(in srgb, var(--admin-btn-primary-bg, #059669) 86%, black)
   ) !important;
-  border-color: color-mix(in srgb, var(--admin-cereri-fill-bg, #059669) 52%, black) !important;
+  border-color: color-mix(in srgb, var(--admin-requests-fill-bg, #059669) 52%, black) !important;
 }
 
-.admin-cereri-fill:active:not(:disabled) {
+.admin-requests-fill:active:not(:disabled) {
   filter: brightness(0.88);
   transform: scale(0.97);
   transition-duration: 0.06s;
 }
 
-.admin-cereri-fill:disabled {
+.admin-requests-fill:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
@@ -1323,9 +1323,9 @@
 
   .admin-hud__sync-dot--live,
   .admin-nav-tab--quest,
-  .admin-nav-tab--cereri-light::before,
+  .admin-nav-tab--requests-light::before,
   .admin-hud-alert,
-  .admin-cereri-glow {
+  .admin-requests-glow {
     animation: none;
   }
 

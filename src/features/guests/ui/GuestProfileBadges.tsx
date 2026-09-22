@@ -20,7 +20,7 @@ export function GuestProfileBadges({
   profile: ProfileLike;
   alertLevel?: GuestFlagLevel;
   alertNote?: string | null;
-  variant?: "default" | "compact" | "cerere";
+  variant?: "default" | "compact" | "request";
 }) {
   const tGuests = useTranslations("admin.guests");
 
@@ -36,11 +36,11 @@ export function GuestProfileBadges({
         ? tGuests("profileBadges.watchlist")
         : tGuests("profileBadges.normal");
 
-  if (variant === "cerere" && profile) {
+  if (variant === "request" && profile) {
     return (
-      <div className="guest-badges guest-badges--cerere">
-        <span className="guest-badges--cerere__stat guest-badges--cerere__stat--neutral">
-          <span className="guest-badges--cerere__label">
+      <div className="guest-badges guest-badges--request">
+        <span className="guest-badges--request__stat guest-badges--request__stat--neutral">
+          <span className="guest-badges--request__label">
             {tGuests("profileBadges.rating")}
           </span>
           <GuestStarsCompact
@@ -53,26 +53,26 @@ export function GuestProfileBadges({
         </span>
         <span
           className={[
-            "guest-badges--cerere__stat",
+            "guest-badges--request__stat",
             effectiveLevel === "normal"
-              ? "guest-badges--cerere__stat--neutral"
-              : "guest-badges--cerere__stat--amber",
+              ? "guest-badges--request__stat--neutral"
+              : "guest-badges--request__stat--amber",
           ].join(" ")}
         >
-          <span className="guest-badges--cerere__label">
+          <span className="guest-badges--request__label">
             {tGuests("profileBadges.state")}
           </span>
           <strong>{riskTone}</strong>
         </span>
         {alertNote ? (
-          <p className="guest-badges--cerere__alert">{alertNote}</p>
+          <p className="guest-badges--request__alert">{alertNote}</p>
         ) : null}
       </div>
     );
   }
 
-  if (variant === "cerere" && alertNote) {
-    return <p className="guest-badges--cerere__alert">{alertNote}</p>;
+  if (variant === "request" && alertNote) {
+    return <p className="guest-badges--request__alert">{alertNote}</p>;
   }
 
   if (variant === "compact" && profile) {

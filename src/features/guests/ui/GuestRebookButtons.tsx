@@ -43,7 +43,7 @@ function RebookButton({
         disabled={disabled}
         className={
           variant === "primary"
-            ? "guest-rebook-buttons__submit admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+            ? "guest-rebook-buttons__submit admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
             : "guest-rebook-buttons__submit rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-medium hover:bg-zinc-50 disabled:opacity-60"
         }
       >
