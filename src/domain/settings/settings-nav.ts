@@ -27,14 +27,14 @@ export const SETTINGS_SECTION_REDIRECTS: Record<string, string> = {
   checkin: "/admin/settings/checkin",
   email: "/admin/settings/email",
   identity: "/admin/settings/identity",
-  preferences: "/admin/settings/appearance",
+  preferences: "/admin/settings/security",
   history: "/admin/istoric",
 };
 
 export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
   {
-    id: "identity",
-    labelKey: "navGroupIdentity",
+    id: "pension",
+    labelKey: "navGroupPension",
     items: [
       {
         id: "overview",
@@ -56,12 +56,13 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navAppearanceDesc",
         href: "/admin/settings/appearance",
         matchPath: "/admin/settings/appearance",
+        permissionGroup: "pension_settings",
       },
     ],
   },
   {
-    id: "operations",
-    labelKey: "navGroupOperations",
+    id: "stay",
+    labelKey: "navGroupStay",
     items: [
       {
         id: "booking",
@@ -72,19 +73,25 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         permissionGroup: "pension_settings",
       },
       {
-        id: "fiscal",
-        labelKey: "navFiscal",
-        descriptionKey: "navFiscalDesc",
-        href: "/admin/settings/fiscal",
-        matchPath: "/admin/settings/fiscal",
-        permissionGroup: "pension_settings",
-      },
-      {
         id: "checkin",
         labelKey: "navCheckin",
         descriptionKey: "navCheckinDesc",
         href: "/admin/settings/checkin",
         matchPath: "/admin/settings/checkin",
+        permissionGroup: "pension_settings",
+      },
+    ],
+  },
+  {
+    id: "money",
+    labelKey: "navGroupMoney",
+    items: [
+      {
+        id: "fiscal",
+        labelKey: "navFiscal",
+        descriptionKey: "navFiscalDesc",
+        href: "/admin/settings/fiscal",
+        matchPath: "/admin/settings/fiscal",
         permissionGroup: "pension_settings",
       },
     ],
@@ -128,29 +135,22 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     ],
   },
   {
-    id: "access",
-    labelKey: "navGroupAccess",
+    id: "rooms",
+    labelKey: "navGroupRooms",
     items: [
       {
-        id: "security",
-        labelKey: "navSecurity",
-        descriptionKey: "navSecurityDesc",
-        href: "/admin/settings/security",
-        matchPath: "/admin/settings/security",
-      },
-      {
-        id: "statistics",
-        labelKey: "navStatistics",
-        descriptionKey: "navStatisticsDesc",
-        href: "/admin/settings/statistics",
-        matchPath: "/admin/settings/statistics",
-        memberRoles: ["owner"],
+        id: "location",
+        labelKey: "navLocation",
+        descriptionKey: "navLocationDesc",
+        href: "/admin/settings/location",
+        matchPath: "/admin/settings/location",
+        permissionGroup: "location_structure",
       },
     ],
   },
   {
-    id: "organization",
-    labelKey: "navGroupOrganization",
+    id: "team",
+    labelKey: "navGroupTeam",
     items: [
       {
         id: "team",
@@ -168,13 +168,26 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         matchPath: "/admin/settings/team-permissions",
         memberRoles: ["owner"],
       },
+    ],
+  },
+  {
+    id: "account",
+    labelKey: "navGroupAccount",
+    items: [
       {
-        id: "location",
-        labelKey: "navLocation",
-        descriptionKey: "navLocationDesc",
-        href: "/admin/settings/location",
-        matchPath: "/admin/settings/location",
-        permissionGroup: "location_structure",
+        id: "security",
+        labelKey: "navSecurity",
+        descriptionKey: "navSecurityDesc",
+        href: "/admin/settings/security",
+        matchPath: "/admin/settings/security",
+      },
+      {
+        id: "statistics",
+        labelKey: "navStatistics",
+        descriptionKey: "navStatisticsDesc",
+        href: "/admin/settings/statistics",
+        matchPath: "/admin/settings/statistics",
+        memberRoles: ["owner"],
       },
     ],
   },

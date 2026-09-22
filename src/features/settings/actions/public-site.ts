@@ -16,14 +16,10 @@ export async function savePublicSiteSettingsAction(
   | { ok: false; error: string; fieldErrors?: Record<string, string> }
 > {
   try {
-    const [t, staff] = await Promise.all([
+    const [t] = await Promise.all([
       getTranslations("admin.serverActions"),
       requireStaffPermission("pension_settings"),
     ]);
-
-    if (staff.memberRole !== "owner" && staff.memberRole !== "admin") {
-      return { ok: false, error: t("forbidden") };
-    }
 
     const tenant = await resolveRequestTenant();
     if (!tenant) {
@@ -46,7 +42,7 @@ export async function savePublicSiteSettingsAction(
     await logAdminActivityFromSession({
       action: "settings.public_site_updated",
       entityType: "settings",
-      summary: `Site public: ${parsed.data.templateId} / ${parsed.data.themeId}`,
+      summary: `Public site: ${parsed.data.templateId} / ${parsed.data.themeId}`,
       metadata: {
         templateId: parsed.data.templateId,
         themeId: parsed.data.themeId,
@@ -56,7 +52,15 @@ export async function savePublicSiteSettingsAction(
 
     return { ok: true, redirectTo: "/admin/settings/public-site?saved=1" };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return { ok: false, error: message };
+    const t = await getTranslations("admin.serverActions");
+    const message = error instanceof Error ? error.message : "";
+    if (
+      message === "auth.permission_forbidden" ||
+      message === "auth.role_forbidden" ||
+      message === "auth.tenant_member_required"
+    ) {
+      return { ok: false, error: t("roleForbidden") };
+    }
+    return { ok: false, error: message || t("genericError") };
   }
 }

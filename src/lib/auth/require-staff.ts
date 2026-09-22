@@ -150,7 +150,7 @@ export async function getAdminUser() {
   return getStaffUser();
 }
 
-/** Configurare locație: owner acces direct; staff cu permisiune + unlock owner. */
+/** Location structure: owner has direct access; staff needs permission plus owner unlock. */
 export async function requireLocationAdmin() {
   const ctx = await requireStaff();
   const permissions = await getTeamPermissions();

@@ -1,9 +1,10 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { createAdminClient, createPublicAdminClient } from "@/lib/supabase/admin";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantScope } from "@/lib/tenant/scope";
+import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 import {
   DEFAULT_STATISTICS_VISIBILITY,
   parseStatisticsVisibility,
@@ -106,7 +107,11 @@ const getCachedPensionSettings = (tenantId: string) =>
     () => getPensionSettingsUncached(tenantId),
     ["pension-settings", tenantId],
     {
-      tags: [CACHE_TAGS.pensionSettings, `tenant-${tenantId}-settings`],
+      tags: [
+        CACHE_TAGS.pensionSettings,
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        `tenant-${tenantId}-settings`,
+      ],
       revalidate: 300,
     }
   );
@@ -237,7 +242,7 @@ export async function updatePensionSettingsPartial(
   if (!existing) {
     const { error: insertError } = await supabase.from("pension_settings").insert({
       tenant_id: tenantId,
-      display_name: "Pensiune",
+      display_name: DEFAULT_PENSION_DISPLAY_NAME,
       admin_palette_key: "noir",
       ...fields,
     });

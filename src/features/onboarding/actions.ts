@@ -1,9 +1,11 @@
 "use server";
 
-import { revalidateTag, revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { requireStaffPermission } from "@/lib/auth/require-staff";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { parseOperationalHours } from "@/domain/settings/operational-hours";
+import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
   getPensionSettings,
   updatePensionSettings,
@@ -11,6 +13,10 @@ import {
 } from "@/services/pension-settings";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { migrateLegacyPaletteKey } from "@/lib/themes";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+} from "@/lib/constants";
 
 export type OnboardingStep1Result =
   | { ok: true }
@@ -22,18 +28,28 @@ export async function saveOnboardingStep1Action(
   const t = await getTranslations("admin.onboarding");
   try {
     await requireStaffPermission("pension_settings");
+    const tActions = await getTranslations("admin.serverActions");
     const displayName = String(formData.get("display_name") ?? "").trim();
-    const checkIn = String(formData.get("default_check_in_time") ?? "14:00");
-    const checkOut = String(formData.get("default_check_out_time") ?? "12:00");
+    const parsedHours = parseOperationalHours({
+      checkInTime: String(formData.get("default_check_in_time") ?? DEFAULT_CHECK_IN_TIME),
+      checkOutTime: String(formData.get("default_check_out_time") ?? DEFAULT_CHECK_OUT_TIME),
+      extraBedsMax: 0,
+    });
 
     if (!displayName || displayName.length < 2) {
       return { ok: false, error: t("genericError") };
     }
+    if (!parsedHours.ok) {
+      if (parsedHours.error === "settings.checkout_must_be_before_checkin") {
+        return { ok: false, error: tActions("checkoutMustBeBeforeCheckin") };
+      }
+      return { ok: false, error: tActions("invalidStayHours") };
+    }
 
     await updatePensionSettingsPartial({
       display_name: displayName,
-      default_check_in_time: checkIn,
-      default_check_out_time: checkOut,
+      default_check_in_time: parsedHours.data.checkInTime,
+      default_check_out_time: parsedHours.data.checkOutTime,
     });
 
     await logAdminActivityFromSession({
@@ -43,7 +59,7 @@ export async function saveOnboardingStep1Action(
       metadata: { step: 1 },
     });
 
-    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    bustPensionSettingsCache(await resolveTenantIdForData());
     revalidatePath("/admin");
     return { ok: true };
   } catch {
@@ -89,7 +105,7 @@ export async function saveOnboardingStep3Action(
       metadata: { step: 3, admin_palette_key: paletteKey, admin_day_night: dayNight },
     });
 
-    revalidateTag(CACHE_TAGS.pensionSettings, "max");
+    bustPensionSettingsCache(await resolveTenantIdForData());
     revalidatePath("/admin/settings");
     return { ok: true };
   } catch {

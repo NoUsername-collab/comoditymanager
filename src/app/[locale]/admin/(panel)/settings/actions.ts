@@ -1,1 +1,1 @@
-export * from "@/features/settings/actions/core";
+export * from "@/features/settings/actions";

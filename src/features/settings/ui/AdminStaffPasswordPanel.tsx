@@ -18,8 +18,10 @@ function roleLabel(
 
 export function AdminStaffPasswordPanel({
   accounts,
+  hideInviteLink = false,
 }: {
   accounts: StaffAccount[];
+  hideInviteLink?: boolean;
 }) {
   const tPage = useTranslations("admin.pages.settingsLocation.staffPanel");
   const tStaff = useTranslations("admin.pages.staffManagement");
@@ -32,10 +34,15 @@ export function AdminStaffPasswordPanel({
     return (
       <div className="settings-alerts">
         <p className="settings-alerts__item settings-alerts__item--warning">
-          {tPage("noStaffForTenant")}{" "}
-          <Link href="/admin/settings/staff" className="font-semibold underline">
-            {tPage("inviteStaffLink")}
-          </Link>
+          {tPage("noStaffForTenant")}
+          {hideInviteLink ? null : (
+            <>
+              {" "}
+              <Link href="/admin/settings/staff" className="font-semibold underline">
+                {tPage("inviteStaffLink")}
+              </Link>
+            </>
+          )}
         </p>
       </div>
     );

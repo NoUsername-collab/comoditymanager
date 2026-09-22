@@ -14,7 +14,7 @@ export function assertFactoryResetAllowed(): void {
   }
 }
 
-/** Șterge datele operaționale doar pentru pensiunea curentă. */
+/** Deletes operational data only for the current property. */
 export async function runFactoryReset(): Promise<void> {
   assertFactoryResetAllowed();
 

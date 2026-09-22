@@ -3,7 +3,6 @@ import {
   DEFAULT_CHECKIN_SETTINGS,
   getCheckinSettings,
 } from "@/services/checkin";
-import { isFactoryResetEnabled } from "@/services/database-reset";
 import { resolveTransactionalEmailIdentity } from "@/services/email-identity";
 import {
   DEFAULT_EMAIL_SETTINGS,
@@ -64,8 +63,11 @@ export async function loadBookingRulesSettings() {
 
 export async function loadStaffMembersPage() {
   const tenant = await resolveRequestTenant();
-  const members = tenant ? await listActiveTenantMembers(tenant.id) : [];
-  return { tenant, members };
+  const [members, staffAccounts] = await Promise.all([
+    tenant ? listActiveTenantMembers(tenant.id) : Promise.resolve([]),
+    listStaffAccountsForCurrentTenant(),
+  ]);
+  return { tenant, members, staffAccounts };
 }
 
 export async function loadSettingsEmailPage() {
@@ -108,30 +110,6 @@ export async function loadSettingsDomainsPage() {
     getActiveTenantIdForData().then((id) => listTenantDomains(id)),
   ]);
   return { tenant, domains };
-}
-
-export async function loadSettingsLocationPage() {
-  const [staffAccounts, pensionResult] = await Promise.all([
-    listStaffAccountsForCurrentTenant(),
-    (async () => {
-      try {
-        return {
-          settings: await getPensionSettings(),
-          error: null as string | null,
-        };
-      } catch (e) {
-        return {
-          settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
-          error: e instanceof Error ? e.message : "generic",
-        };
-      }
-    })(),
-  ]);
-  return {
-    staffAccounts,
-    pensionResult,
-    factoryResetEnabled: isFactoryResetEnabled(),
-  };
 }
 
 export async function loadLocationSetupCatalog() {

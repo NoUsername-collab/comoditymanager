@@ -4,6 +4,7 @@ const MESSAGE_KEYS: Record<string, string> = {
   "auth.tenant_host_required": "tenantHostRequired",
   "auth.login_required": "loginRequired",
   "auth.role_forbidden": "roleForbidden",
+  "auth.permission_forbidden": "roleForbidden",
 };
 
 /** Map thrown server error codes to admin.common i18n keys. */

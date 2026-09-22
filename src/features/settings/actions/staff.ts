@@ -69,7 +69,7 @@ export async function inviteStaffAction(
       action: "staff.invited",
       entityType: "staff",
       entityId: member.id,
-      summary: `Staff invitat: ${email} (${role})`,
+      summary: `Staff invited: ${email} (${role})`,
       metadata: { email, role },
     });
 
@@ -115,7 +115,7 @@ export async function changeStaffRoleAction(
       action: "staff.role_changed",
       entityType: "staff",
       entityId: memberId,
-      summary: `Rol schimbat → ${newRole}`,
+      summary: `Staff role changed → ${newRole}`,
       metadata: { memberId, newRole },
     });
 
@@ -152,7 +152,7 @@ export async function deactivateStaffAction(
       action: "staff.deactivated",
       entityType: "staff",
       entityId: memberId,
-      summary: `Staff dezactivat`,
+      summary: "Staff deactivated",
       metadata: { memberId },
     });
 
@@ -189,7 +189,7 @@ export async function reactivateStaffAction(
       action: "staff.reactivated",
       entityType: "staff",
       entityId: memberId,
-      summary: `Staff reactivat`,
+      summary: "Staff reactivated",
       metadata: { memberId },
     });
 

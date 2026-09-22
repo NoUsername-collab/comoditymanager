@@ -3,11 +3,12 @@ import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayo
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { StaffList } from "@/features/settings/ui/StaffList";
 import { StaffInviteForm } from "@/features/settings/ui/StaffInviteForm";
+import { AdminStaffPasswordPanel } from "@/features/settings/ui/AdminStaffPasswordPanel";
 import { loadStaffMembersPage } from "@/features/settings/loaders";
 import { guardSettingsPermission } from "@/lib/settings/page-context";
 
 export default async function StaffManagementPage() {
-  const [t, , { members }] = await Promise.all([
+  const [t, , { members, staffAccounts }] = await Promise.all([
     getTranslations("admin.pages.staffManagement"),
     guardSettingsPermission("team_admin"),
     loadStaffMembersPage(),
@@ -25,6 +26,14 @@ export default async function StaffManagementPage() {
 
       <SettingsSection title={t("inviteTitle")} description={t("inviteSubtitle")} defaultOpen={false}>
         <StaffInviteForm />
+      </SettingsSection>
+
+      <SettingsSection
+        title={t("passwordsTitle")}
+        description={t("passwordsSubtitle")}
+        defaultOpen={false}
+      >
+        <AdminStaffPasswordPanel accounts={staffAccounts} hideInviteLink />
       </SettingsSection>
 
       <SettingsSection

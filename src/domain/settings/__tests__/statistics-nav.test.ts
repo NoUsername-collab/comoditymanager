@@ -26,9 +26,10 @@ function navItemIds(memberRole: "owner" | "admin" | "operator") {
 }
 
 describe("filterSettingsNav operator ACL (default permissions)", () => {
-  it("hides pension and team settings from operator", () => {
+  it("hides pension, appearance, and team settings from operator", () => {
     const ids = navItemIds("operator");
     expect(ids).not.toContain("identity");
+    expect(ids).not.toContain("appearance");
     expect(ids).not.toContain("booking");
     expect(ids).not.toContain("fiscal");
     expect(ids).not.toContain("checkin");
@@ -42,11 +43,10 @@ describe("filterSettingsNav operator ACL (default permissions)", () => {
     expect(ids).not.toContain("statistics");
   });
 
-  it("shows overview, appearance, and security to operator", () => {
+  it("shows overview and security to operator", () => {
     const ids = navItemIds("operator");
-    expect(ids).toEqual(
-      expect.arrayContaining(["overview", "appearance", "security"]),
-    );
+    expect(ids).toEqual(expect.arrayContaining(["overview", "security"]));
+    expect(ids).not.toContain("appearance");
   });
 });
 
@@ -106,26 +106,34 @@ describe("filterSettingsNav statistics ACL", () => {
     const adminNav = filterSettingsNav(SETTINGS_NAV_GROUPS, ctx("admin"));
 
     expect(
-      ownerNav.some((g) => g.id === "access" && g.items.some((i) => i.id === "statistics")),
+      ownerNav.some((g) => g.id === "account" && g.items.some((i) => i.id === "statistics")),
     ).toBe(true);
     expect(
-      adminNav.some((g) => g.id === "access" && g.items.some((i) => i.id === "statistics")),
+      adminNav.some((g) => g.id === "account" && g.items.some((i) => i.id === "statistics")),
     ).toBe(false);
     expect(
-      adminNav.some((g) => g.id === "access" && g.items.some((i) => i.id === "security")),
+      adminNav.some((g) => g.id === "account" && g.items.some((i) => i.id === "security")),
     ).toBe(true);
   });
+});
 
-  it("does not keep statistics under operations", () => {
-    const ownerNav = filterSettingsNav(SETTINGS_NAV_GROUPS, ctx("owner"));
-    const operations = ownerNav.find((g) => g.id === "operations");
-    expect(operations?.items.some((i) => i.id === "statistics")).toBe(false);
+describe("settings nav information architecture", () => {
+  it("groups settings by information architecture", () => {
+    expect(SETTINGS_NAV_GROUPS.map((g) => g.id)).toEqual([
+      "pension",
+      "stay",
+      "money",
+      "channels",
+      "rooms",
+      "team",
+      "account",
+    ]);
   });
 });
 
 describe("pathPermissionGroup alignment", () => {
-  it("does not require pension_settings for appearance", () => {
-    expect(pathPermissionGroup("/admin/settings/appearance")).toBeNull();
+  it("requires pension_settings for appearance", () => {
+    expect(pathPermissionGroup("/admin/settings/appearance")).toBe("pension_settings");
   });
 
   it("maps pension settings routes to pension_settings", () => {

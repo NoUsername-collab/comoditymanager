@@ -8,6 +8,7 @@ import {
   type PensionContact,
   type PensionIdentity,
 } from "@/domain/settings/pension-identity";
+import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 
 const IDENTITY_SELECT =
   "display_name, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
@@ -53,7 +54,7 @@ async function loadPensionIdentityUncached(
         displayName:
           typeof fallback.data?.display_name === "string"
             ? fallback.data.display_name
-            : "Pensiune",
+            : DEFAULT_PENSION_DISPLAY_NAME,
         contact: { ...EMPTY_PENSION_CONTACT },
       };
     }
@@ -62,7 +63,7 @@ async function loadPensionIdentityUncached(
 
   return {
     displayName:
-      typeof data?.display_name === "string" ? data.display_name : "Pensiune",
+      typeof data?.display_name === "string" ? data.display_name : DEFAULT_PENSION_DISPLAY_NAME,
     contact: data ? mapContact(data) : { ...EMPTY_PENSION_CONTACT },
   };
 }
@@ -100,7 +101,7 @@ export async function updatePensionIdentity(
   const { data, error } = await supabase
     .from("pension_settings")
     .update({
-      display_name: input.displayName.trim() || "Pensiune",
+      display_name: input.displayName.trim() || DEFAULT_PENSION_DISPLAY_NAME,
       contact_email: input.contact.email,
       contact_phone: input.contact.phone,
       contact_whatsapp: input.contact.whatsapp,

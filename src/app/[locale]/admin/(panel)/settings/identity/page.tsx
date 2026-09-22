@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { PensionIdentityForm } from "@/features/settings/ui/PensionIdentityForm";
+import { OperationalHoursForm } from "@/features/settings/ui/OperationalHoursForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { loadPensionIdentity } from "@/features/settings/loaders";
@@ -27,6 +28,8 @@ export default async function SettingsIdentityPage({
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);
   if (error) alerts.push({ tone: "error", message: error });
 
+  const settings = ctx.pensionResult.settings;
+
   return (
     <SettingsPageLayout
       alerts={alerts}
@@ -39,6 +42,14 @@ export default async function SettingsIdentityPage({
       <SettingsSection title={t("identity.sectionTitle")} description={t("identity.sectionDesc")}>
         <PensionIdentityForm identity={identity} />
       </SettingsSection>
+      {settings ? (
+        <SettingsSection
+          title={t("stayHours.title")}
+          description={t("stayHours.subtitle")}
+        >
+          <OperationalHoursForm settings={settings} />
+        </SettingsSection>
+      ) : null}
     </SettingsPageLayout>
   );
 }

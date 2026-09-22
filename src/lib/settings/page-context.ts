@@ -68,9 +68,13 @@ export function canEditFiscalBilling(ctx: SettingsStaffContext): boolean {
   return ctx.staff.memberRole === "owner";
 }
 
-/** Global theme and pension channel editors — owner and employed admin. */
+/** Pension channel editors — matches `pension_settings` (owner always). */
 export function canEditPensionSettingsUi(ctx: SettingsStaffContext): boolean {
-  return ctx.staff.role === "admin";
+  return canStaffPermission(
+    ctx.staff.memberRole,
+    "pension_settings",
+    ctx.teamPermissions,
+  );
 }
 
 export async function buildSettingsAlerts(

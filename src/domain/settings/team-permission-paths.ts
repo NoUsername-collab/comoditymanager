@@ -2,6 +2,7 @@ import type { PermissionGroupId } from "@/domain/settings/team-permissions";
 
 const PENSION_SETTINGS_PREFIXES = [
   "/admin/settings/identity",
+  "/admin/settings/appearance",
   "/admin/settings/booking",
   "/admin/settings/fiscal",
   "/admin/settings/checkin",

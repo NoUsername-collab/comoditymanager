@@ -1,7 +1,8 @@
 import { cache } from "react";
-import { unstable_cache, revalidateTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import { CACHE_TAGS } from "@/lib/cache-tags";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantScope } from "@/lib/tenant/scope";
 
@@ -70,7 +71,11 @@ const getCachedEmailSettings = (tenantId: string) =>
     () => getEmailSettingsUncached(tenantId),
     ["email-settings", tenantId],
     {
-      tags: [CACHE_TAGS.pensionSettings, `tenant-${tenantId}-settings`],
+      tags: [
+        CACHE_TAGS.pensionSettings,
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        `tenant-${tenantId}-settings`,
+      ],
       revalidate: 300,
     },
   );
@@ -114,6 +119,5 @@ export async function updateEmailSettings(
 
   if (error) throw new Error(error.message);
 
-  revalidateTag(CACHE_TAGS.pensionSettings, "max");
-  revalidateTag(`tenant-${tenantId}-settings`, "max");
+  bustPensionSettingsCache(tenantId);
 }

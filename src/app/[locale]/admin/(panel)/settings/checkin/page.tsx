@@ -1,3 +1,4 @@
+import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { CheckinSettingsPanel } from "@/features/checkin/ui/CheckinSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
@@ -34,7 +35,12 @@ export default async function SettingsCheckinPage({
       description={t("navCheckinDesc")}
     >
       <SettingsSection title={t("checkin.title")} description={t("checkin.docRuleDesc")}>
-        <p className="admin-settings-hint mb-4">{t("checkin.scheduleManagedInLocation")}</p>
+        <p className="admin-settings-hint mb-4">
+          {t("checkin.scheduleManagedInIdentity")}{" "}
+          <Link href="/admin/settings/identity" className="font-medium underline">
+            {t("navIdentity")}
+          </Link>
+        </p>
         <CheckinSettingsPanel settings={checkinSettings} />
       </SettingsSection>
     </SettingsPageLayout>

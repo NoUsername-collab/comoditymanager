@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import "@/features/checkin/ui/import-checkin-styles";
 import { updateBookingRulesSettingsAction } from "@/features/settings/actions";
 import {
   settingsPartialChanged,
@@ -97,12 +98,6 @@ export function BookingRulesSettingsPanel({
         }
         if (partial.pricingSeasons !== undefined) {
           fd.set("pricing_seasons", JSON.stringify(partial.pricingSeasons));
-        }
-        if (partial.invoiceSeries !== undefined) {
-          fd.set("invoice_series", partial.invoiceSeries);
-        }
-        if (partial.invoiceSellerRegCom !== undefined) {
-          fd.set("invoice_seller_reg_com", partial.invoiceSellerRegCom ?? "");
         }
 
         const result = await updateBookingRulesSettingsAction(fd);

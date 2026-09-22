@@ -14,14 +14,10 @@ export async function saveGuestAppSettingsAction(
   input: unknown,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const [t, staff] = await Promise.all([
+    const [t] = await Promise.all([
       getTranslations("admin.serverActions"),
       requireStaffPermission("pension_settings"),
     ]);
-
-    if (staff.role !== "admin") {
-      return { ok: false, error: t("forbidden") };
-    }
 
     const tenant = await resolveRequestTenant();
     if (!tenant) {
@@ -41,7 +37,7 @@ export async function saveGuestAppSettingsAction(
     await logAdminActivityFromSession({
       action: "settings.guest_app_updated",
       entityType: "settings",
-      summary: "Guest app: setări actualizate",
+      summary: "Guest app settings updated",
       metadata: { enabled: parsed.data.enabled },
     });
 
@@ -49,7 +45,15 @@ export async function saveGuestAppSettingsAction(
     return { ok: true };
   } catch (error) {
     if (isRedirectError(error)) throw error;
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return { ok: false, error: message };
+    const t = await getTranslations("admin.serverActions");
+    const message = error instanceof Error ? error.message : "";
+    if (
+      message === "auth.permission_forbidden" ||
+      message === "auth.role_forbidden" ||
+      message === "auth.tenant_member_required"
+    ) {
+      return { ok: false, error: t("roleForbidden") };
+    }
+    return { ok: false, error: message || t("genericError") };
   }
 }

@@ -66,7 +66,11 @@ const getCachedBookingRules = (tenantId: string) =>
     () => loadBookingRulesUncached(tenantId),
     ["booking-rules", tenantId],
     {
-      tags: [CACHE_TAGS.pensionSettings, `tenant-${tenantId}-settings`],
+      tags: [
+        CACHE_TAGS.pensionSettings,
+        tenantTag(tenantId, CACHE_TAGS.pensionSettings),
+        `tenant-${tenantId}-settings`,
+      ],
       revalidate: 300,
     }
   );
