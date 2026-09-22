@@ -64,6 +64,60 @@ function FormSection({
   );
 }
 
+type GuestAppDraft = {
+  enabled: boolean;
+  usePrimaryContact: boolean;
+  themeId: GuestAppThemeSource;
+  primaryColor: string;
+  accentColor: string;
+  logoUrl: string;
+  features: GuestAppFeatureDef[];
+  shortDescription: string;
+  longDescription: string;
+  address: string;
+  hotelPhone: string;
+  hotelEmail: string;
+  website: string;
+  wifiName: string;
+  wifiPassword: string;
+  wifiInstructions: string;
+  travelTips: string;
+  greenDescription: string;
+  greenEnabled: boolean;
+  facilitiesText: string;
+  servicesText: string;
+};
+
+function buildGuestAppDraft(settings: GuestAppSettings): GuestAppDraft {
+  const hotel = settings.content.hotel ?? {};
+  const wifi = settings.content.wifi ?? {};
+  const green = settings.content.greenStay ?? {};
+  return {
+    enabled: settings.enabled,
+    usePrimaryContact: settings.usePrimaryContact ?? true,
+    themeId: settings.appearance.themeId ?? "inherit",
+    primaryColor: settings.appearance.primaryColor ?? "#d6b55a",
+    accentColor: settings.appearance.accentColor ?? "#e8cc72",
+    logoUrl: settings.appearance.logoUrl ?? "",
+    features:
+      settings.features.length > 0 ? settings.features : DEFAULT_GUEST_APP_FEATURES,
+    shortDescription: hotel.shortDescription ?? "",
+    longDescription: hotel.longDescription ?? "",
+    address: hotel.address ?? "",
+    hotelPhone: hotel.phone ?? "",
+    hotelEmail: hotel.email ?? "",
+    website: hotel.website ?? "",
+    wifiName: wifi.networkName ?? "",
+    wifiPassword: wifi.password ?? "",
+    wifiInstructions: wifi.instructions ?? "",
+    travelTips: (settings.content.travelTips ?? []).join("\n"),
+    greenDescription: green.description ?? "",
+    greenEnabled: green.enabled ?? true,
+    facilitiesText: listItemsToLines(settings.content.facilities),
+    servicesText: listItemsToLines(settings.content.services),
+  };
+}
+
 export function GuestAppSettingsForm({
   settings,
   readOnly = false,
@@ -77,62 +131,19 @@ export function GuestAppSettingsForm({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [enabled, setEnabled] = useState(settings.enabled);
-  const [usePrimaryContact, setUsePrimaryContact] = useState(
-    settings.usePrimaryContact ?? true,
-  );
-  const [themeId, setThemeId] = useState<GuestAppThemeSource>(
-    settings.appearance.themeId ?? "inherit",
-  );
-  const [primaryColor, setPrimaryColor] = useState(
-    settings.appearance.primaryColor ?? "#d6b55a",
-  );
-  const [accentColor, setAccentColor] = useState(
-    settings.appearance.accentColor ?? "#e8cc72",
-  );
-  const [logoUrl, setLogoUrl] = useState(settings.appearance.logoUrl ?? "");
-
-  const [features, setFeatures] = useState<GuestAppFeatureDef[]>(
-    settings.features.length > 0 ? settings.features : DEFAULT_GUEST_APP_FEATURES,
+  const [draft, setDraft] = useState<GuestAppDraft>(() =>
+    buildGuestAppDraft(settings),
   );
 
-  const hotel = settings.content.hotel ?? {};
-  const wifi = settings.content.wifi ?? {};
-  const green = settings.content.greenStay ?? {};
-
-  const [shortDescription, setShortDescription] = useState(
-    hotel.shortDescription ?? "",
-  );
-  const [longDescription, setLongDescription] = useState(
-    hotel.longDescription ?? "",
-  );
-  const [address, setAddress] = useState(hotel.address ?? "");
-  const [hotelPhone, setHotelPhone] = useState(hotel.phone ?? "");
-  const [hotelEmail, setHotelEmail] = useState(hotel.email ?? "");
-  const [website, setWebsite] = useState(hotel.website ?? "");
-  const [wifiName, setWifiName] = useState(wifi.networkName ?? "");
-  const [wifiPassword, setWifiPassword] = useState(wifi.password ?? "");
-  const [wifiInstructions, setWifiInstructions] = useState(
-    wifi.instructions ?? "",
-  );
-  const [travelTips, setTravelTips] = useState(
-    (settings.content.travelTips ?? []).join("\n"),
-  );
-  const [greenDescription, setGreenDescription] = useState(
-    green.description ?? "",
-  );
-  const [greenEnabled, setGreenEnabled] = useState(green.enabled ?? true);
-  const [facilitiesText, setFacilitiesText] = useState(
-    listItemsToLines(settings.content.facilities),
-  );
-  const [servicesText, setServicesText] = useState(
-    listItemsToLines(settings.content.services),
-  );
+  function patchDraft(partial: Partial<GuestAppDraft>) {
+    setDraft((d) => ({ ...d, ...partial }));
+  }
 
   function setFeatureState(id: GuestAppFeatureId, state: GuestAppFeatureState) {
-    setFeatures((prev) =>
-      prev.map((f) => (f.id === id ? { ...f, state } : f)),
-    );
+    setDraft((d) => ({
+      ...d,
+      features: d.features.map((f) => (f.id === id ? { ...f, state } : f)),
+    }));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -140,35 +151,35 @@ export function GuestAppSettingsForm({
     setError(null);
     startTransition(async () => {
       const result = await saveGuestAppSettingsAction({
-        enabled,
-        usePrimaryContact,
+        enabled: draft.enabled,
+        usePrimaryContact: draft.usePrimaryContact,
         appearance: {
-          themeId,
-          primaryColor: themeId === "custom" ? primaryColor : null,
-          accentColor: themeId === "custom" ? accentColor : null,
-          logoUrl: logoUrl.trim() || null,
+          themeId: draft.themeId,
+          primaryColor: draft.themeId === "custom" ? draft.primaryColor : null,
+          accentColor: draft.themeId === "custom" ? draft.accentColor : null,
+          logoUrl: draft.logoUrl.trim() || null,
         },
-        features,
+        features: draft.features,
         content: {
           hotel: {
-            shortDescription: shortDescription.trim() || undefined,
-            longDescription: longDescription.trim() || undefined,
-            address: address.trim() || undefined,
-            phone: hotelPhone.trim() || undefined,
-            email: hotelEmail.trim() || undefined,
-            website: website.trim() || undefined,
+            shortDescription: draft.shortDescription.trim() || undefined,
+            longDescription: draft.longDescription.trim() || undefined,
+            address: draft.address.trim() || undefined,
+            phone: draft.hotelPhone.trim() || undefined,
+            email: draft.hotelEmail.trim() || undefined,
+            website: draft.website.trim() || undefined,
           },
           wifi: {
-            networkName: wifiName.trim() || undefined,
-            password: wifiPassword.trim() || undefined,
-            instructions: wifiInstructions.trim() || undefined,
+            networkName: draft.wifiName.trim() || undefined,
+            password: draft.wifiPassword.trim() || undefined,
+            instructions: draft.wifiInstructions.trim() || undefined,
           },
-          travelTips: linesToList(travelTips),
-          facilities: linesToListItems(facilitiesText),
-          services: linesToListItems(servicesText),
+          travelTips: linesToList(draft.travelTips),
+          facilities: linesToListItems(draft.facilitiesText),
+          services: linesToListItems(draft.servicesText),
           greenStay: {
-            enabled: greenEnabled,
-            description: greenDescription.trim() || undefined,
+            enabled: draft.greenEnabled,
+            description: draft.greenDescription.trim() || undefined,
           },
         },
       });
@@ -192,8 +203,8 @@ export function GuestAppSettingsForm({
             <label className="pub-settings-section-toggle">
               <input
                 type="checkbox"
-                checked={enabled}
-                onChange={(e) => setEnabled(e.target.checked)}
+                checked={draft.enabled}
+                onChange={(e) => patchDraft({ enabled: e.target.checked })}
               />
               <span>{t("enabled")}</span>
             </label>
@@ -205,8 +216,10 @@ export function GuestAppSettingsForm({
             <label className="admin-settings-fields__full">
               <span>{t("themeSource")}</span>
               <select
-                value={themeId}
-                onChange={(e) => setThemeId(e.target.value as GuestAppThemeSource)}
+                value={draft.themeId}
+                onChange={(e) =>
+                  patchDraft({ themeId: e.target.value as GuestAppThemeSource })
+                }
               >
                 <option value="inherit">{t("themeInherit")}</option>
                 {DESIGN_THEME_IDS.map((id) => (
@@ -217,22 +230,22 @@ export function GuestAppSettingsForm({
                 <option value="custom">{t("themeCustom")}</option>
               </select>
             </label>
-            {themeId === "custom" ? (
+            {draft.themeId === "custom" ? (
               <>
                 <label>
                   <span>{t("primaryColor")}</span>
                   <input
                     type="color"
-                    value={primaryColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    value={draft.primaryColor}
+                    onChange={(e) => patchDraft({ primaryColor: e.target.value })}
                   />
                 </label>
                 <label>
                   <span>{t("accentColor")}</span>
                   <input
                     type="color"
-                    value={accentColor}
-                    onChange={(e) => setAccentColor(e.target.value)}
+                    value={draft.accentColor}
+                    onChange={(e) => patchDraft({ accentColor: e.target.value })}
                   />
                 </label>
               </>
@@ -240,8 +253,8 @@ export function GuestAppSettingsForm({
             <label className="admin-settings-fields__full">
               <span>{t("logoUrl")}</span>
               <input
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
+                value={draft.logoUrl}
+                onChange={(e) => patchDraft({ logoUrl: e.target.value })}
                 placeholder="https://..."
               />
             </label>
@@ -250,7 +263,7 @@ export function GuestAppSettingsForm({
 
         <FormSection title={t("features")} description={t("featuresHint")}>
           <ul className="admin-settings-list">
-            {features.map((feature) => (
+            {draft.features.map((feature) => (
               <li key={feature.id} className="admin-settings-list__row">
                 <span className="admin-settings-list__label">
                   {guestAppFeatureLabel(feature.id)}
@@ -278,8 +291,10 @@ export function GuestAppSettingsForm({
             <label className="pub-settings-section-toggle admin-settings-fields__full">
               <input
                 type="checkbox"
-                checked={usePrimaryContact}
-                onChange={(e) => setUsePrimaryContact(e.target.checked)}
+                checked={draft.usePrimaryContact}
+                onChange={(e) =>
+                  patchDraft({ usePrimaryContact: e.target.checked })
+                }
               />
               <span>{t("usePrimaryContact")}</span>
             </label>
@@ -287,37 +302,46 @@ export function GuestAppSettingsForm({
               <span>{t("shortDescription")}</span>
               <textarea
                 rows={2}
-                value={shortDescription}
-                onChange={(e) => setShortDescription(e.target.value)}
+                value={draft.shortDescription}
+                onChange={(e) => patchDraft({ shortDescription: e.target.value })}
               />
             </label>
             <label className="admin-settings-fields__full">
               <span>{t("longDescription")}</span>
               <textarea
                 rows={4}
-                value={longDescription}
-                onChange={(e) => setLongDescription(e.target.value)}
+                value={draft.longDescription}
+                onChange={(e) => patchDraft({ longDescription: e.target.value })}
               />
             </label>
             <label className="admin-settings-fields__full">
               <span>{t("address")}</span>
-              <input value={address} onChange={(e) => setAddress(e.target.value)} />
+              <input
+                value={draft.address}
+                onChange={(e) => patchDraft({ address: e.target.value })}
+              />
             </label>
             <label>
               <span>{t("phone")}</span>
-              <input value={hotelPhone} onChange={(e) => setHotelPhone(e.target.value)} />
+              <input
+                value={draft.hotelPhone}
+                onChange={(e) => patchDraft({ hotelPhone: e.target.value })}
+              />
             </label>
             <label>
               <span>Email</span>
               <input
                 type="email"
-                value={hotelEmail}
-                onChange={(e) => setHotelEmail(e.target.value)}
+                value={draft.hotelEmail}
+                onChange={(e) => patchDraft({ hotelEmail: e.target.value })}
               />
             </label>
             <label className="admin-settings-fields__full">
               <span>Website</span>
-              <input value={website} onChange={(e) => setWebsite(e.target.value)} />
+              <input
+                value={draft.website}
+                onChange={(e) => patchDraft({ website: e.target.value })}
+              />
             </label>
           </div>
         </FormSection>
@@ -326,21 +350,24 @@ export function GuestAppSettingsForm({
           <div className="admin-settings-fields">
             <label>
               <span>{t("wifiNetwork")}</span>
-              <input value={wifiName} onChange={(e) => setWifiName(e.target.value)} />
+              <input
+                value={draft.wifiName}
+                onChange={(e) => patchDraft({ wifiName: e.target.value })}
+              />
             </label>
             <label>
               <span>{t("wifiPassword")}</span>
               <input
-                value={wifiPassword}
-                onChange={(e) => setWifiPassword(e.target.value)}
+                value={draft.wifiPassword}
+                onChange={(e) => patchDraft({ wifiPassword: e.target.value })}
               />
             </label>
             <label>
               <span>{t("wifiInstructions")}</span>
               <textarea
                 rows={2}
-                value={wifiInstructions}
-                onChange={(e) => setWifiInstructions(e.target.value)}
+                value={draft.wifiInstructions}
+                onChange={(e) => patchDraft({ wifiInstructions: e.target.value })}
               />
             </label>
           </div>
@@ -352,8 +379,8 @@ export function GuestAppSettingsForm({
               <span>{t("travelTipsHint")}</span>
               <textarea
                 rows={4}
-                value={travelTips}
-                onChange={(e) => setTravelTips(e.target.value)}
+                value={draft.travelTips}
+                onChange={(e) => patchDraft({ travelTips: e.target.value })}
               />
             </label>
           </div>
@@ -365,8 +392,8 @@ export function GuestAppSettingsForm({
               <span>{t("facilitiesList")}</span>
               <textarea
                 rows={4}
-                value={facilitiesText}
-                onChange={(e) => setFacilitiesText(e.target.value)}
+                value={draft.facilitiesText}
+                onChange={(e) => patchDraft({ facilitiesText: e.target.value })}
               />
             </label>
           </div>
@@ -378,8 +405,8 @@ export function GuestAppSettingsForm({
               <span>{t("servicesList")}</span>
               <textarea
                 rows={4}
-                value={servicesText}
-                onChange={(e) => setServicesText(e.target.value)}
+                value={draft.servicesText}
+                onChange={(e) => patchDraft({ servicesText: e.target.value })}
               />
             </label>
           </div>
@@ -390,8 +417,8 @@ export function GuestAppSettingsForm({
             <label className="pub-settings-section-toggle">
               <input
                 type="checkbox"
-                checked={greenEnabled}
-                onChange={(e) => setGreenEnabled(e.target.checked)}
+                checked={draft.greenEnabled}
+                onChange={(e) => patchDraft({ greenEnabled: e.target.checked })}
               />
               <span>{t("greenStayEnabled")}</span>
             </label>
@@ -399,8 +426,8 @@ export function GuestAppSettingsForm({
               <span>{t("greenStayDescription")}</span>
               <textarea
                 rows={3}
-                value={greenDescription}
-                onChange={(e) => setGreenDescription(e.target.value)}
+                value={draft.greenDescription}
+                onChange={(e) => patchDraft({ greenDescription: e.target.value })}
               />
             </label>
           </div>
