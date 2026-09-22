@@ -38,6 +38,26 @@
 
   background: var(--zx-paper);
   color: var(--zx-text);
+  color-scheme: light;
+}
+
+/* html defaults to night; admin-color-map then paints every input dark.
+   Marketing shell is paper + ink — beat that leak so typed text and
+   placeholders stay readable. */
+.platform-shell--split input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.platform-shell--split select,
+.platform-shell--split textarea {
+  background-color: var(--zx-surface);
+  border-color: var(--site-border);
+  color: var(--zx-text);
+  color-scheme: light;
+  caret-color: var(--zx-text);
+}
+
+.platform-shell--split input::placeholder,
+.platform-shell--split textarea::placeholder {
+  color: var(--zx-muted);
+  opacity: 1;
 }
 
 .platform-shell--split .platform-header--split .platform-header__cta:hover {
