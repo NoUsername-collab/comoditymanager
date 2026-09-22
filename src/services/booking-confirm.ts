@@ -67,17 +67,25 @@ export async function resolveTotalPriceForConfirm(
   roomIds: string[],
   formData: FormData
 ): Promise<number> {
-  const ctx = await loadBookingConfirmContext(bookingId);
-  if (!ctx) throw new Error("booking.request_not_found");
+  if (roomIds.length === 0) {
+    throw new Error("booking.select_at_least_one_room");
+  }
 
-  const pricingRules = await getStayPricingRules();
+  const { getRoomsByIds } = await import("@/services/rooms-admin");
+  const [params, rooms, pricingRules] = await Promise.all([
+    getBookingStayParams(bookingId),
+    getRoomsByIds(roomIds),
+    getStayPricingRules(),
+  ]);
+  if (!params) throw new Error("booking.request_not_found");
+  if (rooms.length !== roomIds.length) {
+    throw new Error("booking.one_or_more_rooms_unavailable_reload");
+  }
 
-  const idSet = new Set(roomIds);
-  const selected = ctx.availableRooms.filter((r) => idSet.has(r.id));
   const standard = computeStandardStayTotal(
-    selected,
-    ctx.booking.check_in,
-    ctx.booking.check_out,
+    rooms,
+    params.check_in,
+    params.check_out,
     pricingRules
   );
 

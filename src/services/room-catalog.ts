@@ -104,7 +104,9 @@ async function listRoomTypesUncached(
   const supabase = createPublicAdminClient();
   let q = supabase
     .from("room_type_definitions")
-    .select("*")
+    .select(
+      "id, slug, name, capacity_base, base_price_per_night, sort_order, is_system, is_active"
+    )
     .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
   if (!includeInactive) q = q.eq("is_active", true);
@@ -159,7 +161,9 @@ async function listRoomOptionsUncached(
   const supabase = createPublicAdminClient();
   let q = supabase
     .from("room_option_definitions")
-    .select("*")
+    .select(
+      "id, slug, name, description, price_per_night_addon, sort_order, is_system, is_active"
+    )
     .eq("tenant_id", tenantId)
     .order("sort_order", { ascending: true });
   if (!includeInactive) q = q.eq("is_active", true);

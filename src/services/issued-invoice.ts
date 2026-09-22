@@ -34,6 +34,34 @@ import { enqueueFiscalSubmission } from "@/services/fiscal-submission";
 import { getLocale } from "next-intl/server";
 import { resolveTenantCountryForRequest } from "@/lib/tenant/resolve-fiscal-tenant";
 
+const BOOKING_INVOICE_SELECT = [
+  "id",
+  "booking_id",
+  "invoice_kind",
+  "invoice_sequence",
+  "status",
+  "series",
+  "invoice_number",
+  "display_number",
+  "issued_at",
+  "seller_name",
+  "seller_cui",
+  "seller_reg_com",
+  "seller_address",
+  "buyer_name",
+  "buyer_email",
+  "buyer_phone",
+  "check_in",
+  "check_out",
+  "subtotal",
+  "subtotal_net",
+  "vat_rate",
+  "vat_amount",
+  "total",
+  "currency",
+  "lines",
+].join(", ");
+
 export type IssuedInvoiceRecord = {
   id: string;
   booking_id: string;
@@ -113,7 +141,7 @@ export const listBookingInvoices = cache(async (
   const supabase = createPublicAdminClient();
   const { data, error } = await supabase
     .from("booking_invoices")
-    .select("*")
+    .select(BOOKING_INVOICE_SELECT)
     .eq("tenant_id", tenantId)
     .eq("booking_id", bookingId)
     .eq("status", "issued")

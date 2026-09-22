@@ -53,7 +53,7 @@ export const getTenantFiscalSettings = cache(
     const supabase = createPublicAdminClient();
     const { data, error } = await supabase
       .from("tenant_fiscal_settings")
-      .select("*")
+      .select("provider, anaf_enabled, anaf_cif, anaf_env, anaf_credentials")
       .eq("tenant_id", resolvedTenantId)
       .maybeSingle();
 
@@ -97,7 +97,7 @@ export async function updateTenantFiscalSettings(
   const { data, error } = await supabase
     .from("tenant_fiscal_settings")
     .upsert(next, { onConflict: "tenant_id" })
-    .select("*")
+    .select("provider, anaf_enabled, anaf_cif, anaf_env, anaf_credentials")
     .single();
 
   if (error) {

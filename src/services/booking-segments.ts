@@ -245,6 +245,28 @@ export async function syncBookingRoomSegments(bookingId: string): Promise<void> 
   if (insErr) throw new Error(insErr.message);
 }
 
+const RESYNC_CONCURRENCY = 8;
+
+async function mapPool<T>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<void>
+): Promise<void> {
+  if (items.length === 0) return;
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const index = next;
+      next += 1;
+      const item = items[index];
+      if (item === undefined) return;
+      await fn(item);
+    }
+  }
+  const workers = Math.min(Math.max(1, limit), items.length);
+  await Promise.all(Array.from({ length: workers }, () => worker()));
+}
+
 export async function resyncAllBookingSegments(): Promise<number> {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase
@@ -255,10 +277,11 @@ export async function resyncAllBookingSegments(): Promise<number> {
 
   if (error) throw new Error(error.message);
 
-  for (const row of data ?? []) {
-    await syncBookingRoomSegments(row.id);
-  }
-  return data?.length ?? 0;
+  const rows = data ?? [];
+  await mapPool(rows, RESYNC_CONCURRENCY, (row) =>
+    syncBookingRoomSegments(row.id)
+  );
+  return rows.length;
 }
 
 export async function shiftAllSegmentsByDays(
@@ -269,17 +292,18 @@ export async function shiftAllSegmentsByDays(
   if (segments.length === 0) return;
 
   const { tenantId, supabase } = await getTenantScope();
-  for (const seg of segments) {
-    const { error } = await supabase
-      .from("booking_room_segments")
-      .update({
-        segment_start: addDays(seg.segment_start, dayDelta),
-        segment_end: addDays(seg.segment_end, dayDelta),
-      })
-      .eq("tenant_id", tenantId)
-      .eq("id", seg.id);
-    if (error) throw new Error(error.message);
-  }
+  const { error } = await supabase.from("booking_room_segments").upsert(
+    segments.map((seg) => ({
+      id: seg.id,
+      tenant_id: tenantId,
+      booking_id: seg.booking_id,
+      room_id: seg.room_id,
+      segment_start: addDays(seg.segment_start, dayDelta),
+      segment_end: addDays(seg.segment_end, dayDelta),
+      nightly_rate: seg.nightly_rate,
+    }))
+  );
+  if (error) throw new Error(error.message);
 
   await recalcBookingEnvelopeAndTotal(bookingId);
 }
