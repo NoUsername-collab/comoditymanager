@@ -1,6 +1,12 @@
 import type { CSSProperties } from "react";
 import { getDesignTheme, migrateDesignThemeId } from "./catalog";
 import type { DesignThemeId, DesignThemeMode } from "./types";
+import {
+  LEGACY_THEME_MODE_STORAGE_KEYS,
+  LEGACY_THEME_STORAGE_KEYS,
+  THEME_MODE_STORAGE_KEY,
+  THEME_STORAGE_KEY,
+} from "@/lib/themes/storage";
 
 /** Build inline CSS custom properties for admin shell (primitives + key admin aliases). */
 export function adminThemeCssVars(
@@ -51,10 +57,17 @@ export function applyAdminThemeToDocument(
 }
 
 export function adminThemeBootSnippet(): string {
+  const themeKeys = [THEME_STORAGE_KEY, ...LEGACY_THEME_STORAGE_KEYS]
+    .map((key) => JSON.stringify(key))
+    .join(",");
+  const modeKeys = [THEME_MODE_STORAGE_KEY, ...LEGACY_THEME_MODE_STORAGE_KEYS]
+    .map((key) => JSON.stringify(key))
+    .join(",");
   return `(function(){
     try {
-      var themeRaw=localStorage.getItem("casaemil-theme-id")||localStorage.getItem("casaemil-admin-palette-key")||"noir";
-      var modeRaw=localStorage.getItem("casaemil-theme-mode")||localStorage.getItem("casaemil-admin-theme")||"night";
+      function first(keys){for(var i=0;i<keys.length;i++){try{var v=localStorage.getItem(keys[i]);if(v)return v;}catch(e){}}return null;}
+      var themeRaw=first([${themeKeys}])||"noir";
+      var modeRaw=first([${modeKeys}])||"night";
       if(themeRaw==="default") themeRaw="noir";
       var validThemes=["noir","alpine","mediterranean","pearl","slate","forest"];
       if(!validThemes.includes(themeRaw)) themeRaw="noir";

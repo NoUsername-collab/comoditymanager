@@ -1,7 +1,12 @@
 import { tenantDomainFromHost, tenantSlugFromHost } from "@/lib/tenant/host";
+import { readLocalStorageFirst } from "@/lib/storage/local";
 
-export const CAZARI_SEARCH_HISTORY_MAX = 10;
-const STORAGE_PREFIX = "casaemil-cazari-search-history";
+export const STAY_SEARCH_HISTORY_MAX = 10;
+const STORAGE_PREFIX = "zalmox-stays-search-history";
+const LEGACY_STORAGE_PREFIXES = [
+  "zalmox-cazari-search-history",
+  "casaemil-cazari-search-history",
+];
 
 export function normalizeSearchHistoryTerm(raw: string): string {
   return raw.trim().replace(/\s+/g, " ");
@@ -12,15 +17,18 @@ export function dedupeSearchHistory(terms: string[], next: string): string[] {
   if (!normalized) return terms;
   const lower = normalized.toLowerCase();
   const filtered = terms.filter((term) => term.toLowerCase() !== lower);
-  return [normalized, ...filtered].slice(0, CAZARI_SEARCH_HISTORY_MAX);
+  return [normalized, ...filtered].slice(0, STAY_SEARCH_HISTORY_MAX);
 }
 
-export function searchHistoryStorageKey(hostInput: string): string {
+export function searchHistoryStorageKey(
+  hostInput: string,
+  prefix = STORAGE_PREFIX,
+): string {
   const slug = tenantSlugFromHost(hostInput);
-  if (slug) return `${STORAGE_PREFIX}:${slug}`;
+  if (slug) return `${prefix}:${slug}`;
   const domain = tenantDomainFromHost(hostInput);
-  if (domain) return `${STORAGE_PREFIX}:custom:${domain}`;
-  return STORAGE_PREFIX;
+  if (domain) return `${prefix}:custom:${domain}`;
+  return prefix;
 }
 
 export function parseSearchHistory(raw: string | null): string[] {
@@ -32,24 +40,29 @@ export function parseSearchHistory(raw: string | null): string[] {
       .filter((item): item is string => typeof item === "string")
       .map(normalizeSearchHistoryTerm)
       .filter(Boolean)
-      .slice(0, CAZARI_SEARCH_HISTORY_MAX);
+      .slice(0, STAY_SEARCH_HISTORY_MAX);
   } catch {
     return [];
   }
 }
 
-export function readCazariSearchHistory(hostInput?: string): string[] {
+export function readStaySearchHistory(hostInput?: string): string[] {
   if (typeof window === "undefined") return [];
   try {
     const host = hostInput ?? window.location.host;
-    const key = searchHistoryStorageKey(host);
-    return parseSearchHistory(localStorage.getItem(key));
+    const keys = [
+      searchHistoryStorageKey(host),
+      ...LEGACY_STORAGE_PREFIXES.map((prefix) =>
+        searchHistoryStorageKey(host, prefix),
+      ),
+    ];
+    return parseSearchHistory(readLocalStorageFirst(keys));
   } catch {
     return [];
   }
 }
 
-export function writeCazariSearchHistory(
+export function writeStaySearchHistory(
   terms: string[],
   hostInput?: string,
 ): void {
@@ -62,7 +75,7 @@ export function writeCazariSearchHistory(
     } else {
       localStorage.setItem(
         key,
-        JSON.stringify(terms.slice(0, CAZARI_SEARCH_HISTORY_MAX)),
+        JSON.stringify(terms.slice(0, STAY_SEARCH_HISTORY_MAX)),
       );
     }
   } catch {
@@ -70,29 +83,29 @@ export function writeCazariSearchHistory(
   }
 }
 
-export function addCazariSearchHistoryTerm(
+export function addStaySearchHistoryTerm(
   term: string,
   hostInput?: string,
 ): string[] {
-  const current = readCazariSearchHistory(hostInput);
+  const current = readStaySearchHistory(hostInput);
   const next = dedupeSearchHistory(current, term);
-  writeCazariSearchHistory(next, hostInput);
+  writeStaySearchHistory(next, hostInput);
   return next;
 }
 
-export function removeCazariSearchHistoryTerm(
+export function removeStaySearchHistoryTerm(
   term: string,
   hostInput?: string,
 ): string[] {
   const normalized = normalizeSearchHistoryTerm(term).toLowerCase();
-  const current = readCazariSearchHistory(hostInput);
+  const current = readStaySearchHistory(hostInput);
   const next = current.filter((item) => item.toLowerCase() !== normalized);
-  writeCazariSearchHistory(next, hostInput);
+  writeStaySearchHistory(next, hostInput);
   return next;
 }
 
-export function clearCazariSearchHistory(hostInput?: string): void {
-  writeCazariSearchHistory([], hostInput);
+export function clearStaySearchHistory(hostInput?: string): void {
+  writeStaySearchHistory([], hostInput);
 }
 
 export function filterVisibleSearchHistory(
