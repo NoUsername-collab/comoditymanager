@@ -14,6 +14,8 @@ import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
+import { roomsTurnoverDays } from "@/domain/gantt/today-activity";
+import { expandRangeDayIsos } from "@/domain/gantt/view-range";
 import type { BookingRow } from "@/services/bookings/types";
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
@@ -35,6 +37,7 @@ const EMPTY_ROOM_TODAY_FLAGS: RoomTodayFlags = {
   departure: false,
   occupiedTonight: false,
 };
+const EMPTY_TURNOVER = new Set<string>();
 
 export type GanttBuildingGroup = {
   buildingId: string;
@@ -252,6 +255,14 @@ function GanttTbodyRows({
   emptyMessage,
   departurePolicy,
 }: GanttTbodyRowsProps) {
+  const turnoverByRoom = useMemo(() => {
+    const dayIsos =
+      viewRange.columnGranularity === "week"
+        ? expandRangeDayIsos(viewRange.rangeStart, viewRange.rangeEnd)
+        : viewRange.days.map((d) => d.iso);
+    return roomsTurnoverDays([...bookingById.values()], dayIsos);
+  }, [bookingById, viewRange]);
+
   return (
     <>
       {visibleItems.map((item) => {
@@ -309,6 +320,9 @@ function GanttTbodyRows({
               dayGridOptions={dayGridOptions}
               shellZoom={shellZoom}
               departurePolicy={departurePolicy}
+              turnoverIsos={
+                turnoverByRoom.get(item.room.id) ?? EMPTY_TURNOVER
+              }
             />
           </Fragment>
         );

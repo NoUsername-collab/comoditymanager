@@ -12,7 +12,7 @@ export type GanttQuickCreateDraft = GanttCreateDraft;
 export type GanttQuickPanelMode =
   | "hold"
   | "block"
-  | "cerere"
+  | "request"
   | "direct"
   | "move";
 

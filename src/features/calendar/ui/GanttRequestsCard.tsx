@@ -14,7 +14,7 @@ type Props = {
   alertLevel?: GuestFlagLevel | null;
 };
 
-export const GanttCereriCard = memo(function GanttCereriCard({
+export const GanttRequestsCard = memo(function GanttRequestsCard({
   href,
   label,
   dates,
@@ -26,19 +26,19 @@ export const GanttCereriCard = memo(function GanttCereriCard({
       href={href}
       className={[
         ganttStayChromeClass(),
-        "gantt-booking-card gantt-booking-card--pending gantt-cereri-card gantt-stay--filled gantt-stay--cerere gantt-stay--chip gantt-timeline-bar gantt-stay--capsule",
+        "gantt-booking-card gantt-booking-card--pending gantt-requests-card gantt-stay--filled gantt-stay--request gantt-stay--chip gantt-timeline-bar gantt-stay--capsule",
       ].join(" ")}
     >
       <span className="gantt-stay__spine" aria-hidden />
-      <span className="gantt-cereri-card__main">
-        <span className="gantt-stay-chrome__label gantt-cereri-card__guest">{label}</span>
-        <span className="gantt-cereri-card__dates">{dates}</span>
+      <span className="gantt-requests-card__main">
+        <span className="gantt-stay-chrome__label gantt-requests-card__guest">{label}</span>
+        <span className="gantt-requests-card__dates">{dates}</span>
       </span>
-      <span className="gantt-cereri-card__risk">
+      <span className="gantt-requests-card__risk">
         <GuestFlagPill flagLevel={alertLevel} />
       </span>
-      <span className="gantt-cereri-card__party">{party}</span>
-      <span className="gantt-stay__end-tab gantt-cereri-card__tab" aria-hidden>
+      <span className="gantt-requests-card__party">{party}</span>
+      <span className="gantt-stay__end-tab gantt-requests-card__tab" aria-hidden>
         <span className="gantt-stay__end-tab-arrow">›</span>
       </span>
       <span className="gantt-stay__stamp" aria-hidden>

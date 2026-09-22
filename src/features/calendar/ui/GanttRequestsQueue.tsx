@@ -4,13 +4,13 @@ import { Link } from "@/i18n/navigation";
 import { useMemo } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatGuestGanttLabel } from "@/domain/guest-name";
-import { GanttCereriCard } from "@/features/calendar/ui/GanttCereriCard";
+import { GanttRequestsCard } from "@/features/calendar/ui/GanttRequestsCard";
 import { formatGuestPartyShort } from "@/lib/guest-party";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import type { BookingRow } from "@/services/bookings";
 
-export function GanttCereriQueue({
-  cereri,
+export function GanttRequestsQueue({
+  requests,
   embedded = false,
   inline = false,
   top = false,
@@ -18,12 +18,12 @@ export function GanttCereriQueue({
   subtitle,
   ariaLabel,
 }: {
-  cereri: BookingRow[];
-  /** În interiorul panoului toolbar — fără chenar separat */
+  requests: BookingRow[];
+  /** Nested inside the toolbar panel — no extra chrome */
   embedded?: boolean;
-  /** În banda compactă de control, cu header scurt */
+  /** Compact control strip with a short header */
   inline?: boolean;
-  /** În toolbar-ul mare al paginii, deasupra Gantt-ului */
+  /** Full-page toolbar, above the Gantt grid */
   top?: boolean;
   title?: string;
   subtitle?: string | null;
@@ -34,10 +34,10 @@ export function GanttCereriQueue({
   const locale = useLocale();
   const sorted = useMemo(
     () =>
-      [...cereri].sort((a, b) =>
+      [...requests].sort((a, b) =>
         a.check_in.localeCompare(b.check_in) || a.check_out.localeCompare(b.check_out)
       ),
-    [cereri]
+    [requests]
   );
 
   if (sorted.length === 0) return null;
@@ -53,35 +53,35 @@ export function GanttCereriQueue({
 
   return (
     <section
-      id="gantt-cereri-queue"
+      id="gantt-requests-queue"
       className={[
-        "gantt-cereri-queue",
-        embedded && "gantt-cereri-queue--embedded",
-        inline && "gantt-cereri-queue--inline",
-        top && "gantt-cereri-queue--top",
+        "gantt-requests-queue",
+        embedded && "gantt-requests-queue--embedded",
+        inline && "gantt-requests-queue--inline",
+        top && "gantt-requests-queue--top",
       ]
         .filter(Boolean)
         .join(" ")}
       aria-label={resolvedAriaLabel}
     >
-      <header className="gantt-cereri-queue__head">
+      <header className="gantt-requests-queue__head">
         <div>
-          <h2 className="gantt-cereri-queue__title">
+          <h2 className="gantt-requests-queue__title">
             {resolvedTitle}
-            <span className="gantt-cereri-queue__count">{sorted.length}</span>
+            <span className="gantt-requests-queue__count">{sorted.length}</span>
           </h2>
           {resolvedSubtitle && (
-            <p className="gantt-cereri-queue__sub">
+            <p className="gantt-requests-queue__sub">
               {resolvedSubtitle}
             </p>
           )}
         </div>
-        <Link href="/admin/bookings" className="gantt-cereri-queue__all-link">
+        <Link href="/admin/bookings" className="gantt-requests-queue__all-link">
           {inline ? tGantt("queue.allArrow") : tGantt("queue.allRequestsArrow")}
         </Link>
       </header>
 
-      <div className="gantt-cereri-queue__scroller">
+      <div className="gantt-requests-queue__scroller">
         {sorted.map((b) => {
           const label = formatGuestGanttLabel(
             b.guest_last_name,
@@ -89,7 +89,7 @@ export function GanttCereriQueue({
             b.guest_name
           );
           return (
-            <GanttCereriCard
+            <GanttRequestsCard
               key={b.id}
               href={`/admin/bookings/${b.id}`}
               label={label}

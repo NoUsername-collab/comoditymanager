@@ -8,7 +8,10 @@ import {
   ToolbarFilterIcon,
   type InlineZoomChoice,
 } from "@/features/calendar/ui/GanttGridHelpers";
-import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
+import {
+  parseGanttLayerFilter,
+  type GanttLayerFilter,
+} from "@/domain/gantt/occupancy-layer";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
 import type { GanttDensity } from "@/hooks/useGanttDensity";
 import { useTranslations } from "next-intl";
@@ -21,7 +24,7 @@ export function GanttCompactToolbar({
   onOpenReception,
   onOpenCheckIn,
   onOpenCheckOut,
-  cereriCount,
+  requestCount,
   arrivalsCount,
   departuresCount,
   cleanCount,
@@ -54,7 +57,7 @@ export function GanttCompactToolbar({
   onOpenReception: () => void;
   onOpenCheckIn?: () => void;
   onOpenCheckOut: () => void;
-  cereriCount: number;
+  requestCount: number;
   arrivalsCount: number;
   departuresCount: number;
   cleanCount: number;
@@ -104,7 +107,7 @@ export function GanttCompactToolbar({
           onOpenReception={onOpenReception}
           onOpenCheckIn={onOpenCheckIn}
           onOpenCheckOut={onOpenCheckOut}
-          cereriCount={cereriCount}
+          requestCount={requestCount}
           arrivalsCount={arrivalsCount}
           departuresCount={departuresCount}
           cleanCount={cleanCount}
@@ -170,14 +173,16 @@ export function GanttCompactToolbar({
           <select
             className="gantt-compact-toolbar__select"
             value={layerFilter}
-            onChange={(e) => onCalendarPatch({ layer: e.target.value as GanttLayerFilter })}
+            onChange={(e) =>
+              onCalendarPatch({ layer: parseGanttLayerFilter(e.target.value) })
+            }
             aria-label={tCommon("display")}
           >
             <option value="all">{tLayers("all")}</option>
-            <option value="cereri">{tLayers("cereri")}</option>
-            <option value="confirmate">{tLayers("confirmate")}</option>
+            <option value="requests">{tLayers("requests")}</option>
+            <option value="confirmed">{tLayers("confirmed")}</option>
             <option value="in_house">{tLayers("in_house")}</option>
-            <option value="trecute">{tLayers("trecute")}</option>
+            <option value="past">{tLayers("past")}</option>
             <option value="hold">{tLayers("hold")}</option>
             <option value="block">{tLayers("block")}</option>
           </select>

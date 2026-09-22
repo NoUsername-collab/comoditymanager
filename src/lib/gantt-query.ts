@@ -1,6 +1,9 @@
 import type { GanttFilter } from "@/domain/gantt/filters";
 import type { GanttFeatureFilter } from "@/domain/gantt/filters";
-import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
+import {
+  ganttLayerQueryValue,
+  type GanttLayerFilter,
+} from "@/domain/gantt/occupancy-layer";
 import type { GanttZoom } from "@/domain/gantt/view-range";
 
 export function parseGanttFeatureFilter(
@@ -43,7 +46,8 @@ export function buildCalendarQuery(
     p.set("q", String(base.q));
   }
   if (base.filter && base.filter !== "all") p.set("filter", base.filter);
-  if (base.layer && base.layer !== "all") p.set("layer", base.layer);
+  const layerQuery = base.layer ? ganttLayerQueryValue(base.layer) : null;
+  if (layerQuery) p.set("layer", layerQuery);
   if (base.feat && base.feat !== "all") p.set("feat", base.feat);
   if (base.fd) p.set("fd", base.fd);
   return p.toString();

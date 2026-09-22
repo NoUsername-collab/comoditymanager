@@ -85,7 +85,7 @@ export function GanttUnassignedRow({
                   href={`/admin/bookings/${b.id}`}
                   label={label}
                   pos={pos}
-                  isCerere
+                  isRequest
                   guestTotal={guestPartyTotal(b.num_adults, b.num_children)}
                   bookingId={b.id}
                   bookingCheckIn={b.check_in}

@@ -21,7 +21,7 @@ function createTarget(
 describe("ganttCreateActionsDisabled", () => {
   it("enables all four actions for a free single room", () => {
     expect(ganttCreateActionsDisabled(createTarget(), false)).toEqual({
-      cerere: false,
+      request: false,
       direct: false,
       hold: false,
       block: false,
@@ -35,7 +35,7 @@ describe("ganttCreateActionsDisabled", () => {
         false
       )
     ).toEqual({
-      cerere: false,
+      request: false,
       direct: false,
       hold: false,
       block: true,
@@ -46,7 +46,7 @@ describe("ganttCreateActionsDisabled", () => {
     expect(
       ganttCreateActionsDisabled(createTarget({ hasConflict: true }), false)
     ).toEqual({
-      cerere: true,
+      request: true,
       direct: true,
       hold: true,
       block: true,
@@ -54,7 +54,7 @@ describe("ganttCreateActionsDisabled", () => {
     expect(
       ganttCreateActionsDisabled(createTarget({ roomId: null }), false)
     ).toEqual({
-      cerere: true,
+      request: true,
       direct: true,
       hold: true,
       block: true,
@@ -64,13 +64,13 @@ describe("ganttCreateActionsDisabled", () => {
 
 describe("ganttCreateDraftFromMenu", () => {
   it("copies the interval and selected action", () => {
-    expect(ganttCreateDraftFromMenu(createTarget(), "cerere", "Cameră")).toEqual({
+    expect(ganttCreateDraftFromMenu(createTarget(), "request", "Cameră")).toEqual({
       roomId: "r1",
       roomName: "101",
       checkIn: "2026-09-10",
       checkOut: "2026-09-12",
       hasConflict: false,
-      initialMode: "cerere",
+      initialMode: "request",
     });
   });
 });

@@ -134,8 +134,8 @@ export function GanttStayPopover({
   const tGantt = useTranslations("admin.gantt");
   const tFlow = useTranslations("booking.flowStatus");
   const locale = useLocale();
-  const isCerere = data.status === "cerere_noua";
-  const accent = data.buildingColor ?? (isCerere ? "var(--pending-border)" : "var(--active-border)");
+  const isRequest = data.status === "cerere_noua";
+  const accent = data.buildingColor ?? (isRequest ? "var(--pending-border)" : "var(--active-border)");
   const nights = stayNightCount(data.checkIn, data.checkOut);
   const rooms = resolveRoomList(data);
   const keysHandedRooms = data.keysHandedRooms ?? [];
@@ -156,7 +156,7 @@ export function GanttStayPopover({
   const showCombinedTimeline =
     timeline != null && !showRoomKeys && !showNights;
   const hasStatusPills =
-    isCerere || data.showUnpaid || data.showMissingIdentity;
+    isRequest || data.showUnpaid || data.showMissingIdentity;
 
   return (
     <AdminFloatingPanel
@@ -174,7 +174,7 @@ export function GanttStayPopover({
       <article
         className={[
           "gantt-stay-note__card",
-          isCerere && "gantt-stay-note__card--cerere",
+          isRequest && "gantt-stay-note__card--request",
         ]
           .filter(Boolean)
           .join(" ")}
@@ -186,7 +186,7 @@ export function GanttStayPopover({
         <header className="gantt-stay-note__header">
           {hasStatusPills ? (
             <div className="gantt-stay-note__status-row">
-              {isCerere ? (
+              {isRequest ? (
                 <span className="gantt-stay-note__status gantt-stay-note__status--pending">
                   {tFlow("cerere_noua")}
                 </span>

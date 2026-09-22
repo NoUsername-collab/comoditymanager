@@ -14,7 +14,10 @@ import {
 import { mergeAvailabilityPanelSearch } from "@/lib/availability-panel-query";
 import { parseIso } from "@/lib/stay-dates";
 import type { GanttFeatureFilter, GanttFilter } from "@/domain/gantt/filters";
-import type { GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
+import {
+  parseGanttLayerFilter,
+  type GanttLayerFilter,
+} from "@/domain/gantt/occupancy-layer";
 import {
   normalizeZoomChoice,
   periodStepMeta,
@@ -86,7 +89,7 @@ export function useGanttCalendarNavigation({
             ? Number(viewRange.periodKey.split("-")[2])
             : undefined,
         filter: isActive ? "all" : "free",
-        layer: (searchParams.get("layer") as GanttLayerFilter) ?? undefined,
+        layer: parseGanttLayerFilter(searchParams.get("layer") ?? undefined),
         feat: (searchParams.get("feat") as "ac" | "fridge") ?? undefined,
         fd: isActive ? undefined : iso,
       });

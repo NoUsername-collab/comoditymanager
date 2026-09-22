@@ -70,14 +70,14 @@ function checkinSegmentWidth(nightsTotal: number): number {
 }
 
 export function isGanttStayUnpaid(args: {
-  isCerere: boolean;
+  isRequest: boolean;
   paymentStatus?: StoredPaymentStatus | null;
   totalPrice?: number | null;
   bookingCheckIn: string;
   today: string;
   occupancyPhase: OccupancyPhase;
 }): boolean {
-  if (args.isCerere || args.occupancyPhase === "past") return false;
+  if (args.isRequest || args.occupancyPhase === "past") return false;
 
   if (args.paymentStatus === "unpaid" || args.paymentStatus === "partial") {
     return true;
@@ -99,7 +99,7 @@ export function isGanttStayMissingIdentity(args: {
 }
 
 export function isGanttStayMilestoneReached(args: {
-  isCerere: boolean;
+  isRequest: boolean;
   roomNames: string[];
   checkedInRooms: string[];
   paymentStatus?: StoredPaymentStatus | null;
@@ -110,14 +110,14 @@ export function isGanttStayMilestoneReached(args: {
   guestId?: string | null;
   identityStatus?: GuestIdentityStatus | null;
 }): boolean {
-  if (args.isCerere) return false;
+  if (args.isRequest) return false;
 
   const rooms = computeRoomCheckinProgress(args.roomNames, args.checkedInRooms);
   if (!rooms.isComplete) return false;
 
   return (
     !isGanttStayUnpaid({
-      isCerere: false,
+      isRequest: false,
       paymentStatus: args.paymentStatus,
       totalPrice: args.totalPrice,
       bookingCheckIn: args.bookingCheckIn,
@@ -132,7 +132,7 @@ export function isGanttStayMilestoneReached(args: {
 }
 
 function needsCheckinSegment(args: {
-  isCerere: boolean;
+  isRequest: boolean;
   milestoneReached: boolean;
   bookingCheckIn: string;
   today: string;
@@ -140,7 +140,7 @@ function needsCheckinSegment(args: {
   checkedInRooms: string[];
   occupancyPhase: OccupancyPhase;
 }): boolean {
-  if (args.isCerere || args.milestoneReached) return false;
+  if (args.isRequest || args.milestoneReached) return false;
 
   const rooms = computeRoomCheckinProgress(args.roomNames, args.checkedInRooms);
   if (isOperativeCheckInDay(args.bookingCheckIn, args.today)) return true;
@@ -160,14 +160,14 @@ export function resolveGanttStayTimeline(args: {
   roomNames: string[];
   checkedInRooms: string[];
   occupancyPhase: OccupancyPhase;
-  isCerere: boolean;
+  isRequest: boolean;
   compact: boolean;
   paymentStatus?: StoredPaymentStatus | null;
   totalPrice?: number | null;
   guestId?: string | null;
   identityStatus?: GuestIdentityStatus | null;
 }): GanttStayTimeline | null {
-  if (args.compact || args.isCerere || args.occupancyPhase === "past") return null;
+  if (args.compact || args.isRequest || args.occupancyPhase === "past") return null;
 
   const nightProgress = stayNightProgress(
     args.segmentCheckIn,
@@ -182,7 +182,7 @@ export function resolveGanttStayTimeline(args: {
   const roomsPct = (roomsChecked / roomsTotal) * 100;
 
   const milestoneReached = isGanttStayMilestoneReached({
-    isCerere: args.isCerere,
+    isRequest: args.isRequest,
     roomNames: args.roomNames,
     checkedInRooms: args.checkedInRooms,
     paymentStatus: args.paymentStatus,
@@ -195,7 +195,7 @@ export function resolveGanttStayTimeline(args: {
   });
 
   const showCheckin = needsCheckinSegment({
-    isCerere: args.isCerere,
+    isRequest: args.isRequest,
     milestoneReached,
     bookingCheckIn: args.bookingCheckIn,
     today: args.today,
@@ -261,7 +261,7 @@ export function resolveGanttStayBarProgress(args: {
   roomNames: string[];
   checkedInRooms: string[];
   occupancyPhase: OccupancyPhase;
-  isCerere: boolean;
+  isRequest: boolean;
   compact: boolean;
 }): GanttStayBarProgress | null {
   const timeline = resolveGanttStayTimeline({ ...args });
@@ -307,9 +307,9 @@ export function shouldShowGanttStayAlerts(args: {
   bookingCheckIn: string;
   today: string;
   occupancyPhase: OccupancyPhase;
-  isCerere: boolean;
+  isRequest: boolean;
 }): boolean {
-  if (args.isCerere || args.occupancyPhase === "past") return false;
+  if (args.isRequest || args.occupancyPhase === "past") return false;
   if (args.timeline) return true;
   return isOperativeCheckInDay(args.bookingCheckIn, args.today);
 }
@@ -318,7 +318,7 @@ export function shouldShowGanttStayAlerts(args: {
 export type GanttStayCapHealth = "neutral" | "ok" | "problem";
 
 export function resolveGanttStayCapHealth(args: {
-  isCerere: boolean;
+  isRequest: boolean;
   occupancyPhase: OccupancyPhase;
   showUnpaid: boolean;
   showMissingIdentity: boolean;
@@ -328,7 +328,7 @@ export function resolveGanttStayCapHealth(args: {
   bookingCheckIn: string;
   today: string;
 }): GanttStayCapHealth {
-  if (args.isCerere || args.occupancyPhase === "past") {
+  if (args.isRequest || args.occupancyPhase === "past") {
     return "neutral";
   }
 

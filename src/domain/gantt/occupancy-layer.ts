@@ -3,30 +3,47 @@ import type { OccupancyKind, OccupancySegment } from "@/domain/occupancy/types";
 import type { BookingRow } from "@/domain/booking/row";
 import { todayIso } from "@/lib/stay-dates";
 
-/** Filtru vizual timeline — spec timeline-spec.md */
+/** Visual timeline filter — see timeline-spec.md */
 export type GanttLayerFilter =
   | "all"
-  | "cereri"
-  | "confirmate"
+  | "requests"
+  | "confirmed"
   | "in_house"
-  | "trecute"
+  | "past"
   | "hold"
   | "block";
 
+const LAYER_FROM_QUERY: Record<string, GanttLayerFilter> = {
+  all: "all",
+  cereri: "requests",
+  requests: "requests",
+  confirmate: "confirmed",
+  confirmed: "confirmed",
+  in_house: "in_house",
+  trecute: "past",
+  past: "past",
+  hold: "hold",
+  block: "block",
+};
+
+/** Public URL values. Default `all` is omitted from the query string. */
+const LAYER_TO_QUERY: Record<GanttLayerFilter, string | null> = {
+  all: null,
+  requests: "cereri",
+  confirmed: "confirmate",
+  in_house: "in_house",
+  past: "trecute",
+  hold: "hold",
+  block: "block",
+};
+
 export function parseGanttLayerFilter(raw: string | undefined): GanttLayerFilter {
-  const allowed: GanttLayerFilter[] = [
-    "all",
-    "cereri",
-    "confirmate",
-    "in_house",
-    "trecute",
-    "hold",
-    "block",
-  ];
-  if (raw && allowed.includes(raw as GanttLayerFilter)) {
-    return raw as GanttLayerFilter;
-  }
-  return "all";
+  if (!raw) return "all";
+  return LAYER_FROM_QUERY[raw] ?? "all";
+}
+
+export function ganttLayerQueryValue(layer: GanttLayerFilter): string | null {
+  return LAYER_TO_QUERY[layer];
 }
 
 type LayerFilterTranslator = (key: GanttLayerFilter) => string;
@@ -39,13 +56,13 @@ export function layerFilterLabel(
   switch (layer) {
     case "all":
       return "All";
-    case "cereri":
+    case "requests":
       return "Requests";
-    case "confirmate":
+    case "confirmed":
       return "Confirmed";
     case "in_house":
       return "In-house";
-    case "trecute":
+    case "past":
       return "Past";
     case "hold":
       return "Hold";
@@ -69,13 +86,13 @@ export function segmentMatchesLayerFilter(
   const phase = segmentPhase(seg, ref);
 
   switch (layer) {
-    case "cereri":
+    case "requests":
       return seg.kind === "request";
-    case "confirmate":
+    case "confirmed":
       return seg.kind === "stay" && phase === "future";
     case "in_house":
       return seg.kind === "stay" && phase === "active";
-    case "trecute":
+    case "past":
       return (seg.kind === "request" || seg.kind === "stay") && phase === "past";
     case "hold":
       return seg.kind === "hold";
@@ -99,13 +116,13 @@ export function bookingMatchesLayerFilter(
   const phase = occupancyPhase(b.check_in, b.check_out, ref);
 
   switch (layer) {
-    case "cereri":
+    case "requests":
       return kind === "request";
-    case "confirmate":
+    case "confirmed":
       return kind === "stay" && phase === "future";
     case "in_house":
       return kind === "stay" && phase === "active";
-    case "trecute":
+    case "past":
       return phase === "past";
     default:
       return true;
@@ -121,7 +138,7 @@ export function filterOccupancyForLayer(
   return segments.filter((s) => segmentMatchesLayerFilter(s, layer, ref));
 }
 
-/** Hold/block overlays only — fără duplicate stay bars. */
+/** Hold/block overlays only — no duplicate stay bars. */
 export function roomOverlaySegments(
   segments: OccupancySegment[],
   roomId: string,
@@ -134,7 +151,7 @@ export function roomOverlaySegments(
   );
 }
 
-/** Stay/request segments pentru rând cameră (split-card Phase 5). */
+/** Stay/request segments for a room row (split-card Phase 5). */
 export function roomStaySegments(
   segments: OccupancySegment[],
   roomId: string,

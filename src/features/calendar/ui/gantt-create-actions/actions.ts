@@ -4,7 +4,7 @@ import type {
 } from "@/domain/gantt/context-menu";
 
 export const GANTT_CREATE_ACTION_IDS = [
-  "cerere",
+  "request",
   "direct",
   "hold",
   "block",
@@ -21,7 +21,7 @@ export function ganttCreateActionsDisabled(
   const isMultiRoom = (menu.roomIds?.length ?? 0) > 1;
   const blocked = !menu.roomId || pending || menu.hasConflict;
   return {
-    cerere: blocked,
+    request: blocked,
     direct: blocked,
     hold: blocked,
     block: blocked || isMultiRoom,

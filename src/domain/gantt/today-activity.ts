@@ -58,16 +58,35 @@ export function roomTurnoverDays(
   bookings: BookingRow[],
   dayIsos: string[]
 ): Set<string> {
-  const relevant = bookings.filter(
-    (b) => b.status !== "anulata" && b.room_ids.includes(roomId)
-  );
-  const turnover = new Set<string>();
-  for (const iso of dayIsos) {
-    const hasArrival = relevant.some((b) => b.check_in === iso);
-    const hasDeparture = relevant.some((b) => b.check_out === iso);
-    if (hasArrival && hasDeparture) turnover.add(iso);
+  return roomsTurnoverDays(bookings, dayIsos).get(roomId) ?? new Set();
+}
+
+/** Precompute turnover days per room — O(bookings × days), once per Gantt render. */
+export function roomsTurnoverDays(
+  bookings: BookingRow[],
+  dayIsos: string[]
+): Map<string, Set<string>> {
+  const byRoom = new Map<string, BookingRow[]>();
+  for (const booking of bookings) {
+    if (booking.status === "anulata") continue;
+    for (const roomId of booking.room_ids) {
+      const list = byRoom.get(roomId);
+      if (list) list.push(booking);
+      else byRoom.set(roomId, [booking]);
+    }
   }
-  return turnover;
+
+  const out = new Map<string, Set<string>>();
+  for (const [roomId, relevant] of byRoom) {
+    const turnover = new Set<string>();
+    for (const iso of dayIsos) {
+      const hasArrival = relevant.some((b) => b.check_in === iso);
+      const hasDeparture = relevant.some((b) => b.check_out === iso);
+      if (hasArrival && hasDeparture) turnover.add(iso);
+    }
+    if (turnover.size > 0) out.set(roomId, turnover);
+  }
+  return out;
 }
 
 export function stayTodayHighlight(

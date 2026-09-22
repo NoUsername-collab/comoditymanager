@@ -8,14 +8,14 @@ import {
 } from "./actions";
 
 const ACTION_HINT_KEY = {
-  cerere: "unconfirmed",
+  request: "unconfirmed",
   direct: "confirmed",
   hold: "temporary",
   block: "unavailable",
 } as const;
 
 const ACTION_LABEL_KEY = {
-  cerere: "request",
+  request: "request",
   direct: "direct",
   hold: "hold",
   block: "block",

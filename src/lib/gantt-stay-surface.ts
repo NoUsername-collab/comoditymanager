@@ -112,11 +112,11 @@ export type GanttStaySurface = {
 
 export function ganttStaySurface(
   buildingColor: string | null | undefined,
-  isCerere: boolean
+  isRequest: boolean
 ): GanttStaySurface {
-  const base = buildingColor?.trim() || (isCerere ? "#f59e0b" : "#059669");
+  const base = buildingColor?.trim() || (isRequest ? "#f59e0b" : "#059669");
 
-  if (isCerere) {
+  if (isRequest) {
     const fill = base;
     const tabEnd = mixHex(base, "#000000", 0.2);
     const border = mixHex(base, "#d97706", 0.35);

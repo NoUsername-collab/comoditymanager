@@ -3,7 +3,7 @@ import { CalendarAvailabilityStream } from "@/features/calendar/ui/CalendarAvail
 import { AdminAvailabilitySkeleton } from "@/components/admin/loading/AdminAvailabilitySkeleton";
 import { GanttCalendarLazy } from "@/features/calendar/ui/GanttCalendarLazy";
 import { GanttAvailabilityHeatmapPanelLazy } from "@/features/calendar/ui/GanttAvailabilityHeatmapPanelLazy";
-import { GanttCereriQueueLazy } from "@/features/calendar/ui/GanttCereriQueueLazy";
+import { GanttRequestsQueueLazy } from "@/features/calendar/ui/GanttRequestsQueueLazy";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
 import type { GanttViewMode } from "@/features/calendar/ui/GanttToolbar";
@@ -175,12 +175,12 @@ export async function CalendarGanttSection({
     }
   }
 
-  const unassignedCereri = allBookings.filter(
+  const unassignedRequests = allBookings.filter(
     (booking) =>
       booking.status === "cerere_noua" && booking.room_ids.length === 0,
   );
 
-  const todayCereriCount = allBookings.filter(
+  const todayRequestCount = allBookings.filter(
     (b) => b.status === "cerere_noua",
   ).length;
   const todayArrivalsCount = allBookings.filter(
@@ -246,10 +246,10 @@ export async function CalendarGanttSection({
     <AdminPageFrame
       title={t("ganttTitle")}
       description={
-        unassignedCereri.length > 0 ? (
+        unassignedRequests.length > 0 ? (
           <div className="gantt-page-top-cards">
-            <GanttCereriQueueLazy
-              cereri={unassignedCereri}
+            <GanttRequestsQueueLazy
+              requests={unassignedRequests}
               top
               title={t("unassignedTitle")}
               subtitle={t("unassignedSubtitle")}
@@ -288,7 +288,7 @@ export async function CalendarGanttSection({
           focusDay={focusDay}
           today={effectiveToday}
           canEditAfterCheckout={postCheckoutPolicy.canEditAfterCheckout}
-          cereriCount={todayCereriCount}
+          requestCount={todayRequestCount}
           arrivalsCount={todayArrivalsCount}
           departuresCount={todayDeparturesCount}
           cleanCount={todayCleanCount}

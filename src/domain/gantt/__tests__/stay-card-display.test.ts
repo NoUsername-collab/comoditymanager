@@ -26,7 +26,7 @@ describe("stay-card-display", () => {
       roomNames: ["7", "1"],
       checkedInRooms: ["7"],
       occupancyPhase: "active",
-      isCerere: false,
+      isRequest: false,
       compact: false,
       paymentStatus: "unpaid",
       totalPrice: 500,
@@ -52,7 +52,7 @@ describe("stay-card-display", () => {
       roomNames: ["7", "1"],
       checkedInRooms: ["7", "1"],
       occupancyPhase: "active",
-      isCerere: false,
+      isRequest: false,
       compact: false,
       paymentStatus: "paid",
       totalPrice: 500,
@@ -75,7 +75,7 @@ describe("stay-card-display", () => {
         roomNames: ["7", "1"],
         checkedInRooms: [],
         occupancyPhase: "active",
-        isCerere: false,
+        isRequest: false,
         compact: true,
       }),
     ).toBeNull();
@@ -84,7 +84,7 @@ describe("stay-card-display", () => {
   it("flags unpaid on arrival day without payment record", () => {
     expect(
       isGanttStayUnpaid({
-        isCerere: false,
+        isRequest: false,
         paymentStatus: null,
         totalPrice: 500,
         bookingCheckIn: "2026-06-10",
@@ -97,7 +97,7 @@ describe("stay-card-display", () => {
   it("requires payment, identity and rooms for milestone", () => {
     expect(
       isGanttStayMilestoneReached({
-        isCerere: false,
+        isRequest: false,
         roomNames: ["7"],
         checkedInRooms: ["7"],
         paymentStatus: "paid",
@@ -112,7 +112,7 @@ describe("stay-card-display", () => {
 
     expect(
       isGanttStayMilestoneReached({
-        isCerere: false,
+        isRequest: false,
         roomNames: ["7"],
         checkedInRooms: ["7"],
         paymentStatus: "unpaid",
@@ -144,7 +144,7 @@ describe("stay-card-display", () => {
   it("resolves cap health from milestone and alerts", () => {
     expect(
       resolveGanttStayCapHealth({
-        isCerere: false,
+        isRequest: false,
         occupancyPhase: "active",
         showUnpaid: false,
         showMissingIdentity: false,
@@ -158,7 +158,7 @@ describe("stay-card-display", () => {
 
     expect(
       resolveGanttStayCapHealth({
-        isCerere: false,
+        isRequest: false,
         occupancyPhase: "active",
         showUnpaid: true,
         showMissingIdentity: false,
@@ -172,7 +172,7 @@ describe("stay-card-display", () => {
 
     expect(
       resolveGanttStayCapHealth({
-        isCerere: false,
+        isRequest: false,
         occupancyPhase: "future",
         showUnpaid: false,
         showMissingIdentity: false,
@@ -186,7 +186,7 @@ describe("stay-card-display", () => {
 
     expect(
       resolveGanttStayCapHealth({
-        isCerere: true,
+        isRequest: true,
         occupancyPhase: "future",
         showUnpaid: false,
         showMissingIdentity: false,
@@ -208,7 +208,7 @@ describe("stay-card-display", () => {
       roomNames: ["1", "2", "3", "4", "5", "6", "7", "8"],
       checkedInRooms: ["1", "2"],
       occupancyPhase: "active",
-      isCerere: false,
+      isRequest: false,
       compact: false,
       paymentStatus: "paid",
       totalPrice: 500,

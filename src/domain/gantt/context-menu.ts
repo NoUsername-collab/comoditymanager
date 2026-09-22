@@ -20,7 +20,7 @@ export type GanttCreateTarget = GanttContextMenuPoint & {
   roomIds?: string[];
 };
 
-/** @deprecated alias — folosește GanttCreateTarget */
+/** @deprecated alias — use GanttCreateTarget */
 export type GanttEmptyCellTarget = GanttCreateTarget & { roomId: string; roomName: string };
 
 export type GanttStayTarget = GanttContextMenuPoint & {
@@ -53,7 +53,7 @@ export type GanttContextMenuTarget =
   | GanttOccTarget;
 
 export type GanttCreateDraftRequest = GanttCreateDraft & {
-  initialMode?: "hold" | "block" | "cerere" | "direct";
+  initialMode?: "hold" | "block" | "request" | "direct";
 };
 
 export const LONG_PRESS_MS = 400;

@@ -12,7 +12,7 @@ import type { GanttZoom } from "@/domain/gantt/view-range";
 import { buildCalendarQuery } from "@/lib/gantt-query";
 import { addDays, parseIso, todayIso } from "@/lib/stay-dates";
 import type { BookingRow } from "@/services/bookings";
-import { GanttCereriQueue } from "@/features/calendar/ui/GanttCereriQueue";
+import { GanttRequestsQueue } from "@/features/calendar/ui/GanttRequestsQueue";
 import { GanttToolbarOccForm } from "@/features/calendar/ui/GanttToolbarOccForm";
 import { GanttRadialController } from "@/features/calendar/ui/GanttRadialController";
 import { useIsCompactViewport } from "@/hooks/useDisplayProfile";
@@ -30,7 +30,7 @@ type RoomOption = {
 type SegOption<T extends string> = {
   value: T;
   label: string;
-  /** Etichetă scurtă pe mobil */
+  /** Short label on compact viewports */
   shortLabel?: string;
 };
 
@@ -123,7 +123,7 @@ export function GanttToolbar({
   prevHref,
   nextHref,
   bookings = [],
-  cereri = [],
+  requests = [],
   today,
 }: {
   year: number;
@@ -141,18 +141,18 @@ export function GanttToolbar({
   prevHref: string;
   nextHref: string;
   bookings?: BookingRow[];
-  cereri?: BookingRow[];
+  requests?: BookingRow[];
   today?: string;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
   const compactViewport = useIsCompactViewport();
   const forceShortLabels = compactViewport;
-  const cereriCount = cereri.length;
+  const requestCount = requests.length;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [occFormMode, setOccFormMode] = useState<
-    "hold" | "block" | "cerere" | "direct" | "move" | null
+    "hold" | "block" | "request" | "direct" | "move" | null
   >(null);
 
   const view = (searchParams.get("view") as GanttViewMode) || "all";
@@ -252,7 +252,7 @@ export function GanttToolbar({
         <div className="gantt-toolbar__row gantt-toolbar__row--radial">
           <div className="gantt-toolbar__center gantt-toolbar__center--compact">
             <GanttRadialController
-              onOpenRequest={() => setOccFormMode("cerere")}
+              onOpenRequest={() => setOccFormMode("request")}
               onOpenHold={() => setOccFormMode("hold")}
               onOpenMove={() => setOccFormMode("move")}
               onOpenBlock={() => setOccFormMode("block")}
@@ -271,10 +271,10 @@ export function GanttToolbar({
               onChange={(l) => push({ layer: l })}
               options={[
                 { value: "all", label: tLayers("all"), shortLabel: tLayers("all") },
-                { value: "cereri", label: tLayers("cereri"), shortLabel: tCommon("requestsShort") },
-                { value: "confirmate", label: tLayers("confirmate"), shortLabel: tCommon("confirmedShort") },
+                { value: "requests", label: tLayers("requests"), shortLabel: tCommon("requestsShort") },
+                { value: "confirmed", label: tLayers("confirmed"), shortLabel: tCommon("confirmedShort") },
                 { value: "in_house", label: tLayers("in_house"), shortLabel: tCommon("inShort") },
-                { value: "trecute", label: tLayers("trecute"), shortLabel: tCommon("pastShort") },
+                { value: "past", label: tLayers("past"), shortLabel: tCommon("pastShort") },
                 { value: "hold", label: tLayers("hold"), shortLabel: tLayers("hold") },
                 { value: "block", label: tLayers("block"), shortLabel: tCommon("blocksShort") },
               ]}
@@ -340,8 +340,8 @@ export function GanttToolbar({
           </div>
         </div>
 
-        {cereriCount > 0 ? (
-          <GanttCereriQueue cereri={cereri} embedded />
+        {requestCount > 0 ? (
+          <GanttRequestsQueue requests={requests} embedded />
         ) : null}
 
         <div className="gantt-toolbar__row gantt-toolbar__row--nav">
@@ -426,14 +426,14 @@ export function GanttToolbar({
                 {tCommon("todayPanel")}
               </button>
 
-              {cereriCount > 0 ? (
+              {requestCount > 0 ? (
                 <a
-                  href="#gantt-cereri-queue"
-                  className="gantt-toolbar__cereri-pill gantt-toolbar__cereri-pill--jump"
+                  href="#gantt-requests-queue"
+                  className="gantt-toolbar__requests-pill gantt-toolbar__requests-pill--jump"
                   title={tCommon("jumpUnassigned")}
                 >
-                  <span className="gantt-toolbar__cereri-dot" aria-hidden />
-                  {tCommon("requestsNoRoomCount", { count: cereriCount })}
+                  <span className="gantt-toolbar__requests-dot" aria-hidden />
+                  {tCommon("requestsNoRoomCount", { count: requestCount })}
                 </a>
               ) : null}
 
@@ -494,7 +494,7 @@ export function GanttToolbar({
             {tCommon("inHouse")}
           </span>
           <span className="gantt-toolbar__legend-item">
-            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--cerere" />
+            <span className="gantt-toolbar__legend-swatch gantt-toolbar__legend-swatch--request" />
             {tCommon("requests").slice(0, -1)}
           </span>
           <span className="gantt-toolbar__legend-item">

@@ -126,7 +126,7 @@ export function GanttCalendar({
   focusDay = null,
   today: todayProp,
   canEditAfterCheckout = false,
-  cereriCount = 0,
+  requestCount = 0,
   arrivalsCount = 0,
   departuresCount = 0,
   cleanCount = 0,
@@ -149,7 +149,7 @@ export function GanttCalendar({
   /** Owner or Setări → Check-in allows edits after check-out. */
   canEditAfterCheckout?: boolean;
   /** Today board badge counts for the radial controller */
-  cereriCount?: number;
+  requestCount?: number;
   arrivalsCount?: number;
   departuresCount?: number;
   cleanCount?: number;
@@ -277,7 +277,7 @@ export function GanttCalendar({
   const [focusBuildingId, setFocusBuildingId] = useState<string | null>(null);
   const [occDetail, setOccDetail] = useState<GanttOccDetail | null>(null);
   const [occFormMode, setOccFormMode] = useState<
-    "hold" | "block" | "cerere" | "direct" | "move" | null
+    "hold" | "block" | "request" | "direct" | "move" | null
   >(null);
   const [moveRoomDraft, setMoveRoomDraft] = useState<MoveRoomDraft | null>(null);
   const [createDraft, setCreateDraft] = useState<GanttCreateDraftRequest | null>(
@@ -621,7 +621,7 @@ export function GanttCalendar({
         data-gantt-zoom={shellZoom}
       >
         <GanttCompactToolbar
-          onOpenRequest={() => setOccFormMode("cerere")}
+          onOpenRequest={() => setOccFormMode("request")}
           onOpenHold={() => setOccFormMode("hold")}
           onOpenMove={() => setOccFormMode("move")}
           onOpenBlock={() => setOccFormMode("block")}
@@ -632,7 +632,7 @@ export function GanttCalendar({
               : undefined
           }
           onOpenCheckOut={() => setOpsPickerMode("checkout")}
-          cereriCount={cereriCount}
+          requestCount={requestCount}
           arrivalsCount={arrivalsCount}
           departuresCount={departuresCount}
           cleanCount={cleanCount}

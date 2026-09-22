@@ -32,6 +32,7 @@ import { GanttBookingBar } from "@/features/calendar/ui/GanttBookingBar";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
 import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { formatStayPeriod } from "@/lib/ro-calendar";
+import { DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import type { GanttStayPopoverData } from "./GanttStayPopover";
 import { todayIso } from "@/lib/stay-dates";
 
@@ -67,7 +68,7 @@ type Props = {
   href: string;
   label: string;
   pos: GanttBarPosition;
-  isCerere: boolean;
+  isRequest: boolean;
   guestTotal: number;
   bookingId: string;
   bookingCheckIn: string;
@@ -100,7 +101,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   href,
   label,
   pos,
-  isCerere,
+  isRequest,
   guestTotal,
   bookingId,
   bookingCheckIn,
@@ -125,7 +126,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   moveRoomDraft,
   onMoveRoom,
   today,
-  checkOutTime = "12:00",
+  checkOutTime = DEFAULT_CHECK_OUT_TIME,
   departurePolicy,
 }: Props) {
   const locale = useLocale();
@@ -159,7 +160,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     roomNames,
     checkedInRooms,
     occupancyPhase,
-    isCerere,
+    isRequest,
     compact,
     paymentStatus,
     totalPrice,
@@ -171,12 +172,12 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     bookingCheckIn,
     today: effectiveToday,
     occupancyPhase,
-    isCerere,
+    isRequest,
   });
   const showUnpaid =
     showAlerts &&
     isGanttStayUnpaid({
-      isCerere,
+      isRequest,
       paymentStatus,
       totalPrice,
       bookingCheckIn,
@@ -204,7 +205,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     keysProgress.isPartial;
 
   const checkoutUntil =
-    departurePolicy?.checkoutTimeUntil ?? checkOutTime ?? "12:00";
+    departurePolicy?.checkoutTimeUntil ?? checkOutTime ?? DEFAULT_CHECK_OUT_TIME;
   const earlyDeparture = resolveGanttEarlyDeparture({
     actualCheckOutAt,
     plannedCheckOut: bookingCheckOut,
@@ -233,7 +234,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     if (
       todayHighlight === "departure" &&
       !actualCheckOutAt &&
-      !isCerere
+      !isRequest
     ) {
       if (!policy.earlyCheckoutAllowed) {
         return tGantt("stayCard.earlyDeparturePolicyBlocked", {
@@ -255,13 +256,13 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
     checkoutUntil,
     departurePolicy,
     earlyDeparture,
-    isCerere,
+    isRequest,
     tGantt,
     todayHighlight,
   ]);
 
   const milestoneReached = isGanttStayMilestoneReached({
-    isCerere,
+    isRequest,
     roomNames,
     checkedInRooms,
     paymentStatus,
@@ -274,7 +275,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   });
   const checkinReady = milestoneReached;
   const capHealth = resolveGanttStayCapHealth({
-    isCerere,
+    isRequest,
     occupancyPhase,
     showUnpaid,
     showMissingIdentity,
@@ -318,7 +319,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           roomNames,
           checkedInRooms,
           occupancyPhase,
-          isCerere,
+          isRequest,
           compact: false,
           paymentStatus,
           totalPrice,
@@ -343,7 +344,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
       roomNames,
       checkedInRooms,
       occupancyPhase,
-      isCerere,
+      isRequest,
       paymentStatus,
       totalPrice,
       guestId,
@@ -572,7 +573,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           label={displayLabel}
           title={title}
           pos={pos}
-          isCerere={isCerere}
+          isRequest={isRequest}
           guestTotal={guestTotal}
           buildingColor={buildingColor}
           todayHighlight={todayHighlight}

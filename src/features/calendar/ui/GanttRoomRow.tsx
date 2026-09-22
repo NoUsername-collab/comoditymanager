@@ -14,9 +14,8 @@ import { occupancyPhase } from "@/domain/occupancy/phase";
 import type { OccupancySegment } from "@/domain/occupancy/types";
 import type { GanttRoom } from "@/domain/gantt/types";
 import type { GanttViewRange } from "@/domain/gantt/view-range";
-import { expandRangeDayIsos } from "@/domain/gantt/view-range";
 import type { RoomTodayFlags } from "@/domain/gantt/today-activity";
-import { roomTurnoverDays, stayTodayHighlight } from "@/domain/gantt/today-activity";
+import { stayTodayHighlight } from "@/domain/gantt/today-activity";
 import type { GanttDeparturePolicy } from "@/domain/gantt/stay-card-display";
 import { guestPartyTotal } from "@/lib/guest-party";
 import { nightOccupied } from "@/lib/stay-dates";
@@ -70,6 +69,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   dayGridOptions,
   shellZoom,
   departurePolicy,
+  turnoverIsos,
 }: {
   room: GanttRoom;
   viewRange: GanttViewRange;
@@ -92,23 +92,11 @@ export const GanttRoomRow = memo(function GanttRoomRow({
   dayGridOptions?: GanttDayGridOptions;
   shellZoom?: GanttShellZoom;
   departurePolicy?: GanttDeparturePolicy;
+  turnoverIsos: Set<string>;
 }) {
   const tCommon = useTranslations("admin.common");
   const tLayers = useTranslations("admin.gantt.layers");
   const dayCount = viewRange.days.length;
-  const dayIsos = useMemo(
-    () => viewRange.days.map((d) => d.iso),
-    [viewRange.days]
-  );
-
-  const turnoverIsos = useMemo(() => {
-    const active = [...bookingById.values()].filter((b) => b.status !== "anulata");
-    const turnoverDayIsos =
-      viewRange.columnGranularity === "week"
-        ? expandRangeDayIsos(viewRange.rangeStart, viewRange.rangeEnd)
-        : dayIsos;
-    return roomTurnoverDays(room.id, active, turnoverDayIsos);
-  }, [bookingById, room.id, dayIsos, viewRange.columnGranularity, viewRange.rangeEnd, viewRange.rangeStart]);
 
   const roomColor = resolveGanttBuildingColor(
     room.building_color,
@@ -246,7 +234,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
               checkOutTime
             );
             if (!pos || pos.widthPct <= 0) return null;
-            const isCerere = b.status === "cerere_noua";
+            const isRequest = b.status === "cerere_noua";
             const ganttLabel = formatGuestGanttLabel(
               b.guest_last_name,
               b.guest_first_name,
@@ -282,7 +270,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 href={`/admin/bookings/${b.id}`}
                 label={ganttLabel}
                 pos={pos}
-                isCerere={isCerere}
+                isRequest={isRequest}
                 guestTotal={guests}
                 bookingId={b.id}
                 bookingCheckIn={b.check_in}

@@ -69,7 +69,7 @@ function LegendBody({
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="gantt-legend-swatch gantt-legend-swatch--stay-active" />
-          {tLayers("confirmate")}
+          {tLayers("confirmed")}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="gantt-legend-swatch gantt-legend-swatch--stay-pending" />
@@ -77,7 +77,7 @@ function LegendBody({
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="gantt-legend-swatch gantt-legend-swatch--stay-past" />
-          {tLayers("trecute")}
+          {tLayers("past")}
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="gantt-legend-swatch gantt-legend-swatch--stay-hold" />

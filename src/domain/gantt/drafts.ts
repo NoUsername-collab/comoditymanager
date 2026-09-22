@@ -7,7 +7,7 @@ export type GanttCreateDraft = {
   checkIn: string;
   checkOut: string;
   hasConflict: boolean;
-  initialMode?: "hold" | "block" | "cerere" | "direct";
+  initialMode?: "hold" | "block" | "request" | "direct";
 };
 
 export type MoveRoomDraft = {
@@ -24,7 +24,7 @@ export type GanttStayPopoverData = {
   label: string;
   checkIn: string;
   checkOut: string;
-  /** Data reală de sosire a rezervării (nu segmentul vizibil pe timeline). */
+  /** Booking arrival date (not the visible timeline segment). */
   bookingCheckIn?: string;
   status: "cerere_noua" | "confirmata";
   actualCheckInAt?: string | null;

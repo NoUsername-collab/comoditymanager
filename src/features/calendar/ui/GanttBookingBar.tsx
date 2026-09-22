@@ -18,7 +18,7 @@ type Props = {
   label: string;
   title: string;
   pos: GanttBarPosition;
-  isCerere: boolean;
+  isRequest: boolean;
   guestTotal: number;
   buildingColor?: string | null;
   todayHighlight?: StayTodayHighlight;
@@ -39,7 +39,7 @@ type Props = {
 };
 
 function semanticStayVars(
-  isCerere: boolean,
+  isRequest: boolean,
   occupancyPhase?: OccupancyPhase,
   buildingColor?: string | null
 ): CSSProperties & Record<string, string> {
@@ -55,7 +55,7 @@ function semanticStayVars(
         badge: "color-mix(in srgb, var(--past-text) 12%, var(--past-bg))",
         glow: "color-mix(in srgb, var(--past-border) 40%, transparent)",
       }
-    : isCerere
+    : isRequest
       ? {
           fill: "var(--gantt-bar-fill-pending, var(--booking-pending-bg))",
           border: "var(--booking-pending-border)",
@@ -115,7 +115,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   label,
   title,
   pos,
-  isCerere,
+  isRequest,
   guestTotal,
   buildingColor,
   todayHighlight,
@@ -139,7 +139,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
   const showAlerts = showUnpaid || showMissingIdentity;
-  const showInBadge = occupancyPhase === "active" && !isCerere;
+  const showInBadge = occupancyPhase === "active" && !isRequest;
   const showCapStrip =
     showAlerts ||
     showInBadge ||
@@ -153,7 +153,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
     "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-stay--chip gantt-timeline-bar group relative box-border flex min-w-0 items-stretch text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] w-full" : "absolute z-[1] max-w-full",
     compact && "gantt-stay--compact",
-    isCerere ? "gantt-booking-card--pending gantt-stay--cerere" : "gantt-booking-card--active",
+    isRequest ? "gantt-booking-card--pending gantt-stay--request" : "gantt-booking-card--active",
     occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
     occupancyPhase === "active" && "gantt-stay--phase-active",
     occupancyPhase === "future" && "gantt-stay--phase-future",
@@ -171,7 +171,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
     .join(" ");
 
   const style = {
-    ...semanticStayVars(isCerere, occupancyPhase, buildingColor),
+    ...semanticStayVars(isRequest, occupancyPhase, buildingColor),
     borderRadius: ganttStaySlantRadius(continuesBefore, continuesAfter),
     height: "var(--gantt-stay-h, 33px)",
     ...(!interactive ? { top: "var(--gantt-stay-top, 8px)" } : {}),
@@ -381,7 +381,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
         <span className="gantt-stay-edge gantt-stay-edge--right shrink-0" aria-hidden />
       )}
 
-      {isCerere && (
+      {isRequest && (
         <span className="gantt-stay__stamp gantt-stay__surface-text" aria-hidden>
           CERERE
         </span>

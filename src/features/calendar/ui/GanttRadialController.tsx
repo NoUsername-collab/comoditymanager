@@ -12,7 +12,7 @@ type Props = {
   onOpenCheckIn?: () => void;
   onOpenCheckOut?: () => void;
   /** Today board badge counts */
-  cereriCount?: number;
+  requestCount?: number;
   arrivalsCount?: number;
   departuresCount?: number;
   cleanCount?: number;
@@ -40,7 +40,7 @@ export function GanttRadialController({
   onOpenReception,
   onOpenCheckIn,
   onOpenCheckOut,
-  cereriCount = 0,
+  requestCount = 0,
   arrivalsCount = 0,
   departuresCount = 0,
   cleanCount = 0,
@@ -157,8 +157,8 @@ export function GanttRadialController({
       <div className="gantt-action-strip__track">
         {/* Badges layer */}
         <div className={`gantt-action-strip__badges ${open ? "gantt-action-strip__badges--out" : ""}`}>
-          <span className={`gantt-action-strip__badge gantt-action-strip__badge--new ${cereriCount > 0 ? "gantt-action-strip__badge--pulse" : ""}`}>
-            <strong>{cereriCount}</strong> new
+          <span className={`gantt-action-strip__badge gantt-action-strip__badge--new ${requestCount > 0 ? "gantt-action-strip__badge--pulse" : ""}`}>
+            <strong>{requestCount}</strong> new
           </span>
           <span className="gantt-action-strip__badge gantt-action-strip__badge--in">
             <strong>{arrivalsCount}</strong> in

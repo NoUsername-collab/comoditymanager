@@ -2,26 +2,26 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import type { GanttCereriQueue } from "@/features/calendar/ui/GanttCereriQueue";
+import type { GanttRequestsQueue } from "@/features/calendar/ui/GanttRequestsQueue";
 
-const GanttCereriQueueDynamic = dynamic(
+const GanttRequestsQueueDynamic = dynamic(
   () =>
-    import("@/features/calendar/ui/GanttCereriQueue").then((m) => ({
-      default: m.GanttCereriQueue,
+    import("@/features/calendar/ui/GanttRequestsQueue").then((m) => ({
+      default: m.GanttRequestsQueue,
     })),
   {
     ssr: false,
     loading: () => (
       <div
-        className="gantt-cereri-queue-skeleton min-h-[3rem] animate-pulse rounded-lg border border-zinc-200 bg-zinc-50"
+        className="gantt-requests-queue-skeleton min-h-[3rem] animate-pulse rounded-lg border border-zinc-200 bg-zinc-50"
         aria-busy="true"
       />
     ),
   }
 );
 
-export function GanttCereriQueueLazy(
-  props: ComponentProps<typeof GanttCereriQueue>
+export function GanttRequestsQueueLazy(
+  props: ComponentProps<typeof GanttRequestsQueue>
 ) {
-  return <GanttCereriQueueDynamic {...props} />;
+  return <GanttRequestsQueueDynamic {...props} />;
 }
