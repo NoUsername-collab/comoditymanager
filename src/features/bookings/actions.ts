@@ -31,6 +31,7 @@ function safeAdminReturnPath(raw: string, fallback: string): string {
 }
 
 export async function confirmBookingAction(formData: FormData) {
+  const timer = createServerTimer("confirmBookingAction");
   const id = String(formData.get("id") ?? "");
   const roomIds = formData.getAll("room_ids").map(String).filter(Boolean);
   const returnTo = safeAdminReturnPath(
@@ -43,54 +44,23 @@ export async function confirmBookingAction(formData: FormData) {
     resolveTotalPriceForConfirm(id, roomIds, formData),
     import("@/services/bookings").then((m) => m.getBookingById(id)),
   ]);
+  timer.mark("prep");
   const wasCancelled = before?.status === "anulata";
 
   await confirmBookingWithRooms(id, roomIds, total_price);
+  timer.mark("confirm");
 
-  // Notify guest (non-blocking) — include guest app link when available
-  (async () => {
-    try {
-      const { headers } = await import("next/headers");
-      const { resolveTenantPublicSiteUrl } = await import("@/lib/tenant/site-url");
-      const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
-      const { getTenantDisplayName } = await import("@/services/tenants");
-      const { getPensionSettings } = await import("@/services/pension-settings");
-      const pensionName = await getTenantDisplayName(await resolveTenantIdForData());
-      const { getBookingById } = await import("@/services/bookings");
-      const booking = await getBookingById(id);
-      if (!booking || !booking.guest_email) return;
+  const [{ headers: headerStore }, tenantId] = await Promise.all([
+    import("next/headers").then(async (m) => ({ headers: await m.headers() })),
+    resolveTenantIdForData(),
+  ]);
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  revalidateBookingDetailSurfaces(id, tenantId);
 
-      const h = await headers();
-      const host = h.get("x-forwarded-host") ?? h.get("host");
-      const baseUrl = await resolveTenantPublicSiteUrl(host);
-      const { resolveGuestAccessLinkForBooking } = await import(
-        "@/services/guest-app/access"
-      );
-      const link = await resolveGuestAccessLinkForBooking(id, baseUrl);
-      const { getEmailSettings } = await import("@/services/email-settings");
-      const [pensionSettings, emailSettings] = await Promise.all([
-        getPensionSettings().catch(() => null),
-        getEmailSettings().catch(() => null),
-      ]);
+  after(async () => {
+    await notifyGuestConfirmedForBooking(id, total_price, host);
+  });
 
-      const { notifyGuestConfirmed } = await import("@/lib/email/notify");
-      await notifyGuestConfirmed({
-        guestEmail: booking.guest_email,
-        pensionName,
-        guestName: booking.guest_name,
-        checkIn: booking.check_in,
-        checkOut: booking.check_out,
-        rooms: booking.room_names,
-        totalPrice: total_price,
-        checkInTime: pensionSettings?.default_check_in_time,
-        checkOutTime: pensionSettings?.default_check_out_time,
-        guestAppUrl: link?.url,
-        emailSettings: emailSettings ?? undefined,
-      });
-    } catch { /* email failure must never crash */ }
-  })();
-
-  revalidateBookingDetailSurfaces(id);
   let dest =
     wasCancelled && !returnTo.includes("reaccepted=")
       ? appendQueryParam(returnTo, "reaccepted", "1")
@@ -98,12 +68,61 @@ export async function confirmBookingAction(formData: FormData) {
   if (!wasCancelled && !dest.includes("confirmed=")) {
     dest = appendQueryParam(dest, "confirmed", "1");
   }
+  timer.finish({ bookingId: id });
   await redirect(dest);
+}
+
+async function notifyGuestConfirmedForBooking(
+  id: string,
+  totalPrice: number,
+  host: string | null,
+): Promise<void> {
+  try {
+    const { resolveTenantPublicSiteUrl } = await import("@/lib/tenant/site-url");
+    const { getTenantDisplayName } = await import("@/services/tenants");
+    const { getPensionSettings } = await import("@/services/pension-settings");
+    const { getBookingById } = await import("@/services/bookings");
+    const { getEmailSettings } = await import("@/services/email-settings");
+
+    const [pensionName, booking, pensionSettings, emailSettings] = await Promise.all([
+      getTenantDisplayName(await resolveTenantIdForData()),
+      getBookingById(id),
+      getPensionSettings().catch(() => null),
+      getEmailSettings().catch(() => null),
+    ]);
+    if (!booking || !booking.guest_email) return;
+
+    const baseUrl = await resolveTenantPublicSiteUrl(host);
+    const { resolveGuestAccessLinkForBooking } = await import(
+      "@/services/guest-app/access"
+    );
+    const link = await resolveGuestAccessLinkForBooking(id, baseUrl);
+
+    const { notifyGuestConfirmed } = await import("@/lib/email/notify");
+    await notifyGuestConfirmed({
+      guestEmail: booking.guest_email,
+      pensionName,
+      guestName: booking.guest_name,
+      checkIn: booking.check_in,
+      checkOut: booking.check_out,
+      rooms: booking.room_names,
+      totalPrice,
+      checkInTime: pensionSettings?.default_check_in_time,
+      checkOutTime: pensionSettings?.default_check_out_time,
+      guestAppUrl: link?.url,
+      emailSettings: emailSettings ?? undefined,
+    });
+  } catch { /* email failure must never crash */ }
 }
 
 function appendQueryParam(path: string, key: string, value: string): string {
   const sep = path.includes("?") ? "&" : "?";
   return `${path}${sep}${key}=${encodeURIComponent(value)}`;
+}
+
+async function invalidateBookingDetail(bookingId: string) {
+  const tenantId = await resolveTenantIdForData();
+  revalidateBookingDetailSurfaces(bookingId, tenantId);
 }
 
 export async function cancelBookingAction(formData: FormData) {
@@ -117,33 +136,28 @@ export async function cancelBookingAction(formData: FormData) {
 
   await cancelBooking(id);
 
-  // Notify guest (non-blocking) — pension name from DB
-  if (bookingBefore?.guest_email) {
-    (async () => {
-      try {
-        const { resolveTenantIdForData } = await import("@/lib/tenant/resolve-id");
-        const { getTenantDisplayName } = await import("@/services/tenants");
-        const { getEmailSettings } = await import("@/services/email-settings");
-        const [pensionName, emailSettings] = await Promise.all([
-          getTenantDisplayName(await resolveTenantIdForData()),
-          getEmailSettings().catch(() => null),
-        ]);
-        const { notifyGuestCancelled } = await import("@/lib/email/notify");
-        await notifyGuestCancelled({
-          guestEmail: bookingBefore.guest_email,
-          pensionName,
-          guestName: bookingBefore.guest_name,
-          checkIn: bookingBefore.check_in,
-          checkOut: bookingBefore.check_out,
-          emailSettings: emailSettings ?? undefined,
-        });
-      } catch { /* email failure must never crash */ }
-    })();
-  }
+  const tenantId = await resolveTenantIdForData();
+  revalidateBookingDetailSurfaces(id, tenantId);
 
   after(async () => {
-    const tenantId = await resolveTenantIdForData();
-    revalidateBookingDetailSurfaces(id, tenantId);
+    if (!bookingBefore?.guest_email) return;
+    try {
+      const { getTenantDisplayName } = await import("@/services/tenants");
+      const { getEmailSettings } = await import("@/services/email-settings");
+      const [pensionName, emailSettings] = await Promise.all([
+        getTenantDisplayName(tenantId),
+        getEmailSettings().catch(() => null),
+      ]);
+      const { notifyGuestCancelled } = await import("@/lib/email/notify");
+      await notifyGuestCancelled({
+        guestEmail: bookingBefore.guest_email,
+        pensionName,
+        guestName: bookingBefore.guest_name,
+        checkIn: bookingBefore.check_in,
+        checkOut: bookingBefore.check_out,
+        emailSettings: emailSettings ?? undefined,
+      });
+    } catch { /* email failure must never crash */ }
   });
   const base = safeAdminReturnPath(returnTo, "/admin/bookings");
   await redirect(appendQueryParam(base, "toast", "cancelled"));
@@ -167,31 +181,28 @@ export async function cancelBookingOperativeAction(
     await cancelBooking(id);
     timer.mark("cancel");
 
-    if (bookingBefore?.guest_email) {
-      (async () => {
-        try {
-          const { getTenantDisplayName } = await import("@/services/tenants");
-          const { getEmailSettings } = await import("@/services/email-settings");
-          const [pensionName, emailSettings] = await Promise.all([
-            getTenantDisplayName(await resolveTenantIdForData()),
-            getEmailSettings().catch(() => null),
-          ]);
-          const { notifyGuestCancelled } = await import("@/lib/email/notify");
-          await notifyGuestCancelled({
-            guestEmail: bookingBefore.guest_email,
-            pensionName,
-            guestName: bookingBefore.guest_name,
-            checkIn: bookingBefore.check_in,
-            checkOut: bookingBefore.check_out,
-            emailSettings: emailSettings ?? undefined,
-          });
-        } catch { /* email failure must never crash */ }
-      })();
-    }
+    const tenantId = await resolveTenantIdForData();
+    revalidateBookingDetailSurfaces(id, tenantId);
 
     after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateBookingDetailSurfaces(id, tenantId);
+      if (!bookingBefore?.guest_email) return;
+      try {
+        const { getTenantDisplayName } = await import("@/services/tenants");
+        const { getEmailSettings } = await import("@/services/email-settings");
+        const [pensionName, emailSettings] = await Promise.all([
+          getTenantDisplayName(tenantId),
+          getEmailSettings().catch(() => null),
+        ]);
+        const { notifyGuestCancelled } = await import("@/lib/email/notify");
+        await notifyGuestCancelled({
+          guestEmail: bookingBefore.guest_email,
+          pensionName,
+          guestName: bookingBefore.guest_name,
+          checkIn: bookingBefore.check_in,
+          checkOut: bookingBefore.check_out,
+          emailSettings: emailSettings ?? undefined,
+        });
+      } catch { /* email failure must never crash */ }
     });
 
     timer.finish({ bookingId: id });
@@ -256,7 +267,7 @@ export async function updateBookingGuestPhoneAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await updateBookingGuestPhone(id, phone);
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -275,7 +286,7 @@ export async function setBookingCheckInAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await setBookingCheckIn(id, readAt(formData));
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -294,7 +305,7 @@ export async function setBookingCheckOutAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await setBookingCheckOut(id, readAt(formData));
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -401,7 +412,7 @@ export async function completeBookingCheckoutAction(
       }
     }
 
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -420,7 +431,7 @@ export async function undoBookingCheckInAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await undoBookingCheckIn(id);
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     if (e instanceof Error && e.message === "booking.undo_checkout_first") {
@@ -445,7 +456,7 @@ export async function undoBookingCheckOutAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await undoBookingCheckOut(id);
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -464,7 +475,7 @@ export async function editBookingCheckInAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await editBookingCheckIn(id, readAt(formData));
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -483,7 +494,7 @@ export async function editBookingCheckOutAction(
   if (!id) return { ok: false, error: t("bookingIdMissing") };
   try {
     await editBookingCheckOut(id, readAt(formData));
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {
@@ -557,7 +568,7 @@ export async function editBookingDatesAction(
       },
     });
 
-    revalidateBookingDetailSurfaces(id);
+    await invalidateBookingDetail(id);
     return { ok: true };
   } catch (e) {
     return {

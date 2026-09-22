@@ -213,9 +213,7 @@ export async function submitGuestRequestAction(formData: FormData) {
         }
       });
 
-      after(() => {
-        revalidatePublicBookingSurfaces({ disponibilitate: true });
-      });
+      revalidatePublicBookingSurfaces({ availability: true });
       return { ok: true as const };
     } catch (e) {
       return {
@@ -226,7 +224,7 @@ export async function submitGuestRequestAction(formData: FormData) {
   });
 }
 
-/** Rezervare introdusă de admin (telefon, recepție). */
+/** Staff-entered stay (phone / walk-in at reception). */
 export async function submitPhoneBookingAction(formData: FormData) {
   const [[t, tServer]] = await Promise.all([
     Promise.all([
@@ -275,9 +273,7 @@ export async function submitPhoneBookingAction(formData: FormData) {
     notes,
   });
 
-  after(() => {
-    revalidatePublicBookingSurfaces({ receptie: true });
-  });
+  revalidatePublicBookingSurfaces({ reception: true });
 
   if (confirm_now) {
     return { ok: true as const, bookingId: id, redirectConfirm: true };

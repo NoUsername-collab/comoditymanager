@@ -5,6 +5,7 @@ import { revalidatePublicBookingSurfaces } from "@/lib/cache/revalidate-admin";
 import { confirmBookingWithRooms } from "@/services/bookings";
 import { resolveTotalPriceForConfirm } from "@/services/booking-confirm";
 import { requireStaffPermission } from "@/lib/auth/require-admin";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 
 export async function quickConfirmAction(formData: FormData) {
   await requireStaffPermission("booking_management");
@@ -15,6 +16,7 @@ export async function quickConfirmAction(formData: FormData) {
 
   await confirmBookingWithRooms(id, roomIds, total_price);
 
-  revalidatePublicBookingSurfaces({ receptie: true });
+  const tenantId = await resolveTenantIdForData();
+  revalidatePublicBookingSurfaces({ reception: true, tenantId });
   await redirect("/receptie?confirmed=1");
 }

@@ -26,9 +26,9 @@ import {
   listGuestProfileSummaries,
   resolveGuestAlertSnapshot,
 } from "@/services/guest-profiles";
-import {
-  assertRoomsAvailableForOccupancy,
-} from "@/services/room-occupancy";
+import { canRoomsHostGuests } from "@/domain/availability/stay-capacity";
+import { assertRoomsAvailableForOccupancy } from "@/services/room-occupancy";
+import { getRoomsByIds } from "@/services/rooms-admin";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { parseOperationalTimestamp } from "@/lib/operational-check";
@@ -42,29 +42,34 @@ export async function confirmBookingWithRooms(
   bookingId: string,
   roomIds: string[],
   totalPrice: number,
-  options?: { assignedRoomsOnly?: boolean }
+  _options?: { assignedRoomsOnly?: boolean }
 ): Promise<void> {
   if (!Number.isFinite(totalPrice) || totalPrice <= 0) {
     throw new Error("booking.total_price_required_on_confirm");
   }
 
-  const { tenantId } = await getTenantScope();
+  const timer = createServerTimer("confirmBookingWithRooms");
   const booking = await getBookingById(bookingId);
   assertBookingConfirmable(booking);
+  const { tenantId } = await getTenantScope();
+  timer.mark("load");
 
-  if (options?.assignedRoomsOnly) {
-    await assertRoomsAvailableForOccupancy(
+  const [rooms] = await Promise.all([
+    getRoomsByIds(roomIds),
+    assertRoomsAvailableForOccupancy(
       booking.check_in,
       booking.check_out,
       roomIds,
       bookingId
-    );
-  } else {
-    const { assertRoomsAssignableForBooking } = await import(
-      "@/services/booking-confirm"
-    );
-    await assertRoomsAssignableForBooking(bookingId, roomIds);
+    ),
+  ]);
+  if (rooms.length !== roomIds.length) {
+    throw new Error("booking.one_or_more_rooms_unavailable_reload");
   }
+  if (!canRoomsHostGuests(booking.num_adults + booking.num_children, rooms)) {
+    throw new Error("booking.selected_rooms_cannot_host_all_guests");
+  }
+  timer.mark("guards");
 
   const supabase = createPublicAdminClient();
   const { error: rpcError } = await supabase.rpc("confirm_booking_with_rooms", {
@@ -74,28 +79,32 @@ export async function confirmBookingWithRooms(
     p_tenant_id: tenantId,
   });
   if (rpcError) throw new Error(rpcError.message);
+  timer.mark("rpc");
 
-  await logAdminActivityFromSession({
-    action: "booking.confirmed",
-    entityType: "booking",
-    entityId: bookingId,
-    summary: `Confirmată: ${booking.guest_name}`,
-    undoable: true,
-    metadata: {
-      previous_status: booking.status,
-      room_ids: roomIds,
-      total_price: totalPrice,
-      check_in: booking.check_in,
-      check_out: booking.check_out,
-    },
-  });
+  const activitySnapshot = {
+    guest_name: booking.guest_name,
+    previous_status: booking.status,
+    room_ids: roomIds,
+    total_price: totalPrice,
+    check_in: booking.check_in,
+    check_out: booking.check_out,
+  };
 
   after(async () => {
+    await logAdminActivityFromSession({
+      action: "booking.confirmed",
+      entityType: "booking",
+      entityId: bookingId,
+      summary: `Confirmată: ${activitySnapshot.guest_name}`,
+      undoable: true,
+      metadata: activitySnapshot,
+    });
     const { issueGuestAccessForBooking } = await import(
       "@/services/guest-app/access"
     );
     await issueGuestAccessForBooking(bookingId).catch(() => null);
   });
+  timer.finish({ bookingId });
 }
 
 export async function rescheduleBookingDates(
@@ -217,8 +226,8 @@ export async function adjustBookingStayNights(
   return { check_in: booking.check_in, check_out: newCheckOut };
 }
 
-/** Duplică sejurul ca cerere nouă (rebook similar). */
-export async function duplicateBookingAsCerere(bookingId: string): Promise<string> {
+/** Duplicate the stay as a new request (similar rebook). */
+export async function duplicateBookingAsRequest(bookingId: string): Promise<string> {
   const b = await getBookingById(bookingId);
   if (!b) throw new Error("booking.not_found");
   if (b.status === "anulata") {

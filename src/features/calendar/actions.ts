@@ -1,7 +1,7 @@
 "use server";
 
-import { after } from "next/server";
 import { requireAnyStaff, requireStaffPermission, getStaffUser } from "@/lib/auth/require-admin";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
   revalidateBookingSurfaces,
   revalidateBookingSurfacesExtended,
@@ -10,7 +10,7 @@ import {
   confirmBookingWithRooms,
   getBookingById,
   adjustBookingStayNights,
-  duplicateBookingAsCerere,
+  duplicateBookingAsRequest,
   shiftBookingByDays,
 } from "@/services/bookings";
 import { resolveAssignedStayTotal } from "@/services/booking-confirm";
@@ -68,21 +68,20 @@ function ganttCreateRoomIds(input: { roomId: string; roomIds?: string[] }): stri
   return ids.length > 0 ? ids : [input.roomId];
 }
 
-function scheduleBookingRevalidate(
+async function scheduleBookingRevalidate(
   extra?: Parameters<typeof revalidateBookingSurfacesExtended>[0],
 ) {
-  after(() => {
-    revalidateBookingSurfacesExtended({
-      ...extra,
-      includeCalendar: false,
-    });
+  const tenantId = extra?.tenantId ?? (await resolveTenantIdForData());
+  revalidateBookingSurfacesExtended({
+    ...extra,
+    tenantId,
+    includeCalendar: false,
   });
 }
 
-function scheduleCalendarRevalidate() {
-  after(() => {
-    revalidateBookingSurfaces(undefined, { includeCalendar: false });
-  });
+async function scheduleCalendarRevalidate() {
+  const tenantId = await resolveTenantIdForData();
+  revalidateBookingSurfaces(tenantId, { includeCalendar: false });
 }
 
 export async function createRoomHoldsFromGanttAction(input: {
@@ -107,7 +106,7 @@ export async function createRoomHoldsFromGanttAction(input: {
       expiresHours: input.expiresHours,
       createdBy: actorEmail(user),
     });
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
@@ -148,7 +147,7 @@ export async function createRoomHoldFromGanttAction(input: {
       expiresHours: input.expiresHours,
       createdBy: actorEmail(user),
     });
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
@@ -188,7 +187,7 @@ export async function createRoomBlockFromGanttAction(input: {
       reason: input.reason,
       createdBy: actorEmail(user),
     });
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     const logId = await logAdminActivityFromSession({
       action: "occupancy.block_created",
       entityType: "room",
@@ -211,11 +210,11 @@ export async function createRoomBlockFromGanttAction(input: {
   }
 }
 
-export async function quickConfirmCerereFromGanttAction(
+export async function quickConfirmRequestFromGanttAction(
   bookingId: string
 ): Promise<{ ok: true; booking: BookingRow } | ActionErr> {
   const t = await getT();
-  const timer = createServerTimer("quickConfirmCerereFromGantt");
+  const timer = createServerTimer("quickConfirmRequestFromGantt");
   await requireStaffPermission("booking_management");
   timer.mark("auth");
   try {
@@ -238,7 +237,7 @@ export async function quickConfirmCerereFromGanttAction(
       assignedRoomsOnly: true,
     });
     timer.mark("confirm");
-    scheduleBookingRevalidate({ bookingId, includeHistoric: true });
+    await scheduleBookingRevalidate({ bookingId, includeHistoric: true });
     timer.finish({ bookingId });
     return {
       ok: true,
@@ -260,7 +259,7 @@ export async function extendRoomHoldAction(
   await requireAnyStaff();
   try {
     const check_out = await extendRoomHoldOneNight(holdId);
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     return { ok: true, check_out };
   } catch (e) {
     return {
@@ -277,7 +276,7 @@ export async function extendRoomBlockAction(
   await requireAnyStaff();
   try {
     const check_out = await extendRoomBlockOneNight(blockId);
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     return { ok: true, check_out };
   } catch (e) {
     return {
@@ -295,7 +294,7 @@ export async function releaseRoomHoldAction(
   try {
     const user = await getStaffUser();
     await releaseRoomHold(holdId, actorEmail(user));
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     return { ok: true };
   } catch (e) {
     return {
@@ -312,7 +311,7 @@ export async function deleteRoomBlockAction(
   await requireAnyStaff();
   try {
     await deleteRoomBlock(blockId);
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     return { ok: true };
   } catch (e) {
     return {
@@ -341,7 +340,7 @@ export async function undoGanttCreateAction(input: {
       if (!blockId) throw new Error(t("blockIdMissing"));
       await deleteRoomBlock(blockId);
     }
-    scheduleCalendarRevalidate();
+    await scheduleCalendarRevalidate();
     return { ok: true };
   } catch (e) {
     return {
@@ -351,7 +350,7 @@ export async function undoGanttCreateAction(input: {
   }
 }
 
-export async function createCerereFromGanttAction(input: {
+export async function createRequestFromGanttAction(input: {
   roomId: string;
   roomIds?: string[];
   roomName?: string;
@@ -365,14 +364,14 @@ export async function createCerereFromGanttAction(input: {
   numAdults?: number;
   numChildren?: number;
   occupants?: GanttRoomOccupantInput[];
-  /** UI a verificat deja conflictul pe interval — evită al 2-lea query ocupare. */
+  /** UI already checked the interval for conflicts — skip a second occupancy query. */
   skipAvailabilityCheck?: boolean;
 }): Promise<ActionOk | ActionErr> {
   const { createStaffStayAction } = await import(
     "@/features/bookings/staff-stay-actions"
   );
   return createStaffStayAction({
-    intent: "cerere",
+    intent: "request",
     roomIds: ganttCreateRoomIds(input),
     checkIn: input.checkIn,
     checkOut: input.checkOut,
@@ -451,7 +450,7 @@ export async function shiftBookingOnGanttAction(
       return { ok: false, error: t("invalidMove") };
     }
     const result = await shiftBookingByDays(bookingId, dayDelta);
-    scheduleBookingRevalidate({
+    await scheduleBookingRevalidate({
       bookingId,
       includeHistoric: true,
       includeStatistics: true,
@@ -497,7 +496,7 @@ export async function moveBookingRoomFromPivotAction(input: {
   await requireStaffPermission("booking_management");
   try {
     await moveBookingRoomFromPivot(input);
-    scheduleBookingRevalidate({ bookingId: input.bookingId });
+    await scheduleBookingRevalidate({ bookingId: input.bookingId });
     return { ok: true };
   } catch (e) {
     return {
@@ -518,7 +517,7 @@ export async function adjustBookingStayNightsAction(
       return { ok: false, error: t("invalidAdjustment") };
     }
     const result = await adjustBookingStayNights(bookingId, nightDelta);
-    scheduleBookingRevalidate({
+    await scheduleBookingRevalidate({
       bookingId,
       includeHistoric: true,
     });
@@ -531,14 +530,14 @@ export async function adjustBookingStayNightsAction(
   }
 }
 
-export async function duplicateBookingAsCerereAction(
+export async function duplicateBookingAsRequestAction(
   bookingId: string
 ): Promise<{ ok: true; id: string } | ActionErr> {
   const t = await getT();
   await requireAnyStaff();
   try {
-    const id = await duplicateBookingAsCerere(bookingId);
-    scheduleBookingRevalidate({ includeCereri: true });
+    const id = await duplicateBookingAsRequest(bookingId);
+    await scheduleBookingRevalidate({ includeRequests: true });
     return { ok: true, id };
   } catch (e) {
     return {
