@@ -114,7 +114,8 @@ async function listRoomTypesUncached(
   const { data, error } = await q;
   if (error) throw new Error(error.message);
 
-  const typeIds = (data ?? []).map((row) => String(row.id));
+  const rows = (data ?? []) as unknown as Record<string, unknown>[];
+  const typeIds = rows.map((row) => String(row.id));
   const { data: defaults, error: dErr } = await supabase
     .from("room_type_default_options")
     .select("room_type_id, option_id")
@@ -122,7 +123,7 @@ async function listRoomTypesUncached(
   if (dErr) throw new Error(dErr.message);
 
   const byType = new Map<string, string[]>();
-  for (const row of defaults ?? []) {
+  for (const row of (defaults ?? []) as unknown as Record<string, unknown>[]) {
     const tid = String(row.room_type_id);
     if (!typeIds.includes(tid)) continue;
     const list = byType.get(tid) ?? [];
@@ -130,8 +131,8 @@ async function listRoomTypesUncached(
     byType.set(tid, list);
   }
 
-  return (data ?? []).map((row) =>
-    mapType(row as Record<string, unknown>, byType.get(String(row.id)) ?? [])
+  return rows.map((row) =>
+    mapType(row, byType.get(String(row.id)) ?? []),
   );
 }
 
@@ -170,7 +171,9 @@ async function listRoomOptionsUncached(
 
   const { data, error } = await q;
   if (error) throw new Error(error.message);
-  return (data ?? []).map((row) => mapOption(row as Record<string, unknown>));
+  return (data ?? []).map((row) =>
+    mapOption(row as unknown as Record<string, unknown>),
+  );
 }
 
 const getCachedRoomOptions = (tenantId: string, includeInactive: boolean) =>

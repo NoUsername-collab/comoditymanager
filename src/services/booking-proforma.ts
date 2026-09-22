@@ -143,7 +143,7 @@ export const listBookingProformas = cache(async (
   }
 
   return (data ?? []).map((row) =>
-    mapProformaRow(row as Record<string, unknown>)
+    mapProformaRow(row as unknown as Record<string, unknown>)
   );
 });
 

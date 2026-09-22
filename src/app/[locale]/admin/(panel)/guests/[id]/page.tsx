@@ -92,7 +92,7 @@ export default async function GuestDetailPage({
     profileError = tPage("profileSnapshotError");
   }
 
-  let history = historyResult.ok ? historyResult.data : [];
+  const history = historyResult.ok ? historyResult.data : [];
   let historyError: string | null = null;
   if (!historyResult.ok) {
     historyError =
@@ -101,7 +101,7 @@ export default async function GuestDetailPage({
         : tPage("historyLoadError");
   }
 
-  let duplicates = duplicatesResult.ok ? duplicatesResult.data : [];
+  const duplicates = duplicatesResult.ok ? duplicatesResult.data : [];
   let duplicatesError: string | null = null;
   if (!duplicatesResult.ok) {
     duplicatesError =

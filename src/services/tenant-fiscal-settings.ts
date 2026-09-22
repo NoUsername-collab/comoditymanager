@@ -64,7 +64,10 @@ export const getTenantFiscalSettings = cache(
       throw new Error(error.message);
     }
 
-    return mapRow(resolvedTenantId, data as Record<string, unknown> | null);
+    return mapRow(
+      resolvedTenantId,
+      data as unknown as Record<string, unknown> | null,
+    );
   }
 );
 
@@ -107,7 +110,7 @@ export async function updateTenantFiscalSettings(
     throw new Error(error.message);
   }
 
-  return mapRow(resolvedTenantId, data as Record<string, unknown>);
+  return mapRow(resolvedTenantId, data as unknown as Record<string, unknown>);
 }
 
 export async function getTenantFiscalSettingsForTenant(

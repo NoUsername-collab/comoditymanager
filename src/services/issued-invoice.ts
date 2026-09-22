@@ -154,7 +154,7 @@ export const listBookingInvoices = cache(async (
   }
 
   return (data ?? []).map((row) =>
-    mapInvoiceRow(row as Record<string, unknown>)
+    mapInvoiceRow(row as unknown as Record<string, unknown>)
   );
 });
 
