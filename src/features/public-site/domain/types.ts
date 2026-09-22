@@ -1,5 +1,7 @@
 export type PublicLocale = "ro" | "en" | "bg";
 
+export const PUBLIC_LOCALES: PublicLocale[] = ["ro", "en", "bg"];
+
 export type LocalizedText = Partial<Record<PublicLocale, string>>;
 
 export type PublicTemplateId = "classic" | "editorial" | "immersive";

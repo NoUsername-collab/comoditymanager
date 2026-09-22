@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { pickLocalized, writeLocalized } from "@/features/public-site/domain/localized";
+import {
+  pickLocalized,
+  pickOwnLocalized,
+  writeLocalized,
+  writeLocalizedMap,
+} from "@/features/public-site/domain/localized";
 import { normalizeBenefitIcon } from "@/features/public-site/domain/benefit-icons";
 
 describe("writeLocalized", () => {
@@ -16,6 +21,22 @@ describe("writeLocalized", () => {
     const next = writeLocalized({ ro: "Salut" }, "en", "Hello");
     expect(next).toEqual({ ro: "Salut", en: "Hello" });
     expect(pickLocalized(next, "bg")).toBe("Hello");
+  });
+});
+
+describe("pickOwnLocalized", () => {
+  it("does not copy fallback text into an empty locale field", () => {
+    expect(pickOwnLocalized({ ro: "Salut", en: "Hello" }, "bg")).toBe("");
+  });
+});
+
+describe("writeLocalizedMap", () => {
+  it("writes every supplied locale and leaves omitted keys alone", () => {
+    const next = writeLocalizedMap(
+      { ro: "Casa", en: "House" },
+      { en: "Home", bg: "Kashta" },
+    );
+    expect(next).toEqual({ ro: "Casa", en: "Home", bg: "Kashta" });
   });
 });
 

@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import "@/styles/features/admin/admin-public-site-studio.css";
 
 type StudioDevice = "desktop" | "tablet" | "phone";
 type StudioPane = "edit" | "preview";
@@ -13,10 +14,12 @@ export function PublicSiteStudio({
   form,
   preview,
   published,
+  editLocale,
 }: {
   form: ReactNode;
   preview: ReactNode;
   published: boolean;
+  editLocale?: "ro" | "en" | "bg";
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const [pane, setPane] = useState<StudioPane>("edit");
@@ -68,6 +71,12 @@ export function PublicSiteStudio({
             <span className="pub-site-studio__live-dot" aria-hidden />
             <span>{t("studioLiveHint")}</span>
           </p>
+
+          {editLocale ? (
+            <p className="pub-site-studio__locale" aria-label={t("studioLocaleAria")}>
+              {t(`localeTab_${editLocale}`)}
+            </p>
+          ) : null}
 
           {!published ? (
             <p className="pub-site-studio__unpublished" role="status">

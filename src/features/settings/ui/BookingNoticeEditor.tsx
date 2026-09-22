@@ -35,15 +35,18 @@ export function BookingNoticeEditor({
   onChange,
   checkInTime,
   checkOutTime,
+  locale: localeProp,
 }: {
   value: Draft;
   onChange: (next: Draft) => void;
   checkInTime: string;
   checkOutTime: string;
+  locale?: string;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const tCal = useTranslations("public.calendar");
-  const locale = useLocale();
+  const adminLocale = useLocale();
+  const locale = localeProp ?? adminLocale;
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
   const presets = useMemo(() => buildBookingNoticePresetCopy(tCal), [tCal]);

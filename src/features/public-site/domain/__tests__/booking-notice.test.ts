@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  alignNoticeDraft,
   buildBookingNoticeView,
   bookingNoticeFromDraft,
   defaultBookingNotice,
   interpolateNoticePlaceholders,
+  mergeBookingNoticeFromLocales,
   normalizeBookingNotice,
 } from "@/features/public-site/domain/booking-notice";
 
@@ -137,6 +139,76 @@ describe("buildBookingNoticeView", () => {
     expect(view.items).toEqual([
       { id: "noPay", icon: "✓", title: "No pay", text: "Estimate only." },
     ]);
+  });
+});
+
+describe("mergeBookingNoticeFromLocales", () => {
+  it("keeps distinct copy per language", () => {
+    const item = {
+      id: "noPay",
+      preset: "noPay" as const,
+      icon: "check" as const,
+      title: "",
+      text: "",
+    };
+    const notice = mergeBookingNoticeFromLocales(
+      defaultBookingNotice(),
+      {
+        ro: {
+          enabled: true,
+          title: "RO know",
+          footer: "",
+          items: [{ ...item, title: "RO pay" }],
+        },
+        en: {
+          enabled: true,
+          title: "Good to know",
+          footer: "",
+          items: [{ ...item, title: "No online payment" }],
+        },
+        bg: {
+          enabled: true,
+          title: "",
+          footer: "",
+          items: [item],
+        },
+      },
+      "en",
+    );
+    expect(notice.title).toEqual({ ro: "RO know", en: "Good to know" });
+    expect(notice.items[0]?.title).toEqual({
+      ro: "RO pay",
+      en: "No online payment",
+    });
+  });
+});
+
+describe("alignNoticeDraft", () => {
+  it("copies structure from the source locale and keeps target text", () => {
+    const aligned = alignNoticeDraft(
+      {
+        enabled: false,
+        title: "RO title",
+        footer: "",
+        items: [
+          { id: "noPay", preset: "noPay", icon: "check", title: "RO pay", text: "" },
+        ],
+      },
+      {
+        enabled: true,
+        title: "EN title",
+        footer: "",
+        items: [
+          { id: "noPay", preset: "noPay", icon: "check", title: "No pay", text: "" },
+          { id: "pets", preset: "pets", icon: "paw", title: "Pets", text: "" },
+        ],
+      },
+    );
+    expect(aligned.enabled).toBe(true);
+    expect(aligned.title).toBe("RO title");
+    expect(aligned.items.map((item) => item.id)).toEqual(["noPay", "pets"]);
+    expect(aligned.items[0]?.title).toBe("RO pay");
+    expect(aligned.items[1]?.title).toBe("");
   });
 });
 

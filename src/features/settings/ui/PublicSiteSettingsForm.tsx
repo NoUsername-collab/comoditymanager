@@ -8,23 +8,19 @@ import {
   PUBLIC_TEMPLATE_OPTIONS,
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
-import { pickLocalized, writeLocalized } from "@/features/public-site/domain/localized";
 import {
   PUBLIC_BENEFIT_ICON_IDS,
-  normalizeBenefitIcon,
 } from "@/features/public-site/domain/benefit-icons";
-import {
-  bookingNoticeFromDraft,
-  bookingNoticeToDraft,
-} from "@/features/public-site/domain/booking-notice";
+import type { BookingNoticeDraft } from "@/features/public-site/domain/booking-notice";
 import type {
-  PublicBenefitItem,
-  PublicGalleryItem,
+  PublicLocale,
   PublicSiteConfig,
   PublicSiteSettingsInput,
-  PublicStepItem,
 } from "@/features/public-site/domain/types";
+import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 import { BookingNoticeEditor } from "@/features/settings/ui/BookingNoticeEditor";
+import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
+import { PublicSiteLocaleTabs } from "@/features/settings/ui/PublicSiteLocaleTabs";
 import type { PensionContact } from "@/domain/settings/pension-identity";
 import { buildPublicSiteConfigFromInput } from "@/domain/public-site/resolve-config";
 import { savePublicSiteSettingsAction } from "@/features/settings/actions/public-site";
@@ -37,176 +33,18 @@ import { PublicSiteStudio } from "@/features/settings/ui/PublicSiteStudio";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldError";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
-
-type GalleryDraftItem = { id: string; url: string; caption: string };
-
-type CopyLineDraft = { icon: string; title: string; text: string };
-type StepLineDraft = { title: string; text: string };
-
-type PublicSiteDraft = {
-  templateId: PublicSiteSettingsInput["templateId"];
-  themeId: PublicSiteSettingsInput["themeId"];
-  published: boolean;
-  bookingEnabled: boolean;
-  bookingNavPosition: PublicSiteSettingsInput["bookingNavPosition"];
-  noticeDraft: ReturnType<typeof bookingNoticeToDraft>;
-  usePrimaryContact: boolean;
-  heroTitle: string;
-  heroSubtitle: string;
-  heroTagline: string;
-  heroBadge: string;
-  heroCtaPrimary: string;
-  heroCtaSecondary: string;
-  heroImageUrl: string;
-  seoTitle: string;
-  seoDescription: string;
-  contactEmail: string;
-  contactPhone: string;
-  contactWhatsapp: string;
-  contactTelegram: string;
-  contactFacebook: string;
-  contactInstagram: string;
-  galleryItems: GalleryDraftItem[];
-  galleryVisible: boolean;
-  introVisible: boolean;
-  introTitle: string;
-  introLead: string;
-  benefitsVisible: boolean;
-  benefitsTitle: string;
-  benefitsLead: string;
-  benefitItems: CopyLineDraft[];
-  stepsVisible: boolean;
-  stepsTitle: string;
-  stepsLead: string;
-  stepItems: StepLineDraft[];
-  ctaVisible: boolean;
-  ctaTitle: string;
-  ctaLead: string;
-  ctaLabel: string;
-};
-
-let galleryDraftSeq = 0;
-function nextGalleryDraftId(): string {
-  galleryDraftSeq += 1;
-  return `gallery-draft-${galleryDraftSeq}`;
-}
-
-function galleryItemsToDraft(
-  items: PublicGalleryItem[] | undefined,
-  locale: string,
-): GalleryDraftItem[] {
-  return (items ?? []).map((item, index) => ({
-    id: item.id || `gallery-${index}`,
-    url: item.url,
-    caption: pickLocalized(item.caption, locale),
-  }));
-}
-
-function galleryDraftToItems(
-  items: GalleryDraftItem[],
-  locale: string,
-  previous: PublicGalleryItem[],
-): PublicGalleryItem[] {
-  return items
-    .filter((item) => item.url.trim().length > 0)
-    .map((item, index) => {
-      const prev = previous.find((row) => row.id === item.id) ?? previous[index];
-      return {
-        id: item.id || `gallery-${index}`,
-        url: item.url.trim(),
-        caption: writeLocalized(prev?.caption, locale, item.caption),
-      };
-    });
-}
-
-function buildPublicSiteDraft(
-  config: PublicSiteConfig,
-  locale: string,
-): PublicSiteDraft {
-  const gallerySection = config.sections.find(
-    (section) => section.sectionType === "gallery",
-  );
-  const visibility = new Map(
-    config.sections.map((section) => [section.sectionType, section.visible]),
-  );
-  const heroTitle = pickLocalized(config.hero.title, locale, [config.displayName]);
-  const heroSubtitle = pickLocalized(config.hero.subtitle, locale);
-  const introSection = config.sections.find((section) => section.sectionType === "intro");
-  const benefitsSection = config.sections.find((section) => section.sectionType === "benefits");
-  const stepsSection = config.sections.find((section) => section.sectionType === "steps");
-  const ctaSection = config.sections.find((section) => section.sectionType === "cta");
-  const benefitItems = ((benefitsSection?.payload.items ?? []) as PublicBenefitItem[]).map(
-    (item) => ({
-      icon: normalizeBenefitIcon(item.icon),
-      title: pickLocalized(item.title, locale),
-      text: pickLocalized(item.text, locale),
-    }),
-  );
-  const stepItems = ((stepsSection?.payload.items ?? []) as PublicStepItem[]).map((item) => ({
-    title: pickLocalized(item.title, locale),
-    text: pickLocalized(item.text, locale),
-  }));
-  return {
-    templateId: config.templateId,
-    themeId: config.themeId,
-    published: config.published,
-    bookingEnabled: config.bookingEnabled,
-    bookingNavPosition: config.bookingNavPosition,
-    noticeDraft: bookingNoticeToDraft(config.bookingNotice, locale),
-    usePrimaryContact: config.usePrimaryContact ?? true,
-    heroTitle,
-    heroSubtitle,
-    heroTagline: pickLocalized(config.hero.tagline, locale),
-    heroBadge: pickLocalized(config.hero.badge, locale),
-    heroCtaPrimary: pickLocalized(config.hero.ctaPrimary, locale),
-    heroCtaSecondary: pickLocalized(config.hero.ctaSecondary, locale),
-    heroImageUrl: config.hero.imageUrl ?? "",
-    seoTitle: pickLocalized(config.seo.metaTitle, locale, [heroTitle]),
-    seoDescription: pickLocalized(config.seo.metaDescription, locale, [
-      heroSubtitle,
-    ]),
-    contactEmail: config.contact.email ?? "",
-    contactPhone: config.contact.phone ?? "",
-    contactWhatsapp: config.contact.whatsapp ?? "",
-    contactTelegram: config.contact.telegram ?? "",
-    contactFacebook: config.contact.facebook ?? "",
-    contactInstagram: config.contact.instagram ?? "",
-    galleryItems: galleryItemsToDraft(
-      gallerySection?.payload.items as PublicGalleryItem[] | undefined,
-      locale,
-    ),
-    galleryVisible: gallerySection?.visible ?? false,
-    introVisible: visibility.get("intro") ?? true,
-    introTitle: pickLocalized(introSection?.payload.title, locale),
-    introLead: pickLocalized(introSection?.payload.lead, locale),
-    benefitsVisible: visibility.get("benefits") ?? true,
-    benefitsTitle: pickLocalized(benefitsSection?.payload.title, locale),
-    benefitsLead: pickLocalized(benefitsSection?.payload.lead, locale),
-    benefitItems:
-      benefitItems.length > 0
-        ? benefitItems
-        : [
-            { icon: "bed", title: "", text: "" },
-            { icon: "spark", title: "", text: "" },
-            { icon: "handshake", title: "", text: "" },
-          ],
-    stepsVisible: visibility.get("steps") ?? true,
-    stepsTitle: pickLocalized(stepsSection?.payload.title, locale),
-    stepsLead: pickLocalized(stepsSection?.payload.lead, locale),
-    stepItems:
-      stepItems.length > 0
-        ? stepItems
-        : [
-            { title: "", text: "" },
-            { title: "", text: "" },
-            { title: "", text: "" },
-          ],
-    ctaVisible: visibility.get("cta") ?? true,
-    ctaTitle: pickLocalized(ctaSection?.payload.title, locale),
-    ctaLead: pickLocalized(ctaSection?.payload.lead, locale),
-    ctaLabel: pickLocalized(ctaSection?.payload.ctaLabel, locale),
-  };
-}
+import {
+  buildPublicSiteStudioDraft,
+  mergeStudioToInput,
+  nextGalleryDraftId,
+  patchStudioCopy,
+  switchStudioLocale,
+  syncStudioStructure,
+  type CopyLineDraft,
+  type LocaleCopy,
+  type PublicSiteStudioDraft,
+  type StepLineDraft,
+} from "@/features/settings/ui/public-site-studio-draft";
 
 function FormSection({
   title,
@@ -254,22 +92,39 @@ export function PublicSiteSettingsForm({
     return key ? fieldErrors[key] : undefined;
   }
 
-  const [draft, setDraft] = useState<PublicSiteDraft>(() =>
-    buildPublicSiteDraft(config, locale),
+  const [draft, setDraft] = useState<PublicSiteStudioDraft>(() =>
+    buildPublicSiteStudioDraft(config, locale),
   );
+  const copy = draft.copies[draft.editLocale];
 
-  function patchDraft(partial: Partial<PublicSiteDraft>) {
+  function patchDraft(partial: Partial<PublicSiteStudioDraft>) {
     setDraft((d) => ({ ...d, ...partial }));
   }
 
+  function patchCopy(partial: Partial<LocaleCopy>) {
+    setDraft((d) => patchStudioCopy(d, partial));
+  }
+
+  function setEditLocale(next: PublicLocale) {
+    setDraft((d) => switchStudioLocale(d, next));
+  }
+
   function addGalleryItem() {
-    setDraft((d) => ({
-      ...d,
-      galleryItems: [
-        ...d.galleryItems,
-        { id: nextGalleryDraftId(), url: "", caption: "" },
-      ],
-    }));
+    setDraft((d) => {
+      const id = nextGalleryDraftId();
+      const copies = { ...d.copies };
+      for (const loc of PUBLIC_LOCALES) {
+        copies[loc] = {
+          ...copies[loc],
+          galleryCaptions: { ...copies[loc].galleryCaptions, [id]: "" },
+        };
+      }
+      return {
+        ...d,
+        galleryItems: [...d.galleryItems, { id, url: "" }],
+        copies,
+      };
+    });
   }
 
   function removeGalleryItem(id: string) {
@@ -292,36 +147,52 @@ export function PublicSiteSettingsForm({
     });
   }
 
-  function updateGalleryItem(id: string, patch: Partial<GalleryDraftItem>) {
+  function updateGalleryUrl(id: string, url: string) {
     setDraft((d) => ({
       ...d,
       galleryItems: d.galleryItems.map((item) =>
-        item.id === id ? { ...item, ...patch } : item,
+        item.id === id ? { ...item, url } : item,
       ),
     }));
+  }
+
+  function updateGalleryCaption(id: string, caption: string) {
+    setDraft((d) =>
+      patchStudioCopy(d, {
+        galleryCaptions: { ...d.copies[d.editLocale].galleryCaptions, [id]: caption },
+      }),
+    );
   }
 
   function updateBenefitItem(index: number, patch: Partial<CopyLineDraft>) {
-    setDraft((d) => ({
-      ...d,
-      benefitItems: d.benefitItems.map((item, i) =>
-        i === index ? { ...item, ...patch } : item,
-      ),
-    }));
+    setDraft((d) => {
+      const current = d.copies[d.editLocale];
+      const next = patchStudioCopy(d, {
+        benefitItems: current.benefitItems.map((item, i) =>
+          i === index ? { ...item, ...patch } : item,
+        ),
+      });
+      return patch.icon !== undefined ? syncStudioStructure(next) : next;
+    });
   }
 
   function updateStepItem(index: number, patch: Partial<StepLineDraft>) {
-    setDraft((d) => ({
-      ...d,
-      stepItems: d.stepItems.map((item, i) =>
-        i === index ? { ...item, ...patch } : item,
-      ),
-    }));
+    setDraft((d) =>
+      patchStudioCopy(d, {
+        stepItems: d.copies[d.editLocale].stepItems.map((item, i) =>
+          i === index ? { ...item, ...patch } : item,
+        ),
+      }),
+    );
+  }
+
+  function patchNotice(noticeDraft: BookingNoticeDraft) {
+    setDraft((d) => syncStudioStructure(patchStudioCopy(d, { noticeDraft })));
   }
 
   const draftInput = useMemo(
-    () => buildInputFromState({ config, draft, locale }),
-    [config, draft, locale],
+    () => mergeStudioToInput({ config, draft }),
+    [config, draft],
   );
 
   const previewConfig = useMemo(
@@ -355,18 +226,24 @@ export function PublicSiteSettingsForm({
   return (
     <PublicSiteStudio
       published={draft.published}
-      preview={<PublicSitePreview config={previewConfig} locale={locale} />}
+      editLocale={draft.editLocale}
+      preview={<PublicSitePreview config={previewConfig} locale={draft.editLocale} />}
       form={
         <form onSubmit={handleSubmit} className="settings-form-stack">
           <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
+            <PublicSiteLocaleTabs
+              value={draft.editLocale}
+              onChange={setEditLocale}
+              disabled={readOnly}
+            />
+            <SettingsFieldHint className="mb-3 block">
+              {t("localeEditHint", { locale: draft.editLocale.toUpperCase() })}
+            </SettingsFieldHint>
             {!readOnly && dirty ? (
               <p className="settings-unsaved-banner" role="status">
                 {tSettings("unsavedChanges")}
               </p>
             ) : null}
-            <SettingsFieldHint className="mb-3 block">
-              {t("localeEditHint", { locale: locale.toUpperCase() })}
-            </SettingsFieldHint>
             {error ? (
               <div className="settings-alerts">
                 <p className="settings-alerts__item settings-alerts__item--error" role="alert">
@@ -437,9 +314,10 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("heroTitle")}</span>
             <input
-              value={draft.heroTitle}
+              value={copy.heroTitle}
               aria-invalid={!!fieldError("hero.title")}
-              onChange={(e) => patchDraft({ heroTitle: e.target.value })}
+              placeholder={config.displayName}
+              onChange={(e) => patchCopy({ heroTitle: e.target.value })}
             />
             {fieldError("hero.title") ? (
               <SettingsFieldError>{fieldError("hero.title")}</SettingsFieldError>
@@ -450,54 +328,51 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("heroBadge")}</span>
             <input
-              value={draft.heroBadge}
-              onChange={(e) => patchDraft({ heroBadge: e.target.value })}
+              value={copy.heroBadge}
+              onChange={(e) => patchCopy({ heroBadge: e.target.value })}
             />
           </label>
           <label className="admin-settings-fields__full">
             <span>{t("heroSubtitle")}</span>
             <textarea
               rows={2}
-              value={draft.heroSubtitle}
-              onChange={(e) => patchDraft({ heroSubtitle: e.target.value })}
+              value={copy.heroSubtitle}
+              onChange={(e) => patchCopy({ heroSubtitle: e.target.value })}
             />
           </label>
           <label className="admin-settings-fields__full">
             <span>{t("heroTagline")}</span>
             <textarea
               rows={2}
-              value={draft.heroTagline}
-              onChange={(e) => patchDraft({ heroTagline: e.target.value })}
+              value={copy.heroTagline}
+              onChange={(e) => patchCopy({ heroTagline: e.target.value })}
             />
           </label>
           <label>
             <span>{t("heroCtaPrimary")}</span>
             <input
-              value={draft.heroCtaPrimary}
-              onChange={(e) => patchDraft({ heroCtaPrimary: e.target.value })}
+              value={copy.heroCtaPrimary}
+              onChange={(e) => patchCopy({ heroCtaPrimary: e.target.value })}
             />
           </label>
           <label>
             <span>{t("heroCtaSecondary")}</span>
             <input
-              value={draft.heroCtaSecondary}
-              onChange={(e) => patchDraft({ heroCtaSecondary: e.target.value })}
+              value={copy.heroCtaSecondary}
+              onChange={(e) => patchCopy({ heroCtaSecondary: e.target.value })}
             />
           </label>
-          <label className="admin-settings-fields__full">
-            <span>{t("heroImageUrl")}</span>
-            <input
+          <div className="admin-settings-fields__full">
+            <PublicSiteImageField
+              kind="hero"
+              label={t("heroImageLabel")}
               value={draft.heroImageUrl}
-              aria-invalid={!!fieldError("hero.imageUrl")}
-              onChange={(e) => patchDraft({ heroImageUrl: e.target.value })}
-              placeholder="https://..."
+              onChange={(url) => patchDraft({ heroImageUrl: url })}
+              hint={t("heroImageHint")}
+              error={fieldError("hero.imageUrl")}
+              disabled={readOnly}
             />
-            {fieldError("hero.imageUrl") ? (
-              <SettingsFieldError>{fieldError("hero.imageUrl")}</SettingsFieldError>
-            ) : (
-              <SettingsFieldHint>{t("heroImageHint")}</SettingsFieldHint>
-            )}
-          </label>
+          </div>
         </div>
       </FormSection>
 
@@ -506,8 +381,8 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("seoMetaTitle")}</span>
             <input
-              value={draft.seoTitle}
-              onChange={(e) => patchDraft({ seoTitle: e.target.value })}
+              value={copy.seoTitle}
+              onChange={(e) => patchCopy({ seoTitle: e.target.value })}
             />
             <SettingsFieldHint>{t("seoMetaTitleHint")}</SettingsFieldHint>
           </label>
@@ -515,8 +390,8 @@ export function PublicSiteSettingsForm({
             <span>{t("seoMetaDescription")}</span>
             <textarea
               rows={3}
-              value={draft.seoDescription}
-              onChange={(e) => patchDraft({ seoDescription: e.target.value })}
+              value={copy.seoDescription}
+              onChange={(e) => patchCopy({ seoDescription: e.target.value })}
             />
             <SettingsFieldHint>{t("seoMetaDescriptionHint")}</SettingsFieldHint>
           </label>
@@ -648,16 +523,16 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("sectionIntro")}</span>
             <input
-              value={draft.introTitle}
-              onChange={(e) => patchDraft({ introTitle: e.target.value })}
+              value={copy.introTitle}
+              onChange={(e) => patchCopy({ introTitle: e.target.value })}
             />
           </label>
           <label>
             <span>{t("introLead")}</span>
             <textarea
               rows={3}
-              value={draft.introLead}
-              onChange={(e) => patchDraft({ introLead: e.target.value })}
+              value={copy.introLead}
+              onChange={(e) => patchCopy({ introLead: e.target.value })}
             />
           </label>
         </div>
@@ -666,20 +541,20 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("sectionBenefits")}</span>
             <input
-              value={draft.benefitsTitle}
-              onChange={(e) => patchDraft({ benefitsTitle: e.target.value })}
+              value={copy.benefitsTitle}
+              onChange={(e) => patchCopy({ benefitsTitle: e.target.value })}
             />
           </label>
           <label>
             <span>{t("benefitsLead")}</span>
             <textarea
               rows={2}
-              value={draft.benefitsLead}
-              onChange={(e) => patchDraft({ benefitsLead: e.target.value })}
+              value={copy.benefitsLead}
+              onChange={(e) => patchCopy({ benefitsLead: e.target.value })}
             />
           </label>
         </div>
-        {draft.benefitItems.map((item, index) => (
+        {copy.benefitItems.map((item, index) => (
           <div key={`benefit-${index}`} className="admin-settings-fields admin-settings-fields--2col mt-3">
             <label>
               <span>{t("benefitIcon")}</span>
@@ -716,20 +591,20 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("sectionSteps")}</span>
             <input
-              value={draft.stepsTitle}
-              onChange={(e) => patchDraft({ stepsTitle: e.target.value })}
+              value={copy.stepsTitle}
+              onChange={(e) => patchCopy({ stepsTitle: e.target.value })}
             />
           </label>
           <label>
             <span>{t("stepsLead")}</span>
             <textarea
               rows={2}
-              value={draft.stepsLead}
-              onChange={(e) => patchDraft({ stepsLead: e.target.value })}
+              value={copy.stepsLead}
+              onChange={(e) => patchCopy({ stepsLead: e.target.value })}
             />
           </label>
         </div>
-        {draft.stepItems.map((item, index) => (
+        {copy.stepItems.map((item, index) => (
           <div key={`step-${index}`} className="admin-settings-fields mt-3">
             <label>
               <span>{t("stepItemTitle")}</span>
@@ -753,23 +628,23 @@ export function PublicSiteSettingsForm({
           <label>
             <span>{t("sectionCta")}</span>
             <input
-              value={draft.ctaTitle}
-              onChange={(e) => patchDraft({ ctaTitle: e.target.value })}
+              value={copy.ctaTitle}
+              onChange={(e) => patchCopy({ ctaTitle: e.target.value })}
             />
           </label>
           <label>
             <span>{t("ctaLead")}</span>
             <textarea
               rows={2}
-              value={draft.ctaLead}
-              onChange={(e) => patchDraft({ ctaLead: e.target.value })}
+              value={copy.ctaLead}
+              onChange={(e) => patchCopy({ ctaLead: e.target.value })}
             />
           </label>
           <label>
             <span>{t("ctaLabel")}</span>
             <input
-              value={draft.ctaLabel}
-              onChange={(e) => patchDraft({ ctaLabel: e.target.value })}
+              value={copy.ctaLabel}
+              onChange={(e) => patchCopy({ ctaLabel: e.target.value })}
             />
           </label>
         </div>
@@ -790,29 +665,23 @@ export function PublicSiteSettingsForm({
             <p className="pub-gallery-editor__empty">{t("galleryEmpty")}</p>
           ) : (
             draft.galleryItems.map((item, index) => (
-              <div key={item.id} className="pub-gallery-editor__item">
-                {item.url.trim() ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={item.url} alt="" className="pub-gallery-editor__thumb" />
-                ) : (
-                  <div className="pub-gallery-editor__thumb" aria-hidden="true" />
-                )}
-                <div className="pub-gallery-editor__fields">
+              <div key={item.id} className="pub-gallery-editor__item pub-gallery-editor__item--upload">
+                <PublicSiteImageField
+                  kind="gallery"
+                  label={t("galleryPhotoLabel", { index: index + 1 })}
+                  value={item.url}
+                  onChange={(url) => updateGalleryUrl(item.id, url)}
+                  disabled={readOnly}
+                />
+                <label>
+                  <span>{t("galleryCaptionLabel")}</span>
                   <input
-                    value={item.url}
-                    placeholder={t("galleryUrlLabel")}
-                    aria-label={t("galleryUrlLabel")}
-                    onChange={(e) => updateGalleryItem(item.id, { url: e.target.value })}
-                  />
-                  <input
-                    value={item.caption}
+                    value={copy.galleryCaptions[item.id] ?? ""}
                     placeholder={t("galleryCaptionLabel")}
                     aria-label={t("galleryCaptionLabel")}
-                    onChange={(e) =>
-                      updateGalleryItem(item.id, { caption: e.target.value })
-                    }
+                    onChange={(e) => updateGalleryCaption(item.id, e.target.value)}
                   />
-                </div>
+                </label>
                 <div className="pub-gallery-editor__actions">
                   <button
                     type="button"
@@ -885,8 +754,9 @@ export function PublicSiteSettingsForm({
           </label>
         </div>
         <BookingNoticeEditor
-          value={draft.noticeDraft}
-          onChange={(noticeDraft) => patchDraft({ noticeDraft })}
+          value={copy.noticeDraft}
+          onChange={patchNotice}
+          locale={draft.editLocale}
           checkInTime={config.checkInTime}
           checkOutTime={config.checkOutTime}
         />
@@ -904,139 +774,4 @@ export function PublicSiteSettingsForm({
       }
     />
   );
-}
-
-function buildInputFromState(args: {
-  config: PublicSiteConfig;
-  draft: PublicSiteDraft;
-  locale: string;
-}): PublicSiteSettingsInput {
-  const { config, draft, locale } = args;
-  const write = (previous: Parameters<typeof writeLocalized>[0], value: string) =>
-    writeLocalized(previous, locale, value);
-
-  const galleryFromConfig = config.sections.find((s) => s.sectionType === "gallery");
-  const galleryItems = galleryDraftToItems(
-    draft.galleryItems,
-    locale,
-    (galleryFromConfig?.payload.items ?? []) as PublicGalleryItem[],
-  );
-  const baseSections = config.sections.filter((section) => section.sectionType !== "gallery");
-
-  const sections = [
-    ...baseSections.map((section) => {
-      if (section.sectionType === "intro") {
-        return {
-          ...section,
-          visible: draft.introVisible,
-          payload: {
-            ...section.payload,
-            title: write(section.payload.title, draft.introTitle),
-            lead: write(section.payload.lead, draft.introLead),
-          },
-        };
-      }
-      if (section.sectionType === "benefits") {
-        const previous = (section.payload.items ?? []) as PublicBenefitItem[];
-        return {
-          ...section,
-          visible: draft.benefitsVisible,
-          payload: {
-            ...section.payload,
-            title: write(section.payload.title, draft.benefitsTitle),
-            lead: write(section.payload.lead, draft.benefitsLead),
-            items: draft.benefitItems
-              .filter((item) => item.title.trim() || item.text.trim())
-              .map((item, index) => ({
-                icon: normalizeBenefitIcon(item.icon),
-                title: write(previous[index]?.title, item.title),
-                text: write(previous[index]?.text, item.text),
-              })),
-          },
-        };
-      }
-      if (section.sectionType === "steps") {
-        const previous = (section.payload.items ?? []) as PublicStepItem[];
-        return {
-          ...section,
-          visible: draft.stepsVisible,
-          payload: {
-            ...section.payload,
-            title: write(section.payload.title, draft.stepsTitle),
-            lead: write(section.payload.lead, draft.stepsLead),
-            items: draft.stepItems
-              .filter((item) => item.title.trim() || item.text.trim())
-              .map((item, index) => ({
-                title: write(previous[index]?.title, item.title),
-                text: write(previous[index]?.text, item.text),
-              })),
-          },
-        };
-      }
-      if (section.sectionType === "cta") {
-        return {
-          ...section,
-          visible: draft.ctaVisible,
-          payload: {
-            ...section.payload,
-            title: write(section.payload.title, draft.ctaTitle),
-            lead: write(section.payload.lead, draft.ctaLead),
-            ctaLabel: write(section.payload.ctaLabel, draft.ctaLabel),
-            ctaHref: section.payload.ctaHref ?? "/calendar",
-          },
-        };
-      }
-      return section;
-    }),
-    {
-      id: galleryFromConfig?.id ?? "gallery",
-      sectionType: "gallery" as const,
-      sortOrder: galleryFromConfig?.sortOrder ?? 30,
-      visible: draft.galleryVisible && galleryItems.length > 0,
-      payload: {
-        title: galleryFromConfig?.payload.title ?? {},
-        lead: galleryFromConfig?.payload.lead ?? {},
-        items: galleryItems,
-      },
-    },
-  ].map(({ id: _id, ...section }) => section);
-
-  return {
-    templateId: draft.templateId,
-    themeId: draft.themeId,
-    published: draft.published,
-    bookingEnabled: draft.bookingEnabled,
-    bookingNavPosition: draft.bookingNavPosition,
-    usePrimaryContact: draft.usePrimaryContact,
-    hero: {
-      ...config.hero,
-      badge: write(config.hero.badge, draft.heroBadge),
-      title: write(config.hero.title, draft.heroTitle),
-      subtitle: write(config.hero.subtitle, draft.heroSubtitle),
-      tagline: write(config.hero.tagline, draft.heroTagline),
-      ctaPrimary: write(config.hero.ctaPrimary, draft.heroCtaPrimary),
-      ctaSecondary: write(config.hero.ctaSecondary, draft.heroCtaSecondary),
-      ctaPrimaryHref: config.hero.ctaPrimaryHref ?? "/calendar",
-      ctaSecondaryHref: config.hero.ctaSecondaryHref ?? "#public-intro",
-      imageUrl: draft.heroImageUrl.trim() || null,
-      showCheckTimes: config.hero.showCheckTimes ?? true,
-    },
-    contact: {
-      email: draft.contactEmail.trim() || null,
-      phone: draft.contactPhone.trim() || null,
-      whatsapp: draft.contactWhatsapp.trim() || null,
-      telegram: draft.contactTelegram.trim() || null,
-      facebook: draft.contactFacebook.trim() || null,
-      instagram: draft.contactInstagram.trim() || null,
-    },
-    seo: {
-      metaTitle: write(config.seo.metaTitle, draft.seoTitle || draft.heroTitle),
-      metaDescription: write(
-        config.seo.metaDescription,
-        draft.seoDescription || draft.heroSubtitle,
-      ),
-    },
-    bookingNotice: bookingNoticeFromDraft(draft.noticeDraft),
-    sections,
-  };
 }

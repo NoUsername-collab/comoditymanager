@@ -1,10 +1,12 @@
-import { pickLocalized } from "@/features/public-site/domain/localized";
+import { pickLocalized, pickOwnLocalized, writeLocalizedMap } from "@/features/public-site/domain/localized";
 import type {
   BookingNoticeIconId,
   BookingNoticePresetId,
   PublicBookingNoticeConfig,
   PublicBookingNoticeItem,
+  PublicLocale,
 } from "@/features/public-site/domain/types";
+import { PUBLIC_LOCALES } from "@/features/public-site/domain/types";
 
 export const BOOKING_NOTICE_PRESETS: Exclude<BookingNoticePresetId, "custom">[] = [
   "noPay",
@@ -115,14 +117,14 @@ export function bookingNoticeToDraft(
   const normalized = normalizeBookingNotice(notice);
   return {
     enabled: normalized.enabled,
-    title: pickLocalized(normalized.title, locale),
-    footer: pickLocalized(normalized.footer, locale),
+    title: pickOwnLocalized(normalized.title, locale),
+    footer: pickOwnLocalized(normalized.footer, locale),
     items: normalized.items.map((item) => ({
       id: item.id,
       preset: item.preset,
       icon: item.icon,
-      title: pickLocalized(item.title, locale),
-      text: pickLocalized(item.text, locale),
+      title: pickOwnLocalized(item.title, locale),
+      text: pickOwnLocalized(item.text, locale),
     })),
   };
 }
@@ -145,6 +147,76 @@ export function bookingNoticeFromDraft(
       title: localized(item.title),
       text: localized(item.text),
     })),
+  });
+}
+
+/** Keep item order/presets/icons from source; preserve per-locale title and text. */
+export function alignNoticeDraft(
+  target: BookingNoticeDraft,
+  source: BookingNoticeDraft,
+): BookingNoticeDraft {
+  const byId = new Map(target.items.map((item) => [item.id, item]));
+  return {
+    enabled: source.enabled,
+    title: target.title,
+    footer: target.footer,
+    items: source.items.map((item) => {
+      const previous = byId.get(item.id);
+      return {
+        id: item.id,
+        preset: item.preset,
+        icon: item.icon,
+        title: previous?.title ?? "",
+        text: previous?.text ?? "",
+      };
+    }),
+  };
+}
+
+/** Merge EN/RO/BG drafts without stamping one language onto the other two. */
+export function mergeBookingNoticeFromLocales(
+  previous: PublicBookingNoticeConfig | null | undefined,
+  drafts: Record<PublicLocale, BookingNoticeDraft>,
+  structureLocale: PublicLocale,
+): PublicBookingNoticeConfig {
+  const structure = drafts[structureLocale];
+  const prev = normalizeBookingNotice(previous);
+  const prevById = new Map(prev.items.map((item) => [item.id, item]));
+
+  const valuesFor = (
+    pick: (draft: BookingNoticeDraft) => string,
+  ): Partial<Record<PublicLocale, string>> => {
+    const values: Partial<Record<PublicLocale, string>> = {};
+    for (const locale of PUBLIC_LOCALES) {
+      values[locale] = pick(drafts[locale]);
+    }
+    return values;
+  };
+
+  return normalizeBookingNotice({
+    enabled: structure.enabled,
+    title: writeLocalizedMap(prev.title, valuesFor((draft) => draft.title)),
+    footer: writeLocalizedMap(prev.footer, valuesFor((draft) => draft.footer)),
+    items: structure.items.map((item, index) => {
+      const previousItem = prevById.get(item.id) ?? prev.items[index];
+      return {
+        id: item.id || `notice-${index}`,
+        preset: item.preset,
+        icon: item.icon,
+        title: writeLocalizedMap(
+          previousItem?.title,
+          valuesFor(
+            (draft) => draft.items.find((row) => row.id === item.id)?.title ?? "",
+          ),
+        ),
+        text: writeLocalizedMap(
+          previousItem?.text,
+          valuesFor(
+            (draft) => draft.items.find((row) => row.id === item.id)?.text ?? "",
+          ),
+        ),
+      };
+    }),
   });
 }
 

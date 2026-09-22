@@ -44,6 +44,9 @@ const nextConfig: NextConfig = {
       "@dnd-kit/core",
       "@dnd-kit/utilities",
     ],
+    serverActions: {
+      bodySizeLimit: "8mb",
+    },
   },
   headers: async () => [
     {
