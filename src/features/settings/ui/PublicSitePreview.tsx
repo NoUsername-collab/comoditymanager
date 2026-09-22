@@ -14,9 +14,8 @@ import {
 import "@/styles/features/public/public-site.css";
 import "@/styles/features/public/public-site-v2.css";
 
-const PREVIEW_SECTION_LIMIT = 2;
-
 export function PublicSitePreview({ config, locale }: { config: PublicSiteConfig; locale: string }) {
+  const t = useTranslations("admin.pages.settings");
   const tHeader = useTranslations("public.header");
   const tFooter = useTranslations("public.footer");
   const tHome = useTranslations("public.home");
@@ -34,7 +33,7 @@ export function PublicSitePreview({ config, locale }: { config: PublicSiteConfig
         : "pub-home pub-home--classic";
 
   const visibleSections = useMemo(
-    () => config.sections.filter((section) => section.visible).slice(0, PREVIEW_SECTION_LIMIT),
+    () => config.sections.filter((section) => section.visible),
     [config.sections],
   );
 
@@ -59,7 +58,11 @@ export function PublicSitePreview({ config, locale }: { config: PublicSiteConfig
         <span className="settings-public-preview__dot" />
         <span className="settings-public-preview__url">{config.displayName}</span>
       </div>
-      <div className="settings-public-preview__viewport">
+      <div
+        className="settings-public-preview__viewport"
+        tabIndex={0}
+        aria-label={t("livePreviewAria")}
+      >
         <header className="public-header settings-public-preview__header">
           <div className="public-header__inner">
             <div className="public-header__brand">

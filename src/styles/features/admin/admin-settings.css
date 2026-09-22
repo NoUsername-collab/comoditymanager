@@ -1947,12 +1947,15 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   .settings-preview-layout__aside {
     position: sticky;
     top: 0.75rem;
+    display: flex;
+    flex-direction: column;
     max-height: calc(100vh - 6rem);
-    overflow: auto;
+    overflow: hidden;
   }
 }
 
 .settings-preview-layout__aside-title {
+  flex-shrink: 0;
   margin: 0 0 0.5rem;
   font-size: 0.625rem;
   font-weight: 800;
@@ -1962,6 +1965,9 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .settings-public-preview {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   border-radius: 0.875rem;
   border: 1px solid var(--admin-panel-border, #e4e4e7);
   overflow: hidden;
@@ -1969,7 +1975,14 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   box-shadow: var(--admin-surface-shadow, 0 8px 24px rgba(0, 0, 0, 0.08));
 }
 
+@media (min-width: 960px) {
+  .settings-public-preview {
+    flex: 1;
+  }
+}
+
 .settings-public-preview__chrome {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -1996,10 +2009,26 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .settings-public-preview__viewport {
+  flex: 1;
+  min-height: 12rem;
   max-height: min(70vh, 42rem);
   overflow: auto;
-  pointer-events: none;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   transform-origin: top center;
+}
+
+/* Preview is a live mock, not a second site — scroll it, do not follow CTAs. */
+.settings-public-preview__viewport a,
+.settings-public-preview__viewport button {
+  pointer-events: none;
+}
+
+@media (min-width: 960px) {
+  .settings-public-preview__viewport {
+    max-height: none;
+  }
 }
 
 @media (max-width: 959px) {
