@@ -27,11 +27,11 @@ export async function loadPublicCalendarPage() {
   return getPublicSiteConfig();
 }
 
-export async function loadReceptiePage() {
+export async function loadReceptionPage() {
   return getPensionSettings().catch(() => null);
 }
 
-export async function loadTermeniPage() {
+export async function loadTermsPage() {
   return getBookingRulesSettings().catch(() => null);
 }
 

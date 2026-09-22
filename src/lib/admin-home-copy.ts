@@ -8,16 +8,16 @@ export function buildHomeMoodLine(
   t: T,
   input: {
     stats: AdminDashboardStats;
-    cereriCount: number;
+    requestCount: number;
     todayBoard: TodayBoard | null;
   }
 ): string {
-  const { stats, cereriCount, todayBoard } = input;
+  const { stats, requestCount, todayBoard } = input;
 
-  if (cereriCount > 0) {
-    return cereriCount === 1
+  if (requestCount > 0) {
+    return requestCount === 1
       ? t("moodOneRequest")
-      : t("moodManyRequests", { count: cereriCount });
+      : t("moodManyRequests", { count: requestCount });
   }
 
   const arrivals = todayBoard?.arrivals.length ?? 0;
@@ -47,10 +47,10 @@ export function buildHomeBriefing(
   t: T,
   input: {
     todayBoard: TodayBoard | null;
-    cereriCount: number;
+    requestCount: number;
   }
 ): string | null {
-  const { todayBoard, cereriCount } = input;
+  const { todayBoard, requestCount } = input;
   if (!todayBoard) return null;
 
   const parts: string[] = [];
@@ -67,8 +67,8 @@ export function buildHomeBriefing(
   if (todayBoard.roomsToClean.length > 0) {
     parts.push(t("briefingClean", { count: todayBoard.roomsToClean.length }));
   }
-  if (cereriCount > 0) {
-    parts.push(t("briefingRequests", { count: cereriCount }));
+  if (requestCount > 0) {
+    parts.push(t("briefingRequests", { count: requestCount }));
   }
 
   if (parts.length === 0) {
@@ -90,11 +90,11 @@ export function buildHomeMilestones(
     totalConfirmed: number;
     stats: AdminDashboardStats;
     monthCompare: MonthComparison | null;
-    cereriCount: number;
+    requestCount: number;
   }
 ): HomeMilestone[] {
   const out: HomeMilestone[] = [];
-  const { totalConfirmed, stats, monthCompare, cereriCount } = input;
+  const { totalConfirmed, stats, monthCompare, requestCount } = input;
 
   if (totalConfirmed >= 1) {
     out.push({ id: "first", emoji: "🎉", label: t("milestoneFirst") });
@@ -124,7 +124,7 @@ export function buildHomeMilestones(
       label: t("milestoneWeekFull"),
     });
   }
-  if (cereriCount === 0 && totalConfirmed > 0) {
+  if (requestCount === 0 && totalConfirmed > 0) {
     out.push({ id: "inbox-zero", emoji: "✨", label: t("milestoneInboxZero") });
   }
 

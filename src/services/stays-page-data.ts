@@ -6,38 +6,38 @@ import {
   listRecentlyConfirmedStayHistory,
 } from "@/services/bookings";
 import type {
-  CazariPageLists,
-  CazariPageLoadResult,
-  CazariSidebarHistoryLoadResult,
-} from "@/domain/cazari/page-lists";
+  StayPageLists,
+  StayPageLoadResult,
+  StaySidebarHistoryLoadResult,
+} from "@/domain/stays/page-lists";
 
 export type {
-  CazariPageLists,
-  CazariPageLoadResult,
-  CazariSidebarHistoryLoadResult,
-} from "@/domain/cazari/page-lists";
+  StayPageLists,
+  StayPageLoadResult,
+  StaySidebarHistoryLoadResult,
+} from "@/domain/stays/page-lists";
 
 function errorMessage(reason: unknown, fallback: string): string {
   return reason instanceof Error ? reason.message : fallback;
 }
 
 /** Primary lists for main column — stays + cancelled (anulate tab). */
-export const loadCazariPrimaryData = cache(
-  async (): Promise<Pick<CazariPageLoadResult, "data" | "errors">> => {
-    const emptyStays: CazariPageLists["stays"] = [];
-    const emptyCancelled: CazariPageLists["cancelledHistory"] = [];
+export const loadStaysPrimaryData = cache(
+  async (): Promise<Pick<StayPageLoadResult, "data" | "errors">> => {
+    const emptyStays: StayPageLists["stays"] = [];
+    const emptyCancelled: StayPageLists["cancelledHistory"] = [];
 
     const [staysResult, cancelledResult] = await Promise.allSettled([
       listOperationalStays(),
       listCancelledStayHistory(28),
     ]);
 
-    const data: Pick<CazariPageLists, "stays" | "cancelledHistory"> = {
+    const data: Pick<StayPageLists, "stays" | "cancelledHistory"> = {
       stays: emptyStays,
       cancelledHistory: emptyCancelled,
     };
     const errors: Pick<
-      CazariPageLoadResult["errors"],
+      StayPageLoadResult["errors"],
       "stays" | "cancelledHistory"
     > = {
       stays: null,
@@ -72,9 +72,9 @@ export const loadCazariPrimaryData = cache(
 );
 
 /** Sidebar recap lists — streamed via Suspense on the cazări page. */
-export const loadCazariSidebarHistoryData = cache(
-  async (): Promise<CazariSidebarHistoryLoadResult> => {
-    const empty: CazariSidebarHistoryLoadResult["data"] = {
+export const loadStaysSidebarHistoryData = cache(
+  async (): Promise<StaySidebarHistoryLoadResult> => {
+    const empty: StaySidebarHistoryLoadResult["data"] = {
       history: [],
       confirmedRecentHistory: [],
     };
@@ -85,7 +85,7 @@ export const loadCazariSidebarHistoryData = cache(
     ]);
 
     const data = { ...empty };
-    const errors: CazariSidebarHistoryLoadResult["errors"] = {
+    const errors: StaySidebarHistoryLoadResult["errors"] = {
       history: null,
       confirmedRecentHistory: null,
     };
@@ -109,14 +109,14 @@ export const loadCazariSidebarHistoryData = cache(
   }
 );
 
-/** @deprecated Prefer loadCazariPrimaryData + loadCazariSidebarHistoryData. */
-export const loadCazariOperationalData = loadCazariPrimaryData;
+/** @deprecated Prefer loadStaysPrimaryData + loadStaysSidebarHistoryData. */
+export const loadStaysOperationalData = loadStaysPrimaryData;
 
-/** @deprecated Prefer loadCazariSidebarHistoryData. */
-export const loadCazariHistoryData = cache(async () => {
+/** @deprecated Prefer loadStaysSidebarHistoryData. */
+export const loadStaysHistoryData = cache(async () => {
   const [primary, sidebar] = await Promise.all([
-    loadCazariPrimaryData(),
-    loadCazariSidebarHistoryData(),
+    loadStaysPrimaryData(),
+    loadStaysSidebarHistoryData(),
   ]);
   return {
     data: {
@@ -133,10 +133,10 @@ export const loadCazariHistoryData = cache(async () => {
 });
 
 /** Application service — parallel fetch with per-list error isolation. */
-export const loadCazariPageData = cache(async (): Promise<CazariPageLoadResult> => {
+export const loadStaysPageData = cache(async (): Promise<StayPageLoadResult> => {
   const [primary, sidebar] = await Promise.all([
-    loadCazariPrimaryData(),
-    loadCazariSidebarHistoryData(),
+    loadStaysPrimaryData(),
+    loadStaysSidebarHistoryData(),
   ]);
 
   return {

@@ -7,13 +7,13 @@ import { getTenantScope } from "@/lib/tenant/scope";
 
 import {
   BOOKING_ROW_SELECT,
-  CERERE_LIST_PAGE_SELECT,
+  REQUEST_LIST_PAGE_SELECT,
   type BookingRow,
   type BookingSelectRow,
 } from "../types";
 import { mapBookingRows, attachGuestProfiles } from "../map";
 
-async function countCereriNoiUncached(tenantId: string): Promise<number> {
+async function countNewRequestsUncached(tenantId: string): Promise<number> {
   const supabase = createPublicAdminClient();
   const { count, error } = await supabase
     .from("bookings")
@@ -25,37 +25,37 @@ async function countCereriNoiUncached(tenantId: string): Promise<number> {
   return count ?? 0;
 }
 
-const getCachedCereriCount = (tenantId: string) =>
+const getCachedNewRequestCount = (tenantId: string) =>
   unstable_cache(
-    () => countCereriNoiUncached(tenantId),
-    ["cereri-count", tenantId],
+    () => countNewRequestsUncached(tenantId),
+    ["new-request-count", tenantId],
     {
-      tags: [CACHE_TAGS.bookingCounts, `tenant-${tenantId}-cereri`],
+      tags: [CACHE_TAGS.bookingCounts, `tenant-${tenantId}-requests`],
       revalidate: 30,
     }
   );
 
-const loadCereriCount = cache((tenantId: string) =>
-  getCachedCereriCount(tenantId)()
+const loadNewRequestCount = cache((tenantId: string) =>
+  getCachedNewRequestCount(tenantId)()
 );
 
 /** Per-request dedupe + 30s cross-request cache (busted via bookingCounts tag). */
-export async function countCereriNoi(): Promise<number> {
+export async function countNewRequests(): Promise<number> {
   const tenantId = await resolveTenantIdForData();
-  return loadCereriCount(tenantId);
+  return loadNewRequestCount(tenantId);
 }
 
 /** Default page size for /admin/bookings — avoids loading the full queue at once. */
-export const CERERE_LIST_PAGE_SIZE = 30;
+export const REQUEST_LIST_PAGE_SIZE = 30;
 
 /** Hard cap per page load — keeps guest profile batch bounded. */
-export const CERERE_LIST_MAX_SHOWN = 200;
+export const REQUEST_LIST_MAX_SHOWN = 200;
 
-async function listCereriNoiUnassignedQuery(
+async function listNewRequestsUnassignedQuery(
   tenantId: string
 ): Promise<BookingRow[]> {
   const supabase = createPublicAdminClient();
-  const [assignedResult, cereriResult] = await Promise.all([
+  const [assignedResult, requestResult] = await Promise.all([
     supabase
       .from("booking_rooms")
       .select("booking_id, bookings!inner(status)")
@@ -63,30 +63,30 @@ async function listCereriNoiUnassignedQuery(
       .eq("bookings.status", "cerere_noua"),
     supabase
       .from("bookings")
-      .select(CERERE_LIST_PAGE_SELECT)
+      .select(REQUEST_LIST_PAGE_SELECT)
       .eq("tenant_id", tenantId)
       .eq("status", "cerere_noua")
       .order("check_in", { ascending: true })
-      .limit(CERERE_LIST_MAX_SHOWN),
+      .limit(REQUEST_LIST_MAX_SHOWN),
   ]);
 
   if (assignedResult.error) throw new Error(assignedResult.error.message);
-  if (cereriResult.error) throw new Error(cereriResult.error.message);
+  if (requestResult.error) throw new Error(requestResult.error.message);
 
   const assignedIds = new Set(
     (assignedResult.data ?? []).map((row) => String(row.booking_id))
   );
-  const unassigned = ((cereriResult.data ?? []) as unknown as BookingSelectRow[]).filter(
+  const unassigned = ((requestResult.data ?? []) as unknown as BookingSelectRow[]).filter(
     (row) => !assignedIds.has(row.id)
   );
 
   return attachGuestProfiles(mapBookingRows(unassigned));
 }
 
-const getCachedCereriUnassigned = (tenantId: string) =>
+const getCachedUnassignedRequests = (tenantId: string) =>
   unstable_cache(
-    () => listCereriNoiUnassignedQuery(tenantId),
-    ["cereri-unassigned", tenantId],
+    () => listNewRequestsUnassignedQuery(tenantId),
+    ["new-requests-unassigned", tenantId],
     {
       tags: [
         CACHE_TAGS.bookingCounts,
@@ -96,17 +96,17 @@ const getCachedCereriUnassigned = (tenantId: string) =>
     }
   );
 
-const loadUnassignedCereri = cache((tenantId: string) =>
-  getCachedCereriUnassigned(tenantId)()
+const loadUnassignedRequests = cache((tenantId: string) =>
+  getCachedUnassignedRequests(tenantId)()
 );
 
-/** Cereri noi fără camere alocate — vizibile indiferent de perioada Gantt */
-export async function listUnassignedCereri(): Promise<BookingRow[]> {
+/** New requests with no rooms assigned — visible regardless of the Gantt range. */
+export async function listUnassignedRequests(): Promise<BookingRow[]> {
   const tenantId = await resolveTenantIdForData();
-  return loadUnassignedCereri(tenantId);
+  return loadUnassignedRequests(tenantId);
 }
 
-async function listCereriNoiWithSelect(
+async function listNewRequestsWithSelect(
   tenantId: string,
   select: string,
   options?: { limit?: number; offset?: number }
@@ -133,11 +133,11 @@ async function listCereriNoiWithSelect(
   );
 }
 
-const getCachedCereriPreview = (tenantId: string, limit: number) =>
+const getCachedNewRequestPreview = (tenantId: string, limit: number) =>
   unstable_cache(
     () =>
-      listCereriNoiWithSelect(tenantId, BOOKING_ROW_SELECT, { limit }),
-    ["cereri-preview", tenantId, String(limit)],
+      listNewRequestsWithSelect(tenantId, BOOKING_ROW_SELECT, { limit }),
+    ["new-requests-preview", tenantId, String(limit)],
     {
       tags: [
         CACHE_TAGS.bookingCounts,
@@ -147,30 +147,30 @@ const getCachedCereriPreview = (tenantId: string, limit: number) =>
     }
   );
 
-const loadCereriPreview = cache((tenantId: string, limit: number) =>
-  getCachedCereriPreview(tenantId, limit)()
+const loadNewRequestPreview = cache((tenantId: string, limit: number) =>
+  getCachedNewRequestPreview(tenantId, limit)()
 );
 
-/** Paginated cereri for the bookings queue page (light select, no full-table scan). */
-export async function listCereriNoiPage(
-  limit = CERERE_LIST_PAGE_SIZE,
+/** Paginated new requests for the bookings queue (light select, no full-table scan). */
+export async function listNewRequestsPage(
+  limit = REQUEST_LIST_PAGE_SIZE,
   offset = 0
 ): Promise<BookingRow[]> {
-  const capped = Math.min(Math.max(1, limit), CERERE_LIST_MAX_SHOWN);
+  const capped = Math.min(Math.max(1, limit), REQUEST_LIST_MAX_SHOWN);
   const tenantId = await resolveTenantIdForData();
-  return listCereriNoiWithSelect(tenantId, CERERE_LIST_PAGE_SELECT, {
+  return listNewRequestsWithSelect(tenantId, REQUEST_LIST_PAGE_SELECT, {
     limit: capped,
     offset,
   });
 }
 
-/** @deprecated Prefer {@link listCereriNoiPage} — capped for safety. */
-export async function listCereriNoi(): Promise<BookingRow[]> {
-  return listCereriNoiPage(CERERE_LIST_MAX_SHOWN);
+/** @deprecated Prefer {@link listNewRequestsPage} — capped for safety. */
+export async function listNewRequests(): Promise<BookingRow[]> {
+  return listNewRequestsPage(REQUEST_LIST_MAX_SHOWN);
 }
 
-/** Recent cereri for dashboard preview — does not load the full queue. */
-export async function listCereriNoiPreview(limit = 5): Promise<BookingRow[]> {
+/** Recent new requests for dashboard preview — does not load the full queue. */
+export async function listNewRequestsPreview(limit = 5): Promise<BookingRow[]> {
   const tenantId = await resolveTenantIdForData();
-  return loadCereriPreview(tenantId, limit);
+  return loadNewRequestPreview(tenantId, limit);
 }

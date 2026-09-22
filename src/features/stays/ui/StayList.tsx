@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { STAY_LIST_VIRTUAL_MIN_ITEMS } from "@/domain/cazari/confirmed-buckets";
+import { STAY_LIST_VIRTUAL_MIN_ITEMS } from "@/domain/stays/confirmed-buckets";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import { StayListItem } from "@/features/cazari/ui/StayListItem";
-import { StayListVirtualized } from "@/features/cazari/ui/StayListVirtualized";
-import { useCazariLiveStays } from "@/lib/cazari/live-stays";
+import { StayListItem } from "@/features/stays/ui/StayListItem";
+import { StayListVirtualized } from "@/features/stays/ui/StayListVirtualized";
+import { useLiveStays } from "@/lib/stays/live-stays";
 import type {
-  CazariLabels,
+  StayListLabels,
   StayCardRow,
-} from "@/features/cazari/ui/types";
+  StayListVariant,
+} from "@/features/stays/ui/types";
 
 function StayListCollapsible({
   title,
@@ -37,8 +38,8 @@ function StayListCollapsible({
     <AdminPanel
       title={title}
       className={[
-        "mb-3 cazari-bucket-panel",
-        !expanded && "cazari-bucket-panel--collapsed",
+        "mb-3 stays-bucket-panel",
+        !expanded && "stays-bucket-panel--collapsed",
         className,
       ]
         .filter(Boolean)
@@ -46,17 +47,17 @@ function StayListCollapsible({
     >
       <button
         type="button"
-        className="cazari-bucket-panel__toggle"
+        className="stays-bucket-panel__toggle"
         aria-expanded={expanded}
         onClick={() => setExpanded((prev) => !prev)}
       >
-        <span className="cazari-bucket-panel__toggle-text">
-          <span className="cazari-bucket-panel__title">{title}</span>
+        <span className="stays-bucket-panel__toggle-text">
+          <span className="stays-bucket-panel__title">{title}</span>
           {subtitle ? (
-            <span className="cazari-bucket-panel__subtitle">{subtitle}</span>
+            <span className="stays-bucket-panel__subtitle">{subtitle}</span>
           ) : null}
         </span>
-        <span className="cazari-bucket-panel__chevron" aria-hidden>
+        <span className="stays-bucket-panel__chevron" aria-hidden>
           {expanded ? "\u25BE" : "\u25B8"}
         </span>
       </button>
@@ -81,19 +82,19 @@ export function StayList({
   title: string;
   subtitle?: string;
   items: StayCardRow[];
-  variant: "cereri" | "confirmate" | "refuzate";
+  variant: StayListVariant;
   returnTo: string;
   hasQuery: boolean;
-  labels: CazariLabels;
+  labels: StayListLabels;
   operativeToday?: string;
   className?: string;
   collapsible?: boolean;
   defaultExpanded?: boolean;
 }) {
-  const liveItems = useCazariLiveStays(items);
+  const liveItems = useLiveStays(items);
 
   const emptyState =
-    variant === "confirmate"
+    variant === "confirmed"
       ? {
           emoji: "🛏",
           ...(hasQuery
@@ -105,7 +106,7 @@ export function StayList({
               }
             : labels.emptyConfirmed),
         }
-      : variant === "refuzate"
+      : variant === "cancelled"
         ? {
             emoji: "⛔",
             title: hasQuery ? labels.refusedEmptyFilter : labels.refusedEmpty,
@@ -128,9 +129,9 @@ export function StayList({
           };
 
   const rowClass =
-    variant === "refuzate"
+    variant === "cancelled"
       ? "stay-card stay-card--red stay-card--stacked"
-      : variant === "cereri"
+      : variant === "requests"
         ? "stay-card stay-card--yellow stay-card--stacked"
         : "stay-card stay-card--green stay-card--stacked";
 
@@ -173,7 +174,7 @@ export function StayList({
       {!collapsible && subtitle ? (
         <p className="mb-2 text-[11px] text-zinc-500">{subtitle}</p>
       ) : null}
-      {variant === "refuzate" ? (
+      {variant === "cancelled" ? (
         <p className="admin-banner admin-banner--danger admin-banner--compact mb-2">
           {labels.refusedHint}
         </p>

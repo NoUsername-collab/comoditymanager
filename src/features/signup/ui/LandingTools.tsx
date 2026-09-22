@@ -6,10 +6,10 @@ import {
 
 const TOOL_IDS: LandingToolIconName[] = [
   "gantt",
-  "cazari",
+  "stays",
   "checkin",
   "guestApp",
-  "disponibilitate",
+  "availability",
   "fiscal",
   "buildings",
   "publicSite",

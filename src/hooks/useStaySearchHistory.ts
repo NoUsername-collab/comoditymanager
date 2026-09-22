@@ -2,29 +2,29 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  addCazariSearchHistoryTerm,
-  clearCazariSearchHistory,
-  readCazariSearchHistory,
-  removeCazariSearchHistoryTerm,
-} from "@/lib/cazari/search-history-storage";
+  addStaySearchHistoryTerm,
+  clearStaySearchHistory,
+  readStaySearchHistory,
+  removeStaySearchHistoryTerm,
+} from "@/lib/stays/search-history-storage";
 
-export function useCazariSearchHistory() {
+export function useStaySearchHistory() {
   const [items, setItems] = useState<string[]>([]);
 
   useEffect(() => {
-    setItems(readCazariSearchHistory());
+    setItems(readStaySearchHistory());
   }, []);
 
   const add = useCallback((term: string) => {
-    setItems(addCazariSearchHistoryTerm(term));
+    setItems(addStaySearchHistoryTerm(term));
   }, []);
 
   const remove = useCallback((term: string) => {
-    setItems(removeCazariSearchHistoryTerm(term));
+    setItems(removeStaySearchHistoryTerm(term));
   }, []);
 
   const clear = useCallback(() => {
-    clearCazariSearchHistory();
+    clearStaySearchHistory();
     setItems([]);
   }, []);
 

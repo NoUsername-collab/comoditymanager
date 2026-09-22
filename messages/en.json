@@ -570,7 +570,7 @@
       "emailOptional": "Email (optional)",
       "notesLabel": "Notes"
     },
-    "receptie": {
+    "reception": {
       "confirmedBanner": "Booking confirmed.",
       "backToAdmin": "← Admin panel",
       "backToSite": "← Public site"
@@ -627,7 +627,7 @@
       "receptionFallbackEmail": "reception@no-email.local"
     },
     "confirm": {
-      "backReceptie": "Quick reception",
+      "backReception": "Quick reception",
       "title": "Quick confirm",
       "adminLink": "Admin"
     },
@@ -685,8 +685,8 @@
       "more": "More",
       "moreMenuAria": "More admin sections",
       "moreClose": "Close menu",
-      "receptie": "Reception",
-      "disponibilitate": "Availability",
+      "reception": "Reception",
+      "availability": "Availability",
       "buildings": "Buildings",
       "rooms": "Rooms",
       "devlog": "Journal",
@@ -1346,22 +1346,22 @@
           "deposit": "Security deposit",
           "depositDesc": "Require deposit at check-in",
           "depositAmount": "Deposit amount",
-          "fisaTitle": "Tourist sheet (ANAF)",
-          "fisaNote": "Data for the accommodation occupancy sheet — OPANAF 381/2026.",
-          "fisaAddress": "Property address",
-          "fisaAddressDesc": "Section I — address of the accommodation unit",
-          "fisaStreet": "Street and number",
-          "fisaStreetPlaceholder": "e.g. 12 Mihai Viteazu St",
-          "fisaLocality": "Locality",
-          "fisaLocalityPlaceholder": "e.g. Sinaia",
-          "fisaCounty": "County",
-          "fisaCountyPlaceholder": "e.g. Prahova",
-          "fisaCui": "Owner tax ID (optional)",
-          "fisaLicense": "Tourism licence no.",
-          "fisaLicenseDesc": "If you have a local tourism authority licence",
-          "fisaSave": "Save ANAF details",
-          "fisaSaving": "Saving…",
-          "fisaSaveHint": "Fill in address, tax ID and licence, then click Save. Used for tourist sheet and invoicing."
+          "touristSheetTitle": "Tourist sheet (ANAF)",
+          "touristSheetNote": "Data for the accommodation occupancy sheet — OPANAF 381/2026.",
+          "touristSheetAddress": "Property address",
+          "touristSheetAddressDesc": "Section I — address of the accommodation unit",
+          "touristSheetStreet": "Street and number",
+          "touristSheetStreetPlaceholder": "e.g. 12 Mihai Viteazu St",
+          "touristSheetLocality": "Locality",
+          "touristSheetLocalityPlaceholder": "e.g. Sinaia",
+          "touristSheetCounty": "County",
+          "touristSheetCountyPlaceholder": "e.g. Prahova",
+          "touristSheetCui": "Owner tax ID (optional)",
+          "touristSheetLicense": "Tourism licence no.",
+          "touristSheetLicenseDesc": "If you have a local tourism authority licence",
+          "touristSheetSave": "Save ANAF details",
+          "touristSheetSaving": "Saving…",
+          "touristSheetSaveHint": "Fill in address, tax ID and licence, then click Save. Used for tourist sheet and invoicing."
         },
         "booking": {
           "saved": "Settings saved",
@@ -1754,11 +1754,11 @@
         "roomCountLabel": "{count} rooms{suffix}",
         "buildingFilterSuffix": " · building filter"
       },
-      "cazari": {
+      "stays": {
         "title": "Stays — Zalmox",
         "searchFilter": "Search and filter",
         "viewFiltersAria": "Stay list filter",
-        "filterAnulate": "Cancelled",
+        "filterCancelled": "Cancelled",
         "results": "Results",
         "operational": "Operational",
         "confirmedTitle": "Confirmed stays ({count})",
@@ -1767,8 +1767,8 @@
         "cancelRequest": "Cancel request",
         "quickAccept": "Quick accept",
         "quickAcceptSuccess": "Stay confirmed",
-        "emitFisa": "Issue sheet",
-        "completeCheckinForFisa": "Complete check-in (sheet)",
+        "emitTouristSheet": "Issue sheet",
+        "completeCheckinForTouristSheet": "Complete check-in (sheet)",
         "checkInContinue": "Continue arrivals",
         "checkInNextRoom": "Receive last room",
         "checkinRoomsProgress": "{checked} of {total} rooms received",
@@ -1780,9 +1780,9 @@
         "checkinAllRoomsDone": "All rooms received",
         "checkinPartialHint": "Guests may arrive separately — receive one room at a time.",
         "checkInOnlyOnArrivalDay": "Check-in is only available on the arrival date ({date}).",
-        "emitFisaNoCheckin": "No check-in recorded for this stay.",
-        "emitFisaLegacyCheckin": "Only check-in time is set (no sheet data). Use “Complete check-in (sheet)” to register guests.",
-        "emitFisaNoGuests": "Check-in has no guest data for the sheet.",
+        "emitTouristSheetNoCheckin": "No check-in recorded for this stay.",
+        "emitTouristSheetLegacyCheckin": "Only check-in time is set (no sheet data). Use “Complete check-in (sheet)” to register guests.",
+        "emitTouristSheetNoGuests": "Check-in has no guest data for the sheet.",
         "openClientProfile": "Guest profile",
         "historyEmptyFilter": "Nothing in history for current filter",
         "historyEmpty": "History is empty",
@@ -2039,7 +2039,7 @@
         "buildingFloorsTitle": "{name} — floors & rooms",
         "noBuildings": "No buildings yet — add the first one with the button above."
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Availability — Zalmox",
         "description": "Heat map, KPIs, free weekends, building filter, Shift+click range, live updates."
       },
@@ -2328,7 +2328,7 @@
       "unassignedRow": "Unassigned requests",
       "zoneRibbon": "Building zones",
       "todayPanel": "Today",
-      "cereriQueue": "New requests",
+      "requestsQueue": "New requests",
       "noUnassigned": "No unassigned requests in this range",
       "loadingGantt": "Loading calendar…",
       "ganttError": "Calendar could not be loaded. Check the database connection and try again.",
@@ -2496,8 +2496,8 @@
       "todayBoard": "Today",
       "roomGrid": "Room grid",
       "seeAll": "See all",
-      "previewCereri": "Latest requests",
-      "noCereriPreview": "No pending requests.",
+      "previewRequests": "Latest requests",
+      "noRequestsPreview": "No pending requests.",
       "openBookings": "Open requests",
       "attentionToday": "Attention today",
       "staffPreviewAttention": "Attention today",
@@ -3185,10 +3185,10 @@
       "openFullPanel": "Open full panel"
     },
     "dashboard": {
-      "quickCereri": "New requests",
-      "quickCereriDesc": "Confirm and assign rooms",
-      "quickReceptie": "Quick reception",
-      "quickReceptieDesc": "Phone & check-in",
+      "quickRequests": "New requests",
+      "quickRequestsDesc": "Confirm and assign rooms",
+      "quickReception": "Quick reception",
+      "quickReceptionDesc": "Phone & check-in",
       "quickCalendar": "Calendar",
       "quickCalendarDesc": "Month / rooms view",
       "quickAvail": "Month availability",
@@ -3465,7 +3465,7 @@
           "checksum_failed": "Invalid checksum — OCR read is probably wrong. Reposition the document or paste manually."
         }
       },
-      "fisa": {
+      "touristSheet": {
         "legalHint": "Per OPANAF 381/2026: CNP required for Romanian citizens. Foreign guests: passport or ID (series + number).",
         "sectionPersonal": "Guest",
         "sectionCnp": "CNP (required for RO)",
@@ -3550,10 +3550,10 @@
       },
       "layers": {
         "all": "All",
-        "cereri": "Requests",
-        "confirmate": "Confirmed",
+        "requests": "Requests",
+        "confirmed": "Confirmed",
         "in_house": "In-house",
-        "trecute": "Past",
+        "past": "Past",
         "hold": "Hold",
         "block": "Blocks"
       },
@@ -4488,7 +4488,7 @@
         "title": "Gantt calendar",
         "desc": "See all rooms and stays on one page. Drag & drop, building colors, occupancy heatmap."
       },
-      "cazari": {
+      "stays": {
         "title": "Stays & requests",
         "desc": "Manage bookings, new requests and stay status — from confirmation to check-out."
       },
@@ -4500,7 +4500,7 @@
         "title": "Guest app",
         "desc": "Guests access Wi-Fi, property info and online check-in from their phone — no app install."
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Availability",
         "desc": "Rates, seasons and blocks — synced with the calendar and public site."
       },

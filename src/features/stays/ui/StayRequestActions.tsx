@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { quickConfirmCerereFromGanttAction } from "@/features/calendar/actions";
+import { quickConfirmRequestFromGanttAction } from "@/features/calendar/actions";
 import { cancelBookingAction } from "@/features/bookings/actions";
 import { BookingCancelButton } from "@/features/bookings/ui/BookingCancelButton";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
-import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
+import { publishStayCancelled } from "@/lib/stays/live-stays";
 import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
-import type { OperationalStay } from "@/features/cazari/ui/types";
+import type { OperationalStay } from "@/features/stays/ui/types";
 
 export type StayRequestActionLabels = {
   quickAccept: string;
@@ -39,7 +39,7 @@ export function StayRequestActions({
   function quickAccept() {
     if (pending) return;
     setPending(true);
-    void quickConfirmCerereFromGanttAction(stay.id).then((res) => {
+    void quickConfirmRequestFromGanttAction(stay.id).then((res) => {
       setPending(false);
       if (!res.ok) {
         showToast({ kind: "error", title: tCommon("error"), message: res.error });
@@ -51,7 +51,7 @@ export function StayRequestActions({
       if (res.booking) {
         publishGanttLiveBooking(res.booking);
       }
-      publishCazariStayCancelled(stay.id);
+      publishStayCancelled(stay.id);
       celebrateConfirm(labels.quickAcceptSuccess, stay.guest_name);
     });
   }
@@ -68,7 +68,7 @@ export function StayRequestActions({
         disabled={pending}
         aria-busy={pending || undefined}
         onClick={quickAccept}
-        className="admin-cereri-fill"
+        className="admin-requests-fill"
       >
         {pending ? tCommon("loading") : labels.quickAccept}
       </AdminButton>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
+import type { TouristSheetData } from "@/domain/checkin/tourist-sheet";
 import { PLATFORM_NAME } from "@/lib/platform/branding";
 import { formatRoDate } from "@/lib/stay-dates";
 
@@ -24,7 +24,7 @@ export function TouristSheetView({
   onClose,
   showPlatformBranding = true,
 }: Props) {
-  const t = useTranslations("admin.checkIn.fisa");
+  const t = useTranslations("admin.checkIn.touristSheet");
 
   function printSheet() {
     window.print();

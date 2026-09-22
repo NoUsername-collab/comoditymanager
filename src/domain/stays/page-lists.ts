@@ -5,15 +5,15 @@ import type {
 } from "@/domain/booking/row";
 
 /** Shape of Cazări page list payloads — domain view, independent of loaders. */
-export type CazariPageLists = {
+export type StayPageLists = {
   stays: OperationalStayRow[];
   history: CompletedStayHistoryRow[];
   confirmedRecentHistory: CompletedStayHistoryRow[];
   cancelledHistory: CancelledStayHistoryRow[];
 };
 
-export type CazariPageLoadResult = {
-  data: CazariPageLists;
+export type StayPageLoadResult = {
+  data: StayPageLists;
   errors: {
     stays: string | null;
     history: string | null;
@@ -22,10 +22,10 @@ export type CazariPageLoadResult = {
   };
 };
 
-export type CazariSidebarHistoryLoadResult = {
-  data: Pick<CazariPageLists, "history" | "confirmedRecentHistory">;
+export type StaySidebarHistoryLoadResult = {
+  data: Pick<StayPageLists, "history" | "confirmedRecentHistory">;
   errors: Pick<
-    CazariPageLoadResult["errors"],
+    StayPageLoadResult["errors"],
     "history" | "confirmedRecentHistory"
   >;
 };

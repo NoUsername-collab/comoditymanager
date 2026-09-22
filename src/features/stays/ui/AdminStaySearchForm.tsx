@@ -17,21 +17,19 @@ import {
 } from "@/components/admin/feedback/AdminPendingProvider";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { AdminInput } from "@/components/admin/ui/AdminInput";
-import { useCazariSearchHistory } from "@/hooks/useCazariSearchHistory";
-import { filterVisibleSearchHistory } from "@/lib/cazari/search-history-storage";
+import { useStaySearchHistory } from "@/hooks/useStaySearchHistory";
+import { filterVisibleSearchHistory } from "@/lib/stays/search-history-storage";
+import { buildStaysPageHref, type StayHorizonKey, type StayListView } from "@/domain/stays/horizon";
 
-function buildCazariHref(
+function buildStaysHref(
   q: string,
-  preserve?: { view?: string; h?: string },
+  preserve?: { view?: StayListView; h?: StayHorizonKey },
 ): string {
-  const params = new URLSearchParams();
-  if (q) params.set("q", q);
-  if (preserve?.view && preserve.view !== "confirmate") {
-    params.set("view", preserve.view);
-  }
-  if (preserve?.h && preserve.h !== "30d") params.set("h", preserve.h);
-  const qs = params.toString();
-  return qs ? `/admin/cazari?${qs}` : "/admin/cazari";
+  return buildStaysPageHref({
+    q: q || undefined,
+    view: preserve?.view,
+    h: preserve?.h,
+  });
 }
 
 export function AdminStaySearchForm({
@@ -39,7 +37,7 @@ export function AdminStaySearchForm({
   preserveParams,
 }: {
   defaultQuery?: string;
-  preserveParams?: { view?: string; h?: string };
+  preserveParams?: { view?: StayListView; h?: StayHorizonKey };
 }) {
   const t = useTranslations("admin.common");
   const router = useRouter();
@@ -54,7 +52,7 @@ export function AdminStaySearchForm({
   const [activeIndex, setActiveIndex] = useState(-1);
 
   const { items: historyItems, add: addHistory, remove: removeHistory, clear: clearHistory } =
-    useCazariSearchHistory();
+    useStaySearchHistory();
 
   const visibleHistory = filterVisibleSearchHistory(historyItems, query);
   const showHistory =
@@ -89,7 +87,7 @@ export function AdminStaySearchForm({
       setHistoryOpen(false);
       setActiveIndex(-1);
       void runAdminAction(async () => {
-        router.push(buildCazariHref(q, preserveParams));
+        router.push(buildStaysHref(q, preserveParams));
       });
     },
     [addHistory, preserveParams, router, runAdminAction],
@@ -147,12 +145,12 @@ export function AdminStaySearchForm({
 
   return (
     <form
-      className="cazari-search-form flex flex-wrap gap-2"
+      className="stays-search-form flex flex-wrap gap-2"
       onSubmit={onSubmit}
     >
       <div
         ref={fieldRef}
-        className="cazari-search-field relative min-w-0 w-full flex-1"
+        className="stays-search-field relative min-w-0 w-full flex-1"
       >
         <AdminInput
           ref={inputRef}
@@ -184,17 +182,17 @@ export function AdminStaySearchForm({
         {showHistory ? (
           <div
             id={listboxId}
-            className="cazari-search-history"
+            className="stays-search-history"
             role="listbox"
             aria-label={t("searchHistoryTitle")}
           >
-            <div className="cazari-search-history__header">
-              <span className="cazari-search-history__title">
+            <div className="stays-search-history__header">
+              <span className="stays-search-history__title">
                 {t("searchHistoryTitle")}
               </span>
               <button
                 type="button"
-                className="cazari-search-history__clear"
+                className="stays-search-history__clear"
                 onClick={() => {
                   clearHistory();
                   setActiveIndex(-1);
@@ -204,7 +202,7 @@ export function AdminStaySearchForm({
                 {t("clearSearchHistory")}
               </button>
             </div>
-            <ul className="cazari-search-history__list">
+            <ul className="stays-search-history__list">
               {visibleHistory.map((term, index) => (
                 <li key={term} role="presentation">
                   <div
@@ -212,15 +210,15 @@ export function AdminStaySearchForm({
                     role="option"
                     aria-selected={activeIndex === index}
                     className={[
-                      "cazari-search-history__item",
-                      activeIndex === index && "cazari-search-history__item--active",
+                      "stays-search-history__item",
+                      activeIndex === index && "stays-search-history__item--active",
                     ]
                       .filter(Boolean)
                       .join(" ")}
                   >
                     <button
                       type="button"
-                      className="cazari-search-history__select"
+                      className="stays-search-history__select"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => onHistorySelect(term)}
                     >
@@ -228,7 +226,7 @@ export function AdminStaySearchForm({
                     </button>
                     <button
                       type="button"
-                      className="cazari-search-history__remove"
+                      className="stays-search-history__remove"
                       aria-label={t("removeSearchHistoryItem", { term })}
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
@@ -250,7 +248,7 @@ export function AdminStaySearchForm({
       <button
         type="submit"
         disabled={pending}
-        className="admin-cereri-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
+        className="admin-requests-fill px-4 py-2 text-sm font-medium disabled:opacity-60"
       >
         {pending ? "…" : t("searchGuest")}
       </button>
@@ -261,7 +259,7 @@ export function AdminStaySearchForm({
           onClick={() => {
             setQuery("");
             void runAdminAction(async () => {
-              router.push(buildCazariHref("", preserveParams));
+              router.push(buildStaysHref("", preserveParams));
             });
           }}
         >

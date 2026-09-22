@@ -32,7 +32,7 @@ import { isValidGuestPhone } from "@/domain/guest/normalize";
 import { todayIso } from "@/lib/stay-dates";
 import { CheckinWizardLauncher } from "@/features/checkin/ui/CheckinWizardLauncher";
 import { TouristSheetLauncher } from "@/features/checkin/ui/TouristSheetLauncher";
-import { StayCheckinProgress } from "@/features/cazari/ui/StayCheckinProgress";
+import { StayCheckinProgress } from "@/features/stays/ui/StayCheckinProgress";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -81,7 +81,7 @@ export function BookingOperationalPanel({
   const router = useRouter();
   const t = useTranslations("admin.operational");
   const tCheckIn = useTranslations("admin.checkIn");
-  const tCazari = useTranslations("admin.pages.cazari");
+  const tStays = useTranslations("admin.pages.stays");
   const tCommon = useTranslations("common");
   const tPayment = useTranslations("admin.checkinPayment");
   const tFinancial = useTranslations("admin.financial");
@@ -121,7 +121,7 @@ export function BookingOperationalPanel({
     }) && hasPhone;
 
   const isArrivalDay = isOperativeCheckInDay(plannedCheckIn, today);
-  const needsWizardForFisa =
+  const needsWizardForTouristSheet =
     canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
   const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
   const canContinueRooms =
@@ -139,17 +139,17 @@ export function BookingOperationalPanel({
   const checkInEnabled =
     canNewCheckIn ||
     canContinueRooms ||
-    needsWizardForFisa ||
+    needsWizardForTouristSheet ||
     canEditCheckInTimeEffective;
 
-  const checkInLabel = needsWizardForFisa
-    ? tCazari("completeCheckinForFisa")
+  const checkInLabel = needsWizardForTouristSheet
+    ? tStays("completeCheckinForTouristSheet")
     : canEditCheckInTimeEffective
       ? `${tCommon("edit")} ${t("checkInLabel")}`
       : canContinueRooms
         ? roomProgress.remaining === 1
-          ? tCazari("checkInNextRoom")
-          : tCazari("checkInContinue")
+          ? tStays("checkInNextRoom")
+          : tStays("checkInContinue")
         : tCheckIn("startCheckin");
 
   const checkInBlockedTitle = canEditCheckInTimeEffective
@@ -167,14 +167,14 @@ export function BookingOperationalPanel({
     : postCheckoutLocked
       ? checkoutLockedTitle
       : actualCheckOutAt
-      ? tCazari("checkoutAlreadyDone")
+      ? tStays("checkoutAlreadyDone")
       : !actualCheckInAt
-        ? tCazari("checkoutNeedsCheckin")
+        ? tStays("checkoutNeedsCheckin")
         : !roomProgress.isComplete
-          ? tCazari("checkInContinue")
+          ? tStays("checkInContinue")
           : "";
 
-  const canEmitFisa = hasCheckinRecord && roomProgress.isComplete;
+  const canEmitTouristSheet = hasCheckinRecord && roomProgress.isComplete;
 
   const checkInStepDone =
     roomProgress.isComplete || !!actualCheckInAt || roomProgress.checked > 0;
@@ -232,8 +232,8 @@ export function BookingOperationalPanel({
   }
 
   const progressTitle = roomProgress.isComplete
-    ? tCazari("checkinAllRoomsDone")
-    : tCazari("checkinRoomsProgress", {
+    ? tStays("checkinAllRoomsDone")
+    : tStays("checkinRoomsProgress", {
         checked: roomProgress.checked,
         total: roomProgress.total,
       });
@@ -291,13 +291,13 @@ export function BookingOperationalPanel({
                 isConfirmed
                 progressTitle={progressTitle}
                 labels={{
-                  roomChecked: tCazari("checkinRoomChecked"),
-                  roomPending: tCazari("checkinRoomPending"),
-                  roomKeyHanded: tCazari("checkinRoomKeyHanded"),
-                  roomIdVerified: tCazari("checkinRoomIdVerified"),
-                  roomIdMissing: tCazari("checkinRoomIdMissing"),
-                  allRoomsDone: tCazari("checkinAllRoomsDone"),
-                  partialHint: tCazari("checkinPartialHint"),
+                  roomChecked: tStays("checkinRoomChecked"),
+                  roomPending: tStays("checkinRoomPending"),
+                  roomKeyHanded: tStays("checkinRoomKeyHanded"),
+                  roomIdVerified: tStays("checkinRoomIdVerified"),
+                  roomIdMissing: tStays("checkinRoomIdMissing"),
+                  allRoomsDone: tStays("checkinAllRoomsDone"),
+                  partialHint: tStays("checkinPartialHint"),
                 }}
               />
             </div>
@@ -432,11 +432,11 @@ export function BookingOperationalPanel({
         </section>
       </div>
 
-      {canEmitFisa ? (
+      {canEmitTouristSheet ? (
         <div className="bd-ops__footer">
           <TouristSheetLauncher
             bookingId={bookingId}
-            label={tCazari("emitFisa")}
+            label={tStays("emitTouristSheet")}
           />
         </div>
       ) : null}

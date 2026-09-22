@@ -1,7 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
-import { countCereriNoi, listCereriNoiPreview } from "@/services/bookings/queries";
+import { countNewRequests, listNewRequestsPreview } from "@/services/bookings/queries";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { PhoneBookingForm } from "./PhoneBookingForm";
 import { getTranslations } from "next-intl/server";
@@ -13,7 +13,7 @@ export async function AdminQuickPanel({
 }: {
   checkInTime: string;
   checkOutTime: string;
-  /** Parent already verified admin session (e.g. receptie page). */
+  /** Parent already verified admin session (e.g. reception page). */
   adminVerified?: boolean;
 }) {
   if (!adminVerified) {
@@ -23,18 +23,18 @@ export async function AdminQuickPanel({
     }
   }
 
-  const [t, cereriBundle] = await Promise.all([
+  const [t, requestsBundle] = await Promise.all([
     getTranslations("public.staffPanel"),
-    Promise.all([countCereriNoi(), listCereriNoiPreview(10)])
+    Promise.all([countNewRequests(), listNewRequestsPreview(10)])
       .then(([total, preview]) => ({ total, preview }))
-      .catch(() => ({ total: 0, preview: [] as Awaited<ReturnType<typeof listCereriNoiPreview>> })),
+      .catch(() => ({ total: 0, preview: [] as Awaited<ReturnType<typeof listNewRequestsPreview>> })),
   ]);
-  const cereriTotal = cereriBundle.total;
-  const cereri = cereriBundle.preview;
+  const requestTotal = requestsBundle.total;
+  const requests = requestsBundle.preview;
 
   return (
     <section
-      id="receptie"
+      id="reception"
       className="scroll-mt-20 rounded-xl border border-zinc-800/10 bg-zinc-900 text-zinc-100 shadow-lg"
     >
       <div className="border-b border-zinc-700/80 px-4 py-3">
@@ -55,17 +55,17 @@ export async function AdminQuickPanel({
         <div className="rounded-lg bg-zinc-800/50 p-4">
           <p className="mb-3 flex items-center justify-between text-xs font-medium text-zinc-300">
             <span>{t("pendingTitle")}</span>
-            {cereriTotal > 0 && (
+            {requestTotal > 0 && (
               <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                {cereriTotal}
+                {requestTotal}
               </span>
             )}
           </p>
-          {cereriTotal === 0 ? (
+          {requestTotal === 0 ? (
             <p className="text-xs text-zinc-500">{t("noRequests")}</p>
           ) : (
             <ul className="max-h-48 space-y-2 overflow-y-auto">
-              {cereri.map((c) => (
+              {requests.map((c) => (
                 <li
                   key={c.id}
                   className="admin-quick-panel__row flex items-center justify-between gap-2 rounded-md bg-zinc-900/80 px-3 py-2 text-xs"

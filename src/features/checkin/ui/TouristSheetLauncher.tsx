@@ -6,7 +6,7 @@ import { loadTouristSheetAction } from "@/features/checkin/actions";
 import { TouristSheetView } from "@/features/checkin/ui/TouristSheetView";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminFloatingPanel } from "@/components/admin/overlay/AdminFloatingPanel";
-import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
+import type { TouristSheetData } from "@/domain/checkin/tourist-sheet";
 
 export function TouristSheetLauncher({
   bookingId,
@@ -17,7 +17,7 @@ export function TouristSheetLauncher({
   label: string;
   className?: string;
 }) {
-  const tFisa = useTranslations("admin.checkIn.fisa");
+  const tSheet = useTranslations("admin.checkIn.touristSheet");
   const tCommon = useTranslations("common");
   const { showToast } = useAdminFx();
   const [loading, setLoading] = useState(false);
@@ -60,7 +60,7 @@ export function TouristSheetLauncher({
         <AdminFloatingPanel
           open
           onClose={() => setSheetData(null)}
-          title={tFisa("title")}
+          title={tSheet("title")}
           variant="modal"
           width={720}
           className="tourist-sheet-modal"

@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 export default async function Loading() {
   const [t, tLoading] = await Promise.all([
-    getTranslations("admin.pages.cazari"),
+    getTranslations("admin.pages.stays"),
     getTranslations("admin.pages.loading"),
   ]);
   return (

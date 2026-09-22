@@ -1,24 +1,20 @@
 "use server";
 
-import { after } from "next/server";
-import { revalidatePath, revalidateTag } from "next/cache";
-import { requireAnyStaff, requireStaffPermission } from "@/lib/auth/require-admin";
+import { revalidateTag } from "next/cache";
+import { requireAnyStaff } from "@/lib/auth/require-admin";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import {
   revalidateBookingOperativeSurfaces,
+  revalidateBookingSurfacesExtended,
 } from "@/lib/cache/revalidate-admin";
-import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
 import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { createCheckin } from "@/services/checkin/create";
 import { updateCheckin } from "@/services/checkin/update";
-import { getCheckinSettings, updateCheckinSettings, checkinSettingsCacheTag } from "@/services/checkin/settings";
+import { getCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
-import {
-  patchBookingRowForCheckin,
-} from "@/services/bookings/synthetic-gantt-row";
-import type { BookingRow } from "@/services/bookings/types";
+import { patchBookingRowForCheckin } from "@/services/bookings/synthetic-gantt-row";
 import { createServerTimer } from "@/lib/dev/server-timing";
 import { listBookingPayments } from "@/services/booking-payments";
 import { resolveCheckinPaymentFromLedger } from "@/domain/checkin/payment-panel";
@@ -29,71 +25,25 @@ import { assertBookingPostCheckoutEditAllowed } from "@/services/bookings/post-c
 import {
   getCheckinByBookingId,
   getCheckedInRoomsForBooking,
+  getCheckinGuests,
 } from "@/services/checkin/queries";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
-import { buildTouristSheetFromPersisted } from "@/domain/checkin/fisa-turist";
-import type { TouristSheetData } from "@/domain/checkin/fisa-turist";
 import { mapBookingToForCheckin } from "@/domain/checkin/map-booking";
 import { mapPersistedCheckinGuestsToInput } from "@/domain/checkin/map-persisted-guests";
 import type {
   CheckinFormData,
-  CheckinGuestInput,
   PaymentStatus,
   CheckinType,
-  BookingForCheckin,
-  CheckinSettings,
 } from "@/domain/checkin/types";
 import { parseCheckinGuestsJson } from "@/domain/checkin/guest-input-schema";
-import { getCheckinGuests } from "@/services/checkin/queries";
 import { listRegisteredGuestsForCheckin } from "@/services/checkin/booking-guests";
 import { syncBookingOperativeCheckInFromRecord } from "@/services/checkin/sync";
-import { updateCheckinPayment } from "@/services/checkin/update-payment";
-import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
 import type { CheckinTransferOffer } from "@/domain/checkin/identity-result";
 import { decodeCheckinTransferRequired } from "@/domain/checkin/identity-result";
-import type { BookingCheckinPaymentPanelData } from "@/domain/checkin/payment-panel";
-
-export type CheckinWizardContextResult = {
-  ok: boolean;
-  error?: string;
-  booking?: BookingForCheckin;
-  settings?: CheckinSettings;
-  hasExistingCheckin?: boolean;
-  checkedInRooms?: string[];
-  roomCheckinComplete?: boolean;
-  /** Populat când se editează un check-in existent. */
-  editContext?: {
-    checkinId: string;
-    guests: CheckinGuestInput[];
-    paymentStatus: PaymentStatus;
-    paymentAmountPaid: number;
-    depositAmount: number;
-    keysHandedRooms: string[];
-    notes: string;
-  };
-  /** Plată inițială la deschiderea wizard-ului (create sau continuare camere). */
-  partialPayment?: {
-    paymentStatus: PaymentStatus;
-    paymentAmountPaid: number;
-    depositAmount: number;
-    ledgerCollectedHint?: string;
-  };
-};
-
-export type CreateCheckinResult = {
-  ok: boolean;
-  error?: string;
-  checkinId?: string;
-  ganttBooking?: BookingRow;
-  needsTransfer?: boolean;
-  transferOffer?: CheckinTransferOffer;
-};
-
-export type LoadTouristSheetResult = {
-  ok: boolean;
-  error?: string;
-  data?: TouristSheetData;
-};
+import type {
+  CheckinWizardContextResult,
+  CreateCheckinResult,
+} from "./types";
 
 async function buildLedgerCollectedHint(
   payments: PaymentEntry[],
@@ -153,9 +103,24 @@ async function loadWizardPaymentDefaults(
   };
 }
 
-/**
- * Server action: load booking + settings for the full check-in wizard.
- */
+function mapCreateCheckinError(
+  err: unknown,
+  t: Awaited<ReturnType<typeof getTranslations<"admin.checkIn">>>,
+): { ok: false; error: string } | { ok: false; needsTransfer: true; transferOffer: CheckinTransferOffer } {
+  const msg = err instanceof Error ? err.message : "Unknown error";
+  if (isCheckinMigrationMissing(msg)) {
+    return { ok: false, error: t("migrationRequired") };
+  }
+  const transferOffer = decodeCheckinTransferRequired(msg);
+  if (transferOffer) {
+    return { ok: false, needsTransfer: true, transferOffer };
+  }
+  if (msg.startsWith("checkin.blocked:")) {
+    return { ok: false, error: msg.replace("checkin.blocked: ", "") };
+  }
+  return { ok: false, error: msg };
+}
+
 export async function loadCheckinWizardContextAction(
   bookingId: string,
   options?: { edit?: boolean },
@@ -175,10 +140,8 @@ export async function loadCheckinWizardContextAction(
 
     if (existingCheckin && !booking.actual_check_in_at) {
       await syncBookingOperativeCheckInFromRecord(bookingId, existingCheckin);
-      after(async () => {
-        const tenantId = await resolveTenantIdForData();
-        revalidateBookingSurfacesExtended({ bookingId, tenantId, includeHistoric: true });
-      });
+      const tenantId = await resolveTenantIdForData();
+      revalidateBookingSurfacesExtended({ bookingId, tenantId, includeHistoric: true });
       booking = {
         ...booking,
         actual_check_in_at: existingCheckin.checked_in_at,
@@ -212,8 +175,8 @@ export async function loadCheckinWizardContextAction(
 
       const guestRows = await getCheckinGuests(existingCheckin.id);
       if (!guestRows.length) {
-        const t = await getTranslations("admin.pages.cazari");
-        return { ok: false, error: t("emitFisaNoGuests") };
+        const t = await getTranslations("admin.pages.stays");
+        return { ok: false, error: t("emitTouristSheetNoGuests") };
       }
 
       const paymentDefaults = await loadWizardPaymentDefaults(
@@ -279,161 +242,6 @@ export async function loadCheckinWizardContextAction(
   }
 }
 
-export async function loadBookingCheckinPaymentPanelAction(
-  bookingId: string,
-): Promise<
-  | { ok: true; data: BookingCheckinPaymentPanelData }
-  | { ok: false; error: string }
-> {
-  await requireAnyStaff();
-
-  try {
-    const id = bookingId.trim();
-    if (!id) return { ok: false, error: "booking_id required" };
-
-    const [booking, checkin, settings] = await Promise.all([
-      getBookingById(id),
-      getCheckinByBookingId(id),
-      getCheckinSettings(),
-    ]);
-
-    if (!booking || booking.status !== "confirmata") {
-      const t = await getTranslations("admin.serverActions");
-      return { ok: false, error: t("bookingNotFound") };
-    }
-
-    if (!checkin) {
-      const t = await getTranslations("admin.checkinPayment");
-      return { ok: false, error: t("noCheckin") };
-    }
-
-    const [checkedInRooms, registeredGuests] = await Promise.all([
-      getCheckedInRoomsForBooking(id).catch(() => [] as string[]),
-      listRegisteredGuestsForCheckin(
-        id,
-        booking.guest_id,
-        booking.room_names,
-      ).catch(() => []),
-    ]);
-
-    const bookingForCheckin = mapBookingToForCheckin({
-      ...booking,
-      checked_in_rooms: checkedInRooms,
-      registered_guests: registeredGuests,
-    });
-
-    const ledgerPayments = await listBookingPayments(id);
-    const resolved = resolveCheckinPaymentFromLedger(
-      booking.total_price ?? 0,
-      {
-        paymentStatus: checkin.payment_status,
-        paymentAmountPaid: Number(checkin.payment_amount_paid ?? 0),
-      },
-      ledgerPayments,
-    );
-
-    return {
-      ok: true,
-      data: {
-        checkinId: checkin.id,
-        bookingId: booking.id,
-        guestName: booking.guest_name,
-        plannedCheckIn: booking.check_in,
-        plannedCheckOut: booking.check_out,
-        totalPrice: booking.total_price ?? 0,
-        paymentStatus: resolved.paymentStatus,
-        paymentAmountPaid: resolved.paymentAmountPaid,
-        depositAmount: Number(checkin.deposit_amount ?? 0),
-        settings,
-        bookingForCheckin,
-      },
-    };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
-    return { ok: false, error: msg };
-  }
-}
-
-export async function updateCheckinPaymentAction(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
-  await requireAnyStaff();
-
-  try {
-    const checkinId = String(formData.get("checkin_id") ?? "");
-    const bookingId = String(formData.get("booking_id") ?? "");
-    if (!checkinId) return { ok: false, error: "checkin_id required" };
-    if (!bookingId) return { ok: false, error: "booking_id required" };
-
-    const paymentStatus =
-      (formData.get("payment_status") as PaymentStatus) ?? "unpaid";
-    const paymentAmountPaid = Number(formData.get("payment_amount_paid")) || 0;
-    const depositAmount = Number(formData.get("deposit_amount")) || 0;
-
-    const booking = await getBookingById(bookingId);
-    if (!booking) return { ok: false, error: "Booking not found" };
-    await assertBookingPostCheckoutEditAllowed(booking);
-
-    const bookingForCheckin = mapBookingToForCheckin(booking);
-    const settings = await getCheckinSettings();
-
-    await updateCheckinPayment(
-      checkinId,
-      {
-        payment_status: paymentStatus,
-        payment_amount_paid: paymentAmountPaid,
-        deposit_amount: depositAmount,
-      },
-      settings,
-      bookingForCheckin,
-    );
-
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
-      revalidateTag(CACHE_TAGS.checkins, "max");
-      revalidateBookingOperativeSurfaces(bookingId, tenantId);
-    });
-
-    return { ok: true };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
-    if (msg.startsWith("checkin.blocked:")) {
-      return { ok: false, error: msg.replace("checkin.blocked: ", "") };
-    }
-    return { ok: false, error: msg };
-  }
-}
-
-function mapCreateCheckinError(
-  err: unknown,
-  t: Awaited<ReturnType<typeof getTranslations<"admin.checkIn">>>,
-): { ok: false; error: string } | { ok: false; needsTransfer: true; transferOffer: CheckinTransferOffer } {
-  const msg = err instanceof Error ? err.message : "Unknown error";
-  if (isCheckinMigrationMissing(msg)) {
-    return { ok: false, error: t("migrationRequired") };
-  }
-  const transferOffer = decodeCheckinTransferRequired(msg);
-  if (transferOffer) {
-    return { ok: false, needsTransfer: true, transferOffer };
-  }
-  if (msg.startsWith("checkin.blocked:")) {
-    return { ok: false, error: msg.replace("checkin.blocked: ", "") };
-  }
-  return { ok: false, error: msg };
-}
-
-/**
- * Server action: create a check-in from the stepper form.
- */
 export async function createCheckinAction(
   formData: FormData,
 ): Promise<CreateCheckinResult> {
@@ -453,7 +261,6 @@ export async function createCheckinAction(
     const keyHanded = formData.get("key_handed") === "true";
     const notes = String(formData.get("notes") ?? "").trim() || undefined;
 
-    // Parse guests from JSON
     const guestsJson = String(formData.get("guests") ?? "[]");
     const guestsParsed = parseCheckinGuestsJson(guestsJson);
     if (!guestsParsed.ok) {
@@ -495,7 +302,6 @@ export async function createCheckinAction(
       String(formData.get("transfer_booking_to_guest_id") ?? "").trim() ||
       undefined;
 
-    // Load booking + settings in parallel
     const [booking, settings] = await Promise.all([
       getBookingById(bookingId),
       getCheckinSettings(),
@@ -505,7 +311,6 @@ export async function createCheckinAction(
 
     const bookingForCheckin = mapBookingToForCheckin(booking);
 
-    // Build form data
     const checkinData: CheckinFormData = {
       type,
       booking_id: bookingId,
@@ -524,12 +329,9 @@ export async function createCheckinAction(
     const checkinId = await createCheckin(checkinData, settings, bookingForCheckin);
     timer.mark("createCheckin");
 
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
-      revalidateTag(CACHE_TAGS.checkins, "max");
-      revalidateBookingOperativeSurfaces(bookingId, tenantId);
-    });
+    const tenantId = await resolveTenantIdForData();
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
+    revalidateBookingOperativeSurfaces(bookingId, tenantId);
 
     const ganttBooking = patchBookingRowForCheckin(booking, {
       checkedInAt: new Date().toISOString(),
@@ -644,12 +446,9 @@ export async function updateCheckinAction(
 
     await updateCheckin(checkinId, checkinData, settings, bookingForCheckin);
 
-    after(async () => {
-      const tenantId = await resolveTenantIdForData();
-      revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
-      revalidateTag(CACHE_TAGS.checkins, "max");
-      revalidateBookingOperativeSurfaces(bookingId, tenantId);
-    });
+    const tenantId = await resolveTenantIdForData();
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.checkins), "max");
+    revalidateBookingOperativeSurfaces(bookingId, tenantId);
 
     const ganttBooking = patchBookingRowForCheckin(booking, {
       checkedInAt: booking.actual_check_in_at ?? new Date().toISOString(),
@@ -661,163 +460,5 @@ export async function updateCheckinAction(
   } catch (err) {
     const t = await getTranslations("admin.checkIn");
     return mapCreateCheckinError(err, t);
-  }
-}
-
-/**
- * Server action: update check-in settings (owner panel).
- */
-export async function updateCheckinSettingsAction(
-  formData: FormData,
-): Promise<{ ok: boolean; error?: string }> {
-  const t = await getTranslations("admin.serverActions");
-
-  try {
-    await requireStaffPermission("pension_settings");
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "auth.role_forbidden";
-    if (msg === "auth.login_required") {
-      return { ok: false, error: t("invalidUserOrPassword") };
-    }
-    if (msg === "auth.tenant_member_required" || msg === "auth.role_forbidden") {
-      return { ok: false, error: t("roleForbidden") };
-    }
-    return { ok: false, error: msg };
-  }
-
-  try {
-    const input: Record<string, unknown> = {};
-
-    const fields = [
-      "checkin_doc_rule",
-      "checkin_phone_rule",
-      "checkin_cnp_rule",
-      "checkin_payment_rule",
-      "group_checkin_mode",
-      "checkin_key_rule",
-      "checkin_ids_per_room",
-    ];
-
-    for (const f of fields) {
-      const v = formData.get(f);
-      if (v == null) continue;
-      input[f] = String(v).trim();
-    }
-
-    const intFields = ["checkin_min_payment_pct"];
-    for (const f of intFields) {
-      const v = formData.get(f);
-      if (v != null) input[f] = Number(v);
-    }
-
-    const numFields = [
-      "checkin_deposit_amount",
-      "late_checkout_fee",
-      "early_checkin_fee",
-      "early_checkout_fee",
-    ];
-    for (const f of numFields) {
-      const v = formData.get(f);
-      if (v != null) input[f] = Number(v);
-    }
-
-    const boolFields = [
-      "checkin_deposit",
-      "walkin_allowed",
-      "late_checkout_allowed",
-      "checkout_block_unpaid",
-      "early_checkin_allowed",
-      "early_checkout_allowed",
-      "allow_post_checkout_edits",
-    ];
-    for (const f of boolFields) {
-      const v = formData.get(f);
-      if (v != null) input[f] = v === "true";
-    }
-
-    await updateCheckinSettings(input);
-
-    // Log settings change
-    await logAdminActivityFromSession({
-      action: "settings.updated",
-      entityType: "settings",
-      summary: "Check-in settings updated",
-      metadata: { section: "checkin", ...input },
-    });
-
-    // Revalidate settings cache
-    const tenantId = await resolveTenantIdForData();
-    revalidateTag(
-      tenantTag(tenantId, CACHE_TAGS.pensionSettings),
-      "max",
-    );
-    revalidateTag(CACHE_TAGS.pensionSettings, "max");
-    revalidateTag(checkinSettingsCacheTag(tenantId), "max");
-
-    return { ok: true };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
-    if (msg === "settings.pension_settings_missing") {
-      const t = await getTranslations("admin.pages.settings.checkin");
-      return { ok: false, error: t("saveMissingRow") };
-    }
-    return { ok: false, error: msg };
-  }
-}
-
-/**
- * Server action: rebuild fișa turist from a completed check-in.
- */
-export async function loadTouristSheetAction(
-  bookingId: string,
-): Promise<LoadTouristSheetResult> {
-  await requireAnyStaff();
-
-  try {
-    if (!bookingId) return { ok: false, error: "booking_id required" };
-
-    const booking = await getBookingById(bookingId);
-    if (!booking) return { ok: false, error: "Booking not found" };
-
-    const checkin = await getCheckinByBookingId(bookingId);
-    if (!checkin) {
-      const t = await getTranslations("admin.pages.cazari");
-      return {
-        ok: false,
-        error: booking.actual_check_in_at
-          ? t("emitFisaLegacyCheckin")
-          : t("emitFisaNoCheckin"),
-      };
-    }
-
-    const [guestRows, settings] = await Promise.all([
-      getCheckinGuests(checkin.id),
-      getCheckinSettings(),
-    ]);
-
-    if (!guestRows.length) {
-      const t = await getTranslations("admin.pages.cazari");
-      return { ok: false, error: t("emitFisaNoGuests") };
-    }
-
-    const data = buildTouristSheetFromPersisted(
-      mapBookingToForCheckin(booking),
-      mapPersistedCheckinGuestsToInput(guestRows),
-      settings,
-      checkin.checked_in_at,
-    );
-
-    return { ok: true, data };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
-    return { ok: false, error: msg };
   }
 }

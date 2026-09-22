@@ -1,10 +1,10 @@
 import { Link } from "@/i18n/navigation";
-import type { CazariHorizonKey, CazariView } from "@/domain/cazari/horizon";
-import type { CazariLabels } from "@/features/cazari/ui/types";
+import type { StayHorizonKey, StayListView } from "@/domain/stays/horizon";
+import type { StayListLabels } from "@/features/stays/ui/types";
 
-const VIEWS: CazariView[] = ["cereri", "confirmate", "anulate"];
+const VIEWS: StayListView[] = ["requests", "confirmed", "cancelled"];
 
-export function CazariOpsToolbar({
+export function StayOpsToolbar({
   labels,
   view,
   horizon,
@@ -14,36 +14,22 @@ export function CazariOpsToolbar({
   filterLabels,
   filtersAria,
 }: {
-  labels: CazariLabels;
-  view: CazariView;
-  horizon: CazariHorizonKey;
-  metrics: {
-    cereri: number;
-    confirmate: number;
-    anulate: number;
-  };
-  buildViewHref: (next: CazariView) => string;
-  buildHorizonHref: (next: CazariHorizonKey) => string;
-  filterLabels: {
-    cereri: string;
-    confirmate: string;
-    anulate: string;
-  };
+  labels: StayListLabels;
+  view: StayListView;
+  horizon: StayHorizonKey;
+  metrics: Record<StayListView, number>;
+  buildViewHref: (next: StayListView) => string;
+  buildHorizonHref: (next: StayHorizonKey) => string;
+  filterLabels: Record<StayListView, string>;
   filtersAria: string;
 }) {
-  const counts: Record<CazariView, number> = {
-    cereri: metrics.cereri,
-    confirmate: metrics.confirmate,
-    anulate: metrics.anulate,
-  };
-
   return (
-    <div className="cazari-sticky-toolbar">
-      <div className="cazari-view-filters" role="tablist" aria-label={filtersAria}>
+    <div className="stays-sticky-toolbar">
+      <div className="stays-view-filters" role="tablist" aria-label={filtersAria}>
         {VIEWS.map((key) => {
           const active = view === key;
-          const count = counts[key];
-          const cereriAlert = key === "cereri" && count > 0 && !active;
+          const count = metrics[key];
+          const requestsAlert = key === "requests" && count > 0 && !active;
 
           return (
             <Link
@@ -52,25 +38,25 @@ export function CazariOpsToolbar({
               role="tab"
               aria-selected={active}
               className={[
-                "cazari-view-filter",
-                active && "cazari-view-filter--active",
-                key === "cereri" && active && "cazari-view-filter--cereri-active",
-                key === "cereri" && cereriAlert && "cazari-view-filter--cereri-alert",
-                key === "confirmate" && active && "cazari-view-filter--confirm-active",
-                key === "anulate" && active && "cazari-view-filter--anulate-active",
+                "stays-view-filter",
+                active && "stays-view-filter--active",
+                key === "requests" && active && "stays-view-filter--requests-active",
+                key === "requests" && requestsAlert && "stays-view-filter--requests-alert",
+                key === "confirmed" && active && "stays-view-filter--confirmed-active",
+                key === "cancelled" && active && "stays-view-filter--cancelled-active",
               ]
                 .filter(Boolean)
                 .join(" ")}
             >
-              <span className="cazari-view-filter__label">{filterLabels[key]}</span>
-              <span className="cazari-view-filter__count">{count}</span>
+              <span className="stays-view-filter__label">{filterLabels[key]}</span>
+              <span className="stays-view-filter__count">{count}</span>
             </Link>
           );
         })}
       </div>
 
-      <div className="cazari-horizon flex flex-wrap items-center gap-2">
-        <span className="cazari-horizon__label text-[11px] font-semibold text-zinc-600">
+      <div className="stays-horizon flex flex-wrap items-center gap-2">
+        <span className="stays-horizon__label text-[11px] font-semibold text-zinc-600">
           {labels.visibleWindow}
         </span>
         {(
@@ -87,10 +73,10 @@ export function CazariOpsToolbar({
             key={key}
             href={buildHorizonHref(key)}
             className={[
-              "cazari-horizon__pill rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+              "stays-horizon__pill rounded-full border px-2 py-0.5 text-[11px] font-semibold",
               horizon === key
-                ? "cazari-horizon__pill--active"
-                : "cazari-horizon__pill--idle",
+                ? "stays-horizon__pill--active"
+                : "stays-horizon__pill--idle",
             ].join(" ")}
           >
             {label}

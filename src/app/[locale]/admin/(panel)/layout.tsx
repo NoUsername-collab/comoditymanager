@@ -26,7 +26,7 @@ export default async function AdminLayout({
   ]);
 
   const {
-    cereriCount,
+    requestCount,
     locationUnlocked,
     statisticsAccess,
     appearanceSettings,
@@ -38,7 +38,7 @@ export default async function AdminLayout({
         <div className="admin-hud">
           <div className="admin-hud__surface">
             <AdminTopBar
-              cereriCount={cereriCount}
+              requestCount={requestCount}
               locationUnlocked={locationUnlocked}
             />
           </div>
@@ -48,10 +48,10 @@ export default async function AdminLayout({
           <OnboardingBarLazy />
         </Suspense>
 
-        {cereriCount > 0 && (
+        {requestCount > 0 && (
           <div className="admin-hud-alert px-4 py-1.5 text-center text-xs">
             <Link href="/admin/cazari?view=cereri" className="admin-hud-alert__link">
-              {t("pendingCount", { count: cereriCount })}
+              {t("pendingCount", { count: requestCount })}
             </Link>{" "}
             {t("pendingSuffix")}
           </div>
@@ -62,7 +62,7 @@ export default async function AdminLayout({
         </AdminShellClient>
 
         <AdminMobileBottomNav
-          cereriCount={cereriCount}
+          requestCount={requestCount}
           locationUnlocked={locationUnlocked}
           statisticsAccess={statisticsAccess}
         />

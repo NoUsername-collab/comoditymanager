@@ -1,5 +1,5 @@
 /** Serializable copy strings for the Cazări page — no I/O. */
-export type CazariLabels = {
+export type StayListLabels = {
   noContact: string;
   noRoom: string;
   statusConfirmed: string;
@@ -26,8 +26,8 @@ export type CazariLabels = {
   cancelRequest: string;
   quickAccept: string;
   quickAcceptSuccess: string;
-  emitFisa: string;
-  completeCheckinForFisa: string;
+  emitTouristSheet: string;
+  completeCheckinForTouristSheet: string;
   checkInOnlyOnArrivalDay: string;
   guestsShort: string;
   cancelConfirmedMsg: string;

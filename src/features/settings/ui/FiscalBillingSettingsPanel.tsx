@@ -2,13 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import "@/features/checkin/ui/import-checkin-styles";
 import { updateFiscalBillingSettingsAction } from "@/features/settings/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
 import {
-  formatFisaPropertyAddress,
-  parseFisaPropertyAddress,
-  type FisaPropertyAddressParts,
-} from "@/domain/checkin/fisa-property-address";
+  formatTouristSheetAddress,
+  parseTouristSheetAddress,
+  type TouristSheetAddressParts,
+} from "@/domain/checkin/tourist-sheet-address";
 import {
   getCountryFiscalProfile,
   isFiscalSellerComplete,
@@ -36,7 +37,7 @@ type FiscalDraft = {
   taxId: string;
   regCom: string;
   tourismLicense: string;
-  addressParts: FisaPropertyAddressParts;
+  addressParts: TouristSheetAddressParts;
   invoiceSeries: string;
   vatEnabled: boolean;
   vatRate: string;
@@ -84,7 +85,7 @@ function buildDraft(
     taxId: checkinSettings.fisa_owner_cui ?? "",
     regCom: bookingRules.invoiceSellerRegCom ?? "",
     tourismLicense: checkinSettings.fisa_tourism_license ?? "",
-    addressParts: parseFisaPropertyAddress(checkinSettings.fisa_property_address),
+    addressParts: parseTouristSheetAddress(checkinSettings.fisa_property_address),
     invoiceSeries: bookingRules.invoiceSeries,
     vatEnabled: bookingRules.invoiceVatEnabled,
     vatRate: String(
@@ -150,7 +151,7 @@ export function FiscalBillingSettingsPanel({
 
   function saveDraft() {
     setSaveError(null);
-    const address = formatFisaPropertyAddress(draft.addressParts);
+    const address = formatTouristSheetAddress(draft.addressParts);
     const nextBooking: Partial<BookingRulesSettings> = {};
     const nextCheckin: Partial<CheckinSettings> = {};
 
@@ -332,7 +333,7 @@ export function FiscalBillingSettingsPanel({
       </div>
 
       {saveError ? (
-        <p className="checkin-fisa-save__error" role="alert">
+        <p className="checkin-sheet-save__error" role="alert">
           {saveError}
         </p>
       ) : null}
@@ -381,7 +382,7 @@ export function FiscalBillingSettingsPanel({
             <dd>{checkinSettings.fisa_tourism_license || "—"}</dd>
           </div>
           <div className="fiscal-settings__summary-row fiscal-settings__summary-row--wide">
-            <dt>{tCheckin("fisaAddress")}</dt>
+            <dt>{tCheckin("touristSheetAddress")}</dt>
             <dd>{checkinSettings.fisa_property_address || "—"}</dd>
           </div>
           <div className="fiscal-settings__summary-row">
@@ -462,14 +463,14 @@ export function FiscalBillingSettingsPanel({
           <div className="checkin-setting-row checkin-setting-row--stack">
             <div className="checkin-setting-row__left">
               <span className="checkin-setting-row__label">
-                {tCheckin("fisaAddress")}
+                {tCheckin("touristSheetAddress")}
               </span>
             </div>
             <div className="checkin-setting-row__right checkin-setting-row__right--wide">
-              <div className="checkin-fisa-address">
-                <label className="checkin-fisa-address__field">
-                  <span className="checkin-fisa-address__label">
-                    {tCheckin("fisaStreet")}
+              <div className="checkin-sheet-address">
+                <label className="checkin-sheet-address__field">
+                  <span className="checkin-sheet-address__label">
+                    {tCheckin("touristSheetStreet")}
                   </span>
                   <input
                     type="text"
@@ -486,10 +487,10 @@ export function FiscalBillingSettingsPanel({
                     }
                   />
                 </label>
-                <div className="checkin-fisa-address__row">
-                  <label className="checkin-fisa-address__field">
-                    <span className="checkin-fisa-address__label">
-                      {tCheckin("fisaLocality")}
+                <div className="checkin-sheet-address__row">
+                  <label className="checkin-sheet-address__field">
+                    <span className="checkin-sheet-address__label">
+                      {tCheckin("touristSheetLocality")}
                     </span>
                     <input
                       type="text"
@@ -506,9 +507,9 @@ export function FiscalBillingSettingsPanel({
                       }
                     />
                   </label>
-                  <label className="checkin-fisa-address__field">
-                    <span className="checkin-fisa-address__label">
-                      {tCheckin("fisaCounty")}
+                  <label className="checkin-sheet-address__field">
+                    <span className="checkin-sheet-address__label">
+                      {tCheckin("touristSheetCounty")}
                     </span>
                     <input
                       type="text"

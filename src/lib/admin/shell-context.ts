@@ -12,7 +12,8 @@ import {
   pensionTeamPermissions,
   type PensionSettings,
 } from "@/services/pension-settings";
-import { countCereriNoi } from "@/services/bookings/queries";
+import { countNewRequests } from "@/services/bookings/queries";
+import { resolvePensionStayTimes } from "@/lib/constants";
 
 const DEFAULT_APPEARANCE: ThemeSettings = {
   theme: "noir",
@@ -22,7 +23,7 @@ const DEFAULT_APPEARANCE: ThemeSettings = {
 export type AdminShellContext = {
   staff: Awaited<ReturnType<typeof requireStaff>>;
   pension: PensionSettings | null;
-  cereriCount: number;
+  requestCount: number;
   isAdmin: boolean;
   locationUnlocked: boolean;
   statisticsAccess: boolean;
@@ -34,17 +35,17 @@ export type AdminShellContext = {
 
 /**
  * Single per-request admin shell payload: tenant bind, auth, pension settings,
- * cereri badge count, and nav permission flags — no duplicate getPensionSettings /
+ * new-request badge count, and nav permission flags — no duplicate getPensionSettings /
  * getStaffShellAccess round-trips.
  */
 export const loadAdminShellContext = cache(async (): Promise<AdminShellContext> => {
   const staffPromise = requireStaff();
   await bindTenantContextFromRequest();
 
-  const [staff, pension, cereriCount] = await Promise.all([
+  const [staff, pension, requestCount] = await Promise.all([
     staffPromise,
     getPensionSettings().catch(() => null),
-    countCereriNoi().catch(() => 0),
+    countNewRequests().catch(() => 0),
   ]);
 
   const teamPermissions = pensionTeamPermissions(pension);
@@ -53,10 +54,12 @@ export const loadAdminShellContext = cache(async (): Promise<AdminShellContext> 
     teamPermissions,
   );
 
+  const stayTimes = resolvePensionStayTimes(pension);
+
   return {
     staff,
     pension,
-    cereriCount,
+    requestCount,
     isAdmin: staff.role === "admin",
     locationUnlocked,
     statisticsAccess:
@@ -66,7 +69,7 @@ export const loadAdminShellContext = cache(async (): Promise<AdminShellContext> 
       ? pensionAppearanceSettings(pension)
       : DEFAULT_APPEARANCE,
     teamPermissions,
-    checkInTime: pension?.default_check_in_time ?? "14:00",
-    checkOutTime: pension?.default_check_out_time ?? "11:00",
+    checkInTime: stayTimes.checkIn,
+    checkOutTime: stayTimes.checkOut,
   };
 });

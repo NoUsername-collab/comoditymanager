@@ -11,7 +11,7 @@ import {
   deleteRoomBlockAction,
   extendRoomBlockAction,
   extendRoomHoldAction,
-  quickConfirmCerereFromGanttAction,
+  quickConfirmRequestFromGanttAction,
   releaseRoomHoldAction,
 } from "@/features/calendar/actions";
 import { cancelBookingOperativeAction } from "@/features/bookings/actions";
@@ -29,7 +29,7 @@ import {
   removeGanttLiveBooking,
   removeGanttLiveSegment,
 } from "@/lib/gantt/live-bookings";
-import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
+import { publishStayCancelled } from "@/lib/stays/live-stays";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import { GanttCreateActionMenu } from "@/features/calendar/ui/gantt-create-actions/GanttCreateActionMenu";
 import {
@@ -44,7 +44,7 @@ type CancelConfirmState = {
   guestName: string;
   checkIn: string;
   checkOut: string;
-  isCerere: boolean;
+  isRequest: boolean;
 };
 
 function MenuItem({
@@ -140,29 +140,29 @@ export function GanttContextMenuPanel() {
     guestName: string,
     checkIn: string,
     checkOut: string,
-    isCerere: boolean
+    isRequest: boolean
   ) {
     if (sheetMode) {
-      setCancelConfirm({ bookingId, guestName, checkIn, checkOut, isCerere });
+      setCancelConfirm({ bookingId, guestName, checkIn, checkOut, isRequest });
       return;
     }
     const period = formatStayPeriod(checkIn, checkOut, locale, true);
     if (
       !confirm(
-        isCerere
+        isRequest
           ? t("cancelRequestConfirm", { name: guestName, period })
           : t("cancelStayConfirm", { name: guestName, period })
       )
     ) {
       return;
     }
-    void executeCancelBooking(bookingId, guestName, isCerere);
+    void executeCancelBooking(bookingId, guestName, isRequest);
   }
 
   function executeCancelBooking(
     bookingId: string,
     guestName: string,
-    isCerere: boolean
+    isRequest: boolean
   ) {
     void runAdminAction(async () => {
       const res = await cancelBookingOperativeAction(bookingId);
@@ -170,9 +170,9 @@ export function GanttContextMenuPanel() {
         showToast({ kind: "error", title: t("error"), message: res.error });
         return;
       }
-      publishCazariStayCancelled(bookingId);
+      publishStayCancelled(bookingId);
       removeGanttLiveBooking(bookingId);
-      notifyCancel(isCerere ? t("requestCancelled") : t("stayCancelled"), guestName);
+      notifyCancel(isRequest ? t("requestCancelled") : t("stayCancelled"), guestName);
       setCancelConfirm(null);
       closeMenu();
     });
@@ -180,7 +180,7 @@ export function GanttContextMenuPanel() {
 
   function quickAccept(bookingId: string, guestName: string) {
     void runAdminAction(async () => {
-      const res = await quickConfirmCerereFromGanttAction(bookingId);
+      const res = await quickConfirmRequestFromGanttAction(bookingId);
       if (!res.ok) {
         showToast({ kind: "error", title: t("error"), message: res.error });
         if (res.error.includes("room") || res.error.includes("camer")) {
@@ -273,7 +273,7 @@ export function GanttContextMenuPanel() {
           {cancelConfirm ? (
             <>
               <p className="gantt-ctx-menu__head gantt-ctx-menu__confirm-msg">
-                {cancelConfirm.isCerere
+                {cancelConfirm.isRequest
                   ? t("cancelRequestConfirm", {
                       name: cancelConfirm.guestName,
                       period: formatStayPeriod(
@@ -301,7 +301,7 @@ export function GanttContextMenuPanel() {
                   executeCancelBooking(
                     cancelConfirm.bookingId,
                     cancelConfirm.guestName,
-                    cancelConfirm.isCerere
+                    cancelConfirm.isRequest
                   )
                 }
               />

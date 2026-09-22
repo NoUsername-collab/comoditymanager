@@ -12,10 +12,10 @@ import {
 import { useTranslations } from "next-intl";
 
 export function AdminNav({
-  cereriCount,
+  requestCount,
   locationUnlocked = false,
 }: {
-  cereriCount: number;
+  requestCount: number;
   locationUnlocked?: boolean;
 }) {
   const pathname = usePathname();
@@ -33,8 +33,8 @@ export function AdminNav({
     <nav className="admin-nav admin-hud__nav" aria-label={t("menuAria")}>
       {visibleTabs.map((tab) => {
         const active = isAdminTabActive(pathname, tab.href);
-        const isCazari = tab.href === "/admin/cazari";
-        const badge = isCazari && cereriCount > 0 ? cereriCount : null;
+        const isStaysTab = tab.href === "/admin/cazari";
+        const badge = isStaysTab && requestCount > 0 ? requestCount : null;
         const quest = badge != null && !active;
         const ariaLabel =
           badge != null
@@ -58,7 +58,7 @@ export function AdminNav({
             className={[
               "admin-nav-tab",
               active && "admin-nav-tab--active",
-              quest && "admin-nav-tab--quest admin-nav-tab--cereri-light",
+              quest && "admin-nav-tab--quest admin-nav-tab--requests-light",
             ]
               .filter(Boolean)
               .join(" ")}

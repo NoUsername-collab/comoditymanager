@@ -3,9 +3,9 @@ import { getTranslations } from "next-intl/server";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { GuestProfileBadges } from "@/features/guests/ui/GuestProfileBadges";
 import {
-  CERERE_LIST_MAX_SHOWN,
-  CERERE_LIST_PAGE_SIZE,
-  loadCereriListPage,
+  REQUEST_LIST_MAX_SHOWN,
+  REQUEST_LIST_PAGE_SIZE,
+  loadRequestsListPage,
 } from "@/features/bookings/loaders";
 import { AdminEmptyState } from "@/components/admin/ui/AdminEmptyState";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
@@ -18,72 +18,72 @@ export default async function AdminBookingsPage({
 }) {
   const params = await searchParams;
   const shown = Math.min(
-    CERERE_LIST_MAX_SHOWN,
+    REQUEST_LIST_MAX_SHOWN,
     Math.max(
-      CERERE_LIST_PAGE_SIZE,
-      Number(params.shown) || CERERE_LIST_PAGE_SIZE
+      REQUEST_LIST_PAGE_SIZE,
+      Number(params.shown) || REQUEST_LIST_PAGE_SIZE
     )
   );
 
-  const [t, { total, cereriResult }] = await Promise.all([
+  const [t, { total, requestsResult }] = await Promise.all([
     getTranslations("admin.pages.bookings"),
-    loadCereriListPage(shown),
+    loadRequestsListPage(shown),
   ]);
 
-  const cereri = cereriResult.ok ? cereriResult.data : [];
-  const error = cereriResult.ok
+  const requests = requestsResult.ok ? requestsResult.data : [];
+  const error = requestsResult.ok
     ? null
-    : cereriResult.error instanceof Error
-      ? cereriResult.error.message
+    : requestsResult.error instanceof Error
+      ? requestsResult.error.message
       : t("genericError");
 
-  const hasMore = total > shown && shown < CERERE_LIST_MAX_SHOWN;
-  const nextShown = shown + CERERE_LIST_PAGE_SIZE;
+  const hasMore = total > shown && shown < REQUEST_LIST_MAX_SHOWN;
+  const nextShown = shown + REQUEST_LIST_PAGE_SIZE;
 
   return (
     <AdminPageFrame title={t("title")} description={t("description")}>
       <AdminPanel title={t("windowTitle", { count: total })}>
         {error && <p className="text-sm text-red-800">{error}</p>}
 
-        {total > 0 && cereri.length < total && !error ? (
+        {total > 0 && requests.length < total && !error ? (
           <p className="mb-3 text-xs text-zinc-600">
-            {t("showingPartial", { shown: cereri.length, total })}
+            {t("showingPartial", { shown: requests.length, total })}
           </p>
         ) : null}
 
-        <ul className="cerere-list">
-          {cereri.map((c) => (
-            <li key={c.id} className="cerere-item">
-              <div className="cerere-item__head">
-                <div className="cerere-item__lead">
-                  <p className="cerere-item__name">{c.guest_name}</p>
-                  <p className="cerere-item__dates">
+        <ul className="request-list">
+          {requests.map((c) => (
+            <li key={c.id} className="request-item">
+              <div className="request-item__head">
+                <div className="request-item__lead">
+                  <p className="request-item__name">{c.guest_name}</p>
+                  <p className="request-item__dates">
                     {formatStayPeriod(c.check_in, c.check_out)}
                   </p>
                 </div>
                 <Link
                   href={`/admin/bookings/${c.id}`}
-                  className="cerere-item__action admin-cereri-fill"
+                  className="request-item__action admin-requests-fill"
                 >
                   {t("process")}
                 </Link>
               </div>
 
-              <div className="cerere-item__body">
-                <p className="cerere-item__guests">
+              <div className="request-item__body">
+                <p className="request-item__guests">
                   {c.num_adults} {t("adultsShort")}
                   {" · "}
                   {c.num_children} {t("childrenShort")}
                 </p>
                 {c.guest_email ? (
-                  <p className="cerere-item__email" title={c.guest_email}>
+                  <p className="request-item__email" title={c.guest_email}>
                     {c.guest_email}
                   </p>
                 ) : null}
                 {c.guest_id ? (
                   <Link
                     href={`/admin/guests/${c.guest_id}`}
-                    className="cerere-item__profile-link"
+                    className="request-item__profile-link"
                   >
                     {t("openClientProfile")} →
                   </Link>
@@ -91,7 +91,7 @@ export default async function AdminBookingsPage({
               </div>
 
               <GuestProfileBadges
-                variant="cerere"
+                variant="request"
                 profile={c.guest_profile}
                 alertLevel={c.guest_alert_level}
                 alertNote={c.guest_alert_note}
@@ -104,14 +104,14 @@ export default async function AdminBookingsPage({
           <div className="mt-4">
             <Link
               href={`/admin/bookings?shown=${nextShown}`}
-              className="cereri-load-more cazari-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
+              className="requests-load-more stays-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
             >
               {t("loadMore")}
             </Link>
           </div>
         ) : null}
 
-        {cereri.length === 0 && !error && (
+        {requests.length === 0 && !error && (
           <AdminEmptyState
             emoji="?"
             title={t("emptyTitle")}

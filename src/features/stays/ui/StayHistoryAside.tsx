@@ -1,19 +1,19 @@
-import { StayHistoryPanel } from "@/features/cazari/ui/StayHistoryPanel";
-import type { CancelledStay, CazariLabels } from "@/features/cazari/ui/types";
-import { loadCazariSidebarHistoryData } from "@/services/cazari-page-data";
+import { StayHistoryPanel } from "@/features/stays/ui/StayHistoryPanel";
+import type { CancelledStay, StayListLabels } from "@/features/stays/ui/types";
+import { loadStaysSidebarHistoryData } from "@/services/stays-page-data";
 import { getTranslations } from "next-intl/server";
 
 type Props = {
   query: string;
   cancelledItems: CancelledStay[];
   cancelledError: string | null;
-  labels: CazariLabels;
+  labels: StayListLabels;
 };
 
-function CazariHistoryAsideSkeleton() {
+function StayHistoryAsideSkeleton() {
   return (
     <div
-      className="cazari-history-skeleton admin-route-skeleton rounded-xl border border-neutral-800 bg-neutral-900/60 p-4"
+      className="stays-history-skeleton admin-route-skeleton rounded-xl border border-neutral-800 bg-neutral-900/60 p-4"
       aria-hidden
       aria-busy="true"
     >
@@ -27,15 +27,15 @@ function CazariHistoryAsideSkeleton() {
   );
 }
 
-export function CazariHistoryAsideFallback() {
+export function StayHistoryAsideFallback() {
   return (
     <aside className="min-w-0 xl:sticky xl:top-6 xl:self-start">
-      <CazariHistoryAsideSkeleton />
+      <StayHistoryAsideSkeleton />
     </aside>
   );
 }
 
-export async function CazariHistoryAside({
+export async function StayHistoryAside({
   query,
   cancelledItems,
   cancelledError,
@@ -43,10 +43,10 @@ export async function CazariHistoryAside({
 }: Props) {
   const [tCommon, historyResult] = await Promise.all([
     getTranslations("admin.common"),
-    loadCazariSidebarHistoryData(),
+    loadStaysSidebarHistoryData(),
   ]);
 
-  const formatCazariError = (message: string | null) =>
+  const formatStayError = (message: string | null) =>
     message == null ? null : message.trim() ? message : tCommon("error");
 
   const { data, errors } = historyResult;
@@ -58,8 +58,8 @@ export async function CazariHistoryAside({
         confirmedRecentItems={data.confirmedRecentHistory}
         cancelledItems={cancelledItems}
         query={query}
-        completedError={formatCazariError(errors.history)}
-        confirmedRecentError={formatCazariError(errors.confirmedRecentHistory)}
+        completedError={formatStayError(errors.history)}
+        confirmedRecentError={formatStayError(errors.confirmedRecentHistory)}
         cancelledError={cancelledError}
         labels={labels}
       />

@@ -570,7 +570,7 @@
       "emailOptional": "Email (optional)",
       "notesLabel": "Notes"
     },
-    "receptie": {
+    "reception": {
       "confirmedBanner": "Booking confirmed.",
       "backToAdmin": "← Админ панел",
       "backToSite": "← Public site"
@@ -627,7 +627,7 @@
       "receptionFallbackEmail": "reception@no-email.local"
     },
     "confirm": {
-      "backReceptie": "Quick reception",
+      "backReception": "Quick reception",
       "title": "Quick confirm",
       "adminLink": "Admin"
     },
@@ -685,8 +685,8 @@
       "more": "Още",
       "moreMenuAria": "Още админ секции",
       "moreClose": "Затвори менюто",
-      "receptie": "Рецепция",
-      "disponibilitate": "Наличност",
+      "reception": "Рецепция",
+      "availability": "Наличност",
       "buildings": "Сгради",
       "rooms": "Стаи",
       "devlog": "Дневник",
@@ -1277,22 +1277,22 @@
           "checkoutBlockUnpaidDesc": "Не позволява напускане, докато не е платено",
           "allowPostCheckoutEdits": "Редакции след check-out",
           "allowPostCheckoutEditsDesc": "Когато е изключено, само owner може да променя часове, дати или да отмени check-out след затваряне на престоя.",
-          "fisaTitle": "Туристическа карта (ANAF)",
-          "fisaNote": "Данни за формуляра за заетост на настаняване — OPANAF 381/2026.",
-          "fisaAddress": "Адрес на имота",
-          "fisaAddressDesc": "Раздел I — адрес на единицата за настаняване",
-          "fisaStreet": "Улица и номер",
-          "fisaStreetPlaceholder": "напр. ул. Михай Витязу № 12",
-          "fisaLocality": "Населено място",
-          "fisaLocalityPlaceholder": "напр. Синая",
-          "fisaCounty": "Област",
-          "fisaCountyPlaceholder": "напр. Прахова",
-          "fisaCui": "CUI на собственика (по избор)",
-          "fisaLicense": "№ туристическо разрешение",
-          "fisaLicenseDesc": "Ако имате разрешение от местната власт / DTITL",
-          "fisaSave": "Запази данни ANAF",
-          "fisaSaving": "Запазване…",
-          "fisaSaveHint": "Попълнете адрес, ДДС номер и разрешение, след което натиснете Запази. Използва се за туристическата карта и фактуриране."
+          "touristSheetTitle": "Туристическа карта (ANAF)",
+          "touristSheetNote": "Данни за формуляра за заетост на настаняване — OPANAF 381/2026.",
+          "touristSheetAddress": "Адрес на имота",
+          "touristSheetAddressDesc": "Раздел I — адрес на единицата за настаняване",
+          "touristSheetStreet": "Улица и номер",
+          "touristSheetStreetPlaceholder": "напр. ул. Михай Витязу № 12",
+          "touristSheetLocality": "Населено място",
+          "touristSheetLocalityPlaceholder": "напр. Синая",
+          "touristSheetCounty": "Област",
+          "touristSheetCountyPlaceholder": "напр. Прахова",
+          "touristSheetCui": "CUI на собственика (по избор)",
+          "touristSheetLicense": "№ туристическо разрешение",
+          "touristSheetLicenseDesc": "Ако имате разрешение от местната власт / DTITL",
+          "touristSheetSave": "Запази данни ANAF",
+          "touristSheetSaving": "Запазване…",
+          "touristSheetSaveHint": "Попълнете адрес, ДДС номер и разрешение, след което натиснете Запази. Използва се за туристическата карта и фактуриране."
         },
         "booking": {
           "saved": "Настройките са запазени",
@@ -1615,7 +1615,7 @@
         "roomCountLabel": "{count} стаи{suffix}",
         "buildingFilterSuffix": " · филтър сграда"
       },
-      "cazari": {
+      "stays": {
         "title": "Престои — Zalmox",
         "searchFilter": "Търси и филтрирай",
         "results": "Резултати",
@@ -1626,8 +1626,8 @@
         "cancelRequest": "Отмени заявката",
         "quickAccept": "Бързо приемане",
         "quickAcceptSuccess": "Престоят е потвърден",
-        "emitFisa": "Издай лист",
-        "completeCheckinForFisa": "Довърши настаняване (лист)",
+        "emitTouristSheet": "Издай лист",
+        "completeCheckinForTouristSheet": "Довърши настаняване (лист)",
         "checkInContinue": "Продължи настаняванията",
         "checkInNextRoom": "Приеми последната стая",
         "checkinRoomsProgress": "{checked} от {total} стаи приети",
@@ -1636,9 +1636,9 @@
         "checkinAllRoomsDone": "Всички стаи са приети",
         "checkinPartialHint": "Гостите могат да пристигат на части — приемай стая по стая.",
         "checkInOnlyOnArrivalDay": "Настаняване само в деня на пристигане ({date}).",
-        "emitFisaNoCheckin": "Няма записан настаняване за този престой.",
-        "emitFisaLegacyCheckin": "Само час на настаняване (без данни за лист). Натисни „Довърши настаняване (лист)“ за гостите.",
-        "emitFisaNoGuests": "Настаняването няма данни за гости за листа.",
+        "emitTouristSheetNoCheckin": "Няма записан настаняване за този престой.",
+        "emitTouristSheetLegacyCheckin": "Само час на настаняване (без данни за лист). Натисни „Довърши настаняване (лист)“ за гостите.",
+        "emitTouristSheetNoGuests": "Настаняването няма данни за гости за листа.",
         "openClientProfile": "Профил на клиента",
         "historyEmptyFilter": "Няма история за текущия филтър",
         "historyEmpty": "Историята е празна",
@@ -2036,7 +2036,7 @@
         "noBuildings": "Все още няма сгради — добави първата с бутона по-горе.",
         "unknownError": "Неизвестна грешка"
       },
-      "disponibilitate": {
+      "availability": {
         "description": "Heat map, KPI, свободни уикенди, филтър сграда, Shift+click интервал, live обновяване.",
         "title": "Наличност — Zalmox"
       }
@@ -2183,7 +2183,7 @@
       "unassignedRow": "Unassigned requests",
       "zoneRibbon": "Building zones",
       "todayPanel": "Today",
-      "cereriQueue": "New requests",
+      "requestsQueue": "New requests",
       "noUnassigned": "No unassigned requests in this range",
       "loadingGantt": "Loading calendar…",
       "ganttError": "Calendar could not be loaded. Check the database connection and try again.",
@@ -2351,8 +2351,8 @@
       "todayBoard": "Today",
       "roomGrid": "Room grid",
       "seeAll": "See all",
-      "previewCereri": "Latest requests",
-      "noCereriPreview": "No pending requests.",
+      "previewRequests": "Latest requests",
+      "noRequestsPreview": "No pending requests.",
       "openBookings": "Open requests",
       "attentionToday": "Attention today",
       "staffPreviewAttention": "Attention today",
@@ -3038,10 +3038,10 @@
       "openFullPanel": "Отвори пълния панел"
     },
     "dashboard": {
-      "quickCereri": "Нови заявки",
-      "quickCereriDesc": "Потвърди и разпредели стаи",
-      "quickReceptie": "Бърза рецепция",
-      "quickReceptieDesc": "Телефон и check-in",
+      "quickRequests": "Нови заявки",
+      "quickRequestsDesc": "Потвърди и разпредели стаи",
+      "quickReception": "Бърза рецепция",
+      "quickReceptionDesc": "Телефон и check-in",
       "quickCalendar": "Календар",
       "quickCalendarDesc": "Изглед месец / стаи",
       "quickAvail": "Месечна наличност",
@@ -3222,7 +3222,7 @@
         "ledgerCollectedHintMultiple": "Вече събрани {amount} RON ({count} записа) в регистъра на плащанията"
       },
       "keyHanded": "Ключ / код предаден",
-      "fisa": {
+      "touristSheet": {
         "title": "Лист за заетост на капацитет за настаняване",
         "subtitleOfficial": "(информативен формуляр — регистър капацитет)",
         "ministryLine": "Министерство на финансите",
@@ -3292,10 +3292,10 @@
       },
       "layers": {
         "all": "Всички",
-        "cereri": "Заявки",
-        "confirmate": "Потвърдени",
+        "requests": "Заявки",
+        "confirmed": "Потвърдени",
         "in_house": "In-house",
-        "trecute": "Минали",
+        "past": "Минали",
         "hold": "Hold",
         "block": "Блокировки"
       },
@@ -4239,7 +4239,7 @@
         "title": "Gantt kalendar",
         "desc": "Vizhte vsichki stai i nastani na edna stranica. Drag & drop, cvetove po sgrada, heatmap na zaetost."
       },
-      "cazari": {
+      "stays": {
         "title": "Nastani i zaqvki",
         "desc": "Upravlyavajte rezervacii, novi zaqvki i status na nastani — ot potvyrzhdenie do check-out."
       },
@@ -4251,7 +4251,7 @@
         "title": "Guest app",
         "desc": "Gostite dostъpvat Wi-Fi, informaciya za pansiona i onlajn check-in ot telefona — bez instalirane."
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Nalichnost",
         "desc": "Tarifi, sezoni i blokirani — sinhronizirani s kalendara i publichniya sajt."
       },

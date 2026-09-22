@@ -13,7 +13,7 @@ import {
 } from "@/domain/booking/operative-checkin";
 import { computeRoomCheckinProgress } from "@/domain/checkin/room-checkin-progress";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
-import { publishCazariStayPatch } from "@/lib/cazari/live-stays";
+import { publishStayPatch } from "@/lib/stays/live-stays";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -39,13 +39,13 @@ type Props = {
     checkActionsOnlyConfirmed: string;
     moveOnlyConfirmed: string;
     phoneRequiredForCheckIn: string;
-    completeCheckinForFisa: string;
-    /** Pre-rezolvat pe server — nu trimite funcții la client. */
+    completeCheckinForTouristSheet: string;
+    /** Resolved on the server — do not pass functions to the client. */
     checkInArrivalDayHint: string;
   };
   guestPhone?: string | null;
   hasCheckinRecord?: boolean;
-  emitFisaLabel?: string;
+  emitTouristSheetLabel?: string;
 };
 
 export function StayQuickOps({
@@ -61,7 +61,7 @@ export function StayQuickOps({
   labels,
   guestPhone,
   hasCheckinRecord = false,
-  emitFisaLabel,
+  emitTouristSheetLabel,
 }: Props) {
   const tCommon = useTranslations("common");
   const tServer = useTranslations("admin.serverActions");
@@ -87,7 +87,7 @@ export function StayQuickOps({
     checkedInRooms,
     today,
   };
-  const canEmitFisa = hasCheckinRecord && roomProgress.isComplete;
+  const canEmitTouristSheet = hasCheckinRecord && roomProgress.isComplete;
   const canWizardCheckIn =
     canOfferOperativeCheckIn({
       status: bookingStatus,
@@ -99,7 +99,7 @@ export function StayQuickOps({
       roomNames,
       checkedInRooms,
     }) && hasPhone;
-  const needsWizardForFisa =
+  const needsWizardForTouristSheet =
     canWizardCheckIn && !!actualCheckInAt && !hasCheckinRecord;
   const canNewCheckIn = canWizardCheckIn && !actualCheckInAt;
   const canContinueRooms =
@@ -114,14 +114,14 @@ export function StayQuickOps({
   const canMove =
     isConfirmed && (!actualCheckOutAt || canEditAfterCheckout);
   const checkInEnabled =
-    canNewCheckIn || canContinueRooms || needsWizardForFisa || canEditCheckInTimeEffective;
+    canNewCheckIn || canContinueRooms || needsWizardForTouristSheet || canEditCheckInTimeEffective;
 
   const canEditCheckOut = isConfirmed && !!actualCheckOutAt;
   const canEditCheckOutEffective = canEditCheckOut && !postCheckoutLocked;
   const checkoutLockedTitle = postCheckoutLocked ? tServer("checkoutLocked") : "";
 
-  const checkInLabel = needsWizardForFisa
-    ? labels.completeCheckinForFisa
+  const checkInLabel = needsWizardForTouristSheet
+    ? labels.completeCheckinForTouristSheet
     : canEditCheckInTimeEffective
       ? `${labels.edit} ${labels.checkIn}`
       : canContinueRooms
@@ -173,7 +173,7 @@ export function StayQuickOps({
         title: dayDelta > 0 ? labels.moveNextDay : labels.movePrevDay,
         message: guestName,
       });
-      publishCazariStayPatch({
+      publishStayPatch({
         id: bookingId,
         check_in: res.check_in,
         check_out: res.check_out,
@@ -261,11 +261,11 @@ export function StayQuickOps({
         </div>
 
         <div className="stay-quick-ops__tertiary">
-          {canEmitFisa && emitFisaLabel ? (
+          {canEmitTouristSheet && emitTouristSheetLabel ? (
             <TouristSheetLauncher
               bookingId={bookingId}
-              label={emitFisaLabel}
-              className="stay-quick-ops__btn stay-quick-ops__fisa"
+              label={emitTouristSheetLabel}
+              className="stay-quick-ops__btn stay-quick-ops__sheet"
             />
           ) : null}
           <Link

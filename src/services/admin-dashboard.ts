@@ -1,7 +1,7 @@
 import { cache } from "react";
 import {
-  countCereriNoi,
-  listCereriNoiPreview,
+  countNewRequests,
+  listNewRequestsPreview,
   type BookingRow,
 } from "@/services/bookings";
 import {
@@ -53,8 +53,8 @@ export type AdminDashboardData = {
   todayLabel: string;
   checkInTime: string;
   checkOutTime: string;
-  cereriCount: number;
-  cereriPreview: BookingRow[];
+  requestCount: number;
+  requestPreview: BookingRow[];
   stats: AdminDashboardStats;
   buildings: BuildingDashboard[];
   todayBoard: TodayBoard | null;
@@ -101,14 +101,14 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
   const timer = createServerTimer("admin-dashboard");
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tDash, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings, unpaidInHouseCount] =
+  const [locale, tDash, tCommon, settings, requestCount, requestPreview, buildings, todayBoard, monthCompare, totalConfirmed, pensionName, checkinSettings, unpaidInHouseCount] =
     await Promise.all([
       getLocale(),
       getTranslations("admin.dashboard"),
       getTranslations("admin.common"),
       pensionPromise,
-      countCereriNoi(),
-      listCereriNoiPreview(5),
+      countNewRequests(),
+      listNewRequestsPreview(5),
       listBuildingDashboards(),
       pensionPromise.then(loadTodayBoardForSettings),
       loadMonthComparison().catch(() => null),
@@ -125,8 +125,8 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
     todayLabel: todayLabelForLocale(locale),
     checkInTime: DEFAULT_CHECK_IN_TIME,
     checkOutTime: DEFAULT_CHECK_OUT_TIME,
-    cereriCount: 0,
-    cereriPreview: [],
+    requestCount: 0,
+    requestPreview: [],
     stats: {
       buildingsCount: 0,
       activeRooms: 0,
@@ -148,7 +148,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
   };
 
   const pensionMood = computePensionMood({
-    cereriCount,
+    requestCount,
     unpaidInHouseCount,
     pendingCheckIns: todayBoard?.pendingCheckIns.length ?? 0,
   });
@@ -191,7 +191,7 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
     };
 
     timer.finish({
-      cereriCount,
+      requestCount,
       buildings: buildings.length,
       hasTodayBoard: todayBoard != null,
     });
@@ -201,19 +201,19 @@ async function loadAdminDashboardImpl(): Promise<AdminDashboardData> {
       todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,
-      cereriCount,
-      cereriPreview,
+      requestCount,
+      requestPreview,
       stats,
       buildings,
       todayBoard,
       monthCompare,
-      moodLine: buildHomeMoodLine(tDash, { stats, cereriCount, todayBoard }),
-      briefingLine: buildHomeBriefing(tDash, { todayBoard, cereriCount }),
+      moodLine: buildHomeMoodLine(tDash, { stats, requestCount, todayBoard }),
+      briefingLine: buildHomeBriefing(tDash, { todayBoard, requestCount }),
       milestones: buildHomeMilestones(tDash, {
         totalConfirmed,
         stats,
         monthCompare,
-        cereriCount,
+        requestCount,
       }),
       checkinSettings,
       pensionMood,
@@ -237,13 +237,13 @@ export const loadAdminDashboard = cache(loadAdminDashboardImpl);
 async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
   const pensionPromise = getPensionSettings().catch(() => null);
 
-  const [locale, tCommon, settings, cereriCount, cereriPreview, buildings, todayBoard, pensionName, checkinSettings, unpaidInHouseCount] =
+  const [locale, tCommon, settings, requestCount, requestPreview, buildings, todayBoard, pensionName, checkinSettings, unpaidInHouseCount] =
     await Promise.all([
       getLocale(),
       getTranslations("admin.common"),
       pensionPromise,
-      countCereriNoi(),
-      listCereriNoiPreview(5),
+      countNewRequests(),
+      listNewRequestsPreview(5),
       listBuildingDashboards(),
       pensionPromise.then(loadTodayBoardForSettings),
       pensionPromise.then(resolveDashboardPensionName),
@@ -257,8 +257,8 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
     todayLabel: todayLabelForLocale(locale),
     checkInTime: DEFAULT_CHECK_IN_TIME,
     checkOutTime: DEFAULT_CHECK_OUT_TIME,
-    cereriCount: 0,
-    cereriPreview: [],
+    requestCount: 0,
+    requestPreview: [],
     stats: {
       buildingsCount: 0,
       activeRooms: 0,
@@ -280,7 +280,7 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
   };
 
   const pensionMood = computePensionMood({
-    cereriCount,
+    requestCount,
     unpaidInHouseCount,
     pendingCheckIns: todayBoard?.pendingCheckIns.length ?? 0,
   });
@@ -318,8 +318,8 @@ async function loadStaffPublicPreviewImpl(): Promise<AdminDashboardData> {
       todayLabel: todayLabelForLocale(locale),
       checkInTime,
       checkOutTime,
-      cereriCount,
-      cereriPreview,
+      requestCount,
+      requestPreview,
       stats: {
         buildingsCount: buildings.length,
         activeRooms,

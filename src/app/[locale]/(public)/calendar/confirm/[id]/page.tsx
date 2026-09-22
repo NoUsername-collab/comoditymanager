@@ -38,7 +38,7 @@ export default async function QuickConfirmPage({
   return (
     <main className="public-confirm-page ml-content mx-auto max-w-lg flex-1 px-4 py-6">
       <Link href="/receptie" className="public-confirm-page__back text-sm text-zinc-500 hover:text-zinc-800">
-        ← {t("backReceptie")}
+        ← {t("backReception")}
       </Link>
 
       <h1 className="mt-4 text-xl font-semibold">{t("title")}</h1>

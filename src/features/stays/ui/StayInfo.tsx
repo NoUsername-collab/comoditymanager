@@ -1,15 +1,15 @@
 import { Link } from "@/i18n/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
-import { formatCazariLabel } from "@/lib/cazari-label-format";
+import { formatStayLabel } from "@/lib/stay-label-format";
 import { GuestFlagPill } from "@/features/guests/ui/GuestFlagPill";
 import { GuestScoreHint } from "@/features/guests/ui/GuestScoreHint";
-import { StayCheckinProgress } from "@/features/cazari/ui/StayCheckinProgress";
+import { StayCheckinProgress } from "@/features/stays/ui/StayCheckinProgress";
 import {
   computeRoomCheckinProgress,
   shouldShowRoomCheckinProgress,
 } from "@/domain/checkin/room-checkin-progress";
-import type { CazariLabels, StayCardRow } from "@/features/cazari/ui/types";
+import type { StayListLabels, StayCardRow } from "@/features/stays/ui/types";
 
 export function StayInfo({
   stay,
@@ -18,13 +18,13 @@ export function StayInfo({
   operativeToday,
 }: {
   stay: StayCardRow;
-  labels: CazariLabels;
-  variant?: "operational" | "refuzate";
-  /** Ziua operațională — pentru a ascunde progresul înainte de sosire. */
+  labels: StayListLabels;
+  variant?: "operational" | "cancelled";
+  /** Operative day — hide check-in progress before arrival. */
   operativeToday?: string;
 }) {
   const isConfirmed = stay.status === "confirmata";
-  const isCancelled = stay.status === "anulata" || variant === "refuzate";
+  const isCancelled = stay.status === "anulata" || variant === "cancelled";
   const checkedInRooms =
     "checked_in_rooms" in stay ? (stay.checked_in_rooms ?? []) : [];
   const keysHandedRooms =
@@ -79,7 +79,7 @@ export function StayInfo({
         </span>
         <span aria-hidden>·</span>
         <span>
-          {formatCazariLabel(labels.guestsShort, {
+          {formatStayLabel(labels.guestsShort, {
             adults: stay.num_adults,
             children: stay.num_children,
           })}
@@ -140,7 +140,7 @@ export function StayInfo({
           keysHandedRooms={keysHandedRooms}
           roomIdVerified={roomIdVerified}
           isConfirmed={isConfirmed}
-          progressTitle={formatCazariLabel(labels.checkinRoomsProgress, {
+          progressTitle={formatStayLabel(labels.checkinRoomsProgress, {
             checked: roomProgress.checked,
             total: roomProgress.total,
           })}

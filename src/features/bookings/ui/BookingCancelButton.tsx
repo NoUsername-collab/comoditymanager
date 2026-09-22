@@ -6,7 +6,7 @@ import { cancelBookingOperativeAction } from "@/features/bookings/actions";
 import { useAdminPending, useRunAdminAction } from "@/components/admin/feedback/AdminPendingProvider";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { AdminTextActionButton } from "@/components/admin/ui/AdminTextAction";
-import { publishCazariStayCancelled } from "@/lib/cazari/live-stays";
+import { publishStayCancelled } from "@/lib/stays/live-stays";
 import { removeGanttLiveBooking } from "@/lib/gantt/live-bookings";
 
 export function BookingCancelButton({
@@ -55,7 +55,7 @@ export function BookingCancelButton({
         showToast({ kind: "error", title: tCommon("error"), message: res.error });
         return;
       }
-      publishCazariStayCancelled(bookingId);
+      publishStayCancelled(bookingId);
       removeGanttLiveBooking(bookingId);
       onOperativeSuccess?.();
       setOpen(false);

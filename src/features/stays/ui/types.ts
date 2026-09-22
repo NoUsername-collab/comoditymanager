@@ -1,8 +1,9 @@
-import type { CazariPageLists } from "@/services/cazari-page-data";
+import type { StayPageLists } from "@/services/stays-page-data";
 
-export type { CazariLabels } from "@/domain/cazari/labels";
+export type { StayListLabels } from "@/domain/stays/labels";
 
-export type OperationalStay = CazariPageLists["stays"][number];
-export type HistoryStay = CazariPageLists["history"][number];
-export type CancelledStay = CazariPageLists["cancelledHistory"][number];
+export type OperationalStay = StayPageLists["stays"][number];
+export type HistoryStay = StayPageLists["history"][number];
+export type CancelledStay = StayPageLists["cancelledHistory"][number];
 export type StayCardRow = OperationalStay | CancelledStay;
+export type StayListVariant = "requests" | "confirmed" | "cancelled";

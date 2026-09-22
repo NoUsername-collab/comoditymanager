@@ -1,7 +1,7 @@
-import { loadCazariPrimaryData } from "@/services/cazari-page-data";
+import { loadStaysPrimaryData } from "@/services/stays-page-data";
 import { resolvePostCheckoutEditPolicy } from "@/services/bookings/post-checkout-guard";
 
-export { buildCazariLabels } from "@/services/cazari-labels";
+export { buildStayListLabels } from "@/services/stay-labels";
 
 const EMPTY_POST_CHECKOUT_POLICY = {
   memberRole: null,
@@ -9,10 +9,10 @@ const EMPTY_POST_CHECKOUT_POLICY = {
   canEditAfterCheckout: false,
 } as const;
 
-export async function loadCazariPage() {
-  const [cazariResult, postCheckoutPolicy] = await Promise.all([
-    loadCazariPrimaryData(),
+export async function loadStaysPage() {
+  const [staysResult, postCheckoutPolicy] = await Promise.all([
+    loadStaysPrimaryData(),
     resolvePostCheckoutEditPolicy().catch(() => EMPTY_POST_CHECKOUT_POLICY),
   ]);
-  return { cazariResult, postCheckoutPolicy };
+  return { staysResult, postCheckoutPolicy };
 }

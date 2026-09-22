@@ -3,34 +3,34 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { BookingRow } from "@/services/bookings/types";
 
-export const CAZARI_STAY_CANCELLED_EVENT = "cazari:stay-cancelled";
-export const CAZARI_STAY_PATCH_EVENT = "cazari:stay-patch";
+export const STAY_CANCELLED_EVENT = "stays:cancelled";
+export const STAY_PATCH_EVENT = "stays:patch";
 
-type CazariStayCancelledDetail = { bookingId: string };
-type CazariStayPatchDetail = { patch: Partial<BookingRow> & { id: string } };
+type StayCancelledDetail = { bookingId: string };
+type StayPatchDetail = { patch: Partial<BookingRow> & { id: string } };
 
-export function publishCazariStayCancelled(bookingId: string) {
+export function publishStayCancelled(bookingId: string) {
   window.dispatchEvent(
-    new CustomEvent<CazariStayCancelledDetail>(CAZARI_STAY_CANCELLED_EVENT, {
+    new CustomEvent<StayCancelledDetail>(STAY_CANCELLED_EVENT, {
       detail: { bookingId },
     }),
   );
 }
 
-export function publishCazariStayPatch(patch: Partial<BookingRow> & { id: string }) {
+export function publishStayPatch(patch: Partial<BookingRow> & { id: string }) {
   window.dispatchEvent(
-    new CustomEvent<CazariStayPatchDetail>(CAZARI_STAY_PATCH_EVENT, {
+    new CustomEvent<StayPatchDetail>(STAY_PATCH_EVENT, {
       detail: { patch },
     }),
   );
 }
 
-export function useCazariLiveStays<T extends { id: string }>(serverItems: T[]): T[] {
+export function useLiveStays<T extends { id: string }>(serverItems: T[]): T[] {
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => new Set());
   const [patches, setPatches] = useState<Map<string, Partial<T>>>(() => new Map());
 
   const onCancelled = useCallback((event: Event) => {
-    const detail = (event as CustomEvent<CazariStayCancelledDetail>).detail;
+    const detail = (event as CustomEvent<StayCancelledDetail>).detail;
     if (!detail?.bookingId) return;
     setHiddenIds((prev) => {
       const next = new Set(prev);
@@ -40,7 +40,7 @@ export function useCazariLiveStays<T extends { id: string }>(serverItems: T[]): 
   }, []);
 
   const onPatch = useCallback((event: Event) => {
-    const detail = (event as CustomEvent<CazariStayPatchDetail>).detail;
+    const detail = (event as CustomEvent<StayPatchDetail>).detail;
     if (!detail?.patch?.id) return;
     setPatches((prev) => {
       const next = new Map(prev);
@@ -51,11 +51,11 @@ export function useCazariLiveStays<T extends { id: string }>(serverItems: T[]): 
   }, []);
 
   useEffect(() => {
-    window.addEventListener(CAZARI_STAY_CANCELLED_EVENT, onCancelled);
-    window.addEventListener(CAZARI_STAY_PATCH_EVENT, onPatch);
+    window.addEventListener(STAY_CANCELLED_EVENT, onCancelled);
+    window.addEventListener(STAY_PATCH_EVENT, onPatch);
     return () => {
-      window.removeEventListener(CAZARI_STAY_CANCELLED_EVENT, onCancelled);
-      window.removeEventListener(CAZARI_STAY_PATCH_EVENT, onPatch);
+      window.removeEventListener(STAY_CANCELLED_EVENT, onCancelled);
+      window.removeEventListener(STAY_PATCH_EVENT, onPatch);
     };
   }, [onCancelled, onPatch]);
 

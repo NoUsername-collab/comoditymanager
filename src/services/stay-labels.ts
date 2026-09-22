@@ -1,17 +1,17 @@
-import type { CazariLabels } from "@/domain/cazari/labels";
+import type { StayListLabels } from "@/domain/stays/labels";
 
-type CazariLabelSources = {
+type StayListLabelSources = {
   tPages: (key: string, values?: Record<string, string | number>) => string;
   tCommon: (key: string, values?: Record<string, string | number>) => string;
   tFlow: (key: string) => string;
 };
 
-/** Presentation layer — maps i18n keys to serializable CazariLabels patterns. */
-export function buildCazariLabels({
+/** Presentation layer — maps i18n keys to serializable StayListLabels patterns. */
+export function buildStayListLabels({
   tPages,
   tCommon,
   tFlow,
-}: CazariLabelSources): CazariLabels {
+}: StayListLabelSources): StayListLabels {
   return {
     noContact: tCommon("noContact"),
     noRoom: tPages("noRoomBadge"),
@@ -45,8 +45,8 @@ export function buildCazariLabels({
     cancelRequest: tPages("cancelRequest"),
     quickAccept: tPages("quickAccept"),
     quickAcceptSuccess: tPages("quickAcceptSuccess"),
-    emitFisa: tPages("emitFisa"),
-    completeCheckinForFisa: tPages("completeCheckinForFisa"),
+    emitTouristSheet: tPages("emitTouristSheet"),
+    completeCheckinForTouristSheet: tPages("completeCheckinForTouristSheet"),
     checkInOnlyOnArrivalDay: tPages("checkInOnlyOnArrivalDay", {
       date: "{date}",
     }),

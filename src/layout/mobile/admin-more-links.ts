@@ -3,10 +3,10 @@ import type { HudIconName } from "@/components/admin/AdminHudIcons";
 export type AdminMoreLink = {
   href: string;
   labelKey:
-    | "receptie"
+    | "reception"
     | "statistics"
     | "settings"
-    | "disponibilitate"
+    | "availability"
     | "buildings"
     | "rooms"
     | "devlog";
@@ -15,9 +15,9 @@ export type AdminMoreLink = {
 };
 
 export const ADMIN_MORE_LINKS: AdminMoreLink[] = [
-  { href: "/receptie", labelKey: "receptie", icon: "phone" },
+  { href: "/receptie", labelKey: "reception", icon: "phone" },
   { href: "/admin/statistics", labelKey: "statistics", icon: "chart" },
-  { href: "/admin/disponibilitate", labelKey: "disponibilitate", icon: "grid" },
+  { href: "/admin/disponibilitate", labelKey: "availability", icon: "grid" },
   { href: "/admin/settings", labelKey: "settings", icon: "gear" },
   { href: "/admin/buildings", labelKey: "buildings", icon: "building", locationConfig: true },
   { href: "/admin/rooms", labelKey: "rooms", icon: "bed", locationConfig: true },

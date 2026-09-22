@@ -16,11 +16,11 @@ import { AdminMobileMoreDrawer } from "@/layout/components/AdminMobileMoreDrawer
 import { hapticTap } from "@/lib/haptic";
 
 export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
-  cereriCount,
+  requestCount,
   locationUnlocked = false,
   statisticsAccess = false,
 }: {
-  cereriCount: number;
+  requestCount: number;
   locationUnlocked?: boolean;
   statisticsAccess?: boolean;
 }) {
@@ -46,8 +46,8 @@ export const AdminMobileBottomNav = memo(function AdminMobileBottomNav({
       <ul className="ml-bottom-nav__list">
         {tabs.map((tab) => {
           const active = isAdminTabActive(pathname, tab.href);
-          const isCazari = tab.href === "/admin/cazari";
-          const badge = isCazari && cereriCount > 0 ? cereriCount : null;
+          const isStaysTab = tab.href === "/admin/cazari";
+          const badge = isStaysTab && requestCount > 0 ? requestCount : null;
           const ariaLabel =
             badge != null
               ? t("staysPendingAria", { count: badge })

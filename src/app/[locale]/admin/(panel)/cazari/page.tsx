@@ -2,35 +2,35 @@ import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import { addDays, todayIso } from "@/lib/stay-dates";
 import {
-  buildCazariPageHref,
-  CAZARI_HORIZON_DAYS,
-  firstCazariQueryValue,
-  readCazariHorizon,
-  readCazariView,
-  type CazariHorizonKey,
-  type CazariView,
-} from "@/domain/cazari/horizon";
+  buildStaysPageHref,
+  STAY_HORIZON_DAYS,
+  firstStayQueryValue,
+  readStayHorizon,
+  readStayListView,
+  type StayHorizonKey,
+  type StayListView,
+} from "@/domain/stays/horizon";
 import {
-  filterCazariListsByQuery,
-  shouldPinCereriAboveConfirmate,
+  filterStayListsByQuery,
+  shouldPinRequestsAboveConfirmed,
   splitOperationalStays,
-} from "@/domain/cazari/page-splits";
-import { buildCazariLabels, loadCazariPage } from "@/features/cazari/loaders";
-import { formatCazariLabel } from "@/lib/cazari-label-format";
-import { AdminStaySearchForm } from "@/features/cazari/ui/AdminStaySearchForm";
+} from "@/domain/stays/page-splits";
+import { buildStayListLabels, loadStaysPage } from "@/features/stays/loaders";
+import { formatStayLabel } from "@/lib/stay-label-format";
+import { AdminStaySearchForm } from "@/features/stays/ui/AdminStaySearchForm";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AdminPanel } from "@/components/admin/shell/AdminPanel";
-import { CazariOpsToolbar } from "@/features/cazari/ui/CazariOpsToolbar";
-import { ConfirmedBuckets } from "@/features/cazari/ui/ConfirmedBuckets";
+import { StayOpsToolbar } from "@/features/stays/ui/StayOpsToolbar";
+import { ConfirmedBuckets } from "@/features/stays/ui/ConfirmedBuckets";
 import {
-  CazariHistoryAside,
-  CazariHistoryAsideFallback,
-} from "@/features/cazari/ui/CazariHistoryAside";
-import { StayList } from "@/features/cazari/ui/StayList";
-import { CazariOperativeShell } from "@/features/cazari/ui/CazariOperativeShell";
+  StayHistoryAside,
+  StayHistoryAsideFallback,
+} from "@/features/stays/ui/StayHistoryAside";
+import { StayList } from "@/features/stays/ui/StayList";
+import { StayOperativeShell } from "@/features/stays/ui/StayOperativeShell";
 import { getTranslations } from "next-intl/server";
 
-export default async function AdminCazariPage({
+export default async function AdminStaysPage({
   searchParams,
 }: {
   searchParams: Promise<{
@@ -41,43 +41,43 @@ export default async function AdminCazariPage({
     reaccepted?: string;
   }>;
 }) {
-  const [tPages, tCommon, tFlow, params, effectiveToday, cazariPage] =
+  const [tPages, tCommon, tFlow, params, effectiveToday, staysPage] =
     await Promise.all([
-      getTranslations("admin.pages.cazari"),
+      getTranslations("admin.pages.stays"),
       getTranslations("admin.common"),
       getTranslations("booking.flowStatus"),
       searchParams,
       todayIso(),
-      loadCazariPage(),
+      loadStaysPage(),
     ]);
-  const { cazariResult, postCheckoutPolicy } = cazariPage;
+  const { staysResult, postCheckoutPolicy } = staysPage;
 
-  const q = firstCazariQueryValue(params.q).trim();
-  const horizon = readCazariHorizon(params.h);
-  const view = readCazariView(params.view, params.tab);
-  const horizonEnd = addDays(effectiveToday, CAZARI_HORIZON_DAYS[horizon]);
+  const q = firstStayQueryValue(params.q).trim();
+  const horizon = readStayHorizon(params.h);
+  const view = readStayListView(params.view, params.tab);
+  const horizonEnd = addDays(effectiveToday, STAY_HORIZON_DAYS[horizon]);
 
-  const labels = buildCazariLabels({ tPages, tCommon, tFlow });
+  const labels = buildStayListLabels({ tPages, tCommon, tFlow });
 
-  const { data: cazariData, errors: cazariErrors } = cazariResult;
-  const formatCazariError = (message: string | null) =>
+  const { data: staysData, errors: staysErrors } = staysResult;
+  const formatStayError = (message: string | null) =>
     message == null ? null : message.trim() ? message : tCommon("error");
 
-  const filtered = filterCazariListsByQuery(cazariData, q);
+  const filtered = filterStayListsByQuery(staysData, q);
   const {
-    cereri,
-    confirmate,
-    confirmateVisible,
-    hiddenConfirmateCount,
+    requests,
+    confirmed,
+    confirmedVisible,
+    hiddenConfirmedCount,
   } = splitOperationalStays(filtered.filteredStays, effectiveToday, horizonEnd);
 
-  const buildHorizonHref = (next: CazariHorizonKey): string =>
-    buildCazariPageHref({ q: q || undefined, h: next, view });
+  const buildHorizonHref = (next: StayHorizonKey): string =>
+    buildStaysPageHref({ q: q || undefined, h: next, view });
 
-  const buildViewHref = (next: CazariView): string =>
-    buildCazariPageHref({ q: q || undefined, h: horizon, view: next });
+  const buildViewHref = (next: StayListView): string =>
+    buildStaysPageHref({ q: q || undefined, h: horizon, view: next });
 
-  const nextHorizon: CazariHorizonKey =
+  const nextHorizon: StayHorizonKey =
     horizon === "1d"
       ? "7d"
       : horizon === "7d"
@@ -89,8 +89,8 @@ export default async function AdminCazariPage({
             : "365d";
 
   return (
-    <AdminPageFrame title={tPages("title")} className="cazari-page">
-      <CazariOperativeShell
+    <AdminPageFrame title={tPages("title")} className="stays-page">
+      <StayOperativeShell
         today={effectiveToday}
         canEditAfterCheckout={postCheckoutPolicy.canEditAfterCheckout}
       >
@@ -98,33 +98,33 @@ export default async function AdminCazariPage({
         <div className="min-w-0">
           <AdminPanel
             title={tPages("searchFilter")}
-            className="cazari-filter-panel mb-3"
-            bodyClassName="cazari-filter-panel__body"
+            className="stays-filter-panel mb-3"
+            bodyClassName="stays-filter-panel__body"
           >
-            <div className="cazari-filter-panel__stack">
+            <div className="stays-filter-panel__stack">
               <AdminStaySearchForm
                 defaultQuery={q}
                 preserveParams={{
-                  view: view !== "confirmate" ? view : undefined,
+                  view: view !== "confirmed" ? view : undefined,
                   h: horizon,
                 }}
               />
-              <CazariOpsToolbar
+              <StayOpsToolbar
                 labels={labels}
                 view={view}
                 horizon={horizon}
                 metrics={{
-                  cereri: cereri.length,
-                  confirmate: confirmate.length,
-                  anulate: filtered.filteredCancelledHistory.length,
+                  requests: requests.length,
+                  confirmed: confirmed.length,
+                  cancelled: filtered.filteredCancelledHistory.length,
                 }}
                 buildViewHref={buildViewHref}
                 buildHorizonHref={buildHorizonHref}
                 filtersAria={tPages("viewFiltersAria")}
                 filterLabels={{
-                  cereri: tCommon("newRequestsLabel"),
-                  confirmate: tCommon("confirmed"),
-                  anulate: tPages("filterAnulate"),
+                  requests: tCommon("newRequestsLabel"),
+                  confirmed: tCommon("confirmed"),
+                  cancelled: tPages("filterCancelled"),
                 }}
               />
             </div>
@@ -136,43 +136,43 @@ export default async function AdminCazariPage({
             </p>
           )}
 
-          {cazariErrors.stays && (
+          {staysErrors.stays && (
             <p className="mb-4 text-sm text-red-800">
-              {formatCazariError(cazariErrors.stays)}
+              {formatStayError(staysErrors.stays)}
             </p>
           )}
 
-          {view === "anulate" ? (
+          {view === "cancelled" ? (
             <StayList
-              title={`${tPages("filterAnulate")} (${filtered.filteredCancelledHistory.length})`}
+              title={`${tPages("filterCancelled")} (${filtered.filteredCancelledHistory.length})`}
               items={filtered.filteredCancelledHistory}
-              variant="refuzate"
-              returnTo={buildCazariPageHref({ view: "anulate", h: horizon, q: q || undefined })}
+              variant="cancelled"
+              returnTo={buildStaysPageHref({ view: "cancelled", h: horizon, q: q || undefined })}
               hasQuery={!!q}
               labels={labels}
             />
           ) : null}
 
-          {view === "cereri" ? (
+          {view === "requests" ? (
             <StayList
-              title={`${tCommon("newRequestsLabel")} (${cereri.length})`}
-              items={cereri}
-              variant="cereri"
-              returnTo={buildCazariPageHref({ view: "cereri", h: horizon, q: q || undefined })}
+              title={`${tCommon("newRequestsLabel")} (${requests.length})`}
+              items={requests}
+              variant="requests"
+              returnTo={buildStaysPageHref({ view: "requests", h: horizon, q: q || undefined })}
               hasQuery={!!q}
               labels={labels}
             />
           ) : null}
 
-          {view === "confirmate" ? (
+          {view === "confirmed" ? (
             <>
-              {shouldPinCereriAboveConfirmate(view, cereri.length) ? (
+              {shouldPinRequestsAboveConfirmed(view, requests.length) ? (
                 <StayList
-                  className="cazari-pinned-cereri"
-                  title={`${tCommon("newRequestsLabel")} (${cereri.length})`}
-                  items={cereri}
-                  variant="cereri"
-                  returnTo={buildCazariPageHref({
+                  className="stays-pinned-requests"
+                  title={`${tCommon("newRequestsLabel")} (${requests.length})`}
+                  items={requests}
+                  variant="requests"
+                  returnTo={buildStaysPageHref({
                     h: horizon,
                     q: q || undefined,
                   })}
@@ -181,20 +181,20 @@ export default async function AdminCazariPage({
                 />
               ) : null}
             <AdminPanel
-              title={tPages("confirmedTitle", { count: confirmateVisible.length })}
+              title={tPages("confirmedTitle", { count: confirmedVisible.length })}
               className="mb-3"
             >
-              {hiddenConfirmateCount > 0 && (
+              {hiddenConfirmedCount > 0 && (
                 <p className="mb-3 rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600">
-                  {formatCazariLabel(labels.groupedOutsideWindow, {
-                    count: hiddenConfirmateCount,
+                  {formatStayLabel(labels.groupedOutsideWindow, {
+                    count: hiddenConfirmedCount,
                   })}
                 </p>
               )}
               <ConfirmedBuckets
-                items={confirmateVisible}
+                items={confirmedVisible}
                 today={effectiveToday}
-                returnTo={buildCazariPageHref({ h: horizon, q: q || undefined })}
+                returnTo={buildStaysPageHref({ h: horizon, q: q || undefined })}
                 hasQuery={!!q}
                 labels={labels}
               />
@@ -202,7 +202,7 @@ export default async function AdminCazariPage({
                 <div className="mt-3">
                   <Link
                     href={buildHorizonHref(nextHorizon)}
-                    className="cazari-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
+                    className="stays-load-more inline-flex min-h-[var(--ml-touch-min,2.75rem)] items-center rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
                   >
                     {labels.loadMore}
                   </Link>
@@ -213,16 +213,16 @@ export default async function AdminCazariPage({
           ) : null}
         </div>
 
-        <Suspense fallback={<CazariHistoryAsideFallback />}>
-          <CazariHistoryAside
+        <Suspense fallback={<StayHistoryAsideFallback />}>
+          <StayHistoryAside
             query={q}
             cancelledItems={filtered.filteredCancelledHistory}
-            cancelledError={formatCazariError(cazariErrors.cancelledHistory)}
+            cancelledError={formatStayError(staysErrors.cancelledHistory)}
             labels={labels}
           />
         </Suspense>
       </div>
-      </CazariOperativeShell>
+      </StayOperativeShell>
     </AdminPageFrame>
   );
 }

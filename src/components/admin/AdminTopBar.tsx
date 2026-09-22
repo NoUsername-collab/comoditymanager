@@ -12,10 +12,10 @@ import { getTranslations } from "next-intl/server";
 import { getTenantContext } from "@/core/tenant/context";
 
 export async function AdminTopBar({
-  cereriCount,
+  requestCount,
   locationUnlocked = false,
 }: {
-  cereriCount: number;
+  requestCount: number;
   locationUnlocked?: boolean;
 }) {
   const t = await getTranslations("admin.shell");
@@ -41,7 +41,7 @@ export async function AdminTopBar({
 
       {/* ── Center: navigation ── */}
       <div className="admin-hud__center">
-        <AdminNav cereriCount={cereriCount} locationUnlocked={locationUnlocked} />
+        <AdminNav requestCount={requestCount} locationUnlocked={locationUnlocked} />
       </div>
 
       {/* ── Right: theme, version, gear ── */}

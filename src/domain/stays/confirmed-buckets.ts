@@ -3,7 +3,7 @@ import {
   endOfWeekIso,
   startOfMonthIso,
   startOfWeekIso,
-} from "@/domain/cazari/date-buckets";
+} from "@/domain/stays/date-buckets";
 import { todayIso } from "@/lib/stay-dates";
 
 export type ConfirmedStayLike = {

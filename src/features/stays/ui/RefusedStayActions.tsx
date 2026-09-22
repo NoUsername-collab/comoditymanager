@@ -1,6 +1,6 @@
 import { Link } from "@/i18n/navigation";
-import { CancelledStayUndoButton } from "@/features/cazari/ui/CancelledStayUndoButton";
-import type { CancelledStay, CazariLabels } from "@/features/cazari/ui/types";
+import { CancelledStayUndoButton } from "@/features/stays/ui/CancelledStayUndoButton";
+import type { CancelledStay, StayListLabels } from "@/features/stays/ui/types";
 
 export function RefusedStayActions({
   stay,
@@ -8,7 +8,7 @@ export function RefusedStayActions({
   returnTo,
 }: {
   stay: CancelledStay;
-  labels: CazariLabels;
+  labels: StayListLabels;
   returnTo: string;
 }) {
   const bookingHref = `/admin/bookings/${stay.id}?return_to=${encodeURIComponent(returnTo)}`;

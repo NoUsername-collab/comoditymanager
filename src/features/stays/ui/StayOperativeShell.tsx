@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { OperativeCheckProvider } from "@/features/checkin/ui/OperativeCheckProvider";
 
-export function CazariOperativeShell({
+export function StayOperativeShell({
   children,
   today,
   canEditAfterCheckout = false,

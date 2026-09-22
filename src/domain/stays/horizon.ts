@@ -1,11 +1,32 @@
-export type CazariHorizonKey = "1d" | "7d" | "30d" | "60d" | "180d" | "365d";
+export type StayHorizonKey = "1d" | "7d" | "30d" | "60d" | "180d" | "365d";
 
-/** @deprecated Legacy — use CazariView */
-export type CazariTab = "ops" | "refuzate";
+/** @deprecated Legacy query `tab=` — use StayListView */
+export type StayListTab = "ops" | "refused";
 
-export type CazariView = "cereri" | "confirmate" | "anulate";
+export type StayListView = "requests" | "confirmed" | "cancelled";
 
-export const CAZARI_HORIZON_DAYS: Record<CazariHorizonKey, number> = {
+const VIEW_FROM_QUERY: Record<string, StayListView> = {
+  cereri: "requests",
+  requests: "requests",
+  confirmate: "confirmed",
+  confirmed: "confirmed",
+  anulate: "cancelled",
+  cancelled: "cancelled",
+};
+
+const TAB_FROM_QUERY: Record<string, StayListTab> = {
+  refuzate: "refused",
+  refused: "refused",
+};
+
+/** Public URL values. Default `confirmed` is omitted from the query string. */
+const VIEW_TO_QUERY: Record<StayListView, string | null> = {
+  requests: "cereri",
+  confirmed: null,
+  cancelled: "anulate",
+};
+
+export const STAY_HORIZON_DAYS: Record<StayHorizonKey, number> = {
   "1d": 1,
   "7d": 7,
   "30d": 30,
@@ -14,17 +35,17 @@ export const CAZARI_HORIZON_DAYS: Record<CazariHorizonKey, number> = {
   "365d": 365,
 };
 
-export function firstCazariQueryValue(
+export function firstStayQueryValue(
   value: string | string[] | undefined
 ): string {
   if (Array.isArray(value)) return value[0] ?? "";
   return value ?? "";
 }
 
-export function readCazariHorizon(
+export function readStayHorizon(
   input: string | string[] | undefined
-): CazariHorizonKey {
-  const value = firstCazariQueryValue(input).trim();
+): StayHorizonKey {
+  const value = firstStayQueryValue(input).trim();
   if (
     value === "1d" ||
     value === "7d" ||
@@ -37,41 +58,41 @@ export function readCazariHorizon(
   return "30d";
 }
 
-export function readCazariTab(
+export function readStayListTab(
   input: string | string[] | undefined
-): CazariTab {
-  const value = firstCazariQueryValue(input).trim();
-  return value === "refuzate" ? "refuzate" : "ops";
+): StayListTab {
+  const value = firstStayQueryValue(input).trim();
+  return TAB_FROM_QUERY[value] ?? "ops";
 }
 
-export function readCazariView(
+export function readStayListView(
   viewInput: string | string[] | undefined,
   tabInput?: string | string[] | undefined
-): CazariView {
-  const view = firstCazariQueryValue(viewInput).trim();
-  if (view === "cereri" || view === "confirmate" || view === "anulate") {
-    return view;
+): StayListView {
+  const view = firstStayQueryValue(viewInput).trim();
+  const mapped = VIEW_FROM_QUERY[view];
+  if (mapped) return mapped;
+  if (readStayListTab(tabInput) === "refused") {
+    return "cancelled";
   }
-  if (firstCazariQueryValue(tabInput).trim() === "refuzate") {
-    return "anulate";
-  }
-  return "confirmate";
+  return "confirmed";
 }
 
-export function buildCazariPageHref(opts: {
+export function buildStaysPageHref(opts: {
   q?: string;
-  h?: CazariHorizonKey;
-  view?: CazariView;
-  /** @deprecated — maps refuzate → anulate */
-  tab?: CazariTab;
+  h?: StayHorizonKey;
+  view?: StayListView;
+  /** @deprecated — maps refused → cancelled */
+  tab?: StayListTab;
 }): string {
   const params = new URLSearchParams();
   if (opts.q) params.set("q", opts.q);
   if (opts.h && opts.h !== "30d") params.set("h", opts.h);
   const view =
     opts.view ??
-    (opts.tab === "refuzate" ? "anulate" : opts.tab ? "confirmate" : undefined);
-  if (view && view !== "confirmate") params.set("view", view);
+    (opts.tab === "refused" ? "cancelled" : opts.tab ? "confirmed" : undefined);
+  const queryView = view ? VIEW_TO_QUERY[view] : null;
+  if (queryView) params.set("view", queryView);
   const qs = params.toString();
   return qs ? `/admin/cazari?${qs}` : "/admin/cazari";
 }

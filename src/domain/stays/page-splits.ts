@@ -1,40 +1,30 @@
-import type { ConfirmedStayLike } from "@/domain/cazari/confirmed-buckets";
-import type { CazariView } from "@/domain/cazari/horizon";
-import type { CazariPageLists } from "@/domain/cazari/page-lists";
-import { matchesStaySearchQuery } from "@/domain/cazari/stay-search";
+import type { ConfirmedStayLike } from "@/domain/stays/confirmed-buckets";
+import type { StayListView } from "@/domain/stays/horizon";
+import type { StayPageLists } from "@/domain/stays/page-lists";
+import { matchesStaySearchQuery } from "@/domain/stays/stay-search";
 
-type OperationalStay = CazariPageLists["stays"][number];
-type HistoryStay = CazariPageLists["history"][number];
-type CancelledStay = CazariPageLists["cancelledHistory"][number];
+type OperationalStay = StayPageLists["stays"][number];
+type HistoryStay = StayPageLists["history"][number];
+type CancelledStay = StayPageLists["cancelledHistory"][number];
 type OperationalStaySlice = ConfirmedStayLike & {
   status: string;
   room_names: string[];
 };
 
-export type CazariFilteredLists = {
+export type StayFilteredLists = {
   filteredStays: OperationalStay[];
   filteredHistory: HistoryStay[];
   filteredConfirmedRecent: HistoryStay[];
   filteredCancelledHistory: CancelledStay[];
-  cereri: OperationalStay[];
-  confirmate: OperationalStay[];
-  confirmateVisible: OperationalStay[];
-  hiddenConfirmateCount: number;
 };
 
-export function filterCazariListsByQuery(
+export function filterStayListsByQuery(
   data: Pick<
-    CazariPageLists,
+    StayPageLists,
     "stays" | "history" | "confirmedRecentHistory" | "cancelledHistory"
   >,
   query: string
-): Pick<
-  CazariFilteredLists,
-  | "filteredStays"
-  | "filteredHistory"
-  | "filteredConfirmedRecent"
-  | "filteredCancelledHistory"
-> {
+): StayFilteredLists {
   const q = query.trim();
   if (!q) {
     return {
@@ -57,11 +47,11 @@ export function filterCazariListsByQuery(
   };
 }
 
-/** Cereri fără cameră alocată apar primele, apoi după data sosirii. */
-export function sortCereriByPriority<T extends OperationalStaySlice>(
-  cereri: T[]
+/** Unassigned requests first, then by arrival date. */
+export function sortRequestsByPriority<T extends OperationalStaySlice>(
+  requests: T[]
 ): T[] {
-  return [...cereri].sort((a, b) => {
+  return [...requests].sort((a, b) => {
     const aUnassigned = a.room_names.length === 0 ? 0 : 1;
     const bUnassigned = b.room_names.length === 0 ? 0 : 1;
     if (aUnassigned !== bUnassigned) return aUnassigned - bUnassigned;
@@ -69,11 +59,11 @@ export function sortCereriByPriority<T extends OperationalStaySlice>(
   });
 }
 
-export function shouldPinCereriAboveConfirmate(
-  view: CazariView,
-  cereriCount: number
+export function shouldPinRequestsAboveConfirmed(
+  view: StayListView,
+  requestCount: number
 ): boolean {
-  return view === "confirmate" && cereriCount > 0;
+  return view === "confirmed" && requestCount > 0;
 }
 
 export function splitOperationalStays<T extends OperationalStaySlice>(
@@ -81,24 +71,24 @@ export function splitOperationalStays<T extends OperationalStaySlice>(
   effectiveToday: string,
   horizonEnd: string
 ): {
-  cereri: T[];
-  confirmate: T[];
-  confirmateVisible: T[];
-  hiddenConfirmateCount: number;
+  requests: T[];
+  confirmed: T[];
+  confirmedVisible: T[];
+  hiddenConfirmedCount: number;
 } {
-  const cereri = sortCereriByPriority(
+  const requests = sortRequestsByPriority(
     filteredStays.filter((s) => s.status === "cerere_noua")
   );
-  const confirmate = filteredStays.filter((s) => s.status === "confirmata");
-  const confirmateVisible = confirmate.filter(
+  const confirmed = filteredStays.filter((s) => s.status === "confirmata");
+  const confirmedVisible = confirmed.filter(
     (s) =>
       s.check_in <= horizonEnd ||
       (s.check_in <= effectiveToday && s.check_out > effectiveToday)
   );
-  const hiddenConfirmateCount = Math.max(
+  const hiddenConfirmedCount = Math.max(
     0,
-    confirmate.length - confirmateVisible.length
+    confirmed.length - confirmedVisible.length
   );
 
-  return { cereri, confirmate, confirmateVisible, hiddenConfirmateCount };
+  return { requests, confirmed, confirmedVisible, hiddenConfirmedCount };
 }

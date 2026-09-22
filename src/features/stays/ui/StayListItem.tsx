@@ -3,24 +3,25 @@
 import { memo } from "react";
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
-import { formatCazariLabel } from "@/lib/cazari-label-format";
-import { RefusedStayActions } from "@/features/cazari/ui/RefusedStayActions";
-import { StayActions } from "@/features/cazari/ui/StayActions";
-import { StayRequestActions } from "@/features/cazari/ui/StayRequestActions";
-import { StayInfo } from "@/features/cazari/ui/StayInfo";
+import { formatStayLabel } from "@/lib/stay-label-format";
+import { RefusedStayActions } from "@/features/stays/ui/RefusedStayActions";
+import { StayActions } from "@/features/stays/ui/StayActions";
+import { StayRequestActions } from "@/features/stays/ui/StayRequestActions";
+import { StayInfo } from "@/features/stays/ui/StayInfo";
 import type {
   CancelledStay,
-  CazariLabels,
+  StayListLabels,
   OperationalStay,
   StayCardRow,
-} from "@/features/cazari/ui/types";
+  StayListVariant,
+} from "@/features/stays/ui/types";
 
 type Props = {
   stay: StayCardRow;
   rowClass: string;
-  variant: "cereri" | "confirmate" | "refuzate";
+  variant: StayListVariant;
   returnTo: string;
-  labels: CazariLabels;
+  labels: StayListLabels;
   operativeToday?: string;
 };
 
@@ -37,16 +38,16 @@ export const StayListItem = memo(function StayListItem({
       <StayInfo
         stay={stay}
         labels={labels}
-        variant={variant === "refuzate" ? "refuzate" : "operational"}
+        variant={variant === "cancelled" ? "cancelled" : "operational"}
         operativeToday={operativeToday}
       />
-      {variant === "refuzate" ? (
+      {variant === "cancelled" ? (
         <RefusedStayActions
           stay={stay as CancelledStay}
           labels={labels}
           returnTo={returnTo}
         />
-      ) : variant === "cereri" ? (
+      ) : variant === "requests" ? (
         <StayRequestActions
           stay={stay as OperationalStay}
           returnTo={returnTo}
@@ -55,7 +56,7 @@ export const StayListItem = memo(function StayListItem({
             quickAcceptSuccess: labels.quickAcceptSuccess,
             openBooking: labels.openBooking,
             cancelRequest: labels.cancelRequest,
-            cancelMessage: formatCazariLabel(labels.cancelRequestMsg, {
+            cancelMessage: formatStayLabel(labels.cancelRequestMsg, {
               ref: formatBookingRef(stay.id),
               name: stay.guest_name,
               period: formatStayPeriod(stay.check_in, stay.check_out, true),

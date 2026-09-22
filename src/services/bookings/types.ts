@@ -33,8 +33,8 @@ export const GANTT_BOOKING_ROW_SELECT = `
   booking_rooms ( room_id, rooms ( name ) )
 `;
 
-/** Lighter select for full cereri queue list — no room join or operational columns. */
-export const CERERE_LIST_PAGE_SELECT = `
+/** Lighter select for the full new-request queue — no room join or operational columns. */
+export const REQUEST_LIST_PAGE_SELECT = `
   id, check_in, check_out, status, guest_name, guest_last_name, guest_first_name,
   guest_email, guest_id, guest_alert_level, guest_alert_note,
   num_adults, num_children

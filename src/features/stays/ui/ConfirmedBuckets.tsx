@@ -1,20 +1,20 @@
 "use client";
 
-import { groupConfirmedStays, isConfirmedBucketExpandedByDefault } from "@/domain/cazari/confirmed-buckets";
+import { groupConfirmedStays, isConfirmedBucketExpandedByDefault } from "@/domain/stays/confirmed-buckets";
 import { todayIso } from "@/lib/stay-dates";
-import { formatCazariLabel } from "@/lib/cazari-label-format";
-import { StayList } from "@/features/cazari/ui/StayList";
-import type { CazariLabels, OperationalStay } from "@/features/cazari/ui/types";
+import { formatStayLabel } from "@/lib/stay-label-format";
+import { StayList } from "@/features/stays/ui/StayList";
+import type { StayListLabels, OperationalStay } from "@/features/stays/ui/types";
 
 const BUCKET_META: Record<
   "today" | "week" | "month" | "upcoming",
   {
     titleKey: keyof Pick<
-      CazariLabels,
+      StayListLabels,
       "groupedToday" | "groupedThisWeek" | "groupedThisMonth" | "groupedUpcoming"
     >;
     subtitleKey: keyof Pick<
-      CazariLabels,
+      StayListLabels,
       | "groupedTodayHint"
       | "groupedThisWeekHint"
       | "groupedThisMonthHint"
@@ -51,7 +51,7 @@ export function ConfirmedBuckets({
   today?: string;
   returnTo: string;
   hasQuery: boolean;
-  labels: CazariLabels;
+  labels: StayListLabels;
 }) {
   const today = todayProp ?? todayIso();
   const buckets = groupConfirmedStays(items, today);
@@ -63,12 +63,12 @@ export function ConfirmedBuckets({
         return (
           <StayList
             key={bucket.key}
-            title={formatCazariLabel(labels[meta.titleKey], {
+            title={formatStayLabel(labels[meta.titleKey], {
               count: bucket.stays.length,
             })}
             subtitle={labels[meta.subtitleKey]}
             items={bucket.stays}
-            variant="confirmate"
+            variant="confirmed"
             returnTo={returnTo}
             hasQuery={hasQuery}
             labels={labels}

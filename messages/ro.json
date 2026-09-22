@@ -569,7 +569,7 @@
       "emailOptional": "Email (opț.)",
       "notesLabel": "Notițe"
     },
-    "receptie": {
+    "reception": {
       "confirmedBanner": "Rezervare confirmată.",
       "backToAdmin": "← Panou admin",
       "backToSite": "← Site public"
@@ -626,7 +626,7 @@
       "receptionFallbackEmail": "reception@no-email.local"
     },
     "confirm": {
-      "backReceptie": "Recepție rapidă",
+      "backReception": "Recepție rapidă",
       "title": "Confirmă rapid",
       "adminLink": "Administrare"
     },
@@ -684,8 +684,8 @@
       "more": "Mai mult",
       "moreMenuAria": "Mai multe secțiuni admin",
       "moreClose": "Închide meniul",
-      "receptie": "Recepție",
-      "disponibilitate": "Disponibilitate",
+      "reception": "Recepție",
+      "availability": "Disponibilitate",
       "buildings": "Clădiri",
       "rooms": "Camere",
       "devlog": "Jurnal",
@@ -1331,22 +1331,22 @@
           "deposit": "Depozit garanție",
           "depositDesc": "Solicită garanție la check-in",
           "depositAmount": "Suma depozit",
-          "fisaTitle": "Fișă turist (ANAF)",
-          "fisaNote": "Date pentru Fișa de ocupare a capacității de cazare — OPANAF 381/2026.",
-          "fisaAddress": "Adresa imobilului",
-          "fisaAddressDesc": "Secțiunea I — adresa unde se află unitatea de cazare",
-          "fisaStreet": "Stradă și număr",
-          "fisaStreetPlaceholder": "ex. Str. Mihai Viteazu nr. 12",
-          "fisaLocality": "Localitate",
-          "fisaLocalityPlaceholder": "ex. Sinaia",
-          "fisaCounty": "Județ",
-          "fisaCountyPlaceholder": "ex. Prahova",
-          "fisaCui": "CUI proprietar (opțional)",
-          "fisaLicense": "Nr. autorizație turism",
-          "fisaLicenseDesc": "Dacă ai autorizație de la autoritatea locală / DTITL",
-          "fisaSave": "Salvează date ANAF",
-          "fisaSaving": "Se salvează…",
-          "fisaSaveHint": "Completează adresa, CUI și autorizația, apoi apasă Salvează. Datele se folosesc la fișa turist și facturare."
+          "touristSheetTitle": "Fișă turist (ANAF)",
+          "touristSheetNote": "Date pentru Fișa de ocupare a capacității de cazare — OPANAF 381/2026.",
+          "touristSheetAddress": "Adresa imobilului",
+          "touristSheetAddressDesc": "Secțiunea I — adresa unde se află unitatea de cazare",
+          "touristSheetStreet": "Stradă și număr",
+          "touristSheetStreetPlaceholder": "ex. Str. Mihai Viteazu nr. 12",
+          "touristSheetLocality": "Localitate",
+          "touristSheetLocalityPlaceholder": "ex. Sinaia",
+          "touristSheetCounty": "Județ",
+          "touristSheetCountyPlaceholder": "ex. Prahova",
+          "touristSheetCui": "CUI proprietar (opțional)",
+          "touristSheetLicense": "Nr. autorizație turism",
+          "touristSheetLicenseDesc": "Dacă ai autorizație de la autoritatea locală / DTITL",
+          "touristSheetSave": "Salvează date ANAF",
+          "touristSheetSaving": "Se salvează…",
+          "touristSheetSaveHint": "Completează adresa, CUI și autorizația, apoi apasă Salvează. Datele se folosesc la fișa turist și facturare."
         },
         "booking": {
           "saved": "Setări salvate",
@@ -1738,11 +1738,11 @@
         "roomCountLabel": "{count} camere{suffix}",
         "buildingFilterSuffix": " · filtru clădire"
       },
-      "cazari": {
+      "stays": {
         "title": "Cazări — Zalmox",
         "searchFilter": "Caută și filtrează",
         "viewFiltersAria": "Filtru listă cazări",
-        "filterAnulate": "Anulate",
+        "filterCancelled": "Anulate",
         "results": "Rezultate",
         "operational": "Operațional",
         "confirmedTitle": "Cazări confirmate ({count})",
@@ -1751,8 +1751,8 @@
         "cancelRequest": "Anulează cererea",
         "quickAccept": "Acceptă rapid",
         "quickAcceptSuccess": "Cazare confirmată",
-        "emitFisa": "Emite fișă",
-        "completeCheckinForFisa": "Completează check-in (fișă)",
+        "emitTouristSheet": "Emite fișă",
+        "completeCheckinForTouristSheet": "Completează check-in (fișă)",
         "checkInContinue": "Continuă sosirile",
         "checkInNextRoom": "Primește ultima cameră",
         "checkinRoomsProgress": "{checked} din {total} camere primite",
@@ -1764,9 +1764,9 @@
         "checkinAllRoomsDone": "Toate camerele sunt primite",
         "checkinPartialHint": "Oaspeții pot sosi pe rând — primești câte o cameră pe parcurs.",
         "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua sosirii ({date}).",
-        "emitFisaNoCheckin": "Nu există check-in înregistrat pentru această cazare.",
-        "emitFisaLegacyCheckin": "Check-in doar cu oră (fără date fișă). Apasă „Completează check-in (fișă)” pentru a înregistra oaspeții.",
-        "emitFisaNoGuests": "Check-in-ul nu conține date de oaspeți pentru fișă.",
+        "emitTouristSheetNoCheckin": "Nu există check-in înregistrat pentru această cazare.",
+        "emitTouristSheetLegacyCheckin": "Check-in doar cu oră (fără date fișă). Apasă „Completează check-in (fișă)” pentru a înregistra oaspeții.",
+        "emitTouristSheetNoGuests": "Check-in-ul nu conține date de oaspeți pentru fișă.",
         "openClientProfile": "Profil client",
         "historyEmptyFilter": "Nimic în istoric pentru filtrul curent",
         "historyEmpty": "Istoricul este gol",
@@ -2023,7 +2023,7 @@
         "buildingFloorsTitle": "{name} — etaje & camere",
         "noBuildings": "Nicio clădire — adaugă prima din butonul de sus."
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Disponibilitate — Zalmox",
         "description": "Heat map, KPI, filtre clădire și interval."
       },
@@ -2312,7 +2312,7 @@
       "unassignedRow": "Cereri nealocate",
       "zoneRibbon": "Zone clădiri",
       "todayPanel": "Azi",
-      "cereriQueue": "Cereri noi",
+      "requestsQueue": "Cereri noi",
       "noUnassigned": "Nicio cerere nealocată în interval",
       "loadingGantt": "Se încarcă calendarul…",
       "ganttError": "Calendarul nu poate fi încărcat. Verifică conexiunea la baza de date și încearcă din nou.",
@@ -2480,8 +2480,8 @@
       "todayBoard": "Azi",
       "roomGrid": "Grid camere",
       "seeAll": "Vezi tot",
-      "previewCereri": "Ultimele cereri",
-      "noCereriPreview": "Nicio cerere în așteptare.",
+      "previewRequests": "Ultimele cereri",
+      "noRequestsPreview": "Nicio cerere în așteptare.",
       "openBookings": "Deschide cereri",
       "attentionToday": "Atenție azi",
       "staffPreviewAttention": "Attention today",
@@ -3169,10 +3169,10 @@
       "openFullPanel": "Deschide panoul complet"
     },
     "dashboard": {
-      "quickCereri": "Cereri noi",
-      "quickCereriDesc": "Confirmă și alocă camere",
-      "quickReceptie": "Recepție rapidă",
-      "quickReceptieDesc": "Telefon & check-in",
+      "quickRequests": "Cereri noi",
+      "quickRequestsDesc": "Confirmă și alocă camere",
+      "quickReception": "Recepție rapidă",
+      "quickReceptionDesc": "Telefon & check-in",
       "quickCalendar": "Calendar",
       "quickCalendarDesc": "Vedere lună / camere",
       "quickAvail": "Disponibilitate lună",
@@ -3448,7 +3448,7 @@
           "checksum_failed": "Checksum invalid — citirea OCR e probabil greșită. Repoziționează documentul sau lipește manual."
         }
       },
-      "fisa": {
+      "touristSheet": {
         "legalHint": "Conform OPANAF 381/2026: CNP obligatoriu pentru cetățeni români. Străinii: pașaport sau CI (serie + număr).",
         "sectionPersonal": "Oaspete",
         "sectionCnp": "CNP (obligatoriu RO)",
@@ -3533,10 +3533,10 @@
       },
       "layers": {
         "all": "Tot",
-        "cereri": "Cereri",
-        "confirmate": "Confirmate",
+        "requests": "Cereri",
+        "confirmed": "Confirmate",
         "in_house": "In-house",
-        "trecute": "Trecute",
+        "past": "Trecute",
         "hold": "Hold",
         "block": "Blocări"
       },
@@ -4471,7 +4471,7 @@
         "title": "Calendar Gantt",
         "desc": "Vezi toate camerele și sejururile pe o singură pagină. Drag & drop, culori pe clădire, heatmap ocupare."
       },
-      "cazari": {
+      "stays": {
         "title": "Cazări și cereri",
         "desc": "Gestionezi rezervările, cererile noi și statusul sejurului — de la confirmare la check-out."
       },
@@ -4483,7 +4483,7 @@
         "title": "Guest app",
         "desc": "Oaspeții accesează Wi-Fi, info pensiune și check-in online din telefon — fără aplicație de instalat."
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Disponibilitate",
         "desc": "Tarife, sezoane și blocări — sincronizate cu calendarul și site-ul public."
       },

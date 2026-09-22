@@ -1,10 +1,10 @@
 import { formatStayPeriod } from "@/lib/ro-calendar";
 import { formatBookingRef } from "@/lib/booking-admin-links";
-import { formatCazariLabel } from "@/lib/cazari-label-format";
+import { formatStayLabel } from "@/lib/stay-label-format";
 import { BookingCancelButton } from "@/features/bookings/ui/BookingCancelButton";
-import { StayQuickOpsLazy } from "@/features/cazari/ui/StayQuickOpsLazy";
+import { StayQuickOpsLazy } from "@/features/stays/ui/StayQuickOpsLazy";
 import { cancelBookingAction } from "@/features/bookings/actions";
-import type { CazariLabels, OperationalStay } from "@/features/cazari/ui/types";
+import type { StayListLabels, OperationalStay } from "@/features/stays/ui/types";
 
 export function StayActions({
   stay,
@@ -13,18 +13,18 @@ export function StayActions({
 }: {
   stay: OperationalStay;
   returnTo: string;
-  labels: CazariLabels;
+  labels: StayListLabels;
 }) {
   const period = formatStayPeriod(stay.check_in, stay.check_out, true);
   const ref = formatBookingRef(stay.id);
   const cancelMessage =
     stay.status === "confirmata"
-      ? formatCazariLabel(labels.cancelConfirmedMsg, {
+      ? formatStayLabel(labels.cancelConfirmedMsg, {
           ref,
           name: stay.guest_name,
           period,
         })
-      : formatCazariLabel(labels.cancelRequestMsg, {
+      : formatStayLabel(labels.cancelRequestMsg, {
           ref,
           name: stay.guest_name,
           period,
@@ -56,14 +56,14 @@ export function StayActions({
           checkActionsOnlyConfirmed: labels.checkActionsOnlyConfirmed,
           moveOnlyConfirmed: labels.moveOnlyConfirmed,
           phoneRequiredForCheckIn: labels.phoneRequiredForCheckIn,
-          completeCheckinForFisa: labels.completeCheckinForFisa,
-          checkInArrivalDayHint: formatCazariLabel(
+          completeCheckinForTouristSheet: labels.completeCheckinForTouristSheet,
+          checkInArrivalDayHint: formatStayLabel(
             labels.checkInOnlyOnArrivalDay,
             { date: stay.check_in },
           ),
         }}
         hasCheckinRecord={!!stay.has_checkin_record}
-        emitFisaLabel={labels.emitFisa}
+        emitTouristSheetLabel={labels.emitTouristSheet}
       />
       <div className="stay-card__danger-zone">
         <BookingCancelButton

@@ -1,16 +1,16 @@
 import { PublicPageShell } from "@/features/public-site/ui/PublicPageShell";
 import { buildCancellationPolicyText } from "@/domain/settings/booking-rules";
-import { loadTermeniPage } from "@/features/public-site/loaders";
+import { loadTermsPage } from "@/features/public-site/loaders";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
-export default async function TermeniPage() {
+export default async function TermsPage() {
   const [t, tShell, tFooter, locale, bookingRules] = await Promise.all([
     getTranslations("public.terms"),
     getTranslations("public.shell"),
     getTranslations("public.footer"),
     getLocale(),
-    loadTermeniPage(),
+    loadTermsPage(),
   ]);
 
   const policyLocale = locale === "bg" ? "bg" : locale === "en" ? "en" : "ro";

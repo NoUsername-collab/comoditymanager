@@ -3,13 +3,14 @@
 import { useCallback, useRef } from "react";
 import {
   STAY_CARD_VIRTUAL_ROW_H,
-} from "@/domain/cazari/confirmed-buckets";
+} from "@/domain/stays/confirmed-buckets";
 import { useWindowVirtualRange } from "@/hooks/useWindowVirtualRange";
-import { StayListItem } from "@/features/cazari/ui/StayListItem";
+import { StayListItem } from "@/features/stays/ui/StayListItem";
 import type {
-  CazariLabels,
+  StayListLabels,
   StayCardRow,
-} from "@/features/cazari/ui/types";
+  StayListVariant,
+} from "@/features/stays/ui/types";
 
 function StayListSpacer({ height }: { height: number }) {
   if (height <= 0) return null;
@@ -32,9 +33,9 @@ export function StayListVirtualized({
 }: {
   items: StayCardRow[];
   rowClass: string;
-  variant: "cereri" | "confirmate" | "refuzate";
+  variant: StayListVariant;
   returnTo: string;
-  labels: CazariLabels;
+  labels: StayListLabels;
   operativeToday?: string;
 }) {
   const listRef = useRef<HTMLUListElement>(null);

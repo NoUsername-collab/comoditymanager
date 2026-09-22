@@ -26,7 +26,7 @@ import {
 import { NationalIdTypePicker } from "@/features/guests/ui/NationalIdTypePicker";
 import { useAdminFx } from "@/components/admin/feedback/AdminToastProvider";
 import { publishGanttLiveBooking } from "@/lib/gantt/live-bookings";
-import { publishCazariStayPatch } from "@/lib/cazari/live-stays";
+import { publishStayPatch } from "@/lib/stays/live-stays";
 import {
   createCheckinAction,
   updateCheckinAction,
@@ -356,7 +356,7 @@ export function CheckinStepper({
     if (result.ok) {
       if (result.ganttBooking) {
         publishGanttLiveBooking(result.ganttBooking);
-        publishCazariStayPatch({
+        publishStayPatch({
           id: result.ganttBooking.id,
           actual_check_in_at: result.ganttBooking.actual_check_in_at,
           checked_in_rooms: result.ganttBooking.checked_in_rooms,

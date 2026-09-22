@@ -2,7 +2,7 @@ import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { AvailabilityDashboardShell } from "@/features/availability/ui/AvailabilityDashboardShell";
 import { getTranslations } from "next-intl/server";
 
-export default async function AdminDisponibilitatePage({
+export default async function AdminAvailabilityPage({
   searchParams,
 }: {
   searchParams: Promise<{
@@ -16,7 +16,7 @@ export default async function AdminDisponibilitatePage({
   }>;
 }) {
   const [t, params] = await Promise.all([
-    getTranslations("admin.pages.disponibilitate"),
+    getTranslations("admin.pages.availability"),
     searchParams,
   ]);
 

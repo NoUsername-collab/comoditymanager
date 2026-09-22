@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  filterCazariListsByQuery,
-  shouldPinCereriAboveConfirmate,
-  sortCereriByPriority,
+  filterStayListsByQuery,
+  shouldPinRequestsAboveConfirmed,
+  sortRequestsByPriority,
   splitOperationalStays,
-} from "@/domain/cazari/page-splits";
+} from "@/domain/stays/page-splits";
 
 const baseStay = {
   check_in: "2026-06-10",
@@ -14,7 +14,7 @@ const baseStay = {
 
 describe("page-splits", () => {
   it("filters stays by guest name query", () => {
-    const result = filterCazariListsByQuery(
+    const result = filterStayListsByQuery(
       {
         stays: [
           {
@@ -38,7 +38,7 @@ describe("page-splits", () => {
             guest_email: null,
             room_names: [],
           },
-        ] as unknown as Parameters<typeof filterCazariListsByQuery>[0]["stays"],
+        ] as unknown as Parameters<typeof filterStayListsByQuery>[0]["stays"],
         history: [],
         confirmedRecentHistory: [],
         cancelledHistory: [],
@@ -50,7 +50,7 @@ describe("page-splits", () => {
     expect(result.filteredStays[0]?.guest_name).toBe("Maria");
   });
 
-  it("splits operational stays into cereri and visible confirmate", () => {
+  it("splits operational stays into requests and visible confirmed", () => {
     const result = splitOperationalStays(
       [
         { ...baseStay, status: "cerere_noua", room_names: [] },
@@ -73,14 +73,14 @@ describe("page-splits", () => {
       "2026-07-09"
     );
 
-    expect(result.cereri).toHaveLength(1);
-    expect(result.confirmate).toHaveLength(2);
-    expect(result.confirmateVisible).toHaveLength(1);
-    expect(result.hiddenConfirmateCount).toBe(1);
+    expect(result.requests).toHaveLength(1);
+    expect(result.confirmed).toHaveLength(2);
+    expect(result.confirmedVisible).toHaveLength(1);
+    expect(result.hiddenConfirmedCount).toBe(1);
   });
 
-  it("sorts cereri with unassigned rooms first, then by check-in", () => {
-    const sorted = sortCereriByPriority([
+  it("sorts requests with unassigned rooms first, then by check-in", () => {
+    const sorted = sortRequestsByPriority([
       {
         ...baseStay,
         status: "cerere_noua",
@@ -108,10 +108,10 @@ describe("page-splits", () => {
     ]);
   });
 
-  it("pins cereri above confirmate only on the default confirmate view", () => {
-    expect(shouldPinCereriAboveConfirmate("confirmate", 2)).toBe(true);
-    expect(shouldPinCereriAboveConfirmate("confirmate", 0)).toBe(false);
-    expect(shouldPinCereriAboveConfirmate("cereri", 2)).toBe(false);
-    expect(shouldPinCereriAboveConfirmate("anulate", 1)).toBe(false);
+  it("pins requests above confirmed only on the default confirmed view", () => {
+    expect(shouldPinRequestsAboveConfirmed("confirmed", 2)).toBe(true);
+    expect(shouldPinRequestsAboveConfirmed("confirmed", 0)).toBe(false);
+    expect(shouldPinRequestsAboveConfirmed("requests", 2)).toBe(false);
+    expect(shouldPinRequestsAboveConfirmed("cancelled", 1)).toBe(false);
   });
 });

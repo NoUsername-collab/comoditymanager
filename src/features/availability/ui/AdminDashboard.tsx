@@ -19,10 +19,10 @@ export async function AdminDashboard({
 }) {
   const tDashboard = await getTranslations("admin.dashboard");
   const tCommon = await getTranslations("admin.common");
-  const { stats, cereriCount, cereriPreview } = data;
+  const { stats, requestCount, requestPreview } = data;
   const now = new Date();
   const calHref = `/admin/calendar?y=${now.getFullYear()}&m=${now.getMonth()}`;
-  const hasCereri = cereriCount > 0;
+  const hasRequests = requestCount > 0;
   const liveRooms = data.buildings
     .flatMap((section) =>
       section.rooms
@@ -71,10 +71,10 @@ export async function AdminDashboard({
           {/* Center: KPI pills inline */}
           <div className="admin-home-kpis" role="list" aria-label={tCommon("quickKpis")}>
             <span
-              className={["admin-home-kpi", hasCereri && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
+              className={["admin-home-kpi", hasRequests && "admin-home-kpi--alert"].filter(Boolean).join(" ")}
               role="listitem"
             >
-              <strong>{cereriCount}</strong> {tCommon("newRequestsLabel")}
+              <strong>{requestCount}</strong> {tCommon("newRequestsLabel")}
             </span>
             <span className="admin-home-kpi" role="listitem">
               <strong>{stats.freeTonight}</strong> {tCommon("freeTonight")}
@@ -138,41 +138,41 @@ export async function AdminDashboard({
       )}
 
       <section
-        className="admin-home-panel admin-home-panel--cereri admin-home-section"
-        aria-labelledby="admin-home-cereri-title"
+        className="admin-home-panel admin-home-panel--requests admin-home-section"
+        aria-labelledby="admin-home-requests-title"
       >
         <div className="admin-home-panel__head">
           <div>
-            <h2 id="admin-home-cereri-title" className="admin-home-panel__title">
-              {tCommon("cereriQueue")}
+            <h2 id="admin-home-requests-title" className="admin-home-panel__title">
+              {tCommon("requestsQueue")}
             </h2>
             <p className="admin-home-panel__desc">
-              {tDashboard("quickCereriDesc")}
+              {tDashboard("quickRequestsDesc")}
             </p>
           </div>
-          {cereriPreview.length > 0 ? (
+          {requestPreview.length > 0 ? (
             <Link href="/admin/cazari" className="admin-home-panel__link">
               {tCommon("seeAll")} →
             </Link>
           ) : null}
         </div>
-        {cereriPreview.length > 0 ? (
-          <ul className="admin-home-cereri-list">
-            {cereriPreview.map((c) => (
+        {requestPreview.length > 0 ? (
+          <ul className="admin-home-requests-list">
+            {requestPreview.map((c) => (
               <li key={c.id}>
-                <Link href={`/admin/bookings/${c.id}`} className="admin-home-cereri-item">
-                  <span className="admin-home-cereri-item__guest">
+                <Link href={`/admin/bookings/${c.id}`} className="admin-home-requests-item">
+                  <span className="admin-home-requests-item__guest">
                     {formatGuestGanttLabel(
                       c.guest_last_name,
                       c.guest_first_name,
                       c.guest_name
                     )}
-                    <span className="admin-home-cereri-item__meta">
+                    <span className="admin-home-requests-item__meta">
                       {" "}
                       · {c.num_adults}+{c.num_children} pers.
                     </span>
                   </span>
-                  <span className="admin-home-cereri-item__dates">
+                  <span className="admin-home-requests-item__dates">
                     {formatStayPeriod(c.check_in, c.check_out)}
                   </span>
                 </Link>
@@ -182,7 +182,7 @@ export async function AdminDashboard({
         ) : (
           <AdminEmptyState
             emoji="📬"
-            title={tCommon("noCereriPreview")}
+            title={tCommon("noRequestsPreview")}
             description={tDashboard("milestoneInboxZero")}
             actionHref="/admin/cazari?view=cereri"
             actionLabel={tCommon("openBookings")}

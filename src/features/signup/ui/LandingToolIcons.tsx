@@ -21,10 +21,10 @@ function Svg({ className, children }: IconProps & { children: ReactNode }) {
 
 export type LandingToolIconName =
   | "gantt"
-  | "cazari"
+  | "stays"
   | "checkin"
   | "guestApp"
-  | "disponibilitate"
+  | "availability"
   | "fiscal"
   | "buildings"
   | "publicSite";
@@ -40,7 +40,7 @@ function IconGantt({ className }: IconProps) {
   );
 }
 
-function IconCazari({ className }: IconProps) {
+function IconStays({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M4 16V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7" />
@@ -71,7 +71,7 @@ function IconGuestApp({ className }: IconProps) {
   );
 }
 
-function IconDisponibilitate({ className }: IconProps) {
+function IconAvailability({ className }: IconProps) {
   return (
     <Svg className={className}>
       <path d="M4 19V5M4 19h16M8 15l3-4 3 2 4-6" />
@@ -114,10 +114,10 @@ function IconPublicSite({ className }: IconProps) {
 
 const MAP = {
   gantt: IconGantt,
-  cazari: IconCazari,
+  stays: IconStays,
   checkin: IconCheckin,
   guestApp: IconGuestApp,
-  disponibilitate: IconDisponibilitate,
+  availability: IconAvailability,
   fiscal: IconFiscal,
   buildings: IconBuildings,
   publicSite: IconPublicSite,

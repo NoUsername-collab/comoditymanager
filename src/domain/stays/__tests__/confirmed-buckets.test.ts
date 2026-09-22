@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   groupConfirmedStays,
   isConfirmedBucketExpandedByDefault,
-} from "@/domain/cazari/confirmed-buckets";
+} from "@/domain/stays/confirmed-buckets";
 
 describe("isConfirmedBucketExpandedByDefault", () => {
   it("expands only today when not searching", () => {

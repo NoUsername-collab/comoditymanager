@@ -12,7 +12,7 @@ export const ADMIN_MORE_SECTIONS: AdminMoreSection[] = [
   {
     id: "operations",
     labelKey: "drawerGroupOperations",
-    linkLabelKeys: ["receptie", "disponibilitate", "statistics"],
+    linkLabelKeys: ["reception", "availability", "statistics"],
   },
   {
     id: "config",

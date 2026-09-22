@@ -1,29 +1,30 @@
 import { Link } from "@/i18n/navigation";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { AdminQuickPanel } from "@/features/public-site/ui/AdminQuickPanel";
-import { loadReceptiePage } from "@/features/public-site/loaders";
+import { loadReceptionPage } from "@/features/public-site/loaders";
 import { getAdminUser } from "@/lib/auth/require-admin";
 import { getTranslations } from "next-intl/server";
+import { resolvePensionStayTimes } from "@/lib/constants";
 import "@/styles/features/admin/staff-stay-create.css";
 
-export default async function ReceptiePage({
+export default async function ReceptionPage({
   searchParams,
 }: {
   searchParams: Promise<{ confirmed?: string }>;
 }) {
   const [t, admin, params, settings] = await Promise.all([
-    getTranslations("public.receptie"),
+    getTranslations("public.reception"),
     getAdminUser(),
     searchParams,
-    loadReceptiePage(),
+    loadReceptionPage(),
   ]);
 
   if (!admin) {
     await redirect("/admin/login?next=/receptie");
   }
 
-  const checkInTime = settings?.default_check_in_time ?? "14:00";
-  const checkOutTime = settings?.default_check_out_time ?? "11:00";
+  const { checkIn: checkInTime, checkOut: checkOutTime } =
+    resolvePensionStayTimes(settings);
 
   return (
     <main className="receptie-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 public-page">

@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 import type { ComponentProps } from "react";
-import type { StayQuickOps } from "@/features/cazari/ui/StayQuickOps";
+import type { StayQuickOps } from "@/features/stays/ui/StayQuickOps";
 
 const StayQuickOpsDynamic = dynamic(
   () =>
-    import("@/features/cazari/ui/StayQuickOps").then((m) => ({
+    import("@/features/stays/ui/StayQuickOps").then((m) => ({
       default: m.StayQuickOps,
     })),
   {
