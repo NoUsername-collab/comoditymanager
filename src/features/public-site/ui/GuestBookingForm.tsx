@@ -13,6 +13,7 @@ import {
 } from "@/features/bookings/ui/identity";
 import { RoomSelectionWithGuard } from "@/features/public-site/ui/RoomSelectionWithGuard";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
+import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
 import type {
   GuestStayOption,
   GuestStayPreview,
@@ -43,7 +44,7 @@ export function GuestBookingForm({ checkInTime, checkOutTime }: Props) {
   const [hasMinor, setHasMinor] = useState(false);
   const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
   const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
-  const [numAdults, setNumAdults] = useState(2);
+  const [numAdults, setNumAdults] = useState(DEFAULT_PARTY_ADULTS);
   const [numChildren, setNumChildren] = useState(0);
   const [preview, setPreview] = useState<GuestStayPreview | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);

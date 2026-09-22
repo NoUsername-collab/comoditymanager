@@ -24,12 +24,12 @@ export function StaffStayIntentToggle({
         type="button"
         className={[
           "staff-stay-intent__btn",
-          value === "cerere" && "staff-stay-intent__btn--on",
+          value === "request" && "staff-stay-intent__btn--on",
         ]
           .filter(Boolean)
           .join(" ")}
-        aria-pressed={value === "cerere"}
-        onClick={() => onChange("cerere")}
+        aria-pressed={value === "request"}
+        onClick={() => onChange("request")}
       >
         <span className="staff-stay-intent__label">{t("radial.request")}</span>
         <span className="staff-stay-intent__hint">{t("radial.unconfirmed")}</span>

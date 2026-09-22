@@ -15,28 +15,28 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
   const board = data.todayBoard;
   const attentionItems = [
     {
-      id: "cereri",
+      id: "requests",
       label: t("newRequests"),
-      value: formatCountLabel(data.cereriCount, t("requestOne"), t("requestMany")),
+      value: formatCountLabel(data.requestCount, t("requestOne"), t("requestMany")),
       tone:
-        data.cereriCount > 0
+        data.requestCount > 0
           ? "border-red-200 bg-red-50 text-red-900"
           : "border-[var(--site-border)] bg-[var(--site-card)] text-[var(--site-muted)]",
     },
     {
-      id: "sosiri",
+      id: "arrivals",
       label: t("arrivalsToday"),
       value: formatCountLabel(board?.arrivals.length ?? 0, t("arrivalOne"), t("arrivalMany")),
       tone: "border-emerald-200 bg-emerald-50 text-emerald-900",
     },
     {
-      id: "plecari",
+      id: "departures",
       label: t("departuresToday"),
       value: formatCountLabel(board?.departures.length ?? 0, t("departureOne"), t("departureMany")),
       tone: "border-amber-200 bg-amber-50 text-amber-900",
     },
     {
-      id: "curatenie",
+      id: "cleaning",
       label: t("roomsToClean"),
       value: formatCountLabel(board?.roomsToClean.length ?? 0, t("roomOne"), t("roomMany")),
       tone: "border-violet-200 bg-violet-50 text-violet-900",
@@ -118,13 +118,13 @@ export function PublicStaffPreview({ data }: { data: AdminDashboardData }) {
                 </Link>
               </div>
 
-              {data.cereriPreview.length === 0 ? (
+              {data.requestPreview.length === 0 ? (
                 <p className="mt-4 rounded-xl border border-dashed border-[var(--site-border)] px-4 py-4 text-sm text-[var(--site-muted)]">
                   {t("noNewRequestNow")}
                 </p>
               ) : (
                 <ul className="mt-3 space-y-2">
-                  {data.cereriPreview.map((booking) => (
+                  {data.requestPreview.map((booking) => (
                     <li key={booking.id}>
                       <Link
                         href={`/admin/bookings/${booking.id}`}

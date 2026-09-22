@@ -1,6 +1,5 @@
 "use server";
 
-import { after } from "next/server";
 import { isAtLeastOneNight } from "@/domain/booking/conflict";
 import { canRoomsHostGuests } from "@/domain/availability/stay-capacity";
 import { partyGuestCount } from "@/domain/availability/staff-stay-quote";
@@ -13,6 +12,7 @@ import {
   requireStaffPermission,
 } from "@/lib/auth/require-admin";
 import { revalidateBookingSurfacesExtended } from "@/lib/cache/revalidate-admin";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createServerTimer } from "@/lib/dev/server-timing";
 import {
   confirmBookingWithRooms,
@@ -28,7 +28,7 @@ import { buildSyntheticGanttBookingRow } from "@/services/bookings/synthetic-gan
 import type { BookingRow } from "@/services/bookings/types";
 import { getTranslations } from "next-intl/server";
 
-export type StaffStayIntent = "cerere" | "direct";
+export type StaffStayIntent = "request" | "direct";
 
 export type StaffStayOccupantInput = {
   roomId: string;
@@ -126,7 +126,7 @@ export async function createStaffStayAction(
   input: StaffStayCreateInput,
 ): Promise<ActionOk | ActionErr> {
   const timer = createServerTimer(
-    input.intent === "direct" ? "staff-stay-direct" : "staff-stay-cerere",
+    input.intent === "direct" ? "staff-stay-direct" : "staff-stay-request",
   );
   const t = await getTranslations("admin.serverActions");
   if (input.intent === "direct") {
@@ -226,10 +226,10 @@ export async function createStaffStayAction(
       timer.mark("confirm");
     }
 
-    after(() => {
-      revalidateBookingSurfacesExtended({
-        includeCalendar: false,
-      });
+    const tenantId = await resolveTenantIdForData();
+    revalidateBookingSurfacesExtended({
+      tenantId,
+      includeCalendar: false,
     });
 
     const booking = buildSyntheticGanttBookingRow({

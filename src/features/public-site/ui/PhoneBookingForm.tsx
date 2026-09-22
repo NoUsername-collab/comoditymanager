@@ -14,6 +14,7 @@ import {
   useStaffStayPreview,
 } from "@/features/bookings/ui/staff-stay-create";
 import { DateWeekdayHint } from "@/components/ui/DateWeekdayHint";
+import { DEFAULT_PARTY_ADULTS } from "@/lib/constants";
 import {
   addDays,
   clampCheckInDate,
@@ -34,9 +35,9 @@ export function PhoneBookingForm({
   const defaultDates = defaultNewStayDates(today);
   const [checkIn, setCheckIn] = useState(defaultDates.checkIn);
   const [checkOut, setCheckOut] = useState(defaultDates.checkOut);
-  const [numAdults, setNumAdults] = useState(2);
+  const [numAdults, setNumAdults] = useState(DEFAULT_PARTY_ADULTS);
   const [numChildren, setNumChildren] = useState(0);
-  const [intent, setIntent] = useState<StaffStayIntent>("cerere");
+  const [intent, setIntent] = useState<StaffStayIntent>("request");
   const [notes, setNotes] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
