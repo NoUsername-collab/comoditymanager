@@ -27,6 +27,8 @@ const config: PublicSiteConfig = {
     items: [],
     footer: {},
   },
+  chrome: {},
+  pages: {},
   sections: [
     {
       id: "intro-1",
@@ -39,6 +41,8 @@ const config: PublicSiteConfig = {
   displayName: "Casa Test",
   checkInTime: "14:00",
   checkOutTime: "11:00",
+  stayOffers: [],
+  place: { address: null, lat: null, lng: null },
 };
 
 describe("public site studio draft", () => {
@@ -54,6 +58,10 @@ describe("public site studio draft", () => {
       en: "EN home",
       bg: "BG hero",
     });
+    expect(input.hero.showCheckTimes).toBe(true);
+    expect(input.chrome.showContactBar).toBe(true);
+    expect(input.chrome.showStayOffers).toBe(true);
+    expect(input.chrome.showPlace).toBe(true);
     expect(input.sections.find((section) => section.sectionType === "intro")?.payload.title).toEqual({
       ro: "RO intro",
       en: "EN intro",

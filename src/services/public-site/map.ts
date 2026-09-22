@@ -1,4 +1,8 @@
 import { normalizeBookingNotice } from "@/features/public-site/domain/booking-notice";
+import {
+  normalizePublicChrome,
+  normalizePublicPages,
+} from "@/features/public-site/domain/chrome";
 import type {
   PublicBookingNoticeConfig,
   PublicBookingNavPosition,
@@ -59,6 +63,8 @@ export function mapPublicSiteSettingsRow(row: {
   contact: unknown;
   seo: unknown;
   booking_notice?: unknown;
+  chrome?: unknown;
+  pages?: unknown;
 }): PublicSiteSettingsRow {
   return {
     id: row.id,
@@ -74,6 +80,8 @@ export function mapPublicSiteSettingsRow(row: {
     bookingNotice: normalizeBookingNotice(
       row.booking_notice as PublicBookingNoticeConfig | null | undefined
     ),
+    chrome: normalizePublicChrome(row.chrome),
+    pages: normalizePublicPages(row.pages),
   };
 }
 

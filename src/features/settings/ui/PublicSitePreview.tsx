@@ -1,11 +1,15 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { BrandMarkSvg } from "@/features/public-site/ui/BrandMarkSvg";
+import { PublicTenantLogo } from "@/features/public-site/ui/PublicTenantLogo";
 import {
   buildPublicContactLinks,
   PublicContactBar,
 } from "@/features/public-site/contact/PublicContactBar";
+import { publicChromeFontStack } from "@/features/public-site/domain/chrome";
+import { pickLocalized } from "@/features/public-site/domain/localized";
+import { resolvePublicNavItems } from "@/features/public-site/domain/nav-items";
 import { PublicSiteConfigProvider } from "@/features/public-site/PublicSiteConfigProvider";
 import { PublicSiteBody } from "@/features/public-site/templates/PublicSiteTemplates";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
@@ -13,8 +17,10 @@ import {
   publicThemeClassName,
   resolvePublicThemeStyle,
 } from "@/features/public-site/themes/loader";
+import type { CSSProperties } from "react";
 import "@/styles/features/public/public-site.css";
 import "@/styles/features/public/public-site-v2.css";
+import "@/styles/features/public/public-site-layouts.css";
 
 export function PublicSitePreview({
   config,
@@ -27,19 +33,41 @@ export function PublicSitePreview({
   const tNav = useTranslations("public.nav");
   const tFooter = useTranslations("public.footer");
   const tHome = useTranslations("public.home");
+  const tContact = useTranslations("public.contact");
+  const activeLocale = useLocale();
+  const previewLocale = locale || activeLocale;
 
   const checkTimesLabel = tHome("checkTimes", {
     checkIn: config.checkInTime,
     checkOut: config.checkOutTime,
   });
 
-  const showBookingNav =
-    config.bookingEnabled &&
-    (config.bookingNavPosition === "nav" || config.bookingNavPosition === "both");
+  const navItems = resolvePublicNavItems(config, previewLocale, {
+    home: tNav("home"),
+    privacy: tNav("gdpr"),
+    terms: tNav("terms"),
+    book: tNav("book"),
+  });
   const showBookingFooter =
+    config.published !== false &&
     config.bookingEnabled &&
     (config.bookingNavPosition === "footer" || config.bookingNavPosition === "both");
-  const contactLinks = buildPublicContactLinks(config.contact);
+  const contactLinks = buildPublicContactLinks(config.contact, {
+    email: tContact("email"),
+    whatsapp: tContact("whatsapp"),
+    telegram: tContact("telegram"),
+    facebook: tContact("facebook"),
+    instagram: tContact("instagram"),
+  });
+  const subtitle = pickLocalized(config.chrome.headerSubtitle, previewLocale, [tHeader("subtitle")]);
+  const tagline = pickLocalized(config.chrome.footerTagline, previewLocale, [tFooter("tagline")]);
+  const themeStyle = resolvePublicThemeStyle(config.themeId);
+  const fontStack = publicChromeFontStack(config.chrome.fontId);
+  const style = (
+    fontStack
+      ? { ...themeStyle, "--pub-font-display": fontStack, "--public-font-serif": fontStack }
+      : themeStyle
+  ) as CSSProperties;
 
   return (
     <PublicSiteConfigProvider config={config}>
@@ -47,46 +75,67 @@ export function PublicSitePreview({
         className={["settings-public-preview", "pub-site", publicThemeClassName(config.themeId)].join(
           " ",
         )}
-        style={resolvePublicThemeStyle(config.themeId)}
+        style={style}
+        data-pub-template={config.templateId}
       >
         <header className="public-header">
           <div className="public-header__inner">
             <div className="public-header__brand">
-              <BrandMarkSvg animated={false} className="h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]" />
+              <PublicTenantLogo logoUrl={config.chrome.logoUrl} displayName={config.displayName}>
+                <BrandMarkSvg animated={false} className="h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]" />
+              </PublicTenantLogo>
               <div className="min-w-0 leading-tight">
                 <span className="public-header__name">{config.displayName}</span>
-                <span className="public-header__tag">{tHeader("subtitle")}</span>
+                {subtitle ? <span className="public-header__tag">{subtitle}</span> : null}
               </div>
             </div>
             <nav className="public-header__nav" aria-hidden>
-              <span className="public-header__link public-header__link--active">{tNav("home")}</span>
-              <span className="public-header__link">{tNav("gdpr")}</span>
-              {showBookingNav ? (
-                <span className="public-header__link public-header__cta site-cta">{tNav("book")}</span>
-              ) : null}
+              {navItems.map((item) => (
+                <span
+                  key={item.key}
+                  className={[
+                    "public-header__link",
+                    item.cta && "public-header__cta site-cta",
+                    item.key === "home" && "public-header__link--active",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {item.label}
+                </span>
+              ))}
             </nav>
           </div>
         </header>
 
         <PublicSiteBody
           config={config}
-          locale={locale}
+          locale={previewLocale}
           checkTimesLabel={checkTimesLabel}
           preview
         />
 
-        <PublicContactBar
-          contact={config.contact}
-          title={tFooter("contact")}
-          emptyHint={tFooter("contactEmptyHint")}
-        />
+        {config.chrome.showContactBar !== false ? (
+          <PublicContactBar
+            contact={config.contact}
+            title={tFooter("contact")}
+            emptyHint={tFooter("contactEmptyHint")}
+            labels={{
+              email: tContact("email"),
+              whatsapp: tContact("whatsapp"),
+              telegram: tContact("telegram"),
+              facebook: tContact("facebook"),
+              instagram: tContact("instagram"),
+            }}
+          />
+        ) : null}
 
         <footer className="public-footer">
           <div className="public-footer__inner">
             <div className="public-footer__grid">
               <div>
                 <p className="public-footer__brand-name">{config.displayName}</p>
-                <p className="public-footer__brand-desc">{tFooter("tagline")}</p>
+                <p className="public-footer__brand-desc">{tagline}</p>
               </div>
               <div>
                 <p className="public-footer__label">{tFooter("links")}</p>

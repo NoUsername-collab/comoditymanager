@@ -39,7 +39,15 @@ export function renderPublicSection(
   switch (section.sectionType) {
     case "intro":
       return (
-        <SectionShell id="public-intro" className="pub-section--intro">
+        <SectionShell
+          id="public-intro"
+          className={[
+            "pub-section--intro",
+            template === "immersive" ? "pub-section--intro-card" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
           {section.payload.body ? (
@@ -73,7 +81,14 @@ export function renderPublicSection(
       const items = (section.payload.items ?? []) as PublicGalleryItem[];
       if (items.length === 0) return null;
       return (
-        <SectionShell className="pub-section--gallery">
+        <SectionShell
+          className={[
+            "pub-section--gallery",
+            template === "immersive" ? "pub-section--gallery-bleed" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
           {title ? <h2 className="pub-section__title">{title}</h2> : null}
           {lead ? <p className="pub-section__lead">{lead}</p> : null}
           <div className={`pub-gallery pub-gallery--${template}`}>

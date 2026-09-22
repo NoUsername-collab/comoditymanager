@@ -8,6 +8,8 @@ import {
   PUBLIC_TEMPLATE_OPTIONS,
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
+import { PUBLIC_FONT_OPTIONS } from "@/features/public-site/domain/chrome";
+import { applyTemplateSectionKeys } from "@/features/public-site/domain/order-sections";
 import {
   PUBLIC_BENEFIT_ICON_IDS,
 } from "@/features/public-site/domain/benefit-icons";
@@ -34,10 +36,21 @@ import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldErr
 import { SettingsAlerts, type SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 import {
+  addStudioBenefit,
+  addStudioStep,
+  addStudioTextSection,
   buildPublicSiteStudioDraft,
+  MAX_BENEFIT_ITEMS,
+  MAX_STEP_ITEMS,
+  MAX_TEXT_SECTIONS,
   mergeStudioToInput,
+  moveStudioSection,
   nextGalleryDraftId,
   patchStudioCopy,
+  removeStudioBenefit,
+  removeStudioStep,
+  removeStudioTextSection,
+  studioLocaleGaps,
   switchStudioLocale,
   syncStudioStructure,
   type CopyLineDraft,
@@ -192,6 +205,30 @@ export function PublicSiteSettingsForm({
     setDraft((d) => syncStudioStructure(patchStudioCopy(d, { noticeDraft })));
   }
 
+  function addBenefit() {
+    setDraft((d) => addStudioBenefit(d));
+  }
+  function removeBenefit(index: number) {
+    setDraft((d) => removeStudioBenefit(d, index));
+  }
+  function addStep() {
+    setDraft((d) => addStudioStep(d));
+  }
+  function removeStep(index: number) {
+    setDraft((d) => removeStudioStep(d, index));
+  }
+  function addTextSection() {
+    setDraft((d) => addStudioTextSection(d));
+  }
+  function removeTextSection(id: string) {
+    setDraft((d) => removeStudioTextSection(d, id));
+  }
+  function moveSection(key: string, direction: -1 | 1) {
+    setDraft((d) => moveStudioSection(d, key, direction));
+  }
+
+  const localeGaps = studioLocaleGaps(draft);
+
   const draftInput = useMemo(
     () => mergeStudioToInput({ config, draft }),
     [config, draft],
@@ -279,6 +316,13 @@ export function PublicSiteSettingsForm({
             <SettingsFieldHint className="mb-3 block">
               {t("localeEditHint", { locale: draft.editLocale.toUpperCase() })}
             </SettingsFieldHint>
+            {localeGaps.length > 0 ? (
+              <SettingsFieldHint className="mb-3 block">
+                {t("localeGaps", {
+                  locales: localeGaps.map((row) => row.locale.toUpperCase()).join(", "),
+                })}
+              </SettingsFieldHint>
+            ) : null}
 
       <FormSection title={t("publishTitle")} description={t("publishedHint")}>
         <label className="pub-settings-section-toggle">
@@ -289,6 +333,130 @@ export function PublicSiteSettingsForm({
           />
           {t("published")}
         </label>
+      </FormSection>
+
+      <FormSection title={t("brandTitle")} description={t("brandSectionDesc")}>
+        <PublicSiteImageField
+          kind="logo"
+          label={t("logoLabel")}
+          value={draft.logoUrl}
+          onChange={(url) => patchDraft({ logoUrl: url })}
+          hint={t("logoHint")}
+          error={fieldError("chrome.logoUrl")}
+          disabled={readOnly}
+        />
+        <div className="admin-settings-fields mt-4">
+          <label>
+            <span>{t("headerSubtitle")}</span>
+            <input
+              value={copy.headerSubtitle}
+              onChange={(e) => patchCopy({ headerSubtitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("footerTagline")}</span>
+            <textarea
+              rows={2}
+              value={copy.footerTagline}
+              onChange={(e) => patchCopy({ footerTagline: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("fontTitle")}</span>
+            <select
+              value={draft.fontId}
+              onChange={(e) =>
+                patchDraft({ fontId: e.target.value as typeof draft.fontId })
+              }
+            >
+              {PUBLIC_FONT_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {t(`fonts.${option}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showContactBar}
+              onChange={(e) => patchDraft({ showContactBar: e.target.checked })}
+            />
+            {t("showContactBar")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showStayOffers}
+              onChange={(e) => patchDraft({ showStayOffers: e.target.checked })}
+            />
+            {t("showStayOffers")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showStayPrices}
+              onChange={(e) => patchDraft({ showStayPrices: e.target.checked })}
+            />
+            {t("showStayPrices")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showPlace}
+              onChange={(e) => patchDraft({ showPlace: e.target.checked })}
+            />
+            {t("showPlace")}
+          </label>
+        </div>
+        <SettingsFieldHint className="mt-3 block">{t("livePropertyHint")}</SettingsFieldHint>
+      </FormSection>
+
+      <FormSection title={t("navTitle")} description={t("navSectionDesc")}>
+        <div className="pub-settings-toggles mb-3">
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showNavHome}
+              onChange={(e) => patchDraft({ showNavHome: e.target.checked })}
+            />
+            {t("showNavHome")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showNavPrivacy}
+              onChange={(e) => patchDraft({ showNavPrivacy: e.target.checked })}
+            />
+            {t("showNavPrivacy")}
+          </label>
+          <label className="pub-settings-section-toggle">
+            <input
+              type="checkbox"
+              checked={draft.showNavTerms}
+              onChange={(e) => patchDraft({ showNavTerms: e.target.checked })}
+            />
+            {t("showNavTerms")}
+          </label>
+        </div>
+        <div className="admin-settings-fields admin-settings-fields--2col">
+          <label>
+            <span>{t("navHomeLabel")}</span>
+            <input value={copy.navHome} onChange={(e) => patchCopy({ navHome: e.target.value })} />
+          </label>
+          <label>
+            <span>{t("navPrivacyLabel")}</span>
+            <input value={copy.navPrivacy} onChange={(e) => patchCopy({ navPrivacy: e.target.value })} />
+          </label>
+          <label>
+            <span>{t("navTermsLabel")}</span>
+            <input value={copy.navTerms} onChange={(e) => patchCopy({ navTerms: e.target.value })} />
+          </label>
+          <label>
+            <span>{t("navBookLabel")}</span>
+            <input value={copy.navBook} onChange={(e) => patchCopy({ navBook: e.target.value })} />
+          </label>
+        </div>
       </FormSection>
 
       <FormSection title={t("templateTitle")} description={t("templateSectionDesc")}>
@@ -305,7 +473,13 @@ export function PublicSiteSettingsForm({
               ]
                 .filter(Boolean)
                 .join(" ")}
-              onClick={() => patchDraft({ templateId: option })}
+              onClick={() =>
+                setDraft((d) => ({
+                  ...d,
+                  templateId: option,
+                  sectionOrder: applyTemplateSectionKeys(d.sectionOrder, option),
+                }))
+              }
             >
               <p className="pub-settings-card__title">{t(`templates.${option}.title`)}</p>
               <p className="pub-settings-card__desc">{t(`templates.${option}.desc`)}</p>
@@ -401,6 +575,28 @@ export function PublicSiteSettingsForm({
               disabled={readOnly}
             />
           </div>
+          <label>
+            <span>{t("heroCtaPrimaryHref")}</span>
+            <input
+              value={draft.heroCtaPrimaryHref}
+              onChange={(e) => patchDraft({ heroCtaPrimaryHref: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("heroCtaSecondaryHref")}</span>
+            <input
+              value={draft.heroCtaSecondaryHref}
+              onChange={(e) => patchDraft({ heroCtaSecondaryHref: e.target.value })}
+            />
+          </label>
+          <label className="pub-settings-section-toggle admin-settings-fields__full">
+            <input
+              type="checkbox"
+              checked={draft.showCheckTimes}
+              onChange={(e) => patchDraft({ showCheckTimes: e.target.checked })}
+            />
+            {t("showCheckTimes")}
+          </label>
         </div>
       </FormSection>
 
@@ -422,6 +618,62 @@ export function PublicSiteSettingsForm({
               onChange={(e) => patchCopy({ seoDescription: e.target.value })}
             />
             <SettingsFieldHint>{t("seoMetaDescriptionHint")}</SettingsFieldHint>
+          </label>
+          <div className="admin-settings-fields__full">
+            <PublicSiteImageField
+              kind="og"
+              label={t("ogImageLabel")}
+              value={draft.ogImageUrl}
+              onChange={(url) => patchDraft({ ogImageUrl: url })}
+              hint={t("ogImageHint")}
+              error={fieldError("pages.ogImageUrl")}
+              disabled={readOnly}
+            />
+          </div>
+          <label>
+            <span>{t("seoCalendarTitle")}</span>
+            <input
+              value={copy.seoCalendarTitle}
+              onChange={(e) => patchCopy({ seoCalendarTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("seoCalendarDescription")}</span>
+            <textarea
+              rows={2}
+              value={copy.seoCalendarDescription}
+              onChange={(e) => patchCopy({ seoCalendarDescription: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("seoTermsTitle")}</span>
+            <input
+              value={copy.seoTermsTitle}
+              onChange={(e) => patchCopy({ seoTermsTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("seoTermsDescription")}</span>
+            <textarea
+              rows={2}
+              value={copy.seoTermsDescription}
+              onChange={(e) => patchCopy({ seoTermsDescription: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("seoPrivacyTitle")}</span>
+            <input
+              value={copy.seoPrivacyTitle}
+              onChange={(e) => patchCopy({ seoPrivacyTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("seoPrivacyDescription")}</span>
+            <textarea
+              rows={2}
+              value={copy.seoPrivacyDescription}
+              onChange={(e) => patchCopy({ seoPrivacyDescription: e.target.value })}
+            />
           </label>
         </div>
       </FormSection>
@@ -544,6 +796,44 @@ export function PublicSiteSettingsForm({
             {t("sectionCta")}
           </label>
         </div>
+        <p className="mt-4 text-sm font-medium">{t("sectionOrderTitle")}</p>
+        <ul className="pub-gallery-editor mt-2">
+          {draft.sectionOrder.map((key, index) => (
+            <li key={key} className="pub-gallery-editor__actions mb-1 flex items-center gap-2">
+              <span className="text-sm">
+                {key.startsWith("text:") ? t("sectionText") : t(`sectionKey.${key}`)}
+              </span>
+              <button
+                type="button"
+                className="pub-gallery-editor__icon-btn"
+                aria-label={t("galleryMoveUp")}
+                disabled={index === 0}
+                onClick={() => moveSection(key, -1)}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className="pub-gallery-editor__icon-btn"
+                aria-label={t("galleryMoveDown")}
+                disabled={index === draft.sectionOrder.length - 1}
+                onClick={() => moveSection(key, 1)}
+              >
+                ↓
+              </button>
+            </li>
+          ))}
+        </ul>
+        <AdminButton
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="mt-3"
+          onClick={addTextSection}
+          disabled={copy.textItems.length >= MAX_TEXT_SECTIONS}
+        >
+          {t("textAdd")}
+        </AdminButton>
       </FormSection>
 
       <FormSection title={t("pageCopyTitle")} description={t("pageCopyDesc")} defaultOpen={false}>
@@ -612,8 +902,26 @@ export function PublicSiteSettingsForm({
                 onChange={(e) => updateBenefitItem(index, { text: e.target.value })}
               />
             </label>
+            <AdminButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => removeBenefit(index)}
+            >
+              {t("benefitRemove")}
+            </AdminButton>
           </div>
         ))}
+        <AdminButton
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="mt-3"
+          onClick={addBenefit}
+          disabled={copy.benefitItems.length >= MAX_BENEFIT_ITEMS}
+        >
+          {t("benefitAdd")}
+        </AdminButton>
 
         <div className="admin-settings-fields mt-4">
           <label>
@@ -649,8 +957,26 @@ export function PublicSiteSettingsForm({
                 onChange={(e) => updateStepItem(index, { text: e.target.value })}
               />
             </label>
+            <AdminButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => removeStep(index)}
+            >
+              {t("stepRemove")}
+            </AdminButton>
           </div>
         ))}
+        <AdminButton
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="mt-3"
+          onClick={addStep}
+          disabled={copy.stepItems.length >= MAX_STEP_ITEMS}
+        >
+          {t("stepAdd")}
+        </AdminButton>
 
         <div className="admin-settings-fields mt-4">
           <label>
@@ -675,7 +1001,79 @@ export function PublicSiteSettingsForm({
               onChange={(e) => patchCopy({ ctaLabel: e.target.value })}
             />
           </label>
+          <label>
+            <span>{t("ctaHref")}</span>
+            <input
+              value={draft.ctaHref}
+              onChange={(e) => patchDraft({ ctaHref: e.target.value })}
+            />
+          </label>
         </div>
+        {copy.textItems.map((item) => (
+          <div key={item.id} className="admin-settings-fields mt-4">
+            <label className="pub-settings-section-toggle">
+              <input
+                type="checkbox"
+                checked={draft.textVisible[item.id] !== false}
+                onChange={(e) =>
+                  patchDraft({
+                    textVisible: { ...draft.textVisible, [item.id]: e.target.checked },
+                  })
+                }
+              />
+              {t("sectionText")}
+            </label>
+            <label>
+              <span>{t("textTitle")}</span>
+              <input
+                value={item.title}
+                onChange={(e) =>
+                  patchCopy({
+                    textItems: copy.textItems.map((row) =>
+                      row.id === item.id ? { ...row, title: e.target.value } : row,
+                    ),
+                  })
+                }
+              />
+            </label>
+            <label>
+              <span>{t("textLead")}</span>
+              <textarea
+                rows={2}
+                value={item.lead}
+                onChange={(e) =>
+                  patchCopy({
+                    textItems: copy.textItems.map((row) =>
+                      row.id === item.id ? { ...row, lead: e.target.value } : row,
+                    ),
+                  })
+                }
+              />
+            </label>
+            <label>
+              <span>{t("textBody")}</span>
+              <textarea
+                rows={6}
+                value={item.body}
+                onChange={(e) =>
+                  patchCopy({
+                    textItems: copy.textItems.map((row) =>
+                      row.id === item.id ? { ...row, body: e.target.value } : row,
+                    ),
+                  })
+                }
+              />
+            </label>
+            <AdminButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => removeTextSection(item.id)}
+            >
+              {t("textRemove")}
+            </AdminButton>
+          </div>
+        ))}
       </FormSection>
 
       <FormSection title={t("sectionGallery")} description={t("gallerySectionDesc")}>
@@ -687,6 +1085,23 @@ export function PublicSiteSettingsForm({
           />
           {t("sectionGallery")}
         </label>
+        <div className="admin-settings-fields mb-4">
+          <label>
+            <span>{t("galleryTitleLabel")}</span>
+            <input
+              value={copy.galleryTitle}
+              onChange={(e) => patchCopy({ galleryTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("galleryLeadLabel")}</span>
+            <textarea
+              rows={2}
+              value={copy.galleryLead}
+              onChange={(e) => patchCopy({ galleryLead: e.target.value })}
+            />
+          </label>
+        </div>
 
         <div className="pub-gallery-editor">
           {draft.galleryItems.length === 0 ? (
@@ -750,6 +1165,87 @@ export function PublicSiteSettingsForm({
           >
             {t("galleryAddPhoto")}
           </AdminButton>
+        </div>
+      </FormSection>
+
+      <FormSection title={t("pagesTitle")} description={t("pagesSectionDesc")} defaultOpen={false}>
+        <div className="admin-settings-fields">
+          <label>
+            <span>{t("comingSoonTitle")}</span>
+            <input
+              value={copy.comingSoonTitle}
+              onChange={(e) => patchCopy({ comingSoonTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("comingSoonLead")}</span>
+            <textarea
+              rows={3}
+              value={copy.comingSoonLead}
+              onChange={(e) => patchCopy({ comingSoonLead: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("calendarTitleLabel")}</span>
+            <input
+              value={copy.calendarTitle}
+              onChange={(e) => patchCopy({ calendarTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("calendarLeadLabel")}</span>
+            <textarea
+              rows={2}
+              value={copy.calendarLead}
+              onChange={(e) => patchCopy({ calendarLead: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("termsTitleLabel")}</span>
+            <input
+              value={copy.termsTitle}
+              onChange={(e) => patchCopy({ termsTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("termsLeadLabel")}</span>
+            <input
+              value={copy.termsLead}
+              onChange={(e) => patchCopy({ termsLead: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("termsBodyLabel")}</span>
+            <textarea
+              rows={8}
+              value={copy.termsBody}
+              onChange={(e) => patchCopy({ termsBody: e.target.value })}
+            />
+            <SettingsFieldHint>{t("legalBodyHint")}</SettingsFieldHint>
+          </label>
+          <label>
+            <span>{t("privacyTitleLabel")}</span>
+            <input
+              value={copy.privacyTitle}
+              onChange={(e) => patchCopy({ privacyTitle: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("privacyLeadLabel")}</span>
+            <input
+              value={copy.privacyLead}
+              onChange={(e) => patchCopy({ privacyLead: e.target.value })}
+            />
+          </label>
+          <label>
+            <span>{t("privacyBodyLabel")}</span>
+            <textarea
+              rows={8}
+              value={copy.privacyBody}
+              onChange={(e) => patchCopy({ privacyBody: e.target.value })}
+            />
+            <SettingsFieldHint>{t("legalBodyHint")}</SettingsFieldHint>
+          </label>
         </div>
       </FormSection>
 

@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
-import type { PublicSiteConfig } from "@/features/public-site/domain/types";
+import type { PublicSiteConfig, PublicTemplateId } from "@/features/public-site/domain/types";
+import { orderPublicSections } from "@/features/public-site/domain/order-sections";
 import { PublicHomeExtras } from "@/features/public-site/home/PublicHomeExtras";
+import { PublicPlace } from "@/features/public-site/home/PublicPlace";
+import { PublicStayOffers } from "@/features/public-site/home/PublicStayOffers";
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { renderPublicSection } from "@/features/public-site/sections/render-section";
 
@@ -11,6 +14,41 @@ type TemplateProps = {
   afterHero?: ReactNode;
   preview?: boolean;
 };
+
+function LiveProperty({
+  config,
+  locale,
+  preview,
+}: {
+  config: PublicSiteConfig;
+  locale: string;
+  preview?: boolean;
+}) {
+  return (
+    <>
+      <PublicStayOffers config={config} locale={locale} preview={preview} />
+      <PublicPlace config={config} />
+    </>
+  );
+}
+
+function TemplateSections({
+  config,
+  locale,
+  template,
+}: {
+  config: PublicSiteConfig;
+  locale: string;
+  template: PublicTemplateId;
+}) {
+  return (
+    <>
+      {orderPublicSections(config.sections).map((section) => (
+        <div key={section.id}>{renderPublicSection(section, locale, template)}</div>
+      ))}
+    </>
+  );
+}
 
 export function ClassicPublicTemplate({
   config,
@@ -29,9 +67,8 @@ export function ClassicPublicTemplate({
         preview={preview}
       />
       {afterHero}
-      {config.sections.map((section) => (
-        <div key={section.id}>{renderPublicSection(section, locale, "classic")}</div>
-      ))}
+      <TemplateSections config={config} locale={locale} template="classic" />
+      <LiveProperty config={config} locale={locale} preview={preview} />
     </main>
   );
 }
@@ -40,7 +77,6 @@ export function EditorialPublicTemplate({
   config,
   locale,
   checkTimesLabel,
-  afterHero,
   preview = false,
 }: TemplateProps) {
   return (
@@ -52,17 +88,8 @@ export function EditorialPublicTemplate({
         checkTimesLabel={checkTimesLabel}
         preview={preview}
       />
-      {afterHero}
-      <div className="pub-home__stack">
-        {config.sections.map((section, index) => (
-          <div
-            key={section.id}
-            className={index % 2 === 1 ? "pub-home__stack-row pub-home__stack-row--alt" : "pub-home__stack-row"}
-          >
-            {renderPublicSection(section, locale, "editorial")}
-          </div>
-        ))}
-      </div>
+      <TemplateSections config={config} locale={locale} template="editorial" />
+      <LiveProperty config={config} locale={locale} preview={preview} />
     </main>
   );
 }
@@ -85,9 +112,8 @@ export function ImmersivePublicTemplate({
       />
       {afterHero}
       <div className="pub-home__immersive-body">
-        {config.sections.map((section) => (
-          <div key={section.id}>{renderPublicSection(section, locale, "immersive")}</div>
-        ))}
+        <TemplateSections config={config} locale={locale} template="immersive" />
+        <LiveProperty config={config} locale={locale} preview={preview} />
       </div>
     </main>
   );
@@ -104,9 +130,15 @@ export function PublicSiteBody({
   checkTimesLabel: string;
   preview?: boolean;
 }) {
-  const afterHero = (
-    <PublicHomeExtras config={config} locale={locale} preview={preview} />
-  );
+  const extras =
+    config.templateId === "classic" ? (
+      <PublicHomeExtras
+        config={config}
+        locale={locale}
+        preview={preview}
+        layout="classic"
+      />
+    ) : null;
 
   switch (config.templateId) {
     case "editorial":
@@ -115,7 +147,6 @@ export function PublicSiteBody({
           config={config}
           locale={locale}
           checkTimesLabel={checkTimesLabel}
-          afterHero={afterHero}
           preview={preview}
         />
       );
@@ -125,7 +156,7 @@ export function PublicSiteBody({
           config={config}
           locale={locale}
           checkTimesLabel={checkTimesLabel}
-          afterHero={afterHero}
+          afterHero={extras}
           preview={preview}
         />
       );
@@ -136,7 +167,7 @@ export function PublicSiteBody({
           config={config}
           locale={locale}
           checkTimesLabel={checkTimesLabel}
-          afterHero={afterHero}
+          afterHero={extras}
           preview={preview}
         />
       );

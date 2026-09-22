@@ -472,8 +472,29 @@
       "ctaBandTitle": "Gata să trimiți o cerere?",
       "ctaBandText": "Durează câteva minute. Dacă perioada nu e liberă, îți spunem imediat — fără cont și fără card.",
       "ctaBandButton": "Deschide calendarul",
+      "galleryTitle": "Galerie",
       "extrasAria": "Informații rapide",
-      "checkTimesLabel": "Program cazare"
+      "checkTimesLabel": "Program cazare",
+      "roomsTitle": "Camere",
+      "roomsLead": "Ce oferim — disponibilitatea live e pe calendar.",
+      "roomsFrom": "De la {price} RON / noapte",
+      "roomsCapacity": "Până la {count} persoane",
+      "roomsCount": "{count, plural, one {# cameră} other {# camere}}",
+      "roomsCta": "Vezi datele",
+      "placeTitle": "Unde suntem",
+      "placeMap": "Deschide harta",
+      "placeAria": "Locație"
+    },
+    "unpublished": {
+      "title": "Pagina va fi online în curând",
+      "lead": "Pregătim pagina acestei pensiuni. Revino mai târziu sau contactează-ne pe datele de mai jos."
+    },
+    "contact": {
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "facebook": "Facebook",
+      "instagram": "Instagram"
     },
     "calendar": {
       "eyebrow": "Rezervare online",
@@ -641,7 +662,7 @@
       "s3Title": "3. Anulare",
       "s3Body": "Condițiile de anulare sau modificare a sejurului sunt comunicate de pensiune odată cu confirmarea rezervării.",
       "s4Title": "4. Contact",
-      "s4Body": "Zalmox — <email>contact@zalmox.app</email>"
+      "s4Body": "{name} — {email}"
     },
     "privacy": {
       "title": "Politica de confidențialitate",
@@ -658,7 +679,7 @@
       "retentionTitle": "Durata păstrării",
       "retentionBody": "Păstrăm datele pe durata necesară pentru gestionarea rezervării și îndeplinirea obligațiilor legale (contabilitate, fiscalitate).",
       "rightsTitle": "Drepturile tale",
-      "rightsBody": "Aveți dreptul de acces, rectificare, ștergere, restricționare, opoziție și portabilitate. Pentru exercitarea drepturilor, scrieți la <email>contact@zalmox.app</email>."
+      "rightsBody": "Aveți dreptul de acces, rectificare, ștergere, restricționare, opoziție și portabilitate. Pentru exercitarea drepturilor, scrieți la {email}."
     },
     "staffPanel": {
       "badge": "Staff",
@@ -1521,8 +1542,8 @@
         "loading": "Se încarcă…",
         "save": "Salvează site public",
         "saving": "Se salvează…",
-        "templateTitle": "Template prezentare",
-        "templateSectionDesc": "Cum este aranjat conținutul pe pagina publică.",
+        "templateTitle": "Layout pagină",
+        "templateSectionDesc": "Trei structuri de pagină diferite — broșură, revistă sau cinema. Nu doar o temă.",
         "themeTitle": "Temă vizuală",
         "themeSectionDesc": "Paletă de culori și tipografie pentru vizitatori.",
         "heroSectionTitle": "Zona hero",
@@ -1622,8 +1643,80 @@
         "heroTitleHint": "Titlul principal din hero — folosit și ca meta title dacă nu completezi SEO separat.",
         "heroImageHint": "JPEG, PNG sau WebP, maxim 5 MB. Classic o voalează, Editorial o pune lângă titlu, Immersive umple ecranul.",
         "usePrimaryContactHint": "Când e bifat, contactul din Identitate pensiune completează câmpurile goale de mai jos.",
-        "publishedHint": "Dezactivează pentru a ascunde site-ul public (util în timpul configurării).",
+        "publishedHint": "Dezactivează ca să ascunzi homepage-ul și calendarul de vizitatori. Operatorii logați văd în continuare preview-ul.",
         "localeEditHint": "Editezi doar {locale}. Celelalte limbi rămân neschimbate.",
+        "localeGaps": "Lipsește titlul hero în: {locales}. Vizitatorii vor vedea altă limbă până completezi.",
+        "brandTitle": "Brand și chrome",
+        "brandSectionDesc": "Logo, linia din header, linia din footer, fontul și banda de contact.",
+        "logoLabel": "Logo pensiune",
+        "logoHint": "Înlocuiește marca platformei în header. JPEG, PNG sau WebP, maxim 5 MB.",
+        "headerSubtitle": "Subtitlu header",
+        "footerTagline": "Tagline footer",
+        "fontTitle": "Font titluri",
+        "fonts": {
+          "theme": "Ca în tema de culoare",
+          "serif": "Serif",
+          "sans": "Sans-serif"
+        },
+        "showContactBar": "Arată banda de contact deasupra footerului",
+        "showStayOffers": "Arată camerele din catalog",
+        "showStayPrices": "Arată prețul de la, pe camere",
+        "showPlace": "Arată adresa și harta",
+        "livePropertyHint": "Camerele vin din Setări → Camere. Adresa e cea din facturare / fișa turist; pinul folosește coordonatele pentru vreme.",
+        "navTitle": "Navigare",
+        "navSectionDesc": "Ce linkuri apar în header și etichetele pentru limba curentă.",
+        "showNavHome": "Acasă",
+        "showNavPrivacy": "Confidențialitate",
+        "showNavTerms": "Termeni",
+        "navHomeLabel": "Etichetă Acasă",
+        "navPrivacyLabel": "Etichetă Confidențialitate",
+        "navTermsLabel": "Etichetă Termeni",
+        "navBookLabel": "Etichetă Rezervare",
+        "heroCtaPrimaryHref": "Link buton principal",
+        "heroCtaSecondaryHref": "Link buton secundar",
+        "showCheckTimes": "Arată orele de check-in / check-out în hero",
+        "ogImageLabel": "Imagine pentru social",
+        "ogImageHint": "Folosită la preview-ul linkurilor. Dacă e goală, se folosește foto hero.",
+        "seoCalendarTitle": "Meta title calendar",
+        "seoCalendarDescription": "Meta description calendar",
+        "seoTermsTitle": "Meta title termeni",
+        "seoTermsDescription": "Meta description termeni",
+        "seoPrivacyTitle": "Meta title confidențialitate",
+        "seoPrivacyDescription": "Meta description confidențialitate",
+        "sectionOrderTitle": "Ordinea secțiunilor",
+        "sectionText": "Bloc de text",
+        "sectionKey": {
+          "intro": "Introducere",
+          "benefits": "Beneficii",
+          "gallery": "Galerie",
+          "steps": "Pași",
+          "cta": "Bandă CTA"
+        },
+        "textAdd": "Adaugă bloc de text",
+        "textRemove": "Șterge blocul de text",
+        "textTitle": "Titlu text",
+        "textLead": "Lead text",
+        "textBody": "Corp text",
+        "benefitAdd": "Adaugă beneficiu",
+        "benefitRemove": "Șterge beneficiul",
+        "stepAdd": "Adaugă pas",
+        "stepRemove": "Șterge pasul",
+        "ctaHref": "Link buton CTA",
+        "galleryTitleLabel": "Titlu galerie",
+        "galleryLeadLabel": "Lead galerie",
+        "pagesTitle": "Alte pagini",
+        "pagesSectionDesc": "Coming soon, intro calendar, termeni și confidențialitate. Câmpurile goale păstrează textul de platformă.",
+        "comingSoonTitle": "Titlu coming soon",
+        "comingSoonLead": "Text coming soon",
+        "calendarTitleLabel": "Titlu calendar",
+        "calendarLeadLabel": "Lead calendar",
+        "termsTitleLabel": "Titlu termeni",
+        "termsLeadLabel": "Lead termeni",
+        "termsBodyLabel": "Corp termeni (înlocuiește pagina implicită)",
+        "privacyTitleLabel": "Titlu confidențialitate",
+        "privacyLeadLabel": "Lead confidențialitate",
+        "privacyBodyLabel": "Corp confidențialitate (înlocuiește pagina implicită)",
+        "legalBodyHint": "Text simplu. Desparte paragrafele cu un rând gol.",
         "pageCopyTitle": "Texte pe pagină",
         "pageCopyDesc": "Textele pe care le citesc vizitatorii sub hero — doar limba aceasta.",
         "introLead": "Text introducere",
@@ -1655,15 +1748,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Broșură: intro pe două coloane, hero pe fotografie, trei coloane egale."
+            "desc": "Broșură: fotografia în ramă deasupra textului, bandă de facilități, intro pe două coloane, carduri."
           },
           "editorial": {
             "title": "Editorial",
-            "desc": "Revistă: fotografia lângă titlu, beneficii în listă, galerie mozaic."
+            "desc": "Revistă: antet masthead, titlu lângă portret, șină de rezervare, galerie mozaic înaintea beneficiilor."
           },
           "immersive": {
             "title": "Immersive",
-            "desc": "Foto cinematică pe tot ecranul, tipografie mare, galerie full-bleed."
+            "desc": "Cinema: navigare peste foto pe tot ecranul, galerie prima, intro ca un card, fără bandă de contact."
           }
         },
         "themes": {

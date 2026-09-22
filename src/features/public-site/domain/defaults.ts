@@ -1,40 +1,53 @@
 import type {
+  LocalizedText,
+  PublicChromeConfig,
+  PublicPagesConfig,
   PublicSiteConfig,
   PublicSiteSection,
   PublicTemplateId,
   PublicThemeId,
 } from "./types";
 import { defaultBookingNotice } from "./booking-notice";
+import { defaultPublicChrome, defaultPublicPages } from "./chrome";
 import { localizedFromString } from "./localized";
+import { assignTemplateSectionSort } from "./order-sections";
+import { emptyPublicPlace } from "./stay-offers";
 
 type DefaultCopy = {
-  heroBadge: string;
-  heroSubtitle: string;
-  heroTagline: string;
-  ctaPrimary: string;
-  ctaSecondary: string;
-  introTitle: string;
-  introLead: string;
-  benefitsTitle: string;
-  benefitsLead: string;
-  benefit1Title: string;
-  benefit1Text: string;
-  benefit2Title: string;
-  benefit2Text: string;
-  benefit3Title: string;
-  benefit3Text: string;
-  stepsTitle: string;
-  stepsLead: string;
-  step1Title: string;
-  step1Text: string;
-  step2Title: string;
-  step2Text: string;
-  step3Title: string;
-  step3Text: string;
-  ctaBandTitle: string;
-  ctaBandText: string;
-  ctaBandButton: string;
+  heroBadge: LocalizedText | string;
+  heroSubtitle: LocalizedText | string;
+  heroTagline: LocalizedText | string;
+  ctaPrimary: LocalizedText | string;
+  ctaSecondary: LocalizedText | string;
+  introTitle: LocalizedText | string;
+  introLead: LocalizedText | string;
+  benefitsTitle: LocalizedText | string;
+  benefitsLead: LocalizedText | string;
+  benefit1Title: LocalizedText | string;
+  benefit1Text: LocalizedText | string;
+  benefit2Title: LocalizedText | string;
+  benefit2Text: LocalizedText | string;
+  benefit3Title: LocalizedText | string;
+  benefit3Text: LocalizedText | string;
+  stepsTitle: LocalizedText | string;
+  stepsLead: LocalizedText | string;
+  step1Title: LocalizedText | string;
+  step1Text: LocalizedText | string;
+  step2Title: LocalizedText | string;
+  step2Text: LocalizedText | string;
+  step3Title: LocalizedText | string;
+  step3Text: LocalizedText | string;
+  ctaBandTitle: LocalizedText | string;
+  ctaBandText: LocalizedText | string;
+  ctaBandButton: LocalizedText | string;
+  galleryTitle?: LocalizedText | string;
 };
+
+function loc(value: LocalizedText | string | undefined): LocalizedText {
+  if (!value) return {};
+  if (typeof value === "string") return localizedFromString(value);
+  return value;
+}
 
 export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection[] {
   return [
@@ -44,8 +57,8 @@ export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection
       sortOrder: 10,
       visible: true,
       payload: {
-        title: localizedFromString(copy.introTitle),
-        lead: localizedFromString(copy.introLead),
+        title: loc(copy.introTitle),
+        lead: loc(copy.introLead),
       },
     },
     {
@@ -54,23 +67,23 @@ export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection
       sortOrder: 20,
       visible: true,
       payload: {
-        title: localizedFromString(copy.benefitsTitle),
-        lead: localizedFromString(copy.benefitsLead),
+        title: loc(copy.benefitsTitle),
+        lead: loc(copy.benefitsLead),
         items: [
           {
             icon: "bed",
-            title: localizedFromString(copy.benefit1Title),
-            text: localizedFromString(copy.benefit1Text),
+            title: loc(copy.benefit1Title),
+            text: loc(copy.benefit1Text),
           },
           {
             icon: "spark",
-            title: localizedFromString(copy.benefit2Title),
-            text: localizedFromString(copy.benefit2Text),
+            title: loc(copy.benefit2Title),
+            text: loc(copy.benefit2Text),
           },
           {
             icon: "handshake",
-            title: localizedFromString(copy.benefit3Title),
-            text: localizedFromString(copy.benefit3Text),
+            title: loc(copy.benefit3Title),
+            text: loc(copy.benefit3Text),
           },
         ],
       },
@@ -81,8 +94,8 @@ export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection
       sortOrder: 30,
       visible: false,
       payload: {
-        title: localizedFromString("Galerie"),
-        lead: localizedFromString(""),
+        title: loc(copy.galleryTitle ?? ""),
+        lead: loc(""),
         items: [],
       },
     },
@@ -92,20 +105,20 @@ export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection
       sortOrder: 40,
       visible: true,
       payload: {
-        title: localizedFromString(copy.stepsTitle),
-        lead: localizedFromString(copy.stepsLead),
+        title: loc(copy.stepsTitle),
+        lead: loc(copy.stepsLead),
         items: [
           {
-            title: localizedFromString(copy.step1Title),
-            text: localizedFromString(copy.step1Text),
+            title: loc(copy.step1Title),
+            text: loc(copy.step1Text),
           },
           {
-            title: localizedFromString(copy.step2Title),
-            text: localizedFromString(copy.step2Text),
+            title: loc(copy.step2Title),
+            text: loc(copy.step2Text),
           },
           {
-            title: localizedFromString(copy.step3Title),
-            text: localizedFromString(copy.step3Text),
+            title: loc(copy.step3Title),
+            text: loc(copy.step3Text),
           },
         ],
       },
@@ -116,9 +129,9 @@ export function buildDefaultPublicSections(copy: DefaultCopy): PublicSiteSection
       sortOrder: 50,
       visible: true,
       payload: {
-        title: localizedFromString(copy.ctaBandTitle),
-        lead: localizedFromString(copy.ctaBandText),
-        ctaLabel: localizedFromString(copy.ctaBandButton),
+        title: loc(copy.ctaBandTitle),
+        lead: loc(copy.ctaBandText),
+        ctaLabel: loc(copy.ctaBandButton),
         ctaHref: "/calendar",
       },
     },
@@ -133,6 +146,8 @@ export function buildDefaultPublicSiteConfig(args: {
   contactEmail?: string;
   templateId?: PublicTemplateId;
   themeId?: PublicThemeId;
+  chrome?: PublicChromeConfig;
+  pages?: PublicPagesConfig;
 }): PublicSiteConfig {
   return {
     id: "",
@@ -146,12 +161,12 @@ export function buildDefaultPublicSiteConfig(args: {
     checkInTime: args.checkInTime,
     checkOutTime: args.checkOutTime,
     hero: {
-      badge: localizedFromString(args.copy.heroBadge),
-      title: localizedFromString(args.displayName),
-      subtitle: localizedFromString(args.copy.heroSubtitle),
-      tagline: localizedFromString(args.copy.heroTagline),
-      ctaPrimary: localizedFromString(args.copy.ctaPrimary),
-      ctaSecondary: localizedFromString(args.copy.ctaSecondary),
+      badge: loc(args.copy.heroBadge),
+      title: loc(args.displayName),
+      subtitle: loc(args.copy.heroSubtitle),
+      tagline: loc(args.copy.heroTagline),
+      ctaPrimary: loc(args.copy.ctaPrimary),
+      ctaSecondary: loc(args.copy.ctaSecondary),
       ctaPrimaryHref: "/calendar",
       ctaSecondaryHref: "#public-intro",
       showCheckTimes: true,
@@ -160,11 +175,18 @@ export function buildDefaultPublicSiteConfig(args: {
       email: args.contactEmail ?? null,
     },
     seo: {
-      metaTitle: localizedFromString(args.displayName),
-      metaDescription: localizedFromString(args.copy.heroSubtitle),
+      metaTitle: loc(args.displayName),
+      metaDescription: loc(args.copy.heroSubtitle),
     },
     bookingNotice: defaultBookingNotice(),
-    sections: buildDefaultPublicSections(args.copy),
+    chrome: { ...defaultPublicChrome(), ...args.chrome },
+    pages: { ...defaultPublicPages(), ...args.pages },
+    sections: assignTemplateSectionSort(
+      buildDefaultPublicSections(args.copy),
+      args.templateId ?? "classic",
+    ),
+    stayOffers: [],
+    place: emptyPublicPlace(),
   };
 }
 

@@ -99,7 +99,9 @@ with checks as (
     ('091', 'expand_admin_palette_themes', 'constraint_contains', 'pension_settings_admin_palette_key_check', 'pearl'),
     ('092', 'expand_public_site_theme_ids', 'constraint_contains', 'public_site_settings_theme_id_check', 'pearl'),
     ('096', 'drop_simulation',       'function_dropped',    'sim_start',                                ''),
-    ('098', 'public_site_booking_notice', 'column',             'public_site_settings',                     'booking_notice')
+    ('098', 'public_site_booking_notice', 'column',             'public_site_settings',                     'booking_notice'),
+    ('099', 'public_site_media',          'seed',               '',                                         'storage bucket public-site-media'),
+    ('100', 'public_site_chrome_pages',   'column',             'public_site_settings',                     'chrome')
   ) as t(migration_id, slug, kind, obj1, obj2)
 ),
 table_exists as (

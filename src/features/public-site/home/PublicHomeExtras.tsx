@@ -6,6 +6,7 @@ import { safeNavHref } from "@/lib/security/html-escape";
 import type {
   PublicBenefitItem,
   PublicSiteConfig,
+  PublicTemplateId,
 } from "@/features/public-site/domain/types";
 import { useTranslations } from "next-intl";
 
@@ -13,10 +14,12 @@ export function PublicHomeExtras({
   config,
   locale,
   preview = false,
+  layout = "classic",
 }: {
   config: PublicSiteConfig;
   locale: string;
   preview?: boolean;
+  layout?: PublicTemplateId;
 }) {
   const t = useTranslations("public.home");
 
@@ -24,12 +27,15 @@ export function PublicHomeExtras({
     (section) => section.sectionType === "benefits" && section.visible,
   );
   const benefitItems = (benefitsSection?.payload.items ?? []) as PublicBenefitItem[];
-  const amenityLabels = benefitItems
-    .map((item) => pickLocalized(item.title, locale))
-    .filter(Boolean)
-    .slice(0, 4);
+  const amenityLabels =
+    layout === "classic"
+      ? benefitItems
+          .map((item) => pickLocalized(item.title, locale))
+          .filter(Boolean)
+          .slice(0, 4)
+      : [];
 
-  const showCheckStrip = config.hero.showCheckTimes !== false;
+  const showCheckStrip = layout === "classic" && config.hero.showCheckTimes !== false;
   const showBookingBar = config.bookingEnabled;
   const ctaPrimary = pickLocalized(config.hero.ctaPrimary, locale, [t("ctaBook")]);
 

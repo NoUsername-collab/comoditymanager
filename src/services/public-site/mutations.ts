@@ -27,6 +27,8 @@ export async function upsertPublicSiteSettingsImpl(
     p_contact: input.contact,
     p_seo: input.seo,
     p_booking_notice: input.bookingNotice,
+    p_chrome: input.chrome ?? {},
+    p_pages: input.pages ?? {},
     p_sections: sectionsPayload,
   });
 

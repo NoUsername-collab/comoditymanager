@@ -473,8 +473,29 @@
       "ctaBandTitle": "Ready to send a request?",
       "ctaBandText": "Takes a few minutes. If dates aren't free, we'll tell you right away — no account, no card.",
       "ctaBandButton": "Open calendar",
+      "galleryTitle": "Gallery",
       "extrasAria": "Quick info",
-      "checkTimesLabel": "Stay schedule"
+      "checkTimesLabel": "Stay schedule",
+      "roomsTitle": "Rooms",
+      "roomsLead": "What we have — live availability is on the calendar.",
+      "roomsFrom": "From {price} RON / night",
+      "roomsCapacity": "Up to {count} guests",
+      "roomsCount": "{count, plural, one {# room} other {# rooms}}",
+      "roomsCta": "See dates",
+      "placeTitle": "Find us",
+      "placeMap": "Open map",
+      "placeAria": "Location"
+    },
+    "unpublished": {
+      "title": "We'll be online shortly",
+      "lead": "This guesthouse page is being prepared. Please check back soon, or reach us using the contact details below."
+    },
+    "contact": {
+      "email": "Email",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "facebook": "Facebook",
+      "instagram": "Instagram"
     },
     "calendar": {
       "eyebrow": "Online booking",
@@ -642,7 +663,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Zalmox — <email>contact@zalmox.app</email>"
+      "s4Body": "{name} — {email}"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -659,7 +680,7 @@
       "retentionTitle": "Retention",
       "retentionBody": "We keep data as long as needed to manage the booking and meet legal obligations (accounting, tax).",
       "rightsTitle": "Your rights",
-      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@zalmox.app</email>."
+      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact {email}."
     },
     "staffPanel": {
       "badge": "Staff",
@@ -1537,8 +1558,8 @@
         "loading": "Loading…",
         "save": "Save public site",
         "saving": "Saving…",
-        "templateTitle": "Presentation template",
-        "templateSectionDesc": "How content is laid out on your public homepage.",
+        "templateTitle": "Page layout",
+        "templateSectionDesc": "Three different page structures — brochure, magazine, or cinema. Not a color swap.",
         "themeTitle": "Visual theme",
         "themeSectionDesc": "Color palette and typography visitors see on your site.",
         "heroSectionTitle": "Hero area",
@@ -1584,6 +1605,7 @@
         "galleryCaptionLabel": "Caption (optional)",
         "galleryEmpty": "No photos added yet.",
         "publishTitle": "Publishing",
+        "publishedHint": "Turn off to hide the homepage and calendar from visitors. Staff still see a preview when signed in.",
         "bookingTitle": "Booking module",
         "bookingSectionDescOnly": "Control online booking on the public site and the “Good to know” panel beside the form.",
         "bookingSectionDesc": "Control online booking visibility and whether the site is live.",
@@ -1638,8 +1660,80 @@
         "heroTitleHint": "Main hero headline — also used as meta title if SEO fields are empty.",
         "heroImageHint": "JPEG, PNG or WebP, up to 5 MB. Classic veils it, Editorial puts it beside the headline, Immersive fills the viewport.",
         "usePrimaryContactHint": "When checked, Property identity contact fills empty fields below.",
-        "publishedHint": "Turn off to hide the public site while you finish setup.",
+        "publishedHint": "Turn off to hide the homepage and calendar from visitors. Staff still see a preview when signed in.",
         "localeEditHint": "Editing {locale} only. The other languages stay as they are.",
+        "localeGaps": "Missing hero title in: {locales}. Visitors will see another language until you fill it.",
+        "brandTitle": "Brand and chrome",
+        "brandSectionDesc": "Logo, header line, footer line, typeface, and the contact strip.",
+        "logoLabel": "Property logo",
+        "logoHint": "Replaces the platform mark in the header. JPEG, PNG or WebP, up to 5 MB.",
+        "headerSubtitle": "Header subtitle",
+        "footerTagline": "Footer tagline",
+        "fontTitle": "Headline font",
+        "fonts": {
+          "theme": "Match the colour theme",
+          "serif": "Serif",
+          "sans": "Sans-serif"
+        },
+        "showContactBar": "Show the contact strip above the footer",
+        "showStayOffers": "Show rooms from the catalog",
+        "showStayPrices": "Show from-prices on rooms",
+        "showPlace": "Show address and map",
+        "livePropertyHint": "Rooms come from Settings → Rooms. The address is the property address from billing / tourist sheet; the pin uses weather coordinates.",
+        "navTitle": "Navigation",
+        "navSectionDesc": "Which links appear in the header, and the labels for this language.",
+        "showNavHome": "Home",
+        "showNavPrivacy": "Privacy",
+        "showNavTerms": "Terms",
+        "navHomeLabel": "Home label",
+        "navPrivacyLabel": "Privacy label",
+        "navTermsLabel": "Terms label",
+        "navBookLabel": "Book label",
+        "heroCtaPrimaryHref": "Primary button link",
+        "heroCtaSecondaryHref": "Secondary button link",
+        "showCheckTimes": "Show check-in / check-out times in the hero",
+        "ogImageLabel": "Social share image",
+        "ogImageHint": "Used in link previews. Falls back to the hero photo.",
+        "seoCalendarTitle": "Calendar meta title",
+        "seoCalendarDescription": "Calendar meta description",
+        "seoTermsTitle": "Terms meta title",
+        "seoTermsDescription": "Terms meta description",
+        "seoPrivacyTitle": "Privacy meta title",
+        "seoPrivacyDescription": "Privacy meta description",
+        "sectionOrderTitle": "Section order",
+        "sectionText": "Text block",
+        "sectionKey": {
+          "intro": "Introduction",
+          "benefits": "Benefits",
+          "gallery": "Gallery",
+          "steps": "Steps",
+          "cta": "CTA band"
+        },
+        "textAdd": "Add text block",
+        "textRemove": "Remove text block",
+        "textTitle": "Text title",
+        "textLead": "Text lead",
+        "textBody": "Text body",
+        "benefitAdd": "Add benefit",
+        "benefitRemove": "Remove benefit",
+        "stepAdd": "Add step",
+        "stepRemove": "Remove step",
+        "ctaHref": "CTA button link",
+        "galleryTitleLabel": "Gallery title",
+        "galleryLeadLabel": "Gallery lead",
+        "pagesTitle": "Other pages",
+        "pagesSectionDesc": "Coming soon, calendar intro, terms and privacy. Empty fields keep the platform text.",
+        "comingSoonTitle": "Coming soon title",
+        "comingSoonLead": "Coming soon text",
+        "calendarTitleLabel": "Calendar title",
+        "calendarLeadLabel": "Calendar lead",
+        "termsTitleLabel": "Terms title",
+        "termsLeadLabel": "Terms lead",
+        "termsBodyLabel": "Terms body (replaces the default page)",
+        "privacyTitleLabel": "Privacy title",
+        "privacyLeadLabel": "Privacy lead",
+        "privacyBodyLabel": "Privacy body (replaces the default page)",
+        "legalBodyHint": "Plain text. Separate paragraphs with a blank line.",
         "pageCopyTitle": "Page copy",
         "pageCopyDesc": "Texts visitors read below the hero — this language only.",
         "introLead": "Introduction text",
@@ -1671,15 +1765,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Brochure: split intro, photography hero, three equal columns."
+            "desc": "Brochure: framed photo above centered copy, amenity strip, two-column intro, card grid."
           },
           "editorial": {
             "title": "Editorial",
-            "desc": "Magazine: photo beside the headline, lined benefits, mosaic gallery."
+            "desc": "Magazine masthead, headline beside a portrait, booking rail, mosaic gallery before lined benefits."
           },
           "immersive": {
             "title": "Immersive",
-            "desc": "Cinematic full-viewport photo, large type, full-bleed gallery."
+            "desc": "Cinema: overlay nav, full-screen still, gallery first, intro as a card, no contact strip."
           }
         },
         "themes": {

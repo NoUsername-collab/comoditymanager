@@ -37,6 +37,19 @@ export function localizedFromString(text: string): LocalizedText {
   return { ro: text, en: text, bg: text };
 }
 
+export function localizedFromTriad(values: {
+  ro?: string;
+  en?: string;
+  bg?: string;
+}): LocalizedText {
+  const next: LocalizedText = {};
+  for (const locale of PUBLIC_LOCALES) {
+    const text = values[locale]?.trim();
+    if (text) next[locale] = text;
+  }
+  return next;
+}
+
 const PUBLIC_LOCALE_SET = new Set<string>(PUBLIC_LOCALES);
 
 function asPublicLocale(locale: string): PublicLocale {

@@ -5,7 +5,9 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { HeaderLocaleSwitch } from "@/layout/components/HeaderLocaleSwitch";
 import { MobileDrawerPortal } from "@/layout/mobile/MobileDrawerPortal";
 import { useMobileDrawer } from "@/layout/mobile/use-mobile-drawer";
-import { useTranslations } from "next-intl";
+import { useOptionalPublicSiteConfig } from "@/features/public-site/PublicSiteConfigProvider";
+import { resolvePublicNavItems } from "@/features/public-site/domain/nav-items";
+import { useLocale, useTranslations } from "next-intl";
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -14,7 +16,15 @@ function isActive(pathname: string, href: string): boolean {
 
 export function PublicMobileMenu() {
   const pathname = usePathname();
+  const locale = useLocale();
   const t = useTranslations("public.nav");
+  const config = useOptionalPublicSiteConfig();
+  const items = resolvePublicNavItems(config, locale, {
+    home: t("home"),
+    privacy: t("gdpr"),
+    terms: t("terms"),
+    book: t("book"),
+  });
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -85,49 +95,22 @@ export function PublicMobileMenu() {
               </button>
             </div>
             <nav className="ml-drawer__nav" aria-label={t("menuAria")}>
-              <Link
-                href="/"
-                className={[
-                  "ml-drawer__link",
-                  isActive(pathname, "/") && "ml-drawer__link--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={() => setOpen(false)}
-              >
-                {t("home")}
-              </Link>
-              <Link
-                href="/confidentialitate"
-                className={[
-                  "ml-drawer__link",
-                  isActive(pathname, "/confidentialitate") && "ml-drawer__link--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={() => setOpen(false)}
-              >
-                {t("gdpr")}
-              </Link>
-              <Link
-                href="/termeni"
-                className={[
-                  "ml-drawer__link",
-                  isActive(pathname, "/termeni") && "ml-drawer__link--active",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                onClick={() => setOpen(false)}
-              >
-                {t("terms")}
-              </Link>
-              <Link
-                href="/calendar"
-                className="ml-drawer__link ml-drawer__link--cta site-cta"
-                onClick={() => setOpen(false)}
-              >
-                {t("book")}
-              </Link>
+              {items.map((item) => (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={[
+                    "ml-drawer__link",
+                    item.cta && "ml-drawer__link--cta site-cta",
+                    isActive(pathname, item.href) && "ml-drawer__link--active",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
               <div className="ml-drawer__locale">
                 <HeaderLocaleSwitch slot="drawer" />
               </div>

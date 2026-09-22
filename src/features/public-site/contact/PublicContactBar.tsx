@@ -17,7 +17,10 @@ function normalizeUrl(value: string | null | undefined, prefix?: string): string
   return trimmed;
 }
 
-export function buildPublicContactLinks(contact: PublicContactConfig) {
+export function buildPublicContactLinks(
+  contact: PublicContactConfig,
+  labels: Partial<Record<"email" | "whatsapp" | "telegram" | "facebook" | "instagram", string>> = {},
+) {
   const email = contact.email?.trim() || null;
   const phone = contact.phone?.trim() || null;
   const whatsappRaw = contact.whatsapp?.trim() || null;
@@ -37,22 +40,22 @@ export function buildPublicContactLinks(contact: PublicContactConfig) {
 
   return [
     email
-      ? { id: "email", label: "Email", href: `mailto:${email}`, external: false }
+      ? { id: "email", label: labels.email ?? "Email", href: `mailto:${email}`, external: false }
       : null,
     phone
       ? { id: "phone", label: phone, href: `tel:${phone.replace(/\s/g, "")}`, external: false }
       : null,
     whatsapp
-      ? { id: "whatsapp", label: "WhatsApp", href: whatsapp, external: true }
+      ? { id: "whatsapp", label: labels.whatsapp ?? "WhatsApp", href: whatsapp, external: true }
       : null,
     telegram
-      ? { id: "telegram", label: "Telegram", href: telegram, external: true }
+      ? { id: "telegram", label: labels.telegram ?? "Telegram", href: telegram, external: true }
       : null,
     facebook
-      ? { id: "facebook", label: "Facebook", href: facebook, external: true }
+      ? { id: "facebook", label: labels.facebook ?? "Facebook", href: facebook, external: true }
       : null,
     instagram
-      ? { id: "instagram", label: "Instagram", href: instagram, external: true }
+      ? { id: "instagram", label: labels.instagram ?? "Instagram", href: instagram, external: true }
       : null,
   ].filter(Boolean) as {
     id: string;
@@ -66,12 +69,14 @@ export function PublicContactBar({
   contact,
   title = "Contact",
   emptyHint,
+  labels,
 }: {
   contact: PublicContactConfig;
   title?: string;
   emptyHint?: string;
+  labels?: Partial<Record<"email" | "whatsapp" | "telegram" | "facebook" | "instagram", string>>;
 }) {
-  const links = buildPublicContactLinks(contact);
+  const links = buildPublicContactLinks(contact, labels);
 
   return (
     <section

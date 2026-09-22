@@ -1,11 +1,14 @@
 import { resolveContactWithPrimary } from "@/domain/settings/pension-identity";
 import type { PensionContact } from "@/domain/settings/pension-identity";
 import type {
+  PublicPlace,
   PublicSiteConfig,
   PublicSiteSection,
   PublicSiteSettingsInput,
   PublicSiteSettingsRow,
+  PublicStayOffer,
 } from "@/features/public-site/domain/types";
+import { emptyPublicPlace } from "@/features/public-site/domain/stay-offers";
 
 export type PublicSiteConfigContext = {
   displayName: string;
@@ -14,6 +17,8 @@ export type PublicSiteConfigContext = {
   primaryContact: PensionContact;
   fallbackSections: PublicSiteSection[];
   fallbackContactEmail?: string | null;
+  stayOffers?: PublicStayOffer[];
+  place?: PublicPlace;
 };
 
 /** Same merge rules as the live public site loader — contact, identity, sections. */
@@ -42,6 +47,8 @@ export function finalizePublicSiteConfig(
       facebook: resolvedContact.facebook,
       instagram: resolvedContact.instagram,
     },
+    stayOffers: ctx.stayOffers ?? [],
+    place: ctx.place ?? emptyPublicPlace(),
   };
 }
 
@@ -71,6 +78,8 @@ export function buildPublicSiteConfigFromInput(
       contact: input.contact,
       seo: input.seo,
       bookingNotice: input.bookingNotice,
+      chrome: input.chrome,
+      pages: input.pages,
     },
     sections,
     {
@@ -80,6 +89,8 @@ export function buildPublicSiteConfigFromInput(
       primaryContact,
       fallbackSections: base.sections,
       fallbackContactEmail: base.contact.email,
+      stayOffers: base.stayOffers,
+      place: base.place,
     },
   );
 }

@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { getTranslations } from "next-intl/server";
 import { buildDefaultPublicSiteConfig } from "@/features/public-site/domain/defaults";
+import { seedPublicHomeCopy } from "@/features/public-site/domain/seed-copy";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -14,53 +14,24 @@ import { getPensionSettings } from "@/services/pension-settings";
 import { getPensionIdentity } from "@/services/pension-identity";
 import { resolvePensionStayTimes } from "@/lib/constants";
 import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
+import { loadPublicPlace } from "./place";
+import { loadPublicStayOffers } from "./stay-offers";
 import {
   isPublicSiteMigrationMissing,
   mapPublicSiteSectionRow,
   mapPublicSiteSettingsRow,
 } from "./map";
 
-async function loadDefaultCopy() {
-  const t = await getTranslations("public.home");
-  return {
-    heroBadge: t("badge"),
-    heroSubtitle: t("subtitle"),
-    heroTagline: t("tagline"),
-    ctaPrimary: t("ctaBook"),
-    ctaSecondary: t("ctaHow"),
-    introTitle: t("whyTitle"),
-    introLead: t("whyLead"),
-    benefitsTitle: t("whyTitle"),
-    benefitsLead: t("whyLead"),
-    benefit1Title: t("feature1Title"),
-    benefit1Text: t("feature1Text"),
-    benefit2Title: t("feature2Title"),
-    benefit2Text: t("feature2Text"),
-    benefit3Title: t("feature3Title"),
-    benefit3Text: t("feature3Text"),
-    stepsTitle: t("stepsTitle"),
-    stepsLead: t("stepsLead"),
-    step1Title: t("step1Title"),
-    step1Text: t("step1Text"),
-    step2Title: t("step2Title"),
-    step2Text: t("step2Text"),
-    step3Title: t("step3Title"),
-    step3Text: t("step3Text"),
-    ctaBandTitle: t("ctaBandTitle"),
-    ctaBandText: t("ctaBandText"),
-    ctaBandButton: t("ctaBandButton"),
-  };
-}
-
 async function getPublicSiteConfigUncached(
   tenantId: string
 ): Promise<PublicSiteConfig> {
-  const [pension, identity, copy, tFooter] = await Promise.all([
+  const [pension, identity, stayOffers, place] = await Promise.all([
     getPensionSettings().catch(() => null),
     getPensionIdentity().catch(() => null),
-    loadDefaultCopy(),
-    getTranslations("public.footer"),
+    loadPublicStayOffers(tenantId),
+    loadPublicPlace(tenantId),
   ]);
+  const copy = seedPublicHomeCopy();
 
   const displayName = identity?.displayName ?? pension?.display_name ?? "Casa Emil";
   const { checkIn: checkInTime, checkOut: checkOutTime } =
@@ -70,8 +41,10 @@ async function getPublicSiteConfigUncached(
     checkInTime,
     checkOutTime,
     copy,
-    contactEmail: tFooter("contactEmail"),
+    contactEmail: identity?.contact.email ?? undefined,
   });
+  fallback.stayOffers = stayOffers;
+  fallback.place = place;
 
   const supabase = createPublicAdminClient();
   const settingsColumns =
@@ -80,7 +53,7 @@ async function getPublicSiteConfigUncached(
   const [initialSettingsResult, sectionsResult] = await Promise.all([
     supabase
       .from("public_site_settings")
-      .select(`${settingsColumns}, booking_notice`)
+      .select(`${settingsColumns}, booking_notice, chrome, pages`)
       .eq("tenant_id", tenantId)
       .maybeSingle(),
     supabase
@@ -93,7 +66,9 @@ async function getPublicSiteConfigUncached(
   let settingsResult = initialSettingsResult;
   if (
     settingsResult.error &&
-    settingsResult.error.message.includes("booking_notice")
+    (settingsResult.error.message.includes("booking_notice") ||
+      settingsResult.error.message.includes("chrome") ||
+      settingsResult.error.message.includes("pages"))
   ) {
     settingsResult = await supabase
       .from("public_site_settings")
@@ -138,6 +113,8 @@ async function getPublicSiteConfigUncached(
     primaryContact,
     fallbackSections: fallback.sections,
     fallbackContactEmail: fallback.contact.email,
+    stayOffers,
+    place,
   });
 }
 
@@ -146,7 +123,14 @@ const getCachedPublicSiteConfig = (tenantId: string) =>
     () => getPublicSiteConfigUncached(tenantId),
     ["public-site-config", tenantId],
     {
-      tags: [CACHE_TAGS.publicSite, tenantTag(tenantId, CACHE_TAGS.publicSite)],
+      tags: [
+        CACHE_TAGS.publicSite,
+        tenantTag(tenantId, CACHE_TAGS.publicSite),
+        CACHE_TAGS.rooms,
+        tenantTag(tenantId, CACHE_TAGS.rooms),
+        CACHE_TAGS.roomCatalog,
+        tenantTag(tenantId, CACHE_TAGS.roomCatalog),
+      ],
       revalidate: 120,
     }
   );

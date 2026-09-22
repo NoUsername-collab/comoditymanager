@@ -49,6 +49,58 @@ const publicContactConfigSchema = z
   })
   .strict();
 
+const publicFontIdSchema = z.enum(["theme", "serif", "sans"]);
+
+const longLocalizedTextSchema = z
+  .object({
+    ro: z.string().max(20000).optional(),
+    en: z.string().max(20000).optional(),
+    bg: z.string().max(20000).optional(),
+  })
+  .strict();
+
+const publicChromeConfigSchema = z
+  .object({
+    logoUrl: optionalUrlSchema.optional(),
+    headerSubtitle: localizedTextSchema.optional(),
+    footerTagline: localizedTextSchema.optional(),
+    showContactBar: z.boolean().optional(),
+    fontId: publicFontIdSchema.optional(),
+    navHome: localizedTextSchema.optional(),
+    navPrivacy: localizedTextSchema.optional(),
+    navTerms: localizedTextSchema.optional(),
+    navBook: localizedTextSchema.optional(),
+    showNavHome: z.boolean().optional(),
+    showNavPrivacy: z.boolean().optional(),
+    showNavTerms: z.boolean().optional(),
+    showStayOffers: z.boolean().optional(),
+    showStayPrices: z.boolean().optional(),
+    showPlace: z.boolean().optional(),
+  })
+  .strict();
+
+const publicPagesConfigSchema = z
+  .object({
+    comingSoonTitle: localizedTextSchema.optional(),
+    comingSoonLead: localizedTextSchema.optional(),
+    termsTitle: localizedTextSchema.optional(),
+    termsLead: localizedTextSchema.optional(),
+    termsBody: longLocalizedTextSchema.optional(),
+    privacyTitle: localizedTextSchema.optional(),
+    privacyLead: localizedTextSchema.optional(),
+    privacyBody: longLocalizedTextSchema.optional(),
+    calendarTitle: localizedTextSchema.optional(),
+    calendarLead: localizedTextSchema.optional(),
+    seoCalendarTitle: localizedTextSchema.optional(),
+    seoCalendarDescription: localizedTextSchema.optional(),
+    seoTermsTitle: localizedTextSchema.optional(),
+    seoTermsDescription: localizedTextSchema.optional(),
+    seoPrivacyTitle: localizedTextSchema.optional(),
+    seoPrivacyDescription: localizedTextSchema.optional(),
+    ogImageUrl: optionalUrlSchema.optional(),
+  })
+  .strict();
+
 const publicSeoConfigSchema = z
   .object({
     metaTitle: localizedTextSchema.optional(),
@@ -173,6 +225,8 @@ export const publicSiteSettingsInputSchema = z
     contact: publicContactConfigSchema,
     seo: publicSeoConfigSchema,
     bookingNotice: publicBookingNoticeSchema,
+    chrome: publicChromeConfigSchema.default({}),
+    pages: publicPagesConfigSchema.default({}),
     sections: z.array(publicSiteSectionInputSchema).max(50),
   })
   .strict();

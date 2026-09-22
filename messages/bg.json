@@ -423,7 +423,7 @@
       "brandFallback": "Zalmox"
     },
     "header": {
-      "subtitle": "Къща за гости · Таснад"
+      "subtitle": "Къща за гости"
     },
     "nav": {
       "mainAria": "Основна навигация",
@@ -436,7 +436,7 @@
       "book": "Резервация"
     },
     "footer": {
-      "tagline": "Спокойно настаняване в Таснад. Заявка онлайн — лично потвърждение от къщата, без плащане на сайта.",
+      "tagline": "Заявка онлайн — лично потвърждение от къщата, без плащане на сайта.",
       "links": "Връзки",
       "bookingRequest": "Заявка за престой",
       "terms": "Общи условия",
@@ -445,10 +445,10 @@
       "contactNotConfigured": "Настройте контакт в админ панела",
       "contactEmptyHint": "Добавете телефон или имейл в Настройки → Идентичност или Публичен сайт.",
       "contactEmail": "contact@zalmox.app",
-      "copyright": "© {year} {name} · Таснад, Румъния"
+      "copyright": "© {year} {name}"
     },
     "home": {
-      "badge": "Таснад · настаняване",
+      "badge": "Настаняване",
       "subtitle": "Спокойен престой за семейства и кратки почивки. Избирате дати онлайн, получавате личен отговор от рецепцията — без автоматично плащане.",
       "tagline": "Топло и просто, като у дома.",
       "checkTimes": "Check-in от {checkIn} · Check-out до {checkOut}",
@@ -473,8 +473,29 @@
       "ctaBandTitle": "Готови да изпратите заявка?",
       "ctaBandText": "Отнема няколко минути. Ако няма свободни дати, ще ви кажем веднага — без акаунт и карта.",
       "ctaBandButton": "Отвори календара",
+      "galleryTitle": "Галерия",
       "extrasAria": "Бърза информация",
-      "checkTimesLabel": "График на престоя"
+      "checkTimesLabel": "График на престоя",
+      "roomsTitle": "Стаи",
+      "roomsLead": "Какво предлагаме — наличността е в календара.",
+      "roomsFrom": "От {price} RON / нощувка",
+      "roomsCapacity": "До {count} гости",
+      "roomsCount": "{count, plural, one {# стая} other {# стаи}}",
+      "roomsCta": "Виж дати",
+      "placeTitle": "Къде сме",
+      "placeMap": "Отвори картата",
+      "placeAria": "Местоположение"
+    },
+    "unpublished": {
+      "title": "Страницата ще е онлайн скоро",
+      "lead": "Подготвяме публичната страница. Проверете отново скоро или се свържете с нас по данните по-долу."
+    },
+    "contact": {
+      "email": "Имейл",
+      "whatsapp": "WhatsApp",
+      "telegram": "Telegram",
+      "facebook": "Facebook",
+      "instagram": "Instagram"
     },
     "calendar": {
       "eyebrow": "Онлайн резервация",
@@ -642,7 +663,7 @@
       "s3Title": "3. Cancellation",
       "s3Body": "Cancellation or change terms are communicated with your booking confirmation.",
       "s4Title": "4. Contact",
-      "s4Body": "Zalmox — <email>contact@zalmox.app</email>"
+      "s4Body": "{name} — {email}"
     },
     "privacy": {
       "title": "Privacy policy",
@@ -659,7 +680,7 @@
       "retentionTitle": "Retention",
       "retentionBody": "We keep data as long as needed to manage the booking and meet legal obligations (accounting, tax).",
       "rightsTitle": "Your rights",
-      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact <email>contact@zalmox.app</email>."
+      "rightsBody": "You have rights of access, rectification, erasure, restriction, objection, and portability. Contact {email}."
     },
     "staffPanel": {
       "badge": "Екип",
@@ -1469,7 +1490,7 @@
         "loading": "Зареждане…",
         "save": "Запази публичния сайт",
         "saving": "Запазване…",
-        "templateTitle": "Шаблон за представяне",
+        "templateTitle": "Оформление на страницата",
         "themeTitle": "Визуална тема",
         "heroTitle": "Hero заглавие",
         "heroBadge": "Hero badge",
@@ -1565,8 +1586,80 @@
         "heroTitleHint": "Основно заглавие в hero — използва се и като meta title, ако SEO полетата са празни.",
         "heroImageHint": "JPEG, PNG или WebP, до 5 MB. Classic я завоалира, Editorial я поставя до заглавието, Immersive запълва екрана.",
         "usePrimaryContactHint": "Когато е отметнато, контактът от Идентичност попълва празните полета по-долу.",
-        "publishedHint": "Изключете, за да скриете публичния сайт по време на настройка.",
+        "publishedHint": "Изключете, за да скриете началната страница и календара от посетители. Влезлите оператори все още виждат прегледа.",
         "localeEditHint": "Редактирате само {locale}. Другите езици остават непроменени.",
+        "localeGaps": "Липсва hero заглавие в: {locales}. Посетителите ще видят друг език, докато го попълните.",
+        "brandTitle": "Марка и chrome",
+        "brandSectionDesc": "Лого, ред в хедъра, ред във футъра, шрифт и контактната лента.",
+        "logoLabel": "Лого на обекта",
+        "logoHint": "Замества марката на платформата в хедъра. JPEG, PNG или WebP, до 5 MB.",
+        "headerSubtitle": "Подзаглавие в хедъра",
+        "footerTagline": "Таглайн във футъра",
+        "fontTitle": "Шрифт за заглавия",
+        "fonts": {
+          "theme": "Както в цветовата тема",
+          "serif": "Сериф",
+          "sans": "Безсериф"
+        },
+        "showContactBar": "Показвай контактната лента над футъра",
+        "showStayOffers": "Показвай стаите от каталога",
+        "showStayPrices": "Показвай начални цени на стаите",
+        "showPlace": "Показвай адрес и карта",
+        "livePropertyHint": "Стаите идват от Настройки → Стаи. Адресът е от фактуриране / туристически фиш; пинът ползва координатите за времето.",
+        "navTitle": "Навигация",
+        "navSectionDesc": "Кои връзки са в хедъра и етикетите за този език.",
+        "showNavHome": "Начало",
+        "showNavPrivacy": "Поверителност",
+        "showNavTerms": "Условия",
+        "navHomeLabel": "Етикет Начало",
+        "navPrivacyLabel": "Етикет Поверителност",
+        "navTermsLabel": "Етикет Условия",
+        "navBookLabel": "Етикет Резервация",
+        "heroCtaPrimaryHref": "Връзка на основния бутон",
+        "heroCtaSecondaryHref": "Връзка на втория бутон",
+        "showCheckTimes": "Показвай часовете за check-in / check-out в hero",
+        "ogImageLabel": "Изображение за социални мрежи",
+        "ogImageHint": "За преглед на връзки. Ако е празно, се ползва hero снимката.",
+        "seoCalendarTitle": "Meta title календар",
+        "seoCalendarDescription": "Meta description календар",
+        "seoTermsTitle": "Meta title условия",
+        "seoTermsDescription": "Meta description условия",
+        "seoPrivacyTitle": "Meta title поверителност",
+        "seoPrivacyDescription": "Meta description поверителност",
+        "sectionOrderTitle": "Ред на секциите",
+        "sectionText": "Текстов блок",
+        "sectionKey": {
+          "intro": "Увод",
+          "benefits": "Ползи",
+          "gallery": "Галерия",
+          "steps": "Стъпки",
+          "cta": "CTA лента"
+        },
+        "textAdd": "Добави текстов блок",
+        "textRemove": "Премахни текстовия блок",
+        "textTitle": "Заглавие на текста",
+        "textLead": "Lead на текста",
+        "textBody": "Тяло на текста",
+        "benefitAdd": "Добави полза",
+        "benefitRemove": "Премахни ползата",
+        "stepAdd": "Добави стъпка",
+        "stepRemove": "Премахни стъпката",
+        "ctaHref": "Връзка на CTA бутона",
+        "galleryTitleLabel": "Заглавие на галерията",
+        "galleryLeadLabel": "Lead на галерията",
+        "pagesTitle": "Други страници",
+        "pagesSectionDesc": "Coming soon, календар, условия и поверителност. Празните полета пазят текста на платформата.",
+        "comingSoonTitle": "Заглавие coming soon",
+        "comingSoonLead": "Текст coming soon",
+        "calendarTitleLabel": "Заглавие календар",
+        "calendarLeadLabel": "Lead календар",
+        "termsTitleLabel": "Заглавие условия",
+        "termsLeadLabel": "Lead условия",
+        "termsBodyLabel": "Тяло условия (замества страницата по подразбиране)",
+        "privacyTitleLabel": "Заглавие поверителност",
+        "privacyLeadLabel": "Lead поверителност",
+        "privacyBodyLabel": "Тяло поверителност (замества страницата по подразбиране)",
+        "legalBodyHint": "Обикновен текст. Отделяйте абзаците с празен ред.",
         "pageCopyTitle": "Текстове на страницата",
         "pageCopyDesc": "Текстовете под hero — само този език.",
         "introLead": "Уводен текст",
@@ -1598,15 +1691,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Брошура: разделен увод, фотографски hero, три равни колони."
+            "desc": "Брошура: рамкирана снимка над текста, лента с удобства, двуколонен увод, карти."
           },
           "editorial": {
             "title": "Editorial",
-            "desc": "Списание: снимка до заглавието, ползи в редове, мозайка галерия."
+            "desc": "Списание: мачхед, заглавие до портрет, колона за резервация, мозайка преди ползите."
           },
           "immersive": {
             "title": "Immersive",
-            "desc": "Кинематографично фото на цял екран, едър шрифт, full-bleed галерия."
+            "desc": "Кино: навигация върху кадър на цял екран, галерия първа, увод като карта, без контактна лента."
           }
         },
         "themes": {

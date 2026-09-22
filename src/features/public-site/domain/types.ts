@@ -43,6 +43,46 @@ export type PublicSeoConfig = {
   metaDescription?: LocalizedText;
 };
 
+export type PublicFontId = "theme" | "serif" | "sans";
+
+export type PublicChromeConfig = {
+  logoUrl?: string | null;
+  headerSubtitle?: LocalizedText;
+  footerTagline?: LocalizedText;
+  showContactBar?: boolean;
+  fontId?: PublicFontId;
+  navHome?: LocalizedText;
+  navPrivacy?: LocalizedText;
+  navTerms?: LocalizedText;
+  navBook?: LocalizedText;
+  showNavHome?: boolean;
+  showNavPrivacy?: boolean;
+  showNavTerms?: boolean;
+  showStayOffers?: boolean;
+  showStayPrices?: boolean;
+  showPlace?: boolean;
+};
+
+export type PublicPagesConfig = {
+  comingSoonTitle?: LocalizedText;
+  comingSoonLead?: LocalizedText;
+  termsTitle?: LocalizedText;
+  termsLead?: LocalizedText;
+  termsBody?: LocalizedText;
+  privacyTitle?: LocalizedText;
+  privacyLead?: LocalizedText;
+  privacyBody?: LocalizedText;
+  calendarTitle?: LocalizedText;
+  calendarLead?: LocalizedText;
+  seoCalendarTitle?: LocalizedText;
+  seoCalendarDescription?: LocalizedText;
+  seoTermsTitle?: LocalizedText;
+  seoTermsDescription?: LocalizedText;
+  seoPrivacyTitle?: LocalizedText;
+  seoPrivacyDescription?: LocalizedText;
+  ogImageUrl?: string | null;
+};
+
 export type BookingNoticePresetId =
   | "noPay"
   | "hold"
@@ -133,6 +173,22 @@ export type PublicSiteSettingsRow = {
   contact: PublicContactConfig;
   seo: PublicSeoConfig;
   bookingNotice: PublicBookingNoticeConfig;
+  chrome: PublicChromeConfig;
+  pages: PublicPagesConfig;
+};
+
+export type PublicStayOffer = {
+  id: string;
+  name: string;
+  capacity: number;
+  fromPrice: number | null;
+  roomCount: number;
+};
+
+export type PublicPlace = {
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
 };
 
 export type PublicSiteConfig = PublicSiteSettingsRow & {
@@ -141,6 +197,8 @@ export type PublicSiteConfig = PublicSiteSettingsRow & {
   displayName: string;
   checkInTime: string;
   checkOutTime: string;
+  stayOffers: PublicStayOffer[];
+  place: PublicPlace;
 };
 
 export type PublicSiteSettingsInput = {
@@ -154,5 +212,7 @@ export type PublicSiteSettingsInput = {
   contact: PublicContactConfig;
   seo: PublicSeoConfig;
   bookingNotice: PublicBookingNoticeConfig;
+  chrome: PublicChromeConfig;
+  pages: PublicPagesConfig;
   sections: Omit<PublicSiteSection, "id">[];
 };

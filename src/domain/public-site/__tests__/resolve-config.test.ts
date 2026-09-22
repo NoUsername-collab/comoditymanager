@@ -22,6 +22,8 @@ const baseRow = {
     items: [],
     footer: {},
   },
+  chrome: {},
+  pages: {},
 };
 
 const fallbackSections = [
@@ -102,6 +104,8 @@ describe("buildPublicSiteConfigFromInput", () => {
         facebook: null,
         instagram: null,
       },
+      stayOffers: [],
+      place: { address: null, lat: null, lng: null },
     };
 
     const preview = buildPublicSiteConfigFromInput(
@@ -122,6 +126,8 @@ describe("buildPublicSiteConfigFromInput", () => {
           items: [],
           footer: {},
         },
+        chrome: {},
+        pages: {},
         sections: [{ sectionType: "intro", sortOrder: 10, visible: false, payload: {} }],
       },
       {

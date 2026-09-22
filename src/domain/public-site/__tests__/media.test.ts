@@ -38,13 +38,19 @@ describe("validatePublicSiteUpload", () => {
   it("rejects empty, oversized, wrong kind and non-image bytes", () => {
     expect(validatePublicSiteUpload({ kind: "hero", bytes: new Uint8Array() }).ok).toBe(false);
     expect(
-      validatePublicSiteUpload({ kind: "logo", bytes: jpegHeader() }).ok,
+      validatePublicSiteUpload({ kind: "bogus", bytes: jpegHeader() }).ok,
     ).toBe(false);
     expect(
       validatePublicSiteUpload({ kind: "gallery", bytes: new Uint8Array([1, 2, 3, 4]) }).ok,
     ).toBe(false);
     const huge = jpegHeader(5 * 1024 * 1024 + 1);
     expect(validatePublicSiteUpload({ kind: "hero", bytes: huge }).ok).toBe(false);
+  });
+
+  it("accepts a jpeg logo under the size cap", () => {
+    const result = validatePublicSiteUpload({ kind: "logo", bytes: jpegHeader() });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.kind).toBe("logo");
   });
 
   it("accepts a jpeg hero under the size cap", () => {
