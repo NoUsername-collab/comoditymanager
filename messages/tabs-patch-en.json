@@ -393,7 +393,7 @@
         "noDataForYear": "No data for year {year}.",
         "noBookingsYet": "No bookings yet — statistics appear after the first request."
       },
-      "cazari": {
+      "stays": {
         "hubDescription": "Operational hub for requests and confirmed stays, plus quick history in the sidebar for instant search and orientation.",
         "searchExamples": "Useful examples: guest name, `07...`, `gmail`, room name or booking code.",
         "emptyConfirmedFilter": "No confirmed stay matches the filter",
@@ -479,7 +479,7 @@
         "newHint": "You can add <strong>new rooms</strong> after creation. Color appears on the calendar.",
         "listTitle": "Buildings"
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Availability",
         "description": "Heat map, KPIs, free weekends, building filter, Shift+click range, live updates."
       },

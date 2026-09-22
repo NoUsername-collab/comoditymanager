@@ -57,10 +57,10 @@
       "noRoomsConfigured": "Все още няма конфигурирани стаи"
     },
     "dashboard": {
-      "quickCereri": "Нови заявки",
-      "quickCereriDesc": "Потвърди и разпредели стаи",
-      "quickReceptie": "Бърза рецепция",
-      "quickReceptieDesc": "Телефон и check-in",
+      "quickRequests": "Нови заявки",
+      "quickRequestsDesc": "Потвърди и разпредели стаи",
+      "quickReception": "Бърза рецепция",
+      "quickReceptionDesc": "Телефон и check-in",
       "quickCalendar": "Календар",
       "quickCalendarDesc": "Изглед месец / стаи",
       "quickAvail": "Наличност на живо",
@@ -89,10 +89,10 @@
     "gantt": {
       "layers": {
         "all": "Всички",
-        "cereri": "Заявки",
-        "confirmate": "Потвърдени",
+        "requests": "Заявки",
+        "confirmed": "Потвърдени",
         "in_house": "In-house",
-        "trecute": "Минали",
+        "past": "Минали",
         "hold": "Hold",
         "block": "Блокировки"
       }
@@ -122,7 +122,7 @@
         "loadError": "Календарът не може да се зареди.",
         "heatmapError": "Грешка при зареждане на heatmap."
       },
-      "cazari": {
+      "stays": {
         "title": "Престои — Zalmox",
         "confirmedTitle": "Потвърдени престои ({count})",
         "noRoomBadge": "Без стая"

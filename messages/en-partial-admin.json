@@ -128,7 +128,7 @@
       "unassignedRow": "Unassigned requests",
       "zoneRibbon": "Building zones",
       "todayPanel": "Today",
-      "cereriQueue": "New requests",
+      "requestsQueue": "New requests",
       "noUnassigned": "No unassigned requests in this range",
       "loadingGantt": "Loading calendar…",
       "ganttError": "Calendar could not be loaded. Check the database connection and try again.",
@@ -282,8 +282,8 @@
       "todayBoard": "Today",
       "roomGrid": "Room grid",
       "seeAll": "See all",
-      "previewCereri": "Latest requests",
-      "noCereriPreview": "No pending requests.",
+      "previewRequests": "Latest requests",
+      "noRequestsPreview": "No pending requests.",
       "openBookings": "Open requests",
       "attentionToday": "Attention today",
       "staffPreviewAttention": "Attention today",
@@ -296,10 +296,10 @@
       "publicStaffCalendar": "Full calendar →"
     },
     "dashboard": {
-      "quickCereri": "New requests",
-      "quickCereriDesc": "Confirm and assign rooms",
-      "quickReceptie": "Quick reception",
-      "quickReceptieDesc": "Phone & check-in",
+      "quickRequests": "New requests",
+      "quickRequestsDesc": "Confirm and assign rooms",
+      "quickReception": "Quick reception",
+      "quickReceptionDesc": "Phone & check-in",
       "quickCalendar": "Calendar",
       "quickCalendarDesc": "Month / rooms view",
       "quickAvail": "Live availability",
@@ -332,10 +332,10 @@
     "gantt": {
       "layers": {
         "all": "All",
-        "cereri": "Requests",
-        "confirmate": "Confirmed",
+        "requests": "Requests",
+        "confirmed": "Confirmed",
         "in_house": "In-house",
-        "trecute": "Past",
+        "past": "Past",
         "hold": "Hold",
         "block": "Blocks"
       },
@@ -430,7 +430,7 @@
         "loadError": "Calendar could not be loaded. Check the database connection and try again.",
         "heatmapError": "Error loading heatmap."
       },
-      "cazari": {
+      "stays": {
         "title": "Stays — Zalmox",
         "searchFilter": "Search and filter",
         "results": "Results",

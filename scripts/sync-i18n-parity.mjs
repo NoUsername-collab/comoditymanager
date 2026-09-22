@@ -135,9 +135,9 @@ const BG_FROM_EN = {
   "admin.pages.buildings.newTitle": "Нова сграда — Nestio",
   "admin.pages.buildings.noBuildings": "Все още няма сгради — добави първата с бутона по-горе.",
   "admin.pages.buildings.unknownError": "Неизвестна грешка",
-  "admin.pages.disponibilitate.description":
+  "admin.pages.availability.description":
     "Heat map, KPI, свободни уикенди, филтър сграда, Shift+click интервал, live обновяване.",
-  "admin.pages.disponibilitate.title": "Наличност — Nestio",
+  "admin.pages.availability.title": "Наличност — Nestio",
   "admin.pages.invoice.title": "Информативен документ",
   "admin.pages.location.checkInHour": "Check-in (час)",
   "admin.pages.location.checkOutHour": "Check-out (час)",

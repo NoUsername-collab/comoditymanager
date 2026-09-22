@@ -127,7 +127,7 @@
       "unassignedRow": "Cereri nealocate",
       "zoneRibbon": "Zone clădiri",
       "todayPanel": "Azi",
-      "cereriQueue": "Cereri noi",
+      "requestsQueue": "Cereri noi",
       "noUnassigned": "Nicio cerere nealocată în interval",
       "loadingGantt": "Se încarcă calendarul…",
       "ganttError": "Calendarul nu poate fi încărcat. Verifică conexiunea la baza de date și încearcă din nou.",
@@ -219,17 +219,17 @@
       "todayBoard": "Azi",
       "roomGrid": "Grid camere",
       "seeAll": "Vezi tot",
-      "previewCereri": "Ultimele cereri",
-      "noCereriPreview": "Nicio cerere în așteptare.",
+      "previewRequests": "Ultimele cereri",
+      "noRequestsPreview": "Nicio cerere în așteptare.",
       "openBookings": "Deschide cereri",
       "attentionToday": "Atenție azi",
       "noRoomsConfigured": "Încă nu ai camere configurate"
     },
     "dashboard": {
-      "quickCereri": "Cereri noi",
-      "quickCereriDesc": "Confirmă și alocă camere",
-      "quickReceptie": "Recepție rapidă",
-      "quickReceptieDesc": "Telefon & check-in",
+      "quickRequests": "Cereri noi",
+      "quickRequestsDesc": "Confirmă și alocă camere",
+      "quickReception": "Recepție rapidă",
+      "quickReceptionDesc": "Telefon & check-in",
       "quickCalendar": "Calendar",
       "quickCalendarDesc": "Vedere lună / camere",
       "quickAvail": "Disponibilitate live",
@@ -262,10 +262,10 @@
     "gantt": {
       "layers": {
         "all": "Tot",
-        "cereri": "Cereri",
-        "confirmate": "Confirmate",
+        "requests": "Cereri",
+        "confirmed": "Confirmate",
         "in_house": "In-house",
-        "trecute": "Trecute",
+        "past": "Trecute",
         "hold": "Hold",
         "block": "Blocări"
       }
@@ -324,7 +324,7 @@
         "loadError": "Calendarul nu poate fi încărcat. Verifică conexiunea la baza de date și încearcă din nou.",
         "heatmapError": "Eroare la încărcarea heatmap-ului."
       },
-      "cazari": {
+      "stays": {
         "title": "Cazări — Zalmox",
         "searchFilter": "Caută și filtrează",
         "results": "Rezultate",

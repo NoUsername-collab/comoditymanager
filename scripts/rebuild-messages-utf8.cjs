@@ -231,12 +231,12 @@ const roCore = {
       emailOptional: "Email (opț.)",
       notesLabel: "Notițe",
     },
-    receptie: {
+    reception: {
       confirmedBanner: "Rezervare confirmată.",
       backToSite: "← Site public",
     },
     confirm: {
-      backReceptie: "Recepție rapidă",
+      backReception: "Recepție rapidă",
       title: "Confirmă rapid",
       adminLink: "Administrare",
     },

@@ -392,7 +392,7 @@
         "noDataForYear": "Nu există date pentru anul {year}.",
         "noBookingsYet": "Nu există încă rezervări — statisticile apar după prima cerere."
       },
-      "cazari": {
+      "stays": {
         "hubDescription": "Hub operațional pentru cereri și cazări confirmate, plus istoric rapid în lateral ca să poți căuta și orienta instant.",
         "searchExamples": "Exemple utile: nume client, `07...`, `gmail`, nume cameră sau codul rezervării.",
         "emptyConfirmedFilter": "Nicio cazare confirmată nu corespunde filtrului",
@@ -476,7 +476,7 @@
         "newHint": "Poți adăuga <strong>camere noi</strong> după creare. Culoarea apare în calendar.",
         "listTitle": "Clădiri"
       },
-      "disponibilitate": {
+      "availability": {
         "title": "Disponibilitate",
         "description": "Heat map, KPI, weekend-uri libere, filtru clădire, interval Shift+click, live."
       },
