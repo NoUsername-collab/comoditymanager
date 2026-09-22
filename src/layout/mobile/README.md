@@ -39,12 +39,12 @@ Single apply path: `applyDocumentLayout()` in `apply-document-layout.ts`.
 | `../components/` | Shell chrome (`AdminMobileBottomNav`, `PublicMobileMenu`, `MobileShell`) |
 | `../../styles/features/layout/mobile-layout.css` | Shell primitives + `@import` of `mobile-core.css` (global) |
 | `../../styles/features/layout/mobile-core.css` | Guards, alignment tokens, touch targets (~350 lines) |
-| `../../styles/features/layout/mobile-admin.css` | Admin core (HUD + general admin pages) |
+| `../../styles/features/layout/mobile-admin.css` | Admin HUD barrel (`hud` + `alignment` + `touch`) |
 | `../../styles/features/layout/mobile-settings.css` | Admin settings UI (settings pages) |
 | `../../styles/features/layout/mobile-platform-admin.css` | Platform admin UI (nestio-admin / platform-admin) |
 | `../../styles/features/layout/mobile-gantt.css` | Gantt calendar only (`calendar/layout.tsx`) |
-| `../../styles/features/layout/mobile-cazari.css` | Cazări + guests (`cazari/`, `guests/` layouts) |
-| `../../styles/features/layout/mobile-avail.css` | Disponibilitate (`disponibilitate/layout.tsx`) |
+| `../../styles/features/layout/mobile-stays.css` | Stays + guests (`cazari/` URL, `guests/` layouts) |
+| `../../styles/features/layout/mobile-avail.css` | Availability (`disponibilitate/` URL layout) |
 | `../../styles/features/layout/mobile-public.css` | Public site + platform marketing + guest-app (import in public layouts) |
 | `../../hooks/useMobileLayout.ts` | React hook when JS must branch |
 

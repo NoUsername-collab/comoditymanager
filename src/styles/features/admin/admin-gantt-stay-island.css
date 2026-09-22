@@ -11,7 +11,7 @@
 
 html:not([data-theme]) .gantt-shell a.gantt-stay-chrome.gantt-stay--filled,
 html:not([data-theme]) .gantt-shell div.gantt-stay-chrome.gantt-stay--filled,
-html:not([data-theme]) .gantt-shell a.gantt-cereri-card.gantt-stay-chrome {
+html:not([data-theme]) .gantt-shell a.gantt-requests-card.gantt-stay-chrome {
   background-color: var(--gs-bg) !important;
   background-image: none !important;
   border-color: var(--gs-border) !important;
@@ -21,8 +21,8 @@ html:not([data-theme]) .gantt-stay-chrome__label,
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__avatar,
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__body > span:not(.gantt-stay__badge),
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__end-tab-arrow,
-html:not([data-theme]) .gantt-stay-chrome .gantt-cereri-card__guest,
-html:not([data-theme]) .gantt-stay-chrome .gantt-cereri-card__dates {
+html:not([data-theme]) .gantt-stay-chrome .gantt-requests-card__guest,
+html:not([data-theme]) .gantt-stay-chrome .gantt-requests-card__dates {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
   text-shadow:
@@ -34,13 +34,13 @@ html:not([data-theme]) .gantt-stay-chrome .gantt-cereri-card__dates {
 }
 
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__end-tab,
-html:not([data-theme]) .gantt-stay-chrome .gantt-cereri-card__tab {
+html:not([data-theme]) .gantt-stay-chrome .gantt-requests-card__tab {
   background-color: var(--gs-tab) !important;
   background-image: none !important;
 }
 
 html:not([data-theme]) .gantt-stay-chrome .gantt-stay__badge,
-html:not([data-theme]) .gantt-stay-chrome .gantt-cereri-card__party {
+html:not([data-theme]) .gantt-stay-chrome .gantt-requests-card__party {
   background-color: var(--gs-badge-bg) !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;

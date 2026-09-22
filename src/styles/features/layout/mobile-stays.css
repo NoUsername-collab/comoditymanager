@@ -1,4 +1,4 @@
-/* mobile-cazari.css — Cazări, guests, receptie mobile compat (split from mobile-admin.css) */
+/* mobile-stays.css — stays, guests, reception mobile compat (split from mobile-admin.css) */
 
 
 
@@ -38,7 +38,7 @@ html[data-layout-chrome="compact"] .guest-grid--hero {
 /* Tablet portrait gutter: mobile-layout-alignment.css */
 
 /* ── Long admin lists: skip off-screen paint on mobile ── */
-html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .request-item,
 html[data-layout-chrome="compact"] .stay-card {
   content-visibility: auto;
   contain-intrinsic-size: auto 4.5rem;
@@ -101,7 +101,7 @@ html[data-layout-chrome="compact"] .guest-hero {
 
 /* statistics charts in XP windows: mobile-layout-flawless.css */
 
-/* ── Rebook / receptie / confirm ── */
+/* ── Rebook / reception / confirm ── */
 html[data-layout-chrome="compact"] .guest-rebook-page {
   padding: 0.85rem 1rem 1.5rem !important;
   max-width: 100%;
@@ -111,7 +111,7 @@ html[data-layout-chrome="compact"] .guest-rebook-page {
 
 /* ═══ mobile-layout-admin-pages.css ═══ */
 /**
- * Admin page compact rules — settings, cazări, statistics, receptie, buildings.
+ * Admin page compact rules — settings, stays, statistics, reception, buildings.
  */
 
 /* ── Settings: gutter owned by admin-page-main (mobile-layout-alignment.css) ── */
@@ -149,7 +149,7 @@ html[data-layout-chrome="compact"] .phone-booking-form button[type="submit"] {
 /* ═══ mobile-layout-remaining.css ═══ */
 /**
  * Mobile layout — pages not yet covered elsewhere.
- * Public home/legal, receptie, admin page padding, bookings, cazări, platform admin.
+ * Public home/legal, reception, admin page padding, bookings, stays, platform admin.
  */
 
 /* Below-fold public sections — skip paint until near viewport */
@@ -163,14 +163,14 @@ html[data-layout-chrome="compact"] .public-staff-preview-skeleton {
 
 
 
-/* ── Bookings / cereri ── */
-html[data-layout-chrome="compact"] .cerere-list {
+/* ── Bookings / requests ── */
+html[data-layout-chrome="compact"] .request-list {
   gap: 0.55rem;
 }
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__head {
+html[data-layout-chrome="compact"] .request-item__head {
   grid-template-columns: minmax(0, 1fr);
   gap: 0.45rem;
   padding: 0.6rem 0.65rem 0.5rem;
@@ -178,7 +178,7 @@ html[data-layout-chrome="compact"] .cerere-item__head {
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__name {
+html[data-layout-chrome="compact"] .request-item__name {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -186,13 +186,13 @@ html[data-layout-chrome="compact"] .cerere-item__name {
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__dates {
+html[data-layout-chrome="compact"] .request-item__dates {
   overflow-wrap: anywhere;
 }
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__action {
+html[data-layout-chrome="compact"] .request-item__action {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -205,20 +205,20 @@ html[data-layout-chrome="compact"] .cerere-item__action {
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__body {
+html[data-layout-chrome="compact"] .request-item__body {
   padding: 0.45rem 0.65rem 0.5rem;
 }
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__profile-link {
+html[data-layout-chrome="compact"] .request-item__profile-link {
   min-height: var(--ml-touch-min, 2.75rem);
   padding-inline: 0.15rem;
 }
 
 
 
-html[data-layout-chrome="compact"] .cerere-item__email {
+html[data-layout-chrome="compact"] .request-item__email {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -227,7 +227,7 @@ html[data-layout-chrome="compact"] .cerere-item__email {
 
 
 /* ── Cazări ── */
-html[data-layout-chrome="compact"] .cazari-page > .grid {
+html[data-layout-chrome="compact"] .stays-page > .grid {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
@@ -248,20 +248,20 @@ html[data-layout-chrome="compact"] .stay-card button {
 
 
 
-html[data-layout-chrome="compact"] .cazari-view-filters {
+html[data-layout-chrome="compact"] .stays-view-filters {
   gap: 0.3rem;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-view-filter {
+html[data-layout-chrome="compact"] .stays-view-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: 0.72rem;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-tabs {
+html[data-layout-chrome="compact"] .stays-tabs {
   flex-wrap: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -273,21 +273,21 @@ html[data-layout-chrome="compact"] .cazari-tabs {
 
 
 
-html[data-layout-chrome="compact"] .cazari-tabs::-webkit-scrollbar {
+html[data-layout-chrome="compact"] .stays-tabs::-webkit-scrollbar {
   display: none;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-filters {
+html[data-layout-chrome="compact"] .stays-filters {
   flex-wrap: wrap;
   gap: 0.35rem;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-tabs a,
-html[data-layout-chrome="compact"] .cazari-tabs button {
+html[data-layout-chrome="compact"] .stays-tabs a,
+html[data-layout-chrome="compact"] .stays-tabs button {
   flex-shrink: 0;
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
@@ -299,8 +299,8 @@ html[data-layout-chrome="compact"] .cazari-tabs button {
 
 
 
-html[data-layout-chrome="compact"] .cazari-filters a,
-html[data-layout-chrome="compact"] .cazari-filters button {
+html[data-layout-chrome="compact"] .stays-filters a,
+html[data-layout-chrome="compact"] .stays-filters button {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -310,7 +310,7 @@ html[data-layout-chrome="compact"] .cazari-filters button {
 
 
 /* ── Receptie + confirm ── */
-html[data-layout-chrome="compact"] .receptie-page,
+html[data-layout-chrome="compact"] .reception-page,
 html[data-layout-chrome="compact"] .public-confirm-page {
   padding: 0.85rem 0.85rem 1.5rem !important;
   max-width: 100%;
@@ -319,7 +319,7 @@ html[data-layout-chrome="compact"] .public-confirm-page {
 
 
 /* ── Cazări touch ── */
-html[data-layout-chrome="compact"] .cazari-horizon a {
+html[data-layout-chrome="compact"] .stays-horizon a {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -342,14 +342,14 @@ html[data-layout-chrome="compact"] .admin-quick-panel__confirm-link {
 
 
 /* ── Recepție page ── */
-html[data-layout-chrome="compact"] .receptie-page {
+html[data-layout-chrome="compact"] .reception-page {
   padding: 0.85rem max(0.85rem, var(--ml-safe-left, 0px))
     calc(1.5rem + var(--ml-safe-bottom, 0px)) !important;
 }
 
 
 
-html[data-layout-chrome="compact"] .receptie-page__back-admin {
+html[data-layout-chrome="compact"] .reception-page__back-admin {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -401,7 +401,7 @@ html[data-layout-chrome="compact"] .guest-rebook-collapse__trigger {
 
 
 
-html[data-layout-chrome="compact"] .receptie-page__nav a {
+html[data-layout-chrome="compact"] .reception-page__nav a {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -409,14 +409,14 @@ html[data-layout-chrome="compact"] .receptie-page__nav a {
 
 
 
-html[data-layout-chrome="compact"] .cazari-search-form {
+html[data-layout-chrome="compact"] .stays-search-form {
   flex-direction: column;
   align-items: stretch;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-search-form input[type="search"] {
+html[data-layout-chrome="compact"] .stays-search-form input[type="search"] {
   width: 100%;
   min-width: 0 !important;
   font-size: max(16px, 1rem);
@@ -425,7 +425,7 @@ html[data-layout-chrome="compact"] .cazari-search-form input[type="search"] {
 
 
 
-html[data-layout-chrome="compact"] .cazari-search-form button {
+html[data-layout-chrome="compact"] .stays-search-form button {
   flex: 1 1 100%;
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: max(16px, 0.875rem);
@@ -461,8 +461,8 @@ html[data-layout-chrome="compact"] .stay-history-link {
 
 
 
-html[data-layout-chrome="compact"] .cazari-load-more,
-html[data-layout-chrome="compact"] .cereri-load-more {
+html[data-layout-chrome="compact"] .stays-load-more,
+html[data-layout-chrome="compact"] .requests-load-more {
   width: 100%;
   justify-content: center;
 }
@@ -470,8 +470,8 @@ html[data-layout-chrome="compact"] .cereri-load-more {
 
 
 /* Cazări / cereri long lists: skip off-screen paint on compact */
-html[data-layout-chrome="compact"] .cazari-page .stay-card,
-html[data-layout-chrome="compact"] .cerere-item {
+html[data-layout-chrome="compact"] .stays-page .stay-card,
+html[data-layout-chrome="compact"] .request-item {
   content-visibility: auto;
   contain: layout style;
   contain-intrinsic-size: auto 4.5rem;
@@ -479,7 +479,7 @@ html[data-layout-chrome="compact"] .cerere-item {
 
 
 
-/* ── Pass 16: Nestio forms, receptie checkbox, FAQ, drawer safe-area ── */
+/* ── Pass 16: Nestio forms, reception checkbox, FAQ, drawer safe-area ── */
 
 html[data-layout-chrome="compact"] .tenant-billing-toggle,
 html[data-layout-chrome="compact"] .platform-impersonate-link,
@@ -570,7 +570,7 @@ html[data-layout-chrome="compact"] .guest-profile-controls-form__field select {
 
 
 html[data-layout-chrome="compact"] .guest-profile-controls-form button,
-html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-cereri-fill {
+html[data-layout-chrome="compact"] .guest-profile-controls-form .admin-requests-fill {
   width: 100%;
   min-height: var(--ml-touch-min, 2.75rem);
   font-size: max(16px, 0.875rem);
@@ -595,7 +595,7 @@ html[data-layout-chrome="compact"] .guest-rebook-buttons__submit {
 
 
 
-html[data-layout-chrome="compact"] .receptie-page__back-site {
+html[data-layout-chrome="compact"] .reception-page__back-site {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -637,7 +637,7 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
 
 
 html[data-layout-chrome="compact"] .stay-quick-ops {
-  /* Grid + display:contents groups — admin-cazari-cards.css */
+  /* Grid + display:contents groups — admin-stays-cards.css */
   gap: 0.4rem;
 }
 
@@ -668,7 +668,7 @@ html[data-layout-chrome="compact"] .stay-quick-ops a {
 
 
 /* UX: sticky cazări filters + horizon on compact */
-html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+html[data-layout-chrome="compact"] .stays-sticky-toolbar {
   position: sticky;
   top: 0;
   z-index: 3;
@@ -683,7 +683,7 @@ html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
 
 
 
-html[data-layout-chrome="compact"] .cazari-view-filter {
+html[data-layout-chrome="compact"] .stays-view-filter {
   min-height: var(--ml-touch-min, 2.75rem);
   padding: 0.45rem 0.55rem;
   font-size: 0.75rem;
@@ -691,7 +691,7 @@ html[data-layout-chrome="compact"] .cazari-view-filter {
 
 
 
-html[data-layout-chrome="compact"] .cazari-horizon__pill {
+html[data-layout-chrome="compact"] .stays-horizon__pill {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -702,7 +702,7 @@ html[data-layout-chrome="compact"] .cazari-horizon__pill {
 
 
 /* UX: pinned cereri section — clear separation */
-html[data-layout-chrome="compact"] .cazari-pinned-cereri {
+html[data-layout-chrome="compact"] .stays-pinned-requests {
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--admin-surface-border, #e4e4e7);
@@ -712,7 +712,7 @@ html[data-layout-chrome="compact"] .cazari-pinned-cereri {
 
 
 
-html[data-layout-chrome="compact"] .cazari-pinned-cereri .admin-panel__titlebar {
+html[data-layout-chrome="compact"] .stays-pinned-requests .admin-panel__titlebar {
   background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 75%, transparent);
 }
 
@@ -731,7 +731,7 @@ html[data-layout-chrome="compact"] .guest-search {
 
 
 /* Pass 31: cazări horizon — horizontal pill scroll, no wrap overflow */
-html[data-layout-chrome="compact"] .cazari-horizon {
+html[data-layout-chrome="compact"] .stays-horizon {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -747,27 +747,27 @@ html[data-layout-chrome="compact"] .cazari-horizon {
 
 
 
-html[data-layout-chrome="compact"] .cazari-horizon::-webkit-scrollbar {
+html[data-layout-chrome="compact"] .stays-horizon::-webkit-scrollbar {
   display: none;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-horizon__label {
+html[data-layout-chrome="compact"] .stays-horizon__label {
   flex-shrink: 0;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-horizon a,
-html[data-layout-chrome="compact"] .cazari-horizon__pill {
+html[data-layout-chrome="compact"] .stays-horizon a,
+html[data-layout-chrome="compact"] .stays-horizon__pill {
   flex-shrink: 0;
   scroll-snap-align: start;
 }
 
 
 
-html[data-layout-chrome="compact"] .cazari-sticky-toolbar {
+html[data-layout-chrome="compact"] .stays-sticky-toolbar {
   margin-inline: 0;
   padding-inline: 0;
   width: 100%;
@@ -788,7 +788,7 @@ html[data-layout-chrome="compact"] .stay-card {
 
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .stays-sticky-toolbar,
   html[data-layout-chrome="compact"] .admin-page-toolbar,
   html[data-layout-chrome="compact"] .guest-search {
     backdrop-filter: none;
@@ -815,7 +815,7 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .mrz-scan__camera-wrap video 
 
 
 
-html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .request-item,
 html[data-layout-chrome="compact"] .platform-tenant-card,
 html[data-layout-chrome="compact"] .statistics-page .statistics-card {
   content-visibility: auto;
@@ -859,7 +859,7 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
    * backdrop-filter pe sticky toolbars cauzează re-compositare la fiecare
    * frame de scroll pe Android mid-range. Înlocuim cu background opac.
    */
-  html[data-layout-chrome="compact"] .cazari-sticky-toolbar,
+  html[data-layout-chrome="compact"] .stays-sticky-toolbar,
   html[data-layout-chrome="compact"] .admin-page-toolbar,
   html[data-layout-chrome="compact"] .guest-search {
     backdrop-filter: none;
@@ -876,4 +876,106 @@ html[data-layout-chrome="compact"] .mrz-scan-modal .admin-floating-panel__body {
     backdrop-filter: none;
     background: rgba(255, 255, 255, 0.12);
   }
+}
+
+/* Extracted from mobile-admin-premium / mobile-admin-flawless (route-scoped) */
+html[data-layout-chrome="compact"] .guest-search__bar {
+  min-width: 0;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  border-left: none;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-search__submit,
+html[data-layout-chrome="compact"] .guest-search__reset {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Guests search ── */
+html[data-layout-chrome="compact"] .guest-search__bar {
+  flex-wrap: wrap;
+  min-width: 0 !important;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-search__input {
+  min-width: 0 !important;
+  width: 100%;
+  flex: 1 1 calc(100% - 2.5rem);
+  font-size: 16px;
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search__filter {
+  flex: 1 1 100%;
+  border-left: none;
+  border-top: 1px solid var(--border, #e4e4e7);
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 16px;
+  padding-inline: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .guest-search__submit {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.875rem;
+}
+
+html[data-layout-chrome="compact"] .guest-badges--request {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.3rem;
+  padding: 0.45rem 0.65rem 0.55rem;
+}
+
+html[data-layout-chrome="compact"] .guest-badges--request__stat {
+  padding: 0.4rem 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions button,
+html[data-layout-chrome="compact"] .stay-card__actions a,
+html[data-layout-chrome="compact"] .stay-card__actions form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: 0.8125rem !important;
+}
+
+/* ── Guests: filter pills + pagination touch ── */
+html[data-layout-chrome="compact"] .guest-filter-pill {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+html[data-layout-chrome="compact"] .guest-pagination__btn {
+  min-height: var(--ml-touch-min, 2.75rem);
+  min-width: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 1rem;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions > * {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .guest-merge-form select,
+html[data-layout-chrome="compact"] .guest-merge-form button {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .stay-card__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
 }

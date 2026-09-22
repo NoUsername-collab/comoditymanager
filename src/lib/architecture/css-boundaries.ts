@@ -31,8 +31,8 @@ const ROUTE_SCOPED_CSS = [
   "gantt-mobile.css",
   "admin-settings.css",
   "admin-history.css",
-  "admin-cazari-toolbar.css",
-  "admin-cazari-cards.css",
+  "admin-stays-toolbar.css",
+  "admin-stays-cards.css",
   "admin-payments.css",
   "admin-booking-detail.css",
   "mobile-admin-hud.css",
@@ -195,7 +195,7 @@ export function auditCssArchitecture(): CssViolation[] {
 export const CSS_GOD_FILE_LINE_CAPS: { file: string; maxLines: number }[] = [
   {
     file: "src/styles/features/layout/mobile-admin.css",
-    maxLines: 8,
+    maxLines: 6,
   },
   {
     file: "src/styles/features/admin/gantt-premium.css",

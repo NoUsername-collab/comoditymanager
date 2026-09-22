@@ -1,6 +1,6 @@
 /* Gantt premium — interacțiuni & polish */
 
-@keyframes gantt-cereri-pulse {
+@keyframes gantt-requests-pulse {
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.35);
@@ -279,8 +279,8 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   color: #b45309;
 }
 
-.gantt-stay--cerere {
-  animation: gantt-cereri-pulse 2.5s ease-in-out infinite;
+.gantt-stay--request {
+  animation: gantt-requests-pulse 2.5s ease-in-out infinite;
 }
 
 .gantt-stay__avatar {
@@ -307,7 +307,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--stay-border) 40%, transparent);
 }
 
-.gantt-stay--cerere.gantt-stay--filled .gantt-stay__avatar {
+.gantt-stay--request.gantt-stay--filled .gantt-stay__avatar {
   background: var(--stay-badge-bg);
   color: inherit;
 }

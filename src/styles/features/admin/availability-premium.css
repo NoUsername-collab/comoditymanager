@@ -643,7 +643,7 @@ button.avail-kpi-card {
   background: color-mix(in srgb, #fff1f2 70%, white);
 }
 
-.avail-room-tile--cerere {
+.avail-room-tile--request {
   border-color: #fde68a;
   background: color-mix(in srgb, #fffbeb 90%, white);
 }

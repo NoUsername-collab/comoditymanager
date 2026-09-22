@@ -251,7 +251,7 @@
   animation: gantt-popover-in 0.18s ease-out;
 }
 
-.gantt-stay-note__card--cerere {
+.gantt-stay-note__card--request {
   border-top-color: var(--pending-border, #d97706);
 }
 
@@ -671,7 +671,7 @@
 }
 
 .gantt-action-strip__badge--pulse {
-  animation: admin-cereri-glow-pulse 2.2s ease-in-out infinite;
+  animation: admin-requests-glow-pulse 2.2s ease-in-out infinite;
 }
 
 .gantt-action-strip__badge--in {

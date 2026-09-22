@@ -16,7 +16,7 @@ const MOBILE_ADMIN_ROUTE_BUNDLES = [
   "mobile-settings.css",
   "mobile-platform-admin.css",
   "mobile-gantt.css",
-  "mobile-cazari.css",
+  "mobile-stays.css",
   "mobile-avail.css",
 ];
 
@@ -148,9 +148,9 @@ describe("mobile compatibility CSS rules", () => {
   });
 
   it("cazÄƒri compact touch targets for search, ops, and load-more", () => {
-    expect(flawless).toContain(".cazari-search-form");
+    expect(flawless).toContain(".stays-search-form");
     expect(flawless).toContain(".stay-quick-ops");
-    expect(flawless).toContain(".cazari-load-more");
+    expect(flawless).toContain(".stays-load-more");
     expect(flawless).toContain(".stay-history-link");
   });
 
@@ -166,7 +166,7 @@ describe("mobile compatibility CSS rules", () => {
     );
   });
 
-  it("pass 12 drawer safe-area, receptie padding, public touch targets", () => {
+  it("pass 12 drawer safe-area, reception padding, public touch targets", () => {
     expect(flawless).toContain("var(--ml-safe-left");
     expect(flawless).toContain(".public-header__cta");
     expect(flawless).toContain("display: none");
@@ -220,7 +220,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".statistics-years-section");
   });
 
-  it("pass 16 platform forms, receptie checkbox, FAQ, drawer safe-area", () => {
+  it("pass 16 platform forms, reception checkbox, FAQ, drawer safe-area", () => {
     expect(flawless).toContain(".tenant-billing-toggle");
     expect(flawless).toContain(".nestio-tenant-option");
     expect(flawless).toContain(".platform-dashboard__cta");
@@ -331,7 +331,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(flawless).toContain(".guest-identity-form__submit");
     expect(flawless).toContain(".booking-cancel-form__confirm");
     expect(flawless).toContain(".admin-stay-editor__save");
-    expect(flawless).toContain(".receptie-page__back-site");
+    expect(flawless).toContain(".reception-page__back-site");
     expect(flawless).toContain(".bd-banner__top");
   });
 
@@ -366,7 +366,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(confirmPage).toContain("public-confirm-page__admin-link");
   });
 
-  it("pass 28 gantt quick actions, stay review, receptie rows, language trigger", () => {
+  it("pass 28 gantt quick actions, stay review, reception rows, language trigger", () => {
     expect(flawless).toContain(".gantt-quick-panel__actions");
     expect(flawless).toContain(".gantt-quick-panel__action");
     expect(flawless).toContain(".gantt-quick-panel--busy");
@@ -415,7 +415,7 @@ describe("mobile compatibility CSS rules", () => {
     expect(alignment).toContain("--ml-page-inline-start");
     expect(alignment).toContain(".admin-shell .admin-page-main");
     expect(alignment).toContain(".admin-hud__header");
-    expect(alignment).toContain(".cazari-pinned-cereri");
+    expect(alignment).toContain(".stays-pinned-requests");
   });
 
   it("pass 29 availability toolbar, drawer scroll, guest cards, matrix perf", () => {
@@ -453,8 +453,8 @@ describe("mobile compatibility CSS rules", () => {
     const alignment = readCss("mobile-layout-alignment.css");
     expect(alignment).toContain(".admin-page-main .admin-page");
     expect(alignment).toContain("padding-inline: 0 !important");
-    expect(alignment).toContain(".cazari-sticky-toolbar");
-    expect(alignment).toContain(".cazari-horizon");
+    expect(alignment).toContain(".stays-sticky-toolbar");
+    expect(alignment).toContain(".stays-horizon");
     expect(alignment).toContain("scroll-snap-type: x proximity");
     expect(alignment).toContain(".stay-list > li");
     expect(alignment).toContain(".guest-card");
@@ -482,19 +482,19 @@ describe("mobile compatibility CSS rules", () => {
     expect(mrzDialog).toContain("mrz-scan-modal");
 
     const stayList = readFileSync(
-      join(process.cwd(), "src/features/cazari/ui/StayList.tsx"),
+      join(process.cwd(), "src/features/stays/ui/StayList.tsx"),
       "utf8"
     );
     expect(stayList).toContain("stay-list");
   });
 
   it("pass 32 mobile nav, media migration, gantt scroll sync", () => {
-    const cazariToolbar = readFileSync(
-      join(process.cwd(), "src/styles/features/admin/admin-cazari-toolbar.css"),
+    const staysToolbar = readFileSync(
+      join(process.cwd(), "src/styles/features/admin/admin-stays-toolbar.css"),
       "utf8"
     );
-    expect(cazariToolbar).not.toMatch(/@media\s*\(\s*max-width:\s*520px\s*\)/);
-    expect(cazariToolbar).toContain('html[data-layout-chrome="compact"] .cazari-view-filters');
+    expect(staysToolbar).not.toMatch(/@media\s*\(\s*max-width:\s*520px\s*\)/);
+    expect(staysToolbar).toContain('html[data-layout-chrome="compact"] .stays-view-filters');
 
     const settingsCss = readFileSync(
       join(process.cwd(), "src/styles/features/admin/admin-settings.css"),
@@ -546,7 +546,7 @@ describe("mobile compatibility CSS rules", () => {
     );
 
     const stayQuickOps = readFileSync(
-      join(process.cwd(), "src/features/cazari/ui/StayQuickOps.tsx"),
+      join(process.cwd(), "src/features/stays/ui/StayQuickOps.tsx"),
       "utf8"
     );
     expect(stayQuickOps).toContain("stay-quick-ops__btn");

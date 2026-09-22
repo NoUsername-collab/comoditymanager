@@ -25,3 +25,389 @@ html[data-layout-chrome="compact"] .admin-settings-page .settings-form-stack,
 html[data-layout-chrome="compact"] .admin-settings-page .admin-settings-panel__inner {
   padding-bottom: 0.35rem;
 }
+
+/* Extracted from mobile-admin-premium / mobile-admin-flawless (route-scoped) */
+html[data-layout-chrome="compact"] .admin-settings-summary {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-palette-tokens,
+html[data-layout-chrome="compact"] .admin-palette-zones,
+html[data-layout-chrome="compact"] .admin-palette-extend__modes {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card__actions button,
+html[data-layout-chrome="compact"] .building-dashboard-card__actions a,
+html[data-layout-chrome="compact"] .rooms-building-section button,
+html[data-layout-chrome="compact"] .rooms-building-section a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* ── Settings panels ── */
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea,
+html[data-layout-chrome="compact"] .admin-settings-form button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Buildings / rooms ── */
+html[data-layout-chrome="compact"] .building-dashboard-card header,
+html[data-layout-chrome="compact"] .building-dashboard-card .building-dashboard-card__header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .building-dashboard-card a,
+html[data-layout-chrome="compact"] .building-dashboard-card button,
+html[data-layout-chrome="compact"] .rooms-building-section a,
+html[data-layout-chrome="compact"] .rooms-building-section button {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .rooms-building-section > div:first-child {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Staff settings rows ── */
+html[data-layout-chrome="compact"] .admin-staff-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__actions button,
+html[data-layout-chrome="compact"] .admin-staff-row__actions a {
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* Settings accordion triggers: full width on compact */
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger-main {
+  min-width: 0;
+  flex: 1;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__title,
+html[data-layout-chrome="compact"] .admin-settings-panel__subtitle {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Settings location unlock */
+html[data-layout-chrome="compact"] .admin-location-unlock input {
+  font-size: 16px;
+  max-width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-location-unlock button {
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__role-menu {
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-row__role-option {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: flex;
+  align-items: center;
+  font-size: max(16px, 0.875rem);
+  padding-block: 0.65rem;
+}
+
+/* ── Pass 20: domains, structure, staff invite, guest rebook ── */
+
+html[data-layout-chrome="compact"] .tenant-domains-panel input,
+html[data-layout-chrome="compact"] .tenant-domains-panel select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .tenant-domains-panel button,
+html[data-layout-chrome="compact"] .tenant-domains-panel a[href] {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .tenant-domain-card .flex.flex-wrap {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .tenant-domain-card button {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-invite__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-invite input,
+html[data-layout-chrome="compact"] .admin-staff-invite select {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-staff-invite__submit button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .building-structure-card > header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .building-structure-card > header > div:last-child {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .building-structure-card > header a {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Pass 22: room/building forms + gantt view switcher ── */
+
+html[data-layout-chrome="compact"] .admin-room-form__mode {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .admin-room-form__mode button {
+  flex: 1 1 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-room-form__fields input,
+html[data-layout-chrome="compact"] .admin-room-form__fields select,
+html[data-layout-chrome="compact"] .admin-room-form__fields textarea,
+html[data-layout-chrome="compact"] .admin-building-form input,
+html[data-layout-chrome="compact"] .admin-building-form select,
+html[data-layout-chrome="compact"] .admin-building-form textarea {
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  width: 100%;
+  max-width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-room-form__fields button[type="submit"],
+html[data-layout-chrome="compact"] .admin-building-form button[type="submit"] {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+/* ── Pass 23: color picker, add floor, building rooms, guest merge ── */
+
+html[data-layout-chrome="compact"] .color-palette-picker__swatch {
+  width: var(--ml-touch-min, 2.75rem) !important;
+  height: var(--ml-touch-min, 2.75rem) !important;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-back {
+  padding-inline: 0.15rem;
+}
+
+/* ── Pass 24: structure, location lock, delete confirm, guest notes, settings CTAs ── */
+
+html[data-layout-chrome="compact"] .floor-structure-section__head {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__actions {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__action {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.85rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form label {
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form input {
+  width: 100% !important;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .floor-structure-section__edit-form button {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .room-structure-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+html[data-layout-chrome="compact"] .room-structure-row__controls {
+  width: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .room-structure-row__floor-select {
+  max-width: none !important;
+  width: 100%;
+  font-size: max(16px, 0.75rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .admin-location-lock-bar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+html[data-layout-chrome="compact"] .admin-location-lock-bar__badge {
+  text-align: center;
+  font-size: max(16px, 0.75rem);
+  padding-block: 0.5rem;
+}
+
+html[data-layout-chrome="compact"] .admin-location-lock-btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  font-size: max(16px, 0.875rem);
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-cta {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+  justify-content: center;
+  align-items: center;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-submit__btn {
+  width: 100%;
+  min-height: var(--ml-touch-min, 2.75rem);
+}
+
+html[data-layout-chrome="compact"] .admin-settings-location-nav {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-location-nav__card,
+html[data-layout-chrome="compact"] .admin-settings-location-nav__rooms-link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  touch-action: manipulation;
+}
+
+/* ── Pass 27 (cont.): settings panels, confirm header, phone form ── */
+
+html[data-layout-chrome="compact"] .statistics-settings__link {
+  min-height: var(--ml-touch-min, 2.75rem);
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .statistics-settings__select {
+  width: 100%;
+  max-width: 100%;
+  font-size: max(16px, 0.875rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+  padding-block: 0.45rem;
+}
+
+html[data-layout-chrome="compact"] .admin-fx-settings__row {
+  min-height: var(--ml-touch-min, 2.75rem);
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding-block: 0.35rem;
+  touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .admin-fx-settings__row input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__trigger {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 96%, transparent);
+}
+
+html[data-layout-chrome="compact"] .admin-settings-panel__body {
+  overflow-x: clip;
+}
+
+html[data-layout-chrome="compact"] .admin-settings-form input,
+html[data-layout-chrome="compact"] .admin-settings-form select,
+html[data-layout-chrome="compact"] .admin-settings-form textarea {
+  font-size: max(16px, 1rem);
+  min-height: var(--ml-touch-min, 2.75rem);
+}

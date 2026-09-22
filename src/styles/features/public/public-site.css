@@ -848,7 +848,7 @@
 
 /* Pagini publice — py-6 Tailwind prea aerisit pe desktop */
 @media (min-width: 768px) {
-  .receptie-page,
+  .reception-page,
   .public-confirm-page {
     padding-block: 1.25rem;
   }

@@ -57,7 +57,7 @@ test.describe("Mobile UX smoke (390×844 compact)", () => {
       await expectCompactPhoneLayout(page);
       await expectNoFatalPageErrors(page);
 
-      const form = page.locator(".cazari-search-form");
+      const form = page.locator(".stays-search-form");
       await expect(form).toBeVisible();
       const box = await form.boundingBox();
       expect(box?.width ?? 0).toBeGreaterThan(320);

@@ -120,14 +120,14 @@
   color: #71717a;
 }
 
-.admin-cereri-cta {
+.admin-requests-cta {
   gap: 0.5rem;
   padding: 0.55rem 1.15rem;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
 
-.admin-cereri-cta__icon {
+.admin-requests-cta__icon {
   display: inline-flex;
   height: 1.35rem;
   width: 1.35rem;

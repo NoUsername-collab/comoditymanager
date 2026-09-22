@@ -515,33 +515,33 @@ html[data-layout-chrome="compact"] .gantt-page-top-cards {
   padding-inline: 0.2rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--top,
-html[data-layout-chrome="compact"] .gantt-cereri-queue--inline {
+html[data-layout-chrome="compact"] .gantt-requests-queue--top,
+html[data-layout-chrome="compact"] .gantt-requests-queue--inline {
   contain: layout style;
   content-visibility: auto;
   contain-intrinsic-size: auto 5rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--top {
+html[data-layout-chrome="compact"] .gantt-requests-queue--top {
   padding: 0.4rem 0.45rem 0.48rem;
   border-radius: 0.75rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--top .gantt-cereri-queue__head {
+html[data-layout-chrome="compact"] .gantt-requests-queue--top .gantt-requests-queue__head {
   margin-bottom: 0.3rem;
   align-items: center;
   gap: 0.35rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--top .gantt-cereri-queue__title {
+html[data-layout-chrome="compact"] .gantt-requests-queue--top .gantt-requests-queue__title {
   font-size: 0.68rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--top .gantt-cereri-queue__sub {
+html[data-layout-chrome="compact"] .gantt-requests-queue--top .gantt-requests-queue__sub {
   display: none;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue__all-link {
+html[data-layout-chrome="compact"] .gantt-requests-queue__all-link {
   min-height: var(--ml-touch-min, 2.75rem);
   display: inline-flex;
   align-items: center;
@@ -549,14 +549,14 @@ html[data-layout-chrome="compact"] .gantt-cereri-queue__all-link {
   font-size: 0.68rem;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--top .gantt-cereri-card,
-html[data-layout-chrome="compact"] .gantt-cereri-queue--inline .gantt-cereri-card {
+html[data-layout-chrome="compact"] .gantt-requests-queue--top .gantt-requests-card,
+html[data-layout-chrome="compact"] .gantt-requests-queue--inline .gantt-requests-card {
   min-width: min(11.5rem, 78vw);
   max-width: 13rem;
   min-height: var(--ml-touch-min, 2.75rem);
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-card__main {
+html[data-layout-chrome="compact"] .gantt-requests-card__main {
   padding: 0.5rem 0.45rem 0.5rem 0.55rem;
 }
 
@@ -1156,10 +1156,10 @@ html:not([data-layout-chrome="compact"]) .gantt-stay-hint--mobile {
   display: none;
 }
 
-html[data-layout-chrome="compact"] .cerere-item,
+html[data-layout-chrome="compact"] .request-item,
 html[data-layout-chrome="compact"] .stay-card,
-html[data-layout-chrome="compact"] .admin-home-cereri-item,
-html[data-layout-chrome="compact"] .gantt-cereri-card {
+html[data-layout-chrome="compact"] .admin-home-requests-item,
+html[data-layout-chrome="compact"] .gantt-requests-card {
   content-visibility: auto;
   contain-intrinsic-size: auto 4.5rem;
 }
@@ -1188,12 +1188,12 @@ html[data-layout-chrome="compact"] .gantt-ctx-menu {
   max-width: min(18rem, calc(100vw - 1rem));
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--embedded {
+html[data-layout-chrome="compact"] .gantt-requests-queue--embedded {
   max-width: 100%;
   overflow-x: clip;
 }
 
-html[data-layout-chrome="compact"] .gantt-cereri-queue--embedded .gantt-cereri-queue__scroller {
+html[data-layout-chrome="compact"] .gantt-requests-queue--embedded .gantt-requests-queue__scroller {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;

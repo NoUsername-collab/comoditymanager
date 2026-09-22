@@ -27,12 +27,12 @@ export default async function ReceptionPage({
     resolvePensionStayTimes(settings);
 
   return (
-    <main className="receptie-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 public-page">
-      <nav className="receptie-page__nav flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        <Link href="/admin" className="receptie-page__back-admin font-semibold text-emerald-700 hover:text-emerald-900">
+    <main className="reception-page ml-content mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6 public-page">
+      <nav className="reception-page__nav flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+        <Link href="/admin" className="reception-page__back-admin font-semibold text-emerald-700 hover:text-emerald-900">
           {t("backToAdmin")}
         </Link>
-        <Link href="/" className="receptie-page__back-site text-zinc-500 hover:text-zinc-800">
+        <Link href="/" className="reception-page__back-site text-zinc-500 hover:text-zinc-800">
           {t("backToSite")}
         </Link>
       </nav>

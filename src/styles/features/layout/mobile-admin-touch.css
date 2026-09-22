@@ -94,7 +94,7 @@
   }
 
   .admin-hud__sync-dot--live,
-  .admin-cereri-glow-pulse,
+  .admin-requests-glow-pulse,
   .setup-issue-badge {
     animation: none !important;
   }

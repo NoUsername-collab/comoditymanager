@@ -150,8 +150,8 @@
   text-decoration: none;
 }
 
-/* Fișă turist */
-.stay-quick-ops__fisa {
+/* Tourist sheet */
+.stay-quick-ops__sheet {
   border-color: color-mix(in srgb, var(--pending-border, #f59e0b) 50%, var(--admin-surface-border));
   background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 70%, var(--admin-surface-bg));
   color: var(--pending-text, #92400e);
@@ -225,7 +225,7 @@ html[data-layout-chrome="compact"] .stay-quick-ops__tertiary {
 }
 
 html[data-layout-chrome="compact"] .stay-quick-ops__edit,
-html[data-layout-chrome="compact"] .stay-quick-ops__fisa {
+html[data-layout-chrome="compact"] .stay-quick-ops__sheet {
   grid-column: 1 / -1;
 }
 
@@ -249,7 +249,7 @@ html[data-layout-chrome="compact"] .stay-card__cancel-trigger {
 
 /* ── Collapsible confirmed buckets ───────────────────────────── */
 
-.cazari-bucket-panel__toggle {
+.stays-bucket-panel__toggle {
   display: flex;
   width: 100%;
   align-items: flex-start;
@@ -264,29 +264,29 @@ html[data-layout-chrome="compact"] .stay-card__cancel-trigger {
   color: inherit;
 }
 
-.cazari-bucket-panel--collapsed .cazari-bucket-panel__toggle {
+.stays-bucket-panel--collapsed .stays-bucket-panel__toggle {
   margin-bottom: 0;
 }
 
-.cazari-bucket-panel__toggle-text {
+.stays-bucket-panel__toggle-text {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 0.15rem;
 }
 
-.cazari-bucket-panel__title {
+.stays-bucket-panel__title {
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--admin-fg, #18181b);
 }
 
-.cazari-bucket-panel__subtitle {
+.stays-bucket-panel__subtitle {
   font-size: 0.6875rem;
   color: #71717a;
 }
 
-.cazari-bucket-panel__chevron {
+.stays-bucket-panel__chevron {
   flex-shrink: 0;
   font-size: 0.75rem;
   line-height: 1.4;
@@ -359,12 +359,12 @@ html[data-layout-chrome="compact"] .stay-card__cancel-trigger {
   border-color: color-mix(in srgb, var(--active-border, #22c55e) 60%, transparent);
 }
 
-.cazari-pinned-cereri {
+.stays-pinned-requests {
   border-left: 3px solid var(--pending-border, #f59e0b);
   padding-left: 0.5rem;
 }
 
-.cazari-pinned-cereri .admin-panel__titlebar {
+.stays-pinned-requests .admin-panel__titlebar {
   background: color-mix(in srgb, var(--admin-tint-warning-bg, #fffbeb) 70%, transparent);
 }
 

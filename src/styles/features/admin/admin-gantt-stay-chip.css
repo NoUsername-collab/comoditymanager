@@ -520,12 +520,12 @@ html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
   z-index: 1;
 }
 
-.gantt-stay--chip.gantt-stay--cerere {
+.gantt-stay--chip.gantt-stay--request {
   border-style: dashed !important;
   border-width: 1.5px !important;
 }
 
-.gantt-stay--chip.gantt-stay--cerere .gantt-stay__stamp {
+.gantt-stay--chip.gantt-stay--request .gantt-stay__stamp {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -667,23 +667,23 @@ html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
 }
 
 /* Cereri queue — același limbaj chip */
-.gantt-cereri-card.gantt-stay--chip {
+.gantt-requests-card.gantt-stay--chip {
   min-width: min(16rem, 78vw);
   border-radius: 0 10px 0 10px !important;
 }
 
-.gantt-cereri-card.gantt-stay--chip .gantt-stay__spine {
+.gantt-requests-card.gantt-stay--chip .gantt-stay__spine {
   flex: 0 0 4px;
   background: var(--stay-spine, var(--booking-pending-border, #f59e0b));
 }
 
-.gantt-cereri-card.gantt-stay--chip .gantt-cereri-card__main {
+.gantt-requests-card.gantt-stay--chip .gantt-requests-card__main {
   position: relative;
   z-index: 1;
   padding: 0.4rem 0.35rem 0.4rem 0.45rem !important;
 }
 
-.gantt-cereri-card.gantt-stay--chip .gantt-cereri-card__party {
+.gantt-requests-card.gantt-stay--chip .gantt-requests-card__party {
   position: relative;
   z-index: 1;
   min-width: 1.35rem;

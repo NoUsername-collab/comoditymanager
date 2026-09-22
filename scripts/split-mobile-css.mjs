@@ -17,7 +17,7 @@ const src = fs.readFileSync(backupPath, "utf8");
 const lines = src.split(/\r?\n/);
 
 const ADMIN_RE =
-  /\b(admin-|gantt-|cerere-|stay-card|bd-|checkin-|devlog-|guest-page|guest-profile|guest-search|guest-hero|guest-grid|guest-notes|guest-rebook|mrz-scan|nestio-admin|availability-|avail-|receptie|cazari|activity-journal|sim-strip|onboarding-bar|admin-home|admin-page|admin-settings|admin-floating|admin-overlay|admin-gear|admin-hud|admin-nav|admin-today|fiscal-|invoice-line|cerere-item|stay-info|ml-shell--nestio-admin|platform-tenant-detail|platform-tenant-table|platform-log|platform-health|platform-tenant-card|devlog-entry)\b/i;
+  /\b(admin-|gantt-|cerere-|request-|stay-card|bd-|checkin-|devlog-|guest-page|guest-profile|guest-search|guest-hero|guest-grid|guest-notes|guest-rebook|mrz-scan|nestio-admin|availability-|avail-|receptie|cazari|activity-journal|sim-strip|onboarding-bar|admin-home|admin-page|admin-settings|admin-floating|admin-overlay|admin-gear|admin-hud|admin-nav|admin-today|fiscal-|invoice-line|cerere-item|request-item|stay-info|ml-shell--nestio-admin|platform-tenant-detail|platform-tenant-table|platform-log|platform-health|platform-tenant-card|devlog-entry)\b/i;
 
 const PUBLIC_RE =
   /\b(public-|platform-header|platform-footer|platform-shell|landing-|signup-|pricing-table|guest-booking|public-hero|public-section|public-cta|public-page|public-confirm|public-step|public-option|public-staff|public-back|platform-tenant-row|pub-mobile-booking)\b|guest-app/i;

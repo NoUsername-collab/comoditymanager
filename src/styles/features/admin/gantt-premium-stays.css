@@ -125,7 +125,7 @@
   box-shadow: 0 0 0 1px #0369a1;
 }
 
-.gantt-toolbar__legend-swatch--cerere {
+.gantt-toolbar__legend-swatch--request {
   background: #fbbf24;
   border: 1px dashed #d97706;
 }
@@ -179,7 +179,7 @@
     color-mix(in srgb, #fde68a 70%, white) 10px
   );
   color: #92400e;
-  animation: gantt-cereri-pulse 2.5s ease-in-out infinite;
+  animation: gantt-requests-pulse 2.5s ease-in-out infinite;
 }
 
 .gantt-drag-preview--conflict {

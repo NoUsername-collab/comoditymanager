@@ -1,7 +1,5 @@
 /* mobile-admin.css — import barrel. Do not add rules here.
-   Split sheets: hud, premium, flawless, alignment, touch. */
+   Split sheets: hud, alignment, touch. */
 @import "./mobile-admin-hud.css";
-@import "./mobile-admin-premium.css";
-@import "./mobile-admin-flawless.css";
 @import "./mobile-admin-alignment.css";
 @import "./mobile-admin-touch.css";

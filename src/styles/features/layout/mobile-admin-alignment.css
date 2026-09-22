@@ -106,7 +106,7 @@ html[data-layout-chrome="compact"] .admin-page-toolbar {
 
 
 
-html[data-layout-chrome="compact"] .admin-home-cereri-item {
+html[data-layout-chrome="compact"] .admin-home-requests-item {
   content-visibility: auto;
   contain: layout style;
   contain-intrinsic-size: auto 4.5rem;

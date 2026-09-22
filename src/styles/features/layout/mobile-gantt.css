@@ -153,9 +153,9 @@ html[data-layout-chrome="compact"] .admin-page.gantt-calendar-page {
 
 
 
-/* ── Gantt cereri cards + context menu ── */
-html[data-layout-chrome="compact"] .gantt-cereri-card__guest,
-html[data-layout-chrome="compact"] .gantt-cereri-card__dates {
+/* ── Gantt request cards + context menu ── */
+html[data-layout-chrome="compact"] .gantt-requests-card__guest,
+html[data-layout-chrome="compact"] .gantt-requests-card__dates {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,7 +164,7 @@ html[data-layout-chrome="compact"] .gantt-cereri-card__dates {
 
 
 
-html[data-layout-chrome="compact"] .gantt-cereri-card__party {
+html[data-layout-chrome="compact"] .gantt-requests-card__party {
   flex-shrink: 0;
 }
 
@@ -648,7 +648,7 @@ html[data-layout-chrome="compact"] .gantt-quick-panel__cancel {
 
 
 
-/* ── Pass 28: gantt quick actions, stay review, receptie rows, adjust toggle ── */
+/* ── Pass 28: gantt quick actions, stay review, reception rows, adjust toggle ── */
 
 html[data-layout-chrome="compact"] .gantt-quick-panel__actions {
   flex-direction: column;
@@ -757,7 +757,7 @@ html[data-layout-chrome="compact"] .admin-shell:has(.gantt-calendar-page) .admin
 /* Zero horizontal bleed on 390px — clip page columns */
 html[data-layout-chrome="compact"] .admin-shell,
 html[data-layout-chrome="compact"] .admin-page,
-html[data-layout-chrome="compact"] .cazari-page,
+html[data-layout-chrome="compact"] .stays-page,
 html[data-layout-chrome="compact"] .admin-settings-page,
 html[data-layout-chrome="compact"] .admin-settings-shell,
 html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-shell,
@@ -815,4 +815,9 @@ html[data-layout-chrome="compact"] .gantt-compact-toolbar__today-btn,
 html[data-layout-chrome="compact"] .gantt-compact-toolbar__period-jump {
   min-width: var(--gantt-touch-min, 2.75rem);
   min-height: var(--gantt-touch-min, 2.75rem);
+}
+
+/* Extracted from mobile-admin-premium / mobile-admin-flawless (route-scoped) */
+html[data-layout-chrome="compact"] .admin-floating-panel--gantt {
+  max-width: min(340px, calc(100vw - 1rem));
 }

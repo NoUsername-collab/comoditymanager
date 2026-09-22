@@ -19,7 +19,7 @@ const GANTT_RE =
   /\b(gantt-|gantt-calendar|gantt-scroll|gantt-compact|gantt-check-time|gantt-ctx-menu|gantt-stay|gantt-action|gantt-page|gantt-shell|gantt-room|gantt-day|gantt-footer|gantt-inline|gantt-building)\b/i;
 
 const CAZARI_RE =
-  /\b(cazari|stay-card|stay-quick|stay-list|stay-history|stay-info|cerere-|receptie|guest-page|guest-profile|guest-search|guest-hero|guest-grid|guest-notes|guest-rebook|guest-card|mrz-scan)\b/i;
+  /\b(cazari|stay-card|stay-quick|stay-list|stay-history|stay-info|cerere-|request-|receptie|guest-page|guest-profile|guest-search|guest-hero|guest-grid|guest-notes|guest-rebook|guest-card|mrz-scan)\b/i;
 
 const AVAIL_RE = /\b(avail-|availability-|avail-dashboard|availability-week|availability-month)\b/i;
 

@@ -506,7 +506,7 @@
   display: none;
 }
 
-.gantt-toolbar__panel > .gantt-cereri-queue--embedded,
+.gantt-toolbar__panel > .gantt-requests-queue--embedded,
 .gantt-toolbar__panel > .gantt-toolbar__meta,
 .gantt-toolbar__panel > .gantt-toolbar__legend {
   display: none;
@@ -1195,7 +1195,7 @@
   color: #3f3f46;
 }
 
-.gantt-toolbar__cereri-pill {
+.gantt-toolbar__requests-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -1209,22 +1209,22 @@
   color: #92400e;
   text-decoration: none;
   box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.35);
-  animation: gantt-cereri-pulse 2.5s ease-in-out infinite;
+  animation: gantt-requests-pulse 2.5s ease-in-out infinite;
 }
 
-.gantt-toolbar__cereri-pill:hover {
+.gantt-toolbar__requests-pill:hover {
   background: #fef3c7;
   text-decoration: none;
 }
 
-.gantt-toolbar__cereri-pill:active {
+.gantt-toolbar__requests-pill:active {
   background: #fde68a;
   filter: brightness(0.92);
   transform: scale(0.97);
   transition-duration: 0.06s;
 }
 
-.gantt-toolbar__cereri-dot {
+.gantt-toolbar__requests-dot {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 9999px;
@@ -1244,7 +1244,7 @@
 }
 
 /* —— Listă cereri (persistentă, indiferent de lună) —— */
-.gantt-cereri-queue {
+.gantt-requests-queue {
   border: 1px solid var(--admin-tint-warning-border, color-mix(in srgb, #f59e0b 35%, var(--admin-panel-border, #e4e4e7)));
   border-radius: calc(var(--admin-radius, 0.75rem) + 2px);
   background: var(--admin-tint-warning-bg, color-mix(in srgb, #fffbeb 55%, var(--admin-panel-bg, #fff)));
@@ -1252,7 +1252,7 @@
   scroll-margin-top: 6rem;
 }
 
-.gantt-cereri-queue--embedded {
+.gantt-requests-queue--embedded {
   border: none;
   border-radius: 0;
   border-top: 1px solid var(--admin-tint-warning-border, color-mix(in srgb, #f59e0b 32%, var(--admin-panel-border, #e4e4e7)));
@@ -1261,7 +1261,7 @@
   scroll-margin-top: 4.5rem;
 }
 
-.gantt-cereri-queue--inline {
+.gantt-requests-queue--inline {
   flex: 1 1 24rem;
   min-width: min(100%, 20rem);
   padding: 0.42rem 0.5rem 0.48rem;
@@ -1275,7 +1275,7 @@
   width: 100%;
 }
 
-.gantt-cereri-queue--top {
+.gantt-requests-queue--top {
   width: 100%;
   min-width: 0;
   padding: 0.45rem 0.55rem 0.52rem;
@@ -1285,53 +1285,53 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.84);
 }
 
-.gantt-cereri-queue--top .gantt-cereri-queue__head {
+.gantt-requests-queue--top .gantt-requests-queue__head {
   margin-bottom: 0.35rem;
   align-items: center;
 }
 
-.gantt-cereri-queue--top .gantt-cereri-queue__title {
+.gantt-requests-queue--top .gantt-requests-queue__title {
   font-size: 0.72rem;
 }
 
-.gantt-cereri-queue--top .gantt-cereri-queue__sub {
+.gantt-requests-queue--top .gantt-requests-queue__sub {
   margin-top: 0.12rem;
 }
 
-.gantt-cereri-queue--top .gantt-cereri-queue__scroller {
+.gantt-requests-queue--top .gantt-requests-queue__scroller {
   gap: 0.35rem;
   padding-bottom: 0.05rem;
 }
 
-.gantt-cereri-queue--top .gantt-cereri-card {
+.gantt-requests-queue--top .gantt-requests-card {
   min-width: min(13rem, 72vw);
   max-width: 14.5rem;
 }
 
-.gantt-cereri-queue--inline .gantt-cereri-queue__head {
+.gantt-requests-queue--inline .gantt-requests-queue__head {
   margin-bottom: 0.35rem;
   align-items: center;
 }
 
-.gantt-cereri-queue--inline .gantt-cereri-queue__title {
+.gantt-requests-queue--inline .gantt-requests-queue__title {
   font-size: 0.68rem;
 }
 
-.gantt-cereri-queue--inline .gantt-cereri-queue__all-link {
+.gantt-requests-queue--inline .gantt-requests-queue__all-link {
   font-size: 0.58rem;
 }
 
-.gantt-cereri-queue--inline .gantt-cereri-queue__scroller {
+.gantt-requests-queue--inline .gantt-requests-queue__scroller {
   gap: 0.35rem;
   padding-bottom: 0.05rem;
 }
 
-.gantt-cereri-queue--inline .gantt-cereri-card {
+.gantt-requests-queue--inline .gantt-requests-card {
   min-width: min(13rem, 72vw);
   max-width: 14.5rem;
 }
 
-.gantt-cereri-queue__head {
+.gantt-requests-queue__head {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -1340,7 +1340,7 @@
   margin-bottom: 0.55rem;
 }
 
-.gantt-cereri-queue__title {
+.gantt-requests-queue__title {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -1351,7 +1351,7 @@
   color: var(--admin-text, #0f172a);
 }
 
-.gantt-cereri-queue__count {
+.gantt-requests-queue__count {
   display: inline-flex;
   min-width: 1.25rem;
   align-items: center;
@@ -1364,32 +1364,32 @@
   color: #fff;
 }
 
-.gantt-cereri-queue__sub {
+.gantt-requests-queue__sub {
   margin: 0.15rem 0 0;
   font-size: 0.625rem;
   font-weight: 600;
   color: var(--admin-text-muted, #71717a);
 }
 
-.gantt-cereri-queue__all-link {
+.gantt-requests-queue__all-link {
   font-size: 0.625rem;
   font-weight: 800;
   color: var(--admin-link, #047857);
   text-decoration: none;
 }
 
-.gantt-cereri-queue__all-link:hover {
+.gantt-requests-queue__all-link:hover {
   text-decoration: underline;
 }
 
-.gantt-cereri-queue__all-link:active {
+.gantt-requests-queue__all-link:active {
   color: color-mix(in srgb, var(--admin-link, #047857) 80%, black);
   filter: brightness(0.92);
   transform: scale(0.97);
   transition-duration: 0.06s;
 }
 
-.gantt-cereri-queue__scroller {
+.gantt-requests-queue__scroller {
   display: flex;
   gap: 0.45rem;
   overflow-x: auto;
@@ -1398,7 +1398,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.gantt-cereri-card {
+.gantt-requests-card {
   display: flex;
   min-width: min(16rem, 78vw);
   max-width: 18rem;
@@ -1414,19 +1414,19 @@
     filter 0.14s ease;
 }
 
-.gantt-cereri-card:hover {
+.gantt-requests-card:hover {
   transform: translateY(-1px);
   filter: brightness(1.03);
   text-decoration: none;
 }
 
-.gantt-cereri-card:active {
+.gantt-requests-card:active {
   transform: translateY(0px);
   filter: brightness(0.96);
   transition-duration: 0.06s;
 }
 
-.gantt-cereri-card__main {
+.gantt-requests-card__main {
   display: flex;
   min-width: 0;
   flex: 1;
@@ -1436,7 +1436,7 @@
   padding: 0.45rem 0.4rem 0.45rem 0.55rem;
 }
 
-.gantt-cereri-card__guest {
+.gantt-requests-card__guest {
   font-size: 0.72rem;
   font-weight: 800;
   line-height: 1.15;
@@ -1445,14 +1445,14 @@
   white-space: nowrap;
 }
 
-.gantt-cereri-card__dates {
+.gantt-requests-card__dates {
   font-size: 0.58rem;
   font-weight: 600;
   opacity: 0.9;
   line-height: 1.2;
 }
 
-.gantt-cereri-card__party {
+.gantt-requests-card__party {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1464,17 +1464,17 @@
   color: inherit;
 }
 
-.gantt-cereri-card__risk {
+.gantt-requests-card__risk {
   display: flex;
   align-items: center;
   padding-right: 0.15rem;
 }
 
-.gantt-cereri-card__risk .inline-flex {
+.gantt-requests-card__risk .inline-flex {
   border-radius: 999px;
 }
 
-.gantt-cereri-card__tab {
+.gantt-requests-card__tab {
   min-width: 0.65rem;
 }
 
@@ -1502,9 +1502,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gantt-stay--cerere,
+  .gantt-stay--request,
   .gantt-popover-premium,
-  .gantt-toolbar__cereri-pill {
+  .gantt-toolbar__requests-pill {
     animation: none;
   }
 
