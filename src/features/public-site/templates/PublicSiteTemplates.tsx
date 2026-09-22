@@ -3,19 +3,22 @@ import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import { PublicHomeExtras } from "@/features/public-site/home/PublicHomeExtras";
 import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
 import { renderPublicSection } from "@/features/public-site/sections/render-section";
-import { getTranslations } from "next-intl/server";
+
+type TemplateProps = {
+  config: PublicSiteConfig;
+  locale: string;
+  checkTimesLabel: string;
+  afterHero?: ReactNode;
+  preview?: boolean;
+};
 
 export function ClassicPublicTemplate({
   config,
   locale,
   checkTimesLabel,
   afterHero,
-}: {
-  config: PublicSiteConfig;
-  locale: string;
-  checkTimesLabel: string;
-  afterHero?: ReactNode;
-}) {
+  preview = false,
+}: TemplateProps) {
   return (
     <main className="pub-home pub-home--classic">
       <PublicHeroBlock
@@ -23,6 +26,7 @@ export function ClassicPublicTemplate({
         locale={locale}
         variant="classic"
         checkTimesLabel={checkTimesLabel}
+        preview={preview}
       />
       {afterHero}
       {config.sections.map((section) => (
@@ -37,12 +41,8 @@ export function EditorialPublicTemplate({
   locale,
   checkTimesLabel,
   afterHero,
-}: {
-  config: PublicSiteConfig;
-  locale: string;
-  checkTimesLabel: string;
-  afterHero?: ReactNode;
-}) {
+  preview = false,
+}: TemplateProps) {
   return (
     <main className="pub-home pub-home--editorial">
       <PublicHeroBlock
@@ -50,6 +50,7 @@ export function EditorialPublicTemplate({
         locale={locale}
         variant="editorial"
         checkTimesLabel={checkTimesLabel}
+        preview={preview}
       />
       {afterHero}
       <div className="pub-home__stack">
@@ -71,12 +72,8 @@ export function ImmersivePublicTemplate({
   locale,
   checkTimesLabel,
   afterHero,
-}: {
-  config: PublicSiteConfig;
-  locale: string;
-  checkTimesLabel: string;
-  afterHero?: ReactNode;
-}) {
+  preview = false,
+}: TemplateProps) {
   return (
     <main className="pub-home pub-home--immersive">
       <PublicHeroBlock
@@ -84,6 +81,7 @@ export function ImmersivePublicTemplate({
         locale={locale}
         variant="immersive"
         checkTimesLabel={checkTimesLabel}
+        preview={preview}
       />
       {afterHero}
       <div className="pub-home__immersive-body">
@@ -95,19 +93,20 @@ export function ImmersivePublicTemplate({
   );
 }
 
-export async function PublicSitePage({
+export function PublicSiteBody({
   config,
   locale,
+  checkTimesLabel,
+  preview = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  checkTimesLabel: string;
+  preview?: boolean;
 }) {
-  const t = await getTranslations("public.home");
-  const checkTimesLabel = t("checkTimes", {
-    checkIn: config.checkInTime,
-    checkOut: config.checkOutTime,
-  });
-  const afterHero = <PublicHomeExtras config={config} locale={locale} />;
+  const afterHero = (
+    <PublicHomeExtras config={config} locale={locale} preview={preview} />
+  );
 
   switch (config.templateId) {
     case "editorial":
@@ -117,6 +116,7 @@ export async function PublicSitePage({
           locale={locale}
           checkTimesLabel={checkTimesLabel}
           afterHero={afterHero}
+          preview={preview}
         />
       );
     case "immersive":
@@ -126,6 +126,7 @@ export async function PublicSitePage({
           locale={locale}
           checkTimesLabel={checkTimesLabel}
           afterHero={afterHero}
+          preview={preview}
         />
       );
     case "classic":
@@ -136,6 +137,7 @@ export async function PublicSitePage({
           locale={locale}
           checkTimesLabel={checkTimesLabel}
           afterHero={afterHero}
+          preview={preview}
         />
       );
   }

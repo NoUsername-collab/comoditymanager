@@ -14,9 +14,8 @@ export default async function PublicSiteSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, tSettings, params, locale, ctx, bundle] = await Promise.all([
+  const [t, params, locale, ctx, bundle] = await Promise.all([
     getTranslations("admin.pages.publicSite"),
-    getTranslations("admin.pages.settings"),
     searchParams,
     getLocale(),
     guardSettingsPermission("pension_settings"),
@@ -41,9 +40,8 @@ export default async function PublicSiteSettingsPage({
       alerts={alerts}
       title={t("title")}
       description={t("description")}
-      previewHref="/"
-      previewLabel={tSettings("viewOnSite")}
-      previewExternal
+      compact
+      className="settings-page--studio"
     >
       <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
         <PublicSiteSettingsForm

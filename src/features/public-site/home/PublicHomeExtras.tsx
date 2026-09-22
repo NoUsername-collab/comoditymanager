@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 import { pickLocalized } from "@/features/public-site/domain/localized";
 import { safeNavHref } from "@/lib/security/html-escape";
@@ -5,16 +7,18 @@ import type {
   PublicBenefitItem,
   PublicSiteConfig,
 } from "@/features/public-site/domain/types";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
-export async function PublicHomeExtras({
+export function PublicHomeExtras({
   config,
   locale,
+  preview = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
+  preview?: boolean;
 }) {
-  const t = await getTranslations("public.home");
+  const t = useTranslations("public.home");
 
   const benefitsSection = config.sections.find(
     (section) => section.sectionType === "benefits" && section.visible,
@@ -64,9 +68,16 @@ export async function PublicHomeExtras({
 
       {showBookingBar ? (
         <div className="pub-mobile-booking-bar" data-surface="public">
-          <Link href={safeNavHref(config.hero.ctaPrimaryHref, "/calendar")} className="pub-mobile-booking-bar__btn">
-            {ctaPrimary}
-          </Link>
+          {preview ? (
+            <span className="pub-mobile-booking-bar__btn">{ctaPrimary}</span>
+          ) : (
+            <Link
+              href={safeNavHref(config.hero.ctaPrimaryHref, "/calendar")}
+              className="pub-mobile-booking-bar__btn"
+            >
+              {ctaPrimary}
+            </Link>
+          )}
         </div>
       ) : null}
     </>

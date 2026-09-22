@@ -27,9 +27,9 @@ import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { PublicSitePreview } from "@/features/settings/ui/PublicSitePreview";
+import { PublicSiteStudio } from "@/features/settings/ui/PublicSiteStudio";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 import { SettingsFieldError } from "@/components/admin/settings/SettingsFieldError";
-import { SettingsPreviewLayout } from "@/components/admin/settings/SettingsPreviewLayout";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 
 type GalleryDraftItem = { id: string; url: string; caption: string };
@@ -271,7 +271,8 @@ export function PublicSiteSettingsForm({
   }
 
   return (
-    <SettingsPreviewLayout
+    <PublicSiteStudio
+      published={draft.published}
       preview={<PublicSitePreview config={previewConfig} locale={locale} />}
       form={
         <form onSubmit={handleSubmit} className="settings-form-stack">

@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { BrandMarkSvg } from "@/features/public-site/ui/BrandMarkSvg";
-import { buildPublicContactLinks } from "@/features/public-site/contact/PublicContactBar";
-import { PublicHeroBlock } from "@/features/public-site/hero/PublicHeroBlock";
-import { renderPublicSection } from "@/features/public-site/sections/render-section";
+import {
+  buildPublicContactLinks,
+  PublicContactBar,
+} from "@/features/public-site/contact/PublicContactBar";
+import { PublicSiteConfigProvider } from "@/features/public-site/PublicSiteConfigProvider";
+import { PublicSiteBody } from "@/features/public-site/templates/PublicSiteTemplates";
 import type { PublicSiteConfig } from "@/features/public-site/domain/types";
 import {
   publicThemeClassName,
@@ -14,9 +16,15 @@ import {
 import "@/styles/features/public/public-site.css";
 import "@/styles/features/public/public-site-v2.css";
 
-export function PublicSitePreview({ config, locale }: { config: PublicSiteConfig; locale: string }) {
-  const t = useTranslations("admin.pages.settings");
+export function PublicSitePreview({
+  config,
+  locale,
+}: {
+  config: PublicSiteConfig;
+  locale: string;
+}) {
   const tHeader = useTranslations("public.header");
+  const tNav = useTranslations("public.nav");
   const tFooter = useTranslations("public.footer");
   const tHome = useTranslations("public.home");
 
@@ -25,98 +33,93 @@ export function PublicSitePreview({ config, locale }: { config: PublicSiteConfig
     checkOut: config.checkOutTime,
   });
 
-  const templateClass =
-    config.templateId === "editorial"
-      ? "pub-home pub-home--editorial"
-      : config.templateId === "immersive"
-        ? "pub-home pub-home--immersive"
-        : "pub-home pub-home--classic";
-
-  const visibleSections = useMemo(
-    () => config.sections.filter((section) => section.visible),
-    [config.sections],
-  );
-
-  const contactLinks = buildPublicContactLinks(config.contact);
-
   const showBookingNav =
     config.bookingEnabled &&
     (config.bookingNavPosition === "nav" || config.bookingNavPosition === "both");
+  const showBookingFooter =
+    config.bookingEnabled &&
+    (config.bookingNavPosition === "footer" || config.bookingNavPosition === "both");
+  const contactLinks = buildPublicContactLinks(config.contact);
 
   return (
-    <div
-      className={[
-        "settings-public-preview",
-        "pub-site",
-        publicThemeClassName(config.themeId),
-      ].join(" ")}
-      style={resolvePublicThemeStyle(config.themeId)}
-    >
-      <div className="settings-public-preview__chrome" aria-hidden>
-        <span className="settings-public-preview__dot" />
-        <span className="settings-public-preview__dot" />
-        <span className="settings-public-preview__dot" />
-        <span className="settings-public-preview__url">{config.displayName}</span>
-      </div>
+    <PublicSiteConfigProvider config={config}>
       <div
-        className="settings-public-preview__viewport"
-        tabIndex={0}
-        aria-label={t("livePreviewAria")}
+        className={["settings-public-preview", "pub-site", publicThemeClassName(config.themeId)].join(
+          " ",
+        )}
+        style={resolvePublicThemeStyle(config.themeId)}
       >
-        <header className="public-header settings-public-preview__header">
+        <header className="public-header">
           <div className="public-header__inner">
             <div className="public-header__brand">
-              <BrandMarkSvg animated={false} className="h-9 w-9 sm:h-10 sm:w-10" />
+              <BrandMarkSvg animated={false} className="h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]" />
               <div className="min-w-0 leading-tight">
                 <span className="public-header__name">{config.displayName}</span>
                 <span className="public-header__tag">{tHeader("subtitle")}</span>
               </div>
             </div>
-            {showBookingNav ? (
-              <span className="public-header__link public-header__link--active">
-                {tFooter("bookingRequest")}
-              </span>
-            ) : null}
+            <nav className="public-header__nav" aria-hidden>
+              <span className="public-header__link public-header__link--active">{tNav("home")}</span>
+              <span className="public-header__link">{tNav("gdpr")}</span>
+              {showBookingNav ? (
+                <span className="public-header__link public-header__cta site-cta">{tNav("book")}</span>
+              ) : null}
+            </nav>
           </div>
         </header>
 
-        <main className={templateClass}>
-          <PublicHeroBlock
-            config={config}
-            locale={locale}
-            variant={config.templateId}
-            checkTimesLabel={checkTimesLabel}
-            preview
-          />
-          {visibleSections.map((section) => (
-            <div key={section.id}>
-              {renderPublicSection(section, locale, config.templateId)}
-            </div>
-          ))}
-        </main>
+        <PublicSiteBody
+          config={config}
+          locale={locale}
+          checkTimesLabel={checkTimesLabel}
+          preview
+        />
 
-        {contactLinks.length > 0 ? (
-          <section className="pub-contact-bar" aria-hidden>
-            <div className="pub-contact-bar__inner">
-              <p className="pub-contact-bar__title">{tFooter("contact")}</p>
-              <div className="pub-contact-bar__links">
-                {contactLinks.slice(0, 4).map((link) => (
-                  <span key={link.id} className={`pub-contact-chip pub-contact-chip--${link.id}`}>
-                    {link.label}
-                  </span>
-                ))}
+        <PublicContactBar
+          contact={config.contact}
+          title={tFooter("contact")}
+          emptyHint={tFooter("contactEmptyHint")}
+        />
+
+        <footer className="public-footer">
+          <div className="public-footer__inner">
+            <div className="public-footer__grid">
+              <div>
+                <p className="public-footer__brand-name">{config.displayName}</p>
+                <p className="public-footer__brand-desc">{tFooter("tagline")}</p>
+              </div>
+              <div>
+                <p className="public-footer__label">{tFooter("links")}</p>
+                <nav className="public-footer__links">
+                  {showBookingFooter ? <span>{tFooter("bookingRequest")}</span> : null}
+                  <span>{tFooter("terms")}</span>
+                  <span>{tFooter("privacy")}</span>
+                </nav>
+              </div>
+              <div>
+                <p className="public-footer__label">{tFooter("contact")}</p>
+                {contactLinks.length > 0 ? (
+                  <div className="public-footer__contact-links">
+                    {contactLinks.map((link) => (
+                      <span key={link.id}>{link.label}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="public-footer__contact public-footer__contact--muted">
+                    {tFooter("contactNotConfigured")}
+                  </p>
+                )}
               </div>
             </div>
-          </section>
-        ) : null}
-
-        <footer className="public-footer settings-public-preview__footer">
-          <div className="public-footer__inner">
-            <p className="public-footer__brand-name">{config.displayName}</p>
-            <p className="public-footer__brand-desc">{tFooter("tagline")}</p>
+            <p className="public-footer__bottom">
+              {tFooter("copyright", {
+                year: new Date().getFullYear(),
+                name: config.displayName,
+              })}
+            </p>
           </div>
         </footer>
       </div>
-    </div>
+    </PublicSiteConfigProvider>
   );
 }

@@ -12,6 +12,8 @@ type Props = {
   previewLabel?: string;
   previewExternal?: boolean;
   previewPanel?: ReactNode;
+  className?: string;
+  compact?: boolean;
   children: ReactNode;
 };
 
@@ -25,6 +27,8 @@ export function SettingsPageLayout({
   previewLabel,
   previewExternal = false,
   previewPanel,
+  className,
+  compact = false,
   children,
 }: Props) {
   const headerActions =
@@ -38,7 +42,15 @@ export function SettingsPageLayout({
     ) : null);
 
   return (
-    <div className="settings-page">
+    <div
+      className={[
+        "settings-page",
+        compact && "settings-page--compact",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <SettingsAlerts alerts={alerts} />
       <SettingsPageHeader title={title} description={description} actions={headerActions} />
       {previewPanel ? (

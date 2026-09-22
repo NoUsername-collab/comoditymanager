@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PublicStaffPreviewLazy } from "@/features/public-site/ui/PublicStaffPreviewLazy";
 import { pickLocalized } from "@/features/public-site/domain/localized";
-import { PublicSitePage } from "@/features/public-site/templates/PublicSiteTemplates";
+import { PublicSitePage } from "@/features/public-site/templates/PublicSitePage";
 import {
   loadPublicHomePage,
   loadPublicSiteConfig,
