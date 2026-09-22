@@ -12,6 +12,7 @@ import {
 } from "@/domain/settings/pension-identity";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getPensionIdentity } from "@/services/pension-identity";
+import { resolvePensionStayTimes } from "@/lib/constants";
 import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
 import {
   isPublicSiteMigrationMissing,
@@ -62,8 +63,8 @@ async function getPublicSiteConfigUncached(
   ]);
 
   const displayName = identity?.displayName ?? pension?.display_name ?? "Casa Emil";
-  const checkInTime = pension?.default_check_in_time ?? "14:00";
-  const checkOutTime = pension?.default_check_out_time ?? "11:00";
+  const { checkIn: checkInTime, checkOut: checkOutTime } =
+    resolvePensionStayTimes(pension);
   const fallback = buildDefaultPublicSiteConfig({
     displayName,
     checkInTime,

@@ -8,6 +8,7 @@
  */
 
 import { platformPoweredByLabel } from "@/lib/platform/branding";
+import { DEFAULT_CHECK_OUT_TIME } from "@/lib/constants";
 import {
   escapeHtml,
   safeEmailHref,
@@ -182,7 +183,7 @@ export function guestAppLinkToGuest(data: {
     html: wrap(data.pensionName, `
       ${h2("Aplicația pentru oaspeți")}
       ${p(`Bună, <strong>${guestName}</strong>! Iată linkul personal pentru șederea ta (${escapeHtml(data.checkIn)} → ${escapeHtml(data.checkOut)}).`)}
-      ${data.checkInTime ? p(`Check-in de la ${data.checkInTime}, check-out până la ${data.checkOutTime ?? "11:00"}.`) : ""}
+      ${data.checkInTime ? p(`Check-in de la ${data.checkInTime}, check-out până la ${data.checkOutTime ?? DEFAULT_CHECK_OUT_TIME}.`) : ""}
       ${ctaButton(data.guestAppUrl, "Deschide aplicația")}
       ${p("Linkul este valabil pe durata șederii. Nu îl distribui altor persoane.")}
     `),

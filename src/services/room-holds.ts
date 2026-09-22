@@ -98,7 +98,12 @@ export async function createRoomHolds(input: {
   return (data ?? []).map((r) => r.id as string);
 }
 
-export async function releaseRoomHold(holdId: string, releasedBy?: string | null): Promise<void> {
+export async function releaseRoomHolds(
+  holdIds: string[],
+  releasedBy?: string | null
+): Promise<void> {
+  const ids = [...new Set(holdIds.filter(Boolean))];
+  if (ids.length === 0) return;
   const { tenantId, supabase } = await getTenantScope();
   const { error } = await supabase
     .from("room_holds")
@@ -107,10 +112,14 @@ export async function releaseRoomHold(holdId: string, releasedBy?: string | null
       released_by: releasedBy ?? null,
     })
     .eq("tenant_id", tenantId)
-    .eq("id", holdId)
+    .in("id", ids)
     .is("released_at", null);
 
   if (error) throw new Error(error.message);
+}
+
+export async function releaseRoomHold(holdId: string, releasedBy?: string | null): Promise<void> {
+  await releaseRoomHolds([holdId], releasedBy);
 }
 
 /** Marchează hold-urile expirate ca eliberate (lazy cleanup la citire occupancy). */

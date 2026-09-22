@@ -115,7 +115,7 @@ async function listRecentlyConfirmedStayHistoryImpl(
 const getCachedRecentlyConfirmedHistory = (tenantId: string, limit: number) =>
   unstable_cache(
     () => listRecentlyConfirmedStayHistoryImpl(tenantId, limit),
-    ["cazari-recent-confirmed", tenantId, String(limit)],
+    ["stays-recent-confirmed", tenantId, String(limit)],
     {
       tags: [
         CACHE_TAGS.bookingCounts,
@@ -168,7 +168,7 @@ async function listCompletedStayHistoryImpl(
 const getCachedCompletedStayHistory = (tenantId: string, limit: number) =>
   unstable_cache(
     () => listCompletedStayHistoryImpl(tenantId, limit),
-    ["cazari-completed-history", tenantId, String(limit)],
+    ["stays-completed-history", tenantId, String(limit)],
     {
       tags: [
         CACHE_TAGS.bookingCounts,
@@ -223,7 +223,7 @@ async function listCancelledStayHistoryImpl(
 const getCachedCancelledStayHistory = (tenantId: string, limit: number) =>
   unstable_cache(
     () => listCancelledStayHistoryImpl(tenantId, limit),
-    ["cazari-cancelled-history", tenantId, String(limit)],
+    ["stays-cancelled-history", tenantId, String(limit)],
     {
       tags: [
         CACHE_TAGS.bookingCounts,

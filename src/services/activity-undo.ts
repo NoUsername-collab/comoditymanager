@@ -18,7 +18,7 @@ import {
 } from "@/services/bookings";
 import { updateBuildingDefaultPrice } from "@/services/buildings";
 import { deleteRoomBlock } from "@/services/room-blocks";
-import { releaseRoomHold } from "@/services/room-holds";
+import { releaseRoomHolds } from "@/services/room-holds";
 import { syncBookingRoomSegments } from "@/services/booking-segments";
 
 function metaString(m: Record<string, unknown>, key: string): string | null {
@@ -157,9 +157,7 @@ async function undoOccupancyHold(entry: ActivityLogEntry): Promise<void> {
 
   if (ids.length === 0) throw new Error("activity.undo_missing_metadata");
 
-  for (const holdId of ids) {
-    await releaseRoomHold(holdId, entry.actor_email);
-  }
+  await releaseRoomHolds(ids, entry.actor_email);
 }
 
 async function undoOccupancyBlock(entry: ActivityLogEntry): Promise<void> {

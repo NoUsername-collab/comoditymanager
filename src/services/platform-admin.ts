@@ -11,7 +11,7 @@ import {
   loadTenantResourceCounts,
 } from "@/lib/platform-admin/tenant-resource-counts";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import type { TenantRow } from "./tenants";
+import { TENANT_ROW_SELECT, type TenantRow } from "./tenants";
 import { PLAN_CONFIGS, type PlanId } from "@/core/config/plans";
 import { loadTenantEmailListAlerts } from "@/lib/platform-admin/tenant-email-alerts";
 import { quickSetupIncomplete } from "@/domain/platform-admin/tenant-onboarding";
@@ -128,7 +128,7 @@ export const listAllTenants = cache(async (): Promise<PlatformTenantSummary[]> =
   const supabase = createPublicAdminClient();
 
   const [{ data: tenants, error }, resourceCounts, domainMap] = await Promise.all([
-    supabase.from("tenants").select("*").order("created_at", { ascending: false }),
+    supabase.from("tenants").select(TENANT_ROW_SELECT).order("created_at", { ascending: false }),
     loadTenantResourceCounts(supabase),
     loadTenantDomainMap(supabase),
   ]);
@@ -249,7 +249,7 @@ export const getPlatformTenantById = cache(async (
 
   const { data: tenant, error } = await supabase
     .from("tenants")
-    .select("*")
+    .select(TENANT_ROW_SELECT)
     .eq("id", tenantId)
     .single();
 

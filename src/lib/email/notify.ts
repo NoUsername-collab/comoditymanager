@@ -16,6 +16,10 @@ import {
 } from "@/services/email-identity";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { getTenantById } from "@/services/tenants";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+} from "@/lib/constants";
 
 type EmailNotifyFlag =
   | "email_notify_new_request"
@@ -146,8 +150,8 @@ export async function notifyGuestConfirmed(data: {
       rooms: data.rooms,
       totalPrice: data.totalPrice,
       currency: data.currency ?? "RON",
-      checkInTime: data.checkInTime ?? "14:00",
-      checkOutTime: data.checkOutTime ?? "11:00",
+      checkInTime: data.checkInTime ?? DEFAULT_CHECK_IN_TIME,
+      checkOutTime: data.checkOutTime ?? DEFAULT_CHECK_OUT_TIME,
       guestAppUrl: data.guestAppUrl,
     });
 
