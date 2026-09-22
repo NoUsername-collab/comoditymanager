@@ -1,9 +1,9 @@
-import "@/styles/features/layout/mobile-cazari.css";
-import "@/styles/features/admin/admin-cazari-toolbar.css";
-import "@/styles/features/admin/admin-cazari-cards.css";
+import "@/styles/features/layout/mobile-stays.css";
+import "@/styles/features/admin/admin-stays-toolbar.css";
+import "@/styles/features/admin/admin-stays-cards.css";
 import "@/styles/features/admin/admin-history.css";
 
-export default function AdminCazariLayout({
+export default function AdminStaysLayout({
   children,
 }: {
   children: React.ReactNode;

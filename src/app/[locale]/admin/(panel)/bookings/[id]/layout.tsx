@@ -1,5 +1,5 @@
 import "@/styles/features/admin/admin-booking-detail.css";
-import "@/styles/features/admin/admin-cazari-cards.css";
+import "@/styles/features/admin/admin-stays-cards.css";
 import "@/styles/features/admin/admin-payments.css";
 import "@/styles/features/admin/admin-history.css";
 
