@@ -12,6 +12,7 @@ import {
 } from "@/domain/guest/national-id";
 import type { NationalIdType } from "@/domain/guest/national-id";
 import { NationalIdTypePicker } from "@/features/guests/ui/NationalIdTypePicker";
+import { GuestIdentityStatusPill } from "@/features/guests/ui/GuestIdentityStatusPill";
 import { updateGuestIdentityAction } from "@/features/guests/actions";
 import { isValidGuestPhone } from "@/domain/guest/normalize";
 import {
@@ -254,7 +255,7 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
     <>
       <div className="guest-identity-form">
         <div className="guest-identity-form__status">
-          <IdentityStatusPill status={guest.identity_status} t={t} />
+          <GuestIdentityStatusPill status={guest.identity_status} />
         </div>
 
         {/* Document type */}
@@ -582,46 +583,4 @@ export function GuestIdentityForm({ guest }: { guest: GuestRow }) {
       />
     </>
   );
-}
-
-function IdentityStatusPill({
-  status,
-  t,
-  compact = false,
-}: {
-  status: string;
-  t: (key: string) => string;
-  compact?: boolean;
-}) {
-  const cls = [
-    "guest-identity-status",
-    compact && "guest-identity-status--compact",
-    status === "complete" && "guest-identity-status--complete",
-    status === "partial" && "guest-identity-status--partial",
-    status === "draft" && "guest-identity-status--draft",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const icon = status === "complete" ? "✓" : status === "partial" ? "○" : "−";
-  const label = t(`status.${status}`);
-
-  return (
-    <span className={cls}>
-      <span className="guest-identity-status__icon">{icon}</span>
-      {label}
-    </span>
-  );
-}
-
-/** Exported for reuse in cards / badges */
-export function GuestIdentityStatusPill({
-  status,
-  compact = false,
-}: {
-  status: string;
-  compact?: boolean;
-}) {
-  const t = useTranslations("admin.guests.identity");
-  return <IdentityStatusPill status={status} t={t} compact={compact} />;
 }

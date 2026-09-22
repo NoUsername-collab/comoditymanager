@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import type { GuestRow } from "@/domain/guest/types";
 import { DEFAULT_STARS_AVG } from "@/domain/guest/reputation";
 import { GuestFlagPill } from "@/features/guests/ui/GuestFlagPill";
-import { GuestIdentityStatusPill } from "@/features/guests/ui/GuestIdentityForm";
+import { GuestIdentityStatusPill } from "@/features/guests/ui/GuestIdentityStatusPill";
 import { GuestScoreHint } from "@/features/guests/ui/GuestScoreHint";
 import { GuestStarsCompact } from "@/features/guests/ui/GuestStarsCompact";
 import { GuestCompletedStaysPanel, type GuestCompletedStaySummary } from "@/features/guests/ui/GuestCompletedStaysPanel";
