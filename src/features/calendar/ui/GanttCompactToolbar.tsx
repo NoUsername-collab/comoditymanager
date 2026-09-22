@@ -13,7 +13,7 @@ import {
   type GanttLayerFilter,
 } from "@/domain/gantt/occupancy-layer";
 import type { GanttCalendarPatch } from "@/hooks/useGanttCalendarNavigation";
-import type { GanttDensity } from "@/hooks/useGanttDensity";
+import type { GanttCoverage } from "@/domain/gantt/layout";
 import { useTranslations } from "next-intl";
 
 export function GanttCompactToolbar({
@@ -47,8 +47,9 @@ export function GanttCompactToolbar({
   isFiltersOpen,
   hasActiveFilters,
   onToggleFilters,
-  density,
-  onDensityToggle,
+  coverage,
+  onCoverageChange,
+  showCoverage = true,
 }: {
   onOpenRequest: () => void;
   onOpenHold: () => void;
@@ -80,8 +81,9 @@ export function GanttCompactToolbar({
   isFiltersOpen: boolean;
   hasActiveFilters: boolean;
   onToggleFilters: (anchorRect: DOMRect) => void;
-  density: GanttDensity;
-  onDensityToggle: () => void;
+  coverage: GanttCoverage;
+  onCoverageChange: (next: GanttCoverage) => void;
+  showCoverage?: boolean;
 }) {
   const tCommon = useTranslations("admin.common");
   const tNav = useTranslations("admin.nav");
@@ -145,27 +147,20 @@ export function GanttCompactToolbar({
           jumpAria={jumpAria}
         />
 
-        <button
-          type="button"
-          className={[
-            "gantt-compact-toolbar__density-btn",
-            density === "compact" && "gantt-compact-toolbar__density-btn--compact",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onClick={onDensityToggle}
-          aria-pressed={density === "compact"}
-          aria-label={tCommon("ganttDensityToggleAria")}
-          title={
-            density === "comfortable"
-              ? tCommon("ganttDensityCompactHint")
-              : tCommon("ganttDensityComfortableHint")
-          }
-        >
-          {density === "comfortable"
-            ? tCommon("ganttDensityComfortable")
-            : tCommon("ganttDensityCompact")}
-        </button>
+        {showCoverage ? (
+        <div className="gantt-compact-toolbar__dropdown-wrap">
+          <select
+            className="gantt-compact-toolbar__select"
+            value={String(coverage)}
+            onChange={(e) => onCoverageChange(Number(e.target.value) as GanttCoverage)}
+            aria-label={tCommon("ganttCoverageAria")}
+          >
+            <option value="10">{tCommon("ganttCoverage10")}</option>
+            <option value="20">{tCommon("ganttCoverage20")}</option>
+            <option value="30">{tCommon("ganttCoverage30")}</option>
+          </select>
+        </div>
+        ) : null}
       </div>
 
       <div className="gantt-compact-toolbar__right">

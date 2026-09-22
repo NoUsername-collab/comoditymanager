@@ -973,7 +973,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-action-strip__bad
   color: var(--text);
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable {
+html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="10"] {
   --gantt-day-header-row-h: 3.55rem;
   --gantt-row-h: 48px;
   --gantt-stay-h: 33px;
@@ -983,14 +983,24 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable {
   --gantt-unassigned-row-h: 37px;
 }
 
+html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="20"] {
+  --gantt-day-header-row-h: 3.1rem;
+  --gantt-row-h: 36px;
+  --gantt-stay-h: 24px;
+  --gantt-stay-top: 6px;
+  --gantt-occ-bar-h: 20px;
+  --gantt-occ-bar-top: 8px;
+  --gantt-unassigned-row-h: 28px;
+}
+
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-scroll,
 html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-shell {
   width: 100%;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-day-grid--fixed,
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-day-header-grid.gantt-day-grid--fixed,
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-summary-row__grid.gantt-day-grid--fixed {
+html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-day-grid--fixed,
+html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-day-header-grid.gantt-day-grid--fixed,
+html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-summary-row__grid.gantt-day-grid--fixed {
   width: 100%;
   min-width: 0;
 }
@@ -1019,12 +1029,12 @@ html:not([data-layout-chrome="compact"]) .gantt-drag-row {
   overflow-y: hidden;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-comfortable .gantt-drag-row {
+html:not([data-layout-chrome="compact"]) .gantt-shell .gantt-drag-row {
   width: 100%;
   min-width: 0;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact {
+html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] {
   --gantt-day-header-row-h: 2.66rem;
   --gantt-head-cell-py: 0.42rem;
   --gantt-row-h: 28px;
@@ -1035,11 +1045,11 @@ html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact {
   --gantt-unassigned-row-h: 24px;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact .gantt-day-header-cell__body {
+html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] .gantt-day-header-cell__body {
   font-size: 0.62rem;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-shell--density-compact .gantt-stay-chrome__label {
+html:not([data-layout-chrome="compact"]) .gantt-shell[data-gantt-coverage="30"] .gantt-stay-chrome__label {
   font-size: 0.62rem;
 }
 

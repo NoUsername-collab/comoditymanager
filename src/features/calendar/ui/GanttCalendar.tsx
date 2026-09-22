@@ -8,12 +8,16 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type CSSProperties,
 } from "react";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
-import { GANTT_ROW_H, GANTT_ROW_H_COMPACT } from "@/domain/gantt/layout";
+import {
+  ganttRowMetricsStyle,
+  resolveGanttRowMetrics,
+} from "@/domain/gantt/layout";
 import { useIsTouchDevice } from "@/hooks/useDeviceClass";
-import { useGanttDensity } from "@/hooks/useGanttDensity";
+import { useGanttBodyHeight, useGanttCoverage } from "@/hooks/useGanttCoverage";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import type { BookingRow } from "@/services/bookings/types";
 import { type GanttLayerFilter } from "@/domain/gantt/occupancy-layer";
@@ -169,30 +173,28 @@ export function GanttCalendar({
     ? tCommon("scrollDragTouch")
     : tCommon("scrollDrag");
   const { compactChrome, orientation, isPortrait } = useCompactLayoutHints();
-  const { density, toggleDensity } = useGanttDensity();
-  const compact = density === "compact";
+  const { coverage, setCoverage } = useGanttCoverage();
+  const compact = coverage === 30;
   const shellZoom = resolveGanttShellZoom(viewRange.zoom);
   const showZoneRibbon = shellZoom === "7z" || shellZoom === "15z";
-  const ganttRowHeight = density === "compact" ? GANTT_ROW_H_COMPACT : GANTT_ROW_H;
   const summaryFilterActive = filter !== "all";
   const columnMetrics = useMemo(
     () =>
       resolveGanttColumnMetrics(
-        compactChrome || density === "compact",
+        compactChrome,
         orientation === "landscape" ? "landscape" : "portrait"
       ),
-    [compactChrome, density, orientation]
+    [compactChrome, orientation]
   );
   const dayGridOptions = useMemo(
     () =>
       resolveGanttDayGridOptions(
         compactChrome,
-        density,
         isPortrait,
         columnMetrics.dayMin,
         viewRange.days.length
       ),
-    [compactChrome, density, isPortrait, columnMetrics.dayMin, viewRange.days.length]
+    [compactChrome, isPortrait, columnMetrics.dayMin, viewRange.days.length]
   );
   const tableLayout = useMemo(
     () => resolveGanttTableLayout(viewRange.days.length, columnMetrics),
@@ -254,6 +256,12 @@ export function GanttCalendar({
   const scrollRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
+  const bodyHeight = useGanttBodyHeight(theadRef);
+  const rowMetrics = useMemo(
+    () => resolveGanttRowMetrics(coverage, compactChrome ? null : bodyHeight),
+    [coverage, compactChrome, bodyHeight],
+  );
+  const ganttRowHeight = rowMetrics.rowH;
   const scrolledPeriodRef = useRef<string | null>(null);
   const suppressHeaderClickUntilRef = useRef(0);
   const panStateRef = useRef<{
@@ -614,11 +622,10 @@ export function GanttCalendar({
     >
       <div
         ref={shellRef}
-        className={[
-          "gantt-shell gantt-shell--premium relative min-w-full overflow-visible",
-          `gantt-shell--density-${density}`,
-        ].join(" ")}
+        className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
         data-gantt-zoom={shellZoom}
+        data-gantt-coverage={coverage}
+        style={ganttRowMetricsStyle(rowMetrics) as CSSProperties}
       >
         <GanttCompactToolbar
           onOpenRequest={() => setOccFormMode("request")}
@@ -655,8 +662,9 @@ export function GanttCalendar({
           isFiltersOpen={isFiltersOpen}
           hasActiveFilters={hasActiveFilters}
           onToggleFilters={handleToggleFilters}
-          density={density}
-          onDensityToggle={toggleDensity}
+          coverage={coverage}
+          onCoverageChange={setCoverage}
+          showCoverage={!compactChrome}
         />
 
         {showZoneRibbon && (
