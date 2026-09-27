@@ -1,6 +1,6 @@
 import { Suspense } from "react";
+import { Link } from "@/i18n/navigation";
 import { GuestAppSettingsForm } from "@/features/settings/ui/GuestAppSettingsForm";
-import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { loadGuestAppSettingsPage } from "@/features/settings/loaders";
 import { getTranslations } from "next-intl/server";
 import {
@@ -8,6 +8,8 @@ import {
   canEditPensionSettingsUi,
   guardSettingsPermission,
 } from "@/lib/settings/page-context";
+import "@/styles/features/admin/admin-public-site-studio.css";
+import "@/styles/features/admin/admin-guest-app-preview.css";
 
 export default async function GuestAppSettingsPage({
   searchParams,
@@ -22,11 +24,14 @@ export default async function GuestAppSettingsPage({
       loadGuestAppSettingsPage(),
     ]);
 
-  if (!tenant) {
+  if (!tenant || !settings) {
     return (
-      <SettingsPageLayout title={t("title")}>
+      <div className="pub-site-studio-fallback">
+        <Link href="/admin/settings" className="pub-site-studio__back-settings">
+          ← {t("studioBackSettings")}
+        </Link>
         <p className="settings-empty settings-empty--error">{t("loadError")}</p>
-      </SettingsPageLayout>
+      </div>
     );
   }
 
@@ -35,24 +40,15 @@ export default async function GuestAppSettingsPage({
   if (readOnly) alerts.push({ tone: "info", message: t("readOnly") });
 
   return (
-    <SettingsPageLayout
-      alerts={alerts}
-      title={t("title")}
-      description={t("description")}
-    >
-      {!settings ? (
-        <p className="settings-empty settings-empty--error">{t("loadError")}</p>
-      ) : (
-        <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
-          <GuestAppSettingsForm
-            settings={settings}
-            displayName={displayName}
-            publicThemeId={publicThemeId}
-            logoUrl={logoUrl}
-            readOnly={readOnly}
-          />
-        </Suspense>
-      )}
-    </SettingsPageLayout>
+    <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
+      <GuestAppSettingsForm
+        settings={settings}
+        displayName={displayName}
+        publicThemeId={publicThemeId}
+        logoUrl={logoUrl}
+        readOnly={readOnly}
+        alerts={alerts}
+      />
+    </Suspense>
   );
 }

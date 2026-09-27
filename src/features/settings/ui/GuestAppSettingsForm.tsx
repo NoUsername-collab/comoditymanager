@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { DESIGN_THEME_IDS } from "@/design/themes/catalog";
@@ -14,16 +14,20 @@ import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
 import { saveGuestAppSettingsAction } from "@/features/settings/actions/guest-app";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
-import { SettingsPreviewLayout } from "@/components/admin/settings/SettingsPreviewLayout";
-import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
+import {
+  SettingsAlerts,
+  type SettingsAlert,
+} from "@/components/admin/settings/SettingsAlerts";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
 import { GuestAppSettingsPreview } from "@/features/settings/ui/GuestAppSettingsPreview";
+import { GuestAppStudio } from "@/features/settings/ui/GuestAppStudio";
 import {
   buildGuestAppStudioDraft,
   studioDraftToGuestAppSettings,
   type GuestAppStudioDraft,
 } from "@/features/settings/ui/guest-app-preview-model";
+import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 
 function FormSection({
   title,
@@ -47,16 +51,19 @@ export function GuestAppSettingsForm({
   publicThemeId,
   logoUrl,
   readOnly = false,
+  alerts = [],
 }: {
   settings: GuestAppSettings;
   displayName: string;
   publicThemeId: string;
   logoUrl: string;
   readOnly?: boolean;
+  alerts?: SettingsAlert[];
 }) {
   const t = useTranslations("admin.pages.guestApp");
   const tCommon = useTranslations("admin.common");
   const tThemes = useTranslations("admin.pages.publicSite.themes");
+  const tSettings = useTranslations("admin.pages.settings");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -73,6 +80,9 @@ export function GuestAppSettingsForm({
       },
     };
   }, [draft, logoUrl]);
+  const initialSnapshot = useRef(JSON.stringify(studioDraftToGuestAppSettings(draft)));
+  const dirty = JSON.stringify(studioDraftToGuestAppSettings(draft)) !== initialSnapshot.current;
+  useSettingsUnsavedWarning(dirty && !pending && !readOnly);
 
   function patchDraft(partial: Partial<GuestAppStudioDraft>) {
     setDraft((d) => ({ ...d, ...partial }));
@@ -97,9 +107,9 @@ export function GuestAppSettingsForm({
   }
 
   return (
-    <div className="guest-app-settings">
-    <SettingsPreviewLayout
-      previewLabel={t("previewTitle")}
+    <GuestAppStudio
+      enabled={draft.enabled}
+      dirty={dirty}
       preview={
         <GuestAppSettingsPreview
           settings={previewSettings}
@@ -107,8 +117,38 @@ export function GuestAppSettingsForm({
           publicThemeId={publicThemeId}
         />
       }
+      saveControl={
+        readOnly ? null : (
+          <AdminSubmitButton
+            form="guest-app-studio-form"
+            type="submit"
+            variant="primary"
+            size="sm"
+            disabled={pending}
+          >
+            {pending ? tCommon("saving") : t("save")}
+          </AdminSubmitButton>
+        )
+      }
+      banner={
+        <>
+          <SettingsAlerts alerts={alerts} />
+          {!readOnly && dirty ? (
+            <p className="settings-unsaved-banner pub-site-studio__unsaved" role="status">
+              {tSettings("unsavedChanges")}
+            </p>
+          ) : null}
+          {error ? (
+            <div className="settings-alerts">
+              <p className="settings-alerts__item settings-alerts__item--error" role="alert">
+                {error}
+              </p>
+            </div>
+          ) : null}
+        </>
+      }
       form={
-    <form onSubmit={handleSubmit} className="settings-form-stack">
+    <form id="guest-app-studio-form" onSubmit={handleSubmit} className="settings-form-stack">
       <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
         {error ? (
           <div className="settings-alerts">
@@ -351,17 +391,8 @@ export function GuestAppSettingsForm({
           </div>
         </FormSection>
       </fieldset>
-
-      {!readOnly ? (
-        <SettingsSaveBar status={pending ? "saving" : "idle"}>
-          <AdminSubmitButton type="submit" variant="primary" size="lg" disabled={pending}>
-            {pending ? tCommon("saving") : t("save")}
-          </AdminSubmitButton>
-        </SettingsSaveBar>
-      ) : null}
     </form>
       }
     />
-    </div>
   );
 }

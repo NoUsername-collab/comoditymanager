@@ -1,53 +1,35 @@
-/* Phone frame for guest-app settings — live draft preview */
+/* Guest-app settings studio — live, tappable phone on the public-site studio canvas */
 
-.guest-app-settings .settings-preview-layout {
-  min-width: 0;
+.guest-app-studio .pub-site-studio__frame {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--admin-page-bg, #111) 88%, #000);
 }
 
-@media (max-width: 959px) {
-  .guest-app-settings .settings-preview-layout {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .guest-app-settings .settings-preview-layout__aside {
-    order: -1;
-  }
-}
-
-@media (min-width: 960px) {
-  .guest-app-settings .settings-preview-layout__aside {
-    min-height: 0;
-  }
+.guest-app-studio .pub-site-studio__frame a,
+.guest-app-studio .pub-site-studio__frame button {
+  pointer-events: auto;
 }
 
 .guest-app-preview {
-  min-width: 0;
+  width: min(100%, 390px);
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  flex: 1;
-}
-
-.guest-app-preview__hint {
-  margin: 0 0 0.65rem;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: var(--admin-text-muted, #71717a);
 }
 
 .guest-app-preview__phone {
   position: relative;
   isolation: isolate;
-  width: min(100%, 22rem);
-  margin-inline: auto;
   flex: 1;
-  min-height: 24rem;
-  border-radius: 1.75rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: var(--admin-panel-bg, #fff);
+  min-height: 0;
+  border-radius: 1.6rem;
   overflow: hidden;
-  box-shadow: 0 18px 40px color-mix(in srgb, #000 12%, transparent);
+  border: 1px solid color-mix(in srgb, #fff 12%, transparent);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
 
 .guest-app-preview__app {
@@ -55,16 +37,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 24rem;
-  max-height: min(42rem, calc(100vh - 10.5rem));
+  min-height: 0;
   overflow: hidden;
-}
-
-@media (max-width: 959px) {
-  .guest-app-preview__app {
-    min-height: 24rem;
-    height: 28rem;
-  }
 }
 
 .guest-app-preview__header {
@@ -88,18 +62,6 @@
   gap: 1.15rem;
 }
 
-.guest-app-preview__kv {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin: 0.35rem 0 0;
-  font-size: 0.8125rem;
-}
-
-.guest-app-preview__kv span {
-  color: var(--guest-muted);
-}
-
 .guest-app-preview .guest-app__bottom-nav {
   position: absolute;
   left: 0;
@@ -107,26 +69,55 @@
   bottom: 0;
 }
 
-.guest-app-preview__off {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem;
-  background: color-mix(in srgb, var(--guest-bg, #111) 72%, transparent);
-  backdrop-filter: blur(6px);
-  text-align: center;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--guest-fg, #f8fafc);
-}
-
 .guest-app-preview .guest-app__feature-link {
-  pointer-events: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 }
 
 .guest-app-preview .guest-app__bottom-nav__link {
-  pointer-events: none;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.guest-app-preview .guest-app__wifi-quick__more {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.guest-app-preview .guest-app__primary-cta {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  width: 100%;
+}
+
+.guest-app-preview .guest-app__header-back {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.guest-app-preview .guest-app__toast {
+  position: absolute;
+  max-width: calc(100% - 2rem);
+}
+
+@media (max-width: 1099px) {
+  .guest-app-preview__phone {
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .guest-app-preview {
+    width: 100%;
+  }
 }

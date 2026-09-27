@@ -8,7 +8,7 @@ import { loadSettingsStaffContext } from "@/lib/settings/page-context";
 import { AdminPageFrame } from "@/components/admin/shell/AdminPageFrame";
 import { SettingsShellWithSetupIssues } from "@/components/admin/settings/SettingsShellWithSetupIssues";
 import { getRequestAdminPath } from "@/lib/auth/admin-path";
-import { isPublicSiteStudioPath } from "@/domain/settings/public-site-studio-path";
+import { isSettingsStudioPath } from "@/domain/settings/public-site-studio-path";
 
 export default async function SettingsLayout({
   children,
@@ -16,7 +16,7 @@ export default async function SettingsLayout({
   children: React.ReactNode;
 }) {
   const adminPath = await getRequestAdminPath();
-  if (isPublicSiteStudioPath(adminPath)) {
+  if (isSettingsStudioPath(adminPath)) {
     return children;
   }
 

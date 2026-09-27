@@ -1,15 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { isPublicSiteStudioPath } from "@/domain/settings/public-site-studio-path";
+import {
+  isPublicSiteStudioPath,
+  isSettingsStudioPath,
+} from "@/domain/settings/public-site-studio-path";
 
-describe("isPublicSiteStudioPath", () => {
-  it("matches the studio route with or without a query string", () => {
-    expect(isPublicSiteStudioPath("/admin/settings/public-site")).toBe(true);
+describe("settings studio paths", () => {
+  it("matches public-site and guest-app studio routes", () => {
+    expect(isSettingsStudioPath("/admin/settings/public-site")).toBe(true);
+    expect(isSettingsStudioPath("/admin/settings/guest-app?saved=1")).toBe(true);
     expect(isPublicSiteStudioPath("/admin/settings/public-site?saved=1")).toBe(true);
+    expect(isPublicSiteStudioPath("/admin/settings/guest-app")).toBe(false);
   });
 
   it("does not match other settings pages", () => {
-    expect(isPublicSiteStudioPath("/admin/settings")).toBe(false);
-    expect(isPublicSiteStudioPath("/admin/settings/email")).toBe(false);
-    expect(isPublicSiteStudioPath(null)).toBe(false);
+    expect(isSettingsStudioPath("/admin/settings")).toBe(false);
+    expect(isSettingsStudioPath("/admin/settings/email")).toBe(false);
+    expect(isSettingsStudioPath(null)).toBe(false);
   });
 });
