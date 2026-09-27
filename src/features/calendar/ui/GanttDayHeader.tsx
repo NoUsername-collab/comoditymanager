@@ -114,7 +114,11 @@ export const GanttDayHeader = memo(function GanttDayHeader({
                 : formatWeekdayShort(col.iso, locale)}
             </span>
             {columnGranularity !== "week" ? (
-              <span className="gantt-day-zone-preview" aria-hidden>
+              <span
+                className="gantt-day-zone-preview"
+                aria-hidden
+                title={`${checkOutTime} → ${checkInTime}`}
+              >
                 <span className="gantt-day-zone-preview__out" />
                 <span className="gantt-day-zone-preview__clean" />
                 <span className="gantt-day-zone-preview__in" />

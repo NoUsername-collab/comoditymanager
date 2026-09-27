@@ -20,6 +20,11 @@ describe("gantt premium grid CSS", () => {
   it("mixes weekend paper from text ink, not pale border-strong", () => {
     expect(css).toMatch(/--gantt-weekend-ink:\s*var\(--text-muted/);
     expect(css).toMatch(/--gantt-weekend-paper:/);
+    expect(css).toMatch(/88%/);
     expect(css).not.toMatch(/--gantt-weekend-paper:[^;]*--border-strong/);
+  });
+
+  it("draws hour ticks as dashed bars, not solid column walls", () => {
+    expect(css).toMatch(/repeating-linear-gradient\(\s*to bottom/);
   });
 });

@@ -91,8 +91,8 @@
 
 .gantt-summary-cell--weekend {
   background-image: linear-gradient(
-    color-mix(in srgb, var(--text-muted, #5a6080) 22%, transparent),
-    color-mix(in srgb, var(--text-muted, #5a6080) 22%, transparent)
+    color-mix(in srgb, var(--text-muted, #5a6080) 12%, transparent),
+    color-mix(in srgb, var(--text-muted, #5a6080) 12%, transparent)
   );
 }
 
@@ -108,7 +108,7 @@
 .gantt-summary-cell--past.gantt-summary-cell--weekend {
   background-color: color-mix(
     in srgb,
-    color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean, var(--surface))) 72%,
+    color-mix(in srgb, var(--past-bg, #e8eaf0) 55%, var(--gantt-zone-clean, var(--surface))) 86%,
     var(--text-muted, #5a6080)
   );
 }

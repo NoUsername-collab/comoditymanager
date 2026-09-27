@@ -1,26 +1,29 @@
-/* Gantt day grid: paper + chromatic ticks. box-shadow offsets cannot take % —
-   ticks must use `left: var(--gantt-check-*-pct)` on absolutely positioned bars. */
+/* Gantt day grid: paper + time grammar.
+   box-shadow offsets cannot take % — ticks use left: var(--gantt-check-*-pct).
+   Dashed ticks = hour. Solid edge = day. Weekend is a veil, not a wall. */
 
 .gantt-shell,
 .gantt-day-header-grid {
-  --gantt-tick-out: var(--pending-border, #f59e0b);
-  --gantt-tick-in: var(--today-line, #4f7ef8);
+  --gantt-tick-out: var(--pending-border, #d97706);
+  --gantt-tick-in: var(--today-line, #2563eb);
   --gantt-wash-out: color-mix(
     in srgb,
-    var(--pending-bg, #fef3c7) 72%,
+    var(--pending-bg, #fef3c7) 38%,
     var(--gantt-zone-clean, #fff)
   );
   --gantt-wash-in: color-mix(
     in srgb,
-    var(--hold-bg, #f0f9ff) 70%,
-    var(--today-line, #4f7ef8)
+    var(--hold-bg, #f0f9ff) 62%,
+    var(--gantt-zone-clean, #fff)
   );
   --gantt-weekend-ink: var(--text-muted, #5a6080);
   --gantt-weekend-paper: color-mix(
     in srgb,
-    var(--gantt-zone-clean, #fff) 76%,
+    var(--gantt-zone-clean, #fff) 88%,
     var(--gantt-weekend-ink)
   );
+  --gantt-weekend-rail: color-mix(in srgb, var(--gantt-weekend-ink) 32%, transparent);
+  --gantt-tick-halo: color-mix(in srgb, var(--gantt-zone-clean, #fff) 72%, transparent);
 }
 
 .gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell {
@@ -28,7 +31,7 @@
   background-image: none;
   background-color: var(--gantt-zone-clean);
   box-shadow: none;
-  border-right: 1px solid color-mix(in srgb, var(--border, #d4d4d8) 28%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--border, #d4d4d8) 18%, transparent);
 }
 
 .gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell::before,
@@ -41,25 +44,25 @@
   margin-left: -1px;
   pointer-events: none;
   z-index: 2;
+  box-shadow: 0 0 0 1px var(--gantt-tick-halo);
 }
 
 .gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell::before {
   left: var(--gantt-check-out-pct, 45.83%);
-  background: var(--gantt-tick-out);
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--gantt-tick-out) 0 3px,
+    transparent 3px 7px
+  );
 }
 
 .gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell::after {
   left: var(--gantt-check-in-pct, 58.33%);
-  background: var(--gantt-tick-in);
-}
-
-.gantt-shell[data-gantt-zoom="7z"]
-  .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell::before,
-.gantt-shell[data-gantt-zoom="7z"]
-  .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell::after {
-  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--gantt-tick-in) 0 3px,
+    transparent 3px 7px
+  );
 }
 
 .gantt-shell[data-gantt-zoom="quarter"]
@@ -73,18 +76,7 @@
 
 .gantt-shell
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell--today:not(.gantt-day-cell--past) {
-  background-image: linear-gradient(
-    90deg,
-    var(--gantt-wash-out) 0,
-    var(--gantt-wash-out) var(--gantt-check-out-pct, 45.83%),
-    var(--gantt-zone-clean) var(--gantt-check-out-pct, 45.83%),
-    var(--gantt-zone-clean) var(--gantt-check-in-pct, 58.33%),
-    var(--gantt-wash-in) var(--gantt-check-in-pct, 58.33%),
-    var(--gantt-wash-in) 100%
-  );
-}
-
+  .gantt-day-cell--today:not(.gantt-day-cell--past),
 .gantt-shell
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
   .gantt-day-cell--turnover:not(.gantt-day-cell--past) {
@@ -101,13 +93,24 @@
 
 .gantt-shell
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell--weekend {
+  .gantt-day-cell--weekend:not(.gantt-day-cell--today) {
   background-color: var(--gantt-weekend-paper);
+}
+
+.gantt-shell
+  .gantt-day-grid--timed:not(.gantt-day-header-grid)
+  .gantt-day-cell--weekend:not(.gantt-day-cell--today):not(.gantt-day-cell--turnover) {
+  background-image: linear-gradient(
+    var(--gantt-weekend-rail),
+    var(--gantt-weekend-rail) 3px,
+    transparent 3px
+  );
 }
 
 .gantt-shell .gantt-day-header-grid .gantt-day-header-cell--weekend:not(.gantt-day-header-cell--today),
 .gantt-day-header-grid .gantt-day-header-cell--weekend:not(.gantt-day-header-cell--today) {
   background: var(--gantt-weekend-paper);
+  box-shadow: inset 0 3px 0 0 var(--gantt-weekend-rail);
 }
 
 .gantt-shell
@@ -123,7 +126,7 @@
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
   .gantt-day-cell--past {
   background-image: none;
-  background-color: color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean));
+  background-color: color-mix(in srgb, var(--past-bg, #e8eaf0) 55%, var(--gantt-zone-clean));
 }
 
 .gantt-shell
@@ -131,26 +134,28 @@
   .gantt-day-cell--past.gantt-day-cell--weekend {
   background-color: color-mix(
     in srgb,
-    color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean)) 72%,
+    color-mix(in srgb, var(--past-bg, #e8eaf0) 55%, var(--gantt-zone-clean)) 86%,
     var(--gantt-weekend-ink)
+  );
+  background-image: linear-gradient(
+    var(--gantt-weekend-rail),
+    var(--gantt-weekend-rail) 3px,
+    transparent 3px
   );
 }
 
 .gantt-shell
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell--past::before {
-  background: color-mix(in srgb, var(--gantt-tick-out) 45%, transparent);
-}
-
+  .gantt-day-cell--past::before,
 .gantt-shell
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
   .gantt-day-cell--past::after {
-  background: color-mix(in srgb, var(--gantt-tick-in) 45%, transparent);
+  opacity: 0.42;
 }
 
 .gantt-shell .gantt-day-header-grid .gantt-day-header-cell--today,
 .gantt-day-header-grid .gantt-day-header-cell--today {
-  background: color-mix(in srgb, var(--accent-muted, #e4eaff) 46%, var(--surface));
+  background: color-mix(in srgb, var(--accent-muted, #e4eaff) 28%, var(--surface));
   box-shadow: inset 3px 0 0 0 var(--admin-gantt-today-line, #4f7ef8);
 }
 
@@ -158,7 +163,7 @@
 .gantt-day-header-grid .gantt-day-header-cell--past.gantt-day-header-cell--weekend {
   background: color-mix(
     in srgb,
-    var(--past-bg, #e8eaf0) 72%,
+    var(--past-bg, #e8eaf0) 62%,
     var(--gantt-weekend-ink)
   );
   color: var(--past-text, #7a809a);
@@ -168,10 +173,11 @@
   display: grid;
   width: 100%;
   max-width: none;
-  height: 5px;
-  margin-top: 0.22rem;
-  border-radius: 2px;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--border, #dde2f0) 55%, transparent);
+  height: 8px;
+  margin-top: 0.28rem;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--border, #dde2f0) 70%, transparent);
 }
 
 .gantt-day-header-grid .gantt-day-zone-preview__out {
@@ -183,12 +189,16 @@
 }
 
 .gantt-day-header-grid .gantt-day-zone-preview__in {
-  background: var(--hold-bg, #f0f9ff);
+  background: color-mix(in srgb, var(--today-line, #4f7ef8) 26%, #fff);
+}
+
+.gantt-day-header-grid[data-gantt-zoom="15z"] .gantt-day-zone-preview {
+  height: 7px;
 }
 
 .gantt-day-header-grid[data-gantt-zoom="30z"] .gantt-day-zone-preview {
-  height: 4px;
-  margin-top: 0.14rem;
+  height: 6px;
+  margin-top: 0.16rem;
 }
 
 .gantt-day-header-grid[data-gantt-zoom="quarter"] .gantt-day-zone-preview,
@@ -210,17 +220,6 @@ html[data-layout-chrome="compact"] .gantt-day-header-grid .gantt-day-zone-previe
   .gantt-day-grid--timed:not(.gantt-day-header-grid)
   .gantt-day-cell--turnover:not(.gantt-day-cell--past) {
   background-image: none;
-}
-
-html[data-layout-chrome="compact"]
-  .gantt-shell
-  .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell::before,
-html[data-layout-chrome="compact"]
-  .gantt-shell
-  .gantt-day-grid--timed:not(.gantt-day-header-grid)
-  .gantt-day-cell::after {
-  width: 2px;
 }
 
 html[data-layout-chrome="compact"]

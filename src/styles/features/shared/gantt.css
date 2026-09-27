@@ -383,7 +383,7 @@
 .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell--weekend {
   background-color: color-mix(
     in srgb,
-    var(--gantt-zone-clean) 76%,
+    var(--gantt-zone-clean) 88%,
     var(--text-muted, #5a6080)
   );
 }
@@ -416,7 +416,7 @@
 .gantt-day-header-grid .gantt-day-header-cell--weekend:not(.gantt-day-header-cell--today) {
   background: color-mix(
     in srgb,
-    var(--gantt-zone-clean, var(--surface)) 76%,
+    var(--gantt-zone-clean, var(--surface)) 88%,
     var(--text-muted, #5a6080)
   );
 }
@@ -454,7 +454,7 @@
 .gantt-day-header-cell__body {
   min-height: var(--gantt-day-header-row-h, 3.55rem);
   gap: 0.06rem;
-  padding: 0.28rem 0.22rem 0.4rem;
+  padding: 0.28rem 0.22rem 0.45rem;
 }
 
 .gantt-day-header-cell--compact.gantt-day-header-cell__body {
