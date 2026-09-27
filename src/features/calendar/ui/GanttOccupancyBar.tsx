@@ -1,5 +1,6 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import type { CSSProperties } from "react";
 import { useGanttContextMenu } from "@/features/calendar/ui/GanttContextMenuContext";
 import { useGanttMenuTrigger } from "@/features/calendar/ui/useGanttMenuTrigger";
@@ -29,6 +30,8 @@ export function GanttOccupancyBar({
 }: Props) {
   const { openMenu } = useGanttContextMenu();
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
+  const tGantt = useTranslations("admin.gantt");
+  const locale = useLocale();
 
   const className = [
     "gantt-booking-card gantt-occ-bar gantt-occ-bar--chip pointer-events-auto absolute z-[2] box-border flex min-w-0 max-w-full cursor-pointer items-stretch overflow-hidden text-[9px] font-bold leading-none",
@@ -49,7 +52,7 @@ export function GanttOccupancyBar({
   } as CSSProperties;
 
   const fullTitle = expiresAt
-    ? `${title} · expiră ${new Date(expiresAt).toLocaleString("ro-RO")}`
+    ? `${title} · ${tGantt("occupancy.expires")} ${new Date(expiresAt).toLocaleString(locale)}`
     : title;
 
   function openContextMenu(clientX: number, clientY: number) {

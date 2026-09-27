@@ -3832,6 +3832,8 @@
         "milestoneDone": "Gata: plată, ID, toate camerele",
         "milestonePending": "Lipsă: plată, ID sau camere",
         "departureToday": "Plecare azi",
+        "arrivalToday": "Sosire azi",
+        "guestCount": "{count, plural, one {# persoană} other {# persoane}}",
         "earlyDepartureRecorded": "Plecare devreme înregistrată",
         "earlyDepartureRecordedFee": "Plecare devreme — taxă orientativă {fee} RON",
         "earlyDepartureRecordedBlocked": "Plecare devreme — în afara politicii pensiunii",
@@ -4001,7 +4003,7 @@
       "footer": {
         "dragHint": "Trage ±1 zi · click/dublu-click pe bară",
         "buildingFocusHint": "focus clădire din chips",
-        "mobileStayHint": "Tap pe card = detalii · ține apăsat = meniu · ↓↑ $ ! = sosire/plecare/plată/ID",
+        "mobileStayHint": "Tap pe card = detalii · ține apăsat = meniu · glisează datele pentru panoramare",
         "dayDepartureUntil": "Zi — plecare (până {time})",
         "cleaning": "Curățenie",
         "nightArrivalFrom": "Noapte — sosire (de la {time})",

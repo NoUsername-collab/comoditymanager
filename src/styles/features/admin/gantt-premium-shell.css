@@ -101,9 +101,11 @@
   overflow: hidden;
 }
 
-.gantt-day-header-grid--pan {
+.gantt-day-header-grid--pan,
+.gantt-summary-row__grid--pan {
   cursor: grab;
   user-select: none;
+  touch-action: pan-y;
 }
 
 .gantt-day-header-grid--pan.gantt-day-header-grid--panning,
@@ -122,6 +124,7 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 .gantt-summary-row__grid--pan {
   cursor: grab;
   user-select: none;
+  touch-action: pan-y;
 }
 
 .gantt-shell--premium {
@@ -647,6 +650,30 @@ body.gantt-pan-active .gantt-day-header-grid--pan {
 .gantt-today-panel--compact .gantt-today-chip {
   padding: 0.12rem 0.42rem;
   font-size: 0.58rem;
+}
+
+.gantt-footer-legend__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.gantt-footer-legend__lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.gantt-footer-legend__peek {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  pointer-events: none;
+}
+
+.gantt-footer-legend--collapsible[open] .gantt-footer-legend__peek {
+  display: none;
 }
 
 .gantt-inline-controls__period-nav .gantt-today-panel--compact {

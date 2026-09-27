@@ -90,7 +90,11 @@
 }
 
 .gantt-summary-cell--weekend {
-  opacity: 0.96;
+  background-color: color-mix(
+    in srgb,
+    var(--gantt-zone-clean, var(--surface)) 86%,
+    var(--border-strong, #64748b)
+  );
 }
 
 .gantt-summary-cell--today {

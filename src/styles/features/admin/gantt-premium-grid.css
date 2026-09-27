@@ -81,10 +81,18 @@
   .gantt-day-cell--weekend {
   background-color: color-mix(
     in srgb,
-    var(--gantt-zone-clean) 96%,
+    var(--gantt-zone-clean) 86%,
     var(--border-strong, #64748b)
   );
   box-shadow: none;
+}
+
+.gantt-shell .gantt-day-header-grid .gantt-day-header-cell--weekend:not(.gantt-day-header-cell--today) {
+  background: color-mix(
+    in srgb,
+    var(--gantt-zone-clean, var(--surface)) 86%,
+    var(--border-strong, #64748b)
+  );
 }
 
 .gantt-shell

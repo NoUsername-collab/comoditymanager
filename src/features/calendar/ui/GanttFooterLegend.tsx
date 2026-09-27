@@ -104,7 +104,15 @@ export function GanttFooterLegend({
   return (
     <details className="gantt-footer-legend gantt-footer-legend--collapsible border-t border-zinc-100 bg-[var(--admin-surface-bg,var(--surface))] px-3 py-2 text-[11px] text-zinc-600">
       <summary className="gantt-footer-legend__toggle list-none text-xs font-medium text-zinc-700">
-        {tGantt("legend")}
+        <span className="gantt-footer-legend__lead">
+          <span>{tGantt("legend")}</span>
+          <span className="gantt-footer-legend__peek" aria-hidden>
+            <span className="gantt-legend-swatch gantt-legend-swatch--checkout" />
+            <span className="gantt-legend-swatch gantt-legend-swatch--clean" />
+            <span className="gantt-legend-swatch gantt-legend-swatch--checkin" />
+            <span className="gantt-legend-today-line" />
+          </span>
+        </span>
       </summary>
       <div className="gantt-footer-legend__body pt-2">
         <LegendBody checkInTime={checkInTime} checkOutTime={checkOutTime} />

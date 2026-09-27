@@ -737,6 +737,18 @@ html[data-theme="default-night"] .gantt-stay--chip .gantt-stay__end-tab-bulb {
   padding-inline: 0.2rem !important;
 }
 
+.gantt-stay--chip.gantt-stay--dense .gantt-stay__end-tab-bulb {
+  display: none;
+}
+
+.gantt-stay--chip.gantt-stay--dense .gantt-stay__stamp {
+  display: none;
+}
+
+.gantt-stay--chip.gantt-stay--dense .gantt-stay__cap-strip {
+  gap: 0.06rem;
+}
+
 html[data-theme="default"] .gantt-stay--chip .gantt-stay__phase-badge {
   display: inline-flex !important;
 }

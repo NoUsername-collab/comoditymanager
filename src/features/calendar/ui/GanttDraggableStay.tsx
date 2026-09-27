@@ -95,6 +95,7 @@ type Props = {
   today?: string;
   checkOutTime?: string;
   departurePolicy?: GanttDeparturePolicy;
+  coverageDense?: boolean;
 };
 
 export const GanttDraggableStay = memo(function GanttDraggableStay({
@@ -128,6 +129,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
   today,
   checkOutTime = DEFAULT_CHECK_OUT_TIME,
   departurePolicy,
+  coverageDense = false,
 }: Props) {
   const locale = useLocale();
   const tGantt = useTranslations("admin.gantt");
@@ -581,6 +583,7 @@ export const GanttDraggableStay = memo(function GanttDraggableStay({
           interactive
           occupancyPhase={occupancyPhase}
           compact={compact}
+          dense={coverageDense || compact}
           timeline={stayTimeline}
           showUnpaid={showUnpaid}
           showMissingIdentity={showMissingIdentity}

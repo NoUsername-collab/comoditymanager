@@ -3848,6 +3848,8 @@
         "milestoneDone": "Done: payment, ID, all rooms",
         "milestonePending": "Missing: payment, ID or rooms",
         "departureToday": "Departure today",
+        "arrivalToday": "Arrival today",
+        "guestCount": "{count, plural, one {# guest} other {# guests}}",
         "earlyDepartureRecorded": "Early departure recorded",
         "earlyDepartureRecordedFee": "Early departure — indicative fee {fee} RON",
         "earlyDepartureRecordedBlocked": "Early departure — outside property policy",
@@ -4017,7 +4019,7 @@
       "footer": {
         "dragHint": "Drag ±1 day · click/double-click bar",
         "buildingFocusHint": "building focus from chips",
-        "mobileStayHint": "Tap card = details · hold = menu · ↓↑ $ ! = arrival/departure/payment/ID",
+        "mobileStayHint": "Tap card = details · hold = menu · swipe dates to pan",
         "dayDepartureUntil": "Day — departure (until {time})",
         "cleaning": "Cleaning",
         "nightArrivalFrom": "Night — arrival (from {time})",

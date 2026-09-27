@@ -5,6 +5,7 @@ import {
   isGanttStayMilestoneReached,
   isGanttStayUnpaid,
   resolveGanttStayCapHealth,
+  resolveGanttStayDeskMarks,
   resolveGanttStayTimeline,
   shouldShowGanttPopoverNights,
   shouldShowGanttPopoverRoomKeys,
@@ -218,5 +219,36 @@ describe("stay-card-display", () => {
     expect(timeline).not.toBeNull();
     expect(shouldShowGanttPopoverRoomKeys(timeline!, true)).toBe(true);
     expect(shouldShowGanttPopoverNights(timeline!)).toBe(true);
+  });
+
+  it("keeps one desk mark at dense coverage", () => {
+    expect(
+      resolveGanttStayDeskMarks({
+        dense: true,
+        showUnpaid: true,
+        showMissingIdentity: true,
+        todayHighlight: "arrival",
+        earlyDeparture: false,
+        inHouse: true,
+        guestTotal: 3,
+      }),
+    ).toEqual({
+      primary: "unpaid",
+      marks: ["unpaid"],
+    });
+  });
+
+  it("shows the full desk language at comfortable coverage", () => {
+    expect(
+      resolveGanttStayDeskMarks({
+        dense: false,
+        showUnpaid: false,
+        showMissingIdentity: false,
+        todayHighlight: "departure",
+        earlyDeparture: false,
+        inHouse: true,
+        guestTotal: 2,
+      }).marks,
+    ).toEqual(["departure", "in_house", "party"]);
   });
 });

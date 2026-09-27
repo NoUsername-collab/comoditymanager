@@ -5,9 +5,11 @@ import { useTranslations } from "next-intl";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { memo, type CSSProperties } from "react";
 import type { GanttBarPosition } from "@/domain/gantt/bar-position";
-import type {
-  GanttStayCapHealth,
-  GanttStayTimeline as GanttStayTimelineModel,
+import {
+  resolveGanttStayDeskMarks,
+  type GanttStayCapHealth,
+  type GanttStayDeskMark,
+  type GanttStayTimeline as GanttStayTimelineModel,
 } from "@/domain/gantt/stay-card-display";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import { ganttStaySlantRadius } from "@/lib/gantt-stay-shape";
@@ -27,6 +29,8 @@ type Props = {
   extraClass?: string;
   occupancyPhase?: OccupancyPhase;
   compact?: boolean;
+  /** 30-room coverage: one desk mark, name-first. */
+  dense?: boolean;
   timeline?: GanttStayTimelineModel | null;
   showUnpaid?: boolean;
   showMissingIdentity?: boolean;
@@ -77,23 +81,28 @@ function semanticStayVars(
             "color-mix(in srgb, var(--booking-active-border) 35%, transparent)",
         };
 
+  const fill =
+    building && !isPast && !isRequest
+      ? `color-mix(in srgb, ${building} 18%, ${tone.fill})`
+      : tone.fill;
+
   const borderColor =
     building && !isPast
-      ? `color-mix(in srgb, ${building} 10%, ${tone.border})`
+      ? `color-mix(in srgb, ${building} 36%, ${tone.border})`
       : tone.border;
 
   const spine =
     isPast && building
-      ? `color-mix(in srgb, ${building} 38%, var(--past-border))`
+      ? `color-mix(in srgb, ${building} 55%, var(--past-border))`
       : building || tone.border;
 
   return {
-    background: tone.fill,
-    backgroundColor: tone.fill,
+    background: fill,
+    backgroundColor: fill,
     borderColor,
     borderWidth: isPast ? "1px" : "1.5px",
     color: tone.text,
-    "--stay-fill": tone.fill,
+    "--stay-fill": fill,
     "--stay-border": tone.border,
     "--stay-text": tone.text,
     "--stay-tab-end": tone.tab,
@@ -101,13 +110,110 @@ function semanticStayVars(
     "--stay-badge-text": tone.text,
     "--stay-glow": tone.glow,
     "--stay-spine": spine,
-    "--gs-bg": tone.fill,
+    "--gs-bg": fill,
     "--gs-border": tone.border,
     "--gs-fg": tone.text,
     "--gs-tab": tone.tab,
     "--gs-badge-bg": tone.badge,
     "--gs-glow": tone.glow,
   };
+}
+
+function StayDeskMark({
+  mark,
+  guestTotal,
+  checkinReady,
+  earlyDepartureNote,
+  tGantt,
+}: {
+  mark: GanttStayDeskMark;
+  guestTotal: number;
+  checkinReady: boolean;
+  earlyDepartureNote: string | null;
+  tGantt: ReturnType<typeof useTranslations>;
+}) {
+  if (mark === "arrival") {
+    return (
+      <span
+        className="gantt-stay__today-icon"
+        aria-hidden
+        title={tGantt("stayCard.arrivalToday")}
+      >
+        ↓
+      </span>
+    );
+  }
+  if (mark === "departure" || mark === "early_out") {
+    return (
+      <span
+        className={[
+          "gantt-stay__today-icon",
+          mark === "early_out" && "gantt-stay__today-icon--early-out",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        aria-hidden
+        title={
+          earlyDepartureNote ??
+          (mark === "early_out"
+            ? tGantt("stayCard.earlyDepartureRecorded")
+            : tGantt("stayCard.departureToday"))
+        }
+      >
+        ↑
+      </span>
+    );
+  }
+  if (mark === "unpaid") {
+    return (
+      <span
+        className="gantt-stay__alert gantt-stay__alert--unpaid"
+        title={tGantt("stayCard.unpaid")}
+      >
+        $
+      </span>
+    );
+  }
+  if (mark === "identity") {
+    return (
+      <span
+        className="gantt-stay__alert gantt-stay__alert--identity"
+        title={tGantt("stayCard.missingIdentity")}
+      >
+        ID
+      </span>
+    );
+  }
+  if (mark === "in_house") {
+    return (
+      <span
+        className={[
+          "gantt-stay__phase-badge",
+          checkinReady && "gantt-stay__phase-badge--ready",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        title={
+          checkinReady
+            ? tGantt("stayCard.milestoneDone")
+            : tGantt("stayCard.milestonePending")
+        }
+      >
+        {checkinReady ? (
+          <span className="gantt-stay__phase-gem" aria-hidden />
+        ) : null}
+        IN
+      </span>
+    );
+  }
+  return (
+    <span
+      className="gantt-stay__badge"
+      title={tGantt("stayCard.guestCount", { count: guestTotal })}
+    >
+      {guestTotal}
+    </span>
+  );
 }
 
 export const GanttBookingBar = memo(function GanttBookingBar({
@@ -119,15 +225,15 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   guestTotal,
   buildingColor,
   todayHighlight,
-  initials,
   interactive,
   extraClass,
   occupancyPhase,
   compact = false,
-  timeline = null,
+  dense = false,
+  timeline: _timeline = null,
   showUnpaid = false,
   showMissingIdentity = false,
-  keysMicroLabel = null,
+  keysMicroLabel: _keysMicroLabel = null,
   checkinReady = false,
   capHealth = "neutral",
   capHealthLabel,
@@ -138,21 +244,23 @@ export const GanttBookingBar = memo(function GanttBookingBar({
   const tGantt = useTranslations("admin.gantt");
   const { leftPct, widthPct, continuesBefore, continuesAfter } = pos;
 
-  const showAlerts = showUnpaid || showMissingIdentity;
-  const showInBadge = occupancyPhase === "active" && !isRequest;
-  const showCapStrip =
-    showAlerts ||
-    showInBadge ||
-    guestTotal > 0 ||
-    todayHighlight === "arrival" ||
-    todayHighlight === "departure" ||
-    earlyDeparture;
+  const desk = resolveGanttStayDeskMarks({
+    dense: dense || compact,
+    showUnpaid,
+    showMissingIdentity,
+    todayHighlight,
+    earlyDeparture,
+    inHouse: occupancyPhase === "active" && !isRequest,
+    guestTotal,
+  });
+  const denseChip = dense || compact;
 
   const className = [
     ganttStayChromeClass(),
     "gantt-booking-card gantt-stay gantt-stay--slant gantt-stay--filled gantt-stay--chip gantt-timeline-bar group relative box-border flex min-w-0 items-stretch text-[12px] font-semibold leading-none transition duration-200 hover:z-[2]",
     interactive ? "z-[1] w-full" : "absolute z-[1] max-w-full",
     compact && "gantt-stay--compact",
+    denseChip && "gantt-stay--dense",
     isRequest ? "gantt-booking-card--pending gantt-stay--request" : "gantt-booking-card--active",
     occupancyPhase === "past" && "gantt-booking-card--past gantt-stay--phase-past",
     occupancyPhase === "active" && "gantt-stay--phase-active",
@@ -204,130 +312,21 @@ export const GanttBookingBar = memo(function GanttBookingBar({
 
         <span className="gantt-stay__primary min-w-0 flex-1">
           <span className="gantt-stay-chrome__label min-w-0 truncate">{label}</span>
-          {(showUnpaid ||
-            showMissingIdentity ||
-            keysMicroLabel ||
-            guestTotal > 0 ||
-            todayHighlight === "arrival" ||
-            todayHighlight === "departure" ||
-            earlyDeparture) && (
-            <span className="gantt-stay__micro" aria-hidden>
-              {keysMicroLabel ? (
-                <span className="gantt-stay__micro-keys" title={keysMicroLabel}>
-                  🔑{keysMicroLabel}
-                </span>
-              ) : null}
-              {todayHighlight === "arrival" ? (
-                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--in">↓</span>
-              ) : null}
-              {(todayHighlight === "departure" || earlyDeparture) ? (
-                <span
-                  className={[
-                    "gantt-stay__micro-dot gantt-stay__micro-dot--out",
-                    earlyDeparture && "gantt-stay__micro-dot--early-out",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                  title={earlyDepartureNote ?? undefined}
-                >
-                  ↑
-                </span>
-              ) : null}
-              {showUnpaid ? (
-                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--pay">$</span>
-              ) : null}
-              {showMissingIdentity ? (
-                <span className="gantt-stay__micro-dot gantt-stay__micro-dot--id">!</span>
-              ) : null}
-              {guestTotal > 0 ? (
-                <span className="gantt-stay__micro-count">{guestTotal}</span>
-              ) : null}
-            </span>
-          )}
         </span>
-
-        {earlyDepartureNote ? (
-          <span
-            className="gantt-stay__policy-note gantt-stay__surface-text"
-            title={earlyDepartureNote}
-            aria-hidden
-          >
-            {earlyDepartureNote}
-          </span>
-        ) : null}
       </span>
 
-      {showCapStrip && (
+      {desk.marks.length > 0 && (
         <span className="gantt-stay__cap-strip">
-          {todayHighlight === "arrival" && (
-            <span className="gantt-stay__today-icon" aria-hidden title="Sosire azi">
-              ↓
-            </span>
-          )}
-          {(todayHighlight === "departure" || earlyDeparture) && (
-            <span
-              className={[
-                "gantt-stay__today-icon",
-                earlyDeparture && "gantt-stay__today-icon--early-out",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              aria-hidden
-              title={
-                earlyDepartureNote ??
-                (todayHighlight === "departure"
-                  ? tGantt("stayCard.departureToday")
-                  : tGantt("stayCard.earlyDepartureRecorded"))
-              }
-            >
-              ↑
-            </span>
-          )}
-          {showAlerts && (
-            <span className="gantt-stay__alerts" aria-hidden>
-              {showUnpaid && (
-                <span
-                  className="gantt-stay__alert gantt-stay__alert--unpaid"
-                  title={tGantt("stayCard.unpaid")}
-                >
-                  $
-                </span>
-              )}
-              {showMissingIdentity && (
-                <span
-                  className="gantt-stay__alert gantt-stay__alert--identity"
-                  title={tGantt("stayCard.missingIdentity")}
-                >
-                  ID
-                </span>
-              )}
-            </span>
-          )}
-          {showInBadge && (
-            <span
-              className={[
-                "gantt-stay__phase-badge",
-                checkinReady && "gantt-stay__phase-badge--ready",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              title={
-                checkinReady
-                  ? tGantt("stayCard.milestoneDone")
-                  : tGantt("stayCard.milestonePending")
-              }
-            >
-              {checkinReady ? (
-                <span className="gantt-stay__phase-gem" aria-hidden />
-              ) : null}
-              IN
-            </span>
-          )}
-          {guestTotal > 0 && (
-            <span className="gantt-stay__badge" title={`${guestTotal} persoane`}>
-              {guestTotal}
-            </span>
-          )}
+          {desk.marks.map((mark) => (
+            <StayDeskMark
+              key={mark}
+              mark={mark}
+              guestTotal={guestTotal}
+              checkinReady={checkinReady}
+              earlyDepartureNote={earlyDepartureNote}
+              tGantt={tGantt}
+            />
+          ))}
         </span>
       )}
 
@@ -383,7 +382,7 @@ export const GanttBookingBar = memo(function GanttBookingBar({
 
       {isRequest && (
         <span className="gantt-stay__stamp gantt-stay__surface-text" aria-hidden>
-          CERERE
+          {tCommon("request")}
         </span>
       )}
     </>

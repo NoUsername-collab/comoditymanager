@@ -42,10 +42,7 @@ import {
 import { ghostBarPosition } from "@/domain/gantt/drag-create";
 import type { GanttOccDetail } from "@/features/calendar/ui/GanttOccupancyDetailPanel";
 import type { MoveRoomDraft } from "@/features/calendar/ui/MoveRoomDialog";
-import {
-  LONG_PRESS_MOVE_PX,
-  type GanttCreateDraftRequest,
-} from "@/domain/gantt/context-menu";
+import { type GanttCreateDraftRequest } from "@/domain/gantt/context-menu";
 import { GanttContextMenuProvider } from "@/features/calendar/ui/GanttContextMenuContext";
 import { GanttStayTapPopoverProvider } from "@/features/calendar/ui/GanttStayTapPopoverContext";
 import { GanttContextMenuBridge } from "@/features/calendar/ui/GanttContextMenuBridge";
@@ -111,9 +108,6 @@ import { GanttVirtualizedBody } from "@/features/calendar/ui/GanttVirtualizedBod
 import { GanttZoneRibbon } from "@/features/calendar/ui/GanttZoneRibbon";
 
 export type { GanttRoom };
-
-/** Touch: hold this long on the day header before horizontal pan is enabled. */
-const GANTT_TOUCH_PAN_ARM_MS = 2500;
 
 export function GanttCalendar({
   viewRange,
@@ -273,7 +267,6 @@ export function GanttCalendar({
     startScrollLeft: number;
     moved: boolean;
     armed: boolean;
-    armTimer: ReturnType<typeof setTimeout> | null;
     move: (event: PointerEvent) => void;
     end: (event: PointerEvent) => void;
   } | null>(null);
@@ -326,9 +319,6 @@ export function GanttCalendar({
   const endHeaderPan = useCallback(() => {
     const state = panStateRef.current;
     if (!state) return;
-    if (state.armTimer !== null) {
-      clearTimeout(state.armTimer);
-    }
     window.removeEventListener("pointermove", state.move);
     window.removeEventListener("pointerup", state.end);
     window.removeEventListener("pointercancel", state.end);
@@ -351,9 +341,8 @@ export function GanttCalendar({
 
       const armPan = () => {
         const state = panStateRef.current;
-        if (!state) return;
+        if (!state || state.armed) return;
         state.armed = true;
-        state.armTimer = null;
         state.startScrollLeft = el.scrollLeft;
         state.startX = state.lastX;
         state.startY = state.lastY;
@@ -375,13 +364,16 @@ export function GanttCalendar({
         state.lastX = nextEvent.clientX;
         state.lastY = nextEvent.clientY;
 
-        if (isTouch && !state.armed) {
+        if (!state.armed) {
           const dx = nextEvent.clientX - state.startX;
           const dy = nextEvent.clientY - state.startY;
-          if (Math.hypot(dx, dy) > LONG_PRESS_MOVE_PX) {
+          if (Math.abs(dx) < panThreshold && Math.abs(dy) < panThreshold) return;
+          if (Math.abs(dx) > Math.abs(dy)) {
+            armPan();
+          } else {
             endHeaderPan();
+            return;
           }
-          return;
         }
 
         const dx = nextEvent.clientX - state.startX;
@@ -414,9 +406,6 @@ export function GanttCalendar({
         startScrollLeft: el.scrollLeft,
         moved: false,
         armed: !isTouch,
-        armTimer: isTouch
-          ? setTimeout(armPan, GANTT_TOUCH_PAN_ARM_MS)
-          : null,
         move,
         end,
       };

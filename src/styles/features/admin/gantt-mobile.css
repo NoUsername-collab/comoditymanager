@@ -73,7 +73,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-page-top-cards {
   flex-shrink: 0;
 }
 
-/* ── Scroll container: vertical scroll only until header pan arms ── */
+/* Scroll container: vertical on the grid; date header pans on horizontal swipe */
 html[data-layout-chrome="compact"] .gantt-scroll {
   touch-action: pan-y;
   overscroll-behavior-x: contain;

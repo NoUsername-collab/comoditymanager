@@ -277,6 +277,7 @@ export const GanttRoomRow = memo(function GanttRoomRow({
                 bookingCheckOut={b.check_out}
                 dayCount={dayCount}
                 compactLabel={compactLabel}
+                coverageDense={compact}
                 roomNames={b.room_names}
                 checkedInRooms={b.checked_in_rooms ?? []}
                 keysHandedRooms={b.keys_handed_rooms ?? []}

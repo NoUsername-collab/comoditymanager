@@ -9,6 +9,7 @@ import { isIdentityStatusCritical } from "@/domain/guest/profile-data";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
 import type { OccupancyPhase } from "@/domain/occupancy/types";
 import { stayNightProgress } from "@/domain/gantt/stay-progress";
+import type { StayTodayHighlight } from "@/domain/gantt/today-activity";
 import { isoToDatetimeLocal } from "@/lib/operational-check";
 
 export type GanttDeparturePolicy = {
@@ -350,4 +351,53 @@ export function resolveGanttStayCapHealth(args: {
   }
 
   return "neutral";
+}
+
+/** Glyphs on the stay chip. Dense coverage keeps a single highest-priority mark. */
+export type GanttStayDeskMark =
+  | "unpaid"
+  | "identity"
+  | "arrival"
+  | "early_out"
+  | "departure"
+  | "in_house"
+  | "party";
+
+const DENSE_DESK_PRIORITY: GanttStayDeskMark[] = [
+  "unpaid",
+  "identity",
+  "arrival",
+  "early_out",
+  "departure",
+];
+
+export function resolveGanttStayDeskMarks(args: {
+  dense: boolean;
+  showUnpaid: boolean;
+  showMissingIdentity: boolean;
+  todayHighlight?: StayTodayHighlight | null;
+  earlyDeparture: boolean;
+  inHouse: boolean;
+  guestTotal: number;
+}): { primary: GanttStayDeskMark | null; marks: GanttStayDeskMark[] } {
+  const available: GanttStayDeskMark[] = [];
+  if (args.showUnpaid) available.push("unpaid");
+  if (args.showMissingIdentity) available.push("identity");
+  if (args.todayHighlight === "arrival") available.push("arrival");
+  if (args.earlyDeparture) available.push("early_out");
+  else if (args.todayHighlight === "departure") available.push("departure");
+  if (!args.dense) {
+    if (args.inHouse && args.todayHighlight !== "arrival") {
+      available.push("in_house");
+    }
+    if (args.guestTotal > 1) available.push("party");
+  }
+
+  const primary =
+    DENSE_DESK_PRIORITY.find((mark) => available.includes(mark)) ?? null;
+
+  return {
+    primary,
+    marks: args.dense ? (primary ? [primary] : []) : available,
+  };
 }
