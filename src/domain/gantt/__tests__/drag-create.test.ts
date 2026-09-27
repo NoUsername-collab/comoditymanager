@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   dayIndexFromPointerX,
   intervalFromDayIndices,
-  ghostBarPosition,
+  ghostBarFromDayIndices,
 } from "@/domain/gantt/drag-create";
 
 // ---------------------------------------------------------------------------
@@ -83,26 +83,66 @@ describe("intervalFromDayIndices", () => {
 });
 
 // ---------------------------------------------------------------------------
-// ghostBarPosition
+// ghostBarPosition / ghostBarFromDayIndices — clock-aware, not full days
 // ---------------------------------------------------------------------------
-describe("ghostBarPosition", () => {
-  it("returns correct percentage for a normal range", () => {
-    // startIdx=1, endIdx=3, dayCount=10
-    // span = 3-1+1 = 3
-    const result = ghostBarPosition(1, 3, 10);
-    expect(result.leftPct).toBe(10); // 1/10*100
-    expect(result.widthPct).toBe(30); // 3/10*100
+describe("ghostBarFromDayIndices", () => {
+  const days = [
+    "2025-06-01",
+    "2025-06-02",
+    "2025-06-03",
+    "2025-06-04",
+    "2025-06-05",
+    "2025-06-06",
+    "2025-06-07",
+    "2025-06-08",
+    "2025-06-09",
+    "2025-06-10",
+  ];
+  const rangeStart = "2025-06-01";
+  const rangeEnd = "2025-06-11";
+  const checkInTime = "14:00";
+  const checkOutTime = "11:00";
+
+  it("starts at check-in time, not midnight of the first day", () => {
+    const result = ghostBarFromDayIndices(
+      days,
+      0,
+      0,
+      rangeStart,
+      rangeEnd,
+      checkInTime,
+      checkOutTime
+    );
+    expect(result).not.toBeNull();
+    // 14:00 on day 0 of 10 days = 14h / 240h
+    expect(result!.leftPct).toBeCloseTo((14 / 24 / 10) * 100, 5);
+    // 14:00 day 0 → 11:00 day 1 = 21h / 240h
+    expect(result!.widthPct).toBeCloseTo((21 / 24 / 10) * 100, 5);
   });
 
-  it("handles reversed indices (startIdx > endIdx)", () => {
-    const normal = ghostBarPosition(1, 3, 10);
-    const reversed = ghostBarPosition(3, 1, 10);
-    expect(reversed).toEqual(normal);
+  it("ends at check-out time on the morning after the last night", () => {
+    const result = ghostBarFromDayIndices(
+      days,
+      1,
+      3,
+      rangeStart,
+      rangeEnd,
+      checkInTime,
+      checkOutTime
+    );
+    expect(result).not.toBeNull();
+    // 14:00 on 2 Jun → 11:00 on 5 Jun (checkout morning of the day after last night)
+    expect(result!.leftPct).toBeCloseTo(((1 + 14 / 24) / 10) * 100, 5);
+    expect(result!.widthPct).toBeCloseTo((69 / 24 / 10) * 100, 5);
+    const startOfFirstDay = (1 / 10) * 100;
+    const midnightCheckoutDay = (4 / 10) * 100;
+    expect(result!.leftPct).toBeGreaterThan(startOfFirstDay);
+    expect(result!.leftPct + result!.widthPct).toBeGreaterThan(midnightCheckoutDay);
   });
 
-  it("returns correct result for a single day", () => {
-    const result = ghostBarPosition(4, 4, 10);
-    expect(result.leftPct).toBe(40);
-    expect(result.widthPct).toBe(10);
+  it("returns null for an empty day list", () => {
+    expect(
+      ghostBarFromDayIndices([], 0, 0, rangeStart, rangeEnd, checkInTime, checkOutTime)
+    ).toBeNull();
   });
 });

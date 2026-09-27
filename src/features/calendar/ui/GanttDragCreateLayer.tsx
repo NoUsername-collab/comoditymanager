@@ -17,7 +17,7 @@ import {
 import type { PinnedSelection } from "@/domain/gantt/pinned-selection";
 import {
   dayIndexFromPointerX,
-  ghostBarPosition,
+  ghostBarFromDayIndices,
   intervalFromDayIndices,
 } from "@/domain/gantt/drag-create";
 import { findOccupancyConflicts } from "@/domain/occupancy/conflict";
@@ -244,7 +244,15 @@ export function GanttDragCreateLayer({
       const hasConflict = interval
         ? evalConflictForRooms(interval.checkIn, interval.checkOut, roomIds)
         : false;
-      const ghost = ghostBarPosition(startIdx, endIdx, dayCount);
+      const ghost = ghostBarFromDayIndices(
+        dayIsos,
+        startIdx,
+        endIdx,
+        viewRange.rangeStart,
+        viewRange.rangeEnd,
+        checkInTime,
+        checkOutTime
+      );
       if (ghost) {
         setGanttRoomDragSpan(roomIds, {
           leftPct: ghost.leftPct,
@@ -268,7 +276,7 @@ export function GanttDragCreateLayer({
         selectionMode: dragRef.current.selectionMode,
       });
     },
-    [dayCount, dayIsos, evalConflictForRooms]
+    [dayCount, dayIsos, evalConflictForRooms, viewRange.rangeStart, viewRange.rangeEnd, checkInTime, checkOutTime]
   );
 
   const beginDrag = useCallback(
@@ -278,7 +286,15 @@ export function GanttDragCreateLayer({
       clientY: number,
       selectionMode: "range" | "ctrl"
     ) => {
-      const ghost = ghostBarPosition(startIdx, startIdx, dayCount);
+      const ghost = ghostBarFromDayIndices(
+        dayIsos,
+        startIdx,
+        startIdx,
+        viewRange.rangeStart,
+        viewRange.rangeEnd,
+        checkInTime,
+        checkOutTime
+      );
       const orderedRoomIds = listGanttRoomIdsInDomOrder();
       dragRef.current = {
         startIdx,
@@ -308,7 +324,7 @@ export function GanttDragCreateLayer({
       }
       updateDragAt(clientX, clientY);
     },
-    [dayCount, roomId, updateDragAt]
+    [dayCount, dayIsos, roomId, updateDragAt, viewRange.rangeStart, viewRange.rangeEnd, checkInTime, checkOutTime]
   );
 
   const endDrag = useCallback(() => {
@@ -459,7 +475,15 @@ export function GanttDragCreateLayer({
 
   const ghost =
     drag && dayCount > 0
-      ? ghostBarPosition(drag.startIdx, drag.endIdx, dayCount)
+      ? ghostBarFromDayIndices(
+          dayIsos,
+          drag.startIdx,
+          drag.endIdx,
+          viewRange.rangeStart,
+          viewRange.rangeEnd,
+          checkInTime,
+          checkOutTime
+        )
       : null;
 
   const dragInterval =
@@ -509,7 +533,6 @@ export function GanttDragCreateLayer({
           style={{
             left: `${ghost.leftPct}%`,
             width: `${ghost.widthPct}%`,
-            minWidth: "2.75rem",
           }}
         >
           <span className="gantt-drag-preview__label truncate px-1.5">

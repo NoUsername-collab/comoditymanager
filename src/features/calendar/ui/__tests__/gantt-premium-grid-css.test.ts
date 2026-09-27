@@ -24,7 +24,16 @@ describe("gantt premium grid CSS", () => {
     expect(css).not.toMatch(/--gantt-weekend-paper:[^;]*--border-strong/);
   });
 
+  it("lets coverage-30 day cells fill the column so hour ticks are not pinned left", () => {
+    expect(css).toMatch(/max-width:\s*none/);
+  });
+
   it("draws hour ticks as dashed bars, not solid column walls", () => {
     expect(css).toMatch(/repeating-linear-gradient\(\s*to bottom/);
+  });
+
+  it("stretches the header 11/14 bar across the full day", () => {
+    expect(css).toMatch(/align-self:\s*stretch/);
+    expect(css).toMatch(/grid-template-columns:\s*[\s\S]*--gantt-check-out-pct/);
   });
 });

@@ -90,7 +90,7 @@ export const GanttDayHeader = memo(function GanttDayHeader({
             type="button"
             className={[
               dayHeaderCellClass(col, compact),
-              "gantt-day-header-cell__body flex flex-1 flex-col items-center justify-center text-center leading-tight",
+              "gantt-day-header-cell__body flex flex-1 flex-col items-stretch justify-center text-center leading-tight",
               onDayDrillDown && "gantt-day-header-cell--drillable",
             ]
               .filter(Boolean)

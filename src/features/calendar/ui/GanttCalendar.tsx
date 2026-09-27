@@ -10,6 +10,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type CSSProperties,
 } from "react";
+import { ganttDayTimeStyle } from "@/lib/gantt-time";
 import { formatDateWithDay } from "@/lib/ro-calendar";
 import { deriveGanttCalendarData } from "@/domain/gantt/calendar-derivations";
 import {
@@ -29,7 +30,7 @@ import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
 } from "@/lib/constants";
-import { addDays, todayIso } from "@/lib/stay-dates";
+import { todayIso } from "@/lib/stay-dates";
 import { GanttPinnedCreateChip } from "@/features/calendar/ui/GanttPinnedSelectionChip";
 import {
   pinnedSelectionFromRange,
@@ -511,22 +512,25 @@ export function GanttCalendar({
       clearGanttRoomPinnedSpan();
       return;
     }
-    const startIdx = dayIsos.indexOf(pinnedSelection.checkIn);
-    const lastNight = addDays(pinnedSelection.checkOut, -1);
-    const endIdx = dayIsos.indexOf(lastNight);
-    if (startIdx < 0 && endIdx < 0) {
+    const ghost = ghostBarPosition({
+      checkIn: pinnedSelection.checkIn,
+      checkOut: pinnedSelection.checkOut,
+      rangeStart: viewRange.rangeStart,
+      rangeEnd: viewRange.rangeEnd,
+      dayCount: dayIsos.length,
+      checkInTime,
+      checkOutTime,
+    });
+    if (!ghost) {
       clearGanttRoomPinnedSpan();
       return;
     }
-    const safeStart = Math.max(0, startIdx);
-    const safeEnd = endIdx < 0 ? dayIsos.length - 1 : endIdx;
-    const ghost = ghostBarPosition(safeStart, safeEnd, dayIsos.length);
     setGanttRoomPinnedSpan(pinnedSelection.roomIds, {
       leftPct: ghost.leftPct,
       widthPct: ghost.widthPct,
       hasConflict: false,
     });
-  }, [pinnedSelection, dayIsos]);
+  }, [pinnedSelection, dayIsos, viewRange.rangeStart, viewRange.rangeEnd, checkInTime, checkOutTime]);
 
   const {
     handleSummaryDayClick,
@@ -617,7 +621,10 @@ export function GanttCalendar({
         className="gantt-shell gantt-shell--premium relative min-w-full overflow-visible"
         data-gantt-zoom={shellZoom}
         data-gantt-coverage={coverage}
-        style={ganttRowMetricsStyle(rowMetrics) as CSSProperties}
+        style={{
+          ...(ganttRowMetricsStyle(rowMetrics) as CSSProperties),
+          ...ganttDayTimeStyle(checkInTime, checkOutTime),
+        }}
       >
         <GanttCompactToolbar
           onOpenRequest={() => setOccFormMode("request")}

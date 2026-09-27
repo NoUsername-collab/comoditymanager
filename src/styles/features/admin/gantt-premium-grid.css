@@ -32,6 +32,10 @@
   background-color: var(--gantt-zone-clean);
   box-shadow: none;
   border-right: 1px solid color-mix(in srgb, var(--border, #d4d4d8) 18%, transparent);
+  /* Coverage 30 adds --compact for row height; cells must still fill the day column. */
+  width: 100%;
+  max-width: none;
+  min-width: 0;
 }
 
 .gantt-shell .gantt-day-grid--timed:not(.gantt-day-header-grid) .gantt-day-cell::before,
@@ -171,6 +175,8 @@
 
 .gantt-day-header-grid .gantt-day-zone-preview {
   display: grid;
+  align-self: stretch;
+  box-sizing: border-box;
   width: 100%;
   max-width: none;
   height: 8px;
@@ -178,6 +184,10 @@
   border-radius: 3px;
   overflow: hidden;
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--border, #dde2f0) 70%, transparent);
+  grid-template-columns:
+    var(--gantt-check-out-pct, 45.83%)
+    calc(var(--gantt-check-in-pct, 58.33%) - var(--gantt-check-out-pct, 45.83%))
+    calc(100% - var(--gantt-check-in-pct, 58.33%));
 }
 
 .gantt-day-header-grid .gantt-day-zone-preview__out {

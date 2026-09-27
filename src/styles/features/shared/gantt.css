@@ -543,11 +543,11 @@
   color: var(--gantt-zone-checkin-text, #334155);
 }
 
-/* Mini previzualizare zone în header zile */
+/* Mini day-zone bar in the date header — full column width, same 11/14 axis as ticks */
 .gantt-day-zone-preview {
   display: grid;
-  width: 92%;
-  max-width: 3.5rem;
+  width: 100%;
+  max-width: none;
   height: 3px;
   margin-top: 2px;
   overflow: hidden;
@@ -649,8 +649,7 @@
 }
 
 .gantt-day-cell--compact {
-  min-width: 29px;
-  max-width: 36px;
+  min-width: 0;
 }
 
 .gantt-day-cell--compact .gantt-day-zone-preview {

@@ -325,7 +325,7 @@
   top: var(--gantt-stay-top);
   left: var(--gantt-drag-left, 0%);
   width: var(--gantt-drag-width, 0%);
-  min-width: 2.75rem;
+  min-width: 0;
   height: var(--gantt-stay-h);
   border-radius: 0.8rem;
   background: color-mix(in srgb, #0ea5e9 28%, transparent);

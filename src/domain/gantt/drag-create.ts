@@ -1,3 +1,4 @@
+import { bookingBarInRange } from "@/domain/gantt/bar-position";
 import { addDays } from "@/lib/stay-dates";
 
 /** Index of day column from pointer X within row width. */
@@ -26,16 +27,47 @@ export function intervalFromDayIndices(
   return { checkIn, checkOut };
 }
 
-export function ghostBarPosition(
+/** Ghost / pin bar: same clock as stay chips (check-in time → check-out time). */
+export function ghostBarPosition(input: {
+  checkIn: string;
+  checkOut: string;
+  rangeStart: string;
+  rangeEnd: string;
+  dayCount: number;
+  checkInTime: string;
+  checkOutTime: string;
+}): { leftPct: number; widthPct: number } | null {
+  const pos = bookingBarInRange(
+    input.checkIn,
+    input.checkOut,
+    input.rangeStart,
+    input.rangeEnd,
+    input.dayCount,
+    input.checkInTime,
+    input.checkOutTime
+  );
+  if (!pos) return null;
+  return { leftPct: pos.leftPct, widthPct: pos.widthPct };
+}
+
+export function ghostBarFromDayIndices(
+  dayIsos: string[],
   startIdx: number,
   endIdx: number,
-  dayCount: number
-): { leftPct: number; widthPct: number } {
-  const start = Math.min(startIdx, endIdx);
-  const end = Math.max(startIdx, endIdx);
-  const span = end - start + 1;
-  return {
-    leftPct: (start / dayCount) * 100,
-    widthPct: (span / dayCount) * 100,
-  };
+  rangeStart: string,
+  rangeEnd: string,
+  checkInTime: string,
+  checkOutTime: string
+): { leftPct: number; widthPct: number } | null {
+  const interval = intervalFromDayIndices(dayIsos, startIdx, endIdx);
+  if (!interval) return null;
+  return ghostBarPosition({
+    checkIn: interval.checkIn,
+    checkOut: interval.checkOut,
+    rangeStart,
+    rangeEnd,
+    dayCount: dayIsos.length,
+    checkInTime,
+    checkOutTime,
+  });
 }
