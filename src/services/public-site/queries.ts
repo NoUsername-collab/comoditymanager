@@ -33,6 +33,7 @@ async function getPublicSiteConfigUncached(
   ]);
   const copy = seedPublicHomeCopy();
 
+  const identityLogo = identity ? identity.logoUrl : undefined;
   const displayName = identity?.displayName ?? pension?.display_name ?? "Casa Emil";
   const { checkIn: checkInTime, checkOut: checkOutTime } =
     resolvePensionStayTimes(pension);
@@ -79,18 +80,21 @@ async function getPublicSiteConfigUncached(
 
   if (settingsResult.error) {
     if (isPublicSiteMigrationMissing(settingsResult.error.message)) {
-      return fallback;
+      return stampIdentityLogo(fallback, identityLogo);
     }
     throw new Error(settingsResult.error.message);
   }
 
   if (!settingsResult.data) {
-    return fallback;
+    return stampIdentityLogo(fallback, identityLogo);
   }
 
   if (sectionsResult.error) {
     if (isPublicSiteMigrationMissing(sectionsResult.error.message)) {
-      return { ...fallback, ...mapPublicSiteSettingsRow(settingsResult.data) };
+      return stampIdentityLogo(
+        { ...fallback, ...mapPublicSiteSettingsRow(settingsResult.data) },
+        identityLogo,
+      );
     }
     throw new Error(sectionsResult.error.message);
   }
@@ -115,7 +119,22 @@ async function getPublicSiteConfigUncached(
     fallbackContactEmail: fallback.contact.email,
     stayOffers,
     place,
+    logoUrl: identityLogo,
   });
+}
+
+function stampIdentityLogo(
+  config: PublicSiteConfig,
+  logoUrl: string | null | undefined,
+): PublicSiteConfig {
+  if (logoUrl === undefined) return config;
+  return {
+    ...config,
+    chrome: {
+      ...config.chrome,
+      logoUrl: logoUrl?.trim() || null,
+    },
+  };
 }
 
 const getCachedPublicSiteConfig = (tenantId: string) =>

@@ -86,6 +86,60 @@ describe("finalizePublicSiteConfig", () => {
     expect(config.contact.email).toBe("public@test.ro");
     expect(config.contact.phone).toBe("+40999");
   });
+
+  it("uses the identity logo and drops a stored chrome logo", () => {
+    const config = finalizePublicSiteConfig(
+      {
+        ...baseRow,
+        chrome: { logoUrl: "https://cdn.example/old.png" },
+      },
+      fallbackSections,
+      {
+        displayName: "Casa Test",
+        checkInTime: "14:00",
+        checkOutTime: "11:00",
+        primaryContact: {
+          email: null,
+          phone: null,
+          whatsapp: null,
+          telegram: null,
+          facebook: null,
+          instagram: null,
+        },
+        fallbackSections,
+        logoUrl: "https://cdn.example/new.png",
+      },
+    );
+
+    expect(config.chrome.logoUrl).toBe("https://cdn.example/new.png");
+  });
+
+  it("shows no logo when identity has none", () => {
+    const config = finalizePublicSiteConfig(
+      {
+        ...baseRow,
+        chrome: { logoUrl: "https://cdn.example/old.png" },
+      },
+      fallbackSections,
+      {
+        displayName: "Casa Test",
+        checkInTime: "14:00",
+        checkOutTime: "11:00",
+        primaryContact: {
+          email: null,
+          phone: null,
+          whatsapp: null,
+          telegram: null,
+          facebook: null,
+          instagram: null,
+        },
+        fallbackSections,
+        logoUrl: null,
+      },
+    );
+
+    expect(config.chrome.logoUrl).toBeNull();
+  });
 });
 
 describe("buildPublicSiteConfigFromInput", () => {

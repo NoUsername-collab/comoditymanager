@@ -8,14 +8,16 @@ import { buildPublicContactLinks } from "@/features/public-site/contact/PublicCo
 type Props = {
   displayName: string;
   contact: PensionContact;
+  logoUrl?: string | null;
 };
 
 /** Mini preview — how identity appears in public header/footer. */
-export function IdentitySitePreview({ displayName, contact }: Props) {
+export function IdentitySitePreview({ displayName, contact, logoUrl }: Props) {
   const t = useTranslations("admin.pages.settings");
   const tHeader = useTranslations("public.header");
   const tFooter = useTranslations("public.footer");
   const links = buildPublicContactLinks(contact);
+  const initial = displayName.trim().slice(0, 1).toUpperCase() || "•";
 
   return (
     <div className="settings-identity-preview">
@@ -23,7 +25,14 @@ export function IdentitySitePreview({ displayName, contact }: Props) {
       <div className="settings-identity-preview__frame">
         <header className="settings-identity-preview__header">
           <div className="settings-identity-preview__brand">
-            <span className="settings-identity-preview__logo" aria-hidden />
+            <span className="settings-identity-preview__logo" aria-hidden>
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="" />
+              ) : (
+                initial
+              )}
+            </span>
             <div>
               <span className="settings-identity-preview__name">{displayName || "—"}</span>
               <span className="settings-identity-preview__tag">{tHeader("subtitle")}</span>

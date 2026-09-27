@@ -104,6 +104,10 @@
   object-fit: cover;
 }
 
+.pub-image-field__preview--contain img {
+  object-fit: contain;
+}
+
 .pub-image-field__actions {
   display: flex;
   flex-wrap: wrap;

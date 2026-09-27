@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   PUBLIC_TEMPLATE_OPTIONS,
   PUBLIC_THEME_OPTIONS,
@@ -335,15 +336,12 @@ export function PublicSiteSettingsForm({
       </FormSection>
 
       <FormSection title={t("brandTitle")} description={t("brandSectionDesc")}>
-        <PublicSiteImageField
-          kind="logo"
-          label={t("logoLabel")}
-          value={draft.logoUrl}
-          onChange={(url) => patchDraft({ logoUrl: url })}
-          hint={t("logoHint")}
-          error={fieldError("chrome.logoUrl")}
-          disabled={readOnly}
-        />
+        <SettingsFieldHint>
+          {t("logoManaged")}{" "}
+          <Link href="/admin/settings/identity" className="underline">
+            {t("logoManagedLink")}
+          </Link>
+        </SettingsFieldHint>
         <div className="admin-settings-fields mt-4">
           <label>
             <span>{t("headerSubtitle")}</span>

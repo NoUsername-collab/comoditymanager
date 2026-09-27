@@ -101,7 +101,8 @@ with checks as (
     ('096', 'drop_simulation',       'function_dropped',    'sim_start',                                ''),
     ('098', 'public_site_booking_notice', 'column',             'public_site_settings',                     'booking_notice'),
     ('099', 'public_site_media',          'seed',               '',                                         'storage bucket public-site-media'),
-    ('100', 'public_site_chrome_pages',   'column',             'public_site_settings',                     'chrome')
+    ('100', 'public_site_chrome_pages',   'column',             'public_site_settings',                     'chrome'),
+    ('101', 'pension_logo',               'column',             'pension_settings',                         'logo_url')
   ) as t(migration_id, slug, kind, obj1, obj2)
 ),
 table_exists as (

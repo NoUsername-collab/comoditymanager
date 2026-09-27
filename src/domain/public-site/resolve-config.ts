@@ -19,6 +19,11 @@ export type PublicSiteConfigContext = {
   fallbackContactEmail?: string | null;
   stayOffers?: PublicStayOffer[];
   place?: PublicPlace;
+  /**
+   * Identity logo. `undefined` keeps a previously stored chrome logo
+   * (identity could not be loaded). `null` means the owner has no logo.
+   */
+  logoUrl?: string | null;
 };
 
 /** Same merge rules as the live public site loader — contact, identity, sections. */
@@ -33,8 +38,17 @@ export function finalizePublicSiteConfig(
     settings.usePrimaryContact,
   );
 
+  const logoUrl =
+    ctx.logoUrl !== undefined
+      ? ctx.logoUrl?.trim() || null
+      : settings.chrome.logoUrl?.trim() || null;
+
   return {
     ...settings,
+    chrome: {
+      ...settings.chrome,
+      logoUrl,
+    },
     displayName: ctx.displayName,
     checkInTime: ctx.checkInTime,
     checkOutTime: ctx.checkOutTime,
@@ -91,6 +105,7 @@ export function buildPublicSiteConfigFromInput(
       fallbackContactEmail: base.contact.email,
       stayOffers: base.stayOffers,
       place: base.place,
+      logoUrl: base.chrome.logoUrl ?? null,
     },
   );
 }

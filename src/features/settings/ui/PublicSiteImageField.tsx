@@ -16,6 +16,8 @@ export function PublicSiteImageField({
   hint,
   error,
   disabled,
+  allowUrl = true,
+  fit = "cover",
 }: {
   value: string;
   onChange: (url: string) => void;
@@ -24,6 +26,9 @@ export function PublicSiteImageField({
   hint?: string;
   error?: string;
   disabled?: boolean;
+  /** Hide the paste-URL control. Owners upload a file. */
+  allowUrl?: boolean;
+  fit?: "cover" | "contain";
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const inputId = useId();
@@ -61,7 +66,14 @@ export function PublicSiteImageField({
     <div className="pub-image-field">
       <span className="pub-image-field__label">{label}</span>
       <div className="pub-image-field__row">
-        <div className="pub-image-field__preview" data-empty={!value || undefined}>
+        <div
+          className={
+            fit === "contain"
+              ? "pub-image-field__preview pub-image-field__preview--contain"
+              : "pub-image-field__preview"
+          }
+          data-empty={!value || undefined}
+        >
           {value ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" />
@@ -107,15 +119,17 @@ export function PublicSiteImageField({
       ) : hint ? (
         <SettingsFieldHint>{hint}</SettingsFieldHint>
       ) : null}
-      <button
-        type="button"
-        className="pub-image-field__advanced"
-        disabled={disabled}
-        onClick={() => setShowUrl((open) => !open)}
-      >
-        {t("pasteUrlAdvanced")}
-      </button>
-      {showUrl ? (
+      {allowUrl ? (
+        <button
+          type="button"
+          className="pub-image-field__advanced"
+          disabled={disabled}
+          onClick={() => setShowUrl((open) => !open)}
+        >
+          {t("pasteUrlAdvanced")}
+        </button>
+      ) : null}
+      {allowUrl && showUrl ? (
         <label className="pub-image-field__url">
           <span>{t("galleryUrlLabel")}</span>
           <input

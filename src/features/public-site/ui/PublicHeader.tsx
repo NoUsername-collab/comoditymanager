@@ -1,4 +1,3 @@
-import { BrandLogo } from "./BrandLogo";
 import { PublicNav } from "./PublicNav";
 import { PublicTenantLogo } from "./PublicTenantLogo";
 import { StaffLogoEntry } from "./StaffLogoEntry";
@@ -19,9 +18,7 @@ export async function PublicHeader({ config }: { config: PublicSiteConfig }) {
     <header className="public-header">
       <div className="public-header__inner">
         <StaffLogoEntry className="public-header__brand group cursor-pointer">
-          <PublicTenantLogo logoUrl={config.chrome.logoUrl} displayName={config.displayName}>
-            <BrandLogo animated priority />
-          </PublicTenantLogo>
+          <PublicTenantLogo logoUrl={config.chrome.logoUrl} displayName={config.displayName} />
           <div className="min-w-0 leading-tight">
             <span className="public-header__name">{config.displayName}</span>
             {subtitle ? <span className="public-header__tag">{subtitle}</span> : null}

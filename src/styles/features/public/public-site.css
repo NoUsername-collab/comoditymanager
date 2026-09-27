@@ -93,6 +93,11 @@
   padding: 0.875rem 1.5rem;
 }
 
+.public-header__logo-fallback {
+  background: color-mix(in srgb, var(--site-accent) 18%, transparent);
+  color: var(--site-fg);
+}
+
 .public-header__brand {
   display: flex;
   min-width: 0;

@@ -12,6 +12,8 @@ import {
   SettingsPreviewLayout,
 } from "@/components/admin/settings/SettingsPreviewLayout";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
+import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
+import "@/styles/features/admin/admin-public-site-studio.css";
 
 type Props = {
   identity: PensionIdentity;
@@ -21,16 +23,21 @@ export function PensionIdentityForm({ identity }: Props) {
   const t = useTranslations("admin.pages.settings.identity");
   const tSettings = useTranslations("admin.pages.settings");
   const [displayName, setDisplayName] = useState(identity.displayName);
+  const [logoUrl, setLogoUrl] = useState(identity.logoUrl ?? "");
   const [contact, setContact] = useState(identity.contact);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
 
   const initialSnapshot = useRef(
-    JSON.stringify({ displayName: identity.displayName, contact: identity.contact }),
+    JSON.stringify({
+      displayName: identity.displayName,
+      logoUrl: identity.logoUrl ?? "",
+      contact: identity.contact,
+    }),
   );
   const dirty =
-    JSON.stringify({ displayName, contact }) !== initialSnapshot.current;
+    JSON.stringify({ displayName, logoUrl, contact }) !== initialSnapshot.current;
   useSettingsUnsavedWarning(dirty && !pending);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -40,6 +47,7 @@ export function PensionIdentityForm({ identity }: Props) {
     setSaved(false);
     const result = await updatePensionIdentityAction({
       displayName,
+      logoUrl: logoUrl.trim() || null,
       contact,
     });
     setPending(false);
@@ -48,12 +56,18 @@ export function PensionIdentityForm({ identity }: Props) {
       return;
     }
     setSaved(true);
-    initialSnapshot.current = JSON.stringify({ displayName, contact });
+    initialSnapshot.current = JSON.stringify({ displayName, logoUrl, contact });
   }
 
   return (
     <SettingsPreviewLayout
-      preview={<IdentitySitePreview displayName={displayName} contact={contact} />}
+      preview={
+        <IdentitySitePreview
+          displayName={displayName}
+          contact={contact}
+          logoUrl={logoUrl.trim() || null}
+        />
+      }
       form={
         <form className="settings-form-stack" onSubmit={handleSubmit}>
           {dirty && !pending && !saved ? (
@@ -94,6 +108,15 @@ export function PensionIdentityForm({ identity }: Props) {
                   {t("displayNameHint")}
                 </SettingsFieldHint>
               </label>
+              <PublicSiteImageField
+                kind="logo"
+                label={t("logoLabel")}
+                value={logoUrl}
+                onChange={setLogoUrl}
+                hint={t("logoHint")}
+                allowUrl={false}
+                fit="contain"
+              />
             </div>
           </section>
 

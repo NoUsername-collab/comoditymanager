@@ -2427,11 +2427,24 @@ html[data-layout-chrome="compact"] .settings-shell__group {
 }
 
 .settings-identity-preview__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 2rem;
   height: 2rem;
+  overflow: hidden;
   border-radius: 0.5rem;
   background: color-mix(in srgb, var(--admin-accent, #059669) 18%, var(--admin-panel-bg, #fff));
   border: 1px solid color-mix(in srgb, var(--admin-accent, #059669) 25%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--admin-text, #18181b);
+}
+
+.settings-identity-preview__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .settings-identity-preview__name {

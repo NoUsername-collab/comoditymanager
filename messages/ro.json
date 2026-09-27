@@ -1290,7 +1290,9 @@
           "cardContactDesc": "Canale folosite pe site și în comunicări dacă nu există override pe canal.",
           "displayNameHint": "Apare în header-ul site-ului public și în subiectele emailurilor.",
           "emailHint": "Adresa Reply-to și contact din footer.",
-          "phoneHint": "Afișat în bara de contact și footer."
+          "phoneHint": "Afișat în bara de contact și footer.",
+          "logoLabel": "Logo",
+          "logoHint": "Încarcă orice poză ai. O așezăm noi în pătrat, pe site și în aplicația oaspeților. JPEG, PNG sau WebP, maxim 5 MB."
         },
         "stayHours": {
           "title": "Ore sejur",
@@ -1649,7 +1651,9 @@
         "brandTitle": "Brand și chrome",
         "brandSectionDesc": "Logo, linia din header, linia din footer, fontul și banda de contact.",
         "logoLabel": "Logo pensiune",
-        "logoHint": "Înlocuiește marca platformei în header. JPEG, PNG sau WebP, maxim 5 MB.",
+        "logoHint": "Încarcă logo-ul la Identitate pensiune. Aici se vede în preview.",
+        "logoManaged": "Logo-ul se încarcă la Identitate pensiune și apare aici în preview.",
+        "logoManagedLink": "Deschide identitatea",
         "headerSubtitle": "Subtitlu header",
         "footerTagline": "Tagline footer",
         "fontTitle": "Font titluri",

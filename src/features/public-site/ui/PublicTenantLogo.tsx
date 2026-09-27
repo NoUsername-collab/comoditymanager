@@ -1,23 +1,29 @@
-import type { ReactNode } from "react";
-
 export function PublicTenantLogo({
   logoUrl,
   displayName,
-  children,
 }: {
   logoUrl?: string | null;
   displayName: string;
-  children: ReactNode;
 }) {
+  const frame = "h-16 w-16 shrink-0 rounded-lg sm:h-[4.5rem] sm:w-[4.5rem]";
   if (logoUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={logoUrl}
         alt={displayName}
-        className="h-16 w-16 object-contain sm:h-[4.5rem] sm:w-[4.5rem]"
+        className={`${frame} object-contain`}
       />
     );
   }
-  return children;
+
+  const initial = displayName.trim().slice(0, 1).toUpperCase() || "•";
+  return (
+    <span
+      className={`public-header__logo-fallback flex items-center justify-center text-lg font-bold ${frame}`}
+      aria-hidden
+    >
+      {initial}
+    </span>
+  );
 }

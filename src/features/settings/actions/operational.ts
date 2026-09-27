@@ -11,6 +11,8 @@ import { parseOperationalHours } from "@/domain/settings/operational-hours";
 import { requireStaff, requireStaffPermission } from "@/lib/auth/require-staff";
 import { checkRateLimit, getClientIp, RATE_LIMIT_PASSWORD_VERIFY } from "@/lib/rate-limit";
 import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
+import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
+import { optionalUrlSchema } from "@/domain/settings/schemas/shared";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { updatePensionSettings } from "@/services/pension-settings";
 import {
@@ -138,18 +140,33 @@ export async function updatePensionIdentityAction(
   }
 
   try {
+    const logoParsed = optionalUrlSchema.safeParse(input.logoUrl ?? null);
+    if (!logoParsed.success) {
+      return { ok: false, error: t("genericError") };
+    }
+    const logoUrl =
+      typeof logoParsed.data === "string" && logoParsed.data.trim()
+        ? logoParsed.data.trim()
+        : null;
+
     const { updatePensionIdentity } = await import("@/services/pension-identity");
-    await updatePensionIdentity(input);
+    await updatePensionIdentity({ ...input, logoUrl });
     await logAdminActivityFromSession({
       action: "settings.updated",
       entityType: "settings",
       summary: "Property identity updated",
       metadata: { displayName: input.displayName },
     });
-    bustPensionSettingsCache(await resolveTenantIdForData());
+    const tenantId = await resolveTenantIdForData();
+    bustPensionSettingsCache(tenantId);
+    revalidateTag(CACHE_TAGS.publicSite, "max");
+    revalidateTag(tenantTag(tenantId, CACHE_TAGS.publicSite), "max");
     revalidatePath("/admin/settings/identity");
     revalidatePath("/admin/settings");
+    revalidatePath("/admin/settings/public-site");
+    revalidatePath("/admin/settings/guest-app");
     revalidatePath("/");
+    revalidatePath("/stay", "layout");
     return { ok: true };
   } catch (e) {
     if (e instanceof Error && e.message === "settings.identity_migration_required") {

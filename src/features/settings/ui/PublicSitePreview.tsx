@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { BrandMarkSvg } from "@/features/public-site/ui/BrandMarkSvg";
 import { PublicTenantLogo } from "@/features/public-site/ui/PublicTenantLogo";
 import {
   buildPublicContactLinks,
@@ -81,9 +80,7 @@ export function PublicSitePreview({
         <header className="public-header">
           <div className="public-header__inner">
             <div className="public-header__brand">
-              <PublicTenantLogo logoUrl={config.chrome.logoUrl} displayName={config.displayName}>
-                <BrandMarkSvg animated={false} className="h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]" />
-              </PublicTenantLogo>
+              <PublicTenantLogo logoUrl={config.chrome.logoUrl} displayName={config.displayName} />
               <div className="min-w-0 leading-tight">
                 <span className="public-header__name">{config.displayName}</span>
                 {subtitle ? <span className="public-header__tag">{subtitle}</span> : null}
