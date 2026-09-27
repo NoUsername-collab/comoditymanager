@@ -15,7 +15,7 @@ type Props = {
   occupancy: OccupancySegment[];
 };
 
-/** Blochează meniul browser și deschide meniul general Casa Emil pe timeline. */
+/** Block the browser menu and open the Casa Emil timeline menu. */
 export function GanttContextMenuBridge({ shellRef, viewRange, occupancy }: Props) {
   const { openMenu } = useGanttContextMenu();
   const dayIsos = viewRange.days.map((d) => d.iso);

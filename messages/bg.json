@@ -3505,9 +3505,10 @@
         "year": "Year"
       },
       "view": {
-        "all": "All rooms",
-        "building": "Building",
-        "room": "Room"
+        "all": "Всички стаи",
+        "building": "Сграда",
+        "room": "Стая",
+        "allBuildings": "Всички сгради"
       },
       "periodSteps": {
         "day": {

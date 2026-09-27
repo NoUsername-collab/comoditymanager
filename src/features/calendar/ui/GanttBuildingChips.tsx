@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { CSSProperties } from "react";
 import type { AcMode } from "@/types/database";
 import { GanttBuildingMarker } from "@/features/calendar/ui/GanttBuildingMarker";
@@ -23,6 +24,7 @@ export function GanttBuildingChips({
   focusBuildingId: string | null;
   onFocusBuilding: (id: string | null) => void;
 }) {
+  const tGantt = useTranslations("admin.gantt");
   if (buildings.length === 0) return null;
 
   return (
@@ -37,7 +39,7 @@ export function GanttBuildingChips({
           .filter(Boolean)
           .join(" ")}
       >
-        Toate clădirile
+        {tGantt("view.allBuildings")}
       </button>
       {buildings.map((b) => {
         const color = resolveGanttAcMarkerColor(b.ac_mode, {

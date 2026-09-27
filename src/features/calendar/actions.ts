@@ -107,11 +107,12 @@ export async function createRoomHoldsFromGanttAction(input: {
       createdBy: actorEmail(user),
     });
     await scheduleCalendarRevalidate();
+    const tGantt = await getTranslations("admin.gantt");
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
       entityId: input.roomIds[0] ?? null,
-      summary: `Hold ${input.roomIds.length} camere · ${input.checkIn} → ${input.checkOut}`,
+      summary: `${tGantt("quick.holdCreatedMany", { count: input.roomIds.length })} · ${input.checkIn} → ${input.checkOut}`,
       undoable: true,
       metadata: {
         hold_ids: ids,
@@ -148,11 +149,12 @@ export async function createRoomHoldFromGanttAction(input: {
       createdBy: actorEmail(user),
     });
     await scheduleCalendarRevalidate();
+    const tGantt = await getTranslations("admin.gantt");
     const logId = await logAdminActivityFromSession({
       action: "occupancy.hold_created",
       entityType: "room",
       entityId: input.roomId,
-      summary: `Hold cameră · ${input.checkIn} → ${input.checkOut}`,
+      summary: `${tGantt("occupancy.holdRoom")} · ${input.checkIn} → ${input.checkOut}`,
       undoable: true,
       metadata: {
         hold_id: id,
@@ -188,11 +190,12 @@ export async function createRoomBlockFromGanttAction(input: {
       createdBy: actorEmail(user),
     });
     await scheduleCalendarRevalidate();
+    const tGantt = await getTranslations("admin.gantt");
     const logId = await logAdminActivityFromSession({
       action: "occupancy.block_created",
       entityType: "room",
       entityId: input.roomId,
-      summary: `Blocare · ${input.checkIn} → ${input.checkOut}`,
+      summary: `${tGantt("occupancy.blockRoom")} · ${input.checkIn} → ${input.checkOut}`,
       undoable: true,
       metadata: {
         block_id: id,

@@ -47,7 +47,7 @@ export type GanttStayTimeline = {
   nightsPct: number;
 };
 
-/** @deprecated Folosește {@link GanttStayTimeline} */
+/** @deprecated Use {@link GanttStayTimeline} */
 export type GanttStayBarProgress = {
   mode: "nights" | "rooms";
   pct: number;
@@ -253,7 +253,7 @@ export function resolveGanttStayTimeline(args: {
   };
 }
 
-/** @deprecated Folosește {@link resolveGanttStayTimeline} */
+/** @deprecated Use {@link resolveGanttStayTimeline} */
 export function resolveGanttStayBarProgress(args: {
   segmentCheckIn: string;
   segmentCheckOut: string;
@@ -315,7 +315,7 @@ export function shouldShowGanttStayAlerts(args: {
   return isOperativeCheckInDay(args.bookingCheckIn, args.today);
 }
 
-/** Capăt dreapta — bec OK vs roșu problemă pe carduri Gantt. */
+/** Right-end cap — OK lamp vs problem mark on Gantt stay chips. */
 export type GanttStayCapHealth = "neutral" | "ok" | "problem";
 
 export function resolveGanttStayCapHealth(args: {

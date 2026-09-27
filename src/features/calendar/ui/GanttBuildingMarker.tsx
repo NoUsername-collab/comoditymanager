@@ -118,12 +118,12 @@ function GanttAcMarker({
   );
 }
 
-/** Casă — albastru dacă are AC, portocaliu dacă nu. */
+/** Building house — blue if AC, orange if not. */
 export function GanttBuildingMarker(props: MarkerBase) {
   return <GanttAcMarker variant="building" {...props} />;
 }
 
-/** Ușă cameră — aceeași logică AC pe cameră / clădire. */
+/** Room door — same AC logic on room / building. */
 export function GanttRoomMarker(props: MarkerBase) {
   return <GanttAcMarker variant="room" {...props} />;
 }

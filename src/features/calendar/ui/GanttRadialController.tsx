@@ -134,7 +134,7 @@ export function GanttRadialController({
           type="button"
           className={`gantt-action-strip__reveal ${open ? "gantt-action-strip__reveal--hidden" : ""}`}
           onClick={() => setOpen(true)}
-          title="Acțiuni rapide"
+          title={tGantt("radial.openController")}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
@@ -144,7 +144,7 @@ export function GanttRadialController({
           type="button"
           className={`gantt-action-strip__collapse ${open ? "gantt-action-strip__collapse--visible" : ""}`}
           onClick={() => setOpen(false)}
-          title="Ascunde"
+          title={tGantt("radial.closeController")}
           tabIndex={open ? 0 : -1}
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

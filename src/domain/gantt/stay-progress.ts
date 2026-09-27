@@ -6,7 +6,7 @@ export type StayNightProgress = {
   pct: number;
 };
 
-/** Progres nopți (1-based current) pentru bara Gantt; null dacă sejur invalid. */
+/** Night progress (1-based current) for the Gantt bar; null if the stay is invalid. */
 export function stayNightProgress(
   checkIn: string,
   checkOut: string,

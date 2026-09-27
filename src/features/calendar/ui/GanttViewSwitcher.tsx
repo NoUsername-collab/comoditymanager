@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation"
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { AdminSelect } from "@/components/admin/ui/AdminInput";
 
 export type GanttViewMode = "all" | "building" | "room";
@@ -27,6 +28,8 @@ export function GanttViewSwitcher({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const tCommon = useTranslations("admin.common");
+  const tGantt = useTranslations("admin.gantt");
 
   const view = (searchParams.get("view") as GanttViewMode) || "all";
   const buildingId = searchParams.get("building") ?? "";
@@ -72,7 +75,7 @@ export function GanttViewSwitcher({
   return (
     <div className="gantt-view-switcher flex flex-wrap items-center gap-3 rounded-xl border border-zinc-200 bg-zinc-50/80 px-3 py-2.5">
       <span className="text-xs font-medium uppercase tracking-wide text-zinc-500">
-        Vizualizare
+        {tCommon("view")}
       </span>
 
       <div className="gantt-view-switcher__tabs flex flex-wrap gap-1">
@@ -81,7 +84,7 @@ export function GanttViewSwitcher({
           className={tabClass(view === "all")}
           onClick={() => go({ view: "all", building: null, room: null })}
         >
-          Toate
+          {tGantt("view.all")}
         </button>
         <button
           type="button"
@@ -94,7 +97,7 @@ export function GanttViewSwitcher({
             })
           }
         >
-          Per clădire
+          {tCommon("byBuilding")}
         </button>
         <button
           type="button"
@@ -107,7 +110,7 @@ export function GanttViewSwitcher({
             })
           }
         >
-          Per cameră
+          {tCommon("byRoom")}
         </button>
       </div>
 
@@ -150,14 +153,14 @@ export function GanttViewSwitcher({
       )}
 
       <span className="ml-auto text-xs text-zinc-500">
-        {view === "all" && `${rooms.length} camere`}
+        {view === "all" && `${rooms.length} ${tCommon("roomsShort")}`}
         {view === "building" &&
-          `${roomsForBuilding.length} camere · ${
+          `${roomsForBuilding.length} ${tCommon("roomsShort")} · ${
             buildings.find((b) => b.id === buildingId)?.name ?? ""
           }`}
         {view === "room" &&
           rooms.find((r) => r.id === roomId)?.name &&
-          `1 cameră · ${rooms.find((r) => r.id === roomId)?.building_name}`}
+          `1 ${tCommon("room")} · ${rooms.find((r) => r.id === roomId)?.building_name}`}
       </span>
     </div>
   );

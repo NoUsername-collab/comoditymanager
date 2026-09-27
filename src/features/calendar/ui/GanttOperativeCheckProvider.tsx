@@ -7,7 +7,7 @@ import {
   type OperativeCheckRequest,
 } from "@/features/checkin/ui/OperativeCheckProvider";
 
-/** @deprecated Prefer OperativeCheckProvider — păstrat pentru Gantt. */
+/** @deprecated Prefer OperativeCheckProvider — kept for Gantt. */
 export type { OperativeCheckRequest };
 
 export function GanttOperativeCheckProvider({

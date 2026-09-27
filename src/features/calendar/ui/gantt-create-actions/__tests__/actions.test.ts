@@ -64,7 +64,7 @@ describe("ganttCreateActionsDisabled", () => {
 
 describe("ganttCreateDraftFromMenu", () => {
   it("copies the interval and selected action", () => {
-    expect(ganttCreateDraftFromMenu(createTarget(), "request", "Cameră")).toEqual({
+    expect(ganttCreateDraftFromMenu(createTarget(), "request", "Room")).toEqual({
       roomId: "r1",
       roomName: "101",
       checkIn: "2026-09-10",

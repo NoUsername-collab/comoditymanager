@@ -3742,9 +3742,10 @@
         "year": "Year"
       },
       "view": {
-        "all": "All rooms",
-        "building": "Building",
-        "room": "Room"
+        "all": "Toate camerele",
+        "building": "Clădire",
+        "room": "Cameră",
+        "allBuildings": "Toate clădirile"
       },
       "periodSteps": {
         "day": {

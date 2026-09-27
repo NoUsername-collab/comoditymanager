@@ -236,7 +236,7 @@ export function GanttToolbar({
       })
     );
   }
-  if (view === "all") metaParts.push(`${rooms.length} camere`);
+  if (view === "all") metaParts.push(`${rooms.length} ${tCommon("roomsShort")}`);
   else if (view === "building") {
     metaParts.push(
       `${roomsForBuilding.length} ${tCommon("roomsShort")} · ${buildings.find((b) => b.id === buildingId)?.name ?? ""}`

@@ -7,7 +7,7 @@ export type GanttBarPosition = {
   continuesAfter: boolean;
 };
 
-/** Poziționare pe grilă CSS (1 coloană = 1 zi / noapte). */
+/** CSS grid placement (1 column = 1 day / night). */
 export type GanttBarGridSpan = {
   columnStart: number;
   columnSpan: number;
@@ -81,8 +81,8 @@ function parseRangeEndExclusive(rangeEndIso: string): Date {
 }
 
 /**
- * Bară Gantt pe un interval de zile [rangeStart, rangeEnd).
- * rangeEnd = prima zi DUPĂ ultima coloană (exclusiv).
+ * Gantt bar on a day range [rangeStart, rangeEnd).
+ * rangeEnd is the first day after the last column (exclusive).
  */
 export function bookingBarInRange(
   checkIn: string,
@@ -128,7 +128,7 @@ export function bookingBarInRange(
   };
 }
 
-/** @deprecated Prefer bookingBarGridSpan + grid CSS în Gantt */
+/** @deprecated Prefer bookingBarGridSpan + grid CSS in Gantt */
 export function bookingBarInRangeByNights(
   checkIn: string,
   checkOut: string,
@@ -139,7 +139,7 @@ export function bookingBarInRangeByNights(
   return gridSpanToPosition(span, visibleDayIsos.length);
 }
 
-/** @deprecated Folosește bookingBarInRange — păstrat pentru compatibilitate */
+/** @deprecated Use bookingBarInRange — kept for compatibility */
 export function bookingBarInMonth(
   checkIn: string,
   checkOut: string,

@@ -3760,7 +3760,8 @@
       "view": {
         "all": "All rooms",
         "building": "Building",
-        "room": "Room"
+        "room": "Room",
+        "allBuildings": "All buildings"
       },
       "periodSteps": {
         "day": {

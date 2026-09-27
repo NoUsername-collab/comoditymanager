@@ -54,7 +54,7 @@ export function computeDailyFreeCounts(
   });
 }
 
-/** Nivel culoare pentru celula sumar — verde = multe libere, roșu = plin. */
+/** Summary-cell heat — green = many free, red = full. */
 export function dailyFreeHeatLevel(
   free: number,
   total: number

@@ -1,16 +1,16 @@
-/** Înălțime rând Gantt (−15% față de 56px). */
+/** Gantt row height (−15% from 56px). */
 export const GANTT_ROW_H = 48;
 
-/** Desktop compact density — sync cu --gantt-row-h din gantt-premium-shell.css */
+/** Desktop compact density — keep in sync with --gantt-row-h in gantt-premium-shell.css */
 export const GANTT_ROW_H_COMPACT = 28;
 
-/** Înălțime bare rezervare pe Gantt (+10% față de 30px). */
+/** Stay bar height on the Gantt (+10% from 30px). */
 export const GANTT_STAY_H = 33;
 
-/** Înălțime bare hold/block (+10% față de 24px). */
+/** Hold/block bar height (+10% from 24px). */
 export const GANTT_OCC_BAR_H = 26;
 
-/** Rând nerepartizat (−15% față de 44px). */
+/** Unassigned row height (−15% from 44px). */
 export const GANTT_UNASSIGNED_ROW_H = 37;
 
 export const GANTT_COVERAGE_OPTIONS = [10, 20, 30] as const;

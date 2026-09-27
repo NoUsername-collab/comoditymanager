@@ -52,7 +52,7 @@ export function roomTodayFlags(
   };
 }
 
-/** Zile cu plecare + sosire în aceeași cameră (turnover). */
+/** Days with both departure and arrival in the same room (turnover). */
 export function roomTurnoverDays(
   roomId: string,
   bookings: BookingRow[],

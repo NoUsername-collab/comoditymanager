@@ -6,7 +6,7 @@ import {
   LONG_PRESS_MOVE_PX,
 } from "@/domain/gantt/context-menu";
 
-/** Click dreapta + long-press (~400ms) = același meniu contextual. */
+/** Right-click + long-press (~400ms) = the same context menu. */
 export function useGanttMenuTrigger(
   onOpen: (clientX: number, clientY: number) => void
 ) {

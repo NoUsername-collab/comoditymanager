@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ganttStayChromeClass } from "@/lib/gantt-stay-chrome";
 import type { GuestFlagLevel } from "@/domain/guest/types";
@@ -21,6 +22,7 @@ export const GanttRequestsCard = memo(function GanttRequestsCard({
   party,
   alertLevel,
 }: Props) {
+  const tCommon = useTranslations("admin.common");
   return (
     <Link
       href={href}
@@ -42,7 +44,7 @@ export const GanttRequestsCard = memo(function GanttRequestsCard({
         <span className="gantt-stay__end-tab-arrow">›</span>
       </span>
       <span className="gantt-stay__stamp" aria-hidden>
-        CERERE
+        {tCommon("request")}
       </span>
     </Link>
   );

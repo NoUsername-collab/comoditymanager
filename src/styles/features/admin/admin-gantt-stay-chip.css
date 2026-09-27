@@ -84,7 +84,7 @@
   text-align: left;
 }
 
-/* Bară Gantt — ascunde text redundant (CERERE, note policy); numele rămâne vizibil */
+/* Stay chip — hide redundant stamp/policy copy; the guest name stays visible */
 .gantt-stay--chip .gantt-stay__stamp,
 .gantt-stay--chip .gantt-stay__policy-note,
 .gantt-occ-bar--chip .gantt-stay__surface-text {
