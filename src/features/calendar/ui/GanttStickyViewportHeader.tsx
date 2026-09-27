@@ -14,7 +14,7 @@ import type { GanttViewRange } from "@/domain/gantt/view-range";
 import { AdminPortal } from "@/components/admin/overlay/AdminPortal";
 import { GanttDayHeader } from "./GanttDayHeader";
 import { GanttSummaryGrid } from "./GanttSummaryGrid";
-import type { GanttDayGridOptions, StickyViewportState } from "./GanttGridHelpers";
+import type { GanttDayGridOptions, GanttShellZoom, StickyViewportState } from "./GanttGridHelpers";
 import { useCompactLayoutHints } from "@/hooks/useMobileLayout";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -33,6 +33,9 @@ export function GanttStickyViewportHeader({
   filterActive,
   onSummaryDayClick,
   onDayDrillDown,
+  checkInTime,
+  checkOutTime,
+  shellZoom,
 }: {
   scrollRef: RefObject<HTMLDivElement | null>;
   shellRef: RefObject<HTMLElement | null>;
@@ -48,6 +51,9 @@ export function GanttStickyViewportHeader({
   filterActive: boolean;
   onSummaryDayClick: (iso: string) => void;
   onDayDrillDown?: (iso: string) => void;
+  checkInTime: string;
+  checkOutTime: string;
+  shellZoom?: GanttShellZoom;
 }) {
   const tCommon = useTranslations("admin.common");
   const locale = useLocale();
@@ -188,6 +194,9 @@ export function GanttStickyViewportHeader({
                   dayGridOptions={dayGridOptions}
                   columnGranularity={viewRange.columnGranularity}
                   onDayDrillDown={onDayDrillDown}
+                  checkInTime={checkInTime}
+                  checkOutTime={checkOutTime}
+                  shellZoom={shellZoom}
                 />
               </div>
             </div>

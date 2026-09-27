@@ -144,7 +144,7 @@ export function GanttCalendar({
   focusDay?: string | null;
   /** Calendar "today" (ISO), defaults to the real calendar date. */
   today?: string;
-  /** Owner or Setări → Check-in allows edits after check-out. */
+  /** Owner or Settings → Check-in allows edits after check-out. */
   canEditAfterCheckout?: boolean;
   /** Today board badge counts for the radial controller */
   requestCount?: number;
@@ -603,6 +603,9 @@ export function GanttCalendar({
         filterActive={summaryFilterActive}
         onSummaryDayClick={handleSummaryDayClick}
         onDayDrillDown={handleHeaderDayDrillDown}
+        checkInTime={checkInTime}
+        checkOutTime={checkOutTime}
+        shellZoom={shellZoom}
       />
     <div
       key={viewRange.periodKey}
@@ -718,6 +721,9 @@ export function GanttCalendar({
                   dayGridOptions={dayGridOptions}
                   columnGranularity={viewRange.columnGranularity}
                   onDayDrillDown={handleHeaderDayDrillDown}
+                  checkInTime={checkInTime}
+                  checkOutTime={checkOutTime}
+                  shellZoom={shellZoom}
                 />
               </th>
             </tr>

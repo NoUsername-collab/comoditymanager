@@ -90,10 +90,9 @@
 }
 
 .gantt-summary-cell--weekend {
-  background-color: color-mix(
-    in srgb,
-    var(--gantt-zone-clean, var(--surface)) 86%,
-    var(--border-strong, #64748b)
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--text-muted, #5a6080) 22%, transparent),
+    color-mix(in srgb, var(--text-muted, #5a6080) 22%, transparent)
   );
 }
 
@@ -102,8 +101,16 @@
 }
 
 .gantt-summary-cell--past {
-  background: var(--past-bg, #e8eaf0) !important;
-  color: var(--past-text, #7a809a) !important;
+  background-color: color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean, var(--surface)));
+  color: var(--past-text, #7a809a);
+}
+
+.gantt-summary-cell--past.gantt-summary-cell--weekend {
+  background-color: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--past-bg, #e8eaf0) 70%, var(--gantt-zone-clean, var(--surface))) 72%,
+    var(--text-muted, #5a6080)
+  );
 }
 
 .gantt-summary-cell--selected {

@@ -3,7 +3,6 @@
 import type { CSSProperties } from "react";
 import type { GanttViewRange, GanttZoom } from "@/domain/gantt/view-range";
 import { ganttDayTimeStyle } from "@/lib/gantt-time";
-import { addDays } from "@/lib/stay-dates";
 
 /** Shell `data-gantt-zoom` token for CSS zoom grammar. */
 export type GanttShellZoom = "7z" | "15z" | "30z" | "quarter";
@@ -30,10 +29,6 @@ export function drillDownZoomFrom(current: InlineZoomChoice): InlineZoomChoice |
     default:
       return null;
   }
-}
-
-function isInOperationalWindow(iso: string, today: string): boolean {
-  return iso >= today && iso < addDays(today, 7);
 }
 
 export const ROOM_COL_W = "7.7rem";
@@ -78,8 +73,7 @@ export function resolveGanttDayGridOptions(
   return undefined;
 }
 
-export const GANTT_DAY_CELL =
-  "gantt-day-cell min-w-0 bg-white shadow-[inset_0_0_0_1px_#d4d4d8]";
+export const GANTT_DAY_CELL = "gantt-day-cell min-w-0";
 
 export type InlineZoomChoice =
   | "today"
@@ -217,7 +211,6 @@ export function dayCellClass(
   touch: boolean,
   options?: {
     turnover?: boolean;
-    operationalWindow?: boolean;
   }
 ) {
   return [
@@ -228,13 +221,12 @@ export function dayCellClass(
     col.isToday && "gantt-day-cell--today",
     col.isPast && "gantt-day-cell--past",
     options?.turnover && "gantt-day-cell--turnover",
-    options?.operationalWindow && "gantt-day-cell--operational-window",
   ]
     .filter(Boolean)
     .join(" ");
 }
 
-/** Header zile — fără zone/hasură din grila de cazare */
+/** Day header — ticks come from CSS; no full-day zone hatch */
 export function dayHeaderCellClass(
   col: { isWeekend: boolean; isToday: boolean; isPast: boolean },
   compact: boolean
@@ -258,8 +250,6 @@ export function DayGrid({
   checkOutTime,
   dayGridOptions,
   turnoverIsos,
-  shellZoom,
-  effectiveToday,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
@@ -271,12 +261,10 @@ export function DayGrid({
   shellZoom?: GanttShellZoom;
   effectiveToday?: string;
 }) {
-  const showOperationalWindow =
-    shellZoom === "15z" || shellZoom === "30z";
   return (
     <div
       className={[
-        "gantt-day-grid gantt-day-grid--timed grid h-full w-full min-w-0 bg-white shadow-[inset_1px_0_0_0_#d4d4d8]",
+        "gantt-day-grid gantt-day-grid--timed grid h-full w-full min-w-0",
         dayGridOptions?.fixed && "gantt-day-grid--fixed",
       ]
         .filter(Boolean)
@@ -299,10 +287,6 @@ export function DayGrid({
           key={col.iso}
           className={dayCellClass(col, compact, touch, {
             turnover: hasTurnover,
-            operationalWindow:
-              showOperationalWindow &&
-              effectiveToday != null &&
-              isInOperationalWindow(col.iso, effectiveToday),
           })}
         />
       );

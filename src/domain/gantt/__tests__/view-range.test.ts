@@ -184,6 +184,20 @@ describe("ganttTodayStartAnchor", () => {
   });
 });
 
+describe("7-day rolling window today column", () => {
+  it("marks peeked yesterday as past weekend and today as the second column", () => {
+    const range = buildRollingRange("2026-09-26", "days7", "en", undefined, "2026-09-27");
+    expect(range.days[0]?.iso).toBe("2026-09-26");
+    expect(range.days[0]?.isToday).toBe(false);
+    expect(range.days[0]?.isPast).toBe(true);
+    expect(range.days[0]?.isWeekend).toBe(true);
+    expect(range.days[1]?.iso).toBe("2026-09-27");
+    expect(range.days[1]?.isToday).toBe(true);
+    expect(range.days[1]?.isPast).toBe(false);
+    expect(range.days[1]?.isWeekend).toBe(true);
+  });
+});
+
 describe("mondayOfWeekContaining", () => {
   it("returns Monday for a Wednesday", () => {
     // 2025-06-11 is Wednesday → Monday = 2025-06-09

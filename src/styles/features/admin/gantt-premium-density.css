@@ -150,7 +150,7 @@ html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-header-cell__
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-azi-above {
+html[data-layout-chrome="compact"] .gantt-calendar-page .gantt-day-today-above {
   padding: 0.1rem 0 0.04rem 0.14rem;
   font-size: 0.42rem;
   letter-spacing: 0.07em;
@@ -211,7 +211,7 @@ html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-day-h
   line-height: 1;
 }
 
-html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-day-azi-above {
+html[data-layout-chrome="compact"] .gantt-viewport-header--calendar .gantt-day-today-above {
   padding: 0.1rem 0 0.04rem 0.14rem;
   font-size: 0.42rem;
 }
@@ -638,8 +638,8 @@ html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt
   line-height: 1;
 }
 
-html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-azi-above,
-html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-azi-above {
+html:not([data-layout-chrome="compact"]) .gantt-calendar-page .gantt-day-today-above,
+html:not([data-layout-chrome="compact"]) .gantt-viewport-header--calendar .gantt-day-today-above {
   padding: 0.14rem 0 0.07rem 0.17rem;
   font-size: 0.43rem;
 }

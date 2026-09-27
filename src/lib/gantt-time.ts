@@ -1,4 +1,4 @@
-/** Fracție 0–1 din zi pentru HH:MM (pentru poziționare în celulă). */
+/** Fraction 0–1 of the day for HH:MM (bar and tick placement). */
 export function timeToDayFraction(time: string): number {
   const [hh, mm] = time.split(":").map(Number);
   const h = Number.isFinite(hh) ? hh : 0;
@@ -6,7 +6,7 @@ export function timeToDayFraction(time: string): number {
   return Math.min(1, Math.max(0, (h * 60 + m) / (24 * 60)));
 }
 
-/** Ora din HH:MM pentru etichete scurte (ex. „Check-out 11”). */
+/** Hour from HH:MM for short labels (e.g. "Check-out 11"). */
 export function ganttTimeHourLabel(time: string): string {
   const [hh] = time.split(":");
   const h = Number.parseInt(hh ?? "", 10);

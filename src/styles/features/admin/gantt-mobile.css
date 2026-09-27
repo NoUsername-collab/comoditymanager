@@ -211,7 +211,7 @@ html[data-layout-chrome="compact"] .gantt-day-header-cell__weekday {
 }
 
 /* Redundant with today column highlight + toolbar AZI */
-html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-day-azi-above {
+html[data-layout-chrome="compact"][data-layout-orientation="portrait"] .gantt-day-today-above {
   display: none;
 }
 

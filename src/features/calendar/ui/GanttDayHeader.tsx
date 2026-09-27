@@ -11,7 +11,9 @@ import {
   ganttDayGridStyle,
   dayHeaderCellClass,
   type GanttDayGridOptions,
+  type GanttShellZoom,
 } from "./GanttGridHelpers";
+import { ganttDayTimeStyle } from "@/lib/gantt-time";
 
 function parseIsoDay(iso: string): number {
   return Number.parseInt(iso.slice(8, 10), 10);
@@ -28,6 +30,9 @@ export const GanttDayHeader = memo(function GanttDayHeader({
   dayGridOptions,
   columnGranularity,
   onDayDrillDown,
+  checkInTime,
+  checkOutTime,
+  shellZoom,
 }: {
   columns: GanttViewRange["days"];
   compact: boolean;
@@ -39,6 +44,9 @@ export const GanttDayHeader = memo(function GanttDayHeader({
   dayGridOptions?: GanttDayGridOptions;
   columnGranularity?: GanttViewRange["columnGranularity"];
   onDayDrillDown?: (iso: string) => void;
+  checkInTime: string;
+  checkOutTime: string;
+  shellZoom?: GanttShellZoom;
 }) {
   const tCommon = useTranslations("admin.common");
 
@@ -50,16 +58,20 @@ export const GanttDayHeader = memo(function GanttDayHeader({
   return (
     <div
       className={[
-        "gantt-day-header-grid grid w-full min-w-0 border-b border-zinc-300 bg-[var(--admin-surface-bg,var(--surface))]",
+        "gantt-day-header-grid gantt-day-grid--timed grid w-full min-w-0 border-b border-zinc-300 bg-[var(--admin-surface-bg,var(--surface))]",
         dayGridOptions?.fixed && "gantt-day-grid--fixed",
         "gantt-day-header-grid--pan",
         panActive && "gantt-day-header-grid--panning",
       ]
         .filter(Boolean)
         .join(" ")}
-      style={ganttDayGridStyle(columns.length, dayGridOptions)}
+      style={{
+        ...ganttDayGridStyle(columns.length, dayGridOptions),
+        ...ganttDayTimeStyle(checkInTime, checkOutTime),
+      }}
       data-gantt-day-grid=""
       data-gantt-day-count={columns.length}
+      data-gantt-zoom={shellZoom}
       onPointerDown={onPanPointerDown}
       title={scrollTitle}
     >
@@ -67,7 +79,7 @@ export const GanttDayHeader = memo(function GanttDayHeader({
         <div key={col.iso} className="gantt-day-header-col flex min-w-0 flex-col">
           <span
             className={[
-              "gantt-day-azi-above",
+              "gantt-day-today-above",
               !col.isToday && "invisible",
             ].join(" ")}
             aria-hidden={!col.isToday}
@@ -101,6 +113,13 @@ export const GanttDayHeader = memo(function GanttDayHeader({
                 ? formatWeekdayNarrow(col.iso, locale)
                 : formatWeekdayShort(col.iso, locale)}
             </span>
+            {columnGranularity !== "week" ? (
+              <span className="gantt-day-zone-preview" aria-hidden>
+                <span className="gantt-day-zone-preview__out" />
+                <span className="gantt-day-zone-preview__clean" />
+                <span className="gantt-day-zone-preview__in" />
+              </span>
+            ) : null}
           </button>
         </div>
       ))}
