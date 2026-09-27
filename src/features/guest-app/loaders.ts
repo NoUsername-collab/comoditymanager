@@ -1,11 +1,18 @@
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
-import type { GuestAccessResult } from "@/domain/guest-app/types";
+import type { GuestAccessResult, GuestAppAppearance } from "@/domain/guest-app/types";
 import { todayIso } from "@/lib/stay-dates";
 import { resolveGuestAccessByCode } from "@/services/guest-app/access";
 import { resolveGuestAppContext } from "@/services/guest-app/resolve-context";
 import { getGuestAppSettingsPublic } from "@/services/guest-app/settings";
 import { getPensionSettings } from "@/services/pension-settings";
 import { getPublicSiteConfig } from "@/services/public-site/queries";
+
+function appearanceWithLogo(
+  appearance: GuestAppAppearance,
+  logoUrl: string | null | undefined,
+): GuestAppAppearance {
+  return { ...appearance, logoUrl: logoUrl?.trim() || null };
+}
 
 async function resolveGuestSession(code: string): Promise<GuestAccessResult> {
   try {
@@ -34,7 +41,19 @@ export async function loadGuestStayMetadata() {
     getGuestAppSettingsPublic().catch(() => null),
     getPublicSiteConfig().catch(() => null),
   ]);
-  return { pensionSettings, guestSettings, publicConfig };
+  return {
+    pensionSettings,
+    guestSettings: guestSettings
+      ? {
+          ...guestSettings,
+          appearance: appearanceWithLogo(
+            guestSettings.appearance,
+            publicConfig?.chrome.logoUrl,
+          ),
+        }
+      : guestSettings,
+    publicConfig,
+  };
 }
 
 export async function loadGuestStayLayout(code: string) {
@@ -49,8 +68,10 @@ export async function loadGuestStayLayout(code: string) {
 
   const pensionName = pensionSettings?.display_name ?? "Cazare";
   const publicThemeId = publicConfig?.themeId ?? "noir";
-  const shellAppearance =
-    guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance;
+  const shellAppearance = appearanceWithLogo(
+    guestSettings?.appearance ?? DEFAULT_GUEST_APP_SETTINGS.appearance,
+    publicConfig?.chrome.logoUrl,
+  );
   const receptionPhone =
     guestSettings?.content.hotel?.phone?.trim() ||
     publicConfig?.contact.phone?.trim() ||

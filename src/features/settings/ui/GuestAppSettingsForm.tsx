@@ -1,52 +1,29 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { DESIGN_THEME_IDS } from "@/design/themes/catalog";
-import { DEFAULT_GUEST_APP_FEATURES } from "@/domain/guest-app/defaults";
 import type {
-  GuestAppFeatureDef,
   GuestAppFeatureId,
   GuestAppFeatureState,
-  GuestAppListItem,
   GuestAppSettings,
 } from "@/domain/guest-app/types";
 import type { GuestAppThemeSource } from "@/design/themes/types";
 import { guestAppFeatureLabel } from "@/features/guest-app/feature-labels";
 import { saveGuestAppSettingsAction } from "@/features/settings/actions/guest-app";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
+import { SettingsPreviewLayout } from "@/components/admin/settings/SettingsPreviewLayout";
 import { SettingsSaveBar } from "@/components/admin/settings/SettingsSaveBar";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
-
-function linesToList(raw: string): string[] {
-  return raw
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean);
-}
-
-function listItemsToLines(items: GuestAppListItem[] | undefined): string {
-  return (items ?? [])
-    .map((item) => {
-      const parts = [item.icon, item.title, item.description].filter(Boolean);
-      return parts.join(" | ");
-    })
-    .join("\n");
-}
-
-function linesToListItems(raw: string): GuestAppListItem[] {
-  return linesToList(raw).map((line) => {
-    const parts = line.split("|").map((part) => part.trim());
-    if (parts.length >= 3) {
-      return { icon: parts[0], title: parts[1], description: parts[2] };
-    }
-    if (parts.length === 2) {
-      return { title: parts[0], description: parts[1] };
-    }
-    return { title: line };
-  });
-}
+import { SettingsFieldHint } from "@/components/admin/settings/SettingsFieldHint";
+import { GuestAppSettingsPreview } from "@/features/settings/ui/GuestAppSettingsPreview";
+import {
+  buildGuestAppStudioDraft,
+  studioDraftToGuestAppSettings,
+  type GuestAppStudioDraft,
+} from "@/features/settings/ui/guest-app-preview-model";
 
 function FormSection({
   title,
@@ -64,65 +41,17 @@ function FormSection({
   );
 }
 
-type GuestAppDraft = {
-  enabled: boolean;
-  usePrimaryContact: boolean;
-  themeId: GuestAppThemeSource;
-  primaryColor: string;
-  accentColor: string;
-  logoUrl: string;
-  features: GuestAppFeatureDef[];
-  shortDescription: string;
-  longDescription: string;
-  address: string;
-  hotelPhone: string;
-  hotelEmail: string;
-  website: string;
-  wifiName: string;
-  wifiPassword: string;
-  wifiInstructions: string;
-  travelTips: string;
-  greenDescription: string;
-  greenEnabled: boolean;
-  facilitiesText: string;
-  servicesText: string;
-};
-
-function buildGuestAppDraft(settings: GuestAppSettings): GuestAppDraft {
-  const hotel = settings.content.hotel ?? {};
-  const wifi = settings.content.wifi ?? {};
-  const green = settings.content.greenStay ?? {};
-  return {
-    enabled: settings.enabled,
-    usePrimaryContact: settings.usePrimaryContact ?? true,
-    themeId: settings.appearance.themeId ?? "inherit",
-    primaryColor: settings.appearance.primaryColor ?? "#d6b55a",
-    accentColor: settings.appearance.accentColor ?? "#e8cc72",
-    logoUrl: settings.appearance.logoUrl ?? "",
-    features:
-      settings.features.length > 0 ? settings.features : DEFAULT_GUEST_APP_FEATURES,
-    shortDescription: hotel.shortDescription ?? "",
-    longDescription: hotel.longDescription ?? "",
-    address: hotel.address ?? "",
-    hotelPhone: hotel.phone ?? "",
-    hotelEmail: hotel.email ?? "",
-    website: hotel.website ?? "",
-    wifiName: wifi.networkName ?? "",
-    wifiPassword: wifi.password ?? "",
-    wifiInstructions: wifi.instructions ?? "",
-    travelTips: (settings.content.travelTips ?? []).join("\n"),
-    greenDescription: green.description ?? "",
-    greenEnabled: green.enabled ?? true,
-    facilitiesText: listItemsToLines(settings.content.facilities),
-    servicesText: listItemsToLines(settings.content.services),
-  };
-}
-
 export function GuestAppSettingsForm({
   settings,
+  displayName,
+  publicThemeId,
+  logoUrl,
   readOnly = false,
 }: {
   settings: GuestAppSettings;
+  displayName: string;
+  publicThemeId: string;
+  logoUrl: string;
   readOnly?: boolean;
 }) {
   const t = useTranslations("admin.pages.guestApp");
@@ -131,11 +60,21 @@ export function GuestAppSettingsForm({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [draft, setDraft] = useState<GuestAppDraft>(() =>
-    buildGuestAppDraft(settings),
+  const [draft, setDraft] = useState<GuestAppStudioDraft>(() =>
+    buildGuestAppStudioDraft(settings),
   );
+  const previewSettings = useMemo(() => {
+    const next = studioDraftToGuestAppSettings(draft);
+    return {
+      ...next,
+      appearance: {
+        ...next.appearance,
+        logoUrl: logoUrl.trim() || null,
+      },
+    };
+  }, [draft, logoUrl]);
 
-  function patchDraft(partial: Partial<GuestAppDraft>) {
+  function patchDraft(partial: Partial<GuestAppStudioDraft>) {
     setDraft((d) => ({ ...d, ...partial }));
   }
 
@@ -150,44 +89,25 @@ export function GuestAppSettingsForm({
     e.preventDefault();
     setError(null);
     startTransition(async () => {
-      const result = await saveGuestAppSettingsAction({
-        enabled: draft.enabled,
-        usePrimaryContact: draft.usePrimaryContact,
-        appearance: {
-          themeId: draft.themeId,
-          primaryColor: draft.themeId === "custom" ? draft.primaryColor : null,
-          accentColor: draft.themeId === "custom" ? draft.accentColor : null,
-          logoUrl: draft.logoUrl.trim() || null,
-        },
-        features: draft.features,
-        content: {
-          hotel: {
-            shortDescription: draft.shortDescription.trim() || undefined,
-            longDescription: draft.longDescription.trim() || undefined,
-            address: draft.address.trim() || undefined,
-            phone: draft.hotelPhone.trim() || undefined,
-            email: draft.hotelEmail.trim() || undefined,
-            website: draft.website.trim() || undefined,
-          },
-          wifi: {
-            networkName: draft.wifiName.trim() || undefined,
-            password: draft.wifiPassword.trim() || undefined,
-            instructions: draft.wifiInstructions.trim() || undefined,
-          },
-          travelTips: linesToList(draft.travelTips),
-          facilities: linesToListItems(draft.facilitiesText),
-          services: linesToListItems(draft.servicesText),
-          greenStay: {
-            enabled: draft.greenEnabled,
-            description: draft.greenDescription.trim() || undefined,
-          },
-        },
-      });
+      const result = await saveGuestAppSettingsAction(
+        studioDraftToGuestAppSettings(draft),
+      );
       if (!result.ok) setError(result.error);
     });
   }
 
   return (
+    <div className="guest-app-settings">
+    <SettingsPreviewLayout
+      previewLabel={t("previewTitle")}
+      preview={
+        <GuestAppSettingsPreview
+          settings={previewSettings}
+          displayName={displayName}
+          publicThemeId={publicThemeId}
+        />
+      }
+      form={
     <form onSubmit={handleSubmit} className="settings-form-stack">
       <fieldset disabled={readOnly} className="settings-form-stack border-0 p-0 m-0 min-w-0">
         {error ? (
@@ -250,14 +170,12 @@ export function GuestAppSettingsForm({
                 </label>
               </>
             ) : null}
-            <label className="admin-settings-fields__full">
-              <span>{t("logoUrl")}</span>
-              <input
-                value={draft.logoUrl}
-                onChange={(e) => patchDraft({ logoUrl: e.target.value })}
-                placeholder="https://..."
-              />
-            </label>
+            <SettingsFieldHint className="admin-settings-fields__full">
+              {t("logoManaged")}{" "}
+              <Link href="/admin/settings/identity" className="underline">
+                {t("logoManagedLink")}
+              </Link>
+            </SettingsFieldHint>
           </div>
         </FormSection>
 
@@ -442,5 +360,8 @@ export function GuestAppSettingsForm({
         </SettingsSaveBar>
       ) : null}
     </form>
+      }
+    />
+    </div>
   );
 }

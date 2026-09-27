@@ -14,13 +14,13 @@ export default async function GuestAppSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const [t, tSettings, params, ctx, { tenant, settings }] = await Promise.all([
-    getTranslations("admin.pages.guestApp"),
-    getTranslations("admin.pages.settings"),
-    searchParams,
-    guardSettingsPermission("pension_settings"),
-    loadGuestAppSettingsPage(),
-  ]);
+  const [t, params, ctx, { tenant, settings, displayName, publicThemeId, logoUrl }] =
+    await Promise.all([
+      getTranslations("admin.pages.guestApp"),
+      searchParams,
+      guardSettingsPermission("pension_settings"),
+      loadGuestAppSettingsPage(),
+    ]);
 
   if (!tenant) {
     return (
@@ -39,15 +39,18 @@ export default async function GuestAppSettingsPage({
       alerts={alerts}
       title={t("title")}
       description={t("description")}
-      previewHref="/stay/demo"
-      previewLabel={tSettings("viewOnSite")}
-      previewExternal
     >
       {!settings ? (
         <p className="settings-empty settings-empty--error">{t("loadError")}</p>
       ) : (
         <Suspense fallback={<div className="settings-skeleton" aria-busy="true" />}>
-          <GuestAppSettingsForm settings={settings} readOnly={readOnly} />
+          <GuestAppSettingsForm
+            settings={settings}
+            displayName={displayName}
+            publicThemeId={publicThemeId}
+            logoUrl={logoUrl}
+            readOnly={readOnly}
+          />
         </Suspense>
       )}
     </SettingsPageLayout>

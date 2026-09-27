@@ -55,11 +55,11 @@ export function GuestAppHeader({ accessCode, pensionName, appearance }: Props) {
             height={40}
             loading="lazy"
             decoding="async"
-            className="h-10 w-10 shrink-0 rounded-lg object-cover"
+            className="guest-app__logo shrink-0"
           />
         ) : (
           <div
-            className="guest-app__logo-fallback flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold"
+            className="guest-app__logo-fallback flex shrink-0 items-center justify-center text-sm font-bold"
             aria-hidden
           >
             {pensionName.slice(0, 1).toUpperCase()}

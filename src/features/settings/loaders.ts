@@ -107,9 +107,21 @@ export async function loadPublicSiteAdminBundle() {
 
 export async function loadGuestAppSettingsPage() {
   const tenant = await resolveRequestTenant();
-  if (!tenant) return { tenant: null, settings: null };
-  const settings = await ensureGuestAppSettingsRow(tenant.id).catch(() => null);
-  return { tenant, settings };
+  if (!tenant) {
+    return { tenant: null, settings: null, displayName: "", publicThemeId: "noir", logoUrl: "" };
+  }
+  const [settings, identity, publicConfig] = await Promise.all([
+    ensureGuestAppSettingsRow(tenant.id).catch(() => null),
+    getPensionIdentity().catch(() => null),
+    getPublicSiteConfigForAdmin().catch(() => null),
+  ]);
+  return {
+    tenant,
+    settings,
+    displayName: identity?.displayName?.trim() || tenant.display_name,
+    publicThemeId: publicConfig?.themeId ?? "noir",
+    logoUrl: publicConfig?.chrome.logoUrl ?? identity?.logoUrl ?? "",
+  };
 }
 
 export async function loadSettingsDomainsPage() {

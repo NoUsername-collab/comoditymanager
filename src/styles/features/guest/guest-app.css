@@ -15,6 +15,18 @@
   color: var(--guest-muted);
 }
 
+.guest-app__logo,
+.guest-app__logo-fallback {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+}
+
+.guest-app__logo {
+  object-fit: contain;
+  background: color-mix(in srgb, var(--guest-fg) 8%, transparent);
+}
+
 .guest-app__logo-fallback {
   background: var(--guest-primary);
   color: var(--guest-primary-fg);

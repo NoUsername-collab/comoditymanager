@@ -1,0 +1,132 @@
+/* Phone frame for guest-app settings — live draft preview */
+
+.guest-app-settings .settings-preview-layout {
+  min-width: 0;
+}
+
+@media (max-width: 959px) {
+  .guest-app-settings .settings-preview-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .guest-app-settings .settings-preview-layout__aside {
+    order: -1;
+  }
+}
+
+@media (min-width: 960px) {
+  .guest-app-settings .settings-preview-layout__aside {
+    min-height: 0;
+  }
+}
+
+.guest-app-preview {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.guest-app-preview__hint {
+  margin: 0 0 0.65rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.guest-app-preview__phone {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 22rem);
+  margin-inline: auto;
+  flex: 1;
+  min-height: 24rem;
+  border-radius: 1.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+  overflow: hidden;
+  box-shadow: 0 18px 40px color-mix(in srgb, #000 12%, transparent);
+}
+
+.guest-app-preview__app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 24rem;
+  max-height: min(42rem, calc(100vh - 10.5rem));
+  overflow: hidden;
+}
+
+@media (max-width: 959px) {
+  .guest-app-preview__app {
+    min-height: 24rem;
+    height: 28rem;
+  }
+}
+
+.guest-app-preview__header {
+  flex-shrink: 0;
+  padding: 0.85rem 1rem 0.7rem;
+}
+
+.guest-app-preview__header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.guest-app-preview__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 1rem 5.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.guest-app-preview__kv {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+}
+
+.guest-app-preview__kv span {
+  color: var(--guest-muted);
+}
+
+.guest-app-preview .guest-app__bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.guest-app-preview__off {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--guest-bg, #111) 72%, transparent);
+  backdrop-filter: blur(6px);
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--guest-fg, #f8fafc);
+}
+
+.guest-app-preview .guest-app__feature-link {
+  pointer-events: none;
+}
+
+.guest-app-preview .guest-app__bottom-nav__link {
+  pointer-events: none;
+}

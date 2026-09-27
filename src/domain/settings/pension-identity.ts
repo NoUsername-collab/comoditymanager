@@ -9,6 +9,11 @@ export type PensionContact = {
 
 export type PensionIdentity = {
   displayName: string;
+  /**
+   * Uploaded mark. `null` means the owner has no logo.
+   * `undefined` means the column is not migrated yet — keep any older logo.
+   */
+  logoUrl?: string | null;
   contact: PensionContact;
 };
 
