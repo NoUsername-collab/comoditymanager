@@ -2657,6 +2657,15 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   display: block;
 }
 
+/* Hints sit inside <label>; outrank `.admin-settings-fields label span` so they stay muted. */
+.admin-settings-fields label .admin-settings-field-hint {
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--admin-text-muted, #71717a);
+}
+
 .settings-overview__completion {
   margin-bottom: 1rem;
   padding: 0.9rem 1rem;
