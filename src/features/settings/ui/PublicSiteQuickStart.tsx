@@ -14,15 +14,26 @@ import {
 const STEPS = ["about", "photos", "style", "contact"] as const;
 const MAX_QUICK_PHOTOS = 8;
 
-/** Four plain questions that fill a usable homepage; everything stays editable after. */
+/**
+ * Four plain questions that fill a usable homepage; everything stays editable after.
+ * Sits in the editor column so the live preview next to it follows every answer.
+ */
 export function PublicSiteQuickStart({
   initial,
   displayName,
+  language,
+  otherLanguages,
+  onChange,
   onFinish,
   onClose,
 }: {
   initial: QuickStartAnswers;
   displayName: string;
+  /** Name of the language being written, e.g. „Română”. */
+  language: string;
+  /** Names of the languages the answers do not fill. */
+  otherLanguages: string[];
+  onChange: (answers: QuickStartAnswers) => void;
   onFinish: (answers: QuickStartAnswers) => void;
   onClose: () => void;
 }) {
@@ -34,13 +45,18 @@ export function PublicSiteQuickStart({
     heroTitle: initial.heroTitle || displayName,
     galleryUrls: [...initial.galleryUrls, ""],
   }));
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const current = STEPS[step]!;
   const last = step === STEPS.length - 1;
 
   useEffect(() => {
+    dialogRef.current?.scrollIntoView({ block: "start" });
     dialogRef.current?.querySelector<HTMLElement>("input, textarea, button")?.focus();
   }, [step]);
+
+  useEffect(() => {
+    onChange(answers);
+  }, [answers, onChange]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -67,14 +83,8 @@ export function PublicSiteQuickStart({
   }
 
   return (
-    <div className="pub-quickstart" role="presentation">
-      <div
-        ref={dialogRef}
-        className="pub-quickstart__dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="pub-quickstart-title"
-      >
+    <section ref={dialogRef} className="pub-quickstart" aria-labelledby="pub-quickstart-title">
+      <div className="pub-quickstart__dialog">
         <header className="pub-quickstart__head">
           <p className="pub-quickstart__progress">
             {t("progress", { step: step + 1, total: STEPS.length })}
@@ -182,6 +192,11 @@ export function PublicSiteQuickStart({
                 onChange={(contactEmail) => patch({ contactEmail })}
                 hint={t("contactHint")}
               />
+              {otherLanguages.length > 0 ? (
+                <p className="pub-quickstart__note">
+                  {t("languageNote", { language, others: otherLanguages.join(", ") })}
+                </p>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -207,6 +222,6 @@ export function PublicSiteQuickStart({
           </div>
         </footer>
       </div>
-    </div>
+    </section>
   );
 }

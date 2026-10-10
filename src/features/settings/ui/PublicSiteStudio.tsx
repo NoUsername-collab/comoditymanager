@@ -23,7 +23,7 @@ export function PublicSiteStudio({
   dirty,
   banner,
   onPreviewPick,
-  overlay,
+  wideForm = false,
 }: {
   form: ReactNode;
   preview: ReactNode;
@@ -35,8 +35,8 @@ export function PublicSiteStudio({
   banner?: ReactNode;
   /** Click inside the preview; return true when it opened an editor. */
   onPreviewPick?: (target: Element) => boolean;
-  /** Modal layer (quick start) inside the studio so it keeps the admin theme. */
-  overlay?: ReactNode;
+  /** Wider editor column (quick start) with the preview still beside it. */
+  wideForm?: boolean;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const tSettings = useTranslations("admin.pages.settings");
@@ -92,6 +92,7 @@ export function PublicSiteStudio({
       data-device={device}
       data-enter={enter ? "1" : undefined}
       data-leave={leaving ? "1" : undefined}
+      data-wide={wideForm ? "1" : undefined}
     >
       <header className="pub-site-studio__chrome">
         <button
@@ -204,7 +205,6 @@ export function PublicSiteStudio({
           </div>
         </section>
       </div>
-      {overlay}
     </div>
   );
 }

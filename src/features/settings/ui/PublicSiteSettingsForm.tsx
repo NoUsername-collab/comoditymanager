@@ -72,6 +72,7 @@ export function PublicSiteSettingsForm({
   const [openKey, setOpenKey] = useState<string | null>("hero");
   const [scrollSeq, setScrollSeq] = useState(0);
   const [quickStartOpen, setQuickStartOpen] = useState(false);
+  const [quickStartAnswers, setQuickStartAnswers] = useState<QuickStartAnswers | null>(null);
 
   const [draft, setDraftState] = useState<PublicSiteStudioDraft>(() =>
     buildPublicSiteStudioDraft(config, locale),
@@ -83,6 +84,14 @@ export function PublicSiteSettingsForm({
     () => buildPublicSiteConfigFromInput(config, draftInput, primaryContact),
     [config, draftInput, primaryContact],
   );
+  // While the quick start is open the preview shows its answers before they are applied.
+  const studioPreviewConfig = useMemo(() => {
+    if (!quickStartOpen || !quickStartAnswers) return previewConfig;
+    let seq = 0;
+    const answered = applyQuickStart(draft, quickStartAnswers, () => `quick-preview-${++seq}`);
+    const input = mergeStudioToInput({ config, draft: answered });
+    return buildPublicSiteConfigFromInput(config, input, primaryContact);
+  }, [quickStartOpen, quickStartAnswers, previewConfig, draft, config, primaryContact]);
   const progress = useMemo(() => studioLocaleProgress(draft), [draft]);
   const readiness = useMemo(() => publicSiteReadiness(draft, previewConfig), [draft, previewConfig]);
 
@@ -126,12 +135,19 @@ export function PublicSiteSettingsForm({
   function closeQuickStart() {
     rememberQuickStartDismissed();
     setQuickStartOpen(false);
+    setQuickStartAnswers(null);
   }
 
   function finishQuickStart(answers: QuickStartAnswers) {
     setDraftState((d) => applyQuickStart(d, answers, nextGalleryDraftId));
     closeQuickStart();
     goTo("publish");
+  }
+
+  /** Language names mid-sentence: lower-case except in English („în română”). */
+  function languageName(loc: PublicLocale): string {
+    const name = t(`localeTab_${loc}`);
+    return locale === "en" ? name : name.toLocaleLowerCase(locale);
   }
 
   function pickFromPreview(target: Element): boolean {
@@ -153,14 +169,14 @@ export function PublicSiteSettingsForm({
   const canCopy =
     !readOnly && copySource !== undefined && progress[draft.editLocale] < progress[copySource];
 
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  function save(next: PublicSiteStudioDraft, onFail?: () => void) {
     setError(null);
     setFieldErrors({});
-    const payload = mergeStudioToInput({ config, draft });
+    const payload = mergeStudioToInput({ config, draft: next });
     startTransition(async () => {
       const result = await savePublicSiteSettingsAction(payload);
       if (!result.ok) {
+        onFail?.();
         setError(result.error);
         const errors = result.fieldErrors ?? {};
         setFieldErrors(errors);
@@ -174,6 +190,18 @@ export function PublicSiteSettingsForm({
     });
   }
 
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    save(draft);
+  }
+
+  /** Publish or hide in one gesture: flips the switch and saves everything. */
+  function setPublished(published: boolean) {
+    const next = { ...draft, published };
+    setDraftState(next);
+    save(next, () => setDraftState((d) => ({ ...d, published: !published })));
+  }
+
   const errorTabs = new Set(
     Object.keys(fieldErrors).map((path) => firstErrorTab({ [path]: "x" })),
   );
@@ -183,18 +211,9 @@ export function PublicSiteSettingsForm({
       published={draft.published}
       editLocale={draft.editLocale}
       dirty={dirty}
-      onPreviewPick={pickFromPreview}
-      overlay={
-        quickStartOpen ? (
-          <PublicSiteQuickStart
-            initial={quickStartAnswersFrom(draft)}
-            displayName={config.displayName}
-            onFinish={finishQuickStart}
-            onClose={closeQuickStart}
-          />
-        ) : null
-      }
-      preview={<PublicSitePreview config={previewConfig} locale={draft.editLocale} />}
+      onPreviewPick={quickStartOpen ? undefined : pickFromPreview}
+      wideForm={quickStartOpen}
+      preview={<PublicSitePreview config={studioPreviewConfig} locale={draft.editLocale} />}
       localeTabs={
         <PublicSiteLocaleTabs
           variant="chrome"
@@ -205,7 +224,7 @@ export function PublicSiteSettingsForm({
         />
       }
       saveControl={
-        readOnly ? null : (
+        readOnly || quickStartOpen ? null : (
           <AdminSubmitButton
             form="public-site-studio-form"
             type="submit"
@@ -235,6 +254,19 @@ export function PublicSiteSettingsForm({
         </>
       }
       form={
+        quickStartOpen ? (
+          <PublicSiteQuickStart
+            initial={quickStartAnswersFrom(draft)}
+            displayName={config.displayName}
+            language={languageName(draft.editLocale)}
+            otherLanguages={PUBLIC_LOCALES.filter((loc) => loc !== draft.editLocale).map(
+              languageName,
+            )}
+            onChange={setQuickStartAnswers}
+            onFinish={finishQuickStart}
+            onClose={closeQuickStart}
+          />
+        ) : (
         <form
           ref={formRef}
           id="public-site-studio-form"
@@ -300,11 +332,18 @@ export function PublicSiteSettingsForm({
               ) : null}
               {tab === "contact" ? <PublicSiteContactPanel /> : null}
               {tab === "publish" ? (
-                <PublicSitePublishPanel readiness={readiness} onGoTo={goTo} />
+                <PublicSitePublishPanel
+                  readiness={readiness}
+                  onGoTo={goTo}
+                  onPublish={setPublished}
+                  pending={pending}
+                  dirty={dirty}
+                />
               ) : null}
             </PublicSiteEditorProvider>
           </fieldset>
         </form>
+        )
       }
     />
   );

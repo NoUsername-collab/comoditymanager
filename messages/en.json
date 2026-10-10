@@ -486,6 +486,8 @@
       "ctaHow": "How it works",
       "whyTitle": "Why it's simple",
       "whyLead": "Three clear points — no surprises at online checkout.",
+      "aboutTitle": "About us",
+      "aboutLead": "Quiet stays, well-kept rooms and hosts who reply in person — everything you need for an easy trip.",
       "feature1Title": "Comfortable rooms",
       "feature1Text": "Options with or without air conditioning, suitable for families.",
       "feature2Title": "Request in minutes",
@@ -1562,6 +1564,11 @@
       },
       "publicSite": {
         "editor": {
+          "publishButton": "Publish the site",
+          "unpublishButton": "Hide the site",
+          "publishing": "Saving…",
+          "publishAnyway": "{count, plural, one {# thing still missing} other {# things still missing}} — you can publish now and finish later.",
+          "publishSavesAll": "Your other unsaved changes are saved too.",
           "previewClickHint": "Tap any part of the page to edit it",
           "quickStart": {
             "open": "✨ Quick start",
@@ -1626,7 +1633,8 @@
             "skip": "Skip, I’ll fill it in myself",
             "back": "Back",
             "next": "Next",
-            "finish": "Done — show me the site"
+            "finish": "Done — show me the site",
+            "languageNote": "These texts are in {language}. Visitors who choose {others} see them in {language} until you translate them — languages with gaps show a percentage at the top, next to RO / EN / BG."
           },
           "tabsAria": "Editor steps",
           "tabs": {
@@ -1788,7 +1796,7 @@
           "checkFix": "Fill in",
           "publishedOn": "The site is online",
           "publishedOff": "The site is not online yet",
-          "publishedOnDesc": "Anyone can see the page. Untick to hide it.",
+          "publishedOnDesc": "Anyone can see the page.",
           "publishedOffDesc": "Visitors see a “Coming soon” page. You still see the preview.",
           "publishSaveHint": "The change takes effect after you press “Save”.",
           "googleTitle": "How you appear in Google",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
 import {
   EditorAdvanced,
@@ -16,9 +17,16 @@ import type {
 export function PublicSitePublishPanel({
   readiness,
   onGoTo,
+  onPublish,
+  pending,
+  dirty,
 }: {
   readiness: PublicSiteReadinessItem[];
   onGoTo: (tab: PublicSiteEditorTab) => void;
+  /** Flip visibility and save in one go. */
+  onPublish: (published: boolean) => void;
+  pending: boolean;
+  dirty: boolean;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
@@ -53,19 +61,31 @@ export function PublicSitePublishPanel({
       </EditorGroup>
 
       <div className="pub-editor-publish" data-on={draft.published ? "1" : undefined}>
-        <label className="pub-editor-publish__switch">
-          <input
-            type="checkbox"
-            role="switch"
-            checked={draft.published}
-            onChange={(e) => patchDraft({ published: e.target.checked })}
-          />
-          <span className="pub-editor-publish__text">
-            <strong>{te(draft.published ? "publishedOn" : "publishedOff")}</strong>
-            <small>{te(draft.published ? "publishedOnDesc" : "publishedOffDesc")}</small>
-          </span>
-        </label>
-        <p className="pub-editor-publish__note">{te("publishSaveHint")}</p>
+        <p className="pub-editor-publish__text" role="status">
+          <strong>{te(draft.published ? "publishedOn" : "publishedOff")}</strong>
+          <small>{te(draft.published ? "publishedOnDesc" : "publishedOffDesc")}</small>
+        </p>
+        {!readOnly ? (
+          <>
+            <AdminButton
+              type="button"
+              variant={draft.published ? "secondary" : "primary"}
+              className="pub-editor-publish__btn"
+              disabled={pending}
+              onClick={() => onPublish(!draft.published)}
+            >
+              {pending
+                ? te("publishing")
+                : te(draft.published ? "unpublishButton" : "publishButton")}
+            </AdminButton>
+            {!draft.published && done < readiness.length ? (
+              <p className="pub-editor-publish__note">
+                {te("publishAnyway", { count: readiness.length - done })}
+              </p>
+            ) : null}
+            {dirty ? <p className="pub-editor-publish__note">{te("publishSavesAll")}</p> : null}
+          </>
+        ) : null}
       </div>
 
       <EditorGroup title={te("googleTitle")} description={te("googleDesc")}>

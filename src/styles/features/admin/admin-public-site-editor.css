@@ -751,27 +751,34 @@
   color: var(--admin-text-muted, #52525b);
 }
 
+/* Quick start replaces the editor column; the live preview stays beside it. */
 .pub-quickstart {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.55);
+  scroll-margin-top: 1rem;
 }
 
 .pub-quickstart__dialog {
   display: flex;
   flex-direction: column;
-  width: min(36rem, 100%);
-  max-height: calc(100dvh - 2rem);
-  overflow: hidden;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border: 1.5px solid color-mix(in srgb, var(--admin-accent, #059669) 45%, transparent);
   border-radius: 1.1rem;
   background: var(--admin-panel-bg, #fff);
   color: var(--admin-text, #18181b);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.pub-quickstart__note {
+  margin: 0.25rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.6rem;
+  background: var(--admin-tint-info-bg, #eff6ff);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--admin-text, #18181b);
+}
+
+@media (min-width: 1100px) {
+  .pub-site-studio--immersive[data-wide="1"] .pub-site-studio__workspace {
+    grid-template-columns: minmax(26rem, 34rem) minmax(0, 1fr);
+  }
 }
 
 .pub-quickstart__head {
@@ -870,4 +877,21 @@
 /* Keep a revealed card clear of the sticky step tabs. */
 .pub-editor-card {
   scroll-margin-top: 4.75rem;
+}
+
+.pub-editor-publish__btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.pub-editor-publish .pub-editor-publish__text {
+  margin: 0;
+}
+
+/* Keep Back / Next reachable while the step scrolls. */
+.pub-quickstart__foot {
+  position: sticky;
+  bottom: 0;
+  border-radius: 0 0 1.1rem 1.1rem;
+  background: var(--admin-panel-bg, #fff);
 }

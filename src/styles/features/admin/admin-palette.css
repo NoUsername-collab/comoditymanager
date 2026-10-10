@@ -244,13 +244,14 @@ html[data-admin-palette] .gantt-zone-ribbon__segment--checkin .gantt-zone-ribbon
   color: var(--gantt-zone-checkin-text) !important;
 }
 
-html[data-admin-palette] main h1,
-html[data-admin-palette] main h2,
+/* Public-site previews keep their own theme colours. */
+html[data-admin-palette] main h1:not(.pub-site *),
+html[data-admin-palette] main h2:not(.pub-site *),
 html[data-admin-palette] .admin-page-header h1 {
   color: var(--admin-text) !important;
 }
 
-html[data-admin-palette] main p {
+html[data-admin-palette] main p:not(.pub-site *) {
   color: var(--admin-text-muted) !important;
 }
 

@@ -460,7 +460,7 @@
       "menuOpen": "Deschide meniul",
       "menuClose": "Închide meniul",
       "home": "Acasă",
-      "gdpr": "GDPR",
+      "gdpr": "Confidențialitate",
       "terms": "Termeni",
       "book": "Rezervare"
     },
@@ -485,6 +485,8 @@
       "ctaHow": "Cum funcționează",
       "whyTitle": "De ce e simplu",
       "whyLead": "Trei lucruri clare — fără surprize la plată online.",
+      "aboutTitle": "Despre noi",
+      "aboutLead": "Cazare liniștită, camere îngrijite și gazde care îți răspund personal — tot ce ai nevoie pentru un sejur fără griji.",
       "feature1Title": "Camere confortabile",
       "feature1Text": "Opțiuni cu sau fără aer condiționat, potrivite pentru familii.",
       "feature2Title": "Cerere în câteva minute",
@@ -1548,6 +1550,11 @@
       },
       "publicSite": {
         "editor": {
+          "publishButton": "Publică site-ul",
+          "unpublishButton": "Ascunde site-ul",
+          "publishing": "Se salvează…",
+          "publishAnyway": "{count, plural, one {Mai ai # lucru de completat} few {Mai ai # lucruri de completat} other {Mai ai # de lucruri de completat}} — poți publica și acum, apoi completezi.",
+          "publishSavesAll": "Se salvează și celelalte modificări nesalvate.",
           "previewClickHint": "Apasă pe orice parte a paginii ca s-o editezi",
           "quickStart": {
             "open": "✨ Pornire rapidă",
@@ -1612,7 +1619,8 @@
             "skip": "Sari peste, completez singur",
             "back": "Înapoi",
             "next": "Mai departe",
-            "finish": "Gata — arată-mi site-ul"
+            "finish": "Gata — arată-mi site-ul",
+            "languageNote": "Textele de acum sunt în {language}. Vizitatorii care aleg {others} le văd tot în {language} până le traduci — limbile care mai au lipsuri apar cu procent sus, lângă RO / EN / BG."
           },
           "tabsAria": "Pașii editorului",
           "tabs": {
@@ -1774,7 +1782,7 @@
           "checkFix": "Completează",
           "publishedOn": "Site-ul e online",
           "publishedOff": "Site-ul nu e online încă",
-          "publishedOnDesc": "Oricine poate vedea pagina. Debifează ca s-o ascunzi.",
+          "publishedOnDesc": "Oricine poate vedea pagina.",
           "publishedOffDesc": "Vizitatorii văd o pagină „În curând”. Tu vezi în continuare previzualizarea.",
           "publishSaveHint": "Schimbarea intră în vigoare după ce apeși „Salvează”.",
           "googleTitle": "Cum apari în Google",
