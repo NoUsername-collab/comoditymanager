@@ -91,7 +91,6 @@ describe("filterSettingsNav owner ACL (default permissions)", () => {
         "email",
         "domains",
         "security",
-        "statistics",
         "team",
         "team-permissions",
         "location",
@@ -101,19 +100,15 @@ describe("filterSettingsNav owner ACL (default permissions)", () => {
 });
 
 describe("filterSettingsNav statistics ACL", () => {
-  it("shows statistics ACL only to owner", () => {
+  it("keeps statistics access inside owner-only team permissions", () => {
     const ownerNav = filterSettingsNav(SETTINGS_NAV_GROUPS, ctx("owner"));
     const adminNav = filterSettingsNav(SETTINGS_NAV_GROUPS, ctx("admin"));
+    const ids = (nav: typeof ownerNav) => nav.flatMap((g) => g.items.map((i) => i.id));
 
-    expect(
-      ownerNav.some((g) => g.id === "account" && g.items.some((i) => i.id === "statistics")),
-    ).toBe(true);
-    expect(
-      adminNav.some((g) => g.id === "account" && g.items.some((i) => i.id === "statistics")),
-    ).toBe(false);
-    expect(
-      adminNav.some((g) => g.id === "account" && g.items.some((i) => i.id === "security")),
-    ).toBe(true);
+    expect(ids(ownerNav)).not.toContain("statistics");
+    expect(ids(ownerNav)).toContain("team-permissions");
+    expect(ids(adminNav)).not.toContain("team-permissions");
+    expect(ids(adminNav)).toContain("security");
   });
 });
 

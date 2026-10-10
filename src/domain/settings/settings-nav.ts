@@ -21,7 +21,7 @@ export type SettingsNavGroup = {
 /** Legacy ?section= values → dedicated routes */
 export const SETTINGS_SECTION_REDIRECTS: Record<string, string> = {
   appearance: "/admin/settings/appearance",
-  statistics: "/admin/settings/statistics",
+  statistics: "/admin/settings/team-permissions",
   booking: "/admin/settings/booking",
   fiscal: "/admin/settings/fiscal",
   checkin: "/admin/settings/checkin",
@@ -180,14 +180,6 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         descriptionKey: "navSecurityDesc",
         href: "/admin/settings/security",
         matchPath: "/admin/settings/security",
-      },
-      {
-        id: "statistics",
-        labelKey: "navStatistics",
-        descriptionKey: "navStatisticsDesc",
-        href: "/admin/settings/statistics",
-        matchPath: "/admin/settings/statistics",
-        memberRoles: ["owner"],
       },
     ],
   },

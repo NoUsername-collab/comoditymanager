@@ -83,6 +83,7 @@ export async function updateStatisticsVisibilityAction(
     });
     bustPensionSettingsCache(await resolveTenantIdForData());
     revalidatePath("/admin/statistics");
+    revalidatePath("/admin/settings/team-permissions");
     return { ok: true };
   } catch (e) {
     if (

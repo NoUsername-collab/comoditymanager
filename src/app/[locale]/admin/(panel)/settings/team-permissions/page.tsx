@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { TeamPermissionsPanel } from "@/features/settings/ui/TeamPermissionsPanel";
+import { StatisticsSettingsPanel } from "@/features/settings/ui/StatisticsSettingsPanel";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import {
@@ -37,6 +38,11 @@ export default async function SettingsTeamPermissionsPage({
       >
         <TeamPermissionsPanel permissions={ctx.teamPermissions} />
       </SettingsSection>
+      <div id="statistics-access">
+        <SettingsSection title={t("statisticsAclTitle")} description={t("statisticsAclSubtitle")}>
+          <StatisticsSettingsPanel visibility={ctx.statisticsVisibility} />
+        </SettingsSection>
+      </div>
     </SettingsPageLayout>
   );
 }

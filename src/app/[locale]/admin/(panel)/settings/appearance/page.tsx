@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { AdminPalettePicker } from "@/features/settings/ui/AdminPalettePicker";
 import { AdminFxSettings } from "@/features/settings/ui/AdminFxSettings";
+import { AdminDisplayLayoutPicker } from "@/features/settings/ui/AdminDisplayLayoutPicker";
 import { AppearanceSettingsAsideLazy } from "@/features/settings/ui/AppearanceSettingsAsideLazy";
 import { AdminPendingForm } from "@/components/admin/feedback/AdminPendingForm";
 import { AdminSubmitButton } from "@/components/admin/feedback/AdminSubmitButton";
@@ -68,6 +69,10 @@ export default async function SettingsAppearancePage({
           </AdminSubmitButton>
         </SettingsSaveBar>
       </AdminPendingForm>
+      {/* Applies instantly on this device, so it sits outside the saved theme form. */}
+      <SettingsSection title={t("displayLayoutTitle")} description={t("displayLayoutHint")}>
+        <AdminDisplayLayoutPicker />
+      </SettingsSection>
     </SettingsPageLayout>
   );
 }

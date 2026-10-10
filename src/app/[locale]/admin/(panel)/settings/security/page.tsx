@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { MfaEnrollmentPanel } from "@/features/settings/ui/MfaEnrollmentPanel";
-import { AdminDisplayLayoutPicker } from "@/features/settings/ui/AdminDisplayLayoutPicker";
 import { AdminFactoryResetPanel } from "@/features/settings/ui/AdminFactoryResetPanel";
 import { isFactoryResetEnabled } from "@/services/database-reset";
 import { loadSettingsStaffContext } from "@/lib/settings/page-context";
@@ -47,14 +46,12 @@ export default async function SettingsSecurityPage({
       <SettingsSection title={tMfa("settingsSectionTitle")} description={tMfa("settingsSectionDesc")}>
         <MfaEnrollmentPanel next={next} />
       </SettingsSection>
-      <SettingsSection title={t("displayLayoutTitle")} description={t("displayLayoutHint")}>
-        <AdminDisplayLayoutPicker />
-      </SettingsSection>
       {showFactoryReset && tLocation ? (
         <SettingsSection
           title={tLocation("danger.title")}
           description={t("factoryResetHint")}
           className="settings-section--danger"
+          defaultOpen={false}
         >
           <AdminFactoryResetPanel />
         </SettingsSection>
