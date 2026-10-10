@@ -68,7 +68,6 @@ export default async function PublicLayout({
           <PublicContactBar
             contact={config.contact}
             title={tFooter("contact")}
-            emptyHint={tFooter("contactEmptyHint")}
             labels={{
               email: tContact("email"),
               whatsapp: tContact("whatsapp"),

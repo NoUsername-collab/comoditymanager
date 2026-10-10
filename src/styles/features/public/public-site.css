@@ -173,6 +173,14 @@
   margin-left: 0.25rem;
 }
 
+/* The menu link colours above would otherwise paint the CTA label in muted text on accent. */
+.public-header__link.public-header__cta,
+.public-header__link.public-header__cta:hover,
+.public-header__link.public-header__cta.public-header__link--active {
+  background: var(--site-accent);
+  color: var(--site-accent-fg);
+}
+
 /* Compact shell: see mobile-layout.css */
 
 /* Footer */

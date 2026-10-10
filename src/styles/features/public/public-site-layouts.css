@@ -201,8 +201,10 @@
 /* Photos stay visible on light/warm themes (v2 dims media globally). */
 .pub-site--theme-alpine .pub-hero--classic .pub-hero__media,
 .pub-site--theme-alpine .pub-hero--editorial .pub-hero__media,
+.pub-site--theme-alpine .pub-hero--immersive .pub-hero__media,
 .pub-site--theme-mediterranean .pub-hero--classic .pub-hero__media,
-.pub-site--theme-mediterranean .pub-hero--editorial .pub-hero__media {
+.pub-site--theme-mediterranean .pub-hero--editorial .pub-hero__media,
+.pub-site--theme-mediterranean .pub-hero--immersive .pub-hero__media {
   opacity: 1;
 }
 

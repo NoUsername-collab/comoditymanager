@@ -77,6 +77,8 @@ export function PublicContactBar({
   labels?: Partial<Record<"email" | "whatsapp" | "telegram" | "facebook" | "instagram", string>>;
 }) {
   const links = buildPublicContactLinks(contact, labels);
+  // Visitors get no empty band; the settings preview passes a hint for the operator.
+  if (links.length === 0 && !emptyHint) return null;
 
   return (
     <section

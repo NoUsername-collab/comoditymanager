@@ -44,9 +44,10 @@ export async function PublicFooter({ config }: { config: PublicSiteConfig }) {
             </nav>
           </div>
 
-          <div>
-            <p className="public-footer__label">{t("contact")}</p>
-            {contactLinks.length > 0 ? (
+          {/* Without any contact the column is left out — visitors never see setup hints. */}
+          {contactLinks.length > 0 ? (
+            <div>
+              <p className="public-footer__label">{t("contact")}</p>
               <div className="public-footer__contact-links">
                 {contactLinks.map((link) => (
                   <a
@@ -60,12 +61,8 @@ export async function PublicFooter({ config }: { config: PublicSiteConfig }) {
                   </a>
                 ))}
               </div>
-            ) : (
-              <p className="public-footer__contact public-footer__contact--muted">
-                {t("contactNotConfigured")}
-              </p>
-            )}
-          </div>
+            </div>
+          ) : null}
         </div>
 
         <p className="public-footer__bottom">
