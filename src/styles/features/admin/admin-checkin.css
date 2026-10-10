@@ -2686,3 +2686,15 @@ html[data-layout-chrome="compact"] .checkin-sheet-address__row {
     display: table-cell !important;
   }
 }
+
+/* Fiscal: legal references folded under one line. */
+.fiscal-settings__legal {
+  margin-top: 0.5rem;
+}
+
+.fiscal-settings__legal > summary {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #52525b);
+}

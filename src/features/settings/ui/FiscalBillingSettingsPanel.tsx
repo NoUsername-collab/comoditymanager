@@ -342,15 +342,19 @@ export function FiscalBillingSettingsPanel({
         <div className="fiscal-settings__country-badge">
           {profile.countryName[locale] ?? profile.countryName.ro}
         </div>
-        <p className="fiscal-settings__authority">{profile.authorityName[locale]}</p>
-        <ul className="fiscal-settings__refs">
-          {(profile.officialRefs[locale] ?? profile.officialRefs.ro).map((ref) => (
-            <li key={ref}>{ref}</li>
-          ))}
-        </ul>
-        <p className="fiscal-settings__vat-note">
-          {profile.vatNote[locale] ?? profile.vatNote.ro}
-        </p>
+        {/* Legal references matter for audits, not for filling the form — folded. */}
+        <details className="fiscal-settings__legal">
+          <summary>{t("legalDetails")}</summary>
+          <p className="fiscal-settings__authority">{profile.authorityName[locale]}</p>
+          <ul className="fiscal-settings__refs">
+            {(profile.officialRefs[locale] ?? profile.officialRefs.ro).map((ref) => (
+              <li key={ref}>{ref}</li>
+            ))}
+          </ul>
+          <p className="fiscal-settings__vat-note">
+            {profile.vatNote[locale] ?? profile.vatNote.ro}
+          </p>
+        </details>
       </div>
 
       {!sellerComplete ? (
