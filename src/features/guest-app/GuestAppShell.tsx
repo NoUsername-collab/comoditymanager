@@ -24,6 +24,8 @@ type Props = {
   pensionName: string;
   children: ReactNode;
   accessCode?: string;
+  homeHref?: string;
+  headerEyebrow?: string;
   features?: GuestAppFeatureDef[];
   showNavigation?: boolean;
   receptionPhone?: string | null;
@@ -32,6 +34,8 @@ type Props = {
 
 export function GuestAppShell({
   accessCode = "",
+  homeHref,
+  headerEyebrow,
   appearance,
   publicThemeId,
   pensionName,
@@ -61,6 +65,8 @@ export function GuestAppShell({
         <GuestAppHashScroll />
         <GuestAppHeader
           accessCode={accessCode}
+          homeHref={homeHref}
+          eyebrow={headerEyebrow}
           pensionName={pensionName}
           appearance={appearance}
         />

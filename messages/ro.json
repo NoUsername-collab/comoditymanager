@@ -141,7 +141,37 @@
       "title": "Salvează aplicația pe ecranul principal",
       "iosSteps": "În Safari: Share → Add to Home Screen pentru acces rapid la sejur.",
       "androidSteps": "În Chrome: Meniu ⋮ → Add to Home screen pentru acces rapid.",
+      "loyaltyTitle": "Salvează cardul de oaspete",
+      "loyaltyIosSteps": "În Safari: Share → Add to Home Screen. Referința rămâne pe telefon — fără cont.",
+      "loyaltyAndroidSteps": "În Chrome: Meniu ⋮ → Add to Home screen. Referința rămâne pe telefon — fără cont.",
       "dismiss": "Am înțeles"
+    },
+    "loyalty": {
+      "eyebrow": "Card oaspete",
+      "title": "Cardul tău la {name}",
+      "lead": "Aceasta e o referință, nu un cont. Păstreaz-o ca să revii — nopțile și beneficiile rămân la această proprietate.",
+      "referenceLabel": "Referința ta",
+      "stays": "Sejururi",
+      "nights": "Nopți",
+      "perkUnlocked": "Mulțumirea proprietății este deblocată.",
+      "nightsToPerk": "{count, plural, one {# noapte până la mulțumirea proprietății} other {# nopți până la mulțumirea proprietății}}",
+      "perkWaiting": "În așteptare: {perk}",
+      "perkWaitingGeneric": "Mai treci pe la noi — proprietatea mulțumește oaspeților care revin.",
+      "bookAgain": "Rezervă din nou",
+      "welcomeBack": "Bine ai revenit",
+      "homeLead": "Wi-Fi-ul din linkul de sejur se închide la checkout. Cardul rămâne la proprietate.",
+      "landingTitle": "Card oaspete — {name}",
+      "landingBody": "Introdu referința de la ultimul sejur sau întreabă recepția. Fără parolă.",
+      "openCard": "Deschide cardul",
+      "invalidReference": "Referința nu este validă.",
+      "metaTitle": "{name} — card oaspete",
+      "metaDescription": "Referința ta de oaspete la {name} — rezervă din nou și vezi mulțumirile acestei proprietăți.",
+      "disabledTitle": "Card indisponibil",
+      "disabledBody": "Proprietatea nu a pornit încă un card oaspete. Întreabă recepția.",
+      "notFoundTitle": "Referință inexistentă",
+      "notFoundBody": "Verifică codul sau cere recepției să-l caute pe fișa ta.",
+      "unavailableTitle": "Card indisponibil",
+      "unavailableBody": "Contactează recepția."
     },
     "milestones": {
       "ariaLabel": "Etape sejur",
@@ -1846,6 +1876,13 @@
         "greenStay": "Opțiune verde",
         "greenStayEnabled": "Oferă opțiunea de a omite curățenia",
         "greenStayDescription": "Text explicativ pentru oaspete",
+        "loyalty": "Card oaspete",
+        "loyaltyHint": "O referință pe fișa clientului — nu un cont Zalmox. Fiecare proprietate își pune propriul mulțumesc. Oprit implicit.",
+        "loyaltyEnabled": "Oferă un card oaspete după sejururi",
+        "nightsForPerk": "Nopți până la mulțumirea proprietății",
+        "nightsForPerkHint": "0 = doar cardul și Rezervă din nou, fără țintă de nopți.",
+        "perkTitle": "Titlu mulțumire (opțional)",
+        "perkDescription": "Detalii mulțumire (opțional)",
         "errors": {
           "bookingNotFound": "Rezervarea nu a fost găsită.",
           "notConfirmed": "Disponibil doar pentru rezervări confirmate.",
@@ -4045,7 +4082,8 @@
         "flagged": "Client pus sub observație",
         "blacklisted": "Client trecut în blacklist",
         "unblacklisted": "Client scos din blacklist",
-        "adjusted": "Scor client ajustat"
+        "adjusted": "Scor client ajustat",
+        "loyalty_ref_reissued": "Referință card oaspete emisă"
       },
       "building": {
         "created": "Clădire adăugată",
@@ -4384,6 +4422,15 @@
         "totalNights": "Nopți totale",
         "lastCheckout": "Ultimul checkout",
         "operatorNote": "Notă operator"
+      },
+      "loyalty": {
+        "sectionTitle": "Card oaspete",
+        "hint": "Referință doar la această proprietate. Oaspetele nu își face parolă.",
+        "referenceLabel": "Referință",
+        "missing": "Încă nu există referință — emite una după ce programul e pornit.",
+        "issue": "Emite referință",
+        "reissue": "Emite o referință nouă",
+        "enableInGuestApp": "Pornește cardul oaspete din setările Guest app."
       },
       "identity": {
         "title": "Date de identitate",

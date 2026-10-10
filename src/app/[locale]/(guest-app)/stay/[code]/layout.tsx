@@ -5,6 +5,8 @@ import { GuestAppShell } from "@/features/guest-app/GuestAppShell";
 import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { resolveGuestAppThemeStyle } from "@/features/guest-app/themes/loader";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
+import { localeRedirect as redirect } from "@/i18n/server-redirect";
+import { guestLoyaltyHref } from "@/domain/guest-app/loyalty";
 import {
   loadGuestStayLayout,
   loadGuestStayMetadata,
@@ -58,7 +60,12 @@ export default async function GuestStayLayout({
     publicThemeId,
     shellAppearance,
     receptionPhone,
+    loyaltyRedirectRef,
   } = await loadGuestStayLayout(code);
+
+  if (loyaltyRedirectRef) {
+    await redirect(guestLoyaltyHref(loyaltyRedirectRef));
+  }
 
   if (!session.ok) {
     return (

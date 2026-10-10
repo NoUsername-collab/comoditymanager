@@ -9,6 +9,8 @@ import {
   searchGuests,
 } from "@/services/guests";
 import { dedupInputFromGuest, findDedupCandidates } from "@/services/guest-dedup";
+import { getGuestAppSettings } from "@/services/guest-app/settings";
+import { getLoyaltyRefForGuest } from "@/services/guest-app/loyalty";
 
 function firstValue(value: string | string[] | undefined): string {
   if (Array.isArray(value)) return value[0] ?? "";
@@ -98,6 +100,8 @@ export async function loadGuestDetailPage(guestId: string) {
     dedupCandidates,
     today,
     latestRebookPayload,
+    loyaltyRef,
+    loyaltyEnabled,
   ] = await Promise.all([
     baseGuestPromise,
     guestResultPromise,
@@ -112,6 +116,10 @@ export async function loadGuestDetailPage(guestId: string) {
           )
         : null,
     ),
+    getLoyaltyRefForGuest(guestId).catch(() => null),
+    getGuestAppSettings()
+      .then((settings) => settings.loyalty.enabled)
+      .catch(() => false),
   ]);
 
   if (!baseGuest) return null;
@@ -124,5 +132,7 @@ export async function loadGuestDetailPage(guestId: string) {
     dedupCandidates,
     today,
     latestRebookPayload,
+    loyaltyRef,
+    loyaltyEnabled,
   };
 }

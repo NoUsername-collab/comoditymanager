@@ -19,6 +19,7 @@ export async function upsertGuestAppSettingsImpl(
       appearance: input.appearance,
       features: input.features,
       content: input.content,
+      loyalty: input.loyalty,
     }),
     { onConflict: "tenant_id" },
   );
@@ -31,7 +32,7 @@ export async function ensureGuestAppSettingsRow(
   const { supabase } = await getGuestAppPublicDb();
   const { data, error } = await supabase
     .from("guest_app_settings")
-    .select("enabled, use_primary_contact, appearance, features, content")
+    .select("enabled, use_primary_contact, appearance, features, content, loyalty")
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
@@ -46,6 +47,7 @@ export async function ensureGuestAppSettingsRow(
       appearance: defaults.appearance,
       features: defaults.features,
       content: defaults.content,
+      loyalty: defaults.loyalty,
     }),
   );
   if (insError) throw new Error(insError.message);
@@ -63,6 +65,7 @@ export async function enableGuestAppForOwner(tenantId: string): Promise<GuestApp
     appearance: current.appearance,
     features: current.features,
     content: current.content,
+    loyalty: current.loyalty,
   });
 
   return { ...current, enabled: true };

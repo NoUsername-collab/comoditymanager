@@ -15,7 +15,7 @@ async function fetchGuestAppSettingsRow(
 ): Promise<GuestAppSettings> {
   const { data, error } = await supabase
     .from("guest_app_settings")
-    .select("enabled, appearance, features, content")
+    .select("enabled, appearance, features, content, loyalty")
     .eq("tenant_id", tenantId)
     .maybeSingle();
 

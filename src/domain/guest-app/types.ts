@@ -1,6 +1,9 @@
 /** Guest app domain — pure types, fără DB / framework. */
 
 import type { GuestAppThemeSource } from "@/design/themes/types";
+import type { GuestLoyaltyProgram } from "./loyalty";
+
+export type { GuestLoyaltyProgram } from "./loyalty";
 
 export type GuestAppFeatureId =
   | "hotel_info"
@@ -71,10 +74,12 @@ export type GuestAppSettings = {
   appearance: GuestAppAppearance;
   features: GuestAppFeatureDef[];
   content: GuestAppContent;
+  loyalty: GuestLoyaltyProgram;
 };
 
 export type GuestAccessBookingSnapshot = {
   id: string;
+  guestId: string | null;
   status: string;
   checkIn: string;
   checkOut: string;

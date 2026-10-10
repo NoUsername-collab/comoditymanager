@@ -18,7 +18,11 @@ function isIos(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
 
-export function GuestInstallHint() {
+export function GuestInstallHint({
+  variant = "stay",
+}: {
+  variant?: "stay" | "loyalty";
+}) {
   const t = useTranslations("guestApp.install");
   const [visible, setVisible] = useState(false);
 
@@ -37,9 +41,17 @@ export function GuestInstallHint() {
 
   return (
     <aside className="guest-app__install-hint" role="note">
-      <p className="guest-app__install-hint__title">{t("title")}</p>
+      <p className="guest-app__install-hint__title">
+        {variant === "loyalty" ? t("loyaltyTitle") : t("title")}
+      </p>
       <p className="guest-app__install-hint__body">
-        {isIos() ? t("iosSteps") : t("androidSteps")}
+        {variant === "loyalty"
+          ? isIos()
+            ? t("loyaltyIosSteps")
+            : t("loyaltyAndroidSteps")
+          : isIos()
+            ? t("iosSteps")
+            : t("androidSteps")}
       </p>
       <button type="button" className="guest-app__install-hint__dismiss" onClick={dismiss}>
         {t("dismiss")}

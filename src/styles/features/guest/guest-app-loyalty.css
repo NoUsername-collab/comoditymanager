@@ -1,0 +1,87 @@
+.guest-loyalty-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.1rem 1.15rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--guest-primary) 12%, var(--guest-header-bg, var(--guest-bg)));
+  border: 1px solid color-mix(in srgb, var(--guest-primary) 35%, var(--guest-border));
+}
+
+.guest-loyalty-card__eyebrow,
+.guest-loyalty-landing__label span {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--guest-muted);
+}
+
+.guest-loyalty-card__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.guest-loyalty-card__lead,
+.guest-loyalty-card__progress,
+.guest-loyalty-card__perk-preview,
+.guest-loyalty-card__perk-body {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--guest-subtle, var(--guest-muted));
+}
+
+.guest-loyalty-card__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.guest-loyalty-card__stats dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--guest-muted);
+}
+
+.guest-loyalty-card__stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.guest-loyalty-card__perk {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--guest-fg) 6%, transparent);
+}
+
+.guest-loyalty-card__perk-title {
+  margin: 0 0 0.35rem;
+  font-weight: 650;
+}
+
+.guest-loyalty-landing__form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.guest-loyalty-landing__label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.guest-loyalty-landing__input {
+  min-height: 2.75rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--guest-border);
+  background: color-mix(in srgb, var(--guest-fg) 4%, transparent);
+  color: inherit;
+  font: inherit;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 0.85rem;
+}

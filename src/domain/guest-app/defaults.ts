@@ -1,3 +1,4 @@
+import { DEFAULT_GUEST_LOYALTY_PROGRAM } from "./loyalty";
 import type { GuestAppFeatureDef, GuestAppSettings } from "./types";
 
 /** Feature matrix — live by default; plata online ascunsă până la configurare. */
@@ -27,4 +28,5 @@ export const DEFAULT_GUEST_APP_SETTINGS: GuestAppSettings = {
       enabled: true,
     },
   },
+  loyalty: DEFAULT_GUEST_LOYALTY_PROGRAM,
 };

@@ -25,6 +25,17 @@ describe("settings schemas", () => {
     expect(result.ok).toBe(false);
   });
 
+  it("fills loyalty defaults when the field is omitted", () => {
+    const withoutLoyalty = { ...DEFAULT_GUEST_APP_SETTINGS };
+    delete (withoutLoyalty as { loyalty?: unknown }).loyalty;
+    const result = parseGuestAppSettingsInput(withoutLoyalty);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.loyalty.enabled).toBe(false);
+      expect(result.data.loyalty.nightsForPerk).toBe(5);
+    }
+  });
+
   it("accepts valid public site settings", () => {
     const result = parsePublicSiteSettingsInput({
       templateId: "classic",

@@ -10,20 +10,28 @@ import {
 } from "@/domain/guest-app/routes";
 
 type Props = {
-  accessCode: string;
+  accessCode?: string;
+  homeHref?: string;
+  eyebrow?: string;
   pensionName: string;
   appearance: GuestAppAppearance;
 };
 
-export function GuestAppHeader({ accessCode, pensionName, appearance }: Props) {
+export function GuestAppHeader({
+  accessCode = "",
+  homeHref,
+  eyebrow,
+  pensionName,
+  appearance,
+}: Props) {
   const t = useTranslations("guestApp.shell");
   const pathname = usePathname();
-  const homeHref = guestAppHomeHref(accessCode);
-  const onHome = pathname === homeHref || pathname.endsWith(homeHref);
+  const resolvedHome = homeHref ?? (accessCode ? guestAppHomeHref(accessCode) : "/");
+  const onHome = pathname === resolvedHome || pathname.endsWith(resolvedHome);
 
   let featureTitle: string | null = null;
   if (!onHome) {
-    const marker = `${homeHref}/`;
+    const marker = `${resolvedHome}/`;
     const slug = pathname.includes(marker)
       ? pathname.split(marker)[1]?.split("/")[0]
       : null;
@@ -38,7 +46,7 @@ export function GuestAppHeader({ accessCode, pensionName, appearance }: Props) {
       <div className="mx-auto flex max-w-lg items-center gap-3">
         {!onHome ? (
           <Link
-            href={homeHref}
+            href={resolvedHome}
             className="guest-app__header-back"
             aria-label={t("back")}
           >
@@ -68,7 +76,7 @@ export function GuestAppHeader({ accessCode, pensionName, appearance }: Props) {
 
         <div className="min-w-0 flex-1">
           <p className="guest-app__eyebrow truncate text-xs uppercase tracking-widest">
-            {t("eyebrow")}
+            {eyebrow ?? t("eyebrow")}
           </p>
           <p className="truncate font-semibold">
             {featureTitle ?? pensionName}

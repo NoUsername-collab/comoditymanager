@@ -41,7 +41,7 @@ async function loadBookingSnapshot(
     .from("bookings")
     .select(
       `
-      id, status, check_in, check_out, guest_name, guest_email, guest_phone, total_price,
+      id, status, check_in, check_out, guest_name, guest_email, guest_phone, guest_id, total_price,
       booking_rooms (
         rooms ( name, image_url )
       )
@@ -103,6 +103,7 @@ async function loadBookingSnapshot(
 
   return {
     id: String(data.id),
+    guestId: data.guest_id ? String(data.guest_id) : null,
     status: String(data.status),
     checkIn: String(data.check_in),
     checkOut: String(data.check_out),
@@ -146,6 +147,11 @@ export async function issueGuestAccessForBooking(
   if (error) {
     if (error.message.includes("booking_guest_access")) return null;
     throw new Error(error.message);
+  }
+
+  if (booking.guestId) {
+    const { issueLoyaltyRefForGuest } = await import("./loyalty");
+    await issueLoyaltyRefForGuest(booking.guestId).catch(() => null);
   }
 
   return accessCode;

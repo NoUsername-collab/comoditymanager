@@ -166,7 +166,37 @@
       "title": "Save this app to your home screen",
       "iosSteps": "In Safari: Share → Add to Home Screen for quick access during your stay.",
       "androidSteps": "In Chrome: Menu ⋮ → Add to Home screen for quick access.",
+      "loyaltyTitle": "Save this guest card",
+      "loyaltyIosSteps": "In Safari: Share → Add to Home Screen. Your reference stays on this phone — no account.",
+      "loyaltyAndroidSteps": "In Chrome: Menu ⋮ → Add to Home screen. Your reference stays on this phone — no account.",
       "dismiss": "Got it"
+    },
+    "loyalty": {
+      "eyebrow": "Guest card",
+      "title": "Your card at {name}",
+      "lead": "This is a reference, not an account. Keep it to come back — nights and benefits stay with this property.",
+      "referenceLabel": "Your reference",
+      "stays": "Stays",
+      "nights": "Nights",
+      "perkUnlocked": "A thank-you from the property is unlocked.",
+      "nightsToPerk": "{count, plural, one {# night until the property thank-you} other {# nights until the property thank-you}}",
+      "perkWaiting": "Waiting: {perk}",
+      "perkWaitingGeneric": "Keep staying — the property will thank returning guests.",
+      "bookAgain": "Book again",
+      "welcomeBack": "Welcome back",
+      "homeLead": "Wi-Fi from a stay link ends at checkout. This card stays with the property.",
+      "landingTitle": "Guest card — {name}",
+      "landingBody": "Enter the reference from your last stay, or ask reception. No password.",
+      "openCard": "Open card",
+      "invalidReference": "That reference is not valid.",
+      "metaTitle": "{name} — guest card",
+      "metaDescription": "Your guest reference at {name} — book again and see this property’s thank-yous.",
+      "disabledTitle": "Guest card unavailable",
+      "disabledBody": "This property has not turned on a guest card yet. Ask reception.",
+      "notFoundTitle": "Reference not found",
+      "notFoundBody": "Check the code or ask reception to look it up on your file.",
+      "unavailableTitle": "Card unavailable",
+      "unavailableBody": "Please contact reception."
     },
     "milestones": {
       "ariaLabel": "Stay milestones",
@@ -1861,6 +1891,13 @@
         "greenStay": "Green stay",
         "greenStayEnabled": "Offer skip-housekeeping option",
         "greenStayDescription": "Explanation text for guests",
+        "loyalty": "Guest card",
+        "loyaltyHint": "A reference on the guest’s file — not a Zalmox account. Each property sets its own thank-you. Off by default.",
+        "loyaltyEnabled": "Offer a guest card after stays",
+        "nightsForPerk": "Nights until the thank-you",
+        "nightsForPerkHint": "0 = show the card and Book again only, with no night target.",
+        "perkTitle": "Thank-you title (optional)",
+        "perkDescription": "Thank-you details (optional)",
         "errors": {
           "bookingNotFound": "Booking not found.",
           "notConfirmed": "Only available for confirmed bookings.",
@@ -4061,7 +4098,8 @@
         "flagged": "Guest watchlisted",
         "blacklisted": "Guest blacklisted",
         "unblacklisted": "Guest removed from blacklist",
-        "adjusted": "Guest score adjusted"
+        "adjusted": "Guest score adjusted",
+        "loyalty_ref_reissued": "Guest card reference issued"
       },
       "building": {
         "created": "Building added",
@@ -4400,6 +4438,15 @@
         "totalNights": "Total nights",
         "lastCheckout": "Last checkout",
         "operatorNote": "Operator note"
+      },
+      "loyalty": {
+        "sectionTitle": "Guest card",
+        "hint": "A reference for this property only. The guest does not create a password.",
+        "referenceLabel": "Reference",
+        "missing": "No reference yet — issue one after the program is on.",
+        "issue": "Issue reference",
+        "reissue": "Issue a new reference",
+        "enableInGuestApp": "Turn on the guest card in Guest app settings first."
       },
       "identity": {
         "title": "Identity data",

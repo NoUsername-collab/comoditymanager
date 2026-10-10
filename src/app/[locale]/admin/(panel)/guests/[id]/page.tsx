@@ -15,6 +15,7 @@ import { GuestRebookStayCollapse } from "@/features/guests/ui/GuestRebookStayCol
 import { GuestProfileSection } from "@/features/guests/ui/GuestProfileSection";
 import { GuestStayReviewForm } from "@/features/guests/ui/GuestStayReviewForm";
 import { GuestStayStarsInline } from "@/features/guests/ui/GuestStayStarsInline";
+import { GuestLoyaltyRefPanel } from "@/features/guests/ui/GuestLoyaltyRefPanel";
 import { GUEST_TAG_LABELS } from "@/domain/guest/tags";
 import { loadGuestDetailPage } from "@/features/guests/loaders";
 import { getTranslations } from "next-intl/server";
@@ -83,6 +84,8 @@ export default async function GuestDetailPage({
     dedupCandidates,
     today,
     latestRebookPayload,
+    loyaltyRef,
+    loyaltyEnabled,
   } = data;
 
   let guest = guestResult;
@@ -223,6 +226,13 @@ export default async function GuestDetailPage({
             <>
               <GuestProfileSection title={tPage("guestReview")}>
                 <GuestProfileCards profile={guest.profile} showDetails={false} />
+              </GuestProfileSection>
+              <GuestProfileSection title={tGuests("loyalty.sectionTitle")}>
+                <GuestLoyaltyRefPanel
+                  guestId={guest.id}
+                  reference={loyaltyRef}
+                  programEnabled={loyaltyEnabled}
+                />
               </GuestProfileSection>
               {dedupCandidates.length > 0 && (
                 <GuestProfileSection title={tPage("similarProfiles")}>

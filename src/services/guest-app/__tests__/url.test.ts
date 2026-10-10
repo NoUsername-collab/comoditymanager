@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildGuestAppStayUrl } from "../url";
+import { buildGuestAppStayUrl, buildGuestLoyaltyUrl } from "../url";
 
 describe("buildGuestAppStayUrl", () => {
   it("builds stay home URL without trailing slash on base", () => {
@@ -17,6 +17,14 @@ describe("buildGuestAppStayUrl", () => {
   it("preserves access code casing from caller", () => {
     expect(buildGuestAppStayUrl("https://host", "AbC12")).toBe(
       "https://host/stay/AbC12",
+    );
+  });
+});
+
+describe("buildGuestLoyaltyUrl", () => {
+  it("formats the property guest-card URL", () => {
+    expect(buildGuestLoyaltyUrl("https://pensiune.example/", "k7m2q9xw")).toBe(
+      "https://pensiune.example/guest/K7M2-Q9XW",
     );
   });
 });

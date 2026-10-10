@@ -29,6 +29,10 @@ const draft: GuestAppStudioDraft = {
   greenEnabled: false,
   facilitiesText: "Garden | Shared yard",
   servicesText: "",
+  loyaltyEnabled: false,
+  nightsForPerk: 5,
+  perkTitle: "",
+  perkDescription: "",
 };
 
 describe("guest app settings preview model", () => {
@@ -39,5 +43,21 @@ describe("guest app settings preview model", () => {
     expect(ids).not.toContain("green_stay");
     expect(ids).toContain("wifi");
     expect(settings.content.wifi?.networkName).toBe("CasaGuest");
+  });
+
+  it("persists the property loyalty program on the studio draft", () => {
+    const settings = studioDraftToGuestAppSettings({
+      ...draft,
+      loyaltyEnabled: true,
+      nightsForPerk: 8,
+      perkTitle: "Late checkout",
+      perkDescription: "Until 13:00",
+    });
+    expect(settings.loyalty).toEqual({
+      enabled: true,
+      nightsForPerk: 8,
+      perkTitle: "Late checkout",
+      perkDescription: "Until 13:00",
+    });
   });
 });

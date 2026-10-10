@@ -1,4 +1,5 @@
 import type { GuestAppResolvedContext } from "@/services/guest-app/resolve-context";
+import type { GuestLoyaltySnapshot } from "@/services/guest-app/loyalty";
 import { buildGuestStayMilestones } from "@/domain/guest-app/stay-milestone";
 import { visibleGuestAppFeaturesForBooking } from "@/features/guest-app/feature-labels";
 import { GuestAppQuickActions } from "@/features/guest-app/GuestAppQuickActions";
@@ -14,6 +15,8 @@ import { GuestWeatherSection } from "@/features/guest-app/GuestWeatherSection";
 import { GuestAppEmptyState } from "@/features/guest-app/GuestAppEmptyState";
 import { GuestEmptyReceptionAction } from "@/features/guest-app/GuestEmptyReceptionAction";
 import { GuestWifiQuickCard } from "@/features/guest-app/GuestWifiQuickCard";
+import { GuestLoyaltyCard } from "@/features/guest-app/GuestLoyaltyCard";
+import { GuestLoyaltyRemember } from "@/features/guest-app/GuestLoyaltyRemember";
 import {
   countStayNights,
   resolveGuestStayPhase,
@@ -26,6 +29,7 @@ type Props = {
   ctx: GuestAppResolvedContext;
   pensionName: string;
   today: string;
+  loyalty?: GuestLoyaltySnapshot | null;
 };
 
 export async function GuestAppHomeScreen({
@@ -33,6 +37,7 @@ export async function GuestAppHomeScreen({
   ctx,
   pensionName,
   today,
+  loyalty = null,
 }: Props) {
   const t = await getTranslations("guestApp");
   const { booking, settings, locale, hotel, wifi } = ctx;
@@ -95,6 +100,17 @@ export async function GuestAppHomeScreen({
           <GuestShareStayButton />
         </div>
       </section>
+
+      {loyalty ? (
+        <>
+          <GuestLoyaltyRemember reference={loyalty.reference} />
+          <GuestLoyaltyCard
+            snapshot={loyalty}
+            pensionName={pensionName}
+            showBookAgain={false}
+          />
+        </>
+      ) : null}
 
       <GuestTodayCards
         accessCode={accessCode}

@@ -18,6 +18,7 @@ import { formatStayPeriod } from "@/lib/ro-calendar";
 import { guestAppPreviewFeatures } from "@/features/settings/ui/guest-app-preview-model";
 import { GuestAppPreviewFeatureBody } from "@/features/settings/ui/guest-app-preview-screens";
 import "@/styles/features/guest/guest-app.css";
+import "@/styles/features/guest/guest-app-loyalty.css";
 import "@/styles/features/admin/admin-guest-app-preview.css";
 
 const SAMPLE_CODE = "preview";
@@ -192,6 +193,21 @@ export function GuestAppSettingsPreview({
                       </div>
                     ) : null}
                   </section>
+
+                  {settings.loyalty?.enabled ? (
+                    <section className="guest-loyalty-card">
+                      <p className="guest-loyalty-card__eyebrow">{t("loyalty.eyebrow")}</p>
+                      <h2 className="guest-loyalty-card__title">
+                        {t("loyalty.title", { name })}
+                      </h2>
+                      <p className="guest-loyalty-card__lead">{t("loyalty.lead")}</p>
+                      <GuestAppCopyField
+                        label={t("loyalty.referenceLabel")}
+                        value="K7M2-Q9XW"
+                        compact
+                      />
+                    </section>
+                  ) : null}
 
                   {hasWifi && wifiFeature ? (
                     <section className="guest-app__wifi-quick">

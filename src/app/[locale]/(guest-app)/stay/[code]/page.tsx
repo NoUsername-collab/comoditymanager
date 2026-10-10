@@ -23,6 +23,7 @@ export default async function GuestStayHomePage({
       ctx={loaded.ctx}
       pensionName={pensionName}
       today={loaded.today}
+      loyalty={loaded.loyalty}
     />
   );
 }

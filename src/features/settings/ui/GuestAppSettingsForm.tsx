@@ -390,6 +390,58 @@ export function GuestAppSettingsForm({
             </label>
           </div>
         </FormSection>
+
+        <FormSection title={t("loyalty")} description={t("loyaltyHint")}>
+          <div className="admin-settings-fields">
+            <label className="pub-settings-section-toggle">
+              <input
+                type="checkbox"
+                checked={draft.loyaltyEnabled}
+                onChange={(e) =>
+                  patchDraft({ loyaltyEnabled: e.target.checked })
+                }
+              />
+              <span>{t("loyaltyEnabled")}</span>
+            </label>
+            <label>
+              <span>{t("nightsForPerk")}</span>
+              <input
+                type="number"
+                min={0}
+                max={365}
+                value={draft.nightsForPerk}
+                onChange={(e) =>
+                  patchDraft({
+                    nightsForPerk: Math.max(
+                      0,
+                      Math.min(365, Number(e.target.value) || 0),
+                    ),
+                  })
+                }
+              />
+            </label>
+            <SettingsFieldHint>{t("nightsForPerkHint")}</SettingsFieldHint>
+            <label className="admin-settings-fields__full">
+              <span>{t("perkTitle")}</span>
+              <input
+                value={draft.perkTitle}
+                maxLength={120}
+                onChange={(e) => patchDraft({ perkTitle: e.target.value })}
+              />
+            </label>
+            <label className="admin-settings-fields__full">
+              <span>{t("perkDescription")}</span>
+              <textarea
+                rows={3}
+                maxLength={2000}
+                value={draft.perkDescription}
+                onChange={(e) =>
+                  patchDraft({ perkDescription: e.target.value })
+                }
+              />
+            </label>
+          </div>
+        </FormSection>
       </fieldset>
     </form>
       }

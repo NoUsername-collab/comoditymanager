@@ -28,6 +28,10 @@ export type GuestAppStudioDraft = {
   greenEnabled: boolean;
   facilitiesText: string;
   servicesText: string;
+  loyaltyEnabled: boolean;
+  nightsForPerk: number;
+  perkTitle: string;
+  perkDescription: string;
 };
 
 export function linesToList(raw: string): string[] {
@@ -85,6 +89,10 @@ export function buildGuestAppStudioDraft(settings: GuestAppSettings): GuestAppSt
     greenEnabled: green.enabled ?? true,
     facilitiesText: listItemsToLines(settings.content.facilities),
     servicesText: listItemsToLines(settings.content.services),
+    loyaltyEnabled: settings.loyalty?.enabled === true,
+    nightsForPerk: settings.loyalty?.nightsForPerk ?? 5,
+    perkTitle: settings.loyalty?.perkTitle ?? "",
+    perkDescription: settings.loyalty?.perkDescription ?? "",
   };
 }
 
@@ -122,6 +130,12 @@ export function studioDraftToGuestAppSettings(
         enabled: draft.greenEnabled,
         description: draft.greenDescription.trim() || undefined,
       },
+    },
+    loyalty: {
+      enabled: draft.loyaltyEnabled,
+      nightsForPerk: draft.nightsForPerk,
+      perkTitle: draft.perkTitle.trim(),
+      perkDescription: draft.perkDescription.trim(),
     },
   };
 }

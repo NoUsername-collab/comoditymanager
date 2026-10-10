@@ -9,6 +9,7 @@ import {
   DEFAULT_GUEST_APP_FEATURES,
   DEFAULT_GUEST_APP_SETTINGS,
 } from "@/domain/guest-app/defaults";
+import { mapGuestLoyaltyProgram } from "@/domain/guest-app/loyalty";
 
 function mergeFeatures(raw: unknown): GuestAppFeatureDef[] {
   if (!Array.isArray(raw)) return DEFAULT_GUEST_APP_FEATURES;
@@ -36,6 +37,7 @@ export function mapGuestAppSettingsRow(row: {
   appearance: unknown;
   features: unknown;
   content: unknown;
+  loyalty?: unknown;
 }): GuestAppSettings {
   const rawAppearance = (row.appearance ?? {}) as GuestAppAppearance;
   const hasCustomColors =
@@ -59,6 +61,7 @@ export function mapGuestAppSettingsRow(row: {
     appearance,
     features: mergeFeatures(row.features),
     content,
+    loyalty: mapGuestLoyaltyProgram(row.loyalty),
   };
 }
 
@@ -67,6 +70,7 @@ export function isGuestAppMigrationMissing(message: string): boolean {
     message.includes("guest_app_settings") ||
     message.includes("booking_guest_access") ||
     message.includes("guest_precheckin_submissions") ||
-    message.includes("guest_green_stay_requests")
+    message.includes("guest_green_stay_requests") ||
+    message.includes("guest_loyalty_refs")
   );
 }

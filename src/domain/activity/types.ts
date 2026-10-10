@@ -47,6 +47,7 @@ export type ActivityAction =
   | "guest.blacklisted"
   | "guest.unblacklisted"
   | "guest.adjusted"
+  | "guest.loyalty_ref_reissued"
   | "building.created"
   | "building.updated"
   | "building.deleted"

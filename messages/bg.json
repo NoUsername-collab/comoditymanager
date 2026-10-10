@@ -166,7 +166,37 @@
       "title": "Save this app to your home screen",
       "iosSteps": "In Safari: Share → Add to Home Screen for quick access during your stay.",
       "androidSteps": "In Chrome: Menu ⋮ → Add to Home screen for quick access.",
+      "loyaltyTitle": "Save this guest card",
+      "loyaltyIosSteps": "In Safari: Share → Add to Home Screen. Your reference stays on this phone — no account.",
+      "loyaltyAndroidSteps": "In Chrome: Menu ⋮ → Add to Home screen. Your reference stays on this phone — no account.",
       "dismiss": "Got it"
+    },
+    "loyalty": {
+      "eyebrow": "Guest card",
+      "title": "Your card at {name}",
+      "lead": "This is a reference, not an account. Keep it to come back — nights and benefits stay with this property.",
+      "referenceLabel": "Your reference",
+      "stays": "Stays",
+      "nights": "Nights",
+      "perkUnlocked": "A thank-you from the property is unlocked.",
+      "nightsToPerk": "{count, plural, one {# night until the property thank-you} other {# nights until the property thank-you}}",
+      "perkWaiting": "Waiting: {perk}",
+      "perkWaitingGeneric": "Keep staying — the property will thank returning guests.",
+      "bookAgain": "Book again",
+      "welcomeBack": "Welcome back",
+      "homeLead": "Wi-Fi from a stay link ends at checkout. This card stays with the property.",
+      "landingTitle": "Guest card — {name}",
+      "landingBody": "Enter the reference from your last stay, or ask reception. No password.",
+      "openCard": "Open card",
+      "invalidReference": "That reference is not valid.",
+      "metaTitle": "{name} — guest card",
+      "metaDescription": "Your guest reference at {name} — book again and see this property’s thank-yous.",
+      "disabledTitle": "Guest card unavailable",
+      "disabledBody": "This property has not turned on a guest card yet. Ask reception.",
+      "notFoundTitle": "Reference not found",
+      "notFoundBody": "Check the code or ask reception to look it up on your file.",
+      "unavailableTitle": "Card unavailable",
+      "unavailableBody": "Please contact reception."
     },
     "milestones": {
       "ariaLabel": "Stay milestones",
@@ -1748,7 +1778,14 @@
         "studioBackSettings": "Назад към настройките",
         "studioCanvasAria": "Наживо преглед на приложението за гости",
         "logoManaged": "Логото се качва в Идентичност и се вижда тук в прегледа.",
-        "logoManagedLink": "Отвори идентичността"
+        "logoManagedLink": "Отвори идентичността",
+        "loyalty": "Карта на госта",
+        "loyaltyHint": "Референция във файла на госта — не акаунт в Zalmox. Всеки обект си слага собственото благодаря. Изключено по подразбиране.",
+        "loyaltyEnabled": "Карта на госта след престои",
+        "nightsForPerk": "Нощувки до благодарято",
+        "nightsForPerkHint": "0 = само картата и Резервирай отново, без цел за нощувки.",
+        "perkTitle": "Заглавие на благодарято (по избор)",
+        "perkDescription": "Подробности (по избор)"
       },
       "guests": {
         "title": "Клиенти — Zalmox",
@@ -3808,7 +3845,8 @@
         "flagged": "Guest watchlisted",
         "blacklisted": "Guest blacklisted",
         "unblacklisted": "Guest removed from blacklist",
-        "adjusted": "Guest score adjusted"
+        "adjusted": "Guest score adjusted",
+        "loyalty_ref_reissued": "Guest card reference issued"
       },
       "building": {
         "created": "Building added",
@@ -4147,6 +4185,15 @@
         "totalNights": "Общо нощувки",
         "lastCheckout": "Последен checkout",
         "operatorNote": "Бележка на оператора"
+      },
+      "loyalty": {
+        "sectionTitle": "Карта на госта",
+        "hint": "Референция само за този обект. Гостът не си прави парола.",
+        "referenceLabel": "Референция",
+        "missing": "Все още няма референция — издайте след като програмата е включена.",
+        "issue": "Издай референция",
+        "reissue": "Издай нова референция",
+        "enableInGuestApp": "Включете картата на госта в настройките на приложението за гости."
       },
       "identity": {
         "title": "Данни за самоличност",

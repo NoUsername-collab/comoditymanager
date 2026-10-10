@@ -36,6 +36,12 @@ import {
   updateGuestProfileControls,
 } from "@/services/guest-profiles";
 import { getTranslations } from "next-intl/server";
+import { logAdminActivityFromSession } from "@/services/activity-log";
+import {
+  getLoyaltyRefForGuest,
+  issueLoyaltyRefForGuest,
+  reissueLoyaltyRefForGuest,
+} from "@/services/guest-app/loyalty";
 
 function revalidateGuestPaths(guestId: string, bookingId?: string) {
   revalidatePath("/admin/guests");
@@ -327,6 +333,34 @@ export async function saveGuestStayReviewAction(formData: FormData) {
   }
 
   revalidateGuestPaths(guestId, bookingId);
+}
+
+export async function reissueGuestLoyaltyRefAction(formData: FormData) {
+  const t = await getTranslations("admin.serverActions");
+  await requireAnyStaff();
+  const guestId = String(formData.get("guest_id") ?? "").trim();
+  if (!guestId) throw new Error(t("invalidGuest"));
+
+  const existing = await getLoyaltyRefForGuest(guestId);
+  const reference = existing
+    ? await reissueLoyaltyRefForGuest(guestId)
+    : await issueLoyaltyRefForGuest(guestId);
+
+  if (!reference) {
+    const tLoyalty = await getTranslations("admin.guests.loyalty");
+    throw new Error(tLoyalty("enableInGuestApp"));
+  }
+
+  await logAdminActivityFromSession({
+    action: "guest.loyalty_ref_reissued",
+    entityType: "guest",
+    entityId: guestId,
+    summary: "Guest loyalty reference issued",
+    metadata: { guest_id: guestId },
+  });
+
+  revalidateGuestPaths(guestId);
+  await redirect(`/admin/guests/${guestId}?tab=overview`);
 }
 
 export async function suggestExistingGuestAction(input: {

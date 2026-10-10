@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEFAULT_GUEST_LOYALTY_PROGRAM } from "@/domain/guest-app/loyalty";
 import {
   formatZodError,
   hexColorSchema,
@@ -95,6 +96,15 @@ const guestAppContentSchema = z
   })
   .strict();
 
+const guestLoyaltyProgramSchema = z
+  .object({
+    enabled: z.boolean(),
+    nightsForPerk: z.number().int().min(0).max(365),
+    perkTitle: z.string().max(120),
+    perkDescription: z.string().max(2000),
+  })
+  .strict();
+
 export const guestAppSettingsInputSchema = z
   .object({
     enabled: z.boolean(),
@@ -102,6 +112,7 @@ export const guestAppSettingsInputSchema = z
     appearance: guestAppAppearanceSchema,
     features: z.array(guestAppFeatureDefSchema).min(1).max(20),
     content: guestAppContentSchema,
+    loyalty: guestLoyaltyProgramSchema.default(DEFAULT_GUEST_LOYALTY_PROGRAM),
   })
   .strict();
 
