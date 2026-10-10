@@ -33,13 +33,15 @@ function FormSection({
   title,
   description,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
+  defaultOpen?: boolean;
 }) {
   return (
-    <SettingsSection title={title} description={description}>
+    <SettingsSection title={title} description={description} defaultOpen={defaultOpen}>
       {children}
     </SettingsSection>
   );
@@ -171,79 +173,6 @@ export function GuestAppSettingsForm({
           </div>
         </FormSection>
 
-        <FormSection title={t("appearance")} description={t("themeHint")}>
-          <div className="admin-settings-fields admin-settings-fields--2col">
-            <label className="admin-settings-fields__full">
-              <span>{t("themeSource")}</span>
-              <select
-                value={draft.themeId}
-                onChange={(e) =>
-                  patchDraft({ themeId: e.target.value as GuestAppThemeSource })
-                }
-              >
-                <option value="inherit">{t("themeInherit")}</option>
-                {DESIGN_THEME_IDS.map((id) => (
-                  <option key={id} value={id}>
-                    {tThemes(`${id}.title`)}
-                  </option>
-                ))}
-                <option value="custom">{t("themeCustom")}</option>
-              </select>
-            </label>
-            {draft.themeId === "custom" ? (
-              <>
-                <label>
-                  <span>{t("primaryColor")}</span>
-                  <input
-                    type="color"
-                    value={draft.primaryColor}
-                    onChange={(e) => patchDraft({ primaryColor: e.target.value })}
-                  />
-                </label>
-                <label>
-                  <span>{t("accentColor")}</span>
-                  <input
-                    type="color"
-                    value={draft.accentColor}
-                    onChange={(e) => patchDraft({ accentColor: e.target.value })}
-                  />
-                </label>
-              </>
-            ) : null}
-            <SettingsFieldHint className="admin-settings-fields__full">
-              {t("logoManaged")}{" "}
-              <Link href="/admin/settings/identity" className="underline">
-                {t("logoManagedLink")}
-              </Link>
-            </SettingsFieldHint>
-          </div>
-        </FormSection>
-
-        <FormSection title={t("features")} description={t("featuresHint")}>
-          <ul className="admin-settings-list">
-            {draft.features.map((feature) => (
-              <li key={feature.id} className="admin-settings-list__row">
-                <span className="admin-settings-list__label">
-                  {guestAppFeatureLabel(feature.id)}
-                </span>
-                <select
-                  value={feature.state}
-                  onChange={(e) =>
-                    setFeatureState(
-                      feature.id,
-                      e.target.value as GuestAppFeatureState,
-                    )
-                  }
-                >
-                  <option value="mock">{t("stateMock")}</option>
-                  <option value="live">{t("stateLive")}</option>
-                  <option value="hidden">{t("stateHidden")}</option>
-                </select>
-              </li>
-            ))}
-          </ul>
-        </FormSection>
-
         <FormSection title={t("hotelContent")}>
           <div className="admin-settings-fields admin-settings-fields--2col">
             <label className="pub-settings-section-toggle admin-settings-fields__full">
@@ -344,7 +273,7 @@ export function GuestAppSettingsForm({
           </div>
         </FormSection>
 
-        <FormSection title={t("facilities")} description={t("listItemsHint")}>
+        <FormSection title={t("facilities")} description={t("listItemsHint")} defaultOpen={false}>
           <div className="admin-settings-fields">
             <label>
               <span>{t("facilitiesList")}</span>
@@ -357,7 +286,7 @@ export function GuestAppSettingsForm({
           </div>
         </FormSection>
 
-        <FormSection title={t("services")} description={t("listItemsHint")}>
+        <FormSection title={t("services")} description={t("listItemsHint")} defaultOpen={false}>
           <div className="admin-settings-fields">
             <label>
               <span>{t("servicesList")}</span>
@@ -370,7 +299,7 @@ export function GuestAppSettingsForm({
           </div>
         </FormSection>
 
-        <FormSection title={t("greenStay")}>
+        <FormSection title={t("greenStay")} defaultOpen={false}>
           <div className="admin-settings-fields">
             <label className="pub-settings-section-toggle">
               <input
@@ -391,7 +320,7 @@ export function GuestAppSettingsForm({
           </div>
         </FormSection>
 
-        <FormSection title={t("loyalty")} description={t("loyaltyHint")}>
+        <FormSection title={t("loyalty")} description={t("loyaltyHint")} defaultOpen={false}>
           <div className="admin-settings-fields">
             <label className="pub-settings-section-toggle">
               <input
@@ -441,6 +370,79 @@ export function GuestAppSettingsForm({
               />
             </label>
           </div>
+        </FormSection>
+
+        <FormSection title={t("appearance")} description={t("themeHint")} defaultOpen={false}>
+          <div className="admin-settings-fields admin-settings-fields--2col">
+            <label className="admin-settings-fields__full">
+              <span>{t("themeSource")}</span>
+              <select
+                value={draft.themeId}
+                onChange={(e) =>
+                  patchDraft({ themeId: e.target.value as GuestAppThemeSource })
+                }
+              >
+                <option value="inherit">{t("themeInherit")}</option>
+                {DESIGN_THEME_IDS.map((id) => (
+                  <option key={id} value={id}>
+                    {tThemes(`${id}.title`)}
+                  </option>
+                ))}
+                <option value="custom">{t("themeCustom")}</option>
+              </select>
+            </label>
+            {draft.themeId === "custom" ? (
+              <>
+                <label>
+                  <span>{t("primaryColor")}</span>
+                  <input
+                    type="color"
+                    value={draft.primaryColor}
+                    onChange={(e) => patchDraft({ primaryColor: e.target.value })}
+                  />
+                </label>
+                <label>
+                  <span>{t("accentColor")}</span>
+                  <input
+                    type="color"
+                    value={draft.accentColor}
+                    onChange={(e) => patchDraft({ accentColor: e.target.value })}
+                  />
+                </label>
+              </>
+            ) : null}
+            <SettingsFieldHint className="admin-settings-fields__full">
+              {t("logoManaged")}{" "}
+              <Link href="/admin/settings/identity" className="underline">
+                {t("logoManagedLink")}
+              </Link>
+            </SettingsFieldHint>
+          </div>
+        </FormSection>
+
+        <FormSection title={t("features")} description={t("featuresHint")} defaultOpen={false}>
+          <ul className="admin-settings-list">
+            {draft.features.map((feature) => (
+              <li key={feature.id} className="admin-settings-list__row">
+                <span className="admin-settings-list__label">
+                  {guestAppFeatureLabel(feature.id)}
+                </span>
+                <select
+                  value={feature.state}
+                  onChange={(e) =>
+                    setFeatureState(
+                      feature.id,
+                      e.target.value as GuestAppFeatureState,
+                    )
+                  }
+                >
+                  <option value="mock">{t("stateMock")}</option>
+                  <option value="live">{t("stateLive")}</option>
+                  <option value="hidden">{t("stateHidden")}</option>
+                </select>
+              </li>
+            ))}
+          </ul>
         </FormSection>
       </fieldset>
     </form>
