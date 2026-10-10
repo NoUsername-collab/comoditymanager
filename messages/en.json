@@ -1348,6 +1348,10 @@
           "hint": "Housekeeping needs a gap between departure and arrival on the same calendar day."
         },
         "checkin": {
+          "autosaveHint": "Changes save automatically as soon as you change an option.",
+          "advancedTitle": "Advanced settings",
+          "advancedHint": "Keys, groups, people per room and edits after check-out. Usually fine as they are.",
+          "sectionArrivals": "Special arrivals and departures",
           "title": "Check-in Rules",
           "saved": "Setting saved",
           "saveError": "Could not save setting",
@@ -1436,6 +1440,7 @@
           "touristSheetSaveHint": "Fill in address, tax ID and licence, then click Save. Used for tourist sheet and invoicing."
         },
         "booking": {
+          "autosaveHint": "Changes save automatically shortly after you stop typing.",
           "saved": "Settings saved",
           "saveError": "Could not save",
           "cancellationTitle": "Cancellation policy",

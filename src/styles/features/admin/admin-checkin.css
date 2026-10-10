@@ -511,6 +511,32 @@
   margin-bottom: 1.25rem;
 }
 
+/* One saving model, said once: every option here saves on change. */
+.checkin-settings__autosave {
+  margin: -0.35rem 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--admin-text-muted, #52525b);
+}
+
+/* Rarely changed rules stay folded until asked for. */
+.checkin-settings__advanced > summary {
+  cursor: pointer;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.checkin-settings__advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.checkin-settings__advanced > summary .checkin-settings__section-title::before {
+  content: "▸ ";
+}
+
+.checkin-settings__advanced[open] > summary .checkin-settings__section-title::before {
+  content: "▾ ";
+}
+
 .checkin-settings__section-header {
   display: flex;
   align-items: baseline;

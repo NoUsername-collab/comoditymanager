@@ -1333,6 +1333,10 @@
           "hint": "Curățenia are nevoie de un interval între plecare și sosire în aceeași zi calendaristică."
         },
         "checkin": {
+          "autosaveHint": "Modificările se salvează automat, imediat ce schimbi o opțiune.",
+          "advancedTitle": "Setări avansate",
+          "advancedHint": "Chei, grupuri, persoane pe cameră și modificări după plecare. De obicei nu trebuie schimbate.",
+          "sectionArrivals": "Sosiri și plecări speciale",
           "title": "Reguli la sosire (check-in)",
           "saved": "Setare salvată",
           "saveError": "Nu s-a putut salva setarea",
@@ -1421,6 +1425,7 @@
           "touristSheetSaveHint": "Completează adresa, CUI și autorizația, apoi apasă Salvează. Datele se folosesc la fișa turist și facturare."
         },
         "booking": {
+          "autosaveHint": "Modificările se salvează automat, la scurt timp după ce termini de scris.",
           "saved": "Setări salvate",
           "saveError": "Nu s-a putut salva",
           "cancellationTitle": "Politici anulare",

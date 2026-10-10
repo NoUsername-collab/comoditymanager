@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import "@/features/checkin/ui/import-checkin-styles";
 import { updateBookingRulesSettingsAction } from "@/features/settings/actions";
@@ -20,6 +20,8 @@ type Props = {
   settings: BookingRulesSettings;
   locale: "ro" | "en" | "bg";
 };
+
+const SAVE_DELAY_MS = 700;
 
 function newSeasonId(): string {
   return `season-${Date.now().toString(36)}`;
@@ -61,12 +63,28 @@ export function BookingRulesSettingsPanel({
     [settings, locale]
   );
 
-  function save(partial: Partial<BookingRulesSettings>) {
-    if (!settingsPartialChanged(settings, partial)) return;
+  // Edits apply at once on screen; the server gets one merged save after a short pause,
+  // so typing a policy text or a price is not a request (and toast) per keystroke.
+  const pendingRef = useRef<Partial<BookingRulesSettings>>({});
+  const baseRef = useRef(settings);
+  const timerRef = useRef<number | null>(null);
+  const flushRef = useRef<() => void>(() => {});
 
-    const previous = settings;
-    const updated = { ...settings, ...partial };
-    setSettings(updated);
+  function save(changes: Partial<BookingRulesSettings>) {
+    if (!settingsPartialChanged(settings, changes)) return;
+    if (Object.keys(pendingRef.current).length === 0) baseRef.current = settings;
+    pendingRef.current = { ...pendingRef.current, ...changes };
+    setSettings((current) => ({ ...current, ...changes }));
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => flushRef.current(), SAVE_DELAY_MS);
+  }
+
+  flushRef.current = () => {
+    timerRef.current = null;
+    const partial = pendingRef.current;
+    if (Object.keys(partial).length === 0) return;
+    pendingRef.current = {};
+    const previous = baseRef.current;
 
     void (async () => {
       setIsSaving(true);
@@ -105,19 +123,31 @@ export function BookingRulesSettingsPanel({
           notifySuccess(t("saved"));
         } else {
           notifyError(result.error ?? t("saveError"));
-          setSettings(previous);
+          revert();
         }
       } catch (e) {
         notifyError(
           t("saveError"),
           e instanceof Error ? e.message : undefined
         );
-        setSettings(previous);
+        revert();
       } finally {
         setIsSaving(false);
       }
     })();
-  }
+
+    /** Undo only the fields this save carried; later edits stay on screen. */
+    function revert() {
+      const restored: Partial<BookingRulesSettings> = {};
+      for (const key of Object.keys(partial) as (keyof BookingRulesSettings)[]) {
+        Object.assign(restored, { [key]: previous[key] });
+      }
+      setSettings((current) => ({ ...current, ...restored }));
+    }
+  };
+
+  // Leaving the page within the pause still saves what was typed.
+  useEffect(() => () => flushRef.current(), []);
 
   function updateSeason(index: number, patch: Partial<PricingSeason>) {
     const next = settings.pricingSeasons.map((season, i) =>
@@ -154,6 +184,9 @@ export function BookingRulesSettingsPanel({
 
   return (
     <div className="checkin-settings">
+      <p className="checkin-settings__autosave" role="note">
+        {t("autosaveHint")}
+      </p>
       <h3 className="checkin-settings__title">{t("cancellationTitle")}</h3>
 
       <SettingRow label={t("policyType")} description={t("policyTypeDesc")}>

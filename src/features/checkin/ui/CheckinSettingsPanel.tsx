@@ -34,6 +34,46 @@ function SettingRow({ label, description, children }: SettingRowProps) {
   );
 }
 
+/** Number field that saves when the operator is done typing (blur or Enter), not per keystroke. */
+function NumberSetting({
+  value,
+  min,
+  max,
+  onCommit,
+}: {
+  value: number;
+  min?: number;
+  max?: number;
+  onCommit: (value: number) => void;
+}) {
+  const [draft, setDraft] = useState(String(value));
+  useEffect(() => setDraft(String(value)), [value]);
+
+  function commit() {
+    const next = Number(draft) || 0;
+    if (next !== value) onCommit(next);
+  }
+
+  return (
+    <input
+      type="number"
+      inputMode="numeric"
+      className="checkin-field__input"
+      min={min}
+      max={max}
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commit();
+        }
+      }}
+    />
+  );
+}
+
 function appendFormValue(fd: FormData, key: string, value: unknown) {
   if (typeof value === "boolean") {
     fd.set(key, value ? "true" : "false");
@@ -116,6 +156,9 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
   return (
     <div className="checkin-settings">
       <h3 className="checkin-settings__title">{t("title")}</h3>
+      <p className="checkin-settings__autosave" role="note">
+        {t("autosaveHint")}
+      </p>
 
       {/* ── Identitate & documente ──────────────────────────── */}
       <div className="checkin-settings__section">
@@ -172,20 +215,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </select>
         </SettingRow>
 
-        <SettingRow label={t("idsPerRoom")} description={t("idsPerRoomDesc")}>
-          <select
-            className="checkin-field__input"
-            value={settings.checkin_ids_per_room}
-            onChange={(e) =>
-              persist({
-                checkin_ids_per_room: e.target.value as CheckinSettings["checkin_ids_per_room"],
-              })
-            }
-          >
-            <option value="one">{t("idsPerRoomOne")}</option>
-            <option value="two_non_family">{t("idsPerRoomTwoNonFamily")}</option>
-          </select>
-        </SettingRow>
       </div>
 
       {/* ── Plată ───────────────────────────────────────────── */}
@@ -213,15 +242,11 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
         {settings.checkin_payment_rule === "partial" && (
           <SettingRow label={t("minPaymentPct")}>
-            <input
-              type="number"
-              className="checkin-field__input"
+            <NumberSetting
               min={1}
               max={100}
               value={settings.checkin_min_payment_pct}
-              onChange={(e) =>
-                persist({ checkin_min_payment_pct: Number(e.target.value) || 0 })
-              }
+              onCommit={(v) => persist({ checkin_min_payment_pct: v })}
             />
           </SettingRow>
         )}
@@ -240,22 +265,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
           </label>
         </SettingRow>
 
-        <SettingRow
-          label={t("allowPostCheckoutEdits")}
-          description={t("allowPostCheckoutEditsDesc")}
-        >
-          <label className="checkin-toggle">
-            <input
-              type="checkbox"
-              checked={settings.allow_post_checkout_edits}
-              onChange={(e) =>
-                persist({ allow_post_checkout_edits: e.target.checked })
-              }
-            />
-            <span className="checkin-toggle__slider" />
-          </label>
-        </SettingRow>
-
         <SettingRow label={t("deposit")} description={t("depositDesc")}>
           <label className="checkin-toggle">
             <input
@@ -269,14 +278,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
         {settings.checkin_deposit && (
           <SettingRow label={t("depositAmount")}>
-            <input
-              type="number"
-              className="checkin-field__input"
+            <NumberSetting
               min={0}
               value={settings.checkin_deposit_amount}
-              onChange={(e) =>
-                persist({ checkin_deposit_amount: Number(e.target.value) || 0 })
-              }
+              onCommit={(v) => persist({ checkin_deposit_amount: v })}
             />
           </SettingRow>
         )}
@@ -285,7 +290,7 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
       {/* Schedule */}
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">{t("sectionSchedule")}</span>
+          <span className="checkin-settings__section-title">{t("sectionArrivals")}</span>
           <span className="checkin-settings__section-desc">{t("sectionScheduleManaged")}</span>
         </div>
 
@@ -318,14 +323,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
         {settings.early_checkin_allowed && (
           <SettingRow label={t("earlyCheckinFee")} description={t("policyFeeHint")}>
-            <input
-              type="number"
-              className="checkin-field__input"
+            <NumberSetting
               min={0}
               value={settings.early_checkin_fee}
-              onChange={(e) =>
-                persist({ early_checkin_fee: Number(e.target.value) || 0 })
-              }
+              onCommit={(v) => persist({ early_checkin_fee: v })}
             />
           </SettingRow>
         )}
@@ -348,14 +349,10 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
         {settings.early_checkout_allowed && (
           <SettingRow label={t("earlyCheckoutFee")} description={t("policyFeeHint")}>
-            <input
-              type="number"
-              className="checkin-field__input"
+            <NumberSetting
               min={0}
               value={settings.early_checkout_fee}
-              onChange={(e) =>
-                persist({ early_checkout_fee: Number(e.target.value) || 0 })
-              }
+              onCommit={(v) => persist({ early_checkout_fee: v })}
             />
           </SettingRow>
         )}
@@ -378,25 +375,21 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
         {settings.late_checkout_allowed && (
           <SettingRow label={t("lateCheckoutFee")} description={t("policyFeeHint")}>
-            <input
-              type="number"
-              className="checkin-field__input"
+            <NumberSetting
               min={0}
               value={settings.late_checkout_fee}
-              onChange={(e) =>
-                persist({ late_checkout_fee: Number(e.target.value) || 0 })
-              }
+              onCommit={(v) => persist({ late_checkout_fee: v })}
             />
           </SettingRow>
         )}
       </div>
 
-      {/* ── Chei & camere ───────────────────────────────────── */}
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">{t("sectionKeysRooms")}</span>
-          <span className="checkin-settings__section-desc">{t("sectionKeysRoomsDesc")}</span>
-        </div>
+      {/* ── Setări avansate (închise din start) ─────────────── */}
+      <details className="checkin-settings__section checkin-settings__advanced">
+        <summary className="checkin-settings__section-header">
+          <span className="checkin-settings__section-title">{t("advancedTitle")}</span>
+          <span className="checkin-settings__section-desc">{t("advancedHint")}</span>
+        </summary>
 
         <SettingRow label={t("keyRule")} description={t("keyRuleDesc")}>
           <select
@@ -430,7 +423,38 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
             <option value="both">{t("groupBoth")}</option>
           </select>
         </SettingRow>
-      </div>
+
+        <SettingRow label={t("idsPerRoom")} description={t("idsPerRoomDesc")}>
+          <select
+            className="checkin-field__input"
+            value={settings.checkin_ids_per_room}
+            onChange={(e) =>
+              persist({
+                checkin_ids_per_room: e.target.value as CheckinSettings["checkin_ids_per_room"],
+              })
+            }
+          >
+            <option value="one">{t("idsPerRoomOne")}</option>
+            <option value="two_non_family">{t("idsPerRoomTwoNonFamily")}</option>
+          </select>
+        </SettingRow>
+
+        <SettingRow
+          label={t("allowPostCheckoutEdits")}
+          description={t("allowPostCheckoutEditsDesc")}
+        >
+          <label className="checkin-toggle">
+            <input
+              type="checkbox"
+              checked={settings.allow_post_checkout_edits}
+              onChange={(e) =>
+                persist({ allow_post_checkout_edits: e.target.checked })
+              }
+            />
+            <span className="checkin-toggle__slider" />
+          </label>
+        </SettingRow>
+      </details>
     </div>
   );
 }
