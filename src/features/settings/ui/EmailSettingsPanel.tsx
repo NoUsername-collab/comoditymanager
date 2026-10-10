@@ -135,6 +135,14 @@ export function EmailSettingsPanel({
 
   return (
     <div className="checkin-settings">
+      <p className="checkin-settings__autosave" role="note">
+        {t("autosaveHint")}
+      </p>
+      {!delivery.configured ? (
+        <p className="settings-alerts__item settings-alerts__item--warning" role="status">
+          {t("providerNotConfigured")}
+        </p>
+      ) : null}
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
           <span className="checkin-settings__section-title">
@@ -249,12 +257,8 @@ export function EmailSettingsPanel({
 
       <div className="checkin-settings__section">
         <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">
-            {t("senderTitle")}
-          </span>
-          <span className="checkin-settings__section-desc">
-            {t("senderDesc")}
-          </span>
+          <span className="checkin-settings__section-title">{t("senderTitle")}</span>
+          <span className="checkin-settings__section-desc">{t("senderDesc")}</span>
         </div>
 
         <div className="checkin-setting-row checkin-setting-row--stack">
@@ -273,6 +277,52 @@ export function EmailSettingsPanel({
             />
           </div>
         </div>
+
+        <SettingRow label={t("replyTo")} description={t("replyToDesc")}>
+          <input
+            type="email"
+            className="checkin-field__input"
+            placeholder={identity.defaultReplyTo ?? "contact@pensiune.ro"}
+            value={replyTo}
+            onChange={(e) => setReplyTo(e.target.value)}
+            onBlur={() => persist({ email_reply_to: replyTo.trim() || null })}
+          />
+        </SettingRow>
+
+        {!settings.email_reply_to && identity.defaultReplyTo ? (
+          <p className="checkin-sheet-save__hint">{t("replyToFallbackHint")}</p>
+        ) : null}
+      </div>
+
+      <div className="checkin-settings__section">
+        <div className="checkin-settings__section-header">
+          <span className="checkin-settings__section-title">{t("testTitle")}</span>
+          <span className="checkin-settings__section-desc">{t("testDesc")}</span>
+        </div>
+        {delivery.configured ? (
+          <p className="checkin-sheet-save__hint">
+            {t("providerFrom", { from: identity.fromAddress })}
+          </p>
+        ) : null}
+
+        <div className="checkin-sheet-save">
+          <button
+            type="button"
+            className="checkin-sheet-save__btn"
+            disabled={!delivery.configured || isSendingTest || isSaving}
+            onClick={handleSendTest}
+          >
+            {isSendingTest ? t("testSending") : t("testSend")}
+          </button>
+        </div>
+      </div>
+
+      {/* Own sending domain and footer text: rarely needed, folded away. */}
+      <details className="checkin-settings__section checkin-settings__advanced">
+        <summary className="checkin-settings__section-header">
+          <span className="checkin-settings__section-title">{t("advancedTitle")}</span>
+          <span className="checkin-settings__section-desc">{t("advancedHint")}</span>
+        </summary>
 
         <div className="checkin-setting-row checkin-setting-row--stack">
           <div className="checkin-setting-row__left">
@@ -294,32 +344,6 @@ export function EmailSettingsPanel({
         <p className="checkin-sheet-save__hint">
           {t("senderPreview")}: <strong>{fromName.trim() || identity.displayName} &lt;{fromAddress.trim() || `noreply@${identity.mailDomain}`}&gt;</strong>
         </p>
-      </div>
-
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">
-            {t("customizationTitle")}
-          </span>
-          <span className="checkin-settings__section-desc">
-            {t("customizationDesc")}
-          </span>
-        </div>
-
-        <SettingRow label={t("replyTo")} description={t("replyToDesc")}>
-          <input
-            type="email"
-            className="checkin-field__input"
-            placeholder={identity.defaultReplyTo ?? "contact@pensiune.ro"}
-            value={replyTo}
-            onChange={(e) => setReplyTo(e.target.value)}
-            onBlur={() => persist({ email_reply_to: replyTo.trim() || null })}
-          />
-        </SettingRow>
-
-        {!settings.email_reply_to && identity.defaultReplyTo ? (
-          <p className="checkin-sheet-save__hint">{t("replyToFallbackHint")}</p>
-        ) : null}
 
         <div className="checkin-setting-row checkin-setting-row--stack">
           <div className="checkin-setting-row__left">
@@ -342,39 +366,7 @@ export function EmailSettingsPanel({
             />
           </div>
         </div>
-      </div>
-
-      <div className="checkin-settings__section">
-        <div className="checkin-settings__section-header">
-          <span className="checkin-settings__section-title">
-            {t("testTitle")}
-          </span>
-          <span className="checkin-settings__section-desc">
-            {t("testDesc")}
-          </span>
-        </div>
-
-        {!delivery.configured ? (
-          <p className="checkin-sheet-save__hint" role="status">
-            {t("providerNotConfigured")}
-          </p>
-        ) : (
-          <p className="checkin-sheet-save__hint">
-            {t("providerFrom", { from: identity.fromAddress })}
-          </p>
-        )}
-
-        <div className="checkin-sheet-save">
-          <button
-            type="button"
-            className="checkin-sheet-save__btn"
-            disabled={!delivery.configured || isSendingTest || isSaving}
-            onClick={handleSendTest}
-          >
-            {isSendingTest ? t("testSending") : t("testSend")}
-          </button>
-        </div>
-      </div>
+      </details>
     </div>
   );
 }
