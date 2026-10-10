@@ -22,6 +22,8 @@ export function PublicSiteStudio({
   saveControl,
   dirty,
   banner,
+  onPreviewPick,
+  overlay,
 }: {
   form: ReactNode;
   preview: ReactNode;
@@ -31,6 +33,10 @@ export function PublicSiteStudio({
   saveControl?: ReactNode;
   dirty?: boolean;
   banner?: ReactNode;
+  /** Click inside the preview; return true when it opened an editor. */
+  onPreviewPick?: (target: Element) => boolean;
+  /** Modal layer (quick start) inside the studio so it keeps the admin theme. */
+  overlay?: ReactNode;
 }) {
   const t = useTranslations("admin.pages.publicSite");
   const tSettings = useTranslations("admin.pages.settings");
@@ -177,20 +183,28 @@ export function PublicSiteStudio({
                 {t(`localeTab_${editLocale}`)}
               </p>
             ) : null}
+            {onPreviewPick ? (
+              <p className="pub-site-studio__pick-hint">{t("editor.previewClickHint")}</p>
+            ) : null}
           </div>
 
           <div className="pub-site-studio__stage">
             <div
               className="pub-site-studio__frame"
               data-device={device}
+              data-pickable={onPreviewPick ? "1" : undefined}
               tabIndex={0}
               aria-label={t("studioCanvasAria")}
+              onClick={(event) => {
+                if (onPreviewPick?.(event.target as Element)) setPane("edit");
+              }}
             >
               {preview}
             </div>
           </div>
         </section>
       </div>
+      {overlay}
     </div>
   );
 }

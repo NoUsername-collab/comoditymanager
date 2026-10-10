@@ -1561,6 +1561,260 @@
         }
       },
       "publicSite": {
+        "editor": {
+          "previewClickHint": "Tap any part of the page to edit it",
+          "quickStart": {
+            "open": "✨ Quick start",
+            "openHint": "4 simple questions and your site is ready to publish.",
+            "progress": "Step {step} of {total}",
+            "steps": {
+              "about": {
+                "title": "What is your property called?",
+                "lead": "Write it as if you were telling a friend. You can change it any time."
+              },
+              "photos": {
+                "title": "Add a few photos",
+                "lead": "One great main photo and a few of the rooms and surroundings."
+              },
+              "style": {
+                "title": "Which style suits you?",
+                "lead": "Pick one. Colours and layout can change later."
+              },
+              "contact": {
+                "title": "How do guests reach you?",
+                "lead": "Shown at the bottom of the site. At least a phone or an email."
+              }
+            },
+            "nameLabel": "Property name",
+            "subtitleLabel": "One sentence about you",
+            "subtitlePlaceholder": "E.g.: A quiet guesthouse at the foot of the mountains, with home-made breakfast.",
+            "introLabel": "A few lines about the property (optional)",
+            "introPlaceholder": "Where you are, what guests find, what to do nearby…",
+            "introHint": "Shown in the “About us” section.",
+            "heroPhotoLabel": "Main photo",
+            "heroPhotoHint": "Your best photo — shown large at the top of the page.",
+            "galleryLabel": "Gallery photos (optional, up to 8)",
+            "styles": {
+              "mountain": {
+                "title": "Mountain",
+                "desc": "Green and bright, airy."
+              },
+              "elegant": {
+                "title": "Elegant",
+                "desc": "Dark, with gold accents."
+              },
+              "seaside": {
+                "title": "Seaside",
+                "desc": "Blue, full-screen photo."
+              },
+              "boutique": {
+                "title": "Boutique",
+                "desc": "Warm cream and brown, magazine style."
+              },
+              "forest": {
+                "title": "Forest",
+                "desc": "Deep green, natural and calm."
+              },
+              "modern": {
+                "title": "Modern",
+                "desc": "Blue-grey, clean and simple."
+              }
+            },
+            "phoneLabel": "Phone",
+            "emailLabel": "Email",
+            "contactHint": "If Property identity is already filled in, you can leave this empty.",
+            "skip": "Skip, I’ll fill it in myself",
+            "back": "Back",
+            "next": "Next",
+            "finish": "Done — show me the site"
+          },
+          "tabsAria": "Editor steps",
+          "tabs": {
+            "design": "Look",
+            "content": "Content",
+            "contact": "Contact & bookings",
+            "publish": "Publish"
+          },
+          "tabHints": {
+            "design": "How the site looks: photo layout and colours. You can change it any time.",
+            "content": "What the page says, top to bottom. Tap a section to fill it in.",
+            "contact": "How guests reach you and send a booking request.",
+            "publish": "Check what is missing, then put the site online."
+          },
+          "editingLocale": "Writing in: {language}",
+          "copyFrom": "Copy missing text from {locale}",
+          "copyFromHint": "Fills empty fields with the {locale} text so you can translate it in place.",
+          "localeProgress": "{percent}% complete",
+          "advanced": "Advanced settings",
+          "advancedHint": "Optional — the site looks fine without them.",
+          "layoutTitle": "Page layout",
+          "layoutDesc": "How the main photo, text and gallery are arranged.",
+          "colorsTitle": "Colours",
+          "colorsDesc": "Pick the palette that suits your property.",
+          "fontTitle": "Heading font",
+          "contentLead": "This is your page, top to bottom. Tap a section to write it. The “Shown” button hides it, the arrows move it.",
+          "hiddenOnSite": "Hidden — visitors don’t see it",
+          "pinnedTop": "Always on top",
+          "pinnedBottom": "Always at the bottom",
+          "moveUp": "Move “{name}” up",
+          "moveDown": "Move “{name}” down",
+          "showAria": "Show the “{name}” section on the site",
+          "hideAria": "Hide the “{name}” section from the site",
+          "shown": "Shown",
+          "hidden": "Hidden",
+          "done": "Done",
+          "cards": {
+            "hero": {
+              "name": "Top of the page",
+              "desc": "Big photo, title and booking button — the first impression."
+            },
+            "intro": {
+              "name": "About us",
+              "desc": "A few lines about your property."
+            },
+            "benefits": {
+              "name": "What we offer",
+              "desc": "Highlights: Wi-Fi, parking, breakfast…"
+            },
+            "gallery": {
+              "name": "Photo gallery",
+              "desc": "Photos of the rooms and surroundings."
+            },
+            "steps": {
+              "name": "How to book",
+              "desc": "Simple steps for guests."
+            },
+            "cta": {
+              "name": "Booking call-out",
+              "desc": "A band with a button near the end of the page."
+            },
+            "text": {
+              "name": "Free text",
+              "desc": "Your own text: house rules, history, activities."
+            },
+            "stays": {
+              "name": "Rooms",
+              "desc": "Shown automatically from your room list."
+            },
+            "place": {
+              "name": "Address & map",
+              "desc": "Shown automatically from your property details."
+            },
+            "contactBar": {
+              "name": "Contact band",
+              "desc": "Phone, email and socials above the footer."
+            },
+            "chrome": {
+              "name": "Header & footer",
+              "desc": "The small line next to your name and the footer text."
+            }
+          },
+          "photoCount": "{count, plural, one {# photo} other {# photos}}",
+          "noPhotos": "No photos yet",
+          "addText": "Add a free text",
+          "heroImage": "Main photo",
+          "heroImageHint": "Your best photo of the property. JPEG, PNG or WebP, up to 5 MB.",
+          "heroTitle": "Big title",
+          "heroTitleHint": "Your property name or a short phrase. Also used in Google.",
+          "heroSubtitle": "Short description",
+          "heroSubtitleHint": "One sentence about what makes you special.",
+          "heroCtaPrimary": "Button text",
+          "buttonGoesTo": "Button opens",
+          "heroCtaSecondary": "Second button",
+          "heroCtaSecondaryHint": "Leave empty if you don’t want a second button.",
+          "heroBadge": "Small label above the title",
+          "heroTagline": "Extra line under the description",
+          "sectionTitle": "Title",
+          "introText": "About your property",
+          "introTextHint": "2–4 sentences: where you are, what guests find, why they should come.",
+          "sectionLead": "Short text under the title",
+          "benefitNumber": "Highlight {index}",
+          "remove": "Remove",
+          "icon": "Icon",
+          "itemTitle": "Title",
+          "itemText": "Description",
+          "addBenefit": "+ Add a highlight",
+          "stepNumber": "Step {index}",
+          "addStep": "+ Add a step",
+          "buttonText": "Button text",
+          "galleryEmpty": "No photos yet. Add 4–8 photos of the rooms and surroundings.",
+          "photoCaption": "Photo description (optional)",
+          "textBody": "Text",
+          "textBodyHint": "Plain text. Leave an empty line between paragraphs.",
+          "removeText": "Remove this text",
+          "stayPrices": "Show the “from” price on each room",
+          "staysHint": "Rooms, photos and prices are edited in your room list.",
+          "openRooms": "Open rooms",
+          "placeHint": "The address comes from your property’s billing details.",
+          "openLocation": "Open property details",
+          "contactBarHint": "Phone, email and socials are filled in the Contact step.",
+          "openContactTab": "Go to Contact",
+          "headerSubtitle": "Small text next to your name (top)",
+          "headerSubtitleHint": "For example: “Guesthouse in Bran”.",
+          "footerTagline": "Footer text",
+          "menuTitle": "Top menu",
+          "menuHint": "Which links appear in the menu and what they are called, in this language.",
+          "links": {
+            "calendar": "Booking page",
+            "intro": "“About us” section",
+            "steps": "“How to book” section",
+            "custom": "Another address…",
+            "customLabel": "Address (e.g. https://…)"
+          },
+          "contactTitle": "Contact details",
+          "contactDesc": "Shown in the site footer and contact band.",
+          "usePrimaryContact": "Fill in automatically from Property identity",
+          "usePrimaryContactHint": "Empty fields below use the details from there.",
+          "socialTitle": "Social media & Telegram",
+          "bookingTitle": "Online bookings",
+          "bookingDesc": "Guests send a booking request from the site. You confirm it from the panel.",
+          "bookingEnabled": "Accept booking requests from the site",
+          "bookingLinkWhere": "Where the “Book” button appears",
+          "bookingPosBoth": "In the menu and footer (recommended)",
+          "bookingPosNav": "Menu only",
+          "bookingPosFooter": "Footer only",
+          "bookingPosHidden": "Nowhere (only the buttons on the page)",
+          "noticeTitle": "What you tell guests before they book",
+          "checklistTitle": "Before you publish",
+          "checklistDone": "{done} of {total} done",
+          "checks": {
+            "heroImage": "You added a main photo",
+            "heroTitle": "You wrote the big title",
+            "description": "You wrote a short description",
+            "contact": "Guests have a phone or email",
+            "gallery": "The gallery has at least one photo",
+            "locales": "Text is filled in for every language"
+          },
+          "checkFix": "Fill in",
+          "publishedOn": "The site is online",
+          "publishedOff": "The site is not online yet",
+          "publishedOnDesc": "Anyone can see the page. Untick to hide it.",
+          "publishedOffDesc": "Visitors see a “Coming soon” page. You still see the preview.",
+          "publishSaveHint": "The change takes effect after you press “Save”.",
+          "googleTitle": "How you appear in Google",
+          "googleDesc": "If left empty, we use the big title and short description.",
+          "googlePreviewLabel": "Google result preview",
+          "googleDescEmpty": "Write a short description to see it here.",
+          "googleTitleLabel": "Title in Google",
+          "googleTitleHint": "{count} characters — ideally under 60.",
+          "googleDescLabel": "Description in Google",
+          "googleDescHint": "{count} characters — ideally 120–160.",
+          "shareImage": "Photo when the link is shared (WhatsApp, Facebook)",
+          "shareImageHint": "If empty, we use the main photo.",
+          "otherPagesTitle": "Other pages of the site",
+          "otherPagesDesc": "Calendar, terms, privacy. Empty fields use the platform’s standard text.",
+          "comingSoon": "“Coming soon” page (while the site is not published)",
+          "pageTitle": "Title",
+          "pageText": "Text",
+          "pageIntro": "Intro text",
+          "pageBody": "Content (replaces the standard text)",
+          "calendarPage": "Calendar & booking",
+          "termsPage": "Terms & conditions",
+          "privacyPage": "Privacy",
+          "otherSeo": "Google titles for the other pages",
+          "seoFor": "Google title — {page}",
+          "seoDescFor": "Google description — {page}"
+        },
         "title": "Public site — Zalmox",
         "description": "Template, theme, hero content, sections and contact for visitors.",
         "backSettings": "Back to settings",
@@ -1586,7 +1840,7 @@
         "loadError": "Could not load public site settings.",
         "readOnly": "Only the owner or admins can edit the public site.",
         "loading": "Loading…",
-        "save": "Save public site",
+        "save": "Save",
         "saving": "Saving…",
         "templateTitle": "Page layout",
         "templateSectionDesc": "Three different page structures — brochure, magazine, or cinema. Not a color swap.",
@@ -1704,8 +1958,8 @@
         "fontTitle": "Headline font",
         "fonts": {
           "theme": "Match the colour theme",
-          "serif": "Serif",
-          "sans": "Sans-serif"
+          "serif": "Classic (serif)",
+          "sans": "Modern (sans-serif)"
         },
         "showContactBar": "Show the contact strip above the footer",
         "showStayOffers": "Show rooms from the catalog",
@@ -1714,16 +1968,16 @@
         "livePropertyHint": "Rooms come from Settings → Rooms. The address is the property address from billing / tourist sheet; the pin uses weather coordinates.",
         "navTitle": "Navigation",
         "navSectionDesc": "Which links appear in the header, and the labels for this language.",
-        "showNavHome": "Home",
-        "showNavPrivacy": "Privacy",
-        "showNavTerms": "Terms",
-        "navHomeLabel": "Home label",
-        "navPrivacyLabel": "Privacy label",
-        "navTermsLabel": "Terms label",
-        "navBookLabel": "Book label",
+        "showNavHome": "Show “Home” in the menu",
+        "showNavPrivacy": "Show “Privacy” in the menu",
+        "showNavTerms": "Show “Terms” in the menu",
+        "navHomeLabel": "“Home” link name",
+        "navPrivacyLabel": "“Privacy” link name",
+        "navTermsLabel": "“Terms” link name",
+        "navBookLabel": "“Book” button name",
         "heroCtaPrimaryHref": "Primary button link",
         "heroCtaSecondaryHref": "Secondary button link",
-        "showCheckTimes": "Show check-in / check-out times in the hero",
+        "showCheckTimes": "Show check-in and check-out times under the title",
         "ogImageLabel": "Social share image",
         "ogImageHint": "Used in link previews. Falls back to the hero photo.",
         "seoCalendarTitle": "Calendar meta title",
@@ -1797,15 +2051,15 @@
         "templates": {
           "classic": {
             "title": "Classic",
-            "desc": "Brochure: framed photo above centered copy, amenity strip, two-column intro, card grid."
+            "desc": "Photo on top, text below. Simple and clear."
           },
           "editorial": {
-            "title": "Editorial",
-            "desc": "Magazine masthead, headline beside a portrait, booking rail, mosaic gallery before lined benefits."
+            "title": "Magazine",
+            "desc": "Title next to the photo, gallery before the highlights."
           },
           "immersive": {
-            "title": "Immersive",
-            "desc": "Cinema: overlay nav, full-screen still, gallery first, intro as a card, no contact strip."
+            "title": "Panoramic",
+            "desc": "Full-screen photo and the gallery first. For stunning photos."
           }
         },
         "themes": {

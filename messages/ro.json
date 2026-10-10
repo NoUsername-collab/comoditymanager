@@ -1547,6 +1547,260 @@
         }
       },
       "publicSite": {
+        "editor": {
+          "previewClickHint": "Apasă pe orice parte a paginii ca s-o editezi",
+          "quickStart": {
+            "open": "✨ Pornire rapidă",
+            "openHint": "4 întrebări simple și site-ul e gata de publicat.",
+            "progress": "Pasul {step} din {total}",
+            "steps": {
+              "about": {
+                "title": "Cum se numește pensiunea?",
+                "lead": "Scrie ca și cum i-ai povesti unui prieten. Poți schimba oricând."
+              },
+              "photos": {
+                "title": "Pune câteva poze",
+                "lead": "O poză principală frumoasă și câteva cu camerele și împrejurimile."
+              },
+              "style": {
+                "title": "Ce stil ți se potrivește?",
+                "lead": "Alege o variantă. Culorile și așezarea se pot schimba mai târziu."
+              },
+              "contact": {
+                "title": "Cum te contactează oaspeții?",
+                "lead": "Apar în josul site-ului. Cel puțin un telefon sau un e-mail."
+              }
+            },
+            "nameLabel": "Numele pensiunii",
+            "subtitleLabel": "O propoziție despre voi",
+            "subtitlePlaceholder": "Ex.: Pensiune liniștită la poalele munților, cu mic dejun de casă.",
+            "introLabel": "Câteva rânduri despre pensiune (opțional)",
+            "introPlaceholder": "Unde sunteți, ce găsesc oaspeții, ce pot face în zonă…",
+            "introHint": "Apare în secțiunea „Despre noi”.",
+            "heroPhotoLabel": "Poza principală",
+            "heroPhotoHint": "Cea mai frumoasă poză — apare mare, sus pe pagină.",
+            "galleryLabel": "Poze pentru galerie (opțional, până la 8)",
+            "styles": {
+              "mountain": {
+                "title": "Munte",
+                "desc": "Verde și luminos, aerisit."
+              },
+              "elegant": {
+                "title": "Elegant",
+                "desc": "Întunecat, cu accente aurii."
+              },
+              "seaside": {
+                "title": "La mare",
+                "desc": "Albastru, poza pe tot ecranul."
+              },
+              "boutique": {
+                "title": "Boutique",
+                "desc": "Cald, crem și maro, stil revistă."
+              },
+              "forest": {
+                "title": "Pădure",
+                "desc": "Verde închis, natural și calm."
+              },
+              "modern": {
+                "title": "Modern",
+                "desc": "Gri-albastru, curat și simplu."
+              }
+            },
+            "phoneLabel": "Telefon",
+            "emailLabel": "E-mail",
+            "contactHint": "Dacă ai completat deja Identitate pensiune, poți lăsa gol.",
+            "skip": "Sari peste, completez singur",
+            "back": "Înapoi",
+            "next": "Mai departe",
+            "finish": "Gata — arată-mi site-ul"
+          },
+          "tabsAria": "Pașii editorului",
+          "tabs": {
+            "design": "Aspect",
+            "content": "Conținut",
+            "contact": "Contact și rezervări",
+            "publish": "Publicare"
+          },
+          "tabHints": {
+            "design": "Cum arată site-ul: așezarea pozelor și culorile. Poți schimba oricând.",
+            "content": "Ce scrie pe pagină, de sus în jos. Apasă pe o secțiune ca s-o completezi.",
+            "contact": "Cum te contactează oaspeții și cum trimit o cerere de rezervare.",
+            "publish": "Verifică ce mai lipsește, apoi pune site-ul online."
+          },
+          "editingLocale": "Scrii în: {language}",
+          "copyFrom": "Copiază din {locale} ce lipsește",
+          "copyFromHint": "Completează câmpurile goale cu textul din {locale}, ca să-l traduci apoi pe loc.",
+          "localeProgress": "{percent}% completat",
+          "advanced": "Setări avansate",
+          "advancedHint": "Opțional — site-ul arată bine și fără ele.",
+          "layoutTitle": "Așezarea paginii",
+          "layoutDesc": "Cum sunt aranjate poza principală, textele și galeria.",
+          "colorsTitle": "Culori",
+          "colorsDesc": "Alege paleta care se potrivește pensiunii.",
+          "fontTitle": "Litere pentru titluri",
+          "contentLead": "Așa arată pagina ta, de sus în jos. Apasă pe o secțiune ca s-o scrii. Butonul „Afișată” o ascunde, iar săgețile o mută.",
+          "hiddenOnSite": "Ascunsă — vizitatorii nu o văd",
+          "pinnedTop": "Mereu sus",
+          "pinnedBottom": "Mereu jos",
+          "moveUp": "Mută „{name}” mai sus",
+          "moveDown": "Mută „{name}” mai jos",
+          "showAria": "Arată secțiunea „{name}” pe site",
+          "hideAria": "Ascunde secțiunea „{name}” de pe site",
+          "shown": "Afișată",
+          "hidden": "Ascunsă",
+          "done": "Gata",
+          "cards": {
+            "hero": {
+              "name": "Partea de sus",
+              "desc": "Poza mare, titlul și butonul de rezervare — prima impresie."
+            },
+            "intro": {
+              "name": "Despre noi",
+              "desc": "Câteva rânduri despre pensiune."
+            },
+            "benefits": {
+              "name": "Ce oferim",
+              "desc": "Puncte forte: Wi-Fi, parcare, mic dejun…"
+            },
+            "gallery": {
+              "name": "Galerie foto",
+              "desc": "Poze cu camerele și împrejurimile."
+            },
+            "steps": {
+              "name": "Cum rezervi",
+              "desc": "Pașii simpli pentru oaspeți."
+            },
+            "cta": {
+              "name": "Îndemn la rezervare",
+              "desc": "O bandă cu un buton, spre finalul paginii."
+            },
+            "text": {
+              "name": "Text liber",
+              "desc": "Un text al tău: reguli, istoric, activități."
+            },
+            "stays": {
+              "name": "Camere",
+              "desc": "Apar automat din lista de camere."
+            },
+            "place": {
+              "name": "Adresă și hartă",
+              "desc": "Apar automat din datele pensiunii."
+            },
+            "contactBar": {
+              "name": "Bandă de contact",
+              "desc": "Telefon, e-mail și rețele, deasupra subsolului."
+            },
+            "chrome": {
+              "name": "Antet și subsol",
+              "desc": "Textul mic de lângă nume și cel din josul paginii."
+            }
+          },
+          "photoCount": "{count, plural, one {# poză} few {# poze} other {# de poze}}",
+          "noPhotos": "Nicio poză încă",
+          "addText": "Adaugă un text liber",
+          "heroImage": "Poza principală",
+          "heroImageHint": "Cea mai frumoasă poză a pensiunii. JPEG, PNG sau WebP, maxim 5 MB.",
+          "heroTitle": "Titlul mare",
+          "heroTitleHint": "Numele pensiunii sau o frază scurtă. Apare și în Google.",
+          "heroSubtitle": "Descriere scurtă",
+          "heroSubtitleHint": "O propoziție despre ce vă face speciali.",
+          "heroCtaPrimary": "Textul butonului",
+          "buttonGoesTo": "Butonul duce la",
+          "heroCtaSecondary": "Al doilea buton",
+          "heroCtaSecondaryHint": "Lasă gol dacă nu vrei al doilea buton.",
+          "heroBadge": "Etichetă mică deasupra titlului",
+          "heroTagline": "Rând în plus sub descriere",
+          "sectionTitle": "Titlu",
+          "introText": "Textul despre pensiune",
+          "introTextHint": "2–4 propoziții: unde sunteți, ce găsesc oaspeții, de ce să vină.",
+          "sectionLead": "Text scurt sub titlu",
+          "benefitNumber": "Punctul {index}",
+          "remove": "Șterge",
+          "icon": "Iconiță",
+          "itemTitle": "Titlu",
+          "itemText": "Descriere",
+          "addBenefit": "+ Adaugă un punct forte",
+          "stepNumber": "Pasul {index}",
+          "addStep": "+ Adaugă un pas",
+          "buttonText": "Textul butonului",
+          "galleryEmpty": "Nicio poză încă. Adaugă 4–8 poze cu camerele și împrejurimile.",
+          "photoCaption": "Descriere poză (opțional)",
+          "textBody": "Textul",
+          "textBodyHint": "Text simplu. Lasă un rând gol între paragrafe.",
+          "removeText": "Șterge acest text",
+          "stayPrices": "Arată prețul „de la” la fiecare cameră",
+          "staysHint": "Camerele, pozele și prețurile se schimbă din lista de camere.",
+          "openRooms": "Deschide camerele",
+          "placeHint": "Adresa se ia din datele de facturare ale pensiunii.",
+          "openLocation": "Deschide datele pensiunii",
+          "contactBarHint": "Telefonul, e-mailul și rețelele se completează în pasul Contact.",
+          "openContactTab": "Mergi la Contact",
+          "headerSubtitle": "Text mic lângă nume (sus)",
+          "headerSubtitleHint": "De exemplu: „Pensiune în Bran”.",
+          "footerTagline": "Text în subsolul paginii",
+          "menuTitle": "Meniul de sus",
+          "menuHint": "Ce linkuri apar în meniu și cum se numesc, pe limba curentă.",
+          "links": {
+            "calendar": "Pagina de rezervare",
+            "intro": "Secțiunea „Despre noi”",
+            "steps": "Secțiunea „Cum rezervi”",
+            "custom": "Altă adresă…",
+            "customLabel": "Adresa (ex. https://…)"
+          },
+          "contactTitle": "Date de contact",
+          "contactDesc": "Apar în subsolul site-ului și în banda de contact.",
+          "usePrimaryContact": "Completează automat din Identitate pensiune",
+          "usePrimaryContactHint": "Câmpurile goale de mai jos iau datele de acolo.",
+          "socialTitle": "Rețele sociale și Telegram",
+          "bookingTitle": "Rezervări online",
+          "bookingDesc": "Oaspeții trimit o cerere de rezervare din site. Tu o confirmi din panou.",
+          "bookingEnabled": "Primește cereri de rezervare de pe site",
+          "bookingLinkWhere": "Unde apare butonul „Rezervă”",
+          "bookingPosBoth": "În meniu și în subsol (recomandat)",
+          "bookingPosNav": "Doar în meniu",
+          "bookingPosFooter": "Doar în subsol",
+          "bookingPosHidden": "Nicăieri (doar butoanele din pagină)",
+          "noticeTitle": "Ce le spui oaspeților înainte să rezerve",
+          "checklistTitle": "Înainte să publici",
+          "checklistDone": "{done} din {total} gata",
+          "checks": {
+            "heroImage": "Ai pus o poză principală",
+            "heroTitle": "Ai scris titlul mare",
+            "description": "Ai scris o descriere scurtă",
+            "contact": "Oaspeții au un telefon sau e-mail",
+            "gallery": "Galeria are cel puțin o poză",
+            "locales": "Textele sunt completate în toate limbile"
+          },
+          "checkFix": "Completează",
+          "publishedOn": "Site-ul e online",
+          "publishedOff": "Site-ul nu e online încă",
+          "publishedOnDesc": "Oricine poate vedea pagina. Debifează ca s-o ascunzi.",
+          "publishedOffDesc": "Vizitatorii văd o pagină „În curând”. Tu vezi în continuare previzualizarea.",
+          "publishSaveHint": "Schimbarea intră în vigoare după ce apeși „Salvează”.",
+          "googleTitle": "Cum apari în Google",
+          "googleDesc": "Dacă lași gol, folosim titlul mare și descrierea scurtă.",
+          "googlePreviewLabel": "Previzualizare rezultat Google",
+          "googleDescEmpty": "Scrie o descriere scurtă ca să apară aici.",
+          "googleTitleLabel": "Titlu în Google",
+          "googleTitleHint": "{count} caractere — ideal sub 60.",
+          "googleDescLabel": "Descriere în Google",
+          "googleDescHint": "{count} caractere — ideal 120–160.",
+          "shareImage": "Poza la trimiterea linkului (WhatsApp, Facebook)",
+          "shareImageHint": "Dacă lipsește, folosim poza principală.",
+          "otherPagesTitle": "Alte pagini ale site-ului",
+          "otherPagesDesc": "Calendar, termeni, confidențialitate. Câmpurile goale folosesc textul standard al platformei.",
+          "comingSoon": "Pagina „În curând” (cât site-ul nu e publicat)",
+          "pageTitle": "Titlu",
+          "pageText": "Text",
+          "pageIntro": "Text introductiv",
+          "pageBody": "Conținut (înlocuiește textul standard)",
+          "calendarPage": "Calendar și rezervare",
+          "termsPage": "Termeni și condiții",
+          "privacyPage": "Confidențialitate",
+          "otherSeo": "Titluri Google pentru celelalte pagini",
+          "seoFor": "Titlu Google — {page}",
+          "seoDescFor": "Descriere Google — {page}"
+        },
         "title": "Site public — Zalmox",
         "description": "Template, temă, conținut hero, secțiuni și contact pentru vizitatori.",
         "backSettings": "Înapoi la setări",
@@ -1572,7 +1826,7 @@
         "loadError": "Nu s-au putut încărca setările site-ului public.",
         "readOnly": "Doar proprietarul sau adminii pot edita site-ul public.",
         "loading": "Se încarcă…",
-        "save": "Salvează site public",
+        "save": "Salvează",
         "saving": "Se salvează…",
         "templateTitle": "Layout pagină",
         "templateSectionDesc": "Trei structuri de pagină diferite — broșură, revistă sau cinema. Nu doar o temă.",
@@ -1688,9 +1942,9 @@
         "footerTagline": "Tagline footer",
         "fontTitle": "Font titluri",
         "fonts": {
-          "theme": "Ca în tema de culoare",
-          "serif": "Serif",
-          "sans": "Sans-serif"
+          "theme": "Ca tema de culori",
+          "serif": "Clasic (cu serife)",
+          "sans": "Modern (fără serife)"
         },
         "showContactBar": "Arată banda de contact deasupra footerului",
         "showStayOffers": "Arată camerele din catalog",
@@ -1699,16 +1953,16 @@
         "livePropertyHint": "Camerele vin din Setări → Camere. Adresa e cea din facturare / fișa turist; pinul folosește coordonatele pentru vreme.",
         "navTitle": "Navigare",
         "navSectionDesc": "Ce linkuri apar în header și etichetele pentru limba curentă.",
-        "showNavHome": "Acasă",
-        "showNavPrivacy": "Confidențialitate",
-        "showNavTerms": "Termeni",
-        "navHomeLabel": "Etichetă Acasă",
-        "navPrivacyLabel": "Etichetă Confidențialitate",
-        "navTermsLabel": "Etichetă Termeni",
-        "navBookLabel": "Etichetă Rezervare",
+        "showNavHome": "Arată „Acasă” în meniu",
+        "showNavPrivacy": "Arată „Confidențialitate” în meniu",
+        "showNavTerms": "Arată „Termeni” în meniu",
+        "navHomeLabel": "Nume link „Acasă”",
+        "navPrivacyLabel": "Nume link „Confidențialitate”",
+        "navTermsLabel": "Nume link „Termeni”",
+        "navBookLabel": "Nume buton „Rezervă”",
         "heroCtaPrimaryHref": "Link buton principal",
         "heroCtaSecondaryHref": "Link buton secundar",
-        "showCheckTimes": "Arată orele de check-in / check-out în hero",
+        "showCheckTimes": "Arată orele de check-in și check-out sub titlu",
         "ogImageLabel": "Imagine pentru social",
         "ogImageHint": "Folosită la preview-ul linkurilor. Dacă e goală, se folosește foto hero.",
         "seoCalendarTitle": "Meta title calendar",
@@ -1781,16 +2035,16 @@
         "seoMetaDescriptionHint": "Recomandat 120–160 caractere. Descrie pensiunea pe scurt.",
         "templates": {
           "classic": {
-            "title": "Classic",
-            "desc": "Broșură: fotografia în ramă deasupra textului, bandă de facilități, intro pe două coloane, carduri."
+            "title": "Clasic",
+            "desc": "Poza sus, textele dedesubt. Simplu și clar."
           },
           "editorial": {
-            "title": "Editorial",
-            "desc": "Revistă: antet masthead, titlu lângă portret, șină de rezervare, galerie mozaic înaintea beneficiilor."
+            "title": "Revistă",
+            "desc": "Titlul lângă poză, galeria înaintea punctelor forte."
           },
           "immersive": {
-            "title": "Immersive",
-            "desc": "Cinema: navigare peste foto pe tot ecranul, galerie prima, intro ca un card, fără bandă de contact."
+            "title": "Panoramic",
+            "desc": "Poza pe tot ecranul și galeria prima. Pentru poze spectaculoase."
           }
         },
         "themes": {

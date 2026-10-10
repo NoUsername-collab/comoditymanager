@@ -289,10 +289,9 @@ export function buildPublicSiteStudioDraft(
       section.sectionType === "text" ? `text:${section.id}` : section.sectionType,
     );
   const defaultOrder = ["intro", "benefits", "gallery", "steps", "cta"];
-  const order =
-    sectionOrder.length > 0
-      ? sectionOrder
-      : defaultOrder;
+  const order = sectionOrder.length > 0 ? sectionOrder : defaultOrder;
+  // Gallery is always saved, so the editor must be able to place it.
+  if (!order.includes("gallery")) order.push("gallery");
 
   return {
     editLocale,

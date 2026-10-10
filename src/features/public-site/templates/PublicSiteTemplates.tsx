@@ -36,16 +36,30 @@ function TemplateSections({
   config,
   locale,
   template,
+  preview = false,
 }: {
   config: PublicSiteConfig;
   locale: string;
   template: PublicTemplateId;
+  preview?: boolean;
 }) {
+  const seen = new Map<string, number>();
   return (
     <>
-      {orderPublicSections(config.sections).map((section) => (
-        <div key={section.id}>{renderPublicSection(section, locale, template)}</div>
-      ))}
+      {orderPublicSections(config.sections).map((section, index) => {
+        // Preview only: the settings studio maps a click back to its editor card.
+        const nth = seen.get(section.sectionType) ?? 0;
+        seen.set(section.sectionType, nth + 1);
+        return (
+          <div
+            key={`${section.id}-${index}`}
+            data-pub-section={preview ? section.sectionType : undefined}
+            data-pub-nth={preview ? nth : undefined}
+          >
+            {renderPublicSection(section, locale, template)}
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -67,7 +81,7 @@ export function ClassicPublicTemplate({
         preview={preview}
       />
       {afterHero}
-      <TemplateSections config={config} locale={locale} template="classic" />
+      <TemplateSections config={config} locale={locale} template="classic" preview={preview} />
       <LiveProperty config={config} locale={locale} preview={preview} />
     </main>
   );
@@ -88,7 +102,7 @@ export function EditorialPublicTemplate({
         checkTimesLabel={checkTimesLabel}
         preview={preview}
       />
-      <TemplateSections config={config} locale={locale} template="editorial" />
+      <TemplateSections config={config} locale={locale} template="editorial" preview={preview} />
       <LiveProperty config={config} locale={locale} preview={preview} />
     </main>
   );
@@ -112,7 +126,7 @@ export function ImmersivePublicTemplate({
       />
       {afterHero}
       <div className="pub-home__immersive-body">
-        <TemplateSections config={config} locale={locale} template="immersive" />
+        <TemplateSections config={config} locale={locale} template="immersive" preview={preview} />
         <LiveProperty config={config} locale={locale} preview={preview} />
       </div>
     </main>
