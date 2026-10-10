@@ -1656,7 +1656,7 @@
           "advanced": "Advanced settings",
           "advancedHint": "Optional — the site looks fine without them.",
           "layoutTitle": "Page layout",
-          "layoutDesc": "How the main photo, text and gallery are arranged.",
+          "layoutDesc": "How the main photo, text and gallery look. Your section order stays as you set it.",
           "colorsTitle": "Colours",
           "colorsDesc": "Pick the palette that suits your property.",
           "fontTitle": "Heading font",
@@ -2063,11 +2063,11 @@
           },
           "editorial": {
             "title": "Magazine",
-            "desc": "Title next to the photo, gallery before the highlights."
+            "desc": "Title beside the photo, like a magazine."
           },
           "immersive": {
             "title": "Panoramic",
-            "desc": "Full-screen photo and the gallery first. For stunning photos."
+            "desc": "Full-screen photo. For stunning photos."
           }
         },
         "themes": {

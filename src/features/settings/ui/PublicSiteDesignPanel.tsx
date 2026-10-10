@@ -7,7 +7,6 @@ import {
   PUBLIC_THEME_OPTIONS,
 } from "@/features/public-site/domain/defaults";
 import { PUBLIC_FONT_OPTIONS } from "@/features/public-site/domain/chrome";
-import { applyTemplateSectionKeys } from "@/features/public-site/domain/order-sections";
 import { resolvePublicThemeStyle } from "@/features/public-site/themes/loader";
 import {
   EditorAdvanced,
@@ -18,7 +17,7 @@ import {
 export function PublicSiteDesignPanel() {
   const t = useTranslations("admin.pages.publicSite");
   const te = useTranslations("admin.pages.publicSite.editor");
-  const { draft, setDraft, patchDraft } = usePublicSiteEditor();
+  const { draft, patchDraft } = usePublicSiteEditor();
 
   return (
     <>
@@ -31,13 +30,8 @@ export function PublicSiteDesignPanel() {
               role="radio"
               aria-checked={draft.templateId === option}
               className="pub-editor-choice"
-              onClick={() =>
-                setDraft((d) => ({
-                  ...d,
-                  templateId: option,
-                  sectionOrder: applyTemplateSectionKeys(d.sectionOrder, option),
-                }))
-              }
+              // Switching layout restyles the page; the operator's section order stays.
+              onClick={() => patchDraft({ templateId: option })}
             >
               <span className={`pub-editor-layout pub-editor-layout--${option}`} aria-hidden>
                 <i />

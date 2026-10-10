@@ -1642,7 +1642,7 @@
           "advanced": "Setări avansate",
           "advancedHint": "Opțional — site-ul arată bine și fără ele.",
           "layoutTitle": "Așezarea paginii",
-          "layoutDesc": "Cum sunt aranjate poza principală, textele și galeria.",
+          "layoutDesc": "Cum arată poza principală, textele și galeria. Ordinea secțiunilor rămâne cea pusă de tine.",
           "colorsTitle": "Culori",
           "colorsDesc": "Alege paleta care se potrivește pensiunii.",
           "fontTitle": "Litere pentru titluri",
@@ -2048,11 +2048,11 @@
           },
           "editorial": {
             "title": "Revistă",
-            "desc": "Titlul lângă poză, galeria înaintea punctelor forte."
+            "desc": "Titlul lângă poză, ca într-o revistă."
           },
           "immersive": {
             "title": "Panoramic",
-            "desc": "Poza pe tot ecranul și galeria prima. Pentru poze spectaculoase."
+            "desc": "Poza pe tot ecranul. Pentru poze spectaculoase."
           }
         },
         "themes": {
