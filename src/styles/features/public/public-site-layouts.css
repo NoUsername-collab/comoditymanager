@@ -36,8 +36,7 @@
 
 .pub-hero--classic .pub-hero__title,
 .pub-hero--classic .pub-hero__subtitle,
-.pub-hero--classic .pub-hero__tagline,
-.pub-hero--classic .pub-hero__meta {
+.pub-hero--classic .pub-hero__tagline {
   max-width: 22ch;
 }
 
@@ -119,14 +118,14 @@
   letter-spacing: -0.04em;
 }
 
+/* Rail sits at the foot of the spread, as tall as its content — no empty box. */
 .pub-hero--editorial .pub-hero__rail {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  align-self: end;
   gap: 1.1rem;
-  padding: 1.25rem;
-  border-top: 1px solid var(--pub-border);
-  background: color-mix(in srgb, var(--pub-card) 88%, transparent);
+  padding: 1rem 0 0;
+  border-top: 3px solid var(--pub-fg);
 }
 
 .pub-hero--editorial .pub-hero__actions--stack {
@@ -149,8 +148,7 @@
   }
 
   .pub-hero--editorial .pub-hero__rail {
-    border: 1px solid var(--pub-border);
-    border-top: 1px solid var(--pub-border);
+    align-self: end;
   }
 }
 
@@ -303,33 +301,16 @@
   padding-inline: 0;
 }
 
-.pub-home--immersive .pub-section--intro-card {
-  position: relative;
-  z-index: 3;
-  margin-top: -5rem;
-  padding-top: 0;
-}
-
+/* Immersive intro is a centred statement, not a card laid over the gallery. */
 .pub-home--immersive .pub-section--intro-card .pub-section__inner {
-  width: min(40rem, calc(100% - 2rem));
-  padding: 1.75rem 1.5rem;
-  border: 1px solid var(--pub-border);
-  border-radius: var(--pub-radius);
-  background: var(--pub-card);
-  box-shadow: 0 22px 48px color-mix(in srgb, var(--pub-fg) 14%, transparent);
+  max-width: 48rem;
 }
 
-/* Editorial intro stays a magazine dek, not a 2-col brochure. */
-@media (min-width: 800px) {
-  .pub-home--editorial .pub-section--intro .pub-section__inner {
-    display: block;
-    max-width: 46rem;
-  }
-
-  .pub-home--editorial .pub-section--intro .pub-section__title {
-    font-size: clamp(2.4rem, 5vw, 3.75rem);
-    max-width: 14ch;
-  }
+.pub-home--immersive .pub-section--intro-card .pub-section__lead {
+  font-family: var(--pub-font-display);
+  font-size: clamp(1.25rem, 2.6vw, 1.75rem);
+  line-height: 1.4;
+  color: var(--pub-fg);
 }
 
 html[data-layout-chrome="compact"] [data-pub-template="immersive"] .public-header {
@@ -429,4 +410,101 @@ html[data-layout-chrome="compact"] [data-pub-template="immersive"] .public-heade
 
 [data-pub-template="immersive"] .pub-stay {
   background: color-mix(in srgb, var(--pub-bg) 55%, transparent);
+}
+
+/* ── One rule per layout, top to bottom ──
+ * Classic   — brochure: left-aligned heads, content in cards (base styles).
+ * Editorial — magazine: every section opens with a thick rule; lists instead of cards.
+ * Immersive — cinema: centred heads on full-width bands that alternate.
+ */
+
+/* Editorial: section heads */
+[data-pub-template="editorial"] .pub-section:not(.pub-section--cta) .pub-section__title {
+  padding-top: 0.9rem;
+  border-top: 3px solid var(--pub-fg);
+}
+
+/* Editorial: rooms as a ruled list, like the highlights */
+[data-pub-template="editorial"] .pub-stays {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+[data-pub-template="editorial"] .pub-stay {
+  padding: 1rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--pub-border);
+  border-radius: 0;
+  background: none;
+}
+
+@media (min-width: 720px) {
+  [data-pub-template="editorial"] .pub-stay {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.8fr) auto;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  [data-pub-template="editorial"] .pub-stay__price,
+  [data-pub-template="editorial"] .pub-stay__cta {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Editorial: booking band between rules, left aligned */
+[data-pub-template="editorial"] .pub-cta-band {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  border: 0;
+  border-block: 3px solid var(--pub-fg);
+  border-radius: 0;
+  background: none;
+  text-align: left;
+}
+
+[data-pub-template="editorial"] .pub-cta-band__text {
+  margin: 0;
+}
+
+[data-pub-template="editorial"] .pub-cta-band .pub-btn {
+  justify-self: start;
+}
+
+[data-pub-template="editorial"] .pub-place__map {
+  border-radius: 0;
+}
+
+/* Immersive: centred heads everywhere */
+.pub-home--immersive .pub-section .pub-section__title,
+.pub-home--immersive .pub-section .pub-section__lead {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.pub-home--immersive .pub-section__title {
+  font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+}
+
+.pub-home--immersive .pub-place__address,
+.pub-home--immersive .pub-place__link {
+  display: block;
+  text-align: center;
+}
+
+/* Immersive: full-width bands that alternate (gallery and booking band stay edge to edge). */
+.pub-home--immersive .pub-home__immersive-body > :nth-child(even):not(:has(.pub-section--gallery-bleed, .pub-section--cta)),
+.pub-home--immersive .pub-home__immersive-body > .pub-section:nth-child(even) {
+  background: color-mix(in srgb, var(--pub-card) 70%, var(--pub-bg));
+}
+
+.pub-home--immersive .pub-section {
+  padding-block: clamp(3rem, 7vw, 5rem);
+}
+
+.pub-home--immersive .pub-section--gallery-bleed,
+.pub-home--immersive .pub-section--cta {
+  padding-block: 0;
 }

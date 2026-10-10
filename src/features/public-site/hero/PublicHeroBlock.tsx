@@ -170,7 +170,7 @@ export function PublicHeroBlock({
         <h1 className="pub-hero__title">{title}</h1>
         {subtitle ? <p className="pub-hero__subtitle">{subtitle}</p> : null}
         {tagline ? <p className="pub-hero__tagline">{tagline}</p> : null}
-        {/* Classic shows check-in/out in the strip right under the hero. */}
+        {showMeta ? <p className="pub-hero__meta">{checkTimesLabel}</p> : null}
         {primaryBtn || secondaryBtn ? (
           <div className="pub-hero__actions">
             {primaryBtn}

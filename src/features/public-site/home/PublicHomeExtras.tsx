@@ -35,39 +35,26 @@ export function PublicHomeExtras({
           .slice(0, 4)
       : [];
 
-  const showCheckStrip = layout === "classic" && config.hero.showCheckTimes !== false;
+  // Check-in/out lives in the hero on every layout; this strip only lists highlights.
   const showBookingBar = config.bookingEnabled;
   const ctaPrimary = pickLocalized(config.hero.ctaPrimary, locale, [t("ctaBook")]);
 
-  if (!showCheckStrip && amenityLabels.length === 0 && !showBookingBar) {
+  if (amenityLabels.length === 0 && !showBookingBar) {
     return null;
   }
 
   return (
     <>
-      {showCheckStrip || amenityLabels.length > 0 ? (
+      {amenityLabels.length > 0 ? (
         <section className="pub-home-extras" aria-label={t("extrasAria")}>
           <div className="pub-home-extras__inner">
-            {showCheckStrip ? (
-              <div className="pub-home-extras__check">
-                <p className="pub-home-extras__check-label">{t("checkTimesLabel")}</p>
-                <p className="pub-home-extras__check-value">
-                  {t("checkTimes", {
-                    checkIn: config.checkInTime,
-                    checkOut: config.checkOutTime,
-                  })}
-                </p>
-              </div>
-            ) : null}
-            {amenityLabels.length > 0 ? (
-              <ul className="pub-home-extras__amenities">
-                {amenityLabels.map((label) => (
-                  <li key={label} className="pub-home-extras__amenity">
-                    {label}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            <ul className="pub-home-extras__amenities">
+              {amenityLabels.map((label) => (
+                <li key={label} className="pub-home-extras__amenity">
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       ) : null}
