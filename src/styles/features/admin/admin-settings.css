@@ -3193,3 +3193,54 @@ html[data-layout-chrome="compact"] .settings-shell__main {
   font-size: 0.95rem;
   font-weight: 600;
 }
+
+/* Domains: numbered activation steps with the DNS record spelled out. */
+.tenant-domains-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--admin-text, #18181b);
+}
+
+.tenant-domains-steps li[data-done="1"] {
+  color: var(--admin-text-muted, #52525b);
+}
+
+.tenant-domains-record {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  border-radius: 0.6rem;
+  background: var(--admin-page-bg, #f4f4f5);
+}
+
+.tenant-domains-record dt {
+  font-weight: 600;
+  color: var(--admin-text-muted, #52525b);
+}
+
+.tenant-domains-record dd {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+
+.tenant-domains-record__copy {
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--admin-panel-border, #d4d4d8);
+  border-radius: 999px;
+  background: var(--admin-panel-bg, #fff);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--admin-text, #18181b);
+  cursor: pointer;
+}

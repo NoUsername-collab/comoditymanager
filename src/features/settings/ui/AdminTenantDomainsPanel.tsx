@@ -13,6 +13,53 @@ import type { TenantDomainRoutingKind } from "@/lib/tenant/domain-routing";
 import type { TenantDomainRow } from "@/services/tenant-domains";
 import { buildTenantAdminUrl } from "@/lib/tenant/host";
 
+const DNS_TARGET = "cname.vercel-dns.com";
+
+/** Record name for the registrar: the part before the main domain ("www"), or "@" for the bare domain. */
+function dnsRecordName(domain: string): string {
+  const labels = domain.trim().toLowerCase().split(".").filter(Boolean);
+  return labels.length > 2 ? labels.slice(0, -2).join(".") : "@";
+}
+
+/** Numbered path from "added" to "live", with the one DNS record spelled out and copyable. */
+function DomainActivationSteps({ domain }: { domain: string }) {
+  const t = useTranslations("admin.domains");
+  const [copied, setCopied] = useState(false);
+
+  async function copyValue() {
+    try {
+      await navigator.clipboard.writeText(DNS_TARGET);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard blocked — the value stays visible to copy by hand */
+    }
+  }
+
+  return (
+    <ol className="tenant-domains-steps">
+      <li data-done="1">{t("stepAdded")}</li>
+      <li>
+        {t("stepSendRecord")}
+        <dl className="tenant-domains-record">
+          <dt>{t("recordType")}</dt>
+          <dd>CNAME</dd>
+          <dt>{t("recordName")}</dt>
+          <dd>{dnsRecordName(domain)}</dd>
+          <dt>{t("recordValue")}</dt>
+          <dd>
+            {DNS_TARGET}{" "}
+            <button type="button" className="tenant-domains-record__copy" onClick={copyValue}>
+              {copied ? t("copied") : t("copy")}
+            </button>
+          </dd>
+        </dl>
+      </li>
+      <li>{t("stepWait")}</li>
+    </ol>
+  );
+}
+
 type Props = {
   domains: TenantDomainRow[];
   tenantSlug: string;
@@ -59,7 +106,7 @@ export function AdminTenantDomainsPanel({
 
       {canManageCustom ? (
         <>
-          <SettingsSection title={t("addCustomTitle")}>
+          <SettingsSection title={t("addCustomTitle")} description={t("addCustomHint")}>
             <form
               className="settings-form-stack"
               action={async (fd) => {
@@ -116,7 +163,7 @@ export function AdminTenantDomainsPanel({
                       <p className="admin-settings-hint">
                         {d.verified ? t("statusVerified") : t("statusPending")}
                       </p>
-                      <p className="admin-settings-hint">{t("dnsHint")}</p>
+                      {!d.verified ? <DomainActivationSteps domain={d.domain} /> : null}
                     </div>
                     <div className="settings-dialog-actions !mt-2 !justify-start">
                       {!d.verified ? (
