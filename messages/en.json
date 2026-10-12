@@ -1970,7 +1970,7 @@
         "noticeHoursHint": "In the text you can write {placeholderIn} and {placeholderOut} — filled from property hours ({checkInTime} / {checkOutTime}).",
         "published": "Site published",
         "heroTitleHint": "Main hero headline — also used as meta title if SEO fields are empty.",
-        "heroImageHint": "JPEG, PNG or WebP, up to 5 MB. Classic veils it, Editorial puts it beside the headline, Immersive fills the viewport.",
+        "heroImageHint": "JPEG, PNG or WebP, up to 5 MB. “Classic” puts it on top, “Magazine” beside the title, “Panoramic” fills the screen.",
         "usePrimaryContactHint": "When checked, Property identity contact fills empty fields below.",
         "publishedHint": "Turn off to hide the homepage and calendar from visitors. Staff still see a preview when signed in.",
         "localeEditHint": "Editing {locale} only. The other languages stay as they are.",
@@ -2092,28 +2092,28 @@
         },
         "themes": {
           "noir": {
-            "title": "Noir",
-            "desc": "Dark with gold accents — elegant and discreet."
+            "title": "Elegant",
+            "desc": "Dark, with gold accents."
           },
           "alpine": {
-            "title": "Alpine",
-            "desc": "Alpine green, light background — fresh mountain feel."
+            "title": "Mountain",
+            "desc": "Green and bright."
           },
           "mediterranean": {
-            "title": "Mediterranean",
-            "desc": "Deep blue, warm accents — coastal mood."
+            "title": "Seaside",
+            "desc": "Deep blue, with warm accents."
           },
           "pearl": {
-            "title": "Pearl",
-            "desc": "Warm boutique — ivory base, rose-brown accent."
+            "title": "Boutique",
+            "desc": "Warm cream and brown."
           },
           "slate": {
-            "title": "Slate",
-            "desc": "Modern professional — blue-gray, cobalt accent."
+            "title": "Modern",
+            "desc": "Blue-grey, clean and simple."
           },
           "forest": {
             "title": "Forest",
-            "desc": "Daylight lodge — moss paper, forest-green accent."
+            "desc": "Deep green, natural and calm."
           }
         }
       },

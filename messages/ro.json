@@ -1953,7 +1953,7 @@
         "noticeHoursHint": "În text poți scrie {placeholderIn} și {placeholderOut} — se completează cu orele pensiunii ({checkInTime} / {checkOutTime}).",
         "published": "Site publicat",
         "heroTitleHint": "Titlul principal din hero — folosit și ca meta title dacă nu completezi SEO separat.",
-        "heroImageHint": "JPEG, PNG sau WebP, maxim 5 MB. Classic o voalează, Editorial o pune lângă titlu, Immersive umple ecranul.",
+        "heroImageHint": "JPEG, PNG sau WebP, maxim 5 MB. La „Clasic” stă sus, la „Revistă” lângă titlu, la „Panoramic” umple ecranul.",
         "usePrimaryContactHint": "Când e bifat, contactul din Identitate pensiune completează câmpurile goale de mai jos.",
         "publishedHint": "Dezactivează ca să ascunzi homepage-ul și calendarul de vizitatori. Operatorii logați văd în continuare preview-ul.",
         "localeEditHint": "Editezi doar {locale}. Celelalte limbi rămân neschimbate.",
@@ -2075,28 +2075,28 @@
         },
         "themes": {
           "noir": {
-            "title": "Noir",
-            "desc": "Întunecat, accente aurii — elegant și discret."
+            "title": "Elegant",
+            "desc": "Întunecat, cu accente aurii."
           },
           "alpine": {
-            "title": "Alpine",
-            "desc": "Verde alpine, fundal luminos — montan și fresh."
+            "title": "Munte",
+            "desc": "Verde și luminos."
           },
           "mediterranean": {
-            "title": "Mediterranean",
-            "desc": "Albastru adânc, accente calde — costier."
+            "title": "La mare",
+            "desc": "Albastru adânc, cu accente calde."
           },
           "pearl": {
-            "title": "Pearl",
-            "desc": "Cald și boutique — fundal ivory, accent rose-brown."
+            "title": "Boutique",
+            "desc": "Cald, crem și maro."
           },
           "slate": {
-            "title": "Slate",
-            "desc": "Modern profesional — gri-albastru, accent cobalt."
+            "title": "Modern",
+            "desc": "Gri-albastru, curat și simplu."
           },
           "forest": {
-            "title": "Forest",
-            "desc": "Lodge de zi — hârtie mușchi, accent verde pădure."
+            "title": "Pădure",
+            "desc": "Verde închis, natural și calm."
           }
         }
       },
