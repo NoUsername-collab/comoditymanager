@@ -16,34 +16,13 @@ import {
 } from "@/hooks/useSettingsSaveFeedback";
 import { useSettingsDraft } from "@/hooks/useSettingsDraft";
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
+import { SettingRow } from "@/components/admin/settings/SettingRow";
 
 type Props = {
   settings: EmailSettings;
   delivery: EmailDeliveryConfig;
   identity: TransactionalEmailIdentity;
 };
-
-function SettingRow({
-  label,
-  description,
-  children,
-}: {
-  label: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="checkin-setting-row">
-      <div className="checkin-setting-row__left">
-        <span className="checkin-setting-row__label">{label}</span>
-        {description && (
-          <span className="checkin-setting-row__desc">{description}</span>
-        )}
-      </div>
-      <div className="checkin-setting-row__right">{children}</div>
-    </div>
-  );
-}
 
 export function EmailSettingsPanel({
   settings: initial,

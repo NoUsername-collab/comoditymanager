@@ -11,30 +11,11 @@ import {
 } from "@/hooks/useSettingsSaveFeedback";
 import { useSettingsDraft } from "@/hooks/useSettingsDraft";
 import { SettingsDraftSaveBar } from "@/components/admin/settings/SettingsDraftSaveBar";
+import { SettingRow } from "@/components/admin/settings/SettingRow";
 
 type Props = {
   settings: CheckinSettings;
 };
-
-type SettingRowProps = {
-  label: string;
-  description?: string;
-  children: React.ReactNode;
-};
-
-function SettingRow({ label, description, children }: SettingRowProps) {
-  return (
-    <div className="checkin-setting-row">
-      <div className="checkin-setting-row__left">
-        <span className="checkin-setting-row__label">{label}</span>
-        {description && (
-          <span className="checkin-setting-row__desc">{description}</span>
-        )}
-      </div>
-      <div className="checkin-setting-row__right">{children}</div>
-    </div>
-  );
-}
 
 /** Number field kept in the page draft; it is saved with the bottom bar. */
 function NumberSetting({
