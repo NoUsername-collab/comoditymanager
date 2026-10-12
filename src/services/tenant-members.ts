@@ -88,6 +88,12 @@ export async function listActiveTenantMembers(
   return members.filter((m) => m.is_active);
 }
 
+/** True once the owner has invited anyone (pending invites count). */
+export async function hasTeamBesidesOwner(tenantId: string): Promise<boolean> {
+  const members = await listActiveTenantMembers(tenantId);
+  return members.some((m) => m.role !== "owner");
+}
+
 // ─── Get a member by email within a tenant ─────────────────────────
 export async function getTenantMemberByEmail(
   tenantId: string,

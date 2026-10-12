@@ -27,12 +27,14 @@ type Props = {
   checkOutTime?: string;
   setupIssues?: SetupIssue[];
   children: ReactNode;
+  hasTeam?: boolean;
 };
 
 export function SettingsShell({
   role,
   memberRole,
   teamPermissions,
+  hasTeam,
   propertyName,
   checkInTime,
   checkOutTime,
@@ -48,6 +50,7 @@ export function SettingsShell({
     role,
     memberRole,
     teamPermissions,
+    hasTeam,
   });
   const activeId = resolveActiveSettingsNavId(pathname, layoutSegment);
   const normalizedQuery = query.trim().toLowerCase();

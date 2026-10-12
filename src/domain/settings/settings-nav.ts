@@ -10,6 +10,8 @@ export type SettingsNavItem = {
   roles?: Array<"owner" | "admin" | "operator">;
   memberRoles?: Array<"owner" | "admin" | "operator">;
   permissionGroup?: PermissionGroupId;
+  /** Only useful once the owner has invited someone. */
+  requiresTeam?: boolean;
 };
 
 export type SettingsNavGroup = {
@@ -50,12 +52,48 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         matchPath: "/admin/settings/identity",
         permissionGroup: "pension_settings",
       },
+    ],
+  },
+  {
+    id: "rooms",
+    labelKey: "navGroupRooms",
+    items: [
       {
-        id: "appearance",
-        labelKey: "navAppearance",
-        descriptionKey: "navAppearanceDesc",
-        href: "/admin/settings/appearance",
-        matchPath: "/admin/settings/appearance",
+        id: "location",
+        labelKey: "navLocation",
+        descriptionKey: "navLocationDesc",
+        href: "/admin/settings/location",
+        matchPath: "/admin/settings/location",
+        permissionGroup: "location_structure",
+      },
+    ],
+  },
+  {
+    id: "channels",
+    labelKey: "navGroupChannels",
+    items: [
+      {
+        id: "guest-app",
+        labelKey: "navGuestApp",
+        descriptionKey: "navGuestAppDesc",
+        href: "/admin/settings/guest-app",
+        matchPath: "/admin/settings/guest-app",
+        permissionGroup: "pension_settings",
+      },
+      {
+        id: "public-site",
+        labelKey: "navPublicSite",
+        descriptionKey: "navPublicSiteDesc",
+        href: "/admin/settings/public-site",
+        matchPath: "/admin/settings/public-site",
+        permissionGroup: "pension_settings",
+      },
+      {
+        id: "email",
+        labelKey: "navEmail",
+        descriptionKey: "navEmailDesc",
+        href: "/admin/settings/email",
+        matchPath: "/admin/settings/email",
         permissionGroup: "pension_settings",
       },
     ],
@@ -97,58 +135,6 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     ],
   },
   {
-    id: "channels",
-    labelKey: "navGroupChannels",
-    items: [
-      {
-        id: "guest-app",
-        labelKey: "navGuestApp",
-        descriptionKey: "navGuestAppDesc",
-        href: "/admin/settings/guest-app",
-        matchPath: "/admin/settings/guest-app",
-        permissionGroup: "pension_settings",
-      },
-      {
-        id: "public-site",
-        labelKey: "navPublicSite",
-        descriptionKey: "navPublicSiteDesc",
-        href: "/admin/settings/public-site",
-        matchPath: "/admin/settings/public-site",
-        permissionGroup: "pension_settings",
-      },
-      {
-        id: "email",
-        labelKey: "navEmail",
-        descriptionKey: "navEmailDesc",
-        href: "/admin/settings/email",
-        matchPath: "/admin/settings/email",
-        permissionGroup: "pension_settings",
-      },
-      {
-        id: "domains",
-        labelKey: "navDomains",
-        descriptionKey: "navDomainsDesc",
-        href: "/admin/settings/domains",
-        matchPath: "/admin/settings/domains",
-        permissionGroup: "pension_settings",
-      },
-    ],
-  },
-  {
-    id: "rooms",
-    labelKey: "navGroupRooms",
-    items: [
-      {
-        id: "location",
-        labelKey: "navLocation",
-        descriptionKey: "navLocationDesc",
-        href: "/admin/settings/location",
-        matchPath: "/admin/settings/location",
-        permissionGroup: "location_structure",
-      },
-    ],
-  },
-  {
     id: "team",
     labelKey: "navGroupTeam",
     items: [
@@ -167,6 +153,7 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
         href: "/admin/settings/team-permissions",
         matchPath: "/admin/settings/team-permissions",
         memberRoles: ["owner"],
+        requiresTeam: true,
       },
     ],
   },
@@ -183,6 +170,28 @@ export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
       },
     ],
   },
+  {
+    id: "later",
+    labelKey: "navGroupLater",
+    items: [
+      {
+        id: "domains",
+        labelKey: "navDomains",
+        descriptionKey: "navDomainsDesc",
+        href: "/admin/settings/domains",
+        matchPath: "/admin/settings/domains",
+        permissionGroup: "pension_settings",
+      },
+      {
+        id: "appearance",
+        labelKey: "navAppearance",
+        descriptionKey: "navAppearanceDesc",
+        href: "/admin/settings/appearance",
+        matchPath: "/admin/settings/appearance",
+        permissionGroup: "pension_settings",
+      },
+    ],
+  },
 ];
 
 export function filterSettingsNav(
@@ -191,6 +200,8 @@ export function filterSettingsNav(
     role: "admin" | "operator";
     memberRole: "owner" | "admin" | "operator";
     teamPermissions?: TeamPermissions | null;
+    /** Defaults to true so nothing hides when the team is unknown. */
+    hasTeam?: boolean;
   },
 ): SettingsNavGroup[] {
   return groups
@@ -201,6 +212,7 @@ export function filterSettingsNav(
           return false;
         }
         if (item.roles && !item.roles.includes(ctx.role)) return false;
+        if (item.requiresTeam && ctx.hasTeam === false) return false;
         if (item.permissionGroup) {
           if (
             !canStaffPermission(

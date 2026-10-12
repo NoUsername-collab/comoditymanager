@@ -12,9 +12,11 @@ import type { PermissionGroupId } from "@/domain/settings/team-permissions";
 import { canStaffPermission } from "@/domain/settings/team-permissions";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import type { SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
+import { hasTeamBesidesOwner } from "@/services/tenant-members";
+import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 
 export const loadSettingsStaffContext = cache(async () => {
-  const [staff, pensionResult] = await Promise.all([
+  const [staff, pensionResult, hasTeam] = await Promise.all([
     requireStaff(),
     getPensionSettings()
       .then((settings) => ({ settings, error: null as string | null }))
@@ -22,6 +24,10 @@ export const loadSettingsStaffContext = cache(async () => {
         settings: null as Awaited<ReturnType<typeof getPensionSettings>>,
         error: e instanceof Error ? e.message : "generic",
       })),
+    // Team-only settings stay hidden until the owner invites someone.
+    resolveTenantIdForData()
+      .then(hasTeamBesidesOwner)
+      .catch(() => true),
   ]);
 
   const statisticsVisibility = pensionStatisticsVisibility(pensionResult.settings);
@@ -40,6 +46,7 @@ export const loadSettingsStaffContext = cache(async () => {
     statisticsAccess,
     teamPermissions,
     appearance,
+    hasTeam,
   };
 });
 

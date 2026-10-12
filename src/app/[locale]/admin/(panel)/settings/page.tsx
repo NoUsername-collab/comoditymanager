@@ -110,6 +110,7 @@ export default async function SettingsOverviewPage({
         role={role}
         memberRole={memberRole ?? "operator"}
         teamPermissions={ctx.teamPermissions}
+        hasTeam={ctx.hasTeam}
         propertyName={settings.display_name}
         checkInTime={settings.default_check_in_time}
         checkOutTime={settings.default_check_out_time}

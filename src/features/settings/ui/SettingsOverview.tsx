@@ -24,6 +24,7 @@ type Props = {
   role: "admin" | "operator";
   memberRole: "owner" | "admin" | "operator";
   teamPermissions?: TeamPermissions | null;
+  hasTeam?: boolean;
   propertyName: string;
   checkInTime: string;
   checkOutTime: string;
@@ -38,6 +39,7 @@ export function SettingsOverview({
   role,
   memberRole,
   teamPermissions,
+  hasTeam,
   propertyName,
   checkInTime,
   checkOutTime,
@@ -53,6 +55,7 @@ export function SettingsOverview({
     role,
     memberRole,
     teamPermissions,
+    hasTeam,
   });
 
   const quickItems = navGroups

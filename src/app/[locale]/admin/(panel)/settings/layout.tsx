@@ -26,7 +26,7 @@ export default async function SettingsLayout({
     loadSettingsStaffContext(),
   ]);
 
-  const { staff, pensionResult, teamPermissions } = ctx;
+  const { staff, pensionResult, teamPermissions, hasTeam } = ctx;
   const { role, memberRole } = staff;
   const settings = pensionResult.settings;
 
@@ -45,6 +45,7 @@ export default async function SettingsLayout({
           role={role}
           memberRole={memberRole ?? "operator"}
           teamPermissions={teamPermissions}
+          hasTeam={hasTeam}
           propertyName={settings?.display_name}
           checkInTime={settings?.default_check_in_time}
           checkOutTime={settings?.default_check_out_time}

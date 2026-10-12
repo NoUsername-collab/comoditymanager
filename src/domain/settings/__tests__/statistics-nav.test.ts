@@ -114,15 +114,29 @@ describe("filterSettingsNav statistics ACL", () => {
 
 describe("settings nav information architecture", () => {
   it("groups settings by information architecture", () => {
+    // Setup order first (property, rooms, site and email), extras last.
     expect(SETTINGS_NAV_GROUPS.map((g) => g.id)).toEqual([
       "pension",
+      "rooms",
+      "channels",
       "stay",
       "money",
-      "channels",
-      "rooms",
       "team",
       "account",
+      "later",
     ]);
+  });
+
+  it("hides team permissions until someone is invited", () => {
+    const ids = (hasTeam?: boolean) =>
+      filterSettingsNav(SETTINGS_NAV_GROUPS, { role: "admin", memberRole: "owner", hasTeam })
+        .flatMap((g) => g.items)
+        .map((item) => item.id);
+
+    expect(ids(false)).not.toContain("team-permissions");
+    expect(ids(false)).toContain("team");
+    expect(ids(true)).toContain("team-permissions");
+    expect(ids()).toContain("team-permissions");
   });
 });
 
