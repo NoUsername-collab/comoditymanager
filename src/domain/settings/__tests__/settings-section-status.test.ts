@@ -6,7 +6,7 @@ import {
   SETTINGS_COMPLETION_NAV_IDS,
 } from "@/domain/settings/settings-section-status";
 import type { SetupIssue } from "@/domain/setup-issues/types";
-import { APPEARANCE_SETTINGS_PATH, IDENTITY_SETTINGS_PATH } from "@/domain/setup-issues/checks";
+import { IDENTITY_SETTINGS_PATH } from "@/domain/setup-issues/checks";
 
 const identityItem = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).find(
   (item) => item.id === "identity"
@@ -23,7 +23,7 @@ const bookingItem = SETTINGS_NAV_GROUPS.flatMap((g) => g.items).find(
 describe("settings-section-status", () => {
   it("marks tracked sections complete when they have no setup issues", () => {
     expect(resolveSettingsSectionStatus(identityItem, [])).toBe("complete");
-    expect(resolveSettingsSectionStatus(appearanceItem, [])).toBe("complete");
+    expect(resolveSettingsSectionStatus(appearanceItem, [])).toBeNull();
   });
 
   it("marks sections that need attention when setup issues match", () => {
@@ -37,16 +37,16 @@ describe("settings-section-status", () => {
     ];
 
     expect(resolveSettingsSectionStatus(identityItem, issues)).toBe("attention");
-    expect(resolveSettingsSectionStatus(appearanceItem, issues)).toBe("complete");
+    expect(resolveSettingsSectionStatus(appearanceItem, issues)).toBeNull();
   });
 
   it("returns null for sections outside onboarding completion tracking", () => {
     const issues: SetupIssue[] = [
       {
-        id: "theme-not-configured",
+        id: "contact-email-missing",
         severity: "warning",
-        settingsPath: APPEARANCE_SETTINGS_PATH,
-        labelKey: "themeNotConfigured",
+        settingsPath: IDENTITY_SETTINGS_PATH,
+        labelKey: "contactEmailMissing",
       },
     ];
 
@@ -60,15 +60,15 @@ describe("settings-section-status", () => {
 
     const summary = countCompletionStatuses(trackedItems, [
       {
-        id: "theme-not-configured",
+        id: "contact-email-missing",
         severity: "warning",
-        settingsPath: APPEARANCE_SETTINGS_PATH,
-        labelKey: "themeNotConfigured",
+        settingsPath: IDENTITY_SETTINGS_PATH,
+        labelKey: "contactEmailMissing",
       },
     ]);
 
-    expect(summary.tracked).toBe(4);
+    expect(summary.tracked).toBe(3);
     expect(summary.attention).toBe(1);
-    expect(summary.complete).toBe(3);
+    expect(summary.complete).toBe(2);
   });
 });

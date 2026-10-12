@@ -6,8 +6,6 @@ import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 
 export type OnboardingIssueContext = {
   displayName: string | null;
-  rawPaletteKey: string | null;
-  appearanceSaved: boolean;
   pensionEmail: string | null;
   publicSiteEmail: string | null;
   usePrimaryContact: boolean;
@@ -17,28 +15,16 @@ export type OnboardingIssueContext = {
   roomCount: number;
 };
 
-async function hasAppearanceBeenSaved(tenantId: string): Promise<boolean> {
-  const supabase = createPublicAdminClient();
-  const { count, error } = await supabase
-    .from("admin_activity_log")
-    .select("id", { count: "exact", head: true })
-    .eq("tenant_id", tenantId)
-    .eq("action", "settings.appearance_updated");
-
-  if (error) return false;
-  return (count ?? 0) > 0;
-}
-
 async function loadOnboardingIssueContextUncached(
   tenantId: string,
 ): Promise<OnboardingIssueContext> {
   const supabase = createPublicAdminClient();
 
-  const [pensionResult, publicSiteResult, appearanceSaved, roomsResult] = await Promise.all([
+  const [pensionResult, publicSiteResult, roomsResult] = await Promise.all([
     supabase
       .from("pension_settings")
       .select(
-        "admin_palette_key, contact_email, display_name, email_reply_to, email_from_name, email_from_address",
+        "contact_email, display_name, email_reply_to, email_from_name, email_from_address",
       )
       .eq("tenant_id", tenantId)
       .maybeSingle(),
@@ -47,7 +33,6 @@ async function loadOnboardingIssueContextUncached(
       .select("contact, use_primary_contact")
       .eq("tenant_id", tenantId)
       .maybeSingle(),
-    hasAppearanceBeenSaved(tenantId),
     supabase
       .from("rooms")
       .select("id", { count: "exact", head: true })
@@ -64,11 +49,6 @@ async function loadOnboardingIssueContextUncached(
   return {
     displayName:
       typeof pensionRow?.display_name === "string" ? pensionRow.display_name : null,
-    rawPaletteKey:
-      typeof pensionRow?.admin_palette_key === "string"
-        ? pensionRow.admin_palette_key
-        : null,
-    appearanceSaved,
     pensionEmail:
       typeof pensionRow?.contact_email === "string" ? pensionRow.contact_email : null,
     publicSiteEmail:

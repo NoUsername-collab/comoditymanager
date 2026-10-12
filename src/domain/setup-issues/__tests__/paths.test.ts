@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  APPEARANCE_SETTINGS_PATH,
-  BUILDINGS_STRUCTURE_PATH,
-  IDENTITY_SETTINGS_PATH,
-} from "../checks";
+import { IDENTITY_SETTINGS_PATH } from "../checks";
 import {
   getIssuesForSettingsPath,
   issueMatchesSettingsPath,
@@ -18,18 +14,11 @@ const MFA_ISSUE: SetupIssue = {
   labelKey: "mfaNotEnabled",
 };
 
-const THEME_ISSUE: SetupIssue = {
-  id: "theme-not-configured",
+const ROOMS_ISSUE: SetupIssue = {
+  id: "rooms-missing",
   severity: "warning",
-  settingsPath: APPEARANCE_SETTINGS_PATH,
-  labelKey: "themeNotConfigured",
-};
-
-const BUILDINGS_ISSUE: SetupIssue = {
-  id: "buildings-not-colored",
-  severity: "warning",
-  settingsPath: BUILDINGS_STRUCTURE_PATH,
-  labelKey: "buildingsNotColored",
+  settingsPath: "/admin/settings/location",
+  labelKey: "roomsMissing",
 };
 
 const CONTACT_ISSUE: SetupIssue = {
@@ -39,7 +28,7 @@ const CONTACT_ISSUE: SetupIssue = {
   labelKey: "contactEmailMissing",
 };
 
-const ALL_ISSUES = [MFA_ISSUE, THEME_ISSUE, BUILDINGS_ISSUE, CONTACT_ISSUE];
+const ALL_ISSUES = [MFA_ISSUE, ROOMS_ISSUE, CONTACT_ISSUE];
 
 describe("issueMatchesSettingsPath", () => {
   it("matches exact and nested settings routes", () => {
@@ -54,13 +43,13 @@ describe("issueMatchesSettingsPath", () => {
     );
   });
 
-  it("matches location nav for building color issues", () => {
+  it("matches nested location routes", () => {
     expect(
-      issueMatchesSettingsPath(BUILDINGS_ISSUE, "/admin/settings/location")
+      issueMatchesSettingsPath(ROOMS_ISSUE, "/admin/settings/location")
     ).toBe(true);
     expect(
       issueMatchesSettingsPath(
-        BUILDINGS_ISSUE,
+        ROOMS_ISSUE,
         "/admin/settings/location/structure"
       )
     ).toBe(true);
@@ -77,14 +66,11 @@ describe("getIssuesForSettingsPath", () => {
 
   it("returns onboarding issues for their settings sections", () => {
     expect(
-      getIssuesForSettingsPath(ALL_ISSUES, APPEARANCE_SETTINGS_PATH)
-    ).toEqual([THEME_ISSUE]);
-    expect(
       getIssuesForSettingsPath(ALL_ISSUES, IDENTITY_SETTINGS_PATH)
     ).toEqual([CONTACT_ISSUE]);
     expect(
       getIssuesForSettingsPath(ALL_ISSUES, "/admin/settings/location")
-    ).toEqual([BUILDINGS_ISSUE]);
+    ).toEqual([ROOMS_ISSUE]);
   });
 });
 
@@ -103,9 +89,9 @@ describe("navItemHasIssues", () => {
     ).toBe(false);
   });
 
-  it("highlights location nav when buildings need colors", () => {
+  it("highlights location nav when its issue is open", () => {
     expect(
-      navItemHasIssues([BUILDINGS_ISSUE], {
+      navItemHasIssues([ROOMS_ISSUE], {
         href: "/admin/settings/location",
         matchPath: "/admin/settings/location",
       })

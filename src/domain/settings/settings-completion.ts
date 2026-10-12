@@ -17,7 +17,12 @@ export type SettingsCompletionSummary = {
   percent: number;
   completeCount: number;
   totalCount: number;
+  /** The setup steps, in the order a new owner should do them. */
   items: SettingsCompletionItem[];
+  /** First step not done yet — where "Continue" leads. */
+  next: SettingsCompletionItem | null;
+  /** Extra checks for the public site, shown under its own heading. */
+  publicItems: SettingsCompletionItem[];
 };
 
 export type PublicSiteCompletionSnapshot = {
@@ -62,50 +67,44 @@ export function computeSettingsCompletion(opts: {
     publicSite,
   } = opts;
 
+  const roomCount = opts.roomCount ?? 0;
   const items: SettingsCompletionItem[] = [
     {
       id: "identity",
       labelKey: "checklistIdentity",
-      done: isIdentityConfigured(displayName),
-      href: "/admin/settings/identity",
-    },
-    {
-      id: "inventory",
-      labelKey: "checklistInventory",
-      done: (opts.roomCount ?? 0) >= 1,
-      href: (opts.roomCount ?? 0) >= 1 ? "/admin/rooms" : "/admin/onboarding",
-    },
-    {
-      id: "contact-email",
-      labelKey: "checklistContact",
       done:
+        isIdentityConfigured(displayName) &&
         !hasSetupIssue(setupIssues, SETUP_ISSUE_IDS.CONTACT_EMAIL_MISSING) &&
         Boolean(identityContact.email?.trim()),
       href: "/admin/settings/identity",
     },
     {
-      id: "theme",
-      labelKey: "checklistTheme",
-      done: !hasSetupIssue(setupIssues, SETUP_ISSUE_IDS.THEME_NOT_CONFIGURED),
-      href: "/admin/settings/appearance",
-    },
-    {
-      id: "buildings-color",
-      labelKey: "checklistBuildings",
-      done: !hasSetupIssue(setupIssues, SETUP_ISSUE_IDS.BUILDINGS_NOT_COLORED),
-      href: "/admin/settings/location",
-    },
-    {
-      id: "email",
-      labelKey: "checklistEmail",
-      done: isEmailChannelConfigured({
-        emailReplyTo,
-        emailFromName,
-        emailFromAddress,
-      }),
-      href: "/admin/settings/email",
+      id: "inventory",
+      labelKey: "checklistInventory",
+      done: roomCount >= 1,
+      href: roomCount >= 1 ? "/admin/rooms" : "/admin/onboarding",
     },
   ];
+
+  if (publicSite) {
+    items.push({
+      id: "public-published",
+      labelKey: "checklistPublicPublished",
+      done: publicSite.published,
+      href: "/admin/settings/public-site",
+    });
+  }
+
+  items.push({
+    id: "email",
+    labelKey: "checklistEmail",
+    done: isEmailChannelConfigured({
+      emailReplyTo,
+      emailFromName,
+      emailFromAddress,
+    }),
+    href: "/admin/settings/email",
+  });
 
   if (includeMfa) {
     items.push({
@@ -116,33 +115,28 @@ export function computeSettingsCompletion(opts: {
     });
   }
 
-  if (publicSite) {
-    items.push(
-      {
-        id: "public-published",
-        labelKey: "checklistPublicPublished",
-        done: publicSite.published,
-        href: "/admin/settings/public-site",
-      },
-      {
-        id: "public-contact",
-        labelKey: "checklistPublicContact",
-        done: publicSite.hasContact,
-        href: "/admin/settings/public-site",
-      },
-      {
-        id: "public-booking",
-        labelKey: "checklistPublicBooking",
-        done: publicSite.bookingEnabled,
-        href: "/admin/settings/public-site",
-      },
-    );
-  }
+  const publicItems: SettingsCompletionItem[] = publicSite
+    ? [
+        {
+          id: "public-contact",
+          labelKey: "checklistPublicContact",
+          done: publicSite.hasContact,
+          href: "/admin/settings/public-site",
+        },
+        {
+          id: "public-booking",
+          labelKey: "checklistPublicBooking",
+          done: publicSite.bookingEnabled,
+          href: "/admin/settings/public-site",
+        },
+      ]
+    : [];
 
   const completeCount = items.filter((item) => item.done).length;
   const totalCount = items.length;
   const percent =
     totalCount === 0 ? 100 : Math.round((completeCount / totalCount) * 100);
+  const next = items.find((item) => !item.done) ?? null;
 
-  return { percent, completeCount, totalCount, items };
+  return { percent, completeCount, totalCount, items, next, publicItems };
 }

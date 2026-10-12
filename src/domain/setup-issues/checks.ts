@@ -4,19 +4,11 @@ import {
   isMfaRecommendedForUser,
 } from "@/lib/auth/mfa-policy";
 import { isPlatformAdminEmail } from "@/lib/auth/require-platform-admin";
-import { normalizeBuildingColor } from "@/lib/building-color-palette";
 import type { TenantMemberRole } from "@/domain/tenant/types";
 import { ONBOARDING_PATH } from "@/domain/onboarding/steps";
 import { SETUP_ISSUE_IDS, type SetupIssue } from "./types";
 
-export const APPEARANCE_SETTINGS_PATH = "/admin/settings/appearance";
-export const BUILDINGS_STRUCTURE_PATH = "/admin/settings/location";
 export const IDENTITY_SETTINGS_PATH = "/admin/settings/identity";
-
-export type BuildingColorSnapshot = {
-  color_hex: string | null;
-  is_active?: boolean;
-};
 
 export function canReceiveOnboardingSetupIssues(opts: {
   email?: string | null;
@@ -34,24 +26,6 @@ export function shouldResolveSetupIssues(opts: {
   return (
     isMfaRecommendedForUser(opts) || canReceiveOnboardingSetupIssues(opts)
   );
-}
-
-function hasNonLegacyPaletteKey(raw: string | null | undefined): boolean {
-  const key = raw?.trim() ?? "";
-  return key.length > 0 && key !== "pension" && key !== "default";
-}
-
-export function isAdminThemeExplicitlyConfigured(opts: {
-  rawPaletteKey: string | null | undefined;
-  appearanceSaved: boolean;
-}): boolean {
-  if (opts.appearanceSaved) return true;
-  return hasNonLegacyPaletteKey(opts.rawPaletteKey) && opts.rawPaletteKey !== "noir";
-}
-
-export function buildingNeedsPaletteColor(building: BuildingColorSnapshot): boolean {
-  if (building.is_active === false) return false;
-  return !normalizeBuildingColor(building.color_hex);
 }
 
 export function hasConfiguredContactEmail(opts: {
@@ -82,50 +56,6 @@ export function resolveMfaSetupIssue(opts: {
     severity: "warning",
     settingsPath: MFA_SETUP_PATH,
     labelKey: "mfaNotEnabled",
-  };
-}
-
-export function resolveThemeSetupIssue(opts: {
-  email?: string | null;
-  memberRole?: TenantMemberRole | null;
-  rawPaletteKey: string | null | undefined;
-  appearanceSaved: boolean;
-}): SetupIssue | null {
-  if (!canReceiveOnboardingSetupIssues(opts)) return null;
-
-  if (
-    isAdminThemeExplicitlyConfigured({
-      rawPaletteKey: opts.rawPaletteKey,
-      appearanceSaved: opts.appearanceSaved,
-    })
-  ) {
-    return null;
-  }
-
-  return {
-    id: SETUP_ISSUE_IDS.THEME_NOT_CONFIGURED,
-    severity: "warning",
-    settingsPath: APPEARANCE_SETTINGS_PATH,
-    labelKey: "themeNotConfigured",
-  };
-}
-
-export function resolveBuildingsColorSetupIssue(opts: {
-  email?: string | null;
-  memberRole?: TenantMemberRole | null;
-  buildings: BuildingColorSnapshot[];
-}): SetupIssue | null {
-  if (!canReceiveOnboardingSetupIssues(opts)) return null;
-  if (opts.buildings.length === 0) return null;
-
-  const needsColor = opts.buildings.some(buildingNeedsPaletteColor);
-  if (!needsColor) return null;
-
-  return {
-    id: SETUP_ISSUE_IDS.BUILDINGS_NOT_COLORED,
-    severity: "warning",
-    settingsPath: BUILDINGS_STRUCTURE_PATH,
-    labelKey: "buildingsNotColored",
   };
 }
 

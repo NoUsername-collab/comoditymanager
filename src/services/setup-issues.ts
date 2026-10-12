@@ -2,11 +2,9 @@ import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import {
   canReceiveOnboardingSetupIssues,
-  resolveBuildingsColorSetupIssue,
   resolveContactEmailSetupIssue,
   resolveMfaSetupIssue,
   resolveRoomsMissingSetupIssue,
-  resolveThemeSetupIssue,
   shouldResolveSetupIssues,
 } from "@/domain/setup-issues/checks";
 import type { SetupIssue } from "@/domain/setup-issues/types";
@@ -14,7 +12,6 @@ import { isMfaRecommendedForUser } from "@/lib/auth/mfa-policy";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { createClient } from "@/lib/supabase/server";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
-import { listBuildings } from "@/services/buildings";
 import { loadOnboardingIssueContext } from "@/services/setup-issues-context";
 import type { TenantMemberRole } from "@/domain/tenant/types";
 
@@ -39,14 +36,9 @@ async function resolveSetupIssuesUncached(
   const needsOnboarding = canReceiveOnboardingSetupIssues(opts);
   const issues: SetupIssue[] = [];
 
-  const [factorsResult, onboardingBundle] = await Promise.all([
+  const [factorsResult, onboardingContext] = await Promise.all([
     checkMfa ? loadMfaFactors(opts.email ?? "") : Promise.resolve({ data: null }),
-    needsOnboarding
-      ? Promise.all([
-          loadOnboardingIssueContext(),
-          listBuildings().catch(() => []),
-        ])
-      : Promise.resolve(null),
+    needsOnboarding ? loadOnboardingIssueContext() : Promise.resolve(null),
   ]);
 
   if (checkMfa) {
@@ -57,22 +49,7 @@ async function resolveSetupIssuesUncached(
     if (mfaIssue) issues.push(mfaIssue);
   }
 
-  if (needsOnboarding && onboardingBundle) {
-    const [onboardingContext, buildings] = onboardingBundle;
-
-    const themeIssue = resolveThemeSetupIssue({
-      ...opts,
-      rawPaletteKey: onboardingContext.rawPaletteKey,
-      appearanceSaved: onboardingContext.appearanceSaved,
-    });
-    if (themeIssue) issues.push(themeIssue);
-
-    const buildingsIssue = resolveBuildingsColorSetupIssue({
-      ...opts,
-      buildings,
-    });
-    if (buildingsIssue) issues.push(buildingsIssue);
-
+  if (needsOnboarding && onboardingContext) {
     const contactIssue = resolveContactEmailSetupIssue({
       ...opts,
       pensionEmail: onboardingContext.pensionEmail,

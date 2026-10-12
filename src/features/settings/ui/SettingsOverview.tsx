@@ -17,7 +17,6 @@ import { SettingsSetupProgress } from "@/features/settings/ui/SettingsSetupProgr
 import { PublicSiteLaunchCard } from "@/features/settings/ui/PublicSiteLaunchCard";
 
 import type { ReactNode } from "react";
-import { useMemo } from "react";
 
 import type { TeamPermissions } from "@/domain/settings/team-permissions";
 
@@ -60,31 +59,10 @@ export function SettingsOverview({
     .flatMap((g) => g.items)
     .filter((item) => item.id !== "overview");
 
-  const coreCompletion = useMemo(() => {
-    if (!completion) return null;
-    const coreIds = new Set([
-      "identity",
-      "inventory",
-      "contact-email",
-      "theme",
-      "buildings-color",
-      "email",
-      "mfa",
-    ]);
-    const coreItems = completion.items.filter((item) => coreIds.has(item.id));
-    if (coreItems.length === 0) return null;
-    const completeCount = coreItems.filter((item) => item.done).length;
-    const totalCount = coreItems.length;
-    const percent =
-      totalCount === 0 ? 100 : Math.round((completeCount / totalCount) * 100);
-    return { items: coreItems, completeCount, totalCount, percent };
-  }, [completion]);
-
   const canOpenPublicSite = navGroups.some((group) =>
     group.items.some((item) => item.id === "public-site"),
   );
-  const publicCompletionItems =
-    completion?.items.filter((item) => item.id.startsWith("public-")) ?? [];
+  const publicCompletionItems = completion?.publicItems ?? [];
 
   return (
     <div className="settings-overview">
@@ -106,24 +84,13 @@ export function SettingsOverview({
         </div>
       ) : null}
 
-      {coreCompletion ? <SettingsSetupProgress summary={coreCompletion} /> : null}
+      {completion ? <SettingsSetupProgress summary={completion} /> : null}
 
       <div className="settings-overview__hero">
         <div className="settings-overview__hero-main">
           <p className="settings-overview__eyebrow">{t("overviewEyebrow")}</p>
           <h2 className="settings-overview__property">{propertyName}</h2>
           <p className="settings-overview__tagline">{t("overviewTagline")}</p>
-          {completion ? (
-            <p className="settings-overview__progress">
-              {t("checklistProgress")}:{" "}
-              {t("checklistProgressValue", {
-                done: completion.completeCount,
-                total: completion.totalCount,
-              })}
-              {" · "}
-              {completion.percent}%
-            </p>
-          ) : null}
           {publicSitePublished === false ? (
             <p className="settings-overview__draft-note">{t("completionPublicDraft")}</p>
           ) : null}

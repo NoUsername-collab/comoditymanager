@@ -3133,9 +3133,64 @@ html[data-layout-chrome="compact"] .settings-shell__main {
   gap: 0.35rem;
 }
 
-@media (min-width: 640px) {
-  .settings-setup-progress__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.settings-setup-progress__list {
+  counter-reset: setup-step;
+}
+
+.settings-setup-progress__list > li {
+  counter-increment: setup-step;
+}
+
+.settings-setup-progress__label::before {
+  content: counter(setup-step) ". ";
+  font-weight: 700;
+  color: var(--admin-text-muted, #71717a);
+}
+
+.settings-setup-progress__next {
+  margin-left: auto;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.6rem;
+  background: var(--admin-btn-primary-bg, var(--admin-accent, #166534));
+  color: var(--admin-btn-primary-text, #ffffff);
+  text-decoration: none;
+}
+
+.settings-setup-progress__next:hover {
+  filter: brightness(0.95);
+}
+
+.settings-setup-progress__next-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.settings-setup-progress__next-step {
+  font-size: 0.875rem;
+  font-weight: 750;
+}
+
+.settings-setup-progress__all-done {
+  margin: 0 0 0 auto;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--admin-accent, #059669);
+}
+
+@media (max-width: 520px) {
+  .settings-setup-progress__head {
+    flex-wrap: wrap;
+  }
+
+  .settings-setup-progress__next {
+    margin-left: 0;
+    width: 100%;
   }
 }
 

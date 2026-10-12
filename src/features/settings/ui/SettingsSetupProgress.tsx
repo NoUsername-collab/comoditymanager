@@ -10,7 +10,7 @@ type Props = {
 
 export function SettingsSetupProgress({ summary }: Props) {
   const t = useTranslations("admin.pages.settings");
-  const { items, percent, completeCount, totalCount } = summary;
+  const { items, percent, completeCount, totalCount, next } = summary;
 
   if (items.length === 0) return null;
 
@@ -65,9 +65,17 @@ export function SettingsSetupProgress({ summary }: Props) {
             })}
           </p>
         </div>
+        {next ? (
+          <Link href={next.href} className="settings-setup-progress__next">
+            <span className="settings-setup-progress__next-label">{t("checklistNextLabel")}</span>
+            <span className="settings-setup-progress__next-step">{t(next.labelKey)} →</span>
+          </Link>
+        ) : (
+          <p className="settings-setup-progress__all-done">{t("checklistAllDone")}</p>
+        )}
       </div>
 
-      <ul className="settings-setup-progress__list">
+      <ol className="settings-setup-progress__list">
         {items.map((item) => (
           <li key={item.id}>
             <Link
@@ -98,7 +106,7 @@ export function SettingsSetupProgress({ summary }: Props) {
             </Link>
           </li>
         ))}
-      </ul>
+      </ol>
     </section>
   );
 }

@@ -41,38 +41,82 @@ describe("hasIdentityContact", () => {
 });
 
 describe("computeSettingsCompletion", () => {
-  it("marks setup issues as incomplete checklist items", () => {
+  const contact = {
+    email: "hotel@test.ro",
+    phone: null,
+    whatsapp: null,
+    telegram: null,
+    facebook: null,
+    instagram: null,
+  };
+
+  it("lists the setup steps in order, without cosmetic ones", () => {
     const summary = computeSettingsCompletion({
-      displayName: "Test Pension",
-      setupIssues: [
-        {
-          id: SETUP_ISSUE_IDS.THEME_NOT_CONFIGURED,
-          severity: "warning",
-          labelKey: "themeNotConfigured",
-          settingsPath: "/admin/settings/appearance",
-        },
-      ],
-      identityContact: {
-        email: "hotel@test.ro",
-        phone: null,
-        whatsapp: null,
-        telegram: null,
-        facebook: null,
-        instagram: null,
-      },
+      displayName: "Casa Test",
+      setupIssues: [],
+      identityContact: contact,
       publicSite: {
-        published: true,
+        published: false,
         bookingEnabled: true,
         hasContact: true,
         hasGallery: false,
         hasHeroImage: false,
       },
+      roomCount: 2,
     });
 
-    const theme = summary.items.find((item) => item.id === "theme");
-    expect(theme?.done).toBe(false);
-    expect(summary.percent).toBeLessThan(100);
-    expect(summary.completeCount).toBeGreaterThan(0);
+    expect(summary.items.map((item) => item.id)).toEqual([
+      "identity",
+      "inventory",
+      "public-published",
+      "email",
+      "mfa",
+    ]);
+    expect(summary.publicItems.map((item) => item.id)).toEqual([
+      "public-contact",
+      "public-booking",
+    ]);
+  });
+
+  it("points next to the first step not done", () => {
+    const summary = computeSettingsCompletion({
+      displayName: "Casa Test",
+      setupIssues: [],
+      identityContact: contact,
+      emailReplyTo: "hotel@test.ro",
+      includeMfa: false,
+      publicSite: {
+        published: false,
+        bookingEnabled: false,
+        hasContact: false,
+        hasGallery: false,
+        hasHeroImage: false,
+      },
+      roomCount: 1,
+    });
+
+    expect(summary.next?.id).toBe("public-published");
+    expect(summary.completeCount).toBe(3);
+    expect(summary.totalCount).toBe(4);
+  });
+
+  it("needs a contact email before the identity step is done", () => {
+    const summary = computeSettingsCompletion({
+      displayName: "Casa Test",
+      setupIssues: [
+        {
+          id: SETUP_ISSUE_IDS.CONTACT_EMAIL_MISSING,
+          severity: "warning",
+          labelKey: "contactEmailMissing",
+          settingsPath: "/admin/settings/identity",
+        },
+      ],
+      identityContact: { ...contact, email: null },
+      publicSite: null,
+    });
+
+    expect(summary.items.find((item) => item.id === "identity")?.done).toBe(false);
+    expect(summary.next?.id).toBe("identity");
   });
 
   it("includes public site items when snapshot is provided", () => {
