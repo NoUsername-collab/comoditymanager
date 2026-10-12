@@ -1,3 +1,4 @@
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { getTranslations } from "next-intl/server";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
@@ -20,12 +21,7 @@ export default async function SettingsSecurityPage({
     loadSettingsStaffContext(),
   ]);
 
-  const next =
-    params.next?.startsWith("/") &&
-    !params.next.startsWith("//") &&
-    !params.next.includes("://")
-      ? params.next
-      : "/admin";
+  const next = safeInternalPath(params.next, "/admin");
 
   const isOwner = ctx.staff.memberRole === "owner";
   const showFactoryReset = isOwner && isFactoryResetEnabled();

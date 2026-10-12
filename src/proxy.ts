@@ -1,4 +1,5 @@
 ﻿import createIntlMiddleware from "next-intl/middleware";
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
 import {
@@ -286,10 +287,7 @@ async function runTenantAppProxy(
     }
 
     const next = loginNext;
-    const safe =
-      next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
-        ? next
-        : "/receptie";
+    const safe = safeInternalPath(next, "/receptie");
     return NextResponse.redirect(new URL(safe, request.url));
   }
 
@@ -342,10 +340,7 @@ async function redirectPlatformUserToTenantAdmin(
   );
   if (!slug) return null;
 
-  const safe =
-    path.startsWith("/") && !path.startsWith("//") && !path.includes("://")
-      ? path
-      : "/admin";
+  const safe = safeInternalPath(path, "/admin");
   return NextResponse.redirect(buildTenantAdminUrl(slug, safe, requestHost));
 }
 
@@ -500,12 +495,7 @@ export async function proxy(request: NextRequest) {
 
         if (user) {
           const next = request.nextUrl.searchParams.get("next") || "/admin";
-          const safe =
-            next.startsWith("/") &&
-            !next.startsWith("//") &&
-            !next.includes("://")
-              ? next
-              : "/admin";
+          const safe = safeInternalPath(next, "/admin");
 
           const mfaRedirectPath = await resolveMfaRedirectPath(supabase, {
             email: user.email,

@@ -1,5 +1,6 @@
 "use server";
 
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { after } from "next/server";
 import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { revalidateBookingDetailSurfaces } from "@/lib/cache/revalidate-admin";
@@ -23,11 +24,7 @@ import { saveGuestStayReview } from "@/services/guest-profiles";
 import { getTranslations } from "next-intl/server";
 
 function safeAdminReturnPath(raw: string, fallback: string): string {
-  const path = raw.trim();
-  if (!path.startsWith("/admin") || path.startsWith("//") || path.includes("://")) {
-    return fallback;
-  }
-  return path;
+  return safeInternalPath(raw, fallback, "/admin");
 }
 
 export async function confirmBookingAction(formData: FormData) {

@@ -35,7 +35,7 @@ export function isSafeNavHref(href: string): boolean {
   const trimmed = href.trim();
   if (!trimmed) return false;
   if (/^https?:\/\//i.test(trimmed)) return true;
-  if (trimmed.startsWith("/") && !trimmed.startsWith("//")) return true;
+  if (trimmed.startsWith("/") && safeInternalPath(trimmed, "") !== "") return true;
   if (trimmed.startsWith("#")) return true;
   return false;
 }
@@ -61,4 +61,5 @@ export function safeCssUrl(url: string | null | undefined): string {
   const trimmed = url.trim();
   if (!/^https?:\/\//i.test(trimmed)) return "none";
   return trimmed.replace(/["'()\\]/g, (ch) => encodeURIComponent(ch));
-}
+}import { safeInternalPath } from "@/lib/security/safe-path";
+

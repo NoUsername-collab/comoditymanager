@@ -1,3 +1,4 @@
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { formatStayPeriod } from "@/lib/ro-calendar";
@@ -29,11 +30,7 @@ import {
 import { getTranslations } from "next-intl/server";
 
 function safeReturnTo(raw: string | undefined): string {
-  const path = (raw ?? "").trim();
-  if (!path.startsWith("/admin") || path.startsWith("//") || path.includes("://")) {
-    return "/admin/cazari";
-  }
-  return path;
+  return safeInternalPath(raw, "/admin/cazari", "/admin");
 }
 
 export default async function BookingDetailPage({

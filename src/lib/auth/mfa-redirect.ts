@@ -1,3 +1,4 @@
+import { safeInternalPath } from "@/lib/security/safe-path";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { MFA_SETUP_PATH } from "@/lib/auth/admin-path";
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
@@ -13,13 +14,7 @@ export async function resolveMfaRedirectPath(
 ): Promise<string | null> {
   const mfaState = await getMfaAccessState(supabase, opts);
 
-  const safeNext =
-    opts.next &&
-    opts.next.startsWith("/") &&
-    !opts.next.startsWith("//") &&
-    !opts.next.includes("://")
-      ? opts.next
-      : "/admin";
+  const safeNext = safeInternalPath(opts.next, "/admin");
 
   if (mfaState.kind === "needs_enrollment") {
     return `${MFA_SETUP_PATH}?next=${encodeURIComponent(safeNext)}`;

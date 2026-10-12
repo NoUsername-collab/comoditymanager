@@ -1,3 +1,4 @@
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { cookies } from "next/headers";
 import { hmacSha256Hex, timingSafeEqualHex, timingSafeEqualString } from "@/lib/auth/web-hmac";
 import {
@@ -59,8 +60,5 @@ export function verifyAlphaGatePassword(password: string): boolean {
 }
 
 export function sanitizeAlphaGateReturnPath(next: string | null | undefined): string {
-  if (!next || !next.startsWith("/") || next.startsWith("//") || next.includes("://")) {
-    return "/";
-  }
-  return next;
+  return safeInternalPath(next, "/");
 }

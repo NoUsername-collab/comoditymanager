@@ -1,5 +1,6 @@
 "use server";
 
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { localeRedirect as localeRedirectInternal } from "@/i18n/server-redirect";
@@ -51,10 +52,7 @@ async function finalizeStaffLogin(
   role: Awaited<ReturnType<typeof resolveStaffRole>>
 ): Promise<never> {
   const t = await getTranslations("admin.serverActions");
-  const safeNext =
-    next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
-      ? next
-      : "/admin";
+  const safeNext = safeInternalPath(next, "/admin");
   const destination = tenant
     ? await resolveFirstRunDestination(tenant.id, user.id, safeNext)
     : safeNext;
@@ -199,10 +197,7 @@ export async function loginAction(
     memberRole,
   });
 
-  const safeNext =
-    next.startsWith("/") && !next.startsWith("//") && !next.includes("://")
-      ? next
-      : "/admin";
+  const safeNext = safeInternalPath(next, "/admin");
 
   if (mfaState.kind === "needs_challenge") {
     return { error: null, mfaRequired: true };

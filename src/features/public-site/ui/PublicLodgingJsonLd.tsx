@@ -22,7 +22,8 @@ export function PublicLodgingJsonLd({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(json) }}
+      // Escape "<" so owner-written text (name, address) can never close the script tag.
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(json).replace(/</g, "\\u003c") }}
     />
   );
 }
