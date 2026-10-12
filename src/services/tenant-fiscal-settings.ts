@@ -43,10 +43,6 @@ function mapRow(
   };
 }
 
-function isTableMissing(message: string): boolean {
-  return message.includes("tenant_fiscal_settings");
-}
-
 export const getTenantFiscalSettings = cache(
   async (tenantId?: string): Promise<TenantFiscalSettingsRecord> => {
     const resolvedTenantId = tenantId ?? (await resolveTenantIdForData());
@@ -57,12 +53,7 @@ export const getTenantFiscalSettings = cache(
       .eq("tenant_id", resolvedTenantId)
       .maybeSingle();
 
-    if (error) {
-      if (isTableMissing(error.message)) {
-        return mapRow(resolvedTenantId, null);
-      }
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
 
     return mapRow(
       resolvedTenantId,
@@ -103,12 +94,7 @@ export async function updateTenantFiscalSettings(
     .select("provider, anaf_enabled, anaf_cif, anaf_env, anaf_credentials")
     .single();
 
-  if (error) {
-    if (isTableMissing(error.message)) {
-      throw new Error("fiscal.settings_migration_required");
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   return mapRow(resolvedTenantId, data as unknown as Record<string, unknown>);
 }

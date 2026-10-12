@@ -74,12 +74,6 @@ async function resolveTenantCountryById(
   return "RO";
 }
 
-function isJobsTableMissing(message: string): boolean {
-  return (
-    message.includes("fiscal_submission_jobs") ||
-    message.includes("tenant_fiscal_settings")
-  );
-}
 
 function documentFromInvoiceRow(row: JobRow): IssuedInvoiceDocument | null {
   const lines = Array.isArray(row.lines) ? row.lines : [];
@@ -178,12 +172,7 @@ export async function enqueueFiscalSubmission(
     .eq("id", invoiceId)
     .maybeSingle();
 
-  if (invoiceError) {
-    if (isJobsTableMissing(invoiceError.message)) {
-      return { ok: false, error: "fiscal.migration_required" };
-    }
-    return { ok: false, error: invoiceError.message };
-  }
+  if (invoiceError) return { ok: false, error: invoiceError.message };
   if (!invoice) return { ok: false, error: "fiscal.invoice_not_found" };
 
   const document = documentFromInvoiceRow(invoice as JobRow);
@@ -200,12 +189,7 @@ export async function enqueueFiscalSubmission(
     .order("created_at", { ascending: false })
     .limit(1);
 
-  if (existingError) {
-    if (isJobsTableMissing(existingError.message)) {
-      return { ok: false, error: "fiscal.migration_required" };
-    }
-    return { ok: false, error: existingError.message };
-  }
+  if (existingError) return { ok: false, error: existingError.message };
 
   const latest = existingJobs?.[0]
     ? mapJobRow(existingJobs[0] as JobRow)
@@ -232,9 +216,6 @@ export async function enqueueFiscalSubmission(
   if (insertError) {
     if (insertError.message.includes("fiscal_submission_jobs_idempotency")) {
       return { ok: false, error: "fiscal.job_already_active" };
-    }
-    if (isJobsTableMissing(insertError.message)) {
-      return { ok: false, error: "fiscal.migration_required" };
     }
     return { ok: false, error: insertError.message };
   }
@@ -274,10 +255,7 @@ export async function getFiscalStatusForInvoice(
     .limit(1)
     .maybeSingle();
 
-  if (jobError) {
-    if (isJobsTableMissing(jobError.message)) return null;
-    throw new Error(jobError.message);
-  }
+  if (jobError) throw new Error(jobError.message);
 
   return job?.status ? (String(job.status) as FiscalSubmissionStatus) : null;
 }
@@ -486,12 +464,7 @@ export async function processPendingFiscalJobs(
     .order("created_at", { ascending: true })
     .limit(limit);
 
-  if (error) {
-    if (isJobsTableMissing(error.message)) {
-      return { processed: 0, failed: 0, skipped: 0 };
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   let processed = 0;
   let failed = 0;

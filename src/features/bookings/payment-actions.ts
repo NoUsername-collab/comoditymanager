@@ -72,8 +72,6 @@ export async function recordPaymentAction(
         ? t("invalidAmount")
         : key === "payment.booking_not_confirmed"
           ? t("bookingNotConfirmed")
-          : key === "payment.migration_required"
-            ? t("migrationRequired")
             : key;
     return { ok: false, error: mapped };
   }

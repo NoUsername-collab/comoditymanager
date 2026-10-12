@@ -27,8 +27,6 @@ export async function issueBookingInvoiceAction(
         ? t("invoiceSellerDetailsMissing")
         : key === "invoice.booking_not_confirmed"
           ? t("invoiceBookingNotConfirmed")
-          : key === "invoice.migration_required"
-            ? t("invoiceMigrationRequired")
             : key === "invoice.fully_invoiced"
               ? t("invoiceFullyInvoiced")
               : key === "invoice.amount_exceeds_remaining"
@@ -78,8 +76,6 @@ export async function issueBookingProformaAction(
         ? t("invoiceSellerDetailsMissing")
         : key === "invoice.booking_not_confirmed"
           ? t("invoiceBookingNotConfirmed")
-          : key === "proforma.migration_required"
-            ? t("proformaMigrationRequired")
             : key === "proforma.fully_invoiced"
               ? t("proformaFullyInvoiced")
               : key === "proforma.amount_exceeds_remaining"
@@ -128,8 +124,6 @@ export async function convertProformaToInvoiceAction(
             ? t("proformaPaymentInsufficient")
             : key === "proforma.exceeds_remaining"
               ? t("proformaExceedsRemaining")
-              : key === "invoice.migration_required"
-                ? t("invoiceMigrationRequired")
                 : key;
     return { ok: false, error: mapped };
   }

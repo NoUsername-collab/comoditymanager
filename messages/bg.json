@@ -3336,14 +3336,11 @@
       "extendHoldError": "Грешка при удължаване на hold",
       "extendBlockError": "Грешка при удължаване на блокировка",
       "checkInOnlyOnArrivalDay": "Check-in е разрешен само в планирания ден на пристигане.",
-      "bookingRulesMigrationRequired": "Стартирайте миграция 065_booking_policies_pricing_invoices.sql в Supabase.",
       "invoiceSellerDetailsMissing": "Попълнете ДДС номер и адрес на обекта в Настройки → Данъци и фактуриране → Туристическа карта (ANAF).",
       "invoiceBookingNotConfirmed": "Фактура може да се издаде само за потвърдени резервации.",
-      "invoiceMigrationRequired": "Стартирайте миграция 065 за фактуриране.",
       "invoiceFullyInvoiced": "Резервацията вече е напълно фактурирана.",
       "invoiceAmountExceedsRemaining": "Сумата надвишава остатъка за фактуриране.",
       "invoiceInvalidAmount": "Невалидна сума за фактуриране.",
-      "proformaMigrationRequired": "Стартирайте миграция 088 за проформи.",
       "proformaFullyInvoiced": "Няма остатък за проформа фактуриране.",
       "proformaAmountExceedsRemaining": "Сумата на проформата надвишава остатъка.",
       "proformaInvalidAmount": "Невалидна сума на проформа.",
@@ -3440,7 +3437,6 @@
       "publicSiteMediaType": "Използвайте снимка JPEG, PNG или WebP.",
       "publicSiteMediaEmpty": "Изберете снимка за качване.",
       "publicSiteMediaFailed": "Снимката не можа да бъде качена. Опитайте отново.",
-      "publicSiteMigrationRequired": "Публичната страница има нужда от актуализация в базата. Приложи миграция 100 и запиши отново.",
       "identityLogoInvalid": "Адресът на логото не е валиден. Качи го отново или го премахни и запиши.",
       "identitySettingsMissing": "Не намерихме настройките на обекта. Презареди страницата и опитай отново.",
       "bulkDuplicateNames": "Тези имена на стаи вече съществуват на същия етаж: {names}",
@@ -3580,8 +3576,7 @@
       "recordSuccess": "Плащането е записано",
       "recordError": "Плащането не можа да бъде запазено",
       "invalidAmount": "Невалидна сума",
-      "bookingNotConfirmed": "Резервацията трябва да е потвърдена",
-      "migrationRequired": "Пуснете миграция 086 (booking_payments) в базата данни"
+      "bookingNotConfirmed": "Резервацията трябва да е потвърдена"
     },
     "checkIn": {
       "editTitle": "Промени настаняването",

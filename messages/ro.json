@@ -3362,14 +3362,11 @@
       "extendHoldError": "Eroare la extindere hold",
       "extendBlockError": "Eroare la extindere blocare",
       "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua planificată de sosire.",
-      "bookingRulesMigrationRequired": "Rulează migrarea 065_booking_policies_pricing_invoices.sql în Supabase.",
       "invoiceSellerDetailsMissing": "Completează CUI-ul și adresa pensiunii în Setări → Fiscal & facturare → Fișă turist (ANAF).",
       "invoiceBookingNotConfirmed": "Factura poate fi emisă doar pentru rezervări confirmate.",
-      "invoiceMigrationRequired": "Rulează migrarea 065 pentru facturare.",
       "invoiceFullyInvoiced": "Rezervarea este deja facturată integral.",
       "invoiceAmountExceedsRemaining": "Suma depășește restul de facturat.",
       "invoiceInvalidAmount": "Sumă de facturare invalidă.",
-      "proformaMigrationRequired": "Rulează migrarea 088 pentru proforme.",
       "proformaFullyInvoiced": "Nu mai rămâne nimic de facturat pentru proformă.",
       "proformaAmountExceedsRemaining": "Suma proformei depășește restul de facturat.",
       "proformaInvalidAmount": "Sumă proformă invalidă.",
@@ -3469,7 +3466,6 @@
       "publicSiteMediaType": "Folosește o poză JPEG, PNG sau WebP.",
       "publicSiteMediaEmpty": "Alege o poză de încărcat.",
       "publicSiteMediaFailed": "Nu am putut încărca poza. Încearcă din nou.",
-      "publicSiteMigrationRequired": "Pagina publică are nevoie de o actualizare în baza de date. Rulează migrarea 100, apoi salvează din nou.",
       "identityLogoInvalid": "Logo-ul nu are o adresă validă. Încarcă-l din nou sau scoate-l, apoi salvează.",
       "identitySettingsMissing": "Nu am găsit setările proprietății. Reîncarcă pagina și încearcă din nou.",
       "genericError": "Nu am putut salva. Verifică conexiunea și încearcă din nou; dacă se repetă, scrie-ne la suport."
@@ -3601,8 +3597,7 @@
       "recordSuccess": "Încasare înregistrată",
       "recordError": "Încasarea nu a putut fi salvată",
       "invalidAmount": "Sumă invalidă",
-      "bookingNotConfirmed": "Rezervarea trebuie confirmată",
-      "migrationRequired": "Rulează migrarea 086 (booking_payments) pe baza de date"
+      "bookingNotConfirmed": "Rezervarea trebuie confirmată"
     },
     "checkIn": {
       "title": "Check-in",

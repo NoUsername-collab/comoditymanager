@@ -63,9 +63,6 @@ export async function savePublicSiteSettingsAction(
     ) {
       return { ok: false, error: t("roleForbidden") };
     }
-    if (message === "public_site.migration_missing") {
-      return { ok: false, error: t("publicSiteMigrationRequired") };
-    }
     return { ok: false, error: settingsActionErrorMessage(error, t) };
   }
 }

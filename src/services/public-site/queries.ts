@@ -17,7 +17,6 @@ import { finalizePublicSiteConfig } from "@/domain/public-site/resolve-config";
 import { loadPublicPlace } from "./place";
 import { loadPublicStayOffers } from "./stay-offers";
 import {
-  isPublicSiteMigrationMissing,
   mapPublicSiteSectionRow,
   mapPublicSiteSettingsRow,
 } from "./map";
@@ -48,13 +47,12 @@ async function getPublicSiteConfigUncached(
   fallback.place = place;
 
   const supabase = createPublicAdminClient();
-  const settingsColumns =
-    "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo";
-
-  const [initialSettingsResult, sectionsResult] = await Promise.all([
+  const [settingsResult, sectionsResult] = await Promise.all([
     supabase
       .from("public_site_settings")
-      .select(`${settingsColumns}, booking_notice, chrome, pages`)
+      .select(
+        "id, template_id, theme_id, published, booking_enabled, booking_nav_position, use_primary_contact, hero, contact, seo, booking_notice, chrome, pages",
+      )
       .eq("tenant_id", tenantId)
       .maybeSingle(),
     supabase
@@ -64,40 +62,13 @@ async function getPublicSiteConfigUncached(
       .order("sort_order", { ascending: true }),
   ]);
 
-  let settingsResult = initialSettingsResult;
-  if (
-    settingsResult.error &&
-    (settingsResult.error.message.includes("booking_notice") ||
-      settingsResult.error.message.includes("chrome") ||
-      settingsResult.error.message.includes("pages"))
-  ) {
-    settingsResult = await supabase
-      .from("public_site_settings")
-      .select(settingsColumns)
-      .eq("tenant_id", tenantId)
-      .maybeSingle();
-  }
-
-  if (settingsResult.error) {
-    if (isPublicSiteMigrationMissing(settingsResult.error.message)) {
-      return stampIdentityLogo(fallback, identityLogo);
-    }
-    throw new Error(settingsResult.error.message);
-  }
+  if (settingsResult.error) throw new Error(settingsResult.error.message);
 
   if (!settingsResult.data) {
     return stampIdentityLogo(fallback, identityLogo);
   }
 
-  if (sectionsResult.error) {
-    if (isPublicSiteMigrationMissing(sectionsResult.error.message)) {
-      return stampIdentityLogo(
-        { ...fallback, ...mapPublicSiteSettingsRow(settingsResult.data) },
-        identityLogo,
-      );
-    }
-    throw new Error(sectionsResult.error.message);
-  }
+  if (sectionsResult.error) throw new Error(sectionsResult.error.message);
 
   const settings = mapPublicSiteSettingsRow(settingsResult.data);
   const sections = (sectionsResult.data ?? []).map(mapPublicSiteSectionRow);

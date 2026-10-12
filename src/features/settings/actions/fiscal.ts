@@ -109,9 +109,6 @@ export async function updateFiscalBillingSettingsAction(
     revalidateTag(checkinSettingsCacheTag(tenantId), "max");
     return { ok: true };
   } catch (e) {
-    if (e instanceof Error && e.message === "fiscal.settings_migration_required") {
-      return { ok: false, error: t("bookingRulesMigrationRequired") };
-    }
     if (e instanceof Error && e.message === "settings.pension_settings_missing") {
       const tFiscal = await getTranslations("admin.pages.settings.fiscal");
       return { ok: false, error: tFiscal("saveMissingRow") };

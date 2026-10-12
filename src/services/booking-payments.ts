@@ -24,10 +24,6 @@ import {
 } from "@/domain/checkin/types";
 import { getBookingById } from "@/services/bookings";
 
-function isBookingPaymentsTableMissing(message: string): boolean {
-  return message.includes("booking_payments");
-}
-
 function mapPaymentRow(row: Record<string, unknown>): PaymentEntry {
   const kind = row.kind === "refund" ? "refund" : "payment";
   const method = row.method;
@@ -68,10 +64,7 @@ export const listBookingPayments = cache(async (
     .eq("booking_id", bookingId)
     .order("paid_at", { ascending: true });
 
-  if (error) {
-    if (isBookingPaymentsTableMissing(error.message)) return [];
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   return (data ?? []).map((row) =>
     mapPaymentRow(row as Record<string, unknown>)
@@ -144,12 +137,7 @@ export async function recordBookingPayment(
     )
     .single();
 
-  if (error) {
-    if (isBookingPaymentsTableMissing(error.message)) {
-      return { ok: false, error: "payment.migration_required" };
-    }
-    return { ok: false, error: error.message };
-  }
+  if (error) return { ok: false, error: error.message };
 
   const entry = mapPaymentRow(data as Record<string, unknown>);
   await syncCheckinPaymentSnapshot(input.bookingId, booking.total_price ?? 0);
@@ -250,14 +238,7 @@ export async function bridgeCheckinPaymentToLedger(
   });
 
   const checkinPatch: CheckinPaymentLedgerPatch = {};
-  if (!ledgerResult.ok) {
-    if (ledgerResult.error === "payment.migration_required") {
-      checkinPatch.payment_status = storedStatus;
-      checkinPatch.payment_amount_paid = amountPaid;
-    } else {
-      throw new Error(ledgerResult.error);
-    }
-  }
+  if (!ledgerResult.ok) throw new Error(ledgerResult.error);
 
   return { storedStatus, amountPaid, checkinPatch };
 }

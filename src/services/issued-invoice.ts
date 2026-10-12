@@ -266,12 +266,7 @@ export async function issueBookingInvoice(
     { p_tenant_id: tenantId }
   );
 
-  if (numberError) {
-    if (numberError.message.includes("issue_next_invoice_number")) {
-      return { ok: false, error: "invoice.migration_required" };
-    }
-    return { ok: false, error: numberError.message };
-  }
+  if (numberError) return { ok: false, error: numberError.message };
 
   const numberData = numberPayload as {
     series: string;

@@ -1,6 +1,5 @@
 import type { PublicSiteSettingsInputParsed } from "@/domain/settings/schemas/public-site";
 import { getTenantScope } from "@/lib/tenant/scope";
-import { isPublicSiteMigrationMissing, isPublicSiteRpcMissing } from "./map";
 
 type AtomicRpcArgs = {
   p_tenant_id: string;
@@ -23,13 +22,6 @@ type AtomicRpcArgs = {
     payload: PublicSiteSettingsInputParsed["sections"][number]["payload"];
   }>;
 };
-
-function throwPublicSiteWriteError(message: string): never {
-  if (isPublicSiteMigrationMissing(message)) {
-    throw new Error("public_site.migration_missing");
-  }
-  throw new Error(message);
-}
 
 export async function upsertPublicSiteSettingsImpl(
   tenantId: string,
@@ -63,27 +55,5 @@ export async function upsertPublicSiteSettingsImpl(
 
   const { error } = await supabase.rpc("upsert_public_site_settings_atomic", args);
 
-  if (error && isPublicSiteRpcMissing(error.message)) {
-    const { p_chrome, p_pages, ...legacyArgs } = args;
-    const retry = await supabase.rpc("upsert_public_site_settings_atomic", legacyArgs);
-    if (retry.error) {
-      throwPublicSiteWriteError(retry.error.message);
-    }
-    const extra = await supabase
-      .from("public_site_settings")
-      .update({ chrome: p_chrome, pages: p_pages })
-      .eq("tenant_id", tenantId);
-    if (
-      extra.error &&
-      !extra.error.message.includes("chrome") &&
-      !extra.error.message.includes("pages")
-    ) {
-      throwPublicSiteWriteError(extra.error.message);
-    }
-    return;
-  }
-
-  if (error) {
-    throwPublicSiteWriteError(error.message);
-  }
+  if (error) throw new Error(error.message);
 }

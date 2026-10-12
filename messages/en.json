@@ -3378,14 +3378,11 @@
       "extendHoldError": "Error extending hold",
       "extendBlockError": "Error extending block",
       "checkInOnlyOnArrivalDay": "Check-in is only allowed on the planned arrival date.",
-      "bookingRulesMigrationRequired": "Run migration 065_booking_policies_pricing_invoices.sql in Supabase.",
       "invoiceSellerDetailsMissing": "Set the tax ID and property address under Settings → Fiscal & billing → Tourist sheet (ANAF).",
       "invoiceBookingNotConfirmed": "Invoices can only be issued for confirmed bookings.",
-      "invoiceMigrationRequired": "Run migration 065 for invoicing.",
       "invoiceFullyInvoiced": "This booking is already fully invoiced.",
       "invoiceAmountExceedsRemaining": "Amount exceeds remaining to invoice.",
       "invoiceInvalidAmount": "Invalid invoice amount.",
-      "proformaMigrationRequired": "Run migration 088 for proforma support.",
       "proformaFullyInvoiced": "Nothing left to invoice for proforma.",
       "proformaAmountExceedsRemaining": "Proforma amount exceeds remaining to invoice.",
       "proformaInvalidAmount": "Invalid proforma amount.",
@@ -3485,7 +3482,6 @@
       "publicSiteMediaType": "Use a JPEG, PNG or WebP photo.",
       "publicSiteMediaEmpty": "Choose a photo to upload.",
       "publicSiteMediaFailed": "Could not upload the photo. Try again.",
-      "publicSiteMigrationRequired": "The public site is missing a database update. Apply migration 100, then save again.",
       "identityLogoInvalid": "The logo address is not valid. Upload it again or remove it, then save.",
       "identitySettingsMissing": "Property settings were not found. Reload the page and try again.",
       "genericError": "An error occurred. Please try again."
@@ -3617,8 +3613,7 @@
       "recordSuccess": "Payment recorded",
       "recordError": "Could not save payment",
       "invalidAmount": "Invalid amount",
-      "bookingNotConfirmed": "Booking must be confirmed",
-      "migrationRequired": "Run migration 086 (booking_payments) on the database"
+      "bookingNotConfirmed": "Booking must be confirmed"
     },
     "checkIn": {
       "title": "Check-in",
