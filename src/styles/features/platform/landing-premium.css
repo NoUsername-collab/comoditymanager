@@ -483,7 +483,7 @@
 
 .lp-stats__value {
   display: block;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--lp-text);
@@ -514,7 +514,7 @@
 }
 
 .lp-block {
-  padding: 4.5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
   background: var(--lp-bg);
 }
 
@@ -614,7 +614,7 @@
 /* ── Feature showcase sections ───────────────────────────────────────── */
 
 .lp-feat-section {
-  padding: 5rem 1.5rem;
+  padding: 3.75rem 1.5rem;
   background: var(--lp-bg);
 }
 
@@ -1260,7 +1260,7 @@
 /* ── Pricing section ─────────────────────────────────────────────────── */
 
 .lp-pricing-section {
-  padding: 5rem 1.5rem;
+  padding: 3.75rem 1.5rem;
   background: var(--lp-bg);
   max-width: none;
 }
@@ -1458,6 +1458,23 @@
   line-height: 1.55;
 }
 
+.lp-assurance {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 1.5rem 2.5rem;
+  background: var(--lp-bg-alt);
+  text-align: center;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--lp-text-soft);
+}
+
+.lp-assurance a {
+  color: var(--lp-accent-2);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
 .lp-legal-line a {
   color: var(--lp-accent-2);
   text-decoration: underline;
@@ -1467,7 +1484,7 @@
 /* ── FAQ ─────────────────────────────────────────────────────────────── */
 
 .lp-faq-section {
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem 2rem;
   background: var(--lp-bg-alt);
 }
 

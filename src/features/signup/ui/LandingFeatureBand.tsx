@@ -5,6 +5,7 @@ type Align = "copy-first" | "visual-first";
 export function LandingFeatureBand({
   align,
   ink = false,
+  alt = false,
   eyebrow,
   title,
   description,
@@ -13,6 +14,7 @@ export function LandingFeatureBand({
 }: {
   align: Align;
   ink?: boolean;
+  alt?: boolean;
   eyebrow?: string;
   title: string;
   description: string;
@@ -48,7 +50,9 @@ export function LandingFeatureBand({
   ) : null;
 
   return (
-    <section className={`lp-feat-section${ink ? " lp-feat-section--dark" : ""}`}>
+    <section
+      className={`lp-feat-section${ink ? " lp-feat-section--dark" : ""}${alt ? " lp-feat-section--alt" : ""}`}
+    >
       <div className={`lp-feat-section__inner ${innerMod}`}>
         {align === "visual-first" && visual ? (
           <>

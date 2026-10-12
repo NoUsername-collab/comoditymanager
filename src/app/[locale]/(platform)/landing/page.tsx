@@ -10,18 +10,7 @@ import {
 import { PLATFORM_CONTACT_EMAIL } from "@/lib/platform/branding";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-const TOOLS = [
-  "gantt",
-  "stays",
-  "checkin",
-  "guestApp",
-  "availability",
-  "fiscal",
-  "buildings",
-  "publicSite",
-] as const;
-
-const TRUST = ["security", "multiTenant", "gdpr"] as const;
+const INCLUDED = ["checkin", "availability", "fiscal", "buildings"] as const;
 
 export async function generateMetadata({
   params,
@@ -126,14 +115,7 @@ export default async function LandingPage({
 
       <LandingFeatureBand
         align="copy-first"
-        eyebrow={t("featGanttEyebrow")}
-        title={t("featGanttTitle")}
-        description={t("featGanttDesc")}
-        items={[t("featGanttL1"), t("featGanttL2"), t("featGanttL3"), t("featGanttL4")]}
-      />
-
-      <LandingFeatureBand
-        align="copy-first"
+        alt
         eyebrow={t("featSiteEyebrow")}
         title={t("featSiteTitle")}
         description={t("featSiteDesc")}
@@ -173,7 +155,7 @@ export default async function LandingPage({
         </h2>
         <p className="lp-section-lead">{t("toolsLead")}</p>
         <ul className="lp-tool-grid" aria-label={t("toolsAria")}>
-          {TOOLS.map((key) => (
+          {INCLUDED.map((key) => (
             <li key={key} className="lp-tool">
               <h3 className="lp-tool__title">{t(`tools.${key}.title`)}</h3>
               <p className="lp-tool__desc">{t(`tools.${key}.desc`)}</p>
@@ -196,26 +178,6 @@ export default async function LandingPage({
             </li>
           ))}
         </ol>
-      </section>
-
-      <section className="lp-block" aria-labelledby="lp-trust-title">
-        <h2 className="lp-section-title" id="lp-trust-title">
-          {t("trustSectionTitle")}
-        </h2>
-        <p className="lp-section-lead">{t("trustSectionLead")}</p>
-        <ul className="lp-trust-grid">
-          {TRUST.map((key) => (
-            <li key={key} className="lp-trust">
-              <h3 className="lp-trust__title">{t(`trustCards.${key}.title`)}</h3>
-              <p className="lp-trust__desc">{t(`trustCards.${key}.desc`)}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="lp-legal-line">
-          {t("trustLegalPrefix")}{" "}
-          <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
-          {t("trustLegalSuffix")}
-        </p>
       </section>
 
       <section
@@ -249,6 +211,12 @@ export default async function LandingPage({
           ))}
         </div>
       </section>
+
+      <p className="lp-assurance">
+        {t("trustSectionLead")}{" "}
+        <Link href="/confidentialitate">{t("trustLegalLink")}</Link>
+        {t("trustLegalSuffix")}
+      </p>
 
       <section className="lp-final-cta" aria-labelledby="lp-final-title">
         <div className="lp-final-cta__inner">
