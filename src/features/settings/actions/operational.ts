@@ -173,9 +173,6 @@ export async function updatePensionIdentityAction(
     revalidatePath("/stay", "layout");
     return { ok: true };
   } catch (e) {
-    if (e instanceof Error && e.message === "settings.identity_migration_required") {
-      return { ok: false, error: t("identityMigrationRequired") };
-    }
     if (e instanceof Error && e.message === "settings.pension_settings_missing") {
       return { ok: false, error: t("identitySettingsMissing") };
     }
@@ -245,12 +242,6 @@ export async function updateBookingRulesSettingsAction(
     revalidatePath("/termeni");
     return { ok: true };
   } catch (e) {
-    if (
-      e instanceof Error &&
-      e.message === "settings.booking_rules_migration_required"
-    ) {
-      return { ok: false, error: t("bookingRulesMigrationRequired") };
-    }
     return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }

@@ -16,7 +16,6 @@ import {
 } from "@/lib/rate-limit";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
 import { withTenantId } from "@/lib/tenant/scope";
-import { isGuestAppMigrationMissing } from "./map";
 import { getGuestAppPublicDb } from "./public-db";
 import { getGuestAppSettings, getGuestAppSettingsPublic } from "./settings";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
@@ -68,10 +67,7 @@ async function loadGuestLoyaltyRow(
     .eq("id", guestId)
     .maybeSingle();
 
-  if (guestError) {
-    if (isGuestAppMigrationMissing(guestError.message)) return null;
-    throw new Error(guestError.message);
-  }
+  if (guestError) throw new Error(guestError.message);
   if (!guest) return null;
 
   const { data: profile, error: profileError } = await supabase
@@ -135,7 +131,6 @@ async function insertLoyaltyRef(
       { onConflict: "tenant_id,guest_id" },
     );
     if (!error) return referenceCode;
-    if (isGuestAppMigrationMissing(error.message)) return null;
     if (
       error.message.includes("reference_code") ||
       error.code === "23505"
@@ -162,10 +157,7 @@ export async function issueLoyaltyRefForGuest(
     .eq("guest_id", guestId)
     .maybeSingle();
 
-  if (error) {
-    if (isGuestAppMigrationMissing(error.message)) return null;
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
   if (data?.reference_code && !data.revoked_at) {
     return String(data.reference_code);
   }
@@ -183,10 +175,7 @@ export async function getLoyaltyRefForGuest(
     .eq("guest_id", guestId)
     .maybeSingle();
 
-  if (error) {
-    if (isGuestAppMigrationMissing(error.message)) return null;
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
   if (!data?.reference_code || data.revoked_at) return null;
   return formatLoyaltyReference(String(data.reference_code));
 }
@@ -256,12 +245,7 @@ export const resolveLoyaltyByReference = cache(
         .eq("reference_code", code)
         .maybeSingle();
 
-      if (error) {
-        if (isGuestAppMigrationMissing(error.message)) {
-          return { ok: false, reason: "not_found" };
-        }
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
       if (!data || data.revoked_at) return { ok: false, reason: "not_found" };
 
       const guestId = String(data.guest_id);
@@ -322,12 +306,7 @@ export const resolveLoyaltyFromStayAccessCode = cache(
         .in("access_code", accessCodes)
         .maybeSingle();
 
-      if (error) {
-        if (isGuestAppMigrationMissing(error.message)) {
-          return { ok: false, reason: "not_found" };
-        }
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
       if (!accessRow || accessRow.revoked_at) {
         return { ok: false, reason: "not_found" };
       }

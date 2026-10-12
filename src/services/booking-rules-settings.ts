@@ -29,16 +29,6 @@ const BOOKING_RULES_SELECT = [
   "invoice_prices_include_vat",
 ].join(", ");
 
-function isBookingRulesMigrationMissing(message: string): boolean {
-  return (
-    message.includes("cancellation_policy_type") ||
-    message.includes("pricing_weekend_enabled") ||
-    message.includes("invoice_series") ||
-    message.includes("proforma_series") ||
-    message.includes("invoice_vat_enabled")
-  );
-}
-
 async function loadBookingRulesUncached(
   tenantId: string
 ): Promise<BookingRulesSettings> {
@@ -49,12 +39,7 @@ async function loadBookingRulesUncached(
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (error) {
-    if (isBookingRulesMigrationMissing(error.message)) {
-      return DEFAULT_BOOKING_RULES;
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   return parseBookingRulesRow(
     data as Record<string, unknown> | null | undefined
@@ -140,12 +125,7 @@ export async function updateBookingRulesSettings(
     .update(update)
     .eq("tenant_id", tenantId);
 
-  if (error) {
-    if (isBookingRulesMigrationMissing(error.message)) {
-      throw new Error("settings.booking_rules_migration_required");
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 }
 
 export type { BookingRulesSettings, StayPricingRules };

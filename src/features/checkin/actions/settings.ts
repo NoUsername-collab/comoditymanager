@@ -6,7 +6,6 @@ import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { logAdminActivityFromSession } from "@/services/activity-log";
 import { getTranslations } from "next-intl/server";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import {
   updateCheckinSettings,
   checkinSettingsCacheTag,
@@ -96,10 +95,6 @@ export async function updateCheckinSettingsAction(
     return { ok: true };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
     if (msg === "settings.pension_settings_missing") {
       const t = await getTranslations("admin.pages.settings.checkin");
       return { ok: false, error: t("saveMissingRow") };

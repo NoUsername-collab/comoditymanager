@@ -219,7 +219,6 @@
         "generic": "Nu puteți accesa această pagină.",
         "serviceUnavailable": "Serviciul nu este disponibil momentan. Reîncercați mai târziu.",
         "disabled": "Aplicația pentru oaspeți este dezactivată. Contactați recepția.",
-        "setupIncomplete": "Aplicația nu este încă configurată pe acest mediu.",
         "notFound": "Cod invalid sau inexistent.",
         "notFoundHint": "Dacă ați primit un link nou, deschideți-l pe cel actual. Altfel cereți recepției un link actualizat.",
         "wrongHost": "Linkul trebuie deschis de pe adresa pensiunii. Cere recepției linkul actualizat.",
@@ -3363,7 +3362,6 @@
       "extendHoldError": "Eroare la extindere hold",
       "extendBlockError": "Eroare la extindere blocare",
       "checkInOnlyOnArrivalDay": "Check-in posibil doar în ziua planificată de sosire.",
-      "statisticsVisibilityMigrationRequired": "Rulează migrarea 049_statistics_visibility.sql în Supabase (coloana statistics_visibility lipsește).",
       "bookingRulesMigrationRequired": "Rulează migrarea 065_booking_policies_pricing_invoices.sql în Supabase.",
       "invoiceSellerDetailsMissing": "Completează CUI-ul și adresa pensiunii în Setări → Fiscal & facturare → Fișă turist (ANAF).",
       "invoiceBookingNotConfirmed": "Factura poate fi emisă doar pentru rezervări confirmate.",
@@ -3473,9 +3471,7 @@
       "publicSiteMediaFailed": "Nu am putut încărca poza. Încearcă din nou.",
       "publicSiteMigrationRequired": "Pagina publică are nevoie de o actualizare în baza de date. Rulează migrarea 100, apoi salvează din nou.",
       "identityLogoInvalid": "Logo-ul nu are o adresă validă. Încarcă-l din nou sau scoate-l, apoi salvează.",
-      "identityMigrationRequired": "Datele de identitate au nevoie de o actualizare în baza de date. Rulează migrările 079 și 101, apoi salvează din nou.",
       "identitySettingsMissing": "Nu am găsit setările proprietății. Reîncarcă pagina și încearcă din nou.",
-      "teamPermissionsMigrationRequired": "Permisiunile echipei au nevoie de o actualizare în baza de date. Rulează migrarea 083, apoi salvează din nou.",
       "genericError": "Nu am putut salva. Verifică conexiunea și încearcă din nou; dacă se repetă, scrie-ne la suport."
     },
     "availabilityLightSummary": {
@@ -3629,7 +3625,6 @@
       "alreadyCheckedIn": "Toate camerele acestei rezervări sunt deja primite.",
       "noCheckinToEdit": "Nu există un check-in salvat de editat.",
       "updatedSuccess": "Check-in actualizat",
-      "migrationRequired": "Sistemul de check-in nu e activ în baza de date. Rulează migrarea 048_checkin_system.sql în Supabase (SQL Editor), apoi încearcă din nou.",
       "unknownError": "A apărut o eroare la salvare. Încearcă din nou sau contactează suportul.",
       "registeredGuests": {
         "onlyHint": "Doar clienți înregistrați cu date în profil — completează sau actualizează identitatea aici; la salvare se sincronizează în fișa clientului.",

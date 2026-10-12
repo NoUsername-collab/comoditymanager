@@ -65,12 +65,3 @@ export function mapGuestAppSettingsRow(row: {
   };
 }
 
-export function isGuestAppMigrationMissing(message: string): boolean {
-  return (
-    message.includes("guest_app_settings") ||
-    message.includes("booking_guest_access") ||
-    message.includes("guest_precheckin_submissions") ||
-    message.includes("guest_green_stay_requests") ||
-    message.includes("guest_loyalty_refs")
-  );
-}

@@ -2,7 +2,6 @@
 
 import { requireAnyStaff } from "@/lib/auth/require-admin";
 import { getTranslations } from "next-intl/server";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
 import {
@@ -56,10 +55,6 @@ export async function loadTouristSheetAction(
     return { ok: true, data };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
     return { ok: false, error: msg };
   }
 }

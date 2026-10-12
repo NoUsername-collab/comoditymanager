@@ -4,12 +4,10 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { getTenantScope } from "@/lib/tenant/scope";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import type { CheckinRow, CheckinGuestRow } from "./types";
 import {
   CHECKIN_ROW_SELECT,
   CHECKIN_GUEST_ROW_SELECT,
-  CHECKIN_GUEST_ROW_SELECT_MINIMAL,
 } from "./types";
 
 // ── Single checkin for a booking ────────────────────────────
@@ -69,11 +67,7 @@ async function getCheckinGuestsUncached(
       .eq("checkin_id", checkinId)
       .order("is_representative", { ascending: false });
 
-  let { data, error } = await queryGuests(CHECKIN_GUEST_ROW_SELECT);
-
-  if (error && isCheckinMigrationMissing(error.message)) {
-    ({ data, error } = await queryGuests(CHECKIN_GUEST_ROW_SELECT_MINIMAL));
-  }
+  const { data, error } = await queryGuests(CHECKIN_GUEST_ROW_SELECT);
 
   if (error) throw new Error(error.message);
   return (data ?? []) as unknown as CheckinGuestRow[];
@@ -152,10 +146,7 @@ export async function loadCheckinEnrichmentByBookingIds(
     .in("booking_id", bookingIds)
     .order("created_at", { ascending: false });
 
-  if (checkinErr) {
-    if (isCheckinMigrationMissing(checkinErr.message)) return EMPTY_ENRICHMENT;
-    throw new Error(checkinErr.message);
-  }
+  if (checkinErr) throw new Error(checkinErr.message);
   if (!checkins?.length) return EMPTY_ENRICHMENT;
 
   const latestByBooking = new Map<string, CheckinLiteRow>();
@@ -196,17 +187,7 @@ export async function loadCheckinEnrichmentByBookingIds(
     .eq("tenant_id", tenantId)
     .in("checkin_id", checkinIds);
 
-  if (guestErr) {
-    if (isCheckinMigrationMissing(guestErr.message)) {
-      return {
-        latestByBooking,
-        checkedRoomsByBooking,
-        keysHandedByBooking,
-        roomIdVerifiedByBooking,
-      };
-    }
-    throw new Error(guestErr.message);
-  }
+  if (guestErr) throw new Error(guestErr.message);
 
   for (const guest of guests ?? []) {
     const bookingId = checkinToBooking.get(guest.checkin_id as string);

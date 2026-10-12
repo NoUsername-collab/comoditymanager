@@ -5,7 +5,6 @@ import { getTenantScope } from "@/lib/tenant/scope";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import type { CheckinSettings } from "@/domain/checkin/types";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 
 import { getTenantById } from "@/services/tenants";
 import {
@@ -190,31 +189,16 @@ async function loadCheckinSettingsRow(
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (!error) {
-    return (data as Record<string, unknown> | null) ?? null;
-  }
-  if (isCheckinMigrationMissing(error.message)) {
-    return null;
-  }
-  throw new Error(error.message);
+  if (error) throw new Error(error.message);
+  return (data as Record<string, unknown> | null) ?? null;
 }
 
 async function getCheckinSettingsUncached(
   tenantId: string,
 ): Promise<CheckinSettings> {
-  try {
-    const data = await loadCheckinSettingsRow(tenantId);
-    if (!data) return { ...DEFAULT_CHECKIN_SETTINGS };
-    return mapRow(data);
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      isCheckinMigrationMissing(error.message)
-    ) {
-      return { ...DEFAULT_CHECKIN_SETTINGS };
-    }
-    throw error;
-  }
+  const data = await loadCheckinSettingsRow(tenantId);
+  if (!data) return { ...DEFAULT_CHECKIN_SETTINGS };
+  return mapRow(data);
 }
 
 const getCachedCheckinSettings = (tenantId: string) =>
@@ -276,14 +260,9 @@ async function getCheckinDeparturePolicyUncached(
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (!error) {
-    if (!data) return empty;
-    return mapDeparturePolicyRow(data as unknown as Record<string, unknown>);
-  }
-  if (isCheckinMigrationMissing(error.message)) {
-    return empty;
-  }
-  throw new Error(error.message);
+  if (error) throw new Error(error.message);
+  if (!data) return empty;
+  return mapDeparturePolicyRow(data as unknown as Record<string, unknown>);
 }
 
 const getCachedCheckinDeparturePolicy = (tenantId: string) =>
@@ -377,12 +356,7 @@ export async function updateCheckinSettings(
     .select("tenant_id")
     .maybeSingle();
 
-  if (error) {
-    if (isCheckinMigrationMissing(error.message)) {
-      throw new Error("checkin.migration_required");
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
   if (!data) {
     throw new Error("settings.pension_settings_missing");
   }

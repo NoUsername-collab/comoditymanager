@@ -13,9 +13,6 @@ import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 const IDENTITY_SELECT =
   "display_name, logo_url, fisa_property_address, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
 
-const IDENTITY_SELECT_WITHOUT_LOGO =
-  "display_name, fisa_property_address, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
-
 function mapContact(row: Record<string, unknown>): PensionContact {
   const str = (key: string) => {
     const value = row[key];
@@ -32,18 +29,9 @@ function mapContact(row: Record<string, unknown>): PensionContact {
   };
 }
 
-function isIdentityMigrationMissing(message: string): boolean {
-  return message.includes("contact_email");
-}
-
-function isLogoColumnMissing(message: string): boolean {
-  return message.includes("logo_url");
-}
-
-function mapIdentity(
-  row: Record<string, unknown> | null,
-  logoUrl: string | null | undefined,
-): PensionIdentity {
+function mapIdentity(row: Record<string, unknown> | null): PensionIdentity {
+  const logoUrl =
+    typeof row?.logo_url === "string" && row.logo_url.trim() ? row.logo_url.trim() : null;
   return {
     displayName:
       typeof row?.display_name === "string" ? row.display_name : DEFAULT_PENSION_DISPLAY_NAME,
@@ -66,54 +54,8 @@ async function loadPensionIdentityUncached(
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (error) {
-    if (isLogoColumnMissing(error.message) && !isIdentityMigrationMissing(error.message)) {
-      const retry = await supabase
-        .from("pension_settings")
-        .select(IDENTITY_SELECT_WITHOUT_LOGO)
-        .eq("tenant_id", tenantId)
-        .maybeSingle();
-      if (retry.error) {
-        if (isIdentityMigrationMissing(retry.error.message)) {
-          const fallback = await supabase
-            .from("pension_settings")
-            .select("display_name")
-            .eq("tenant_id", tenantId)
-            .maybeSingle();
-          return {
-            displayName:
-              typeof fallback.data?.display_name === "string"
-                ? fallback.data.display_name
-                : DEFAULT_PENSION_DISPLAY_NAME,
-            contact: { ...EMPTY_PENSION_CONTACT },
-            address: null,
-          };
-        }
-        throw new Error(retry.error.message);
-      }
-      return mapIdentity(retry.data, undefined);
-    }
-    if (isIdentityMigrationMissing(error.message)) {
-      const fallback = await supabase
-        .from("pension_settings")
-        .select("display_name")
-        .eq("tenant_id", tenantId)
-        .maybeSingle();
-      return {
-        displayName:
-          typeof fallback.data?.display_name === "string"
-            ? fallback.data.display_name
-            : DEFAULT_PENSION_DISPLAY_NAME,
-        contact: { ...EMPTY_PENSION_CONTACT },
-        address: null,
-      };
-    }
-    throw new Error(error.message);
-  }
-
-  const logoUrl =
-    typeof data?.logo_url === "string" && data.logo_url.trim() ? data.logo_url.trim() : null;
-  return mapIdentity(data, logoUrl);
+  if (error) throw new Error(error.message);
+  return mapIdentity(data);
 }
 
 const getCachedPensionIdentity = (tenantId: string) =>
@@ -165,12 +107,7 @@ export async function updatePensionIdentity(
     .select("tenant_id")
     .maybeSingle();
 
-  if (error) {
-    if (isIdentityMigrationMissing(error.message) || isLogoColumnMissing(error.message)) {
-      throw new Error("settings.identity_migration_required");
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
   if (!data) {
     throw new Error("settings.pension_settings_missing");
   }

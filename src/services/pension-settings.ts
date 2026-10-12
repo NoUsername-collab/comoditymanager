@@ -39,50 +39,20 @@ function parseDayNight(raw: unknown): ThemeMode {
 const PENSION_SETTINGS_BASE_SELECT =
   "id, display_name, default_check_in_time, default_check_out_time, total_extra_beds_max, admin_palette_source, admin_palette_key, admin_day_night";
 
-function isStatisticsVisibilityColumnMissing(message: string): boolean {
-  return message.includes("statistics_visibility");
-}
-
-function isTeamPermissionsColumnMissing(message: string): boolean {
-  return message.includes("team_permissions");
-}
-
 async function getPensionSettingsUncached(tenantId: string): Promise<PensionSettings | null> {
   // Always read from public — pension settings are global, not sim-scoped
   const supabase = createPublicAdminClient();
-  let result = await supabase
+  const result = await supabase
     .from("pension_settings")
     .select(`${PENSION_SETTINGS_BASE_SELECT}, statistics_visibility, team_permissions`)
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  let statisticsVisibility = DEFAULT_STATISTICS_VISIBILITY;
-  let teamPermissions = DEFAULT_TEAM_PERMISSIONS;
-
-  if (result.error) {
-    const message = result.error.message;
-    if (
-      isStatisticsVisibilityColumnMissing(message) ||
-      isTeamPermissionsColumnMissing(message)
-    ) {
-      result = await supabase
-        .from("pension_settings")
-        .select(PENSION_SETTINGS_BASE_SELECT)
-        .eq("tenant_id", tenantId)
-        .maybeSingle();
-    }
-  } else if (result.data) {
-    if ("statistics_visibility" in result.data) {
-      statisticsVisibility = parseStatisticsVisibility(result.data.statistics_visibility);
-    }
-    if ("team_permissions" in result.data) {
-      teamPermissions = parseTeamPermissions(result.data.team_permissions);
-    }
-  }
-
   if (result.error) throw new Error(result.error.message);
   const data = result.data;
   if (!data) return null;
+  const statisticsVisibility = parseStatisticsVisibility(data.statistics_visibility);
+  const teamPermissions = parseTeamPermissions(data.team_permissions);
 
   return {
     id: data.id,
@@ -165,9 +135,6 @@ export async function updatePensionSettings(
   if (error) throw new Error(error.message);
 }
 
-export const STATISTICS_VISIBILITY_MIGRATION_ERROR =
-  "settings.statistics_visibility_migration_required";
-
 export async function updateStatisticsVisibility(
   visibility: StatisticsVisibility
 ): Promise<void> {
@@ -177,12 +144,7 @@ export async function updateStatisticsVisibility(
     .update({ statistics_visibility: visibility })
     .eq("tenant_id", tenantId);
 
-  if (error) {
-    if (isStatisticsVisibilityColumnMissing(error.message)) {
-      throw new Error(STATISTICS_VISIBILITY_MIGRATION_ERROR);
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 }
 
 export function pensionStatisticsVisibility(
@@ -190,9 +152,6 @@ export function pensionStatisticsVisibility(
 ): StatisticsVisibility {
   return settings?.statistics_visibility ?? DEFAULT_STATISTICS_VISIBILITY;
 }
-
-export const TEAM_PERMISSIONS_MIGRATION_ERROR =
-  "settings.team_permissions_migration_required";
 
 export async function getTeamPermissions(): Promise<TeamPermissions> {
   const settings = await getPensionSettings();
@@ -215,12 +174,7 @@ export async function updateTeamPermissions(
     .update({ team_permissions: payload })
     .eq("tenant_id", tenantId);
 
-  if (error) {
-    if (isTeamPermissionsColumnMissing(error.message)) {
-      throw new Error(TEAM_PERMISSIONS_MIGRATION_ERROR);
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 }
 
 /** Single-row partial update on pension_settings (atomic per tenant). */

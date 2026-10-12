@@ -9,7 +9,6 @@ import {
   revalidateBookingSurfacesExtended,
 } from "@/lib/cache/revalidate-admin";
 import { getTranslations } from "next-intl/server";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { createCheckin } from "@/services/checkin/create";
 import { updateCheckin } from "@/services/checkin/update";
 import { getCheckinSettings } from "@/services/checkin/settings";
@@ -105,12 +104,8 @@ async function loadWizardPaymentDefaults(
 
 function mapCreateCheckinError(
   err: unknown,
-  t: Awaited<ReturnType<typeof getTranslations<"admin.checkIn">>>,
 ): { ok: false; error: string } | { ok: false; needsTransfer: true; transferOffer: CheckinTransferOffer } {
   const msg = err instanceof Error ? err.message : "Unknown error";
-  if (isCheckinMigrationMissing(msg)) {
-    return { ok: false, error: t("migrationRequired") };
-  }
   const transferOffer = decodeCheckinTransferRequired(msg);
   if (transferOffer) {
     return { ok: false, needsTransfer: true, transferOffer };
@@ -234,10 +229,6 @@ export async function loadCheckinWizardContextAction(
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
     return { ok: false, error: msg };
   }
 }
@@ -343,8 +334,7 @@ export async function createCheckinAction(
     return { ok: true, checkinId, ganttBooking };
   } catch (err) {
     timer.finish({ error: true });
-    const t = await getTranslations("admin.checkIn");
-    return mapCreateCheckinError(err, t);
+    return mapCreateCheckinError(err);
   }
 }
 
@@ -458,7 +448,6 @@ export async function updateCheckinAction(
     });
     return { ok: true, checkinId, ganttBooking };
   } catch (err) {
-    const t = await getTranslations("admin.checkIn");
-    return mapCreateCheckinError(err, t);
+    return mapCreateCheckinError(err);
   }
 }

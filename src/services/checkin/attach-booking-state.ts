@@ -1,7 +1,6 @@
 import { bookingRoomNames } from "@/domain/checkin/room-checkin-progress";
 import type { StoredPaymentStatus } from "@/domain/checkin/types";
 import type { GuestIdentityStatus } from "@/domain/guest/types";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getTenantScope } from "@/lib/tenant/scope";
 import type { BookingRow } from "@/services/bookings/types";
 import { loadCheckinEnrichmentByBookingIds } from "./queries";
@@ -95,55 +94,43 @@ export async function attachCheckinRecordState(
   const repairOrphans = options?.repairOrphans === true;
   if (!stays.length) return stays;
 
-  try {
-    const bookingIds = stays.map((s) => s.id);
+  const bookingIds = stays.map((s) => s.id);
 
-    const guestIds = [
-      ...new Set(
-        stays.map((stay) => stay.guest_id).filter(Boolean) as string[],
+  const guestIds = [
+    ...new Set(
+      stays.map((stay) => stay.guest_id).filter(Boolean) as string[],
+    ),
+  ];
+
+  const [{ latestByBooking, checkedRoomsByBooking, keysHandedByBooking, roomIdVerifiedByBooking }, identityByGuest] =
+    await Promise.all([
+      loadCheckinEnrichmentByBookingIds(bookingIds),
+      loadGuestIdentityStatuses(guestIds).catch(
+        () => new Map<string, GuestIdentityStatus>(),
       ),
-    ];
+    ]);
 
-    const [{ latestByBooking, checkedRoomsByBooking, keysHandedByBooking, roomIdVerifiedByBooking }, identityByGuest] =
-      await Promise.all([
-        loadCheckinEnrichmentByBookingIds(bookingIds),
-        loadGuestIdentityStatuses(guestIds).catch(
-          () => new Map<string, GuestIdentityStatus>(),
+  const orphans = stays.filter(
+    (stay) => latestByBooking.has(stay.id) && !stay.actual_check_in_at,
+  );
+
+  if (repairOrphans && orphans.length > 0) {
+    await Promise.allSettled(
+      orphans.map((stay) =>
+        syncBookingOperativeCheckInFromRecord(
+          stay.id,
+          latestByBooking.get(stay.id) ?? null,
         ),
-      ]);
-
-    const orphans = stays.filter(
-      (stay) => latestByBooking.has(stay.id) && !stay.actual_check_in_at,
+      ),
     );
-
-    if (repairOrphans && orphans.length > 0) {
-      await Promise.allSettled(
-        orphans.map((stay) =>
-          syncBookingOperativeCheckInFromRecord(
-            stay.id,
-            latestByBooking.get(stay.id) ?? null,
-          ),
-        ),
-      );
-    }
-
-    return attachCheckinFields(
-      stays,
-      latestByBooking,
-      checkedRoomsByBooking,
-      keysHandedByBooking,
-      identityByGuest,
-      roomIdVerifiedByBooking,
-    );
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    if (isCheckinMigrationMissing(message)) {
-      return stays.map((stay) => ({
-        ...stay,
-        has_checkin_record: false,
-        checked_in_rooms: [],
-      }));
-    }
-    throw err;
   }
+
+  return attachCheckinFields(
+    stays,
+    latestByBooking,
+    checkedRoomsByBooking,
+    keysHandedByBooking,
+    identityByGuest,
+    roomIdVerifiedByBooking,
+  );
 }

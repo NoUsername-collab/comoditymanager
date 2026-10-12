@@ -7,7 +7,6 @@ import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { resolveTenantIdForData } from "@/lib/tenant/resolve-id";
 import { revalidateBookingOperativeSurfaces } from "@/lib/cache/revalidate-admin";
 import { getTranslations } from "next-intl/server";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
 import { getCheckinSettings } from "@/services/checkin/settings";
 import { getBookingById } from "@/services/bookings";
 import { listBookingPayments } from "@/services/booking-payments";
@@ -96,10 +95,6 @@ export async function loadBookingCheckinPaymentPanelAction(
     };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
     return { ok: false, error: msg };
   }
 }
@@ -148,10 +143,6 @@ export async function updateCheckinPaymentAction(
     return { ok: true };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
-    if (isCheckinMigrationMissing(msg)) {
-      const t = await getTranslations("admin.checkIn");
-      return { ok: false, error: t("migrationRequired") };
-    }
     if (msg.startsWith("checkin.blocked:")) {
       return { ok: false, error: msg.replace("checkin.blocked: ", "") };
     }

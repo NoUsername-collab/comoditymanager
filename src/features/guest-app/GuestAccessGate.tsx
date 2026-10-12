@@ -10,7 +10,6 @@ import { useLocale } from "next-intl";
 
 const ERROR_KEYS = {
   disabled: "errors.disabled",
-  setup_incomplete: "errors.setupIncomplete",
   not_found: "errors.notFound",
   wrong_host: "errors.wrongHost",
   revoked: "errors.revoked",

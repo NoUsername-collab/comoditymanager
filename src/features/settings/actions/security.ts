@@ -10,7 +10,6 @@ import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { revalidateAfterFactoryReset } from "@/lib/cache/revalidate-admin";
 import {
   updateTeamPermissions,
-  TEAM_PERMISSIONS_MIGRATION_ERROR,
 } from "@/services/pension-settings";
 import {
   parseTeamPermissions,
@@ -53,12 +52,6 @@ export async function updateTeamPermissionsAction(
     revalidatePath("/admin/settings/team-permissions");
     return { ok: true };
   } catch (e) {
-    if (
-      e instanceof Error &&
-      e.message === TEAM_PERMISSIONS_MIGRATION_ERROR
-    ) {
-      return { ok: false, error: t("teamPermissionsMigrationRequired") };
-    }
     return { ok: false, error: settingsActionErrorMessage(e, t) };
   }
 }

@@ -112,13 +112,6 @@ export async function updateFiscalBillingSettingsAction(
     if (e instanceof Error && e.message === "fiscal.settings_migration_required") {
       return { ok: false, error: t("bookingRulesMigrationRequired") };
     }
-    if (
-      e instanceof Error &&
-      (e.message === "settings.booking_rules_migration_required" ||
-        e.message === "checkin.migration_required")
-    ) {
-      return { ok: false, error: t("bookingRulesMigrationRequired") };
-    }
     if (e instanceof Error && e.message === "settings.pension_settings_missing") {
       const tFiscal = await getTranslations("admin.pages.settings.fiscal");
       return { ok: false, error: tFiscal("saveMissingRow") };

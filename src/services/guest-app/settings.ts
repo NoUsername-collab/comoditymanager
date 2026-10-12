@@ -4,7 +4,6 @@ import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { DEFAULT_GUEST_APP_SETTINGS } from "@/domain/guest-app/defaults";
 import type { GuestAppSettings } from "@/domain/guest-app/types";
 import {
-  isGuestAppMigrationMissing,
   mapGuestAppSettingsRow,
 } from "./map";
 import { getGuestAppPublicDb } from "./public-db";
@@ -19,12 +18,7 @@ async function fetchGuestAppSettingsRow(
     .eq("tenant_id", tenantId)
     .maybeSingle();
 
-  if (error) {
-    if (isGuestAppMigrationMissing(error.message)) {
-      return DEFAULT_GUEST_APP_SETTINGS;
-    }
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   if (!data) return DEFAULT_GUEST_APP_SETTINGS;
   return mapGuestAppSettingsRow(data);

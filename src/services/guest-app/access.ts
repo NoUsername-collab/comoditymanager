@@ -22,8 +22,6 @@ import { withTenantId } from "@/lib/tenant/scope";
 import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { getGuestAppSettings, getGuestAppSettingsPublic } from "./settings";
 import { getGuestAppPublicDb } from "./public-db";
-import { isCheckinMigrationMissing } from "@/lib/checkin/migration";
-import { isGuestAppMigrationMissing } from "./map";
 
 function generateAccessCode(): string {
   return randomBytes(9).toString("base64url").slice(0, 12).toLowerCase();
@@ -48,10 +46,7 @@ async function loadBookingSnapshot(
     .eq("id", bookingId)
     .maybeSingle();
 
-  if (error) {
-    if (isGuestAppMigrationMissing(error.message)) return null;
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
   if (!data) return null;
 
   const roomLabels: string[] = [];
@@ -80,9 +75,7 @@ async function loadBookingSnapshot(
     .maybeSingle();
 
   if (checkinResult.error) {
-    if (!isCheckinMigrationMissing(checkinResult.error.message)) {
-      throw new Error(checkinResult.error.message);
-    }
+    throw new Error(checkinResult.error.message);
   } else if (checkinResult.data?.checked_in_at) {
     checkedInAt = String(checkinResult.data.checked_in_at);
     const ps = checkinResult.data.payment_status;
@@ -186,12 +179,7 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
       .in("access_code", accessCodes)
       .maybeSingle();
 
-    if (error) {
-      if (isGuestAppMigrationMissing(error.message)) {
-        return { ok: false, reason: "setup_incomplete" };
-      }
-      throw new Error(error.message);
-    }
+    if (error) throw new Error(error.message);
     if (!accessRow) return { ok: false, reason: "not_found" };
     if (accessRow.revoked_at) return { ok: false, reason: "revoked" };
 

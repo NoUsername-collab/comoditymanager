@@ -244,7 +244,6 @@
         "generic": "You cannot access this page.",
         "serviceUnavailable": "The service is temporarily unavailable. Please try again later.",
         "disabled": "The guest app is disabled. Please contact reception.",
-        "setupIncomplete": "The guest app is not configured on this environment yet.",
         "notFound": "Invalid or unknown code.",
         "notFoundHint": "If you received a new link, open that one. Otherwise ask reception for an updated link.",
         "wrongHost": "Open this link on the property's website. Ask reception for an updated link.",
@@ -3379,7 +3378,6 @@
       "extendHoldError": "Error extending hold",
       "extendBlockError": "Error extending block",
       "checkInOnlyOnArrivalDay": "Check-in is only allowed on the planned arrival date.",
-      "statisticsVisibilityMigrationRequired": "Run migration 049_statistics_visibility.sql in Supabase (statistics_visibility column is missing).",
       "bookingRulesMigrationRequired": "Run migration 065_booking_policies_pricing_invoices.sql in Supabase.",
       "invoiceSellerDetailsMissing": "Set the tax ID and property address under Settings → Fiscal & billing → Tourist sheet (ANAF).",
       "invoiceBookingNotConfirmed": "Invoices can only be issued for confirmed bookings.",
@@ -3489,9 +3487,7 @@
       "publicSiteMediaFailed": "Could not upload the photo. Try again.",
       "publicSiteMigrationRequired": "The public site is missing a database update. Apply migration 100, then save again.",
       "identityLogoInvalid": "The logo address is not valid. Upload it again or remove it, then save.",
-      "identityMigrationRequired": "Property identity is missing a database update. Apply migrations 079 and 101, then save again.",
       "identitySettingsMissing": "Property settings were not found. Reload the page and try again.",
-      "teamPermissionsMigrationRequired": "Team permissions are missing a database update. Apply migration 083, then save again.",
       "genericError": "An error occurred. Please try again."
     },
     "availabilityLightSummary": {
@@ -3645,7 +3641,6 @@
       "alreadyCheckedIn": "All rooms for this booking have already been received.",
       "noCheckinToEdit": "No saved check-in to edit.",
       "updatedSuccess": "Check-in updated",
-      "migrationRequired": "The check-in system is not set up in the database. Run migration 048_checkin_system.sql in Supabase (SQL Editor), then try again.",
       "unknownError": "Something went wrong while saving. Please try again or contact support.",
       "registeredGuests": {
         "onlyHint": "Registered guests with profile data only — updates sync to the client file on save.",
