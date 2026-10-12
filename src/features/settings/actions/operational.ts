@@ -126,8 +126,8 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   bustPensionSettingsCache(tenantId);
   revalidateTag(checkinSettingsCacheTag(tenantId), "max");
   revalidatePath("/admin/settings");
-  revalidatePath("/admin/settings/identity");
-  await redirect("/admin/settings/identity?saved=1");
+  revalidatePath("/admin/settings/checkin");
+  await redirect("/admin/settings/checkin?saved=1");
 }
 
 export async function updatePensionIdentityAction(

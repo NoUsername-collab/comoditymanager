@@ -1,6 +1,6 @@
-import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { CheckinSettingsPanel } from "@/features/checkin/ui/CheckinSettingsPanel";
+import { OperationalHoursForm } from "@/features/settings/ui/OperationalHoursForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { loadCheckinSettingsPage } from "@/features/checkin/loaders";
@@ -27,6 +27,7 @@ export default async function SettingsCheckinPage({
   const alerts = await buildSettingsAlerts(params);
   const error = pensionSettingsErrorMessage(ctx.pensionResult.error, t);
   if (error) alerts.push({ tone: "error", message: error });
+  const settings = ctx.pensionResult.settings;
 
   return (
     <SettingsPageLayout
@@ -34,13 +35,12 @@ export default async function SettingsCheckinPage({
       title={t("navCheckin")}
       description={t("navCheckinDesc")}
     >
+      {settings ? (
+        <SettingsSection title={t("stayHours.title")} description={t("stayHours.subtitle")}>
+          <OperationalHoursForm settings={settings} />
+        </SettingsSection>
+      ) : null}
       <SettingsSection title={t("checkin.title")} description={t("checkin.docRuleDesc")}>
-        <p className="admin-settings-hint mb-4">
-          {t("checkin.scheduleManagedInIdentity")}{" "}
-          <Link href="/admin/settings/identity" className="font-medium underline">
-            {t("navIdentity")}
-          </Link>
-        </p>
         <CheckinSettingsPanel settings={checkinSettings} />
       </SettingsSection>
     </SettingsPageLayout>
