@@ -48,3 +48,10 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# local build output and logs
+build-output.txt
+build-*.txt
+build-*.log
+mrz-parse-snapshot.txt
+tsconfig.tsbuildinfo
