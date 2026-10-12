@@ -964,75 +964,50 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   border-top: 1px solid var(--admin-panel-border, #e4e4e7);
 }
 
-.pub-notice-editor__preview {
-  padding: 0.95rem 1rem;
-  border-radius: 0.9rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: color-mix(in srgb, var(--admin-panel-bg, #fff) 88%, var(--admin-page-bg, #fafafa));
-}
-
-.pub-notice-editor__preview-kicker {
-  margin: 0 0 0.45rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.pub-notice-editor__preview-title {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 650;
-}
-
-.pub-notice-editor__preview-list {
-  margin: 0.7rem 0 0;
-  padding: 0;
+.pub-notice-editor__choices {
   list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  gap: 0.65rem;
+  gap: 0.5rem;
 }
 
-.pub-notice-editor__preview-list li {
+.pub-notice-editor__choice {
   display: grid;
-  grid-template-columns: auto 1fr;
   gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
+}
+
+.pub-notice-editor__choice[data-on] {
+  border-color: color-mix(in srgb, var(--admin-accent, #166534) 45%, var(--admin-panel-border, #e4e4e7));
+}
+
+.pub-notice-editor__choice-row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+  cursor: pointer;
+}
+
+.pub-notice-editor__choice-row input {
+  margin-top: 0.3rem;
+}
+
+.pub-notice-editor__choice-copy {
+  display: grid;
+  gap: 0.15rem;
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--admin-text-muted, #71717a);
 }
 
-.pub-notice-editor__preview-list strong {
-  display: block;
+.pub-notice-editor__choice-copy strong {
   color: var(--admin-text, #18181b);
-}
-
-.pub-notice-editor__preview-footer {
-  margin: 0.75rem 0 0;
-  font-size: 0.75rem;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.pub-notice-editor__cards {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.pub-notice-editor__card {
-  display: grid;
-  gap: 0.7rem;
-  padding: 0.85rem;
-  border-radius: 0.85rem;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: var(--admin-panel-bg, #fff);
-}
-
-.pub-notice-editor__card-head {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.65rem;
-  align-items: start;
+  font-weight: 650;
 }
 
 .pub-notice-editor__glyph {
@@ -1043,76 +1018,46 @@ html[data-layout-chrome="compact"] .settings-shell__group {
   font-size: 0.95rem;
 }
 
-.pub-notice-editor__card-title {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 650;
-}
-
-.pub-notice-editor__card-text {
-  margin: 0.2rem 0 0;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  color: var(--admin-text-muted, #71717a);
-}
-
-.pub-notice-editor__card-tools {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-}
-
-@media (max-width: 640px) {
-  .pub-notice-editor__card-tools {
-    grid-template-columns: 1fr;
-  }
-}
-
 .pub-notice-editor__fields {
   display: grid;
   gap: 0.55rem;
 }
 
-.pub-notice-editor__catalog {
+.pub-notice-editor__own {
   display: grid;
   gap: 0.55rem;
+  justify-items: start;
+}
+
+.pub-notice-editor__own > .pub-notice-editor__card {
+  justify-self: stretch;
+}
+
+.pub-notice-editor__card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--admin-panel-border, #e4e4e7);
+  background: var(--admin-panel-bg, #fff);
 }
 
 .pub-notice-editor__catalog-label {
   margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 650;
 }
 
-.pub-notice-editor__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+.pub-notice-editor__more {
+  display: grid;
+  gap: 0.55rem;
 }
 
-.pub-notice-editor__chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  border: 1px solid var(--admin-panel-border, #e4e4e7);
-  background: var(--admin-panel-bg, #fff);
-  font-size: 0.75rem;
+.pub-notice-editor__more > summary {
   cursor: pointer;
-}
-
-.pub-notice-editor__chip:hover:not(:disabled) {
-  border-color: var(--admin-accent, #166534);
-}
-
-.pub-notice-editor__chip:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.pub-notice-editor__chip--custom {
+  font-size: 0.8125rem;
   font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
 }
 
 .admin-settings-hint {

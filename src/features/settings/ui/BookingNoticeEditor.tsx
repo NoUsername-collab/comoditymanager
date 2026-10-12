@@ -3,26 +3,27 @@
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import {
-  BOOKING_NOTICE_ICONS,
   BOOKING_NOTICE_ICON_GLYPH,
   BOOKING_NOTICE_PRESETS,
   BOOKING_NOTICE_PRESET_ICON,
   bookingNoticeFromDraft,
   buildBookingNoticeView,
   emptyCustomItem,
-  emptyPresetItem,
+  interpolateNoticePlaceholders,
   type BookingNoticeDraft,
 } from "@/features/public-site/domain/booking-notice";
-import type {
-  BookingNoticeIconId,
-  BookingNoticePresetId,
-} from "@/features/public-site/domain/types";
+import type { BookingNoticePresetId } from "@/features/public-site/domain/types";
 import { buildBookingNoticePresetCopy } from "@/features/public-site/ui/booking-notice-copy";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 
 type Draft = BookingNoticeDraft;
+type Item = Draft["items"][number];
+type PresetId = Exclude<BookingNoticePresetId, "custom">;
 
 const MAX_NOTICE_ITEMS = 8;
+
+/** The hours text follows the check-in settings, so it is never edited by hand. */
+const AUTO_TEXT_PRESETS = new Set<PresetId>(["hours"]);
 
 let noticeDraftSeq = 0;
 function nextNoticeId(): string {
@@ -30,6 +31,11 @@ function nextNoticeId(): string {
   return `notice-${Date.now()}-${noticeDraftSeq}`;
 }
 
+/**
+ * "What guests should know" next to the booking form: tick ready-made texts
+ * (shown exactly as guests read them, hours filled in), reword one if needed,
+ * or add a text of your own.
+ */
 export function BookingNoticeEditor({
   value,
   onChange,
@@ -47,7 +53,7 @@ export function BookingNoticeEditor({
   const tCal = useTranslations("public.calendar");
   const adminLocale = useLocale();
   const locale = localeProp ?? adminLocale;
-  const [expandedIds, setExpandedIds] = useState<string[]>([]);
+  const [editingIds, setEditingIds] = useState<string[]>([]);
 
   const presets = useMemo(() => buildBookingNoticePresetCopy(tCal), [tCal]);
   const view = useMemo(
@@ -61,50 +67,47 @@ export function BookingNoticeEditor({
         fallbackFooter: tCal("surplusNote"),
         presets,
       }),
-    [value, locale, checkInTime, checkOutTime, tCal, presets]
+    [value, locale, checkInTime, checkOutTime, tCal, presets],
   );
 
-  function presetCopy(preset: Exclude<BookingNoticePresetId, "custom">) {
-    return presets[preset];
+  const full = value.items.length >= MAX_NOTICE_ITEMS;
+  const customItems = value.items.filter((item) => item.preset === "custom");
+
+  function readyText(preset: PresetId) {
+    const copy = presets[preset];
+    return {
+      title: interpolateNoticePlaceholders(copy.title, checkInTime, checkOutTime),
+      text: interpolateNoticePlaceholders(copy.text, checkInTime, checkOutTime),
+    };
   }
 
-  function applyPreset(id: string, preset: BookingNoticePresetId) {
+  function patchItem(id: string, patch: Partial<Item>) {
     onChange({
       ...value,
-      items: value.items.map((item) => {
-        if (item.id !== id) return item;
-        if (preset === "custom") {
-          const current = view.items.find((row) => row.id === id);
-          return {
-            ...item,
-            preset,
-            title: item.title || current?.title || "",
-            text: item.text || current?.text || "",
-          };
-        }
-        return {
-          ...item,
-          preset,
-          icon: BOOKING_NOTICE_PRESET_ICON[preset],
-          title: "",
-          text: "",
-        };
-      }),
+      items: value.items.map((item) => (item.id === id ? { ...item, ...patch } : item)),
     });
-    setExpandedIds((ids) => ids.filter((row) => row !== id));
   }
 
-  function addPreset(preset: Exclude<BookingNoticePresetId, "custom">) {
-    if (value.items.length >= MAX_NOTICE_ITEMS) return;
-    const item = emptyPresetItem(preset);
+  function removeItem(id: string) {
+    onChange({ ...value, items: value.items.filter((item) => item.id !== id) });
+    setEditingIds((ids) => ids.filter((row) => row !== id));
+  }
+
+  function togglePreset(preset: PresetId, on: boolean) {
+    const existing = value.items.find((item) => item.preset === preset);
+    if (!on) {
+      if (existing) removeItem(existing.id);
+      return;
+    }
+    if (existing || full) return;
     onChange({
       ...value,
       items: [
         ...value.items,
         {
           id: `${preset}-${nextNoticeId()}`,
-          preset: item.preset,
-          icon: item.icon,
+          preset,
+          icon: BOOKING_NOTICE_PRESET_ICON[preset],
           title: "",
           text: "",
         },
@@ -112,43 +115,28 @@ export function BookingNoticeEditor({
     });
   }
 
+  function startEditing(item: Item, preset: PresetId) {
+    const source = readyText(preset);
+    patchItem(item.id, {
+      title: item.title || source.title,
+      text: item.text || source.text,
+    });
+    setEditingIds((ids) => (ids.includes(item.id) ? ids : [...ids, item.id]));
+  }
+
+  function resetToReady(item: Item) {
+    patchItem(item.id, { title: "", text: "" });
+    setEditingIds((ids) => ids.filter((row) => row !== item.id));
+  }
+
   function addCustom() {
-    if (value.items.length >= MAX_NOTICE_ITEMS) return;
+    if (full) return;
     const item = emptyCustomItem(nextNoticeId());
     onChange({
       ...value,
-      items: [
-        ...value.items,
-        { id: item.id, preset: "custom", icon: "info", title: "", text: "" },
-      ],
+      items: [...value.items, { id: item.id, preset: "custom", icon: "info", title: "", text: "" }],
     });
-    setExpandedIds((ids) => [...ids, item.id]);
   }
-
-  function restoreDefaults() {
-    onChange({
-      enabled: true,
-      title: "",
-      footer: "",
-      items: (["noPay", "hold", "hours"] as const).map((preset) => ({
-        id: preset,
-        preset,
-        icon: BOOKING_NOTICE_PRESET_ICON[preset],
-        title: "",
-        text: "",
-      })),
-    });
-    setExpandedIds([]);
-  }
-
-  const usedPresets = new Set(
-    value.items
-      .filter((item) => item.preset !== "custom")
-      .map((item) => item.preset)
-  );
-  const availablePresets = BOOKING_NOTICE_PRESETS.filter(
-    (preset) => !usedPresets.has(preset)
-  );
 
   return (
     <div className="pub-notice-editor">
@@ -161,282 +149,136 @@ export function BookingNoticeEditor({
         {t("noticeEnabled")}
       </label>
 
-      <p className="admin-settings-hint">{t("noticeCatalogHint")}</p>
+      {value.enabled ? (
+        <>
+          <p className="admin-settings-hint">{t("noticeCatalogHint")}</p>
 
-      {value.enabled && view.items.length > 0 ? (
-        <div className="pub-notice-editor__preview" aria-label={t("noticePreviewLabel")}>
-          <p className="pub-notice-editor__preview-kicker">{t("noticePreviewLabel")}</p>
-          {view.title ? (
-            <p className="pub-notice-editor__preview-title">{view.title}</p>
-          ) : null}
-          <ul className="pub-notice-editor__preview-list">
-            {view.items.map((item) => (
-              <li key={item.id}>
-                <span aria-hidden>{item.icon}</span>
-                <span>
-                  {item.title ? <strong>{item.title}</strong> : null}
-                  {item.text ? <span>{item.text}</span> : null}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {view.footer ? <p className="pub-notice-editor__preview-footer">{view.footer}</p> : null}
-        </div>
-      ) : null}
-
-      <label>
-        <span>{t("noticeTitle")}</span>
-        <input
-          value={value.title}
-          placeholder={tCal("asideTitle")}
-          onChange={(e) => onChange({ ...value, title: e.target.value })}
-        />
-      </label>
-
-      <div className="pub-notice-editor__cards">
-        {value.items.map((item, index) => {
-          const resolved = view.items.find((row) => row.id === item.id);
-          const isCustom = item.preset === "custom";
-          const showFields =
-            isCustom ||
-            item.title.trim().length > 0 ||
-            item.text.trim().length > 0 ||
-            expandedIds.includes(item.id);
-          const copy = item.preset === "custom" ? null : presetCopy(item.preset);
-
-          return (
-            <div key={item.id} className="pub-notice-editor__card">
-              <div className="pub-notice-editor__card-head">
-                <span className="pub-notice-editor__glyph" aria-hidden>
-                  {BOOKING_NOTICE_ICON_GLYPH[item.icon]}
-                </span>
-                <div>
-                  <p className="pub-notice-editor__card-title">
-                    {resolved?.title || copy?.title || t("noticePreset_custom")}
-                  </p>
-                  <p className="pub-notice-editor__card-text">
-                    {resolved?.text || copy?.text || t("noticeCustomPlaceholder")}
-                  </p>
-                </div>
-                <div className="pub-gallery-editor__actions">
-                  <button
-                    type="button"
-                    className="pub-gallery-editor__icon-btn"
-                    disabled={index === 0}
-                    aria-label={t("galleryMoveUp")}
-                    onClick={() => {
-                      if (index === 0) return;
-                      const next = [...value.items];
-                      const [moved] = next.splice(index, 1);
-                      next.splice(index - 1, 0, moved!);
-                      onChange({ ...value, items: next });
-                    }}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    className="pub-gallery-editor__icon-btn"
-                    disabled={index === value.items.length - 1}
-                    aria-label={t("galleryMoveDown")}
-                    onClick={() => {
-                      if (index >= value.items.length - 1) return;
-                      const next = [...value.items];
-                      const [moved] = next.splice(index, 1);
-                      next.splice(index + 1, 0, moved!);
-                      onChange({ ...value, items: next });
-                    }}
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    className="pub-gallery-editor__icon-btn pub-gallery-editor__icon-btn--danger"
-                    aria-label={t("noticeRemove")}
-                    onClick={() =>
-                      onChange({
-                        ...value,
-                        items: value.items.filter((row) => row.id !== item.id),
-                      })
-                    }
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              <div className="pub-notice-editor__card-tools">
-                <label>
-                  <span>{t("noticePreset")}</span>
-                  <select
-                    value={item.preset}
-                    onChange={(e) =>
-                      applyPreset(item.id, e.target.value as BookingNoticePresetId)
-                    }
-                  >
-                    {BOOKING_NOTICE_PRESETS.map((preset) => (
-                      <option key={preset} value={preset}>
-                        {t(`noticePreset_${preset}`)}
-                      </option>
-                    ))}
-                    <option value="custom">{t("noticePreset_custom")}</option>
-                  </select>
-                </label>
-                <label>
-                  <span>{t("noticeIcon")}</span>
-                  <select
-                    value={item.icon}
-                    onChange={(e) =>
-                      onChange({
-                        ...value,
-                        items: value.items.map((row) =>
-                          row.id === item.id
-                            ? { ...row, icon: e.target.value as BookingNoticeIconId }
-                            : row
-                        ),
-                      })
-                    }
-                  >
-                    {BOOKING_NOTICE_ICONS.map((icon) => (
-                      <option key={icon} value={icon}>
-                        {BOOKING_NOTICE_ICON_GLYPH[icon]} {t(`noticeIcon_${icon}`)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              {showFields ? (
-                <div className="pub-notice-editor__fields">
-                  <label>
-                    <span>{t("noticeItemTitle")}</span>
+          <ul className="pub-notice-editor__choices">
+            {BOOKING_NOTICE_PRESETS.map((preset) => {
+              const item = value.items.find((row) => row.preset === preset);
+              const checked = Boolean(item);
+              const ready = readyText(preset);
+              const shown = item ? view.items.find((row) => row.id === item.id) : null;
+              const editing =
+                item &&
+                (editingIds.includes(item.id) || item.title.trim() || item.text.trim());
+              return (
+                <li key={preset} className="pub-notice-editor__choice" data-on={checked || undefined}>
+                  <label className="pub-notice-editor__choice-row">
                     <input
-                      value={item.title}
-                      placeholder={copy?.title ?? ""}
-                      onChange={(e) =>
-                        onChange({
-                          ...value,
-                          items: value.items.map((row) =>
-                            row.id === item.id ? { ...row, title: e.target.value } : row
-                          ),
-                        })
-                      }
+                      type="checkbox"
+                      checked={checked}
+                      disabled={!checked && full}
+                      onChange={(e) => togglePreset(preset, e.target.checked)}
                     />
+                    <span className="pub-notice-editor__glyph" aria-hidden>
+                      {BOOKING_NOTICE_ICON_GLYPH[BOOKING_NOTICE_PRESET_ICON[preset]]}
+                    </span>
+                    <span className="pub-notice-editor__choice-copy">
+                      <strong>{shown?.title || ready.title}</strong>
+                      <span>{shown?.text || ready.text}</span>
+                    </span>
                   </label>
-                  <label>
-                    <span>{t("noticeItemText")}</span>
-                    <textarea
-                      rows={2}
-                      value={item.text}
-                      placeholder={copy?.text ?? ""}
-                      onChange={(e) =>
-                        onChange({
-                          ...value,
-                          items: value.items.map((row) =>
-                            row.id === item.id ? { ...row, text: e.target.value } : row
-                          ),
-                        })
-                      }
-                    />
-                  </label>
-                  {!isCustom ? (
+
+                  {item && editing ? (
+                    <div className="pub-notice-editor__fields">
+                      <NoticeFields
+                        item={item}
+                        placeholder={ready}
+                        onChange={(patch) => patchItem(item.id, patch)}
+                      />
+                      <AdminButton type="button" variant="ghost" size="sm" onClick={() => resetToReady(item)}>
+                        {t("noticeUsePreset")}
+                      </AdminButton>
+                    </div>
+                  ) : item && !AUTO_TEXT_PRESETS.has(preset) ? (
                     <AdminButton
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => {
-                        onChange({
-                          ...value,
-                          items: value.items.map((row) =>
-                            row.id === item.id ? { ...row, title: "", text: "" } : row
-                          ),
-                        });
-                        setExpandedIds((ids) => ids.filter((row) => row !== item.id));
-                      }}
+                      onClick={() => startEditing(item, preset)}
                     >
-                      {t("noticeUsePreset")}
+                      {t("noticeCustomize")}
                     </AdminButton>
+                  ) : item ? (
+                    <p className="admin-settings-hint">{t("noticeHoursAuto")}</p>
                   ) : null}
-                </div>
-              ) : (
-                <AdminButton
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const source = copy ?? resolved;
-                    onChange({
-                      ...value,
-                      items: value.items.map((row) =>
-                        row.id === item.id
-                          ? {
-                              ...row,
-                              title: source?.title ?? "",
-                              text: source?.text ?? "",
-                            }
-                          : row
-                      ),
-                    });
-                    setExpandedIds((ids) =>
-                      ids.includes(item.id) ? ids : [...ids, item.id]
-                    );
-                  }}
-                >
-                  {t("noticeCustomize")}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="pub-notice-editor__own">
+            <p className="pub-notice-editor__catalog-label">{t("noticeOwnTitle")}</p>
+            {customItems.map((item) => (
+              <div key={item.id} className="pub-notice-editor__card">
+                <NoticeFields item={item} onChange={(patch) => patchItem(item.id, patch)} />
+                <AdminButton type="button" variant="ghost" size="sm" onClick={() => removeItem(item.id)}>
+                  {t("noticeRemove")}
                 </AdminButton>
-              )}
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            ))}
+            <AdminButton type="button" variant="secondary" size="sm" disabled={full} onClick={addCustom}>
+              + {t("noticeAddCustom")}
+            </AdminButton>
+            {full ? <p className="admin-settings-hint">{t("noticeFull", { max: MAX_NOTICE_ITEMS })}</p> : null}
+          </div>
 
-      <div className="pub-notice-editor__catalog">
-        <p className="pub-notice-editor__catalog-label">{t("noticeAddPreset")}</p>
-        <div className="pub-notice-editor__chips">
-          {availablePresets.map((preset) => (
-            <button
-              key={preset}
-              type="button"
-              className="pub-notice-editor__chip"
-              disabled={value.items.length >= MAX_NOTICE_ITEMS}
-              onClick={() => addPreset(preset)}
-            >
-              <span aria-hidden>{BOOKING_NOTICE_ICON_GLYPH[BOOKING_NOTICE_PRESET_ICON[preset]]}</span>
-              {t(`noticePreset_${preset}`)}
-            </button>
-          ))}
-          <button
-            type="button"
-            className="pub-notice-editor__chip pub-notice-editor__chip--custom"
-            disabled={value.items.length >= MAX_NOTICE_ITEMS}
-            onClick={addCustom}
-          >
-            + {t("noticeAddCustom")}
-          </button>
-        </div>
-        <AdminButton type="button" variant="ghost" size="sm" onClick={restoreDefaults}>
-          {t("noticeRestore")}
-        </AdminButton>
-      </div>
+          <details className="pub-notice-editor__more">
+            <summary>{t("noticeMore")}</summary>
+            <label>
+              <span>{t("noticeTitle")}</span>
+              <input
+                value={value.title}
+                placeholder={tCal("asideTitle")}
+                onChange={(e) => onChange({ ...value, title: e.target.value })}
+              />
+            </label>
+            <label>
+              <span>{t("noticeFooter")}</span>
+              <textarea
+                rows={2}
+                value={value.footer}
+                placeholder={tCal("surplusNote")}
+                onChange={(e) => onChange({ ...value, footer: e.target.value })}
+              />
+            </label>
+          </details>
+        </>
+      ) : null}
+    </div>
+  );
+}
 
+function NoticeFields({
+  item,
+  placeholder,
+  onChange,
+}: {
+  item: Item;
+  placeholder?: { title: string; text: string };
+  onChange: (patch: Partial<Item>) => void;
+}) {
+  const t = useTranslations("admin.pages.publicSite");
+  return (
+    <>
       <label>
-        <span>{t("noticeFooter")}</span>
-        <textarea
-          rows={2}
-          value={value.footer}
-          placeholder={tCal("surplusNote")}
-          onChange={(e) => onChange({ ...value, footer: e.target.value })}
+        <span>{t("noticeItemTitle")}</span>
+        <input
+          value={item.title}
+          placeholder={placeholder?.title ?? ""}
+          onChange={(e) => onChange({ title: e.target.value })}
         />
       </label>
-      <p className="admin-settings-hint">{t("noticeEmptyUsesPreset")}</p>
-      <p className="admin-settings-hint">
-        {t("noticeHoursHint", {
-          placeholderIn: "{checkIn}",
-          placeholderOut: "{checkOut}",
-          checkInTime,
-          checkOutTime,
-        })}
-      </p>
-    </div>
+      <label>
+        <span>{t("noticeItemText")}</span>
+        <textarea
+          rows={2}
+          value={item.text}
+          placeholder={placeholder?.text ?? ""}
+          onChange={(e) => onChange({ text: e.target.value })}
+        />
+      </label>
+    </>
   );
 }
