@@ -46,7 +46,8 @@
     "selectVariant": "Изберете вариант за настаняване преди изпращане.",
     "variantUnavailable": "Избраният вариант вече не е наличен. Обновете датите и изберете отново.",
     "pickDates": "Изберете check-in и check-out.",
-    "previewFailed": "Неуспешно зареждане на опциите"
+    "previewFailed": "Неуспешно зареждане на опциите",
+    "genericError": "Възникна грешка. Опитайте отново."
   },
   "guestApp": {
     "meta": {
@@ -569,6 +570,11 @@
       "stepContact": "3. Submit",
       "checkIn": "Check-in *",
       "checkOut": "Check-out *",
+      "selectRooms": "{count, plural, one {Изберете стая} other {Изберете # стаи}}",
+      "cancel": "Отказ",
+      "confirm": "Потвърди",
+      "successRooms": "{count, plural, one {Избрана е 1 стая} other {Избрани са # стаи}}",
+      "changeRooms": "Промени стаите",
       "adults": "Adults *",
       "children": "Children",
       "previewLoading": "Calculating…",
@@ -2972,6 +2978,7 @@
       "calendar": "Календар",
       "catalogSqlHint": "за типове и опции в Supabase SQL Editor",
       "checkIn": "Check-in",
+      "checkOut": "Напускане",
       "checkInHour": "Check-in (час)",
       "checkOutHour": "Check-out (час)",
       "emDash": "—",

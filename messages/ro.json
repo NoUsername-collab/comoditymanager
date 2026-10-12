@@ -46,7 +46,8 @@
     "selectVariant": "Alege o variantă de cazare înainte de trimitere.",
     "variantUnavailable": "Varianta aleasă nu mai e disponibilă. Actualizează datele și alege din nou.",
     "pickDates": "Alege check-in și check-out.",
-    "previewFailed": "Nu am putut calcula variantele"
+    "previewFailed": "Nu am putut calcula variantele",
+    "genericError": "A apărut o eroare. Încearcă din nou."
   },
   "guestApp": {
     "meta": {
@@ -314,6 +315,7 @@
         "appliedToast": "Date MRZ aplicate — verifică și corectează dacă e nevoie.",
         "title": "Citire MRZ (pașaport / CI)",
         "close": "Închide",
+        "loading": "Se pornește scanerul…",
         "intro": "Poziționează zona MRZ (cele 2–3 rânduri de jos de pe spatele documentului) sau lipește textul manual.",
         "tabPaste": "Lipește text",
         "tabCamera": "Cameră",
@@ -568,6 +570,11 @@
       "stepContact": "3. Trimite",
       "checkIn": "Check-in *",
       "checkOut": "Check-out *",
+      "selectRooms": "{count, plural, one {Alege o cameră} few {Alege # camere} other {Alege # de camere}}",
+      "cancel": "Anulează",
+      "confirm": "Confirmă",
+      "successRooms": "{count, plural, one {O cameră aleasă} few {# camere alese} other {# de camere alese}}",
+      "changeRooms": "Schimbă camerele",
       "adults": "Adulți *",
       "children": "Copii",
       "previewLoading": "Se calculează…",
@@ -2821,6 +2828,7 @@
       "guestProfile": "Profil client",
       "activeRoomsCount": "{count} camere active",
       "checkIn": "Check-in",
+      "checkOut": "Check-out",
       "checkout": "Checkout",
       "openBooking": "Deschide rezervarea",
       "guestsShort": "{adults} ad. + {children} cop.",

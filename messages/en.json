@@ -46,7 +46,8 @@
     "selectVariant": "Choose an accommodation option before submitting.",
     "variantUnavailable": "The selected option is no longer available. Refresh dates and choose again.",
     "pickDates": "Choose check-in and check-out dates.",
-    "previewFailed": "Could not load options"
+    "previewFailed": "Could not load options",
+    "genericError": "Something went wrong. Please try again."
   },
   "guestApp": {
     "meta": {
@@ -569,6 +570,11 @@
       "stepContact": "3. Submit",
       "checkIn": "Check-in *",
       "checkOut": "Check-out *",
+      "selectRooms": "{count, plural, one {Choose a room} other {Choose # rooms}}",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "successRooms": "{count, plural, one {1 room selected} other {# rooms selected}}",
+      "changeRooms": "Change rooms",
       "adults": "Adults *",
       "children": "Children",
       "previewLoading": "Calculating…",
@@ -2838,6 +2844,7 @@
       "guestProfile": "Guest profile",
       "activeRoomsCount": "{count} active rooms",
       "checkIn": "Check-in",
+      "checkOut": "Check-out",
       "checkout": "Checkout",
       "openBooking": "Open booking",
       "guestsShort": "{adults} ad. + {children} ch.",
