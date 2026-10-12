@@ -14,7 +14,7 @@ import { stayNightCount } from "@/lib/stay-dates";
 import { computeStandardStayTotal } from "@/domain/pricing/nightly-rates";
 import { requireAnyStaff } from "@/lib/auth/require-admin";
 import {
-  checkRateLimit,
+  enforceRateLimit,
   getClientIp,
   RATE_LIMIT_BOOKING_SUBMIT,
   RATE_LIMIT_BOOKING_PREVIEW,
@@ -23,7 +23,7 @@ import { runInPublicBookingMode } from "@/lib/tenant/scope";
 
 async function assertRateLimit(preset: { limit: number; windowMs: number }, action: string) {
   const ip = await getClientIp();
-  const result = checkRateLimit(`${action}:${ip}`, preset.limit, preset.windowMs);
+  const result = await enforceRateLimit(`${action}:${ip}`, preset.limit, preset.windowMs);
   if (!result.allowed) {
     const seconds = Math.ceil(result.retryAfterMs / 1000);
     throw new Error(`rate_limit.too_many_requests:${seconds}`);

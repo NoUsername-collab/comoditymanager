@@ -9,7 +9,7 @@ import {
 import { verifyLocationUnlockPassword } from "@/lib/auth/location-unlock";
 import { parseOperationalHours } from "@/domain/settings/operational-hours";
 import { requireStaff, requireStaffPermission } from "@/lib/auth/require-staff";
-import { checkRateLimit, getClientIp, RATE_LIMIT_PASSWORD_VERIFY } from "@/lib/rate-limit";
+import { enforceRateLimit, getClientIp, RATE_LIMIT_PASSWORD_VERIFY } from "@/lib/rate-limit";
 import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
 import { optionalUrlSchema } from "@/domain/settings/schemas/shared";
@@ -34,7 +34,7 @@ export async function unlockLocationAdminAction(formData: FormData) {
     getClientIp(),
   ]);
 
-  const rl = checkRateLimit(`pwd:${ip}`, RATE_LIMIT_PASSWORD_VERIFY.limit, RATE_LIMIT_PASSWORD_VERIFY.windowMs);
+  const rl = await enforceRateLimit(`pwd:${ip}`, RATE_LIMIT_PASSWORD_VERIFY.limit, RATE_LIMIT_PASSWORD_VERIFY.windowMs);
   if (!rl.allowed) {
     return { error: t("ownerPasswordIncorrect") };
   }

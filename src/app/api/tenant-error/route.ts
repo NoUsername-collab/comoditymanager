@@ -5,7 +5,7 @@ import {
   isTenantRequestHost,
   shouldSkipTenantErrorLog,
 } from "@/lib/tenant/error-safeguard";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { enforceRateLimit } from "@/lib/rate-limit";
 
 type Body = {
   message?: string;
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
   }
 
   const clientIp = h.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const rl = checkRateLimit(`tenant-err:${clientIp}`, 10, 60_000);
+  const rl = await enforceRateLimit(`tenant-err:${clientIp}`, 10, 60_000);
   if (!rl.allowed) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }

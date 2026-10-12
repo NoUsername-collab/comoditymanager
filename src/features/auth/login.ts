@@ -20,7 +20,7 @@ import { getPrimaryTenantSlugForUser, getTenantMemberRole } from "@/services/ten
 import { getMfaAccessState } from "@/lib/auth/mfa-session";
 import { tenantHasAnyRoom } from "@/services/onboarding";
 import {
-  checkRateLimit,
+  enforceRateLimit,
   getClientIp,
   RATE_LIMIT_LOGIN,
 } from "@/lib/rate-limit";
@@ -142,7 +142,7 @@ export async function loginAction(
   }
 
   const ip = await getClientIp();
-  const rl = checkRateLimit(
+  const rl = await enforceRateLimit(
     `login:${ip}`,
     RATE_LIMIT_LOGIN.limit,
     RATE_LIMIT_LOGIN.windowMs,

@@ -5,7 +5,7 @@ import { createPublicAdminClient } from "@/lib/supabase/admin";
 import { buildTenantLoginUrl, platformDomainFromRequestHost } from "@/lib/tenant/host";
 import { getTranslations } from "next-intl/server";
 import {
-  checkRateLimit,
+  enforceRateLimit,
   getClientIp,
 } from "@/lib/rate-limit";
 
@@ -122,7 +122,7 @@ export async function signupAction(formData: FormData): Promise<SignupResult> {
   }
 
   const ip = await getClientIp();
-  const rl = checkRateLimit(
+  const rl = await enforceRateLimit(
     `signup:${ip}`,
     RATE_LIMIT_SIGNUP.limit,
     RATE_LIMIT_SIGNUP.windowMs

@@ -6,7 +6,7 @@ import { getGuestAppPublicDb } from "@/services/guest-app/public-db";
 import { withTenantId } from "@/lib/tenant/scope";
 import { runInPublicBookingMode } from "@/lib/tenant/scope";
 import {
-  checkRateLimit,
+  enforceRateLimit,
   getClientIp,
   RATE_LIMIT_GUEST_STAY_ACTION,
 } from "@/lib/rate-limit";
@@ -22,7 +22,7 @@ export type GuestStayActionResult =
 
 async function assertGuestStayActionRateLimit(): Promise<GuestStayActionResult | null> {
   const ip = await getClientIp();
-  const rl = checkRateLimit(
+  const rl = await enforceRateLimit(
     `guest-stay:${ip}`,
     RATE_LIMIT_GUEST_STAY_ACTION.limit,
     RATE_LIMIT_GUEST_STAY_ACTION.windowMs,

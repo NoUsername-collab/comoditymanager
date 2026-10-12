@@ -13,7 +13,7 @@ import type {
 } from "@/domain/guest-app/types";
 import { todayIso } from "@/lib/stay-dates";
 import {
-  checkRateLimit,
+  enforceRateLimit,
   getClientIp,
   RATE_LIMIT_GUEST_ACCESS,
 } from "@/lib/rate-limit";
@@ -163,7 +163,7 @@ export const resolveGuestAccessByCode = cache(async function resolveGuestAccessB
 ): Promise<GuestAccessResult> {
   return runInPublicBookingMode(async () => {
     const ip = await getClientIp();
-    const rl = checkRateLimit(
+    const rl = await enforceRateLimit(
       `guest-access:${ip}`,
       RATE_LIMIT_GUEST_ACCESS.limit,
       RATE_LIMIT_GUEST_ACCESS.windowMs,

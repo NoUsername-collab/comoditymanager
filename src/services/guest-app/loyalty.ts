@@ -10,7 +10,7 @@ import {
   normalizeLoyaltyReference,
 } from "@/domain/guest-app/loyalty";
 import {
-  checkRateLimit,
+  enforceRateLimit,
   getClientIp,
   RATE_LIMIT_GUEST_ACCESS,
 } from "@/lib/rate-limit";
@@ -231,7 +231,7 @@ export const resolveLoyaltyByReference = cache(
   ): Promise<GuestLoyaltyAccessResult> {
     return runInPublicBookingMode(async () => {
       const ip = await getClientIp();
-      const rl = checkRateLimit(
+      const rl = await enforceRateLimit(
         `guest-loyalty:${ip}`,
         RATE_LIMIT_GUEST_ACCESS.limit,
         RATE_LIMIT_GUEST_ACCESS.windowMs,

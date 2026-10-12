@@ -102,3 +102,38 @@ export const RATE_LIMIT_GUEST_STAY_ACTION = { limit: 10, windowMs: 10 * 60 * 100
 
 /** Staff login: max 10 attempts per 15 minutes per IP (Supabase Auth adds its own limit) */
 export const RATE_LIMIT_LOGIN = { limit: 10, windowMs: 15 * 60 * 1000 };
+
+export type RateLimitResult =
+  | { allowed: true; remaining: number }
+  | { allowed: false; retryAfterMs: number };
+
+/**
+ * Rate limit that holds across serverless restarts: the in-memory check stops a
+ * burst on one instance cheaply, then the shared counter in `rate_limits`
+ * (migration 103) decides for all instances.
+ *
+ * If the database cannot answer, the request is let through and the failure is
+ * logged — a broken counter must not lock every owner out of login.
+ */
+export async function enforceRateLimit(
+  key: string,
+  limit: number,
+  windowMs: number,
+): Promise<RateLimitResult> {
+  const local = checkRateLimit(key, limit, windowMs);
+  if (!local.allowed) return local;
+
+  try {
+    const { createPublicAdminClient } = await import("@/lib/supabase/admin");
+    const { data, error } = await createPublicAdminClient().rpc("rate_limit_hit", {
+      p_key: key,
+      p_limit: limit,
+      p_window_seconds: Math.max(1, Math.round(windowMs / 1000)),
+    });
+    if (error) throw new Error(error.message);
+    if (data === false) return { allowed: false, retryAfterMs: windowMs };
+  } catch (error) {
+    console.error("[rate-limit] shared counter unavailable", { key, error });
+  }
+  return local;
+}

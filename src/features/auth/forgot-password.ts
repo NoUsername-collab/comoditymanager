@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { headers } from "next/headers";
-import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { enforceRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export type ForgotPasswordResult =
   | { ok: true }
@@ -20,7 +20,7 @@ export async function forgotPasswordAction(
   }
 
   const ip = await getClientIp();
-  const rl = checkRateLimit(`forgot-pw:${ip}`, 5, 15 * 60 * 1000);
+  const rl = await enforceRateLimit(`forgot-pw:${ip}`, 5, 15 * 60 * 1000);
   if (!rl.allowed) {
     return { ok: false, error: t("genericError") };
   }
