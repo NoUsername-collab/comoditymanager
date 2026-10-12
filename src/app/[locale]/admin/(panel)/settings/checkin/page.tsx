@@ -36,11 +36,11 @@ export default async function SettingsCheckinPage({
       description={t("navCheckinDesc")}
     >
       {settings ? (
-        <SettingsSection title={t("stayHours.title")} description={t("stayHours.subtitle")}>
+        <SettingsSection title={t("stayHours.title")}>
           <OperationalHoursForm settings={settings} />
         </SettingsSection>
       ) : null}
-      <SettingsSection title={t("checkin.title")} description={t("checkin.docRuleDesc")}>
+      <SettingsSection title={t("checkin.title")}>
         <CheckinSettingsPanel settings={checkinSettings} />
       </SettingsSection>
     </SettingsPageLayout>

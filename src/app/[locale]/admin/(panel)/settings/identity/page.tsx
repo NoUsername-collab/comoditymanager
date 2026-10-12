@@ -36,7 +36,7 @@ export default async function SettingsIdentityPage({
       previewLabel={t("seeEffectPreview")}
       previewExternal
     >
-      <SettingsSection title={t("identity.sectionTitle")} description={t("identity.sectionDesc")}>
+      <SettingsSection title={t("identity.sectionTitle")}>
         <PensionIdentityForm identity={identity} />
       </SettingsSection>
     </SettingsPageLayout>

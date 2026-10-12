@@ -1284,7 +1284,6 @@
         },
         "identity": {
           "sectionTitle": "Date principale",
-          "sectionDesc": "Se folosesc pe site, în aplicația oaspeților și în emailuri, dacă nu pui altceva acolo.",
           "displayName": "Nume afișat",
           "email": "Email contact",
           "phone": "Telefon",
@@ -1292,14 +1291,11 @@
           "telegram": "Telegram",
           "facebook": "Facebook",
           "instagram": "Instagram",
-          "channelsHint": "Site-ul și aplicația oaspeților pot prelua automat aceste date.",
+          "socialTitle": "Rețele sociale (opțional)",
           "displayNameHint": "Apare sus pe site și în subiectul emailurilor.",
           "emailHint": "Aici primești răspunsurile oaspeților; apare și jos pe site.",
-          "phoneHint": "Apare în banda de contact și jos pe site.",
           "cardBrandTitle": "Numele pensiunii",
-          "cardBrandDesc": "Apare pe site, în aplicația oaspeților și în emailuri.",
           "cardContactTitle": "Canale contact",
-          "cardContactDesc": "Telefon, email și rețele — folosite pe site și în mesaje, dacă nu pui altceva acolo.",
           "save": "Salvează identitatea",
           "saving": "Se salvează…",
           "saved": "Identitate salvată",
@@ -1324,7 +1320,6 @@
         },
         "stayHours": {
           "title": "Ore sejur",
-          "subtitle": "Plecarea trebuie să fie înaintea sosirii din aceeași zi (ex. plecare 11:00, sosire 14:00), ca să rămână timp de curățenie.",
           "save": "Salvează orele",
           "hint": "Curățenia are nevoie de un interval între plecare și sosire în aceeași zi calendaristică."
         },

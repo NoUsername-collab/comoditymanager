@@ -1315,7 +1315,6 @@
           "addressLocality": "Town",
           "addressCounty": "County",
           "sectionTitle": "Primary details",
-          "sectionDesc": "Used on the public site, guest app, and emails unless a channel overrides them.",
           "displayName": "Display name",
           "email": "Contact email",
           "phone": "Phone",
@@ -1323,22 +1322,18 @@
           "telegram": "Telegram",
           "facebook": "Facebook",
           "instagram": "Instagram",
-          "channelsHint": "Public site and guest app can use these via “use primary identity”.",
+          "socialTitle": "Social networks (optional)",
           "save": "Save identity",
           "saving": "Saving…",
           "saved": "Identity saved",
           "saveError": "Could not save identity",
           "cardBrandTitle": "Property brand",
-          "cardBrandDesc": "Name shown in the site header, guest app, and emails.",
           "cardContactTitle": "Primary contact",
-          "cardContactDesc": "Channels used on the site and in communications unless overridden per channel.",
           "displayNameHint": "Shown in the public site header and email subjects.",
-          "emailHint": "Reply-to address and footer contact.",
-          "phoneHint": "Shown in the contact bar and footer."
+          "emailHint": "Reply-to address and footer contact."
         },
         "stayHours": {
           "title": "Stay hours",
-          "subtitle": "Same-day hotel window: checkout must be earlier than check-in (for example 11:00 out, 14:00 in).",
           "save": "Save hours",
           "hint": "Housekeeping needs a gap between departure and arrival on the same calendar day."
         },

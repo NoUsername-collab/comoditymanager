@@ -103,7 +103,6 @@ export function PensionIdentityForm({ identity }: Props) {
           <section className="admin-surface-card identity-settings-card">
             <header className="identity-settings-card__head">
               <h3 className="identity-settings-card__title">{t("cardBrandTitle")}</h3>
-              <p className="identity-settings-card__desc">{t("cardBrandDesc")}</p>
             </header>
             <div className="admin-settings-fields">
               <label className="admin-settings-fields__full">
@@ -133,7 +132,6 @@ export function PensionIdentityForm({ identity }: Props) {
           <section className="admin-surface-card identity-settings-card">
             <header className="identity-settings-card__head">
               <h3 className="identity-settings-card__title">{t("cardContactTitle")}</h3>
-              <p className="identity-settings-card__desc">{t("cardContactDesc")}</p>
             </header>
             <div className="admin-settings-fields admin-settings-fields--2col">
               <label>
@@ -161,9 +159,7 @@ export function PensionIdentityForm({ identity }: Props) {
                       phone: e.target.value.trim() || null,
                     }))
                   }
-                  aria-describedby="identity-phone-hint"
                 />
-                <SettingsFieldHint id="identity-phone-hint">{t("phoneHint")}</SettingsFieldHint>
               </label>
               <label>
                 <span>{t("whatsapp")}</span>
@@ -178,46 +174,48 @@ export function PensionIdentityForm({ identity }: Props) {
                   placeholder="+40..."
                 />
               </label>
-              <label>
-                <span>{t("telegram")}</span>
-                <input
-                  value={contact.telegram ?? ""}
-                  onChange={(e) =>
-                    setContact((current) => ({
-                      ...current,
-                      telegram: e.target.value.trim() || null,
-                    }))
-                  }
-                  placeholder="@username"
-                />
-              </label>
-              <label>
-                <span>{t("facebook")}</span>
-                <input
-                  value={contact.facebook ?? ""}
-                  onChange={(e) =>
-                    setContact((current) => ({
-                      ...current,
-                      facebook: e.target.value.trim() || null,
-                    }))
-                  }
-                />
-              </label>
-              <label>
-                <span>{t("instagram")}</span>
-                <input
-                  value={contact.instagram ?? ""}
-                  onChange={(e) =>
-                    setContact((current) => ({
-                      ...current,
-                      instagram: e.target.value.trim() || null,
-                    }))
-                  }
-                />
-              </label>
-              <SettingsFieldHint className="admin-settings-fields__full">
-                {t("channelsHint")}
-              </SettingsFieldHint>
+              <details className="admin-settings-fields__full identity-contact-override">
+                <summary>{t("socialTitle")}</summary>
+                <div className="admin-settings-fields admin-settings-fields--2col">
+                  <label>
+                    <span>{t("telegram")}</span>
+                    <input
+                      value={contact.telegram ?? ""}
+                      onChange={(e) =>
+                        setContact((current) => ({
+                          ...current,
+                          telegram: e.target.value.trim() || null,
+                        }))
+                      }
+                      placeholder="@username"
+                    />
+                  </label>
+                  <label>
+                    <span>{t("facebook")}</span>
+                    <input
+                      value={contact.facebook ?? ""}
+                      onChange={(e) =>
+                        setContact((current) => ({
+                          ...current,
+                          facebook: e.target.value.trim() || null,
+                        }))
+                      }
+                    />
+                  </label>
+                  <label>
+                    <span>{t("instagram")}</span>
+                    <input
+                      value={contact.instagram ?? ""}
+                      onChange={(e) =>
+                        setContact((current) => ({
+                          ...current,
+                          instagram: e.target.value.trim() || null,
+                        }))
+                      }
+                    />
+                  </label>
+                </div>
+              </details>
             </div>
           </section>
 

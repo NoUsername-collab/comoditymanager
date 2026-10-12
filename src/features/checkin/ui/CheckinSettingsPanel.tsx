@@ -155,7 +155,6 @@ export function CheckinSettingsPanel({ settings: initial }: Props) {
 
   return (
     <div className="checkin-settings">
-      <h3 className="checkin-settings__title">{t("title")}</h3>
       <p className="checkin-settings__autosave" role="note">
         {tSettings("saveModelHint")}
       </p>
