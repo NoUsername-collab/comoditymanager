@@ -160,9 +160,12 @@ export async function updatePensionIdentityAction(
     });
     const tenantId = await resolveTenantIdForData();
     bustPensionSettingsCache(tenantId);
+    // The address also feeds check-in (tourist sheet) and invoices.
+    revalidateTag(checkinSettingsCacheTag(tenantId), "max");
     revalidateTag(CACHE_TAGS.publicSite, "max");
     revalidateTag(tenantTag(tenantId, CACHE_TAGS.publicSite), "max");
     revalidatePath("/admin/settings/identity");
+    revalidatePath("/admin/settings/fiscal");
     revalidatePath("/admin/settings");
     revalidatePath("/admin/settings/public-site");
     revalidatePath("/admin/settings/guest-app");

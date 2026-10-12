@@ -518,7 +518,7 @@ export function PlaceEditor() {
   return (
     <SettingsFieldHint className="block">
       {te("placeHint")}{" "}
-      <Link href="/admin/settings/fiscal" className="underline">
+      <Link href="/admin/settings/identity" className="underline">
         {te("openLocation")}
       </Link>
     </SettingsFieldHint>

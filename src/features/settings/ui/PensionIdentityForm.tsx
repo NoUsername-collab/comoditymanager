@@ -13,6 +13,10 @@ import {
 } from "@/components/admin/settings/SettingsPreviewLayout";
 import { useSettingsUnsavedWarning } from "@/hooks/useSettingsUnsavedWarning";
 import { PublicSiteImageField } from "@/features/settings/ui/PublicSiteImageField";
+import {
+  formatTouristSheetAddress,
+  parseTouristSheetAddress,
+} from "@/domain/checkin/tourist-sheet-address";
 import "@/styles/features/admin/admin-public-site-studio.css";
 
 type Props = {
@@ -25,6 +29,9 @@ export function PensionIdentityForm({ identity }: Props) {
   const [displayName, setDisplayName] = useState(identity.displayName);
   const [logoUrl, setLogoUrl] = useState(identity.logoUrl ?? "");
   const [contact, setContact] = useState(identity.contact);
+  const [addressParts, setAddressParts] = useState(() =>
+    parseTouristSheetAddress(identity.address),
+  );
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [pending, setPending] = useState(false);
@@ -34,10 +41,12 @@ export function PensionIdentityForm({ identity }: Props) {
       displayName: identity.displayName,
       logoUrl: identity.logoUrl ?? "",
       contact: identity.contact,
+      addressParts: parseTouristSheetAddress(identity.address),
     }),
   );
   const dirty =
-    JSON.stringify({ displayName, logoUrl, contact }) !== initialSnapshot.current;
+    JSON.stringify({ displayName, logoUrl, contact, addressParts }) !==
+    initialSnapshot.current;
   useSettingsUnsavedWarning(dirty && !pending);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,6 +58,7 @@ export function PensionIdentityForm({ identity }: Props) {
       displayName,
       logoUrl: logoUrl.trim() || null,
       contact,
+      address: formatTouristSheetAddress(addressParts),
     });
     setPending(false);
     if (!result.ok) {
@@ -56,7 +66,7 @@ export function PensionIdentityForm({ identity }: Props) {
       return;
     }
     setSaved(true);
-    initialSnapshot.current = JSON.stringify({ displayName, logoUrl, contact });
+    initialSnapshot.current = JSON.stringify({ displayName, logoUrl, contact, addressParts });
   }
 
   return (
@@ -208,6 +218,46 @@ export function PensionIdentityForm({ identity }: Props) {
               <SettingsFieldHint className="admin-settings-fields__full">
                 {t("channelsHint")}
               </SettingsFieldHint>
+            </div>
+          </section>
+
+          <section className="admin-surface-card identity-settings-card">
+            <header className="identity-settings-card__head">
+              <h3 className="identity-settings-card__title">{t("cardAddressTitle")}</h3>
+              <p className="identity-settings-card__desc">{t("cardAddressDesc")}</p>
+            </header>
+            <div className="admin-settings-fields admin-settings-fields--2col">
+              <label className="admin-settings-fields__full">
+                <span>{t("addressStreet")}</span>
+                <input
+                  value={addressParts.street}
+                  onChange={(e) =>
+                    setAddressParts((current) => ({ ...current, street: e.target.value }))
+                  }
+                  placeholder={t("addressStreetPlaceholder")}
+                  autoComplete="address-line1"
+                />
+              </label>
+              <label>
+                <span>{t("addressLocality")}</span>
+                <input
+                  value={addressParts.locality}
+                  onChange={(e) =>
+                    setAddressParts((current) => ({ ...current, locality: e.target.value }))
+                  }
+                  autoComplete="address-level2"
+                />
+              </label>
+              <label>
+                <span>{t("addressCounty")}</span>
+                <input
+                  value={addressParts.county}
+                  onChange={(e) =>
+                    setAddressParts((current) => ({ ...current, county: e.target.value }))
+                  }
+                  autoComplete="address-level1"
+                />
+              </label>
             </div>
           </section>
 

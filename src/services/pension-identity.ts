@@ -11,10 +11,10 @@ import {
 import { DEFAULT_PENSION_DISPLAY_NAME } from "@/lib/constants";
 
 const IDENTITY_SELECT =
-  "display_name, logo_url, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
+  "display_name, logo_url, fisa_property_address, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
 
 const IDENTITY_SELECT_WITHOUT_LOGO =
-  "display_name, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
+  "display_name, fisa_property_address, contact_email, contact_phone, contact_whatsapp, contact_telegram, contact_facebook, contact_instagram";
 
 function mapContact(row: Record<string, unknown>): PensionContact {
   const str = (key: string) => {
@@ -49,6 +49,10 @@ function mapIdentity(
       typeof row?.display_name === "string" ? row.display_name : DEFAULT_PENSION_DISPLAY_NAME,
     logoUrl,
     contact: row ? mapContact(row) : { ...EMPTY_PENSION_CONTACT },
+    address:
+      typeof row?.fisa_property_address === "string" && row.fisa_property_address.trim()
+        ? row.fisa_property_address.trim()
+        : null,
   };
 }
 
@@ -82,6 +86,7 @@ async function loadPensionIdentityUncached(
                 ? fallback.data.display_name
                 : DEFAULT_PENSION_DISPLAY_NAME,
             contact: { ...EMPTY_PENSION_CONTACT },
+            address: null,
           };
         }
         throw new Error(retry.error.message);
@@ -100,6 +105,7 @@ async function loadPensionIdentityUncached(
             ? fallback.data.display_name
             : DEFAULT_PENSION_DISPLAY_NAME,
         contact: { ...EMPTY_PENSION_CONTACT },
+        address: null,
       };
     }
     throw new Error(error.message);
@@ -133,6 +139,7 @@ export type PensionIdentityInput = {
   displayName: string;
   logoUrl: string | null;
   contact: PensionContact;
+  address: string | null;
 };
 
 export async function updatePensionIdentity(
@@ -146,6 +153,7 @@ export async function updatePensionIdentity(
     .update({
       display_name: input.displayName.trim() || DEFAULT_PENSION_DISPLAY_NAME,
       logo_url: input.logoUrl,
+      fisa_property_address: input.address?.trim() || null,
       contact_email: input.contact.email,
       contact_phone: input.contact.phone,
       contact_whatsapp: input.contact.whatsapp,

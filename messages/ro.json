@@ -1303,7 +1303,13 @@
           "emailHint": "Aici primești răspunsurile oaspeților; apare și jos pe site.",
           "phoneHint": "Apare în banda de contact și jos pe site.",
           "logoLabel": "Logo",
-          "logoHint": "Încarcă orice poză ai. O așezăm noi în pătrat, pe site și în aplicația oaspeților. JPEG, PNG sau WebP, maxim 5 MB."
+          "logoHint": "Încarcă orice poză ai. O așezăm noi în pătrat, pe site și în aplicația oaspeților. JPEG, PNG sau WebP, maxim 5 MB.",
+          "cardAddressTitle": "Adresa pensiunii",
+          "cardAddressDesc": "Apare pe site lângă hartă, pe facturi și în fișa turistului.",
+          "addressStreet": "Stradă și număr",
+          "addressStreetPlaceholder": "Ex.: Str. Principală nr. 12",
+          "addressLocality": "Localitate",
+          "addressCounty": "Județ"
         },
         "stayHours": {
           "title": "Ore sejur",
@@ -1375,10 +1381,7 @@
           "deposit": "Garanție (depozit)",
           "depositDesc": "Ceri o garanție la sosire",
           "depositAmount": "Suma garanției",
-          "touristSheetAddress": "Adresa imobilului",
-          "touristSheetStreet": "Stradă și număr",
-          "touristSheetLocality": "Localitate",
-          "touristSheetCounty": "Județ"
+          "touristSheetAddress": "Adresa imobilului"
         },
         "booking": {
           "autosaveHint": "Modificările se salvează automat, la scurt timp după ce termini de scris.",
@@ -1430,7 +1433,7 @@
           "saved": "Setări fiscale salvate",
           "saveError": "Nu s-a putut salva",
           "saveMissingRow": "Setările pensiunii nu sunt încă create. Contactează suportul Zalmox.",
-          "incompleteWarning": "Ca să poți emite facturi, mai trebuie completate codul fiscal (CUI) și adresa. Apasă „Editează”.",
+          "incompleteWarning": "Ca să poți emite facturi, mai trebuie completate codul fiscal (CUI) și adresa. Codul îl pui aici cu „Editează”; adresa, în Identitate pensiune.",
           "completeOk": "Ai tot ce trebuie ca să emiți facturi.",
           "propertyName": "Numele pensiunii (din Identitate pensiune)",
           "invoiceSeries": "Serie factură",
@@ -1673,8 +1676,8 @@
           "stayPrices": "Arată prețul „de la” la fiecare cameră",
           "staysHint": "Camerele, pozele și prețurile se schimbă din lista de camere.",
           "openRooms": "Deschide camerele",
-          "placeHint": "Adresa se ia din datele de facturare ale pensiunii.",
-          "openLocation": "Deschide datele pensiunii",
+          "placeHint": "Adresa se ia din Identitate pensiune.",
+          "openLocation": "Schimbă adresa",
           "contactBarHint": "Telefonul, e-mailul și rețelele se completează în pasul Contact.",
           "openContactTab": "Mergi la Contact",
           "headerSubtitle": "Text mic lângă nume (sus)",

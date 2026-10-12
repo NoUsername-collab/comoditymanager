@@ -5,11 +5,7 @@ import { useTranslations } from "next-intl";
 import "@/features/checkin/ui/import-checkin-styles";
 import { updateFiscalBillingSettingsAction } from "@/features/settings/actions";
 import type { CheckinSettings } from "@/domain/checkin/types";
-import {
-  formatTouristSheetAddress,
-  parseTouristSheetAddress,
-  type TouristSheetAddressParts,
-} from "@/domain/checkin/tourist-sheet-address";
+import { Link } from "@/i18n/navigation";
 import {
   getCountryFiscalProfile,
   isFiscalSellerComplete,
@@ -37,7 +33,6 @@ type FiscalDraft = {
   taxId: string;
   regCom: string;
   tourismLicense: string;
-  addressParts: TouristSheetAddressParts;
   invoiceSeries: string;
   vatEnabled: boolean;
   vatRate: string;
@@ -85,7 +80,6 @@ function buildDraft(
     taxId: checkinSettings.fisa_owner_cui ?? "",
     regCom: bookingRules.invoiceSellerRegCom ?? "",
     tourismLicense: checkinSettings.fisa_tourism_license ?? "",
-    addressParts: parseTouristSheetAddress(checkinSettings.fisa_property_address),
     invoiceSeries: bookingRules.invoiceSeries,
     vatEnabled: bookingRules.invoiceVatEnabled,
     vatRate: String(
@@ -151,7 +145,6 @@ export function FiscalBillingSettingsPanel({
 
   function saveDraft() {
     setSaveError(null);
-    const address = formatTouristSheetAddress(draft.addressParts);
     const nextBooking: Partial<BookingRulesSettings> = {};
     const nextCheckin: Partial<CheckinSettings> = {};
 
@@ -184,9 +177,6 @@ export function FiscalBillingSettingsPanel({
       (checkinSettings.fisa_tourism_license ?? "")
     ) {
       nextCheckin.fisa_tourism_license = draft.tourismLicense.trim() || null;
-    }
-    if (address !== (checkinSettings.fisa_property_address ?? "")) {
-      nextCheckin.fisa_property_address = address || null;
     }
 
     const nextFiscal: Partial<TenantFiscalSettingsRecord> = {};
@@ -248,9 +238,6 @@ export function FiscalBillingSettingsPanel({
         }
         if (nextCheckin.fisa_tourism_license !== undefined) {
           fd.set("fisa_tourism_license", nextCheckin.fisa_tourism_license ?? "");
-        }
-        if (nextCheckin.fisa_property_address !== undefined) {
-          fd.set("fisa_property_address", nextCheckin.fisa_property_address ?? "");
         }
         if (fiscalChanged) {
           fd.set("fiscal_provider", draft.fiscalProvider);
@@ -387,7 +374,12 @@ export function FiscalBillingSettingsPanel({
           </div>
           <div className="fiscal-settings__summary-row fiscal-settings__summary-row--wide">
             <dt>{tCheckin("touristSheetAddress")}</dt>
-            <dd>{checkinSettings.fisa_property_address || "—"}</dd>
+            <dd>
+              {checkinSettings.fisa_property_address || "—"}{" "}
+              <Link href="/admin/settings/identity" className="fiscal-settings__address-link">
+                {t("addressInIdentity")}
+              </Link>
+            </dd>
           </div>
           <div className="fiscal-settings__summary-row">
             <dt>{t("invoiceSeries")}</dt>
@@ -464,76 +456,14 @@ export function FiscalBillingSettingsPanel({
             />
           </SettingRow>
 
-          <div className="checkin-setting-row checkin-setting-row--stack">
-            <div className="checkin-setting-row__left">
-              <span className="checkin-setting-row__label">
-                {tCheckin("touristSheetAddress")}
-              </span>
-            </div>
-            <div className="checkin-setting-row__right checkin-setting-row__right--wide">
-              <div className="checkin-sheet-address">
-                <label className="checkin-sheet-address__field">
-                  <span className="checkin-sheet-address__label">
-                    {tCheckin("touristSheetStreet")}
-                  </span>
-                  <input
-                    type="text"
-                    className="checkin-field__input checkin-field__input--wide"
-                    value={draft.addressParts.street}
-                    onChange={(e) =>
-                      setDraft({
-                        ...draft,
-                        addressParts: {
-                          ...draft.addressParts,
-                          street: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                </label>
-                <div className="checkin-sheet-address__row">
-                  <label className="checkin-sheet-address__field">
-                    <span className="checkin-sheet-address__label">
-                      {tCheckin("touristSheetLocality")}
-                    </span>
-                    <input
-                      type="text"
-                      className="checkin-field__input"
-                      value={draft.addressParts.locality}
-                      onChange={(e) =>
-                        setDraft({
-                          ...draft,
-                          addressParts: {
-                            ...draft.addressParts,
-                            locality: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                  <label className="checkin-sheet-address__field">
-                    <span className="checkin-sheet-address__label">
-                      {tCheckin("touristSheetCounty")}
-                    </span>
-                    <input
-                      type="text"
-                      className="checkin-field__input"
-                      value={draft.addressParts.county}
-                      onChange={(e) =>
-                        setDraft({
-                          ...draft,
-                          addressParts: {
-                            ...draft.addressParts,
-                            county: e.target.value,
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
+          <SettingRow label={tCheckin("touristSheetAddress")}>
+            <span className="fiscal-settings__readonly">
+              {checkinSettings.fisa_property_address || "—"}{" "}
+              <Link href="/admin/settings/identity" className="fiscal-settings__address-link">
+                {t("addressInIdentity")}
+              </Link>
+            </span>
+          </SettingRow>
 
           <SettingRow label={t("invoiceSeries")} description={t("invoiceSeriesDesc")}>
             <input

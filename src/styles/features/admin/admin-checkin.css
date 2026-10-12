@@ -2289,6 +2289,14 @@ html[data-layout-chrome="compact"] .checkin-sheet-address__row {
   color: var(--admin-text-muted);
 }
 
+.fiscal-settings__address-link {
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--admin-link, var(--admin-accent));
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
 .settings-percent-field {
   display: inline-flex;
   align-items: center;

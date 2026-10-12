@@ -55,8 +55,8 @@ export async function updateFiscalBillingSettingsAction(
       String(formData.get("invoice_prices_include_vat")) === "true";
   }
 
+  // The property address is edited in Identity, not here.
   for (const key of [
-    "fisa_property_address",
     "fisa_owner_cui",
     "fisa_tourism_license",
   ] as const) {
