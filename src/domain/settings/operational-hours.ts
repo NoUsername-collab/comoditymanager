@@ -5,7 +5,6 @@ const CLOCK_HM = /^([01]\d|2[0-3]):[0-5]\d$/;
 type OperationalHours = {
   checkInTime: string;
   checkOutTime: string;
-  extraBedsMax: number;
 };
 
 function normalizeClockHm(raw: string): string | null {
@@ -22,7 +21,6 @@ function normalizeClockHm(raw: string): string | null {
 export function parseOperationalHours(input: {
   checkInTime: string;
   checkOutTime: string;
-  extraBedsMax: unknown;
 }): ParseResult<OperationalHours> {
   const checkInTime = normalizeClockHm(input.checkInTime);
   const checkOutTime = normalizeClockHm(input.checkOutTime);
@@ -33,7 +31,15 @@ export function parseOperationalHours(input: {
     return { ok: false, error: "settings.checkout_must_be_before_checkin" };
   }
 
-  const extraBedsMax = Number(input.extraBedsMax);
+  return {
+    ok: true,
+    data: { checkInTime, checkOutTime },
+  };
+}
+
+/** Whole-property extra-bed inventory. 0 means the property has none. */
+export function parseExtraBedsMax(input: unknown): ParseResult<{ extraBedsMax: number }> {
+  const extraBedsMax = Number(input);
   if (
     !Number.isFinite(extraBedsMax) ||
     !Number.isInteger(extraBedsMax) ||
@@ -42,9 +48,5 @@ export function parseOperationalHours(input: {
   ) {
     return { ok: false, error: "settings.invalid_extra_beds" };
   }
-
-  return {
-    ok: true,
-    data: { checkInTime, checkOutTime, extraBedsMax },
-  };
+  return { ok: true, data: { extraBedsMax } };
 }

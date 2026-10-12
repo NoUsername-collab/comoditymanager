@@ -2377,9 +2377,16 @@
           "staffHeadline": "Parole și acces operațional.",
           "staffBody": "Operatorul folosește aplicația, adminul configurează din acest hub."
         },
+        "extraBeds": {
+          "title": "Paturi suplimentare",
+          "hint": "Câte paturi extra are pensiunea în total. Pe fiecare cameră stabilești dacă primește și câte.",
+          "label": "Plafon (total pensiune)",
+          "save": "Salvează plafonul",
+          "saved": "Plafonul de paturi suplimentare a fost salvat."
+        },
         "operational": {
           "title": "Operațional",
-          "subtitle": "Ore check-in/out și paturi extra",
+          "subtitle": "Ore check-in și check-out",
           "identityHint": "Numele și contactul principal sunt în",
           "identityLink": "Identitate pensiune",
           "displayName": "Nume afișat",
@@ -3018,6 +3025,9 @@
       "deleteBuildingConfirm": "Ștergi „{name}”? Trebuie să nu mai aibă camere.",
       "calendarColor": "Culoare în calendar",
       "colorPalette": "Paletă culori",
+      "customColor": "Culoare personalizată",
+      "hexColor": "Cod hex",
+      "customColorLabel": "Culoare aleasă",
       "detailsAndDeleteList": "Listă detalii & ștergere",
       "deleteRoomConfirm": "Ștergi „{room}”?"
     },

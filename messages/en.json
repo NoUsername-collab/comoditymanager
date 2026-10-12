@@ -2393,9 +2393,16 @@
           "staffHeadline": "Passwords and operational access.",
           "staffBody": "Operator uses the app, admin configures from this hub."
         },
+        "extraBeds": {
+          "title": "Extra beds",
+          "hint": "How many extra beds the property has in total. Each room still sets whether it takes one, and how many.",
+          "label": "Cap (whole property)",
+          "save": "Save cap",
+          "saved": "Extra-bed cap saved."
+        },
         "operational": {
           "title": "Operational",
-          "subtitle": "Check-in/out hours and extra beds",
+          "subtitle": "Check-in and check-out hours",
           "identityHint": "Display name and primary contact are in",
           "identityLink": "Property identity",
           "displayName": "Display name",
@@ -3034,6 +3041,9 @@
       "deleteBuildingConfirm": "Delete \"{name}\"? It must have no rooms.",
       "calendarColor": "Calendar color",
       "colorPalette": "Color palette",
+      "customColor": "Custom color",
+      "hexColor": "Hex code",
+      "customColorLabel": "Chosen color",
       "detailsAndDeleteList": "Details & delete list",
       "deleteRoomConfirm": "Delete \"{room}\"?"
     },

@@ -45,25 +45,6 @@ export async function listBuildings(): Promise<Building[]> {
   return loadBuildings(tenantId);
 }
 
-const loadBuildingColorHex = cache(async (buildingId: string): Promise<string | null> => {
-  const { tenantId, supabase } = await getTenantScope();
-  const { data, error } = await supabase
-    .from("buildings")
-    .select("color_hex")
-    .eq("tenant_id", tenantId)
-    .eq("id", buildingId)
-    .maybeSingle();
-
-  if (error) throw new Error(error.message);
-  return (data?.color_hex as string | null) ?? null;
-});
-
-/** Single-column fetch — avoids loading all buildings on edit save. */
-export async function getBuildingColorHex(buildingId: string): Promise<string | null> {
-  if (!buildingId) return null;
-  return loadBuildingColorHex(buildingId);
-}
-
 const loadBuildingDefaultPrice = cache(async (buildingId: string): Promise<number> => {
   const { tenantId, supabase } = await getTenantScope();
   const { data, error } = await supabase

@@ -1,21 +1,24 @@
 import { Link } from "@/i18n/navigation";
 import { AdminLocationLockBar } from "@/features/settings/ui/AdminLocationLockBar";
+import { ExtraBedsCapForm } from "@/features/settings/ui/ExtraBedsCapForm";
 import { SettingsPageLayout } from "@/components/admin/settings/SettingsPageLayout";
 import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import type { SettingsAlert } from "@/components/admin/settings/SettingsAlerts";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
+import { getPensionSettings } from "@/services/pension-settings";
 import { getTranslations } from "next-intl/server";
 
 export default async function LocationAdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ unlocked?: string; locked?: string }>;
+  searchParams: Promise<{ unlocked?: string; locked?: string; extraBeds?: string }>;
 }) {
-  const [tPage, tCommon, , params] = await Promise.all([
+  const [tPage, tCommon, , params, settings] = await Promise.all([
     getTranslations("admin.pages.settingsLocation"),
     getTranslations("admin.common"),
     requireLocationAdmin(),
     searchParams,
+    getPensionSettings().catch(() => null),
   ]);
 
   const alerts: SettingsAlert[] = [
@@ -24,6 +27,9 @@ export default async function LocationAdminPage({
       : null,
     params.locked === "1"
       ? { tone: "info", message: tPage("unlock.ownerLockClosed") }
+      : null,
+    params.extraBeds === "1"
+      ? { tone: "success", message: tPage("extraBeds.saved") }
       : null,
   ].filter((alert): alert is SettingsAlert => alert !== null);
 
@@ -34,6 +40,12 @@ export default async function LocationAdminPage({
       alerts={alerts}
       actions={<AdminLocationLockBar />}
     >
+      {settings ? (
+        <SettingsSection title={tPage("extraBeds.title")}>
+          <ExtraBedsCapForm settings={settings} />
+        </SettingsSection>
+      ) : null}
+
       <div className="settings-location-steps">
         <div className="settings-location-steps__card">
           <p className="settings-location-steps__label">{tPage("steps.structureTitle")}</p>

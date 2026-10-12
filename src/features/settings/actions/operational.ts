@@ -7,8 +7,15 @@ import {
   setAdminLocationUnlock,
 } from "@/lib/auth/admin-config-session";
 import { verifyLocationUnlockPassword } from "@/lib/auth/location-unlock";
-import { parseOperationalHours } from "@/domain/settings/operational-hours";
-import { requireStaff, requireStaffPermission } from "@/lib/auth/require-staff";
+import {
+  parseExtraBedsMax,
+  parseOperationalHours,
+} from "@/domain/settings/operational-hours";
+import {
+  requireLocationAdmin,
+  requireStaff,
+  requireStaffPermission,
+} from "@/lib/auth/require-staff";
 import { enforceRateLimit, getClientIp, RATE_LIMIT_PASSWORD_VERIFY } from "@/lib/rate-limit";
 import { bustPensionSettingsCache } from "@/lib/cache/revalidate-settings";
 import { CACHE_TAGS, tenantTag } from "@/lib/cache-tags";
@@ -78,7 +85,6 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   const parsedHours = parseOperationalHours({
     checkInTime: String(formData.get("default_check_in_time") ?? ""),
     checkOutTime: String(formData.get("default_check_out_time") ?? ""),
-    extraBedsMax: Number(formData.get("total_extra_beds_max") ?? 0),
   });
 
   const [t, , pension] = await Promise.all([
@@ -91,9 +97,6 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     if (parsedHours.error === "settings.checkout_must_be_before_checkin") {
       throw new Error(t("checkoutMustBeBeforeCheckin"));
     }
-    if (parsedHours.error === "settings.invalid_extra_beds") {
-      throw new Error(t("invalidExtraBeds"));
-    }
     throw new Error(t("invalidStayHours"));
   }
 
@@ -104,7 +107,7 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     display_name: pension.display_name,
     default_check_in_time: parsedHours.data.checkInTime,
     default_check_out_time: parsedHours.data.checkOutTime,
-    total_extra_beds_max: parsedHours.data.extraBedsMax,
+    total_extra_beds_max: pension.total_extra_beds_max,
     admin_palette_source: pension.admin_palette_source ?? "catalog",
     admin_palette_key: migrateLegacyPaletteKey(pension.admin_palette_key ?? "noir"),
     admin_day_night: pension.admin_day_night ?? "night",
@@ -114,11 +117,10 @@ export async function updateOperationalSettingsAction(formData: FormData) {
     action: "settings.operational_updated",
     entityType: "settings",
     entityId: id,
-    summary: "Operational hours and extra-bed cap updated",
+    summary: "Operational hours updated",
     metadata: {
       default_check_in_time: parsedHours.data.checkInTime,
       default_check_out_time: parsedHours.data.checkOutTime,
-      total_extra_beds_max: parsedHours.data.extraBedsMax,
     },
   });
 
@@ -128,6 +130,44 @@ export async function updateOperationalSettingsAction(formData: FormData) {
   revalidatePath("/admin/settings");
   revalidatePath("/admin/settings/checkin");
   await redirect("/admin/settings/checkin?saved=1");
+}
+
+export async function updateExtraBedsCapAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const parsed = parseExtraBedsMax(formData.get("total_extra_beds_max"));
+
+  const [t, , pension] = await Promise.all([
+    getTranslations("admin.serverActions"),
+    requireLocationAdmin(),
+    import("@/services/pension-settings").then((m) => m.getPensionSettings()),
+  ]);
+
+  if (!parsed.ok) throw new Error(t("invalidExtraBeds"));
+  if (!id) throw new Error(t("settingsNotConfigured"));
+  if (!pension) throw new Error(t("settingsMissing"));
+
+  await updatePensionSettings(id, {
+    display_name: pension.display_name,
+    default_check_in_time: pension.default_check_in_time,
+    default_check_out_time: pension.default_check_out_time,
+    total_extra_beds_max: parsed.data.extraBedsMax,
+    admin_palette_source: pension.admin_palette_source ?? "catalog",
+    admin_palette_key: migrateLegacyPaletteKey(pension.admin_palette_key ?? "noir"),
+    admin_day_night: pension.admin_day_night ?? "night",
+  });
+
+  await logAdminActivityFromSession({
+    action: "settings.operational_updated",
+    entityType: "settings",
+    entityId: id,
+    summary: "Extra-bed cap updated",
+    metadata: { total_extra_beds_max: parsed.data.extraBedsMax },
+  });
+
+  const tenantId = await resolveTenantIdForData();
+  bustPensionSettingsCache(tenantId);
+  revalidatePath("/admin/settings/location");
+  await redirect("/admin/settings/location?extraBeds=1");
 }
 
 export async function updatePensionIdentityAction(

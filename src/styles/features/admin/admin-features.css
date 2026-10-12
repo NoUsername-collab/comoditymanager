@@ -390,3 +390,17 @@
   }
 }
 
+.color-palette-picker__custom {
+  overflow: hidden;
+}
+
+.color-palette-picker__custom::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-palette-picker__custom::-webkit-color-swatch,
+.color-palette-picker__custom::-moz-color-swatch {
+  border: none;
+  border-radius: 9999px;
+}
+

@@ -11,7 +11,7 @@ import { useTranslations } from "next-intl";
 type Props = {
   name?: string;
   defaultValue?: string | null;
-  /** Schimbă culoarea sugerată când se schimbă politica AC */
+  /** Changes the suggested color when the AC policy changes. */
   acMode?: "all_rooms" | "none" | "per_room";
 };
 
@@ -20,10 +20,10 @@ export function ColorPalettePicker({
   defaultValue,
   acMode,
 }: Props) {
-  const tCommon = useTranslations("admin.common");
   const tBuildings = useTranslations("admin.buildings");
   const [pickedHex, setPickedHex] = useState<string | null>(null);
   const [pickedForAcMode, setPickedForAcMode] = useState(acMode);
+  const [hexDraft, setHexDraft] = useState<string | null>(null);
 
   const autoForAcMode = acMode
     ? defaultColorForAcMode(acMode)
@@ -41,6 +41,14 @@ export function ColorPalettePicker({
   const selected = BUILDING_COLOR_PALETTE.find(
     (c) => c.hex.toLowerCase() === value.toLowerCase()
   );
+  const draftInvalid =
+    hexDraft != null && hexDraft.trim() !== "" && canonicalHexColor(hexDraft) == null;
+
+  function choose(hex: string) {
+    setPickedHex(hex);
+    setPickedForAcMode(acMode);
+    setHexDraft(null);
+  }
 
   return (
     <fieldset className="color-palette-picker space-y-3">
@@ -59,10 +67,7 @@ export function ColorPalettePicker({
               role="option"
               aria-selected={active}
               title={c.label}
-              onClick={() => {
-                setPickedHex(c.hex);
-                setPickedForAcMode(acMode);
-              }}
+              onClick={() => choose(c.hex)}
               className={[
                 "color-palette-picker__swatch relative h-10 w-10 rounded-full border-2 shadow-sm transition hover:scale-110",
                 active
@@ -81,13 +86,50 @@ export function ColorPalettePicker({
         })}
       </div>
 
-      <div className="flex items-center gap-2 text-sm text-zinc-600">
-        <span
-          className="h-5 w-5 shrink-0 rounded-full border border-zinc-200 shadow-inner"
-          style={{ backgroundColor: value }}
+      <div className="color-palette-picker__custom-row flex items-center gap-2">
+        <input
+          type="color"
+          value={value}
+          aria-label={tBuildings("customColor")}
+          onChange={(event) => {
+            const hex = canonicalHexColor(event.target.value);
+            if (hex) choose(hex);
+          }}
+          className={[
+            "color-palette-picker__custom h-10 w-14 shrink-0 cursor-pointer rounded-full border-2 bg-white p-0.5 shadow-sm",
+            selected
+              ? "border-white ring-1 ring-zinc-200"
+              : "border-zinc-900 ring-2 ring-zinc-400 ring-offset-2",
+          ].join(" ")}
         />
-        <span>
-          {selected?.label ?? tCommon("color")} — <code className="text-xs">{value}</code>
+        <input
+          type="text"
+          inputMode="text"
+          autoComplete="off"
+          spellCheck={false}
+          maxLength={7}
+          value={hexDraft ?? value}
+          aria-label={tBuildings("hexColor")}
+          aria-invalid={draftInvalid}
+          onChange={(event) => {
+            const next = event.target.value;
+            const hex = canonicalHexColor(next);
+            if (hex) {
+              setPickedHex(hex);
+              setPickedForAcMode(acMode);
+              setHexDraft(hex === next.trim().toLowerCase() ? null : next);
+              return;
+            }
+            setHexDraft(next);
+          }}
+          onBlur={() => setHexDraft(null)}
+          className={[
+            "color-palette-picker__hex w-28 rounded-md border px-2 py-1.5 font-mono text-sm text-zinc-800",
+            draftInvalid ? "border-red-400" : "border-zinc-200",
+          ].join(" ")}
+        />
+        <span className="text-sm text-zinc-600">
+          {selected?.label ?? tBuildings("customColorLabel")}
         </span>
       </div>
     </fieldset>

@@ -40,18 +40,6 @@ export async function OperationalHoursForm({
             />
           </label>
         </div>
-        <label>
-          <span>{tCommon("extraBedsCap")}</span>
-          <input
-            name="total_extra_beds_max"
-            type="number"
-            min={0}
-            max={999}
-            step={1}
-            required
-            defaultValue={settings.total_extra_beds_max}
-          />
-        </label>
       </div>
       <SettingsSaveBar>
         <AdminSubmitButton type="submit" variant="primary" size="lg">

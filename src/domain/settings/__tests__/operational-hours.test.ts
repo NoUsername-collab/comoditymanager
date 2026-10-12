@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { parseOperationalHours } from "@/domain/settings/operational-hours";
+import {
+  parseExtraBedsMax,
+  parseOperationalHours,
+} from "@/domain/settings/operational-hours";
 
 describe("parseOperationalHours", () => {
   it("accepts a typical same-day hotel window", () => {
@@ -7,14 +10,12 @@ describe("parseOperationalHours", () => {
       parseOperationalHours({
         checkInTime: "14:00:00",
         checkOutTime: "11:00",
-        extraBedsMax: 4,
       }),
     ).toEqual({
       ok: true,
       data: {
         checkInTime: "14:00",
         checkOutTime: "11:00",
-        extraBedsMax: 4,
       },
     });
   });
@@ -24,39 +25,38 @@ describe("parseOperationalHours", () => {
       parseOperationalHours({
         checkInTime: "12:00",
         checkOutTime: "12:00",
-        extraBedsMax: 0,
       }).ok,
     ).toBe(false);
     expect(
       parseOperationalHours({
         checkInTime: "10:00",
         checkOutTime: "14:00",
-        extraBedsMax: 0,
       }),
     ).toMatchObject({ ok: false, error: "settings.checkout_must_be_before_checkin" });
   });
 
-  it("rejects invalid clocks and extra-bed counts", () => {
+  it("rejects invalid clocks", () => {
     expect(
       parseOperationalHours({
         checkInTime: "25:00",
         checkOutTime: "11:00",
-        extraBedsMax: 0,
       }).ok,
     ).toBe(false);
-    expect(
-      parseOperationalHours({
-        checkInTime: "14:00",
-        checkOutTime: "11:00",
-        extraBedsMax: -1,
-      }),
-    ).toMatchObject({ ok: false, error: "settings.invalid_extra_beds" });
-    expect(
-      parseOperationalHours({
-        checkInTime: "14:00",
-        checkOutTime: "11:00",
-        extraBedsMax: 1.5,
-      }).ok,
-    ).toBe(false);
+  });
+});
+
+describe("parseExtraBedsMax", () => {
+  it("accepts a whole number from 0 to 999", () => {
+    expect(parseExtraBedsMax(0)).toEqual({ ok: true, data: { extraBedsMax: 0 } });
+    expect(parseExtraBedsMax("12")).toEqual({ ok: true, data: { extraBedsMax: 12 } });
+  });
+
+  it("rejects fractions and values outside 0–999", () => {
+    expect(parseExtraBedsMax(-1)).toMatchObject({
+      ok: false,
+      error: "settings.invalid_extra_beds",
+    });
+    expect(parseExtraBedsMax(1.5).ok).toBe(false);
+    expect(parseExtraBedsMax(1000).ok).toBe(false);
   });
 });

@@ -5,11 +5,7 @@ import { localeRedirect as redirect } from "@/i18n/server-redirect";
 import { requireLocationAdmin } from "@/lib/auth/require-staff";
 import { CACHE_TAGS } from "@/lib/cache-tags";
 import { revalidateStructurePaths } from "@/lib/cache/revalidate-structure";
-import {
-  createBuilding,
-  getBuildingColorHex,
-  updateBuilding,
-} from "@/services/buildings";
+import { createBuilding, updateBuilding } from "@/services/buildings";
 import {
   defaultColorForAcMode,
   normalizeBuildingColor,
@@ -251,14 +247,9 @@ export async function updateBuildingFormAction(
     const name = String(formData.get("name") ?? "").trim();
     const sort_order = Number(formData.get("sort_order") ?? 0);
     const ac_mode = String(formData.get("ac_mode") ?? "per_room") as AcMode;
-    const rawColor = String(formData.get("color_hex") ?? "");
-    const existingColor = building_id
-      ? await getBuildingColorHex(building_id).catch(() => null)
-      : null;
     const color_hex = resolveSubmittedBuildingColor(
-      rawColor,
-      ac_mode,
-      existingColor
+      String(formData.get("color_hex") ?? ""),
+      ac_mode
     );
     const default_price_per_night = Number(
       formData.get("default_price_per_night") ?? 0

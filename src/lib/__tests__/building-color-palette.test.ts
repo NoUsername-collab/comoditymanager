@@ -64,8 +64,9 @@ describe("normalizeBuildingColor", () => {
     expect(normalizeBuildingColor("#2563EB")).toBe("#2563eb");
   });
 
-  it("returns null for a valid hex not in the palette", () => {
-    expect(normalizeBuildingColor("#ffffff")).toBeNull();
+  it("accepts any valid hex, including colors outside the palette", () => {
+    expect(normalizeBuildingColor("#ffffff")).toBe("#ffffff");
+    expect(normalizeBuildingColor("#abc")).toBe("#aabbcc");
   });
 
   it("returns null for an invalid hex", () => {
@@ -82,20 +83,13 @@ describe("resolveSubmittedBuildingColor", () => {
     expect(resolveSubmittedBuildingColor("#2563eb", "none")).toBe("#2563eb");
   });
 
-  it("preserves legacy non-palette color when unchanged on edit", () => {
-    expect(resolveSubmittedBuildingColor("#ffffff", "per_room", "#ffffff")).toBe(
-      "#ffffff"
-    );
+  it("keeps a custom hex the property chose", () => {
+    expect(resolveSubmittedBuildingColor("#ffffff", "none")).toBe("#ffffff");
+    expect(resolveSubmittedBuildingColor("abc", "per_room")).toBe("#aabbcc");
   });
 
-  it("matches legacy colors when existing hex omits the # prefix", () => {
-    expect(resolveSubmittedBuildingColor("#ffffff", "per_room", "ffffff")).toBe(
-      "#ffffff"
-    );
-  });
-
-  it("falls back to AC default for new non-palette picks", () => {
-    expect(resolveSubmittedBuildingColor("#ffffff", "none")).toBe("#ea580c");
+  it("falls back to the AC default when the hex is invalid", () => {
+    expect(resolveSubmittedBuildingColor("nope", "none")).toBe("#ea580c");
   });
 });
 
@@ -108,8 +102,12 @@ describe("isAllowedBuildingColor", () => {
     expect(isAllowedBuildingColor("#dc2626")).toBe(true);
   });
 
-  it("returns false for non-palette colors", () => {
-    expect(isAllowedBuildingColor("#000000")).toBe(false);
+  it("returns true for any valid hex", () => {
+    expect(isAllowedBuildingColor("#000000")).toBe(true);
+  });
+
+  it("returns false for an invalid hex", () => {
+    expect(isAllowedBuildingColor("nope")).toBe(false);
   });
 });
 
@@ -127,7 +125,11 @@ describe("resolveGanttBuildingColor", () => {
     expect(resolveGanttBuildingColor(null, "per_room")).toBe("#059669");
   });
 
-  it("falls back to AC mode default when color is not in palette", () => {
-    expect(resolveGanttBuildingColor("#ffffff", "none")).toBe("#ea580c");
+  it("keeps a custom hex on the calendar", () => {
+    expect(resolveGanttBuildingColor("#ffffff", "none")).toBe("#ffffff");
+  });
+
+  it("falls back to the AC default when the stored color is invalid", () => {
+    expect(resolveGanttBuildingColor("nope", "none")).toBe("#ea580c");
   });
 });

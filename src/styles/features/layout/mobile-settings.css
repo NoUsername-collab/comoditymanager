@@ -243,10 +243,19 @@ html[data-layout-chrome="compact"] .admin-building-form button[type="submit"] {
 
 /* ── Pass 23: color picker, add floor, building rooms, guest merge ── */
 
-html[data-layout-chrome="compact"] .color-palette-picker__swatch {
+html[data-layout-chrome="compact"] .color-palette-picker__swatch,
+html[data-layout-chrome="compact"] .color-palette-picker__custom {
   width: var(--ml-touch-min, 2.75rem) !important;
   height: var(--ml-touch-min, 2.75rem) !important;
+  min-height: 0 !important;
+  max-width: none;
   touch-action: manipulation;
+}
+
+html[data-layout-chrome="compact"] .color-palette-picker__hex {
+  width: 7.5rem !important;
+  max-width: 8rem;
+  flex: 0 0 auto;
 }
 
 html[data-layout-chrome="compact"] .admin-settings-back {
