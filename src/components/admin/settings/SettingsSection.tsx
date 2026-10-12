@@ -60,6 +60,8 @@ export function SettingsSection({
       className={[
         "settings-section",
         "settings-section--collapsible",
+        // Starts closed on every screen size, so it needs a visible "open me" cue.
+        !defaultOpen && "settings-section--folded",
         className,
       ]
         .filter(Boolean)

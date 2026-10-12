@@ -2964,6 +2964,23 @@ html:not([data-layout-chrome="compact"]) .settings-section--collapsible .setting
   display: none;
 }
 
+.settings-section--folded .settings-section__details > summary {
+  cursor: pointer;
+}
+
+html:not([data-layout-chrome="compact"]) .settings-section--folded .settings-section__details > summary::after {
+  display: block;
+  content: "▾";
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--admin-text-muted, #71717a);
+  transition: transform 0.2s ease;
+}
+
+html:not([data-layout-chrome="compact"]) .settings-section--folded .settings-section__details[open] > summary::after {
+  transform: rotate(180deg);
+}
+
 .settings-overview__progress {
   margin: 0.45rem 0 0;
   font-size: 0.75rem;
