@@ -1,33 +1,21 @@
--- Run in Supabase SQL Editor (production). Every row must say true before the
--- app's "migration missing" fallbacks can be removed. Read-only.
+-- Run in Supabase SQL Editor (production). Read-only.
+-- Lists the schema the app's remaining "migration missing" fallbacks wait for
+-- (public site, payments, invoices, proformas, ANAF). Every row must say true
+-- before those fallbacks can be removed.
+-- The first batch (identity, settings, check-in, guest app, migrations 048–103)
+-- was confirmed on 2026-10-12 and its fallbacks are already gone.
 with expected(kind, object_name, migration) as (
   values
-    ('column', 'pension_settings.contact_email', '079'),
-    ('column', 'pension_settings.logo_url', '101'),
-    ('column', 'pension_settings.fisa_property_address', '052'),
-    ('column', 'pension_settings.checkin_doc_rule', '048'),
-    ('column', 'pension_settings.checkin_min_payment_pct', '048'),
-    ('column', 'pension_settings.checkin_cnp_rule', '052'),
-    ('column', 'pension_settings.checkout_block_unpaid', '055'),
-    ('column', 'pension_settings.statistics_visibility', '049'),
-    ('column', 'pension_settings.cancellation_policy_type', '065'),
-    ('column', 'pension_settings.invoice_vat_enabled', '065'),
-    ('column', 'pension_settings.team_permissions', '083'),
-    ('column', 'pension_settings.proforma_series', '088'),
-    ('column', 'checkin_guests.national_id', '052'),
-    ('column', 'checkin_guests.document_series', '052'),
-    ('column', 'checkin_guests.room_label', '052'),
-    ('table', 'checkin_guests', '048'),
-    ('table', 'public_site_settings', '054'),
-    ('table', 'public_site_sections', '054'),
-    ('table', 'guest_app_settings', '056'),
-    ('table', 'booking_guest_access', '056'),
-    ('table', 'guest_precheckin_submissions', '063'),
-    ('table', 'guest_green_stay_requests', '063'),
-    ('table', 'guest_loyalty_refs', '102'),
-    ('table', 'rate_limits', '103'),
-    ('function', 'upsert_public_site_settings_atomic', '077'),
-    ('function', 'rate_limit_hit', '103')
+    ('column', 'public_site_settings.booking_notice', '098'),
+    ('column', 'public_site_settings.chrome', '100'),
+    ('column', 'public_site_settings.pages', '100'),
+    -- 100 replaces the save function with a 14-argument version (chrome, pages).
+    ('function14', 'upsert_public_site_settings_atomic', '100'),
+    ('table', 'booking_invoices', '065'),
+    ('column', 'booking_invoices.invoice_kind', '088'),
+    ('table', 'booking_payments', '086'),
+    ('table', 'fiscal_submission_jobs', '089'),
+    ('table', 'tenant_fiscal_settings', '089')
 )
 select
   e.kind,
@@ -42,6 +30,9 @@ select
     when 'table' then exists (
       select 1 from information_schema.tables t
       where t.table_schema = 'public' and t.table_name = e.object_name)
+    when 'function14' then exists (
+      select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public' and p.proname = e.object_name and p.pronargs = 14)
     else exists (
       select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and p.proname = e.object_name)
