@@ -51,7 +51,7 @@ Baseline: **1,308+ tests**, strict TypeScript.
 | Doc | Audience |
 |-----|----------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | Engineers |
-| [docs/PRODUCTION-READINESS.md](./docs/PRODUCTION-READINESS.md) | Smoke test + checklist tenant / infra |
+| [PRODUCTION-READINESS.md](./PRODUCTION-READINESS.md) | Smoke test + checklist tenant / infra |
 | [docs/vercel-env.md](./docs/vercel-env.md) | Deploy — Vercel env |
 | [docs/tenant-security.md](./docs/tenant-security.md) | Multi-tenant isolation |
 | [docs/acces-staff.md](./docs/acces-staff.md) | Operators — login |

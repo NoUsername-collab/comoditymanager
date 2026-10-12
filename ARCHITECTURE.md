@@ -221,3 +221,54 @@ When touching coupled code:
 - CSS location is correct; god files are barrels (`mobile-admin.css`, `gantt-premium.css`) — do not add rules to them
 - `routing_kind = platform_subdomain` (renamed from `hospira_subdomain` in migration 104)
 - Location-unlock cookie remains `casaemil_admin_location_unlock` (not localStorage; not dual-read)
+
+## Performance and decoupling
+
+### Cache la granița de serviciu
+
+Fiecare serviciu expune funcții **cached per-request** (`React.cache`) și, unde datele sunt tenant-static, **`unstable_cache`** cu tag-uri din `lib/cache-tags.ts`.
+
+```typescript
+// services/example.ts
+const loadForTenant = cache((tenantId: string) =>
+  unstable_cache(() => fetchUncached(tenantId), ["key", tenantId], {
+    tags: [tenantTag(tenantId, CACHE_TAGS.example)],
+    revalidate: 120,
+  })(),
+);
+```
+
+**Reguli**
+
+- După split-uri „god class”, păstrează **aceleași chei de cache** (`["setup-onboarding-context", tenantId]`, etc.).
+- `Promise.all` la granița paginii — **nu** waterfall între servicii independente.
+- `React.cache` dedupează în același request (ex.: `getPensionIdentity` apelat din 2 servicii = 1 query).
+
+### Bundle: import dinamic la granița de feature
+
+Componente grele (Gantt, MRZ/Tesseract, preview site public, heatmap) folosesc `dynamic(..., { ssr: false })` în fișiere `*Lazy.tsx` — UI-ul rămâne decuplat, bundle-ul inițial rămâne mic.
+
+Domain greu (`mrz-parse`) poate fi importat dinamic din `domain/guest/mrz.ts` pentru a nu trage parserul în bundle-uri care doar afișează UI.
+
+### Fără N+1 după split
+
+- Agregă date în serviciu (`loadOnboardingIssueContext`, `getPublicSiteAdminBundle`) — o pagină = un `Promise.all`, nu loop-uri cu await.
+- `getPublicSiteAdminBundle` — config + `primaryContact` paralel, cached; înlocuiește apeluri duplicate identity + config.
+
+### Importuri lean
+
+- `optimizePackageImports` în `next.config.ts` pentru biblioteci voluminoase.
+- Feature-urile nu importă barrel-uri întregi din alte feature-uri — doar module țintă (`@/features/public-site/domain/types`, nu tot folderul).
+- CSS de feature (ex. `public-site-v2.css`) doar în componente lazy/preview, nu în layout global.
+
+## Anti-patterns
+
+| Anti-pattern | Alternativă |
+|--------------|-------------|
+| Componentă → Supabase | `services/` + props / server component loader |
+| Query în layout fără cache | `unstable_cache` + tag revalidate la save |
+| `getXForAdmin()` uncached duplicat | același loader cached + `revalidateTag` în action |
+| Split serviciu → 5 await secvențiale | `Promise.all` la orchestrator (pagină sau facade serviciu) |
+| `@media (max-width)` pentru chrome mobil | `html[data-layout-chrome="compact"]` (vezi `layout/mobile/`) |
+
+More: `docs/performance.md` (what is done), `docs/performance-roadmap.md` (next steps).

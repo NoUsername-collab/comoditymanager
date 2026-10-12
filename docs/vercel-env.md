@@ -93,7 +93,7 @@ npm run setup-staff
 | `https://{domeniu-tenant}/admin/login` | Login staff |
 | `/platform-admin` | Panel operatori Zalmox |
 
-Smoke complet: [PRODUCTION-READINESS.md](./PRODUCTION-READINESS.md).
+Smoke complet: [PRODUCTION-READINESS.md](../PRODUCTION-READINESS.md).
 
 ## 5. Comenzi utile
 

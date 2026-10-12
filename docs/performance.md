@@ -138,7 +138,7 @@ CREATE INDEX IF NOT EXISTS idx_admin_activity_tenant_created ON admin_activity_l
 
 ## Anti-pattern
 
-- `linear-gradient` pe carduri operaționale (vezi `docs/design-color-roadmap.md`)
+- `linear-gradient` pe carduri operaționale
 - Query-uri în layout fără cache pentru date tenant statice
 - `tesseract` import static în client bundle
 - `attachCheckinRecordState` cu repair pe liste/read paths

@@ -1,6 +1,6 @@
 # Mediu test live (~2 săptămâni)
 
-> **Notă (2026):** ghid istoric de staging. Platforma poate fi **deja live** — pentru smoke pe producție folosește [PRODUCTION-READINESS.md](./PRODUCTION-READINESS.md). Exemplele „Casa Emil” / `casaemil.ro` sunt **tenant de test**, nu un caz special al codului.
+> **Notă (2026):** ghid istoric de staging. Platforma poate fi **deja live** — pentru smoke pe producție folosește [PRODUCTION-READINESS.md](../PRODUCTION-READINESS.md). Exemplele „Casa Emil” / `casaemil.ro` sunt **tenant de test**, nu un caz special al codului.
 
 > (Supabase Cloud, `test.zalmox.app`, `*.test.zalmox.app`, Vercel — fără localhost)
 

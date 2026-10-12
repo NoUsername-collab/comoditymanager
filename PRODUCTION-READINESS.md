@@ -1,99 +1,151 @@
-﻿# Production Readiness — Zalmox / Zalmox
+﻿# Pregătire producție — Zalmox (platformă multi-tenant)
 
-Jurnal de verificări înainte de deploy. Fiecare **Pass** rulează `tsc`, `npm test` și `npm run build`, remediază regresiile și notează verdictul.
+**Ultima verificare:** 8 iulie 2026  
+**Context:** platforma și tenantii pot fi **deja live** — documentul servește la validare periodică, onboarding tenant nou și checklist infra.
 
----
+**DNS `zalmox.app` încă în curs?** Când muți domeniul, urmează [zalmox-app-dns-cutover.md](./docs/zalmox-app-dns-cutover.md) (checklist + serie de teste).
 
-## Pass 13 — 2026-06-22
+## Rezultate verificare automată (local)
 
-### Comenzi
+| Verificare | Rezultat |
+|------------|----------|
+| GitHub Actions CI | `npm test` + `test:security` + `typecheck` + `build` (`.github/workflows/ci.yml`) |
+| `npm run typecheck` | ✅ OK |
+| `npm test` | ✅ 1,308+ teste |
+| `npm run build` | ✅ OK |
 
-| Verificare | Rezultat | Detalii |
-|------------|----------|---------|
-| `npx tsc --noEmit` | **OK** | Fără erori TypeScript în `src/` (după eliminarea `.next/types` corupte din rulări paralele). |
-| `npm test` | **OK** | **1225** teste trecute, **0** eșuate (137 fișiere). |
-| `npm run build` | **EȘUAT** | `EPERM` la ștergerea `.next/server/chunks/ssr/src_0nfyxmr._.js.map` — fișier blocat (probabil `next dev`/proces Node paralel pe Windows). Recomandat: oprire server dev, ștergere `.next`, rebuild izolat. |
-
-### Remedieri în acest pass
-
-- **`src/domain/guest/mrz-parse.ts`**: reintroduse exporturile lipsă (`tryParseMrzBlock`, TD3, scoruri MRZ, `isMrzParseChecksumValid`); eliminat fallback-ul care accepta parse invalid.
-- **`src/components/admin/gantt/gantt-quick-panel/GanttQuickActionPanel.tsx`**: restaurat componenta (UTF-8); rezolvat eșecul testelor mobile-compat pe fișier UTF-16.
-- **`src/app/[locale]/admin/(panel)/settings/location/structure/page.tsx`**: reparat JSX (`SettingsPageLayout`, summary chips).
-- **`src/domain/settings/__tests__/settings-completion.test.ts`**: adăugat `displayName` obligatoriu pentru `computeSettingsCompletion`.
-- **`src/app/[locale]/admin/(panel)/settings/page.tsx`**: importuri `computeSettingsCompletion` / `resolveContactWithPrimary`.
-- **`src/domain/gantt/__tests__/quick-interval.test.ts`**: import Vitest.
-
-### Verdict (Pass 13)
-
-**Nu este încă gata de producție** din cauza build-ului Next.js blocat de permisiuni pe cache-ul `.next`. Calitatea codului la nivel de tipuri și teste automate este **bună** (tsc + suite completă verzi). Următorul pas operațional: mediu curat (fără procese `next` concurente), `Remove-Item -Recurse -Force .next`, apoi `npm run build` reușit; opțional re-rulare Pass 13 după build verde.
+Rulează local înainte de deploy: `npm test && npm run typecheck && npm run build`.
 
 ---
 
-### Istoric passes
+## Ce poate face operatorul FĂRĂ programator
 
-| Pass | Data | tsc | test | build | Verdict scurt |
-|------|------|-----|------|-------|----------------|
-| 14 | 2026-06-22 | OK | OK | OK (4 warn) | Pipeline verde |
+Din panoul admin pe **domeniul pensiunii** (subdomeniu `{slug}.{platform}` sau domeniu custom din `tenant_domains`):
 
+### Zilnic la recepție
+- **Calendar Gantt** — ocupare, mutări, hold/blocări/cereri/stay
+- **Cazări** — sejururi active, check-in / check-out, istoric
+- **Rezervări** — confirmă cereri de pe site, anulează, detalii oaspete
+- **Disponibilitate** — calendar săptămânal/lunar
+- **Oaspeți** — fișe, note, scanare CI/pașaport (MRZ), rebook
+- **Recepție rapidă** — flux scurt pentru sosiri
 
+### Setări (depinde de rol)
+- **Operator:** temă, notificări locale, setări permise în **Permisiuni echipă**
+- **Admin / Owner:** site public, email, fiscal, staff, domenii, MFA, identitate pensiune
 
-## Pass 14 - 2026-06-22
+### Site public (fără login)
+- Pagină pensiune, calendar rezervări, confirmare cerere
+- **Guest app** — `/stay/[code]`
 
-### Comenzi
-
-| Verificare | Rezultat | Detalii |
-|------------|----------|---------|
-| `npx tsc --noEmit` | **OK** | Fără erori TypeScript în `src/`. |
-| `npm test` | **OK** | **1225** teste trecute, **0** eșuate (137 fișiere). |
-| `npm run build` | **OK** | `next build` (Turbopack) finalizat; 143 pagini generate. **4 avertismente** Edge/instrumentation (build reușit). |
-
-### Remedieri în acest pass
-
-- **`src/app/[locale]/admin/(panel)/settings/page.tsx`**: completare setup folosește `getEmailSettings()` (nu câmpuri inexistente pe `PensionSettings`).
-- **`src/services/rooms-admin/list.ts`**: export `listAllRoomsForTenant` pentru `statistics.ts`.
-- **`src/app/[locale]/admin/(panel)/bookings/guest-app-actions.ts`**: `getTeamPermissions` din `@/services/pension-settings`.
-- **`src/services/bookings/queries/cereri.ts`**: import `getTenantScope`.
-- **`src/domain/settings/__tests__/settings-completion.test.ts`**: `displayName` pentru `computeSettingsCompletion`.
-- **`src/domain/gantt/__tests__/quick-interval.test.ts`**: import Vitest.
-- **`src/app/admin/admin-settings.css`**: `z-index: 55` pe bara de salvare (compact), conform testului mobile-compat.
-- **`src/lib/brand-logo-cache.ts`**: căi logo sub `public/` + `turbopackIgnore` pentru NFT Turbopack.
-
-### Verdict (Pass 14)
-
-Pipeline-ul local este verde: tipuri, teste și build production trec.
-Rămân avertismentele Turbopack pe lanțul Edge (instrumentation, `crypto` în middleware) — de monitorizat la deploy, fără a bloca build-ul.
-Recomandat smoke pe staging după oprirea proceselor `next` concurente pe Windows (evită lock `.next` / EPERM).
-
----
-## Pass 15 — 2026-06-22
-
-### Comenzi
-
-| Verificare | Rezultat | Detalii |
-|------------|----------|---------|
-| `npx tsc --noEmit` | **OK** | Fără erori TypeScript în `src/`. |
-| `npm test` | **OK** | **1225** teste trecute, **0** eșuate (137 fișiere). |
-| `npm run build` | **OK** | `next build` (Turbopack) finalizat; 143 pagini generate. **4 avertismente** Turbopack pe lanțul Edge (`instrumentation` / `sim-cookie`) — build reușit, de monitorizat. |
-
-### Remedieri în acest pass
-
-- **`src/layout/mobile/__tests__/mobile-compat-rules.test.ts`**: așteptare `z-index: 60` pentru `.settings-save-bar` (compact), aliniat cu `admin-settings.css`.
-- **`src/components/admin/gantt/gantt-quick-panel/GanttQuickActionPanel.tsx`**: panel Gantt quick action restaurat pentru exportul din `GanttQuickActionPanel.tsx`.
-- **`src/services/rooms-admin/list.ts`**: export `listAllRoomsForTenant` pentru statistici multi-tenant.
-- **`src/domain/settings/__tests__/settings-completion.test.ts`**: `displayName` obligatoriu pentru `computeSettingsCompletion`.
-- **`src/domain/gantt/__tests__/quick-interval.test.ts`**: import Vitest + `draftRoomIds` în testele de interval Gantt.
-
-### Verdict (Pass 15)
-
-**Gata de producție la nivel de pipeline local** — tipuri, teste și build production trec. Rămân de urmărit avertismentele Turbopack pe Edge/instrumentation în deploy; recomandat smoke pe staging după oprirea proceselor `next` concurente pe Windows (evită lock/EPERM pe `.next`).
+### Ce NU face operatorul singur
+- Deploy, DNS, chei API (Supabase, Resend, Vercel)
+- Crearea inițială a conturilor în Supabase Auth (prima dată)
+- Migrări bază de date
+- Acces **platform admin** (`/platform-admin`) — doar echipa Zalmox
 
 ---
 
-### Istoric passes (actualizat)
+## Smoke test — platformă live (≈10 min)
 
-| Pass | Data | tsc | test | build | Verdict scurt |
-|------|------|-----|------|-------|----------------|
-| 15 | 2026-06-22 | OK | OK | OK (4 warn) | Pipeline verde |
-| 14 | 2026-06-22 | OK | OK | OK (4 warn) | Pipeline verde |
+Folosește URL-urile reale ale tenantului tău (`{slug}`, domeniu custom dacă există).
 
+| # | Verificare | OK? |
+|---|------------|-----|
+| 1 | Site public — homepage + calendar | ☐ |
+| 2 | Cerere rezervare (incognito) → apare în admin | ☐ |
+| 3 | Login staff pe **domeniul pensiunii** (nu pe apex platformă) | ☐ |
+| 4 | Gantt — vizualizare + acțiune rapidă pe cameră | ☐ |
+| 5 | Cazări — deschide sejur / check-in scurt | ☐ |
+| 6 | Mobil — meniul de jos + setări (bara salvare) | ☐ |
+| 7 | Email test din Setări → Email (dacă Resend e activ) | ☐ |
+| 8 | `/platform-admin` — login cu email din `ZALMOX_ADMIN_EMAILS` | ☐ |
+| 9 | Tenant suspendat (staging) → redirect `/tenant-suspended` | ☐ |
 
+**Bookmark recomandat pentru recepție:** `https://{domeniu-tenant}/admin/login`
+
+---
+
+## Checklist — tenant nou sau infra nouă
+
+### 1. Supabase
+- [ ] Migrările din `supabase/migrations/` sunt aplicate
+- [ ] `NEXT_PUBLIC_SUPABASE_URL`, anon key, service_role key în Vercel
+- [ ] Rând în `tenant_domains`: subdomeniu `{slug}.{platform}` + eventual domeniu custom
+
+### 2. Conturi staff (prima dată per tenant)
+
+**Preferat:** signup public sau **Provision tenant** din `/platform-admin` → owner în `tenant_members`.
+
+**Legacy (script local, un singur tenant de dev):**
+```bash
+cp .env.example .env.local
+npm run env:check:setup
+npm run setup-staff   # folosește ADMIN_EMAIL / OPERATOR_EMAIL din .env
+```
+- [ ] Emailuri Admin și Operator **diferite** în Supabase Auth
+- [ ] Șterge `ADMIN_INITIAL_PASSWORD` din `.env` după setup
+
+### 3. Vercel — Environment Variables (Production)
+
+| Variabilă | Obligatoriu |
+|-----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Da |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Da |
+| `SUPABASE_SERVICE_ROLE_KEY` | Da (Secret) |
+| `NEXT_PUBLIC_PLATFORM_DOMAIN` | Da (apex platformă, ex. `zalmox.ro`) |
+| `NEXT_PUBLIC_SITE_URL` | Da |
+| `ZALMOX_ADMIN_EMAILS` | Pentru `/platform-admin` |
+| `ADMIN_LOCATION_UNLOCK_SECRET` | Recomandat (`npm run env:secret`) |
+| `RESEND_API_KEY` | Pentru emailuri (Secret) |
+| `CRON_SECRET` | Cron backup + rezumat zilnic |
+
+**Legacy (opțional):** `ADMIN_EMAIL` / `OPERATOR_EMAIL` — vezi [vercel-env.md](./docs/vercel-env.md).
+
+**Interzis pe Production:** `ADMIN_INITIAL_PASSWORD`, `ADMIN_FACTORY_RESET_ENABLED=true`
+
+### 4. DNS
+- [ ] Apex platformă + `*.{apex}` → Vercel (subdomenii tenant)
+- [ ] Domeniu custom tenant (`pension.example.ro`, `www`) → Vercel
+
+### 5. Resend (email)
+- [ ] Domenii verificate (platformă + tenant dacă trimite de pe domeniu propriu)
+- [ ] Expeditor/reply-to în **Setări → Email** (admin tenant)
+- [ ] **Redeploy** după adăugarea `RESEND_API_KEY`
+
+### 6. MFA (recomandat)
+- [ ] Owner/Admin: **Setări → Securitate** sau `/admin/security/mfa`
+
+### 7. Configurare pensiune (din admin)
+- [ ] **Identitate**, **Site public**, **Check-in**, **Email**
+- [ ] **Setup issues** (roata din meniu) — fără avertismente critice
+
+---
+
+## Comenzi utile (programator)
+
+```bash
+npm run env:check
+npm run env:check:prod
+npm run setup-platform-admin
+npx tsc --noEmit && npm test && npm run build
+```
+
+---
+
+## Riscuri / limitări cunoscute
+
+- Admin tenant pe **domeniul pensiunii**, nu pe apex platformă
+- Fără `RESEND_API_KEY`, emailurile sunt noop în dev
+- MRZ/OCR poate necesita reîncercare la calitate slabă
+- Tenant `suspended` / `cancelled` — blocat la edge (except login + pagina suspend)
+
+---
+
+## Referințe
+
+- [docs/README.md](./docs/README.md) — index documentație
+- [vercel-env.md](./docs/vercel-env.md) — variabile Vercel
+- [acces-staff.md](./docs/acces-staff.md) — acces staff
+- [tenant-security.md](./docs/tenant-security.md) — izolare tenant
+- [.env.example](./.env.example) — șablon variabile

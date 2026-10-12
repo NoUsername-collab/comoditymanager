@@ -8,7 +8,7 @@ Onboarding for **Zalmox** (platformă multi-tenant). Start: [README](../README.m
 - `npm test` — include import/CSS boundary audits
 
 ## Operare (live sau tenant nou)
-- [PRODUCTION-READINESS.md](./PRODUCTION-READINESS.md) — **smoke test** + checklist infra
+- [PRODUCTION-READINESS.md](../PRODUCTION-READINESS.md) — **smoke test** + checklist infra
 - [zalmox-app-dns-cutover.md](./zalmox-app-dns-cutover.md) — **DNS `zalmox.app`** + teste post-migrare (când ești deblocat)
 - [vercel-env.md](./vercel-env.md) — variabile Vercel
 - [acces-staff.md](./acces-staff.md) — login staff pe domeniul pensiunii
